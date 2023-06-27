@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 import typing
 
 from flask import Response
@@ -10,6 +11,7 @@ from flask_wtf.csrf import CSRFProtect
 from sentry_sdk import set_tag
 
 from pcapi import settings
+from pcapi.flask_app import setup_metrics
 from pcapi.flask_app import app
 from pcapi.routes.backoffice_v3.scss import preprocess_scss
 
@@ -54,6 +56,8 @@ with app.app_context():
 
     app.generate_error_response = generate_error_response  # type: ignore [attr-defined]
 
+    setup_metrics(app)
+
 
 if __name__ == "__main__":
     port = settings.FLASK_PORT
@@ -67,4 +71,7 @@ if __name__ == "__main__":
             print("🎉 Code debugger attached, enjoy debugging 🎉", flush=True)
 
     set_tag("pcapi.app_type", "app")
+    if "DEBUG_METRICS" in os.environ:
+        # 'prometheus_flask_exporter' does not play well when debug mode is on.
+        debug = use_reloader = False
     app.run(host="0.0.0.0", port=port, debug=True, use_reloader=True)

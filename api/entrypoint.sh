@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variabilize "bind" when we will merge dockerfiles. "127.0.0.1 for devs and 0.0.0.0 for kubernetes"
-exec gunicorn \
+PROMETHEUS_MULTIPROC_DIR=/tmp/prometheus_flask_export_multiproc_dir exec gunicorn \
     --preload \
     --bind 0.0.0.0:$GUNICORN_PORT \
     --worker-class gthread \
@@ -11,4 +11,5 @@ exec gunicorn \
     --threads $GUNICORN_THREADS \
     --timeout $GUNICORN_TIMEOUT \
     --log-level $GUNICORN_LOG_LEVEL \
+    --config gunicorn.conf.py \
     ${GUNICORN_FLASK_APP:-pcapi.app:app}

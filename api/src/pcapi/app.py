@@ -1,9 +1,12 @@
 #!/usr/bin/env python
+import os
+
 from flask_jwt_extended import JWTManager
 from sentry_sdk import set_tag
 
 from pcapi import settings
 from pcapi.flask_app import app
+from pcapi.flask_app import setup_metrics
 
 
 app.config["SESSION_COOKIE_HTTPONLY"] = True
@@ -29,6 +32,8 @@ with app.app_context():
 
     install_all_routes(app)
 
+    setup_metrics(app)
+
 
 if __name__ == "__main__":
     port = settings.FLASK_PORT
@@ -46,4 +51,8 @@ if __name__ == "__main__":
             print("🎉 Code debugger attached, enjoy debugging 🎉", flush=True)
 
     set_tag("pcapi.app_type", "app")
-    app.run(host="0.0.0.0", port=port, debug=True, use_reloader=True)
+    debug = use_reloader = True
+    if "DEBUG_METRICS" in os.environ:
+        # 'prometheus_flask_exporter' does not play well when debug mode is on.
+        debug = use_reloader = False
+    app.run(host="0.0.0.0", port=port, debug=debug, use_reloader=use_reloader)

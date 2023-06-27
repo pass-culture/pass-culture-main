@@ -79,6 +79,9 @@ USER pcapi
 
 RUN pip install --no-cache-dir --user -e .
 
+RUN mkdir /tmp/prometheus_flask_export_multiproc_dir
+RUN chown pcapi:pcapi /tmp/prometheus_flask_export_multiproc_dir
+
 ######### PRODUCTION #########
 
 FROM lib AS pcapi
