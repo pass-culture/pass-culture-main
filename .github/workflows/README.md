@@ -96,7 +96,6 @@ Liste des fichiers
 | release--deploy.yml                   | Workflow | Manually      | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/release--deploy.yml)       |
 | reusable--build-and-tag.yml           | Helper   | Automatically |                                                                                                       |
 | storybook.yml                         | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/storybook.yml)             |
-| tests-adage.yml                       | Helper   | Automatically |                                                                                                       |
 | tests-api.yml                         | Helper   | Automatically |                                                                                                       |
 | tests-backoffice-v3.yml               | Helper   | Automatically |                                                                                                       |
 | tests-main.yml                        | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/tests-main.yml)            |
