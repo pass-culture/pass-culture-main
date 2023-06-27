@@ -21,9 +21,6 @@
 #  pro_cache_key:
 #    type: string
 #    default: 'node_modules-18.12-{{ checksum "pro/yarn.lock" }}'
-#  adage-front_cache_key:
-#    type: string
-#    default: 'node_modules-18.12-{{ checksum "adage-front/yarn.lock" }}'
 
 ###################
 #  EXECUTORS
@@ -513,125 +510,6 @@
 #          command: ./rebuild_staging.sh
 #          working_directory: /usr/src/app
 #
-#  type-checking-adage-front:
-#    docker:
-#      - image: cimg/node:18.12
-#    working_directory: ~/pass-culture
-#    steps:
-#      - checkout
-#      - skip_unchanged:
-#          paths: adage-front
-#      - unless:
-#          condition:
-#            equal: ["master", << pipeline.git.branch >>]
-#          steps:
-#            - restore_cache:
-#                name: Restore Yarn Package Cache
-#                key: << pipeline.parameters.adage-front_cache_key >>
-#      - run:
-#          name: Install dependencies
-#          working_directory: adage-front
-#          command: yarn install
-#      - unless:
-#          condition:
-#            equal: ["master", << pipeline.git.branch >>]
-#          steps:
-#            - save_cache:
-#                name: Save Yarn Package Cache
-#                key: << pipeline.parameters.adage-front_cache_key >>
-#                paths:
-#                  - ~/pass-culture/adage-front/node_modules
-#      - run:
-#          name: Running type checking
-#          working_directory: adage-front
-#          command: yarn tsc -b
-#      - when:
-#          condition:
-#            equal: ["master", << pipeline.git.branch >>]
-#          steps:
-#            - notify-slack:
-#                channel: dev
-#
-#  quality-adage-front:
-#    docker:
-#      - image: cimg/node:18.12
-#    working_directory: ~/pass-culture
-#    steps:
-#      - checkout
-#      - skip_unchanged:
-#          paths: adage-front
-#      - unless:
-#          condition:
-#            equal: ["master", << pipeline.git.branch >>]
-#          steps:
-#            - restore_cache:
-#                name: Restore Yarn Package Cache
-#                key: << pipeline.parameters.adage-front_cache_key >>
-#      - run:
-#          name: Install dependencies
-#          working_directory: adage-front
-#          command: |
-#            yarn install
-#      - unless:
-#          condition:
-#            equal: ["master", << pipeline.git.branch >>]
-#          steps:
-#            - save_cache:
-#                name: Save Yarn Package Cache
-#                key: << pipeline.parameters.adage-front_cache_key >>
-#                paths:
-#                  - ~/pass-culture/adage-front/node_modules
-#      - run:
-#          name: Running linter
-#          working_directory: adage-front
-#          command: |
-#            yarn lint:js
-#      - when:
-#          condition:
-#            equal: ["master", << pipeline.git.branch >>]
-#          steps:
-#            - notify-slack:
-#                channel: dev
-#
-#  tests-adage-front:
-#    docker:
-#      - image: cimg/node:18.12
-#    working_directory: ~/pass-culture
-#    steps:
-#      - checkout
-#      - skip_unchanged:
-#          paths: adage-front
-#      - unless:
-#          condition:
-#            equal: ["master", << pipeline.git.branch >>]
-#          steps:
-#            - restore_cache:
-#                name: Restore Yarn Package Cache
-#                key: << pipeline.parameters.adage-front_cache_key >>
-#      - run:
-#          name: Install dependencies
-#          working_directory: adage-front
-#          command: yarn install
-#      - unless:
-#          condition:
-#            equal: ["master", << pipeline.git.branch >>]
-#          steps:
-#            - save_cache:
-#                name: Save Yarn Package Cache
-#                key: << pipeline.parameters.adage-front_cache_key >>
-#                paths:
-#                  - ~/pass-culture/adage-front/node_modules
-#      - run:
-#          name: Run Unit Test Adage-front
-#          working_directory: adage-front
-#          command: yarn test:unit
-#      - when:
-#          condition:
-#            equal: ["master", << pipeline.git.branch >>]
-#          steps:
-#            - notify-slack:
-#                channel: dev
-#
 #  type-checking-pro:
 #    docker:
 #      - image: cimg/node:18.12
@@ -916,54 +794,6 @@
 #                  curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
 #                when: on_fail
 #
-#  deploy-adage-front:
-#    executor: node-gcp-18
-#    parameters:
-#      app_environment:
-#        type: string
-#        default: ${CIRCLE_BRANCH}
-#    steps:
-#      - checkout
-#      - authenticate-gcp:
-#          gcp-key-name: GCP_METIER_KEY
-#      - build-frontend-app:
-#          node_env: <<parameters.app_environment>>
-#          build_dir: ./adage-front
-#          yarn_build_subcommand: "build:<<parameters.app_environment>>"
-#      - unless:
-#          condition:
-#            equal: ["testing", <<parameters.app_environment>>]
-#          steps:
-#            - run:
-#                name: Update version.txt file
-#                command: >
-#                  cat adage-front/package.json | grep -E '"version": "[0-9]+.[0-9]+.[0-9]+"' | grep -Eo '[0-9]+.[0-9]+.[0-9]+' > adage-front/build/version.txt
-#      - push-to-bucket:
-#          build_path: ./adage-front/build/
-#          bucket_name: ${GCP_PROJECT}-<<parameters.app_environment>>-adage
-#      - when:
-#          condition:
-#            equal: ["production", <<parameters.app_environment>>]
-#          steps:
-#            - invalidate-cache:
-#                url_map_name: <<parameters.app_environment>>-pro-url-map
-#      - unless:
-#          condition:
-#            equal: ["testing", <<parameters.app_environment>>]
-#          steps:
-#            - run:
-#                name: Send failure notification
-#                command: |
-#                  if [[ "<<parameters.app_environment>>" == "testing" ]]; then
-#                    exit 0
-#                    circleci step halt;
-#                  fi
-#                  VERSION_TO_DEPLOY=$(git describe --contains | sed 's/..$//')
-#                  BOT_MESSAGE="'*"<<parameters.app_environment>>"* : *Adage-front* deployment *"$VERSION_TO_DEPLOY"* may
-#                  have *FAILED* (an old cache could still be valid) :collision:'"
-#                  curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
-#                when: on_fail
-#
 #  release-synthesis:
 #    machine:
 #      image: ubuntu-2004:202101-01
@@ -1009,24 +839,6 @@
 #              ignore:
 #                - docs
 #      - type-checking-pro:
-#         filters:
-#           branches:
-#             ignore:
-#               - production
-#               - staging
-#               - integration
-#               - docs
-#         context: Slack
-#      - type-checking-adage-front:
-#         filters:
-#           branches:
-#             ignore:
-#               - production
-#               - staging
-#               - integration
-#               - docs
-#         context: Slack
-#      - quality-adage-front:
 #         filters:
 #           branches:
 #             ignore:
@@ -1089,17 +901,6 @@
 #            - GCP_EHP
 #          requires:
 #            - build-and-push-image
-#      - tests-adage-front:
-#         filters:
-#           branches:
-#             ignore:
-#               - production
-#               - staging
-#               - integration
-#               - docs
-#         context: Slack
-#         requires:
-#           - type-checking-adage-front
 #      - tests-pro-e2e-tests:
 #         filters:
 #           branches:
@@ -1156,19 +957,6 @@
 #           - GCP
 #           - GCP_EHP
 #         app_environment: testing
-#      - deploy-adage-front:
-#         filters:
-#           branches:
-#             only:
-#               - master
-#         requires:
-#           - quality-adage-front
-#           - tests-adage-front
-#           - restart-pcapi
-#         context:
-#           - GCP
-#           - GCP_EHP
-#         app_environment: testing
 #  gcp-ehp:
 #    jobs:
 #      - generate-pcapi-helm-values-files:
@@ -1192,20 +980,6 @@
 #          context:
 #            - GCP
 #            - GCP_EHP
-#      - deploy-adage-front:
-#          filters:
-#            branches:
-#              ignore: integration
-#          requires:
-#            - deploy-pcapi
-#          context:
-#            - GCP
-#            - GCP_EHP
-#      - release-synthesis:
-#          requires:
-#            - restart-pcapi
-#            - deploy-pro
-#            - deploy-adage-front
 #      - restart-pcapi:
 #          requires:
 #            - deploy-pcapi
@@ -1235,17 +1009,6 @@
 #          context:
 #            - GCP
 #            - GCP_PROD
-#      - deploy-adage-front:
-#          requires:
-#            - deploy-pcapi
-#          context:
-#            - GCP
-#            - GCP_PROD
-#      - release-synthesis:
-#          requires:
-#            - restart-pcapi
-#            - deploy-pro
-#            - deploy-adage-front
 #      - restart-pcapi:
 #          requires:
 #            - deploy-pcapi

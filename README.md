@@ -21,8 +21,6 @@ Le repo `main` contient les 5 projets suivants :
 
 - l'[api](./api/) (Flask)
 - le portail [pro](./pro) (React), pour les acteurs culturels
-- [adage-front](./adage-front) (React, TS), application frontend pour les
-  rédacteurs de projets scolaires
 - [doc](./doc) : documentation de l'API pour les partenaires du pass Culture
 - [maintenance-api](./maintenance-ste) : page de maintenance (HTML)
 
@@ -36,7 +34,7 @@ Le repo `main` contient les 5 projets suivants :
 - [NVM](https://github.com/creationix/nvm) (Node Version Manager)
   - `curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash`
 - [Node](https://nodejs.org/en/download/)
-  - Lancer `nvm install` dans `/pro` et `/adage-front`
+  - Lancer `nvm install` dans `/pro`
 - [Yarn](https://classic.yarnpkg.com/en/)
   - `npm install --global yarn` (NPM)
   - autres méthodes [dans la doc de Yarn](https://classic.yarnpkg.com/lang/en/docs/install/)
@@ -87,13 +85,6 @@ manières de lancer le backend.
 - `pc start-pro`
 - `http://localhost:3001/` devrait être lancé et fonctionnel
 - Connectez-vous avec `pctest.admin93.0@example.com` (admin) ou `pctest.pro93.0@example.com` (non-admin)
-
-#### adage-front
-
-- `pc start-adage-front`
-- `http://localhost:3002/` devrait être lancé et fonctionnel
-- Connectez-vous avec un token valide en le passant en query param (pour générer un token valide, générez-le via le
-  helper de test dans l'API)
 
 #### Flask Admin
 
