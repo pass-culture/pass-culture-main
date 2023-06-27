@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 import time
 
@@ -12,6 +13,7 @@ from flask.logging import default_handler
 import flask.wrappers
 from flask_login import LoginManager
 from flask_login import current_user
+import prometheus_flask_exporter.multiprocess
 import redis
 import sentry_sdk
 from sqlalchemy import orm
@@ -42,6 +44,16 @@ init_sentry_sdk()
 
 
 app = Flask(__name__, static_url_path="/static")
+
+
+def setup_metrics(app_: Flask) -> None:
+    if not int(os.environ.get("ENABLE_FLASK_PROMETHEUS_EXPORTER", "0")):
+        return
+    prometheus_flask_exporter.multiprocess.GunicornPrometheusMetrics(
+        app_,
+        group_by="url_rule",
+    )
+    # An external export server is started by Gunicorn, see `gunicorn.conf.py`.
 
 
 # These `before_request()` and `after_request()` callbacks must be

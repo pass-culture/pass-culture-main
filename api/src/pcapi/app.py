@@ -4,6 +4,7 @@ from sentry_sdk import set_tag
 
 from pcapi import settings
 from pcapi.flask_app import app
+from pcapi.flask_app import setup_metrics
 
 
 app.config["SESSION_COOKIE_HTTPONLY"] = True
@@ -28,6 +29,8 @@ with app.app_context():
     import pcapi.utils.login_manager
 
     install_all_routes(app)
+
+    setup_metrics(app)
 
 
 if __name__ == "__main__":

@@ -42,6 +42,8 @@ FROM python:3.10-slim AS lib
 RUN useradd -rm -d /home/pcapi -u 1000 pcapi
 
 ENV PATH=$PATH:/home/pcapi/.local/bin
+ENV PROMETHEUS_MULTIPROC_DIR /tmp
+ENV FLASK_PROMETHEUS_EXPORTER_PORT 5002
 
 RUN apt-get update \
 	&& apt-get --no-install-recommends -y install \
