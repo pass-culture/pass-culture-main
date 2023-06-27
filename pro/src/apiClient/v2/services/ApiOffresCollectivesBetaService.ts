@@ -236,7 +236,7 @@ export class ApiOffresCollectivesBetaService {
   }
 
   /**
-   * Récupération de la liste des lieux associés à la structure authentifiée par le jeton d'API.
+   * Récupération de la liste des lieux associés au fournisseur authentifiée par le jeton d'API.
    * Tous les lieux enregistrés, sont listés ici avec leurs coordonnées.
    * @returns CollectiveOffersListVenuesResponseModel La liste des lieux ou vous pouvez créer une offre.
    * @throws ApiError
