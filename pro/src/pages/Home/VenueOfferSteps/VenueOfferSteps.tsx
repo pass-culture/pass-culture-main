@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { ReactComponent as FullInfoIcon } from 'icons/full-infos.svg'
+import { ReactComponent as FullInfoIcon } from 'icons/full-info.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -19,7 +19,7 @@ import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 
 import styles from './VenueOfferSteps.module.scss'
 
-interface IVenueOfferStepsProps {
+interface VenueOfferStepsProps {
   hasVenue: boolean
   hasMissingReimbursementPoint?: boolean
   offererId: number
@@ -37,7 +37,7 @@ const VenueOfferSteps = ({
   hasCreatedOffer = false,
   hasAdageId = false,
   shouldDisplayEACInformationSection = false,
-}: IVenueOfferStepsProps) => {
+}: VenueOfferStepsProps) => {
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
   const venueCreationUrl = isVenueCreationAvailable
     ? `/structures/${offererId}/lieux/creation`
