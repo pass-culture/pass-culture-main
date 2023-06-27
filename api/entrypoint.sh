@@ -4,7 +4,7 @@
 
 # The PROMETHEUS_MULTIPROC_DIR must be the same as the directory
 # created in the Dockerfile.
-PROMETHEUS_MULTIPROC_DIR=/var/run/prometheus_flask_export_multiproc_dir exec gunicorn \
+PROMETHEUS_MULTIPROC_DIR=/var/tmp/prometheus_flask_export_multiproc_dir exec gunicorn \
     --preload \
     --bind 0.0.0.0:$GUNICORN_PORT \
     --worker-class gthread \

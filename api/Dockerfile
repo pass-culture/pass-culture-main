@@ -80,8 +80,8 @@ USER pcapi
 RUN pip install --no-cache-dir --user -e .
 
 # This directory must be the same as the one mentioned in `gunicorn.conf.py`.
-RUN mkdir /var/run/prometheus_flask_export_multiproc_dir
-RUN chown pcapi:pcapi /var/run/prometheus_flask_export_multiproc_dir
+RUN mkdir /var/tmp/prometheus_flask_export_multiproc_dir
+RUN chown pcapi:pcapi /var/tmp/prometheus_flask_export_multiproc_dir
 
 ######### PRODUCTION #########
 
