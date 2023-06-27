@@ -133,7 +133,14 @@ $offer-image-width: rem.torem(176px);
   }
 
   .offer-like-button {
-    cursor: pointer;
+    color: colors.$primary;
+    width: rem.torem(40px);
+    height: rem.torem(40px);
+
+    svg {
+      width: rem.torem(40px)!important;
+      height: rem.torem(40px)!important;
+    }
   }
 
   &-see-more {
