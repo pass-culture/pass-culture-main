@@ -8,10 +8,10 @@ import useAnalytics from 'hooks/useAnalytics'
 import { CalendarIcon } from 'icons'
 import { ReactComponent as IconOffers } from 'icons/ico-offers.svg'
 import { ReactComponent as IconSignout } from 'icons/ico-signout.svg'
-import { ReactComponent as StatsIcon } from 'icons/ico-stats.svg'
 import deskIcon from 'icons/stroke-desk.svg'
 import strokeEuro from 'icons/stroke-euro.svg'
 import strokeHome from 'icons/stroke-home.svg'
+import strokeSignalIcon from 'icons/stroke-signal.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { ROOT_PATH } from 'utils/config'
 
@@ -118,7 +118,11 @@ const Header = () => {
               role="menuitem"
               to="/statistiques"
             >
-              <StatsIcon aria-hidden className="nav-item-icon" />
+              <SvgIcon
+                src={strokeSignalIcon}
+                alt=""
+                className="nav-item-icon"
+              />
               Statistiques
             </NavLink>
           )}
