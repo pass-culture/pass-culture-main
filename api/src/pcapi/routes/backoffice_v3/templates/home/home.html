@@ -8,6 +8,7 @@
               <p class="text-sm mb-0 text-capitalize font-weight-bold">{{ text_many if value > 1 else text_one }}</p>
               <h5 class="font-weight-bolder mb-0">
                 {{ value }}
+                <span class="text-{{ ['danger', 'success']|random }} text-sm font-weight-bolder">{{ ['+55', '+42', '+3', '-7', '-10', '-80']|random }}%</span>
               </h5>
             </div>
           </div>
@@ -51,9 +52,9 @@
           <div class="row">
             <div class="col-8">
               <div class="numbers">
-                <p class="text-sm mb-0 text-capitalize font-weight-bold">Sales</p>
+                <p class="text-sm mb-0 text-capitalize font-weight-bold">Montant dépensé sur les dernières 24h</p>
                 <h5 class="font-weight-bolder mb-0">
-                  $103,430
+                  103.430 €
                   <span class="text-success text-sm font-weight-bolder">+5%</span>
                 </h5>
               </div>
@@ -75,11 +76,11 @@
           <div class="row">
             <div class="col-lg-6">
               <div class="d-flex flex-column h-100">
-                <p class="mb-1 pt-2 text-bold">Built by developers</p>
+                <p class="mb-1 pt-2 text-bold">Hackathon du 27-28 Juin 2023</p>
                 <h5 class="font-weight-bolder">Soft UI Dashboard</h5>
-                <p class="mb-5">From colors, cards, typography to complex elements, you will find the full documentation.</p>
-                <a class="text-body text-sm font-weight-bold mb-0 icon-move-right mt-auto" href="javascript:;">
-                  Read More
+                <p class="mb-5">L'équipe des angry nerds vous propose une nouvelle UI pour votre outil préféré.</p>
+                <a class="text-body text-sm font-weight-bold mb-0 icon-move-right mt-auto" href="https://www.notion.so/passcultureapp/Hackathon-6045901d67254427b1275dea8621fb60?p=c6ae5b2c1e4d49fb878a1244e7756a22&pm=s">
+                  Lire plus
                   <i class="fas fa-arrow-right text-sm ms-1" aria-hidden="true"></i>
                 </a>
               </div>
@@ -101,10 +102,10 @@
         <div class="overflow-hidden position-relative border-radius-lg bg-cover h-100" style="background-image: url('{{ url_for('static', filename='backofficev3/img/ivancik.jpg' ) }}');">
           <span class="mask bg-gradient-dark"></span>
           <div class="card-body position-relative z-index-1 d-flex flex-column h-100 p-3">
-            <h5 class="text-white font-weight-bolder mb-4 pt-2">Work with the rockets</h5>
-            <p class="text-white">Wealth creation is an evolutionarily recent positive-sum game. It is all about who take the opportunity first.</p>
-            <a class="text-white text-sm font-weight-bold mb-0 icon-move-right mt-auto" href="javascript:;">
-              Read More
+            <h5 class="text-white font-weight-bolder mb-4 pt-2">La nouvelle page jeune</h5>
+            <p class="text-white">Nous vous proposons une nouvelle mise en page du profil d'un jeune.</p>
+            <a class="text-white text-sm font-weight-bold mb-0 icon-move-right mt-auto" href="http://localhost:5001/public-accounts/45">
+              Voir l'exemple
               <i class="fas fa-arrow-right text-sm ms-1" aria-hidden="true"></i>
             </a>
           </div>
@@ -121,8 +122,8 @@
               <canvas id="chart-bars" class="chart-canvas" height="170"></canvas>
             </div>
           </div>
-          <h6 class="ms-2 mt-4 mb-0"> Active Users </h6>
-          <p class="text-sm ms-2"> (<span class="font-weight-bolder">+23%</span>) than last week </p>
+          <h6 class="ms-2 mt-4 mb-0">Utilisateurs actifs</h6>
+          <p class="text-sm ms-2"> (<span class="font-weight-bolder">+23%</span>) par rapport à la semaine passée</p>
           <div class="container border-radius-lg">
             <div class="row">
               <div class="col-3 py-3 ps-0">
@@ -142,9 +143,9 @@
                       </g>
                     </svg>
                   </div>
-                  <p class="text-xs mt-1 mb-0 font-weight-bold">Users</p>
+                  <p class="text-xs mt-1 mb-0 font-weight-bold">Utilisateurs</p>
                 </div>
-                <h4 class="font-weight-bolder">36K</h4>
+                <h4 class="font-weight-bolder">36 K</h4>
                 <div class="progress w-75">
                   <div class="progress-bar bg-dark w-60" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
@@ -192,9 +193,9 @@
                       </g>
                     </svg>
                   </div>
-                  <p class="text-xs mt-1 mb-0 font-weight-bold">Sales</p>
+                  <p class="text-xs mt-1 mb-0 font-weight-bold">Réservations</p>
                 </div>
-                <h4 class="font-weight-bolder">435$</h4>
+                <h4 class="font-weight-bolder">435 €</h4>
                 <div class="progress w-75">
                   <div class="progress-bar bg-dark w-30" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
                 </div>
@@ -217,7 +218,7 @@
                       </g>
                     </svg>
                   </div>
-                  <p class="text-xs mt-1 mb-0 font-weight-bold">Items</p>
+                  <p class="text-xs mt-1 mb-0 font-weight-bold">Nouvelles offres</p>
                 </div>
                 <h4 class="font-weight-bolder">43</h4>
                 <div class="progress w-75">
@@ -232,10 +233,10 @@
     <div class="col-lg-7">
       <div class="card z-index-2">
         <div class="card-header pb-0">
-          <h6>Sales overview</h6>
+          <h6>Créations d'offres</h6>
           <p class="text-sm">
             <i class="fa fa-arrow-up text-success"></i>
-            <span class="font-weight-bold">4% more</span> in 2021
+            <span class="font-weight-bold">4% de plus qu'en</span> in 2022
           </p>
         </div>
         <div class="card-body p-3">
@@ -252,10 +253,10 @@
         <div class="card-header pb-0">
           <div class="row">
             <div class="col-lg-6 col-7">
-              <h6>Projects</h6>
+              <h6>Événements à venir</h6>
               <p class="text-sm mb-0">
                 <i class="fa fa-check text-info" aria-hidden="true"></i>
-                <span class="font-weight-bold ms-1">30 done</span> this month
+                <span class="font-weight-bold ms-1">30 événements passés</span> ce mois-ci
               </p>
             </div>
             <div class="col-lg-6 col-5 my-auto text-end">
@@ -277,10 +278,10 @@
             <table class="table align-items-center mb-0">
               <thead>
                 <tr>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Companies</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Members</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Titre de l'évènement</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Acteurs culturels</th>
                   <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Budget</th>
-                  <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Completion</th>
+                  <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Stock</th>
                 </tr>
               </thead>
               <tbody>
@@ -291,7 +292,7 @@
                         <img src="{{ url_for('static', filename='backofficev3/img/small-logos/logo-xd.svg' ) }}" class="avatar avatar-sm me-3" alt="xd">
                       </div>
                       <div class="d-flex flex-column justify-content-center">
-                        <h6 class="mb-0 text-sm">Soft UI XD Version</h6>
+                        <h6 class="mb-0 text-sm">LOLLAPALOOZA PARIS 2023 - PASS 3 JOURS - VALABLE DU 21 AU 23 JUILLET 2023</h6>
                       </div>
                     </div>
                   </td>
@@ -312,13 +313,13 @@
                     </div>
                   </td>
                   <td class="align-middle text-center text-sm">
-                    <span class="text-xs font-weight-bold"> $14,000 </span>
+                    <span class="text-xs font-weight-bold">14.000 €</span>
                   </td>
                   <td class="align-middle">
                     <div class="progress-wrapper w-75 mx-auto">
                       <div class="progress-info">
                         <div class="progress-percentage">
-                          <span class="text-xs font-weight-bold">60%</span>
+                          <span class="text-xs font-weight-bold">0%</span>
                         </div>
                       </div>
                       <div class="progress">
@@ -334,7 +335,7 @@
                         <img src="{{ url_for('static', filename='backofficev3/img/small-logos/logo-atlassian.svg' ) }}" class="avatar avatar-sm me-3" alt="atlassian">
                       </div>
                       <div class="d-flex flex-column justify-content-center">
-                        <h6 class="mb-0 text-sm">Add Progress Track</h6>
+                        <h6 class="mb-0 text-sm">DJADJA & DINAZ - FESTIVAL DE NIMES 2023</h6>
                       </div>
                     </div>
                   </td>
@@ -349,13 +350,13 @@
                     </div>
                   </td>
                   <td class="align-middle text-center text-sm">
-                    <span class="text-xs font-weight-bold"> $3,000 </span>
+                    <span class="text-xs font-weight-bold">3.000 €</span>
                   </td>
                   <td class="align-middle">
                     <div class="progress-wrapper w-75 mx-auto">
                       <div class="progress-info">
                         <div class="progress-percentage">
-                          <span class="text-xs font-weight-bold">10%</span>
+                          <span class="text-xs font-weight-bold">0%</span>
                         </div>
                       </div>
                       <div class="progress">
@@ -371,7 +372,7 @@
                         <img src="{{ url_for('static', filename='backofficev3/img/small-logos/logo-slack.svg' ) }}" class="avatar avatar-sm me-3" alt="team7">
                       </div>
                       <div class="d-flex flex-column justify-content-center">
-                        <h6 class="mb-0 text-sm">Fix Platform Errors</h6>
+                        <h6 class="mb-0 text-sm">Fnac Live Paris 2023 - Gratuit - Accès Libre</h6>
                       </div>
                     </div>
                   </td>
@@ -386,7 +387,7 @@
                     </div>
                   </td>
                   <td class="align-middle text-center text-sm">
-                    <span class="text-xs font-weight-bold"> Not set </span>
+                    <span class="text-xs font-weight-bold">Gratuit</span>
                   </td>
                   <td class="align-middle">
                     <div class="progress-wrapper w-75 mx-auto">
@@ -408,7 +409,7 @@
                         <img src="{{ url_for('static', filename='backofficev3/img/small-logos/logo-spotify.svg' ) }}" class="avatar avatar-sm me-3" alt="spotify">
                       </div>
                       <div class="d-flex flex-column justify-content-center">
-                        <h6 class="mb-0 text-sm">Launch our Mobile App</h6>
+                        <h6 class="mb-0 text-sm">SOIRÉE ANTDT : NISKA + WERENOI + KERCHAK</h6>
                       </div>
                     </div>
                   </td>
@@ -429,7 +430,7 @@
                     </div>
                   </td>
                   <td class="align-middle text-center text-sm">
-                    <span class="text-xs font-weight-bold"> $20,500 </span>
+                    <span class="text-xs font-weight-bold">20.500 €</span>
                   </td>
                   <td class="align-middle">
                     <div class="progress-wrapper w-75 mx-auto">
@@ -451,7 +452,7 @@
                         <img src="{{ url_for('static', filename='backofficev3/img/small-logos/logo-jira.svg' ) }}" class="avatar avatar-sm me-3" alt="jira">
                       </div>
                       <div class="d-flex flex-column justify-content-center">
-                        <h6 class="mb-0 text-sm">Add the New Pricing Page</h6>
+                        <h6 class="mb-0 text-sm">HERETIK SYSTEM avec POPOF + NOUT + BEUNS + TOM BULD'R</h6>
                       </div>
                     </div>
                   </td>
@@ -463,7 +464,7 @@
                     </div>
                   </td>
                   <td class="align-middle text-center text-sm">
-                    <span class="text-xs font-weight-bold"> $500 </span>
+                    <span class="text-xs font-weight-bold">12.000 €</span>
                   </td>
                   <td class="align-middle">
                     <div class="progress-wrapper w-75 mx-auto">
@@ -485,7 +486,7 @@
                         <img src="{{ url_for('static', filename='backofficev3/img/small-logos/logo-invision.svg' ) }}" class="avatar avatar-sm me-3" alt="invision">
                       </div>
                       <div class="d-flex flex-column justify-content-center">
-                        <h6 class="mb-0 text-sm">Redesign New Online Shop</h6>
+                        <h6 class="mb-0 text-sm">Djadja & Dinaz • ZKR • Favé • Skia @ Festival les Authentiks #18</h6>
                       </div>
                     </div>
                   </td>
@@ -500,7 +501,7 @@
                     </div>
                   </td>
                   <td class="align-middle text-center text-sm">
-                    <span class="text-xs font-weight-bold"> $2,000 </span>
+                    <span class="text-xs font-weight-bold">39.000 €</span>
                   </td>
                   <td class="align-middle">
                     <div class="progress-wrapper w-75 mx-auto">
@@ -524,10 +525,10 @@
     <div class="col-lg-4 col-md-6">
       <div class="card h-100">
         <div class="card-header pb-0">
-          <h6>Orders overview</h6>
+          <h6>Dernières réservations</h6>
           <p class="text-sm">
             <i class="fa fa-arrow-up text-success" aria-hidden="true"></i>
-            <span class="font-weight-bold">24%</span> this month
+            <span class="font-weight-bold">24%</span> ce mois-ci
           </p>
         </div>
         <div class="card-body p-3">
@@ -537,8 +538,8 @@
                 <i class="ni ni-bell-55 text-success text-gradient"></i>
               </span>
               <div class="timeline-content">
-                <h6 class="text-dark text-sm font-weight-bold mb-0">$2400, Design changes</h6>
-                <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">22 DEC 7:20 PM</p>
+                <h6 class="text-dark text-sm font-weight-bold mb-0">Design des cloches</h6>
+                <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">23 h 20</p>
               </div>
             </div>
             <div class="timeline-block mb-3">
@@ -546,8 +547,8 @@
                 <i class="ni ni-html5 text-danger text-gradient"></i>
               </span>
               <div class="timeline-content">
-                <h6 class="text-dark text-sm font-weight-bold mb-0">New order #1832412</h6>
-                <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">21 DEC 11 PM</p>
+                <h6 class="text-dark text-sm font-weight-bold mb-0">Comment devenir Webmestre</h6>
+                <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">20 h 01</p>
               </div>
             </div>
             <div class="timeline-block mb-3">
@@ -555,8 +556,8 @@
                 <i class="ni ni-cart text-info text-gradient"></i>
               </span>
               <div class="timeline-content">
-                <h6 class="text-dark text-sm font-weight-bold mb-0">Server payments for April</h6>
-                <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">21 DEC 9:34 PM</p>
+                <h6 class="text-dark text-sm font-weight-bold mb-0">L'invention du charriot</h6>
+                <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">19 h 34</p>
               </div>
             </div>
             <div class="timeline-block mb-3">
@@ -564,8 +565,8 @@
                 <i class="ni ni-credit-card text-warning text-gradient"></i>
               </span>
               <div class="timeline-content">
-                <h6 class="text-dark text-sm font-weight-bold mb-0">New card added for order #4395133</h6>
-                <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">20 DEC 2:20 AM</p>
+                <h6 class="text-dark text-sm font-weight-bold mb-0">Comment gérer ses dépenses</h6>
+                <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">11 h 55</p>
               </div>
             </div>
             <div class="timeline-block mb-3">
@@ -573,8 +574,8 @@
                 <i class="ni ni-key-25 text-primary text-gradient"></i>
               </span>
               <div class="timeline-content">
-                <h6 class="text-dark text-sm font-weight-bold mb-0">Unlock packages for development</h6>
-                <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">18 DEC 4:54 AM</p>
+                <h6 class="text-dark text-sm font-weight-bold mb-0">La clé du savoir</h6>
+                <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">11 h 54</p>
               </div>
             </div>
             <div class="timeline-block">
@@ -582,8 +583,8 @@
                 <i class="ni ni-money-coins text-dark text-gradient"></i>
               </span>
               <div class="timeline-content">
-                <h6 class="text-dark text-sm font-weight-bold mb-0">New order #9583120</h6>
-                <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">17 DEC</p>
+                <h6 class="text-dark text-sm font-weight-bold mb-0">Poker Theory - David Sklansky</h6>
+                <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">08 h 03</p>
               </div>
             </div>
           </div>
@@ -591,36 +592,4 @@
       </div>
     </div>
   </div>
-  <footer class="footer pt-3  ">
-    <div class="container-fluid">
-      <div class="row align-items-center justify-content-lg-between">
-        <div class="col-lg-6 mb-lg-0 mb-4">
-          <div class="copyright text-center text-sm text-muted text-lg-start">
-            © <script>
-              document.write(new Date().getFullYear())
-            </script>,
-            made with <i class="fa fa-heart"></i> by
-            <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Creative Tim</a>
-            for a better web.
-          </div>
-        </div>
-        <div class="col-lg-6">
-          <ul class="nav nav-footer justify-content-center justify-content-lg-end">
-            <li class="nav-item">
-              <a href="https://www.creative-tim.com" class="nav-link text-muted" target="_blank">Creative Tim</a>
-            </li>
-            <li class="nav-item">
-              <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted" target="_blank">About Us</a>
-            </li>
-            <li class="nav-item">
-              <a href="https://www.creative-tim.com/blog" class="nav-link text-muted" target="_blank">Blog</a>
-            </li>
-            <li class="nav-item">
-              <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted" target="_blank">License</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </footer>
 {% endblock page %}

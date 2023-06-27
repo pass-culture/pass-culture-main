@@ -34,9 +34,9 @@ class PcSoftUiDashboardTmp extends PcAddOn {
         new Chart(this.ctx, {
           type: "bar",
           data: {
-            labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+            labels: ["Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"],
             datasets: [{
-              label: "Sales",
+              label: "Validation d'offres",
               tension: 0.4,
               borderWidth: 0,
               borderRadius: 4,
@@ -110,9 +110,9 @@ class PcSoftUiDashboardTmp extends PcAddOn {
         new Chart(this.ctx2, {
           type: "line",
           data: {
-            labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+            labels: ["Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"],
             datasets: [{
-                label: "Mobile apps",
+                label: "Offres individuelles",
                 tension: 0.4,
                 pointRadius: 0,
                 borderColor: "#cb0c9f",
@@ -124,7 +124,7 @@ class PcSoftUiDashboardTmp extends PcAddOn {
     
               },
               {
-                label: "Websites",
+                label: "Offres collectives",
                 tension: 0.4,
                 pointRadius: 0,
                 borderColor: "#3A416F",
