@@ -98,6 +98,13 @@ class CGRCinemaProviderPivotFactory(CinemaProviderPivotFactory):
     provider = factory.LazyFunction(lambda: providers_repository.get_provider_by_local_class("CGRStocks"))
 
 
+class EMSCinemaProviderPivotFactory(CinemaProviderPivotFactory):
+    class Meta:
+        sqlalchemy_get_or_create = ["provider"]
+
+    provider = factory.LazyFunction(lambda: providers_repository.get_provider_by_local_class("EMSStocks"))
+
+
 class CDSCinemaDetailsFactory(BaseFactory):
     class Meta:
         model = models.CDSCinemaDetails
@@ -127,6 +134,14 @@ class CGRCinemaDetailsFactory(BaseFactory):
     cinemaUrl = factory.Sequence("https://cgr-cinema-{}.example.com/".format)
     numCinema = factory.Sequence(int)
     password = "a great password"
+
+
+class EMSCinemaDetailsFactory(BaseFactory):
+    class Meta:
+        model = models.EMSCinemaDetails
+
+    cinemaProviderPivot = factory.SubFactory(EMSCinemaProviderPivotFactory)
+    lastVersion = 0
 
 
 class AllocineProviderFactory(BaseFactory):

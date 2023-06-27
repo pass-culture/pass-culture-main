@@ -349,3 +349,15 @@ class CGRCinemaDetails(PcObject, Base, Model):
     password: str = Column(
         Text, nullable=True
     )  # FIXME (yacine-pc) since we already have a row in production, make this column not nullable later
+
+
+class EMSCinemaDetails(PcObject, Base, Model):
+    """Stores info on the specific login details of a cinema synced with EMS"""
+
+    cinemaProviderPivotId = Column(
+        BigInteger, ForeignKey("cinema_provider_pivot.id"), index=False, nullable=True, unique=True
+    )
+    cinemaProviderPivot: sa_orm.Mapped["CinemaProviderPivot | None"] = relationship(
+        CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId]
+    )
+    lastVersion: int = Column(BigInteger, default=0, nullable=False)

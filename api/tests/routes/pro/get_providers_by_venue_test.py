@@ -20,23 +20,21 @@ def test_venue_has_known_allocine_id(client):
 
     # Then
     assert response.status_code == 200
-    assert len(response.json) == 5
-    assert response.json[:2] == [
-        {
-            "enabledForPro": True,
-            "id": allocine_provider.id,
-            "isActive": True,
-            "name": "Allociné",
-            "hasOffererProvider": False,
-        },
-        {
-            "enabledForPro": True,
-            "id": other_provider.id,
-            "isActive": True,
-            "name": other_provider.name,
-            "hasOffererProvider": False,
-        },
-    ]
+    assert len(response.json) == 6
+    assert {
+        "enabledForPro": True,
+        "id": allocine_provider.id,
+        "isActive": True,
+        "name": "Allociné",
+        "hasOffererProvider": False,
+    } in response.json
+    assert {
+        "enabledForPro": True,
+        "id": other_provider.id,
+        "isActive": True,
+        "name": other_provider.name,
+        "hasOffererProvider": False,
+    } in response.json
 
 
 @pytest.mark.usefixtures("db_session")
@@ -53,14 +51,14 @@ def test_venue_has_no_allocine_id(client):
 
     # Then
     assert response.status_code == 200
-    assert len(response.json) == 4
-    assert response.json[0] == {
+    assert len(response.json) == 5
+    assert {
         "enabledForPro": True,
         "id": other_provider.id,
         "isActive": True,
         "name": other_provider.name,
         "hasOffererProvider": False,
-    }
+    } in response.json
     assert allocine_provider.id not in [p["id"] for p in response.json]
 
 
@@ -86,7 +84,7 @@ def test_venue_has_offerer_provider(client):
 
     # Then
     assert response.status_code == 200
-    assert len(response.json) == 4
+    assert len(response.json) == 5
     mango_provider = list(filter(lambda x: x["name"] == name, response.json))
     assert mango_provider == [
         {

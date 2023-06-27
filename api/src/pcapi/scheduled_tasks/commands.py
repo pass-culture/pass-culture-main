@@ -30,6 +30,7 @@ from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.users import api as users_api
 import pcapi.core.users.constants as users_constants
 from pcapi.core.users.repository import get_newly_eligible_age_18_users
+from pcapi.local_providers.provider_manager import synchronize_ems_venue_providers
 from pcapi.local_providers.provider_manager import synchronize_venue_providers
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
@@ -96,6 +97,14 @@ def synchronize_cgr_stocks() -> None:
     cgr_stocks_provider_id = get_provider_by_local_class("CGRStocks").id
     venue_providers = providers_repository.get_active_venue_providers_by_provider(cgr_stocks_provider_id)
     synchronize_venue_providers(venue_providers)
+
+
+@blueprint.cli.command("synchronize_ems_stocks")
+@log_cron_with_transaction
+@cron_require_feature(FeatureToggle.ENABLE_EMS_INTEGRATION)
+def synchronize_ems_stocks() -> None:
+    """Launch EMS synchronization"""
+    synchronize_ems_venue_providers()
 
 
 @blueprint.cli.command("cancel_unstored_external_bookings")

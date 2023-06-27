@@ -1,0 +1,2 @@
+class EMSAPIException(Exception):
+    pass
