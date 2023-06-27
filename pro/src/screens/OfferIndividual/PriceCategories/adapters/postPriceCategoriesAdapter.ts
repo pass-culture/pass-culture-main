@@ -2,15 +2,15 @@ import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
 import { PriceCategoryBody } from 'apiClient/v1'
 
-type TSuccessPayload = Record<string, unknown>
-type TFailurePayload = { errors: Record<string, string>[] }
+type SuccessPayload = Record<string, unknown>
+type FailurePayload = { errors: Record<string, string>[] }
 type PostPriceCategoriesAdapter = Adapter<
   {
     offerId: number
     requestBody?: PriceCategoryBody
   },
-  TSuccessPayload,
-  TFailurePayload
+  SuccessPayload,
+  FailurePayload
 >
 
 const postPriceCategoriesAdapter: PostPriceCategoriesAdapter = async ({

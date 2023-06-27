@@ -4,7 +4,7 @@ import { getCategoriesAdapter } from 'core/Offers/adapters'
 import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { getOfferIndividualVenuesAdapter } from 'core/Venue/adapters/getOfferIndividualVenuesAdapter'
-import { TOfferIndividualVenue } from 'core/Venue/types'
+import { OfferIndividualVenue } from 'core/Venue/types'
 
 interface GetWizardDataArgs {
   offerOffererId?: string
@@ -16,14 +16,14 @@ interface GetWizardDataArgs {
 
 interface OfferWizardData {
   offererNames: OffererName[]
-  venueList: TOfferIndividualVenue[]
+  venueList: OfferIndividualVenue[]
   categoriesData: {
     categories: OfferCategory[]
     subCategories: OfferSubCategory[]
   }
 }
 
-type TGetOfferIndividualAdapter = Adapter<
+type GetOfferIndividualAdapter = Adapter<
   GetWizardDataArgs,
   OfferWizardData,
   null
@@ -35,7 +35,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-const getWizardData: TGetOfferIndividualAdapter = async ({
+const getWizardData: GetOfferIndividualAdapter = async ({
   offerer,
   queryOffererId,
   isAdmin,

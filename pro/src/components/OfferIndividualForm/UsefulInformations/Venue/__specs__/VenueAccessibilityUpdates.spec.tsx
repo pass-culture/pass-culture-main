@@ -7,7 +7,7 @@ import * as yup from 'yup'
 import { Accessibility } from 'components/OfferIndividualForm/Accessibility'
 import { OffererName } from 'core/Offerers/types'
 import { AccessiblityEnum, AccessibiltyFormValues } from 'core/shared'
-import { TOfferIndividualVenue } from 'core/Venue/types'
+import { OfferIndividualVenue } from 'core/Venue/types'
 
 import { Venue } from '..'
 import { VenueProps } from '../Venue'
@@ -65,8 +65,8 @@ const renderVenue = async ({
 describe('OfferIndividual section: venue', () => {
   let initialValues: InitialValues
   let venueProps: VenueProps
-  let venueAccessible: TOfferIndividualVenue
-  let venueNotAccessible: TOfferIndividualVenue
+  let venueAccessible: OfferIndividualVenue
+  let venueNotAccessible: OfferIndividualVenue
   const onSubmit = jest.fn()
 
   beforeEach(() => {
@@ -109,7 +109,7 @@ describe('OfferIndividual section: venue', () => {
       hasMissingReimbursementPoint: false,
       hasCreatedOffer: true,
     }
-    const venueList: TOfferIndividualVenue[] = [
+    const venueList: OfferIndividualVenue[] = [
       venueAccessible,
       venueNotAccessible,
     ]

@@ -3,7 +3,7 @@ import {
   OfferIndividualFormValues,
 } from 'components/OfferIndividualForm'
 import { OffererName } from 'core/Offerers/types'
-import { TOfferIndividualVenue } from 'core/Venue/types'
+import { OfferIndividualVenue } from 'core/Venue/types'
 
 import setDefaultInitialFormValues from '../setDefaultInitialFormValues'
 
@@ -12,7 +12,7 @@ describe('setDefaultInitialFormValues', () => {
   let offererNames: OffererName[]
   let offererId: string | null
   let venueId: string | null
-  let venueList: TOfferIndividualVenue[]
+  let venueList: OfferIndividualVenue[]
 
   beforeEach(() => {
     expectedInitialValues = {

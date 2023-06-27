@@ -15,7 +15,7 @@ import {
   OfferIndividual,
   OfferSubCategory,
 } from 'core/Offers/types'
-import { TOfferIndividualVenue } from 'core/Venue/types'
+import { OfferIndividualVenue } from 'core/Venue/types'
 import { SubmitButton } from 'ui-kit'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -81,7 +81,7 @@ describe('OfferIndividualForm', () => {
   let categories: OfferCategory[] = []
   let subCategories: OfferSubCategory[] = []
   let offererNames: OffererName[]
-  let venueList: TOfferIndividualVenue[]
+  let venueList: OfferIndividualVenue[]
   const offererId = 2
   const physicalVenueId = 1
   const virtualVenueId = 2

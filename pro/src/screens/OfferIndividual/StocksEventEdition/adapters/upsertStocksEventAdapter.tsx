@@ -6,18 +6,18 @@ import {
   StockEditionBodyModel,
 } from 'apiClient/v1'
 
-type TSuccessPayload = { stockIds: string[] }
-type TFailurePayload = { errors: Record<string, string>[] }
-type TUpdateStocksAdapter = Adapter<
+type SuccessPayload = { stockIds: string[] }
+type FailurePayload = { errors: Record<string, string>[] }
+type UpdateStocksAdapter = Adapter<
   {
     offerId: number
     stocks: Array<StockCreationBodyModel | StockEditionBodyModel>
   },
-  TSuccessPayload,
-  TFailurePayload
+  SuccessPayload,
+  FailurePayload
 >
 
-const upsertStocksEventAdapter: TUpdateStocksAdapter = async ({
+const upsertStocksEventAdapter: UpdateStocksAdapter = async ({
   offerId,
   stocks,
 }) => {

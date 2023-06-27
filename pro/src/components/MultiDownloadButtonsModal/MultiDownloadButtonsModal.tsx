@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 
-import { TPreFilters } from 'core/Bookings'
+import { PreFiltersParams } from 'core/Bookings'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
@@ -17,8 +17,8 @@ interface MultiDownloadButtonsModalType {
   isDownloading: boolean
   isLocalLoading: boolean
   isFiltersDisabled: boolean
-  downloadFunction: (filters: TPreFilters, type: string) => Promise<void>
-  filters: TPreFilters
+  downloadFunction: (filters: PreFiltersParams, type: string) => Promise<void>
+  filters: PreFiltersParams
 }
 
 const MultiDownloadButtonsModal = ({

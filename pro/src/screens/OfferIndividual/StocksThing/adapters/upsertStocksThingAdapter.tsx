@@ -7,17 +7,17 @@ import { IStockThingFormValues } from '../'
 
 import { serializeStockThingList } from './serializers'
 
-type TSuccessPayload = { stockIds: string[] }
-type TFailurePayload = { errors: Record<string, string> }
-type TUpdateStocksAdapter = Adapter<
+type SuccessPayload = { stockIds: string[] }
+type FailurePayload = { errors: Record<string, string> }
+type UpdateStocksAdapter = Adapter<
   {
     offerId: number
     formValues: IStockThingFormValues
     departementCode: string
     mode: OFFER_WIZARD_MODE
   },
-  TSuccessPayload,
-  TFailurePayload
+  SuccessPayload,
+  FailurePayload
 >
 
 const successMessage = {
@@ -26,7 +26,7 @@ const successMessage = {
   [OFFER_WIZARD_MODE.EDITION]: 'Vos modifications ont bien été enregistrées',
 }
 
-const upsertStocksThingAdapter: TUpdateStocksAdapter = async ({
+const upsertStocksThingAdapter: UpdateStocksAdapter = async ({
   offerId,
   formValues,
   departementCode,

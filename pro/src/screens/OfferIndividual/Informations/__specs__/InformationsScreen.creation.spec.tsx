@@ -18,7 +18,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
 import { OfferSubCategory } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
-import { TOfferIndividualVenue } from 'core/Venue/types'
+import { OfferIndividualVenue } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as utils from 'screens/OfferIndividual/Informations/utils'
@@ -148,7 +148,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       },
     ]
 
-    const venue: TOfferIndividualVenue = {
+    const venue: OfferIndividualVenue = {
       nonHumanizedId: 1,
       name: 'Lieu offline AA',
       managingOffererId: 1,

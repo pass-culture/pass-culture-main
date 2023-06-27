@@ -8,10 +8,10 @@ interface SuccessPayload {
 interface FailurePayload {
   error: string
 }
-type TTestingAdapter = Adapter<void, SuccessPayload, FailurePayload>
+type TestingAdapter = Adapter<void, SuccessPayload, FailurePayload>
 
-const getTestingAdapter = (apiCall: any): TTestingAdapter => {
-  const testingAdapter: TTestingAdapter = async () => {
+const getTestingAdapter = (apiCall: any): TestingAdapter => {
+  const testingAdapter: TestingAdapter = async () => {
     try {
       await apiCall()
       return {
