@@ -919,3 +919,13 @@ class OffererProvider(PcObject, Base, Model):
     )
 
     __table_args__ = (UniqueConstraint("offererId", "providerId", name="unique_offerer_provider"),)
+
+
+class OffererInvitation(PcObject, Base, Model):
+    __tablename__ = "offerer_invitation"
+    offererId: int = Column(BigInteger, ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False)
+    offerer: Offerer = relationship("Offerer", foreign_keys=[offererId])
+    email: str = Column(Text, nullable=False)
+    dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
+
+    __table_args__ = (UniqueConstraint("offererId", "email", name="unique_offerer_invitation"),)
