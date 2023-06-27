@@ -5,11 +5,11 @@ import {
   UserPhoneResponseModel,
 } from 'apiClient/v1'
 
-type IPayloadFailure = Record<string, string>
+type PayloadFailure = Record<string, string>
 export type PatchPhoneAdapter = Adapter<
   UserPhoneBodyModel,
   UserPhoneResponseModel,
-  IPayloadFailure
+  PayloadFailure
 >
 
 const patchPhoneAdapter: PatchPhoneAdapter = async (

@@ -1,23 +1,23 @@
 import {
-  IEducationalCategory,
-  IEducationalSubCategory,
+  EducationalCategory,
+  EducationalSubCategory,
 } from 'core/OfferEducational'
 
 const categoryFactory = (
-  categoryExtend: Partial<IEducationalCategory>
-): IEducationalCategory => ({
+  categoryExtend: Partial<EducationalCategory>
+): EducationalCategory => ({
   id: 'CATEGORY_ID',
   label: 'categoryLabel',
   ...categoryExtend,
 })
 
 export const categoriesFactory = (
-  categoriesExtend: Partial<IEducationalCategory>[]
-): IEducationalCategory[] => categoriesExtend.map(categoryFactory)
+  categoriesExtend: Partial<EducationalCategory>[]
+): EducationalCategory[] => categoriesExtend.map(categoryFactory)
 
 const subCategoryFactory = (
-  subCategoryExtend: Partial<IEducationalSubCategory>
-): IEducationalSubCategory => ({
+  subCategoryExtend: Partial<EducationalSubCategory>
+): EducationalSubCategory => ({
   id: 'SUB_CATEGORY_ID',
   categoryId: 'CATEGORY_ID',
   label: 'subCategoryLabel',
@@ -25,5 +25,5 @@ const subCategoryFactory = (
 })
 
 export const subCategoriesFactory = (
-  subCategoriesExtend: Partial<IEducationalSubCategory>[]
-): IEducationalSubCategory[] => subCategoriesExtend.map(subCategoryFactory)
+  subCategoriesExtend: Partial<EducationalSubCategory>[]
+): EducationalSubCategory[] => subCategoriesExtend.map(subCategoryFactory)

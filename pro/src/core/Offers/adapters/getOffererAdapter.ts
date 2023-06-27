@@ -2,9 +2,9 @@ import { api } from 'apiClient/api'
 import { Offerer } from 'core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
-type IPayload = Offerer
+type Payload = Offerer
 
-type GetOffererAdapter = Adapter<string, IPayload, null>
+type GetOffererAdapter = Adapter<string, Payload, null>
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,

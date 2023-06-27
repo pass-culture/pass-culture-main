@@ -8,7 +8,7 @@ import { unhumanizeSiret } from 'core/Venue/utils'
 import { validateSiret } from 'core/Venue/validate'
 
 type Params = string
-type IPayload = {
+type Payload = {
   values?: {
     address: string
     city: string
@@ -21,7 +21,7 @@ type IPayload = {
     legalCategoryCode: string
   }
 }
-type GetSiretDataAdapter = Adapter<Params, IPayload, IPayload>
+type GetSiretDataAdapter = Adapter<Params, Payload, Payload>
 
 const getSiretDataAdapter: GetSiretDataAdapter = async (humanSiret: string) => {
   const siret = unhumanizeSiret(humanSiret || '')

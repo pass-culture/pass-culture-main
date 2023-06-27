@@ -8,7 +8,7 @@ import FormLayout from 'components/FormLayout'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
-  IOfferEducationalFormValues,
+  OfferEducationalFormValues,
   isCollectiveOffer,
   Mode,
 } from 'core/OfferEducational'
@@ -73,7 +73,7 @@ const OfferEducationalForm = ({
   const [isEligible, setIsEligible] = useState<boolean>()
 
   const { values, setFieldValue, initialValues } =
-    useFormikContext<IOfferEducationalFormValues>()
+    useFormikContext<OfferEducationalFormValues>()
 
   useScrollToFirstErrorAfterSubmit()
 

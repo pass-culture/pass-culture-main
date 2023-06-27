@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react'
 
 import { VenueProviderResponse } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
-import { IProviders, Venue } from 'core/Venue/types'
+import { Providers, Venue } from 'core/Venue/types'
 import AddVenueProviderButton from 'pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManager/AddVenueProviderButton'
 import VenueProviderList from 'pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManager/VenueProviderList/VenueProviderList'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 interface OffersSynchronization {
-  provider: IProviders[]
+  provider: Providers[]
   venueProvider: VenueProviderResponse[]
   venue: Venue
 }

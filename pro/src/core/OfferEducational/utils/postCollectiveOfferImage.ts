@@ -1,10 +1,10 @@
 import useNotification from 'hooks/useNotification'
 
 import postCollectiveOfferImageAdapter from '../adapters/postCollectiveOfferImageAdapter'
-import { IOfferEducationalFormValues } from '../types'
+import { OfferEducationalFormValues } from '../types'
 
 interface PostCollectiveOfferImageProps {
-  initialValues: IOfferEducationalFormValues
+  initialValues: OfferEducationalFormValues
   notify: ReturnType<typeof useNotification>
   payload: { id: string }
 }

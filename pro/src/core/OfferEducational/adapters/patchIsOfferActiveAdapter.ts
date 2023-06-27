@@ -2,12 +2,12 @@ import { api } from 'apiClient/api'
 
 import { offerAdageActivated, offerAdageDeactivate } from '../'
 
-type IPayloadSuccess = null
-type IPayloadFailure = null
+type PayloadSuccess = null
+type PayloadFailure = null
 type PatchIsOfferActiveAdapter = Adapter<
   { offerId: string; isActive: boolean },
-  IPayloadSuccess,
-  IPayloadFailure
+  PayloadSuccess,
+  PayloadFailure
 >
 
 export const patchIsOfferActiveAdapter: PatchIsOfferActiveAdapter = async ({

@@ -4,14 +4,14 @@ import {
 } from 'apiClient/v1'
 
 import { DEFAULT_EAC_FORM_VALUES } from '../constants'
-import { EducationalCategories, IOfferEducationalFormValues } from '../types'
+import { EducationalCategories, OfferEducationalFormValues } from '../types'
 
 export const applyVenueDefaultsToFormValues = (
-  values: IOfferEducationalFormValues,
+  values: OfferEducationalFormValues,
   offerers: GetEducationalOffererResponseModel[],
   isOfferCreated: boolean,
   categories: EducationalCategories
-): IOfferEducationalFormValues => {
+): OfferEducationalFormValues => {
   const venue = offerers
     ?.find(
       ({ nonHumanizedId }) => nonHumanizedId.toString() === values.offererId

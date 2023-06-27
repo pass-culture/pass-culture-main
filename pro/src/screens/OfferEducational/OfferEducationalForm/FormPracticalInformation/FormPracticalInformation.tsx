@@ -9,7 +9,7 @@ import {
 import FormLayout from 'components/FormLayout'
 import {
   DEFAULT_EAC_FORM_VALUES,
-  IOfferEducationalFormValues,
+  OfferEducationalFormValues,
   MAX_DETAILS_LENGTH,
 } from 'core/OfferEducational'
 import { handleAllFranceDepartmentOptions } from 'core/shared'
@@ -65,7 +65,7 @@ const FormPracticalInformation = ({
   isTemplate,
 }: FormPracticalInformationProps): JSX.Element => {
   const { values, setFieldValue } =
-    useFormikContext<IOfferEducationalFormValues>()
+    useFormikContext<OfferEducationalFormValues>()
 
   const [currentVenue, setCurrentVenue] =
     useState<GetEducationalOffererVenueResponseModel | null>(null)

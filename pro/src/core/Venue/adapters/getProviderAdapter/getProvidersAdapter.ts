@@ -1,16 +1,12 @@
 import * as pcapi from '../../../../repository/pcapi/pcapi'
 import { GET_DATA_ERROR_MESSAGE } from '../../../shared'
-import { IProviders } from '../../types'
+import { Providers } from '../../types'
 
 import { serializeProvidersApi } from './serializers'
 
-type GetProvidersAdapter = Adapter<
-  number | undefined,
-  IProviders[],
-  IProviders[]
->
+type GetProvidersAdapter = Adapter<number | undefined, Providers[], Providers[]>
 
-const FAILING_RESPONSE: AdapterFailure<IProviders[]> = {
+const FAILING_RESPONSE: AdapterFailure<Providers[]> = {
   isOk: false,
   message: GET_DATA_ERROR_MESSAGE,
   payload: [],

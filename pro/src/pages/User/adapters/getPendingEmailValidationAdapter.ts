@@ -1,11 +1,11 @@
 import { api } from 'apiClient/api'
 import { ApiError, UserEmailValidationResponseModel } from 'apiClient/v1'
 
-type IPayloadFailure = Record<string, string>
+type PayloadFailure = Record<string, string>
 type GetPendingEmailValidationAdapter = Adapter<
   void,
   UserEmailValidationResponseModel,
-  IPayloadFailure
+  PayloadFailure
 >
 
 export const getPendingEmailValidationAdapter: GetPendingEmailValidationAdapter =

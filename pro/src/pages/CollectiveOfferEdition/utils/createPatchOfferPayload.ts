@@ -2,7 +2,7 @@ import isEqual from 'lodash.isequal'
 
 import { PatchCollectiveOfferBodyModel } from 'apiClient/v1'
 import {
-  IOfferEducationalFormValues,
+  OfferEducationalFormValues,
   parseDuration,
   serializeParticipants,
 } from 'core/OfferEducational'
@@ -10,23 +10,23 @@ import {
 const serializer = {
   title: (
     payload: PatchCollectiveOfferBodyModel,
-    offer: IOfferEducationalFormValues
+    offer: OfferEducationalFormValues
   ) => ({ ...payload, name: offer.title }),
   description: (
     payload: PatchCollectiveOfferBodyModel,
-    offer: IOfferEducationalFormValues
+    offer: OfferEducationalFormValues
   ) => ({ ...payload, description: offer.description }),
   duration: (
     payload: PatchCollectiveOfferBodyModel,
-    offer: IOfferEducationalFormValues
+    offer: OfferEducationalFormValues
   ) => ({ ...payload, durationMinutes: parseDuration(offer.duration) }),
   subCategory: (
     payload: PatchCollectiveOfferBodyModel,
-    offer: IOfferEducationalFormValues
+    offer: OfferEducationalFormValues
   ) => ({ ...payload, subcategoryId: offer.subCategory }),
   accessibility: (
     payload: PatchCollectiveOfferBodyModel,
-    offer: IOfferEducationalFormValues
+    offer: OfferEducationalFormValues
   ) => ({
     ...payload,
     mentalDisabilityCompliant: offer.accessibility.mental,
@@ -36,7 +36,7 @@ const serializer = {
   }),
   notificationEmails: (
     payload: PatchCollectiveOfferBodyModel,
-    offer: IOfferEducationalFormValues
+    offer: OfferEducationalFormValues
   ) => {
     return {
       ...payload,
@@ -45,7 +45,7 @@ const serializer = {
   },
   notifications: (
     payload: PatchCollectiveOfferBodyModel,
-    offer: IOfferEducationalFormValues
+    offer: OfferEducationalFormValues
   ) => {
     return {
       ...payload,
@@ -57,7 +57,7 @@ const serializer = {
   offererId: (payload: PatchCollectiveOfferBodyModel) => payload,
   venueId: (
     payload: PatchCollectiveOfferBodyModel,
-    offer: IOfferEducationalFormValues
+    offer: OfferEducationalFormValues
   ) => ({
     ...payload,
     venueId: offer.venueId,
@@ -65,7 +65,7 @@ const serializer = {
   category: (payload: PatchCollectiveOfferBodyModel) => payload,
   eventAddress: (
     payload: PatchCollectiveOfferBodyModel,
-    offer: IOfferEducationalFormValues
+    offer: OfferEducationalFormValues
   ) => {
     const eventAddressPayload = {
       ...offer.eventAddress,
@@ -78,35 +78,35 @@ const serializer = {
   },
   participants: (
     payload: PatchCollectiveOfferBodyModel,
-    offer: IOfferEducationalFormValues
+    offer: OfferEducationalFormValues
   ) => ({
     ...payload,
     students: serializeParticipants(offer.participants),
   }),
   phone: (
     payload: PatchCollectiveOfferBodyModel,
-    offer: IOfferEducationalFormValues
+    offer: OfferEducationalFormValues
   ) => ({
     ...payload,
     contactPhone: offer.phone,
   }),
   email: (
     payload: PatchCollectiveOfferBodyModel,
-    offer: IOfferEducationalFormValues
+    offer: OfferEducationalFormValues
   ) => ({
     ...payload,
     contactEmail: offer.email,
   }),
   domains: (
     payload: PatchCollectiveOfferBodyModel,
-    offer: IOfferEducationalFormValues
+    offer: OfferEducationalFormValues
   ) => ({
     ...payload,
     domains: offer.domains.map(domainIdString => Number(domainIdString)),
   }),
   interventionArea: (
     payload: PatchCollectiveOfferBodyModel,
-    offer: IOfferEducationalFormValues
+    offer: OfferEducationalFormValues
   ) => ({
     ...payload,
     interventionArea: offer.interventionArea,
@@ -117,14 +117,14 @@ const templateSerializer = {
   ...serializer,
   venueId: (
     payload: PatchCollectiveOfferBodyModel,
-    offer: IOfferEducationalFormValues
+    offer: OfferEducationalFormValues
   ) => ({
     ...payload,
     venueId: offer.venueId,
   }),
   priceDetail: (
     payload: PatchCollectiveOfferBodyModel,
-    offer: IOfferEducationalFormValues
+    offer: OfferEducationalFormValues
   ) => ({
     ...payload,
     priceDetail: offer.priceDetail,
@@ -132,13 +132,13 @@ const templateSerializer = {
 }
 
 export const createPatchOfferPayload = (
-  offer: IOfferEducationalFormValues,
-  initialValues: IOfferEducationalFormValues,
+  offer: OfferEducationalFormValues,
+  initialValues: OfferEducationalFormValues,
   isTemplate: boolean
 ): PatchCollectiveOfferBodyModel => {
   let changedValues: PatchCollectiveOfferBodyModel = {}
 
-  const offerKeys = Object.keys(offer) as (keyof IOfferEducationalFormValues)[]
+  const offerKeys = Object.keys(offer) as (keyof OfferEducationalFormValues)[]
 
   const offerSerializer = isTemplate ? templateSerializer : serializer
 

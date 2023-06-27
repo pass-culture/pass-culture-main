@@ -10,23 +10,23 @@ import {
 import { AccessibiltyFormValues } from 'core/shared'
 import { hasProperty } from 'utils/types'
 
-export type IEducationalCategory = {
+export type EducationalCategory = {
   id: string
   label: string
 }
 
-export type IEducationalSubCategory = {
+export type EducationalSubCategory = {
   id: string
   categoryId: string
   label: string
 }
 
 export type EducationalCategories = {
-  educationalCategories: IEducationalCategory[]
-  educationalSubCategories: IEducationalSubCategory[]
+  educationalCategories: EducationalCategory[]
+  educationalSubCategories: EducationalSubCategory[]
 }
 
-export type IOfferEducationalFormValues = {
+export type OfferEducationalFormValues = {
   category: string
   subCategory: SubcategoryIdEnum
   title: string

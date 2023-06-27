@@ -1,9 +1,9 @@
 import { StudentLevels } from 'apiClient/v1'
 
-import { IOfferEducationalFormValues } from '../types'
+import { OfferEducationalFormValues } from '../types'
 
 export const serializeParticipants = (
-  participants: IOfferEducationalFormValues['participants']
+  participants: OfferEducationalFormValues['participants']
 ): StudentLevels[] =>
   Object.values(StudentLevels).filter(
     studentLevel => participants[studentLevel] === true

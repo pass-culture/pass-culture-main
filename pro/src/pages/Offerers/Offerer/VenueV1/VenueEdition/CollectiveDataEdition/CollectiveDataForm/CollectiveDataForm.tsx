@@ -6,7 +6,7 @@ import { GetCollectiveVenueResponseModel, StudentLevels } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import {
   EducationalCategories,
-  IEducationalSubCategory,
+  EducationalSubCategory,
 } from 'core/OfferEducational'
 import { handleAllFranceDepartmentOptions } from 'core/shared'
 import { venueInterventionOptions } from 'core/shared/interventionOptions'
@@ -56,7 +56,7 @@ type CollectiveDataFormProps = {
 
 const getCategoriesAndSubcategoriesOptions = (
   categories: EducationalCategories,
-  availableSubCategories: IEducationalSubCategory[]
+  availableSubCategories: EducationalSubCategory[]
 ) => {
   let categoriesOptions = categories.educationalCategories.map(item => ({
     value: item['id'],
@@ -111,7 +111,7 @@ const CollectiveDataForm = ({
     : COLLECTIVE_DATA_FORM_INITIAL_VALUES
 
   const [availableSubCategories, setAvailableSubCategories] = useState<
-    IEducationalSubCategory[]
+    EducationalSubCategory[]
   >(
     initialValues.collectiveCategoryId
       ? categories.educationalSubCategories.filter(

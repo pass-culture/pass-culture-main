@@ -5,17 +5,17 @@ import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
 import { serializeOffers } from './serializers'
 
-type IPayload = {
+type Payload = {
   offers: Offer[]
 }
 
 type GetFilteredCollectiveOffersAdapter = Adapter<
   SearchFiltersParams,
-  IPayload,
-  IPayload
+  Payload,
+  Payload
 >
 
-const FAILING_RESPONSE: AdapterFailure<IPayload> = {
+const FAILING_RESPONSE: AdapterFailure<Payload> = {
   isOk: false,
   message: GET_DATA_ERROR_MESSAGE,
   payload: {

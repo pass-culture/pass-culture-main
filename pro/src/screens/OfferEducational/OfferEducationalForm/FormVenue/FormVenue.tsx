@@ -11,7 +11,7 @@ import {
   CollectiveOffer,
   CollectiveOfferTemplate,
   EducationalCategories,
-  IOfferEducationalFormValues,
+  OfferEducationalFormValues,
   isCollectiveOffer,
   Mode,
 } from 'core/OfferEducational'
@@ -66,7 +66,7 @@ const FormVenue = ({
       ...offerersOptions,
     ]
   }
-  const { values, setValues } = useFormikContext<IOfferEducationalFormValues>()
+  const { values, setValues } = useFormikContext<OfferEducationalFormValues>()
 
   return (
     <FormLayout.Section
