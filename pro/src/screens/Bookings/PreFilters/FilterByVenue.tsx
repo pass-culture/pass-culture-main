@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ALL_VENUES_OPTION, TPreFilters } from 'core/Bookings'
+import { ALL_VENUES_OPTION, PreFiltersParams } from 'core/Bookings'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared'
 
@@ -9,7 +9,7 @@ import styles from './PreFilters.module.scss'
 interface FilterByVenueProps {
   isDisabled?: boolean
   selectedVenueId: string
-  updateFilters: (filter: Partial<TPreFilters>) => void
+  updateFilters: (filter: Partial<PreFiltersParams>) => void
   venuesFormattedAndOrdered: { displayName: string; id: string }[]
 }
 

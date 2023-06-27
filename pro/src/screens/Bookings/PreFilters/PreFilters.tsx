@@ -8,7 +8,7 @@ import {
   DEFAULT_PRE_FILTERS,
   GetBookingsCSVFileAdapter,
   GetBookingsXLSFileAdapter,
-  TPreFilters,
+  PreFiltersParams,
 } from 'core/Bookings'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
@@ -24,16 +24,16 @@ import FilterByVenue from './FilterByVenue'
 import styles from './PreFilters.module.scss'
 
 export interface PreFiltersProps {
-  appliedPreFilters: TPreFilters
-  applyPreFilters: (filters: TPreFilters) => void
+  appliedPreFilters: PreFiltersParams
+  applyPreFilters: (filters: PreFiltersParams) => void
   hasResult: boolean
   isFiltersDisabled: boolean
   isTableLoading: boolean
   wereBookingsRequested: boolean
   isLocalLoading: boolean
   resetPreFilters: () => void
-  urlParams?: TPreFilters
-  updateUrl?: (selectedPreFilters: TPreFilters) => void
+  urlParams?: PreFiltersParams
+  updateUrl?: (selectedPreFilters: PreFiltersParams) => void
   venues: { id: string; displayName: string }[]
   getBookingsCSVFileAdapter: GetBookingsCSVFileAdapter
   getBookingsXLSFileAdapter: GetBookingsXLSFileAdapter
@@ -57,9 +57,10 @@ const PreFilters = ({
 
   const { logEvent } = useAnalytics()
 
-  const [selectedPreFilters, setSelectedPreFilters] = useState<TPreFilters>({
-    ...appliedPreFilters,
-  })
+  const [selectedPreFilters, setSelectedPreFilters] =
+    useState<PreFiltersParams>({
+      ...appliedPreFilters,
+    })
   const [isDownloadingCSV, setIsDownloadingCSV] = useState<boolean>(false)
 
   useEffect(
@@ -69,7 +70,7 @@ const PreFilters = ({
 
   const [hasPreFilters, setHasPreFilters] = useState<boolean>(false)
   useEffect(() => {
-    let key: keyof TPreFilters
+    let key: keyof PreFiltersParams
     let hasFilters = false
     for (key in selectedPreFilters) {
       if (
@@ -134,7 +135,7 @@ const PreFilters = ({
   }
 
   const downloadBookingsCSV = useCallback(
-    async (filters: TPreFilters, type: string) => {
+    async (filters: PreFiltersParams, type: string) => {
       setIsDownloadingCSV(true)
 
       /* istanbul ignore next: DEBT to fix */

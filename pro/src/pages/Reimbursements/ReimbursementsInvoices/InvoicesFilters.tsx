@@ -7,18 +7,18 @@ import { FieldLayout } from 'ui-kit/form/shared'
 import PeriodSelector from 'ui-kit/form_raw/PeriodSelector/PeriodSelector'
 import { getToday } from 'utils/date'
 
-import { TFiltersType } from './types'
+import { FiltersType } from './types'
 
 interface ReimbursementsSectionHeaderProps {
   areFiltersDefault: boolean
   children: React.ReactNode | React.ReactNode[]
-  filters: TFiltersType
+  filters: FiltersType
   disable: boolean
-  initialFilters: TFiltersType
+  initialFilters: FiltersType
   loadInvoices: (shouldReset: boolean) => void
   selectableOptions: SelectOption[]
   setAreFiltersDefault: Dispatch<SetStateAction<boolean>>
-  setFilters: Dispatch<SetStateAction<TFiltersType>>
+  setFilters: Dispatch<SetStateAction<FiltersType>>
 }
 
 const InvoicesFilters = ({
@@ -48,7 +48,7 @@ const InvoicesFilters = ({
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const reimbursementPointId = event.target.value
-    setFilters((prevFilters: TFiltersType) => ({
+    setFilters((prevFilters: FiltersType) => ({
       ...prevFilters,
       reimbursementPoint: reimbursementPointId,
     }))
@@ -56,7 +56,7 @@ const InvoicesFilters = ({
   }
 
   const setStartDateFilter = (startDate: Date) => {
-    setFilters((prevFilters: TFiltersType) => ({
+    setFilters((prevFilters: FiltersType) => ({
       ...prevFilters,
       periodStart: startDate,
     }))
@@ -64,7 +64,7 @@ const InvoicesFilters = ({
   }
 
   const setEndDateFilter = (endDate: Date) => {
-    setFilters((prevFilters: TFiltersType) => ({
+    setFilters((prevFilters: FiltersType) => ({
       ...prevFilters,
       periodEnd: endDate,
     }))

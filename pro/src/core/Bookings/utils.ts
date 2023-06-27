@@ -1,4 +1,8 @@
-import { DEFAULT_PRE_FILTERS, TAPIFilters, TPreFilters } from 'core/Bookings'
+import {
+  DEFAULT_PRE_FILTERS,
+  APIFilters,
+  PreFiltersParams,
+} from 'core/Bookings'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
@@ -12,8 +16,8 @@ export const buildBookingsRecapQuery = ({
   bookingStatusFilter = DEFAULT_PRE_FILTERS.bookingStatusFilter,
   offerType = DEFAULT_PRE_FILTERS.offerType,
   page,
-}: Partial<TPreFilters> & { page?: number }): TAPIFilters => {
-  const params = { page } as TAPIFilters
+}: Partial<PreFiltersParams> & { page?: number }): APIFilters => {
+  const params = { page } as APIFilters
 
   if (offerVenueId !== DEFAULT_PRE_FILTERS.offerVenueId) {
     params.venueId = offerVenueId

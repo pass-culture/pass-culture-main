@@ -1,12 +1,12 @@
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers'
 import { OfferSubCategory } from 'core/Offers/types'
-import { TOfferIndividualVenue } from 'core/Venue/types'
+import { OfferIndividualVenue } from 'core/Venue/types'
 
 import { getFilteredVenueList } from '../getFilteredVenueList'
 
 describe('getFilteredVenueList', () => {
-  let virtualVenue: TOfferIndividualVenue
+  let virtualVenue: OfferIndividualVenue
   const firstVenueId = 1
   const secondVenueId = 2
   const thirdVenueId = 3

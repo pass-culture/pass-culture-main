@@ -21,7 +21,7 @@ import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
 import { OfferIndividual, OfferSubCategory } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { AccessiblityEnum } from 'core/shared'
-import { TOfferIndividualVenue } from 'core/Venue/types'
+import { OfferIndividualVenue } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as utils from 'screens/OfferIndividual/Informations/utils'
 import { ButtonLink } from 'ui-kit'
@@ -246,7 +246,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       },
     ]
 
-    const venue: TOfferIndividualVenue = {
+    const venue: OfferIndividualVenue = {
       nonHumanizedId: 1,
       name: 'Lieu offline AA',
       managingOffererId: 1,

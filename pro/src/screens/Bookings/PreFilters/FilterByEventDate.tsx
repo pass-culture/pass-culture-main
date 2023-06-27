@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { DEFAULT_PRE_FILTERS, TPreFilters } from 'core/Bookings'
+import { DEFAULT_PRE_FILTERS, PreFiltersParams } from 'core/Bookings'
 import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
 import { FieldLayout } from 'ui-kit/form/shared'
 
@@ -9,7 +9,7 @@ import styles from './PreFilters.module.scss'
 export interface FilterByEventDateProps {
   isDisabled?: boolean
   selectedOfferDate: Date | string
-  updateFilters: (filters: Partial<TPreFilters>) => void
+  updateFilters: (filters: Partial<PreFiltersParams>) => void
 }
 
 const selectedOfferDateIsDate = (

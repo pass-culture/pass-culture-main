@@ -16,19 +16,19 @@ export const formatLocalTimeDateString = (
   })
 }
 
-type TGetLocalDepartementDateTimeFromUtc = (
+type GetLocalDepartementDateTimeFromUtc = (
   date: string | number | Date,
   departementCode?: string | null
 ) => Date
-export const getLocalDepartementDateTimeFromUtc: TGetLocalDepartementDateTimeFromUtc =
+export const getLocalDepartementDateTimeFromUtc: GetLocalDepartementDateTimeFromUtc =
   (date, departementCode) =>
     utcToZonedTime(date, getDepartmentTimezone(departementCode))
 
-type TGetUtcDateTimeFromLocalDepartement = (
+type GetUtcDateTimeFromLocalDepartement = (
   zonedDate: Date,
   departementCode?: string | null
 ) => Date
-export const getUtcDateTimeFromLocalDepartement: TGetUtcDateTimeFromLocalDepartement =
+export const getUtcDateTimeFromLocalDepartement: GetUtcDateTimeFromLocalDepartement =
   (zonedDate, departementCode) =>
     zonedTimeToUtc(zonedDate, getDepartmentTimezone(departementCode))
 

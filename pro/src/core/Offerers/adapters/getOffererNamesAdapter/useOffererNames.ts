@@ -4,7 +4,7 @@ import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { useAdapter } from 'hooks'
 import { dehumanizeId } from 'utils/dehumanize'
 
-type TGetOffererNamesAdapter = Adapter<void, OffererName[], OffererName[]>
+type GetOffererNamesAdapter = Adapter<void, OffererName[], OffererName[]>
 
 const FAILING_RESPONSE = {
   isOk: false,
@@ -15,12 +15,12 @@ const FAILING_RESPONSE = {
 type OffererNamesAdapterGetterName = (
   isAdmin?: boolean,
   offererId?: string | null
-) => TGetOffererNamesAdapter
+) => GetOffererNamesAdapter
 const getOffererNamesAdapter: OffererNamesAdapterGetterName = (
   isAdmin = false,
   offererId = null
 ) => {
-  const emptyOffererNamesAdapter: TGetOffererNamesAdapter = async () => {
+  const emptyOffererNamesAdapter: GetOffererNamesAdapter = async () => {
     return {
       isOk: true,
       message: null,
@@ -28,7 +28,7 @@ const getOffererNamesAdapter: OffererNamesAdapterGetterName = (
     }
   }
 
-  const offererNamesAdapter: TGetOffererNamesAdapter = async () => {
+  const offererNamesAdapter: GetOffererNamesAdapter = async () => {
     try {
       const dehumanizedId = offererId ? dehumanizeId(offererId) : undefined
       const response = await api.listOfferersNames(

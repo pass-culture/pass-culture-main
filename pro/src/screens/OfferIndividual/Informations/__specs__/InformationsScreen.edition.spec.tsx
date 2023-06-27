@@ -22,7 +22,7 @@ import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
 import { OfferIndividual, OfferSubCategory } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { AccessiblityEnum } from 'core/shared'
-import { TOfferIndividualVenue } from 'core/Venue/types'
+import { OfferIndividualVenue } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as utils from 'screens/OfferIndividual/Informations/utils'
@@ -167,7 +167,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       },
     ]
 
-    const venue: TOfferIndividualVenue = {
+    const venue: OfferIndividualVenue = {
       nonHumanizedId: physicalVenueId,
       name: 'Venue name',
       isVirtual: false,

@@ -15,7 +15,7 @@ import {
   GetFilteredCollectiveBookingsRecapAdapter,
   GetUserHasBookingsAdapter,
   GetVenuesAdapter,
-  TPreFilters,
+  PreFiltersParams,
 } from 'core/Bookings'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared/types'
@@ -69,7 +69,7 @@ const Bookings = <
   const notify = useNotification()
   const { logEvent } = useAnalytics()
 
-  const [appliedPreFilters, setAppliedPreFilters] = useState<TPreFilters>({
+  const [appliedPreFilters, setAppliedPreFilters] = useState<PreFiltersParams>({
     ...DEFAULT_PRE_FILTERS,
   })
   const [isTableLoading, setIsTableLoading] = useState(false)
@@ -78,7 +78,8 @@ const Bookings = <
   const [hasBooking, setHasBooking] = useState(true)
   const [isLocalLoading, setIsLocalLoading] = useState(false)
   const [venues, setVenues] = useState<SelectOption[]>([])
-  const [urlParams, setUrlParams] = useState<TPreFilters>(DEFAULT_PRE_FILTERS)
+  const [urlParams, setUrlParams] =
+    useState<PreFiltersParams>(DEFAULT_PRE_FILTERS)
 
   const resetPreFilters = useCallback(() => {
     setWereBookingsRequested(false)
@@ -93,12 +94,12 @@ const Bookings = <
     updateUrl({ ...DEFAULT_PRE_FILTERS })
   }, [resetPreFilters])
 
-  const applyPreFilters = (filters: TPreFilters) => {
+  const applyPreFilters = (filters: PreFiltersParams) => {
     setAppliedPreFilters(filters)
     loadBookingsRecap(filters)
   }
 
-  const loadBookingsRecap = async (preFilters: TPreFilters) => {
+  const loadBookingsRecap = async (preFilters: PreFiltersParams) => {
     setIsTableLoading(true)
     setBookings([])
     setWereBookingsRequested(true)
@@ -181,21 +182,21 @@ const Bookings = <
         DEFAULT_PRE_FILTERS.bookingEndingDate === paramBookingEndingDate
       )
     ) {
-      const filterToLoad: TPreFilters = {
+      const filterToLoad: PreFiltersParams = {
         offerVenueId: paramVenueId,
         bookingStatusFilter: paramBookingStatusFilter,
         bookingBeginningDate: paramBookingBeginningDate,
         bookingEndingDate: paramBookingEndingDate,
         offerType: paramOfferType,
         offerEventDate: paramOfferEventDate,
-      } as TPreFilters
+      } as PreFiltersParams
 
       loadBookingsRecap(filterToLoad)
       setAppliedPreFilters(filterToLoad)
     }
   }, [location])
 
-  const updateUrl = (filter: TPreFilters) => {
+  const updateUrl = (filter: PreFiltersParams) => {
     const partialUrlInfo = {
       ...(filter.offerEventDate && filter.offerEventDate !== 'all'
         ? { offerEventDate: dateFilterFormat(new Date(filter.offerEventDate)) }
@@ -213,7 +214,7 @@ const Bookings = <
         : {}),
       ...(filter.offerType ? { offerType: filter.offerType } : {}),
       ...(filter.offerVenueId ? { offerVenueId: filter.offerVenueId } : {}),
-    } as Partial<TPreFilters>
+    } as Partial<PreFiltersParams>
     setUrlParams({
       ...urlParams,
       ...partialUrlInfo,
