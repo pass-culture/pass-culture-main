@@ -71,11 +71,7 @@
     <script src="{{ url_for('static', filename='backofficev3/js/libs/momentjs@2.18.1/moment.min.js') }}"></script>
     <script src="{{ url_for('static', filename='backofficev3/js/libs/vanilla-datetimerange-picker@latest/dist/vanilla-datetimerange-picker.js') }}"></script>
     <!-- Our css needs to be imported after Bootstrap to have a stronger weight -->
-    {#<link href="{{ url_for('static', filename='backofficev3/css/compiled/pc/pc.css') }}"
-          rel="stylesheet"
-          type="text/css" />#}
-    <!-- Custom SoftUI theme -->
-    <link href="{{ url_for('static', filename='backofficev3/softui/css/soft-ui-dashboard.min.css') }}"
+    <link href="{{ url_for('static', filename='backofficev3/css/compiled/pc/pc.css') }}"
           rel="stylesheet"
           type="text/css" />
     <!-- Hotwired turbo frame -->
@@ -88,6 +84,10 @@
     <!-- Bootstrap JS -->
     <script src="{{ url_for('static', filename='backofficev3/js/libs/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ url_for('static', filename='backofficev3/js/libs/tom-select@2.2.2/dist/js/tom-select.complete.min.js') }}"></script>
+    <!-- Github buttons -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
+    <script src="{{ url_for('static', filename='backofficev3/js/libs/soft-ui-dashboard@1.0.7/soft-ui-dashboard.min.js') }}"></script>
     <!-- Our core libs -->
     <script src="{{ url_for('static', filename='backofficev3/js/core/pc-utils.js') }}"></script>
     <script src="{{ url_for('static', filename='backofficev3/js/core/pc-event-handler.js') }}"></script>
@@ -110,6 +110,9 @@
     <script src="{{ url_for('static', filename='backofficev3/js/addons/pc-field-list.js') }}"></script>
     <script src="{{ url_for('static', filename='backofficev3/js/addons/pc-form-field.js') }}"></script>
     <script src="{{ url_for('static', filename='backofficev3/js/addons/pc-date-range-field.js') }}"></script>
+    <!-- TODO remove -->
+    <script src="{{ url_for('static', filename='backofficev3/js/addons/pc-soft-ui-dashboard-tmp.js') }}"></script>
+    <!-- /end TODO remove -->
     <script>
       const app = new PcBackofficeApp({
         addOns: [
@@ -128,6 +131,8 @@
           PcFieldList,
           PcFormField,
           PcDateRangeField,
+          // TODO REMOVE
+          PcSoftUiDashboardTmp
         ]
       })
     </script>
@@ -138,14 +143,5 @@
   <body data-turbo="false"
         class="data-bs-no-jquery g-sidenav-show  bg-gray-100">
     {% block content %}{% endblock %}
-    <script>
-      var win = navigator.platform.indexOf('Win') > -1;
-      if (win && document.querySelector('#sidenav-scrollbar')) {
-        var options = {
-          damping: '0.5'
-        }
-        Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
-      }
-    </script>
   </body>
 </html>

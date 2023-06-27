@@ -3,29 +3,30 @@
 @import "../bootstrap/variables";
 @import "../soft-ui-dashboard/soft-ui-dashboard/variables";
 
-// ------------------------------
-// Bootstrap 5 variables override
-// ------------------------------
-$gray-600: #7f7f7f;
-$blue:    #0066FF;
-$indigo:  #870087;
-$purple:  #320096;
-$pink:    #eb0055;
-$red:     #B60025;
-$yellow:  #fbc02D;
-$green:   #15884F;
-
-// scss-docs-start theme-color-variables
-$primary:       $pink;
-$secondary:     $purple;
-$info:          $blue;
-$dark:          #c10046;
-
-$border-radius:               1rem;
-$border-radius-sm:            $border-radius;
-$border-radius-lg:            1.5rem;
-$border-radius-xl:            $border-radius;
-$border-radius-2xl:           $border-radius;
+// TODO: commented to be ISO with layout and soft-ui-dashboard, see later what to do
+//// ------------------------------
+//// Bootstrap 5 variables override
+//// ------------------------------
+//$gray-600: #7f7f7f;
+//$blue:    #0066FF;
+//$indigo:  #870087;
+//$purple:  #320096;
+//$pink:    #eb0055;
+//$red:     #B60025;
+//$yellow:  #fbc02D;
+//$green:   #15884F;
+//
+//// scss-docs-start theme-color-variables
+//$primary:       $pink;
+//$secondary:     $purple;
+//$info:          $blue;
+//$dark:          #c10046;
+//
+//$border-radius:               1rem;
+//$border-radius-sm:            $border-radius;
+//$border-radius-lg:            1.5rem;
+//$border-radius-xl:            $border-radius;
+//$border-radius-2xl:           $border-radius;
 
 $zindex-levels: map-merge($zindex-levels, (
   4: 4,
