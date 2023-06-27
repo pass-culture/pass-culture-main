@@ -6,6 +6,7 @@ import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullLinkIcon from 'icons/full-link.svg'
+import { ReactComponent as IcoPlusCircle } from 'icons/ico-plus-circle.svg'
 import { Banner, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
@@ -81,6 +82,19 @@ const OffererDetails = ({
               value={selectedOfferer.id.toString()}
             />
           </div>
+
+          <div className="od-separator vertical" />
+          <ButtonLink
+            variant={ButtonVariant.TERNARY}
+            link={{
+              to: `/structures/${selectedOfferer.nonHumanizedId}#attachment-invitations-section`,
+              isExternal: false,
+            }}
+            Icon={IcoPlusCircle}
+            isDisabled={!isUserOffererValidated}
+          >
+            Inviter
+          </ButtonLink>
 
           <div className="od-separator vertical" />
           <ButtonLink
