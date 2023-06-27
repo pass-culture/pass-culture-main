@@ -42,6 +42,9 @@ FROM python:3.10-slim AS lib
 RUN useradd -rm -d /home/pcapi -u 1000 pcapi
 
 ENV PATH=$PATH:/home/pcapi/.local/bin
+ENV PROMETHEUS_MULTIPROC_DIR /tmp
+ENV prometheus_multiproc_dir /tmp
+ENV FLASK_PROMETHEUS_EXPORTER_PORT 5002
 
 RUN apt-get update \
 	&& apt-get --no-install-recommends -y install \
@@ -78,10 +81,6 @@ RUN apt-get update && \
 USER pcapi
 
 RUN pip install --no-cache-dir --user -e .
-
-# This directory must be the same as the one mentioned in `gunicorn.conf.py`.
-RUN mkdir /var/tmp/prometheus_flask_export_multiproc_dir
-RUN chown pcapi:pcapi /var/tmp/prometheus_flask_export_multiproc_dir
 
 ######### PRODUCTION #########
 
