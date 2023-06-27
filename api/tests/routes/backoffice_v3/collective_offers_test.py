@@ -522,8 +522,11 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             response = authenticated_client.get(url)
 
         # then
+        content_as_text = html_parser.content_as_text(response.data)
         assert response.status_code == 200
-        assert "Ajuster le prix de l'offre" in response.data.decode()
+        assert "Ajuster le prix de l'offre" in content_as_text
+        assert "Statut : Expirée" in content_as_text
+        assert "État : Validée" in content_as_text
 
     def test_processed_pricing(self, legit_user, authenticated_client):
         # when
