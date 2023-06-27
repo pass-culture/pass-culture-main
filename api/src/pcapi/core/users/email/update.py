@@ -167,6 +167,32 @@ def cancel_email_update_request(token: str) -> None:
     _expire_token(user, TokenType.CONFIRMATION)
 
 
+def validate_email_update_request(
+    current_email: str,
+    new_email: str,
+    by_admin: bool = False,
+) -> None:
+    """
+    Change a user's email and add a new (validation) entry to its email
+    history.
+
+    If no user is found, check whether a validated update request
+    exists: if so, there is no need to panic nor to redo the update
+    since it already has been done.
+
+    Therefore this function can be called multiple times with the same
+    inputs safely.
+    """
+    current_user = users_repository.find_user_by_email(current_email)
+
+    if not current_user:
+        if not validated_update_request_exists(current_email, new_email):
+            raise exceptions.UserDoesNotExist()
+    else:
+        api.change_email(current_user, new_email, by_admin)
+        transactional_mails.send_email_change_information_email(current_user)
+
+
 def request_email_update_from_pro(user: models.User, email: str, password: str) -> None:
     check_user_password(user, password)
     check_pro_email_update_attempts(user)

@@ -29,7 +29,6 @@ import pcapi.core.offerers.models as offerers_models
 from pcapi.core.permissions import models as perm_models
 import pcapi.core.subscription.phone_validation.exceptions as phone_validation_exceptions
 import pcapi.core.users.constants as users_constants
-import pcapi.core.users.email.update as email_update
 import pcapi.core.users.models as users_models
 import pcapi.core.users.repository as users_repository
 import pcapi.core.users.utils as users_utils
@@ -495,32 +494,6 @@ def change_email(
     repository.delete(*sessions)
 
     logger.info("User has changed their email", extra={"user": current_user.id})
-
-
-def change_beneficiary_user_email(
-    current_email: str,
-    new_email: str,
-    by_admin: bool = False,
-) -> None:
-    """
-    Change a user's email and add a new (validation) entry to its email
-    history.
-
-    If no user if found, check whether a validated update request
-    exists: if so, there is no need to panic nor to redo the update
-    since it already has been done.
-
-    Therefore this function can be called multiple times with the same
-    inputs safely.
-    """
-    current_user = users_repository.find_user_by_email(current_email)
-
-    if not current_user:
-        if not email_update.validated_update_request_exists(current_email, new_email):
-            raise exceptions.UserDoesNotExist()
-    else:
-        change_email(current_user, new_email, by_admin)
-        transactional_mails.send_email_change_information_email(current_user)
 
 
 def change_pro_user_email(
