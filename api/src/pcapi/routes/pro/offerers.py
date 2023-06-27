@@ -85,7 +85,8 @@ def get_offerer(offerer_id: int) -> offerers_serialize.GetOffererResponseModel:
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def invite_members(offerer_id: int, body: offerers_serialize.InviteMembersQueryModel) -> None:
     check_user_has_access_to_offerer(current_user, offerer_id)
-    logger.info("Invite members", extra={"emails": body.emails})
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    api.invite_members(offerer, body.emails)
 
 
 @private_api.route("/offerers/<int:offerer_id>/api_keys", methods=["POST"])

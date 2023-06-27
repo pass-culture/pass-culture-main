@@ -1844,3 +1844,18 @@ def delete_offerer(offerer_id: int) -> None:
     search.unindex_collective_offer_ids(offer_ids_to_delete["collective_offer_ids_to_delete"])
     search.unindex_collective_offer_template_ids(offer_ids_to_delete["collective_offer_template_ids_to_delete"])
     search.unindex_venue_ids(venue_ids_subquery)
+
+
+def invite_members(offerer: models.Offerer, emails: list[str]) -> None:
+    existing_invited_emails = (
+        models.OffererInvitation.query.filter(models.OffererInvitation.offererId == offerer.id)
+        .filter(models.OffererInvitation.email.in_(emails))
+        .all()
+    )
+    for email in emails:
+        if email in existing_invited_emails:
+            continue
+        offerer_invitation = models.OffererInvitation(offerer=offerer, email=email)
+        db.session.add(offerer_invitation)
+
+    db.session.commit()

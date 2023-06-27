@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Iterable
 
+from pydantic import validator
 import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
@@ -11,6 +12,7 @@ from pcapi.routes.native.v1.serialization.common_models import AccessibilityComp
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization.venues_serialize import DMSApplicationForEAC
 import pcapi.utils.date as date_utils
+from pcapi.utils.email import sanitize_email
 
 
 class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
@@ -233,3 +235,11 @@ class OffererStatsResponseModel(BaseModel):
 
 class InviteMembersQueryModel(BaseModel):
     emails: list[str]
+
+    @validator("emails", each_item=True)
+    @classmethod
+    def validate_emails(cls, email: str) -> str:
+        try:
+            return sanitize_email(email)
+        except Exception as e:
+            raise ValueError(email) from e
