@@ -8,6 +8,8 @@ import { FORMAT_DD_MM_YYYY } from 'utils/date'
 
 import { BaseInput } from '../shared'
 
+import './BaseDatePicker.module.scss'
+
 registerLocale('fr', fr)
 
 type Props = Omit<ReactDatePickerProps, 'value'> & {

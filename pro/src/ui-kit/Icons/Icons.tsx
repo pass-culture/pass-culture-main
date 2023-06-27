@@ -159,7 +159,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-alert-grey.svg', viewBox: '0 0 80 80' },
   { src: 'icons/ico-circle-arrow.svg', viewBox: '0 0 20 20' },
   { src: 'icons/add-user.svg', viewBox: '0 0 106 74' },
-  { src: 'icons/ico-alert-filled.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-arrow-up-b.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-calendar-check.svg', viewBox: '0 0 48 48' },
   { src: 'icons/icon-calendar.svg', viewBox: '0 0 30 30' },
