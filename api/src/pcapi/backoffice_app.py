@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import os
 import typing
 
 from flask import Response
@@ -71,7 +70,4 @@ if __name__ == "__main__":
             print("🎉 Code debugger attached, enjoy debugging 🎉", flush=True)
 
     set_tag("pcapi.app_type", "app")
-    if "DEBUG_METRICS" in os.environ:
-        # 'prometheus_flask_exporter' does not play well when debug mode is on.
-        debug = use_reloader = False
     app.run(host="0.0.0.0", port=port, debug=True, use_reloader=True)

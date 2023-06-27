@@ -52,8 +52,10 @@ app = Flask(__name__, static_url_path="/static")
 
 
 def setup_metrics(app_):
-    metrics = prometheus_flask_exporter.multiprocess.GunicornPrometheusMetrics(app_)
-    # metrics.start_http_server(port=settings.FLASK_PROMETHEUS_EXPORTER_PORT)
+    if settings.IS_DEV:
+        return
+    prometheus_flask_exporter.multiprocess.GunicornPrometheusMetrics(app_)
+    # An external export server is started by Gunicorn, see `gunicorn.conf.py`.
 
 
 # These `before_request()` and `after_request()` callbacks must be

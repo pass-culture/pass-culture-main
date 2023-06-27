@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-import os
-
 from flask_jwt_extended import JWTManager
 from sentry_sdk import set_tag
 
@@ -52,7 +50,4 @@ if __name__ == "__main__":
 
     set_tag("pcapi.app_type", "app")
     debug = use_reloader = True
-    if "DEBUG_METRICS" in os.environ:
-        # 'prometheus_flask_exporter' does not play well when debug mode is on.
-        debug = use_reloader = False
-    app.run(host="0.0.0.0", port=port, debug=debug, use_reloader=use_reloader)
+    app.run(host="0.0.0.0", port=port, debug=True, use_reloader=True)
