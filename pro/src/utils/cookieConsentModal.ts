@@ -58,7 +58,7 @@ export const initCookieConsent = () => {
         deviceId: localStorage.getItem('DEVICE_ID') ?? 'NODEVICEID',
       }
 
-      api.cookiesConsent(cookieConsent).then()
+      api.cookiesConsent(cookieConsent)
 
       return JSON.stringify(contents)
     },
@@ -164,7 +164,7 @@ export const initCookieConsent = () => {
   }
 
   const storageId = localStorage.getItem('DEVICE_ID')
-  if (storageId == null) {
+  if (storageId === null) {
     localStorage.setItem('DEVICE_ID', uuidv4())
   }
   return Orejime.init(orejimeConfig)
