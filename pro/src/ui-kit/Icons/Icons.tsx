@@ -130,7 +130,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-status-sold-out.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-status-validated.svg', viewBox: '0 0 17 17' },
   { src: 'icons/ico-status-validated-white.svg', viewBox: '0 0 17 17' },
-  { src: 'icons/ico-structure.svg', viewBox: '0 0 30 25' },
   { src: 'icons/ico-success.svg', viewBox: '0 0 88 88' },
   { src: 'icons/ico-tag.svg', viewBox: '0 0 33 33' },
   { src: 'icons/ico-template-offer.svg' },
