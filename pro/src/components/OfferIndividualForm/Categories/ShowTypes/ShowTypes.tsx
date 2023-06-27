@@ -4,23 +4,23 @@ import React, { useEffect, useState } from 'react'
 import FormLayout from 'components/FormLayout'
 import {
   FORM_DEFAULT_VALUES,
-  IOfferIndividualFormValues,
+  OfferIndividualFormValues,
 } from 'components/OfferIndividualForm'
 import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
 import { SelectOption } from 'custom_types/form'
 import { Select } from 'ui-kit'
 
-interface IShowTypesProps {
+interface ShowTypesProps {
   readOnly?: boolean
 }
 
 /* istanbul ignore next: DEBT, TO FIX */
-const ShowTypes = ({ readOnly = false }: IShowTypesProps): JSX.Element => {
+const ShowTypes = ({ readOnly = false }: ShowTypesProps): JSX.Element => {
   const {
     initialValues,
     values: { showType },
     setFieldValue,
-  } = useFormikContext<IOfferIndividualFormValues>()
+  } = useFormikContext<OfferIndividualFormValues>()
   const [showTypesOptions, setShowTypesOptions] = useState<{
     showType: SelectOption[]
     showSubType: SelectOption[]

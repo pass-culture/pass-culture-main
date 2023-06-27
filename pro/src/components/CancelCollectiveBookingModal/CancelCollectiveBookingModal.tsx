@@ -3,7 +3,7 @@ import React from 'react'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { ReactComponent as Trash } from 'icons/ico-trash.svg'
 
-interface IOfferEducationalModalProps {
+interface OfferEducationalModalProps {
   onDismiss(): void
   onValidate(): void
 }
@@ -11,7 +11,7 @@ interface IOfferEducationalModalProps {
 const CancelCollectiveBookingModal = ({
   onDismiss,
   onValidate,
-}: IOfferEducationalModalProps): JSX.Element => {
+}: OfferEducationalModalProps): JSX.Element => {
   return (
     <ConfirmDialog
       onCancel={onDismiss}

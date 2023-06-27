@@ -4,7 +4,7 @@ import { OfferStatus } from 'apiClient/v1'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { MAX_OFFERS_TO_DISPLAY } from 'core/Offers/constants'
-import { Offer, TSearchFilters } from 'core/Offers/types'
+import { Offer, SearchFiltersParams } from 'core/Offers/types'
 import { hasSearchFilters, isOfferDisabled } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
@@ -20,7 +20,7 @@ import OffersTableHead from './OffersTableHead/OffersTableHead'
 type OffersProps = {
   applyFilters: () => void
   applyUrlFiltersAndRedirect: (
-    filters: TSearchFilters,
+    filters: SearchFiltersParams,
     isRefreshing: boolean
   ) => void
   areAllOffersSelected: boolean
@@ -33,12 +33,12 @@ type OffersProps = {
   offersCount: number
   pageCount: number
   resetFilters: () => void
-  searchFilters: TSearchFilters
+  searchFilters: SearchFiltersParams
   selectedOfferIds: string[]
-  setSearchFilters: React.Dispatch<React.SetStateAction<TSearchFilters>>
+  setSearchFilters: React.Dispatch<React.SetStateAction<SearchFiltersParams>>
   setSelectedOfferIds: React.Dispatch<React.SetStateAction<string[]>>
   toggleSelectAllCheckboxes: () => void
-  urlSearchFilters: TSearchFilters
+  urlSearchFilters: SearchFiltersParams
   refreshOffers: () => void
 }
 
@@ -64,7 +64,7 @@ const Offers = ({
   refreshOffers,
 }: OffersProps) => {
   const isAdminForbidden = useCallback(
-    (searchFilters: TSearchFilters) => {
+    (searchFilters: SearchFiltersParams) => {
       return (
         currentUser.isAdmin &&
         !hasSearchFilters(searchFilters, ['venueId', 'offererId'])
@@ -75,7 +75,7 @@ const Offers = ({
 
   const updateStatusFilter = useCallback(
     (selectedStatus: OfferStatus | CollectiveOfferStatus | 'all') => {
-      setSearchFilters((currentSearchFilters: TSearchFilters) => ({
+      setSearchFilters((currentSearchFilters: SearchFiltersParams) => ({
         ...currentSearchFilters,
         status: selectedStatus,
       }))

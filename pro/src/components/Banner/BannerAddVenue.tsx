@@ -2,11 +2,11 @@ import React from 'react'
 
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
 
-interface IBannerAddVenueProps {
+interface BannerAddVenueProps {
   offererId: string
 }
 
-const BannerAddVenue = ({ offererId }: IBannerAddVenueProps): JSX.Element => (
+const BannerAddVenue = ({ offererId }: BannerAddVenueProps): JSX.Element => (
   <InternalBanner
     to={`/structures/${offererId}/lieux/creation`}
     linkTitle="+ Ajouter un lieu"

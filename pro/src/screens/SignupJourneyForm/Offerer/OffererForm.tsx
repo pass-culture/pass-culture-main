@@ -7,12 +7,12 @@ import { TextInput } from 'ui-kit'
 
 import styles from './OffererForm.module.scss'
 
-export interface IOffererFormValues {
+export interface OffererFormValues {
   siret: string
 }
 
 const OffererForm = (): JSX.Element => {
-  const { setFieldValue } = useFormikContext<IOffererFormValues>()
+  const { setFieldValue } = useFormikContext<OffererFormValues>()
 
   const formatSiret = async (siret: string): Promise<void> => {
     if ((siret && /^[0-9]+$/.test(unhumanizeSiret(siret))) || !siret) {

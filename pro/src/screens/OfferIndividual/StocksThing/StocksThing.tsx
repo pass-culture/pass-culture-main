@@ -8,7 +8,7 @@ import FormLayout, { FormLayoutDescription } from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
 import { StockFormActions } from 'components/StockFormActions'
-import { IStockFormRowAction } from 'components/StockFormActions/types'
+import { StockFormRowAction } from 'components/StockFormActions/types'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
   Events,
@@ -24,7 +24,7 @@ import {
   LIVRE_PAPIER_SUBCATEGORY_ID,
   OFFER_WIZARD_MODE,
 } from 'core/Offers/constants'
-import { IOfferIndividual } from 'core/Offers/types'
+import { OfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { useOfferWizardMode } from 'hooks'
@@ -55,11 +55,11 @@ import {
   STOCK_THING_FORM_DEFAULT_VALUES,
 } from './'
 
-export interface IStocksThingProps {
-  offer: IOfferIndividual
+export interface StocksThingProps {
+  offer: OfferIndividual
 }
 
-const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
+const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const [afterSubmitUrl, setAfterSubmitUrl] = useState<string>(
     getOfferIndividualUrl({
@@ -289,7 +289,7 @@ const StocksThing = ({ offer }: IStocksThingProps): JSX.Element => {
     return result
   }
 
-  const actions: IStockFormRowAction[] = [
+  const actions: StockFormRowAction[] = [
     {
       callback: async () => {
         if (

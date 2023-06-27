@@ -7,11 +7,11 @@ import StoreProvider from 'store/StoreProvider/StoreProvider'
 
 import ButtonImageDelete, { ButtonImageDeleteProps } from '../ButtonImageDelete'
 
-interface IRenderButtonImageDeleteProps {
+interface RenderButtonImageDeleteProps {
   storeOverride?: Partial<RootState>
   props: ButtonImageDeleteProps
 }
-const renderButtonImageDelete = ({ props }: IRenderButtonImageDeleteProps) => {
+const renderButtonImageDelete = ({ props }: RenderButtonImageDeleteProps) => {
   return render(
     <StoreProvider isDev>
       <ButtonImageDelete {...props} />

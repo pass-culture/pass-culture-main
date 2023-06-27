@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import Advices from 'components/Advices/Advices'
 import { ImageUploadBrowserForm } from 'components/ImageUploadBrowserForm'
-import { IImageUploadBrowserFormValues } from 'components/ImageUploadBrowserForm/types'
+import { ImageUploadBrowserFormValues } from 'components/ImageUploadBrowserForm/types'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { PreferredOrientation } from 'components/PreferredOrientation/PreferredOrientation'
 import { NBSP } from 'core/shared/constants'
@@ -11,7 +11,7 @@ import { Divider } from 'ui-kit'
 import style from './ModalImageUploadBrowser.module.scss'
 
 interface ModalImageUploadBrowserProps {
-  onImageClientUpload: (values: IImageUploadBrowserFormValues) => void
+  onImageClientUpload: (values: ImageUploadBrowserFormValues) => void
   mode: UploaderModeEnum
 }
 

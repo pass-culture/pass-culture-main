@@ -17,8 +17,8 @@ import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
 import { VenueFormValues } from 'components/VenueForm'
-import { IOfferer } from 'core/Offerers/types'
-import { IVenue } from 'core/Venue'
+import { Offerer } from 'core/Offerers/types'
+import { Venue } from 'core/Venue'
 import { SelectOption } from 'custom_types/form'
 import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -42,7 +42,7 @@ const renderForm = (
   currentUser: SharedCurrentUserResponseModel,
   initialValues: VenueFormValues,
   isCreatingVenue: boolean,
-  venue?: IVenue | undefined,
+  venue?: Venue | undefined,
   features?: { list: { isActive: true; nameKey: string }[] },
   hasBookingQuantity?: boolean
 ) => {
@@ -64,7 +64,7 @@ const renderForm = (
               <VenueFormScreen
                 initialValues={initialValues}
                 isCreatingVenue={isCreatingVenue}
-                offerer={{ id: 'AE', siren: '881457238' } as IOfferer}
+                offerer={{ id: 'AE', siren: '881457238' } as Offerer}
                 venueTypes={venueTypes}
                 venueLabels={venueLabels}
                 providers={[]}
@@ -253,7 +253,7 @@ const venueResponse: GetVenueResponseModel = {
 describe('screen | VenueForm', () => {
   let formValues: VenueFormValues
   let expectedEditVenue: Partial<EditVenueBodyModel>
-  let venue: IVenue
+  let venue: Venue
   beforeEach(() => {
     formValues = {
       bannerMeta: undefined,

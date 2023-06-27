@@ -6,12 +6,12 @@ import { Audience } from 'core/shared'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import DeactivationConfirmDialog, {
-  IDeactivationConfirmDialogProps,
+  DeactivationConfirmDialogProps,
 } from '../DeactivationConfirmDialog'
 
 const renderDeactivationConfirmDialog = ({
   ...props
-}: IDeactivationConfirmDialogProps) => {
+}: DeactivationConfirmDialogProps) => {
   renderWithProviders(<DeactivationConfirmDialog {...props} />)
 }
 

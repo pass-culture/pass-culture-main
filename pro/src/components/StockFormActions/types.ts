@@ -1,6 +1,6 @@
 import { FunctionComponent, SVGProps } from 'react'
 
-export interface IStockFormRowAction {
+export interface StockFormRowAction {
   callback: () => void
   label: string
   Icon?: FunctionComponent<

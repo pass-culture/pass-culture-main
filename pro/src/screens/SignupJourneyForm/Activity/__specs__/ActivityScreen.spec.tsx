@@ -8,8 +8,8 @@ import { Target } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
 import {
   DEFAULT_ACTIVITY_VALUES,
-  ISignupJourneyContext,
   SignupJourneyContext,
+  SignupJourneyContextValues,
 } from 'context/SignupJourneyContext'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -21,7 +21,7 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-const renderActivityScreen = (contextValue: ISignupJourneyContext) => {
+const renderActivityScreen = (contextValue: SignupJourneyContextValues) => {
   const storeOverrides = {
     user: {
       initialized: true,
@@ -54,7 +54,7 @@ const renderActivityScreen = (contextValue: ISignupJourneyContext) => {
 }
 
 describe('screens:SignupJourney::Activity', () => {
-  let contextValue: ISignupJourneyContext
+  let contextValue: SignupJourneyContextValues
   beforeEach(() => {
     contextValue = {
       activity: DEFAULT_ACTIVITY_VALUES,

@@ -11,12 +11,12 @@ import {
 import Notification from 'components/Notification/Notification'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import {
-  IOfferIndividualContext,
   OfferIndividualContext,
+  OfferIndividualContextValues,
 } from 'context/OfferIndividualContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
-import { IOfferIndividual, IOfferIndividualVenue } from 'core/Offers/types'
+import { OfferIndividual, OfferIndividualVenue } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { ButtonLink } from 'ui-kit'
@@ -48,7 +48,7 @@ jest.mock('utils/date', () => ({
 
 const renderStockEventScreen = (
   props: StocksEventEditionProps,
-  contextValue: IOfferIndividualContext,
+  contextValue: OfferIndividualContextValues,
   url: string = getOfferIndividualPath({
     step: OFFER_WIZARD_STEP_IDS.STOCKS,
     mode: OFFER_WIZARD_MODE.EDITION,
@@ -110,8 +110,8 @@ const priceCategoryId = '1'
 
 describe('screens:StocksEventEdition', () => {
   let props: StocksEventEditionProps
-  let contextValue: IOfferIndividualContext
-  let offer: Partial<IOfferIndividual>
+  let contextValue: OfferIndividualContextValues
+  let offer: Partial<OfferIndividual>
   const offerId = 1
 
   beforeEach(() => {
@@ -119,7 +119,7 @@ describe('screens:StocksEventEdition', () => {
       nonHumanizedId: offerId,
       venue: {
         departmentCode: '75',
-      } as IOfferIndividualVenue,
+      } as OfferIndividualVenue,
       stocks: [],
       priceCategories: [
         { id: Number(priceCategoryId), label: 'Cat 1', price: 10 },
@@ -127,7 +127,7 @@ describe('screens:StocksEventEdition', () => {
       ],
     }
     props = {
-      offer: offer as IOfferIndividual,
+      offer: offer as OfferIndividual,
     }
     contextValue = {
       offerId: null,

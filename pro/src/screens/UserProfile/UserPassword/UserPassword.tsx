@@ -5,7 +5,7 @@ import { BoxRounded } from 'ui-kit/BoxRounded'
 
 import { Forms } from '../constants'
 
-interface IUserPasswordProps {
+interface UserPasswordProps {
   setCurrentForm: (value: Forms | null) => void
   showForm: boolean
 }
@@ -13,7 +13,7 @@ interface IUserPasswordProps {
 const UserPassword = ({
   setCurrentForm,
   showForm = false,
-}: IUserPasswordProps) => {
+}: UserPasswordProps) => {
   const onClickModify = () => setCurrentForm(Forms.USER_PASSWORD)
   const resetForm = () => setCurrentForm(null)
   return (

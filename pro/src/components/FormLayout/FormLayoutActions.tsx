@@ -3,7 +3,7 @@ import React from 'react'
 
 import style from './FormLayout.module.scss'
 
-interface IFormLayoutActionsProps {
+interface FormLayoutActionsProps {
   children: React.ReactElement[] | React.ReactElement
   className?: string
 }
@@ -21,7 +21,7 @@ const addActionClass = (
 const Actions = ({
   children,
   className,
-}: IFormLayoutActionsProps): JSX.Element => (
+}: FormLayoutActionsProps): JSX.Element => (
   <div className={cn(style['form-layout-actions'], className)}>
     {Array.isArray(children)
       ? children.map(addActionClass)

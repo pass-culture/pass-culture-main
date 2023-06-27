@@ -7,7 +7,7 @@ import { BoxRounded } from 'ui-kit/BoxRounded'
 
 import { Forms } from '../constants'
 
-interface IUserPhoneProps {
+interface UserPhoneProps {
   setCurrentForm: (value: Forms | null) => void
   initialValues: UserPhoneBodyModel
   showForm: boolean
@@ -17,7 +17,7 @@ const UserPhone = ({
   setCurrentForm,
   initialValues,
   showForm = false,
-}: IUserPhoneProps) => {
+}: UserPhoneProps) => {
   const onClickModify = () => setCurrentForm(Forms.USER_PHONE)
   const resetForm = () => setCurrentForm(null)
   return (

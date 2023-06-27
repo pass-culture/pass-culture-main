@@ -4,20 +4,16 @@ import { Adapter, Option } from 'pages/AdageIframe/app/types'
 
 type Params = null
 
-interface IPayload {
+interface Payload {
   educationalCategories: Option<string[]>[]
 }
 
-type GetEducationalCategoriesOptionsAdapter = Adapter<
-  Params,
-  IPayload,
-  IPayload
->
+type GetEducationalCategoriesOptionsAdapter = Adapter<Params, Payload, Payload>
 
 const filterEducationalSubCategories = ({
   categories,
   subcategories,
-}: CategoriesResponseModel): IPayload => {
+}: CategoriesResponseModel): Payload => {
   if (!subcategories || !categories) {
     return { educationalCategories: [] }
   }

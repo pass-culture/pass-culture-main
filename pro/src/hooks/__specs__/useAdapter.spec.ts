@@ -2,13 +2,13 @@ import { renderHook, waitFor } from '@testing-library/react'
 
 import { useAdapter } from '..'
 
-interface ISuccessPayload {
+interface SuccessPayload {
   success: string
 }
-interface IFailurePayload {
+interface FailurePayload {
   error: string
 }
-type TTestingAdapter = Adapter<void, ISuccessPayload, IFailurePayload>
+type TTestingAdapter = Adapter<void, SuccessPayload, FailurePayload>
 
 const getTestingAdapter = (apiCall: any): TTestingAdapter => {
   const testingAdapter: TTestingAdapter = async () => {
@@ -41,9 +41,7 @@ describe('useAdapter', () => {
       .fn()
       .mockResolvedValue(new Promise(r => setTimeout(r, 200)))
     const { result } = renderHook(() =>
-      useAdapter<ISuccessPayload, IFailurePayload>(
-        getTestingAdapter(successCall)
-      )
+      useAdapter<SuccessPayload, FailurePayload>(getTestingAdapter(successCall))
     )
     const loadingState = result.current
 
@@ -65,9 +63,7 @@ describe('useAdapter', () => {
   it('should return loading payload then failure payload', async () => {
     const failureCall = jest.fn().mockRejectedValue('Api error')
     const { result } = renderHook(() =>
-      useAdapter<ISuccessPayload, IFailurePayload>(
-        getTestingAdapter(failureCall)
-      )
+      useAdapter<SuccessPayload, FailurePayload>(getTestingAdapter(failureCall))
     )
     const loadingState = result.current
 

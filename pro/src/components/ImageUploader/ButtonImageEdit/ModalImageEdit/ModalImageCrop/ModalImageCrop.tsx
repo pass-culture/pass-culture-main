@@ -3,7 +3,7 @@ import AvatarEditor, { CroppedRect, Position } from 'react-avatar-editor'
 
 import { CreditInput } from 'components/CreditInput/CreditInput'
 import ImageEditor, {
-  IImageEditorConfig,
+  ImageEditorConfig,
 } from 'components/ImageEditor/ImageEditor'
 import { coordonateToPosition } from 'components/ImageEditor/utils'
 import { modeValidationConstraints } from 'components/ImageUploadBrowserForm/constants'
@@ -17,7 +17,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import style from './ModalImageCrop.module.scss'
 import { getCropMaxDimension } from './utils'
 
-interface IModalImageCropProps {
+interface ModalImageCropProps {
   image: File
   credit: string
   onSetCredit: (credit: string) => void
@@ -44,7 +44,7 @@ const ModalImageCrop = ({
   initialScale,
   mode,
   submitButtonText,
-}: IModalImageCropProps): JSX.Element => {
+}: ModalImageCropProps): JSX.Element => {
   const { width, height } = useGetImageBitmap(image)
   const editorRef = useRef<AvatarEditor>(null)
   const notification = useNotification()
@@ -66,7 +66,7 @@ const ModalImageCrop = ({
     [UploaderModeEnum.OFFER_COLLECTIVE]: 384,
     [UploaderModeEnum.VENUE]: 244,
   }[mode]
-  const imageEditorConfig: IImageEditorConfig = {
+  const imageEditorConfig: ImageEditorConfig = {
     [UploaderModeEnum.OFFER]: {
       canvasHeight,
       canvasWidth: (canvasHeight * 6) / 9,

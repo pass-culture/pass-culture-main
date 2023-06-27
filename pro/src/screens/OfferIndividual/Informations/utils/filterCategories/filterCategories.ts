@@ -1,14 +1,14 @@
 import { CATEGORY_STATUS, INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
 import {
-  IOfferCategory,
-  IOfferIndividual,
-  IOfferSubCategory,
+  OfferCategory,
+  OfferIndividual,
+  OfferSubCategory,
 } from 'core/Offers/types'
 import { parse } from 'utils/query-string'
 
 export const getOfferSubtypeFromParamsOrOffer = (
   queryParams: string,
-  offer: IOfferIndividual | null
+  offer: OfferIndividual | null
 ): INDIVIDUAL_OFFER_SUBTYPE | null => {
   const params = parse(queryParams)
 
@@ -68,7 +68,7 @@ export const isOfferSubtypeEvent = (
 }
 
 const isSubcategoryMatchingCriteria = (
-  subcategory: IOfferSubCategory,
+  subcategory: OfferSubCategory,
   onlineOfflinePlatform: CATEGORY_STATUS,
   isEvent: boolean | null
 ) => {
@@ -87,13 +87,13 @@ const isSubcategoryMatchingCriteria = (
 }
 
 const filterCategories = (
-  allCategories: IOfferCategory[],
-  allSubCategories: IOfferSubCategory[],
+  allCategories: OfferCategory[],
+  allSubCategories: OfferSubCategory[],
   onlineOfflinePlatform: CATEGORY_STATUS,
   isEvent: boolean | null
-): [IOfferCategory[], IOfferSubCategory[]] => {
-  const subCategories: IOfferSubCategory[] = allSubCategories.filter(
-    (subcategory: IOfferSubCategory) => {
+): [OfferCategory[], OfferSubCategory[]] => {
+  const subCategories: OfferSubCategory[] = allSubCategories.filter(
+    (subcategory: OfferSubCategory) => {
       if (!subcategory.isSelectable) {
         return false
       }
@@ -105,10 +105,10 @@ const filterCategories = (
       )
     }
   )
-  const categories: IOfferCategory[] = allCategories.filter(
-    (c: IOfferCategory) =>
+  const categories: OfferCategory[] = allCategories.filter(
+    (c: OfferCategory) =>
       c.isSelectable &&
-      subCategories.some((s: IOfferSubCategory) => s.categoryId === c.id)
+      subCategories.some((s: OfferSubCategory) => s.categoryId === c.id)
   )
 
   return [categories, subCategories]

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 
 import { SelectOption } from 'custom_types/form'
 import SelectAutocomplete from 'ui-kit/form/SelectAutoComplete2/SelectAutocomplete'
-import { IAutocompleteItemProps } from 'ui-kit/form/shared/AutocompleteList/type'
+import { AutocompleteItemProps } from 'ui-kit/form/shared/AutocompleteList/type'
 
 import { getAdressDataAdapter } from './adapter'
 
@@ -12,11 +12,11 @@ interface AddressProps {
   suggestionLimit?: number
 }
 
-const Address = ({ description, suggestionLimit }: AddressProps) => {
+const AddressSelect = ({ description, suggestionLimit }: AddressProps) => {
   const { setFieldValue } = useFormikContext()
   const [options, setOptions] = useState<SelectOption[]>([])
   const [addressesMap, setAddressesMap] = useState<
-    Record<string, IAutocompleteItemProps>
+    Record<string, AutocompleteItemProps>
   >({})
   const [searchField] = useField('search-addressAutocomplete')
   const [selectedField] = useField('addressAutocomplete')
@@ -28,8 +28,8 @@ const Address = ({ description, suggestionLimit }: AddressProps) => {
     if (searchField.value.length >= 3) {
       getSuggestions(searchField.value).then(response => {
         setAddressesMap(
-          response.reduce<Record<string, IAutocompleteItemProps>>(
-            (acc, add: IAutocompleteItemProps) => {
+          response.reduce<Record<string, AutocompleteItemProps>>(
+            (acc, add: AutocompleteItemProps) => {
               acc[add.label] = add
               return acc
             },
@@ -87,7 +87,7 @@ const Address = ({ description, suggestionLimit }: AddressProps) => {
 
 export const handleAddressSelect = (
   setFieldValue: any,
-  selectedItem?: IAutocompleteItemProps,
+  selectedItem?: AutocompleteItemProps,
   searchField?: any
 ) => {
   setFieldValue('address', selectedItem?.extraData.address)
@@ -100,4 +100,4 @@ export const handleAddressSelect = (
   setFieldValue('longitude', selectedItem?.extraData.longitude)
 }
 
-export default Address
+export default AddressSelect

@@ -2,7 +2,6 @@ import React from 'react'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
-import { IRoute } from 'app/AppRouter/routesMap'
 import { routesSignupJourney } from 'app/AppRouter/subroutesSignupJourneyMap'
 import { SignupJourneyFormLayout } from 'components/SignupJourneyFormLayout'
 import SkipLinks from 'components/SkipLinks'
@@ -53,7 +52,7 @@ const SignupJourneyRoutes = () => {
         <SignupJourneyContextProvider>
           <SignupJourneyFormLayout>
             <Routes>
-              {routesSignupJourney.map(({ path, element }: IRoute) => (
+              {routesSignupJourney.map(({ path, element }) => (
                 <Route key={path} path={path} element={element} />
               ))}
             </Routes>

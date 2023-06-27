@@ -8,7 +8,7 @@ import { FilterResultsRow } from 'components/StocksEventList/FilterResultsRow'
 import { NoResultsRow } from 'components/StocksEventList/NoResultsRow'
 import { SortArrow } from 'components/StocksEventList/SortArrow'
 import { isOfferDisabled, OFFER_WIZARD_MODE } from 'core/Offers'
-import { IOfferIndividual } from 'core/Offers/types'
+import { OfferIndividual } from 'core/Offers/types'
 import { SelectOption } from 'custom_types/form'
 import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -34,7 +34,7 @@ import {
 import { StockEventFormValues, STOCK_EVENT_FORM_DEFAULT_VALUES } from './'
 
 interface StockFormListProps {
-  offer: IOfferIndividual
+  offer: OfferIndividual
   onDeleteStock: (
     stockValues: StockEventFormValues,
     index: number

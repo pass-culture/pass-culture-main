@@ -8,7 +8,7 @@ import {
 
 import TableRow from './TableRow'
 
-interface ITableBodyProps<
+interface TableBodyProps<
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel
 > {
   row: Row<T>
@@ -19,6 +19,6 @@ const IndividualTableRow = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel
 >({
   row,
-}: ITableBodyProps<T>) => <TableRow row={row} />
+}: TableBodyProps<T>) => <TableRow row={row} />
 
 export default IndividualTableRow

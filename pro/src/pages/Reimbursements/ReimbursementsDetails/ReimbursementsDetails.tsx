@@ -20,7 +20,7 @@ import { sortByLabel } from 'utils/strings'
 
 import DetailsFilters from './DetailsFilters'
 
-interface ICsvQueryParams {
+interface CsvQueryParams {
   venueId?: string
   reimbursementPeriodBeginningDate?: string
   reimbursementPeriodEndingDate?: string
@@ -82,7 +82,7 @@ const ReimbursementsDetails = (): JSX.Element => {
   }, [loadVenues])
 
   useEffect(() => {
-    const params: ICsvQueryParams = {}
+    const params: CsvQueryParams = {}
     if (periodStart) {
       params.reimbursementPeriodBeginningDate = dateFilterFormat(periodStart)
     }

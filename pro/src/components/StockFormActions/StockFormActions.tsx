@@ -7,16 +7,16 @@ import '@reach/menu-button/styles.css'
 import { ReactComponent as OtherIcon } from 'icons/ico-other.svg'
 
 import styles from './StockFormActions.module.scss'
-import { IStockFormRowAction } from './types'
+import { StockFormRowAction } from './types'
 
-export interface IStockFormActionsProps {
+export interface StockFormActionsProps {
   disabled?: boolean
-  actions: IStockFormRowAction[]
+  actions: StockFormRowAction[]
 }
 const StockFormActions = ({
   disabled = false,
   actions,
-}: IStockFormActionsProps): JSX.Element => {
+}: StockFormActionsProps): JSX.Element => {
   return (
     <div className={styles['stock-form-actions']}>
       <Menu>

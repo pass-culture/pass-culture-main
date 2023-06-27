@@ -18,8 +18,8 @@ import {
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import { IOfferer } from 'core/Offerers/types'
-import { IProviders, IVenue } from 'core/Venue/types'
+import { Offerer } from 'core/Offerers/types'
+import { IProviders, Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
@@ -40,12 +40,12 @@ import style from './VenueFormScreen.module.scss'
 interface VenueEditionProps {
   isCreatingVenue: boolean
   initialValues: VenueFormValues
-  offerer: IOfferer
+  offerer: Offerer
   venueTypes: SelectOption[]
   venueLabels: SelectOption[]
   providers?: IProviders[]
   venueProviders?: VenueProviderResponse[]
-  venue?: IVenue
+  venue?: Venue
   hasBookingQuantity?: boolean
 }
 

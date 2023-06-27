@@ -1,11 +1,11 @@
 import { GetOffererResponseModel } from 'apiClient/v1'
 
-import { IOfferer } from '../types'
+import { Offerer } from '../types'
 
 export const serializeOffererApi = (
   offerer: GetOffererResponseModel
-): IOfferer => {
-  return <IOfferer>{
+): Offerer => {
+  return <Offerer>{
     address: offerer.address || '',
     apiKey: offerer.apiKey || null,
     city: offerer.city || '',

@@ -3,7 +3,7 @@ import React, { ForwardedRef } from 'react'
 import { Button } from 'ui-kit/Button'
 import { ButtonVariant, SharedButtonProps } from 'ui-kit/Button/types'
 
-export interface ISubmitButtonProps extends SharedButtonProps {
+export interface SubmitButtonProps extends SharedButtonProps {
   className?: string
   disabled?: boolean
   isLoading?: boolean
@@ -22,7 +22,7 @@ const SubmitButton = ({
   onClick,
   type = 'submit',
   ...buttonAttrs
-}: ISubmitButtonProps): JSX.Element => (
+}: SubmitButtonProps): JSX.Element => (
   <Button
     className={className}
     disabled={disabled || isLoading}

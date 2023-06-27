@@ -3,14 +3,14 @@ import {
   showOptionsTree,
 } from 'core/Offers/categoriesSubTypes'
 import {
-  IOfferIndividual,
-  IOfferSubCategory,
-  IOfferCategory,
+  OfferIndividual,
+  OfferSubCategory,
+  OfferCategory,
 } from 'core/Offers/types'
 
 const serializerOfferSubCategoryFields = (
-  offer: IOfferIndividual,
-  subCategory?: IOfferSubCategory
+  offer: OfferIndividual,
+  subCategory?: OfferSubCategory
 ): {
   author: string
   stageDirector: string
@@ -72,9 +72,9 @@ const serializerOfferSubCategoryFields = (
 }
 
 export const serializeOfferSectionData = (
-  offer: IOfferIndividual,
-  categories: IOfferCategory[],
-  subCategories: IOfferSubCategory[]
+  offer: OfferIndividual,
+  categories: OfferCategory[],
+  subCategories: OfferSubCategory[]
 ) => {
   const offerSubCategory = subCategories.find(s => s.id === offer.subcategoryId)
   const offerCategory = categories.find(

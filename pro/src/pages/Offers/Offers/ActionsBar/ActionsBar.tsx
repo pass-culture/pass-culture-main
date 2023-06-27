@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
-import { TSearchFilters } from 'core/Offers/types'
+import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
@@ -36,7 +36,7 @@ export interface ActionBarProps {
 
 const getUpdateActiveStatusAdapter = (
   areAllOffersSelected: boolean,
-  searchFilters: Partial<TSearchFilters>,
+  searchFilters: Partial<SearchFiltersParams>,
   isActive: boolean,
   nbSelectedOffers: number,
   selectedOfferIds: string[],

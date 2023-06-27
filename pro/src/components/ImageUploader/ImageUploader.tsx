@@ -3,13 +3,13 @@ import React from 'react'
 import { ButtonAppPreview } from './ButtonAppPreview'
 import { ButtonImageDelete } from './ButtonImageDelete'
 import { ButtonImageEdit, IUploadImageValues } from './ButtonImageEdit'
-import { IOnImageUploadArgs } from './ButtonImageEdit/ModalImageEdit/ModalImageEdit'
+import { OnImageUploadArgs } from './ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { ImagePreview } from './ImagePreview'
 import styles from './ImageUploader.module.scss'
 import { UploaderModeEnum } from './types'
 
-export interface IImageUploaderProps {
-  onImageUpload: (values: IOnImageUploadArgs) => Promise<void>
+export interface ImageUploaderProps {
+  onImageUpload: (values: OnImageUploadArgs) => Promise<void>
   onImageDelete: () => Promise<void>
   initialValues?: IUploadImageValues
   mode: UploaderModeEnum
@@ -20,7 +20,7 @@ const ImageUploader = ({
   onImageDelete,
   initialValues = {},
   mode,
-}: IImageUploaderProps) => {
+}: ImageUploaderProps) => {
   const { imageUrl, originalImageUrl, credit, cropParams } = initialValues
 
   return (

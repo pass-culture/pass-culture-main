@@ -3,7 +3,7 @@ import React from 'react'
 
 import style from './OfferFormLayout.module.scss'
 
-interface IOfferFormLayoutStepperProps {
+interface OfferFormLayoutStepperProps {
   children: React.ReactNode | React.ReactNode[]
   className?: string
 }
@@ -11,7 +11,7 @@ interface IOfferFormLayoutStepperProps {
 const OfferFormLayoutStepper = ({
   children,
   className,
-}: IOfferFormLayoutStepperProps): JSX.Element => (
+}: OfferFormLayoutStepperProps): JSX.Element => (
   <div className={cn(style['stepper'], className)}>{children}</div>
 )
 

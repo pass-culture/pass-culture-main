@@ -1,6 +1,6 @@
-import { IOnImageUploadArgs } from '../ModalImageEdit'
+import { OnImageUploadArgs } from '../ModalImageEdit'
 
-export const imageUploadArgsFactory = (): IOnImageUploadArgs => ({
+export const imageUploadArgsFactory = (): OnImageUploadArgs => ({
   imageFile: new File([''], 'filename'),
   imageCroppedDataUrl: 'https://example.com/image.jpg',
   credit: 'Best photographer ever',

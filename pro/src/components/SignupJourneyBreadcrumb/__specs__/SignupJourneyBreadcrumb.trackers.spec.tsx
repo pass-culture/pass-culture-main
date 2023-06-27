@@ -9,8 +9,8 @@ import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyBreadcrumb/cons
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import {
   DEFAULT_ACTIVITY_VALUES,
-  ISignupJourneyContext,
   SignupJourneyContext,
+  SignupJourneyContextValues,
 } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
@@ -22,7 +22,7 @@ import SignupBreadcrumb from '../SignupJourneyBreadcrumb'
 const mockLogEvent = jest.fn()
 
 const renderSignupBreadcrumb = (
-  contextValue: ISignupJourneyContext,
+  contextValue: SignupJourneyContextValues,
   url = '/parcours-inscription/authentification'
 ) => {
   const storeOverrides = {
@@ -68,7 +68,7 @@ const renderSignupBreadcrumb = (
 }
 
 describe('test SignupBreadcrumb', () => {
-  let contextValue: ISignupJourneyContext
+  let contextValue: SignupJourneyContextValues
   beforeEach(() => {
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,

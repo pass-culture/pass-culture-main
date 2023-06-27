@@ -5,7 +5,7 @@ import { Title } from 'ui-kit'
 
 import style from './SummaryLayout.module.scss'
 
-interface ISummaryLayoutSubSectionProps {
+interface SummaryLayoutSubSectionProps {
   title: string
   children: React.ReactNode | React.ReactNode[]
   className?: string
@@ -15,7 +15,7 @@ const SubSection = ({
   title,
   children,
   className,
-}: ISummaryLayoutSubSectionProps): JSX.Element => (
+}: SummaryLayoutSubSectionProps): JSX.Element => (
   <div className={cn(style['summary-layout-sub-section'], className)}>
     <Title
       as="h4"

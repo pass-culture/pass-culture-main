@@ -3,7 +3,7 @@ import type { Story } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
-import RadioGroup, { Direction, IRadioGroupProps } from './RadioGroup'
+import RadioGroup, { Direction, RadioGroupProps } from './RadioGroup'
 
 export default {
   title: 'ui-kit/forms/RadioGroup',
@@ -26,7 +26,7 @@ const args = {
   withBorder: false,
 }
 
-const Template: Story<IRadioGroupProps> = ({
+const Template: Story<RadioGroupProps> = ({
   direction,
   name,
   group,

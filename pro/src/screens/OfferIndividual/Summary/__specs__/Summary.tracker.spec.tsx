@@ -12,7 +12,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { api } from '../../../../apiClient/api'
 import {
-  IOfferIndividualContext,
+  OfferIndividualContextValues,
   OfferIndividualContext,
 } from '../../../../context/OfferIndividualContext'
 import Summary from '../Summary'
@@ -24,7 +24,7 @@ jest.mock('apiClient/api', () => ({
   api: { patchPublishOffer: jest.fn().mockResolvedValue({}) },
 }))
 
-const defaultContext: IOfferIndividualContext = {
+const defaultContext: OfferIndividualContextValues = {
   offerId: null,
   offer: null,
   venueList: [],
@@ -38,7 +38,7 @@ const defaultContext: IOfferIndividualContext = {
 }
 
 const renderSummary = (
-  customContext: Partial<IOfferIndividualContext> = {},
+  customContext: Partial<OfferIndividualContextValues> = {},
   customOverrides?: any
 ) => {
   const context = {
@@ -65,7 +65,7 @@ const renderSummary = (
 }
 
 describe('Summary trackers', () => {
-  let customContext: Partial<IOfferIndividualContext>
+  let customContext: Partial<OfferIndividualContextValues>
   const offerId = 15
 
   beforeEach(() => {

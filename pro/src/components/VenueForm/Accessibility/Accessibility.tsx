@@ -7,11 +7,11 @@ import { useAccessibilityOptions } from 'hooks'
 import { Checkbox, CheckboxGroup, InfoBox } from 'ui-kit'
 
 import { VenueFormValues } from '..'
-interface IAccessiblityProps {
+interface AccessiblityProps {
   isCreatingVenue: boolean
 }
 
-const Accessibility = ({ isCreatingVenue }: IAccessiblityProps) => {
+const Accessibility = ({ isCreatingVenue }: AccessiblityProps) => {
   const { values, setFieldValue, initialValues } =
     useFormikContext<VenueFormValues>()
 

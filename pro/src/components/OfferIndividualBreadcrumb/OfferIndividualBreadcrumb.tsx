@@ -3,7 +3,7 @@ import { generatePath, useLocation } from 'react-router-dom'
 
 import Breadcrumb, {
   BreadcrumbStyle,
-  IStepPattern,
+  StepPattern,
   Step,
 } from 'components/Breadcrumb'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
@@ -24,13 +24,13 @@ import { OFFER_WIZARD_STEP_IDS } from './constants'
 import { useActiveStep } from './hooks'
 import styles from './OfferIndividualStepper.module.scss'
 
-interface IOfferIndividualBreadcrumb {
+interface OfferIndividualBreadcrumbProps {
   shouldTrack?: boolean
 }
 
 const OfferIndividualBreadcrumb = ({
   shouldTrack = true,
-}: IOfferIndividualBreadcrumb) => {
+}: OfferIndividualBreadcrumbProps) => {
   const { offer } = useOfferIndividualContext()
   const activeStep = useActiveStep()
   const { logEvent } = useAnalytics()
@@ -45,7 +45,7 @@ const OfferIndividualBreadcrumb = ({
 
   const isEvent = offer?.isEvent || isOfferSubtypeEvent(offerSubtype)
 
-  const stepPatternList: IStepPattern[] = [
+  const stepPatternList: StepPattern[] = [
     {
       id: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
       label: 'Détails de l’offre',
@@ -133,7 +133,7 @@ const OfferIndividualBreadcrumb = ({
     )
   }
 
-  const stepList = stepPatternList.map((stepPattern: IStepPattern): Step => {
+  const stepList = stepPatternList.map((stepPattern: StepPattern): Step => {
     const step: Step = {
       id: stepPattern.id,
       label: stepPattern.label,

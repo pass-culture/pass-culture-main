@@ -4,12 +4,12 @@ import React from 'react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { ButtonLinkNewWindow, IButtonLinkNewWindowProps } from '..'
+import { ButtonLinkNewWindow, ButtonLinkNewWindowProps } from '..'
 
 window.open = jest.fn()
 const mockLogEvent = jest.fn()
 
-const renderButtonLinkNewWindow = (props: IButtonLinkNewWindowProps) =>
+const renderButtonLinkNewWindow = (props: ButtonLinkNewWindowProps) =>
   renderWithProviders(
     <ButtonLinkNewWindow {...props}>
       <p>clique moi</p>

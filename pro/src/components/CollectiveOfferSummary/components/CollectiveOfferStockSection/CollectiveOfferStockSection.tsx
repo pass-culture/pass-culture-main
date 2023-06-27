@@ -9,7 +9,7 @@ import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { DEFAULT_RECAP_VALUE } from '../constants'
 
-export interface ICollectiveOfferStockSectionProps {
+export interface CollectiveOfferStockSectionProps {
   stock?: GetCollectiveOfferCollectiveStockResponseModel | null
   venueDepartmentCode?: string | null
 }
@@ -17,7 +17,7 @@ export interface ICollectiveOfferStockSectionProps {
 const CollectiveOfferStockSection = ({
   stock,
   venueDepartmentCode,
-}: ICollectiveOfferStockSectionProps) => {
+}: CollectiveOfferStockSectionProps) => {
   /* istanbul ignore next: DEBT, TO FIX */
   const formatDateTime = (date: string, dateFormat: string) => {
     return format(

@@ -8,9 +8,9 @@ import { PriceCategories } from 'pages/OfferIndividualWizard/PriceCategories'
 import { Stocks } from 'pages/OfferIndividualWizard/Stocks'
 import { Summary } from 'pages/OfferIndividualWizard/Summary'
 
-import type { IRoute } from './routesMap'
+import type { RouteConfig } from './routesMap'
 
-export const routesOfferIndividualWizard: IRoute[] = [
+export const routesOfferIndividualWizard: RouteConfig[] = [
   {
     element: <Offer />,
     parentPath: '/offre/individuelle/:offerId',

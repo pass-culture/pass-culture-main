@@ -12,12 +12,12 @@ import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers'
 import {
-  IOfferCategory,
-  IOfferIndividual,
-  IOfferIndividualOfferer,
-  IOfferIndividualStock,
-  IOfferIndividualVenue,
-  IOfferSubCategory,
+  OfferCategory,
+  OfferIndividual,
+  OfferIndividualOfferer,
+  OfferIndividualStock,
+  OfferIndividualVenue,
+  OfferSubCategory,
 } from 'core/Offers/types'
 
 let offerId = 1
@@ -29,12 +29,12 @@ let offerCategoryId = 1
 let offerSubCategoryId = 1
 
 export const individualOfferFactory = (
-  customOffer: Partial<IOfferIndividual> = {},
-  customStock: IOfferIndividualStock = individualStockFactory() || null,
-  customVenue: IOfferIndividualVenue = individualOfferVenueFactory(),
+  customOffer: Partial<OfferIndividual> = {},
+  customStock: OfferIndividualStock = individualStockFactory() || null,
+  customVenue: OfferIndividualVenue = individualOfferVenueFactory(),
   customPriceCatgory: PriceCategoryResponseModel = priceCategoryFactory() ||
     null
-): IOfferIndividual => {
+): OfferIndividual => {
   const priceCategory = customPriceCatgory ?? null
   const stock = customStock === null ? null : customStock
 
@@ -85,8 +85,8 @@ export const individualOfferFactory = (
 }
 
 export const individualStockFactory = (
-  customStock: Partial<IOfferIndividualStock> = {}
-): IOfferIndividualStock => {
+  customStock: Partial<OfferIndividualStock> = {}
+): OfferIndividualStock => {
   const id = stockId++
   return {
     nonHumanizedId: id,
@@ -108,9 +108,9 @@ export const individualStockFactory = (
 }
 
 export const individualOfferVenueFactory = (
-  customVenue: Partial<IOfferIndividualVenue> = {},
-  customOfferer: IOfferIndividualOfferer = individualOfferOffererFactory()
-): IOfferIndividualVenue => {
+  customVenue: Partial<OfferIndividualVenue> = {},
+  customOfferer: OfferIndividualOfferer = individualOfferOffererFactory()
+): OfferIndividualVenue => {
   const currentVenueId = venueId++
 
   return {
@@ -135,8 +135,8 @@ export const individualOfferVenueFactory = (
 }
 
 export const individualOfferOffererFactory = (
-  customOfferer: Partial<IOfferIndividualOfferer> = {}
-): IOfferIndividualOfferer => {
+  customOfferer: Partial<OfferIndividualOfferer> = {}
+): OfferIndividualOfferer => {
   const currentOffererId = offererId++
 
   return {
@@ -156,8 +156,8 @@ export const priceCategoryFactory = (
 })
 
 export const individualOfferCategoryFactory = (
-  customOfferCategory: Partial<IOfferCategory> = {}
-): IOfferCategory => ({
+  customOfferCategory: Partial<OfferCategory> = {}
+): OfferCategory => ({
   id: String(offerCategoryId++),
   proLabel: `catégorie ${offerCategoryId}`,
   isSelectable: true,
@@ -165,8 +165,8 @@ export const individualOfferCategoryFactory = (
 })
 
 export const individualOfferSubCategoryFactory = (
-  customOfferSubCategory: Partial<IOfferSubCategory> = {}
-): IOfferSubCategory => ({
+  customOfferSubCategory: Partial<OfferSubCategory> = {}
+): OfferSubCategory => ({
   id: String(offerSubCategoryId++),
   categoryId: 'A',
   proLabel: `sous catégorie ${offerSubCategoryId}`,

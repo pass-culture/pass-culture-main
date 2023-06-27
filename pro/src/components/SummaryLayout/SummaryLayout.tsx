@@ -8,7 +8,7 @@ import Section from './SummaryLayoutSection'
 import Side from './SummaryLayoutSide'
 import SubSection from './SummaryLayoutSubSection'
 
-interface ISummaryLayoutProps {
+interface SummaryLayoutProps {
   children?: React.ReactNode | React.ReactNode[]
   className?: string
 }
@@ -16,7 +16,7 @@ interface ISummaryLayoutProps {
 const SummaryLayout = ({
   children,
   className,
-}: ISummaryLayoutProps): JSX.Element => (
+}: SummaryLayoutProps): JSX.Element => (
   <div className={cn(style['summary-layout'], className)}>{children}</div>
 )
 

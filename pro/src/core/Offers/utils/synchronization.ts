@@ -1,9 +1,9 @@
 import { isAllocineProvider } from 'core/Providers'
 
-import { IOfferIndividual } from '../types'
+import { OfferIndividual } from '../types'
 
 export const isOfferSynchronized = (
-  offer?: IOfferIndividual | null
+  offer?: OfferIndividual | null
 ): boolean => {
   if (!offer) {
     return false
@@ -12,7 +12,7 @@ export const isOfferSynchronized = (
 }
 
 export const isOfferAllocineSynchronized = (
-  offer?: IOfferIndividual | null
+  offer?: OfferIndividual | null
 ): boolean => {
   if (!offer) {
     return false

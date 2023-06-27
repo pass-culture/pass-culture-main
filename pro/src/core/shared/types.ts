@@ -11,7 +11,7 @@ export enum AccessiblityEnum {
   NONE = 'none',
 }
 
-export interface IAccessibiltyFormValues {
+export interface AccessibiltyFormValues {
   visual: boolean
   audio: boolean
   motor: boolean

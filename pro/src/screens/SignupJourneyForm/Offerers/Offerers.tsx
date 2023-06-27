@@ -7,7 +7,7 @@ import { CreateOffererQueryModel } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyBreadcrumb/constants'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
-import { IOfferer, useSignupJourneyContext } from 'context/SignupJourneyContext'
+import { Offerer, useSignupJourneyContext } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import { getSirenDataAdapter } from 'core/Offerers/adapters'
 import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenuesOfOffererFromSiretAdapter'
@@ -58,7 +58,7 @@ const Offerers = (): JSX.Element => {
   }
 
   const redirectToOnboarding = () => {
-    const newOfferer: IOfferer = {
+    const newOfferer: Offerer = {
       ...offerer,
       createVenueWithoutSiret: true,
     }

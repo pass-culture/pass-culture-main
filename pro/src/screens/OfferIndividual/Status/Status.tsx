@@ -7,7 +7,7 @@ import StatusToggleButton from 'screens/OfferIndividual/Status/StatusToggleButto
 
 import styles from './Status.module.scss'
 
-interface IStatus {
+interface StatusProps {
   offerId: number
   status: OfferStatus
   isActive: boolean
@@ -21,7 +21,7 @@ const Status = ({
   isActive,
   canDeactivate,
   reloadOffer,
-}: IStatus) => (
+}: StatusProps) => (
   <div
     className={cn(styles['status'], {
       [styles['multiple-columns']]: canDeactivate,

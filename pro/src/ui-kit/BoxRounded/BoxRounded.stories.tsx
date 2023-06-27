@@ -1,7 +1,7 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import { IBoxRoundedProps } from './BoxRounded'
+import { BoxRoundedProps } from './BoxRounded'
 
 import { BoxRounded } from '.'
 
@@ -9,7 +9,7 @@ export default {
   title: 'ui-kit/BoxRounded',
 }
 
-const Template: Story<IBoxRoundedProps> = args => <BoxRounded {...args} />
+const Template: Story<BoxRoundedProps> = args => <BoxRounded {...args} />
 
 export const DefaultBoxRounded = Template.bind({})
 

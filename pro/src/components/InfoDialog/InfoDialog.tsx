@@ -5,7 +5,7 @@ import Icon from 'ui-kit/Icon/Icon'
 
 import styles from './InfoDialog.module.scss'
 
-interface IInfoDialogProps {
+interface InfoDialogProps {
   buttonText: string
   iconName?: string
   title: string
@@ -21,7 +21,7 @@ const InfoDialog = ({
   subTitle,
   componentIcon,
   closeDialog,
-}: IInfoDialogProps): JSX.Element => {
+}: InfoDialogProps): JSX.Element => {
   return (
     <DialogBox
       hasCloseButton

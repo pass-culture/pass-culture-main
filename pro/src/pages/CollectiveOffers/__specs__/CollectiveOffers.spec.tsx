@@ -11,7 +11,7 @@ import {
   ALL_VENUES_OPTION,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { Offer, TSearchFilters } from 'core/Offers/types'
+import { Offer, SearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -20,7 +20,7 @@ import { collectiveOfferFactory } from '../utils/collectiveOffersFactories'
 
 const renderOffers = async (
   storeOverrides: Store,
-  filters: Partial<TSearchFilters> & {
+  filters: Partial<SearchFiltersParams> & {
     page?: number
   } = DEFAULT_SEARCH_FILTERS
 ) => {

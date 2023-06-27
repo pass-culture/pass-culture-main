@@ -1,13 +1,13 @@
-export interface ICropParams {
+export interface CropParams {
   xCropPercent: number
   yCropPercent: number
   heightCropPercent: number
   widthCropPercent: number
 }
 
-export interface IUploadImageValues {
+export interface UploadImageValues {
   imageUrl?: string
   originalImageUrl?: string
   credit?: string
-  cropParams?: ICropParams
+  cropParams?: CropParams
 }

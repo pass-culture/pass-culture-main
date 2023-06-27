@@ -18,7 +18,7 @@ import { RootState } from 'store/reducers'
 import { Button, ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 
-export interface IActionBarProps {
+export interface ActionBarProps {
   onClickNext?: () => void
   onClickPrevious?: () => void
   onClickSaveDraft?: () => void
@@ -38,7 +38,7 @@ const ActionBar = ({
   offerId,
   shouldTrack = true,
   submitAsButton = false,
-}: IActionBarProps) => {
+}: ActionBarProps) => {
   const offersSearchFilters = useSelector(
     (state: RootState) => state.offers.searchFilters
   )

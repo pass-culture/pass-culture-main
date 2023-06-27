@@ -5,7 +5,7 @@ import Icon from 'ui-kit/Icon/Icon'
 
 import styles from './NoData.module.scss'
 
-interface INoOffers {
+interface NoOffers {
   page: 'offers' | 'bookings'
   audience: Audience
 }
@@ -22,7 +22,7 @@ const wordingMapping = {
   },
 }
 
-const NoOffers = ({ page, audience }: INoOffers): JSX.Element => {
+const NoOffers = ({ page, audience }: NoOffers): JSX.Element => {
   return (
     <div className={styles['no-data']}>
       <Icon className={styles['no-data-icon']} svg="ticket-cross" />

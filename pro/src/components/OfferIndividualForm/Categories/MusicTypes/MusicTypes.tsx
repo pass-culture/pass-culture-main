@@ -4,17 +4,17 @@ import React, { useEffect, useState } from 'react'
 import FormLayout from 'components/FormLayout'
 import {
   FORM_DEFAULT_VALUES,
-  IOfferIndividualFormValues,
+  OfferIndividualFormValues,
 } from 'components/OfferIndividualForm'
 import { musicOptionsTree } from 'core/Offers/categoriesSubTypes'
 import { SelectOption } from 'custom_types/form'
 import { Select } from 'ui-kit'
 
-interface IMusicTypesProps {
+interface MusicTypesProps {
   readOnly?: boolean
 }
 
-const MusicTypes = ({ readOnly = false }: IMusicTypesProps): JSX.Element => {
+const MusicTypes = ({ readOnly = false }: MusicTypesProps): JSX.Element => {
   const [musicTypesOptions, setMusicTypesOptions] = useState<{
     musicType: SelectOption[]
     musicSubType: SelectOption[]
@@ -32,7 +32,7 @@ const MusicTypes = ({ readOnly = false }: IMusicTypesProps): JSX.Element => {
     values: { musicType },
     initialValues,
     setFieldValue,
-  } = useFormikContext<IOfferIndividualFormValues>()
+  } = useFormikContext<OfferIndividualFormValues>()
 
   useEffect(() => {
     setFieldValue('musicSubType', initialValues.musicSubType)

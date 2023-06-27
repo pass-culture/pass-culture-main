@@ -3,10 +3,10 @@ import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
 import {
-  IOfferIndividualContext,
+  OfferIndividualContextValues,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
-import { IOfferIndividual, IOfferIndividualVenue } from 'core/Offers/types'
+import { OfferIndividual, OfferIndividualVenue } from 'core/Offers/types'
 import { RootState } from 'store/reducers'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -14,9 +14,9 @@ import Stocks from '../Stocks'
 
 const renderStocksScreen = (
   storeOverrides: Partial<RootState> = {},
-  contextOverride: Partial<IOfferIndividualContext>
+  contextOverride: Partial<OfferIndividualContextValues>
 ) => {
-  const contextValue: IOfferIndividualContext = {
+  const contextValue: OfferIndividualContextValues = {
     offerId: null,
     offer: null,
     venueList: [],
@@ -39,8 +39,8 @@ const renderStocksScreen = (
 
 describe('screens:Stocks', () => {
   let storeOverrides: Partial<RootState>
-  let contextOverride: Partial<IOfferIndividualContext>
-  let offer: Partial<IOfferIndividual>
+  let contextOverride: Partial<OfferIndividualContextValues>
+  let offer: Partial<OfferIndividual>
   const offerId = 12
 
   beforeEach(() => {
@@ -48,13 +48,13 @@ describe('screens:Stocks', () => {
       nonHumanizedId: offerId,
       venue: {
         departmentCode: '75',
-      } as IOfferIndividualVenue,
+      } as OfferIndividualVenue,
       stocks: [],
     }
     storeOverrides = {}
     contextOverride = {
       offerId: offerId,
-      offer: offer as IOfferIndividual,
+      offer: offer as OfferIndividual,
     }
   })
 
@@ -63,7 +63,7 @@ describe('screens:Stocks', () => {
       ...contextOverride.offer,
       isEvent: false,
       isDigital: false,
-    } as IOfferIndividual
+    } as OfferIndividual
     renderStocksScreen(storeOverrides, contextOverride)
 
     expect(
@@ -77,7 +77,7 @@ describe('screens:Stocks', () => {
     contextOverride.offer = {
       ...contextOverride.offer,
       isEvent: true,
-    } as IOfferIndividual
+    } as OfferIndividual
     renderStocksScreen(storeOverrides, contextOverride)
 
     await waitFor(() => {
@@ -97,7 +97,7 @@ describe('screens:Stocks', () => {
         ...contextOverride.offer,
         isEvent: true,
         status: offerStatus,
-      } as IOfferIndividual
+      } as OfferIndividual
       renderStocksScreen(storeOverrides, contextOverride)
 
       await waitFor(() => {
@@ -124,7 +124,7 @@ describe('screens:Stocks', () => {
         ...contextOverride.offer,
         isEvent: true,
         status: offerStatus,
-      } as IOfferIndividual
+      } as OfferIndividual
       renderStocksScreen(storeOverrides, contextOverride)
 
       await waitFor(() => {

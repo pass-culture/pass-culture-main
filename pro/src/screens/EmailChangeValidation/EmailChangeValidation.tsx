@@ -6,13 +6,13 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { ROOT_PATH } from 'utils/config'
 
-interface IEmailChangeValidationProps {
+interface EmailChangeValidationProps {
   isSuccess: boolean
 }
 
 const EmailChangeValidation = ({
   isSuccess,
-}: IEmailChangeValidationProps): JSX.Element => {
+}: EmailChangeValidationProps): JSX.Element => {
   return (
     <>
       <div className="logo-side">

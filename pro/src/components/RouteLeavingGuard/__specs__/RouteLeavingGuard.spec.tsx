@@ -5,9 +5,7 @@ import { Link, Route, Routes } from 'react-router-dom'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import RouteLeavingGuard, {
-  IRouteLeavingGuardProps,
-} from '../RouteLeavingGuard'
+import RouteLeavingGuard, { RouteLeavingGuardProps } from '../RouteLeavingGuard'
 
 const MiniAppTest = () => (
   <div>
@@ -22,7 +20,7 @@ const MiniAppTest = () => (
   </div>
 )
 
-const renderRouteLeavingGuard = async (props: IRouteLeavingGuardProps) => {
+const renderRouteLeavingGuard = async (props: RouteLeavingGuardProps) => {
   renderWithProviders(
     <>
       <MiniAppTest />
@@ -32,7 +30,7 @@ const renderRouteLeavingGuard = async (props: IRouteLeavingGuardProps) => {
 }
 
 describe('components | RouteLeavingGuardCollectiveOfferCreation | RouteLeavingGuard', () => {
-  let props: IRouteLeavingGuardProps
+  let props: RouteLeavingGuardProps
 
   beforeEach(() => {
     props = {

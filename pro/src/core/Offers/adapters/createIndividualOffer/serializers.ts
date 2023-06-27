@@ -1,14 +1,14 @@
 /* istanbul ignore file: DEBT, TO FIX */
 import { PostOfferBodyModel } from 'apiClient/v1'
-import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
-import { IOfferExtraData } from 'core/Offers/types'
+import { OfferIndividualFormValues } from 'components/OfferIndividualForm'
+import { OfferExtraData } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 
 /* istanbul ignore next: DEBT, TO FIX */
 const serializeExtraData = (
-  formValues: IOfferIndividualFormValues
-): IOfferExtraData => {
-  const extraData: IOfferExtraData = {}
+  formValues: OfferIndividualFormValues
+): OfferExtraData => {
+  const extraData: OfferExtraData = {}
   if (formValues.author) {
     extraData.author = formValues.author
   }
@@ -59,7 +59,7 @@ const serializeDurationMinutes = (durationHour: string): number | null => {
 }
 
 export const serializePostOffer = (
-  formValues: IOfferIndividualFormValues
+  formValues: OfferIndividualFormValues
 ): PostOfferBodyModel => {
   return {
     audioDisabilityCompliant: formValues.accessibility[AccessiblityEnum.AUDIO],

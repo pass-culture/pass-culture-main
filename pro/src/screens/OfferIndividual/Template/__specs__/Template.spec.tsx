@@ -5,20 +5,20 @@ import { generatePath } from 'react-router-dom'
 import { OfferStatus } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import {
-  IOfferIndividualContext,
   OfferIndividualContext,
+  OfferIndividualContextValues,
 } from 'context/OfferIndividualContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
-import { IOfferIndividual } from 'core/Offers/types'
+import { OfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Template, { ITemplateProps } from '../Template'
+import Template, { TemplateProps } from '../Template'
 
-interface IRenderTemplateProps {
-  contextOverride?: Partial<IOfferIndividualContext>
+interface RenderTemplateProps {
+  contextOverride?: Partial<OfferIndividualContextValues>
   url?: string
-  props?: Partial<ITemplateProps>
+  props?: Partial<TemplateProps>
 }
 
 const renderTemplate = ({
@@ -28,8 +28,8 @@ const renderTemplate = ({
     mode: OFFER_WIZARD_MODE.CREATION,
   }),
   props = {},
-}: IRenderTemplateProps) => {
-  const contextValues: IOfferIndividualContext = {
+}: RenderTemplateProps) => {
+  const contextValues: OfferIndividualContextValues = {
     offerId: null,
     offer: null,
     venueList: [],
@@ -69,13 +69,13 @@ describe('test OfferIndividualTemplate', () => {
     ).toBeInTheDocument()
   })
   it('should render when offer is given', () => {
-    const offer: Partial<IOfferIndividual> = {
+    const offer: Partial<OfferIndividual> = {
       name: 'Titre de l’offre',
       nonHumanizedId: offerId,
       stocks: [],
     }
     const contextOverride = {
-      offer: offer as IOfferIndividual,
+      offer: offer as OfferIndividual,
     }
     renderTemplate({ contextOverride })
 
@@ -92,13 +92,13 @@ describe('test OfferIndividualTemplate', () => {
     ).toBeInTheDocument()
   })
   it('should render when no offer is given on edition mode', () => {
-    const offer: Partial<IOfferIndividual> = {
+    const offer: Partial<OfferIndividual> = {
       name: 'Titre de l’offre',
       nonHumanizedId: offerId,
       stocks: [],
     }
     const contextOverride = {
-      offer: offer as IOfferIndividual,
+      offer: offer as OfferIndividual,
     }
     renderTemplate({
       contextOverride,
@@ -135,7 +135,7 @@ describe('test OfferIndividualTemplate', () => {
 
   describe('Status', () => {
     it('should display status and button in edition', () => {
-      const offer: Partial<IOfferIndividual> = {
+      const offer: Partial<OfferIndividual> = {
         name: 'Titre de l’offre',
         nonHumanizedId: offerId,
         isActive: true,
@@ -143,7 +143,7 @@ describe('test OfferIndividualTemplate', () => {
         stocks: [],
       }
       const contextOverride = {
-        offer: offer as IOfferIndividual,
+        offer: offer as OfferIndividual,
       }
       renderTemplate({
         contextOverride,
@@ -164,7 +164,7 @@ describe('test OfferIndividualTemplate', () => {
     })
 
     it('should display draft status in draft', () => {
-      const offer: Partial<IOfferIndividual> = {
+      const offer: Partial<OfferIndividual> = {
         name: 'Titre de l’offre',
         nonHumanizedId: offerId,
         isActive: false,
@@ -172,7 +172,7 @@ describe('test OfferIndividualTemplate', () => {
         stocks: [],
       }
       const contextOverride = {
-        offer: offer as IOfferIndividual,
+        offer: offer as OfferIndividual,
       }
       renderTemplate({
         contextOverride,
@@ -191,7 +191,7 @@ describe('test OfferIndividualTemplate', () => {
     })
 
     it('should display nothing in creation', () => {
-      const offer: Partial<IOfferIndividual> = {
+      const offer: Partial<OfferIndividual> = {
         name: 'Titre de l’offre',
         nonHumanizedId: offerId,
         isActive: false,
@@ -199,7 +199,7 @@ describe('test OfferIndividualTemplate', () => {
         stocks: [],
       }
       const contextOverride = {
-        offer: offer as IOfferIndividual,
+        offer: offer as OfferIndividual,
       }
       renderTemplate({
         contextOverride,

@@ -2,7 +2,6 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
-import { IRoute } from 'app/AppRouter/routesMap'
 import { routesSignup } from 'app/AppRouter/subroutesSignupMap'
 import SkipLinks from 'components/SkipLinks'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -37,7 +36,7 @@ const Signup = () => {
         >
           {isProAccountCreationEnabled ? (
             <Routes>
-              {routesSignup.map(({ path, element }: IRoute) => (
+              {routesSignup.map(({ path, element }) => (
                 <Route key={path} path={path} element={element} />
               ))}
             </Routes>

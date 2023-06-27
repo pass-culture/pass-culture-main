@@ -3,7 +3,7 @@ import React, { ForwardedRef, forwardRef } from 'react'
 
 import styles from './BaseInput.module.scss'
 
-interface IBaseInputProps
+interface BaseInputProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
   className?: string
   hasError?: boolean
@@ -22,7 +22,7 @@ const BaseInput = forwardRef(
       rightIcon,
       rightButton,
       ...props
-    }: IBaseInputProps,
+    }: BaseInputProps,
     ref: ForwardedRef<HTMLInputElement>
   ): JSX.Element => {
     if (rightIcon || rightButton) {

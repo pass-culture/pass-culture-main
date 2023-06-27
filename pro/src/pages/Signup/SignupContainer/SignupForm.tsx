@@ -23,14 +23,14 @@ import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
 import { MAYBE_APP_USER_APE_CODE } from './constants'
 import styles from './SignupContainer.module.scss'
-import { ISignupFormValues } from './types'
+import { SignupFormValues } from './types'
 
 const SignupForm = (): JSX.Element => {
   const navigate = useNavigate()
   const [showAnonymousBanner, setShowAnonymousBanner] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { values, setFieldValue, setFieldError, isSubmitting } =
-    useFormikContext<ISignupFormValues>()
+    useFormikContext<SignupFormValues>()
 
   const newOnboardingActive = useActiveFeature('WIP_ENABLE_NEW_ONBOARDING')
 

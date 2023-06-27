@@ -6,7 +6,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './FieldSuccess.module.scss'
 
-interface IFieldSuccessProps {
+interface FieldSuccessProps {
   children: React.ReactNode | React.ReactNode[]
   className?: string
   name: string
@@ -18,7 +18,7 @@ const FieldSuccess = ({
   className,
   name,
   iconAlt = '',
-}: IFieldSuccessProps): JSX.Element => (
+}: FieldSuccessProps): JSX.Element => (
   <div className={cn(styles['field-success'], className)} id={name}>
     <SvgIcon src={strokeValidIcon} alt={iconAlt} />
     <span

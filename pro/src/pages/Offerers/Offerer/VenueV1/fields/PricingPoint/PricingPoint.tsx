@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
-import { IVenue } from 'core/Venue'
+import { Venue } from 'core/Venue'
 import { ReactComponent as FullLink } from 'icons/full-link.svg'
 import strokeValidIcon, {
   ReactComponent as StrokeValidIcon,
@@ -20,7 +20,7 @@ import styles from './PricingPoint.module.scss'
 interface PricingPointProps {
   readOnly: boolean
   offerer: GetOffererResponseModel
-  venue: IVenue
+  venue: Venue
   setVenueHasPricingPoint: (venueHasPricingPoint: boolean) => void
 }
 

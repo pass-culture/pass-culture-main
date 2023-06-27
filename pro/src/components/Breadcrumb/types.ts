@@ -6,7 +6,7 @@ export type Step = {
   hash?: string
 }
 
-export interface IStepPattern {
+export interface StepPattern {
   id: string
   label: string
   path?: string

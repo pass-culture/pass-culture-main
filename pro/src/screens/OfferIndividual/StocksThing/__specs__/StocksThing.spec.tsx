@@ -14,15 +14,15 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import {
-  IOfferIndividualContext,
+  OfferIndividualContextValues,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
 import { LIVRE_PAPIER_SUBCATEGORY_ID, OFFER_WIZARD_MODE } from 'core/Offers'
 import {
-  IOfferIndividual,
-  IOfferIndividualStock,
-  IOfferIndividualVenue,
-  IOfferSubCategory,
+  OfferIndividual,
+  OfferIndividualStock,
+  OfferIndividualVenue,
+  OfferSubCategory,
 } from 'core/Offers/types'
 import {
   getOfferIndividualPath,
@@ -31,7 +31,7 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { serializeThingBookingLimitDatetime } from '../adapters/serializers'
-import StocksThing, { IStocksThingProps } from '../StocksThing'
+import StocksThing, { StocksThingProps } from '../StocksThing'
 
 jest.mock('screens/OfferIndividual/Informations/utils', () => {
   return {
@@ -51,8 +51,8 @@ jest.mock('utils/date', () => ({
 }))
 
 const renderStockThingScreen = (
-  props: IStocksThingProps,
-  contextValue: IOfferIndividualContext
+  props: StocksThingProps,
+  contextValue: OfferIndividualContextValues
 ) =>
   renderWithProviders(
     <>
@@ -104,9 +104,9 @@ const renderStockThingScreen = (
   )
 
 describe('screens:StocksThing', () => {
-  let props: IStocksThingProps
-  let contextValue: IOfferIndividualContext
-  let offer: Partial<IOfferIndividual>
+  let props: StocksThingProps
+  let contextValue: OfferIndividualContextValues
+  let offer: Partial<OfferIndividual>
   const offerId = 1
 
   beforeEach(() => {
@@ -114,21 +114,21 @@ describe('screens:StocksThing', () => {
       nonHumanizedId: offerId,
       venue: {
         departmentCode: '75',
-      } as IOfferIndividualVenue,
+      } as OfferIndividualVenue,
       stocks: [],
       lastProviderName: 'Ciné Office',
       subcategoryId: 'CANBEDUO',
     }
     props = {
-      offer: offer as IOfferIndividual,
+      offer: offer as OfferIndividual,
     }
     contextValue = {
       offerId: offerId,
-      offer: offer as IOfferIndividual,
+      offer: offer as OfferIndividual,
       venueList: [],
       offererNames: [],
       categories: [],
-      subCategories: [{ id: 'CANBEDUO', canBeDuo: true } as IOfferSubCategory],
+      subCategories: [{ id: 'CANBEDUO', canBeDuo: true } as OfferSubCategory],
       setOffer: () => {},
       setShouldTrack: () => {},
       shouldTrack: true,
@@ -145,7 +145,7 @@ describe('screens:StocksThing', () => {
   it('should render physical stock thing', async () => {
     offer.lastProviderName = 'Ciné Office'
     props.offer = {
-      ...(offer as IOfferIndividual),
+      ...(offer as OfferIndividual),
       isDigital: false,
     }
 
@@ -169,7 +169,7 @@ describe('screens:StocksThing', () => {
 
   it('should render digital stock thing', async () => {
     props.offer = {
-      ...(offer as IOfferIndividual),
+      ...(offer as OfferIndividual),
       subcategoryId: 'TESTID',
       isDigital: true,
     }
@@ -189,7 +189,7 @@ describe('screens:StocksThing', () => {
 
   it('should render digital book', async () => {
     props.offer = {
-      ...(offer as IOfferIndividual),
+      ...(offer as OfferIndividual),
       subcategoryId: LIVRE_PAPIER_SUBCATEGORY_ID,
       isDigital: false,
     }
@@ -343,7 +343,7 @@ describe('screens:StocksThing', () => {
         stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
       })
       props.offer = {
-        ...(offer as IOfferIndividual),
+        ...(offer as OfferIndividual),
         isDigital: true,
       }
       renderStockThingScreen(props, contextValue)
@@ -413,7 +413,7 @@ describe('screens:StocksThing', () => {
         stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
       })
       props.offer = {
-        ...(offer as IOfferIndividual),
+        ...(offer as OfferIndividual),
         isDigital: true,
       }
       renderStockThingScreen(props, contextValue)
@@ -451,7 +451,7 @@ describe('screens:StocksThing', () => {
     })
     it('should display an expiration field disabled when activationCodesExpirationDatetime is provided', async () => {
       props.offer = {
-        ...(offer as IOfferIndividual),
+        ...(offer as OfferIndividual),
         isDigital: true,
         stocks: [
           {
@@ -459,7 +459,7 @@ describe('screens:StocksThing', () => {
             price: 12,
             hasActivationCode: true,
             activationCodesExpirationDatetime: new Date('2020-12-15T12:00:00Z'),
-          } as IOfferIndividualStock,
+          } as OfferIndividualStock,
         ],
       }
       renderStockThingScreen(props, contextValue)

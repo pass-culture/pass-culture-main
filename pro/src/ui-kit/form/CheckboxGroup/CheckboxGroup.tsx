@@ -7,7 +7,7 @@ import { FieldSetLayout } from '../shared'
 import styles from './CheckboxGroup.module.scss'
 import CheckboxGroupItem from './CheckboxGroupItem'
 
-export interface ICheckboxGroupProps {
+export interface CheckboxGroupProps {
   groupName: string
   legend: string
   group: {
@@ -27,7 +27,7 @@ const CheckboxGroup = ({
   legend,
   className,
   disabled,
-}: ICheckboxGroupProps): JSX.Element => {
+}: CheckboxGroupProps): JSX.Element => {
   const [, meta, helpers] = useField({ name: groupName })
 
   return (

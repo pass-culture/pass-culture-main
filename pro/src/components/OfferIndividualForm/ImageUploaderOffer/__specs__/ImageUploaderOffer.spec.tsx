@@ -4,7 +4,7 @@ import React from 'react'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ImageUploaderOffer, {
-  IImageUploaderOfferProps,
+  ImageUploaderOfferProps,
 } from '../ImageUploaderOffer'
 import * as imageUploaderOfferUtils from '../utils'
 
@@ -12,11 +12,11 @@ jest.mock('../utils', () => ({
   buildInitialValues: jest.fn(),
 }))
 
-const renderImageUploaderOffer = (props: IImageUploaderOfferProps) =>
+const renderImageUploaderOffer = (props: ImageUploaderOfferProps) =>
   renderWithProviders(<ImageUploaderOffer {...props} />)
 
 describe('test ImageUploaderOffer', () => {
-  let props: IImageUploaderOfferProps
+  let props: ImageUploaderOfferProps
   beforeEach(() => {
     props = {
       onImageUpload: jest.fn().mockResolvedValue(undefined),

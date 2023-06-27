@@ -1,9 +1,9 @@
-import { IAdresseData } from 'apiClient/adresse/types'
-import { IAutocompleteItemProps } from 'ui-kit/form/shared/AutocompleteList/type'
+import { AdresseData } from 'apiClient/adresse/types'
+import { AutocompleteItemProps } from 'ui-kit/form/shared/AutocompleteList/type'
 
 export const serializeAdressData = (
-  adressData: IAdresseData[]
-): IAutocompleteItemProps[] => {
+  adressData: AdresseData[]
+): AutocompleteItemProps[] => {
   return adressData.map(data => ({
     value: data.id,
     label: data.label,

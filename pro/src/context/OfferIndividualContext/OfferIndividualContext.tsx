@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { TOffererName } from 'core/Offerers/types'
+import { OffererName } from 'core/Offerers/types'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import {
-  IOfferCategory,
-  IOfferIndividual,
-  IOfferSubCategory,
+  OfferCategory,
+  OfferIndividual,
+  OfferSubCategory,
 } from 'core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
@@ -15,39 +15,40 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 
 import { getWizardData } from './adapters'
 
-export interface IOfferIndividualContext {
+export interface OfferIndividualContextValues {
   offerId: number | null
-  offer: IOfferIndividual | null
-  setOffer: ((offer: IOfferIndividual | null) => void) | null
-  categories: IOfferCategory[]
-  subCategories: IOfferSubCategory[]
-  offererNames: TOffererName[]
+  offer: OfferIndividual | null
+  setOffer: ((offer: OfferIndividual | null) => void) | null
+  categories: OfferCategory[]
+  subCategories: OfferSubCategory[]
+  offererNames: OffererName[]
   venueList: TOfferIndividualVenue[]
   shouldTrack: boolean
   setShouldTrack: (p: boolean) => void
   venueId?: number | undefined
-  offerOfferer?: TOffererName | null
+  offerOfferer?: OffererName | null
   showVenuePopin: Record<string, boolean>
 }
 
-export const OfferIndividualContext = createContext<IOfferIndividualContext>({
-  offerId: null,
-  offer: null,
-  setOffer: null,
-  categories: [],
-  subCategories: [],
-  offererNames: [],
-  venueList: [],
-  shouldTrack: true,
-  setShouldTrack: () => {},
-  showVenuePopin: {},
-})
+export const OfferIndividualContext =
+  createContext<OfferIndividualContextValues>({
+    offerId: null,
+    offer: null,
+    setOffer: null,
+    categories: [],
+    subCategories: [],
+    offererNames: [],
+    venueList: [],
+    shouldTrack: true,
+    setShouldTrack: () => {},
+    showVenuePopin: {},
+  })
 
 export const useOfferIndividualContext = () => {
   return useContext(OfferIndividualContext)
 }
 
-interface IOfferIndividualContextProviderProps {
+interface OfferIndividualContextProviderProps {
   children: React.ReactNode
   isUserAdmin: boolean
   offerId?: string
@@ -59,26 +60,26 @@ export function OfferIndividualContextProvider({
   isUserAdmin,
   offerId,
   queryOffererId,
-}: IOfferIndividualContextProviderProps) {
+}: OfferIndividualContextProviderProps) {
   const homePath = '/accueil'
   const notify = useNotification()
   const navigate = useNavigate()
 
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [shouldTrack, setShouldTrack] = useState<boolean>(true)
-  const [offerOfferer, setOfferOfferer] = useState<TOffererName | null>(null)
+  const [offerOfferer, setOfferOfferer] = useState<OffererName | null>(null)
   const [venueId, setVenueId] = useState<number>()
 
-  const [offer, setOfferState] = useState<IOfferIndividual | null>(null)
-  const [categories, setCategories] = useState<IOfferCategory[]>([])
-  const [subCategories, setSubCategories] = useState<IOfferSubCategory[]>([])
-  const [offererNames, setOffererNames] = useState<TOffererName[]>([])
+  const [offer, setOfferState] = useState<OfferIndividual | null>(null)
+  const [categories, setCategories] = useState<OfferCategory[]>([])
+  const [subCategories, setSubCategories] = useState<OfferSubCategory[]>([])
+  const [offererNames, setOffererNames] = useState<OffererName[]>([])
   const [venueList, setVenueList] = useState<TOfferIndividualVenue[]>([])
   const [showVenuePopin, setShowVenuePopin] = useState<Record<string, boolean>>(
     {}
   )
 
-  const setOffer = (offer: IOfferIndividual | null) => {
+  const setOffer = (offer: OfferIndividual | null) => {
     setOfferState(offer)
     setOfferOfferer(
       offer

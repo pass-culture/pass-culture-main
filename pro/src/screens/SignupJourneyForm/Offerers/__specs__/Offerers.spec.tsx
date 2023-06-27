@@ -8,8 +8,8 @@ import { api } from 'apiClient/api'
 import { ApiError, VenueOfOffererFromSiretResponseModel } from 'apiClient/v1'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import {
-  ISignupJourneyContext,
   SignupJourneyContext,
+  SignupJourneyContextValues,
 } from 'context/SignupJourneyContext'
 import * as getSirenDataAdapter from 'core/Offerers/adapters/getSirenDataAdapter'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
@@ -24,7 +24,7 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-const renderOfferersScreen = (contextValue: ISignupJourneyContext) => {
+const renderOfferersScreen = (contextValue: SignupJourneyContextValues) => {
   const storeOverrides = {
     user: {
       initialized: true,
@@ -60,7 +60,7 @@ const renderOfferersScreen = (contextValue: ISignupJourneyContext) => {
   )
 }
 describe('screens:SignupJourney::Offerers', () => {
-  let contextValue: ISignupJourneyContext
+  let contextValue: SignupJourneyContextValues
   let venues: VenueOfOffererFromSiretResponseModel[]
 
   beforeEach(() => {

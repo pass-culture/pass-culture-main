@@ -4,12 +4,12 @@ import React from 'react'
 import { generatePath, Route, Routes } from 'react-router-dom'
 
 import {
-  IOfferIndividualContext,
+  OfferIndividualContextValues,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
-import { IOfferIndividual } from 'core/Offers/types'
+import { OfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { individualOfferFactory } from 'utils/individualApiFactories'
@@ -21,13 +21,13 @@ import OfferIndividualBreadcrumb from '../OfferIndividualBreadcrumb'
 const mockLogEvent = jest.fn()
 
 const renderOfferIndividualBreadcrumb = (
-  contextOverride: Partial<IOfferIndividualContext> = {},
+  contextOverride: Partial<OfferIndividualContextValues> = {},
   url = getOfferIndividualPath({
     step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
     mode: OFFER_WIZARD_MODE.CREATION,
   })
 ) => {
-  const contextValues: IOfferIndividualContext = {
+  const contextValues: OfferIndividualContextValues = {
     offerId: null,
     offer: null,
     venueList: [],
@@ -92,13 +92,13 @@ const renderOfferIndividualBreadcrumb = (
 }
 
 describe('test tracker OfferIndividualBreadcrumb', () => {
-  let offer: Partial<IOfferIndividual>
-  let contextOverride: Partial<IOfferIndividualContext>
+  let offer: Partial<OfferIndividual>
+  let contextOverride: Partial<OfferIndividualContextValues>
   const offerId = 1
   beforeEach(() => {
     offer = individualOfferFactory({ nonHumanizedId: offerId })
     contextOverride = {
-      offer: offer as IOfferIndividual,
+      offer: offer as OfferIndividual,
     }
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,

@@ -15,10 +15,10 @@ import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferEducationalStock, {
-  IOfferEducationalStockProps,
+  OfferEducationalStockProps,
 } from '../OfferEducationalStock'
 
-const defaultProps: IOfferEducationalStockProps = {
+const defaultProps: OfferEducationalStockProps = {
   initialValues: DEFAULT_EAC_STOCK_FORM_VALUES,
   offer: collectiveOfferFactory({}),
   onSubmit: jest.fn(),
@@ -43,7 +43,7 @@ jest.mock('react-router-dom', () => ({
 describe('OfferEducationalStock', () => {
   it('should render for offer with a stock', () => {
     const offer = collectiveOfferFactory()
-    const testProps: IOfferEducationalStockProps = {
+    const testProps: OfferEducationalStockProps = {
       ...defaultProps,
       offer,
       initialValues: {
@@ -64,7 +64,7 @@ describe('OfferEducationalStock', () => {
 
   it('should render for offer with a stock', () => {
     const offer = collectiveOfferFactory({ isPublicApi: true })
-    const testProps: IOfferEducationalStockProps = {
+    const testProps: OfferEducationalStockProps = {
       ...defaultProps,
       offer,
       mode: Mode.EDITION,
@@ -78,7 +78,7 @@ describe('OfferEducationalStock', () => {
 
   it('should not disable price and place when offer status is reimbursment', () => {
     const offer = collectiveOfferFactory({ isPublicApi: false })
-    const testProps: IOfferEducationalStockProps = {
+    const testProps: OfferEducationalStockProps = {
       ...defaultProps,
       offer,
       mode: Mode.READ_ONLY,
@@ -94,7 +94,7 @@ describe('OfferEducationalStock', () => {
 
   it('should call submit callback when clicking next step with valid form data', async () => {
     const offer = collectiveOfferFactory({ isPublicApi: false })
-    const testProps: IOfferEducationalStockProps = {
+    const testProps: OfferEducationalStockProps = {
       ...defaultProps,
       offer,
       initialValues: initialValuesNotEmpty,
@@ -113,7 +113,7 @@ describe('OfferEducationalStock', () => {
         id: 'A1',
         students: [StudentLevels.COLL_GE_6E, StudentLevels.COLL_GE_5E],
       })
-      const testProps: IOfferEducationalStockProps = {
+      const testProps: OfferEducationalStockProps = {
         ...defaultProps,
         offer,
         initialValues: initialValuesNotEmpty,
@@ -140,7 +140,7 @@ describe('OfferEducationalStock', () => {
         id: 'A1',
         students: [StudentLevels.COLL_GE_6E, StudentLevels.COLL_GE_5E],
       })
-      const testProps: IOfferEducationalStockProps = {
+      const testProps: OfferEducationalStockProps = {
         ...defaultProps,
         offer,
         initialValues: initialValuesNotEmpty,
@@ -172,7 +172,7 @@ describe('OfferEducationalStock', () => {
           StudentLevels.COLL_GE_4E,
         ],
       })
-      const testProps: IOfferEducationalStockProps = {
+      const testProps: OfferEducationalStockProps = {
         ...defaultProps,
         offer,
         initialValues: initialValuesNotEmpty,
@@ -201,7 +201,7 @@ describe('OfferEducationalStock', () => {
           StudentLevels.COLL_GE_4E,
         ],
       })
-      const testProps: IOfferEducationalStockProps = {
+      const testProps: OfferEducationalStockProps = {
         ...defaultProps,
         offer,
         initialValues: initialValuesNotEmpty,
@@ -233,7 +233,7 @@ describe('OfferEducationalStock', () => {
         id: 'A1',
         students: [StudentLevels.COLL_GE_6E, StudentLevels.COLL_GE_5E],
       })
-      const testProps: IOfferEducationalStockProps = {
+      const testProps: OfferEducationalStockProps = {
         ...defaultProps,
         offer,
         initialValues: initialValuesNotEmpty,
@@ -262,7 +262,7 @@ describe('OfferEducationalStock', () => {
         id: 'A1',
         students: [StudentLevels.COLL_GE_6E, StudentLevels.LYC_E_SECONDE],
       })
-      const testProps: IOfferEducationalStockProps = {
+      const testProps: OfferEducationalStockProps = {
         ...defaultProps,
         offer,
         initialValues: initialValuesNotEmpty,
@@ -283,7 +283,7 @@ describe('OfferEducationalStock', () => {
     it('should render for offer with a stock', async () => {
       const offer = collectiveOfferFactory()
 
-      const testProps: IOfferEducationalStockProps = {
+      const testProps: OfferEducationalStockProps = {
         ...defaultProps,
         offer,
         initialValues: {

@@ -7,13 +7,17 @@ import { findLastIndex } from 'utils/findLastIndex'
 
 import styles from './Stepper.module.scss'
 
-export interface IStepper {
+export interface StepperProps {
   activeStep: string
   steps: Step[]
   className?: string
 }
 
-const Stepper = ({ activeStep, steps, className }: IStepper): JSX.Element => {
+const Stepper = ({
+  activeStep,
+  steps,
+  className,
+}: StepperProps): JSX.Element => {
   const lastStepIndex = steps.length - 1
   const lastLineToActivate = findLastIndex(steps, (step: Step) => !!step.url)
 

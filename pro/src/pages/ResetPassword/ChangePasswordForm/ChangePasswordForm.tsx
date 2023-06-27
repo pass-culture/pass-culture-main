@@ -6,11 +6,13 @@ import { PasswordInput, SubmitButton } from 'ui-kit'
 
 import styles from './ChangePasswordForm.module.scss'
 import { validationSchema } from './validationSchema'
-interface IChangePasswordForm {
+interface ChangePasswordFormProps {
   onSubmit: (values: Record<string, string>) => void
 }
 
-const ChangePasswordForm = ({ onSubmit }: IChangePasswordForm): JSX.Element => {
+const ChangePasswordForm = ({
+  onSubmit,
+}: ChangePasswordFormProps): JSX.Element => {
   const formik = useFormik({
     initialValues: { newPasswordValue: '' },
     onSubmit: onSubmit,

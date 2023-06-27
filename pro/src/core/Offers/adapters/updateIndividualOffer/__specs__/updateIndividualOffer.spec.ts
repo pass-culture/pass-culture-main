@@ -6,8 +6,8 @@ import {
   PatchOfferBodyModel,
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
-import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
-import { IOfferIndividual } from 'core/Offers/types'
+import { OfferIndividualFormValues } from 'components/OfferIndividualForm'
+import { OfferIndividual } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 
 import { updateIndividualOffer } from '..'
@@ -15,7 +15,7 @@ import { serializePatchOffer } from '../serializers'
 
 describe('updateIndividualOffer', () => {
   it('should sent PatchOfferBodyModel to api', async () => {
-    const formValues: IOfferIndividualFormValues = {
+    const formValues: OfferIndividualFormValues = {
       name: 'Test offer',
       description: 'Description for testing offer',
       accessibility: {
@@ -87,7 +87,7 @@ describe('updateIndividualOffer', () => {
     const nonHumanizedofferId = 1234
     const offer = {
       nonHumanizedId: nonHumanizedofferId,
-    } as IOfferIndividual
+    } as OfferIndividual
 
     jest
       .spyOn(api, 'patchOffer')
@@ -104,7 +104,7 @@ describe('updateIndividualOffer', () => {
   })
 
   it('should sent PatchOfferBodyModel to api with provider editable params', async () => {
-    const formValues: IOfferIndividualFormValues = {
+    const formValues: OfferIndividualFormValues = {
       name: 'Test offer',
       description: 'Description for testing offer',
       accessibility: {
@@ -168,7 +168,7 @@ describe('updateIndividualOffer', () => {
       lastProvider: {
         name: 'provider',
       },
-    } as IOfferIndividual
+    } as OfferIndividual
     jest
       .spyOn(api, 'patchOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)

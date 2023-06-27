@@ -3,7 +3,7 @@ import React from 'react'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { ReactComponent as Trash } from 'icons/ico-trash.svg'
 
-interface IDialogStockDeleteConfirmProps {
+interface DialogStockDeleteConfirmProps {
   onConfirm: () => void
   onCancel: () => void
 }
@@ -11,7 +11,7 @@ interface IDialogStockDeleteConfirmProps {
 const DialogStockThingDeleteConfirm = ({
   onConfirm,
   onCancel,
-}: IDialogStockDeleteConfirmProps) => {
+}: DialogStockDeleteConfirmProps) => {
   return (
     <ConfirmDialog
       onCancel={onCancel}

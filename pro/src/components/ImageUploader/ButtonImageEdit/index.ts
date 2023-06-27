@@ -1,2 +1,5 @@
 export { default as ButtonImageEdit } from './ButtonImageEdit'
-export type { IUploadImageValues, ICropParams } from './types'
+export type {
+  UploadImageValues as IUploadImageValues,
+  CropParams as ICropParams,
+} from './types'

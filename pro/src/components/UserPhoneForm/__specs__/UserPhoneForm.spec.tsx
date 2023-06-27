@@ -5,11 +5,11 @@ import React from 'react'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { UserPhoneForm } from '../'
-import { IUserPhoneFormProps } from '../UserPhoneForm'
+import { UserPhoneFormProps } from '../UserPhoneForm'
 
 const patchPhoneAdapterMock = jest.fn()
 
-const renderUserPhoneForm = (props: IUserPhoneFormProps) => {
+const renderUserPhoneForm = (props: UserPhoneFormProps) => {
   const storeOverrides = {
     user: {
       initialized: true,
@@ -27,7 +27,7 @@ const renderUserPhoneForm = (props: IUserPhoneFormProps) => {
 }
 
 describe('components:UserPhoneForm', () => {
-  let props: IUserPhoneFormProps
+  let props: UserPhoneFormProps
   beforeEach(() => {
     patchPhoneAdapterMock.mockResolvedValue({})
     props = {

@@ -20,7 +20,7 @@ export type Link = {
   isExternal?: boolean
   onClick?: () => void
 }
-export interface IBannerProps extends BannerLayoutProps {
+export interface BannerProps extends BannerLayoutProps {
   children?: React.ReactNode | React.ReactNode[]
   links?: Link[]
 }
@@ -29,7 +29,7 @@ const Banner = ({
   children,
   links = [],
   ...bannerLayoutProps
-}: IBannerProps): JSX.Element => {
+}: BannerProps): JSX.Element => {
   /* istanbul ignore next: DEBT to fix */
   const getLinkNode = (link: Link) => (
     /* istanbul ignore next: DEBT to fix */

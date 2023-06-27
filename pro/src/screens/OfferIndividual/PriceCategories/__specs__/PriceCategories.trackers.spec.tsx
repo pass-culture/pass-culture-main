@@ -16,13 +16,13 @@ import { ButtonLink } from 'ui-kit'
 import { individualOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import PriceCategories, { IPriceCategories } from '../PriceCategories'
+import PriceCategories, { PriceCategoriesProps } from '../PriceCategories'
 
 const mockLogEvent = jest.fn()
 const offerId = 1
 
 const renderPriceCategories = (
-  props: IPriceCategories,
+  props: PriceCategoriesProps,
   url = generatePath(
     getOfferIndividualPath({
       step: OFFER_WIZARD_STEP_IDS.TARIFS,

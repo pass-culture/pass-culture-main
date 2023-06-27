@@ -5,7 +5,7 @@ import { GetOffererResponseModel } from 'apiClient/v1'
 import InfoDialog from 'components/InfoDialog'
 import ReimbursmentPointDialog from 'components/reimbursementPointDialog'
 import { Events } from 'core/FirebaseEvents/constants'
-import { IVenue } from 'core/Venue'
+import { Venue } from 'core/Venue'
 import { serializeVenueApi } from 'core/Venue/adapters/getVenueAdapter/serializers'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as IcoWarningGrey } from 'icons/ico-warning-grey.svg'
@@ -19,7 +19,7 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 import styles from './ReimbursementPoint.module.scss'
 
 interface ReimbursementPointV2 {
-  initialVenue: IVenue
+  initialVenue: Venue
   isCreatingVenue?: boolean
   offerer: GetOffererResponseModel
   readOnly: boolean

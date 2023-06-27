@@ -12,11 +12,11 @@ import {
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import StockSection, { IStockSection } from '../StockSection'
+import StockSection, { StockSectionProps } from '../StockSection'
 
 const mockLogEvent = jest.fn()
 
-const renderStockSection = (props: IStockSection, url = '/recapitulatif') =>
+const renderStockSection = (props: StockSectionProps, url = '/recapitulatif') =>
   renderWithProviders(
     <Routes>
       <Route path="/recapitulatif" element={<StockSection {...props} />} />
@@ -33,7 +33,7 @@ const renderStockSection = (props: IStockSection, url = '/recapitulatif') =>
   )
 
 describe('Summary stock section trackers', () => {
-  let props: IStockSection
+  let props: StockSectionProps
   const offerId = 1
 
   beforeEach(() => {

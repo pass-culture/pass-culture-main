@@ -7,19 +7,19 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './Tabs.module.scss'
 
-interface ITab {
+interface Tab {
   label: string
   key: string
   url?: string
   onClick?: () => void
   Icon?: FunctionComponent<SVGProps<SVGSVGElement>>
 }
-export interface IFilterTabsProps {
-  tabs: ITab[]
+export interface FilterTabsProps {
+  tabs: Tab[]
   selectedKey?: string
 }
 
-const Tabs = ({ selectedKey, tabs }: IFilterTabsProps): JSX.Element => {
+const Tabs = ({ selectedKey, tabs }: FilterTabsProps): JSX.Element => {
   return (
     <ul className={styles['tabs']}>
       {tabs.map(({ key, label, url, Icon, onClick }) => {

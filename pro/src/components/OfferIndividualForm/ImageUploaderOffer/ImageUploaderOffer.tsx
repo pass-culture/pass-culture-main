@@ -2,24 +2,24 @@ import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { ImageUploader } from 'components/ImageUploader'
-import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
+import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
-import { IOfferIndividualImage } from 'core/Offers/types'
+import { OfferIndividualImage } from 'core/Offers/types'
 import { InfoBox } from 'ui-kit'
 
 import { buildInitialValues } from './utils'
 
-export interface IImageUploaderOfferProps {
-  onImageUpload: (values: IOnImageUploadArgs) => Promise<void>
+export interface ImageUploaderOfferProps {
+  onImageUpload: (values: OnImageUploadArgs) => Promise<void>
   onImageDelete: () => Promise<void>
-  imageOffer?: IOfferIndividualImage
+  imageOffer?: OfferIndividualImage
 }
 
 const ImageUploaderOffer = ({
   onImageUpload,
   onImageDelete,
   imageOffer,
-}: IImageUploaderOfferProps) => (
+}: ImageUploaderOfferProps) => (
   <FormLayout.Section title="Image de l’offre">
     <FormLayout.Row
       sideComponent={

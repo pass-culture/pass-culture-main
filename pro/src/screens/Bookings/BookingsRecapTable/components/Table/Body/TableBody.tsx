@@ -1,5 +1,9 @@
 import React from 'react'
-import type { TableInstance, TableBodyProps, Row } from 'react-table'
+import type {
+  TableInstance,
+  TableBodyProps as ReactTableTableBodyProps,
+  Row,
+} from 'react-table'
 
 import {
   BookingRecapResponseModel,
@@ -11,12 +15,12 @@ import styles from './TableBody.module.scss'
 import CollectiveTableRow from './TableRow/CollectiveTableRow'
 import IndividualTableRow from './TableRow/IndividualTableRow'
 
-interface ITableBodyProps<
+interface TableBodyProps<
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel
 > {
   page: TableInstance<T>['page']
   prepareRow: TableInstance<T>['prepareRow']
-  tableBodyProps: TableBodyProps
+  tableBodyProps: ReactTableTableBodyProps
   audience: Audience
   reloadBookings: () => void
   bookingId: string
@@ -37,7 +41,7 @@ const TableBody = <
   audience,
   reloadBookings,
   bookingId,
-}: ITableBodyProps<T>) => {
+}: TableBodyProps<T>) => {
   return (
     <tbody className={styles['bookings-body']} {...tableBodyProps}>
       {page.map((row, index) => {

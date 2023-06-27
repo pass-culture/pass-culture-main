@@ -4,10 +4,10 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
+import { OfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { SubmitButton } from 'ui-kit'
 
-import Informations, { IInformationsProps } from '../Informations'
+import Informations, { InformationsProps } from '../Informations'
 import { validationSchema } from '../validationSchema'
 
 const renderInformations = async ({
@@ -15,8 +15,8 @@ const renderInformations = async ({
   initialValues,
   onSubmit = jest.fn(),
 }: {
-  props: IInformationsProps
-  initialValues: Partial<IOfferIndividualFormValues>
+  props: InformationsProps
+  initialValues: Partial<OfferIndividualFormValues>
   onSubmit: () => void
 }) => {
   const rtlReturns = render(
@@ -41,9 +41,9 @@ const renderInformations = async ({
 }
 
 describe('OfferIndividual section: UsefulInformations', () => {
-  let initialValues: Partial<IOfferIndividualFormValues>
+  let initialValues: Partial<OfferIndividualFormValues>
   const onSubmit = jest.fn()
-  let props: IInformationsProps
+  let props: InformationsProps
 
   beforeEach(() => {
     initialValues = {

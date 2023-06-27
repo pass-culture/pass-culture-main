@@ -1,10 +1,10 @@
 import { api } from 'apiClient/api'
-import { TOffererName } from 'core/Offerers/types'
+import { OffererName } from 'core/Offerers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { useAdapter } from 'hooks'
 import { dehumanizeId } from 'utils/dehumanize'
 
-type TGetOffererNamesAdapter = Adapter<void, TOffererName[], TOffererName[]>
+type TGetOffererNamesAdapter = Adapter<void, OffererName[], OffererName[]>
 
 const FAILING_RESPONSE = {
   isOk: false,
@@ -12,11 +12,11 @@ const FAILING_RESPONSE = {
   payload: [],
 }
 
-type TOffererNamesAdapterGetterName = (
+type OffererNamesAdapterGetterName = (
   isAdmin?: boolean,
   offererId?: string | null
 ) => TGetOffererNamesAdapter
-const getOffererNamesAdapter: TOffererNamesAdapterGetterName = (
+const getOffererNamesAdapter: OffererNamesAdapterGetterName = (
   isAdmin = false,
   offererId = null
 ) => {
@@ -57,7 +57,7 @@ const useGetOffererNames = ({
   offererId = null,
 }: UseAdapterArgs) => {
   const adapter = getOffererNamesAdapter(isAdmin, offererId)
-  return useAdapter<TOffererName[], TOffererName[]>(adapter)
+  return useAdapter<OffererName[], OffererName[]>(adapter)
 }
 
 export default useGetOffererNames

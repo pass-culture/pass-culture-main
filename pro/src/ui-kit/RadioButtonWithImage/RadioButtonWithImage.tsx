@@ -7,7 +7,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './RadioButtonWithImage.module.scss'
 
-export interface IRadioButtonWithImage {
+export interface RadioButtonWithImageProps {
   name: string
   isChecked: boolean
   icon: string
@@ -31,7 +31,7 @@ const RadioButtonWithImage = ({
   disabled = false,
   value,
   dataTestid,
-}: IRadioButtonWithImage): JSX.Element => (
+}: RadioButtonWithImageProps): JSX.Element => (
   <label
     className={cn(
       styles.button,

@@ -10,7 +10,7 @@ import {
   ALL_CATEGORIES_OPTION,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { Offer, TSearchFilters } from 'core/Offers/types'
+import { Offer, SearchFiltersParams } from 'core/Offers/types'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -26,7 +26,7 @@ jest.mock('react-router-dom', () => ({
 
 const renderOffers = async (
   storeOverrides: Store,
-  filters: Partial<TSearchFilters> & {
+  filters: Partial<SearchFiltersParams> & {
     page?: number
   } = DEFAULT_SEARCH_FILTERS
 ) => {

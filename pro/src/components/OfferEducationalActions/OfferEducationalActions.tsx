@@ -27,7 +27,7 @@ import { ReactComponent as IconActive } from './assets/icon-active.svg'
 import { ReactComponent as IconInactive } from './assets/icon-inactive.svg'
 import style from './OfferEducationalActions.module.scss'
 
-export interface IOfferEducationalActions {
+export interface OfferEducationalActionsProps {
   className?: string
   isBooked: boolean
   offer: CollectiveOffer | CollectiveOfferTemplate
@@ -41,7 +41,7 @@ const OfferEducationalActions = ({
   offer,
   mode,
   reloadCollectiveOffer,
-}: IOfferEducationalActions): JSX.Element => {
+}: OfferEducationalActionsProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const lastBookingId = isCollectiveOffer(offer) ? offer.lastBookingId : null

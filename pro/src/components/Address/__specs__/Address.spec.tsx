@@ -8,7 +8,7 @@ import { apiAdresse } from 'apiClient/adresse'
 import { VenueFormValues } from 'components/VenueForm'
 import { SubmitButton } from 'ui-kit'
 
-import { Address, validationSchema as addressValidationSchema } from '../'
+import { AddressSelect, validationSchema as addressValidationSchema } from '../'
 
 const mockAdressData = [
   {
@@ -56,7 +56,7 @@ const renderAddress = async ({
     >
       {({ handleSubmit }) => (
         <Form onSubmit={handleSubmit}>
-          <Address />
+          <AddressSelect />
           <SubmitButton isLoading={false}>Submit</SubmitButton>
         </Form>
       )}
@@ -71,7 +71,7 @@ const renderAddress = async ({
   }
 }
 
-describe('components | Address', () => {
+describe('AddressSelect', () => {
   let initialValues: Partial<VenueFormValues>
   const onSubmit = jest.fn()
 

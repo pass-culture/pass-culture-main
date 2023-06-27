@@ -7,7 +7,7 @@ import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
-import { IOfferIndividual, IOfferIndividualStock } from 'core/Offers/types'
+import { OfferIndividual, OfferIndividualStock } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
 import { PlusCircleIcon, TrashFilledIcon } from 'icons'
 import { ReactComponent as StrokeEuro } from 'icons/stroke-euro.svg'
@@ -28,11 +28,11 @@ import {
 import { PriceCategoriesFormValues, PriceCategoryForm } from './form/types'
 import styles from './PriceCategoriesForm.module.scss'
 
-interface IPriceCategoriesForm {
+interface PriceCategoriesFormProps {
   offerId: number
-  stocks: IOfferIndividualStock[]
+  stocks: OfferIndividualStock[]
   mode: OFFER_WIZARD_MODE
-  setOffer: ((offer: IOfferIndividual | null) => void) | null
+  setOffer: ((offer: OfferIndividual | null) => void) | null
   isDisabled: boolean
   canBeDuo?: boolean
 }
@@ -44,7 +44,7 @@ export const PriceCategoriesForm = ({
   setOffer,
   isDisabled,
   canBeDuo,
-}: IPriceCategoriesForm): JSX.Element => {
+}: PriceCategoriesFormProps): JSX.Element => {
   const { setFieldValue, setValues, values } =
     useFormikContext<PriceCategoriesFormValues>()
   const notify = useNotification()

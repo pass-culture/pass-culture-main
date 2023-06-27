@@ -4,15 +4,15 @@ import React from 'react'
 
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 
-import StockFormActions, { IStockFormActionsProps } from '../StockFormActions'
-import { IStockFormRowAction } from '../types'
+import StockFormActions, { StockFormActionsProps } from '../StockFormActions'
+import { StockFormRowAction } from '../types'
 
-const renderStockFormActions = (props: IStockFormActionsProps) => {
+const renderStockFormActions = (props: StockFormActionsProps) => {
   return render(<StockFormActions {...props} />)
 }
 
 describe('StockFormActions', () => {
-  let actions: IStockFormRowAction[]
+  let actions: StockFormRowAction[]
   const mockActionCallback = jest.fn()
   beforeEach(() => {
     actions = [

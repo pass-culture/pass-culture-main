@@ -3,15 +3,12 @@ import React from 'react'
 
 import style from './SummaryLayout.module.scss'
 
-interface ISummaryLayoutSideProps {
+interface SummaryLayoutSideProps {
   className?: string
   children?: React.ReactNode | React.ReactNode[]
 }
 
-const Side = ({
-  className,
-  children,
-}: ISummaryLayoutSideProps): JSX.Element => (
+const Side = ({ className, children }: SummaryLayoutSideProps): JSX.Element => (
   <div className={cn(style['summary-layout-side'], className)}>{children}</div>
 )
 

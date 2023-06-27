@@ -8,7 +8,7 @@ import { VenueFormValues } from '..'
 
 import SiretOrCommentFields from './SiretOrCommentFields'
 
-export interface IInformations {
+export interface InformationsProps {
   isCreatedEntity: boolean
   readOnly: boolean
   updateIsSiretValued: (value: boolean) => void
@@ -26,7 +26,7 @@ const Informations = ({
   setIsSiretValued,
   siren,
   isNewOnboardingActive,
-}: IInformations) => {
+}: InformationsProps) => {
   const { initialValues } = useFormikContext<VenueFormValues>()
   const [isFieldNameFrozen, setIsFieldNameFrozen] = useState(false)
 

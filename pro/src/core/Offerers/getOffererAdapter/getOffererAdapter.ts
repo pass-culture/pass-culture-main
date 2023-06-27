@@ -1,10 +1,10 @@
 import { api } from 'apiClient/api'
 
-import { IOfferer } from '../types'
+import { Offerer } from '../types'
 
 import { serializeOffererApi } from './serializers'
 
-type GetOffererAdapter = Adapter<number | undefined, IOfferer, null>
+type GetOffererAdapter = Adapter<number | undefined, Offerer, null>
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,

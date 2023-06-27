@@ -8,7 +8,7 @@ import TextInput from '../TextInput'
 import styles from './PasswordInput.module.scss'
 import ValidationMessageList from './ValidationMessageList'
 
-interface IPasswordInputProps {
+interface PasswordInputProps {
   label: string
   name: string
   placeholder?: string
@@ -23,7 +23,7 @@ const PasswordInput = ({
   withErrorPreview = false,
   autoComplete,
   ...props
-}: IPasswordInputProps): JSX.Element => {
+}: PasswordInputProps): JSX.Element => {
   const [isPasswordHidden, setPasswordHidden] = useState(true)
   const [field] = useField({ name })
   const displayLocalErrors = withErrorPreview && field.value.length > 0

@@ -5,12 +5,12 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './DialogBox.module.scss'
 
-interface ICloseButtonProps {
+interface CloseButtonProps {
   onCloseClick?: () => void
   ref?: RefObject<HTMLButtonElement> | null
 }
 
-const CloseButton = ({ onCloseClick, ref }: ICloseButtonProps): JSX.Element => (
+const CloseButton = ({ onCloseClick, ref }: CloseButtonProps): JSX.Element => (
   <button
     className={styles['dialog-box-close']}
     onClick={onCloseClick}

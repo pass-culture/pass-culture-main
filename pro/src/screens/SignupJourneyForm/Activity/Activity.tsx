@@ -6,7 +6,7 @@ import { Target } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyBreadcrumb/constants'
 import { useSignupJourneyContext } from 'context/SignupJourneyContext'
-import { IActivity } from 'context/SignupJourneyContext/SignupJourneyContext'
+import { ActivityContext } from 'context/SignupJourneyContext/SignupJourneyContext'
 import { FORM_ERROR_MESSAGE } from 'core/shared'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import useAnalytics from 'hooks/useAnalytics'
@@ -31,7 +31,7 @@ const Activity = (): JSX.Element => {
   const { logEvent } = useAnalytics()
 
   const serializeActivityContext = (
-    activity: IActivity
+    activity: ActivityContext
   ): ActivityFormValues => {
     return {
       ...activity,
@@ -50,7 +50,7 @@ const Activity = (): JSX.Element => {
 
   const serializeActivityFormToSubmit = (
     activityForm: ActivityFormValues
-  ): IActivity => {
+  ): ActivityContext => {
     const { individual, educational } = activityForm.targetCustomer
     let serializedTargetCustomer
 

@@ -9,7 +9,7 @@ import RowWithInfo from './FormLayoutRowWithInfo'
 import Section from './FormLayoutSection'
 import SubSection from './FormLayoutSubSection'
 
-interface IFormLayoutProps {
+interface FormLayoutProps {
   children: React.ReactNode | React.ReactNode[]
   className?: string
   small?: boolean
@@ -21,7 +21,7 @@ const FormLayout = ({
   className,
   small = false,
   fullWidthActions = false,
-}: IFormLayoutProps): JSX.Element => (
+}: FormLayoutProps): JSX.Element => (
   <div
     className={cn(
       style['form-layout'],

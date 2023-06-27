@@ -5,7 +5,7 @@ import CaseIcon from 'icons/ico-case.svg'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
 
 import RadioButtonWithImage, {
-  IRadioButtonWithImage,
+  RadioButtonWithImageProps,
 } from './RadioButtonWithImage'
 
 export default {
@@ -13,7 +13,7 @@ export default {
   component: RadioButtonWithImage,
 }
 
-const Template: Story<IRadioButtonWithImage> = ({ description }) => {
+const Template: Story<RadioButtonWithImageProps> = ({ description }) => {
   const [offerType, setOfferType] = useState('indiv')
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setOfferType(e.target.value)

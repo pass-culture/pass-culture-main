@@ -6,7 +6,7 @@ import { AccessibilityLabel } from 'ui-kit/AccessibilityLabel'
 
 import styles from './AccessibilitySummarySection.module.scss'
 
-interface IAccessibilitySummarySectionProps {
+interface AccessibilitySummarySectionProps {
   noDisabilityCompliance: boolean
   visualDisabilityCompliant: boolean
   mentalDisabilityCompliant: boolean
@@ -20,7 +20,7 @@ const AccessibilitySummarySection = ({
   mentalDisabilityCompliant,
   motorDisabilityCompliant,
   audioDisabilityCompliant,
-}: IAccessibilitySummarySectionProps) => (
+}: AccessibilitySummarySectionProps) => (
   <SummaryLayout.SubSection title="Accessibilité">
     {noDisabilityCompliance && (
       <SummaryLayout.Row description="Non accessible" />

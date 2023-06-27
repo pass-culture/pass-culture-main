@@ -1,16 +1,16 @@
 import React from 'react'
 
-import { IOfferIndividual } from 'core/Offers/types'
+import { OfferIndividual } from 'core/Offers/types'
 
 import style from './OfferAppPreview.module.scss'
 import { OptionsIcons } from './OptionsIcons'
 import { VenueDetails } from './VenueDetails'
 
-interface IOfferAppPreviewProps {
-  offer: IOfferIndividual
+interface OfferAppPreviewProps {
+  offer: OfferIndividual
 }
 
-const OfferAppPreview = ({ offer }: IOfferAppPreviewProps): JSX.Element => {
+const OfferAppPreview = ({ offer }: OfferAppPreviewProps): JSX.Element => {
   const { venue } = offer
 
   const cropPreviewText = (text: string, maxLength = 300): string => {

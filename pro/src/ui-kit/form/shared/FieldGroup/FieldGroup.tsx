@@ -3,7 +3,7 @@ import React from 'react'
 
 import styles from './FieldGroup.module.scss'
 
-interface IFieldGroupProps {
+interface FieldGroupProps {
   children: React.ReactElement[]
   className?: string
 }
@@ -18,7 +18,7 @@ const addFieldGroupItemClass = (
     className: cn(styles['field-group-item'], element.props.className),
   })
 
-const FieldGroup = ({ children, className }: IFieldGroupProps): JSX.Element => (
+const FieldGroup = ({ children, className }: FieldGroupProps): JSX.Element => (
   <div className={cn(styles['field-group'], className)}>
     {children.map(addFieldGroupItemClass)}
   </div>

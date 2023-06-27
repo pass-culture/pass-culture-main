@@ -6,16 +6,16 @@ import React from 'react'
 
 import { apiAdresse } from 'apiClient/adresse'
 import {
-  IOfferer,
-  ISignupJourneyContext,
+  Offerer,
   SignupJourneyContext,
+  SignupJourneyContextValues,
 } from 'context/SignupJourneyContext'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { SubmitButton } from 'ui-kit'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffererAuthenticationForm, {
-  IOffererAuthenticationFormValues,
+  OffererAuthenticationFormValues,
 } from '../OffererAuthenticationForm'
 import { validationSchema } from '../validationSchema'
 
@@ -74,9 +74,9 @@ const renderOffererAuthenticationForm = ({
   onSubmit = jest.fn(),
   contextValue,
 }: {
-  initialValues: Partial<IOffererAuthenticationFormValues>
+  initialValues: Partial<OffererAuthenticationFormValues>
   onSubmit?: () => void
-  contextValue: ISignupJourneyContext
+  contextValue: SignupJourneyContextValues
 }) => {
   const storeOverrides = {
     user: {
@@ -109,9 +109,9 @@ const renderOffererAuthenticationForm = ({
 }
 
 describe('screens:SignupJourney::OffererAuthenticationForm', () => {
-  let offererAuthenticationFormValues: IOfferer
-  let contextValue: ISignupJourneyContext
-  let initialValues: Partial<IOffererAuthenticationFormValues>
+  let offererAuthenticationFormValues: Offerer
+  let contextValue: SignupJourneyContextValues
+  let initialValues: Partial<OffererAuthenticationFormValues>
 
   beforeEach(() => {
     offererAuthenticationFormValues = {

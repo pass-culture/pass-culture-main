@@ -20,7 +20,7 @@ import {
   TITLE_LABEL,
 } from '../../constants/labels'
 
-interface IFormTypeProps {
+interface FormTypeProps {
   categories: IEducationalCategory[]
   subCategories: IEducationalSubCategory[]
   domainsOptions: SelectOption[]
@@ -32,7 +32,7 @@ const FormOfferType = ({
   subCategories,
   domainsOptions,
   disableForm,
-}: IFormTypeProps): JSX.Element => {
+}: FormTypeProps): JSX.Element => {
   const { values, setFieldValue } =
     useFormikContext<IOfferEducationalFormValues>()
   const [availableSubCategories, setAvailableSubCategories] = useState<

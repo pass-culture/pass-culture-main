@@ -10,9 +10,9 @@ import { Offerers as SignupJourneyOfferers } from 'screens/SignupJourneyForm/Off
 import { Validation } from 'screens/SignupJourneyForm/Validation'
 import { Welcome } from 'screens/SignupJourneyForm/Welcome'
 
-import type { IRoute } from './routesMap'
+import type { RouteConfig } from './routesMap'
 
-export const routesSignupJourney: IRoute[] = [
+export const routesSignupJourney: RouteConfig[] = [
   {
     element: <Welcome />,
     parentPath: '/parcours-inscription',

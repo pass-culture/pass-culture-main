@@ -8,7 +8,7 @@ import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 
 import styles from './EmailInputRow.module.scss'
 
-interface IEmailInputRowProps {
+interface EmailInputRowProps {
   disableForm: boolean
   displayTrash?: boolean
   name: string
@@ -20,7 +20,7 @@ const EmailInputRow = ({
   displayTrash = true,
   name,
   onDelete,
-}: IEmailInputRowProps) => {
+}: EmailInputRowProps) => {
   return (
     <FormLayout.Row inline className={styles['notification-mail']}>
       <TextInput

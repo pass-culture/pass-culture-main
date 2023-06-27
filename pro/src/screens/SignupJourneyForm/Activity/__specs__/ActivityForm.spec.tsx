@@ -6,10 +6,10 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import {
   DEFAULT_ACTIVITY_VALUES,
-  ISignupJourneyContext,
   SignupJourneyContext,
+  SignupJourneyContextValues,
 } from 'context/SignupJourneyContext'
-import { IActivity } from 'context/SignupJourneyContext/SignupJourneyContext'
+import { ActivityContext } from 'context/SignupJourneyContext/SignupJourneyContext'
 import { SelectOption } from 'custom_types/form'
 import { SubmitButton } from 'ui-kit'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -41,7 +41,7 @@ const renderActivityForm = ({
   initialValues: Partial<ActivityFormValues>
   onSubmit?: () => void
   props: ActivityFormProps
-  contextValue: ISignupJourneyContext
+  contextValue: SignupJourneyContextValues
 }) => {
   const storeOverrides = {
     user: {
@@ -71,8 +71,8 @@ const renderActivityForm = ({
 }
 
 describe('screens:SignupJourney::ActivityForm', () => {
-  let activity: IActivity
-  let contextValue: ISignupJourneyContext
+  let activity: ActivityContext
+  let contextValue: SignupJourneyContextValues
   let props: ActivityFormProps
   let initialValues: Partial<ActivityFormValues>
   beforeEach(() => {

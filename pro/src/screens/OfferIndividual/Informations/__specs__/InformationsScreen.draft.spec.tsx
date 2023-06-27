@@ -12,13 +12,13 @@ import {
 import Notification from 'components/Notification/Notification'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import {
-  IOfferIndividualContext,
   OfferIndividualContext,
+  OfferIndividualContextValues,
 } from 'context/OfferIndividualContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { Events } from 'core/FirebaseEvents/constants'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
-import { IOfferIndividual, IOfferSubCategory } from 'core/Offers/types'
+import { OfferIndividual, OfferSubCategory } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { AccessiblityEnum } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
@@ -27,7 +27,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import * as utils from 'screens/OfferIndividual/Informations/utils'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { IInformationsProps, Informations as InformationsScreen } from '..'
+import { InformationsProps, Informations as InformationsScreen } from '..'
 
 window.matchMedia = jest.fn().mockReturnValue({ matches: true })
 const mockLogEvent = jest.fn()
@@ -43,8 +43,8 @@ jest.mock('repository/pcapi/pcapi', () => ({
 const scrollIntoViewMock = jest.fn()
 
 const renderInformationsScreen = (
-  props: IInformationsProps,
-  contextOverride: Partial<IOfferIndividualContext>
+  props: InformationsProps,
+  contextOverride: Partial<OfferIndividualContextValues>
 ) => {
   const storeOverrides = {
     user: {
@@ -55,7 +55,7 @@ const renderInformationsScreen = (
       },
     },
   }
-  const contextValue: IOfferIndividualContext = {
+  const contextValue: OfferIndividualContextValues = {
     offerId: null,
     offer: null,
     venueList: [],
@@ -105,10 +105,10 @@ const renderInformationsScreen = (
 }
 
 describe('screens:OfferIndividual::Informations:draft', () => {
-  let props: IInformationsProps
-  let contextOverride: Partial<IOfferIndividualContext>
-  let offer: IOfferIndividual
-  let subCategories: IOfferSubCategory[]
+  let props: InformationsProps
+  let contextOverride: Partial<OfferIndividualContextValues>
+  let offer: OfferIndividual
+  let subCategories: OfferSubCategory[]
   const offererId = 1
   const physicalVenueId = 1
   const virtualVenueId = 1

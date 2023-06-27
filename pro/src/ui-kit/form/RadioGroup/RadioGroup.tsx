@@ -12,7 +12,7 @@ export enum Direction {
   VERTICAL = 'vertical',
   HORIZONTAL = 'horizontal',
 }
-export interface IRadioGroupProps {
+export interface RadioGroupProps {
   direction?: Direction.HORIZONTAL | Direction.VERTICAL
   disabled?: boolean
   hideFooter?: boolean
@@ -37,7 +37,7 @@ const RadioGroup = ({
   className,
   withBorder,
   variant = BaseRadioVariant.PRIMARY,
-}: IRadioGroupProps): JSX.Element => {
+}: RadioGroupProps): JSX.Element => {
   const [, meta] = useField({ name })
 
   return (

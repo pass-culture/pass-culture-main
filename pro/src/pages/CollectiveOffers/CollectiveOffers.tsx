@@ -7,7 +7,7 @@ import { filterEducationalCategories } from 'core/OfferEducational'
 import { getOffererAdapter } from 'core/Offers/adapters'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks'
-import { Offer, Offerer, TSearchFilters } from 'core/Offers/types'
+import { Offer, Offerer, SearchFiltersParams } from 'core/Offers/types'
 import { hasSearchFilters, computeCollectiveOffersUrl } from 'core/Offers/utils'
 import { Audience } from 'core/shared/types'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
@@ -33,7 +33,7 @@ const CollectiveOffers = (): JSX.Element => {
   const [offers, setOffers] = useState<Offer[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [initialSearchFilters, setInitialSearchFilters] =
-    useState<TSearchFilters | null>(null)
+    useState<SearchFiltersParams | null>(null)
   const [venues, setVenues] = useState<SelectOption[]>([])
   const [categories, setCategories] = useState<SelectOption[]>([])
 
@@ -87,7 +87,7 @@ const CollectiveOffers = (): JSX.Element => {
   }, [offerer?.nonHumanizedId])
 
   const loadAndUpdateOffers = useCallback(
-    async (filters: TSearchFilters) => {
+    async (filters: SearchFiltersParams) => {
       setIsLoading(true)
       const apiFilters = {
         ...DEFAULT_SEARCH_FILTERS,
@@ -108,7 +108,7 @@ const CollectiveOffers = (): JSX.Element => {
   )
 
   const redirectWithUrlFilters = (
-    filters: TSearchFilters & {
+    filters: SearchFiltersParams & {
       page?: number
       audience?: Audience
     }

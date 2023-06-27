@@ -14,13 +14,13 @@ export const RemoteConfigContext = createContext<{
   setRemoteConfigData: null,
 })
 
-type IRemoteConfigContextProviderProps = {
+type RemoteConfigContextProviderProps = {
   children: React.ReactNode
 }
 
 export function RemoteContextProvider({
   children,
-}: IRemoteConfigContextProviderProps) {
+}: RemoteConfigContextProviderProps) {
   const [remoteConfig, setRemoteConfig] = useState<RemoteConfig | null>(null)
   const [remoteConfigData, setRemoteConfigData] = useState<Record<
     string,

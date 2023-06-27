@@ -1,11 +1,11 @@
 import { api } from 'apiClient/api'
-import { IOfferIndividual } from 'core/Offers/types'
+import { OfferIndividual } from 'core/Offers/types'
 
 import { serializeOfferApi } from './serializers'
 
 type GetOfferIndividualAdapter = Adapter<
   number | undefined,
-  IOfferIndividual,
+  OfferIndividual,
   null
 >
 

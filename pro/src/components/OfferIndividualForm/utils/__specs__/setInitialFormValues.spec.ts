@@ -1,13 +1,13 @@
 import { OfferStatus, WithdrawalTypeEnum } from 'apiClient/v1'
 import { CATEGORY_STATUS } from 'core/Offers'
-import { IOfferIndividual, IOfferSubCategory } from 'core/Offers/types'
+import { OfferIndividual, OfferSubCategory } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 
 import setInitialFormValues from '../setInitialFormValues'
 
 describe('setFormReadOnlyFields', () => {
-  let offer: IOfferIndividual
-  let subCategoryList: IOfferSubCategory[]
+  let offer: OfferIndividual
+  let subCategoryList: OfferSubCategory[]
   const venueId = 13
   const offererId = 12
 

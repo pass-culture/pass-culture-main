@@ -10,7 +10,7 @@ import Tooltip from 'ui-kit/Tooltip'
 import styles from './Button.module.scss'
 import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
 
-interface IButtonProps
+interface ButtonProps
   extends SharedButtonProps,
     React.HTMLProps<HTMLButtonElement> {
   type?: 'button' | 'submit'
@@ -32,7 +32,7 @@ const Button = ({
   testId,
   isLoading = false,
   ...buttonAttrs
-}: IButtonProps): JSX.Element => {
+}: ButtonProps): JSX.Element => {
   const tooltipId = useId()
 
   const button = (

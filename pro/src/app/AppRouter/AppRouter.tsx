@@ -11,7 +11,7 @@ import {
 
 import App from 'app/App/App'
 import AppLayout from 'app/AppLayout'
-import { IRoute } from 'app/AppRouter/routesMap'
+import { RouteConfig } from 'app/AppRouter/routesMap'
 import useCurrentUser from 'hooks/useCurrentUser'
 import NotFound from 'pages/Errors/NotFound/NotFound'
 import { selectActiveFeatures } from 'store/features/selectors'
@@ -20,7 +20,7 @@ import { dehumanizedRoute } from 'utils/dehumanize'
 const sentryCreateBrowserRouter =
   Sentry.wrapCreateBrowserRouter(createBrowserRouter)
 
-const RouteWrapper = ({ route }: { route: IRoute }) => {
+const RouteWrapper = ({ route }: { route: RouteConfig }) => {
   const { currentUser } = useCurrentUser()
   const location = useLocation()
   const matches = useMatches()
@@ -57,7 +57,7 @@ const RouteWrapper = ({ route }: { route: IRoute }) => {
   return <App>{jsx}</App>
 }
 
-const AppRouter = ({ routes }: { routes: IRoute[] }): JSX.Element => {
+const AppRouter = ({ routes }: { routes: RouteConfig[] }): JSX.Element => {
   const activeFeatures = useSelector(selectActiveFeatures)
 
   const activeRoutes = routes

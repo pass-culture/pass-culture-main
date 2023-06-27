@@ -12,7 +12,7 @@ import {
   DEFAULT_CREATION_MODE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { Offerer, TSearchFilters } from 'core/Offers/types'
+import { Offerer, SearchFiltersParams } from 'core/Offers/types'
 import { hasSearchFilters } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
@@ -32,11 +32,11 @@ interface SearchFiltersProps {
   applyFilters: () => void
   offerer: Offerer | null
   removeOfferer: () => void
-  selectedFilters: TSearchFilters
+  selectedFilters: SearchFiltersParams
   setSearchFilters: (
     filters:
-      | TSearchFilters
-      | ((previousFilters: TSearchFilters) => TSearchFilters)
+      | SearchFiltersParams
+      | ((previousFilters: SearchFiltersParams) => SearchFiltersParams)
   ) => void
   disableAllFilters: boolean
   resetFilters: MouseEventHandler<HTMLAnchorElement>
@@ -57,7 +57,9 @@ const SearchFilters = ({
   categories,
   audience,
 }: SearchFiltersProps): JSX.Element => {
-  const updateSearchFilters = (newSearchFilters: Partial<TSearchFilters>) => {
+  const updateSearchFilters = (
+    newSearchFilters: Partial<SearchFiltersParams>
+  ) => {
     setSearchFilters(currentSearchFilters => ({
       ...currentSearchFilters,
       ...newSearchFilters,

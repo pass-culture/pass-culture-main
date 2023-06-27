@@ -1,5 +1,5 @@
 import { api } from 'apiClient/api'
-import { Offer, TSearchFilters } from 'core/Offers/types'
+import { Offer, SearchFiltersParams } from 'core/Offers/types'
 import { serializeApiFilters } from 'core/Offers/utils'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
@@ -9,7 +9,7 @@ export type Payload = {
   offers: Offer[]
 }
 
-type GetFilteredOffersAdapter = Adapter<TSearchFilters, Payload, Payload>
+type GetFilteredOffersAdapter = Adapter<SearchFiltersParams, Payload, Payload>
 
 const FAILING_RESPONSE: AdapterFailure<Payload> = {
   isOk: false,

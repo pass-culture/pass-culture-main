@@ -9,9 +9,9 @@ import {
 } from 'utils/translate'
 
 import { Audience } from '../../shared/types'
-import { TSearchFilters } from '../types'
+import { SearchFiltersParams } from '../types'
 
-interface IUrlSearchFilters {
+interface UrlSearchFilters {
   nameOrIsbn?: string
   offererId?: string
   venueId?: string
@@ -29,10 +29,10 @@ const isAudienceIndividualOrCollective = (
 ): audience is Audience =>
   audience === Audience.INDIVIDUAL || audience === Audience.COLLECTIVE
 
-const useQuerySearchFilters = (): [TSearchFilters, number, Audience] => {
+const useQuerySearchFilters = (): [SearchFiltersParams, number, Audience] => {
   const { search } = useLocation()
 
-  const queryParams: IUrlSearchFilters = useMemo(() => parse(search), [search])
+  const queryParams: UrlSearchFilters = useMemo(() => parse(search), [search])
 
   const urlPageNumber: number = useMemo(() => {
     return Number(queryParams.page) || DEFAULT_PAGE
@@ -45,7 +45,7 @@ const useQuerySearchFilters = (): [TSearchFilters, number, Audience] => {
     return Audience.INDIVIDUAL
   }, [queryParams])
 
-  const urlSearchFilters: TSearchFilters = useMemo(() => {
+  const urlSearchFilters: SearchFiltersParams = useMemo(() => {
     const translatedFilters: Record<string, string> = {}
 
     const fieldsWithTranslatedValues = ['statut', 'creation'] as const

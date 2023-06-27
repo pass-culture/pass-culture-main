@@ -8,7 +8,7 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
-import { IOfferIndividual } from 'core/Offers/types'
+import { OfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
@@ -17,12 +17,12 @@ import { RecurrenceSection } from './RecurrenceSection'
 import styles from './StockSection.module.scss'
 import { StockThingSection } from './StockThingSection'
 
-export interface IStockSection {
-  offer: IOfferIndividual
+export interface StockSectionProps {
+  offer: OfferIndividual
   canBeDuo?: boolean
 }
 
-const StockSection = ({ offer, canBeDuo }: IStockSection): JSX.Element => {
+const StockSection = ({ offer, canBeDuo }: StockSectionProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const { logEvent } = useAnalytics()
 

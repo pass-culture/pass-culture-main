@@ -4,11 +4,11 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
+import { OfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { SubmitButton } from 'ui-kit'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Notifications, { INotifications } from '../Notifications'
+import Notifications, { NotificationsProps } from '../Notifications'
 import validationSchema from '../validationSchema'
 
 const renderNotifications = ({
@@ -17,8 +17,8 @@ const renderNotifications = ({
   onSubmit = jest.fn(),
   venueBookingEmail,
 }: {
-  props?: INotifications
-  initialValues: Partial<IOfferIndividualFormValues>
+  props?: NotificationsProps
+  initialValues: Partial<OfferIndividualFormValues>
   onSubmit: () => void
   venueBookingEmail?: string | null
 }) => {
@@ -49,7 +49,7 @@ const renderNotifications = ({
 }
 
 describe('OfferIndividual section: Notifications', () => {
-  let initialValues: Partial<IOfferIndividualFormValues>
+  let initialValues: Partial<OfferIndividualFormValues>
   const onSubmit = jest.fn()
 
   beforeEach(() => {

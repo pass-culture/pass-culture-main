@@ -3,13 +3,13 @@ import React from 'react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import AppPreviewVenue, { IAppPreviewVenueProps } from '../AppPreviewVenue'
+import AppPreviewVenue, { AppPreviewVenueProps } from '../AppPreviewVenue'
 
-const renderAppPreviewVenue = (props: IAppPreviewVenueProps) =>
+const renderAppPreviewVenue = (props: AppPreviewVenueProps) =>
   renderWithProviders(<AppPreviewVenue {...props} />)
 
 describe('AppPreviewVenue', () => {
-  let props: IAppPreviewVenueProps
+  let props: AppPreviewVenueProps
 
   beforeEach(() => {
     props = {

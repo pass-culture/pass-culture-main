@@ -1,14 +1,14 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import Timeline, { ITimelineProps, TimelineStepType } from './Timeline'
+import Timeline, { TimelineProps, TimelineStepType } from './Timeline'
 
 export default {
   title: 'ui-kit/Timeline',
   component: Timeline,
 }
 
-const Template: Story<ITimelineProps> = ({ steps }) => {
+const Template: Story<TimelineProps> = ({ steps }) => {
   return <Timeline steps={steps} />
 }
 

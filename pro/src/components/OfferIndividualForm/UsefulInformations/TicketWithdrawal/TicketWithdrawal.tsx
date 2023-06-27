@@ -5,7 +5,7 @@ import { WithdrawalTypeEnum } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { RadioGroup, Select } from 'ui-kit'
 
-import { IOfferIndividualFormValues } from '../../types'
+import { OfferIndividualFormValues } from '../../types'
 
 import {
   ticketSentDateOptions,
@@ -13,18 +13,18 @@ import {
   ticketWithdrawalTypeRadios,
 } from './constants'
 
-export interface ITicketWithdrawalProps {
+export interface TicketWithdrawalProps {
   readOnlyFields?: string[]
 }
 
 const TicketWithdrawal = ({
   readOnlyFields = [],
-}: ITicketWithdrawalProps): JSX.Element => {
+}: TicketWithdrawalProps): JSX.Element => {
   const {
     values: { withdrawalType },
     setFieldValue,
     dirty,
-  } = useFormikContext<IOfferIndividualFormValues>()
+  } = useFormikContext<OfferIndividualFormValues>()
 
   const getFirstWithdrawalTypeEnumValue = () => {
     switch (withdrawalType) {

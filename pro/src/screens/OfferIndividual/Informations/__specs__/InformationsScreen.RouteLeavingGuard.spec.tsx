@@ -12,13 +12,13 @@ import {
 import Notification from 'components/Notification/Notification'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import {
-  IOfferIndividualContext,
   OfferIndividualContext,
+  OfferIndividualContextValues,
 } from 'context/OfferIndividualContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { Events } from 'core/FirebaseEvents/constants'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
-import { IOfferIndividual, IOfferSubCategory } from 'core/Offers/types'
+import { OfferIndividual, OfferSubCategory } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { AccessiblityEnum } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
@@ -27,7 +27,7 @@ import * as utils from 'screens/OfferIndividual/Informations/utils'
 import { ButtonLink } from 'ui-kit'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { IInformationsProps, Informations as InformationsScreen } from '..'
+import { InformationsProps, Informations as InformationsScreen } from '..'
 
 const mockLogEvent = jest.fn()
 
@@ -42,8 +42,8 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 
 const renderInformationsScreen = (
-  props: IInformationsProps,
-  contextOverride: Partial<IOfferIndividualContext>,
+  props: InformationsProps,
+  contextOverride: Partial<OfferIndividualContextValues>,
   url = generatePath(
     getOfferIndividualPath({
       step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
@@ -61,7 +61,7 @@ const renderInformationsScreen = (
       },
     },
   }
-  const contextValue: IOfferIndividualContext = {
+  const contextValue: OfferIndividualContextValues = {
     offerId: null,
     offer: null,
     venueList: [],
@@ -119,9 +119,9 @@ const renderInformationsScreen = (
 const scrollIntoViewMock = jest.fn()
 
 describe('screens:OfferIndividual::Informations::creation', () => {
-  let props: IInformationsProps
-  let contextOverride: Partial<IOfferIndividualContext>
-  let offer: IOfferIndividual
+  let props: InformationsProps
+  let contextOverride: Partial<OfferIndividualContextValues>
+  let offer: OfferIndividual
   const offerId = 12
 
   beforeEach(() => {
@@ -204,7 +204,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
         isSelectable: true,
       },
     ]
-    const subCategories: IOfferSubCategory[] = [
+    const subCategories: OfferSubCategory[] = [
       {
         id: 'virtual',
         categoryId: 'A',

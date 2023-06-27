@@ -13,13 +13,13 @@ export const AnalyticsContext = createContext<{
   setLogEvent: null,
 })
 
-type IAnalyticsContextProviderProps = {
+type AnalyticsContextProviderProps = {
   children: React.ReactNode
 }
 
 export function AnalyticsContextProvider({
   children,
-}: IAnalyticsContextProviderProps) {
+}: AnalyticsContextProviderProps) {
   const [logEvent, setLogEvent] = useState<logEventType | null>(null)
   return (
     <AnalyticsContext.Provider value={{ logEvent, setLogEvent }}>

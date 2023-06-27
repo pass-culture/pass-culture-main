@@ -7,7 +7,7 @@ import { SubmitButton } from '../../../../ui-kit'
 import { DEFAULT_ACTIVITY_FORM_VALUES } from '../../Activity'
 import informationsValidationSchema from '../../Activity/validationSchema'
 import { Contact } from '../../Contact'
-import { IContactProps } from '../../Contact/Contact'
+import { ContactProps } from '../../Contact/Contact'
 import { VenueFormValues } from '../../types'
 
 const renderContact = ({
@@ -17,7 +17,7 @@ const renderContact = ({
 }: {
   initialValues: Partial<VenueFormValues>
   onSubmit: () => void
-  props: IContactProps
+  props: ContactProps
 }) => {
   const validationSchema = yup
     .object()
@@ -37,7 +37,7 @@ const renderContact = ({
   )
 }
 describe('Contacts', () => {
-  let props: IContactProps
+  let props: ContactProps
   let initialValues: Partial<VenueFormValues>
   const onSubmit = jest.fn()
 

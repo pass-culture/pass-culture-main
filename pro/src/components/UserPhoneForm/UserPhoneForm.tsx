@@ -15,7 +15,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import styles from './UserPhoneForm.module.scss'
 import validationSchema from './validationSchema'
 
-export interface IUserPhoneFormProps {
+export interface UserPhoneFormProps {
   closeForm: () => void
   patchPhoneAdapter: PatchPhoneAdapter
   initialValues: UserPhoneBodyModel
@@ -25,7 +25,7 @@ const UserPhoneForm = ({
   closeForm,
   initialValues,
   patchPhoneAdapter,
-}: IUserPhoneFormProps): JSX.Element => {
+}: UserPhoneFormProps): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const dispatch = useDispatch()
 

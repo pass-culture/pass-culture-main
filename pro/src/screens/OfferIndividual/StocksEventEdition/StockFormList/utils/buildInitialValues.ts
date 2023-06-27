@@ -1,5 +1,5 @@
 import { OfferStatus } from 'apiClient/v1'
-import { IOfferIndividualStock } from 'core/Offers/types'
+import { OfferIndividualStock } from 'core/Offers/types'
 import { SelectOption } from 'custom_types/form'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
@@ -16,7 +16,7 @@ interface BuildInitialValuesCommonArgs {
 }
 
 interface BuildSingleInitialValuesArgs extends BuildInitialValuesCommonArgs {
-  stock: IOfferIndividualStock
+  stock: OfferIndividualStock
 }
 
 const buildSingleInitialValues = ({
@@ -74,7 +74,7 @@ const buildSingleInitialValues = ({
 }
 
 interface BuildInitialValuesArgs extends BuildInitialValuesCommonArgs {
-  offerStocks: IOfferIndividualStock[]
+  offerStocks: OfferIndividualStock[]
 }
 
 export const buildInitialValues = ({

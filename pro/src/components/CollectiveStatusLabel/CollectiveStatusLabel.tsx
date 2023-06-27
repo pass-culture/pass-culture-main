@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React, { ReactElement } from 'react'
 
 import style from './CollectiveStatusLabel.module.scss'
-type ICollectiveStatusLabelProps = {
+type CollectiveStatusLabelProps = {
   className: string
   icon: ReactElement
   label: string
@@ -12,7 +12,7 @@ const CollectiveStatusLabel = ({
   className,
   icon,
   label,
-}: ICollectiveStatusLabelProps) => {
+}: CollectiveStatusLabelProps) => {
   return (
     <span className={cn(style['status-label'], className)}>
       <>

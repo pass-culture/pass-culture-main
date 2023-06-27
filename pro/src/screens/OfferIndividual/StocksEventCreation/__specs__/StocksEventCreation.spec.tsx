@@ -9,7 +9,7 @@ import Notification from 'components/Notification/Notification'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { Events } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
-import { IOfferIndividualStock } from 'core/Offers/types'
+import { OfferIndividualStock } from 'core/Offers/types'
 import {
   getOfferIndividualPath,
   getOfferIndividualUrl,
@@ -23,11 +23,11 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
-  IStocksEventCreationProps,
+  StocksEventCreationProps,
   StocksEventCreation,
 } from '../StocksEventCreation'
 
-const renderStockEventCreation = (props: IStocksEventCreationProps) =>
+const renderStockEventCreation = (props: StocksEventCreationProps) =>
   renderWithProviders(
     <Routes>
       <Route
@@ -128,7 +128,7 @@ describe('StocksEventCreation', () => {
   })
 
   it('should paginate stocks', async () => {
-    const stocks: IOfferIndividualStock[] = []
+    const stocks: OfferIndividualStock[] = []
     for (let i = 0; i < 30; i++) {
       stocks.push(individualStockFactory({ priceCategoryId: 1 }))
     }

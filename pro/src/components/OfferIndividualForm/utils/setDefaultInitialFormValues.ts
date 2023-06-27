@@ -1,19 +1,19 @@
 import {
   FORM_DEFAULT_VALUES,
-  IOfferIndividualFormValues,
+  OfferIndividualFormValues,
 } from 'components/OfferIndividualForm'
-import { TOffererName } from 'core/Offerers/types'
+import { OffererName } from 'core/Offerers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 
 import { buildVenueOptions } from '../UsefulInformations/Venue/utils'
 
 const setDefaultInitialFormValues = (
-  values: IOfferIndividualFormValues,
-  offererNames: TOffererName[],
+  values: OfferIndividualFormValues,
+  offererNames: OffererName[],
   offererId: string | null,
   venueId: string | null,
   venueList: TOfferIndividualVenue[]
-): IOfferIndividualFormValues => {
+): OfferIndividualFormValues => {
   let initialOffererId = FORM_DEFAULT_VALUES.offererId
 
   if (offererNames.length === 1) {

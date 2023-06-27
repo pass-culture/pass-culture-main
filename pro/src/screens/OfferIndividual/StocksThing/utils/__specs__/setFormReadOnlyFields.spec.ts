@@ -1,17 +1,17 @@
 import { OfferStatus } from 'apiClient/v1'
 import {
-  IOfferIndividual,
-  IOfferIndividualVenueProvider,
+  OfferIndividual,
+  OfferIndividualVenueProvider,
 } from 'core/Offers/types'
 
 import { IStockThingFormValues } from '../..'
 import setFormReadOnlyFields from '../setFormReadOnlyFields'
 
 describe('StockThingForm::utils::setFormReadOnlyFields', () => {
-  let offer: IOfferIndividual
+  let offer: OfferIndividual
   let currentStock: IStockThingFormValues
   beforeEach(() => {
-    offer = {} as IOfferIndividual
+    offer = {} as OfferIndividual
     currentStock = {} as IStockThingFormValues
   })
   const disabledStatus = [OfferStatus.REJECTED, OfferStatus.PENDING]
@@ -37,7 +37,7 @@ describe('StockThingForm::utils::setFormReadOnlyFields', () => {
   it('should disabled field synchronized offer', () => {
     offer.lastProvider = {
       name: 'any provider',
-    } as IOfferIndividualVenueProvider
+    } as OfferIndividualVenueProvider
     const readOnlyFields = setFormReadOnlyFields(offer, currentStock)
     expect(readOnlyFields).toEqual([
       'stockId',
@@ -53,7 +53,7 @@ describe('StockThingForm::utils::setFormReadOnlyFields', () => {
   })
 
   it('should not disabled field for allociné synchronized offer', () => {
-    offer.lastProvider = { name: 'allociné' } as IOfferIndividualVenueProvider
+    offer.lastProvider = { name: 'allociné' } as OfferIndividualVenueProvider
     currentStock = {
       activationCodes: new Array<string>(),
     } as IStockThingFormValues

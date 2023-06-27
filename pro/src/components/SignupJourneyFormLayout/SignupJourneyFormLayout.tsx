@@ -4,14 +4,14 @@ import { SignupJourneyBreadcrumb } from 'components/SignupJourneyBreadcrumb'
 
 import styles from './SignupJourneyFormLayoutContent.module.scss'
 
-interface ISignupOffererFormLayoutProps {
+interface SignupOffererFormLayoutProps {
   children: React.ReactNode
   className?: string
 }
 
 const SignupJourneyFormLayout = ({
   children,
-}: ISignupOffererFormLayoutProps): JSX.Element => (
+}: SignupOffererFormLayoutProps): JSX.Element => (
   <div className={styles['signup-offerer-layout-wrapper']}>
     <SignupJourneyBreadcrumb />
     {children}
