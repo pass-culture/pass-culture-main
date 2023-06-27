@@ -18,18 +18,19 @@ import {
 import { OFFER_STATUS_PENDING } from 'core/Offers'
 import useAnalytics from 'hooks/useAnalytics'
 import { useOfferEditionURL } from 'hooks/useOfferEditionURL'
-import { AlertFilledIcon } from 'icons'
+import fullErrorIcon from 'icons/full-error.svg'
 import {
   getDate,
   getRemainingTime,
   shouldDisplayWarning,
 } from 'pages/Offers/Offers/OfferItem/Cells/OfferNameCell/utils'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
 import { pluralize } from 'utils/pluralize'
 
 import styles from './BookingOfferCell.module.scss'
 
-interface IBookingOfferCellProps {
+export interface BookingOfferCellProps {
   offer:
     | BookingRecapResponseStockModel
     | CollectiveBookingCollectiveStockResponseModel
@@ -43,7 +44,7 @@ const BookingOfferCell = ({
   offer,
   bookingRecapInfo,
   isCollective,
-}: IBookingOfferCellProps) => {
+}: BookingOfferCellProps) => {
   const { logEvent } = useAnalytics()
 
   const editionUrl = useOfferEditionURL(
@@ -97,10 +98,12 @@ const BookingOfferCell = ({
             {eventDatetimeFormatted || offer.offerIsbn}
             <span className={styles['stocks']}>
               {shouldShowCollectiveWarning && (
-                <div className={styles['sold-out-container']}>
-                  <AlertFilledIcon
+                <span>
+                  &nbsp;
+                  <SvgIcon
                     className={styles['sold-out-icon']}
-                    title="Attention"
+                    src={fullErrorIcon}
+                    alt="Attention"
                   />
                   <span className={styles['sold-out-dates']}>
                     La date limite de réservation par le chef d'établissement
@@ -114,7 +117,7 @@ const BookingOfferCell = ({
                         : "moins d'un jour"
                     } (${getDate([bookingRecapInfo.values.stock])})`}
                   </span>
-                </div>
+                </span>
               )}
             </span>
           </div>

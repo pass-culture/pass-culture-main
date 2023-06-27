@@ -116,8 +116,7 @@ describe('bookings offer cell', () => {
         isCollective: true,
       })
 
-      const warningIco = screen.queryByTitle('Attention')
-      expect(warningIco).not.toBeNull()
+      expect(screen.getByRole('img', { name: 'Attention' })).toBeInTheDocument()
     })
 
     it('should not display warning when limit booking date is in more than 7 days', () => {
@@ -143,8 +142,9 @@ describe('bookings offer cell', () => {
         isCollective: true,
       })
 
-      const warningIco = screen.queryByTitle('Attention')
-      expect(warningIco).toBeNull()
+      expect(
+        screen.queryByRole('img', { name: 'Attention' })
+      ).not.toBeInTheDocument()
     })
   })
 })
