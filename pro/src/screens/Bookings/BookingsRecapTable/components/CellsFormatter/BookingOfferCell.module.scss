@@ -31,10 +31,6 @@
 .stocks {
   display: flex;
 
-  .sold-out-container {
-    height: rem.torem(24px);
-  }
-
   .sold-out-dates {
     background-color: colors.$white;
     border-radius: rem.torem(4px);
@@ -45,6 +41,14 @@
   }
 
   .sold-out-icon {
+    width: rem.torem(16px);
+    height: rem.torem(16px);
+    color: colors.$red-error;
+
+    // Center visually
+    position: relative;
+    top: 2px;
+
     &:hover,
     &:focus {
       & ~ .sold-out-dates {

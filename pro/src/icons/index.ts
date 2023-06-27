@@ -1,5 +1,4 @@
 export { ReactComponent as AddUserIcon } from 'icons/add-user.svg'
-export { ReactComponent as AlertFilledIcon } from 'icons/ico-alert-filled.svg'
 export { ReactComponent as AlertGreyIcon } from 'icons/ico-alert-grey.svg'
 export { ReactComponent as ArrowUpBIcon } from 'icons/ico-arrow-up-b.svg'
 export { ReactComponent as CalendarCheckIcon } from 'icons/ico-calendar-check.svg'

@@ -15,9 +15,10 @@ import {
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import useAnalytics from 'hooks/useAnalytics'
-import { AlertFilledIcon } from 'icons'
+import fullErrorIcon from 'icons/full-error.svg'
 import { Tag } from 'ui-kit'
 import Icon from 'ui-kit/Icon/Icon'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
 import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
@@ -123,12 +124,13 @@ const OfferNameCell = ({
             </div>
           )}
           {shouldShowCollectiveWarning && (
-            <div className={styles['sold-out']}>
-              <AlertFilledIcon
+            <div>
+              &nbsp;
+              <SvgIcon
                 className={styles['sold-out-icon']}
-                title="Attention"
+                src={fullErrorIcon}
+                alt="Attention"
               />
-
               <span className={styles['sold-out-dates']}>
                 La date limite de réservation par le chef d'établissement est
                 dans{' '}
