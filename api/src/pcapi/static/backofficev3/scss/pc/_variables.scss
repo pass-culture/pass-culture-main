@@ -7,6 +7,8 @@
 //// ------------------------------
 //// Bootstrap 5 variables override
 //// ------------------------------
+$link-decoration: none ;
+
 //$gray-600: #7f7f7f;
 //$blue:    #0066FF;
 //$indigo:  #870087;
@@ -17,7 +19,7 @@
 //$green:   #15884F;
 //
 //// scss-docs-start theme-color-variables
-//$primary:       $pink;
+$primary:       $pink;
 //$secondary:     $purple;
 //$info:          $blue;
 //$dark:          #c10046;
