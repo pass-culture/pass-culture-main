@@ -61,6 +61,7 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-home.svg' },
   { src: 'icons/stroke-building.svg' },
   { src: 'icons/stroke-desk.svg' },
+  { src: 'icons/stroke-hide.svg' }, // TODO 1 use left inside Button (PasswordInput)
   { src: 'icons/stroke-hourglass.svg' },
   { src: 'icons/stroke-like.svg' }, // TODO 1 use left inside Button
   { src: 'icons/stroke-code.svg' },
@@ -161,7 +162,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-date.svg', viewBox: '0 0 48 48' },
   { src: 'icons/ico-disconnect-full.svg', viewBox: '0 0 40 40' },
   { src: 'icons/ico-events.svg', viewBox: '0 0 24 24' },
-  { src: 'icons/ico-eye-close.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-eye-open.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-info-wrong.svg', viewBox: '0 0 78 78' },
   { src: 'icons/ico-key.svg', viewBox: '0 0 20 20' },

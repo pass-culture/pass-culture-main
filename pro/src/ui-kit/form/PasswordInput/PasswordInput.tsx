@@ -1,7 +1,10 @@
 import { useField } from 'formik'
 import React, { useState } from 'react'
 
-import { EyeCloseIcon, EyeOpenIcon } from 'icons'
+import { EyeOpenIcon } from 'icons'
+import { ReactComponent as StrokeHideIcon } from 'icons/stroke-hide.svg'
+import { Button } from 'ui-kit/Button'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import TextInput from '../TextInput'
 
@@ -43,17 +46,16 @@ const PasswordInput = ({
         type={isPasswordHidden ? 'password' : 'text'}
         autoComplete={autoComplete}
         rightButton={() => (
-          <button onClick={handleToggleHidden} type="button">
-            {isPasswordHidden ? (
-              <EyeCloseIcon className={styles['password-input-eye-ico']}>
-                Afficher le mot de passe
-              </EyeCloseIcon>
-            ) : (
-              <EyeOpenIcon className={styles['password-input-eye-ico']}>
-                Cacher le mot de passe
-              </EyeOpenIcon>
-            )}
-          </button>
+          <Button
+            Icon={isPasswordHidden ? StrokeHideIcon : EyeOpenIcon}
+            title={
+              isPasswordHidden
+                ? 'Afficher le mot de passe'
+                : 'Cacher le mot de passe'
+            }
+            onClick={handleToggleHidden}
+            variant={ButtonVariant.TERNARY}
+          />
         )}
         ErrorDetails={
           displayLocalErrors && <ValidationMessageList name={name} />
