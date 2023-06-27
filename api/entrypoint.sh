@@ -1,7 +1,10 @@
 #!/bin/bash
 
 # Variabilize "bind" when we will merge dockerfiles. "127.0.0.1 for devs and 0.0.0.0 for kubernetes"
-PROMETHEUS_MULTIPROC_DIR=/tmp/prometheus_flask_export_multiproc_dir exec gunicorn \
+
+# The PROMETHEUS_MULTIPROC_DIR must be the same as the directory
+# created in the Dockerfile.
+PROMETHEUS_MULTIPROC_DIR=/var/run/prometheus_flask_export_multiproc_dir exec gunicorn \
     --preload \
     --bind 0.0.0.0:$GUNICORN_PORT \
     --worker-class gthread \
