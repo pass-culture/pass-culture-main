@@ -1,9 +1,9 @@
 import { api } from 'apiClient/api'
 
-type IPayloadFailure = null
-type DeleteCollectiveOfferImageAdapter = Adapter<string, null, IPayloadFailure>
+type PayloadFailure = null
+type DeleteCollectiveOfferImageAdapter = Adapter<string, null, PayloadFailure>
 
-const FAILING_RESPONSE: AdapterFailure<IPayloadFailure> = {
+const FAILING_RESPONSE: AdapterFailure<PayloadFailure> = {
   isOk: false,
   message:
     'Une erreur est survenue lors de la suppression de l’image de l’offre',

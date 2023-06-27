@@ -4,13 +4,13 @@ import { Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { IOfferEducationalFormValues } from 'core/OfferEducational'
+import { OfferEducationalFormValues } from 'core/OfferEducational'
 import { SubmitButton } from 'ui-kit'
 
 import FormNotifications from '../FormNotifications'
 
 const renderFormNotifications = (
-  initialValues: Partial<IOfferEducationalFormValues>,
+  initialValues: Partial<OfferEducationalFormValues>,
   onSubmit: () => void
 ) => {
   const validationSchema = yup.object().shape({
@@ -41,7 +41,7 @@ const renderFormNotifications = (
 }
 
 describe('FormNotifications', () => {
-  let initialValues: Partial<IOfferEducationalFormValues>
+  let initialValues: Partial<OfferEducationalFormValues>
   const onSubmit = jest.fn()
   beforeEach(() => {
     initialValues = {

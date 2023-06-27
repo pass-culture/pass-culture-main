@@ -19,7 +19,7 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import { Offerer } from 'core/Offerers/types'
-import { IProviders, Venue } from 'core/Venue/types'
+import { Providers, Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
@@ -43,7 +43,7 @@ interface VenueEditionProps {
   offerer: Offerer
   venueTypes: SelectOption[]
   venueLabels: SelectOption[]
-  providers?: IProviders[]
+  providers?: Providers[]
   venueProviders?: VenueProviderResponse[]
   venue?: Venue
   hasBookingQuantity?: boolean

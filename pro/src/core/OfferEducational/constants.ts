@@ -2,13 +2,13 @@ import { OfferAddressType, SubcategoryIdEnum } from 'apiClient/v1'
 
 import {
   EducationalOfferType,
-  IOfferEducationalFormValues,
+  OfferEducationalFormValues,
   OfferEducationalStockFormValues,
   VisibilityFormValues,
 } from './types'
 import { buildStudentLevelsMapWithDefaultValue } from './utils/buildStudentLevelsMapWithDefaultValue'
 
-export const DEFAULT_EAC_FORM_VALUES: IOfferEducationalFormValues = {
+export const DEFAULT_EAC_FORM_VALUES: OfferEducationalFormValues = {
   category: '',
   subCategory: '' as SubcategoryIdEnum,
   title: '',

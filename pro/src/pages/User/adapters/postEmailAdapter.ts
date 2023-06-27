@@ -1,11 +1,11 @@
 import { api } from 'apiClient/api'
 import { ApiError, UserResetEmailBodyModel } from 'apiClient/v1'
 
-type IPayloadFailure = Record<string, string>
+type PayloadFailure = Record<string, string>
 export type PostEmailAdapter = Adapter<
   UserResetEmailBodyModel,
   void,
-  IPayloadFailure
+  PayloadFailure
 >
 
 const postEmailAdapter: PostEmailAdapter = async (

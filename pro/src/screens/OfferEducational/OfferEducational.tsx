@@ -6,7 +6,7 @@ import { GetEducationalOffererResponseModel } from 'apiClient/v1'
 import OfferEducationalActions from 'components/OfferEducationalActions'
 import {
   CanOffererCreateCollectiveOffer,
-  IOfferEducationalFormValues,
+  OfferEducationalFormValues,
   Mode,
   isCollectiveOffer,
   isCollectiveOfferTemplate,
@@ -87,7 +87,7 @@ const OfferEducational = ({
         )
       : baseInitialValues
 
-  const onSubmit = async (offerValues: IOfferEducationalFormValues) => {
+  const onSubmit = async (offerValues: OfferEducationalFormValues) => {
     let response = null
     if (isTemplate) {
       if (offer === undefined) {

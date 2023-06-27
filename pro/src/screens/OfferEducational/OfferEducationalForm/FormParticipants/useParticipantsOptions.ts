@@ -1,5 +1,5 @@
 import { StudentLevels } from 'apiClient/v1'
-import { IOfferEducationalFormValues } from 'core/OfferEducational'
+import { OfferEducationalFormValues } from 'core/OfferEducational'
 import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
 
 export const ALL_STUDENTS_LABEL = 'Tout sélectionner'
@@ -14,7 +14,7 @@ const getStudentLevelLabel = (studentLevel: StudentLevels) => {
   }
 }
 const useParticipantsOptions = (
-  values: IOfferEducationalFormValues['participants'],
+  values: OfferEducationalFormValues['participants'],
   setFieldValue: (
     field: string,
     value: any,

@@ -7,7 +7,7 @@ import {
   StudentLevels,
 } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
-import { IOfferEducationalFormValues } from 'core/OfferEducational'
+import { OfferEducationalFormValues } from 'core/OfferEducational'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { Banner, CheckboxGroup, InfoBox } from 'ui-kit'
 
@@ -21,7 +21,7 @@ const FormParticipants = ({
   offerStock?: GetCollectiveOfferCollectiveStockResponseModel | null
 }): JSX.Element => {
   const { values, setFieldValue } =
-    useFormikContext<IOfferEducationalFormValues>()
+    useFormikContext<OfferEducationalFormValues>()
 
   const isCLG6Active = useActiveFeature('WIP_ADD_CLG_6_5_COLLECTIVE_OFFER')
   const isBeforeSeptembre1st =

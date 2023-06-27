@@ -1,10 +1,10 @@
 import { useAdapter } from 'hooks'
 
-import { IProviders } from '../../types'
+import { Providers } from '../../types'
 
 import { getProviderAdapter } from '.'
 
 const useGetProvider = (venueId?: number) =>
-  useAdapter<IProviders[], IProviders[]>(() => getProviderAdapter(venueId))
+  useAdapter<Providers[], Providers[]>(() => getProviderAdapter(venueId))
 
 export default useGetProvider

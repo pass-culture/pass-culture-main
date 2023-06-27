@@ -2,12 +2,12 @@ import { api } from 'apiClient/api'
 import { getErrorCode, isErrorAPIError } from 'apiClient/helpers'
 import { OfferStatus } from 'apiClient/v2'
 
-type IPayloadSuccess = null
-type IPayloadFailure = null
+type PayloadSuccess = null
+type PayloadFailure = null
 type cancelCollectiveBookingAdapter = Adapter<
   { offerId?: string; offerStatus?: string },
-  IPayloadSuccess,
-  IPayloadFailure
+  PayloadSuccess,
+  PayloadFailure
 >
 
 export const cancelCollectiveBookingAdapter: cancelCollectiveBookingAdapter =
