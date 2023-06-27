@@ -9,10 +9,10 @@ from werkzeug.routing import BuildError
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.admin.custom_views.mixins.suspension_mixin import SuspensionMixin
-from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users.email import repository as email_repository
+from pcapi.core.users.email.update import full_email_update_by_admin
 from pcapi.core.users.models import UserEmailHistory
 
 
@@ -81,9 +81,7 @@ class UserEmailHistoryView(SuspensionMixin, BaseAdminView):
             )
         else:
             try:
-                users_api.change_beneficiary_user_email(
-                    current_email=entry.oldEmail, new_email=entry.newEmail, by_admin=True
-                )
+                full_email_update_by_admin(user=entry.user, email=entry.newEmail)
             except users_exceptions.UserDoesNotExist:
                 flash(f"L'utilisateur avec l'adresse email {entry.oldEmail} n'a pas été trouvé", category="error")
             except users_exceptions.EmailExistsError:
