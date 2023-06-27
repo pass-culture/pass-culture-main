@@ -1,11 +1,11 @@
 import React, { useId } from 'react'
 
 import DialogBox from 'components/DialogBox/DialogBox'
-import { ReactComponent as AlertSvg } from 'icons/ico-alert-grey.svg'
+import { ReactComponent as StrokeErrorIcon } from 'icons/stroke-error.svg'
 
 import styles from './Dialog.module.scss'
 
-export interface IDialogProps {
+export interface DialogProps {
   onCancel: () => void
   title: string
   secondTitle?: string
@@ -25,8 +25,8 @@ const Dialog = ({
   icon,
   hideIcon = false,
   extraClassNames,
-}: IDialogProps): JSX.Element => {
-  const Icon = icon ?? AlertSvg
+}: DialogProps): JSX.Element => {
+  const Icon = icon ?? StrokeErrorIcon
   const titleId = useId()
 
   return (
