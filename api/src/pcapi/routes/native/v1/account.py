@@ -19,9 +19,6 @@ from pcapi.core.users import constants
 from pcapi.core.users import email as email_api
 from pcapi.core.users import exceptions
 from pcapi.core.users.email import repository as email_repository
-from pcapi.core.users.email.update import TokenType
-from pcapi.core.users.email.update import check_and_expire_token
-from pcapi.core.users.email.update import check_email_address_does_not_exist
 import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.core.users.utils import decode_jwt_token
@@ -158,15 +155,7 @@ def cancel_email_update(body: serializers.ChangeBeneficiaryEmailBody) -> None:
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> None:
     try:
-        payload = serializers.ChangeEmailTokenContent.from_token(body.token)
-        current_email = payload.current_email
-        new_email = payload.new_email
-        user = find_user_by_email(current_email)
-        if not user:
-            raise exceptions.InvalidEmailError()
-        check_email_address_does_not_exist(new_email)
-        check_and_expire_token(user, body.token, TokenType.VALIDATION)
-        email_api.update.validate_email_update_request(current_email, new_email)
+        email_api.update.validate_email_update_request(body.token)
     except pydantic.ValidationError:
         raise api_errors.ApiErrors(
             {"code": "INVALID_EMAIL", "message": "Adresse email invalide"},

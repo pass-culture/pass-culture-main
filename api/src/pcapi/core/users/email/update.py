@@ -168,9 +168,7 @@ def cancel_email_update_request(token: str) -> None:
 
 
 def validate_email_update_request(
-    current_email: str,
-    new_email: str,
-    by_admin: bool = False,
+    token: str,
 ) -> None:
     """
     Change a user's email and add a new (validation) entry to its email
@@ -183,14 +181,18 @@ def validate_email_update_request(
     Therefore this function can be called multiple times with the same
     inputs safely.
     """
-    current_user = users_repository.find_user_by_email(current_email)
-
-    if not current_user:
+    payload = ChangeEmailTokenContent.from_token(token)
+    current_email = payload.current_email
+    new_email = payload.new_email
+    user = users_repository.find_user_by_email(current_email)
+    if not user:
         if not validated_update_request_exists(current_email, new_email):
             raise exceptions.UserDoesNotExist()
-    else:
-        api.change_email(current_user, new_email, by_admin)
-        transactional_mails.send_email_change_information_email(current_user)
+        return
+    check_and_expire_token(user, token, TokenType.VALIDATION)
+    check_email_address_does_not_exist(new_email)
+    api.change_email(user, new_email)
+    transactional_mails.send_email_change_information_email(user)
 
 
 def request_email_update_from_pro(user: models.User, email: str, password: str) -> None:
