@@ -5,7 +5,7 @@ import { api } from 'apiClient/api'
 import FormLayout from 'components/FormLayout'
 import { ImageUploader } from 'components/ImageUploader'
 import { IUploadImageValues } from 'components/ImageUploader/ButtonImageEdit'
-import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
+import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import useNotification from 'hooks/useNotification'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
@@ -60,7 +60,7 @@ const ImageUploaderVenue = () => {
     imageFile,
     credit,
     cropParams,
-  }: IOnImageUploadArgs) => {
+  }: OnImageUploadArgs) => {
     try {
       const editedVenue = await postImageToVenue(
         venueId || 0,

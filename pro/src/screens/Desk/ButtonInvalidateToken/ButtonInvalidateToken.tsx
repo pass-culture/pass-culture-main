@@ -3,13 +3,13 @@ import React, { useState } from 'react'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { Button } from 'ui-kit'
 
-interface IButtonInvalidateTokenProps {
+interface ButtonInvalidateTokenProps {
   onConfirm: () => void
 }
 
 const ButtonInvalidateToken = ({
   onConfirm,
-}: IButtonInvalidateTokenProps): JSX.Element => {
+}: ButtonInvalidateTokenProps): JSX.Element => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const openDialog = (event: React.MouseEvent<HTMLButtonElement>) => {

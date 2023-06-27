@@ -10,7 +10,7 @@ import { VenueFormValues } from 'components/VenueForm'
 import { SubmitButton } from 'ui-kit'
 
 import { DEFAULT_INFORMATIONS_FORM_VALUES } from '../constants'
-import Informations, { IInformations } from '../Informations'
+import Informations, { InformationsProps } from '../Informations'
 import generateSiretValidationSchema from '../SiretOrCommentFields/validationSchema'
 import informationsValidationSchema from '../validationSchema'
 
@@ -42,7 +42,7 @@ const renderInformations = ({
 }: {
   initialValues: Partial<VenueFormValues>
   onSubmit: () => void
-  props: IInformations
+  props: InformationsProps
 }) => {
   const generateSiretOrCommentValidationSchema = generateSiretValidationSchema(
     '123456789',
@@ -75,7 +75,7 @@ const renderInformations = ({
 }
 
 describe('components | Informations', () => {
-  let props: IInformations
+  let props: InformationsProps
   let initialValues: Partial<VenueFormValues>
   const onSubmit = jest.fn()
 

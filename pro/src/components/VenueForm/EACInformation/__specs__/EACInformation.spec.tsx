@@ -3,7 +3,7 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { AdageCulturalPartnersResponseModel } from 'apiClient/v1'
-import { IVenue } from 'core/Venue'
+import { Venue } from 'core/Venue'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import EACInformation from '../EACInformation'
@@ -12,7 +12,7 @@ const renderEACInformation = async ({
   venue,
   isCreatingVenue,
 }: {
-  venue?: IVenue | null
+  venue?: Venue | null
   isCreatingVenue: boolean
 }) =>
   renderWithProviders(
@@ -41,7 +41,7 @@ describe('components | EACInformation', () => {
   it('should be able to access information page when updating a venue', async () => {
     const venue = {
       id: 'V1',
-    } as unknown as IVenue
+    } as unknown as Venue
 
     await renderEACInformation({
       isCreatingVenue: false,
@@ -70,7 +70,7 @@ describe('components | EACInformation', () => {
       collectiveAccessInformation: 'test',
       collectiveDescription: 'desc',
       collectiveEmail: 'email@email.email',
-    } as unknown as IVenue
+    } as unknown as Venue
 
     await renderEACInformation({
       isCreatingVenue: false,

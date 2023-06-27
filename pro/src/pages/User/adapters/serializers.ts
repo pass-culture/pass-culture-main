@@ -2,11 +2,11 @@ import {
   SharedCurrentUserResponseModel,
   UserPhoneBodyModel,
 } from 'apiClient/v1'
-import { IUserIdentityFormValues } from 'components/UserIdentityForm/types'
+import { UserIdentityFormValues } from 'components/UserIdentityForm/types'
 
 export const serializeUserIdentity = (
   user: SharedCurrentUserResponseModel
-): IUserIdentityFormValues => {
+): UserIdentityFormValues => {
   return {
     firstName: user.firstName || '',
     lastName: user.lastName || '',

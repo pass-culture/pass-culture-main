@@ -8,7 +8,7 @@ import {
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
 import { OFFER_STATUS_PENDING } from 'core/Offers'
-import { IOfferIndividual } from 'core/Offers/types'
+import { OfferIndividual } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as FullLink } from 'icons/full-link.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
@@ -20,13 +20,13 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './OfferIndividualConfirmation.module.scss'
 
-interface IOfferIndividualConfirmationProps {
-  offer: IOfferIndividual
+interface OfferIndividualConfirmationProps {
+  offer: OfferIndividual
 }
 
 const OfferIndividualConfirmation = ({
   offer,
-}: IOfferIndividualConfirmationProps): JSX.Element => {
+}: OfferIndividualConfirmationProps): JSX.Element => {
   const isPendingOffer = offer.status === OFFER_STATUS_PENDING
   const queryString = `?structure=${offer.venue.offerer.nonHumanizedId}&lieu=${offer.venueId}`
   const { logEvent } = useAnalytics()

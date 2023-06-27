@@ -4,7 +4,7 @@ import Content from './OfferFormLayoutContent'
 import Stepper from './OfferFormLayoutStepper'
 import TitleBlock from './OfferFormLayoutTitleBlock'
 
-interface IOfferFormLayoutProps {
+interface OfferFormLayoutProps {
   children: React.ReactNode | React.ReactNode[]
   className?: string
 }
@@ -12,7 +12,7 @@ interface IOfferFormLayoutProps {
 const OfferFormLayout = ({
   children,
   className,
-}: IOfferFormLayoutProps): JSX.Element => (
+}: OfferFormLayoutProps): JSX.Element => (
   <div className={className}>{children}</div>
 )
 

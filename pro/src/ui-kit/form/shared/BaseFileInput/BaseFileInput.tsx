@@ -3,7 +3,7 @@ import React from 'react'
 
 import style from './BaseFileInput.module.scss'
 
-export interface IBaseFileInputProps {
+export interface BaseFileInputProps {
   label: string
   fileTypes: string[]
   isValid: boolean
@@ -16,7 +16,7 @@ const BaseFileInput = ({
   isValid,
   fileTypes,
   onChange,
-}: IBaseFileInputProps): JSX.Element => (
+}: BaseFileInputProps): JSX.Element => (
   <label className={cn('primary-link ', style['base-file-input-container'])}>
     {label}
     <input

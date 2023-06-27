@@ -1,17 +1,17 @@
 import { PatchOfferBodyModel, WithdrawalTypeEnum } from 'apiClient/v1'
-import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
+import { OfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'core/Offers'
-import { IOfferExtraData, IOfferIndividual } from 'core/Offers/types'
+import { OfferExtraData, OfferIndividual } from 'core/Offers/types'
 import { isAllocineOffer } from 'core/Providers/utils/localProvider'
 import { AccessiblityEnum } from 'core/shared'
 
 export const serializeExtraData = (
-  formValues: Partial<IOfferIndividualFormValues>
-): IOfferExtraData | undefined => {
+  formValues: Partial<OfferIndividualFormValues>
+): OfferExtraData | undefined => {
   // TODO: change api create and update offer in order not to save
   // extra data fields that's aren't link to offer subCategory
 
-  const extraData: IOfferExtraData = {}
+  const extraData: OfferExtraData = {}
   extraData.author = formValues.author
   extraData.musicType = formValues.musicType
   extraData.musicSubType = formValues.musicSubType
@@ -40,9 +40,9 @@ export const serializeDurationMinutes = (
 
   return minutes + hours * 60
 }
-interface ISerializePatchOffer {
-  offer: IOfferIndividual
-  formValues: Partial<IOfferIndividualFormValues>
+interface SerializePatchOffer {
+  offer: OfferIndividual
+  formValues: Partial<OfferIndividualFormValues>
   shouldSendMail?: boolean
 }
 
@@ -50,8 +50,8 @@ export const serializePatchOffer = ({
   offer,
   formValues,
   shouldSendMail = false,
-}: ISerializePatchOffer): PatchOfferBodyModel => {
-  let sentValues: Partial<IOfferIndividualFormValues> = formValues
+}: SerializePatchOffer): PatchOfferBodyModel => {
+  let sentValues: Partial<OfferIndividualFormValues> = formValues
   if (offer?.lastProvider) {
     const {
       ALLOCINE: allocineEditableFields,

@@ -5,7 +5,7 @@ import React, { useCallback } from 'react'
 import { BaseRadio } from '../shared'
 import { BaseRadioVariant } from '../shared/BaseRadio/types'
 
-interface IRadioButtonProps
+interface RadioButtonProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
   name: string
   label: string | JSX.Element
@@ -25,7 +25,7 @@ const RadioButton = ({
   hasError,
   variant = BaseRadioVariant.PRIMARY,
   onChange,
-}: IRadioButtonProps): JSX.Element => {
+}: RadioButtonProps): JSX.Element => {
   const [field] = useField({ name, value, type: 'radio' })
 
   const onCustomChange = useCallback(

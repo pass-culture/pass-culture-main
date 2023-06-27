@@ -4,23 +4,23 @@ import React from 'react'
 import * as csvService from 'pages/CsvTable/adapters/getCsvData'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CsvTable, { ICsvTableProps } from '../CsvTable'
-import { ITableData } from '../types'
+import CsvTable, { CsvTableProps } from '../CsvTable'
+import { TableData } from '../types'
 
-interface ICsvTableTestProps {
-  getCsvData: jest.SpyInstance<Promise<ITableData | null>>
+interface CsvTableTestProps {
+  getCsvData: jest.SpyInstance<Promise<TableData | null>>
 }
 
 // FIXME: we don't have store type yet.
 // This will be irrelevant soon as we are removing it
-const renderCsvTable = (props: ICsvTableTestProps) =>
-  renderWithProviders(<CsvTable {...(props as unknown as ICsvTableProps)} />)
+const renderCsvTable = (props: CsvTableTestProps) =>
+  renderWithProviders(<CsvTable {...(props as unknown as CsvTableProps)} />)
 
 const getCsvDataMock = jest.spyOn(csvService, 'getCsvData')
 
 describe('src | components | layout | CsvTable', () => {
-  let dataFromCsv: ITableData
-  let props: ICsvTableTestProps
+  let dataFromCsv: TableData
+  let props: CsvTableTestProps
 
   beforeEach(() => {
     dataFromCsv = {

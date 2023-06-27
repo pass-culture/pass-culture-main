@@ -1,8 +1,8 @@
 import { AttachImageResponseModel } from 'apiClient/v1'
-import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
+import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-interface Params extends IOnImageUploadArgs {
+interface Params extends OnImageUploadArgs {
   offerId: string
 }
 

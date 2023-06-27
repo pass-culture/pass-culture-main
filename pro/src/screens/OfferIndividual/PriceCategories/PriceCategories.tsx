@@ -16,7 +16,7 @@ import {
   isOfferDisabled,
   OFFER_WIZARD_MODE,
 } from 'core/Offers'
-import { IOfferIndividual, IOfferIndividualStock } from 'core/Offers/types'
+import { OfferIndividual, OfferIndividualStock } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
@@ -33,8 +33,8 @@ import { PriceCategoriesFormValues, PriceCategoryForm } from './form/types'
 import { validationSchema } from './form/validationSchema'
 import { PriceCategoriesForm } from './PriceCategoriesForm'
 
-export interface IPriceCategories {
-  offer: IOfferIndividual
+export interface PriceCategoriesProps {
+  offer: OfferIndividual
 }
 
 export enum POPIN_TYPE {
@@ -66,7 +66,7 @@ const hasFieldChange = (
   })
 
 export const getPopinType = (
-  stocks: IOfferIndividualStock[],
+  stocks: OfferIndividualStock[],
   initialValues: PriceCategoriesFormValues,
   values: PriceCategoriesFormValues
 ): POPIN_TYPE | null => {
@@ -159,7 +159,7 @@ export const getPopinType = (
   return null
 }
 
-const PriceCategories = ({ offer }: IPriceCategories): JSX.Element => {
+const PriceCategories = ({ offer }: PriceCategoriesProps): JSX.Element => {
   const { setOffer, subCategories } = useOfferIndividualContext()
   const { logEvent } = useAnalytics()
   const [isClickingFromActionBar, setIsClickingFromActionBar] =

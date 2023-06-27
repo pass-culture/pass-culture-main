@@ -7,11 +7,11 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './ReimbursementsTableBody.module.scss'
 
-interface ITableBody {
+interface TableBody {
   invoices: InvoiceResponseModel[]
 }
 
-const ReimbursementsTableBody = ({ invoices }: ITableBody): JSX.Element => {
+const ReimbursementsTableBody = ({ invoices }: TableBody): JSX.Element => {
   return (
     <tbody className={styles['reimbursement-body']}>
       {invoices.map(invoice => {

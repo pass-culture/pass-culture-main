@@ -7,17 +7,17 @@ import * as yup from 'yup'
 import { WithdrawalTypeEnum } from 'apiClient/v1'
 import {
   FORM_DEFAULT_VALUES,
-  IOfferIndividualFormValues,
+  OfferIndividualFormValues,
   setDefaultInitialFormValues,
 } from 'components/OfferIndividualForm'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
-import { TOffererName } from 'core/Offerers/types'
+import { OffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS } from 'core/Offers'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { SubmitButton } from 'ui-kit'
 
 import UsefulInformations, {
-  IUsefulInformationsProps,
+  UsefulInformationsProps,
 } from '../UsefulInformations'
 import validationSchema from '../validationSchema'
 
@@ -26,9 +26,9 @@ const renderUsefulInformations = async ({
   onSubmit = jest.fn(),
   props,
 }: {
-  initialValues: Partial<IOfferIndividualFormValues>
+  initialValues: Partial<OfferIndividualFormValues>
   onSubmit: () => void
-  props: IUsefulInformationsProps
+  props: UsefulInformationsProps
 }) => {
   return render(
     <Formik
@@ -47,14 +47,14 @@ const renderUsefulInformations = async ({
 }
 
 describe('OfferIndividual section: UsefulInformations', () => {
-  let initialValues: Partial<IOfferIndividualFormValues>
-  let props: IUsefulInformationsProps
+  let initialValues: Partial<OfferIndividualFormValues>
+  let props: UsefulInformationsProps
   const onSubmit = jest.fn()
   const offererId = 1
   let venueList: TOfferIndividualVenue[]
 
   beforeEach(() => {
-    const offererNames: TOffererName[] = [
+    const offererNames: OffererName[] = [
       {
         nonHumanizedId: offererId,
         name: 'Offerer AE',

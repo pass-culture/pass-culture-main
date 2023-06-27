@@ -5,7 +5,7 @@ import { ReactComponent as Trash } from 'icons/ico-trash.svg'
 
 import styles from './DialogStockDeleteConfirm.module.scss'
 
-interface IDialogStockDeleteConfirmProps {
+interface DialogStockDeleteConfirmProps {
   onConfirm: () => void
   onCancel: () => void
 }
@@ -13,7 +13,7 @@ interface IDialogStockDeleteConfirmProps {
 const DialogStockEventDeleteConfirm = ({
   onConfirm,
   onCancel,
-}: IDialogStockDeleteConfirmProps) => {
+}: DialogStockDeleteConfirmProps) => {
   return (
     <ConfirmDialog
       onCancel={onCancel}

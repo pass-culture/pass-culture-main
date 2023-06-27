@@ -1,4 +1,4 @@
-import { IOfferIndividualVenueProvider } from 'core/Offers/types'
+import { OfferIndividualVenueProvider } from 'core/Offers/types'
 
 import { CINEMA_PROVIDER_NAMES } from '../constants'
 
@@ -22,7 +22,7 @@ export const isCinemaProviderName = (providerName: string | null): boolean => {
 
 /* istanbul ignore next: DEBT, TO FIX */
 export const isAllocineProvider = (
-  provider?: IOfferIndividualVenueProvider | null
+  provider?: OfferIndividualVenueProvider | null
 ): boolean => {
   if (!provider) {
     return false
@@ -32,7 +32,7 @@ export const isAllocineProvider = (
 
 /* istanbul ignore next: DEBT, TO FIX */
 export const isCinemaProvider = (
-  provider?: IOfferIndividualVenueProvider | null
+  provider?: OfferIndividualVenueProvider | null
 ): boolean => {
   if (!provider) {
     return false

@@ -18,13 +18,13 @@ export enum TimelineStepType {
   REFUSED = 'REFUSED',
 }
 
-export interface ITimelineStep {
+export interface TimelineStep {
   type: TimelineStepType
   content: ReactNode
 }
 
-export interface ITimelineProps {
-  steps: ITimelineStep[]
+export interface TimelineProps {
+  steps: TimelineStep[]
 }
 
 const getIconComponent = (type: TimelineStepType, hasErrorSteps: boolean) => {
@@ -111,7 +111,7 @@ const getLineStyle = (
   }
 }
 
-const Timeline = ({ steps }: ITimelineProps): JSX.Element => {
+const Timeline = ({ steps }: TimelineProps): JSX.Element => {
   const hasErrorSteps =
     steps.filter(x => x.type === TimelineStepType.ERROR).length > 0
   return (

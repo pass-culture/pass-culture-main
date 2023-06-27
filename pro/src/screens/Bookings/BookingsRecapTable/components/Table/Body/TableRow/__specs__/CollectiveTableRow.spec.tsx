@@ -14,7 +14,7 @@ import {
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CollectiveTableRow, { ITableBodyProps } from '../CollectiveTableRow'
+import CollectiveTableRow, { TableBodyProps } from '../CollectiveTableRow'
 
 jest.mock('apiClient/api')
 jest.mock(
@@ -31,7 +31,7 @@ jest.mock('utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: jest.fn().mockReturnValue(true),
 }))
 
-const renderCollectiveTableRow = (props: ITableBodyProps) =>
+const renderCollectiveTableRow = (props: TableBodyProps) =>
   renderWithProviders(
     <table>
       <tbody>

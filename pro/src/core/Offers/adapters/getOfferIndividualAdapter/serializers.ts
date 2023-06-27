@@ -4,25 +4,25 @@ import {
   GetOfferStockResponseModel,
 } from 'apiClient/v1'
 import {
-  IOfferIndividual,
-  IOfferIndividualImage,
-  IOfferIndividualOfferer,
-  IOfferIndividualStock,
-  IOfferIndividualVenue,
-  IOfferIndividualVenueProvider,
+  OfferIndividual,
+  OfferIndividualImage,
+  OfferIndividualOfferer,
+  OfferIndividualStock,
+  OfferIndividualVenue,
+  OfferIndividualVenueProvider,
 } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 
 export const serializeOffererApi = (
   apiOffer: GetIndividualOfferResponseModel
-): IOfferIndividualOfferer => ({
+): OfferIndividualOfferer => ({
   nonHumanizedId: apiOffer.venue.managingOfferer.nonHumanizedId,
   name: apiOffer.venue.managingOfferer.name,
 })
 
 export const serializeVenueApi = (
   apiOffer: GetIndividualOfferResponseModel
-): IOfferIndividualVenue => {
+): OfferIndividualVenue => {
   const baseAccessibility = {
     [AccessiblityEnum.VISUAL]:
       apiOffer.venue.visualDisabilityCompliant || false,
@@ -50,7 +50,7 @@ export const serializeVenueApi = (
 
 export const serializeStockApi = (
   apiStock: GetOfferStockResponseModel
-): IOfferIndividualStock => {
+): OfferIndividualStock => {
   // null or undefined -> 'unlimited', 0 -> 0
   const remainingQuantity = apiStock.remainingQuantity ?? 'unlimited'
 
@@ -93,7 +93,7 @@ export const serializeOfferApiExtraData = (
 
 export const serializeLastProvider = (
   apiVenueProvider: GetOfferLastProviderResponseModel | null
-): IOfferIndividualVenueProvider | null => {
+): OfferIndividualVenueProvider | null => {
   if (apiVenueProvider === null) {
     return null
   }
@@ -105,7 +105,7 @@ export const serializeLastProvider = (
 
 export const serializeOfferApiImage = (
   apiOffer: GetIndividualOfferResponseModel
-): IOfferIndividualImage | undefined => {
+): OfferIndividualImage | undefined => {
   if (apiOffer.activeMediation) {
     if (apiOffer.activeMediation.thumbUrl) {
       return {
@@ -127,7 +127,7 @@ export const serializeOfferApiImage = (
 
 export const serializeOfferApi = (
   apiOffer: GetIndividualOfferResponseModel
-): IOfferIndividual => {
+): OfferIndividual => {
   const baseAccessibility = {
     [AccessiblityEnum.VISUAL]: apiOffer.visualDisabilityCompliant || false,
     [AccessiblityEnum.MENTAL]: apiOffer.mentalDisabilityCompliant || false,
@@ -135,7 +135,7 @@ export const serializeOfferApi = (
     [AccessiblityEnum.MOTOR]: apiOffer.motorDisabilityCompliant || false,
   }
 
-  const offer: IOfferIndividual = {
+  const offer: OfferIndividual = {
     nonHumanizedId: apiOffer.nonHumanizedId,
     bookingEmail: apiOffer.bookingEmail || '',
     description: apiOffer.description || '',

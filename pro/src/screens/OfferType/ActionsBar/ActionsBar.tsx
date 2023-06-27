@@ -8,13 +8,13 @@ import { ReactComponent as IcoMiniArrowRight } from 'icons/ico-mini-arrow-right.
 import { ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 
-interface IActionsBar {
+interface ActionsBarProps {
   disableNextButton?: boolean
 }
 
 const ActionsBar = ({
   disableNextButton = false,
-}: IActionsBar): JSX.Element => {
+}: ActionsBarProps): JSX.Element => {
   const { logEvent } = useAnalytics()
 
   return (

@@ -10,18 +10,18 @@ import {
 } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import {
-  IOfferIndividualContext,
   OfferIndividualContext,
+  OfferIndividualContextValues,
 } from 'context/OfferIndividualContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
-import { IOfferIndividual, IOfferIndividualVenue } from 'core/Offers/types'
+import { OfferIndividual, OfferIndividualVenue } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { ButtonLink } from 'ui-kit'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import StocksThing, { IStocksThingProps } from '../StocksThing'
+import StocksThing, { StocksThingProps } from '../StocksThing'
 
 const mockLogEvent = jest.fn()
 
@@ -45,8 +45,8 @@ jest.mock('utils/date', () => ({
 const offerId = 12
 
 const renderStockThingScreen = (
-  props: IStocksThingProps,
-  contextValue: IOfferIndividualContext,
+  props: StocksThingProps,
+  contextValue: OfferIndividualContextValues,
   url: string = generatePath(
     getOfferIndividualPath({
       step: OFFER_WIZARD_STEP_IDS.STOCKS,
@@ -101,20 +101,20 @@ const renderStockThingScreen = (
   )
 
 describe('screens:StocksThing', () => {
-  let props: IStocksThingProps
-  let contextValue: IOfferIndividualContext
-  let offer: Partial<IOfferIndividual>
+  let props: StocksThingProps
+  let contextValue: OfferIndividualContextValues
+  let offer: Partial<OfferIndividual>
 
   beforeEach(() => {
     offer = {
       nonHumanizedId: offerId,
       venue: {
         departmentCode: '75',
-      } as IOfferIndividualVenue,
+      } as OfferIndividualVenue,
       stocks: [],
     }
     props = {
-      offer: offer as IOfferIndividual,
+      offer: offer as OfferIndividual,
     }
     contextValue = {
       offerId: null,
@@ -241,12 +241,12 @@ describe('screens:StocksThing', () => {
       nonHumanizedId: offerId,
       venue: {
         departmentCode: '75',
-      } as IOfferIndividualVenue,
+      } as OfferIndividualVenue,
       stocks: [stock],
     }
 
-    props.offer = offer as IOfferIndividual
-    contextValue.offer = offer as IOfferIndividual
+    props.offer = offer as OfferIndividual
+    contextValue.offer = offer as OfferIndividual
     renderStockThingScreen(
       props,
       contextValue,

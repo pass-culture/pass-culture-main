@@ -16,7 +16,7 @@ import {
 
 import styles from './FormStock.module.scss'
 
-export interface IFormStockProps {
+export interface FormStockProps {
   mode: Mode
   disablePriceAndParticipantInputs: boolean
   preventPriceIncrease: boolean
@@ -27,7 +27,7 @@ const FormStock = ({
   mode,
   disablePriceAndParticipantInputs,
   offerDateCreated,
-}: IFormStockProps): JSX.Element => {
+}: FormStockProps): JSX.Element => {
   const { values, setFieldValue } =
     useFormikContext<OfferEducationalStockFormValues>()
 

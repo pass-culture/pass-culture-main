@@ -8,7 +8,7 @@ import {
   getOfferIndividualPathV2,
 } from './getOfferIndividualUrlV2'
 
-interface IGetOfferIndividualPathArgs {
+interface GetOfferIndividualPathArgs {
   isCreation?: boolean
   mode: OFFER_WIZARD_MODE
   step: OFFER_WIZARD_STEP_IDS
@@ -19,7 +19,7 @@ export const getOfferIndividualPath = ({
   mode,
   step,
   isV2 = false,
-}: IGetOfferIndividualPathArgs) => {
+}: GetOfferIndividualPathArgs) => {
   // needed for redirection to old url
   if (isV2) {
     return getOfferIndividualPathV2({
@@ -62,7 +62,7 @@ export const getOfferIndividualPath = ({
   }[step][mode]
 }
 
-interface IGetOfferIndividualUrlArgs {
+interface GetOfferIndividualUrlArgs {
   offerId?: number
   mode: OFFER_WIZARD_MODE
   step: OFFER_WIZARD_STEP_IDS
@@ -73,7 +73,7 @@ const getOfferIndividualUrl = ({
   mode,
   step,
   isV2 = false,
-}: IGetOfferIndividualUrlArgs) => {
+}: GetOfferIndividualUrlArgs) => {
   if (isV2) {
     return getOfferIndividualUrlV2({
       offerId,

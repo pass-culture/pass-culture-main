@@ -3,13 +3,13 @@ import React from 'react'
 
 import style from './FormLayout.module.scss'
 
-interface IFormLayoutMandatoryInfoProps {
+interface FormLayoutMandatoryInfoProps {
   className?: string
 }
 
 const MandatoryInfo = ({
   className,
-}: IFormLayoutMandatoryInfoProps): JSX.Element => {
+}: FormLayoutMandatoryInfoProps): JSX.Element => {
   return (
     <p className={cn(style['mandatory-info'], className)}>
       Tous les champs sont obligatoires sauf mention contraire.

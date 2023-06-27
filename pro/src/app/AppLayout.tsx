@@ -5,16 +5,16 @@ import DomainNameBanner from 'components/DomainNameBanner'
 import Header from 'components/Header/Header'
 import SkipLinks from 'components/SkipLinks'
 
-import { ILayoutConfig } from './AppRouter/routesMap'
+import { LayoutConfig } from './AppRouter/routesMap'
 
 export interface AppLayoutProps {
   children?: React.ReactNode
-  layoutConfig?: ILayoutConfig
+  layoutConfig?: LayoutConfig
   className?: string
 }
 
 const AppLayout = ({ children, layoutConfig, className }: AppLayoutProps) => {
-  const defaultConfig: ILayoutConfig = {
+  const defaultConfig: LayoutConfig = {
     fullscreen: false,
     pageName: 'Accueil',
   }

@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import React from 'react'
 
 import {
-  IOfferIndividualContext,
+  OfferIndividualContextValues,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
 import { individualOfferFactory } from 'utils/individualApiFactories'
@@ -10,8 +10,10 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import PriceCategories from '../PriceCategories'
 
-const renderOffer = (contextOverride?: Partial<IOfferIndividualContext>) => {
-  const contextValue: IOfferIndividualContext = {
+const renderOffer = (
+  contextOverride?: Partial<OfferIndividualContextValues>
+) => {
+  const contextValue: OfferIndividualContextValues = {
     offerId: null,
     offer: null,
     venueList: [],

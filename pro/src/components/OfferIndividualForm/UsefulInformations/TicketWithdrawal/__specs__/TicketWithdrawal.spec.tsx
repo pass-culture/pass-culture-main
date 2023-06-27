@@ -4,10 +4,10 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { IOfferIndividualFormValues } from 'components/OfferIndividualForm/types'
+import { OfferIndividualFormValues } from 'components/OfferIndividualForm/types'
 import { SubmitButton } from 'ui-kit'
 
-import TicketWithdrawal, { ITicketWithdrawalProps } from '../TicketWithdrawal'
+import TicketWithdrawal, { TicketWithdrawalProps } from '../TicketWithdrawal'
 import validationSchema from '../validationSchema'
 
 const renderTicketWithdrawal = ({
@@ -15,8 +15,8 @@ const renderTicketWithdrawal = ({
   initialValues,
   onSubmit = jest.fn(),
 }: {
-  props?: ITicketWithdrawalProps
-  initialValues: Partial<IOfferIndividualFormValues>
+  props?: TicketWithdrawalProps
+  initialValues: Partial<OfferIndividualFormValues>
   onSubmit: () => void
 }) => {
   return render(
@@ -36,7 +36,7 @@ const renderTicketWithdrawal = ({
 }
 
 describe('OfferIndividual section: TicketWithdrawal', () => {
-  let initialValues: Partial<IOfferIndividualFormValues>
+  let initialValues: Partial<OfferIndividualFormValues>
   const onSubmit = jest.fn()
 
   beforeEach(() => {

@@ -3,6 +3,6 @@ export {
   SignupJourneyContextProvider,
   useSignupJourneyContext,
 } from './SignupJourneyContext'
-export type { IOfferer } from './SignupJourneyContext'
-export type { ISignupJourneyContext } from './SignupJourneyContext'
+export type { Offerer } from './SignupJourneyContext'
+export type { SignupJourneyContextValues } from './SignupJourneyContext'
 export { DEFAULT_ACTIVITY_VALUES } from './constants'

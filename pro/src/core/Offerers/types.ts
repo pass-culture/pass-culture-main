@@ -4,9 +4,9 @@ import {
   OffererApiKey,
 } from 'apiClient/v1'
 
-export type TOffererName = GetOffererNameResponseModel
+export type OffererName = GetOffererNameResponseModel
 
-export interface IOfferer {
+export interface Offerer {
   address?: string | null
   apiKey: OffererApiKey
   city: string

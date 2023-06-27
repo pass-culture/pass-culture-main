@@ -5,7 +5,7 @@ import { Title } from 'ui-kit'
 
 import style from './FormLayout.module.scss'
 
-interface IFormLayoutSubSectionProps {
+interface FormLayoutSubSectionProps {
   title: string
   children: React.ReactNode | React.ReactNode[]
   className?: string
@@ -15,7 +15,7 @@ const SubSection = ({
   title,
   children,
   className,
-}: IFormLayoutSubSectionProps): JSX.Element => (
+}: FormLayoutSubSectionProps): JSX.Element => (
   <div className={cn(style['form-layout-sub-section'], className)}>
     <Title as="h3" className={style['form-layout-sub-section-title']} level={4}>
       {title}

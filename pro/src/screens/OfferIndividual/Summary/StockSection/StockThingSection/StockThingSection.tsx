@@ -2,16 +2,16 @@ import { format } from 'date-fns-tz'
 import React from 'react'
 
 import { SummaryLayout } from 'components/SummaryLayout'
-import { IOfferIndividual } from 'core/Offers/types'
+import { OfferIndividual } from 'core/Offers/types'
 import { FORMAT_DD_MM_YYYY, toDateStrippedOfTimezone } from 'utils/date'
 import { formatPrice } from 'utils/formatPrice'
 
-interface IStockThingSectionProps {
-  offer: IOfferIndividual
+interface StockThingSectionProps {
+  offer: OfferIndividual
   canBeDuo?: boolean
 }
 
-const StockThingSection = ({ offer, canBeDuo }: IStockThingSectionProps) => {
+const StockThingSection = ({ offer, canBeDuo }: StockThingSectionProps) => {
   if (offer.isEvent || offer.stocks.length === 0) {
     return null
   }

@@ -11,7 +11,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import styles from './UserEmailForm.module.scss'
 import validationSchema from './validationSchema'
 
-export interface IUserEmailFormProps {
+export interface UserEmailFormProps {
   closeForm: () => void
   postEmailAdapter: PostEmailAdapter
   getPendingEmailRequest: () => void
@@ -21,7 +21,7 @@ const UserEmailForm = ({
   closeForm,
   postEmailAdapter,
   getPendingEmailRequest,
-}: IUserEmailFormProps): JSX.Element => {
+}: UserEmailFormProps): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const onSubmit = (values: any) => {
     postEmailAdapter(values).then(response => {

@@ -5,7 +5,7 @@ import { getLastCollectiveDmsApplication } from 'core/Venue/adapters/getVenueAda
 
 import Venue from './Venue'
 
-interface IVenueListProps {
+interface VenueListProps {
   physicalVenues: GetOffererVenueResponseModel[]
   selectedOffererId: number
   virtualVenue: GetOffererVenueResponseModel | null
@@ -15,7 +15,7 @@ const VenueList = ({
   physicalVenues,
   selectedOffererId,
   virtualVenue,
-}: IVenueListProps) => {
+}: VenueListProps) => {
   return (
     <div className="h-venue-list">
       {virtualVenue && (

@@ -8,7 +8,7 @@ import style from './FormLayout.module.scss'
 
 import { FormLayoutDescription } from '.'
 
-interface IFormLayoutSectionProps {
+interface FormLayoutSectionProps {
   title: React.ReactNode
   description?: string
   children: React.ReactNode | React.ReactNode[]
@@ -26,7 +26,7 @@ const Section = ({
   descriptionAsBanner = false,
   links,
   id,
-}: IFormLayoutSectionProps): JSX.Element => (
+}: FormLayoutSectionProps): JSX.Element => (
   <fieldset>
     <div className={cn(style['form-layout-section'], className)} id={id}>
       <div className={style['form-layout-section-header']}>

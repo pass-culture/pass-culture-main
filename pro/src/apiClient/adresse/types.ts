@@ -1,4 +1,4 @@
-export interface IFeatureAdresseApi {
+export interface FeatureAdresseApi {
   geometry: {
     coordinates: [number, number]
   }
@@ -11,13 +11,13 @@ export interface IFeatureAdresseApi {
   }
 }
 
-export interface IAdresseApiJson {
+export interface AdresseApiJson {
   type: string
   version: string
-  features: Array<IFeatureAdresseApi>
+  features: Array<FeatureAdresseApi>
 }
 
-export interface IAdresseData {
+export interface AdresseData {
   address: string
   city: string
   id: string

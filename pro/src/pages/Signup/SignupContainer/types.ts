@@ -1,4 +1,4 @@
-export interface ISignupFormValues {
+export interface SignupFormValues {
   email: string
   password: string
   firstName: string
@@ -15,7 +15,7 @@ export interface ISignupFormValues {
   }
 }
 
-export interface ISignupApiErrorResponse {
+export interface SignupApiErrorResponse {
   email?: string
   password?: string
   firstName?: string

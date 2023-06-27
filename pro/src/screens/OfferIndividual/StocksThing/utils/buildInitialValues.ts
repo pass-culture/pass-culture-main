@@ -1,9 +1,9 @@
-import { IOfferIndividual } from 'core/Offers/types'
+import { OfferIndividual } from 'core/Offers/types'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES, IStockThingFormValues } from '../'
 
-const buildInitialValues = (offer: IOfferIndividual): IStockThingFormValues => {
+const buildInitialValues = (offer: OfferIndividual): IStockThingFormValues => {
   if (offer.stocks.length === 0) {
     return STOCK_THING_FORM_DEFAULT_VALUES
   }

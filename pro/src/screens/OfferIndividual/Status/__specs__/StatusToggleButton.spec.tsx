@@ -7,13 +7,15 @@ import { OfferStatus } from 'apiClient/v1'
 import * as useNotification from 'hooks/useNotification'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import StatusToggleButton, { IStatusToggleButton } from '../StatusToggleButton'
+import StatusToggleButton, {
+  StatusToggleButtonProps,
+} from '../StatusToggleButton'
 
-const renderStatusToggleButton = (props: IStatusToggleButton) =>
+const renderStatusToggleButton = (props: StatusToggleButtonProps) =>
   renderWithProviders(<StatusToggleButton {...props} />)
 
 describe('StatusToggleButton', () => {
-  let props: IStatusToggleButton
+  let props: StatusToggleButtonProps
   const offerId = 12
   beforeEach(() => {
     props = {

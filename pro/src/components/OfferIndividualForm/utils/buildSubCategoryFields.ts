@@ -1,14 +1,14 @@
-import { IOfferSubCategory } from 'core/Offers/types'
+import { OfferSubCategory } from 'core/Offers/types'
 
 const buildSubCategoryFields = (
   subCategoryId: string,
-  subCategories: IOfferSubCategory[]
+  subCategories: OfferSubCategory[]
 ): {
   subCategoryFields: string[]
   isEvent: boolean
 } => {
   const subCategory = subCategories.find(
-    (subcategory: IOfferSubCategory) => subCategoryId === subcategory.id
+    (subcategory: OfferSubCategory) => subCategoryId === subcategory.id
   )
   const subCategoryFields = [...new Set(subCategory?.conditionalFields || [])]
   const isEvent = subCategory?.isEvent || false

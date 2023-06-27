@@ -5,11 +5,11 @@ import {
   OfferStatus,
 } from 'apiClient/v1'
 import {
-  IOfferIndividual,
-  IOfferIndividualOfferer,
-  IOfferIndividualStock,
-  IOfferIndividualVenue,
-  IOfferIndividualVenueProvider,
+  OfferIndividual,
+  OfferIndividualOfferer,
+  OfferIndividualStock,
+  OfferIndividualVenue,
+  OfferIndividualVenueProvider,
 } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
@@ -43,7 +43,7 @@ describe('serializer', () => {
       remainingQuantity: 10,
     }
 
-    const stockSerialized: IOfferIndividualStock = {
+    const stockSerialized: OfferIndividualStock = {
       beginningDatetime: '01-01-2001',
       bookingLimitDatetime: '01-10-2001',
       bookingsQuantity: 10,
@@ -80,7 +80,7 @@ describe('serializer', () => {
       remainingQuantity: 0,
     }
 
-    const stockSerialized: IOfferIndividualStock = {
+    const stockSerialized: OfferIndividualStock = {
       beginningDatetime: '01-01-2001',
       bookingLimitDatetime: '01-10-2001',
       bookingsQuantity: 10,
@@ -115,7 +115,7 @@ describe('serializer', () => {
       quantity: 20,
     }
 
-    const stockSerialized: IOfferIndividualStock = {
+    const stockSerialized: OfferIndividualStock = {
       beginningDatetime: null,
       bookingLimitDatetime: null,
       bookingsQuantity: 10,
@@ -201,7 +201,7 @@ describe('serializer', () => {
         },
       },
     } as unknown as GetIndividualOfferResponseModel
-    const offerer: IOfferIndividualOfferer = {
+    const offerer: OfferIndividualOfferer = {
       nonHumanizedId: 1,
       name: 'Offerer name',
     }
@@ -234,7 +234,7 @@ describe('serializer', () => {
         },
       },
     } as unknown as GetIndividualOfferResponseModel
-    const venue: IOfferIndividualVenue = {
+    const venue: OfferIndividualVenue = {
       id: venueId,
       name: 'venue name',
       publicName: 'venue publicName',
@@ -294,7 +294,7 @@ describe('serializer', () => {
     const venueProviderApi: GetOfferLastProviderResponseModel = {
       name: 'Awesom provider',
     }
-    const provider: IOfferIndividualVenueProvider = {
+    const provider: OfferIndividualVenueProvider = {
       name: 'Awesom provider',
     }
 
@@ -303,7 +303,7 @@ describe('serializer', () => {
   it('serializeOfferApi', async () => {
     const offerApi: GetIndividualOfferResponseModel =
       GetIndividualOfferFactory()
-    const offerSerialized: IOfferIndividual = {
+    const offerSerialized: OfferIndividual = {
       accessibility: {
         audio: false,
         mental: false,

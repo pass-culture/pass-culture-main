@@ -4,7 +4,7 @@ import React, { useState, useId } from 'react'
 import styles from './BaseRadio.module.scss'
 import { BaseRadioVariant } from './types'
 
-interface IBaseInputProps
+interface BaseInputProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
   label: string | JSX.Element
   hasError?: boolean
@@ -21,7 +21,7 @@ const BaseInput = ({
 
   variant = /* istanbul ignore next: graphic variation */ BaseRadioVariant.PRIMARY,
   ...props
-}: IBaseInputProps): JSX.Element => {
+}: BaseInputProps): JSX.Element => {
   // TODO : https://stackoverflow.com/a/71681435 when upgrading React 18
   const [id] = useState(useId())
 

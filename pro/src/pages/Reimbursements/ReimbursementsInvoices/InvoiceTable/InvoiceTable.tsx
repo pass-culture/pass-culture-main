@@ -4,11 +4,11 @@ import { InvoiceResponseModel } from 'apiClient/v1'
 
 import ReimbursementsTable from '../../ReimbursementsTable'
 
-interface IInvoiceTableProps {
+interface InvoiceTableProps {
   invoices: InvoiceResponseModel[]
 }
 
-const InvoiceTable = ({ invoices }: IInvoiceTableProps) => {
+const InvoiceTable = ({ invoices }: InvoiceTableProps) => {
   const columns = [
     {
       title: 'Date du justificatif',

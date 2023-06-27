@@ -3,12 +3,12 @@ export enum MESSAGE_VARIANT {
   ERROR = 'error',
 }
 
-export interface IErrorMessage {
+export interface ErrorMessage {
   message: string
   variant: MESSAGE_VARIANT
 }
 
-export interface IBooking {
+export interface Booking {
   datetime: string
   ean13?: string | null
   offerName: string
@@ -19,19 +19,19 @@ export interface IBooking {
   venueDepartmentCode?: string | null
 }
 
-export interface IDeskGetBookingResponse {
-  error?: IErrorMessage & {
+export interface DeskGetBookingResponse {
+  error?: ErrorMessage & {
     isTokenValidated: boolean
   }
-  booking?: IBooking
+  booking?: Booking
 }
 
 export interface DeskProps {
-  getBooking: (token: string) => Promise<IDeskGetBookingResponse>
-  submitInvalidate: (token: string) => Promise<IDeskSubmitResponse>
-  submitValidate: (token: string) => Promise<IDeskSubmitResponse>
+  getBooking: (token: string) => Promise<DeskGetBookingResponse>
+  submitInvalidate: (token: string) => Promise<DeskSubmitResponse>
+  submitValidate: (token: string) => Promise<DeskSubmitResponse>
 }
 
-export interface IDeskSubmitResponse {
-  error?: IErrorMessage
+export interface DeskSubmitResponse {
+  error?: ErrorMessage
 }

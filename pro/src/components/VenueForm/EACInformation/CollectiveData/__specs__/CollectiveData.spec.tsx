@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { IVenue } from 'core/Venue'
+import { Venue } from 'core/Venue'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveData from '../CollectiveData'
@@ -18,7 +18,7 @@ describe('CollectiveData', () => {
     collectivePhone: '',
     collectiveStudents: ['Collège - 3e'],
     collectiveWebsite: undefined,
-  } as unknown as IVenue // we only test for used fields
+  } as unknown as Venue // we only test for used fields
 
   beforeEach(() => {
     jest
@@ -37,7 +37,7 @@ describe('CollectiveData', () => {
       collectivePhone: '0600000000',
       collectiveStudents: ['Collège - 3e'],
       collectiveWebsite: 'www.google.fr',
-    } as unknown as IVenue // we only test for used fields
+    } as unknown as Venue // we only test for used fields
 
     jest
       .spyOn(api, 'getEducationalPartners')

@@ -2,7 +2,7 @@ import type { LocationListener } from 'history'
 import { useEffect } from 'react'
 import { matchPath, useLocation } from 'react-router-dom'
 
-import routes, { IRoute } from 'app/AppRouter/routesMap'
+import routes, { RouteConfig } from 'app/AppRouter/routesMap'
 import routesOfferIndividualWizardDefinitions from 'app/AppRouter/subroutesOfferIndividualWizardMap'
 import routesSignupJourneyDefinitions from 'app/AppRouter/subroutesSignupJourneyMap'
 import routesSignupDefinitions from 'app/AppRouter/subroutesSignupMap'
@@ -19,7 +19,7 @@ const usePageTitle = (): LocationListener | void => {
     ]
       .reverse()
       .find(
-        ({ path, parentPath }: IRoute) =>
+        ({ path, parentPath }: RouteConfig) =>
           matchPath(`${parentPath || ''}${path}`, location.pathname) !== null
       )
 

@@ -1,12 +1,12 @@
 import { useCallback, useState } from 'react'
 
-import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
+import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 import deleteCollectiveOfferImageAdapter from 'core/OfferEducational/adapters/deleteCollectiveOfferImageAdapter'
 import deleteCollectiveOfferTemplateImageAdapter from 'core/OfferEducational/adapters/deleteCollectiveOfferTemplateImageAdapter'
 import postCollectiveOfferImageAdapter from 'core/OfferEducational/adapters/postCollectiveOfferImageAdapter'
 import postCollectiveOfferTemplateImageAdapter from 'core/OfferEducational/adapters/postCollectiveOfferTemplateImageAdapter'
-import { IOfferCollectiveImage } from 'core/Offers/types'
+import { OfferCollectiveImage } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
 
 export const useCollectiveOfferImageUpload = (
@@ -14,16 +14,16 @@ export const useCollectiveOfferImageUpload = (
   isTemplate?: boolean
 ) => {
   const notify = useNotification()
-  const [imageOffer, setImageOffer] = useState<IOfferCollectiveImage | null>(
+  const [imageOffer, setImageOffer] = useState<OfferCollectiveImage | null>(
     offer !== undefined
       ? { url: offer.imageUrl, credit: offer.imageCredit }
       : null
   )
-  const [imageToUpload, setImageToUpload] = useState<IOnImageUploadArgs | null>(
+  const [imageToUpload, setImageToUpload] = useState<OnImageUploadArgs | null>(
     null
   )
 
-  const onImageUpload = useCallback(async (image: IOnImageUploadArgs) => {
+  const onImageUpload = useCallback(async (image: OnImageUploadArgs) => {
     setImageToUpload(image)
     setImageOffer({ url: image.imageCroppedDataUrl, credit: image.credit })
   }, [])

@@ -23,7 +23,7 @@ import {
 } from 'apiClient/v1'
 import { BOOKING_STATUS } from 'core/Bookings'
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
-import { IVenue } from 'core/Venue'
+import { Venue } from 'core/Venue'
 
 let offerId = 1
 let stockId = 1
@@ -329,7 +329,7 @@ export const defaultCollectiveDmsApplication: DMSApplicationForEAC = {
 }
 
 // FIXME : to remove while this type should be used in the future
-export const defaultIVenue: IVenue = {
+export const defaultVenue: Venue = {
   name: 'Lieu de test',
   address: '1 rue de test',
   city: 'Paris',

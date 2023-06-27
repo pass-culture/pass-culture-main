@@ -3,7 +3,7 @@ import React from 'react'
 
 import style from './SummaryLayout.module.scss'
 
-interface ISummaryLayoutContentProps {
+interface SummaryLayoutContentProps {
   className?: string
   children?: React.ReactNode | React.ReactNode[]
   fullWidth?: boolean
@@ -13,7 +13,7 @@ const Content = ({
   className,
   children,
   fullWidth = false,
-}: ISummaryLayoutContentProps): JSX.Element => (
+}: SummaryLayoutContentProps): JSX.Element => (
   <div
     className={cn(style['summary-layout-content'], className, {
       [style['full-width']]: fullWidth,

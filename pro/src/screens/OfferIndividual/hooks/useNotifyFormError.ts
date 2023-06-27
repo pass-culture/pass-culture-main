@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { FORM_ERROR_MESSAGE } from 'core/shared'
 import useNotification from 'hooks/useNotification'
 
-interface IUseNotifyFormErrorProps {
+interface UseNotifyFormErrorProps {
   isSubmitting: boolean
   errors: FormikErrors<any>
 }
@@ -12,7 +12,7 @@ interface IUseNotifyFormErrorProps {
 const useNotifyFormError = ({
   isSubmitting,
   errors,
-}: IUseNotifyFormErrorProps): void => {
+}: UseNotifyFormErrorProps): void => {
   const notify = useNotification()
   useEffect(() => {
     if (isSubmitting && Object.keys(errors).length > 0) {

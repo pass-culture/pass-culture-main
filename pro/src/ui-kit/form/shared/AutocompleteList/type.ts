@@ -1,4 +1,4 @@
-export interface IAutocompleteItemProps {
+export interface AutocompleteItemProps {
   value: string | number
   label: string
   disabled?: boolean

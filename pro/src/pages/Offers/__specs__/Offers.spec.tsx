@@ -13,7 +13,7 @@ import {
   DEFAULT_CREATION_MODE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { Offer, TSearchFilters } from 'core/Offers/types'
+import { Offer, SearchFiltersParams } from 'core/Offers/types'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import { individualOfferFactory } from 'screens/Offers/utils/individualOffersFactories'
@@ -24,7 +24,7 @@ import OffersRoute from '../../../pages/Offers/OffersRoute'
 
 const renderOffers = async (
   storeOverrides: any,
-  filters: Partial<TSearchFilters> & {
+  filters: Partial<SearchFiltersParams> & {
     page?: number
     audience?: Audience
   } = DEFAULT_SEARCH_FILTERS

@@ -4,7 +4,7 @@ import React from 'react'
 import style from './FormLayout.module.scss'
 import RowWithInfo from './FormLayoutRowWithInfo'
 
-interface IFormLayoutRowProps {
+interface FormLayoutRowProps {
   children: React.ReactNode | React.ReactNode[]
   className?: string
   inline?: boolean
@@ -20,7 +20,7 @@ const Row = ({
   mdSpaceAfter,
   smSpaceAfter,
   sideComponent,
-}: IFormLayoutRowProps): JSX.Element => {
+}: FormLayoutRowProps): JSX.Element => {
   return sideComponent !== undefined ? (
     <RowWithInfo
       className={className}

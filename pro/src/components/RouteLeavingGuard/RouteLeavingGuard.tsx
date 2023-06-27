@@ -9,7 +9,7 @@ export type BlockerFunction = (args: {
   nextLocation: Location
 }) => boolean
 
-export interface IRouteLeavingGuardProps {
+export interface RouteLeavingGuardProps {
   children?: ReactNode | ReactNode[]
   extraClassNames?: string
   shouldBlockNavigation: BlockerFunction
@@ -31,7 +31,7 @@ const RouteLeavingGuard = ({
   rightButton = 'Quitter',
   leftButton = 'Annuler',
   closeModalOnRightButton = false,
-}: IRouteLeavingGuardProps) => {
+}: RouteLeavingGuardProps) => {
   const blocker = unstable_useBlocker(shouldBlockNavigation)
 
   const closeModal = () => {

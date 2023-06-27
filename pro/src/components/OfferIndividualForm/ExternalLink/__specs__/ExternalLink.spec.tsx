@@ -4,11 +4,11 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
+import { OfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { SubmitButton } from 'ui-kit'
 
 import { EXTERNAL_LINK_DEFAULT_VALUES } from '../constants'
-import ExternalLink, { IExternalLink } from '../ExternalLink'
+import ExternalLink, { ExternalLinkProps } from '../ExternalLink'
 import validationSchema from '../validationSchema'
 
 const renderExternalLink = ({
@@ -16,8 +16,8 @@ const renderExternalLink = ({
   initialValues,
   onSubmit,
 }: {
-  props?: IExternalLink
-  initialValues: Partial<IOfferIndividualFormValues>
+  props?: ExternalLinkProps
+  initialValues: Partial<OfferIndividualFormValues>
   onSubmit: () => void
 }) => {
   render(
@@ -35,7 +35,7 @@ const renderExternalLink = ({
 }
 
 describe('OfferIndividual section: ExternalLink', () => {
-  let initialValues: Partial<IOfferIndividualFormValues>
+  let initialValues: Partial<OfferIndividualFormValues>
   const onSubmit = jest.fn()
 
   beforeEach(() => {

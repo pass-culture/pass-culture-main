@@ -4,7 +4,7 @@ import { ReactComponent as LoaderSvg } from 'icons/ico-passculture.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-interface IVenueStatProps {
+interface VenueStatProps {
   count?: string
   label: string
   link: {
@@ -15,7 +15,7 @@ interface IVenueStatProps {
   }
   onClick: () => void
 }
-const VenueStat = ({ count, label, link, onClick }: IVenueStatProps) => (
+const VenueStat = ({ count, label, link, onClick }: VenueStatProps) => (
   <div className="h-card-col" data-testid="venue-stat">
     {
       /* istanbul ignore next: DEBT, TO FIX */ count ? (

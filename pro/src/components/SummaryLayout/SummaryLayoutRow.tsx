@@ -3,7 +3,7 @@ import React from 'react'
 
 import style from './SummaryLayout.module.scss'
 
-interface ISummaryLayoutRowProps {
+interface SummaryLayoutRowProps {
   className?: string
   description: string | number | React.ReactNode
   title?: string
@@ -13,7 +13,7 @@ const Row = ({
   className,
   description,
   title,
-}: ISummaryLayoutRowProps): JSX.Element => (
+}: SummaryLayoutRowProps): JSX.Element => (
   <div className={cn(style['summary-layout-row'], className)}>
     <span className={style['summary-layout-row-title']}>
       {title}

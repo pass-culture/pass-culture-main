@@ -4,13 +4,13 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
+import { OfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS, INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
-import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
+import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
 import { SubmitButton } from 'ui-kit'
 
-import Categories, { ICategoriesProps } from '../Categories'
+import Categories, { CategoriesProps } from '../Categories'
 import { CATEGORIES_DEFAULT_VALUES } from '../constants'
 import validationSchema from '../validationSchema'
 
@@ -19,9 +19,9 @@ const renderCategories = ({
   onSubmit,
   props,
 }: {
-  initialValues: Partial<IOfferIndividualFormValues>
+  initialValues: Partial<OfferIndividualFormValues>
   onSubmit: () => void
-  props: ICategoriesProps
+  props: CategoriesProps
 }) => {
   render(
     <Formik
@@ -38,11 +38,11 @@ const renderCategories = ({
 }
 
 describe('OfferIndividual section: Categories', () => {
-  let initialValues: Partial<IOfferIndividualFormValues>
+  let initialValues: Partial<OfferIndividualFormValues>
   const onSubmit = jest.fn()
-  let props: ICategoriesProps
-  let categories: IOfferCategory[] = []
-  let subCategories: IOfferSubCategory[] = []
+  let props: CategoriesProps
+  let categories: OfferCategory[] = []
+  let subCategories: OfferSubCategory[] = []
 
   beforeEach(() => {
     initialValues = { ...CATEGORIES_DEFAULT_VALUES }

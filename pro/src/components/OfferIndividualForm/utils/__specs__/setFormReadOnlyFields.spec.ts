@@ -7,7 +7,7 @@ import {
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
 } from 'core/Offers/constants'
-import { IOfferIndividual } from 'core/Offers/types'
+import { OfferIndividual } from 'core/Offers/types'
 
 import { FORM_DEFAULT_VALUES } from '../../constants'
 import setFormReadOnlyFields from '../setFormReadOnlyFields'
@@ -24,7 +24,7 @@ describe('setFormReadOnlyFields', () => {
     async status => {
       const offer = {
         status,
-      } as IOfferIndividual
+      } as OfferIndividual
       const readOnlyFields = setFormReadOnlyFields(offer)
       expect(readOnlyFields).toStrictEqual(Object.keys(FORM_DEFAULT_VALUES))
     }
@@ -41,7 +41,7 @@ describe('setFormReadOnlyFields', () => {
     async status => {
       const offer = {
         status,
-      } as IOfferIndividual
+      } as OfferIndividual
       const readOnlyFields = setFormReadOnlyFields(offer)
       expect(readOnlyFields).toStrictEqual([
         'categoryId',
@@ -61,7 +61,7 @@ describe('setFormReadOnlyFields', () => {
       lastProvider: {
         name: 'AlLocINé',
       },
-    } as IOfferIndividual
+    } as OfferIndividual
     const readOnlyFields = setFormReadOnlyFields(offer)
     expect(readOnlyFields).toStrictEqual(expectedReadOnlyFields)
   })
@@ -75,7 +75,7 @@ describe('setFormReadOnlyFields', () => {
       lastProvider: {
         name: 'AnySyncProviderName',
       },
-    } as IOfferIndividual
+    } as OfferIndividual
     const readOnlyFields = setFormReadOnlyFields(offer)
     expect(readOnlyFields).toStrictEqual(expectedReadOnlyFields)
   })

@@ -7,8 +7,8 @@ import { Route, Routes } from 'react-router-dom'
 import { apiAdresse } from 'apiClient/adresse'
 import Notification from 'components/Notification/Notification'
 import {
-  ISignupJourneyContext,
   SignupJourneyContext,
+  SignupJourneyContextValues,
 } from 'context/SignupJourneyContext'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -67,7 +67,7 @@ fetch.mockResponse(
 )
 
 const renderOffererAuthentiationScreen = (
-  contextValue: ISignupJourneyContext
+  contextValue: SignupJourneyContextValues
 ) => {
   const storeOverrides = {
     user: {
@@ -106,7 +106,7 @@ const renderOffererAuthentiationScreen = (
   )
 }
 describe('screens:SignupJourney::OffererAuthentication', () => {
-  let contextValue: ISignupJourneyContext
+  let contextValue: SignupJourneyContextValues
   beforeEach(() => {
     contextValue = {
       activity: null,

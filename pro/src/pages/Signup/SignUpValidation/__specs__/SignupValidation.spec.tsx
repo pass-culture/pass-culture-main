@@ -6,7 +6,7 @@ import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import type { IUseCurrentUserReturn } from 'hooks/useCurrentUser'
+import type { UseCurrentUserReturn } from 'hooks/useCurrentUser'
 import * as useCurrentUser from 'hooks/useCurrentUser'
 import * as useNotification from 'hooks/useNotification'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -44,7 +44,7 @@ describe('src | components | pages | Signup | validation', () => {
     }))
     jest.spyOn(useCurrentUser, 'default').mockReturnValue({
       currentUser: {},
-    } as IUseCurrentUserReturn)
+    } as UseCurrentUserReturn)
   })
 
   afterEach(jest.resetAllMocks)
@@ -55,7 +55,7 @@ describe('src | components | pages | Signup | validation', () => {
       currentUser: {
         nonHumanizedId: 123,
       },
-    } as IUseCurrentUserReturn)
+    } as UseCurrentUserReturn)
     // when the user is logged in and lands on signup validation page
     renderSignupValidation('/validation/AAA')
 

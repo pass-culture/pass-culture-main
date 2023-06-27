@@ -1,6 +1,6 @@
-import { IActivity } from './SignupJourneyContext'
+import { ActivityContext } from './SignupJourneyContext'
 
-export const DEFAULT_ACTIVITY_VALUES: IActivity = {
+export const DEFAULT_ACTIVITY_VALUES: ActivityContext = {
   venueTypeCode: '',
   socialUrls: [''],
   targetCustomer: undefined,

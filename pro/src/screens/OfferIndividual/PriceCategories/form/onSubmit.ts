@@ -5,7 +5,7 @@ import {
   updateIndividualOffer,
 } from 'core/Offers/adapters'
 import { serializePatchOffer } from 'core/Offers/adapters/updateIndividualOffer/serializers'
-import { IOfferIndividual } from 'core/Offers/types'
+import { OfferIndividual } from 'core/Offers/types'
 
 import postPriceCategoriesAdapter from '../adapters/postPriceCategoriesAdapter'
 import { serializePriceCategories } from '../adapters/serializePriceCategories'
@@ -15,8 +15,8 @@ import { PriceCategoriesFormValues } from './types'
 
 export const onSubmit = async (
   values: PriceCategoriesFormValues,
-  offer: IOfferIndividual,
-  setOffer: ((offer: IOfferIndividual | null) => void) | null,
+  offer: OfferIndividual,
+  setOffer: ((offer: OfferIndividual | null) => void) | null,
   resetForm: (
     nextState?: Partial<FormikState<PriceCategoriesFormValues>> | undefined
   ) => void

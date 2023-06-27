@@ -7,7 +7,7 @@ import { Audience, NBSP } from 'core/shared'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as EyeIcon } from 'icons/full-hide.svg'
 
-export interface IDeactivationConfirmDialogProps {
+export interface DeactivationConfirmDialogProps {
   areAllOffersSelected: boolean
   nbSelectedOffers: number
   onCancel: (status: boolean) => void
@@ -21,7 +21,7 @@ const DeactivationConfirmDialog = ({
   nbSelectedOffers,
   onConfirm,
   audience,
-}: IDeactivationConfirmDialogProps): JSX.Element => {
+}: DeactivationConfirmDialogProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const location = useLocation()
 

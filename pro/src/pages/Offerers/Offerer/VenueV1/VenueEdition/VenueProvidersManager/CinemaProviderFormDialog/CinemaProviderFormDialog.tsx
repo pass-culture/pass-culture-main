@@ -6,7 +6,7 @@ import DialogBox from 'components/DialogBox'
 
 import { CinemaProviderForm } from '../CinemaProviderForm/CinemaProviderForm'
 
-interface ICinemaProviderFormDialogProps {
+interface CinemaProviderFormDialogProps {
   onCancel: () => void
   onConfirm: (payload: any) => void
   initialValues: any
@@ -22,7 +22,7 @@ export const CinemaProviderFormDialog = ({
   providerId,
   venueId,
   offererId,
-}: ICinemaProviderFormDialogProps) => {
+}: CinemaProviderFormDialogProps) => {
   return (
     <DialogBox
       extraClassNames="cinema-provider-form-dialog"

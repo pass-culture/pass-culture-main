@@ -2,15 +2,15 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
-import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
+import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
+import { OfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
-import { TOffererName } from 'core/Offerers/types'
+import { OffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS, INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
 import {
-  IOfferCategory,
-  IOfferIndividualImage,
-  IOfferSubCategory,
+  OfferCategory,
+  OfferIndividualImage,
+  OfferSubCategory,
 } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
@@ -26,15 +26,15 @@ import { Notifications } from './Notifications'
 import { UsefulInformations } from './UsefulInformations'
 import { getFilteredVenueList } from './utils/getFilteredVenueList'
 
-export interface IOfferIndividualFormProps {
-  offererNames: TOffererName[]
+export interface OfferIndividualFormProps {
+  offererNames: OffererName[]
   venueList: TOfferIndividualVenue[]
-  categories: IOfferCategory[]
-  subCategories: IOfferSubCategory[]
-  onImageUpload: (values: IOnImageUploadArgs) => Promise<void>
+  categories: OfferCategory[]
+  subCategories: OfferSubCategory[]
+  onImageUpload: (values: OnImageUploadArgs) => Promise<void>
   onImageDelete: () => Promise<void>
   readOnlyFields?: string[]
-  imageOffer?: IOfferIndividualImage
+  imageOffer?: OfferIndividualImage
   offerSubtype: INDIVIDUAL_OFFER_SUBTYPE | null
 }
 
@@ -48,13 +48,13 @@ const OfferIndividualForm = ({
   onImageDelete,
   imageOffer,
   offerSubtype,
-}: IOfferIndividualFormProps) => {
+}: OfferIndividualFormProps) => {
   const {
     currentUser: { isAdmin },
   } = useCurrentUser()
   const {
     values: { offererId, subcategoryId, venueId },
-  } = useFormikContext<IOfferIndividualFormValues>()
+  } = useFormikContext<OfferIndividualFormValues>()
 
   useScrollToFirstErrorAfterSubmit()
 

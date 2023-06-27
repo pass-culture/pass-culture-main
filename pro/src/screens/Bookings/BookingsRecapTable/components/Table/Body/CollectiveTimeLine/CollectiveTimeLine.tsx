@@ -16,7 +16,7 @@ import { ReactComponent as FullLink } from 'icons/full-link.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Timeline from 'ui-kit/Timeline'
-import { ITimelineStep, TimelineStepType } from 'ui-kit/Timeline/Timeline'
+import { TimelineStep, TimelineStepType } from 'ui-kit/Timeline/Timeline'
 import { getDateToFrenchText } from 'utils/date'
 
 import styles from './CollectiveTimeLine.module.scss'
@@ -441,7 +441,7 @@ const CollectiveTimeLine = ({
     ),
   }
 
-  const arrayHistoryStep: Array<ITimelineStep> =
+  const arrayHistoryStep: Array<TimelineStep> =
     bookingRecap.bookingStatusHistory.map(el => {
       switch (el.status) {
         case BOOKING_STATUS.PENDING:

@@ -1,9 +1,9 @@
 /* istanbul ignore file: Those are test helpers, their coverage is not relevant */
-import { IStockThingFormValues } from './types'
+import { StockThingFormValues } from './types'
 
 export const stockThingFactory = (
-  customStockThing: Partial<IStockThingFormValues> = {}
-): IStockThingFormValues => ({
+  customStockThing: Partial<StockThingFormValues> = {}
+): StockThingFormValues => ({
   stockId: 1,
   remainingQuantity: '10',
   bookingsQuantity: '1',

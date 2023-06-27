@@ -6,13 +6,13 @@ import deskIcon from 'icons/stroke-desk.svg'
 import strokeEuro from 'icons/stroke-euro.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { IStepComponentProps } from '../types'
+import { StepComponentProps } from '../types'
 
 import { ReactComponent as DownArrow } from './assets/down-arrow.svg'
 import { ReactComponent as UpArrow } from './assets/up-arrow.svg'
 import styles from './Step.module.scss'
 
-const ManageBookings = ({ titleId }: IStepComponentProps): JSX.Element => (
+const ManageBookings = ({ titleId }: StepComponentProps): JSX.Element => (
   <>
     <h1 id={titleId}>Suivez et gérez vos réservations</h1>
     <section className={styles['mb-content']}>

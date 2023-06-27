@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 
-import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
+import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
@@ -10,7 +10,7 @@ import {
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { createThumbnailAdapter } from 'core/Offers/adapters/createThumbnailAdapter'
 import { deleteThumbnailAdapter } from 'core/Offers/adapters/deleteThumbnailAdapter'
-import { IOfferIndividualImage } from 'core/Offers/types'
+import { OfferIndividualImage } from 'core/Offers/types'
 import { SENT_DATA_ERROR_MESSAGE } from 'core/shared'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
@@ -25,16 +25,16 @@ export const useIndividualOfferImageUpload = () => {
   const { offerId, offer, setOffer } = useOfferIndividualContext()
 
   const [imageOfferCreationArgs, setImageOfferCreationArgs] = useState<
-    IOnImageUploadArgs | undefined
+    OnImageUploadArgs | undefined
   >(undefined)
   const [imageOffer, setImageOffer] = useState<
-    IOfferIndividualImage | undefined
+    OfferIndividualImage | undefined
   >(offer && offer.image ? offer.image : undefined)
 
   const handleImageOnSubmit = useCallback(
     async (
       imageOfferId: number,
-      imageEditionCreationArgs?: IOnImageUploadArgs
+      imageEditionCreationArgs?: OnImageUploadArgs
     ) => {
       // Param is passed through state when the offer is not created yet and through param
       // in edition, which is not ideal. We should only have one flow here
@@ -80,7 +80,7 @@ export const useIndividualOfferImageUpload = () => {
     imageCroppedDataUrl,
     credit,
     cropParams,
-  }: IOnImageUploadArgs) => {
+  }: OnImageUploadArgs) => {
     const creationArgs = {
       imageFile,
       credit,

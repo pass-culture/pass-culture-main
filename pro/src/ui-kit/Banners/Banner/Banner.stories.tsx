@@ -2,21 +2,21 @@ import type { Story } from '@storybook/react'
 import React from 'react'
 
 import { ReactComponent as BannerImage } from './assets/job_highlights_banner.svg'
-import Banner, { IBannerProps } from './Banner'
+import Banner, { BannerProps } from './Banner'
 
 export default {
   title: 'ui-kit/Banner',
   component: Banner,
 }
 
-const Template: Story<IBannerProps> = props => (
+const Template: Story<BannerProps> = props => (
   <Banner {...props}>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
     tempor incididunt ut labore et dolore magna aliqua.
   </Banner>
 )
 
-const ImageTemplate: Story<IBannerProps> = props => (
+const ImageTemplate: Story<BannerProps> = props => (
   <Banner {...props}>
     <a
       href="https://docsend.com/view/n9yniyrtusp82a9m"

@@ -1,13 +1,13 @@
 import { getYupValidationSchemaErrors } from 'utils/yupValidationTestHelpers'
 
 import { stockThingFactory } from '../stockThingFactory'
-import { IStockThingFormValues } from '../types'
+import { StockThingFormValues } from '../types'
 import { getValidationSchema } from '../validationSchema'
 
 describe('validationSchema', () => {
   const cases: {
     description: string
-    formValues: Partial<IStockThingFormValues>
+    formValues: Partial<StockThingFormValues>
     expectedErrors: string[]
     minQuantity: null | number
   }[] = [

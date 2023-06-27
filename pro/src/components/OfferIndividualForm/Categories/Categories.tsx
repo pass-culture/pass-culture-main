@@ -6,10 +6,10 @@ import BannerAddVenue from 'components/Banner/BannerAddVenue'
 import FormLayout from 'components/FormLayout'
 import {
   FORM_DEFAULT_VALUES,
-  IOfferIndividualFormValues,
+  OfferIndividualFormValues,
 } from 'components/OfferIndividualForm'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
-import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
+import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import { InfoBox, Select } from 'ui-kit'
@@ -24,30 +24,30 @@ import { MusicTypes } from './MusicTypes'
 import { OfferSubtypeTag } from './OfferSubtypeTag/OfferSubtypeTag'
 import { ShowTypes } from './ShowTypes'
 
-export interface ICategoriesProps {
-  categories: IOfferCategory[]
-  subCategories: IOfferSubCategory[]
+export interface CategoriesProps {
+  categories: OfferCategory[]
+  subCategories: OfferSubCategory[]
   readOnlyFields?: string[]
   showAddVenueBanner?: boolean
   offerSubtype: INDIVIDUAL_OFFER_SUBTYPE | null
   venueList: TOfferIndividualVenue[]
 }
 
-const buildCategoryOptions = (categories: IOfferCategory[]): SelectOption[] =>
+const buildCategoryOptions = (categories: OfferCategory[]): SelectOption[] =>
   categories
-    .map((category: IOfferCategory) => ({
+    .map((category: OfferCategory) => ({
       value: category.id,
       label: category.proLabel,
     }))
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
 
 const buildSubcategoryOptions = (
-  subCategories: IOfferSubCategory[],
+  subCategories: OfferSubCategory[],
   categoryId: string
 ): SelectOption[] =>
   buildCategoryOptions(
     subCategories.filter(
-      (subCategory: IOfferSubCategory) => subCategory.categoryId === categoryId
+      (subCategory: OfferSubCategory) => subCategory.categoryId === categoryId
     )
   )
 
@@ -58,11 +58,11 @@ const Categories = ({
   showAddVenueBanner = false,
   offerSubtype,
   venueList,
-}: ICategoriesProps): JSX.Element => {
+}: CategoriesProps): JSX.Element => {
   const {
     values: { categoryId, subCategoryFields, offererId },
     setFieldValue,
-  } = useFormikContext<IOfferIndividualFormValues>()
+  } = useFormikContext<OfferIndividualFormValues>()
   const categoryOptions = buildCategoryOptions(categories)
   const subcategoryOptions = buildSubcategoryOptions(subCategories, categoryId)
 

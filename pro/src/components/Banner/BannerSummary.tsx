@@ -3,11 +3,11 @@ import React from 'react'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import Banner from 'ui-kit/Banners/Banner'
 
-interface IBannerSummaryProps {
+interface BannerSummaryProps {
   mode: OFFER_WIZARD_MODE
 }
 
-const BannerSummary = ({ mode }: IBannerSummaryProps): JSX.Element => {
+const BannerSummary = ({ mode }: BannerSummaryProps): JSX.Element => {
   return (
     <>
       <Banner type="notification-info">

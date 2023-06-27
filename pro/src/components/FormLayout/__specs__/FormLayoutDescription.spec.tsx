@@ -2,13 +2,13 @@ import { render, screen } from '@testing-library/react'
 import React from 'react'
 
 import { FormLayoutDescription } from '..'
-import { IFormLayoutDescriptionProps } from '../FormLayoutDescription'
+import { FormLayoutDescriptionProps } from '../FormLayoutDescription'
 
 const renderFormLayoutDescription = ({
   description,
   isBanner,
   links,
-}: IFormLayoutDescriptionProps) => {
+}: FormLayoutDescriptionProps) => {
   render(
     <FormLayoutDescription
       description={description}
@@ -19,7 +19,7 @@ const renderFormLayoutDescription = ({
 }
 
 describe('Description', () => {
-  let descriptionProps: IFormLayoutDescriptionProps
+  let descriptionProps: FormLayoutDescriptionProps
 
   beforeEach(() => {
     descriptionProps = {

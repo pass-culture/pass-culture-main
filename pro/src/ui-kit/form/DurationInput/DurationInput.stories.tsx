@@ -3,14 +3,14 @@ import { Formik } from 'formik'
 import React from 'react'
 
 import DurationInput from './DurationInput'
-import type { IDurationInputProps } from './DurationInput'
+import type { DurationInputProps } from './DurationInput'
 import { validationSchema } from './validationSchema'
 
 export default {
   title: 'ui-kit/forms/DurationInput',
   component: DurationInput,
 }
-interface Args extends IDurationInputProps {
+interface Args extends DurationInputProps {
   initialValues: { durationMinutes: string | null }
 }
 

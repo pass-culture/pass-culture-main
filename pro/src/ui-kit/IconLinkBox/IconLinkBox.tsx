@@ -5,7 +5,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './IconLinkBox.module.scss'
 
-export interface IIconLinkBoxProps {
+export interface IconLinkBoxProps {
   title: string
   linkTitle: string
   linkUrl: string
@@ -29,7 +29,7 @@ const IconLinkBox = ({
   linkTitle,
   linkUrl,
   onClick,
-}: IIconLinkBoxProps) => {
+}: IconLinkBoxProps) => {
   return (
     <div className={styles['icon-link-box']}>
       <div className={styles['icon-link-box-header']}>

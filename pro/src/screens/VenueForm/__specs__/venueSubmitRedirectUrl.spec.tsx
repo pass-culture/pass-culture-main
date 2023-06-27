@@ -1,9 +1,9 @@
 import { SharedCurrentUserResponseModel } from 'apiClient/v1'
 
-import { IOfferer } from '../../../core/Offerers/types'
+import { Offerer } from '../../../core/Offerers/types'
 import { venueSubmitRedirectUrl } from '../utils/venueSubmitRedirectUrl'
 
-const offerer = { nonHumanizedId: 1 } as IOfferer
+const offerer = { nonHumanizedId: 1 } as Offerer
 
 describe('redirect url after submit', () => {
   it.each([true, false])(

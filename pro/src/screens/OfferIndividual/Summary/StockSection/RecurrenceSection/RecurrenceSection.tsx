@@ -1,17 +1,17 @@
 import React from 'react'
 
 import { SummaryLayout } from 'components/SummaryLayout'
-import { IOfferIndividual, IOfferIndividualStock } from 'core/Offers/types'
+import { OfferIndividual, OfferIndividualStock } from 'core/Offers/types'
 import { FORMAT_DD_MM_YYYY } from 'utils/date'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
-interface IRecurrenceSectionProps {
-  offer: IOfferIndividual
+interface RecurrenceSectionProps {
+  offer: OfferIndividual
 }
 
 const sortStocks = (
-  a: IOfferIndividualStock,
-  b: IOfferIndividualStock
+  a: OfferIndividualStock,
+  b: OfferIndividualStock
 ): number => {
   const aDate =
     a.beginningDatetime !== null ? new Date(a.beginningDatetime) : a.dateCreated
@@ -20,7 +20,7 @@ const sortStocks = (
   return aDate < bDate ? -1 : 1
 }
 
-const RecurrenceSection = ({ offer }: IRecurrenceSectionProps) => {
+const RecurrenceSection = ({ offer }: RecurrenceSectionProps) => {
   if (offer.stocks.length === 0) {
     return null
   }

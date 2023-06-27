@@ -7,11 +7,11 @@ import { RootState } from 'store/reducers'
 
 import ButtonAppPreview, { ButtonAppPreviewProps } from '../ButtonAppPreview'
 
-interface IRenderButtonAppPreviewProps {
+interface RenderButtonAppPreviewProps {
   storeOverride?: Partial<RootState>
   props: ButtonAppPreviewProps
 }
-const renderButtonAppPreview = ({ props }: IRenderButtonAppPreviewProps) => {
+const renderButtonAppPreview = ({ props }: RenderButtonAppPreviewProps) => {
   return render(<ButtonAppPreview {...props} />)
 }
 

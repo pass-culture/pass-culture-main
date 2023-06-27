@@ -9,15 +9,15 @@ import {
   StockResponseModel,
 } from 'apiClient/v1'
 import {
-  IOfferIndividualContext,
+  OfferIndividualContextValues,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
 import { Events } from 'core/FirebaseEvents/constants'
-import { IOfferIndividual, IOfferIndividualVenue } from 'core/Offers/types'
+import { OfferIndividual, OfferIndividualVenue } from 'core/Offers/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import StocksThing, { IStocksThingProps } from '../StocksThing'
+import StocksThing, { StocksThingProps } from '../StocksThing'
 
 const mockLogEvent = jest.fn()
 
@@ -39,8 +39,8 @@ jest.mock('utils/date', () => ({
 }))
 
 const renderStockThingScreen = (
-  props: IStocksThingProps,
-  contextValue: IOfferIndividualContext,
+  props: StocksThingProps,
+  contextValue: OfferIndividualContextValues,
   url = '/creation/stocks'
 ) =>
   renderWithProviders(
@@ -61,9 +61,9 @@ const renderStockThingScreen = (
   )
 
 describe('screens:StocksThing', () => {
-  let props: IStocksThingProps
-  let contextValue: IOfferIndividualContext
-  let offer: Partial<IOfferIndividual>
+  let props: StocksThingProps
+  let contextValue: OfferIndividualContextValues
+  let offer: Partial<OfferIndividual>
   const offerId = 1
 
   beforeEach(() => {
@@ -71,11 +71,11 @@ describe('screens:StocksThing', () => {
       nonHumanizedId: offerId,
       venue: {
         departmentCode: '75',
-      } as IOfferIndividualVenue,
+      } as OfferIndividualVenue,
       stocks: [],
     }
     props = {
-      offer: offer as IOfferIndividual,
+      offer: offer as OfferIndividual,
     }
     contextValue = {
       offerId: null,

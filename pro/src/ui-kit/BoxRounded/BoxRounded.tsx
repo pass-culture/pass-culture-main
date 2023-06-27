@@ -7,7 +7,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './BoxRounded.module.scss'
 
-export interface IBoxRoundedProps {
+export interface BoxRoundedProps {
   children: JSX.Element
   onClickModify: () => void
   showButtonModify?: boolean
@@ -17,7 +17,7 @@ const BoxRounded = ({
   children,
   onClickModify,
   showButtonModify = true,
-}: IBoxRoundedProps) => {
+}: BoxRoundedProps) => {
   return (
     <div className={styles['expandable-box']}>
       <div

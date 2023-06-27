@@ -5,17 +5,17 @@ import React from 'react'
 import * as yup from 'yup'
 
 import { Accessibility } from 'components/OfferIndividualForm/Accessibility'
-import { TOffererName } from 'core/Offerers/types'
-import { AccessiblityEnum, IAccessibiltyFormValues } from 'core/shared'
+import { OffererName } from 'core/Offerers/types'
+import { AccessiblityEnum, AccessibiltyFormValues } from 'core/shared'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 
 import { Venue } from '..'
-import { IVenueProps } from '../Venue'
+import { VenueProps } from '../Venue'
 
-interface IInitialValues {
+interface InitialValues {
   offererId: string
   venueId: string
-  accessibility: IAccessibiltyFormValues
+  accessibility: AccessibiltyFormValues
 }
 
 const renderVenue = async ({
@@ -23,9 +23,9 @@ const renderVenue = async ({
   onSubmit = jest.fn(),
   venueProps,
 }: {
-  initialValues: IInitialValues
+  initialValues: InitialValues
   onSubmit: () => void
-  venueProps: IVenueProps
+  venueProps: VenueProps
 }) => {
   const rtlReturn = render(
     <Formik
@@ -63,14 +63,14 @@ const renderVenue = async ({
 }
 
 describe('OfferIndividual section: venue', () => {
-  let initialValues: IInitialValues
-  let venueProps: IVenueProps
+  let initialValues: InitialValues
+  let venueProps: VenueProps
   let venueAccessible: TOfferIndividualVenue
   let venueNotAccessible: TOfferIndividualVenue
   const onSubmit = jest.fn()
 
   beforeEach(() => {
-    const offererNames: TOffererName[] = [
+    const offererNames: OffererName[] = [
       {
         nonHumanizedId: 1,
         name: 'Offerer AE',

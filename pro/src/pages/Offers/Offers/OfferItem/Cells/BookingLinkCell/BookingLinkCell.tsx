@@ -11,7 +11,7 @@ import {
 
 import styles from '../../OfferItem.module.scss'
 
-interface IBookingLinkCellProps {
+interface BookingLinkCellProps {
   bookingId: string
   bookingStatus: string
   offerEventDate?: Date | null
@@ -21,7 +21,7 @@ const BookingLinkCell = ({
   bookingId,
   bookingStatus,
   offerEventDate,
-}: IBookingLinkCellProps) => {
+}: BookingLinkCellProps) => {
   if (!offerEventDate) {
     return null
   }

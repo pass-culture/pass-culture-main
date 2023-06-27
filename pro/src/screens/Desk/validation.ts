@@ -1,9 +1,9 @@
-import { IErrorMessage, MESSAGE_VARIANT } from './types'
+import { ErrorMessage, MESSAGE_VARIANT } from './types'
 
 const TOKEN_MAX_LENGTH = 6
 const VALID_TOKEN_SYNTAX = /[^a-z0-9]/i
 
-export const validateToken = (token: string): IErrorMessage | false => {
+export const validateToken = (token: string): ErrorMessage | false => {
   const validationRules = [
     {
       check: (token: string) => token === '',

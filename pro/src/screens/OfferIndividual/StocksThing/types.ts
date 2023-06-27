@@ -1,4 +1,4 @@
-export interface IStockThingFormValues {
+export interface StockThingFormValues {
   stockId?: number
   remainingQuantity: string
   bookingsQuantity: string

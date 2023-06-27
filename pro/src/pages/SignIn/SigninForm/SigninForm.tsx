@@ -21,12 +21,12 @@ import styles from '../Signin.module.scss'
 import { SIGNIN_FORM_DEFAULT_VALUES } from './constants'
 import { validationSchema } from './validationSchema'
 
-interface ISigninFormValues {
+interface SigninFormValues {
   email: string
   password: string
 }
 
-interface ISigninApiErrorResponse {
+interface SigninApiErrorResponse {
   status: number
   errors: {
     [key: string]: string
@@ -45,7 +45,7 @@ const SigninForm = (): JSX.Element => {
     : UNAVAILABLE_ERROR_PAGE
 
   const onSubmit = (
-    values: ISigninFormValues,
+    values: SigninFormValues,
     submitting: (x: boolean) => void
   ) => {
     const { email, password } = values
@@ -64,7 +64,7 @@ const SigninForm = (): JSX.Element => {
   }
 
   const onHandleFail = (
-    payload: ISigninApiErrorResponse,
+    payload: SigninApiErrorResponse,
     submitting: (x: boolean) => void
   ) => {
     const { errors, status } = payload

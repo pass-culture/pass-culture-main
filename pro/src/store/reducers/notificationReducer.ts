@@ -4,63 +4,63 @@ export const SET_IS_STICKYBAR_OPEN = 'SET_IS_STICKYBAR_OPEN'
 export const CLOSE_NOTIFICATION = 'CLOSE_NOTIFICATION'
 export const SHOW_NOTIFICATION = 'SHOW_NOTIFICATION'
 
-export interface INotification {
+export interface Notification {
   text: string | null
   type: NotificationTypeEnum
   duration?: number
 }
 
-interface IActionShowNotification {
+interface ActionShowNotification {
   type: typeof SHOW_NOTIFICATION
-  payload: INotification
+  payload: Notification
 }
 
 export const showNotification = (
-  payload: INotification
-): IActionShowNotification => ({
+  payload: Notification
+): ActionShowNotification => ({
   payload,
   type: SHOW_NOTIFICATION,
 })
 
-interface IActionCloseNotification {
+interface ActionCloseNotification {
   type: typeof CLOSE_NOTIFICATION
 }
 
-export const closeNotification = (): IActionCloseNotification => ({
+export const closeNotification = (): ActionCloseNotification => ({
   type: CLOSE_NOTIFICATION,
 })
 
-interface IActionSetIsStickyBarOpen {
+interface ActionSetIsStickyBarOpen {
   type: typeof SET_IS_STICKYBAR_OPEN
   payload: boolean
 }
 
 export const setIsStickyBarOpen = (
   payload: boolean
-): IActionSetIsStickyBarOpen => ({
+): ActionSetIsStickyBarOpen => ({
   payload,
   type: SET_IS_STICKYBAR_OPEN,
 })
 
-type TNotificationAction =
-  | IActionCloseNotification
-  | IActionShowNotification
-  | IActionSetIsStickyBarOpen
+type NotificationAction =
+  | ActionCloseNotification
+  | ActionShowNotification
+  | ActionSetIsStickyBarOpen
 
-interface INotificationState {
+interface NotificationState {
   isStickyBarOpen: boolean
-  notification: INotification | null
+  notification: Notification | null
 }
 
-export const notificationInitialState: INotificationState = {
+export const notificationInitialState: NotificationState = {
   isStickyBarOpen: false,
   notification: null,
 }
 
 export const notificationReducer = (
   state = notificationInitialState,
-  action: TNotificationAction
-): INotificationState => {
+  action: NotificationAction
+): NotificationState => {
   switch (action.type) {
     case CLOSE_NOTIFICATION:
       return { ...state, notification: null }

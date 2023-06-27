@@ -9,13 +9,13 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 import { DEFAULT_RECAP_VALUE } from '../constants'
 import { formatOfferEventAddress } from '../utils/formatOfferEventAddress'
 
-interface ICollectiveOfferPracticalInformationSectionProps {
+interface CollectiveOfferPracticalInformationSectionProps {
   offer: CollectiveOfferTemplate | CollectiveOffer
 }
 
 const CollectiveOfferPracticalInformationSection = ({
   offer,
-}: ICollectiveOfferPracticalInformationSectionProps) => {
+}: CollectiveOfferPracticalInformationSectionProps) => {
   const notify = useNotification()
   const {
     error,

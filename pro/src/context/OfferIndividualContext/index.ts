@@ -3,4 +3,4 @@ export {
   OfferIndividualContextProvider,
   useOfferIndividualContext,
 } from './OfferIndividualContext'
-export type { IOfferIndividualContext } from './OfferIndividualContext'
+export type { OfferIndividualContextValues } from './OfferIndividualContext'

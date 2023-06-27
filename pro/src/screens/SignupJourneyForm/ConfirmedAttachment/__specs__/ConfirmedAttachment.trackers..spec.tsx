@@ -5,8 +5,8 @@ import React from 'react'
 import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyBreadcrumb/constants'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import {
-  ISignupJourneyContext,
   SignupJourneyContext,
+  SignupJourneyContextValues,
 } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
@@ -18,7 +18,7 @@ import { ConfirmedAttachment } from '..'
 const mockLogEvent = jest.fn()
 
 const renderConfirmedAttachmentScreen = (
-  contextValue: ISignupJourneyContext
+  contextValue: SignupJourneyContextValues
 ) => {
   const storeOverrides = {
     user: {
@@ -40,7 +40,7 @@ const renderConfirmedAttachmentScreen = (
   )
 }
 describe('ConfirmedAttachment trackers', () => {
-  let contextValue: ISignupJourneyContext
+  let contextValue: SignupJourneyContextValues
 
   beforeEach(() => {
     contextValue = {

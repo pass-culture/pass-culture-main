@@ -1,4 +1,4 @@
-interface IDimension {
+interface Dimension {
   width: number
   height: number
 }
@@ -7,9 +7,9 @@ const getCropMaxDimension = ({
   originalDimensions,
   orientation,
 }: {
-  originalDimensions: IDimension
+  originalDimensions: Dimension
   orientation: 'portrait' | 'landscape'
-}): IDimension => {
+}): Dimension => {
   if (orientation === 'landscape') {
     return {
       width: Math.floor(

@@ -11,8 +11,8 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address'
 import Notification from 'components/Notification/Notification'
 import {
-  ISignupJourneyContext,
   SignupJourneyContext,
+  SignupJourneyContextValues,
 } from 'context/SignupJourneyContext'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -47,7 +47,7 @@ fetch.mockResponse(
   }),
   { status: 200 }
 )
-const renderOffererScreen = (contextValue: ISignupJourneyContext) => {
+const renderOffererScreen = (contextValue: SignupJourneyContextValues) => {
   const storeOverrides = {
     user: {
       initialized: true,
@@ -83,7 +83,7 @@ const renderOffererScreen = (contextValue: ISignupJourneyContext) => {
 }
 
 describe('screens:SignupJourney::Offerer', () => {
-  let contextValue: ISignupJourneyContext
+  let contextValue: SignupJourneyContextValues
 
   beforeEach(() => {
     contextValue = {

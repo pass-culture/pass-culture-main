@@ -4,11 +4,11 @@ import React from 'react'
 import { generatePath, Route, Routes } from 'react-router-dom'
 
 import {
-  IOfferIndividualContext,
+  OfferIndividualContextValues,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
-import { IOfferIndividual, IOfferIndividualStock } from 'core/Offers/types'
+import { OfferIndividual, OfferIndividualStock } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { individualOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -20,14 +20,14 @@ const offerId = 12
 const stockId = 55
 
 const renderOfferIndividualBreadcrumb = (
-  contextOverride: Partial<IOfferIndividualContext> = {},
+  contextOverride: Partial<OfferIndividualContextValues> = {},
   url = getOfferIndividualPath({
     step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
     mode: OFFER_WIZARD_MODE.CREATION,
   }),
   storeOverrides = {}
 ) => {
-  const contextValues: IOfferIndividualContext = {
+  const contextValues: OfferIndividualContextValues = {
     offerId: null,
     offer: null,
     venueList: [],
@@ -122,13 +122,13 @@ describe('test OfferIndividualBreadcrumb', () => {
     })
 
     it('should render steps when offer without stock is given', async () => {
-      const offer: Partial<IOfferIndividual> = individualOfferFactory({
+      const offer: Partial<OfferIndividual> = individualOfferFactory({
         stocks: [],
         isEvent: false,
       })
 
-      const contextOverride: Partial<IOfferIndividualContext> = {
-        offer: offer as IOfferIndividual,
+      const contextOverride: Partial<OfferIndividualContextValues> = {
+        offer: offer as OfferIndividual,
       }
       renderOfferIndividualBreadcrumb(contextOverride)
 
@@ -148,12 +148,12 @@ describe('test OfferIndividualBreadcrumb', () => {
     })
 
     it('should render steps when offer and stock are given', async () => {
-      const offer: Partial<IOfferIndividual> = individualOfferFactory({
+      const offer: Partial<OfferIndividual> = individualOfferFactory({
         isEvent: false,
       })
 
-      const contextOverride: Partial<IOfferIndividualContext> = {
-        offer: offer as IOfferIndividual,
+      const contextOverride: Partial<OfferIndividualContextValues> = {
+        offer: offer as OfferIndividual,
       }
       renderOfferIndividualBreadcrumb(contextOverride)
 
@@ -285,13 +285,13 @@ describe('test OfferIndividualBreadcrumb', () => {
 
   describe('in edition', () => {
     it('should render default breadcrumb in edition', () => {
-      const offer: Partial<IOfferIndividual> = {
+      const offer: Partial<OfferIndividual> = {
         nonHumanizedId: offerId,
-        stocks: [{ nonHumanizedId: stockId } as IOfferIndividualStock],
+        stocks: [{ nonHumanizedId: stockId } as OfferIndividualStock],
       }
 
-      const contextOverride: Partial<IOfferIndividualContext> = {
-        offer: offer as IOfferIndividual,
+      const contextOverride: Partial<OfferIndividualContextValues> = {
+        offer: offer as OfferIndividual,
       }
       renderOfferIndividualBreadcrumb(
         contextOverride,
@@ -309,13 +309,13 @@ describe('test OfferIndividualBreadcrumb', () => {
     })
 
     it('should render steps on Information', () => {
-      const offer: Partial<IOfferIndividual> = {
+      const offer: Partial<OfferIndividual> = {
         nonHumanizedId: offerId,
-        stocks: [{ nonHumanizedId: stockId } as IOfferIndividualStock],
+        stocks: [{ nonHumanizedId: stockId } as OfferIndividualStock],
       }
 
-      const contextOverride: Partial<IOfferIndividualContext> = {
-        offer: offer as IOfferIndividual,
+      const contextOverride: Partial<OfferIndividualContextValues> = {
+        offer: offer as OfferIndividual,
       }
 
       renderOfferIndividualBreadcrumb(
@@ -338,13 +338,13 @@ describe('test OfferIndividualBreadcrumb', () => {
     })
 
     it('should render steps on Stocks', () => {
-      const offer: Partial<IOfferIndividual> = {
+      const offer: Partial<OfferIndividual> = {
         nonHumanizedId: offerId,
-        stocks: [{ nonHumanizedId: stockId } as IOfferIndividualStock],
+        stocks: [{ nonHumanizedId: stockId } as OfferIndividualStock],
       }
 
-      const contextOverride: Partial<IOfferIndividualContext> = {
-        offer: offer as IOfferIndividual,
+      const contextOverride: Partial<OfferIndividualContextValues> = {
+        offer: offer as OfferIndividual,
       }
 
       renderOfferIndividualBreadcrumb(

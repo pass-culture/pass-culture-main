@@ -3,13 +3,13 @@ import React from 'react'
 import { StudentLevels } from 'apiClient/v1'
 import { SummaryLayout } from 'components/SummaryLayout'
 
-interface ICollectiveOfferParticipantSectionProps {
+interface CollectiveOfferParticipantSectionProps {
   students: StudentLevels[]
 }
 
 const CollectiveOfferParticipantSection = ({
   students,
-}: ICollectiveOfferParticipantSectionProps) => {
+}: CollectiveOfferParticipantSectionProps) => {
   return (
     <SummaryLayout.SubSection title="Participants">
       {students.map(student => (

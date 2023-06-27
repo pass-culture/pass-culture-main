@@ -1,3 +1,3 @@
-export interface IImageUploadBrowserFormValues {
+export interface ImageUploadBrowserFormValues {
   image: File | null
 }

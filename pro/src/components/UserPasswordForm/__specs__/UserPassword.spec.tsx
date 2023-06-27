@@ -5,11 +5,11 @@ import React from 'react'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { UserPasswordForm } from '..'
-import { IUserPasswordFormProps } from '../UserPasswordForm'
+import { UserPasswordFormProps } from '../UserPasswordForm'
 
 const postPasswordAdapterMock = jest.fn()
 
-const renderUserPasswordForm = (props: IUserPasswordFormProps) => {
+const renderUserPasswordForm = (props: UserPasswordFormProps) => {
   const storeOverrides = {
     user: {
       initialized: true,
@@ -29,7 +29,7 @@ const renderUserPasswordForm = (props: IUserPasswordFormProps) => {
 }
 
 describe('components:UserPasswordForm', () => {
-  let props: IUserPasswordFormProps
+  let props: UserPasswordFormProps
   beforeEach(() => {
     postPasswordAdapterMock.mockResolvedValue({})
     props = {

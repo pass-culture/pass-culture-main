@@ -1,10 +1,10 @@
-import { IOfferIndividual } from 'core/Offers/types'
+import { OfferIndividual } from 'core/Offers/types'
 
 import { FIRST_INITIAL_PRICE_CATEGORY } from './constants'
 import { PriceCategoriesFormValues } from './types'
 
 export const computeInitialValues = (
-  offer: IOfferIndividual
+  offer: OfferIndividual
 ): PriceCategoriesFormValues => {
   const initialPriceCategories =
     !offer.priceCategories || offer?.priceCategories.length === 0

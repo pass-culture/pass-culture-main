@@ -3,13 +3,13 @@ import {
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
 } from 'core/Offers/constants'
-import { IOfferIndividual } from 'core/Offers/types'
+import { OfferIndividual } from 'core/Offers/types'
 import { isAllocineProvider } from 'core/Providers'
 
 import { FORM_DEFAULT_VALUES } from '../constants'
 
 const setFormReadOnlyFields = (
-  offer: IOfferIndividual | null,
+  offer: OfferIndividual | null,
   isAdmin?: boolean
 ): string[] => {
   let readOnlyField: string[] = []

@@ -5,8 +5,8 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import {
-  ISignupJourneyContext,
   SignupJourneyContext,
+  SignupJourneyContextValues,
 } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
@@ -22,7 +22,7 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-const renderOfferersScreen = (contextValue: ISignupJourneyContext) => {
+const renderOfferersScreen = (contextValue: SignupJourneyContextValues) => {
   const storeOverrides = {
     user: {
       initialized: true,
@@ -43,7 +43,7 @@ const renderOfferersScreen = (contextValue: ISignupJourneyContext) => {
   )
 }
 describe('Offerers trackers', () => {
-  let contextValue: ISignupJourneyContext
+  let contextValue: SignupJourneyContextValues
 
   beforeEach(() => {
     contextValue = {

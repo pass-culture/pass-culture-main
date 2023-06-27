@@ -1,9 +1,9 @@
 import type { FormikProps } from 'formik'
 
 import { WithdrawalTypeEnum } from 'apiClient/v1'
-import { IAccessibiltyFormValues } from 'core/shared'
+import { AccessibiltyFormValues } from 'core/shared'
 
-export interface IOfferIndividualFormValues {
+export interface OfferIndividualFormValues {
   isEvent?: boolean
   subCategoryFields: string[]
   name: string
@@ -20,7 +20,7 @@ export interface IOfferIndividualFormValues {
   withdrawalDetails: string
   withdrawalDelay?: number | null
   withdrawalType?: WithdrawalTypeEnum | null
-  accessibility: IAccessibiltyFormValues
+  accessibility: AccessibiltyFormValues
   author?: string
   performer?: string
   ean?: string
@@ -36,4 +36,4 @@ export interface IOfferIndividualFormValues {
   isVenueVirtual?: boolean
 }
 
-export type OfferIndividualForm = FormikProps<IOfferIndividualFormValues>
+export type OfferIndividualForm = FormikProps<OfferIndividualFormValues>

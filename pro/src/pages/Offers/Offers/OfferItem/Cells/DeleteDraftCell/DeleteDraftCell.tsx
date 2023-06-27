@@ -16,12 +16,12 @@ import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
 import { deleteDraftOffersAdapter } from '../../../adapters/deleteDraftOffers'
 import styles from '../../OfferItem.module.scss'
 
-interface IDeleteDraftOffers {
+interface DeleteDraftOffersProps {
   offer: Offer
   refreshOffers: () => void
 }
 
-const DeleteDraftCell = ({ offer, refreshOffers }: IDeleteDraftOffers) => {
+const DeleteDraftCell = ({ offer, refreshOffers }: DeleteDraftOffersProps) => {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
   const { logEvent } = useAnalytics()
   const notification = useNotification()

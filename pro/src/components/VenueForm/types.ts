@@ -1,10 +1,10 @@
-import { IAccessibiltyFormValues } from 'core/shared'
+import { AccessibiltyFormValues } from 'core/shared'
 
 import { VenueBannerMetaProps } from './ImageUploaderVenue/ImageUploaderVenue'
 
 export interface VenueFormValues {
   reimbursementPointId: number | string | null
-  accessibility: IAccessibiltyFormValues
+  accessibility: AccessibiltyFormValues
   address: string
   addressAutocomplete: string
   bannerMeta: VenueBannerMetaProps | undefined | null

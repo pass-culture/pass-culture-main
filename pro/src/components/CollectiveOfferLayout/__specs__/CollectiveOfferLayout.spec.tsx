@@ -12,12 +12,12 @@ jest.mock('apiClient/api', () => ({
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOfferLayout, {
-  ICollectiveOfferLayout,
+  CollectiveOfferLayoutProps,
 } from '../CollectiveOfferLayout'
 
 const renderCollectiveOfferLayout = (
   path: string,
-  props: Partial<ICollectiveOfferLayout>
+  props: Partial<CollectiveOfferLayoutProps>
 ) => {
   renderWithProviders(
     <CollectiveOfferLayout subTitle="Ma super offre" {...props}>

@@ -3,7 +3,7 @@ import React, { FunctionComponent, useCallback, MouseEventHandler } from 'react'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant, SharedButtonProps } from 'ui-kit/Button/types'
 
-export interface IButtonLinkNewWindowProps extends SharedButtonProps {
+export interface ButtonLinkNewWindowProps extends SharedButtonProps {
   className?: string
   linkTo: string
   children?: React.ReactNode
@@ -11,7 +11,7 @@ export interface IButtonLinkNewWindowProps extends SharedButtonProps {
 }
 
 export const ButtonLinkNewWindow: FunctionComponent<
-  IButtonLinkNewWindowProps
+  ButtonLinkNewWindowProps
 > = ({
   className,
   linkTo,

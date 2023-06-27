@@ -14,9 +14,9 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { TUTO_DIALOG_LABEL_ID } from './constants'
 import styles from './Tutorial.module.scss'
-import { IStep } from './types'
+import { Step } from './types'
 
-const steps: IStep[] = [
+const steps: Step[] = [
   {
     position: 1,
     component: Welcome,
@@ -38,14 +38,14 @@ const steps: IStep[] = [
     className: 'tutorial-content',
   },
 ]
-const getStep = (position: number): IStep | undefined =>
-  steps.find((step: IStep) => step.position === position)
+const getStep = (position: number): Step | undefined =>
+  steps.find((step: Step) => step.position === position)
 
-interface ITutorialProps {
+interface TutorialProps {
   onFinish: () => void
 }
 
-const Tutorial = ({ onFinish }: ITutorialProps): JSX.Element => {
+const Tutorial = ({ onFinish }: TutorialProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const [activeStepPosition, setActiveStepPosition] = useState<number>(1)
   const hasNextStep: boolean = getStep(activeStepPosition + 1) !== undefined
@@ -54,7 +54,7 @@ const Tutorial = ({ onFinish }: ITutorialProps): JSX.Element => {
     (newStepPosition: number) => () => setActiveStepPosition(newStepPosition),
     []
   )
-  const activeStep = getStep(activeStepPosition) as IStep
+  const activeStep = getStep(activeStepPosition) as Step
 
   useEffect(() => {
     logEvent?.(Events.TUTO_PAGE_VIEW, {

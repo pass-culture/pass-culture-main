@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import useNotification from 'hooks/useNotification'
 import { Button } from 'ui-kit'
 
-interface IDownloadButtonProps {
+interface DownloadButtonProps {
   filename: string
   href: string
   mimeType: string
@@ -17,7 +17,7 @@ const ButtonDownloadCSV = ({
   mimeType,
   children,
   isDisabled,
-}: IDownloadButtonProps): JSX.Element => {
+}: DownloadButtonProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false)
   const notification = useNotification()
 

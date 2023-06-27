@@ -4,19 +4,19 @@ import React from 'react'
 import Icon from 'ui-kit/Icon/Icon'
 
 import styles from './AutocompleteList.module.scss'
-import { IAutocompleteItemProps } from './type'
+import { AutocompleteItemProps } from './type'
 
 // FIXME (MathildeDuboille - 15-06-22): improve accessibility and refactor if needed.
 // This component is used in SelectAutocomplete and MultiselectAutocomplete
 type AutocompleteListProps = {
   className?: string
   displayNumberOfSelectedValues?: boolean
-  filteredOptions: IAutocompleteItemProps[]
+  filteredOptions: AutocompleteItemProps[]
   isOpen: boolean
   maxHeight?: number
   numberOfSelectedOptions?: number
   onButtonClick: () => void
-  renderOption: (option: IAutocompleteItemProps) => React.ReactNode
+  renderOption: (option: AutocompleteItemProps) => React.ReactNode
   disabled?: boolean
   hideArrow?: boolean
 }

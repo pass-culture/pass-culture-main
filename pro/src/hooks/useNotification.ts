@@ -15,7 +15,7 @@ export enum NotificationTypeEnum {
   INFORMATION = 'information',
 }
 
-interface IOptions {
+interface Options {
   duration?: number
 }
 
@@ -25,7 +25,7 @@ const useNotification = () => {
     (
       textMessage: string | null,
       type: NotificationTypeEnum,
-      { duration = NOTIFICATION_SHOW_DURATION }: IOptions
+      { duration = NOTIFICATION_SHOW_DURATION }: Options
     ) => {
       dispatch(
         showNotification({
@@ -44,13 +44,13 @@ const useNotification = () => {
 
   return useMemo(
     () => ({
-      success: (msg: string | null, options: IOptions = {}) =>
+      success: (msg: string | null, options: Options = {}) =>
         dispatchNotification(msg, NotificationTypeEnum.SUCCESS, options),
-      error: (msg: string | null, options: IOptions = {}) =>
+      error: (msg: string | null, options: Options = {}) =>
         dispatchNotification(msg, NotificationTypeEnum.ERROR, options),
-      pending: (msg: string | null, options: IOptions = {}) =>
+      pending: (msg: string | null, options: Options = {}) =>
         dispatchNotification(msg, NotificationTypeEnum.PENDING, options),
-      information: (msg: string | null, options: IOptions = {}) =>
+      information: (msg: string | null, options: Options = {}) =>
         dispatchNotification(msg, NotificationTypeEnum.INFORMATION, options),
       close: () => dispatchCloseNotification(),
     }),

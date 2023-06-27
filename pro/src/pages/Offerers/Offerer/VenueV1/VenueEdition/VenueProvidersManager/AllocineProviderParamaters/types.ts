@@ -1,4 +1,4 @@
-export interface IAllocineProviderParametersValues {
+export interface AllocineProviderParametersValues {
   isDuo: boolean
   quantity: number
   price: string

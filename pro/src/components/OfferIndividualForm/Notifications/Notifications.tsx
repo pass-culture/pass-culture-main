@@ -5,11 +5,11 @@ import FormLayout from 'components/FormLayout'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { Checkbox, TextInput } from 'ui-kit'
 
-import { IOfferIndividualFormValues } from '../types'
+import { OfferIndividualFormValues } from '../types'
 
 import { NOTIFICATIONS_DEFAULT_VALUES } from './constants'
 
-export interface INotifications {
+export interface NotificationsProps {
   venueBookingEmail?: string | null
   readOnlyFields?: string[]
 }
@@ -17,12 +17,12 @@ export interface INotifications {
 const Notifications = ({
   readOnlyFields,
   venueBookingEmail,
-}: INotifications): JSX.Element => {
+}: NotificationsProps): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const {
     values: { receiveNotificationEmails, bookingEmail },
     setFieldValue,
-  } = useFormikContext<IOfferIndividualFormValues>()
+  } = useFormikContext<OfferIndividualFormValues>()
 
   useEffect(() => {
     if (

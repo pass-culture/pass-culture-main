@@ -8,7 +8,7 @@ import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validate
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-export interface IStatusToggleButton {
+export interface StatusToggleButtonProps {
   offerId: number
   isActive: boolean
   status: OfferStatus
@@ -20,7 +20,7 @@ const StatusToggleButton = ({
   isActive,
   status,
   reloadOffer,
-}: IStatusToggleButton) => {
+}: StatusToggleButtonProps) => {
   const notification = useNotification()
 
   const toggleOfferActiveStatus = useCallback(async () => {

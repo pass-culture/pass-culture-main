@@ -2,11 +2,11 @@ import React from 'react'
 
 import style from './ActionsBarSticky.module.scss'
 
-interface IActionsBarStickyLeftProps {
+interface ActionsBarStickyLeftProps {
   children: React.ReactNode
 }
 
-const Left = ({ children }: IActionsBarStickyLeftProps): JSX.Element | null => {
+const Left = ({ children }: ActionsBarStickyLeftProps): JSX.Element | null => {
   return children ? <div className={style['left']}>{children}</div> : null
 }
 

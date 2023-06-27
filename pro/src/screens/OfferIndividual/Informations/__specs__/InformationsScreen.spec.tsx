@@ -3,17 +3,17 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import {
-  IOfferIndividualContext,
   OfferIndividualContext,
+  OfferIndividualContextValues,
 } from 'context/OfferIndividualContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers'
-import { IOfferSubCategory } from 'core/Offers/types'
+import { OfferSubCategory } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import * as utils from 'screens/OfferIndividual/Informations/utils'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { IInformationsProps, Informations as InformationsScreen } from '..'
+import { InformationsProps, Informations as InformationsScreen } from '..'
 
 jest.mock('screens/OfferIndividual/Informations/utils', () => {
   return {
@@ -33,8 +33,8 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 
 const renderInformationsScreen = (
-  props: IInformationsProps,
-  contextValue: IOfferIndividualContext
+  props: InformationsProps,
+  contextValue: OfferIndividualContextValues
 ) => {
   const storeOverrides = {
     user: {
@@ -57,8 +57,8 @@ const renderInformationsScreen = (
 const scrollIntoViewMock = jest.fn()
 
 describe('screens:OfferIndividual::Informations', () => {
-  let props: IInformationsProps
-  let contextValue: IOfferIndividualContext
+  let props: InformationsProps
+  let contextValue: OfferIndividualContextValues
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
@@ -69,7 +69,7 @@ describe('screens:OfferIndividual::Informations', () => {
         isSelectable: true,
       },
     ]
-    const subCategories: IOfferSubCategory[] = [
+    const subCategories: OfferSubCategory[] = [
       {
         id: 'virtual',
         categoryId: 'A',

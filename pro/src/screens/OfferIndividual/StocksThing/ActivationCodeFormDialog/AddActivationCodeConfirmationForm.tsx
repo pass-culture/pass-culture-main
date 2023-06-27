@@ -5,7 +5,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './ActivationCodeFormDialog.module.scss'
 
-interface IAddActivationCodeConfirmationForm {
+interface AddActivationCodeConfirmationFormProps {
   unsavedActivationCodes: string[] | undefined
   clearActivationCodes: () => void
   submitActivationCodes: () => void
@@ -19,7 +19,7 @@ const AddActivationCodeConfirmationForm = ({
   submitActivationCodes,
   today,
   minExpirationDate,
-}: IAddActivationCodeConfirmationForm) => {
+}: AddActivationCodeConfirmationFormProps) => {
   const getMinimumExpirationDatetime = (date: Date) => {
     const result = new Date(date)
     result.setDate(result.getDate() + 7)

@@ -69,12 +69,10 @@ import {
 La convention de nommage retenu pour les composants et leurs interface est la suivante:
 
 ```js
-// prefix I pour interface
-// prefix T pour types lorsqu'un type est necessaire
 // suffix Props pour les interface des Props
-interface IMonComposantProps {}
+interface MonComposantProps {}
 
-const MonComposant(props: IMonComposantProps): JSX.Element => {}
+const MonComposant(props: MonComposantProps): JSX.Element => {}
 ```
 
 ## DO

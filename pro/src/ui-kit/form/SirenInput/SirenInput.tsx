@@ -15,7 +15,7 @@ const formatSiren = (siren: string) => {
   return humanizeSiren(siren)
 }
 
-interface ISirenInputProps {
+interface SirenInputProps {
   label: string
   name?: string
   placeholder?: string
@@ -27,7 +27,7 @@ const SirenInput = ({
   name = 'siren',
   placeholder = '123456789',
   onValidSiren,
-}: ISirenInputProps): JSX.Element => {
+}: SirenInputProps): JSX.Element => {
   const [field, meta, helpers] = useField({ name })
   const { setValue } = helpers
   useEffect(() => {

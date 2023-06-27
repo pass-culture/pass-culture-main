@@ -3,14 +3,14 @@ import React from 'react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import ImageUploader, { IImageUploaderProps } from '../ImageUploader'
+import ImageUploader, { ImageUploaderProps } from '../ImageUploader'
 import { UploaderModeEnum } from '../types'
 
-const renderImageUploader = (props: IImageUploaderProps) =>
+const renderImageUploader = (props: ImageUploaderProps) =>
   renderWithProviders(<ImageUploader {...props} />)
 
 describe('ImageUploader', () => {
-  let props: IImageUploaderProps
+  let props: ImageUploaderProps
 
   beforeEach(() => {
     props = {

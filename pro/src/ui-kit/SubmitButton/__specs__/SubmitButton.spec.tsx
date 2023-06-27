@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import SubmitButton, { ISubmitButtonProps } from '../SubmitButton'
+import SubmitButton, { SubmitButtonProps } from '../SubmitButton'
 
-const renderSubmitButton = (props: ISubmitButtonProps) => {
+const renderSubmitButton = (props: SubmitButtonProps) => {
   return render(<SubmitButton {...props} />)
 }
 

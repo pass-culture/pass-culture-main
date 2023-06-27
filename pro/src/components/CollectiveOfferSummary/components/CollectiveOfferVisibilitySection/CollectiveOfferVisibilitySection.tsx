@@ -6,7 +6,7 @@ import {
 } from 'apiClient/v1'
 import { SummaryLayout } from 'components/SummaryLayout'
 
-interface ICollectiveOfferStockSectionProps {
+interface CollectiveOfferStockSectionProps {
   institution?: EducationalInstitutionResponseModel | null
   teacher?: EducationalRedactorResponseModel | null
 }
@@ -14,7 +14,7 @@ interface ICollectiveOfferStockSectionProps {
 const CollectiveOfferStockSection = ({
   institution,
   teacher,
-}: ICollectiveOfferStockSectionProps) => {
+}: CollectiveOfferStockSectionProps) => {
   const getVisibilityDescription = (
     institution?: EducationalInstitutionResponseModel | null
   ) => {

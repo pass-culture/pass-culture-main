@@ -1,16 +1,16 @@
 import { api } from 'apiClient/api'
 import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
-import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
+import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
 import { CATEGORY_STATUS } from '..'
 
-interface IPayload {
-  categories: IOfferCategory[]
-  subCategories: IOfferSubCategory[]
+interface Payload {
+  categories: OfferCategory[]
+  subCategories: OfferSubCategory[]
 }
 
-type GetCategoriesAdapter = Adapter<void, IPayload, IPayload>
+type GetCategoriesAdapter = Adapter<void, Payload, Payload>
 
 const FAILING_RESPONSE = {
   isOk: false,
@@ -21,7 +21,7 @@ const FAILING_RESPONSE = {
   },
 }
 
-const serializeCategory = (s: CategoryResponseModel): IOfferCategory => {
+const serializeCategory = (s: CategoryResponseModel): OfferCategory => {
   return {
     id: s.id,
     proLabel: s.proLabel,
@@ -31,7 +31,7 @@ const serializeCategory = (s: CategoryResponseModel): IOfferCategory => {
 
 const serializeSubCategory = (
   s: SubcategoryResponseModel
-): IOfferSubCategory => {
+): OfferSubCategory => {
   return {
     id: s.id,
     categoryId: s.categoryId,

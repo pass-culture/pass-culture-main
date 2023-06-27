@@ -8,7 +8,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './CollectiveOfferConfirmation.module.scss'
 
-interface ICollectiveOfferConfirmationProps {
+interface CollectiveOfferConfirmationProps {
   offererId?: string | null
   offerStatus?: OfferStatus
   isShowcase?: boolean
@@ -84,7 +84,7 @@ const CollectiveOfferConfirmation = ({
   offerStatus,
   isShowcase,
   institutionDisplayName,
-}: ICollectiveOfferConfirmationProps): JSX.Element => {
+}: CollectiveOfferConfirmationProps): JSX.Element => {
   const { title, description, Icon } = mapOfferStatusToData(
     offerStatus,
     isShowcase,

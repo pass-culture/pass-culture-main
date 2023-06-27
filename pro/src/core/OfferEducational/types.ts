@@ -7,7 +7,7 @@ import {
   GetCollectiveOfferResponseModel,
   GetCollectiveOfferTemplateResponseModel,
 } from 'apiClient/v1'
-import { IAccessibiltyFormValues } from 'core/shared'
+import { AccessibiltyFormValues } from 'core/shared'
 import { hasProperty } from 'utils/types'
 
 export type IEducationalCategory = {
@@ -41,7 +41,7 @@ export type IOfferEducationalFormValues = {
   }
   interventionArea: string[]
   participants: Record<StudentLevels | 'all', boolean>
-  accessibility: IAccessibiltyFormValues
+  accessibility: AccessibiltyFormValues
   phone: string
   email: string
   notificationEmails: string[]

@@ -3,7 +3,7 @@ import React from 'react'
 
 import style from './OfferFormLayout.module.scss'
 
-interface IOfferFormLayoutContentProps {
+interface OfferFormLayoutContentProps {
   children: React.ReactNode | React.ReactNode[]
   className?: string
 }
@@ -11,7 +11,7 @@ interface IOfferFormLayoutContentProps {
 const OfferFormLayoutContent = ({
   children,
   className,
-}: IOfferFormLayoutContentProps): JSX.Element => (
+}: OfferFormLayoutContentProps): JSX.Element => (
   <div className={cn(style['content'], className)}>{children}</div>
 )
 

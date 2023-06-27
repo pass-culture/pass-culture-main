@@ -5,12 +5,12 @@ import type { Step } from 'components/Breadcrumb'
 
 import styles from './Stepper.module.scss'
 
-interface IStepContent {
+interface StepContent {
   step: Step
   stepIndex: number
 }
 
-const StepContent = ({ step, stepIndex }: IStepContent): JSX.Element => {
+const StepContent = ({ step, stepIndex }: StepContent): JSX.Element => {
   const stepContent = (
     <>
       <div className={styles['number']}>

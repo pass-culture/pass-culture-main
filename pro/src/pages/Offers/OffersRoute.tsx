@@ -6,7 +6,7 @@ import { api } from 'apiClient/api'
 import { DEFAULT_SEARCH_FILTERS, hasSearchFilters } from 'core/Offers'
 import { getOffererAdapter } from 'core/Offers/adapters'
 import { useQuerySearchFilters } from 'core/Offers/hooks'
-import { Offer, Offerer, TSearchFilters } from 'core/Offers/types'
+import { Offer, Offerer, SearchFiltersParams } from 'core/Offers/types'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
@@ -32,7 +32,7 @@ const OffersRoute = (): JSX.Element => {
   const [offers, setOffers] = useState<Offer[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [initialSearchFilters, setInitialSearchFilters] =
-    useState<TSearchFilters | null>(null)
+    useState<SearchFiltersParams | null>(null)
   const [venues, setVenues] = useState<SelectOption[]>([])
   const [categories, setCategories] = useState<SelectOption[]>([])
 
@@ -58,7 +58,7 @@ const OffersRoute = (): JSX.Element => {
   }, [urlSearchFilters.offererId, notify])
 
   const loadAndUpdateOffers = useCallback(
-    async (filters: TSearchFilters) => {
+    async (filters: SearchFiltersParams) => {
       const apiFilters = {
         ...DEFAULT_SEARCH_FILTERS,
         ...filters,
@@ -95,7 +95,7 @@ const OffersRoute = (): JSX.Element => {
   }, [])
 
   const redirectWithUrlFilters = (
-    filters: TSearchFilters & {
+    filters: SearchFiltersParams & {
       page?: number
       audience?: Audience
     }

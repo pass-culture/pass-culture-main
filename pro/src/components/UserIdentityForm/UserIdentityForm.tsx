@@ -10,21 +10,21 @@ import { setCurrentUser } from 'store/user/actions'
 import { TextInput, Button, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import { IUserIdentityFormValues } from './types'
+import { UserIdentityFormValues } from './types'
 import styles from './UserIdentityForm.module.scss'
 import validationSchema from './validationSchema'
 
-export interface IUserIdentityFormProps {
+export interface UserIdentityFormProps {
   closeForm: () => void
   patchIdentityAdapter: PatchIdentityAdapter
-  initialValues: IUserIdentityFormValues
+  initialValues: UserIdentityFormValues
 }
 
 const UserIdentityForm = ({
   closeForm,
   initialValues,
   patchIdentityAdapter,
-}: IUserIdentityFormProps): JSX.Element => {
+}: UserIdentityFormProps): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const dispatch = useDispatch()
 

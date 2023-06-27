@@ -5,9 +5,9 @@ import React from 'react'
 import ReimbursementsDetails from 'pages/Reimbursements/ReimbursementsDetails/ReimbursementsDetails'
 import { ReimbursementsInvoices } from 'pages/Reimbursements/ReimbursementsInvoices'
 
-import type { IRoute } from './routesMap'
+import type { RouteConfig } from './routesMap'
 
-export const routesReimbursements: IRoute[] = [
+export const routesReimbursements: RouteConfig[] = [
   {
     element: <ReimbursementsInvoices />,
     parentPath: '/remboursements',

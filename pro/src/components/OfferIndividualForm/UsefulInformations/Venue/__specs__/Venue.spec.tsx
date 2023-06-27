@@ -6,23 +6,23 @@ import * as yup from 'yup'
 
 import {
   FORM_DEFAULT_VALUES,
-  IOfferIndividualFormValues,
+  OfferIndividualFormValues,
   setDefaultInitialFormValues,
 } from 'components/OfferIndividualForm'
-import { TOffererName } from 'core/Offerers/types'
+import { OffererName } from 'core/Offerers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 
 import { validationSchema, Venue, VENUE_DEFAULT_VALUES } from '..'
-import { IVenueProps } from '../Venue'
+import { VenueProps } from '../Venue'
 
 const renderVenue = ({
   initialValues,
   onSubmit = jest.fn(),
   props,
 }: {
-  initialValues: Partial<IOfferIndividualFormValues>
+  initialValues: Partial<OfferIndividualFormValues>
   onSubmit: () => void
-  props: IVenueProps
+  props: VenueProps
 }) => {
   return render(
     <Formik
@@ -36,8 +36,8 @@ const renderVenue = ({
 }
 
 describe('OfferIndividual section: venue', () => {
-  let initialValues: Partial<IOfferIndividualFormValues>
-  let props: IVenueProps
+  let initialValues: Partial<OfferIndividualFormValues>
+  let props: VenueProps
   const onSubmit = jest.fn()
   let venueList: TOfferIndividualVenue[]
   const firstOfferer = {
@@ -57,7 +57,7 @@ describe('OfferIndividual section: venue', () => {
   }
 
   beforeEach(() => {
-    const offererNames: TOffererName[] = [
+    const offererNames: OffererName[] = [
       firstOfferer,
       secondOfferer,
       thirdOfferer,

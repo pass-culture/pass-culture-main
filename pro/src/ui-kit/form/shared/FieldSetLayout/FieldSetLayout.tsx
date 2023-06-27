@@ -5,7 +5,7 @@ import FieldError from '../FieldError'
 
 import styles from './FieldSetLayout.module.scss'
 
-interface IFieldSetLayoutProps {
+interface FieldSetLayoutProps {
   children: React.ReactNode
   legend?: string
   className?: string
@@ -23,7 +23,7 @@ const FieldSetLayout = ({
   name,
   hideFooter = false,
   dataTestId,
-}: IFieldSetLayoutProps): JSX.Element => {
+}: FieldSetLayoutProps): JSX.Element => {
   return (
     <fieldset
       className={cn(styles['fieldset-layout'], className)}

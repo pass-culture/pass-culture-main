@@ -3,9 +3,9 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import CopyLink from 'ui-kit/CopyLink'
-import { ICopyLink } from 'ui-kit/CopyLink/CopyLink'
+import { CopyLinkProps } from 'ui-kit/CopyLink/CopyLink'
 
-const renderCopyLink = (props: ICopyLink) => {
+const renderCopyLink = (props: CopyLinkProps) => {
   return render(<CopyLink {...props} />)
 }
 

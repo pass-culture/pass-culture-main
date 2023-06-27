@@ -6,7 +6,7 @@ import { ALL_STATUS } from 'core/Offers/constants'
 import { Audience } from 'core/shared'
 import { RadioInput } from 'ui-kit/form_raw/RadioInput/RadioInput'
 
-interface IOfferStatusFiltersModalProps {
+interface OfferStatusFiltersModalProps {
   isVisible: boolean
   applyFilters: () => void
   status?: OfferStatus | CollectiveOfferStatus | 'all'
@@ -24,7 +24,7 @@ export const OffersStatusFiltersModal = ({
   setIsVisible,
   updateStatusFilter,
   audience,
-}: IOfferStatusFiltersModalProps) => {
+}: OfferStatusFiltersModalProps) => {
   const modalRef = useRef<HTMLDivElement | null>(null)
 
   const handleStatusFilterChange = useCallback(

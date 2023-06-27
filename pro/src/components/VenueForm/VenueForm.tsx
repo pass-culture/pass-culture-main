@@ -6,11 +6,11 @@ import {
   SharedCurrentUserResponseModel,
   VenueProviderResponse,
 } from 'apiClient/v1'
-import { Address } from 'components/Address'
+import { AddressSelect } from 'components/Address'
 import FormLayout from 'components/FormLayout'
 import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
-import { IOfferer } from 'core/Offerers/types'
-import { IProviders, IVenue } from 'core/Venue/types'
+import { Offerer } from 'core/Offerers/types'
+import { IProviders, Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -35,13 +35,13 @@ import { VenueFormValues } from '.'
 
 interface VenueFormProps {
   isCreatingVenue: boolean
-  offerer: IOfferer
+  offerer: Offerer
   updateIsSiretValued: (isSiretValued: boolean) => void
   venueTypes: SelectOption[]
   venueLabels: SelectOption[]
   provider?: IProviders[]
   venueProvider?: VenueProviderResponse[]
-  venue?: IVenue
+  venue?: Venue
   initialIsVirtual?: boolean
   isNewOnboardingActive: boolean
 }
@@ -144,7 +144,7 @@ const VenueForm = ({
             description="Cette adresse sera utilisée pour permettre aux jeunes de géolocaliser votre lieu."
           >
             <FormLayout.Row>
-              <Address />
+              <AddressSelect />
             </FormLayout.Row>
           </FormLayout.Section>
         )}

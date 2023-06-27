@@ -2,14 +2,14 @@ import React from 'react'
 
 import { OfferCardEuroIcon, Venue2Icon } from 'icons'
 
-import { IStepComponentProps } from '../types'
+import { StepComponentProps } from '../types'
 
 import styles from './Step.module.scss'
 
 const CreateVenue = ({
   titleId,
   contentClassName,
-}: IStepComponentProps): JSX.Element => (
+}: StepComponentProps): JSX.Element => (
   <>
     <h1 id={titleId}>Paramétrez votre espace PRO</h1>
     <section className={contentClassName}>

@@ -6,11 +6,11 @@ import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel, Target } from 'apiClient/v1'
-import { IAddress } from 'components/Address'
+import { Address } from 'components/Address'
 import Notification from 'components/Notification/Notification'
 import {
   DEFAULT_ACTIVITY_VALUES,
-  ISignupJourneyContext,
+  SignupJourneyContextValues,
   SignupJourneyContext,
 } from 'context/SignupJourneyContext'
 import { Validation } from 'screens/SignupJourneyForm/Validation/index'
@@ -28,7 +28,7 @@ jest.mock('react-router-dom', () => ({
   useNavigate: jest.fn(),
 }))
 
-const addressInformations: IAddress = {
+const addressInformations: Address = {
   address: '3 Rue de Valois',
   city: 'Paris',
   latitude: 1.23,
@@ -36,7 +36,7 @@ const addressInformations: IAddress = {
   postalCode: '75001',
 }
 
-const renderValidationScreen = (contextValue: ISignupJourneyContext) => {
+const renderValidationScreen = (contextValue: SignupJourneyContextValues) => {
   const storeOverrides = {
     user: {
       initialized: true,
@@ -76,7 +76,7 @@ const renderValidationScreen = (contextValue: ISignupJourneyContext) => {
 }
 
 describe('screens:SignupJourney::Validation', () => {
-  let contextValue: ISignupJourneyContext
+  let contextValue: SignupJourneyContextValues
   beforeEach(() => {
     contextValue = {
       activity: DEFAULT_ACTIVITY_VALUES,

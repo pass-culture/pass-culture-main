@@ -2,14 +2,14 @@
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
-import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
+import { OfferIndividualFormValues } from 'components/OfferIndividualForm'
 
 import { serializePostOffer } from './serializers'
 
 type TSuccessPayload = { nonHumanizedId: number }
 type TFailurePayload = { errors: Record<string, string> }
 type TCreateIndividualOffer = Adapter<
-  IOfferIndividualFormValues,
+  OfferIndividualFormValues,
   TSuccessPayload,
   TFailurePayload
 >

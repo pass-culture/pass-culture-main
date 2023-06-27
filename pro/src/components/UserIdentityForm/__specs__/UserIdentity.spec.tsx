@@ -5,11 +5,11 @@ import React from 'react'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { UserIdentityForm } from '../'
-import { IUserIdentityFormProps } from '../UserIdentityForm'
+import { UserIdentityFormProps } from '../UserIdentityForm'
 
 const patchIdentityAdapterMock = jest.fn()
 
-const renderUserIdentityForm = (props: IUserIdentityFormProps) => {
+const renderUserIdentityForm = (props: UserIdentityFormProps) => {
   const storeOverrides = {
     user: {
       initialized: true,
@@ -29,7 +29,7 @@ const renderUserIdentityForm = (props: IUserIdentityFormProps) => {
 }
 
 describe('components:UserIdentityForm', () => {
-  let props: IUserIdentityFormProps
+  let props: UserIdentityFormProps
   beforeEach(() => {
     patchIdentityAdapterMock.mockResolvedValue({})
     props = {

@@ -1,5 +1,5 @@
 import { OfferAddressType } from 'apiClient/v1'
-import { IVenue } from 'core/Venue'
+import { Venue } from 'core/Venue'
 import { EVENT_ADDRESS_SCHOOL_LABEL } from 'screens/OfferEducational/constants/labels'
 
 import { formatOfferEventAddress } from '../formatOfferEventAddress'
@@ -19,7 +19,7 @@ describe('formatOfferEventAddress', () => {
           postalCode: '75000',
           city: 'Paris',
           address: '12 rue Duhesme',
-        } as IVenue
+        } as Venue
       )
     ).toBe('Offerer venue, 12 rue Duhesme, 75000, Paris')
   })
@@ -38,7 +38,7 @@ describe('formatOfferEventAddress', () => {
           postalCode: '75000',
           city: 'Paris',
           address: '12 rue Duhesme',
-        } as IVenue
+        } as Venue
       )
     ).toBe(EVENT_ADDRESS_SCHOOL_LABEL)
   })
@@ -57,7 +57,7 @@ describe('formatOfferEventAddress', () => {
           postalCode: '75000',
           city: 'Paris',
           address: '12 rue Duhesme',
-        } as IVenue
+        } as Venue
       )
     ).toBe('A la mairie')
   })

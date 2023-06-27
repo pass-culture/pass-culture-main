@@ -6,7 +6,7 @@ import { IOfferEducationalFormValues } from 'core/OfferEducational'
 import useAccessibilityOptions from 'hooks/useAccessibilityOptions'
 import { CheckboxGroup } from 'ui-kit'
 
-interface IFormAccessibilityProps {
+interface FormAccessibilityProps {
   legend?: string
   disableForm: boolean
 }
@@ -14,7 +14,7 @@ interface IFormAccessibilityProps {
 const FormAccessibility = ({
   legend = 'Cette offre est accessible au public en situation de handicap :',
   disableForm,
-}: IFormAccessibilityProps): JSX.Element => {
+}: FormAccessibilityProps): JSX.Element => {
   const { setFieldValue } = useFormikContext<IOfferEducationalFormValues>()
 
   return (

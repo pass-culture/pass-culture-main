@@ -1,14 +1,14 @@
 import { BoxFormLayout } from 'components/BoxFormLayout'
 import { UserIdentityForm } from 'components/UserIdentityForm'
-import { IUserIdentityFormValues } from 'components/UserIdentityForm/types'
+import { UserIdentityFormValues } from 'components/UserIdentityForm/types'
 import patchIdentityAdapter from 'pages/User/adapters/patchIdentityAdapter'
 import { BoxRounded } from 'ui-kit/BoxRounded'
 
 import { Forms } from '../constants'
 
-interface IUserIdentityProps {
+interface UserIdentityProps {
   setCurrentForm: (value: Forms | null) => void
-  initialValues: IUserIdentityFormValues
+  initialValues: UserIdentityFormValues
   showForm: boolean
 }
 
@@ -16,7 +16,7 @@ const UserIdentity = ({
   setCurrentForm,
   initialValues,
   showForm = false,
-}: IUserIdentityProps) => {
+}: UserIdentityProps) => {
   const onClickModify = () => setCurrentForm(Forms.USER_IDENTITY)
   const resetForm = () => setCurrentForm(null)
   return (

@@ -1,4 +1,4 @@
-import { TSearchFilters } from 'core/Offers/types'
+import { SearchFiltersParams } from 'core/Offers/types'
 
-export const searchFiltersSelector = (state: any): TSearchFilters =>
+export const searchFiltersSelector = (state: any): SearchFiltersParams =>
   state.offers.searchFilters
