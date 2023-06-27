@@ -4,23 +4,7 @@ name: "[reusable] build and tag"
 # It builds then tags the release so it's ready to deploy.
 
 on:
-  workflow_call:
-    inputs:
-      base_ref:
-        # The base ref to tag from.
-        # Can be a branch name, a tag or a commit.
-        required: true
-        type: string
-
-      tag_number:
-        # 200.0.2 for example.
-        required: true
-        type: string
-
-      base_ref_is_a_branch:
-        required: false
-        type: boolean
-        default: false
+  push:
 
 env:
   DOCKER_REGISTRY_PROJECT_ID: passculture-infra-prod
@@ -37,36 +21,17 @@ jobs:
     env:
       GIT_CONFIG_EMAIL: github-actions-bot@passculture.app
       GIT_CONFIG_NAME: ${{ github.actor }}
-      TAG_NAME: v${{ inputs.tag_number }}
 
     steps:
       - name: Checkout ref
         uses: actions/checkout@v3
         with:
-          ref: ${{ inputs.base_ref }}
+          ref: "dbaty/prometheus-flask-exporter"
 
       - name: Author
         run: |
           git config --global user.email "$GIT_CONFIG_EMAIL"
           git config --global user.name "$GIT_CONFIG_NAME"
-
-      - name: Add version to api
-        run: |
-          cd ./api
-          echo "${{ inputs.tag_number }}" > version.txt
-          git add version.txt
-
-      - name: Add version to pro
-        run: |
-          cd pro
-          yarn version --new-version "${{ inputs.tag_number }}"
-          git add package.json
-
-      - name: Add version to adage
-        run: |
-          cd adage-front
-          yarn version --new-version "${{ inputs.tag_number }}"
-          git add package.json
 
       - name: Output variables
         id: vars
@@ -94,46 +59,11 @@ jobs:
           username: "oauth2accesstoken"
           password: "${{ steps.openid-auth.outputs.access_token }}"
 
-      - name: "Build and push pcapi image"
-        uses: docker/build-push-action@v2
-        with:
-          context: api
-          push: true
-          target: pcapi
-          tags: ${{ env.DOCKER_REPO }}/pcapi:${{ inputs.tag_number }}
-
-      - name: "Build and push pcapi-console image"
-        uses: docker/build-push-action@v2
-        with:
-          context: api
-          push: true
-          target: pcapi-console
-          tags: ${{ env.DOCKER_REPO }}/pcapi-console:${{ inputs.tag_number }}
-
-      - name: Tag Release
-        run: |
-          git commit -m "🚀 $TAG_NAME" -n
-          git tag -a "$TAG_NAME" -m "🚀 $TAG_NAME"
-          git push origin "$TAG_NAME"
-
-      - name: Push tag to base ref
-        if: ${{ inputs.base_ref_is_a_branch }}
-        run: git push origin "${{ inputs.base_ref }}"
-
-      - name: Slack success notification
-        uses: rtCamp/action-slack-notify@v2
-        if: ${{ !failure() }}
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_RELEASE_MANAGEMENT_WEBHOOK }}
-          SLACK_COLOR: ${{ job.status }}
-          SLACK_MESSAGE: "La pose du tag *${{ env.TAG_NAME }}* a réussi. Rdv sur <https://github.com/pass-culture/pass-culture-main/actions/workflows/release--deploy.yml|cette action Github> pour le déployer :rocket:"
-          MSG_MINIMAL: true
-
-      - name: Slack failure notification
-        uses: rtCamp/action-slack-notify@v2
-        if: ${{ failure() }}
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_RELEASE_MANAGEMENT_WEBHOOK }}
-          SLACK_COLOR: ${{ job.status }}
-          SLACK_MESSAGE: "La pose du tag *${{ env.TAG_NAME }}* a échoué :x: Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>"
-          MSG_MINIMAL: true
+              #      - name: "Build and push pcapi image"
+              #        uses: docker/build-push-action@v2
+              #        with:
+              #          context: api
+              #          push: true
+              #          target: pcapi
+              #          tags: ${{ env.DOCKER_REPO }}/pcapi:flask-exporter
+              #
