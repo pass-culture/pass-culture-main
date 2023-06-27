@@ -1,16 +1,16 @@
 import React, { FunctionComponent, SVGProps } from 'react'
 
-import { AlertGreyIcon, CircleArrowIcon } from 'icons'
+import { CircleArrowIcon } from 'icons'
 import { ReactComponent as FullLink } from 'icons/full-link.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { LinkProps } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import Dialog, { IDialogProps } from '../Dialog'
+import Dialog, { DialogProps } from '../Dialog'
 
 import styles from './RedirectDialog.module.scss'
 
-type IRedirectDialogProps = IDialogProps & {
+type RedirectDialogProps = DialogProps & {
   redirectText: string
   redirectLink: LinkProps
   cancelText: string
@@ -38,13 +38,13 @@ const RedirectDialog = ({
   cancelText,
   onCancel,
   withRedirectLinkIcon = true,
-}: IRedirectDialogProps): JSX.Element => {
+}: RedirectDialogProps): JSX.Element => {
   return (
     <Dialog
       onCancel={onCancel}
       title={title}
       secondTitle={secondTitle}
-      icon={icon ?? AlertGreyIcon}
+      icon={icon}
       hideIcon={hideIcon}
       explanation={children}
       extraClassNames={`${extraClassNames} ${styles['confirm-dialog-explanation']}`}

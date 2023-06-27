@@ -1,14 +1,14 @@
 import React from 'react'
 
-import { ReactComponent as AlertSvg } from 'icons/ico-alert-grey.svg'
+import { ReactComponent as StrokeErrorIcon } from 'icons/stroke-error.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import Dialog, { IDialogProps } from '../Dialog'
+import Dialog, { DialogProps } from '../Dialog'
 
 import styles from './ConfirmDialog.module.scss'
 
-type IConfirmDialogProps = IDialogProps & {
+type ConfirmDialogProps = DialogProps & {
   onConfirm: () => void
   confirmText: string
   cancelText: string
@@ -28,8 +28,8 @@ const ConfirmDialog = ({
   hideIcon = false,
   extraClassNames,
   leftButtonAction = onCancel,
-}: IConfirmDialogProps): JSX.Element => {
-  const Icon = icon ?? AlertSvg
+}: ConfirmDialogProps): JSX.Element => {
+  const Icon = icon ?? StrokeErrorIcon
 
   return (
     <Dialog
