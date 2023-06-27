@@ -23,15 +23,14 @@ const App = ({ children }: AppProps): JSX.Element | null => {
   const { currentUser } = useCurrentUser()
   const [consentedToFirebase, setConsentedToFirebase] = useState(false)
   const [consentedToBeamer, setConsentedToBeamer] = useState(false)
-  const [isCookieConsentChecked, setIsCookieConsentChecked] = useState(false)
 
-  // Initialize cookie consent modal
-  if (!isCookieConsentChecked) {
-    setTimeout(() => {
-      if (
-        isCookieBannerEnabled &&
-        location.pathname.indexOf('/adage-iframe') === -1
-      ) {
+  useEffect(() => {
+    // Initialize cookie consent modal
+    if (
+      isCookieBannerEnabled &&
+      location.pathname.indexOf('/adage-iframe') === -1
+    ) {
+      setTimeout(() => {
         const orejime = initCookieConsent()
         // Set the consent on consent change
         orejime.internals.manager.watch({
@@ -40,24 +39,28 @@ const App = ({ children }: AppProps): JSX.Element | null => {
           }: {
             consents: { [key in Consents]: boolean }
           }) => {
-            setConsentedToFirebase(consents.firebase)
-            setConsentedToBeamer(consents.beamer)
+            setConsentedToFirebase(consents[Consents.FIREBASE])
+            setConsentedToBeamer(consents[Consents.BEAMER])
           },
         })
-        // Set the consent if the user has already seen the modal
         setConsentedToFirebase(
           orejime.internals.manager.consents[Consents.FIREBASE]
         )
         setConsentedToBeamer(
           orejime.internals.manager.consents[Consents.BEAMER]
         )
-      } else {
-        setConsentedToFirebase(true)
-        setConsentedToBeamer(true)
-      }
-    })
-    setIsCookieConsentChecked(true)
-  }
+
+        // We force the banner to be displayed again if the cookie was deleted somehow
+        if (!document.cookie.includes('orejime')) {
+          orejime.internals.manager.confirmed = false
+          initCookieConsent()
+        }
+      })
+    } else {
+      setConsentedToFirebase(true)
+      setConsentedToBeamer(true)
+    }
+  }, [location.pathname])
 
   const isMaintenanceActivated = useSelector(maintenanceSelector)
   useConfigureFirebase({
@@ -81,18 +84,24 @@ const App = ({ children }: AppProps): JSX.Element | null => {
           window.Beamer.init()
         }
       }, 1000)
+    } else {
+      window.Beamer?.destroy()
     }
   }, [currentUser, consentedToBeamer])
 
-  if (currentUser !== null) {
-    setSentryUser({ id: currentUser.nonHumanizedId.toString() })
-  }
+  useEffect(() => {
+    if (currentUser !== null) {
+      setSentryUser({ id: currentUser.nonHumanizedId.toString() })
+    }
+  }, [currentUser])
 
-  if (isMaintenanceActivated) {
-    window.location.href = URL_FOR_MAINTENANCE
-    return null
-  }
+  useEffect(() => {
+    if (isMaintenanceActivated) {
+      window.location.href = URL_FOR_MAINTENANCE
+    }
+  }, [isMaintenanceActivated])
 
+  if (isMaintenanceActivated) return null
   return (
     <>
       {children}
