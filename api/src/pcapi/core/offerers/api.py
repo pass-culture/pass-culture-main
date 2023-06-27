@@ -1859,3 +1859,6 @@ def invite_members(offerer: models.Offerer, emails: list[str]) -> None:
         db.session.add(offerer_invitation)
 
     db.session.commit()
+    transactional_mails.send_offerer_attachment_invitation(
+        emails
+    )  # TODO à modifier envoyer email seulement aux nouveaux invités
