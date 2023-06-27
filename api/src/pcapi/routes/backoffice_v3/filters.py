@@ -302,7 +302,7 @@ def format_tag_object_list(
 
 def format_criteria(criteria: list[criteria_models.OfferCriterion]) -> str:
     return " ".join(
-        Markup('<span class="badge text-bg-light shadow-sm">{name}</span>').format(name=criterion.name)
+        Markup('<span class="badge badge-sm bg-gradient-light">{name}</span>').format(name=criterion.name)
         for criterion in criteria
     )
 

@@ -3,15 +3,13 @@
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 {% extends "layouts/connected.html" %}
 {% block page %}
-  <div class="pt-3 px-5">
+  <div>
     <h2 class="fw-light">Offres individuelles</h2>
     {{ build_filters_form(form, dst) }}
     <div>
       {% if rows %}
         <div class="d-flex justify-content-between">
           <p class="lead num-results">
-            {{ rows | length }}{{ "+" if rows | length > 100 else "" }}
-            résultat{{ "s" if rows | length > 1 else "" }}
           </p>
           {% if has_permission("PRO_FRAUD_ACTIONS") %}
             <div class="btn-group btn-group-sm"
@@ -45,101 +43,165 @@
                     data-use-confirmation-modal="true">Éditer les offres</button>
           </div>
         </div>
-        <table class="table mb-4"
-               data-table-multi-select-id="table-individual-offers-multiselect">
-          <thead>
-            <tr>
-              <th scope="col">
-                <input type="checkbox"
-                       class="form-check-input"
-                       name="pc-table-multi-select-check-all" />
-              </th>
-              <th scope="col"></th>
-              <th scope="col">ID</th>
-              <th scope="col">Nom de l'offre</th>
-              <th scope="col">Catégorie</th>
-              <th scope="col">Sous-catégorie</th>
-              <th scope="col">Stock restant</th>
-              <th scope="col">Tag</th>
-              <th scope="col">Pond.</th>
-              <th scope="col">État</th>
-              <th scope="col">
-                {% if date_created_sort_url %}
-                  <a href="{{ date_created_sort_url }}"
-                     class="text-decoration-none"
-                     title="Changer pour un tri {{ 'croissant' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'desc' else 'décroissant' }}">
-                    Date de création
-                    <i class="bi bi-sort-{{ 'down' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'desc' else 'up' }}-alt"></i>
-                  </a>
-                {% else %}
-                  Date de création
-                {% endif %}
-              </th>
-              <th scope="col">Dernière validation</th>
-              <th scope="col">Dép.</th>
-              <th scope="col">Structure</th>
-              <th scope="col">Lieu</th>
-              <th scope="col">{# icon #}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for offer in rows %}
-              <tr>
-                <td>
-                  <input type="checkbox"
-                         class="form-check-input"
-                         name="pc-table-multi-select-check-{{ offer.id }}"
-                         data-id="{{ offer.id }}" />
-                </td>
-                <td>
-                  <div class="dropdown">
-                    <button type="button"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                            class="btn p-0">
-                      <i class="bi bi-three-dots-vertical"></i>
-                    </button>
-                    <ul class="dropdown-menu">
-                      {% if has_permission("MANAGE_OFFERS") %}
-                        <li class="dropdown-item">
-                          <a class="btn btn-sm d-block w-100 text-start px-3"
-                             data-bs-toggle="modal"
-                             data-bs-target="#edit-offer-modal-{{ offer.id }}">Modifier</a>
-                        </li>
+        <div class="card mb-4">
+          <div class="card-header pb-0">
+            {{ rows | length }}{{ "+" if rows | length > 100 else "" }}
+            résultat{{ "s" if rows | length > 1 else "" }}
+          </div>
+          <div class="card-body px-0 pt-0 pb-2">
+            <div class="table-responsive p-0">
+              <table class="table align-items-center justify-content-center mb-0"
+                     data-table-multi-select-id="table-individual-offers-multiselect">
+                <thead>
+                  <tr>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2" scope="col">
+                      <input type="checkbox"
+                             class="form-check-input"
+                             name="pc-table-multi-select-check-all" />
+                    </th>
+                    <th></th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2" scope="col">
+                        ID
+                    </th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2" scope="col">
+                        Nom de l'offre
+                    </th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2" scope="col">
+                        Catégorie
+                    </th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2" scope="col">
+                        Sous-catégorie
+                    </th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2" scope="col">
+                        Stock restant
+                    </th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2" scope="col">
+                        Tag
+                    </th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2" scope="col">
+                        Pond.
+                    </th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2" scope="col">
+                        État
+                    </th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2" scope="col">
+                      {% if date_created_sort_url %}
+                        <a href="{{ date_created_sort_url }}"
+                           class="text-decoration-none"
+                           title="Changer pour un tri {{ 'croissant' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'desc' else 'décroissant' }}">
+                          Date de création
+                          <i class="bi bi-sort-{{ 'down' if request.args.get('sort') == 'dateCreated' and request.args.get('order') == 'desc' else 'up' }}-alt"></i>
+                        </a>
+                      {% else %}
+                        Date de création
                       {% endif %}
-                      {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                        <li class="dropdown-item">
-                          <a class="btn btn-sm d-block w-100 text-start px-3"
-                             data-bs-toggle="modal"
-                             data-bs-target="#validate-offer-modal-{{ offer.id }}">Valider l'offre</a>
-                        </li>
-                        <li class="dropdown-item">
-                          <a class="btn btn-sm d-block w-100 text-start px-3"
-                             data-bs-toggle="modal"
-                             data-bs-target="#reject-offer-modal-{{ offer.id }}">Rejeter l'offre</a>
-                        </li>
-                      {% endif %}
-                    </ul>
-                  </div>
-                </td>
-                <td>{{ offer.id }}</td>
-                <td>{{ links.build_offer_name_to_pc_pro_link(offer) }}</td>
-                <td>{{ offer.category.pro_label }}</td>
-                <td>{{ offer.subcategory_v2.pro_label }}</td>
-                <td class="text-nowrap">{{ get_remaining_stock(offer) }} / {{ get_initial_stock(offer) }}</td>
-                <td>{{ offer.criteria | format_criteria | safe }}</td>
-                <td>{{ offer.rankingWeight | empty_string_if_null }}</td>
-                <td>{{ offer.validation | format_offer_validation_status }}</td>
-                <td>{{ offer.dateCreated | format_date("%d/%m/%Y") }}</td>
-                <td>{{ offer.lastValidationDate | format_date("%d/%m/%Y") }}</td>
-                <td>{{ offer.venue.departementCode | empty_string_if_null }}</td>
-                <td>{{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}</td>
-                <td>{{ links.build_venue_name_to_details_link(offer.venue) }}</td>
-                <td>{{ links.build_venue_offers_icon_link(".list_offers", "Offres individuelles", offer.venue) }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+                    </th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2" scope="col">
+                        Dernière validation
+                    </th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2" scope="col">
+                        Dép.
+                    </th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2" scope="col">
+                        Structure
+                    </th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2" scope="col">
+                        Lieu
+                    </th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for offer in rows %}
+                  <tr>
+                    <td>
+                      <input type="checkbox"
+                             class="form-check-input"
+                             name="pc-table-multi-select-check-{{ offer.id }}"
+                             data-id="{{ offer.id }}" />
+                    </td>
+                    <td class="align-middle">
+                      <div class="dropdown">
+                        <button type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                                class="btn p-0">
+                          <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                          {% if has_permission("MANAGE_OFFERS") %}
+                            <li class="dropdown-item">
+                              <a class="btn btn-sm d-block w-100 text-start px-3"
+                                 data-bs-toggle="modal"
+                                 data-bs-target="#edit-offer-modal-{{ offer.id }}">Modifier</a>
+                            </li>
+                          {% endif %}
+                          {% if has_permission("PRO_FRAUD_ACTIONS") %}
+                            <li class="dropdown-item">
+                              <a class="btn btn-sm d-block w-100 text-start px-3"
+                                 data-bs-toggle="modal"
+                                 data-bs-target="#validate-offer-modal-{{ offer.id }}">Valider l'offre</a>
+                            </li>
+                            <li class="dropdown-item">
+                              <a class="btn btn-sm d-block w-100 text-start px-3"
+                                 data-bs-toggle="modal"
+                                 data-bs-target="#reject-offer-modal-{{ offer.id }}">Rejeter l'offre</a>
+                            </li>
+                          {% endif %}
+                        </ul>
+                      </div>
+                    </td>
+                    <td>
+                      <p class="text-sm font-weight-bold mb-0">{{ offer.id }}</p>
+                    </td>
+                    <td>
+                      <div class="d-flex">
+                          <h6 class="mb-0 text-sm">{{ links.build_offer_name_to_pc_pro_link(offer) }}</h6>
+                      </div>
+                    </td>
+                    <td>
+                      <p class="text-sm font-weight-bold mb-0">{{ offer.category.pro_label }}</p>
+                    </td>
+                    <td>
+                      <span class="text-xs font-weight-bold">{{ offer.subcategory_v2.pro_label }}</span>
+                    </td>
+                    <td class="text-nowrap">
+                      <p class="text-sm font-weight-bold mb-0">{{ get_remaining_stock(offer) }} / {{ get_initial_stock(offer) }}</p>
+                    </td>
+                    <td>
+                        <p class="text-sm font-weight-bold mb-0">{{ offer.criteria | format_criteria | safe }}</p>
+                    </td>
+                    <td>
+                        <p class="text-sm font-weight-bold mb-0">{{ offer.rankingWeight | empty_string_if_null }}</p>
+                    </td>
+                    <td>
+                        <p class="text-sm font-weight-bold mb-0">{{ offer.validation | format_offer_validation_status }}</p>
+                    </td>
+                    <td>
+                        <p class="text-sm font-weight-bold mb-0">{{ offer.dateCreated | format_date("%d/%m/%Y") }}</p>
+                    </td>
+                    <td>
+                        <p class="text-sm font-weight-bold mb-0">{{ offer.lastValidationDate | format_date("%d/%m/%Y") }}</p>
+                    </td>
+                    <td>
+                        <p class="text-sm font-weight-bold mb-0">{{ offer.venue.departementCode | empty_string_if_null }}</p>
+                    </td>
+                    <td>
+                        <p class="text-sm font-weight-bold mb-0">{{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}</p>
+                    </td>
+                    <td>
+                        <p class="text-sm font-weight-bold mb-0">{{ links.build_venue_name_to_details_link(offer.venue) }}</p>
+                    </td>
+                    <td>
+                        <p class="text-sm font-weight-bold mb-0">{{ links.build_venue_offers_icon_link(".list_offers", "Offres individuelles", offer.venue) }}</p>
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
         {% for offer in rows %}
           {{ build_lazy_modal(url_for('backoffice_v3_web.offer.get_edit_offer_form', offer_id=offer.id), "edit-offer-modal-" + offer.id|string) }}
           {{ build_lazy_modal(url_for('backoffice_v3_web.offer.get_validate_offer_form', offer_id=offer.id), "validate-offer-modal-" + offer.id|string) }}

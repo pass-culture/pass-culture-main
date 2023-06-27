@@ -313,14 +313,14 @@
         {% if messages %}
           <div class="mb-3">
             {% for category, message in messages %}
-              <div class="alert alert-{{ category }} alert-dismissible fade show mb-0 px-5 rounded-0"
+              <div class="alert alert-{{ category }} alert-dismissible fade show rounded-0"
                    role="alert">
                 <p class="mx-3 mb-0">
                   {{ message }}
                   <button type="button"
                           class="btn-close"
                           data-bs-dismiss="alert"
-                          aria-label="Close"></button>
+                          aria-label="Fermer"></button>
                 </p>
               </div>
             {% endfor %}
