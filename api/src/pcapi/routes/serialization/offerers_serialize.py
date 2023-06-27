@@ -229,3 +229,7 @@ class OffererReimbursementPointListResponseModel(BaseModel):
 
 class OffererStatsResponseModel(BaseModel):
     dashboardUrl: str
+
+
+class InviteMembersQueryModel(BaseModel):
+    emails: list[str]
