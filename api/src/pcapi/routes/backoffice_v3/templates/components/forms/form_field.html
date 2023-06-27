@@ -1,5 +1,5 @@
 {% set configuration_name = random_hash() %}
-<div class="pc-form-field-field"
+<div class="pc-form-field-field gap-2 mb-2 input-group"
      data-original-name="{{ field.name }}"
      data-clone-function-name="_formFieldCloneFunction"
      data-configuration-class="pc-{{ configuration_name }}"
@@ -8,7 +8,7 @@
   <span class="d-none pc-form-field-json-data">{{ field.json_data }}</span>
 </div>
 <!-- (Almost) duplicated form field html for field list field widget -->
-<div class="d-none pc-form-field-empty-container"
+<div class="d-none pc-form-field-empty-container gap-2 mb-2 input-group"
      data-original-name="{{ field.name }}"
      data-clone-function-name="_formFieldCloneFunction"
      data-configuration-class="pc-{{ configuration_name }}"
