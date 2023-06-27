@@ -1,8 +1,8 @@
 import { useField } from 'formik'
 import React, { useState } from 'react'
 
-import { EyeOpenIcon } from 'icons'
 import { ReactComponent as StrokeHideIcon } from 'icons/stroke-hide.svg'
+import { ReactComponent as StrokeShowIcon } from 'icons/stroke-show.svg'
 import { Button } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -47,7 +47,7 @@ const PasswordInput = ({
         autoComplete={autoComplete}
         rightButton={() => (
           <Button
-            Icon={isPasswordHidden ? StrokeHideIcon : EyeOpenIcon}
+            Icon={isPasswordHidden ? StrokeHideIcon : StrokeShowIcon}
             title={
               isPasswordHidden
                 ? 'Afficher le mot de passe'
