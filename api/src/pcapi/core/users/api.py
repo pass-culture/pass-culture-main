@@ -474,9 +474,8 @@ def bulk_unsuspend_account(user_ids: list[int], actor: models.User) -> None:
 def change_email(
     current_user: models.User,
     new_email: str,
-    by_admin: bool = False,
 ) -> None:
-    email_history = models.UserEmailHistory.build_validation(user=current_user, new_email=new_email, by_admin=by_admin)
+    email_history = models.UserEmailHistory.build_validation(user=current_user, new_email=new_email, by_admin=False)
 
     try:
         current_user.email = new_email
