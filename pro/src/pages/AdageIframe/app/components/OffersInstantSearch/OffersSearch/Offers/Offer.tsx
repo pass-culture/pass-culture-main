@@ -5,11 +5,11 @@ import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import DialogBox from 'components/DialogBox/DialogBox'
 import useActiveFeature from 'hooks/useActiveFeature'
+import fullLikeIcon from 'icons/full-like.svg'
 import { ReactComponent as ChevronIconAdage } from 'icons/ico-chevron-adage.svg'
-import { ReactComponent as LikedIcon } from 'icons/ico-liked.svg'
 import { ReactComponent as Logo } from 'icons/ico-passculture.svg'
 import { ReactComponent as ImagePlaceholder } from 'icons/ico-placeholder-offer-image.svg'
-import { ReactComponent as StrokeLike } from 'icons/stroke-like.svg'
+import { ReactComponent as StrokeLikeIcon } from 'icons/stroke-like.svg'
 import {
   HydratedCollectiveOffer,
   HydratedCollectiveOfferTemplate,
@@ -17,6 +17,7 @@ import {
 } from 'pages/AdageIframe/app/types/offers'
 import { Button, Tag } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { LOGS_DATA } from 'utils/config'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
@@ -167,7 +168,7 @@ const Offer = ({
             </button>
             {isLikeActive && (
               <Button
-                Icon={StrokeLike}
+                Icon={StrokeLikeIcon}
                 className={style['offer-like-button']}
                 title="bouton j'aime"
                 variant={ButtonVariant.TERNARY}
@@ -180,7 +181,12 @@ const Offer = ({
                 extraClassNames={style['offer-like-modal']}
                 hasCloseButton
               >
-                <LikedIcon />
+                <SvgIcon
+                  src={fullLikeIcon}
+                  alt=""
+                  width="88"
+                  className={style['full-like-icon']}
+                />
                 <p className={style['offer-like-modal-text']}>
                   Lʼéquipe du pass Culture a bien noté votre intérêt pour cette
                   fonctionnalité. Elle arrivera bientôt !
