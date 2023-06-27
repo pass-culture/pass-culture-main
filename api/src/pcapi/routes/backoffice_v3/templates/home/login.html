@@ -1,28 +1,42 @@
 {% extends "layouts/base.html" %}
 {% block content %}
-  <div class="container pc-login-container">
-    <div class="row">
-      <div class="col-md-8 col-lg-6 offset-lg-2">
-        <div class="card p-5">
-          <div class="d-flex justify-content-between align-items-start">
-            <img src="{{ url_for('static', filename='backofficev3/icons/government.svg') }}"
-                 class="government-logo"
-                 alt="Logo du Gouvernement Français" />
-            <img src="{{ url_for('static', filename='backofficev3/icons/passculture.svg') }}"
-                 class="pass-culture-logo"
-                 alt="Logo du pass Culture" />
-          </div>
-          <hr class="my-5" />
-          <h1>Connexion au backoffice</h1>
-          <div>
-            <a href="{{ url_for('backoffice_v3_web.login') }}"
-               class="btn mt-5 btn-primary">Se connecter via Google</a>
+  <main class="main-content  mt-0">
+    <section>
+      <div class="page-header min-vh-75">
+        <div class="container">
+          <div class="row">
+            <div class="col-xl-4 col-lg-5 col-md-6 d-flex flex-column mx-auto">
+              <div class="card card-plain mt-8">
+                <div class="d-flex justify-content-between align-items-start">
+                  <img src="{{ url_for('static', filename='backofficev3/icons/government.svg') }}"
+                       class="government-logo"
+                       alt="Logo du Gouvernement Français" />
+                  <img src="{{ url_for('static', filename='backofficev3/icons/passculture.svg') }}"
+                       class="pass-culture-logo"
+                       alt="Logo du pass Culture" />
+                </div>
+                <hr class="my-5" />
+                <div class="card-header pb-0 text-left bg-transparent">
+                  <h3 class="font-weight-bolder text-primary text-gradient">Connexion au backoffice</h3>
+                </div>
+                <div class="card-body">
+                  <div class="text-center">
+                    <a href="{{ url_for('backoffice_v3_web.login') }}"
+                       class="btn bg-gradient-primary w-100 mt-4 mb-0">Se connecter via Google</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="oblique position-absolute top-0 h-100 d-md-block d-none me-n8">
+                <div class="oblique-image bg-cover position-absolute fixed-top ms-auto h-100 z-index-0 ms-n6"
+                     style="background-image:url({{ url_for('static', filename='backofficev3/softui/img/curved-images/curved-10.jpg') }})">
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-  <img src="{{ url_for('static', filename='backofficev3/login/background.svg') }}"
-       class="pc-login-background"
-       alt="font d'écran pass Culture" />
+    </section>
+  </main>
 {% endblock content %}

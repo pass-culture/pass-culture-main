@@ -25,8 +25,8 @@
 {% block content %}
   {% set pc_collapse_menu_id = random_hash() %}
   {% set pc_collapse_menu_label_id = random_hash() %}
-  <nav class="navbar text-bg-primary p-3 pc-header-top">
-    <button class="btn"
+  <nav class="navbar text-bg-primary bg-gradient-primary p-1 pc-header-top">
+    <button class="btn btn-outline-primary border-0"
             type="button"
             data-bs-toggle="collapse"
             data-bs-target=".pc-collapse-menu"
@@ -35,7 +35,7 @@
     </button>
     <a href="{{ url_for('backoffice_v3_web.home') }}"
        class="card-link">
-      <p class="my-0 ms-5 navbar-brand text-white btn">
+      <p class="my-0 ms-5 navbar-brand text-white h5">
         <svg width="105.532"
              height="36"
              color="#FFFFFF">
