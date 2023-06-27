@@ -4,20 +4,20 @@ import { Formik } from 'formik'
 import React from 'react'
 
 import { REIMBURSEMENT_RULES } from 'core/Finances'
-import { TOffererName } from 'core/Offerers/types'
+import { OffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS } from 'core/Offers'
-import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
+import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
   FORM_DEFAULT_VALUES,
-  IOfferIndividualFormValues,
+  OfferIndividualFormValues,
   setDefaultInitialFormValues,
   validationSchema,
 } from '..'
 import OfferIndividualForm, {
-  IOfferIndividualFormProps,
+  OfferIndividualFormProps,
 } from '../OfferIndividualForm'
 
 const renderOfferIndividualForm = ({
@@ -25,9 +25,9 @@ const renderOfferIndividualForm = ({
   onSubmit = jest.fn(),
   props,
 }: {
-  initialValues: IOfferIndividualFormValues
+  initialValues: OfferIndividualFormValues
   onSubmit: () => void
-  props: IOfferIndividualFormProps
+  props: OfferIndividualFormProps
 }) => {
   const storeOverrides = {
     user: { currentUser: { isAdmin: false } },
@@ -45,12 +45,12 @@ const renderOfferIndividualForm = ({
 }
 
 describe('OfferIndividualForm', () => {
-  let initialValues: IOfferIndividualFormValues
+  let initialValues: OfferIndividualFormValues
   const onSubmit = jest.fn()
-  let props: IOfferIndividualFormProps
-  let categories: IOfferCategory[] = []
-  let subCategories: IOfferSubCategory[] = []
-  let offererNames: TOffererName[]
+  let props: OfferIndividualFormProps
+  let categories: OfferCategory[] = []
+  let subCategories: OfferSubCategory[] = []
+  let offererNames: OffererName[]
   let venueList: TOfferIndividualVenue[]
 
   beforeEach(() => {

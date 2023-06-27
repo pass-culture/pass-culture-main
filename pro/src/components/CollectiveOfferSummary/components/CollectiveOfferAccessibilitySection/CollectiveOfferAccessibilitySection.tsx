@@ -3,13 +3,13 @@ import React from 'react'
 import AccessibilitySummarySection from 'components/AccessibilitySummarySection'
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 
-interface ICollectiveOfferParticipantSectionProps {
+interface CollectiveOfferParticipantSectionProps {
   offer: CollectiveOfferTemplate | CollectiveOffer
 }
 
 const CollectiveOfferParticipantSection = ({
   offer,
-}: ICollectiveOfferParticipantSectionProps) => {
+}: CollectiveOfferParticipantSectionProps) => {
   const noDisabilityCompliance =
     !offer.audioDisabilityCompliant &&
     !offer.motorDisabilityCompliant &&

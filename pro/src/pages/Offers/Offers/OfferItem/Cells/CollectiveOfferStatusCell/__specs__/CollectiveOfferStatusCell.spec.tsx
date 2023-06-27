@@ -19,14 +19,14 @@ const renderCollectiveStatusLabel = (offer: Offer) => {
   )
 }
 
-interface ITestCaseProps {
+interface TestCaseProps {
   offerStatus: OfferStatus
   bookingStatus?: string
   expectedLabel: string
 }
 
 describe('CollectiveStatusLabel', () => {
-  const testCases: ITestCaseProps[] = [
+  const testCases: TestCaseProps[] = [
     { offerStatus: OfferStatus.PENDING, expectedLabel: 'en attente' },
     { offerStatus: OfferStatus.REJECTED, expectedLabel: 'refusée' },
     { offerStatus: OfferStatus.INACTIVE, expectedLabel: 'désactivée' },

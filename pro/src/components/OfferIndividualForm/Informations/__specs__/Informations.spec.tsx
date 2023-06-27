@@ -3,9 +3,9 @@ import { Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { IOfferIndividualFormValues } from 'components/OfferIndividualForm/types'
+import { OfferIndividualFormValues } from 'components/OfferIndividualForm/types'
 
-import Informations, { IInformationsProps } from '../Informations'
+import Informations, { InformationsProps } from '../Informations'
 import { validationSchema } from '../validationSchema'
 
 const renderInformations = ({
@@ -13,8 +13,8 @@ const renderInformations = ({
   initialValues,
   onSubmit = jest.fn(),
 }: {
-  props: IInformationsProps
-  initialValues: Partial<IOfferIndividualFormValues>
+  props: InformationsProps
+  initialValues: Partial<OfferIndividualFormValues>
   onSubmit: () => void
 }) => {
   return render(
@@ -29,9 +29,9 @@ const renderInformations = ({
 }
 
 describe('OfferIndividual section: UsefulInformations', () => {
-  let initialValues: Partial<IOfferIndividualFormValues>
+  let initialValues: Partial<OfferIndividualFormValues>
   const onSubmit = jest.fn()
-  let props: IInformationsProps
+  let props: InformationsProps
 
   beforeEach(() => {
     initialValues = {

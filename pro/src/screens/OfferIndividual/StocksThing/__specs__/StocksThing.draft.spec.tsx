@@ -8,14 +8,14 @@ import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import {
-  IOfferIndividualContext,
+  OfferIndividualContextValues,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import {
-  IOfferIndividual,
-  IOfferIndividualStock,
-  IOfferIndividualVenue,
+  OfferIndividual,
+  OfferIndividualStock,
+  OfferIndividualVenue,
 } from 'core/Offers/types'
 import {
   getOfferIndividualPath,
@@ -23,7 +23,7 @@ import {
 } from 'core/Offers/utils/getOfferIndividualUrl'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import StocksThing, { IStocksThingProps } from '../StocksThing'
+import StocksThing, { StocksThingProps } from '../StocksThing'
 
 jest.mock('screens/OfferIndividual/Informations/utils', () => {
   return {
@@ -43,8 +43,8 @@ jest.mock('utils/date', () => ({
 }))
 
 const renderStockThingScreen = (
-  props: IStocksThingProps,
-  contextValue: IOfferIndividualContext
+  props: StocksThingProps,
+  contextValue: OfferIndividualContextValues
 ) =>
   renderWithProviders(
     <>
@@ -82,10 +82,10 @@ const renderStockThingScreen = (
   )
 
 describe('screens:StocksThing::draft', () => {
-  let props: IStocksThingProps
-  let contextValue: IOfferIndividualContext
-  let offer: Partial<IOfferIndividual>
-  let stock: Partial<IOfferIndividualStock>
+  let props: StocksThingProps
+  let contextValue: OfferIndividualContextValues
+  let offer: Partial<OfferIndividual>
+  let stock: Partial<OfferIndividualStock>
   const offerId = 1
 
   beforeEach(() => {
@@ -102,15 +102,15 @@ describe('screens:StocksThing::draft', () => {
       lastProvider: null,
       venue: {
         departmentCode: '75',
-      } as IOfferIndividualVenue,
-      stocks: [stock as IOfferIndividualStock],
+      } as OfferIndividualVenue,
+      stocks: [stock as OfferIndividualStock],
     }
     props = {
-      offer: offer as IOfferIndividual,
+      offer: offer as OfferIndividual,
     }
     contextValue = {
       offerId: offerId,
-      offer: offer as IOfferIndividual,
+      offer: offer as OfferIndividual,
       venueList: [],
       offererNames: [],
       categories: [],

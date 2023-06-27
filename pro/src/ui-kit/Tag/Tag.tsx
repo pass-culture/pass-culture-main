@@ -10,13 +10,13 @@ interface Closeable {
   closeLabel?: string
   disabled?: boolean
 }
-export interface ITagProps {
+export interface TagProps {
   className?: string
   closeable?: Closeable
   label: string
 }
 
-const Tag = ({ label, className, closeable }: ITagProps): JSX.Element => {
+const Tag = ({ label, className, closeable }: TagProps): JSX.Element => {
   return (
     <span
       className={cx(

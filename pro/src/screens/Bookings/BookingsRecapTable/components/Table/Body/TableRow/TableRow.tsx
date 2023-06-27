@@ -7,7 +7,7 @@ import {
 } from 'apiClient/v1'
 
 import styles from './TableRow.module.scss'
-interface ITableBodyProps<
+interface TableBodyProps<
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel
 > {
   row: Row<T>
@@ -20,7 +20,7 @@ const TableRow = <
 >({
   row,
   additionalRowAttribute,
-}: ITableBodyProps<T>) => {
+}: TableBodyProps<T>) => {
   const rowAttributes = {
     ...row.getRowProps(),
     ...additionalRowAttribute,

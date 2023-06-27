@@ -5,14 +5,14 @@ import { ReactComponent as LibraryIcon } from 'icons/library.svg'
 import { ReactComponent as strokeUserIcon } from 'icons/stroke-user.svg'
 import { withRouterDecorator } from 'stories/decorators/withRouter'
 
-import Tabs, { IFilterTabsProps } from './Tabs'
+import Tabs, { FilterTabsProps } from './Tabs'
 export default {
   title: 'ui-kit/Tabs',
   decorators: [withRouterDecorator],
   component: Tabs,
 }
 
-const Template: Story<IFilterTabsProps> = args => {
+const Template: Story<FilterTabsProps> = args => {
   return <Tabs {...args} />
 }
 

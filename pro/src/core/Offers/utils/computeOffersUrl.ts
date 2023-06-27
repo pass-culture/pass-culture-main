@@ -11,14 +11,14 @@ import {
 } from 'utils/translate'
 
 import { Audience } from '../../shared/types'
-import { TSearchFilters } from '../types'
+import { SearchFiltersParams } from '../types'
 
 const INDIVIDUAL_OFFERS_URL = '/offres'
 const COLLECTIVE_OFFERS_URL = '/offres/collectives'
 
 const computeOffersUrlForGivenAudience = (
   audience: Audience,
-  offersSearchFilters: Partial<TSearchFilters> & { page?: number },
+  offersSearchFilters: Partial<SearchFiltersParams> & { page?: number },
   offersPageNumber: number
 ): string => {
   const { creationMode, status } = offersSearchFilters
@@ -34,9 +34,9 @@ const computeOffersUrlForGivenAudience = (
     searchFiltersParams.page = offersPageNumber
   }
 
-  const keys = Object.keys(searchFiltersParams) as (keyof TSearchFilters)[]
+  const keys = Object.keys(searchFiltersParams) as (keyof SearchFiltersParams)[]
 
-  const newFilters: Partial<TSearchFilters> = {}
+  const newFilters: Partial<SearchFiltersParams> = {}
   keys.forEach(key => {
     if (searchFiltersParams[key] !== DEFAULT_SEARCH_FILTERS[key]) {
       // @ts-expect-error next FIX ME: newFilters['status'] is not string...
@@ -53,7 +53,7 @@ const computeOffersUrlForGivenAudience = (
 }
 
 export const computeOffersUrl = (
-  offersSearchFilters: Partial<TSearchFilters> & { page?: number },
+  offersSearchFilters: Partial<SearchFiltersParams> & { page?: number },
   offersPageNumber = 1
 ): string =>
   computeOffersUrlForGivenAudience(
@@ -63,7 +63,7 @@ export const computeOffersUrl = (
   )
 
 export const computeCollectiveOffersUrl = (
-  offersSearchFilters: Partial<TSearchFilters> & { page?: number },
+  offersSearchFilters: Partial<SearchFiltersParams> & { page?: number },
   offersPageNumber = 1
 ): string =>
   computeOffersUrlForGivenAudience(

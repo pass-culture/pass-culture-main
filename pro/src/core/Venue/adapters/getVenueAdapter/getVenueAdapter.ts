@@ -1,9 +1,9 @@
 import { api } from 'apiClient/api'
-import { IVenue } from 'core/Venue/types'
+import { Venue } from 'core/Venue/types'
 
 import { serializeVenueApi } from './serializers'
 
-type GetVenueAdapter = Adapter<number | undefined, IVenue, null>
+type GetVenueAdapter = Adapter<number | undefined, Venue, null>
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,

@@ -1,12 +1,12 @@
-import { IOfferIndividual, IOfferIndividualStock } from 'core/Offers/types'
+import { OfferIndividual, OfferIndividualStock } from 'core/Offers/types'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../../'
 import buildInitialValues from '../buildInitialValues'
 
 describe('StockThingForm::utils::buildInitialValues', () => {
-  let offer: IOfferIndividual
+  let offer: OfferIndividual
   beforeEach(() => {
-    offer = { venue: { departmentCode: '93' } } as IOfferIndividual
+    offer = { venue: { departmentCode: '93' } } as OfferIndividual
   })
 
   it('should return default values when offer have no stocks', () => {
@@ -24,7 +24,7 @@ describe('StockThingForm::utils::buildInitialValues', () => {
         quantity: 40,
         bookingLimitDatetime: '2001-06-05',
         price: 12,
-      } as IOfferIndividualStock,
+      } as OfferIndividualStock,
     ]
     const initialValues = buildInitialValues(offer)
     expect(initialValues).toEqual({
@@ -47,7 +47,7 @@ describe('StockThingForm::utils::buildInitialValues', () => {
         quantity: null,
         bookingLimitDatetime: null,
         price: 12,
-      } as IOfferIndividualStock,
+      } as OfferIndividualStock,
     ]
     const initialValues = buildInitialValues(offer)
     expect(initialValues).toEqual({

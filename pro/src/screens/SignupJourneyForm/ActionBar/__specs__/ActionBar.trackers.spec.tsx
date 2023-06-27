@@ -7,13 +7,13 @@ import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyBreadcrumb/cons
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { IActionBarProps } from 'screens/SignupJourneyForm/ActionBar/ActionBar'
+import { ActionBarProps } from 'screens/SignupJourneyForm/ActionBar/ActionBar'
 import { ActionBar } from 'screens/SignupJourneyForm/ActionBar/index'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 const mockLogEvent = jest.fn()
 
-const renderActionBar = (props: IActionBarProps) => {
+const renderActionBar = (props: ActionBarProps) => {
   const storeOverrides = {
     user: {
       initialized: true,
@@ -36,7 +36,7 @@ const renderActionBar = (props: IActionBarProps) => {
 }
 
 describe('screens:SignupJourney::ActionBar', () => {
-  let props: IActionBarProps
+  let props: ActionBarProps
   beforeEach(() => {
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,

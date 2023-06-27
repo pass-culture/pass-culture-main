@@ -15,7 +15,7 @@ import {
   STOCK_EVENT_FORM_DEFAULT_VALUES,
 } from '../constants'
 
-interface ISetReadOnlyFieldsArgs {
+interface SetReadOnlyFieldsArgs {
   beginningDate: Date | null
   today: Date
   lastProviderName: string | null
@@ -27,7 +27,7 @@ const setFormReadOnlyFields = ({
   today,
   lastProviderName,
   offerStatus,
-}: ISetReadOnlyFieldsArgs) => {
+}: SetReadOnlyFieldsArgs) => {
   if (offerStatus === OFFER_STATUS_DRAFT) {
     return []
   }

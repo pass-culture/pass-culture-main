@@ -15,7 +15,7 @@ import { SIGNUP_FORM_DEFAULT_VALUES } from './constants'
 import OperatingProcedures from './OperationProcedures'
 import styles from './SignupContainer.module.scss'
 import SignupForm from './SignupForm'
-import { ISignupApiErrorResponse, ISignupFormValues } from './types'
+import { SignupApiErrorResponse, SignupFormValues } from './types'
 import { validationSchema } from './validationSchema'
 
 const SignupContainer = (): JSX.Element => {
@@ -26,7 +26,7 @@ const SignupContainer = (): JSX.Element => {
 
   const newOnboardingActive = useActiveFeature('WIP_ENABLE_NEW_ONBOARDING')
 
-  const onSubmit = (values: ISignupFormValues) => {
+  const onSubmit = (values: SignupFormValues) => {
     const { legalUnitValues, siren, ...flattenvalues } = values
 
     let promise
@@ -51,7 +51,7 @@ const SignupContainer = (): JSX.Element => {
     navigate('/inscription/confirmation', { replace: true })
   }
 
-  const onHandleFail = (errors: ISignupApiErrorResponse) => {
+  const onHandleFail = (errors: SignupApiErrorResponse) => {
     for (const field in errors) {
       formik.setFieldError(field, (errors as any)[field])
     }

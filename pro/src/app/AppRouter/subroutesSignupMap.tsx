@@ -6,9 +6,9 @@ import SignupConfirmation from 'pages/Signup/SignupConfirmation/SignupConfirmati
 import SignupContainer from 'pages/Signup/SignupContainer/SignupContainer'
 import SignUpValidation from 'pages/Signup/SignUpValidation'
 
-import type { IRoute } from './routesMap'
+import type { RouteConfig } from './routesMap'
 
-export const routesSignup: IRoute[] = [
+export const routesSignup: RouteConfig[] = [
   {
     element: <SignupContainer />,
     parentPath: '/inscription',

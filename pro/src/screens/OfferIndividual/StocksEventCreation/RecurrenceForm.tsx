@@ -9,7 +9,7 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
-import { IOfferIndividual } from 'core/Offers/types'
+import { OfferIndividual } from 'core/Offers/types'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import {
@@ -53,7 +53,7 @@ import { getValidationSchema } from './form/validationSchema'
 import styles from './RecurrenceForm.module.scss'
 
 interface Props {
-  offer: IOfferIndividual
+  offer: OfferIndividual
   onCancel: () => void
   onConfirm: (newStocks: StocksEvent[]) => void
 }

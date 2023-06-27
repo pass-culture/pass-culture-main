@@ -1,6 +1,6 @@
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS, INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
-import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
+import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
 
 import { filterCategories } from '..'
@@ -29,8 +29,8 @@ describe('getOfferSubtypeFromParamsOrOffer', () => {
 })
 
 describe('filterCategories', () => {
-  let categories: IOfferCategory[]
-  let subCategories: IOfferSubCategory[]
+  let categories: OfferCategory[]
+  let subCategories: OfferSubCategory[]
 
   beforeEach(() => {
     categories = [
@@ -162,7 +162,7 @@ describe('filterCategories', () => {
       filteredCategories.find(category => category.id === 'D')
     ).toBeUndefined()
     expect(
-      filteredSubCategories.find((c: IOfferSubCategory) => c.id === 'C-D')
+      filteredSubCategories.find((c: OfferSubCategory) => c.id === 'C-D')
     ).toBeUndefined()
   })
 
@@ -178,7 +178,7 @@ describe('filterCategories', () => {
       filteredCategories.find(category => category.id === 'D')
     ).toBeUndefined()
     expect(
-      filteredSubCategories.find((c: IOfferSubCategory) => c.id === 'C-D')
+      filteredSubCategories.find((c: OfferSubCategory) => c.id === 'C-D')
     ).toBeUndefined()
   })
 

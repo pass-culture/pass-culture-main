@@ -10,11 +10,11 @@ import {
 } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
 import {
-  IOfferIndividualContext,
   OfferIndividualContext,
+  OfferIndividualContextValues,
 } from 'context/OfferIndividualContext'
 import { Events } from 'core/FirebaseEvents/constants'
-import { IOfferIndividual, IOfferIndividualVenue } from 'core/Offers/types'
+import { OfferIndividual, OfferIndividualVenue } from 'core/Offers/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { getToday } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -44,7 +44,7 @@ jest.mock('utils/date', () => ({
 
 const renderStockEventScreen = (
   props: StocksEventEditionProps,
-  contextValue: IOfferIndividualContext,
+  contextValue: OfferIndividualContextValues,
   url = '/creation/stocks'
 ) =>
   renderWithProviders(
@@ -72,8 +72,8 @@ const priceCategoryId = '1'
 
 describe('screens:StocksEventEdition', () => {
   let props: StocksEventEditionProps
-  let contextValue: IOfferIndividualContext
-  let offer: Partial<IOfferIndividual>
+  let contextValue: OfferIndividualContextValues
+  let offer: Partial<OfferIndividual>
   const offerId = 12
 
   beforeEach(() => {
@@ -81,7 +81,7 @@ describe('screens:StocksEventEdition', () => {
       nonHumanizedId: offerId,
       venue: {
         departmentCode: '75',
-      } as IOfferIndividualVenue,
+      } as OfferIndividualVenue,
       stocks: [],
       priceCategories: [
         { id: Number(priceCategoryId), label: 'Cat 1', price: 10 },
@@ -89,7 +89,7 @@ describe('screens:StocksEventEdition', () => {
       ],
     }
     props = {
-      offer: offer as IOfferIndividual,
+      offer: offer as OfferIndividual,
     }
     contextValue = {
       offerId: null,

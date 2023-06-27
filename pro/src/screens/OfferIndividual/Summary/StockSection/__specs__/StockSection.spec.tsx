@@ -15,12 +15,12 @@ import {
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import StockSection, { IStockSection } from '../StockSection'
+import StockSection, { StockSectionProps } from '../StockSection'
 
 const mockLogEvent = jest.fn()
 
 const renderStockSection = (
-  props: IStockSection,
+  props: StockSectionProps,
   url: string = getOfferIndividualPath({
     step: OFFER_WIZARD_STEP_IDS.SUMMARY,
     mode: OFFER_WIZARD_MODE.EDITION,
@@ -75,7 +75,7 @@ const renderStockSection = (
   )
 
 describe('Summary stock section', () => {
-  let props: IStockSection
+  let props: StockSectionProps
 
   beforeEach(() => {
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({

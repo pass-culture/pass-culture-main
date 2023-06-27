@@ -9,7 +9,7 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import { OFFER_WITHDRAWAL_TYPE_LABELS, OFFER_WIZARD_MODE } from 'core/Offers'
-import { IOfferIndividual } from 'core/Offers/types'
+import { OfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { AccessiblityEnum } from 'core/shared'
 import { useOfferWizardMode } from 'hooks'
@@ -18,15 +18,15 @@ import useAnalytics from 'hooks/useAnalytics'
 import { serializeOfferSectionData } from './serializer'
 import humanizeDelay from './utils'
 
-interface IOfferSummaryProps {
-  offer: IOfferIndividual
+interface OfferSummaryProps {
+  offer: OfferIndividual
   conditionalFields: string[]
 }
 
 const OfferSummary = ({
   conditionalFields,
   offer,
-}: IOfferSummaryProps): JSX.Element => {
+}: OfferSummaryProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const { logEvent } = useAnalytics()
   const { categories, subCategories } = useOfferIndividualContext()

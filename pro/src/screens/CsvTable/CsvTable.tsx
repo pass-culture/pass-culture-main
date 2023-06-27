@@ -6,11 +6,11 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 import { API_URL } from 'utils/config'
 import { getKey } from 'utils/strings'
 
-export interface ICsvTableProps {
+export interface CsvTableProps {
   getCsvData: (url: string) => Promise<ITableData | null>
 }
 
-const CsvTable = ({ getCsvData }: ICsvTableProps): JSX.Element => {
+const CsvTable = ({ getCsvData }: CsvTableProps): JSX.Element => {
   const { search } = useLocation()
   const [dataFromCsv, setDataFromCsv] = useState<ITableData | null>()
   const [isLoading, setIsLoading] = useState<boolean>(true)

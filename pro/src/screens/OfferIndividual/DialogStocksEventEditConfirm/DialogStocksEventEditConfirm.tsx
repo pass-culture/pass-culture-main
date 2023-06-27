@@ -2,7 +2,7 @@ import React from 'react'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 
-interface IDialogStocksEventEditConfirmProps {
+interface DialogStocksEventEditConfirmProps {
   onConfirm: () => void
   onCancel: () => void
 }
@@ -10,7 +10,7 @@ interface IDialogStocksEventEditConfirmProps {
 const DialogStocksEventEditConfirm = ({
   onConfirm,
   onCancel,
-}: IDialogStocksEventEditConfirmProps) => {
+}: DialogStocksEventEditConfirmProps) => {
   return (
     <ConfirmDialog
       onCancel={onCancel}

@@ -2,13 +2,13 @@ import {
   OFFER_STATUS_REJECTED,
   OFFER_STATUS_PENDING,
 } from 'core/Offers/constants'
-import { IOfferIndividual } from 'core/Offers/types'
+import { OfferIndividual } from 'core/Offers/types'
 import { isAllocineProvider } from 'core/Providers'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES, IStockThingFormValues } from '../'
 
 const setFormReadOnlyFields = (
-  offer: IOfferIndividual,
+  offer: OfferIndividual,
   currentStock: IStockThingFormValues
 ): string[] => {
   const isDisabledStatus = offer.status

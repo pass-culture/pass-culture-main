@@ -5,11 +5,11 @@ import React from 'react'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { UserEmailForm } from '..'
-import { IUserEmailFormProps } from '../UserEmailForm'
+import { UserEmailFormProps } from '../UserEmailForm'
 
 const postEmailAdapterMock = jest.fn()
 
-const renderUserEmailForm = (props: IUserEmailFormProps) => {
+const renderUserEmailForm = (props: UserEmailFormProps) => {
   const storeOverrides = {
     user: {
       initialized: true,
@@ -27,7 +27,7 @@ const renderUserEmailForm = (props: IUserEmailFormProps) => {
 }
 
 describe('components:UserEmailForm', () => {
-  let props: IUserEmailFormProps
+  let props: UserEmailFormProps
   beforeEach(() => {
     postEmailAdapterMock.mockResolvedValue({})
     props = {

@@ -1,14 +1,14 @@
 import React from 'react'
 
 import { VenueProviderResponse } from 'apiClient/v1'
-import { IVenue } from 'core/Venue/types'
+import { Venue } from 'core/Venue/types'
 
 import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
 
 interface VenueProviderListV2Props {
   afterVenueProviderDelete: (deletedVenueProvider: number) => void
   afterVenueProviderEdit: (editedVenueProvider: VenueProviderResponse) => void
-  venue: IVenue
+  venue: Venue
   venueProviders: VenueProviderResponse[]
 }
 

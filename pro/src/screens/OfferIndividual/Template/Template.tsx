@@ -13,7 +13,7 @@ import { Status } from '../Status'
 import OfferStatusBanner from './OfferStatusBanner'
 import styles from './Template.module.scss'
 
-export interface ITemplateProps {
+export interface TemplateProps {
   title?: string
   withStepper?: boolean
   withStatus?: boolean
@@ -27,7 +27,7 @@ const Template = ({
   withStepper = true,
   withStatus = true,
   withBanner = true,
-}: ITemplateProps) => {
+}: TemplateProps) => {
   const { offer, setOffer, shouldTrack } = useOfferIndividualContext()
   const mode = useOfferWizardMode()
   const notify = useNotification()

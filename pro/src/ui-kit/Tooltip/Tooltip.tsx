@@ -3,7 +3,7 @@ import React, { ReactNode } from 'react'
 
 import styles from './Tooltip.module.scss'
 
-export interface ITooltipProps {
+export interface TooltipProps {
   id: string // Mandatory, must be linked to the aria-describedby attribute of the child
   content: ReactNode
   children: ReactNode
@@ -15,7 +15,7 @@ const Tooltip = ({
   children,
   content,
   className,
-}: ITooltipProps): JSX.Element => {
+}: TooltipProps): JSX.Element => {
   return (
     <div className={cn(styles['tooltip-container'], className)}>
       {children}

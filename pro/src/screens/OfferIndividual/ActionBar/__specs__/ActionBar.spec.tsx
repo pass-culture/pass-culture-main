@@ -6,13 +6,13 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { ActionBar } from '..'
-import { IActionBarProps } from '../ActionBar'
+import { ActionBarProps } from '../ActionBar'
 
 const renderActionBar = ({
   props,
   url = '/creation/testUrl',
 }: {
-  props: IActionBarProps
+  props: ActionBarProps
   url?: string
 }) => {
   const storeOverrides = {
@@ -32,7 +32,7 @@ const renderActionBar = ({
 }
 
 describe('OfferIndividual::ActionBar', () => {
-  let props: IActionBarProps
+  let props: ActionBarProps
   const onClickPreviousMock = jest.fn()
   const onClickNextMock = jest.fn()
   const onClickSaveDraftMock = jest.fn()

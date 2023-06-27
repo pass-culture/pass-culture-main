@@ -4,16 +4,16 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 
 import {
-  IOfferIndividualContext,
+  OfferIndividualContextValues,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
-import { TOffererName } from 'core/Offerers/types'
+import { OffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS, INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
 import {
-  IOfferCategory,
-  IOfferIndividual,
-  IOfferSubCategory,
+  OfferCategory,
+  OfferIndividual,
+  OfferSubCategory,
 } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { SubmitButton } from 'ui-kit'
@@ -21,12 +21,12 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
   FORM_DEFAULT_VALUES,
-  IOfferIndividualFormValues,
+  OfferIndividualFormValues,
   setDefaultInitialFormValues,
   validationSchema,
 } from '..'
 import OfferIndividualForm, {
-  IOfferIndividualFormProps,
+  OfferIndividualFormProps,
 } from '../OfferIndividualForm'
 
 const renderOfferIndividualForm = ({
@@ -35,15 +35,15 @@ const renderOfferIndividualForm = ({
   props,
   contextOverride = {},
 }: {
-  initialValues: IOfferIndividualFormValues
+  initialValues: OfferIndividualFormValues
   onSubmit: () => void
-  props: IOfferIndividualFormProps
-  contextOverride?: Partial<IOfferIndividualContext>
+  props: OfferIndividualFormProps
+  contextOverride?: Partial<OfferIndividualContextValues>
 }) => {
   const storeOverrides = {
     user: { currentUser: { isAdmin: false } },
   }
-  const contextValues: IOfferIndividualContext = {
+  const contextValues: OfferIndividualContextValues = {
     offerId: null,
     offer: null,
     venueList: [],
@@ -75,12 +75,12 @@ const renderOfferIndividualForm = ({
 }
 
 describe('OfferIndividualForm', () => {
-  let initialValues: IOfferIndividualFormValues
+  let initialValues: OfferIndividualFormValues
   const onSubmit = jest.fn()
-  let props: IOfferIndividualFormProps
-  let categories: IOfferCategory[] = []
-  let subCategories: IOfferSubCategory[] = []
-  let offererNames: TOffererName[]
+  let props: OfferIndividualFormProps
+  let categories: OfferCategory[] = []
+  let subCategories: OfferSubCategory[] = []
+  let offererNames: OffererName[]
   let venueList: TOfferIndividualVenue[]
   const offererId = 2
   const physicalVenueId = 1
@@ -210,8 +210,8 @@ describe('OfferIndividualForm', () => {
         },
       },
       lastProviderName: 'Ciné Office',
-    } as IOfferIndividual
-    const contextOverride: Partial<IOfferIndividualContext> = {
+    } as OfferIndividual
+    const contextOverride: Partial<OfferIndividualContextValues> = {
       offer: offer,
     }
 
@@ -226,7 +226,7 @@ describe('OfferIndividualForm', () => {
     ).toBeInTheDocument()
   })
 
-  const imageSectionDataset: (Partial<IOfferIndividual> | undefined)[] = [
+  const imageSectionDataset: (Partial<OfferIndividual> | undefined)[] = [
     {
       stocks: [],
     },
@@ -235,8 +235,8 @@ describe('OfferIndividualForm', () => {
   it.each(imageSectionDataset)(
     'should render image section when offer is given',
     async offer => {
-      const contextOverride: Partial<IOfferIndividualContext> = {
-        offer: offer ? (offer as IOfferIndividual) : undefined,
+      const contextOverride: Partial<OfferIndividualContextValues> = {
+        offer: offer ? (offer as OfferIndividual) : undefined,
       }
 
       renderOfferIndividualForm({

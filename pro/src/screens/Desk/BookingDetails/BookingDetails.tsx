@@ -5,7 +5,7 @@ import strokeDuoIcon from 'icons/stroke-duo.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
-import { IBooking } from '..'
+import { Booking } from '..'
 
 import styles from './BookingDetails.module.scss'
 
@@ -22,14 +22,14 @@ const BookingDetailsLine = ({ label, value }: BookingDetailsLine) => (
 )
 
 interface BookingDetailsProps {
-  booking: IBooking | null
+  booking: Booking | null
 }
 
 const BookingDetails = ({
   booking,
 }: BookingDetailsProps): JSX.Element | null => {
   /* istanbul ignore next: DEBT, TO FIX */
-  const formattedBookingDate = (booking: IBooking): string => {
+  const formattedBookingDate = (booking: Booking): string => {
     return !booking.datetime
       ? 'Permanent'
       : formatLocalTimeDateString(

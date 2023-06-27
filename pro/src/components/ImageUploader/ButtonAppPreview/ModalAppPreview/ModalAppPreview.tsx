@@ -7,7 +7,7 @@ import { UploaderModeEnum } from 'components/ImageUploader/types'
 
 import style from './ModalAppPreview.module.scss'
 
-interface IModalAppPreviewProps {
+interface ModalAppPreviewProps {
   hideModal: () => void
   mode: UploaderModeEnum
   imageUrl: string
@@ -18,7 +18,7 @@ const ModalAppPreview = ({
   mode,
   hideModal,
   imageUrl,
-}: IModalAppPreviewProps): JSX.Element => {
+}: ModalAppPreviewProps): JSX.Element => {
   const AppPreview = {
     [UploaderModeEnum.VENUE]: AppPreviewVenue,
     [UploaderModeEnum.OFFER]: AppPreviewOffer,

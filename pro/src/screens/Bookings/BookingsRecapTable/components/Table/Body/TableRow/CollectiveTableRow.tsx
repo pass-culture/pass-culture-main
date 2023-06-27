@@ -14,7 +14,7 @@ import getCollectiveBookingAdapter from './adapters/getCollectiveBookingAdapter'
 import TableRow from './TableRow'
 import styles from './TableRow.module.scss'
 
-export interface ITableBodyProps {
+export interface TableBodyProps {
   row: Row<CollectiveBookingResponseModel>
   reloadBookings: () => void
   bookingId: string
@@ -24,7 +24,7 @@ const CollectiveTableRow = ({
   row,
   reloadBookings,
   bookingId,
-}: ITableBodyProps) => {
+}: TableBodyProps) => {
   const [bookingDetails, setBookingDetails] =
     useState<CollectiveBookingByIdResponseModel | null>(null)
   const [isLoading, setIsLoading] = useState(false)

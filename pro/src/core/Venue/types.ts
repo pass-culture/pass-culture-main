@@ -7,7 +7,7 @@ import {
   StudentLevels,
 } from 'apiClient/v1'
 import { VenueBannerMetaProps } from 'components/VenueForm/ImageUploaderVenue/ImageUploaderVenue'
-import { IAccessibiltyFormValues } from 'core/shared'
+import { AccessibiltyFormValues } from 'core/shared'
 
 export type TOfferIndividualVenue = {
   nonHumanizedId: number
@@ -15,7 +15,7 @@ export type TOfferIndividualVenue = {
   name: string
   isVirtual: boolean
   withdrawalDetails: string | null
-  accessibility: IAccessibiltyFormValues
+  accessibility: AccessibiltyFormValues
   bookingEmail?: string | null
   hasMissingReimbursementPoint: boolean
   hasCreatedOffer: boolean
@@ -35,12 +35,12 @@ export type VenueCollectiveInformation = Pick<
   | 'collectiveSubCategoryId'
 >
 
-export interface IVenue {
+export interface Venue {
   collectiveDomains: Array<GetVenueDomainResponseModel>
   dateCreated: string
   fieldsUpdated: Array<string>
   isVirtual: boolean
-  accessibility: IAccessibiltyFormValues
+  accessibility: AccessibiltyFormValues
   address: string
   bannerMeta: VenueBannerMetaProps | null | undefined
   bannerUrl: string

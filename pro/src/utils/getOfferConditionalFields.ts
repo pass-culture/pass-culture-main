@@ -1,7 +1,7 @@
-import { IOfferSubCategory } from 'core/Offers/types'
+import { OfferSubCategory } from 'core/Offers/types'
 
-interface IGetOfferConditionalFieldsProps {
-  offerSubCategory?: IOfferSubCategory | null
+interface GetOfferConditionalFieldsProps {
+  offerSubCategory?: OfferSubCategory | null
   isUserAdmin?: boolean | null
   receiveNotificationEmails?: boolean | null
   isVenueVirtual?: boolean | null
@@ -12,7 +12,7 @@ export const getOfferConditionalFields = ({
   isUserAdmin = null,
   receiveNotificationEmails = null,
   isVenueVirtual = null,
-}: IGetOfferConditionalFieldsProps): string[] => {
+}: GetOfferConditionalFieldsProps): string[] => {
   const offerConditionalFields = []
 
   if (offerSubCategory?.isEvent) {

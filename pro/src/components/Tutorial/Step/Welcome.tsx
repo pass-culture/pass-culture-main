@@ -7,14 +7,14 @@ import {
   PasscultureIcon,
 } from 'icons'
 
-import { IStepComponentProps } from '../types'
+import { StepComponentProps } from '../types'
 
 import styles from './Step.module.scss'
 
 const Welcome = ({
   titleId,
   contentClassName,
-}: IStepComponentProps): JSX.Element => (
+}: StepComponentProps): JSX.Element => (
   <>
     <h1 id={titleId}>Bienvenue dans l’espace acteurs culturels</h1>
     <section className={contentClassName}>

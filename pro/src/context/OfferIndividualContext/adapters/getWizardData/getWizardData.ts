@@ -1,7 +1,7 @@
 import { getOffererNamesAdapter } from 'core/Offerers/adapters'
-import { TOffererName } from 'core/Offerers/types'
+import { OffererName } from 'core/Offerers/types'
 import { getCategoriesAdapter } from 'core/Offers/adapters'
-import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
+import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { getOfferIndividualVenuesAdapter } from 'core/Venue/adapters/getOfferIndividualVenuesAdapter'
 import { TOfferIndividualVenue } from 'core/Venue/types'
@@ -9,17 +9,17 @@ import { TOfferIndividualVenue } from 'core/Venue/types'
 interface GetWizardDataArgs {
   offerOffererId?: string
   offerOffererName?: string
-  offerer?: TOffererName
+  offerer?: OffererName
   queryOffererId?: string
   isAdmin?: boolean
 }
 
 interface OfferWizardData {
-  offererNames: TOffererName[]
+  offererNames: OffererName[]
   venueList: TOfferIndividualVenue[]
   categoriesData: {
-    categories: IOfferCategory[]
-    subCategories: IOfferSubCategory[]
+    categories: OfferCategory[]
+    subCategories: OfferSubCategory[]
   }
 }
 

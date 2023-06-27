@@ -9,7 +9,7 @@ import { Tag, Title } from 'ui-kit'
 
 import styles from './CollectiveOfferLayout.module.scss'
 
-export interface ICollectiveOfferLayout {
+export interface CollectiveOfferLayoutProps {
   children: React.ReactNode | React.ReactNode[]
   subTitle?: string
   isCreation?: boolean
@@ -27,7 +27,7 @@ const CollectiveOfferLayout = ({
   isCreation = false,
   isTemplate = false,
   requestId = null,
-}: ICollectiveOfferLayout): JSX.Element => {
+}: CollectiveOfferLayoutProps): JSX.Element => {
   const location = useLocation()
   const isSummaryPage = location.pathname.includes('recapitulatif')
   const { offerId: offerIdFromParams } = useParams<{

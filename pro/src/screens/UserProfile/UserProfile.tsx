@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { UserPhoneBodyModel } from 'apiClient/v1'
 import { BannerRGS } from 'components/Banner'
-import { IUserIdentityFormValues } from 'components/UserIdentityForm/types'
+import { UserIdentityFormValues } from 'components/UserIdentityForm/types'
 
 import { Forms } from './constants'
 import UserEmail, { UserEmailInitialValues } from './UserEmail/UserEmail'
@@ -11,8 +11,8 @@ import { UserPassword } from './UserPassword'
 import { UserPhone } from './UserPhone'
 import styles from './UserProfile.module.scss'
 
-interface IUserProfileProps {
-  userIdentityInitialValues: IUserIdentityFormValues
+interface UserProfileProps {
+  userIdentityInitialValues: UserIdentityFormValues
   userPhoneInitialValues: UserPhoneBodyModel
   userEmailInitialValues: UserEmailInitialValues
 }
@@ -21,7 +21,7 @@ const UserProfile = ({
   userIdentityInitialValues,
   userPhoneInitialValues,
   userEmailInitialValues,
-}: IUserProfileProps): JSX.Element => {
+}: UserProfileProps): JSX.Element => {
   const [currentForm, setCurrentForm] = useState<Forms | null>(null)
   return (
     <>

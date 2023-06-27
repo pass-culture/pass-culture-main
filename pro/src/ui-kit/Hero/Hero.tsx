@@ -3,14 +3,14 @@ import { Link } from 'react-router-dom'
 
 import styles from './Hero.module.scss'
 
-interface IHero {
+interface HeroProps {
   title: string
   text: string
   linkLabel: string
   linkTo: string
 }
 
-const Hero = ({ title, text, linkLabel, linkTo }: IHero): JSX.Element => (
+const Hero = ({ title, text, linkLabel, linkTo }: HeroProps): JSX.Element => (
   <section className={styles['hero']}>
     <div className={styles['hero-body']}>
       <h1>{title}</h1>

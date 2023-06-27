@@ -14,7 +14,7 @@ import {
 import { generateValidationSchema } from 'screens/OfferEducationalStock/validationSchema'
 import { SubmitButton } from 'ui-kit'
 
-import FormStock, { IFormStockProps } from '../FormStock'
+import FormStock, { FormStockProps } from '../FormStock'
 
 const renderFormStock = ({
   initialValues,
@@ -23,7 +23,7 @@ const renderFormStock = ({
 }: {
   initialValues: OfferEducationalStockFormValues
   onSubmit: () => void
-  props: IFormStockProps
+  props: FormStockProps
 }) => {
   return render(
     <Formik
@@ -45,7 +45,7 @@ const renderFormStock = ({
 describe('TimePicker', () => {
   let initialValues: OfferEducationalStockFormValues
   const onSubmit = jest.fn()
-  let props: IFormStockProps
+  let props: FormStockProps
 
   beforeEach(() => {
     props = {

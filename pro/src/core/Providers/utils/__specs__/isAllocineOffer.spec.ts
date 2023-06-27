@@ -1,4 +1,4 @@
-import { IOfferIndividual } from 'core/Offers/types'
+import { OfferIndividual } from 'core/Offers/types'
 
 import { isAllocineOffer } from '../localProvider'
 
@@ -9,7 +9,7 @@ describe('isAllocineOffer', () => {
         lastProvider: {
           name: 'Allociné',
         },
-      } as IOfferIndividual) // TODO should use factory pattern
+      } as OfferIndividual) // TODO should use factory pattern
     ).toBe(true)
   })
 
@@ -19,7 +19,7 @@ describe('isAllocineOffer', () => {
         lastProvider: {
           name: 'Anyotherprovider',
         },
-      } as IOfferIndividual)
+      } as OfferIndividual)
     ).toBe(false)
   })
 
@@ -27,11 +27,11 @@ describe('isAllocineOffer', () => {
     expect(
       isAllocineOffer({
         lastProvider: null,
-      } as IOfferIndividual)
+      } as OfferIndividual)
     ).toBe(false)
   })
 
   it('should return false if last provider is undefined', () => {
-    expect(isAllocineOffer({} as IOfferIndividual)).toBe(false)
+    expect(isAllocineOffer({} as OfferIndividual)).toBe(false)
   })
 })

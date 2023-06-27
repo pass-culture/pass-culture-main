@@ -1,14 +1,14 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import SubmitButton, { ISubmitButtonProps } from './SubmitButton'
+import SubmitButton, { SubmitButtonProps } from './SubmitButton'
 
 export default {
   title: 'ui-kit/SubmitButton',
   component: SubmitButton,
 }
 
-const Template: Story<ISubmitButtonProps> = args => (
+const Template: Story<SubmitButtonProps> = args => (
   <SubmitButton {...args}>{args.children}</SubmitButton>
 )
 

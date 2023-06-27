@@ -7,7 +7,7 @@ import { BaseFileInput } from 'ui-kit/form/shared'
 import styles from './ActivationCodeFormDialog.module.scss'
 import ActivationCodesUploadInformationDescription from './ActivationCodesUploadInformationDescription'
 
-interface IAddActivationCodeForm {
+interface AddActivationCodeFormProps {
   submitFile: (e: React.ChangeEvent<HTMLInputElement>) => void
   isFileInputDisabled: boolean
   errorMessage: string
@@ -17,7 +17,7 @@ const AddActivationCodeForm = ({
   submitFile,
   isFileInputDisabled,
   errorMessage,
-}: IAddActivationCodeForm) => {
+}: AddActivationCodeFormProps) => {
   return (
     <>
       <>

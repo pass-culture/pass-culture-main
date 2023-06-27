@@ -37,7 +37,7 @@ import {
 } from './validationSchema'
 import WrongStudentsModal from './WrongStudentsModal/WrongStudentsModal'
 
-export interface IOfferEducationalStockProps<
+export interface OfferEducationalStockProps<
   T = CollectiveOffer | CollectiveOfferTemplate
 > {
   initialValues: OfferEducationalStockFormValues
@@ -57,7 +57,7 @@ const OfferEducationalStock = <
   mode,
   reloadCollectiveOffer,
   requestId = '',
-}: IOfferEducationalStockProps<T>): JSX.Element => {
+}: OfferEducationalStockProps<T>): JSX.Element => {
   const offerIsDisabled = isOfferDisabled(offer.status)
   const [isLoading, setIsLoading] = useState(false)
   const [isWrongStudentsModalVisible, setIsWrongStudentsModalVisible] =

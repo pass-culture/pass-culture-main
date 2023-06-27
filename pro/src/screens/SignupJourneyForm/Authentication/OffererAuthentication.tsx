@@ -12,7 +12,7 @@ import { DEFAULT_OFFERER_FORM_VALUES } from '../Offerer/constants'
 
 import styles from './OffererAuthentication.module.scss'
 import OffererAuthenticationForm, {
-  IOffererAuthenticationFormValues,
+  OffererAuthenticationFormValues,
 } from './OffererAuthenticationForm'
 import { validationSchema } from './validationSchema'
 
@@ -22,7 +22,7 @@ const OffererAuthentication = (): JSX.Element => {
 
   const { offerer, setOfferer } = useSignupJourneyContext()
 
-  const initialValues: IOffererAuthenticationFormValues = {
+  const initialValues: OffererAuthenticationFormValues = {
     ...DEFAULT_OFFERER_FORM_VALUES,
     ...offerer,
     addressAutocomplete: `${offerer?.address} ${offerer?.postalCode} ${offerer?.city}`,
@@ -35,7 +35,7 @@ const OffererAuthentication = (): JSX.Element => {
   }
 
   const onSubmitOffererAuthentication = async (
-    formValues: IOffererAuthenticationFormValues
+    formValues: OffererAuthenticationFormValues
   ): Promise<void> => {
     setOfferer({
       ...formValues,

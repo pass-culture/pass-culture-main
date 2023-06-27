@@ -3,14 +3,14 @@ import type { Story } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
-import CheckboxGroup, { ICheckboxGroupProps } from './CheckboxGroup'
+import CheckboxGroup, { CheckboxGroupProps } from './CheckboxGroup'
 
 export default {
   title: 'ui-kit/forms/CheckboxGroup',
   component: CheckboxGroup,
 }
 
-const Template: Story<ICheckboxGroupProps> = props => (
+const Template: Story<CheckboxGroupProps> = props => (
   <Formik
     initialValues={{ accessibility: false }}
     onSubmit={action('onSubmit')}

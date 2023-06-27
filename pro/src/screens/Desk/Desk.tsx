@@ -9,11 +9,11 @@ import { BookingDetails } from './BookingDetails'
 import { ButtonInvalidateToken } from './ButtonInvalidateToken'
 import styles from './Desk.module.scss'
 import {
-  IBooking,
-  IDeskGetBookingResponse,
+  Booking,
+  DeskGetBookingResponse,
   DeskProps,
-  IDeskSubmitResponse,
-  IErrorMessage,
+  DeskSubmitResponse,
+  ErrorMessage,
   MESSAGE_VARIANT,
 } from './types'
 import { validateToken } from './validation'
@@ -25,8 +25,8 @@ const Desk = ({
 }: DeskProps): JSX.Element => {
   const [token, setToken] = useState('')
   const [isTokenValidated, setIsTokenValidated] = useState(false)
-  const [booking, setBooking] = useState<IBooking | null>(null)
-  const [message, setMessage] = useState<IErrorMessage>({
+  const [booking, setBooking] = useState<Booking | null>(null)
+  const [message, setMessage] = useState<ErrorMessage>({
     message: 'Saisissez une contremarque',
     variant: MESSAGE_VARIANT.DEFAULT,
   })
@@ -66,7 +66,7 @@ const Desk = ({
       setBooking(null)
     } else {
       resetMessage()
-      getBooking(token).then((responseBooking: IDeskGetBookingResponse) => {
+      getBooking(token).then((responseBooking: DeskGetBookingResponse) => {
         if (responseBooking.error) {
           setIsTokenValidated(responseBooking.error.isTokenValidated)
           setBooking(null)
@@ -103,7 +103,7 @@ const Desk = ({
         variant: MESSAGE_VARIANT.DEFAULT,
       })
 
-      submitValidate(token).then((submitResponse: IDeskSubmitResponse) => {
+      submitValidate(token).then((submitResponse: DeskSubmitResponse) => {
         if (submitResponse.error) {
           setMessage(submitResponse.error)
         } else {
@@ -117,7 +117,7 @@ const Desk = ({
       message: 'Invalidation en cours...',
       variant: MESSAGE_VARIANT.DEFAULT,
     })
-    submitInvalidate(token).then((submitResponse: IDeskSubmitResponse) => {
+    submitInvalidate(token).then((submitResponse: DeskSubmitResponse) => {
       if (submitResponse.error) {
         setMessage(submitResponse.error)
       } else {

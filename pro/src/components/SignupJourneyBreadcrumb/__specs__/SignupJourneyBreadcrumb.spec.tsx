@@ -7,8 +7,8 @@ import { Target } from 'apiClient/v1'
 import { DEFAULT_ADDRESS_FORM_VALUES } from 'components/Address'
 import {
   DEFAULT_ACTIVITY_VALUES,
-  ISignupJourneyContext,
   SignupJourneyContext,
+  SignupJourneyContextValues,
 } from 'context/SignupJourneyContext'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -16,7 +16,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import SignupBreadcrumb from '../SignupJourneyBreadcrumb'
 
 const renderSignupBreadcrumb = (
-  contextValue: ISignupJourneyContext,
+  contextValue: SignupJourneyContextValues,
   url = '/parcours-inscription/identification'
 ) => {
   const storeOverrides = {
@@ -62,7 +62,7 @@ const renderSignupBreadcrumb = (
 }
 
 describe('test SignupBreadcrumb', () => {
-  let contextValue: ISignupJourneyContext
+  let contextValue: SignupJourneyContextValues
   beforeEach(() => {
     contextValue = {
       activity: DEFAULT_ACTIVITY_VALUES,

@@ -6,16 +6,16 @@ import { useAccessibilityOptions } from 'hooks'
 import { CheckboxGroup } from 'ui-kit'
 
 import styles from '../OfferIndividualForm.module.scss'
-import { IOfferIndividualFormValues } from '../types'
+import { OfferIndividualFormValues } from '../types'
 
-interface IAccessiblityProps {
+interface AccessiblityProps {
   readOnlyFields?: string[]
 }
 
 const Accessibility = ({
   readOnlyFields = [],
-}: IAccessiblityProps): JSX.Element => {
-  const { setFieldValue } = useFormikContext<IOfferIndividualFormValues>()
+}: AccessiblityProps): JSX.Element => {
+  const { setFieldValue } = useFormikContext<OfferIndividualFormValues>()
 
   return (
     <FormLayout.Section title="Accessibilité">

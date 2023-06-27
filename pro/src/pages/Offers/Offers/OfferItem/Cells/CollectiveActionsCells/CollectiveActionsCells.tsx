@@ -8,7 +8,7 @@ import BookingLinkCell from '../BookingLinkCell'
 import DuplicateOfferCell from '../DuplicateOfferCell/DuplicateOfferCell'
 import EditOfferCell from '../EditOfferCell'
 
-interface IActionsCellsProps {
+interface ActionsCellsProps {
   offer: Offer
   isOfferEditable: boolean
   editionOfferLink: string
@@ -18,7 +18,7 @@ const CollectiveActionsCells = ({
   offer,
   isOfferEditable,
   editionOfferLink,
-}: IActionsCellsProps) => {
+}: ActionsCellsProps) => {
   return (
     <td className={styles['actions-column']}>
       <div className={styles['actions-column-container']}>

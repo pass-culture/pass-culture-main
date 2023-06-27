@@ -10,11 +10,9 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveActionButtons from '..'
-import { ICollectiveActionButtonsProps } from '../CollectiveActionButtons'
+import { CollectiveActionButtonsProps } from '../CollectiveActionButtons'
 
-const renderCollectiveActionButtons = (
-  props: ICollectiveActionButtonsProps
-) => {
+const renderCollectiveActionButtons = (props: CollectiveActionButtonsProps) => {
   renderWithProviders(<CollectiveActionButtons {...props} />)
 }
 

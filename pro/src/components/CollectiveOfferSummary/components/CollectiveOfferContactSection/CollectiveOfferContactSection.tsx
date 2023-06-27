@@ -2,7 +2,7 @@ import React from 'react'
 
 import { SummaryLayout } from 'components/SummaryLayout'
 
-interface ICollectiveOfferContactSectionProps {
+interface CollectiveOfferContactSectionProps {
   phone?: string | null
   email: string
 }
@@ -10,7 +10,7 @@ interface ICollectiveOfferContactSectionProps {
 const CollectiveOfferContactSection = ({
   phone,
   email,
-}: ICollectiveOfferContactSectionProps) => {
+}: CollectiveOfferContactSectionProps) => {
   return (
     <SummaryLayout.SubSection title="Contact">
       <SummaryLayout.Row title="Téléphone" description={phone} />

@@ -11,7 +11,7 @@ import { ReactComponent as IcoMiniArrowRight } from 'icons/ico-mini-arrow-right.
 import { Button, SubmitButton } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 
-export interface IActionBarProps {
+export interface ActionBarProps {
   onClickNext?: () => void
   onClickPrevious?: () => void
   isDisabled: boolean
@@ -37,7 +37,7 @@ const ActionBar = ({
   withRightIcon = true,
   logEvent,
   legalCategoryCode,
-}: IActionBarProps) => {
+}: ActionBarProps) => {
   const location = useLocation()
 
   const logActionBarNavigation = (to: SIGNUP_JOURNEY_STEP_IDS) => {

@@ -7,27 +7,27 @@ import {
   coordonateToPosition,
   heightCropPercentToScale,
 } from 'components/ImageEditor/utils'
-import { IImageUploadBrowserFormValues } from 'components/ImageUploadBrowserForm/types'
+import { ImageUploadBrowserFormValues } from 'components/ImageUploadBrowserForm/types'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 
-import { IUploadImageValues } from '../types'
+import { UploadImageValues } from '../types'
 
 import { ModalImageCrop } from './ModalImageCrop'
 import { ModalImageUploadBrowser } from './ModalImageUploadBrowser'
 import { ModalImageUploadConfirm } from './ModalImageUploadConfirm'
 
-export interface IOnImageUploadArgs {
+export interface OnImageUploadArgs {
   imageFile: File
   imageCroppedDataUrl?: string
   credit: string | null
   cropParams?: CroppedRect
 }
 
-interface IModalImageEditProps {
+interface ModalImageEditProps {
   mode: UploaderModeEnum
   onDismiss: () => void
-  onImageUpload: (values: IOnImageUploadArgs) => Promise<void>
-  initialValues?: IUploadImageValues
+  onImageUpload: (values: OnImageUploadArgs) => Promise<void>
+  initialValues?: UploadImageValues
 }
 // FIXME: find a way to test FileReader
 /* istanbul ignore next: DEBT, TO FIX */
@@ -36,7 +36,7 @@ const ModalImageEdit = ({
   onDismiss,
   onImageUpload,
   initialValues = {},
-}: IModalImageEditProps): JSX.Element | null => {
+}: ModalImageEditProps): JSX.Element | null => {
   const [isReady, setIsReady] = useState<boolean>(false)
 
   const {
@@ -91,7 +91,7 @@ const ModalImageEdit = ({
     setEditedImageDataUrl('')
   }, [])
 
-  const onImageClientUpload = (values: IImageUploadBrowserFormValues) => {
+  const onImageClientUpload = (values: ImageUploadBrowserFormValues) => {
     setImage(values.image || undefined)
   }
 

@@ -7,7 +7,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import style from './WrongStudentsModal.module.scss'
 
-interface IWrongStudentsModalProps {
+interface WrongStudentsModalProps {
   closeModal(): void
   postForm(): void
   modifyStudents(): void
@@ -19,7 +19,7 @@ const WrongStudentsModal = ({
   postForm,
   modifyStudents,
   hasOnlyWrongStudents,
-}: IWrongStudentsModalProps) => {
+}: WrongStudentsModalProps) => {
   return (
     <Dialog
       onCancel={hasOnlyWrongStudents ? modifyStudents : closeModal}

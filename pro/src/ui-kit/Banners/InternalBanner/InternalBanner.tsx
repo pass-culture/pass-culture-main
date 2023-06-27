@@ -6,7 +6,7 @@ import BannerLayout from '../BannerLayout'
 import { BannerLayoutProps } from '../BannerLayout/BannerLayout'
 import styles from '../BannerLayout/BannerLayout.module.scss'
 
-interface IInternalBannerProps extends BannerLayoutProps {
+interface InternalBannerProps extends BannerLayoutProps {
   extraClassName?: string
   Icon?: FunctionComponent<
     SVGProps<SVGSVGElement> & {
@@ -25,7 +25,7 @@ const InternalBanner = ({
   Icon,
   linkTitle,
   ...bannerLayoutProps
-}: IInternalBannerProps): JSX.Element => (
+}: InternalBannerProps): JSX.Element => (
   <BannerLayout
     linkNode={
       to ? (

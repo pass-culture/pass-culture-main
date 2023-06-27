@@ -4,14 +4,14 @@ import { ReactComponent as LandscapePreferredOrientation } from './landscape-pre
 import { ReactComponent as PortraitPreferredOrientation } from './portrait-preferred-orientation.svg'
 import style from './PreferredOrientation.module.scss'
 
-export type IPreferredOrientationProps = {
+export type PreferredOrientationProps = {
   orientation: 'portrait' | 'landscape'
   children?: never
 }
 
 export const PreferredOrientation = ({
   orientation,
-}: IPreferredOrientationProps): JSX.Element => {
+}: PreferredOrientationProps): JSX.Element => {
   const Image =
     orientation === 'portrait'
       ? PortraitPreferredOrientation

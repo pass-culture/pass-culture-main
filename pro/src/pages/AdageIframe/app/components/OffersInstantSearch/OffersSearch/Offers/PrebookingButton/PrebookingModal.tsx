@@ -3,14 +3,14 @@ import React from 'react'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog/ConfirmDialog'
 import { ReactComponent as PasscultureIcon } from 'icons/ico-passculture.svg'
 
-interface IPrebookingModal {
+interface PrebookingModal {
   closeModal: () => void
   preBookCurrentStock: () => Promise<void>
 }
 const PrebookingModal = ({
   closeModal,
   preBookCurrentStock,
-}: IPrebookingModal): JSX.Element => {
+}: PrebookingModal): JSX.Element => {
   return (
     <ConfirmDialog
       icon={PasscultureIcon}

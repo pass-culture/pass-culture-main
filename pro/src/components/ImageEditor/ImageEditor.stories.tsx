@@ -2,7 +2,7 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import ImageEditor, { IImageEditorProps } from './ImageEditor'
+import ImageEditor, { ImageEditorProps } from './ImageEditor'
 import sampleImage from './sample-image.jpg'
 
 export default {
@@ -10,7 +10,7 @@ export default {
   component: ImageEditor,
 }
 
-const Template: Story<IImageEditorProps> = props => (
+const Template: Story<ImageEditorProps> = props => (
   <>
     <ImageEditor {...props} ref={null} />
     <h1>

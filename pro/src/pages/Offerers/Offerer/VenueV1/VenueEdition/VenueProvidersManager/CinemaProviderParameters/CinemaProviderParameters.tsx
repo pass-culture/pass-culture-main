@@ -9,7 +9,7 @@ import { Button } from 'ui-kit/index'
 import { CinemaProviderFormDialog } from '../CinemaProviderFormDialog/CinemaProviderFormDialog'
 
 import style from './CinemaProviderParameters.module.scss'
-import { ICinemaProviderParametersValues } from './types'
+import { CinemaProviderParametersValues } from './types'
 
 interface CinemaProviderParametersProps {
   venueProvider: VenueProviderResponse
@@ -26,7 +26,7 @@ const CinemaProviderParameters = ({
   const notification = useNotification()
 
   const editVenueProvider = useCallback(
-    (payload: ICinemaProviderParametersValues) => {
+    (payload: CinemaProviderParametersValues) => {
       api
         .updateVenueProvider(payload)
         .then(editedVenueProvider => {
@@ -51,7 +51,7 @@ const CinemaProviderParameters = ({
   }, [])
 
   const onConfirmDialog = useCallback(
-    (payload: ICinemaProviderParametersValues) => {
+    (payload: CinemaProviderParametersValues) => {
       payload = {
         ...payload,
         isActive: venueProvider.isActive,

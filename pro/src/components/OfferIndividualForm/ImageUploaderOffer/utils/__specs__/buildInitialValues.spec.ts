@@ -1,4 +1,4 @@
-import { IOfferIndividualImage } from 'core/Offers/types'
+import { OfferIndividualImage } from 'core/Offers/types'
 
 import { buildInitialValues } from '../buildInitialValues'
 
@@ -18,7 +18,7 @@ describe('test ImageUploader:utils:buildInitialValues', () => {
     })
   })
   it('should build initial values for given data', () => {
-    const imageOffer: IOfferIndividualImage = {
+    const imageOffer: OfferIndividualImage = {
       originalUrl: 'https://cropped.test.url',
       url: 'https://test.url',
       credit: 'John Do',

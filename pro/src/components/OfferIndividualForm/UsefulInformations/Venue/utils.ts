@@ -1,9 +1,9 @@
-import { TOffererName } from 'core/Offerers/types'
+import { OffererName } from 'core/Offerers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 
 export const buildOffererOptions = (
-  offererNames: TOffererName[]
+  offererNames: OffererName[]
 ): {
   offererOptions: SelectOption[]
   isDisabled: boolean

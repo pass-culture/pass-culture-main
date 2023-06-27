@@ -1,6 +1,6 @@
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers'
-import { IOfferSubCategory } from 'core/Offers/types'
+import { OfferSubCategory } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 
 import { getFilteredVenueList } from '../getFilteredVenueList'
@@ -11,7 +11,7 @@ describe('getFilteredVenueList', () => {
   const secondVenueId = 2
   const thirdVenueId = 3
 
-  const subCategories: IOfferSubCategory[] = [
+  const subCategories: OfferSubCategory[] = [
     {
       id: 'A-A',
       categoryId: 'A',

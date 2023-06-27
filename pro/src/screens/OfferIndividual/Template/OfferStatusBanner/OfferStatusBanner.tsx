@@ -4,11 +4,11 @@ import { OfferStatus } from 'apiClient/v1'
 import { Banner } from 'ui-kit'
 import { CGU_URL } from 'utils/config'
 
-interface IOfferStatusBanner {
+interface OfferStatusBannerProps {
   status: OfferStatus
 }
 
-const OfferStatusBanner = ({ status }: IOfferStatusBanner): JSX.Element => {
+const OfferStatusBanner = ({ status }: OfferStatusBannerProps): JSX.Element => {
   if (status === OfferStatus.REJECTED) {
     return (
       <Banner

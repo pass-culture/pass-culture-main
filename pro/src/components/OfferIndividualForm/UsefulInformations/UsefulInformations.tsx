@@ -4,22 +4,22 @@ import React from 'react'
 import { OfferRefundWarning, WithdrawalReminder } from 'components/Banner'
 import FormLayout from 'components/FormLayout'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
-import { TOffererName } from 'core/Offerers/types'
-import { IOfferSubCategory } from 'core/Offers/types'
+import { OffererName } from 'core/Offerers/types'
+import { OfferSubCategory } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { Checkbox, InfoBox, TextArea, TextInput } from 'ui-kit'
 
 import styles from '../OfferIndividualForm.module.scss'
-import { IOfferIndividualFormValues } from '../types'
+import { OfferIndividualFormValues } from '../types'
 
 import { TicketWithdrawal } from './TicketWithdrawal'
 import { Venue } from './Venue'
 
-export interface IUsefulInformationsProps {
-  offererNames: TOffererName[]
+export interface UsefulInformationsProps {
+  offererNames: OffererName[]
   venueList: TOfferIndividualVenue[]
   isUserAdmin: boolean
-  offerSubCategory?: IOfferSubCategory
+  offerSubCategory?: OfferSubCategory
   isVenueVirtual: boolean
   readOnlyFields?: string[]
 }
@@ -31,10 +31,10 @@ const UsefulInformations = ({
   offerSubCategory,
   isVenueVirtual,
   readOnlyFields = [],
-}: IUsefulInformationsProps): JSX.Element => {
+}: UsefulInformationsProps): JSX.Element => {
   const {
     values: { subCategoryFields },
-  } = useFormikContext<IOfferIndividualFormValues>()
+  } = useFormikContext<OfferIndividualFormValues>()
 
   const displayNoRefundWarning =
     offerSubCategory?.reimbursementRule === REIMBURSEMENT_RULES.NOT_REIMBURSED

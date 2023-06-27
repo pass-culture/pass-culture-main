@@ -12,7 +12,7 @@ import {
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import { IOfferer } from 'core/Offerers/types'
+import { Offerer } from 'core/Offerers/types'
 import { SelectOption } from 'custom_types/form'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -89,7 +89,7 @@ const renderForm = (isCreation: boolean) => {
           <VenueFormScreen
             initialValues={formValues}
             isCreatingVenue={isCreation}
-            offerer={{ id: 'AE', siren: '881457238' } as IOfferer}
+            offerer={{ id: 'AE', siren: '881457238' } as Offerer}
             venueTypes={venueTypes}
             venueLabels={venueLabels}
             providers={[]}

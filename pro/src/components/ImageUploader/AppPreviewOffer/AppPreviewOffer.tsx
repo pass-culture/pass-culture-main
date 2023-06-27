@@ -8,11 +8,11 @@ import offerShell from '../assets/offer-shell.png'
 import homeStyle from './HomeScreenPreview.module.scss'
 import offerStyle from './OfferScreenPreview.module.scss'
 
-export interface IAppPreviewOfferProps {
+export interface AppPreviewOfferProps {
   imageUrl: string
 }
 
-const AppPreviewOffer = ({ imageUrl }: IAppPreviewOfferProps): JSX.Element => (
+const AppPreviewOffer = ({ imageUrl }: AppPreviewOfferProps): JSX.Element => (
   <ImagePreviewsWrapper>
     <ImagePreview title="Page d’accueil">
       <img

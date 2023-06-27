@@ -5,16 +5,16 @@ import React from 'react'
 import type { Step } from 'components/Breadcrumb'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Stepper, { IStepper } from '../Stepper'
+import Stepper, { StepperProps } from '../Stepper'
 
-const renderStepper = (props: IStepper) => {
+const renderStepper = (props: StepperProps) => {
   return renderWithProviders(<Stepper {...props} />)
 }
 
 const onClick = jest.fn()
 
 describe('Stepper', () => {
-  let props: IStepper
+  let props: StepperProps
   let steps: Step[]
 
   beforeEach(() => {

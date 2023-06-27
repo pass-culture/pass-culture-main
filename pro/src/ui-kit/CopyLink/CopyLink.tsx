@@ -6,11 +6,11 @@ import { Button } from 'ui-kit/Button'
 
 import styles from './CopyLink.module.scss'
 
-export interface ICopyLink {
+export interface CopyLinkProps {
   textToCopy: string
 }
 
-const CopyLink = ({ textToCopy }: ICopyLink): JSX.Element => {
+const CopyLink = ({ textToCopy }: CopyLinkProps): JSX.Element => {
   const [isClicked, setIsClicked] = useState(false)
 
   const copyTextToClipboard = async (text: string) => {

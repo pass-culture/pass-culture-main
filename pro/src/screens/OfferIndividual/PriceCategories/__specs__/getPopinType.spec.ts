@@ -1,4 +1,4 @@
-import { IOfferIndividualStock } from 'core/Offers/types'
+import { OfferIndividualStock } from 'core/Offers/types'
 import { individualStockFactory } from 'utils/individualApiFactories'
 
 import { priceCategoryFormFactory } from '../form/factories'
@@ -8,7 +8,7 @@ import { POPIN_TYPE, getPopinType } from '../PriceCategories'
 describe('getPopinType', () => {
   const cases: {
     description: string
-    stocks: IOfferIndividualStock[]
+    stocks: OfferIndividualStock[]
     initialValues: PriceCategoriesFormValues
     values: PriceCategoriesFormValues
     expected: POPIN_TYPE | null

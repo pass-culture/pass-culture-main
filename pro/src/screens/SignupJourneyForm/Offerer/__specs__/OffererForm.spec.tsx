@@ -9,15 +9,15 @@ import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import {
-  IOfferer,
-  ISignupJourneyContext,
+  Offerer,
   SignupJourneyContext,
+  SignupJourneyContextValues,
 } from 'context/SignupJourneyContext'
 import { SubmitButton } from 'ui-kit'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { DEFAULT_OFFERER_FORM_VALUES } from '../constants'
-import OffererForm, { IOffererFormValues } from '../OffererForm'
+import OffererForm, { OffererFormValues } from '../OffererForm'
 import { validationSchema } from '../validationSchema'
 
 jest.mock('apiClient/api', () => ({
@@ -53,9 +53,9 @@ const renderOffererForm = ({
   onSubmit = jest.fn(),
   contextValue,
 }: {
-  initialValues: Partial<IOffererFormValues>
+  initialValues: Partial<OffererFormValues>
   onSubmit?: () => void
-  contextValue: ISignupJourneyContext
+  contextValue: SignupJourneyContextValues
 }) => {
   const storeOverrides = {
     user: {
@@ -85,9 +85,9 @@ const renderOffererForm = ({
 }
 
 describe('screens:SignupJourney::OffererForm', () => {
-  let offerer: IOfferer
-  let contextValue: ISignupJourneyContext
-  let initialValues: Partial<IOffererFormValues>
+  let offerer: Offerer
+  let contextValue: SignupJourneyContextValues
+  let initialValues: Partial<OffererFormValues>
   beforeEach(() => {
     offerer = DEFAULT_OFFERER_FORM_VALUES
     initialValues = { ...offerer }

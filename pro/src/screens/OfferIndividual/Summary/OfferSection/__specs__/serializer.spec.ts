@@ -1,19 +1,19 @@
 import { OfferStatus, WithdrawalTypeEnum } from 'apiClient/v1'
 import { CATEGORY_STATUS } from 'core/Offers'
 import {
-  IOfferCategory,
-  IOfferIndividual,
-  IOfferIndividualStock,
-  IOfferSubCategory,
+  OfferCategory,
+  OfferIndividual,
+  OfferIndividualStock,
+  OfferSubCategory,
 } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 
 import { serializeOfferSectionData } from '../serializer'
 
 describe('routes::Summary::serializers', () => {
-  let offer: IOfferIndividual
-  let categories: IOfferCategory[]
-  let subCategoryList: IOfferSubCategory[]
+  let offer: OfferIndividual
+  let categories: OfferCategory[]
+  let subCategoryList: OfferSubCategory[]
 
   beforeEach(() => {
     offer = {
@@ -86,26 +86,26 @@ describe('routes::Summary::serializers', () => {
           bookingLimitDatetime: '01-01-2021',
           beginningDatetime: null,
           dateCreated: new Date('01-12-2020'),
-        } as IOfferIndividualStock,
+        } as OfferIndividualStock,
         {
           quantity: 10,
           price: 12,
           bookingLimitDatetime: '01-01-2023',
           beginningDatetime: '01-12-2023',
-        } as IOfferIndividualStock,
+        } as OfferIndividualStock,
         {
           quantity: 10,
           price: 12,
           bookingLimitDatetime: '01-01-2024',
           beginningDatetime: null,
           dateCreated: new Date('01-12-2019'),
-        } as IOfferIndividualStock,
+        } as OfferIndividualStock,
         {
           quantity: 10,
           price: 12,
           bookingLimitDatetime: '01-01-2022',
           beginningDatetime: '01-12-2022',
-        } as IOfferIndividualStock,
+        } as OfferIndividualStock,
       ],
       lastProviderName: 'Last Provider Name',
       lastProvider: null,

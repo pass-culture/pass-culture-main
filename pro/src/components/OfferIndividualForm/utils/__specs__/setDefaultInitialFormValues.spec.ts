@@ -1,15 +1,15 @@
 import {
   FORM_DEFAULT_VALUES,
-  IOfferIndividualFormValues,
+  OfferIndividualFormValues,
 } from 'components/OfferIndividualForm'
-import { TOffererName } from 'core/Offerers/types'
+import { OffererName } from 'core/Offerers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 
 import setDefaultInitialFormValues from '../setDefaultInitialFormValues'
 
 describe('setDefaultInitialFormValues', () => {
-  let expectedInitialValues: IOfferIndividualFormValues
-  let offererNames: TOffererName[]
+  let expectedInitialValues: OfferIndividualFormValues
+  let offererNames: OffererName[]
   let offererId: string | null
   let venueId: string | null
   let venueList: TOfferIndividualVenue[]

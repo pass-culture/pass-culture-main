@@ -10,7 +10,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import styles from './UserPasswordForm.module.scss'
 import validationSchema from './validationSchema'
 
-export interface IUserPasswordFormProps {
+export interface UserPasswordFormProps {
   closeForm: () => void
   postPasswordAdapter: PostPasswordAdapter
 }
@@ -18,7 +18,7 @@ export interface IUserPasswordFormProps {
 const UserPasswordForm = ({
   closeForm,
   postPasswordAdapter,
-}: IUserPasswordFormProps): JSX.Element => {
+}: UserPasswordFormProps): JSX.Element => {
   const onSubmit = (values: any) => {
     postPasswordAdapter(values).then(response => {
       if (response.isOk) {

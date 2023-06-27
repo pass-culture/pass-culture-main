@@ -9,7 +9,7 @@ import strokeAccessibilityLeg from 'icons/stroke-accessibility-leg.svg'
 
 import styles from './AccessibilityLabel.module.scss'
 
-interface IAccessibilityLabelProps {
+interface AccessibilityLabelProps {
   className?: string
   name: AccessiblityEnum
 }
@@ -17,7 +17,7 @@ interface IAccessibilityLabelProps {
 const AccessibilityLabel = ({
   className,
   name,
-}: IAccessibilityLabelProps): JSX.Element => {
+}: AccessibilityLabelProps): JSX.Element => {
   const labelData = {
     [AccessiblityEnum.AUDIO]: {
       label: 'Auditif',

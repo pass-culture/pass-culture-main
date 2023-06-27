@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import Banner, { IBannerProps } from '../Banner'
+import Banner, { BannerProps } from '../Banner'
 
 describe('src | components | layout | Banner', () => {
   describe('render', () => {
-    const props: IBannerProps = {
+    const props: BannerProps = {
       links: [{ href: '/some/site', linkTitle: 'linkTitle' }],
     }
 

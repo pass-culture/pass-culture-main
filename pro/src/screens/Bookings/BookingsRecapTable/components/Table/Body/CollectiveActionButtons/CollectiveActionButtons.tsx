@@ -12,7 +12,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './CollectiveActionButtons.module.scss'
 
-export interface ICollectiveActionButtonsProps {
+export interface CollectiveActionButtonsProps {
   bookingRecap: CollectiveBookingResponseModel
   reloadBookings: () => void
   isCancellable: boolean
@@ -22,7 +22,7 @@ const CollectiveActionButtons = ({
   bookingRecap,
   reloadBookings,
   isCancellable,
-}: ICollectiveActionButtonsProps) => {
+}: CollectiveActionButtonsProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const notify = useNotification()

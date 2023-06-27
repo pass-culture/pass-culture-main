@@ -4,14 +4,11 @@ import FormLayout from 'components/FormLayout'
 import { InfoBox, TextInput } from 'ui-kit'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
-export interface IContactProps {
+export interface ContactProps {
   isVenueVirtual?: boolean
   isCreatingVenue?: boolean
 }
-const Contact = ({
-  isVenueVirtual = false,
-  isCreatingVenue,
-}: IContactProps) => {
+const Contact = ({ isVenueVirtual = false, isCreatingVenue }: ContactProps) => {
   return (
     <>
       {!isCreatingVenue && !isVenueVirtual && (

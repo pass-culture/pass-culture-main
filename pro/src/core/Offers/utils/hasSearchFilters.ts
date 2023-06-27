@@ -1,11 +1,11 @@
 import { DEFAULT_SEARCH_FILTERS } from '../constants'
-import { TSearchFilters } from '../types'
+import { SearchFiltersParams } from '../types'
 
 export const hasSearchFilters = (
-  searchFilters: TSearchFilters,
-  filterNames: (keyof TSearchFilters)[] = Object.keys(
+  searchFilters: SearchFiltersParams,
+  filterNames: (keyof SearchFiltersParams)[] = Object.keys(
     searchFilters
-  ) as (keyof TSearchFilters)[]
+  ) as (keyof SearchFiltersParams)[]
 ): boolean => {
   return filterNames
     .map(

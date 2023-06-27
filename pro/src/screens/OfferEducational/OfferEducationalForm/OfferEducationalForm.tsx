@@ -25,7 +25,7 @@ import { OfferEducationalProps } from '../OfferEducational'
 import FormAccessibility from './FormAccessibility'
 import FormContact from './FormContact'
 import FormImageUploader from './FormImageUploader'
-import { IImageUploaderOfferProps } from './FormImageUploader/FormImageUploader'
+import { ImageUploaderOfferProps } from './FormImageUploader/FormImageUploader'
 import FormNotifications from './FormNotifications'
 import FormOfferType from './FormOfferType'
 import FormParticipants from './FormParticipants'
@@ -44,9 +44,9 @@ type OfferEducationalFormProps = Omit<
   | 'useOfferForFormValues'
 > & {
   mode: Mode
-  imageOffer: IImageUploaderOfferProps['imageOffer']
-  onImageUpload: IImageUploaderOfferProps['onImageUpload']
-  onImageDelete: IImageUploaderOfferProps['onImageDelete']
+  imageOffer: ImageUploaderOfferProps['imageOffer']
+  onImageUpload: ImageUploaderOfferProps['onImageUpload']
+  onImageDelete: ImageUploaderOfferProps['onImageDelete']
   isOfferCreated?: boolean
   offer?: CollectiveOffer | CollectiveOfferTemplate
 }

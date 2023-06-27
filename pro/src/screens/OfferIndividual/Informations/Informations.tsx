@@ -7,7 +7,7 @@ import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import {
   FORM_DEFAULT_VALUES,
-  IOfferIndividualFormValues,
+  OfferIndividualFormValues,
   OfferIndividualForm,
   setDefaultInitialFormValues,
   setFormReadOnlyFields,
@@ -88,7 +88,7 @@ const Informations = ({
   const { search } = useLocation()
   const offerSubtype = getOfferSubtypeFromParamsOrOffer(search, offer)
   const categoryStatus = getCategoryStatusFromOfferSubtype(offerSubtype)
-  const initialValues: IOfferIndividualFormValues =
+  const initialValues: OfferIndividualFormValues =
     offer === null
       ? setDefaultInitialFormValues(
           FORM_DEFAULT_VALUES,
@@ -183,7 +183,7 @@ const Informations = ({
     }
 
   const onSubmitOffer = async (
-    formValues: IOfferIndividualFormValues
+    formValues: OfferIndividualFormValues
   ): Promise<void> => {
     if (isWithdrawalDialogOpen) {
       return

@@ -6,15 +6,12 @@ import Icon from 'ui-kit/Icon/Icon'
 
 import styles from './NoResults.module.scss'
 
-interface INoResultsProps {
+interface NoResultsProps {
   resetFilters: () => void
   audience: Audience
 }
 
-const NoResults = ({
-  resetFilters,
-  audience,
-}: INoResultsProps): JSX.Element => (
+const NoResults = ({ resetFilters, audience }: NoResultsProps): JSX.Element => (
   <div className={styles['search-no-results']}>
     <Icon
       alt="Illustration de recherche"

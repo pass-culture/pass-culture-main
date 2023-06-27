@@ -10,11 +10,11 @@ import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { BaseFileInput } from 'ui-kit/form/shared'
 
 import { modeValidationConstraints } from './constants'
-import { IImageUploadBrowserFormValues } from './types'
+import { ImageUploadBrowserFormValues } from './types'
 import getValidationSchema from './validationSchema'
 
-interface IImageUploadBrowserFormProps {
-  onSubmit: (values: IImageUploadBrowserFormValues) => void
+interface ImageUploadBrowserFormProps {
+  onSubmit: (values: ImageUploadBrowserFormValues) => void
   mode: UploaderModeEnum
   children?: never
 }
@@ -22,7 +22,7 @@ interface IImageUploadBrowserFormProps {
 const ImageUploadBrowserForm = ({
   onSubmit,
   mode,
-}: IImageUploadBrowserFormProps): JSX.Element => {
+}: ImageUploadBrowserFormProps): JSX.Element => {
   const [errors, setErrors] = useState<string[]>([])
   const validationConstraints = modeValidationConstraints[mode]
 

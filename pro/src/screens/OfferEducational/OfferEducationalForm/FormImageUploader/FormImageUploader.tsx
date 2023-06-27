@@ -2,18 +2,18 @@ import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { ImageUploader, IUploadImageValues } from 'components/ImageUploader'
-import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
+import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
-import { IOfferCollectiveImage } from 'core/Offers/types'
+import { OfferCollectiveImage } from 'core/Offers/types'
 
-export interface IImageUploaderOfferProps {
-  onImageUpload: (values: IOnImageUploadArgs) => Promise<void>
+export interface ImageUploaderOfferProps {
+  onImageUpload: (values: OnImageUploadArgs) => Promise<void>
   onImageDelete: () => Promise<void>
-  imageOffer: IOfferCollectiveImage | null
+  imageOffer: OfferCollectiveImage | null
 }
 
 const buildInitialValues = (
-  imageOffer: IOfferCollectiveImage | null
+  imageOffer: OfferCollectiveImage | null
 ): IUploadImageValues => ({
   imageUrl: imageOffer?.url || '',
   originalImageUrl: imageOffer?.url || '',
@@ -24,7 +24,7 @@ const FormImageUploader = ({
   onImageUpload,
   onImageDelete,
   imageOffer,
-}: IImageUploaderOfferProps) => (
+}: ImageUploaderOfferProps) => (
   <FormLayout.Section title="Image de l’offre">
     <FormLayout.Row>
       <ImageUploader

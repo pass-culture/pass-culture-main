@@ -1,5 +1,5 @@
 import { apiAdresse } from 'apiClient/adresse'
-import { IAutocompleteItemProps } from 'ui-kit/form/shared/AutocompleteList/type'
+import { AutocompleteItemProps } from 'ui-kit/form/shared/AutocompleteList/type'
 
 import { serializeAdressData } from './serializer'
 
@@ -10,11 +10,11 @@ interface AddressParams {
 
 type GetAdressDataAdapter = Adapter<
   AddressParams,
-  IAutocompleteItemProps[],
-  IAutocompleteItemProps[]
+  AutocompleteItemProps[],
+  AutocompleteItemProps[]
 >
 
-const FAILING_RESPONSE: AdapterFailure<IAutocompleteItemProps[]> = {
+const FAILING_RESPONSE: AdapterFailure<AutocompleteItemProps[]> = {
   isOk: false,
   message:
     "Une erreur est survenue lors de la récupération des suggestions d'adresse",

@@ -5,11 +5,11 @@ import { TOTAL_PRICE_LABEL } from 'screens/OfferEducationalStock/constants/label
 import { collectiveStockFactory } from 'utils/collectiveApiFactories'
 
 import CollectiveOfferStockSection, {
-  ICollectiveOfferStockSectionProps,
+  CollectiveOfferStockSectionProps,
 } from '../CollectiveOfferStockSection'
 
 const renderCollectiveOfferStockSection = (
-  props: ICollectiveOfferStockSectionProps
+  props: CollectiveOfferStockSectionProps
 ) => {
   return render(<CollectiveOfferStockSection {...props} />)
 }

@@ -3,7 +3,7 @@ import React from 'react'
 
 import styles from './OffererStatsNoResult.module.scss'
 
-type IOffererStatsNoResult = {
+type OffererStatsNoResult = {
   title: string
   subtitle: string
   extraClassName?: string
@@ -15,7 +15,7 @@ const OffererStatsNoResult = ({
   subtitle,
   icon,
   extraClassName,
-}: IOffererStatsNoResult) => {
+}: OffererStatsNoResult) => {
   return (
     <div
       className={cn(

@@ -1,2 +1,2 @@
 export { default, BreadcrumbStyle } from './Breadcrumb'
-export type { Step, IStepPattern } from './types'
+export type { Step, StepPattern } from './types'

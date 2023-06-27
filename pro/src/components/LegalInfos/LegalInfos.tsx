@@ -11,12 +11,12 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './LegalInfos.module.scss'
-interface ILegalInfoProps {
+interface LegalInfoProps {
   title: string
   className: string
 }
 
-const LegalInfos = ({ title, className }: ILegalInfoProps): JSX.Element => {
+const LegalInfos = ({ title, className }: LegalInfoProps): JSX.Element => {
   const location = useLocation()
   const { logEvent } = useAnalytics()
   return (

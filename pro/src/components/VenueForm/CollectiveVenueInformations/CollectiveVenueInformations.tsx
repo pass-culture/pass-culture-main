@@ -3,14 +3,14 @@ import React from 'react'
 
 import { DMSApplicationstatus } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
-import { IVenue } from 'core/Venue'
+import { Venue } from 'core/Venue'
 
 import NewEACInformation from '../EACInformation/NewEACInformation'
 
 import CollectiveDmsTimeline from './CollectiveDmsTimeline/CollectiveDmsTimeline'
 
-export interface ICollectiveVenueInformationsProps {
-  venue?: IVenue
+export interface CollectiveVenueInformationsProps {
+  venue?: Venue
   isCreatingVenue: boolean
   canCreateCollectiveOffer: boolean
 }
@@ -19,7 +19,7 @@ const CollectiveVenueInformations = ({
   venue,
   isCreatingVenue,
   canCreateCollectiveOffer,
-}: ICollectiveVenueInformationsProps) => {
+}: CollectiveVenueInformationsProps) => {
   const hasAdageIdForMoreThan30Days = Boolean(
     venue?.hasAdageId &&
       venue?.adageInscriptionDate &&

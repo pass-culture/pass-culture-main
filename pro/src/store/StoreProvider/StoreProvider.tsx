@@ -10,12 +10,12 @@ import createStore from 'store'
 import { RootState } from 'store/reducers'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-interface IStoreProvider {
+interface StoreProviderProps {
   isDev?: boolean
   children: JSX.Element | JSX.Element[]
 }
 
-const StoreProvider = ({ children, isDev = false }: IStoreProvider) => {
+const StoreProvider = ({ children, isDev = false }: StoreProviderProps) => {
   const [currentUser, setCurrentUser] =
     useState<SharedCurrentUserResponseModel | null>()
   const [features, setFeatures] = useState<FeatureResponseModel[]>()

@@ -8,7 +8,7 @@ import { SubmitButton } from 'ui-kit'
 
 import style from './ModalImageUploadConfirm.module.scss'
 
-interface IModalImageUploadConfirmProps {
+interface ModalImageUploadConfirmProps {
   imageUrl: string
   children?: never
   mode: UploaderModeEnum
@@ -23,7 +23,7 @@ const ModalImageUploadConfirm = ({
   onGoBack,
   onUploadImage,
   mode,
-}: IModalImageUploadConfirmProps): JSX.Element => {
+}: ModalImageUploadConfirmProps): JSX.Element => {
   const AppPreview = {
     [UploaderModeEnum.VENUE]: AppPreviewVenue,
     [UploaderModeEnum.OFFER]: AppPreviewOffer,

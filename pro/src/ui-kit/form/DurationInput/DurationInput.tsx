@@ -5,7 +5,7 @@ import TextInput from '../TextInput'
 
 import { parseMinutesToHours } from './utils/parseMinutesToHours'
 
-export interface IDurationInputProps {
+export interface DurationInputProps {
   label: string
   name: string
   isOptional?: boolean
@@ -20,7 +20,7 @@ const DurationInput = ({
   className,
   disabled,
   ...props
-}: IDurationInputProps): JSX.Element => {
+}: DurationInputProps): JSX.Element => {
   const [field, , helpers] = useField({ name })
 
   const onDurationBlur = (event: React.FocusEvent<HTMLInputElement>) => {

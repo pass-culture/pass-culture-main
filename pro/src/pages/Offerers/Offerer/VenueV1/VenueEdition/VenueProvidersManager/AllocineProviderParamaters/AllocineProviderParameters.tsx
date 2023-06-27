@@ -11,7 +11,7 @@ import AllocineProviderFormDialog from '../AllocineProviderFormDialog/AllocinePr
 import { getRequestErrorStringFromErrors } from '../utils/getRequestErrorStringFromErrors'
 
 import style from './AllocineProviderParameters.module.scss'
-import { IAllocineProviderParametersValues } from './types'
+import { AllocineProviderParametersValues } from './types'
 
 interface AllocineProviderParametersProps {
   venueProvider: VenueProviderResponse
@@ -28,7 +28,7 @@ const AllocineProviderParameters = ({
   const notification = useNotification()
 
   const editVenueProvider = useCallback(
-    (payload: IAllocineProviderParametersValues) => {
+    (payload: AllocineProviderParametersValues) => {
       api
         .updateVenueProvider(payload)
         .then(editedVenueProvider => {
@@ -55,7 +55,7 @@ const AllocineProviderParameters = ({
   }, [])
 
   const onConfirmDialog = useCallback(
-    (payload: IAllocineProviderParametersValues) => {
+    (payload: AllocineProviderParametersValues) => {
       payload = {
         ...payload,
         isActive: venueProvider.isActive,

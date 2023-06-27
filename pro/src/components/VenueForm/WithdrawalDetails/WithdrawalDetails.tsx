@@ -4,11 +4,11 @@ import FormLayout from 'components/FormLayout'
 import { InfoBox } from 'ui-kit'
 import { Checkbox, TextArea } from 'ui-kit/form'
 
-interface IWithdrawalDetails {
+interface WithdrawalDetails {
   isCreatedEntity?: boolean
 }
 
-const WithdrawalDetails = ({ isCreatedEntity }: IWithdrawalDetails) => {
+const WithdrawalDetails = ({ isCreatedEntity }: WithdrawalDetails) => {
   return (
     <FormLayout.Section title="Informations de retrait de vos offres">
       <FormLayout.Row

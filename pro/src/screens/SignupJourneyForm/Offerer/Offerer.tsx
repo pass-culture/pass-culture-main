@@ -21,7 +21,7 @@ import { ActionBar } from '../ActionBar'
 
 import { DEFAULT_OFFERER_FORM_VALUES } from './constants'
 import styles from './Offerer.module.scss'
-import OffererForm, { IOffererFormValues } from './OffererForm'
+import OffererForm, { OffererFormValues } from './OffererForm'
 import { validationSchema } from './validationSchema'
 
 const Offerer = (): JSX.Element => {
@@ -32,7 +32,7 @@ const Offerer = (): JSX.Element => {
   const [showIsAppUserDialog, setShowIsAppUserDialog] = useState<boolean>(false)
   const [showInvisibleBanner, setShowInvisibleBanner] = useState<boolean>(false)
 
-  const initialValues: IOffererFormValues = offerer
+  const initialValues: OffererFormValues = offerer
     ? { siret: offerer.siret }
     : { siret: DEFAULT_OFFERER_FORM_VALUES.siret }
 
@@ -44,7 +44,7 @@ const Offerer = (): JSX.Element => {
   }
 
   const onSubmitOfferer = async (
-    formValues: IOffererFormValues
+    formValues: OffererFormValues
   ): Promise<void> => {
     const formattedSiret = formValues.siret.replaceAll(' ', '')
     const response = await getSiretData(formattedSiret)

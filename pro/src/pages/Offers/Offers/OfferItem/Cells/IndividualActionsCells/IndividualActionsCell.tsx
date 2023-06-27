@@ -8,7 +8,7 @@ import DeleteDraftCell from '../DeleteDraftCell'
 import EditOfferCell from '../EditOfferCell'
 import EditStocksCell from '../EditStocksCell'
 
-interface IActionsCellsProps {
+interface ActionsCellsProps {
   offer: Offer
   isOfferEditable: boolean
   editionOfferLink: string
@@ -22,7 +22,7 @@ const IndividualActionsCells = ({
   editionOfferLink,
   editionStockLink,
   refreshOffers,
-}: IActionsCellsProps) => {
+}: ActionsCellsProps) => {
   return (
     <td className={styles['actions-column']}>
       <div className={styles['actions-column-container']}>

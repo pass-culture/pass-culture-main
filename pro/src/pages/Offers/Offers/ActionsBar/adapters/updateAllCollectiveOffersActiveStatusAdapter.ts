@@ -1,5 +1,5 @@
 import { api } from 'apiClient/api'
-import { TSearchFilters } from 'core/Offers/types'
+import { SearchFiltersParams } from 'core/Offers/types'
 import { serializeApiFilters } from 'core/Offers/utils'
 
 import {
@@ -9,7 +9,7 @@ import {
 
 type UpdateAllCollectiveOffersActiveStatusAdapter = Adapter<
   {
-    searchFilters: Partial<TSearchFilters> & { isActive: boolean }
+    searchFilters: Partial<SearchFiltersParams> & { isActive: boolean }
     nbSelectedOffers: number
   },
   null,

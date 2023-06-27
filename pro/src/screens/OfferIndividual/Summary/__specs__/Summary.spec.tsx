@@ -15,7 +15,7 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import {
-  IOfferIndividualContext,
+  OfferIndividualContextValues,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
@@ -41,14 +41,14 @@ jest.mock('core/Notification/constants', () => ({
 }))
 
 const renderSummary = (
-  customContext: Partial<IOfferIndividualContext> = {},
+  customContext: Partial<OfferIndividualContextValues> = {},
   url: string = getOfferIndividualPath({
     step: OFFER_WIZARD_STEP_IDS.SUMMARY,
     mode: OFFER_WIZARD_MODE.EDITION,
   }),
   storeOverride: any = {}
 ) => {
-  const contextValues: IOfferIndividualContext = {
+  const contextValues: OfferIndividualContextValues = {
     offerId: null,
     offer: null,
     venueList: [],
@@ -144,7 +144,7 @@ const subCategories = [
 ]
 
 describe('Summary', () => {
-  let customContext: Partial<IOfferIndividualContext>
+  let customContext: Partial<OfferIndividualContextValues>
   beforeEach(() => {
     customContext = {
       offer: individualOfferFactory(

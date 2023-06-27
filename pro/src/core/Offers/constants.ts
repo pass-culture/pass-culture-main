@@ -1,7 +1,7 @@
 import { OfferStatus } from 'apiClient/v1'
 import { SelectOption } from 'custom_types/form'
 
-import { TSearchFilters } from './types'
+import { SearchFiltersParams } from './types'
 
 export enum OFFER_TYPES {
   INDIVIDUAL_OR_DUO = 'INDIVIDUAL_OR_DUO',
@@ -80,7 +80,7 @@ export const NUMBER_OF_OFFERS_PER_PAGE = 10
 export const MAX_TOTAL_PAGES = 50
 export const MAX_OFFERS_TO_DISPLAY = MAX_TOTAL_PAGES * NUMBER_OF_OFFERS_PER_PAGE
 export const DEFAULT_AUDIENCE = 'individual'
-export const DEFAULT_SEARCH_FILTERS: TSearchFilters = {
+export const DEFAULT_SEARCH_FILTERS: SearchFiltersParams = {
   nameOrIsbn: ALL_OFFERS,
   offererId: 'all',
   venueId: ALL_VENUES,

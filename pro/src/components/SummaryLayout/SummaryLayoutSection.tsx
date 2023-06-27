@@ -6,7 +6,7 @@ import { ButtonLink, Title } from 'ui-kit'
 
 import style from './SummaryLayout.module.scss'
 
-interface ISummaryLayoutSectionProps {
+interface SummaryLayoutSectionProps {
   title: string
   children: React.ReactNode | React.ReactNode[]
   className?: string
@@ -22,7 +22,7 @@ const Section = ({
   editLink,
   onLinkClick,
   ...props
-}: ISummaryLayoutSectionProps): JSX.Element => (
+}: SummaryLayoutSectionProps): JSX.Element => (
   <div className={cn(style['summary-layout-section'], className)}>
     <div className={style['summary-layout-section-header']}>
       <div className={style['summary-layout-section-header-content']}>

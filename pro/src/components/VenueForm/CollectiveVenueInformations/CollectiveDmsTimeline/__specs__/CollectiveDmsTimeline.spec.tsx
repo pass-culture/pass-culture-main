@@ -36,7 +36,7 @@ const renderCollectiveDmsTimeline = ({
   )
 }
 
-interface ITestCaseProps {
+interface TestCaseProps {
   collectiveDmsApplication: DMSApplicationForEAC
   hasAdageId?: boolean
   hasAdageIdForMoreThan30Days?: boolean
@@ -44,7 +44,7 @@ interface ITestCaseProps {
 }
 
 describe('CollectiveDmsTimeline', () => {
-  const testCases: ITestCaseProps[] = [
+  const testCases: TestCaseProps[] = [
     {
       collectiveDmsApplication: {
         ...defaultCollectiveDmsApplication,

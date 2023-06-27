@@ -14,7 +14,7 @@ import { useEffectUnmount } from 'hooks'
 import CanvasTools from './canvas'
 import style from './ImageEditor.module.scss'
 
-export interface IImageEditorConfig {
+export interface ImageEditorConfig {
   canvasHeight: number
   canvasWidth: number
   cropBorderColor: string
@@ -23,7 +23,7 @@ export interface IImageEditorConfig {
   maxScale: number
 }
 
-export interface IImageEditorProps extends IImageEditorConfig {
+export interface ImageEditorProps extends ImageEditorConfig {
   image: File
   saveInitialScale?: (scale: number) => void
   initialPosition?: Position
@@ -31,7 +31,7 @@ export interface IImageEditorProps extends IImageEditorConfig {
   children?: never
 }
 
-const ImageEditor = forwardRef<AvatarEditor, IImageEditorProps>(
+const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
   (
     {
       image,

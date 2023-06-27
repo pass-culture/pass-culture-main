@@ -1,4 +1,4 @@
-import { ISignupFormValues } from 'pages/Signup/SignupContainer/types'
+import { SignupFormValues } from 'pages/Signup/SignupContainer/types'
 import { getYupValidationSchemaErrors } from 'utils/yupValidationTestHelpers'
 
 import { validationSchema } from '../validationSchema'
@@ -27,7 +27,7 @@ const signupFormWithSiren = {
 describe('validationSchema', () => {
   const cases: {
     description: string
-    formValues: Partial<ISignupFormValues>
+    formValues: Partial<SignupFormValues>
     expectedErrors: string[]
     withoutSiren: boolean
   }[] = [

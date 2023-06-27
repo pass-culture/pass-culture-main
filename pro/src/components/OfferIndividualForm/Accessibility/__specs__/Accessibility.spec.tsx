@@ -4,7 +4,7 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
-import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
+import { OfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { AccessiblityEnum } from 'core/shared'
 import { SubmitButton } from 'ui-kit'
 
@@ -14,7 +14,7 @@ const renderAccessibility = ({
   initialValues,
   onSubmit = jest.fn(),
 }: {
-  initialValues: Partial<IOfferIndividualFormValues>
+  initialValues: Partial<OfferIndividualFormValues>
   onSubmit: () => void
 }) => {
   return render(
@@ -32,7 +32,7 @@ const renderAccessibility = ({
 }
 
 describe('Accessibility', () => {
-  let initialValues: Partial<IOfferIndividualFormValues>
+  let initialValues: Partial<OfferIndividualFormValues>
   const onSubmit = jest.fn()
 
   beforeEach(() => {

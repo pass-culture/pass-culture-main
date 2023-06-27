@@ -7,7 +7,7 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
-import { IOfferIndividual } from 'core/Offers/types'
+import { OfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
@@ -16,7 +16,7 @@ import { formatPrice } from 'utils/formatPrice'
 import styles from './PriceCategoriesSection.module.scss'
 
 interface Props {
-  offer: IOfferIndividual
+  offer: OfferIndividual
   canBeDuo?: boolean
 }
 

@@ -16,7 +16,7 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferEducationalActions, {
-  IOfferEducationalActions,
+  OfferEducationalActionsProps,
 } from '../OfferEducationalActions'
 
 jest.mock('apiClient/api', () => ({
@@ -26,7 +26,7 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-const renderOfferEducationalActions = (props: IOfferEducationalActions) => {
+const renderOfferEducationalActions = (props: OfferEducationalActionsProps) => {
   return renderWithProviders(<OfferEducationalActions {...props} />)
 }
 

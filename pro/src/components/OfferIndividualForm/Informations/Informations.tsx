@@ -6,18 +6,18 @@ import { TextArea, TextInput } from 'ui-kit'
 import DurationInput from 'ui-kit/form/DurationInput'
 
 import styles from '../OfferIndividualForm.module.scss'
-import { IOfferIndividualFormValues } from '../types'
+import { OfferIndividualFormValues } from '../types'
 
-export interface IInformationsProps {
+export interface InformationsProps {
   readOnlyFields?: string[]
 }
 
 const Informations = ({
   readOnlyFields = [],
-}: IInformationsProps): JSX.Element => {
+}: InformationsProps): JSX.Element => {
   const {
     values: { subCategoryFields },
-  } = useFormikContext<IOfferIndividualFormValues>()
+  } = useFormikContext<OfferIndividualFormValues>()
 
   const hasAuthor = subCategoryFields.includes('author')
   const hasPerformer = subCategoryFields.includes('performer')

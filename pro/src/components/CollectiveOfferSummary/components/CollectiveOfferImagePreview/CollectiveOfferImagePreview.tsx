@@ -7,13 +7,13 @@ import { ReactComponent as OfferImagePlaceholderIcon } from 'icons/ico-placehold
 
 import styles from './CollectiveOfferImagePreview.module.scss'
 
-interface ICollectiveOfferImagePreviewProps {
+interface CollectiveOfferImagePreviewProps {
   offer: CollectiveOfferTemplate | CollectiveOffer
 }
 
 const CollectiveOfferImagePreview = ({
   offer,
-}: ICollectiveOfferImagePreviewProps): JSX.Element => {
+}: CollectiveOfferImagePreviewProps): JSX.Element => {
   return (
     <SummaryLayout.SubSection title="Image de l’offre">
       {offer?.imageUrl ? (

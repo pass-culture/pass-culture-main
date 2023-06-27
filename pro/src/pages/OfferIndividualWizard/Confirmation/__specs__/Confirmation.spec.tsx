@@ -8,11 +8,11 @@ import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { OfferStatus } from 'apiClient/v2'
 import Notification from 'components/Notification/Notification'
 import {
-  IOfferIndividualContext,
+  OfferIndividualContextValues,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
 import { Events } from 'core/FirebaseEvents/constants'
-import { IOfferIndividual } from 'core/Offers/types'
+import { OfferIndividual } from 'core/Offers/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { RootState } from 'store/reducers'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -29,10 +29,10 @@ jest.mock('utils/config', () => {
 })
 
 const renderOffer = (
-  contextOverride: Partial<IOfferIndividualContext>,
+  contextOverride: Partial<OfferIndividualContextValues>,
   storeOverride?: Partial<RootState>
 ) => {
-  const contextValue: IOfferIndividualContext = {
+  const contextValue: OfferIndividualContextValues = {
     offerId: null,
     offer: null,
     venueList: [],
@@ -76,8 +76,8 @@ const renderOffer = (
 
 describe('Confirmation', () => {
   let store: any
-  let contextOverride: Partial<IOfferIndividualContext>
-  let offer: IOfferIndividual
+  let contextOverride: Partial<OfferIndividualContextValues>
+  let offer: OfferIndividual
   const venueId = 45
   const offererId = 51
   beforeEach(() => {
@@ -100,7 +100,7 @@ describe('Confirmation', () => {
         },
       },
       status: OfferStatus.ACTIVE,
-    } as IOfferIndividual
+    } as OfferIndividual
     contextOverride = {
       offer: offer,
     }

@@ -11,7 +11,7 @@ import {
   BaseInput,
   FieldLayout,
 } from '../shared'
-import { IAutocompleteItemProps } from '../shared/AutocompleteList/type'
+import { AutocompleteItemProps } from '../shared/AutocompleteList/type'
 import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
 import styles from './TextInputAutocomplete.module.scss'
@@ -19,11 +19,11 @@ import styles from './TextInputAutocomplete.module.scss'
 export type TextInputAutocompleteProps = FieldLayoutBaseProps & {
   disabled?: boolean
   filterLabel?: string
-  getSuggestions: (search: string) => Promise<IAutocompleteItemProps[]>
+  getSuggestions: (search: string) => Promise<AutocompleteItemProps[]>
   maxDisplayOptions?: number
   maxDisplayOptionsLabel?: string
   maxHeight?: number
-  onSelectCustom?: (selectedItem: IAutocompleteItemProps) => void
+  onSelectCustom?: (selectedItem: AutocompleteItemProps) => void
   onSearchChange?: () => void
   placeholder?: string
   hideArrow?: boolean
@@ -55,7 +55,7 @@ const AutocompleteTextInput = ({
     name: `search-${name}`,
   })
   const [lastSelectedValue, setLastSelectedValue] =
-    useState<IAutocompleteItemProps>()
+    useState<AutocompleteItemProps>()
 
   const { setFieldValue, setFieldTouched } = useFormikContext()
 
@@ -95,7 +95,7 @@ const AutocompleteTextInput = ({
   )
 
   const updateFieldWithSelectedItem = (
-    selectedItem?: IAutocompleteItemProps
+    selectedItem?: AutocompleteItemProps
   ) => {
     if (onSelectCustom && selectedItem) {
       onSelectCustom(selectedItem)
@@ -103,7 +103,7 @@ const AutocompleteTextInput = ({
     helpers.setValue(selectedItem?.label || '')
     setFieldValue(`search-${name}`, selectedItem?.label || '', false)
   }
-  const handleSelect = (selectedItem: IAutocompleteItemProps) => {
+  const handleSelect = (selectedItem: AutocompleteItemProps) => {
     setLastSelectedValue(selectedItem)
     updateFieldWithSelectedItem(selectedItem)
     setIsOpen(false)

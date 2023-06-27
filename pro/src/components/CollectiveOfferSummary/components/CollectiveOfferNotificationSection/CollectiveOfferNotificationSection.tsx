@@ -2,13 +2,13 @@ import React from 'react'
 
 import { SummaryLayout } from 'components/SummaryLayout'
 
-interface ICollectiveOfferNotificationSectionProps {
+interface CollectiveOfferNotificationSectionProps {
   bookingEmails: string[]
 }
 
 const CollectiveOfferNotificationSection = ({
   bookingEmails,
-}: ICollectiveOfferNotificationSectionProps) => {
+}: CollectiveOfferNotificationSectionProps) => {
   return (
     <SummaryLayout.SubSection title="Notifications des réservations">
       {bookingEmails.map(email => (

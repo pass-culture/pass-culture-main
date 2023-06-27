@@ -4,7 +4,7 @@ import { ReactComponent as SearchSvg } from 'icons/ico-search-gray.svg'
 
 import { TFiltersType } from './types'
 
-interface IInvoicesNoResultsProps {
+interface InvoicesNoResultsProps {
   areFiltersDefault: boolean
   initialFilters: TFiltersType
   loadInvoices: (shouldReset: boolean) => void
@@ -18,7 +18,7 @@ const InvoicesNoResult = ({
   loadInvoices,
   setAreFiltersDefault,
   setFilters,
-}: IInvoicesNoResultsProps): JSX.Element => {
+}: InvoicesNoResultsProps): JSX.Element => {
   function resetFilters() {
     setAreFiltersDefault(true)
     setFilters(initialFilters)

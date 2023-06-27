@@ -2,13 +2,13 @@ import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 
 import { API_ADRESSE_BASE_URL } from './constants'
-import { IAdresseApiJson, IAdresseData } from './types'
+import { AdresseApiJson, AdresseData } from './types'
 
 const handleApiError = async (
   response: Response,
   method: ApiRequestOptions['method'],
   url: string
-): Promise<IAdresseApiJson> => {
+): Promise<AdresseApiJson> => {
   if (!response.ok) {
     throw new ApiError(
       { method, url },
@@ -16,14 +16,14 @@ const handleApiError = async (
       `Échec de la requête ${response.url}, code: ${response.status}`
     )
   }
-  return (await response.json()) as IAdresseApiJson
+  return (await response.json()) as AdresseApiJson
 }
 
 export default {
   getDataFromAddress: async (
     address: string,
     limit = 5
-  ): Promise<Array<IAdresseData>> => {
+  ): Promise<Array<AdresseData>> => {
     const url = `${API_ADRESSE_BASE_URL}/search/?limit=${limit}&q=${address}`
     const response = await handleApiError(await fetch(url), 'GET', url)
 

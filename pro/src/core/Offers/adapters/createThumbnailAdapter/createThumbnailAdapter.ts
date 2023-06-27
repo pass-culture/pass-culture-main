@@ -1,12 +1,12 @@
-import { IOnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
-import { IOfferIndividualImage } from 'core/Offers/types'
+import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
+import { OfferIndividualImage } from 'core/Offers/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-interface Params extends IOnImageUploadArgs {
+interface Params extends OnImageUploadArgs {
   offerId: number
 }
 
-type TCreateThumbnailAdapter = Adapter<Params, IOfferIndividualImage, null>
+type TCreateThumbnailAdapter = Adapter<Params, OfferIndividualImage, null>
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,

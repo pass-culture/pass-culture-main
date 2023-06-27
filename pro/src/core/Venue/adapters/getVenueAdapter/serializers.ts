@@ -5,9 +5,9 @@ import {
 } from 'apiClient/v1'
 import { VenueBannerMetaProps } from 'components/VenueForm/ImageUploaderVenue/ImageUploaderVenue'
 import { AccessiblityEnum } from 'core/shared'
-import { IVenue } from 'core/Venue'
+import { Venue } from 'core/Venue'
 
-export const serializeVenueApi = (venue: GetVenueResponseModel): IVenue => {
+export const serializeVenueApi = (venue: GetVenueResponseModel): Venue => {
   const venueAccessibility = {
     [AccessiblityEnum.VISUAL]: venue.visualDisabilityCompliant || false,
     [AccessiblityEnum.MENTAL]: venue.mentalDisabilityCompliant || false,

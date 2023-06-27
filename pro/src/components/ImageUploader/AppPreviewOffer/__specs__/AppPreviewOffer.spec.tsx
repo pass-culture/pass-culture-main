@@ -3,18 +3,18 @@ import React from 'react'
 
 import { RootState } from 'store/reducers'
 
-import AppPreviewOffer, { IAppPreviewOfferProps } from '../AppPreviewOffer'
+import AppPreviewOffer, { AppPreviewOfferProps } from '../AppPreviewOffer'
 
-interface IRenderAppPreviewOfferProps {
+interface RenderAppPreviewOfferProps {
   storeOverride?: Partial<RootState>
-  props: IAppPreviewOfferProps
+  props: AppPreviewOfferProps
 }
-const renderAppPreviewOffer = ({ props }: IRenderAppPreviewOfferProps) => {
+const renderAppPreviewOffer = ({ props }: RenderAppPreviewOfferProps) => {
   return render(<AppPreviewOffer {...props} />)
 }
 
 describe('AppPreviewOffer', () => {
-  let props: IAppPreviewOfferProps
+  let props: AppPreviewOfferProps
 
   beforeEach(() => {
     props = {

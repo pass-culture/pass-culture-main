@@ -3,7 +3,7 @@ import React from 'react'
 
 import StoreProvider from 'store/StoreProvider/StoreProvider'
 
-import ImageUploader, { IImageUploaderProps } from './ImageUploader'
+import ImageUploader, { ImageUploaderProps } from './ImageUploader'
 import sampleImageLandscape from './sample-image-landscape.jpg'
 import sampleImagePortrait from './sample-image-portrait.jpg'
 import { UploaderModeEnum } from './types'
@@ -13,13 +13,13 @@ export default {
   component: ImageUploader,
 }
 
-const Template: Story<IImageUploaderProps> = props => (
+const Template: Story<ImageUploaderProps> = props => (
   <StoreProvider isDev>
     <ImageUploader {...props} />
   </StoreProvider>
 )
 
-const props: IImageUploaderProps = {
+const props: ImageUploaderProps = {
   initialValues: {
     originalImageUrl: sampleImagePortrait,
     imageUrl: sampleImagePortrait,

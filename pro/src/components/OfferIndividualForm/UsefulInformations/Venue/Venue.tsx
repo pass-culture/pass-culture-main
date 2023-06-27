@@ -2,16 +2,16 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { IOfferIndividualFormValues } from 'components/OfferIndividualForm'
+import { OfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { OfferIndividualForm } from 'components/OfferIndividualForm/types'
-import { TOffererName } from 'core/Offerers/types'
+import { OffererName } from 'core/Offerers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { Select } from 'ui-kit'
 
 import { buildOffererOptions, buildVenueOptions } from './utils'
 
-export interface IVenueProps {
-  offererNames: TOffererName[]
+export interface VenueProps {
+  offererNames: OffererName[]
   venueList: TOfferIndividualVenue[]
   readOnlyFields?: string[]
 }
@@ -39,9 +39,9 @@ const Venue = ({
   offererNames,
   venueList,
   readOnlyFields = [],
-}: IVenueProps): JSX.Element => {
+}: VenueProps): JSX.Element => {
   const { values, setFieldValue } =
-    useFormikContext<IOfferIndividualFormValues>()
+    useFormikContext<OfferIndividualFormValues>()
   const { isDisabled: isOffererDisabled, offererOptions } =
     buildOffererOptions(offererNames)
 

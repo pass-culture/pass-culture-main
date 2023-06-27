@@ -16,7 +16,7 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { isOfferDisabled, OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
-import { IOfferIndividual } from 'core/Offers/types'
+import { OfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
@@ -34,11 +34,11 @@ import { HelpSection } from './HelpSection/HelpSection'
 import { RecurrenceForm } from './RecurrenceForm'
 import styles from './StocksEventCreation.module.scss'
 
-export interface IStocksEventCreationProps {
-  offer: IOfferIndividual
+export interface StocksEventCreationProps {
+  offer: OfferIndividual
 }
 
-const getInitialStocks = (offer: IOfferIndividual) =>
+const getInitialStocks = (offer: OfferIndividual) =>
   offer.stocks.map((stock): StocksEvent => {
     if (
       stock.beginningDatetime === null ||
@@ -63,7 +63,7 @@ const getInitialStocks = (offer: IOfferIndividual) =>
 
 export const StocksEventCreation = ({
   offer,
-}: IStocksEventCreationProps): JSX.Element => {
+}: StocksEventCreationProps): JSX.Element => {
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
     useState<boolean>(false)
   const { logEvent } = useAnalytics()

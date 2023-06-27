@@ -18,7 +18,7 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { isOfferDisabled } from 'core/Offers'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
-import { IOfferIndividual } from 'core/Offers/types'
+import { OfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { SelectOption } from 'custom_types/form'
 import { useOfferWizardMode } from 'hooks'
@@ -114,7 +114,7 @@ export const getPriceCategoryOptions = (
 }
 
 export interface StocksEventEditionProps {
-  offer: IOfferIndividual
+  offer: OfferIndividual
 }
 
 const StocksEventEdition = ({

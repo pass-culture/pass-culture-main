@@ -4,7 +4,7 @@ import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'
 import { PostVenueProviderBody, VenueProviderResponse } from 'apiClient/v1'
 import { isAllocineProvider, isCinemaProvider } from 'core/Providers'
-import { IVenue } from 'core/Venue'
+import { Venue } from 'core/Venue'
 import { IProviders } from 'core/Venue/types'
 import useNotification from 'hooks/useNotification'
 
@@ -16,7 +16,7 @@ import { getRequestErrorStringFromErrors } from '../utils/getRequestErrorStringF
 interface VenueProviderFormProps {
   afterSubmit: (createdVenueProvider?: VenueProviderResponse) => void
   provider: IProviders
-  venue: IVenue
+  venue: Venue
 }
 
 const VenueProviderForm = ({

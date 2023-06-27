@@ -1,8 +1,8 @@
 import {
   FORM_DEFAULT_VALUES,
-  IOfferIndividualFormValues,
+  OfferIndividualFormValues,
 } from 'components/OfferIndividualForm'
-import { IOfferIndividual, IOfferSubCategory } from 'core/Offers/types'
+import { OfferIndividual, OfferSubCategory } from 'core/Offers/types'
 
 import buildSubCategoryFields from './buildSubCategoryFields'
 
@@ -13,11 +13,11 @@ const serializeDurationHour = (durationMinute: number): string => {
 }
 
 const setInitialFormValues = (
-  offer: IOfferIndividual,
-  subCategoryList: IOfferSubCategory[]
-): IOfferIndividualFormValues => {
+  offer: OfferIndividual,
+  subCategoryList: OfferSubCategory[]
+): OfferIndividualFormValues => {
   const subCategory = subCategoryList.find(
-    (s: IOfferSubCategory) => s.id === offer.subcategoryId
+    (s: OfferSubCategory) => s.id === offer.subcategoryId
   )
 
   if (subCategory === undefined) {

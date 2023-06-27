@@ -17,7 +17,7 @@ import {
   NUMBER_OF_OFFERS_PER_PAGE,
   OFFER_STATUS_DRAFT,
 } from 'core/Offers'
-import { Offer, Offerer, TSearchFilters } from 'core/Offers/types'
+import { Offer, Offerer, SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import getUserValidatedOfferersNamesAdapter from 'core/shared/adapters/getUserValidatedOfferersNamesAdapter'
 import { SelectOption } from 'custom_types/form'
@@ -41,19 +41,19 @@ export interface OffersProps {
     isAdmin: boolean
   }
   isLoading: boolean
-  loadAndUpdateOffers: (filters: TSearchFilters) => Promise<void>
+  loadAndUpdateOffers: (filters: SearchFiltersParams) => Promise<void>
   offerer: Offerer | null
   offers: Offer[]
   setOfferer: (offerer: Offerer | null) => void
-  initialSearchFilters: TSearchFilters
+  initialSearchFilters: SearchFiltersParams
   audience: Audience
   redirectWithUrlFilters: (
-    filters: TSearchFilters & {
+    filters: SearchFiltersParams & {
       page?: number
       audience?: Audience
     }
   ) => void
-  urlSearchFilters: TSearchFilters
+  urlSearchFilters: SearchFiltersParams
   venues: SelectOption[]
   categories: SelectOption[]
 }
@@ -74,7 +74,7 @@ const Offers = ({
   categories,
 }: OffersProps): JSX.Element => {
   const [searchFilters, setSearchFilters] =
-    useState<TSearchFilters>(initialSearchFilters)
+    useState<SearchFiltersParams>(initialSearchFilters)
   const [isRefreshingOffers, setIsRefreshingOffers] = useState(true)
 
   const [areAllOffersSelected, setAreAllOffersSelected] = useState(false)
@@ -93,10 +93,10 @@ const Offers = ({
 
   const hasDifferentFiltersFromLastSearch = useCallback(
     (
-      searchFilters: TSearchFilters,
-      filterNames: (keyof TSearchFilters)[] = Object.keys(
+      searchFilters: SearchFiltersParams,
+      filterNames: (keyof SearchFiltersParams)[] = Object.keys(
         searchFilters
-      ) as (keyof TSearchFilters)[]
+      ) as (keyof SearchFiltersParams)[]
     ) => {
       const lastSearchFilters = {
         ...DEFAULT_SEARCH_FILTERS,
@@ -189,7 +189,7 @@ const Offers = ({
 
   const applyUrlFiltersAndRedirect = useCallback(
     (
-      filters: TSearchFilters & {
+      filters: SearchFiltersParams & {
         page?: number
         audience?: Audience
       },

@@ -4,14 +4,14 @@ import React from 'react'
 import { ReactComponent as TropheeIcon } from 'icons/ico-trophee.svg'
 import Icon from 'ui-kit/Icon/Icon'
 
-import IconLinkBox, { IIconLinkBoxProps } from './IconLinkBox'
+import IconLinkBox, { IconLinkBoxProps } from './IconLinkBox'
 
 export default {
   title: 'ui-kit/StatBox',
   component: IconLinkBox,
 }
 
-const Template: Story<IIconLinkBoxProps> = props => (
+const Template: Story<IconLinkBoxProps> = props => (
   <div style={{ width: '265px', height: '104px' }}>
     <IconLinkBox {...props} />
   </div>

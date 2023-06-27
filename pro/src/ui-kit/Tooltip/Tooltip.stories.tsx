@@ -1,14 +1,14 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import Tooltip, { ITooltipProps } from './Tooltip'
+import Tooltip, { TooltipProps } from './Tooltip'
 
 export default {
   title: 'ui-kit/Tooltip',
   component: Tooltip,
 }
 
-const Template: Story<ITooltipProps> = ({ content, children }) => {
+const Template: Story<TooltipProps> = ({ content, children }) => {
   return (
     <div style={{ padding: '4rem' }}>
       <Tooltip id="someid" content={content}>

@@ -1,10 +1,10 @@
-export interface IStepComponentProps {
+export interface StepComponentProps {
   titleId: string
   contentClassName: string
 }
 
-export interface IStep {
+export interface Step {
   position: number
-  component: React.ComponentType<IStepComponentProps>
+  component: React.ComponentType<StepComponentProps>
   className: string
 }

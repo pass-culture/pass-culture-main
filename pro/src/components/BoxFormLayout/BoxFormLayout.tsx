@@ -8,7 +8,7 @@ import FormHeader from './BoxFormLayoutFormHeader'
 import Header from './BoxFormLayoutHeader'
 import RequiredMessage from './BoxFormLayoutRequiredMessage'
 
-interface IBoxFormLayoutProps {
+interface BoxFormLayoutProps {
   children?: React.ReactNode | React.ReactNode[]
   className?: string
 }
@@ -16,7 +16,7 @@ interface IBoxFormLayoutProps {
 const BoxFormLayout = ({
   children,
   className,
-}: IBoxFormLayoutProps): JSX.Element => (
+}: BoxFormLayoutProps): JSX.Element => (
   <div className={cn(style['box-form-layout'], className)}>{children}</div>
 )
 

@@ -2,7 +2,7 @@ import type { Story } from '@storybook/react'
 import React from 'react'
 
 import {
-  IPreferredOrientationProps,
+  PreferredOrientationProps,
   PreferredOrientation,
 } from './PreferredOrientation'
 
@@ -11,7 +11,7 @@ export default {
   component: PreferredOrientation,
 }
 
-const Template: Story<IPreferredOrientationProps> = props => (
+const Template: Story<PreferredOrientationProps> = props => (
   <PreferredOrientation {...props} />
 )
 

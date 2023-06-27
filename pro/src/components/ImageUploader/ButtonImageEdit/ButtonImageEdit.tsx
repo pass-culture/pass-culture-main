@@ -8,12 +8,12 @@ import { UploaderModeEnum } from '../types'
 
 import { ButtonImageAdd } from './ButtonImageAdd'
 import { ModalImageEdit } from './ModalImageEdit'
-import { IOnImageUploadArgs } from './ModalImageEdit/ModalImageEdit'
-import { IUploadImageValues } from './types'
+import { OnImageUploadArgs } from './ModalImageEdit/ModalImageEdit'
+import { UploadImageValues } from './types'
 
 export interface ButtonImageEditProps {
-  onImageUpload: (values: IOnImageUploadArgs) => Promise<void>
-  initialValues?: IUploadImageValues
+  onImageUpload: (values: OnImageUploadArgs) => Promise<void>
+  initialValues?: UploadImageValues
   mode: UploaderModeEnum
 }
 

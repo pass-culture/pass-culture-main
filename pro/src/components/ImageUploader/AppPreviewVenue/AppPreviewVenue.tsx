@@ -9,11 +9,11 @@ import venueShell from '../assets/venue-shell.png'
 import homeStyle from './HomeScreenPreview.module.scss'
 import venueStyle from './VenueScreenPreview.module.scss'
 
-export interface IAppPreviewVenueProps {
+export interface AppPreviewVenueProps {
   imageUrl: string
 }
 
-const AppPreviewVenue = ({ imageUrl }: IAppPreviewVenueProps): JSX.Element => {
+const AppPreviewVenue = ({ imageUrl }: AppPreviewVenueProps): JSX.Element => {
   const notification = useNotification()
 
   const showError = useCallback(() => {

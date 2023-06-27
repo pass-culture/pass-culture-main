@@ -7,11 +7,11 @@ import {
 } from 'apiClient/v1'
 import { ICropParams } from 'components/ImageUploader'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
-import { IAccessibiltyFormValues } from 'core/shared'
+import { AccessibiltyFormValues } from 'core/shared'
 
 import { CATEGORY_STATUS } from '.'
 
-export type TSearchFilters = {
+export type SearchFiltersParams = {
   nameOrIsbn: string
   offererId: string
   venueId: string
@@ -62,7 +62,7 @@ export type Offer = {
   educationalBooking?: CollectiveOffersBookingResponseModel | null
 }
 
-export interface ICategorySubtypeItem {
+export interface CategorySubtypeItem {
   code: number
   label: string
   children: {
@@ -71,13 +71,13 @@ export interface ICategorySubtypeItem {
   }[]
 }
 
-export interface IOfferCategory {
+export interface OfferCategory {
   id: string
   proLabel: string
   isSelectable: boolean
 }
 
-export interface IOfferSubCategory {
+export interface OfferSubCategory {
   id: string
   categoryId: string
   proLabel: string
@@ -91,7 +91,7 @@ export interface IOfferSubCategory {
   canBeWithdrawable: boolean
 }
 
-export interface IOfferIndividualStock {
+export interface OfferIndividualStock {
   beginningDatetime: string | null
   bookingLimitDatetime: string | null
   bookingsQuantity: number
@@ -109,12 +109,12 @@ export interface IOfferIndividualStock {
   activationCodes: string[]
 }
 
-export interface IOfferIndividualOfferer {
+export interface OfferIndividualOfferer {
   name: string
   nonHumanizedId: number
 }
 
-export interface IOfferIndividualVenue {
+export interface OfferIndividualVenue {
   id: number
   name: string
   publicName: string
@@ -122,13 +122,13 @@ export interface IOfferIndividualVenue {
   address: string
   postalCode: string
   city: string
-  offerer: IOfferIndividualOfferer
+  offerer: OfferIndividualOfferer
   departmentCode: string
-  accessibility: IAccessibiltyFormValues
+  accessibility: AccessibiltyFormValues
 }
 
 // TODO: this should be generated in openapi schema
-export interface IOfferExtraData {
+export interface OfferExtraData {
   author?: string
   musicType?: string
   musicSubType?: string
@@ -141,23 +141,23 @@ export interface IOfferExtraData {
   visa?: string
 }
 
-export interface IOfferIndividualVenueProvider {
+export interface OfferIndividualVenueProvider {
   name: string
 }
 
-export interface IOfferCollectiveImage {
+export interface OfferCollectiveImage {
   url?: string | null
   credit?: string | null
 }
 
-export interface IOfferIndividualImage {
+export interface OfferIndividualImage {
   originalUrl: string
   url: string
   credit: string | null
   cropParams?: ICropParams
 }
 
-export interface IOfferIndividual {
+export interface OfferIndividual {
   nonHumanizedId: number
   author: string
   bookingEmail: string
@@ -167,7 +167,7 @@ export interface IOfferIndividual {
   isDuo: boolean
   isEvent: boolean
   isDigital: boolean
-  accessibility: IAccessibiltyFormValues
+  accessibility: AccessibiltyFormValues
   isNational: boolean
   name: string
   musicSubType: string
@@ -182,17 +182,17 @@ export interface IOfferIndividual {
   stageDirector: string
   speaker: string
   subcategoryId: string
-  image?: IOfferIndividualImage
+  image?: OfferIndividualImage
   url: string
   externalTicketOfficeUrl: string
   venueId: number
-  venue: IOfferIndividualVenue
+  venue: OfferIndividualVenue
   visa: string
   withdrawalDetails: string | null
   withdrawalDelay?: number | null
   withdrawalType: WithdrawalTypeEnum | null
-  stocks: IOfferIndividualStock[]
+  stocks: OfferIndividualStock[]
   lastProviderName: string | null
-  lastProvider: IOfferIndividualVenueProvider | null
+  lastProvider: OfferIndividualVenueProvider | null
   status: OfferStatus
 }

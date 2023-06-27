@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import ReimbursementPoint from 'components/VenueForm/ReimbursementPoint/ReimbursementPoint'
-import { IVenue } from 'core/Venue'
+import { Venue } from 'core/Venue'
 import { ReactComponent as FullLink } from 'icons/full-link.svg'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
 
@@ -13,7 +13,7 @@ interface ReimbursementFieldsProps {
   offerer: GetOffererResponseModel
   readOnly: boolean
   scrollToSection?: boolean
-  venue: IVenue
+  venue: Venue
 }
 
 const ReimbursementFields = ({

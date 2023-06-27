@@ -42,23 +42,23 @@ import { VenueEdition } from 'pages/VenueEdition'
 import CollectiveOfferSelectionDuplication from 'screens/CollectiveOfferSelectionDuplication'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
-export interface ILayoutConfig {
+export interface LayoutConfig {
   pageName?: string
   fullscreen?: boolean
 }
 
-interface IRouteMeta {
+interface RouteMeta {
   public?: boolean
-  layoutConfig?: ILayoutConfig
+  layoutConfig?: LayoutConfig
   withoutLayout?: boolean
   shouldRedirect?: boolean
 }
-export interface IRoute {
+export interface RouteConfig {
   parentPath?: string
   path: string
   title?: string
   element: JSX.Element
-  meta?: IRouteMeta
+  meta?: RouteMeta
   featureName?: string
 }
 
@@ -67,7 +67,7 @@ const RedirectToConnexionComponent = () => {
   return <Navigate to={`/connexion${location.search}`} />
 }
 
-const routes: IRoute[] = [
+const routes: RouteConfig[] = [
   {
     element: <RedirectToConnexionComponent />,
     path: '/',
