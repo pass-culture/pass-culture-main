@@ -13,26 +13,6 @@
   .subtitle {
     padding-top: rem.torem(8px);
   }
-
-  .section-icon {
-    background-image: url("/icons/ico-structure.svg");
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 80%;
-    height: rem.torem(120px);
-    margin-left: rem.torem(-40px);
-    opacity: 0.25;
-    width: rem.torem(120px);
-  }
-
-  .section-icon-mask {
-    height: rem.torem(120px);
-    left: rem.torem(-84.8px);
-    overflow: hidden;
-    position: absolute;
-    top: rem.torem(-44px);
-    width: rem.torem(80px);
-  }
 }
 
 .title-subtitle-link-block {
