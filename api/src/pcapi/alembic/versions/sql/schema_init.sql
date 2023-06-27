@@ -5586,6 +5586,7 @@ INSERT INTO public.provider VALUES (false, 5, 'FNAC', 'FnacStocks', false, NULL,
 INSERT INTO public.provider VALUES (true, 6, 'Ciné Office', 'CDSStocks', true, NULL, NULL, false, false);
 INSERT INTO public.provider VALUES (true, 7, 'Boost', 'BoostStocks', true, NULL, NULL, false, false);
 INSERT INTO public.provider VALUES (false, 8, 'Pass Culture API Stocks', 'PCAPIStocks', false, NULL, NULL, false, false);
+INSERT INTO public.provider VALUES (true, 9, 'EMS', 'EMSStocks', true, NULL, NULL, false, false);
 
 
 --
