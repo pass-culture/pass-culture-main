@@ -2,7 +2,7 @@ import { FieldArray, useFormikContext } from 'formik'
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { IOfferEducationalFormValues } from 'core/OfferEducational'
+import { OfferEducationalFormValues } from 'core/OfferEducational'
 import { ReactComponent as PlusCircleIcon } from 'icons/ico-plus-circle.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -15,7 +15,7 @@ const FormNotifications = ({
 }: {
   disableForm: boolean
 }): JSX.Element => {
-  const { values } = useFormikContext<IOfferEducationalFormValues>()
+  const { values } = useFormikContext<OfferEducationalFormValues>()
 
   return (
     <FormLayout.Section title="Notifications">

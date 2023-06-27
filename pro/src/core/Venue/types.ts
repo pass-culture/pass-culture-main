@@ -90,7 +90,7 @@ export interface Venue {
   collectiveDmsApplication: DMSApplicationForEAC | null
 }
 
-export type IProviders = {
+export type Providers = {
   id: number
   isActive: boolean
   name: string

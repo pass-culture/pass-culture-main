@@ -2,7 +2,7 @@ import { useFormikContext } from 'formik'
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { IOfferEducationalFormValues } from 'core/OfferEducational'
+import { OfferEducationalFormValues } from 'core/OfferEducational'
 import useAccessibilityOptions from 'hooks/useAccessibilityOptions'
 import { CheckboxGroup } from 'ui-kit'
 
@@ -15,7 +15,7 @@ const FormAccessibility = ({
   legend = 'Cette offre est accessible au public en situation de handicap :',
   disableForm,
 }: FormAccessibilityProps): JSX.Element => {
-  const { setFieldValue } = useFormikContext<IOfferEducationalFormValues>()
+  const { setFieldValue } = useFormikContext<OfferEducationalFormValues>()
 
   return (
     <FormLayout.Section title="Accessibilité">

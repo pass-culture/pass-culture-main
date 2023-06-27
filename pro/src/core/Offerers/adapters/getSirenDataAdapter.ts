@@ -7,7 +7,7 @@ import { unhumanizeSiren } from 'core/Offerers/utils'
 import { validateSiren } from 'core/Offerers/validate'
 
 type Params = string
-type IPayload = {
+type Payload = {
   values?: {
     address: string
     city: string
@@ -18,7 +18,7 @@ type IPayload = {
   }
 }
 
-type GetSirenDataAdapter = Adapter<Params, IPayload, IPayload>
+type GetSirenDataAdapter = Adapter<Params, Payload, Payload>
 
 const getSirenDataAdapter: GetSirenDataAdapter = async (humanSiren: string) => {
   const siren = unhumanizeSiren(humanSiren || '')

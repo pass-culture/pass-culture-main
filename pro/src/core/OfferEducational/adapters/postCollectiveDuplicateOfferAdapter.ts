@@ -5,18 +5,18 @@ type Params = {
   offerId: number
 }
 
-type IPayloadSuccess = { id: string }
-type IPayloadFailure = null
+type PayloadSuccess = { id: string }
+type PayloadFailure = null
 
-type PostOfferAdapter = Adapter<Params, IPayloadSuccess, IPayloadFailure>
+type PostOfferAdapter = Adapter<Params, PayloadSuccess, PayloadFailure>
 
-const BAD_REQUEST_FAILING_RESPONSE: AdapterFailure<IPayloadFailure> = {
+const BAD_REQUEST_FAILING_RESPONSE: AdapterFailure<PayloadFailure> = {
   isOk: false,
   message: 'Une ou plusieurs erreurs sont présentes dans le formulaire',
   payload: null,
 }
 
-const UNKNOWN_FAILING_RESPONSE: AdapterFailure<IPayloadFailure> = {
+const UNKNOWN_FAILING_RESPONSE: AdapterFailure<PayloadFailure> = {
   isOk: false,
   message: 'Une erreur est survenue lors de la création de votre offre',
   payload: null,

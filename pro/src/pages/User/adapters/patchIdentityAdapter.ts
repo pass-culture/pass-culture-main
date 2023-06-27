@@ -5,11 +5,11 @@ import {
   UserIdentityResponseModel,
 } from 'apiClient/v1'
 
-type IPayloadFailure = Record<string, string>
+type PayloadFailure = Record<string, string>
 export type PatchIdentityAdapter = Adapter<
   UserIdentityBodyModel,
   UserIdentityResponseModel,
-  IPayloadFailure
+  PayloadFailure
 >
 
 const patchIdentityAdapter: PatchIdentityAdapter = async (

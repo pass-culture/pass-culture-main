@@ -1,11 +1,11 @@
 import { api } from 'apiClient/api'
 import { ApiError, ChangePasswordBodyModel } from 'apiClient/v1'
 
-type IPayloadFailure = Record<string, string>
+type PayloadFailure = Record<string, string>
 export type PostPasswordAdapter = Adapter<
   ChangePasswordBodyModel,
   null,
-  IPayloadFailure
+  PayloadFailure
 >
 
 const postPasswordAdapter: PostPasswordAdapter = async (

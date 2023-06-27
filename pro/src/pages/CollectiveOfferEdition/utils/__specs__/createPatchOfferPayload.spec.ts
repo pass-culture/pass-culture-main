@@ -1,6 +1,6 @@
 import { PatchCollectiveOfferBodyModel, SubcategoryIdEnum } from 'apiClient/v1'
 import { OfferAddressType } from 'apiClient/v2'
-import { IOfferEducationalFormValues } from 'core/OfferEducational'
+import { OfferEducationalFormValues } from 'core/OfferEducational'
 import { buildStudentLevelsMapWithDefaultValue } from 'core/OfferEducational/utils/buildStudentLevelsMapWithDefaultValue'
 
 import { createPatchOfferPayload } from '../createPatchOfferPayload'
@@ -8,7 +8,7 @@ import { createPatchOfferPayload } from '../createPatchOfferPayload'
 describe('createPatchOfferPayload', () => {
   const offerId = '17'
   const venueId = 12
-  const initialValues: IOfferEducationalFormValues = {
+  const initialValues: OfferEducationalFormValues = {
     title: 'Test Offer',
     description: 'Test Description',
     offererId: 'DY',
@@ -38,7 +38,7 @@ describe('createPatchOfferPayload', () => {
     domains: [],
     interventionArea: ['2A'],
   }
-  const offer: IOfferEducationalFormValues = {
+  const offer: OfferEducationalFormValues = {
     title: 'Test Offer update',
     description: 'Test Description update',
     offererId: offerId,

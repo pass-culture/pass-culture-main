@@ -1,20 +1,20 @@
 import { api } from 'apiClient/api'
 import { isErrorAPIError } from 'apiClient/helpers'
-import { IOfferEducationalFormValues } from 'core/OfferEducational'
+import { OfferEducationalFormValues } from 'core/OfferEducational'
 
 import { createCollectiveOfferPayload } from '../utils/createOfferPayload'
 
 type Params = {
-  offer: IOfferEducationalFormValues
+  offer: OfferEducationalFormValues
   offerTemplateId?: number
 }
 
-type IPayloadSuccess = { id: string }
-type IPayloadFailure = { id: null }
+type PayloadSuccess = { id: string }
+type PayloadFailure = { id: null }
 
-type PostOfferAdapter = Adapter<Params, IPayloadSuccess, IPayloadFailure>
+type PostOfferAdapter = Adapter<Params, PayloadSuccess, PayloadFailure>
 
-const BAD_REQUEST_FAILING_RESPONSE: AdapterFailure<IPayloadFailure> = {
+const BAD_REQUEST_FAILING_RESPONSE: AdapterFailure<PayloadFailure> = {
   isOk: false,
   message: 'Une ou plusieurs erreurs sont présentes dans le formulaire',
   payload: {
@@ -22,7 +22,7 @@ const BAD_REQUEST_FAILING_RESPONSE: AdapterFailure<IPayloadFailure> = {
   },
 }
 
-const UNKNOWN_FAILING_RESPONSE: AdapterFailure<IPayloadFailure> = {
+const UNKNOWN_FAILING_RESPONSE: AdapterFailure<PayloadFailure> = {
   isOk: false,
   message: 'Une erreur est survenue lors de la création de votre offre',
   payload: {

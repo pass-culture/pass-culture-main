@@ -9,9 +9,9 @@ import {
   CollectiveOffer,
   CollectiveOfferTemplate,
   EducationalCategories,
-  IOfferEducationalFormValues,
-  IEducationalCategory,
-  IEducationalSubCategory,
+  OfferEducationalFormValues,
+  EducationalCategory,
+  EducationalSubCategory,
 } from '../types'
 
 import { buildStudentLevelsMapWithDefaultValue } from './buildStudentLevelsMapWithDefaultValue'
@@ -34,8 +34,8 @@ const getCategoryAndSubcategoryFromOffer = (
   categories: EducationalCategories,
   offer: CollectiveOffer | CollectiveOfferTemplate
 ): {
-  category: IEducationalCategory | null
-  subcategory: IEducationalSubCategory | null
+  category: EducationalCategory | null
+  subcategory: EducationalSubCategory | null
 } => {
   const subcategory =
     categories.educationalSubCategories.find(
@@ -106,7 +106,7 @@ export const computeInitialValuesFromOffer = (
   offer?: CollectiveOffer | CollectiveOfferTemplate,
   offererIdQueryParam?: string | null,
   venueIdQueryParam?: string | null
-): IOfferEducationalFormValues => {
+): OfferEducationalFormValues => {
   const initialOffererId = getInitialOffererId(
     offerers,
     offer,

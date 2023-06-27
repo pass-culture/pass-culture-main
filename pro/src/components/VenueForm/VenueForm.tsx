@@ -10,7 +10,7 @@ import { AddressSelect } from 'components/Address'
 import FormLayout from 'components/FormLayout'
 import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import { Offerer } from 'core/Offerers/types'
-import { IProviders, Venue } from 'core/Venue/types'
+import { Providers, Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -39,7 +39,7 @@ interface VenueFormProps {
   updateIsSiretValued: (isSiretValued: boolean) => void
   venueTypes: SelectOption[]
   venueLabels: SelectOption[]
-  provider?: IProviders[]
+  provider?: Providers[]
   venueProvider?: VenueProviderResponse[]
   venue?: Venue
   initialIsVirtual?: boolean

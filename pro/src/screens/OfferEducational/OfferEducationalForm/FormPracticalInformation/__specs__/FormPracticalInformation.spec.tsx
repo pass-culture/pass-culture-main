@@ -3,7 +3,7 @@ import { Formik } from 'formik'
 import React from 'react'
 
 import { OfferAddressType } from 'apiClient/v1'
-import { IOfferEducationalFormValues } from 'core/OfferEducational'
+import { OfferEducationalFormValues } from 'core/OfferEducational'
 import {
   EVENT_ADDRESS_OTHER_ADDRESS_LABEL,
   INTERVENTION_AREA_LABEL,
@@ -18,7 +18,7 @@ import FormPracticalInformation, {
 const renderFormPracticalInformation = (
   props: FormPracticalInformationProps,
   initialValues: Pick<
-    IOfferEducationalFormValues,
+    OfferEducationalFormValues,
     'eventAddress' | 'priceDetail' | 'interventionArea'
   >
 ) => {
@@ -32,7 +32,7 @@ const renderFormPracticalInformation = (
 describe('FormPracticalInformation', () => {
   let props: FormPracticalInformationProps
   let initialValues: Pick<
-    IOfferEducationalFormValues,
+    OfferEducationalFormValues,
     | 'eventAddress'
     | 'priceDetail'
     | 'interventionArea'

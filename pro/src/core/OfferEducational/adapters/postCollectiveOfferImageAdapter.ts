@@ -6,13 +6,13 @@ interface Params extends OnImageUploadArgs {
   offerId: string
 }
 
-type IPayloadSuccess = AttachImageResponseModel
-type IPayloadFailure = null
+type PayloadSuccess = AttachImageResponseModel
+type PayloadFailure = null
 
 export type PostCollectiveOfferImageAdapter = Adapter<
   Params,
-  IPayloadSuccess,
-  IPayloadFailure
+  PayloadSuccess,
+  PayloadFailure
 >
 
 const FAILING_RESPONSE: AdapterFailure<null> = {

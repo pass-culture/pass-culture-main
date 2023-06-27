@@ -3,13 +3,13 @@ import {
   PostCollectiveOfferTemplateBodyModel,
 } from 'apiClient/v1'
 
-import { IOfferEducationalFormValues } from '../types'
+import { OfferEducationalFormValues } from '../types'
 
 import { parseDuration } from './parseDuration'
 import { serializeParticipants } from './serializeParticipants'
 
 const disabilityCompliances = (
-  accessibility: IOfferEducationalFormValues['accessibility']
+  accessibility: OfferEducationalFormValues['accessibility']
 ): Pick<
   PostCollectiveOfferTemplateBodyModel,
   | 'audioDisabilityCompliant'
@@ -24,7 +24,7 @@ const disabilityCompliances = (
 })
 
 export const createCollectiveOfferPayload = (
-  offer: IOfferEducationalFormValues,
+  offer: OfferEducationalFormValues,
   isTemplate: boolean,
   offerTemplateId?: number
 ): PostCollectiveOfferTemplateBodyModel => ({

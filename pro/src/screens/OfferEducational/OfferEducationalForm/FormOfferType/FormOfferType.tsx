@@ -4,9 +4,9 @@ import React, { useEffect, useState } from 'react'
 import FormLayout from 'components/FormLayout'
 import {
   DEFAULT_EAC_FORM_VALUES,
-  IEducationalCategory,
-  IEducationalSubCategory,
-  IOfferEducationalFormValues,
+  EducationalCategory,
+  EducationalSubCategory,
+  OfferEducationalFormValues,
   MAX_DETAILS_LENGTH,
 } from 'core/OfferEducational'
 import { SelectOption } from 'custom_types/form'
@@ -21,8 +21,8 @@ import {
 } from '../../constants/labels'
 
 interface FormTypeProps {
-  categories: IEducationalCategory[]
-  subCategories: IEducationalSubCategory[]
+  categories: EducationalCategory[]
+  subCategories: EducationalSubCategory[]
   domainsOptions: SelectOption[]
   disableForm: boolean
 }
@@ -34,9 +34,9 @@ const FormOfferType = ({
   disableForm,
 }: FormTypeProps): JSX.Element => {
   const { values, setFieldValue } =
-    useFormikContext<IOfferEducationalFormValues>()
+    useFormikContext<OfferEducationalFormValues>()
   const [availableSubCategories, setAvailableSubCategories] = useState<
-    IEducationalSubCategory[] | null
+    EducationalSubCategory[] | null
   >(null)
 
   useEffect(() => {

@@ -2,14 +2,14 @@ import { api } from 'apiClient/api'
 
 import { CollectiveOffer } from '../types'
 
-type IPayloadFailure = null
+type PayloadFailure = null
 type GetCollectiveOfferAdapter = Adapter<
   number,
   CollectiveOffer,
-  IPayloadFailure
+  PayloadFailure
 >
 
-const FAILING_RESPONSE: AdapterFailure<IPayloadFailure> = {
+const FAILING_RESPONSE: AdapterFailure<PayloadFailure> = {
   isOk: false,
   message: 'Une erreur est survenue lors de la récupération de votre offre',
   payload: null,

@@ -12,7 +12,7 @@ import {
 } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { IProviders } from 'core/Venue/types'
+import { Providers } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -71,7 +71,7 @@ jest.mock('react-router-dom', () => ({
 describe('route VenueEdition', () => {
   let venue: GetVenueResponseModel
   let venueProviders: VenueProviderResponse[]
-  let providers: IProviders[]
+  let providers: Providers[]
   let offerer: GetOffererResponseModel
 
   beforeEach(() => {
@@ -108,7 +108,7 @@ describe('route VenueEdition', () => {
         isActive: true,
         name: 'name',
       },
-    ] as IProviders[]
+    ] as Providers[]
 
     offerer = {
       nonHumanizedId: 13,
