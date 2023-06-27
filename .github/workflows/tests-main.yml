@@ -15,12 +15,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  check-adage-folder-changes:
-    name: Check adage folder changes
-    uses: ./.github/workflows/check-folder-changes.yml
-    with:
-      folder: adage-front
-
   check-api-folder-changes:
     name: Check api folder changes
     uses: ./.github/workflows/check-folder-changes.yml
@@ -32,12 +26,6 @@ jobs:
     uses: ./.github/workflows/check-folder-changes.yml
     with:
       folder: pro
-
-  test-adage:
-    name: Test adage
-    needs: check-adage-folder-changes
-    if: needs.check-adage-folder-changes.outputs.folder_changed == 'true'
-    uses: ./.github/workflows/tests-adage.yml
 
   test-api:
     name: Test api
@@ -82,17 +70,14 @@ jobs:
   deploy-to-testing:
     name: Deploy to testing
     needs:
-      - check-adage-folder-changes
       - check-api-folder-changes
       - check-pro-folder-changes
-      - test-adage
       - build-api
       - test-backoffice
       - test-pro
     if: |
       always() &&
       github.ref == 'refs/heads/master' &&
-      (needs.test-adage.result == 'success' || needs.test-adage.result == 'skipped') &&
       (needs.build-api.result == 'success' || needs.build-api.result == 'skipped') &&
       (needs.test-backoffice.result == 'success' || needs.test-backoffice.result == 'skipped') &&
       (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped')

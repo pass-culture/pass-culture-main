@@ -37,7 +37,6 @@ Commands:
   restore-db            Restore a postgresql database from file (and anonymize data)
   restore-db-intact     Restore a postgresql database from file (non anonymized)
   set-git-config        Define a local Git configuration
-  start-adage-front     Start the adage frontend on localhost
   start-backend         Start the API on localhost
   start-backoffice      Start the backoffice on localhost
   start-pro             Start the pro frontend on localhost
@@ -224,12 +223,8 @@ elif [[ "$CMD" == "start-backoffice" ]]; then
   start_backoffice
 
 # Start pro or adage application
-elif [[ "$CMD" == "start-pro" ]] || [[ "$CMD" == "start-adage-front" ]]; then
-  if [[ "$CMD" == "start-pro" ]]; then
-    RUN='cd $ROOT_PATH/pro'
-  else
-    RUN='cd $ROOT_PATH/adage-front'
-  fi
+elif [[ "$CMD" == "start-pro" ]]; then
+  RUN='cd $ROOT_PATH/pro'
   if [[ "$BACKEND" == "testing" ]]; then
     RUN="$RUN"' && export THUMBS_URL=https://storage.gra3.cloud.ovh.net/v1/AUTH_810600e32fdc4cb49a8d15332b68d2cc/storage-pc/thumbs && export API_URL=https://backend.passculture-testing.beta.gouv.fr'
   elif [[ "$BACKEND" != "localhost" ]]; then
@@ -257,7 +252,6 @@ elif [[ "$CMD" == "install" ]]; then
   cd $ROOT_PATH
   git checkout master
   cd $ROOT_PATH/pro && yarn
-  cd $ROOT_PATH/adage-front && yarn
   pc install-hooks
   pc set-git-config
   exit_success_restoring_branch

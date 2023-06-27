@@ -37,7 +37,7 @@ jobs:
         id: check-dependency-change
         run: |
           for changed_file in ${{ steps.files.outputs.all }}; do
-            if [[ "$changed_file" == "pro/yarn.lock" || "$changed_file" == "adage-front/yarn.lock" || "$changed_file" == "api/requirements.txt" ]];
+            if [[ "$changed_file" == "pro/yarn.lock" || "$changed_file" == "api/requirements.txt" ]];
               then
                 echo "dependency-change=true" >> $GITHUB_OUTPUT
             fi
@@ -89,25 +89,10 @@ jobs:
             ${{ runner.os }}-node-16-yarn-${{ hashFiles('pro/yarn.lock') }}
             ${{ runner.os }}-node-16-yarn-
 
-      - uses: actions/cache@v2
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        with:
-          path: adage-front/node_modules
-          key: ${{ runner.os }}-adage-node-16-yarn-${{ hashFiles('adage-front/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-adage-node-16-yarn-${{ hashFiles('adage-front/yarn.lock') }}
-            ${{ runner.os }}-adage-node-16-yarn-
-
       - name: Install dependencies PRO
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: |
           cd pro
-          yarn install
-
-      - name: Install dependencies ADAGE FRONT
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        run: |
-          cd adage-front
           yarn install
 
       - name: Wait for backend
@@ -118,8 +103,6 @@ jobs:
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         run: |
           cd pro
-          yarn generate:api:client:local
-          cd ../adage-front
           yarn generate:api:client:local
 
       - name: Check if there are changes

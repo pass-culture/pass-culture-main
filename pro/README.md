@@ -46,6 +46,60 @@ Yarn est prometteur, on vous conseille de l'utiliser. Tâchez de l'installer glo
     yarn test:cafe
     ```
 
+## Adage
+
+Nous intégrons une sous-route du portail Pro (`/adage-iframe/`) dans une iframe au sein d'Adage, la plateforme des établissements scolaires permettant de gérer leurs activités culturelles.
+
+### Accès à l'iframe Adage
+
+Application web pour les rédacteurs de projets scolaires, leur permettant de réserver des offres sur le pass Culture pour leurs élèves.
+
+1. Ouvrir la console bash
+
+```bash
+$ pc bash
+```
+
+2. Générer un token via la commande
+
+```bash
+flask generate_fake_adage_token
+```
+
+3. Copier l'url générée dans le navigateur pour accéder à l'app
+
+### Affichage d'offres en local
+
+Comme le local est branché sur algolia de testing, les ids qui sont remontés d'algolia sont ceux de testing, et il n'est pas certain qu'on ait les mêmes en local.
+
+Pour récupérer les ids de certaines offres en local, on peut utiliser un index local. Pour cela, il faut :
+
+- Créer un nouvel index sur la sandbox algolia : `<votre_nom>-collective-offers`
+
+- Créer un fichier `.env.development.local` dans le dossier `pro` et renseigner le nom de l'index dans la variable `REACT_APP_ALGOLIA_COLLECTIVE_OFFERS_INDEX`
+
+- Créer un fichier `.env.local.secret`
+
+```
+ALGOLIA_COLLECTIVE_OFFERS_INDEX_NAME=<votre_nom>-collective-offers
+ALGOLIA_TRIGGER_INDEXATION=1
+ALGOLIA_API_KEY=<demander l'api key>
+ALGOLIA_APPLICATION_ID=testingHXXTDUE7H0
+SEARCH_BACKEND=pcapi.core.search.backends.algolia.AlgoliaBackend
+```
+
+- Ouvrir la console bash
+
+```
+$ pc bash
+```
+
+- Réindexer vos offres collectives
+
+```
+flask reindex_all_collective_offers
+```
+
 ## Standards de code et d'architecture
 
 La documentation est intégrée au projet, aux travers de fichiers README à la racine des dossiers principaux.

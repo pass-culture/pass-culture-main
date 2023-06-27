@@ -62,12 +62,6 @@ jobs:
           yarn version --new-version "${{ inputs.tag_number }}"
           git add package.json
 
-      - name: Add version to adage
-        run: |
-          cd adage-front
-          yarn version --new-version "${{ inputs.tag_number }}"
-          git add package.json
-
       - name: Output variables
         id: vars
         run: echo "DOCKER_REPO=${DOCKER_REGISTRY_REGION}-docker.pkg.dev/${DOCKER_REGISTRY_PROJECT_ID}/${DOCKER_REGISTRY_REPOSITORY}" >> $GITHUB_ENV
