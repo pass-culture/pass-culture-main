@@ -1,182 +1,300 @@
 {% extends "layouts/base.html" %}
-{% macro sub_menu_header(name) %}
-  <hr class="mdc-deprecated-list-divider" />
-  <h6 class="mdc-deprecated-list-group__subheader">{{ name }}</h6>
-{% endmacro %}
-{% macro menu_item(label, url) %}
-  <a href="{{ url }}"
-     class="mdc-deprecated-list-item {{ "mdc-deprecated-list-item--activated" if url == request.path else "" }}">
-    <span class="mdc-deprecated-list-item__ripple"></span>
-    <span class="mdc-deprecated-list-item__text">{{ label }}</span>
-  </a>
-{% endmacro %}
 {% macro menu_section(title) %}
-  <p class="m-3 lead">{{ title }}</p>
-  <nav class="nav nav-pills flex-column">
-    {{ caller() }}
-  </nav>
+  <li class="nav-item mt-3">
+    <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">{{ title }}</h6>
+  </li>
+  {{ caller() }}
+</nav>
 {% endmacro %}
 {% macro menu_section_item(title, path) %}
   {% set url = url_for(path) %}
   {% set is_active = "active" if request.path == url else "" %}
-  <a class="nav-link ps-5 g-0 {{ is_active }} rounded-0 text-reset"
-     href="{{ url }}">{{ title }}</a>
+  <li class="nav-item">
+    <a href="{{ url }}"
+       class="nav-link {{ is_active }}">
+      <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+        <svg width="12px"
+             height="20px"
+             viewBox="0 0 40 40"
+             version="1.1"
+             xmlns="http://www.w3.org/2000/svg">
+          <title>spaceship</title>
+          <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+          <g transform="translate(-1720.000000, -592.000000)" fill="#FFFFFF" fill-rule="nonzero">
+          <g transform="translate(1716.000000, 291.000000)">
+          <g transform="translate(4.000000, 301.000000)">
+          <path class="color-background" d="M39.3,0.706666667 C38.9660984,0.370464027 38.5048767,0.192278529 38.0316667,0.216666667 C14.6516667,1.43666667 6.015,22.2633333 5.93166667,22.4733333 C5.68236407,23.0926189 5.82664679,23.8009159 6.29833333,24.2733333 L15.7266667,33.7016667 C16.2013871,34.1756798 16.9140329,34.3188658 17.535,34.065 C17.7433333,33.98 38.4583333,25.2466667 39.7816667,1.97666667 C39.8087196,1.50414529 39.6335979,1.04240574 39.3,0.706666667 Z M25.69,19.0233333 C24.7367525,19.9768687 23.3029475,20.2622391 22.0572426,19.7463614 C20.8115377,19.2304837 19.9992882,18.0149658 19.9992882,16.6666667 C19.9992882,15.3183676 20.8115377,14.1028496 22.0572426,13.5869719 C23.3029475,13.0710943 24.7367525,13.3564646 25.69,14.31 C26.9912731,15.6116662 26.9912731,17.7216672 25.69,19.0233333 L25.69,19.0233333 Z">
+          </path>
+          <path class="color-background opacity-6" d="M1.855,31.4066667 C3.05106558,30.2024182 4.79973884,29.7296005 6.43969145,30.1670277 C8.07964407,30.6044549 9.36054508,31.8853559 9.7979723,33.5253085 C10.2353995,35.1652612 9.76258177,36.9139344 8.55833333,38.11 C6.70666667,39.9616667 0,40 0,40 C0,40 0,33.2566667 1.855,31.4066667 Z">
+          </path>
+          <path class="color-background opacity-6" d="M17.2616667,3.90166667 C12.4943643,3.07192755 7.62174065,4.61673894 4.20333333,8.04166667 C3.31200265,8.94126033 2.53706177,9.94913142 1.89666667,11.0416667 C1.5109569,11.6966059 1.61721591,12.5295394 2.155,13.0666667 L5.47,16.3833333 C8.55036617,11.4946947 12.5559074,7.25476565 17.2616667,3.90166667 L17.2616667,3.90166667 Z">
+          </path>
+          <path class="color-background opacity-6" d="M36.0983333,22.7383333 C36.9280725,27.5056357 35.3832611,32.3782594 31.9583333,35.7966667 C31.0587397,36.6879974 30.0508686,37.4629382 28.9583333,38.1033333 C28.3033941,38.4890431 27.4704606,38.3827841 26.9333333,37.845 L23.6166667,34.53 C28.5053053,31.4496338 32.7452344,27.4440926 36.0983333,22.7383333 L36.0983333,22.7383333 Z">
+          </path>
+          </g>
+          </g>
+          </g>
+          </g>
+        </svg>
+      </div>
+      <span class="nav-link-text ms-1">{{ title }}</span>
+    </a>
+  </li>
 {% endmacro %}
 {% block content %}
   {% set pc_collapse_menu_id = random_hash() %}
   {% set pc_collapse_menu_label_id = random_hash() %}
-  <nav class="navbar text-bg-primary bg-gradient-primary p-1 pc-header-top text-white">
-    <button class="btn btn-outline-primary border-0"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target=".pc-collapse-menu"
-            aria-controls="{{ pc_collapse_menu_id }}">
-      <i class="bi bi-list text-white h4"></i>
-    </button>
-    <a href="{{ url_for('backoffice_v3_web.home') }}"
-       class="card-link">
-      <p class="my-0 ms-5 navbar-brand text-white h5">
-        <svg width="105.532"
-             height="36"
-             color="#FFFFFF">
-          <path fill="white" d="M34.103 13.427c.677-.417 1.2-1.004 1.571-1.76s.557-1.632.557-2.627c0-1.007-.189-1.898-.565-2.672-.378-.774-.91-1.373-1.598-1.797-.688-.425-1.482-.637-2.379-.637-.646 0-1.229.133-1.75.397-.52.265-.954.648-1.3 1.153V4.027h-2.766V17.52h2.765v-5.013c.358.504.799.888 1.319 1.152.52.264 1.116.396 1.786.396.898 0 1.684-.209 2.36-.627zm-4.792-2.487c-.448-.503-.672-1.167-.672-1.99 0-.8.224-1.454.672-1.964.45-.51 1.027-.765 1.733-.765.706 0 1.28.255 1.723.765.443.51.664 1.165.664 1.963 0 .811-.221 1.472-.664 1.982-.442.51-1.017.764-1.723.764-.706 0-1.283-.251-1.733-.755zm34.313.857c-.222.129-.517.194-.888.194-.539 0-1.11-.108-1.715-.324a5.608 5.608 0 0 1-1.642-.91l-.898 1.915a5.797 5.797 0 0 0 1.903 1.023c.73.24 1.49.36 2.28.36 1.148 0 2.09-.273 2.827-.82.736-.547 1.104-1.312 1.104-2.295 0-.65-.163-1.176-.485-1.577a3.159 3.159 0 0 0-1.15-.902 13.814 13.814 0 0 0-1.687-.618c-.622-.184-1.07-.35-1.346-.497-.275-.148-.413-.357-.413-.627 0-.246.103-.43.305-.553.204-.122.474-.184.808-.184.407 0 .868.083 1.382.249a7.853 7.853 0 0 1 1.562.71l.952-1.935a6.523 6.523 0 0 0-1.796-.822 7.084 7.084 0 0 0-1.973-.285c-1.102 0-2.011.27-2.73.81-.717.541-1.076 1.303-1.076 2.287 0 .639.155 1.158.467 1.557.31.4.685.697 1.121.894.437.196.985.394 1.643.59.622.184 1.074.357 1.355.516.28.16.422.38.422.663a.63.63 0 0 1-.332.581zm-37.75 20.111h2.765V18.231h-2.765v13.676zm-5.09-5.014c0 .737-.191 1.34-.575 1.807-.382.467-.903.707-1.561.718-.562 0-1.005-.177-1.329-.534-.322-.356-.485-.848-.485-1.474v-5.42H14.07v6.23c0 1.168.314 2.093.943 2.775.628.682 1.475 1.023 2.54 1.023 1.495 0 2.573-.62 3.23-1.862v1.751h2.748V21.99h-2.747v4.903zM9.501 29.041c-.581.276-1.152.415-1.714.415a3.617 3.617 0 0 1-1.94-.544 3.862 3.862 0 0 1-1.382-1.475 4.252 4.252 0 0 1-.502-2.055c0-.75.167-1.432.502-2.045a3.8 3.8 0 0 1 1.383-1.457 3.657 3.657 0 0 1 1.939-.535c.585 0 1.169.151 1.75.452.58.302 1.085.716 1.516 1.244l1.651-2.083a6.764 6.764 0 0 0-2.261-1.576 6.681 6.681 0 0 0-2.693-.58c-1.244 0-2.378.289-3.4.866a6.347 6.347 0 0 0-2.415 2.378c-.586 1.007-.88 2.132-.88 3.373 0 1.254.288 2.39.862 3.41a6.3 6.3 0 0 0 2.37 2.405c1.004.584 2.123.876 3.356.876.909 0 1.815-.209 2.72-.627a7.551 7.551 0 0 0 2.36-1.696l-1.67-1.861a5.432 5.432 0 0 1-1.552 1.115zm25.873.599c-.587 0-.88-.38-.88-1.143v-4.092h2.62v-1.972h-2.62v-2.728h-2.746v2.728h-1.347v1.954h1.347v4.59c0 .983.281 1.738.843 2.267.563.529 1.293.792 2.19.792.443 0 .883-.058 1.32-.175a4.473 4.473 0 0 0 1.193-.507l-.574-2.083c-.49.246-.94.369-1.346.369zm17.78-5.862V21.99h-2.763v9.917h2.764v-4.774c0-.786.248-1.416.745-1.889.496-.473 1.17-.71 2.019-.71.192 0 .335.007.43.019V21.88c-.717.012-1.345.178-1.884.497-.538.32-.975.787-1.31 1.4zm8.681-1.88c-.968 0-1.83.212-2.584.636a4.465 4.465 0 0 0-1.759 1.788c-.418.768-.628 1.656-.628 2.664 0 .995.207 1.873.62 2.635a4.322 4.322 0 0 0 1.759 1.77c.759.417 1.648.627 2.665.627.862 0 1.643-.15 2.342-.452.7-.3 1.296-.734 1.786-1.3l-1.454-1.511a3.448 3.448 0 0 1-1.13.783c-.42.178-.856.268-1.311.268-.622 0-1.155-.176-1.597-.525-.443-.35-.742-.839-.897-1.466h6.928c.012-.16.018-.387.018-.682 0-1.647-.404-2.931-1.211-3.853-.808-.921-1.99-1.382-3.547-1.382zm-2.243 4.24c.109-.663.363-1.189.764-1.576.4-.387.9-.58 1.498-.58.634 0 1.143.196 1.526.589.383.393.586.915.61 1.567h-4.398zm-14.202.755c0 .737-.192 1.34-.575 1.807-.383.467-.903.707-1.562.718-.562 0-1.004-.177-1.328-.534-.322-.356-.485-.848-.485-1.474v-5.42h-2.764v6.23c0 1.168.314 2.093.943 2.775.628.682 1.474 1.023 2.54 1.023 1.495 0 2.573-.62 3.23-1.862v1.751h2.747V21.99h-2.745v4.903zm8.511-15.097c-.22.129-.517.194-.889.194-.538 0-1.11-.108-1.713-.324a5.614 5.614 0 0 1-1.643-.91l-.897 1.915a5.792 5.792 0 0 0 1.902 1.023c.73.24 1.49.36 2.28.36 1.149 0 2.09-.273 2.827-.82.736-.547 1.104-1.312 1.104-2.295 0-.65-.161-1.176-.485-1.577a3.148 3.148 0 0 0-1.149-.902 13.917 13.917 0 0 0-1.686-.618c-.624-.184-1.072-.35-1.347-.497-.276-.148-.413-.357-.413-.627 0-.246.102-.43.305-.553.203-.122.473-.184.808-.184.407 0 .868.083 1.382.249a7.828 7.828 0 0 1 1.562.71l.95-1.935a6.497 6.497 0 0 0-1.794-.822 7.098 7.098 0 0 0-1.975-.285c-1.1 0-2.01.27-2.728.81-.719.541-1.077 1.303-1.077 2.287 0 .639.156 1.158.467 1.557.31.4.685.697 1.122.894.436.196.984.394 1.642.59.622.184 1.074.357 1.355.516.281.16.422.38.422.663a.63.63 0 0 1-.332.581zM41.527 7.99c-1.173.012-2.08.279-2.72.802-.64.522-.96 1.25-.96 2.184 0 .922.3 1.668.897 2.24.598.57 1.407.857 2.424.857.67 0 1.262-.111 1.777-.332.514-.221.933-.54 1.256-.959v1.161h2.71l-.017-6.47c-.012-1.118-.374-1.99-1.087-2.617-.711-.626-1.713-.94-3.006-.94-.802 0-1.538.093-2.208.277-.67.184-1.388.473-2.154.867l.862 1.953c1.017-.577 1.974-.867 2.872-.867.658 0 1.157.146 1.498.434.341.289.512.697.512 1.225v.185h-2.656zm2.656 2.562c-.084.43-.335.787-.754 1.069-.418.283-.915.424-1.49.424-.467 0-.835-.113-1.103-.342-.27-.226-.404-.53-.404-.911 0-.393.129-.679.386-.857.257-.179.654-.268 1.193-.268h2.172v.885zM83.257 9.44a.325.325 0 1 0 .568-.314l-2.272-4.143a.323.323 0 0 0-.44-.128.325.325 0 0 0-.128.441l2.272 4.143zM80.329 4.1a.325.325 0 1 0 .569-.313l-.93-1.694a.324.324 0 1 0-.567.314l.928 1.693zm6.066 7.826a.326.326 0 0 0 .395.235.325.325 0 0 0 .233-.396L84.407 1.553a.325.325 0 0 0-.628.161l2.616 10.213zm-2.254-1.546a.327.327 0 0 0-.128.442l.648 1.18a.325.325 0 0 0 .44.129.325.325 0 0 0 .128-.441l-.647-1.182a.324.324 0 0 0-.44-.128zm-1.18 2.323a.323.323 0 0 0 .458.014.327.327 0 0 0 .015-.46l-5.911-6.31a.325.325 0 0 0-.473.446l5.91 6.31zm6.755-.54a.325.325 0 0 0 .394-.235l2.458-9.595a.325.325 0 1 0-.628-.162l-2.458 9.596c-.044.174.06.35.234.396zm-8.844 9.52c.046 0 .093-.01.138-.032l1.367-.645a.325.325 0 0 0-.276-.588l-1.367.645a.324.324 0 0 0 .138.619zm1.367-5.44a.326.326 0 0 0 .1-.636l-6.353-2.068a.324.324 0 1 0-.2.618l6.353 2.07c.033.01.067.015.1.015zm-2.817 5.439-3.52 1.66a.326.326 0 0 0-.156.433.327.327 0 0 0 .432.156l3.52-1.661a.324.324 0 1 0-.276-.588zm3.135-2.717a.325.325 0 0 0-.379-.259l-9.755 1.866a.324.324 0 0 0-.258.38.324.324 0 0 0 .378.258l9.757-1.865a.325.325 0 0 0 .257-.38zm-4.622-1.415 4.284.27.02.001c.17 0 .313-.132.323-.304a.323.323 0 0 0-.303-.345l-4.284-.27a.324.324 0 0 0-.343.304.323.323 0 0 0 .303.344zm16.016-3.298a.322.322 0 0 0 .447.101l8.228-5.236a.326.326 0 0 0-.347-.55l-8.228 5.237a.325.325 0 0 0-.1.448zm6.54-.362a.326.326 0 0 0-.409-.21l-5.917 1.928a.326.326 0 0 0 .1.634.308.308 0 0 0 .1-.016l5.917-1.927a.325.325 0 0 0 .208-.41zm-6.246 3.282a.325.325 0 0 0 .02.649h.02l3.547-.224a.323.323 0 0 0 .303-.345.324.324 0 0 0-.343-.304l-3.547.224zm-.118 3.834 6.2 2.924a.326.326 0 0 0 .431-.155.326.326 0 0 0-.156-.433l-6.198-2.924a.325.325 0 0 0-.277.588zm-2.725-8.874a.323.323 0 0 0 .44-.128l1.923-3.507a.324.324 0 1 0-.567-.313l-1.924 3.507a.324.324 0 0 0 .128.441zm-8.949 1.67-1.408-.896a.324.324 0 0 0-.447.1.326.326 0 0 0 .1.449l1.408.896a.324.324 0 0 0 .447-.1.326.326 0 0 0-.1-.449zm19.148-.274a.326.326 0 0 0 .308.225.309.309 0 0 0 .1-.017l2.27-.739a.325.325 0 0 0-.201-.618l-2.269.74a.325.325 0 0 0-.208.409zm-7.033-2.394a.326.326 0 0 0 .459-.015l3.021-3.226a.324.324 0 1 0-.472-.445l-3.022 3.226a.326.326 0 0 0 .014.46zm-.557.594a.323.323 0 0 0-.458.015l-.483.514a.324.324 0 1 0 .472.445l.484-.514a.326.326 0 0 0-.015-.46zm.16-4.646a.323.323 0 0 0 .441-.128l2.32-4.23a.326.326 0 0 0-.128-.442.323.323 0 0 0-.44.128l-2.32 4.23a.325.325 0 0 0 .127.442zm-1.858 16.395a.324.324 0 0 0-.072.453l1.729 2.387a.324.324 0 1 0 .524-.382l-1.729-2.387a.322.322 0 0 0-.452-.071zm6.578-16.634a.321.321 0 0 0 .236-.102l1.721-1.837a.325.325 0 0 0-.473-.446l-1.72 1.838a.326.326 0 0 0 .013.46.328.328 0 0 0 .223.087zM74.287 9.375l5.208 3.313a.325.325 0 0 0 .348-.549l-5.208-3.313a.325.325 0 1 0-.348.549zm20.057 23.038a.324.324 0 1 0-.603.24l.626 1.584a.325.325 0 1 0 .603-.239l-.626-1.585zm-2.985-7.558-.424-1.072a.323.323 0 0 0-.42-.183.327.327 0 0 0-.183.422l.424 1.072a.324.324 0 1 0 .603-.239zm-1.592 5.035a.324.324 0 0 0 .281-.363l-.714-5.665a.324.324 0 1 0-.642.082l.713 5.664a.324.324 0 0 0 .362.282zm.114.902a.322.322 0 0 0-.28.363l.416 3.31c.021.165.16.285.321.285.014 0 .028 0 .042-.003a.324.324 0 0 0 .28-.363l-.416-3.31a.326.326 0 0 0-.363-.282zm4.23-8.48a.324.324 0 1 0-.413.501l6.931 5.747a.323.323 0 0 0 .457-.044.324.324 0 0 0-.044-.457l-6.93-5.747zm11.55-5.86-6.456.406a.326.326 0 0 0 .02.65h.021l6.455-.408a.324.324 0 0 0 .303-.345.324.324 0 0 0-.344-.304zm-1.091 4.212-10.242-1.959a.325.325 0 0 0-.122.639l10.242 1.958a.325.325 0 0 0 .122-.638zM88.253.08a.324.324 0 0 0-.324.325v2.458a.324.324 0 1 0 .648 0V.405a.324.324 0 0 0-.324-.325zm7.403 27.455a.325.325 0 0 0-.525.382l2.42 3.338a.321.321 0 0 0 .452.072.325.325 0 0 0 .072-.454l-2.42-3.338zm8.662-2.442-2.269-1.07a.323.323 0 0 0-.431.155.324.324 0 0 0 .155.433l2.269 1.07a.324.324 0 0 0 .138.032.325.325 0 0 0 .138-.62zm-12.36 1.279a.324.324 0 1 0-.603.239l1.736 4.397a.326.326 0 0 0 .422.182.325.325 0 0 0 .181-.422l-1.736-4.396zm-9.105-4.018a.323.323 0 0 0-.457-.043l-6.715 5.568a.325.325 0 1 0 .413.501l6.716-5.569a.325.325 0 0 0 .043-.457zm-8.277 1.613-2.23 1.052a.325.325 0 0 0 .276.588l2.23-1.052a.325.325 0 0 0-.276-.588zm1.926-6.508a.325.325 0 0 0 .02-.65l-5.676-.358a.325.325 0 0 0-.041.649l5.676.358h.021zm-4.924-4.674 2.732.89a.325.325 0 0 0 .201-.619l-2.732-.889a.325.325 0 0 0-.201.619zm7.721 16.891-1.552 2.141a.326.326 0 0 0 .262.516c.1 0 .2-.047.263-.134l1.552-2.14a.324.324 0 1 0-.525-.383zm4.894-6.2a.324.324 0 0 0-.453.072l-3.502 4.832a.326.326 0 0 0 .262.516c.1 0 .2-.046.263-.134l3.502-4.832a.326.326 0 0 0-.072-.454zm1.798.124a.323.323 0 0 0-.42.183l-1.385 3.507a.325.325 0 0 0 .602.24l1.386-3.508a.327.327 0 0 0-.183-.422zm1.543-.02a.325.325 0 0 0-.362.282L85.73 35.304a.324.324 0 0 0 .28.363l.042.003c.161 0 .3-.12.32-.285l1.443-11.441a.325.325 0 0 0-.28-.364zm.72-18.765a.324.324 0 0 0-.325.325v6.707a.325.325 0 1 0 .648 0V5.14a.324.324 0 0 0-.324-.325zm-4.28 23.893a.323.323 0 0 0-.42.183l-2.018 5.107a.326.326 0 0 0 .302.445c.129 0 .25-.078.301-.206l2.018-5.107a.326.326 0 0 0-.183-.422z" />
-        </svg>
-        Back Office
-      </p>
-    </a>
-    <form action="{{ url_for('backoffice_v3_web.logout') }}"
-          name="{{ url_for('backoffice_v3_web.logout') | action_to_name }}"
-          method="post">
-      {{ csrf_token }}
-      <button type="submit"
-              class="btn btn-link text-white">
-        <i class="bi bi-box-arrow-right fs-5 me-2"></i>
-      </button>
-    </form>
-  </nav>
-  <div class="container-fluid row">
-    <div class="row flex-nowrap">
-      <div class="col-auto px-0">
-        <div class="collapse collapse-horizontal offcanvas-start{% if request.path == "/" %} show{% endif %} pc-collapse-menu no-transition" data-bs-scroll="true" tabindex="-1" id="{{ pc_collapse_menu_id }}" aria-labelledby="collapse-menu-label">
-          <div class="no-gutters">
-            <nav class="me-3 shadow bg-white rounded-1 rounded-start-0 rounded-top-0">
-              <div class="nav nav-pills flex-column">
-                {% call menu_section("Jeunes et grand public") %}
-                  {% if has_permission("READ_PUBLIC_ACCOUNT") %}
-                    {{ menu_section_item("Jeunes bénéficiaires ou à venir", "backoffice_v3_web.public_accounts.search_public_accounts") }}
-                  {% endif %}
-                {% endcall %}
-              </div>
-              <hr />
-              <div class="nav nav-pills flex-column">
-                {% call menu_section("Acteurs culturels") %}
-                  {% if has_permission("READ_PRO_ENTITY") %}
-                    {{ menu_section_item("Liste des acteurs culturels", "backoffice_v3_web.search_pro") }}
-                  {% endif %}
-                  {% if has_permission("VALIDATE_OFFERER") %}
-                    {{ menu_section_item("Structures à valider", "backoffice_v3_web.validation.list_offerers_to_validate") }}
-                    {{ menu_section_item("Rattachements à valider", "backoffice_v3_web.validation.list_offerers_attachments_to_validate") }}
-                  {% endif %}
-                  {% if has_permission("MANAGE_OFFERER_TAG") %}
-                    {{ menu_section_item("Tags structure", "backoffice_v3_web.offerer_tag.list_offerer_tags") }}
-                  {% endif %}
-                  {% if has_permission("READ_OFFERS") %}
-                    {{ menu_section_item("Offres individuelles", "backoffice_v3_web.offer.list_offers") }}
-                    {{ menu_section_item("Offres collectives", "backoffice_v3_web.collective_offer.list_collective_offers") }}
-                    {{ menu_section_item("Offres collectives vitrines", "backoffice_v3_web.collective_offer_template.list_collective_offer_templates") }}
-                  {% endif %}
-                  {% if has_permission("MULTIPLE_OFFERS_ACTIONS") %}
-                    {{ menu_section_item("Opérations sur plusieurs offres", "backoffice_v3_web.multiple_offers.multiple_offers_home") }}
-                  {% endif %}
-                  {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                    {{ menu_section_item("Recherche EAN via Tite Live", "backoffice_v3_web.titelive.search_titelive") }}
-                  {% endif %}
-                  {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}
-                    {{ menu_section_item("Tags des offres et lieux", "backoffice_v3_web.tags.list_tags") }}
-                  {% endif %}
-                  {% if has_permission("MANAGE_PRO_ENTITY") %}
-                    {{ menu_section_item("Actions sur les lieux", "backoffice_v3_web.venue.list_venues") }}
-                  {% endif %}
-                {% endcall %}
-              </div>
-              <hr />
-              {% if has_permission("MOVE_SIRET") or has_permission("ADVANCED_PRO_SUPPORT") or has_permission("READ_REIMBURSEMENT_RULES") %}
-                <div class="nav nav-pills flex-column">
-                  {% call menu_section("Support Pro") %}
-                    {% if has_permission("MOVE_SIRET") %}{{ menu_section_item("Déplacer un SIRET", "backoffice_v3_web.move_siret.move_siret") }}{% endif %}
-                    {% if has_permission("ADVANCED_PRO_SUPPORT") %}
-                      {{ menu_section_item("Synchronisation Pivot", "backoffice_v3_web.pivots.get_pivots") }}
-                      {{ menu_section_item("Synchronisation Prestataires", "backoffice_v3_web.providers.get_providers") }}
-                    {% endif %}
-                    {% if has_permission("READ_REIMBURSEMENT_RULES") %}
-                      {{ menu_section_item("Tarifs dérogatoires", "backoffice_v3_web.reimbursement_rules.list_custom_reimbursement_rules") }}
-                    {% endif %}
-                  {% endcall %}
-                </div>
-                <hr />
-              {% endif %}
-              {% if has_permission("READ_BOOKINGS") %}
-                <div class="nav nav-pills flex-column">
-                  {% call menu_section("Réservations") %}
-                    {{ menu_section_item("Réservations individuelles", "backoffice_v3_web.individual_bookings.list_individual_bookings") }}
-                    {{ menu_section_item("Réservations collectives", "backoffice_v3_web.collective_bookings.list_collective_bookings") }}
-                  {% endcall %}
-                </div>
-                <hr />
-              {% endif %}
-              {% if has_permission("PRO_FRAUD_ACTIONS") or has_permission("BATCH_SUSPEND_USERS") %}
-                <div class="nav nav-pills flex-column">
-                  {% call menu_section("Fraude et conformité") %}
-                    {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                      {{ menu_section_item("Règles de validation d'offres", "backoffice_v3_web.offer_validation_rules.list_rules") }}
-                    {% endif %}
-                    {% if has_permission("BATCH_SUSPEND_USERS") %}
-                      {{ menu_section_item("Suspension de comptes jeunes", "backoffice_v3_web.fraud.list_blacklisted_domain_names") }}
-                    {% endif %}
-                  {% endcall %}
-                </div>
-                <hr />
-              {% endif %}
-              <div class="nav nav-pills flex-column">
-                {% call menu_section("Admin") %}
-                  {% if has_permission("MANAGE_PERMISSIONS") %}{{ menu_section_item("Gestion des rôles", "backoffice_v3_web.get_roles") }}{% endif %}
-                  {% if has_permission("MANAGE_ADMIN_ACCOUNTS") %}
-                    {{ menu_section_item("Utilisateurs BackOffice", "backoffice_v3_web.bo_users.search_bo_users") }}
-                  {% endif %}
-                  {% if has_permission("FEATURE_FLIPPING") %}{{ menu_section_item("Feature flipping", "backoffice_v3_web.list_feature_flags") }}{% endif %}
-                  {% if get_setting("ENABLE_TEST_USER_GENERATION") %}
-                    {{ menu_section_item("Générateur d'utilisateurs de test", "backoffice_v3_web.generate_user") }}
-                  {% endif %}
-                {% endcall %}
-              </div>
-            </nav>
-          </div>
-        </div>
-      </div>
-      <div class="row flex-fill">
-        <div class="col g-0 bg-light overflow-auto min-vh-100">
-          {% with messages = get_flashed_messages(with_categories=True) %}
-            {% if messages %}
-              <div class="mb-3">
-                {% for category, message in messages %}
-                  <div class="alert alert-{{ category }} alert-dismissible fade show mb-0 px-5 rounded-0"
-                       role="alert">
-                    <p class="mx-3 mb-0">
-                      {{ message }}
-                      <button type="button"
-                              class="btn-close"
-                              data-bs-dismiss="alert"
-                              aria-label="Close"></button>
-                    </p>
-                  </div>
-                {% endfor %}
-              </div>
+  <!-- NEW CONTENT  -->
+  <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 "
+         id="sidenav-main">
+    <hr class="horizontal dark mt-0">
+    <div class="collapse navbar-collapse  w-auto "
+         id="sidenav-collapse-main">
+      <ul class="navbar-nav">
+        {% call menu_section("Jeunes et grand public") %}
+          {% if has_permission("READ_PUBLIC_ACCOUNT") %}
+            {{ menu_section_item("Jeunes bénéficiaires ou à venir", "backoffice_v3_web.public_accounts.search_public_accounts") }}
+          {% endif %}
+        {% endcall %}
+        {% call menu_section("Acteurs culturels") %}
+          {% if has_permission("READ_PRO_ENTITY") %}
+            {{ menu_section_item("Liste des acteurs culturels", "backoffice_v3_web.search_pro") }}
+          {% endif %}
+          {% if has_permission("VALIDATE_OFFERER") %}
+            {{ menu_section_item("Structures à valider", "backoffice_v3_web.validation.list_offerers_to_validate") }}
+            {{ menu_section_item("Rattachements à valider", "backoffice_v3_web.validation.list_offerers_attachments_to_validate") }}
+          {% endif %}
+          {% if has_permission("MANAGE_OFFERER_TAG") %}
+            {{ menu_section_item("Tags structure", "backoffice_v3_web.offerer_tag.list_offerer_tags") }}
+          {% endif %}
+          {% if has_permission("READ_OFFERS") %}
+            {{ menu_section_item("Offres individuelles", "backoffice_v3_web.offer.list_offers") }}
+            {{ menu_section_item("Offres collectives", "backoffice_v3_web.collective_offer.list_collective_offers") }}
+            {{ menu_section_item("Offres collectives vitrines", "backoffice_v3_web.collective_offer_template.list_collective_offer_templates") }}
+          {% endif %}
+          {% if has_permission("MULTIPLE_OFFERS_ACTIONS") %}
+            {{ menu_section_item("Opérations sur plusieurs offres", "backoffice_v3_web.multiple_offers.multiple_offers_home") }}
+          {% endif %}
+          {% if has_permission("PRO_FRAUD_ACTIONS") %}
+            {{ menu_section_item("Recherche EAN via Tite Live", "backoffice_v3_web.titelive.search_titelive") }}
+          {% endif %}
+          {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}
+            {{ menu_section_item("Tags des offres et lieux", "backoffice_v3_web.tags.list_tags") }}
+          {% endif %}
+          {% if has_permission("MANAGE_PRO_ENTITY") %}
+            {{ menu_section_item("Actions sur les lieux", "backoffice_v3_web.venue.list_venues") }}
+          {% endif %}
+        {% endcall %}
+        {% if has_permission("MOVE_SIRET") or has_permission("ADVANCED_PRO_SUPPORT") or has_permission("READ_REIMBURSEMENT_RULES") %}
+          {% call menu_section("Support Pro") %}
+            {% if has_permission("MOVE_SIRET") %}{{ menu_section_item("Déplacer un SIRET", "backoffice_v3_web.move_siret.move_siret") }}{% endif %}
+            {% if has_permission("ADVANCED_PRO_SUPPORT") %}
+              {{ menu_section_item("Synchronisation Pivot", "backoffice_v3_web.pivots.get_pivots") }}
+              {{ menu_section_item("Synchronisation Prestataires", "backoffice_v3_web.providers.get_providers") }}
             {% endif %}
-          {% endwith %}
-          {% block page %}
-          {% endblock page %}
+            {% if has_permission("READ_REIMBURSEMENT_RULES") %}
+              {{ menu_section_item("Tarifs dérogatoires", "backoffice_v3_web.reimbursement_rules.list_custom_reimbursement_rules") }}
+            {% endif %}
+          {% endcall %}
+        {% endif %}
+        {% if has_permission("READ_BOOKINGS") %}
+          {% call menu_section("Réservations") %}
+            {{ menu_section_item("Réservations individuelles", "backoffice_v3_web.individual_bookings.list_individual_bookings") }}
+            {{ menu_section_item("Réservations collectives", "backoffice_v3_web.collective_bookings.list_collective_bookings") }}
+          {% endcall %}
+        {% endif %}
+        {% if has_permission("PRO_FRAUD_ACTIONS") or has_permission("BATCH_SUSPEND_USERS") %}
+          {% call menu_section("Fraude et conformité") %}
+            {% if has_permission("PRO_FRAUD_ACTIONS") %}
+              {{ menu_section_item("Règles de validation d'offres", "backoffice_v3_web.offer_validation_rules.list_rules") }}
+            {% endif %}
+            {% if has_permission("BATCH_SUSPEND_USERS") %}
+              {{ menu_section_item("Suspension de comptes jeunes", "backoffice_v3_web.fraud.list_blacklisted_domain_names") }}
+            {% endif %}
+          {% endcall %}
+        {% endif %}
+        {% call menu_section("Admin") %}
+          {% if has_permission("MANAGE_PERMISSIONS") %}{{ menu_section_item("Gestion des rôles", "backoffice_v3_web.get_roles") }}{% endif %}
+          {% if has_permission("MANAGE_ADMIN_ACCOUNTS") %}
+            {{ menu_section_item("Utilisateurs BackOffice", "backoffice_v3_web.bo_users.search_bo_users") }}
+          {% endif %}
+          {% if has_permission("FEATURE_FLIPPING") %}{{ menu_section_item("Feature flipping", "backoffice_v3_web.list_feature_flags") }}{% endif %}
+          {% if get_setting("ENABLE_TEST_USER_GENERATION") %}
+            {{ menu_section_item("Générateur d'utilisateurs de test", "backoffice_v3_web.generate_user") }}
+          {% endif %}
+        {% endcall %}
+      </ul>
+    </div>
+  </aside>
+  <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+    <!-- Navbar -->
+    <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl"
+         id="navbarBlur"
+         navbar-scroll="true">
+      <div class="container-fluid py-1 px-3">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+            <li class="breadcrumb-item text-sm">
+              <a class="opacity-5 text-dark"
+                 href="javascript:;">Pages</a>
+            </li>
+            <li class="breadcrumb-item text-sm text-dark active"
+                aria-current="page">Dashboard</li>
+          </ol>
+          <h6 class="font-weight-bolder mb-0">Dashboard</h6>
+        </nav>
+        <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4"
+             id="navbar">
+          <div class="ms-md-auto pe-md-3 d-flex align-items-center text-primary text-gradient">
+            <a href="{{ url_for('backoffice_v3_web.home') }}"
+               class="navbar-brand ">
+              <p class="my-0 ms-5 navbar-brand text-white h5">
+                <svg width="105.532"
+                     height="36"
+                     color="#000">
+                  <path fill="black" d="M34.103 13.427c.677-.417 1.2-1.004 1.571-1.76s.557-1.632.557-2.627c0-1.007-.189-1.898-.565-2.672-.378-.774-.91-1.373-1.598-1.797-.688-.425-1.482-.637-2.379-.637-.646 0-1.229.133-1.75.397-.52.265-.954.648-1.3 1.153V4.027h-2.766V17.52h2.765v-5.013c.358.504.799.888 1.319 1.152.52.264 1.116.396 1.786.396.898 0 1.684-.209 2.36-.627zm-4.792-2.487c-.448-.503-.672-1.167-.672-1.99 0-.8.224-1.454.672-1.964.45-.51 1.027-.765 1.733-.765.706 0 1.28.255 1.723.765.443.51.664 1.165.664 1.963 0 .811-.221 1.472-.664 1.982-.442.51-1.017.764-1.723.764-.706 0-1.283-.251-1.733-.755zm34.313.857c-.222.129-.517.194-.888.194-.539 0-1.11-.108-1.715-.324a5.608 5.608 0 0 1-1.642-.91l-.898 1.915a5.797 5.797 0 0 0 1.903 1.023c.73.24 1.49.36 2.28.36 1.148 0 2.09-.273 2.827-.82.736-.547 1.104-1.312 1.104-2.295 0-.65-.163-1.176-.485-1.577a3.159 3.159 0 0 0-1.15-.902 13.814 13.814 0 0 0-1.687-.618c-.622-.184-1.07-.35-1.346-.497-.275-.148-.413-.357-.413-.627 0-.246.103-.43.305-.553.204-.122.474-.184.808-.184.407 0 .868.083 1.382.249a7.853 7.853 0 0 1 1.562.71l.952-1.935a6.523 6.523 0 0 0-1.796-.822 7.084 7.084 0 0 0-1.973-.285c-1.102 0-2.011.27-2.73.81-.717.541-1.076 1.303-1.076 2.287 0 .639.155 1.158.467 1.557.31.4.685.697 1.121.894.437.196.985.394 1.643.59.622.184 1.074.357 1.355.516.28.16.422.38.422.663a.63.63 0 0 1-.332.581zm-37.75 20.111h2.765V18.231h-2.765v13.676zm-5.09-5.014c0 .737-.191 1.34-.575 1.807-.382.467-.903.707-1.561.718-.562 0-1.005-.177-1.329-.534-.322-.356-.485-.848-.485-1.474v-5.42H14.07v6.23c0 1.168.314 2.093.943 2.775.628.682 1.475 1.023 2.54 1.023 1.495 0 2.573-.62 3.23-1.862v1.751h2.748V21.99h-2.747v4.903zM9.501 29.041c-.581.276-1.152.415-1.714.415a3.617 3.617 0 0 1-1.94-.544 3.862 3.862 0 0 1-1.382-1.475 4.252 4.252 0 0 1-.502-2.055c0-.75.167-1.432.502-2.045a3.8 3.8 0 0 1 1.383-1.457 3.657 3.657 0 0 1 1.939-.535c.585 0 1.169.151 1.75.452.58.302 1.085.716 1.516 1.244l1.651-2.083a6.764 6.764 0 0 0-2.261-1.576 6.681 6.681 0 0 0-2.693-.58c-1.244 0-2.378.289-3.4.866a6.347 6.347 0 0 0-2.415 2.378c-.586 1.007-.88 2.132-.88 3.373 0 1.254.288 2.39.862 3.41a6.3 6.3 0 0 0 2.37 2.405c1.004.584 2.123.876 3.356.876.909 0 1.815-.209 2.72-.627a7.551 7.551 0 0 0 2.36-1.696l-1.67-1.861a5.432 5.432 0 0 1-1.552 1.115zm25.873.599c-.587 0-.88-.38-.88-1.143v-4.092h2.62v-1.972h-2.62v-2.728h-2.746v2.728h-1.347v1.954h1.347v4.59c0 .983.281 1.738.843 2.267.563.529 1.293.792 2.19.792.443 0 .883-.058 1.32-.175a4.473 4.473 0 0 0 1.193-.507l-.574-2.083c-.49.246-.94.369-1.346.369zm17.78-5.862V21.99h-2.763v9.917h2.764v-4.774c0-.786.248-1.416.745-1.889.496-.473 1.17-.71 2.019-.71.192 0 .335.007.43.019V21.88c-.717.012-1.345.178-1.884.497-.538.32-.975.787-1.31 1.4zm8.681-1.88c-.968 0-1.83.212-2.584.636a4.465 4.465 0 0 0-1.759 1.788c-.418.768-.628 1.656-.628 2.664 0 .995.207 1.873.62 2.635a4.322 4.322 0 0 0 1.759 1.77c.759.417 1.648.627 2.665.627.862 0 1.643-.15 2.342-.452.7-.3 1.296-.734 1.786-1.3l-1.454-1.511a3.448 3.448 0 0 1-1.13.783c-.42.178-.856.268-1.311.268-.622 0-1.155-.176-1.597-.525-.443-.35-.742-.839-.897-1.466h6.928c.012-.16.018-.387.018-.682 0-1.647-.404-2.931-1.211-3.853-.808-.921-1.99-1.382-3.547-1.382zm-2.243 4.24c.109-.663.363-1.189.764-1.576.4-.387.9-.58 1.498-.58.634 0 1.143.196 1.526.589.383.393.586.915.61 1.567h-4.398zm-14.202.755c0 .737-.192 1.34-.575 1.807-.383.467-.903.707-1.562.718-.562 0-1.004-.177-1.328-.534-.322-.356-.485-.848-.485-1.474v-5.42h-2.764v6.23c0 1.168.314 2.093.943 2.775.628.682 1.474 1.023 2.54 1.023 1.495 0 2.573-.62 3.23-1.862v1.751h2.747V21.99h-2.745v4.903zm8.511-15.097c-.22.129-.517.194-.889.194-.538 0-1.11-.108-1.713-.324a5.614 5.614 0 0 1-1.643-.91l-.897 1.915a5.792 5.792 0 0 0 1.902 1.023c.73.24 1.49.36 2.28.36 1.149 0 2.09-.273 2.827-.82.736-.547 1.104-1.312 1.104-2.295 0-.65-.161-1.176-.485-1.577a3.148 3.148 0 0 0-1.149-.902 13.917 13.917 0 0 0-1.686-.618c-.624-.184-1.072-.35-1.347-.497-.276-.148-.413-.357-.413-.627 0-.246.102-.43.305-.553.203-.122.473-.184.808-.184.407 0 .868.083 1.382.249a7.828 7.828 0 0 1 1.562.71l.95-1.935a6.497 6.497 0 0 0-1.794-.822 7.098 7.098 0 0 0-1.975-.285c-1.1 0-2.01.27-2.728.81-.719.541-1.077 1.303-1.077 2.287 0 .639.156 1.158.467 1.557.31.4.685.697 1.122.894.436.196.984.394 1.642.59.622.184 1.074.357 1.355.516.281.16.422.38.422.663a.63.63 0 0 1-.332.581zM41.527 7.99c-1.173.012-2.08.279-2.72.802-.64.522-.96 1.25-.96 2.184 0 .922.3 1.668.897 2.24.598.57 1.407.857 2.424.857.67 0 1.262-.111 1.777-.332.514-.221.933-.54 1.256-.959v1.161h2.71l-.017-6.47c-.012-1.118-.374-1.99-1.087-2.617-.711-.626-1.713-.94-3.006-.94-.802 0-1.538.093-2.208.277-.67.184-1.388.473-2.154.867l.862 1.953c1.017-.577 1.974-.867 2.872-.867.658 0 1.157.146 1.498.434.341.289.512.697.512 1.225v.185h-2.656zm2.656 2.562c-.084.43-.335.787-.754 1.069-.418.283-.915.424-1.49.424-.467 0-.835-.113-1.103-.342-.27-.226-.404-.53-.404-.911 0-.393.129-.679.386-.857.257-.179.654-.268 1.193-.268h2.172v.885zM83.257 9.44a.325.325 0 1 0 .568-.314l-2.272-4.143a.323.323 0 0 0-.44-.128.325.325 0 0 0-.128.441l2.272 4.143zM80.329 4.1a.325.325 0 1 0 .569-.313l-.93-1.694a.324.324 0 1 0-.567.314l.928 1.693zm6.066 7.826a.326.326 0 0 0 .395.235.325.325 0 0 0 .233-.396L84.407 1.553a.325.325 0 0 0-.628.161l2.616 10.213zm-2.254-1.546a.327.327 0 0 0-.128.442l.648 1.18a.325.325 0 0 0 .44.129.325.325 0 0 0 .128-.441l-.647-1.182a.324.324 0 0 0-.44-.128zm-1.18 2.323a.323.323 0 0 0 .458.014.327.327 0 0 0 .015-.46l-5.911-6.31a.325.325 0 0 0-.473.446l5.91 6.31zm6.755-.54a.325.325 0 0 0 .394-.235l2.458-9.595a.325.325 0 1 0-.628-.162l-2.458 9.596c-.044.174.06.35.234.396zm-8.844 9.52c.046 0 .093-.01.138-.032l1.367-.645a.325.325 0 0 0-.276-.588l-1.367.645a.324.324 0 0 0 .138.619zm1.367-5.44a.326.326 0 0 0 .1-.636l-6.353-2.068a.324.324 0 1 0-.2.618l6.353 2.07c.033.01.067.015.1.015zm-2.817 5.439-3.52 1.66a.326.326 0 0 0-.156.433.327.327 0 0 0 .432.156l3.52-1.661a.324.324 0 1 0-.276-.588zm3.135-2.717a.325.325 0 0 0-.379-.259l-9.755 1.866a.324.324 0 0 0-.258.38.324.324 0 0 0 .378.258l9.757-1.865a.325.325 0 0 0 .257-.38zm-4.622-1.415 4.284.27.02.001c.17 0 .313-.132.323-.304a.323.323 0 0 0-.303-.345l-4.284-.27a.324.324 0 0 0-.343.304.323.323 0 0 0 .303.344zm16.016-3.298a.322.322 0 0 0 .447.101l8.228-5.236a.326.326 0 0 0-.347-.55l-8.228 5.237a.325.325 0 0 0-.1.448zm6.54-.362a.326.326 0 0 0-.409-.21l-5.917 1.928a.326.326 0 0 0 .1.634.308.308 0 0 0 .1-.016l5.917-1.927a.325.325 0 0 0 .208-.41zm-6.246 3.282a.325.325 0 0 0 .02.649h.02l3.547-.224a.323.323 0 0 0 .303-.345.324.324 0 0 0-.343-.304l-3.547.224zm-.118 3.834 6.2 2.924a.326.326 0 0 0 .431-.155.326.326 0 0 0-.156-.433l-6.198-2.924a.325.325 0 0 0-.277.588zm-2.725-8.874a.323.323 0 0 0 .44-.128l1.923-3.507a.324.324 0 1 0-.567-.313l-1.924 3.507a.324.324 0 0 0 .128.441zm-8.949 1.67-1.408-.896a.324.324 0 0 0-.447.1.326.326 0 0 0 .1.449l1.408.896a.324.324 0 0 0 .447-.1.326.326 0 0 0-.1-.449zm19.148-.274a.326.326 0 0 0 .308.225.309.309 0 0 0 .1-.017l2.27-.739a.325.325 0 0 0-.201-.618l-2.269.74a.325.325 0 0 0-.208.409zm-7.033-2.394a.326.326 0 0 0 .459-.015l3.021-3.226a.324.324 0 1 0-.472-.445l-3.022 3.226a.326.326 0 0 0 .014.46zm-.557.594a.323.323 0 0 0-.458.015l-.483.514a.324.324 0 1 0 .472.445l.484-.514a.326.326 0 0 0-.015-.46zm.16-4.646a.323.323 0 0 0 .441-.128l2.32-4.23a.326.326 0 0 0-.128-.442.323.323 0 0 0-.44.128l-2.32 4.23a.325.325 0 0 0 .127.442zm-1.858 16.395a.324.324 0 0 0-.072.453l1.729 2.387a.324.324 0 1 0 .524-.382l-1.729-2.387a.322.322 0 0 0-.452-.071zm6.578-16.634a.321.321 0 0 0 .236-.102l1.721-1.837a.325.325 0 0 0-.473-.446l-1.72 1.838a.326.326 0 0 0 .013.46.328.328 0 0 0 .223.087zM74.287 9.375l5.208 3.313a.325.325 0 0 0 .348-.549l-5.208-3.313a.325.325 0 1 0-.348.549zm20.057 23.038a.324.324 0 1 0-.603.24l.626 1.584a.325.325 0 1 0 .603-.239l-.626-1.585zm-2.985-7.558-.424-1.072a.323.323 0 0 0-.42-.183.327.327 0 0 0-.183.422l.424 1.072a.324.324 0 1 0 .603-.239zm-1.592 5.035a.324.324 0 0 0 .281-.363l-.714-5.665a.324.324 0 1 0-.642.082l.713 5.664a.324.324 0 0 0 .362.282zm.114.902a.322.322 0 0 0-.28.363l.416 3.31c.021.165.16.285.321.285.014 0 .028 0 .042-.003a.324.324 0 0 0 .28-.363l-.416-3.31a.326.326 0 0 0-.363-.282zm4.23-8.48a.324.324 0 1 0-.413.501l6.931 5.747a.323.323 0 0 0 .457-.044.324.324 0 0 0-.044-.457l-6.93-5.747zm11.55-5.86-6.456.406a.326.326 0 0 0 .02.65h.021l6.455-.408a.324.324 0 0 0 .303-.345.324.324 0 0 0-.344-.304zm-1.091 4.212-10.242-1.959a.325.325 0 0 0-.122.639l10.242 1.958a.325.325 0 0 0 .122-.638zM88.253.08a.324.324 0 0 0-.324.325v2.458a.324.324 0 1 0 .648 0V.405a.324.324 0 0 0-.324-.325zm7.403 27.455a.325.325 0 0 0-.525.382l2.42 3.338a.321.321 0 0 0 .452.072.325.325 0 0 0 .072-.454l-2.42-3.338zm8.662-2.442-2.269-1.07a.323.323 0 0 0-.431.155.324.324 0 0 0 .155.433l2.269 1.07a.324.324 0 0 0 .138.032.325.325 0 0 0 .138-.62zm-12.36 1.279a.324.324 0 1 0-.603.239l1.736 4.397a.326.326 0 0 0 .422.182.325.325 0 0 0 .181-.422l-1.736-4.396zm-9.105-4.018a.323.323 0 0 0-.457-.043l-6.715 5.568a.325.325 0 1 0 .413.501l6.716-5.569a.325.325 0 0 0 .043-.457zm-8.277 1.613-2.23 1.052a.325.325 0 0 0 .276.588l2.23-1.052a.325.325 0 0 0-.276-.588zm1.926-6.508a.325.325 0 0 0 .02-.65l-5.676-.358a.325.325 0 0 0-.041.649l5.676.358h.021zm-4.924-4.674 2.732.89a.325.325 0 0 0 .201-.619l-2.732-.889a.325.325 0 0 0-.201.619zm7.721 16.891-1.552 2.141a.326.326 0 0 0 .262.516c.1 0 .2-.047.263-.134l1.552-2.14a.324.324 0 1 0-.525-.383zm4.894-6.2a.324.324 0 0 0-.453.072l-3.502 4.832a.326.326 0 0 0 .262.516c.1 0 .2-.046.263-.134l3.502-4.832a.326.326 0 0 0-.072-.454zm1.798.124a.323.323 0 0 0-.42.183l-1.385 3.507a.325.325 0 0 0 .602.24l1.386-3.508a.327.327 0 0 0-.183-.422zm1.543-.02a.325.325 0 0 0-.362.282L85.73 35.304a.324.324 0 0 0 .28.363l.042.003c.161 0 .3-.12.32-.285l1.443-11.441a.325.325 0 0 0-.28-.364zm.72-18.765a.324.324 0 0 0-.325.325v6.707a.325.325 0 1 0 .648 0V5.14a.324.324 0 0 0-.324-.325zm-4.28 23.893a.323.323 0 0 0-.42.183l-2.018 5.107a.326.326 0 0 0 .302.445c.129 0 .25-.078.301-.206l2.018-5.107a.326.326 0 0 0-.183-.422z" />
+                </svg>
+                Back Office
+              </p>
+            </a>
+          </div>
+          <ul class="navbar-nav  justify-content-center">
+            <li class="nav-item d-flex align-items-center">
+              <form action="{{ url_for('backoffice_v3_web.logout') }}"
+                    name="{{ url_for('backoffice_v3_web.logout') | action_to_name }}"
+                    method="post"
+                    class="border-0">
+                {{ csrf_token }}
+                <button type="submit"
+                        class="btn bg-outline-primary bg-gradient my-1 me-1">
+                  <i class="bi bi-box-arrow-right me-sm-1"></i>
+                  <span class="d-sm-inline d-none">Se déconnecter</span>
+                </button>
+              </form>
+            </li>
+            <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
+              <a href="javascript:;"
+                 class="nav-link text-body p-0"
+                 id="iconNavbarSidenav">
+                <div class="sidenav-toggler-inner">
+                  <i class="sidenav-toggler-line"></i>
+                  <i class="sidenav-toggler-line"></i>
+                  <i class="sidenav-toggler-line"></i>
+                </div>
+              </a>
+            </li>
+            <li class="nav-item dropdown pe-2 d-flex align-items-center">
+              <a href="javascript:;"
+                 class="nav-link text-body p-0"
+                 id="dropdownMenuButton"
+                 data-bs-toggle="dropdown"
+                 aria-expanded="false">
+                <i class="fa fa-bell cursor-pointer"></i>
+              </a>
+              <ul class="dropdown-menu  dropdown-menu-end  px-2 py-3 me-sm-n4"
+                  aria-labelledby="dropdownMenuButton">
+                <li class="mb-2">
+                  <a class="dropdown-item border-radius-md"
+                     href="javascript:;">
+                    <div class="d-flex py-1">
+                      <div class="my-auto">
+                        <img src="../assets/img/team-2.jpg"
+                             class="avatar avatar-sm  me-3 ">
+                      </div>
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="text-sm font-weight-normal mb-1">
+                          <span class="font-weight-bold">New message</span> from Laur
+                        </h6>
+                        <p class="text-xs text-secondary mb-0 ">
+                          <i class="fa fa-clock me-1"></i>
+                          13 minutes ago
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li class="mb-2">
+                  <a class="dropdown-item border-radius-md"
+                     href="javascript:;">
+                    <div class="d-flex py-1">
+                      <div class="my-auto">
+                        <img src="../assets/img/small-logos/logo-spotify.svg"
+                             class="avatar avatar-sm bg-gradient-dark  me-3 ">
+                      </div>
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="text-sm font-weight-normal mb-1">
+                          <span class="font-weight-bold">New album</span> by Travis Scott
+                        </h6>
+                        <p class="text-xs text-secondary mb-0 ">
+                          <i class="fa fa-clock me-1"></i>
+                          1 day
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item border-radius-md"
+                     href="javascript:;">
+                    <div class="d-flex py-1">
+                      <div class="avatar avatar-sm bg-gradient-secondary  me-3  my-auto">
+                        <svg width="12px"
+                             height="12px"
+                             viewBox="0 0 43 36"
+                             version="1.1"
+                             xmlns="http://www.w3.org/2000/svg">
+                          <title>credit-card</title>
+                          <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                          <g transform="translate(-2169.000000, -745.000000)" fill="#FFFFFF" fill-rule="nonzero">
+                          <g transform="translate(1716.000000, 291.000000)">
+                          <g transform="translate(453.000000, 454.000000)">
+                          <path class="color-background" d="M43,10.7482083 L43,3.58333333 C43,1.60354167 41.3964583,0 39.4166667,0 L3.58333333,0 C1.60354167,0 0,1.60354167 0,3.58333333 L0,10.7482083 L43,10.7482083 Z" opacity="0.593633743">
+                          </path>
+                          <path class="color-background" d="M0,16.125 L0,32.25 C0,34.2297917 1.60354167,35.8333333 3.58333333,35.8333333 L39.4166667,35.8333333 C41.3964583,35.8333333 43,34.2297917 43,32.25 L43,16.125 L0,16.125 Z M19.7083333,26.875 L7.16666667,26.875 L7.16666667,23.2916667 L19.7083333,23.2916667 L19.7083333,26.875 Z M35.8333333,26.875 L28.6666667,26.875 L28.6666667,23.2916667 L35.8333333,23.2916667 L35.8333333,26.875 Z">
+                          </path>
+                          </g>
+                          </g>
+                          </g>
+                          </g>
+                        </svg>
+                      </div>
+                      <div class="d-flex flex-column justify-content-center">
+                        <h6 class="text-sm font-weight-normal mb-1">Payment successfully completed</h6>
+                        <p class="text-xs text-secondary mb-0 ">
+                          <i class="fa fa-clock me-1"></i>
+                          2 days
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
         </div>
       </div>
+    </nav>
+    <!-- End Navbar -->
+    <div class="container-fluid py-4">
+      {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+          <div class="mb-3">
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show mb-0 px-5 rounded-0"
+                   role="alert">
+                <p class="mx-3 mb-0">
+                  {{ message }}
+                  <button type="button"
+                          class="btn-close"
+                          data-bs-dismiss="alert"
+                          aria-label="Close"></button>
+                </p>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+      {% block page %}{% endblock %}
     </div>
-  </div>
+  </main>
 {% endblock content %}
