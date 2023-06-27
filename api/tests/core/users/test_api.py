@@ -29,6 +29,7 @@ from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as sendinblue_testing
+from pcapi.core.users.email import update as email_update
 from pcapi.core.users.repository import get_user_with_valid_token
 from pcapi.core.users.utils import ALGORITHM_HS_256
 from pcapi.core.users.utils import encode_jwt_payload
@@ -411,9 +412,12 @@ class ChangeUserEmailTest:
         user = users_factories.UserFactory(email=old_email, firstName="UniqueNameForEmailChangeTest")
         users_factories.UserSessionFactory(user=user)
         new_email = "newemail@mail.com"
-
+        expiration_date = email_update.generate_email_change_token_expiration_date()
+        token = email_update.generate_email_change_token(
+            user, new_email, expiration_date, email_update.TokenType.VALIDATION
+        )
         # When
-        users_api.change_beneficiary_user_email(old_email, new_email)
+        email_update.validate_email_update_request(token)
 
         # Then
         reloaded_user = users_models.User.query.get(user.id)
@@ -431,46 +435,47 @@ class ChangeUserEmailTest:
 
     def test_change_user_email_new_email_already_existing(self):
         # Given
+        new_email = "newemail@mail.com"
         user = users_factories.UserFactory(email="oldemail@mail.com", firstName="UniqueNameForEmailChangeTest")
-        other_user = users_factories.UserFactory(email="newemail@mail.com")
+        other_user = users_factories.UserFactory(email=new_email)
+        expiration_date = email_update.generate_email_change_token_expiration_date()
+        token = email_update.generate_email_change_token(
+            user, new_email, expiration_date, email_update.TokenType.VALIDATION
+        )
 
         # When
         with pytest.raises(users_exceptions.EmailExistsError):
-            users_api.change_beneficiary_user_email(user.email, other_user.email)
+            email_update.validate_email_update_request(token)
 
         # Then
         user = users_models.User.query.get(user.id)
         assert user.email == "oldemail@mail.com"
 
         other_user = users_models.User.query.get(other_user.id)
-        assert other_user.email == "newemail@mail.com"
+        assert other_user.email == new_email
 
-    def test_change_email_user_not_existing(self):
-        # When
-        with pytest.raises(users_exceptions.UserDoesNotExist):
-            users_api.change_beneficiary_user_email("oldemail@mail.com", "newemail@mail.com")
-
-        # Then
-        old_user = users_models.User.query.filter_by(email="oldemail@mail.com").first()
-        assert old_user is None
-
-        new_user = users_models.User.query.filter_by(email="newemail@mail.com").first()
-        assert new_user is None
-
-    def test_no_history_on_error(self):
+    def test_change_user_email_expired_token(self, app):
         # Given
         old_email = "oldemail@mail.com"
         user = users_factories.UserFactory(email=old_email, firstName="UniqueNameForEmailChangeTest")
         users_factories.UserSessionFactory(user=user)
         new_email = "newemail@mail.com"
+        expiration_date = email_update.generate_email_change_token_expiration_date()
+        token = email_update.generate_email_change_token(
+            user, new_email, expiration_date, email_update.TokenType.VALIDATION
+        )
+        app.redis_client.expire(
+            email_update.get_token_key(user, email_update.TokenType.VALIDATION),
+            -1,
+        )
 
         # When
-        with pytest.raises(users_exceptions.UserDoesNotExist):
-            users_api.change_beneficiary_user_email(old_email + "_error", new_email)
+        with pytest.raises(users_exceptions.InvalidToken):
+            email_update.validate_email_update_request(token)
 
         # Then
-        reloaded_user = users_models.User.query.get(user.id)
-        assert not reloaded_user.email_history
+        user = users_models.User.query.get(user.id)
+        assert user.email == old_email
 
     def test_change_user_email_twice(self):
         """
@@ -485,21 +490,21 @@ class ChangeUserEmailTest:
 
         user = users_factories.UserFactory(email=old_email)
         users_factories.UserSessionFactory(user=user)
+        expiration_date = email_update.generate_email_change_token_expiration_date()
+        token = email_update.generate_email_change_token(
+            user, new_email, expiration_date, email_update.TokenType.VALIDATION
+        )
 
         # first call, email is updated as expected
-        users_api.change_beneficiary_user_email(old_email, new_email)
-        db.session.commit()
+        email_update.validate_email_update_request(token)
 
         reloaded_user = users_models.User.query.get(user.id)
         assert reloaded_user.email == new_email
-        assert len(reloaded_user.email_history) == 1
 
         # second call, no error, no update
-        users_api.change_beneficiary_user_email(old_email, new_email)
-
+        email_update.validate_email_update_request(token)
         reloaded_user = users_models.User.query.get(user.id)
         assert reloaded_user.email == new_email
-        assert len(reloaded_user.email_history) == 1
 
 
 class CreateBeneficiaryTest:
