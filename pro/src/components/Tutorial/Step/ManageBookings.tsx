@@ -1,14 +1,14 @@
 import React from 'react'
 
 import { CalendarIcon } from 'icons'
-import { ReactComponent as IconDesk } from 'icons/ico-desk.svg'
-import { ReactComponent as IconEuro } from 'icons/ico-euro.svg'
-import { ReactComponent as IconOffers } from 'icons/ico-offers.svg'
+import IconDesk from 'icons/ico-desk.svg'
+import IconEuro from 'icons/ico-euro.svg'
+import IconOffers from 'icons/ico-offers.svg'
 
 import { IStepComponentProps } from '../types'
 
-import { ReactComponent as DownArrow } from './assets/down-arrow.svg'
-import { ReactComponent as UpArrow } from './assets/up-arrow.svg'
+import DownArrow from './assets/down-arrow.svg'
+import UpArrow from './assets/up-arrow.svg'
 import styles from './Step.module.scss'
 
 const ManageBookings = ({ titleId }: IStepComponentProps): JSX.Element => (

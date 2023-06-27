@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
-import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
+import TrashFilledIcon from 'icons/ico-trash-filled.svg'
 
 import StockFormActions, { IStockFormActionsProps } from '../StockFormActions'
 import { IStockFormRowAction } from '../types'

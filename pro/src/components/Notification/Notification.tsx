@@ -9,10 +9,10 @@ import {
   notificationSelector,
 } from 'store/selectors/notificationSelector'
 
-import { ReactComponent as ErrorIcon } from './assets/notification-error-white.svg'
-import { ReactComponent as InfoIcon } from './assets/notification-information.svg'
-import { ReactComponent as SuccessIcon } from './assets/notification-success-white.svg'
-import { ReactComponent as PendingIcon } from './assets/status-pending.svg'
+import ErrorIcon from './assets/notification-error-white.svg'
+import InfoIcon from './assets/notification-information.svg'
+import SuccessIcon from './assets/notification-success-white.svg'
+import PendingIcon from './assets/status-pending.svg'
 import styles from './Notification.module.scss'
 
 const Notification = (): JSX.Element | null => {

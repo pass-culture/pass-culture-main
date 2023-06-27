@@ -1,8 +1,6 @@
 import { useField } from 'formik'
 import React, { useState } from 'react'
 
-import { EyeCloseIcon, EyeOpenIcon } from 'icons'
-
 import TextInput from '../TextInput'
 
 import styles from './PasswordInput.module.scss'
@@ -41,15 +39,7 @@ const PasswordInput = ({
         hideFooter={displayLocalErrors}
         rightButton={() => (
           <button onClick={handleToggleHidden} type="button">
-            {isPasswordHidden ? (
-              <EyeCloseIcon className={styles['password-input-eye-ico']}>
-                Afficher le mot de passe
-              </EyeCloseIcon>
-            ) : (
-              <EyeOpenIcon className={styles['password-input-eye-ico']}>
-                Cacher le mot de passe
-              </EyeOpenIcon>
-            )}
+            h{' '}
           </button>
         )}
       />

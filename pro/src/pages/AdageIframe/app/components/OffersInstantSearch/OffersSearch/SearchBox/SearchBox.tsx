@@ -2,7 +2,7 @@ import './SearchBox.scss'
 import React, { useCallback, useContext } from 'react'
 import type { SearchBoxProvided } from 'react-instantsearch-core'
 
-import { ReactComponent as SearchIco } from 'icons/search-ico.svg'
+import SearchIco from 'icons/search-ico.svg'
 import { AlgoliaQueryContext } from 'pages/AdageIframe/app/providers'
 
 const SearchBoxComponent = ({

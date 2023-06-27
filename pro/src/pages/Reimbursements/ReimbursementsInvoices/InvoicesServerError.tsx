@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ReactComponent as UnavailablePageSVG } from 'icons/ico-unavailable-page.svg'
+import UnavailablePageSVG from 'icons/ico-unavailable-page.svg'
 
 const InvoicesServerError = (): JSX.Element => {
   return (

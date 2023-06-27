@@ -4,7 +4,7 @@ import React from 'react'
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as PlusCircleIcon } from 'icons/ico-plus-circle.svg'
+import PlusCircleIcon from 'icons/ico-plus-circle.svg'
 import { ButtonLink } from 'ui-kit'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 

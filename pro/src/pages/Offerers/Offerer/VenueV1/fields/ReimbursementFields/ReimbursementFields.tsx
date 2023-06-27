@@ -4,7 +4,7 @@ import { GetOffererResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import ReimbursementPoint from 'components/VenueForm/ReimbursementPoint/ReimbursementPoint'
 import { IVenue } from 'core/Venue'
-import { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site-filled.svg'
+import ExternalSiteIcon from 'icons/ico-external-site-filled.svg'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
 
 import PricingPoint from '../PricingPoint'

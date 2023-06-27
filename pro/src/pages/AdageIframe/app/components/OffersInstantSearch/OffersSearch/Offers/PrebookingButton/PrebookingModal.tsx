@@ -1,7 +1,7 @@
 import React from 'react'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog/ConfirmDialog'
-import { ReactComponent as PasscultureIcon } from 'icons/ico-passculture.svg'
+import PasscultureIcon from 'icons/ico-passculture.svg'
 
 interface IPrebookingModal {
   closeModal: () => void

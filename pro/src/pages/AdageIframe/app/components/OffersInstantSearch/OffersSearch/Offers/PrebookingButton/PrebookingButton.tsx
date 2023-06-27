@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react'
 
 import { OfferStockResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { ReactComponent as HourGlassIcon } from 'icons/ico-hourglass.svg'
+import HourGlassIcon from 'icons/ico-hourglass.svg'
 import {
   Notification,
   NotificationComponent,

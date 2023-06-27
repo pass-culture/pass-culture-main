@@ -10,7 +10,7 @@ import { createOfferFromBookableOffer } from 'core/OfferEducational/utils/create
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { CopyIcon } from 'icons'
-import { ReactComponent as PlusIcon } from 'icons/ico-plus.svg'
+import PlusIcon from 'icons/ico-plus.svg'
 import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
 
 import DuplicateOfferDialog from './DuplicateOfferDialog'

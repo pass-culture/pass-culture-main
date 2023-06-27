@@ -2,7 +2,7 @@ import React from 'react'
 
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as ArrowIcon } from 'icons/ico-arrow-right.svg'
+import ArrowIcon from 'icons/ico-arrow-right.svg'
 import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
 import {
   FORMAT_ISO_DATE_ONLY,

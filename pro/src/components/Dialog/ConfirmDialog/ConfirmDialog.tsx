@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ReactComponent as AlertSvg } from 'icons/ico-alert-grey.svg'
+import AlertSvg from 'icons/ico-alert-grey.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

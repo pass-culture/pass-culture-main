@@ -5,7 +5,7 @@ import type { Row } from 'react-table'
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as DropdownIcon } from 'icons/ico-arrow-up-b.svg'
+import DropdownIcon from 'icons/ico-arrow-up-b.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

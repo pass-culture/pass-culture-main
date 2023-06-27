@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 import { useModal } from 'hooks/useModal'
-import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
+import TrashFilledIcon from 'icons/ico-trash-filled.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

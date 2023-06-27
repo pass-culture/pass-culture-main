@@ -1,7 +1,7 @@
 import React from 'react'
 
 import Dialog from 'components/Dialog/Dialog'
-import { ReactComponent as MailOutlineIcon } from 'icons/ico-mail-outline.svg'
+import MailOutlineIcon from 'icons/ico-mail-outline.svg'
 import { Button } from 'ui-kit'
 
 import styles from './ContactDialog.module.scss'

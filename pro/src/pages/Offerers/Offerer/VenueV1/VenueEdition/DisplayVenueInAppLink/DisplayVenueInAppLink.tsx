@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react'
 
 import { ButtonLinkNewWindow } from 'components/ButtonLinkNewWindow'
-import { ReactComponent as LinkIcon } from 'icons/ico-external-site-red-filled.svg'
+import LinkIcon from 'icons/ico-external-site-red-filled.svg'
 import { WEBAPP_URL } from 'utils/config'
 
 import styles from './DisplayVenueInAppLink.module.scss'

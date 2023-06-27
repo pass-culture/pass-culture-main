@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ReactComponent as DuoSvg } from 'icons/ico-duo.svg'
+import DuoSvg from 'icons/ico-duo.svg'
 
 import styles from './BookingIsDuoCell.module.scss'
 

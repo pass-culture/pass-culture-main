@@ -1,7 +1,7 @@
 import './Spinner.scss'
 import React, { useEffect, useState } from 'react'
 
-import { ReactComponent as LogoImage } from 'icons/ico-passculture.svg'
+import LogoImage from 'icons/ico-passculture.svg'
 
 export const Spinner = ({
   message = 'Chargement en cours',

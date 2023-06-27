@@ -1,7 +1,7 @@
 import React from 'react'
 
 import Dialog from 'components/Dialog/Dialog/Dialog'
-import { ReactComponent as IcoWarningGrey } from 'icons/ico-warning-grey.svg'
+import IcoWarningGrey from 'icons/ico-warning-grey.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

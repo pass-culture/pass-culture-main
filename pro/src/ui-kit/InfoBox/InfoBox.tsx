@@ -1,9 +1,9 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { ReactComponent as AttentionIcon } from 'icons/ico-attention.svg'
-import { ReactComponent as BulbIcon } from 'icons/ico-bulb.svg'
-import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
+import AttentionIcon from 'icons/ico-attention.svg'
+import BulbIcon from 'icons/ico-bulb.svg'
+import LinkIcon from 'icons/ico-external-site-filled.svg'
 import { ButtonLink } from 'ui-kit/Button'
 import type { LinkProps } from 'ui-kit/Button/ButtonLink'
 

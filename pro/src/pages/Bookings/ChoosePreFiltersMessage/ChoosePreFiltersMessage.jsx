@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ReactComponent as MessageIconSvg } from './assets/message-icon.svg'
+import MessageIconSvg from './assets/message-icon.svg'
 
 const UNBREAKABLE_SPACE = '\u00A0'
 

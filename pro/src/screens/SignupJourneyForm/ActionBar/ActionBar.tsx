@@ -6,8 +6,8 @@ import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyBreadcrumb/cons
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { logEventType } from 'context/analyticsContext'
 import { Events } from 'core/FirebaseEvents/constants'
-import { ReactComponent as IcoMiniArrowLeft } from 'icons/ico-mini-arrow-left.svg'
-import { ReactComponent as IcoMiniArrowRight } from 'icons/ico-mini-arrow-right.svg'
+import IcoMiniArrowLeft from 'icons/ico-mini-arrow-left.svg'
+import IcoMiniArrowRight from 'icons/ico-mini-arrow-right.svg'
 import { Button, SubmitButton } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 

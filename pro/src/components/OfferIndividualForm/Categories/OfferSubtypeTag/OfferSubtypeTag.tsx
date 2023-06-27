@@ -2,10 +2,10 @@ import cn from 'classnames'
 import React from 'react'
 
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
-import { ReactComponent as DateIcon } from 'icons/ico-date.svg'
-import { ReactComponent as ThingIcon } from 'icons/ico-thing.svg'
-import { ReactComponent as VirtualEventIcon } from 'icons/ico-virtual-event.svg'
-import { ReactComponent as VirtualThingIcon } from 'icons/ico-virtual-thing.svg'
+import DateIcon from 'icons/ico-date.svg'
+import ThingIcon from 'icons/ico-thing.svg'
+import VirtualEventIcon from 'icons/ico-virtual-event.svg'
+import VirtualThingIcon from 'icons/ico-virtual-thing.svg'
 
 import style from './OfferSubtypeTag.module.scss'
 

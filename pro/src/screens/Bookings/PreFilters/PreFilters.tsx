@@ -11,7 +11,7 @@ import {
 } from 'core/Bookings'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as ResetIcon } from 'icons/reset.svg'
+import ResetIcon from 'icons/reset.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

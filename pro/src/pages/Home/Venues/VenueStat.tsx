@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ReactComponent as LoaderSvg } from 'icons/ico-passculture.svg'
+import LoaderSvg from 'icons/ico-passculture.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

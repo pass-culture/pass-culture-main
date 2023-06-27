@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useState } from 'react'
 
 import DialogBox from 'components/DialogBox'
-import { ReactComponent as AddActivationCodeIcon } from 'icons/add-activation-code-light.svg'
+import AddActivationCodeIcon from 'icons/add-activation-code-light.svg'
 
 import {
   checkAndParseUploadedFile,

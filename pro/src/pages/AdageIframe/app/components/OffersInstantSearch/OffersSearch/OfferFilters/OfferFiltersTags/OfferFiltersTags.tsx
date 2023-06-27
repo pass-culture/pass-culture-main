@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 
 import { VenueResponse } from 'apiClient/adage'
 import './OfferFiltersTags.scss'
-import { ReactComponent as ResetIcon } from 'icons/reset.svg'
+import ResetIcon from 'icons/reset.svg'
 import {
   AlgoliaQueryContext,
   FiltersContext,

@@ -6,8 +6,8 @@ import {
   NOTIFICATION_SHOW_DURATION,
   NOTIFICATION_TRANSITION_DURATION,
 } from './_constants'
-import { ReactComponent as ErrorIcon } from './assets/notification-error-white.svg'
-import { ReactComponent as SuccessIcon } from './assets/notification-success-white.svg'
+import ErrorIcon from './assets/notification-error-white.svg'
+import SuccessIcon from './assets/notification-success-white.svg'
 
 export enum NotificationType {
   success = 'success',

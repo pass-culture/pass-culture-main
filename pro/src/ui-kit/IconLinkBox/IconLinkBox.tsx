@@ -33,7 +33,6 @@ const IconLinkBox = ({
   return (
     <div className={styles['icon-link-box']}>
       <div className={styles['icon-link-box-header']}>
-        <IconHeader className={styles['icon-link-box-header-icon']} />
         <h2 className={styles['icon-link-box-title']}>{title}</h2>
       </div>
       <div className={styles['icon-link-box-footer']}>
@@ -45,7 +44,6 @@ const IconLinkBox = ({
             isExternal: false,
           }}
           onClick={onClick}
-          Icon={IconLink}
           className={styles['icon-link-box-footer-link']}
         >
           {linkTitle}

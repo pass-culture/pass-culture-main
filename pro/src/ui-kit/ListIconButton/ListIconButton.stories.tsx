@@ -1,7 +1,7 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import { ReactComponent as TrashIcon } from 'icons/ico-trash-filled.svg'
+import TrashIcon from 'icons/ico-trash-filled.svg'
 
 import ListIconButton, { IListIconButtonProps } from './ListIconButton'
 export default {

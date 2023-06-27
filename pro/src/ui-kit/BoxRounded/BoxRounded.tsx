@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { ReactComponent as EditIcon } from 'icons/ico-pen-black.svg'
+import EditIcon from 'icons/ico-pen-black.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

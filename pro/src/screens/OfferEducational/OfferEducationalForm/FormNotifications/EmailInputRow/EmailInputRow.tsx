@@ -1,7 +1,7 @@
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
+import TrashFilledIcon from 'icons/ico-trash-filled.svg'
 import { NOTIFICATIONS_EMAIL_LABEL } from 'screens/OfferEducational/constants/labels'
 import { Button, TextInput } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'

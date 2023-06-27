@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ReactComponent as ResetIcon } from 'icons/reset.svg'
+import ResetIcon from 'icons/reset.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { pluralize } from 'utils/pluralize'

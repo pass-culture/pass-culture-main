@@ -1,7 +1,4 @@
-import { removeWhitespaces } from 'utils/string'
-
-export const unhumanizeSiren = siren =>
-  removeWhitespaces(siren.replace(/[^[0-9]/g, '')).substring(0, 9)
+export const unhumanizeSiren = siren => siren
 
 export const humanizeSiren = value => {
   const siren = value && unhumanizeSiren(value)

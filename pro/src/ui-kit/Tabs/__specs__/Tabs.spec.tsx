@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
 
-import { ReactComponent as LibraryIcon } from 'icons/library.svg'
-import { ReactComponent as UserIcon } from 'icons/user.svg'
+import LibraryIcon from 'icons/library.svg'
+import UserIcon from 'icons/user.svg'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Tabs from '../Tabs'

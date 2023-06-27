@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { ReactComponent as CircleArrowIcon } from 'icons/ico-circle-arrow-left.svg'
+import CircleArrowIcon from 'icons/ico-circle-arrow-left.svg'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'

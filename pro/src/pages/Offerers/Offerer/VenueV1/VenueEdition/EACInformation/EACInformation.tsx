@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React from 'react'
 
 import { GetVenueResponseModel } from 'apiClient/v1'
-import { ReactComponent as EditIcon } from 'icons/ico-pen.svg'
+import EditIcon from 'icons/ico-pen.svg'
 import { Banner, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

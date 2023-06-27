@@ -1,7 +1,7 @@
 import React from 'react'
 
-import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
-import { ReactComponent as StatusValidatedIcon } from 'icons/ico-status-validated.svg'
+import StatusInactiveIcon from 'icons/ico-status-inactive.svg'
+import StatusValidatedIcon from 'icons/ico-status-validated.svg'
 
 import styles from './VenueProviderStatus.module.scss'
 

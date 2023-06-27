@@ -3,7 +3,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import Stepper from 'components/Stepper'
-import { ReactComponent as BreadcumbSeparator } from 'icons/ico-breadcrumb-arrow-right.svg'
+import BreadcumbSeparator from 'icons/ico-breadcrumb-arrow-right.svg'
 
 import styles from './Breadcrumb.module.scss'
 import type { Step } from './types'

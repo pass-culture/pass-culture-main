@@ -43,9 +43,9 @@ module.exports = {
   staticDirs: ['../src/stories/assets', '../public'],
   plugins: [
     new webpack.DefinePlugin({
-      'process.env': {},
-      'process.env.NODE_ENV': JSON.stringify('development'),
-      'process.env.FLAG': JSON.stringify('false'),
+      'import.meta.env': {},
+      'import.meta.env.NODE_ENV': JSON.stringify('development'),
+      'import.meta.env.FLAG': JSON.stringify('false'),
     }),
   ],
   webpackFinal: config => {

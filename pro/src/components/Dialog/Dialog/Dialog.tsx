@@ -1,7 +1,7 @@
 import React, { useId } from 'react'
 
 import DialogBox from 'components/DialogBox/DialogBox'
-import { ReactComponent as AlertSvg } from 'icons/ico-alert-grey.svg'
+import AlertSvg from 'icons/ico-alert-grey.svg'
 
 import styles from './Dialog.module.scss'
 

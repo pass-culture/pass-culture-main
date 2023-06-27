@@ -1,8 +1,8 @@
 import cn from 'classnames'
 import React, { FunctionComponent, SVGProps } from 'react'
 
-import { ReactComponent as RadioOffIcon } from 'icons/ico-radio-off.svg'
-import { ReactComponent as RadioOnIcon } from 'icons/ico-radio-on.svg'
+import RadioOffIcon from 'icons/ico-radio-off.svg'
+import RadioOnIcon from 'icons/ico-radio-on.svg'
 
 import styles from './RadioButtonWithImage.module.scss'
 
@@ -25,7 +25,6 @@ export interface IRadioButtonWithImage {
 const RadioButtonWithImage = ({
   name,
   isChecked,
-  Icon,
   label,
   description,
   onChange,
@@ -48,17 +47,6 @@ const RadioButtonWithImage = ({
       className
     )}
   >
-    {isChecked ? (
-      <RadioOnIcon className={styles['button-radio-on']} />
-    ) : (
-      <RadioOffIcon className={styles['button-radio-off']} />
-    )}
-    <Icon
-      className={cn(
-        styles['button-icon'],
-        transparent && styles['button-icon-transparent']
-      )}
-    />
     <input
       checked={isChecked}
       className={styles['button-radio']}

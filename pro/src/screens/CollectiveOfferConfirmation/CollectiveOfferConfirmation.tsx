@@ -1,8 +1,8 @@
 import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
-import { ReactComponent as PendingIcon } from 'icons/pending.svg'
-import { ReactComponent as ValidateIcon } from 'icons/validate.svg'
+import PendingIcon from 'icons/pending.svg'
+import ValidateIcon from 'icons/validate.svg'
 import { Banner, ButtonLink, Title } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

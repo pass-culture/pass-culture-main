@@ -1,7 +1,7 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import { ReactComponent as Icon } from 'icons/visual-disability.svg'
+import Icon from 'icons/visual-disability.svg'
 
 import BaseCheckbox, { IBaseCheckboxProps } from './BaseCheckbox'
 

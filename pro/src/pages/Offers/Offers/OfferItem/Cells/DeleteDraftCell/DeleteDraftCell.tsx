@@ -9,8 +9,8 @@ import {
 import { Offer } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
-import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
+import TrashFilledIcon from 'icons/ico-trash-filled.svg'
+import TrashIcon from 'icons/ico-trash.svg'
 import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
 
 import { deleteDraftOffersAdapter } from '../../../adapters/deleteDraftOffers'

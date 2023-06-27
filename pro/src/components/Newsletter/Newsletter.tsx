@@ -1,16 +1,13 @@
 import React from 'react'
 
-import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import { ReactComponent as NewsletterImg } from './assets/newsletter.svg'
 import styles from './Newsletter.module.scss'
 
 const Newsletter = () => {
   return (
     <div className={styles['newsletter-container']}>
-      <NewsletterImg className={styles['newsletter-img']} />
       <div className={styles['newsletter-link']}>
         <ButtonLink
           variant={ButtonVariant.TERNARY}
@@ -19,7 +16,6 @@ const Newsletter = () => {
             isExternal: true,
             target: '_blank',
           }}
-          Icon={LinkIcon}
         >
           Inscrivez-vous à notre newsletter pour recevoir les actualités du pass
           Culture

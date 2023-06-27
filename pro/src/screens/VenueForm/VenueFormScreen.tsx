@@ -26,7 +26,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import { MailOutlineIcon } from 'icons'
-import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
+import AddOfferSvg from 'icons/ico-plus.svg'
 import { Button, Title } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

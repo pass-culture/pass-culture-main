@@ -1,6 +1,6 @@
 import React, { FunctionComponent, SVGProps } from 'react'
 
-import { ReactComponent as ExternalSiteIcon } from 'icons/ico-external-site-filled.svg'
+import ExternalSiteIcon from 'icons/ico-external-site-filled.svg'
 import oldStyles from 'ui-kit/Banners/BannerLayout/BannerLayout.module.scss'
 import newStyles from 'ui-kit/Banners/BannerLayout/NewBannerLayout.module.scss'
 import { ButtonLink } from 'ui-kit/Button'

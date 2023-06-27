@@ -4,7 +4,7 @@ import cn from 'classnames'
 import React from 'react'
 import '@reach/menu-button/styles.css'
 
-import { ReactComponent as OtherIcon } from 'icons/ico-other.svg'
+import OtherIcon from 'icons/ico-other.svg'
 
 import styles from './StockFormActions.module.scss'
 import { IStockFormRowAction } from './types'

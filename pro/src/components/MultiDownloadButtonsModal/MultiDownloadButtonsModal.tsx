@@ -4,10 +4,10 @@ import { TPreFilters } from 'core/Bookings'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
-import { ReactComponent as DownloadSvg } from 'icons/ico-download.svg'
+import DownloadSvg from 'icons/ico-download.svg'
 
-import { ReactComponent as DropDownIcon } from './assets/dropdown-disclosure-down-w.svg'
-import { ReactComponent as DropUpIcon } from './assets/dropdown-disclosure-up-w.svg'
+import DropDownIcon from './assets/dropdown-disclosure-down-w.svg'
+import DropUpIcon from './assets/dropdown-disclosure-up-w.svg'
 import style from './MultiDownloadButtonsModal.module.scss'
 
 interface MultiDownloadButtonsModalType {

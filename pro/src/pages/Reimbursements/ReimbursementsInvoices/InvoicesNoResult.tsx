@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction } from 'react'
 
-import { ReactComponent as SearchSvg } from 'icons/ico-search-gray.svg'
+import SearchSvg from 'icons/ico-search-gray.svg'
 
 import { TFiltersType } from './types'
 

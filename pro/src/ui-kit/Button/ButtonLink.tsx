@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React, { MouseEventHandler, useId } from 'react'
 import { Link } from 'react-router-dom'
 
-import { ReactComponent as IcoArrowRight } from 'icons/ico-mini-arrow-right.svg'
+import IcoArrowRight from 'icons/ico-mini-arrow-right.svg'
 import Tooltip from 'ui-kit/Tooltip'
 
 import styles from './Button.module.scss'
@@ -28,7 +28,6 @@ interface IButtonProps extends SharedButtonProps {
 const ButtonLink = ({
   className,
   children,
-  Icon,
   isDisabled = false,
   onClick,
   variant = ButtonVariant.TERNARY,
@@ -46,12 +45,6 @@ const ButtonLink = ({
 
   let body = (
     <>
-      {
-        /* istanbul ignore next: graphic variation */
-        Icon && iconPosition !== IconPositionEnum.RIGHT && (
-          <Icon className={styles['button-icon']} />
-        )
-      }
       {hasTooltip ? (
         <div className={styles['visually-hidden']}>{children}</div>
       ) : /* istanbul ignore next: graphic variation */ variant ===
@@ -60,20 +53,6 @@ const ButtonLink = ({
       ) : (
         children
       )}
-      {
-        /* istanbul ignore next: graphic variation */
-        Icon && iconPosition === IconPositionEnum.RIGHT && (
-          <Icon className={styles['button-icon']} />
-        )
-      }
-      {
-        /* istanbul ignore next: graphic variation */ variant ===
-          ButtonVariant.BOX && (
-          <IcoArrowRight
-            className={cn(styles['button-icon'], styles['button-icon-arrow'])}
-          />
-        )
-      }
     </>
   )
 

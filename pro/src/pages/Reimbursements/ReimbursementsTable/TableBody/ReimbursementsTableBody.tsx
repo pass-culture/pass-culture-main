@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { InvoiceResponseModel } from 'apiClient/v1'
-import { ReactComponent as DownloadSvg } from 'icons/ico-download.svg'
+import DownloadSvg from 'icons/ico-download.svg'
 
 import styles from './ReimbursementsTableBody.module.scss'
 

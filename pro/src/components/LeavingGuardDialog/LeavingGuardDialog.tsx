@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ReactComponent as InfoIcon } from 'icons/info.svg'
+import InfoIcon from 'icons/info.svg'
 import { Title } from 'ui-kit'
 
 import styles from './LeavingGuardDialog.module.scss'

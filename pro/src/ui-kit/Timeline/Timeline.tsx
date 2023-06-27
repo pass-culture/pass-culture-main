@@ -2,12 +2,12 @@ import cn from 'classnames'
 import React, { ReactNode } from 'react'
 
 import { InfoWrongIcon } from 'icons'
-import { ReactComponent as ErrorSvg } from 'icons/ico-clear.svg'
-import { ReactComponent as SuccessSvg } from 'icons/ico-notification-success.svg'
+import ErrorSvg from 'icons/ico-clear.svg'
+import SuccessSvg from 'icons/ico-notification-success.svg'
 
-import { ReactComponent as DisabledSvg } from './disabled.svg'
+import DisabledSvg from './disabled.svg'
 import styles from './Timeline.module.scss'
-import { ReactComponent as WaitingSvg } from './waiting.svg'
+import WaitingSvg from './waiting.svg'
 
 export enum TimelineStepType {
   SUCCESS = 'SUCCESS',

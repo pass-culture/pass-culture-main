@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { ReactComponent as SuccessIcon } from 'icons/ico-valid.svg'
+import SuccessIcon from 'icons/ico-valid.svg'
 
 import styles from './FieldSuccess.module.scss'
 

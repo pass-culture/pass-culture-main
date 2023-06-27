@@ -14,7 +14,7 @@ import {
 import { Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import { hasSearchFilters } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
-import { ReactComponent as ResetIcon } from 'icons/reset.svg'
+import ResetIcon from 'icons/reset.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import PeriodSelector from 'ui-kit/form_raw/PeriodSelector/PeriodSelector'

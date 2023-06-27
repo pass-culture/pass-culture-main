@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React, { ChangeEvent } from 'react'
 
-import { ReactComponent as Down } from 'icons/ico-mini-arrow-right.svg'
+import Down from 'icons/ico-mini-arrow-right.svg'
 
 import { PhoneCodeSelectOption } from '../types'
 

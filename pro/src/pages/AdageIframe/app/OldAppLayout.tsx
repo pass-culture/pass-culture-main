@@ -3,8 +3,8 @@ import './OldAppLayout.scss'
 import * as React from 'react'
 
 import { VenueResponse } from 'apiClient/adage'
-import { ReactComponent as Download } from 'icons/ico-other-download.svg'
-import { ReactComponent as Logo } from 'icons/logo-pass-culture-dark.svg'
+import Download from 'icons/ico-other-download.svg'
+import Logo from 'icons/logo-pass-culture-dark.svg'
 
 import { OffersInstantSearch } from './components/OffersInstantSearch/OffersInstantSearch'
 

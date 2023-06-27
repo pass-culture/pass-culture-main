@@ -20,7 +20,7 @@ import CollectiveOfferStockSection from './components/CollectiveOfferStockSectio
 import CollectiveOfferTypeSection from './components/CollectiveOfferTypeSection'
 import CollectiveOfferVenueSection from './components/CollectiveOfferVenueSection'
 import CollectiveOfferVisibilitySection from './components/CollectiveOfferVisibilitySection'
-export { ReactComponent as LogoPassCultureDarkIcon } from 'icons/logo-pass-culture-dark.svg'
+export { default as LogoPassCultureDarkIcon } from 'icons/logo-pass-culture-dark.svg'
 
 export interface ICollectiveOfferSummaryProps {
   offer: CollectiveOfferTemplate | CollectiveOffer

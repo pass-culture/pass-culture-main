@@ -1,6 +1,6 @@
 import React, { RefObject } from 'react'
 
-import { ReactComponent as CloseDialogIcon } from 'icons/close-dialog.svg'
+import CloseDialogIcon from 'icons/close-dialog.svg'
 
 import styles from './DialogBox.module.scss'
 

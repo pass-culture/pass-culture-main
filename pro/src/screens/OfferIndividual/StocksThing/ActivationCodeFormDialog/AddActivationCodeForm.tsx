@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ReactComponent as DownloadIcon } from 'icons/ico-other-download.svg'
+import DownloadIcon from 'icons/ico-other-download.svg'
 import { ButtonLink } from 'ui-kit'
 import { BaseFileInput } from 'ui-kit/form/shared'
 
@@ -49,7 +49,7 @@ const AddActivationCodeForm = ({
           link={{
             isExternal: true,
             to:
-              process.env.PUBLIC_URL +
+              import.meta.env.PUBLIC_URL +
               '/csvtemplates/CodesActivations-Gabarit.csv',
             target: '_blank',
             rel: 'noopener noreferrer',

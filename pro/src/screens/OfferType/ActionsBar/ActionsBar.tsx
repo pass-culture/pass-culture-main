@@ -4,7 +4,7 @@ import ActionsBarSticky from 'components/ActionsBarSticky'
 import { Events } from 'core/FirebaseEvents/constants'
 import { computeOffersUrl } from 'core/Offers/utils'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as IcoMiniArrowRight } from 'icons/ico-mini-arrow-right.svg'
+import IcoMiniArrowRight from 'icons/ico-mini-arrow-right.svg'
 import { ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 

@@ -3,7 +3,7 @@ import React from 'react'
 
 import { SummaryLayout } from 'components/SummaryLayout'
 import { CollectiveOfferTemplate, CollectiveOffer } from 'core/OfferEducational'
-import { ReactComponent as OfferImagePlaceholderIcon } from 'icons/ico-placeholder-offer-image.svg'
+import OfferImagePlaceholderIcon from 'icons/ico-placeholder-offer-image.svg'
 
 import styles from './CollectiveOfferImagePreview.module.scss'
 

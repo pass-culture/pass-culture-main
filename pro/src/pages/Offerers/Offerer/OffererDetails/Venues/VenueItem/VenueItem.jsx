@@ -9,8 +9,8 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as PlusCircleIcon } from 'icons/ico-plus-circle.svg'
-import { ReactComponent as IcoVenue } from 'icons/ico-venue.svg'
+import PlusCircleIcon from 'icons/ico-plus-circle.svg'
+import IcoVenue from 'icons/ico-venue.svg'
 import { ButtonLink } from 'ui-kit'
 
 import styles from './VenueItem.module.scss'

@@ -1,7 +1,7 @@
 import cx from 'classnames'
 import React from 'react'
 
-import { ReactComponent as DuoSvg } from 'icons/ico-duo.svg'
+import DuoSvg from 'icons/ico-duo.svg'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
 import { IBooking } from '..'

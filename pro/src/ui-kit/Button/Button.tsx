@@ -3,8 +3,8 @@
 import cn from 'classnames'
 import React, { useId } from 'react'
 
-import { ReactComponent as IcoArrowRight } from 'icons/ico-mini-arrow-right.svg'
-import { ReactComponent as SpinnerIcon } from 'icons/loader.svg'
+import IcoArrowRight from 'icons/ico-mini-arrow-right.svg'
+import SpinnerIcon from 'icons/loader.svg'
 import Tooltip from 'ui-kit/Tooltip'
 
 import styles from './Button.module.scss'
@@ -23,7 +23,6 @@ interface IButtonProps
 const Button = ({
   className,
   children,
-  Icon,
   iconPosition = IconPositionEnum.LEFT,
   variant = ButtonVariant.PRIMARY,
   type = 'button',
@@ -50,13 +49,6 @@ const Button = ({
       {...(hasTooltip ? { 'aria-describedby': tooltipId } : {})}
       {...buttonAttrs}
     >
-      {Icon && iconPosition !== IconPositionEnum.RIGHT && (
-        <Icon
-          className={cn(styles['button-icon'], {
-            [styles['has-tooltip']]: hasTooltip,
-          })}
-        />
-      )}
       {hasTooltip ? (
         <div className={styles['visually-hidden']}>
           {isLoading ? (
@@ -83,14 +75,6 @@ const Button = ({
         </div>
       ) : (
         children
-      )}
-      {Icon && iconPosition === IconPositionEnum.RIGHT && (
-        <Icon className={styles['button-icon']} />
-      )}
-      {variant === ButtonVariant.BOX && (
-        <IcoArrowRight
-          className={cn(styles['button-icon'], styles['button-icon-arrow'])}
-        />
       )}
     </button>
   )

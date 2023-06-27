@@ -3,7 +3,7 @@ import React, { ComponentProps } from 'react'
 
 import { SelectOption } from 'custom_types/form'
 
-import { ReactComponent as Down } from './assets/down.svg'
+import Down from './assets/down.svg'
 import styles from './Select.module.scss'
 
 export interface SelectInputProps extends ComponentProps<'select'> {

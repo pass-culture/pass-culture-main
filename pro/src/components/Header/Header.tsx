@@ -4,14 +4,6 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
-import { CalendarIcon } from 'icons'
-import { ReactComponent as IconDesk } from 'icons/ico-desk.svg'
-import { ReactComponent as IconEuro } from 'icons/ico-euro.svg'
-import { ReactComponent as IconHome } from 'icons/ico-home.svg'
-import { ReactComponent as IconOffers } from 'icons/ico-offers.svg'
-import { ReactComponent as IconSignout } from 'icons/ico-signout.svg'
-import { ReactComponent as StatsIcon } from 'icons/ico-stats.svg'
-import Logo from 'ui-kit/Logo/Logo'
 
 const Header = () => {
   const navigate = useNavigate()
@@ -26,14 +18,7 @@ const Header = () => {
   return (
     <header className="menu-v2" id="header-navigation">
       <nav>
-        <div className="nav-brand">
-          <Logo
-            className="nav-item"
-            onClick={() => {
-              logEvent?.(Events.CLICKED_PRO, { from: location.pathname })
-            }}
-          />
-        </div>
+        <div className="nav-brand">logo </div>
 
         <div className="nav-menu">
           <NavLink
@@ -44,7 +29,6 @@ const Header = () => {
             role="menuitem"
             to={'/accueil'}
           >
-            <IconHome aria-hidden className="nav-item-icon" />
             Accueil
           </NavLink>
 
@@ -56,7 +40,6 @@ const Header = () => {
             role="menuitem"
             to="/guichet"
           >
-            <IconDesk aria-hidden className="nav-item-icon" />
             Guichet
           </NavLink>
 
@@ -68,7 +51,6 @@ const Header = () => {
             role="menuitem"
             to="/offres"
           >
-            <IconOffers aria-hidden className="nav-item-icon" />
             Offres
           </NavLink>
 
@@ -80,7 +62,6 @@ const Header = () => {
             role="menuitem"
             to="/reservations"
           >
-            <CalendarIcon aria-hidden className="nav-item-icon" />
             Réservations
           </NavLink>
 
@@ -94,7 +75,6 @@ const Header = () => {
             role="menuitem"
             to="/remboursements/justificatifs"
           >
-            <IconEuro aria-hidden className="nav-item-icon" />
             Remboursements
           </NavLink>
 
@@ -109,7 +89,6 @@ const Header = () => {
               role="menuitem"
               to="/statistiques"
             >
-              <StatsIcon aria-hidden className="nav-item-icon" />
               Statistiques
             </NavLink>
           )}
@@ -122,7 +101,7 @@ const Header = () => {
             role="menuitem"
             type="button"
           >
-            <IconSignout className="nav-item-icon signout-icon" />
+            signout
           </button>
         </div>
       </nav>

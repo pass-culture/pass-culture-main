@@ -3,7 +3,7 @@ import React from 'react'
 
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 
-import { ReactComponent as PlusIcon } from './assets/plus-icon.svg'
+import PlusIcon from './assets/plus-icon.svg'
 import style from './ButtonImageAdd.module.scss'
 
 export interface IButtonImageAddProps {

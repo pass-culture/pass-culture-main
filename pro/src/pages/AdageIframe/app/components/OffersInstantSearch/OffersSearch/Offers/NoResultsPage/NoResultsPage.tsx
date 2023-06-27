@@ -2,8 +2,8 @@ import './NoResultsPage.scss'
 
 import React, { useContext } from 'react'
 
-import { ReactComponent as SearchGrayIcon } from 'icons/ico-search-gray.svg'
-import { ReactComponent as ResetIcon } from 'icons/reset.svg'
+import SearchGrayIcon from 'icons/ico-search-gray.svg'
+import ResetIcon from 'icons/reset.svg'
 import {
   AlgoliaQueryContext,
   FacetFiltersContext,

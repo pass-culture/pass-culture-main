@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react'
 import { api } from 'apiClient/api'
 import { useModal } from 'hooks/useModal'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
+import TrashFilledIcon from 'icons/ico-trash-filled.svg'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Button } from 'ui-kit/index'
 

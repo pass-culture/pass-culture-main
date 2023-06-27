@@ -1,9 +1,9 @@
 import React, { FunctionComponent, useCallback, useEffect, useRef } from 'react'
 
 import { NBSP } from 'core/shared'
-import { ReactComponent as ArrowDown } from 'icons/arrow-down.svg'
-import { ReactComponent as ArrowUp } from 'icons/arrow-up.svg'
-import { ReactComponent as ExternalSite } from 'icons/external-site.svg'
+import ArrowDown from 'icons/arrow-down.svg'
+import ArrowUp from 'icons/arrow-up.svg'
+import ExternalSite from 'icons/external-site.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 

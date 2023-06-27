@@ -1,8 +1,8 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import { ReactComponent as LibraryIcon } from 'icons/library.svg'
-import { ReactComponent as UserIcon } from 'icons/user.svg'
+import LibraryIcon from 'icons/library.svg'
+import UserIcon from 'icons/user.svg'
 import { withRouterDecorator } from 'stories/decorators/withRouter'
 
 import Tabs, { IFilterTabsProps } from './Tabs'

@@ -3,7 +3,7 @@ import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { IOfferEducationalFormValues } from 'core/OfferEducational'
-import { ReactComponent as PlusCircleIcon } from 'icons/ico-plus-circle.svg'
+import PlusCircleIcon from 'icons/ico-plus-circle.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 

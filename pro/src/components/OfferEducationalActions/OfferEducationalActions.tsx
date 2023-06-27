@@ -23,8 +23,8 @@ import {
   toDateStrippedOfTimezone,
 } from 'utils/date'
 
-import { ReactComponent as IconActive } from './assets/icon-active.svg'
-import { ReactComponent as IconInactive } from './assets/icon-inactive.svg'
+import IconActive from './assets/icon-active.svg'
+import IconInactive from './assets/icon-inactive.svg'
 import style from './OfferEducationalActions.module.scss'
 
 export interface IOfferEducationalActions {

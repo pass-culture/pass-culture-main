@@ -1,7 +1,7 @@
 import React from 'react'
 import { Form } from 'react-final-form'
 
-import { ReactComponent as MotorDisabilitySvg } from 'icons/motor-disability.svg'
+import MotorDisabilitySvg from 'icons/motor-disability.svg'
 
 import CheckboxField from './CheckboxField'
 
