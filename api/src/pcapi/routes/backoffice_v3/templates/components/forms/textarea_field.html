@@ -2,7 +2,7 @@
   {% set textarea_field_id = random_hash() %}
   <textarea name="{{ field.name }}"
             data-original-name="{{ field.name }}"
-            class="form-control h-100 pc-override-custom-textarea-enter value-element-form {% if field.flags.required %}pc-required{% endif %}"
+            class="form-control pc-override-custom-textarea-enter value-element-form {% if field.flags.required %}pc-required{% endif %}"
             rows="{{ field.rows }}"
             {% if field.flags.required %}required{% endif %}
             {% if field.flags.minlength %}minlength="{{ field.flags.minlength }}"{% endif %}

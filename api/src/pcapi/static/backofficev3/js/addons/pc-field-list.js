@@ -125,10 +125,10 @@ class PcFieldList extends PcAddOn {
   }
 
   _formFieldCloneFunction = ($ul) => {
-    const formFieldClass = PcFieldList.PC_FORM_FIELD_CLASS
     const $emptyForm = $ul.querySelector(`.${PcFieldList.PC_FORM_FIELD_EMPTY_CONTAINER_CLASS}`)
     const $removeButton = $ul.querySelector(PcFieldList.REMOVE_BUTTON_SELECTOR).cloneNode(true)
     const $li = document.createElement('li')
+    $li.classList.add("d-flex", "align-items-start", "justify-content-between", "gap-2")
     const $newEmptyForm = $emptyForm.cloneNode(true)
     $li.append($newEmptyForm, $emptyForm.cloneNode(true), $removeButton) // we keep a clone within the newly added and edited $newEmptyForm form
     // tomSelect code
