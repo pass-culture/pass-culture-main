@@ -6,16 +6,17 @@ import { apiAdage } from 'apiClient/api'
 import DialogBox from 'components/DialogBox/DialogBox'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { ReactComponent as ChevronIconAdage } from 'icons/ico-chevron-adage.svg'
-import { ReactComponent as LikeIcon } from 'icons/ico-like.svg'
 import { ReactComponent as LikedIcon } from 'icons/ico-liked.svg'
 import { ReactComponent as Logo } from 'icons/ico-passculture.svg'
 import { ReactComponent as ImagePlaceholder } from 'icons/ico-placeholder-offer-image.svg'
+import { ReactComponent as StrokeLike } from 'icons/stroke-like.svg'
 import {
   HydratedCollectiveOffer,
   HydratedCollectiveOfferTemplate,
   isCollectiveOffer,
 } from 'pages/AdageIframe/app/types/offers'
 import { Button, Tag } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { LOGS_DATA } from 'utils/config'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
@@ -165,10 +166,12 @@ const Offer = ({
               en savoir plus
             </button>
             {isLikeActive && (
-              <LikeIcon
+              <Button
+                Icon={StrokeLike}
                 className={style['offer-like-button']}
-                onClick={handleLikeClick}
                 title="bouton j'aime"
+                variant={ButtonVariant.TERNARY}
+                onClick={handleLikeClick}
               />
             )}
             {isModalLikeOpen && (
