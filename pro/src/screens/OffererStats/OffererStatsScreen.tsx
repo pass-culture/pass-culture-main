@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { SelectOption } from 'custom_types/form'
-import { ReactComponent as StatsIconGrey } from 'icons/ico-stats-grey.svg'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared'
 import Titles from 'ui-kit/Titles/Titles'
@@ -124,7 +123,6 @@ const OffererStatsScreen = ({ offererOptions }: OffererStatsScreenProps) => {
           subtitle={
             'Vos données statistiques s’afficheront dès la première réservation.'
           }
-          icon={<StatsIconGrey />}
         />
       )}
     </div>
