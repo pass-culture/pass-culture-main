@@ -12,7 +12,7 @@ import {
   OfferIndividualImage,
   OfferSubCategory,
 } from 'core/Offers/types'
-import { TOfferIndividualVenue } from 'core/Venue/types'
+import { OfferIndividualVenue } from 'core/Venue/types'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { SynchronizedProviderInformation } from 'screens/OfferIndividual/SynchronisedProviderInfos'
@@ -28,7 +28,7 @@ import { getFilteredVenueList } from './utils/getFilteredVenueList'
 
 export interface OfferIndividualFormProps {
   offererNames: OffererName[]
-  venueList: TOfferIndividualVenue[]
+  venueList: OfferIndividualVenue[]
   categories: OfferCategory[]
   subCategories: OfferSubCategory[]
   onImageUpload: (values: OnImageUploadArgs) => Promise<void>
@@ -74,7 +74,7 @@ const OfferIndividualForm = ({
 
   const isVenueVirtual = venue?.isVirtual || false
 
-  const matchOffererId = (venue: TOfferIndividualVenue) => {
+  const matchOffererId = (venue: OfferIndividualVenue) => {
     return venue.managingOffererId.toString() == offererId
   }
 

@@ -4,7 +4,7 @@ import {
   BookingStatusFilter,
 } from 'apiClient/v1'
 
-export type TPreFilters = {
+export type PreFiltersParams = {
   offerVenueId: string
   offerEventDate: Date | string
   bookingBeginningDate: Date
@@ -13,7 +13,7 @@ export type TPreFilters = {
   offerType: string
 }
 
-export type TAPIFilters = {
+export type APIFilters = {
   venueId: string
   eventDate: string
   bookingPeriodBeginningDate: string
@@ -36,25 +36,25 @@ export type GetFilteredCollectiveBookingsRecapAdapterPayload = {
 }
 
 export type GetFilteredBookingsRecapAdapter = Adapter<
-  TPreFilters & { page?: number },
+  PreFiltersParams & { page?: number },
   GetFilteredBookingsRecapAdapterPayload,
   GetFilteredBookingsRecapAdapterPayload
 >
 
 export type GetFilteredCollectiveBookingsRecapAdapter = Adapter<
-  TPreFilters & { page?: number },
+  PreFiltersParams & { page?: number },
   GetFilteredCollectiveBookingsRecapAdapterPayload,
   GetFilteredCollectiveBookingsRecapAdapterPayload
 >
 
 export type GetBookingsCSVFileAdapter = Adapter<
-  TPreFilters & { page?: number },
+  PreFiltersParams & { page?: number },
   null,
   null
 >
 
 export type GetBookingsXLSFileAdapter = Adapter<
-  TPreFilters & { page?: number },
+  PreFiltersParams & { page?: number },
   null,
   null
 >

@@ -9,7 +9,7 @@ import {
 import { VenueBannerMetaProps } from 'components/VenueForm/ImageUploaderVenue/ImageUploaderVenue'
 import { AccessibiltyFormValues } from 'core/shared'
 
-export type TOfferIndividualVenue = {
+export type OfferIndividualVenue = {
   nonHumanizedId: number
   managingOffererId: number
   name: string

@@ -1,5 +1,5 @@
 import { OffererName } from 'core/Offerers/types'
-import { TOfferIndividualVenue } from 'core/Venue/types'
+import { OfferIndividualVenue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 
 export const buildOffererOptions = (
@@ -29,12 +29,12 @@ export const buildOffererOptions = (
 
 export const buildVenueOptions = (
   offererId: string,
-  venueList: TOfferIndividualVenue[]
+  venueList: OfferIndividualVenue[]
 ): {
   venueOptions: SelectOption[]
   isDisabled: boolean
 } => {
-  const offererVenues = venueList.filter((venue: TOfferIndividualVenue) => {
+  const offererVenues = venueList.filter((venue: OfferIndividualVenue) => {
     if (!offererId) {
       return false
     }

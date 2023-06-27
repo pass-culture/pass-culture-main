@@ -7,7 +7,7 @@ import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { OffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS } from 'core/Offers'
 import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
-import { TOfferIndividualVenue } from 'core/Venue/types'
+import { OfferIndividualVenue } from 'core/Venue/types'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -51,7 +51,7 @@ describe('OfferIndividualForm', () => {
   let categories: OfferCategory[] = []
   let subCategories: OfferSubCategory[] = []
   let offererNames: OffererName[]
-  let venueList: TOfferIndividualVenue[]
+  let venueList: OfferIndividualVenue[]
 
   beforeEach(() => {
     categories = [

@@ -1,4 +1,4 @@
-export type TFiltersType = {
+export type FiltersType = {
   reimbursementPoint: string
   periodStart: Date
   periodEnd: Date

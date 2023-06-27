@@ -3,7 +3,7 @@ import {
   OfferIndividualFormValues,
 } from 'components/OfferIndividualForm'
 import { OffererName } from 'core/Offerers/types'
-import { TOfferIndividualVenue } from 'core/Venue/types'
+import { OfferIndividualVenue } from 'core/Venue/types'
 
 import { buildVenueOptions } from '../UsefulInformations/Venue/utils'
 
@@ -12,7 +12,7 @@ const setDefaultInitialFormValues = (
   offererNames: OffererName[],
   offererId: string | null,
   venueId: string | null,
-  venueList: TOfferIndividualVenue[]
+  venueList: OfferIndividualVenue[]
 ): OfferIndividualFormValues => {
   let initialOffererId = FORM_DEFAULT_VALUES.offererId
 

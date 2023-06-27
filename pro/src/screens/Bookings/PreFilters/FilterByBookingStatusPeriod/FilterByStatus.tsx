@@ -4,7 +4,7 @@ import { BookingStatusFilter } from 'apiClient/v1'
 import {
   BOOKING_STATUS_FILTER,
   DEFAULT_BOOKING_FILTER,
-  TPreFilters,
+  PreFiltersParams,
 } from 'core/Bookings'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 
@@ -12,7 +12,7 @@ import styles from './FilterByBookingStatusPeriod.module.scss'
 
 interface FilterByStatusProps {
   isDisabled: boolean
-  updateFilters: (filters: Partial<TPreFilters>) => void
+  updateFilters: (filters: Partial<PreFiltersParams>) => void
   selectedStatusId: string
 }
 

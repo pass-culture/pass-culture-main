@@ -5,20 +5,20 @@ import FormLayout from 'components/FormLayout'
 import { OfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { OfferIndividualForm } from 'components/OfferIndividualForm/types'
 import { OffererName } from 'core/Offerers/types'
-import { TOfferIndividualVenue } from 'core/Venue/types'
+import { OfferIndividualVenue } from 'core/Venue/types'
 import { Select } from 'ui-kit'
 
 import { buildOffererOptions, buildVenueOptions } from './utils'
 
 export interface VenueProps {
   offererNames: OffererName[]
-  venueList: TOfferIndividualVenue[]
+  venueList: OfferIndividualVenue[]
   readOnlyFields?: string[]
 }
 
 export const onVenueChange = (
   setFieldValue: OfferIndividualForm['setFieldValue'],
-  venueList: TOfferIndividualVenue[],
+  venueList: OfferIndividualVenue[],
   venueId: string
 ) => {
   const newVenue = venueList.find(v => v.nonHumanizedId.toString() === venueId)

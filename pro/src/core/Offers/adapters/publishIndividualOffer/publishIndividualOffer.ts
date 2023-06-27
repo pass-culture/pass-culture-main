@@ -1,14 +1,14 @@
 import { api } from 'apiClient/api'
 
-type TSuccessPayload = null
-type TFailurePayload = null
-type TPublishIndividualOffer = Adapter<
+type SuccessPayload = null
+type FailurePayload = null
+type PublishIndividualOffer = Adapter<
   { offerId: number },
-  TSuccessPayload,
-  TFailurePayload
+  SuccessPayload,
+  FailurePayload
 >
 
-const publishIndividualOffer: TPublishIndividualOffer = async ({ offerId }) => {
+const publishIndividualOffer: PublishIndividualOffer = async ({ offerId }) => {
   try {
     await api.patchPublishOffer({ id: offerId })
     return {

@@ -6,15 +6,15 @@ import { OfferIndividualFormValues } from 'components/OfferIndividualForm'
 
 import { serializePostOffer } from './serializers'
 
-type TSuccessPayload = { nonHumanizedId: number }
-type TFailurePayload = { errors: Record<string, string> }
-type TCreateIndividualOffer = Adapter<
+type SuccessPayload = { nonHumanizedId: number }
+type FailurePayload = { errors: Record<string, string> }
+type CreateIndividualOffer = Adapter<
   OfferIndividualFormValues,
-  TSuccessPayload,
-  TFailurePayload
+  SuccessPayload,
+  FailurePayload
 >
 
-const createIndividualOffer: TCreateIndividualOffer = async formValues => {
+const createIndividualOffer: CreateIndividualOffer = async formValues => {
   try {
     const response = await api.postOffer(serializePostOffer(formValues))
     return {

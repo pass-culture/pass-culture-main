@@ -10,7 +10,7 @@ import {
   setDefaultInitialFormValues,
 } from 'components/OfferIndividualForm'
 import { OffererName } from 'core/Offerers/types'
-import { TOfferIndividualVenue } from 'core/Venue/types'
+import { OfferIndividualVenue } from 'core/Venue/types'
 
 import { validationSchema, Venue, VENUE_DEFAULT_VALUES } from '..'
 import { VenueProps } from '../Venue'
@@ -39,7 +39,7 @@ describe('OfferIndividual section: venue', () => {
   let initialValues: Partial<OfferIndividualFormValues>
   let props: VenueProps
   const onSubmit = jest.fn()
-  let venueList: TOfferIndividualVenue[]
+  let venueList: OfferIndividualVenue[]
   const firstOfferer = {
     id: 'AE',
     nonHumanizedId: 1,

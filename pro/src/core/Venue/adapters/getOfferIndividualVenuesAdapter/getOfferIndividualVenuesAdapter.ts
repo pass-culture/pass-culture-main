@@ -1,11 +1,11 @@
 import { api } from 'apiClient/api'
 import { VenueListItemResponseModel } from 'apiClient/v1'
 import { AccessiblityEnum, GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { TOfferIndividualVenue } from 'core/Venue/types'
+import { OfferIndividualVenue } from 'core/Venue/types'
 
 type Params = { offererId?: number }
-type IPayload = TOfferIndividualVenue[]
-type TGetOfferIndividualVenuesAdapter = Adapter<Params, IPayload, IPayload>
+type Payload = OfferIndividualVenue[]
+type GetOfferIndividualVenuesAdapter = Adapter<Params, Payload, Payload>
 
 const FAILING_RESPONSE = {
   isOk: false,
@@ -13,14 +13,14 @@ const FAILING_RESPONSE = {
   payload: [],
 }
 
-const getOfferIndividualVenuesAdapter: TGetOfferIndividualVenuesAdapter =
+const getOfferIndividualVenuesAdapter: GetOfferIndividualVenuesAdapter =
   async ({ offererId }) => {
     try {
       const response = await api.getVenues(null, true, offererId)
 
       const serializeVenue = (
         venue: VenueListItemResponseModel
-      ): TOfferIndividualVenue => {
+      ): OfferIndividualVenue => {
         /* istanbul ignore next: DEBT, TO FIX */
         const baseAccessibility = {
           [AccessiblityEnum.VISUAL]: venue.visualDisabilityCompliant || false,

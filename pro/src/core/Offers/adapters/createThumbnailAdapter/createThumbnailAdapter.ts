@@ -6,7 +6,7 @@ interface Params extends OnImageUploadArgs {
   offerId: number
 }
 
-type TCreateThumbnailAdapter = Adapter<Params, OfferIndividualImage, null>
+type CreateThumbnailAdapter = Adapter<Params, OfferIndividualImage, null>
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
@@ -14,7 +14,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-const createThumbnailAdapter: TCreateThumbnailAdapter = async ({
+const createThumbnailAdapter: CreateThumbnailAdapter = async ({
   offerId,
   imageFile,
   credit,

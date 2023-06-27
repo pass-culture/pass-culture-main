@@ -13,7 +13,7 @@ import {
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { OffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS } from 'core/Offers'
-import { TOfferIndividualVenue } from 'core/Venue/types'
+import { OfferIndividualVenue } from 'core/Venue/types'
 import { SubmitButton } from 'ui-kit'
 
 import UsefulInformations, {
@@ -51,7 +51,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
   let props: UsefulInformationsProps
   const onSubmit = jest.fn()
   const offererId = 1
-  let venueList: TOfferIndividualVenue[]
+  let venueList: OfferIndividualVenue[]
 
   beforeEach(() => {
     const offererNames: OffererName[] = [
