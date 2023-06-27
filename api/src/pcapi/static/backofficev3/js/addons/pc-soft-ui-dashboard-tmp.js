@@ -5,11 +5,11 @@ class PcSoftUiDashboardTmp extends PcAddOn {
     }
     
     get ctx() {
-        return document.getElementById("chart-bars").getContext("2d")
+        return document.getElementById("chart-bars")?.getContext("2d")
     }
     
     get ctx2() {
-        return document.getElementById("chart-line").getContext("2d")
+        return document.getElementById("chart-line")?.getContext("2d")
     }
     
     initialize = () => {
