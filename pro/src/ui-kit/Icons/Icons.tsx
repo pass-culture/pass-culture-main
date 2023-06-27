@@ -116,7 +116,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-separator.svg', viewBox: '0 0 20 1' },
   { src: 'icons/ico-signout.svg', viewBox: '0 0 48 49' },
   { src: 'icons/ico-star.svg', viewBox: '0 0 38 36' },
-  { src: 'icons/ico-stats-grey.svg', viewBox: '0 0 88 88' },
   { src: 'icons/ico-status-booked.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-status-cancelled.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-status-double-validated.svg', viewBox: '0 0 16 16' },
