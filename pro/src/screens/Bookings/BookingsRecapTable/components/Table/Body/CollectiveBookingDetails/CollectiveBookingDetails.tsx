@@ -3,6 +3,7 @@ import React from 'react'
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
+import strokeUserIcon from 'icons/stroke-user.svg'
 import Icon from 'ui-kit/Icon/Icon'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -67,10 +68,10 @@ const CollectiveBookingDetails = ({
 
               <div className={styles['contact-detail']}>
                 <dt>
-                  <Icon
-                    className={styles['contact-detail-icon']}
+                  <SvgIcon
+                    src={strokeUserIcon}
                     alt="Nom"
-                    svg="ico-user"
+                    className={styles['contact-detail-icon']}
                   />
                 </dt>
                 <dd>{`${educationalRedactor.firstName} ${educationalRedactor.lastName}`}</dd>
