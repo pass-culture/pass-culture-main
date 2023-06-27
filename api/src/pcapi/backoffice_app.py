@@ -11,6 +11,7 @@ from sentry_sdk import set_tag
 
 from pcapi import settings
 from pcapi.flask_app import app
+from pcapi.flask_app import setup_metrics
 from pcapi.routes.backoffice_v3.scss import preprocess_scss
 
 
@@ -53,6 +54,8 @@ with app.app_context():
     app.register_blueprint(backoffice_v3_web, url_prefix="/")
 
     app.generate_error_response = generate_error_response  # type: ignore [attr-defined]
+
+    setup_metrics(app)
 
 
 if __name__ == "__main__":

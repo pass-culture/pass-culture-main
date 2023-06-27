@@ -11,4 +11,5 @@ exec gunicorn \
     --threads $GUNICORN_THREADS \
     --timeout $GUNICORN_TIMEOUT \
     --log-level $GUNICORN_LOG_LEVEL \
+    --config gunicorn.conf.py \
     ${GUNICORN_FLASK_APP:-pcapi.app:app}
