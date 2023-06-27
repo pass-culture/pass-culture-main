@@ -110,11 +110,6 @@ def request_email_update(user: models.User, new_email: str, password: str) -> No
     generate_and_send_beneficiary_confirmation_email_for_email_change(user, new_email)
 
 
-def check_and_expire_token(user: models.User, token: str, token_type: TokenType) -> None:
-    _check_token(user, token, token_type)
-    _expire_token(user, token_type)
-
-
 def _check_token(user: models.User, token_to_check: str, token_type: TokenType) -> None:
     token_key = get_token_key(user, token_type)
     if app.redis_client.get(token_key) != token_to_check:  # type: ignore [attr-defined]
@@ -189,10 +184,11 @@ def validate_email_update_request(
         if not validated_update_request_exists(current_email, new_email):
             raise exceptions.UserDoesNotExist()
         return
-    check_and_expire_token(user, token, TokenType.VALIDATION)
+    _check_token(user, token, TokenType.VALIDATION)
     check_email_address_does_not_exist(new_email)
     api.change_email(user, new_email)
     transactional_mails.send_email_change_information_email(user)
+    _expire_token(user, TokenType.VALIDATION)
 
 
 def request_email_update_from_pro(user: models.User, email: str, password: str) -> None:
