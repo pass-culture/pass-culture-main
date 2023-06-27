@@ -139,7 +139,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-unavailable-gradient.svg', viewBox: '0 0 178 100' },
   { src: 'icons/ico-unavailable-page.svg', viewBox: '0 0 317 198' },
   { src: 'icons/ico-unavailable-page-white.svg', viewBox: '0 0 317 198' },
-  { src: 'icons/ico-user.svg', viewBox: '0 0 17 16' },
   { src: 'icons/ico-validate-p.svg', viewBox: '0 0 17 17' },
   { src: 'icons/ico-warning-grey.svg' },
   { src: 'icons/ico-warning.svg', viewBox: '0 0 16 16' },
