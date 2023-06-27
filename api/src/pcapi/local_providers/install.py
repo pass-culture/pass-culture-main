@@ -15,3 +15,7 @@ def install_local_providers() -> None:
         localClass=providers_constants.PASS_CULTURE_STOCKS_FAKE_CLASS_NAME,
         enabledForPro=False,
     )
+    providers_factories.ProviderFactory(
+        name="EMS",
+        localClass=providers_constants.EMS_STOCKS_FAKE_CLASS_NAME,
+    )

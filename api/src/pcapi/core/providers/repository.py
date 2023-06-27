@@ -123,6 +123,24 @@ def get_cgr_cinema_details(cinema_id: str) -> models.CGRCinemaDetails:
     return cinema_details
 
 
+def get_ems_cinema_details(cinema_id: str) -> models.EMSCinemaDetails:
+    cinema_details = (
+        models.EMSCinemaDetails.query.join(models.CinemaProviderPivot)
+        .join(models.CinemaProviderPivot.provider)
+        .filter(models.CinemaProviderPivot.idAtProvider == cinema_id)
+        .filter(models.Provider.localClass == "EMSStocks")
+        .one()
+    )
+    return cinema_details
+
+
+def set_ems_cinema_sync_version(venue_provider: models.VenueProvider, version: int) -> None:
+    ems_cinema_pivot = get_cinema_provider_pivot_for_venue(venue_provider.venue)
+    if ems_cinema_pivot:
+        ems_cinema_details = get_ems_cinema_details(ems_cinema_pivot.idAtProvider)
+        ems_cinema_details.lastVersion = version
+
+
 # Each venue is known to allocine by its siret (AllocineTheater) or by its id (AllocinePivot).
 # This class is used to handle this logic when a venue wants to sync with Allocine.
 @dataclass

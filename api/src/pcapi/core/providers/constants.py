@@ -5,6 +5,7 @@ CINEMA_PROVIDER_NAMES = [
 ]
 
 PASS_CULTURE_STOCKS_FAKE_CLASS_NAME = "PCAPIStocks"
+EMS_STOCKS_FAKE_CLASS_NAME = "EMSStocks"
 
 # FIXME: (mageoffray, 16-05-2023)
 # To delete few iterations after v240
