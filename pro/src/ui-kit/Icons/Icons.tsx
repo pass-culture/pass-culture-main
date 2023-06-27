@@ -34,6 +34,7 @@ const fullIcons: IconListItem[] = [
   { src: 'icons/full-edit.svg' }, // TODO 7 uses left in <ButtonLink>s
   { src: 'icons/full-duplicate.svg' }, // TODO still used in 1 Button
   { src: 'icons/full-hide.svg' }, // TODO still used in 1 ConfirmDialog
+  { src: 'icons/full-like.svg' },
   { src: 'icons/full-back.svg' },
   { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
   { src: 'icons/full-refresh.svg' }, // TODO still unsed in <Button>s
@@ -61,7 +62,7 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-building.svg' },
   { src: 'icons/stroke-desk.svg' },
   { src: 'icons/stroke-hourglass.svg' },
-  { src: 'icons/stroke-like.svg' },
+  { src: 'icons/stroke-like.svg' }, // TODO 1 use left inside Button
   { src: 'icons/stroke-code.svg' },
   { src: 'icons/stroke-accessibility-eye.svg' },
   { src: 'icons/stroke-accessibility-ear.svg' },
@@ -148,7 +149,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-warning-grey.svg' },
   { src: 'icons/ico-warning.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-subcategory.svg', viewBox: '0 0 24 24' },
-  { src: 'icons/ico-liked.svg' },
   { src: 'icons/ico-chevron-adage.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-circle-arrow.svg', viewBox: '0 0 20 20' },
   { src: 'icons/add-user.svg', viewBox: '0 0 106 74' },

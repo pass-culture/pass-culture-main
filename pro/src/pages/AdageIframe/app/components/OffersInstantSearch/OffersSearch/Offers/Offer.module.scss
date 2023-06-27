@@ -177,5 +177,9 @@ $offer-image-width: rem.torem(176px);
     &-button {
       margin-top: rem.torem(16px);
     }
+
+    .full-like-icon {
+      color: colors.$primary;
+    }
   }
 }
