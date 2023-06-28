@@ -54,10 +54,12 @@
                      data-table-multi-select-id="table-individual-offers-multiselect">
                 <thead>
                   <tr>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2" scope="col">
-                      <input type="checkbox"
-                             class="form-check-input"
-                             name="pc-table-multi-select-check-all" />
+                    <th class="text-uppercase text-secondary font-weight-bolder opacity-7 ps-2" scope="col">
+                      <div class="form-check">
+                        <input type="checkbox"
+                               class="form-check-input"
+                               name="pc-table-multi-select-check-all" />
+                      </div>
                     </th>
                     <th></th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2" scope="col">
@@ -115,10 +117,12 @@
                 {% for offer in rows %}
                   <tr>
                     <td>
-                      <input type="checkbox"
-                             class="form-check-input"
-                             name="pc-table-multi-select-check-{{ offer.id }}"
-                             data-id="{{ offer.id }}" />
+                      <div class="form-check">
+                        <input type="checkbox"
+                               class="form-check-input"
+                               name="pc-table-multi-select-check-{{ offer.id }}"
+                               data-id="{{ offer.id }}" />
+                      </div>
                     </td>
                     <td class="align-middle">
                       <div class="dropdown">
