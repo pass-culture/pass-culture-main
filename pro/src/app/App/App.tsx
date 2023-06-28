@@ -19,6 +19,7 @@ interface AppProps {
 
 const App = ({ children }: AppProps): JSX.Element | null => {
   const isCookieBannerEnabled = useActiveFeature('WIP_ENABLE_COOKIES_BANNER')
+  const isBeamerEnabled = useActiveFeature('ENABLE_BEAMER')
   const location = useLocation()
   const { currentUser } = useCurrentUser()
   const [consentedToFirebase, setConsentedToFirebase] = useState(false)
@@ -76,7 +77,8 @@ const App = ({ children }: AppProps): JSX.Element | null => {
       setTimeout(() => {
         if (
           window.Beamer !== undefined &&
-          location.pathname.indexOf('/parcours-inscription') === -1
+          location.pathname.indexOf('/parcours-inscription') === -1 &&
+          isBeamerEnabled
         ) {
           window.Beamer.update({
             user_firstname: currentUser.firstName,
