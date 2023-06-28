@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
@@ -23,6 +23,18 @@ const SignupJourneyRoutes = () => {
     logEvent?.(Events.CLICKED_LOGOUT, { from: location.pathname })
     navigate('/logout')
   }
+
+  useEffect(() => {
+    if (window.Beamer !== undefined) {
+      window.Beamer.hide()
+    }
+
+    return () => {
+      if (window.Beamer !== undefined) {
+        window.Beamer.show()
+      }
+    }
+  }, [])
 
   return (
     <>
