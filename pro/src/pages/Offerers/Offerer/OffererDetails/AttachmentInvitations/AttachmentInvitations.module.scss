@@ -3,7 +3,7 @@
 @use "styles/variables/_colors.scss" as colors;
 
 .section {
-  margin-bottom: rem.torem(48px);
+  margin-bottom: rem.torem(32px);
   padding-bottom: 0;
   padding-top: 0;
 
@@ -11,7 +11,7 @@
     @include fonts.title4;
 
     border-bottom: thin solid colors.$grey-medium;
-    margin: rem.torem(12px) 0;
+    margin: rem.torem(12px) 0 rem.torem(32px) 0;
     padding-bottom: rem.torem(8px);
 
     .main-list-title-text {
@@ -21,46 +21,45 @@
   .subtitle {
     @include fonts.button;
 
-    padding-top: rem.torem(8px);
     margin-bottom: rem.torem(16px);
   }
   
+  .description {
+    margin-bottom: rem.torem(16px);
+  }
+
+  .invitation-form {
+    margin-bottom: rem.torem(32px);
+  }
+
+  .invitation-email-field {
+    width: 50%;
+    margin-bottom: rem.torem(8px);
+  }
+
+  .add-member-button {
+    margin-bottom: rem.torem(24px);
+  }
+
   .members-list {
     width: 100%;
-    margin-top: rem.torem(-8px);
     margin-bottom: rem.torem(16px);
 
     th {
       @include fonts.caption;
 
-      color: colors.$black;
-      line-height: rem.torem(20px);
-      min-height: rem.torem(60px);
-      padding: rem.torem(14px);
+      padding-bottom: rem.torem(16px);
+
       vertical-align: middle;
       text-align: left;
     }
-    tr {
-      border-bottom: rem.torem(1px) solid colors.$grey-medium;
-    }
+
     td {
       @include fonts.body;
 
-      padding: rem.torem(16px);
+      padding-bottom: rem.torem(12px);
       vertical-align: middle;
       text-align: left;
     }
-  }
-
-  .description {
-    margin-bottom: rem.torem(16px);
-  }
-
-  .invitation-email-field {
-    width: 50%
-  }
-
-  .add-member-button {
-    margin-bottom: rem.torem(24px);
   }
 }

@@ -6,6 +6,7 @@ import { api } from 'apiClient/api'
 import { GetOffererMemberResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout/FormLayout'
 import useNotification from 'hooks/useNotification'
+import { ReactComponent as OtherIcon } from 'icons/ico-other.svg'
 import { ReactComponent as IcoPlusCircle } from 'icons/ico-plus-circle.svg'
 import { Button, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -70,34 +71,15 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
       <div className={styles['main-list-title']}>
         <h2 className={styles['main-list-title-text']}>Collaborateurs</h2>
       </div>
-      {!!members && (
-        <>
-          <h3 className={styles['subtitle']}>Membres de la structure</h3>
-          <table className={styles['members-list']}>
-            <thead>
-              <tr>
-                <th scope="col">Prénom & Nom</th>
-                <th scope="col">Adresse email</th>
-              </tr>
-            </thead>
-            <tbody>
-              {members.map(({ firstName, lastName, email }) => (
-                <tr>
-                  <td>{`${firstName} ${lastName}`}</td>
-                  <td>{email}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
-      )}
 
       <h3 className={styles['subtitle']}>Ajout de collaborateurs</h3>
       <p className={styles['description']}>
-        Vous pouvez inviter des collaborateurs à rejoindre votre espace.
+        Vous pouvez inviter des collaborateurs à rejoindre votre espace. Votre
+        invitation sera envoyée par mail et vous serez notifié quand ils auront
+        rejoint l’espace.
       </p>
       <FormikProvider value={formik}>
-        <Form>
+        <Form className={styles['invitation-form']}>
           <FormLayout>
             <FormLayout.Row>
               <EmailSpellCheckInput
@@ -118,11 +100,6 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
               </Button>
             </FormLayout.Row>
 
-            <p className={styles['description']}>
-              Votre invitation sera envoyée par mail à vos collaborateurs et
-              vous serez notifié quand ils auront rejoint l’espace.
-            </p>
-
             <FormLayout.Row>
               <SubmitButton
                 // TODO: disable when all emails are empty
@@ -135,6 +112,31 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
           </FormLayout>
         </Form>
       </FormikProvider>
+
+      {!!members && (
+        <>
+          <h3 className={styles['subtitle']}>Membres de la structure</h3>
+          <table className={styles['members-list']}>
+            <thead>
+              <tr>
+                <th scope="col">Prénom & Nom</th>
+                <th scope="col">Adresse email</th>
+                <th scope="col">Rôle</th>
+              </tr>
+            </thead>
+            <tbody>
+              {members.map(({ firstName, lastName, email }) => (
+                <tr>
+                  <td>{`${firstName} ${lastName}`}</td>
+                  <td>{email}</td>
+                  <td>Administrateur</td>
+                  <OtherIcon />
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
     </section>
   )
 }
