@@ -1,7 +1,17 @@
 import { OfferIndividual } from 'core/Offers/types'
 
 import { FIRST_INITIAL_PRICE_CATEGORY } from './constants'
-import { PriceCategoriesFormValues } from './types'
+import { PriceCategoriesFormValues, PriceCategoryForm } from './types'
+
+export const sortPriceCategories = (
+  a: PriceCategoryForm,
+  b: PriceCategoryForm
+) => {
+  if (a.price === '' || b.price === '') {
+    return 1
+  }
+  return b.price - a.price
+}
 
 export const computeInitialValues = (
   offer: OfferIndividual
@@ -10,8 +20,11 @@ export const computeInitialValues = (
     !offer.priceCategories || offer?.priceCategories.length === 0
       ? [FIRST_INITIAL_PRICE_CATEGORY]
       : offer.priceCategories
+
+  initialPriceCategories.sort(sortPriceCategories)
+
   return {
     priceCategories: initialPriceCategories,
-    isDuo: offer.isDuo,
+    isDuo: Boolean(offer.isDuo),
   }
 }
