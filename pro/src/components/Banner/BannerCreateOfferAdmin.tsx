@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { EyeOpenIcon } from 'icons'
+import { ReactComponent as StrokeShowIcon } from 'icons/stroke-show.svg'
 import Banner from 'ui-kit/Banners/Banner'
 
 const BannerCreateOfferAdmin = (): JSX.Element => (
@@ -10,7 +10,7 @@ const BannerCreateOfferAdmin = (): JSX.Element => (
       {
         href: '/accueil',
         linkTitle: 'Aller à l’accueil',
-        Icon: EyeOpenIcon,
+        Icon: StrokeShowIcon,
         isExternal: false,
       },
     ]}
