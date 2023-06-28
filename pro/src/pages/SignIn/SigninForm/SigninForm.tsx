@@ -1,7 +1,7 @@
 import { Form, Formik } from 'formik'
 import React from 'react'
 import { useDispatch } from 'react-redux'
-import { Link, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
@@ -11,9 +11,10 @@ import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { KeyIcon } from 'icons'
+import { ReactComponent as FullKeyIcon } from 'icons/full-key.svg'
 import { setCurrentUser } from 'store/user/actions'
-import { PasswordInput, SubmitButton, TextInput } from 'ui-kit'
+import { ButtonLink, PasswordInput, SubmitButton, TextInput } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 import styles from '../Signin.module.scss'
@@ -103,31 +104,37 @@ const SigninForm = (): JSX.Element => {
                   <PasswordInput name="password" label="Mot de passe" />
                 </FormLayout.Row>
               </div>
-              <Link
-                className="tertiary-link"
-                id="lostPasswordLink"
+
+              <ButtonLink
+                Icon={FullKeyIcon}
+                variant={ButtonVariant.TERNARY}
+                link={{
+                  to: '/demande-mot-de-passe',
+                  isExternal: false,
+                }}
                 onClick={() =>
                   logEvent?.(Events.CLICKED_FORGOTTEN_PASSWORD, {
                     from: location.pathname,
                   })
                 }
-                to="/demande-mot-de-passe"
               >
-                <KeyIcon className="ico-key" />
                 Mot de passe oublié ?
-              </Link>
+              </ButtonLink>
               <div className={styles['buttons-field']}>
-                <Link
-                  className="secondary-link"
+                <ButtonLink
+                  variant={ButtonVariant.SECONDARY}
+                  link={{
+                    to: accountCreationUrl,
+                    isExternal: false,
+                  }}
                   onClick={() =>
                     logEvent?.(Events.CLICKED_CREATE_ACCOUNT, {
                       from: location.pathname,
                     })
                   }
-                  to={accountCreationUrl}
                 >
                   Créer un compte
-                </Link>
+                </ButtonLink>
                 <SubmitButton
                   className="primary-button"
                   isLoading={isSubmitting}
