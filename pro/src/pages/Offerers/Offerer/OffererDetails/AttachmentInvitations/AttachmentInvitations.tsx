@@ -71,6 +71,7 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
                 name="email"
                 placeholder="email@exemple.com"
                 label="Adresse email"
+                className={styles['invitation-email-field']}
               />
             </FormLayout.Row>
 
