@@ -20,6 +20,7 @@ from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.notifications.internal.transactional import import_test_user_failure
 from pcapi.repository import repository
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.utils.email import sanitize_email
@@ -181,7 +182,12 @@ def create_users_from_google_sheet(document_id: str, update_if_exists: bool = Fa
     backend = GoogleDriveBackend()
     content = backend.download_file(document_id, "text/csv")
     wrapper = TextIOWrapper(content, encoding="utf-8")
-    return create_users_from_csv(wrapper, update_if_exists=update_if_exists)
+    try:
+        return create_users_from_csv(wrapper, update_if_exists=update_if_exists)
+    except Exception as exc:  # pylint: disable=broad-except
+        logger.exception("Could not create or update user from Google Drive file", extra={"exc": str(exc)})
+        import_test_user_failure.send()
+    return []
 
 
 @blueprint.cli.command("import_test_users")
