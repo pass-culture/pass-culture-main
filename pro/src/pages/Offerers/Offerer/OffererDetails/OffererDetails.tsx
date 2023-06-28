@@ -96,8 +96,8 @@ const OffererDetails = () => {
       <Titles subtitle={offerer.name} title="Structure" />
 
       <p className={styles['op-teaser']}>
-        Détails de la structure rattachée, des lieux et des fournisseurs de ses
-        offres.
+        Détails de la structure rattachée, des collaborateurs, des lieux et des
+        fournisseurs de ses offres
       </p>
 
       <div className={cn(styles['section'], styles['op-content-section'])}>
