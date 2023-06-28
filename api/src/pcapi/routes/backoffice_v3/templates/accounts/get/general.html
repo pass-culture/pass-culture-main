@@ -1,5 +1,94 @@
 {% from "components/forms.html" import build_form_fields_group with context %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
+<div class="card bg-transparent shadow-xl">
+  <div class="overflow-hidden position-relative border-radius-xl"
+       style="background-image: url({{ url_for('static', filename='backofficev3/img/curved-images/curved14.jpg') }})">
+    <span class="mask bg-gradient-dark"></span>
+    <div class="card-body position-relative z-index-1 p-3">
+      <h6 class="text-white">
+        {{ user.firstName }} {{ user.lastName | upper }}
+        {% for role in user.roles %}
+          <span class="ms-2 me-2 badge rounded-pill text-bg-primary bg-gradient-primary align-middle">{{ role | format_role }}</span>
+        {% endfor %}
+        {% if not user.isActive %}
+          <span class="badge rounded-pill text-bg-secondary align-middle">{{ user.isActive | format_state }}</span>
+        {% endif %}
+        {% if duplicate_user_id %}
+          <small><a href="{{ duplicate_user_id | pc_backoffice_public_account_link }}"
+   target="_blank">User ID
+          doublon : {{ duplicate_user_id }}</a></small>
+        {% endif %}
+        {% if edit_account_form %}
+          <button class="btn btn-outline-primary p-1  mt-2 justify-content-center"
+                  data-bs-toggle="modal"
+                  data-bs-target="#edit-account-modal"
+                  type="button">Modifier les infos</button>
+          <div class="modal modal-lg fade z-index-0"
+               id="edit-account-modal"
+               tabindex="-1"
+               aria-labelledby="edit-account-modal-label"
+               aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <form action="{{ edit_account_dst }}"
+                      name="{{ edit_account_dst | action_to_name }}"
+                      method="post">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Modifier les informations</h5>
+                  </div>
+                  <div class="modal-body">
+                    <div class="form-floating my-3">{{ build_form_fields_group(edit_account_form) }}</div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-outline-primary"
+                            data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit"
+                            class="btn btn-primary">Enregistrer</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      </h6>
+      {% if show_personal_info %}
+        <p class="my-1 text-white-50 small">
+          <span class="fw-bold">Date de naissance</span>
+          {% if user.birth_date %}<span>{{ user.birth_date | format_date }} ({{ user.age | empty_string_if_null }} ans)</span>{% endif %}
+        </p>
+        {% if user.dateOfBirth and user.dateOfBirth.date() != user.birth_date %}
+          <p class="my-1 text-white-50 small">
+            <span class="fw-bold">Date de naissance déclarée à l'inscription</span>
+            <span>{{ user.dateOfBirth | format_date }}</span>
+          </p>
+        {% endif %}
+        <p class="mb-1 text-white-50 small">
+          <span class="fw-bold">Crédité le :</span> {{ user.deposit_activation_date | format_date }}
+        </p>
+        {% if user.deposit %}
+          <p class="mb-1 text-white-50 small">
+            <span class="fw-bold">Date d'expiration du crédit :</span> {{ user.deposit.expirationDate | format_date_time }}
+          </p>
+        {% endif %}
+      {% endif %}
+      <p class="mb-1 text-white-50 small">
+        <span class="fw-bold">Date de création du compte :</span> {{ user.dateCreated | format_date }}
+      </p>
+      <p class="mb-1 text-white-50 small">
+        <span class="fw-bold">Date de dernière connexion :</span> {{ user.lastConnectionDate | format_date_time }}
+      </p>
+      {% if show_personal_info %}
+        <div class="mb-1 text-white-50 small">
+          <span class="fw-bold">Adresse</span>
+          <p class="small mb-0">{{ user.address }}</p>
+          <p class="small">{{ user.postalCode | empty_string_if_null }}&nbsp;{{ user.city | empty_string_if_null }}</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{#<div class="card-body position-relative z-index-1 p-3">
 <div class="row row-cols-1 g-4 py-3">
   <div class="col">
     <div class="card">
@@ -20,39 +109,7 @@
             {% endif %}
           </h5>
           <div class="d-flex row-reverse justify-content-end flex-grow-1">
-            {% if edit_account_form %}
-              <button class="btn btn-outline-primary lead fw-bold mt-2 justify-content-end"
-                      data-bs-toggle="modal"
-                      data-bs-target="#edit-account-modal"
-                      type="button">Modifier les informations</button>
-              <div class="modal modal-lg fade"
-                   id="edit-account-modal"
-                   tabindex="-1"
-                   aria-labelledby="edit-account-modal-label"
-                   aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                  <div class="modal-content">
-                    <form action="{{ edit_account_dst }}"
-                          name="{{ edit_account_dst | action_to_name }}"
-                          method="post">
-                      <div class="modal-header">
-                        <h5 class="modal-title">Modifier les informations</h5>
-                      </div>
-                      <div class="modal-body">
-                        <div class="form-floating my-3">{{ build_form_fields_group(edit_account_form) }}</div>
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button"
-                                class="btn btn-outline-primary"
-                                data-bs-dismiss="modal">Annuler</button>
-                        <button type="submit"
-                                class="btn btn-primary">Enregistrer</button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            {% endif %}
+
           </div>
         </div>
         <h6 class="card-subtitle text-muted">User ID : {{ user.id }}</h6>
@@ -184,3 +241,4 @@
     </div>
   </div>
 </div>
+</div>#}

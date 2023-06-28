@@ -1,54 +1,62 @@
-<div class="row row-cols-xl-3 row-cols-md-2 row-cols-sm-1 g-3 py-0">
-  <div class="col">
-    <div class="card shadow-sm">
-      {% if credit is not none %}
-        <div class="card-body">
-          <h6 class="card-title fs-1 mb-3">{{ credit.all.remaining | format_amount }}</h6>
-          <div class="d-flex">
-            <h6 class="card-subtitle text-muted me-auto">Crédit restant</h6>
-            <h6 class="card-subtitle text-muted ms-auto">{{ credit.all.initial | format_amount }}</h6>
-          </div>
-          <div class="progress mt-2">
-            {% set progress_value = ( credit.all.remaining / credit.all.initial ) * 100 %}
-            <div class="progress-bar"
-                 role="progressbar"
-                 style="width: {{ progress_value }}%"
-                 aria-label="Crédit restant"
-                 aria-valuenow="{{ progress_value }}"
-                 aria-valuemin="0"
-                 aria-valuemax="100"></div>
+<div class="row">
+  {% if credit %}
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header mx-4 p-3 text-center">
+          <div class="icon icon-shape icon-lg bg-gradient-primary shadow text-center border-radius-lg">
+            <i class="fas fa-landmark opacity-10"></i>
           </div>
         </div>
-      {% endif %}
+        <div class="card-body pt-0 p-3 text-center">
+          <h6 class="text-center mb-0">Crédit Restant</h6>
+          <span class="text-xs">Crédit initial : {{ credit.all.initial | format_amount }}</span>
+        </div>
+        <div class="progress w-75 mx-auto">
+          {% set progress_value = ( credit.all.remaining / credit.all.initial ) * 100 %}
+          <div class="progress-bar"
+               role="progressbar"
+               style="width: {{ progress_value }}%"
+               aria-label="Crédit restant"
+               aria-valuenow="{{ progress_value }}"
+               aria-valuemin="0"
+               aria-valuemax="100"></div>
+        </div>
+        <hr class="horizontal dark my-3">
+        <h5 class="mb-2 text-center">{{ credit.all.remaining | format_amount }}</h5>
+      </div>
     </div>
-  </div>
-  <div class="col">
-    <div class="card shadow-sm">
-      {% if credit is not none and credit.digital is not none %}
-        <div class="card-body">
-          <h6 class="card-title fs-1 mb-3">{{ credit.digital.remaining | format_amount }}</h6>
-          <div class="d-flex">
-            <h6 class="card-subtitle text-muted me-auto">Crédit digital restant</h6>
-            <h6 class="card-subtitle text-muted ms-auto">{{ credit.digital.initial | format_amount }}</h6>
-          </div>
-          <div class="progress mt-2">
-            {% set progress_value = ( credit.digital.remaining / credit.digital.initial ) * 100 %}
-            <div class="progress-bar"
-                 role="progressbar"
-                 style="width: {{ progress_value }}%"
-                 aria-label="Crédit restant"
-                 aria-valuenow="{{ progress_value }}"
-                 aria-valuemin="0"
-                 aria-valuemax="100"></div>
+  {% endif %}
+  {% if credit.digital %}
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header mx-4 p-3 text-center">
+          <div class="icon icon-shape icon-lg bg-gradient-primary shadow text-center border-radius-lg">
+            <i class="fas fa-landmark opacity-10"></i>
           </div>
         </div>
-      {% endif %}
+        <div class="card-body pt-0 p-3 text-center">
+          <h6 class="text-center mb-0">Crédit Digital Restant</h6>
+          <span class="text-xs">Crédit initial : {{ credit.digital.initial |format_amount }}</span>
+        </div>
+        <div class="progress w-75 mx-auto">
+          {% set progress_value = ( credit.digital.remaining / credit.digital.initial ) * 100 %}
+          <div class="progress-bar"
+               role="progressbar"
+               style="width: {{ progress_value }}%"
+               aria-label="Crédit restant"
+               aria-valuenow="{{ progress_value }}"
+               aria-valuemin="0"
+               aria-valuemax="100"></div>
+        </div>
+        <hr class="horizontal dark my-3">
+        <h5 class="mb-2 text-center">{{ credit.digital.remaining | format_amount }}</h5>
+      </div>
     </div>
-  </div>
-  <div class="col">
-    <div class="card pc-script-user-accounts-additional-data-main-fraud-check">
-      <div class="card-body">
-        {% if latest_fraud_check %}
+  {% endif %}
+</div>
+{#
+
+      {% if latest_fraud_check %}
           <h5 class="card-title mb-3">Dossier {{ latest_fraud_check.type | upper }} importé le</h5>
           <h6 class="card-subtitle text-muted me-auto mb-2">{{ latest_fraud_check.dateCreated | format_date_time }}</h6>
           <h6 class="card-subtitle me-auto">Statut: {{ latest_fraud_check.status | upper }}</h6>
@@ -57,8 +65,4 @@
              class="card-link btn lead px-0 py-0 fw-bold">Accéder au dossier {{ latest_fraud_check.type | upper }}</a>
         {% else %}
           <h5 class="card-title mb-3">Pas de dossier DMS ou Ubble</h5>
-        {% endif %}
-      </div>
-    </div>
-  </div>
-</div>
+        {% endif %}#}

@@ -170,31 +170,21 @@
   </div>
 {% endmacro %}
 {% macro build_registration_steps(tunnel, builded_steps) %}
-  <div class="card my-4 pc-personal-information-registration-view">
-    <div class="card-body">
-      <h5 class="card-title text-bold fs-2 m-3">
-        Parcours d'inscription
-        <span class="badge rounded-pill text-bg-primary fs-6 align-middle mx-4">{{ tunnel.type.value | i18n_public_account }}</span>
-      </h5>
-      <div class="card-body">
-        <div class="row py-1"
-             data-registration-steps-id="{{ tunnel.type.value }}">
-          <div class="col-12 position-relative">
-            <div class="progress position-absolute">
-              <div class="progress-bar"
-                   role="progressbar"
-                   aria-valuenow="{{ tunnel.progress }}"
-                   aria-valuemin="0"
-                   aria-valuemax="100"
-                   style="width: {{ tunnel.progress }}%"></div>
-            </div>
-            <ol class="breadcrumb-container position-relative d-flex p-0 justify-content-between">
-              {% for builded_step in builded_steps %}{{ builded_step }}{% endfor %}
-            </ol>
-          </div>
-          {{ caller() }}
-        </div>
+  <div class="row py-1"
+       data-registration-steps-id="{{ tunnel.type.value }}">
+    <div class="col-12 position-relative">
+      <div class="progress position-absolute">
+        <div class="progress-bar"
+             role="progressbar"
+             aria-valuenow="{{ tunnel.progress }}"
+             aria-valuemin="0"
+             aria-valuemax="100"
+             style="width: {{ tunnel.progress }}%"></div>
       </div>
+      <ol class="breadcrumb-container position-relative d-flex p-0 justify-content-between">
+        {% for builded_step in builded_steps %}{{ builded_step }}{% endfor %}
+      </ol>
     </div>
+    {{ caller() }}
   </div>
 {% endmacro %}

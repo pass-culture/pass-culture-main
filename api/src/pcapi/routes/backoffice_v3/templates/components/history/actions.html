@@ -1,66 +1,57 @@
 {% import "components/links.html" as links %}
 {# This macro must be imported with context because of is_user_offerer_action_type() #}
 {% macro build_actions_table(actions, show_venue) %}
-  <table class="table table-hover my-4">
-    <thead>
-      <tr>
-        <th scope="col"></th>
-        <th scope="col">Type</th>
-        <th scope="col">Date/Heure</th>
-        <th scope="col">Commentaire</th>
-        <th scope="col">Auteur</th>
-      </tr>
-    </thead>
-    <tbody class="table-group-divider">
-      {% for action in actions %}
-        <tr>
-          <th scope="row"></th>
-          {# action can be an ActionHistory row from db or an AccountAction object from another table #}
-          <td>{{ action.actionType.value or action.actionType }}</td>
-          <td>{{ action.actionDate | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
-          <td class="text-break">
-            {% if action.userId and is_user_offerer_action_type(action) %}
-              {{ links.build_pro_user_name_to_details_link(action.user.id, action.user.full_name) }}
-            {% elif action.actionType.name == "USER_SUSPENDED" %}
-              <p>{{ action.extraData['reason'] | format_reason_label }}</p>
-            {% endif %}
-            {% if action.comment %}
-              <p>
-                {{ action.comment | empty_string_if_null | replace("\n", "
-                <br />
-                "|safe) }}
-              </p>
-            {% endif %}
-            {% if action.extraData %}
-              {% set modified_info = action.extraData.get('modified_info', {}) %}
-              {% if modified_info %}
-                {# INFO_MODIFIED but also tags modified in OFFERER_PENDING #}
+  <ul class="list-group">
+    {% for action in actions %}
+      <li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+        <div class="d-flex flex-column">
+          <h6 class="mb-1 text-dark font-weight-bold text-sm">{{ action.actionType.value or action.actionType }}</h6>
+          <span class="text-xs">{{ action.actionDate | format_date("Le %d/%m/%Y à %Hh%M") }}</span>
+        </div>
+        <div class="d-flex align-items-center text-sm">
+          {% if action.userId and is_user_offerer_action_type(action) %}
+            {{ links.build_pro_user_name_to_details_link(action.user.id, action.user.full_name) }}
+          {% elif action.actionType.name == "USER_SUSPENDED" %}
+            <p>{{ action.extraData['reason'] | format_reason_label }}</p>
+          {% endif %}
+          {% if action.comment %}
+            <p>
+              {{ action.comment | empty_string_if_null | replace("\n", "
+              <br />
+              "|safe) }}
+            </p>
+          {% endif %}
+          {% if action.extraData %}
+            {% set modified_info = action.extraData.get('modified_info', {}) %}
+            {% if modified_info %}
+              {# INFO_MODIFIED but also tags modified in OFFERER_PENDING #}
+              <div>
+                <span class="fw-bold">Informations modifiées :</span>
+                {% if show_venue and action.venueId %}
+                  sur le lieu {{ links.build_venue_name_to_details_link(action.venue) }}
+                  ({{ action.venueId }})
+                {% endif %}
+              </div>
+              {% for info_name, modified_info in modified_info.items() %}
                 <div>
-                  <span class="fw-bold">Informations modifiées :</span>
-                  {% if show_venue and action.venueId %}
-                    sur le lieu {{ links.build_venue_name_to_details_link(action.venue) }}
-                    ({{ action.venueId }})
+                  <span class="text-decoration-underline">{{ info_name | i18n_column_name }} :</span>
+                  {% if modified_info['old_info'] and modified_info['new_info'] %}
+                    {{ modified_info['old_info'] | format_modified_info_value | i18n_column_value | escape }}
+                    =&gt; {{ modified_info['new_info'] | format_modified_info_value | i18n_column_value | escape }}
+                  {% elif modified_info['old_info'] %}
+                    suppression de :
+                    {{ modified_info['old_info'] | format_modified_info_value | i18n_column_value | escape }}
+                  {% elif modified_info['new_info'] %}
+                    ajout de :
+                    {{ modified_info['new_info'] | format_modified_info_value | i18n_column_value | escape }}
                   {% endif %}
                 </div>
-                {% for info_name, modified_info in modified_info.items() %}
-                  <div>
-                    <span class="text-decoration-underline">{{ info_name | i18n_column_name }} :</span>
-                    {% if modified_info['old_info'] and modified_info['new_info'] %}
-                      {{ modified_info['old_info'] | format_modified_info_value | i18n_column_value | escape }}
-                      =&gt; {{ modified_info['new_info'] | format_modified_info_value | i18n_column_value | escape }}
-                    {% elif modified_info['old_info'] %}
-                      suppression de : {{ modified_info['old_info'] | format_modified_info_value | i18n_column_value | escape }}
-                    {% elif modified_info['new_info'] %}
-                      ajout de : {{ modified_info['new_info'] | format_modified_info_value | i18n_column_value | escape }}
-                    {% endif %}
-                  </div>
-                {% endfor %}
-              {% endif %}
+              {% endfor %}
             {% endif %}
-          </td>
-          <td>{{ action.authorUser.full_name if action.authorUser else None | empty_string_if_null }}</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+          {% endif %}
+          <span class="text-dark text-sm mb-0 px-0 ms-4">{{ action.authorUser.full_name if action.authorUser else None | empty_string_if_null }}</span>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
 {% endmacro %}
