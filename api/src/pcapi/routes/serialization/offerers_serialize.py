@@ -130,6 +130,27 @@ class GetOffererNameResponseModel(BaseModel):
         orm_mode = True
 
 
+class GetOffererMemberResponseModel(BaseModel):
+    firstName: str
+    lastName: str
+    email: str
+
+    class Config:
+        orm_mode = True
+
+    @classmethod
+    def from_orm(cls, user_offerer: offerers_models.UserOfferer) -> "GetOffererMemberResponseModel":
+        res = super().from_orm(user_offerer.user)
+        return res
+
+
+class GetOffererMembersResponseModel(BaseModel):
+    members: list[GetOffererMemberResponseModel]
+
+    class Config:
+        orm_mode = True
+
+
 class GetOfferersNamesResponseModel(BaseModel):
     offerersNames: list[GetOffererNameResponseModel]
 

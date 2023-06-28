@@ -1874,6 +1874,10 @@ def invite_members(offerer: models.Offerer, emails: list[str]) -> None:
     )  # TODO à modifier envoyer email seulement aux nouveaux invités
 
 
+def get_offerer_members(offerer: models.Offerer) -> list[models.UserOfferer]:
+    return models.UserOfferer.query.filter_by(offererId=offerer.id).join(users_models.User).all()
+
+
 def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
     offerer_invitations = models.OffererInvitation.query.filter_by(email=user.email).all()
     if not offerer_invitations:

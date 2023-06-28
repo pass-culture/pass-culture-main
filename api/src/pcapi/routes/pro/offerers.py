@@ -89,6 +89,18 @@ def invite_members(offerer_id: int, body: offerers_serialize.InviteMembersQueryM
     api.invite_members(offerer, body.emails)
 
 
+@private_api.route("/offerers/<int:offerer_id>/members", methods=["GET"])
+@login_required
+@spectree_serialize(response_model=offerers_serialize.GetOffererMembersResponseModel, api=blueprint.pro_private_schema)
+def get_offerer_members(offerer_id: int) -> offerers_serialize.GetOffererMembersResponseModel:
+    check_user_has_access_to_offerer(current_user, offerer_id)
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    users = api.get_offerer_members(offerer)
+    return offerers_serialize.GetOffererMembersResponseModel(
+        members=[offerers_serialize.GetOffererMemberResponseModel.from_orm(user) for user in users]
+    )
+
+
 @private_api.route("/offerers/<int:offerer_id>/api_keys", methods=["POST"])
 @login_required
 @spectree_serialize(response_model=offerers_serialize.GenerateOffererApiKeyResponse, api=blueprint.pro_private_schema)
