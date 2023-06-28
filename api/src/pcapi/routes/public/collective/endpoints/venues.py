@@ -1,6 +1,4 @@
-from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.providers import repository as providers_repository
-from pcapi.models.feature import FeatureToggle
 from pcapi.routes.public import blueprints
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
 from pcapi.routes.public.collective.serialization import venues as serialization
@@ -33,10 +31,7 @@ def list_venues() -> serialization.CollectiveOffersListVenuesResponseModel:
 
     Tous les lieux enregistrés, sont listés ici avec leurs coordonnées.
     """
-    if FeatureToggle.ENABLE_PROVIDER_AUTHENTIFICATION.is_active():
-        venues = providers_repository.get_providers_venues(current_api_key.providerId)
-    else:
-        venues = offerers_repository.get_all_venues_by_offerer_id(current_api_key.offererId)
+    venues = providers_repository.get_providers_venues(current_api_key.providerId)
 
     return serialization.CollectiveOffersListVenuesResponseModel(
         __root__=[venues_serialization.VenueResponse.build_model(venue) for venue in venues]

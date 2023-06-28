@@ -4,13 +4,11 @@ import pytest
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as provider_factories
-from pcapi.core.testing import override_features
 
 
 @pytest.mark.usefixtures("db_session")
 @freeze_time("2022-05-01 15:00:00")
 class CollectiveOffersPublicGetOfferTest:
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_get_offer(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -72,7 +70,6 @@ class CollectiveOffersPublicGetOfferTest:
             "imageUrl": offer.imageUrl,
         }
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_offer_does_not_exists(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -85,7 +82,6 @@ class CollectiveOffersPublicGetOfferTest:
         # Then
         assert response.status_code == 404
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_offer_without_stock(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -108,7 +104,6 @@ class CollectiveOffersPublicGetOfferTest:
         # Then
         assert response.status_code == 404
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_user_not_logged_in(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -126,7 +121,6 @@ class CollectiveOffersPublicGetOfferTest:
         # Then
         assert response.status_code == 401
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_user_no_access_to_user(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()

@@ -21,7 +21,6 @@ from pcapi.core.providers import models as provider_models
 from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import offer_mixin
-from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.utils.clean_accents import clean_accents
@@ -579,20 +578,12 @@ def list_public_collective_offers(
 ) -> list[educational_models.CollectiveOffer]:
     query = educational_models.CollectiveOffer.query
 
-    if FeatureToggle.ENABLE_PROVIDER_AUTHENTIFICATION.is_active():
-        query = query.join(provider_models.Provider, educational_models.CollectiveOffer.provider)
-        query = query.join(educational_models.CollectiveStock, educational_models.CollectiveOffer.collectiveStock)
-        filters = [
-            educational_models.CollectiveOffer.providerId == required_id,
-            educational_models.CollectiveOffer.validation != offer_mixin.OfferValidationStatus.DRAFT,
-        ]
-    else:
-        query = query.join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
-        query = query.join(educational_models.CollectiveStock, educational_models.CollectiveOffer.collectiveStock)
-        filters = [
-            offerers_models.Venue.managingOffererId == required_id,
-            educational_models.CollectiveOffer.validation != offer_mixin.OfferValidationStatus.DRAFT,
-        ]
+    query = query.join(provider_models.Provider, educational_models.CollectiveOffer.provider)
+    query = query.join(educational_models.CollectiveStock, educational_models.CollectiveOffer.collectiveStock)
+    filters = [
+        educational_models.CollectiveOffer.providerId == required_id,
+        educational_models.CollectiveOffer.validation != offer_mixin.OfferValidationStatus.DRAFT,
+    ]
 
     if status:
         filters.append(educational_models.CollectiveOffer.status == status)  # type: ignore [arg-type]

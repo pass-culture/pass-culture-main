@@ -51,7 +51,6 @@ class FeatureToggle(enum.Enum):
     ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18 = (
         "Permet l'affichage du lien vers DMS sur la page de maintenance pour les 18 ans"
     )
-    ENABLE_PROVIDER_AUTHENTIFICATION = "Active l'authentification via le provider à la place de l'offerer"
     ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE = (
         "Permet l'affichage du lien vers DMS sur la page de maintenance pour les 15-17 ans"
     )
@@ -194,7 +193,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_COLLECTIVE_REQUEST,
     FeatureToggle.WIP_ENABLE_NEW_ADAGE_HEADER,
     FeatureToggle.WIP_ENABLE_SATISFACTION_SURVEY,
-    FeatureToggle.ENABLE_PROVIDER_AUTHENTIFICATION,
     FeatureToggle.WIP_ENABLE_NEW_ADAGE_FILTERS,
     FeatureToggle.WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING,
     FeatureToggle.WIP_ENABLE_NEW_TITELIVE_ELIGIBILITY_FILTERS,

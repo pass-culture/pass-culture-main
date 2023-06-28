@@ -8,7 +8,6 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation as offers_validation
 from pcapi.core.providers import exceptions as provider_exceptions
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.feature import FeatureToggle
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import utils
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
@@ -50,12 +49,8 @@ def get_collective_offers_public(
     """Récuperation de l'offre collective avec l'identifiant offer_id.
     Cette api ignore les offre vitrines et les offres commencées sur l'interface web et non finalisées."""
 
-    if FeatureToggle.ENABLE_PROVIDER_AUTHENTIFICATION.is_active():
-        required_id = current_api_key.providerId
-    else:
-        required_id = current_api_key.offererId
     offers = educational_api_offer.list_public_collective_offers(
-        required_id=required_id,
+        required_id=current_api_key.providerId,
         venue_id=query.venue_id,
         status=query.status,
         period_beginning_date=query.period_beginning_date,
@@ -104,22 +99,13 @@ def get_collective_offer_public(
             status_code=404,
         )
 
-    if FeatureToggle.ENABLE_PROVIDER_AUTHENTIFICATION.is_active():
-        if offer.provider.id != current_api_key.providerId:
-            raise ApiErrors(
-                errors={
-                    "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."],
-                },
-                status_code=403,
-            )
-    else:
-        if offer.venue.managingOffererId != current_api_key.offerer.id:
-            raise ApiErrors(
-                errors={
-                    "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."],
-                },
-                status_code=403,
-            )
+    if offer.provider.id != current_api_key.providerId:
+        raise ApiErrors(
+            errors={
+                "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette information."],
+            },
+            status_code=403,
+        )
 
     return offers_serialization.GetPublicCollectiveOfferResponseModel.from_orm(offer)
 
@@ -194,8 +180,7 @@ def post_collective_offer_public(
 
     try:
         offer = educational_api_offer.create_collective_offer_public(
-            provider_id=current_api_key.providerId,
-            offerer_id=current_api_key.offererId,
+            requested_id=current_api_key.providerId,
             body=body,
         )
 
@@ -367,54 +352,35 @@ def patch_collective_offer_public(
             status_code=404,
         )
 
-    if FeatureToggle.ENABLE_PROVIDER_AUTHENTIFICATION.is_active():
-        if not offer.provider or offer.provider.id != current_api_key.provider.id:
+    if not offer.provider or offer.provider.id != current_api_key.provider.id:
+        raise ApiErrors(
+            errors={
+                "global": ["Vous n'avez pas les droits d'accès suffisants pour accéder à cette offre collective."],
+            },
+            status_code=403,
+        )
+
+    if new_values.get("venueId"):
+        venue = offerers_repository.find_venue_and_provider_by_id(new_values["venueId"])
+        if not venue:
             raise ApiErrors(
                 errors={
-                    "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette offre collective."],
+                    "venueId": ["Ce lieu n'a pas été trouvé."],
+                },
+                status_code=404,
+            )
+        list_venueproviders = [
+            venue_provider
+            for venue_provider in venue.venueProviders
+            if venue_provider.providerId == current_api_key.provider.id
+        ]
+        if not list_venueproviders:
+            raise ApiErrors(
+                errors={
+                    "venueId": ["aucun lieu de fournisseur n'a été trouvé."],
                 },
                 status_code=403,
             )
-
-        if new_values.get("venueId"):
-            venue = offerers_repository.find_venue_and_provider_by_id(new_values["venueId"])
-            if not venue:
-                raise ApiErrors(
-                    errors={
-                        "venueId": ["Ce lieu n'a pas été trouvé."],
-                    },
-                    status_code=404,
-                )
-            list_venueproviders = [
-                venue_provider
-                for venue_provider in venue.venueProviders
-                if venue_provider.providerId == current_api_key.provider.id
-            ]
-            if not list_venueproviders:
-                raise ApiErrors(
-                    errors={
-                        "venueId": ["aucun lieu de fournisseur n'a été trouvé."],
-                    },
-                    status_code=403,
-                )
-    else:
-        if offer.venue.managingOffererId != current_api_key.offerer.id:
-            raise ApiErrors(
-                errors={
-                    "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette offre collective."],
-                },
-                status_code=403,
-            )
-
-        if new_values.get("venueId"):
-            venue = offerers_repository.find_venue_by_id(new_values["venueId"])
-            if (not venue) or (venue.managingOffererId != current_api_key.offerer.id):
-                raise ApiErrors(
-                    errors={
-                        "venueId": ["Ce lieu n'a pas été trouvé."],
-                    },
-                    status_code=404,
-                )
 
     if new_values.get("offerVenue"):
         if new_values["offerVenue"] == collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value:
