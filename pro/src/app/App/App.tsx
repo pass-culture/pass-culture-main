@@ -74,7 +74,10 @@ const App = ({ children }: AppProps): JSX.Element | null => {
     if (consentedToBeamer && currentUser !== null) {
       // We use setTimeout because Beamer might not be loaded yet
       setTimeout(() => {
-        if (window.Beamer !== undefined) {
+        if (
+          window.Beamer !== undefined &&
+          location.pathname.indexOf('/parcours-inscription') === -1
+        ) {
           window.Beamer.update({
             user_firstname: currentUser.firstName,
             user_lastname: currentUser.lastName,
