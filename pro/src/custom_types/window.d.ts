@@ -12,6 +12,8 @@ declare global {
       init: () => void
       update: (config: any) => void
       destroy: () => void
+      hide: () => void
+      show: () => void
     }
   }
 }
