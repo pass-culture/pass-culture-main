@@ -1853,8 +1853,18 @@ def invite_members(offerer: models.Offerer, emails: list[str]) -> None:
         .all()
     )
     for email in emails:
-        if email in existing_invited_emails:
+        if email in existing_invited_emails:  # already invited
             continue
+        user = (
+            users_models.User.query.filter_by(email=email)
+            .join(models.UserOfferer)
+            .filter(models.UserOfferer.offererId == offerer.id)
+            .one_or_none()
+        )
+        if user and user.UserOfferers:  # User already attached to offerer
+            continue
+        if user:  # User exists but not attached to offerer
+            pass  # TODO create user offerer
         offerer_invitation = models.OffererInvitation(offerer=offerer, email=email)
         db.session.add(offerer_invitation)
 
@@ -1862,3 +1872,23 @@ def invite_members(offerer: models.Offerer, emails: list[str]) -> None:
     transactional_mails.send_offerer_attachment_invitation(
         emails
     )  # TODO à modifier envoyer email seulement aux nouveaux invités
+
+
+def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
+    offerer_invitations = models.OffererInvitation.query.filter_by(email=user.email).all()
+    if not offerer_invitations:
+        return
+    for offerer_invitation in offerer_invitations:
+        user_offerer = grant_user_offerer_access(user=user, offerer=offerer_invitation.offerer)
+        user_offerer.user.add_pro_role()
+        db.session.add(user_offerer)
+        db.session.delete(offerer_invitation)
+
+        try:
+            db.session.commit()
+        except Exception:  # pylint: disable=broad-except
+            db.session.rollback()
+            logger.info("User offferer already exists")
+            continue
+        transactional_mails.send_offerer_attachment_invitation_confirmed([user.email])
+        # transactional_mails.send_offerer_attachment_invitation_accepted()
