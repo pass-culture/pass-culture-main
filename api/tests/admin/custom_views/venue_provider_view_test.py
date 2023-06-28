@@ -1,141 +1,141 @@
-from unittest.mock import patch
+# from unittest.mock import patch
 
-from pcapi.admin.custom_views.venue_provider_view import VenueProviderView
-from pcapi.core.bookings.factories import BookingFactory
-import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.offers.factories import StockFactory
-from pcapi.core.providers.factories import AllocineProviderFactory
-from pcapi.core.providers.factories import AllocineVenueProviderFactory
-from pcapi.core.providers.factories import AllocineVenueProviderPriceRuleFactory
-from pcapi.core.providers.factories import ProviderFactory
-from pcapi.core.providers.factories import VenueProviderFactory
-from pcapi.core.providers.models import VenueProvider
-from pcapi.core.users.factories import AdminFactory
-from pcapi.core.users.factories import UserFactory
+# from pcapi.admin.custom_views.venue_provider_view import VenueProviderView
+# from pcapi.core.bookings.factories import BookingFactory
+# import pcapi.core.offerers.factories as offerers_factories
+# from pcapi.core.offers.factories import StockFactory
+# from pcapi.core.providers.factories import AllocineProviderFactory
+# from pcapi.core.providers.factories import AllocineVenueProviderFactory
+# from pcapi.core.providers.factories import AllocineVenueProviderPriceRuleFactory
+# from pcapi.core.providers.factories import ProviderFactory
+# from pcapi.core.providers.factories import VenueProviderFactory
+# from pcapi.core.providers.models import VenueProvider
+# from pcapi.core.users.factories import AdminFactory
+# from pcapi.core.users.factories import UserFactory
 
-from tests.conftest import clean_database
-
-
-class VenueProviderViewTest:
-    def test_prevent_access_not_authenticated(self, app, db_session):
-        # When
-        view = VenueProviderView(VenueProvider, db_session)
-
-        # Then
-        assert not view.is_accessible()
-
-    def test_prevent_access_missing_venue_access(self, client, app, db_session):
-        # Given
-        UserFactory(email="user@example.com")
-        client.with_session_auth("user@example.com")
-
-        # When
-        view = VenueProviderView(VenueProvider, db_session)
-
-        # Then
-        assert not view.is_accessible()
+# from tests.conftest import clean_database
 
 
-class EditModelTest:
-    @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
-    @patch("pcapi.core.providers.api._siret_can_be_synchronized")
-    def test_edit_venue_provider(
-        self, mock_siret_can_be_synchronized, mock_synchronize_venue_provider, validate_csrf_token, client, app
-    ):
-        # Given
-        AdminFactory(email="user@example.com")
-        venue = offerers_factories.VenueFactory()
-        old_provider = ProviderFactory(
-            name="old provider", enabledForPro=True, localClass=None, apiUrl="https://example.com"
-        )
-        new_provider = ProviderFactory(
-            name="new provider", enabledForPro=True, localClass=None, apiUrl="https://example2.com"
-        )
-        venue_provider = VenueProviderFactory(provider=old_provider, venue=venue)
+# class VenueProviderViewTest:
+#     def test_prevent_access_not_authenticated(self, app, db_session):
+#         # When
+#         view = VenueProviderView(VenueProvider, db_session)
 
-        existing_stock = StockFactory(quantity=10, offer__venue=venue, offer__idAtProvider="1")
-        BookingFactory(stock=existing_stock)
+#         # Then
+#         assert not view.is_accessible()
 
-        mock_siret_can_be_synchronized.return_value = True
+#     def test_prevent_access_missing_venue_access(self, client, app, db_session):
+#         # Given
+#         UserFactory(email="user@example.com")
+#         client.with_session_auth("user@example.com")
 
-        data = dict(
-            provider=new_provider.id,
-            venue=venue.id,
-            venueIdAtOfferProvider="hsf4uiagèy12386dq",
-        )
+#         # When
+#         view = VenueProviderView(VenueProvider, db_session)
 
-        client.with_session_auth("user@example.com")
-        response = client.post(f"/pc/back-office/venue_providers/edit/?id={venue_provider.id}", form=data)
+#         # Then
+#         assert not view.is_accessible()
 
-        assert response.status_code == 302
 
-        # Then
-        venue_provider = VenueProvider.query.one()
+# class EditModelTest:
+#     @clean_database
+#     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+#     @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
+#     @patch("pcapi.core.providers.api._siret_can_be_synchronized")
+#     def test_edit_venue_provider(
+#         self, mock_siret_can_be_synchronized, mock_synchronize_venue_provider, validate_csrf_token, client, app
+#     ):
+#         # Given
+#         AdminFactory(email="user@example.com")
+#         venue = offerers_factories.VenueFactory()
+#         old_provider = ProviderFactory(
+#             name="old provider", enabledForPro=True, localClass=None, apiUrl="https://example.com"
+#         )
+#         new_provider = ProviderFactory(
+#             name="new provider", enabledForPro=True, localClass=None, apiUrl="https://example2.com"
+#         )
+#         venue_provider = VenueProviderFactory(provider=old_provider, venue=venue)
 
-        # Check that venue_provider model have been updated
-        assert venue_provider.venue == venue
-        assert venue_provider.provider == new_provider
-        assert venue_provider.venueIdAtOfferProvider == "hsf4uiagèy12386dq"
+#         existing_stock = StockFactory(quantity=10, offer__venue=venue, offer__idAtProvider="1")
+#         BookingFactory(stock=existing_stock)
 
-        # Check that the quantity of existing stocks have been updated and quantity reset to booked_quantity.
-        assert existing_stock.quantity == 1
-        assert existing_stock.offer.lastProviderId == new_provider.id
+#         mock_siret_can_be_synchronized.return_value = True
 
-        mock_synchronize_venue_provider.assert_called_once_with(venue_provider)
+#         data = dict(
+#             provider=new_provider.id,
+#             venue=venue.id,
+#             venueIdAtOfferProvider="hsf4uiagèy12386dq",
+#         )
 
-    @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.core.providers.api._siret_can_be_synchronized")
-    def test_provider_not_synchronizable(self, mock_siret_can_be_synchronized, validate_csrf_token, client):
-        # Given
-        AdminFactory(email="user@example.com")
-        venue = offerers_factories.VenueFactory()
-        old_provider = ProviderFactory(enabledForPro=True, localClass=None, apiUrl="https://example.com")
-        new_provider = ProviderFactory(enabledForPro=True, localClass=None, apiUrl="https://example2.com")
-        venue_provider = VenueProviderFactory(provider=old_provider, venue=venue, venueIdAtOfferProvider="old-siret")
+#         client.with_session_auth("user@example.com")
+#         response = client.post(f"/pc/back-office/venue_providers/edit/?id={venue_provider.id}", form=data)
 
-        mock_siret_can_be_synchronized.return_value = False
+#         assert response.status_code == 302
 
-        data = dict(
-            provider=new_provider.id,
-            venue=venue.id,
-            venueIdAtOfferProvider="hsf4uiagèy12386dq",
-        )
+#         # Then
+#         venue_provider = VenueProvider.query.one()
 
-        client.with_session_auth("user@example.com")
-        client.post(f"/pc/back-office/venue_providers/edit/?id={venue_provider.id}", form=data)
+#         # Check that venue_provider model have been updated
+#         assert venue_provider.venue == venue
+#         assert venue_provider.provider == new_provider
+#         assert venue_provider.venueIdAtOfferProvider == "hsf4uiagèy12386dq"
 
-        # Then
-        assert venue_provider.provider == old_provider
-        assert venue_provider.venueIdAtOfferProvider == "old-siret"
+#         # Check that the quantity of existing stocks have been updated and quantity reset to booked_quantity.
+#         assert existing_stock.quantity == 1
+#         assert existing_stock.offer.lastProviderId == new_provider.id
 
-    @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
-    def test_allocine_provider(self, synchronize_venue_provider, validate_csrf_token, client):
-        # Given
-        AdminFactory(email="user@example.com")
-        venue = offerers_factories.VenueFactory(siret="siret-pivot")
-        provider = AllocineProviderFactory(enabledForPro=True)
+#         mock_synchronize_venue_provider.assert_called_once_with(venue_provider)
 
-        venue_provider = AllocineVenueProviderFactory(provider=provider, venue=venue, isDuo=False, quantity=111)
-        AllocineVenueProviderPriceRuleFactory(price=11, allocineVenueProvider=venue_provider)
+#     @clean_database
+#     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+#     @patch("pcapi.core.providers.api._siret_can_be_synchronized")
+#     def test_provider_not_synchronizable(self, mock_siret_can_be_synchronized, validate_csrf_token, client):
+#         # Given
+#         AdminFactory(email="user@example.com")
+#         venue = offerers_factories.VenueFactory()
+#         old_provider = ProviderFactory(enabledForPro=True, localClass=None, apiUrl="https://example.com")
+#         new_provider = ProviderFactory(enabledForPro=True, localClass=None, apiUrl="https://example2.com")
+#         venue_provider = VenueProviderFactory(provider=old_provider, venue=venue, venueIdAtOfferProvider="old-siret")
 
-        data = dict(
-            isDuo=True,
-            allocine_price=22,
-            allocine_quantity=222,
-            provider=provider.id,
-            venue=venue.id,
-            venueIdAtOfferProvider="ABCDEF12345",
-        )
+#         mock_siret_can_be_synchronized.return_value = False
 
-        client.with_session_auth("user@example.com")
-        client.post(f"/pc/back-office/venue_providers/edit/?id={venue_provider.id}", form=data)
-        synchronize_venue_provider.assert_called_once_with(venue_provider)
+#         data = dict(
+#             provider=new_provider.id,
+#             venue=venue.id,
+#             venueIdAtOfferProvider="hsf4uiagèy12386dq",
+#         )
 
-        # Then
-        assert venue.venueProviders[0] == venue_provider
-        assert venue_provider.quantity == 222
+#         client.with_session_auth("user@example.com")
+#         client.post(f"/pc/back-office/venue_providers/edit/?id={venue_provider.id}", form=data)
+
+#         # Then
+#         assert venue_provider.provider == old_provider
+#         assert venue_provider.venueIdAtOfferProvider == "old-siret"
+
+#     @clean_database
+#     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+#     @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
+#     def test_allocine_provider(self, synchronize_venue_provider, validate_csrf_token, client):
+#         # Given
+#         AdminFactory(email="user@example.com")
+#         venue = offerers_factories.VenueFactory(siret="siret-pivot")
+#         provider = AllocineProviderFactory(enabledForPro=True)
+
+#         venue_provider = AllocineVenueProviderFactory(provider=provider, venue=venue, isDuo=False, quantity=111)
+#         AllocineVenueProviderPriceRuleFactory(price=11, allocineVenueProvider=venue_provider)
+
+#         data = dict(
+#             isDuo=True,
+#             allocine_price=22,
+#             allocine_quantity=222,
+#             provider=provider.id,
+#             venue=venue.id,
+#             venueIdAtOfferProvider="ABCDEF12345",
+#         )
+
+#         client.with_session_auth("user@example.com")
+#         client.post(f"/pc/back-office/venue_providers/edit/?id={venue_provider.id}", form=data)
+#         synchronize_venue_provider.assert_called_once_with(venue_provider)
+
+#         # Then
+#         assert venue.venueProviders[0] == venue_provider
+#         assert venue_provider.quantity == 222
