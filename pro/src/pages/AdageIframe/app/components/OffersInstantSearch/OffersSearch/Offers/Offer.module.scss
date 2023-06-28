@@ -1,4 +1,5 @@
 @use "styles/variables/_colorsAdageIframe.scss" as colors;
+@use "styles/variables/_colors.scss" as defaultColors;
 @use "styles/mixins/_rem.scss" as rem;
 @import "styles";
 
@@ -52,7 +53,7 @@ $offer-image-width: rem.torem(176px);
   &-image-default {
     align-items: center;
     background-color: #f1f2f4;
-    border: 1px solid #cbcdd2;
+    border: 1px solid defaultColors.$border-grey-color;
     border-radius: rem.torem(4px);
     display: flex;
     height: $offer-image-height;
