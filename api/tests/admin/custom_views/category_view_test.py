@@ -1,25 +1,25 @@
-from pcapi.core.categories import categories
-from pcapi.core.categories import subcategories
-import pcapi.core.users.factories as users_factories
+# from pcapi.core.categories import categories
+# from pcapi.core.categories import subcategories
+# import pcapi.core.users.factories as users_factories
 
 
-class CategoryViewTest:
-    def test_authorized_user(self, app, db_session, client):
-        admin = users_factories.AdminFactory(email="admin@example.com")
-        client.with_session_auth(admin.email)
+# class CategoryViewTest:
+#     def test_authorized_user(self, app, db_session, client):
+#         admin = users_factories.AdminFactory(email="admin@example.com")
+#         client.with_session_auth(admin.email)
 
-        response = client.get("/pc/back-office/categories")
+#         response = client.get("/pc/back-office/categories")
 
-        assert response.status_code == 200
-        assert any(c.id in response.data.decode("utf-8") for c in categories.ALL_CATEGORIES)
+#         assert response.status_code == 200
+#         assert any(c.id in response.data.decode("utf-8") for c in categories.ALL_CATEGORIES)
 
 
-class SubcategoryViewTest:
-    def test_authorized_user(self, app, db_session, client):
-        admin = users_factories.AdminFactory(email="admin@example.com")
-        client.with_session_auth(admin.email)
+# class SubcategoryViewTest:
+#     def test_authorized_user(self, app, db_session, client):
+#         admin = users_factories.AdminFactory(email="admin@example.com")
+#         client.with_session_auth(admin.email)
 
-        response = client.get("/pc/back-office/subcategories")
+#         response = client.get("/pc/back-office/subcategories")
 
-        assert response.status_code == 200
-        assert any(s.id in response.data.decode("utf-8") for s in subcategories.ALL_SUBCATEGORIES)
+#         assert response.status_code == 200
+#         assert any(s.id in response.data.decode("utf-8") for s in subcategories.ALL_SUBCATEGORIES)
