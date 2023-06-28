@@ -1815,11 +1815,11 @@ def delete_offerer(offerer_id: int) -> None:
     offerers_models.VenuePricingPointLink.query.filter(
         offerers_models.VenuePricingPointLink.venueId.in_(venue_ids_subquery)
         | offerers_models.VenuePricingPointLink.pricingPointId.in_(venue_ids_subquery),
-    ).delete(synchronize_session=False)
+        ).delete(synchronize_session=False)
     offerers_models.VenueReimbursementPointLink.query.filter(
         offerers_models.VenueReimbursementPointLink.venueId.in_(venue_ids_subquery)
         | offerers_models.VenueReimbursementPointLink.reimbursementPointId.in_(venue_ids_subquery),
-    ).delete(synchronize_session=False)
+        ).delete(synchronize_session=False)
     offerers_models.Venue.query.filter(offerers_models.Venue.managingOffererId == offerer_id).delete(
         synchronize_session=False
     )
@@ -1846,7 +1846,7 @@ def delete_offerer(offerer_id: int) -> None:
     search.unindex_venue_ids(venue_ids_subquery)
 
 
-def invite_members(offerer: models.Offerer, emails: list[str]) -> None:
+def invite_members(offerer: models.Offerer, emails: list[str], current_user: users_models.User) -> None:
     existing_invited_emails = (
         models.OffererInvitation.query.filter(models.OffererInvitation.offererId == offerer.id)
         .filter(models.OffererInvitation.email.in_(emails))
@@ -1863,9 +1863,9 @@ def invite_members(offerer: models.Offerer, emails: list[str]) -> None:
         )
         if user and user.UserOfferers:  # User already attached to offerer
             continue
-        if user:  # User exists but not attached to offerer
+        if user and user.isEmailValidated:  # User exists but not attached to offerer
             pass  # TODO create user offerer
-        offerer_invitation = models.OffererInvitation(offerer=offerer, email=email)
+        offerer_invitation = models.OffererInvitation(offerer=offerer, email=email, user=current_user)
         db.session.add(offerer_invitation)
 
     db.session.commit()
@@ -1885,6 +1885,7 @@ def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
     for offerer_invitation in offerer_invitations:
         user_offerer = grant_user_offerer_access(user=user, offerer=offerer_invitation.offerer)
         user_offerer.user.add_pro_role()
+        inviter_email = offerer_invitation.user.email
         db.session.add(user_offerer)
         db.session.delete(offerer_invitation)
 
@@ -1895,4 +1896,4 @@ def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
             logger.info("User offferer already exists")
             continue
         transactional_mails.send_offerer_attachment_invitation_confirmed([user.email])
-        # transactional_mails.send_offerer_attachment_invitation_accepted()
+        transactional_mails.send_offerer_attachment_invitation_accepted([inviter_email])

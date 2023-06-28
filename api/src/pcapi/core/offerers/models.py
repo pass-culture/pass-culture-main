@@ -927,5 +927,7 @@ class OffererInvitation(PcObject, Base, Model):
     offerer: Offerer = relationship("Offerer", foreign_keys=[offererId])
     email: str = Column(Text, nullable=False)
     dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
+    userId: int = Column(BigInteger, ForeignKey("user.id"), nullable=False, index=True)
+    user: sa_orm.Mapped["users_models.User"] = relationship("User", foreign_keys=[userId], backref="OffererInvitations")
 
     __table_args__ = (UniqueConstraint("offererId", "email", name="unique_offerer_invitation"),)

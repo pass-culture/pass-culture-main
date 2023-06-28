@@ -86,7 +86,7 @@ def get_offerer(offerer_id: int) -> offerers_serialize.GetOffererResponseModel:
 def invite_members(offerer_id: int, body: offerers_serialize.InviteMembersQueryModel) -> None:
     check_user_has_access_to_offerer(current_user, offerer_id)
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
-    api.invite_members(offerer, body.emails)
+    api.invite_members(offerer, body.emails, current_user)
 
 
 @private_api.route("/offerers/<int:offerer_id>/members", methods=["GET"])
