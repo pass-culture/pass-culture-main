@@ -1,8 +1,9 @@
 import { Form, useFormik, FormikProvider } from 'formik'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { GetOffererMemberResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout/FormLayout'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as IcoPlusCircle } from 'icons/ico-plus-circle.svg'
@@ -25,6 +26,9 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
   const location = useLocation()
   const notify = useNotification()
   const [isLoading, setIsLoading] = useState(false)
+  const [members, setMembers] = useState<
+    Array<GetOffererMemberResponseModel> | undefined
+  >()
 
   const onSubmit = async ({ email }: { email: string }) => {
     try {
@@ -44,6 +48,14 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
     validateOnChange: false,
   })
 
+  useEffect(() => {
+    const fetchOffererMembers = async () => {
+      const { members } = await api.getOffererMembers(offererId)
+      setMembers(members)
+    }
+    fetchOffererMembers()
+  })
+
   const shouldScrollToSection = location.hash === SECTION_ID
   const scrollToSection = useCallback((node: HTMLElement) => {
     if (shouldScrollToSection) {
@@ -56,10 +68,31 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
   return (
     <section className={styles['section']} ref={scrollToSection}>
       <div className={styles['main-list-title']}>
-        <h2 className={styles['main-list-title-text']}>
-          Ajout des collaborateurs
-        </h2>
+        <h2 className={styles['main-list-title-text']}>Collaborateurs</h2>
       </div>
+      {!!members && (
+        <>
+          <h3 className={styles['subtitle']}>Membres de la structure</h3>
+          <table className={styles['members-list']}>
+            <thead>
+              <tr>
+                <th scope="col">Prénom & Nom</th>
+                <th scope="col">Adresse email</th>
+              </tr>
+            </thead>
+            <tbody>
+              {members.map(({ firstName, lastName, email }) => (
+                <tr>
+                  <td>{`${firstName} ${lastName}`}</td>
+                  <td>{email}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
+
+      <h3 className={styles['subtitle']}>Ajout de collaborateurs</h3>
       <p className={styles['description']}>
         Vous pouvez inviter des collaborateurs à rejoindre votre espace.
       </p>

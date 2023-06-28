@@ -18,6 +18,39 @@
       @include fonts.title4;
     }
   }
+  .subtitle {
+    @include fonts.button;
+
+    padding-top: rem.torem(8px);
+    margin-bottom: rem.torem(16px);
+  }
+  
+  .members-list {
+    width: 100%;
+    margin-top: rem.torem(-8px);
+    margin-bottom: rem.torem(16px);
+
+    th {
+      @include fonts.caption;
+
+      color: colors.$black;
+      line-height: rem.torem(20px);
+      min-height: rem.torem(60px);
+      padding: rem.torem(14px);
+      vertical-align: middle;
+      text-align: left;
+    }
+    tr {
+      border-bottom: rem.torem(1px) solid colors.$grey-medium;
+    }
+    td {
+      @include fonts.body;
+
+      padding: rem.torem(16px);
+      vertical-align: middle;
+      text-align: left;
+    }
+  }
 
   .description {
     margin-bottom: rem.torem(16px);
