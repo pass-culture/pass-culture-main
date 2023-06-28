@@ -36,6 +36,7 @@ import type { GetCollectiveOfferTemplateResponseModel } from '../models/GetColle
 import type { GetCollectiveVenueResponseModel } from '../models/GetCollectiveVenueResponseModel';
 import type { GetEducationalOfferersResponseModel } from '../models/GetEducationalOfferersResponseModel';
 import type { GetIndividualOfferResponseModel } from '../models/GetIndividualOfferResponseModel';
+import type { GetOffererMembersResponseModel } from '../models/GetOffererMembersResponseModel';
 import type { GetOffererResponseModel } from '../models/GetOffererResponseModel';
 import type { GetOfferersNamesResponseModel } from '../models/GetOfferersNamesResponseModel';
 import type { GetVenueListResponseModel } from '../models/GetVenueListResponseModel';
@@ -1186,6 +1187,28 @@ export class DefaultService {
       },
       body: requestBody,
       mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_offerer_members <GET>
+   * @param offererId
+   * @returns GetOffererMembersResponseModel OK
+   * @throws ApiError
+   */
+  public getOffererMembers(
+    offererId: number,
+  ): CancelablePromise<GetOffererMembersResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/offerers/{offerer_id}/members',
+      path: {
+        'offerer_id': offererId,
+      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,

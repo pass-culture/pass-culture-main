@@ -88,6 +88,8 @@ export type { GetEducationalOfferersQueryModel } from './models/GetEducationalOf
 export type { GetEducationalOfferersResponseModel } from './models/GetEducationalOfferersResponseModel';
 export type { GetEducationalOffererVenueResponseModel } from './models/GetEducationalOffererVenueResponseModel';
 export type { GetIndividualOfferResponseModel } from './models/GetIndividualOfferResponseModel';
+export type { GetOffererMemberResponseModel } from './models/GetOffererMemberResponseModel';
+export type { GetOffererMembersResponseModel } from './models/GetOffererMembersResponseModel';
 export type { GetOffererNameResponseModel } from './models/GetOffererNameResponseModel';
 export type { GetOffererResponseModel } from './models/GetOffererResponseModel';
 export type { GetOfferersNamesQueryModel } from './models/GetOfferersNamesQueryModel';
