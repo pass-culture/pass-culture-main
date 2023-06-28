@@ -1,6 +1,4 @@
 import pytest
-from tests.conftest import TestClient
-from pcapi.routes.native.v1.serialization import moodboard_offers as serializers
 
 from pcapi import settings
 from pcapi.core.bookings.factories import BookingFactory
@@ -19,6 +17,7 @@ from pcapi.core.users.factories import UserFactory
 import pcapi.local_providers.cinema_providers.constants as cinema_providers_constants
 from pcapi.models.offer_mixin import OfferValidationStatus
 import pcapi.notifications.push.testing as notifications_testing
+from pcapi.routes.native.v1.serialization import moodboard_offers as serializers
 
 from tests.conftest import TestClient
 from tests.connectors.cgr import soap_definitions
