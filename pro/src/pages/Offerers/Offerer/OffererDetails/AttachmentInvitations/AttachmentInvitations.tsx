@@ -54,7 +54,7 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
       setMembers(members)
     }
     fetchOffererMembers()
-  })
+  }, [])
 
   const shouldScrollToSection = location.hash === SECTION_ID
   const scrollToSection = useCallback((node: HTMLElement) => {
