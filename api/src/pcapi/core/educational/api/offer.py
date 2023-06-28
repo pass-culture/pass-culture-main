@@ -32,7 +32,6 @@ from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
-from pcapi.models.feature import FeatureToggle
 from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.adage_iframe.serialization.offers import PostCollectiveRequestBodyModel
 from pcapi.routes.public.collective.serialization import offers as public_api_collective_offers_serialize
@@ -448,23 +447,17 @@ def update_collective_offer_educational_institution(
 
 
 def create_collective_offer_public(
-    provider_id: int,
-    offerer_id: int,
+    requested_id: int,
     body: public_api_collective_offers_serialize.PostCollectiveOfferBodyModel,
 ) -> educational_models.CollectiveOffer:
     from pcapi.core.offers.api import update_offer_fraud_information
 
-    if FeatureToggle.ENABLE_PROVIDER_AUTHENTIFICATION.is_active():
-        offerers_api.can_venue_create_educational_offer(body.venue_id)
-    else:
-        offerers_api.can_offerer_create_educational_offer(offerer_id)
+    offerers_api.can_venue_create_educational_offer(body.venue_id)
 
     venue_query = offerers_models.Venue.query.filter(offerers_models.Venue.id == body.venue_id)
-    if FeatureToggle.ENABLE_PROVIDER_AUTHENTIFICATION.is_active():
-        venue_query = venue_query.join(providers_models.VenueProvider, offerers_models.Venue.venueProviders)
-        venue_query = venue_query.filter(providers_models.VenueProvider.providerId == provider_id)
-    else:
-        venue_query = venue_query.filter(offerers_models.Venue.managingOffererId == offerer_id)
+    venue_query = venue_query.join(providers_models.VenueProvider, offerers_models.Venue.venueProviders)
+    venue_query = venue_query.filter(providers_models.VenueProvider.providerId == requested_id)
+
     venue = venue_query.one_or_none()
     if not venue:
         raise offerers_exceptions.VenueNotFoundException()
@@ -525,7 +518,7 @@ def create_collective_offer_public(
         offerVenue=offer_venue,
         interventionArea=[],
         institution=institution,
-        providerId=provider_id,
+        providerId=requested_id,
     )
 
     collective_offer.bookingEmails = body.booking_emails

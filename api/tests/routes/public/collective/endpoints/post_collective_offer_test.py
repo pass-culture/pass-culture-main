@@ -32,7 +32,6 @@ class CollectiveOffersPublicPostOfferTest:
                     continue
                 child.unlink()
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_post_offers(self, client):
         # Given
 
@@ -98,9 +97,9 @@ class CollectiveOffersPublicPostOfferTest:
         }
         assert offer.providerId == venue_provider.providerId
         assert offer.hasImage is True
+        assert offer.isPublicApi
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     @override_features(WIP_ADD_CLG_6_5_COLLECTIVE_OFFER=True)
     def test_post_offers_6_5_only(self, client):
         # Given
@@ -154,7 +153,6 @@ class CollectiveOffersPublicPostOfferTest:
         # Then
         assert response.status_code == 403
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_post_offers_with_uai(self, client):
         # Given
 
@@ -220,9 +218,9 @@ class CollectiveOffersPublicPostOfferTest:
         }
         assert offer.providerId == venue_provider.providerId
         assert offer.hasImage is True
+        assert offer.isPublicApi
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_post_offers_with_uai_and_institution_id(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -275,7 +273,6 @@ class CollectiveOffersPublicPostOfferTest:
         # Then
         assert response.status_code == 400
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_invalid_api_key(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -324,7 +321,6 @@ class CollectiveOffersPublicPostOfferTest:
         # Then
         assert response.status_code == 401
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_user_cannot_create_collective_offer(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -377,7 +373,6 @@ class CollectiveOffersPublicPostOfferTest:
         # Then
         assert response.status_code == 403
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_bad_educational_institution(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -426,7 +421,6 @@ class CollectiveOffersPublicPostOfferTest:
         # Then
         assert response.status_code == 404
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_bad_venue_id(self, client):
         # Given
         # venue = offerers_factories.VenueFactory(id="ohno")
@@ -475,7 +469,6 @@ class CollectiveOffersPublicPostOfferTest:
         # Then
         assert response.status_code == 404
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_invalid_image_size(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -527,7 +520,6 @@ class CollectiveOffersPublicPostOfferTest:
         # Then
         assert response.status_code == 400
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_invalid_image_type(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -579,7 +571,6 @@ class CollectiveOffersPublicPostOfferTest:
         # Then
         assert response.status_code == 400
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_post_offers_institution_not_active(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -631,7 +622,6 @@ class CollectiveOffersPublicPostOfferTest:
         # Then
         assert response.status_code == 403
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_post_offers_invalid_domain(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -683,7 +673,6 @@ class CollectiveOffersPublicPostOfferTest:
         # Then
         assert response.status_code == 404
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_post_offers_invalid_subcategory(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
