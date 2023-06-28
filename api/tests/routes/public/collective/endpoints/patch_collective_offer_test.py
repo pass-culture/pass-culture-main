@@ -34,7 +34,6 @@ class CollectiveOffersPublicPatchOfferTest:
                     continue
                 child.unlink()
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_patch_offer(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -124,7 +123,6 @@ class CollectiveOffersPublicPatchOfferTest:
         assert offer.institutionId == educational_institution.id
         assert educational_institution.isActive is True
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_patch_offer_price_should_be_lower(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory()
@@ -144,7 +142,6 @@ class CollectiveOffersPublicPatchOfferTest:
         # Then
         assert response.status_code == 403
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     @override_features(WIP_ADD_CLG_6_5_COLLECTIVE_OFFER=True)
     def test_patch_offer_6_5_only_too_early(self, client):
         # Given
@@ -183,7 +180,6 @@ class CollectiveOffersPublicPatchOfferTest:
         offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
         assert offer.students == [educational_models.StudentLevels.COLLEGE4]
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_change_venue(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -225,7 +221,6 @@ class CollectiveOffersPublicPatchOfferTest:
             "otherAddress": "",
         }
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_partial_patch_offer(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -255,7 +250,6 @@ class CollectiveOffersPublicPatchOfferTest:
         assert offer.institutionId == educational_institution.id
         assert educational_institution.isActive is True
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_patch_private_api_offer(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -286,7 +280,6 @@ class CollectiveOffersPublicPatchOfferTest:
         offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
         assert offer.name == "old_name"
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_partial_patch_offer_uai(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -319,7 +312,6 @@ class CollectiveOffersPublicPatchOfferTest:
         assert offer.institutionId == educational_institution.id
         assert educational_institution.isActive is True
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_patch_offer_uai_and_institution_id(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -352,7 +344,6 @@ class CollectiveOffersPublicPatchOfferTest:
         offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
         assert offer.institutionId is None
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_patch_offer_invalid_domain(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -401,7 +392,6 @@ class CollectiveOffersPublicPatchOfferTest:
         # Then
         assert response.status_code == 404
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_patch_offer_invalid_api_key(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -450,7 +440,6 @@ class CollectiveOffersPublicPatchOfferTest:
         # Then
         assert response.status_code == 401
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_patch_offer_invalid_offerer(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -498,7 +487,6 @@ class CollectiveOffersPublicPatchOfferTest:
         # Then
         assert response.status_code == 403
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_patch_offer_invalid_phone_number(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -524,7 +512,6 @@ class CollectiveOffersPublicPatchOfferTest:
         # Then
         assert response.status_code == 400
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_patch_offer_institution_not_active(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -580,7 +567,6 @@ class CollectiveOffersPublicPatchOfferTest:
         # then
         assert response.status_code == 400
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_add_valid_image(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -608,7 +594,6 @@ class CollectiveOffersPublicPatchOfferTest:
         assert offer.hasImage is True
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_add_invalid_image_size(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -637,7 +622,6 @@ class CollectiveOffersPublicPatchOfferTest:
         assert not (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
         assert offer.name != "pouet"
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_add_invalid_image_type(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -665,7 +649,6 @@ class CollectiveOffersPublicPatchOfferTest:
         assert not (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
         assert offer.name != "pouet"
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_delete_image(self, client):
         # SETUP
         venue_provider = provider_factories.VenueProviderFactory()
@@ -700,7 +683,6 @@ class CollectiveOffersPublicPatchOfferTest:
         assert offer.hasImage is False
         assert not (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_patch_offer_invalid_domains(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -734,7 +716,6 @@ class CollectiveOffersPublicPatchOfferTest:
         offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
         assert offer.domains[0].id == domain.id
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_patch_offer_bad_institution(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -769,7 +750,6 @@ class CollectiveOffersPublicPatchOfferTest:
         offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
         assert offer.institutionId == educational_institution.id
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_patch_offer_invalid_subcategory(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()

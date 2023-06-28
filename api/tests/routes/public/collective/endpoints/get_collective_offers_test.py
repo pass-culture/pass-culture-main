@@ -6,14 +6,12 @@ import pytest
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as provider_factories
-from pcapi.core.testing import override_features
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
 @pytest.mark.usefixtures("db_session")
 @freeze_time("2022-05-01 15:00:00")
 class CollectiveOffersPublicGetOfferTest:
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_get_offers(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -70,7 +68,6 @@ class CollectiveOffersPublicGetOfferTest:
             },
         ]
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_get_offers_filter_by_status(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -111,7 +108,6 @@ class CollectiveOffersPublicGetOfferTest:
             },
         ]
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_no_offers(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -125,7 +121,6 @@ class CollectiveOffersPublicGetOfferTest:
         assert response.status_code == 200
         assert not response.json
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_offer_without_stock(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -148,7 +143,6 @@ class CollectiveOffersPublicGetOfferTest:
             },
         ]
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_other_offerer_offers_not_visible(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -175,7 +169,6 @@ class CollectiveOffersPublicGetOfferTest:
             },
         ]
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_draft_offers_not_visible(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
@@ -203,7 +196,6 @@ class CollectiveOffersPublicGetOfferTest:
             },
         ]
 
-    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
     def test_user_not_logged_in(self, client):
         # Given
         venue_provider = provider_factories.VenueProviderFactory()
