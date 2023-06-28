@@ -9,8 +9,8 @@ import { CalendarIcon } from 'icons'
 import { ReactComponent as IconOffers } from 'icons/ico-offers.svg'
 import { ReactComponent as IconSignout } from 'icons/ico-signout.svg'
 import deskIcon from 'icons/stroke-desk.svg'
-import strokeEuro from 'icons/stroke-euro.svg'
-import strokeHome from 'icons/stroke-home.svg'
+import strokeEuroIcon from 'icons/stroke-euro.svg'
+import strokeHomeIcon from 'icons/stroke-home.svg'
 import strokeSignalIcon from 'icons/stroke-signal.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { ROOT_PATH } from 'utils/config'
@@ -53,7 +53,7 @@ const Header = () => {
             role="menuitem"
             to={'/accueil'}
           >
-            <SvgIcon className="nav-item-icon" src={strokeHome} alt="" />
+            <SvgIcon className="nav-item-icon" src={strokeHomeIcon} alt="" />
             Accueil
           </NavLink>
 
@@ -103,7 +103,7 @@ const Header = () => {
             role="menuitem"
             to="/remboursements/justificatifs"
           >
-            <SvgIcon className="nav-item-icon" src={strokeEuro} alt="" />
+            <SvgIcon className="nav-item-icon" src={strokeEuroIcon} alt="" />
             Remboursements
           </NavLink>
 
