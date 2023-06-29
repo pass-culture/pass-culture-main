@@ -10,7 +10,6 @@ export type GetEducationalOffererVenueResponseModel = {
   collectiveInterventionArea?: Array<string> | null;
   collectivePhone?: string | null;
   collectiveSubCategoryId?: string | null;
-  id: string;
   isVirtual: boolean;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;

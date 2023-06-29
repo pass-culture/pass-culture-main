@@ -205,7 +205,6 @@ describe('screens:OfferIndividual::OfferType', () => {
       managedVenues: [
         {
           ...defaultGetOffererVenueResponseModel,
-          id: 'venue1',
           collectiveDmsApplications: [
             {
               ...defaultCollectiveDmsApplication,

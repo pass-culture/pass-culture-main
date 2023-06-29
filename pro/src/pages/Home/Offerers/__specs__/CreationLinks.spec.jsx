@@ -42,7 +42,7 @@ describe('creationLinks', () => {
 
   beforeEach(() => {
     virtualVenue = {
-      id: 'test_venue_id_1',
+      nonHumanizedId: 1,
       isVirtual: true,
       managingOffererId: 'GE',
       name: 'Le Sous-sol (Offre numérique)',
@@ -51,7 +51,7 @@ describe('creationLinks', () => {
     }
 
     physicalVenue = {
-      id: 'test_venue_id_2',
+      nonHumanizedId: 2,
       isVirtual: false,
       managingOffererId: 'GE',
       name: 'Le Sous-sol (Offre physique)',
@@ -60,7 +60,7 @@ describe('creationLinks', () => {
     }
 
     physicalVenueWithPublicName = {
-      id: 'test_venue_id_3',
+      nonHumanizedId: 3,
       isVirtual: false,
       managingOffererId: 'GE',
       name: 'Le deuxième Sous-sol (Offre physique)',
@@ -81,7 +81,6 @@ describe('creationLinks', () => {
         demarchesSimplifieesApplicationId: null,
         fieldsUpdated: [],
         hasDigitalVenueAtLeastOneOffer: true,
-        id: 'GE',
         nonHumanizedId: 6,
         isValidated: true,
         isActive: true,
@@ -107,7 +106,6 @@ describe('creationLinks', () => {
         demarchesSimplifieesApplicationId: null,
         fieldsUpdated: [],
         hasDigitalVenueAtLeastOneOffer: true,
-        id: 'FQ',
         nonHumanizedId: 12,
         isValidated: true,
         isActive: true,

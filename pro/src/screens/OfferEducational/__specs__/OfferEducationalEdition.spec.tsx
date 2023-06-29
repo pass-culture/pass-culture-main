@@ -40,7 +40,6 @@ describe('screens | OfferEducational', () => {
         managedVenues: [
           managedVenueFactory({}),
           managedVenueFactory({
-            id: 'VENUE_WITH_INTERVENTION_AREA',
             collectiveInterventionArea: ['01', '02'],
           }),
         ],

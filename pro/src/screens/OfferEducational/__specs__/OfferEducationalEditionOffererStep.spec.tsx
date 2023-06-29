@@ -37,15 +37,15 @@ describe('screens | OfferEducational : edition offerer step', () => {
         {
           nonHumanizedId: firstOffererId,
           managedVenues: managedVenuesFactory([
-            { id: firstvenueId.toString(), nonHumanizedId: firstvenueId },
-            { id: secondVenueId.toString(), nonHumanizedId: secondVenueId },
+            { nonHumanizedId: firstvenueId },
+            { nonHumanizedId: secondVenueId },
           ]),
         },
         {
           nonHumanizedId: secondOffererId,
           managedVenues: managedVenuesFactory([
-            { id: thirdVenueId.toString(), nonHumanizedId: thirdVenueId },
-            { id: fourthVenueId.toString(), nonHumanizedId: fourthVenueId },
+            { nonHumanizedId: thirdVenueId },
+            { nonHumanizedId: fourthVenueId },
           ]),
         },
       ]),
@@ -94,15 +94,15 @@ describe('screens | OfferEducational : edition offerer step', () => {
         {
           nonHumanizedId: firstOffererId,
           managedVenues: managedVenuesFactory([
-            { id: firstvenueId.toString(), nonHumanizedId: firstvenueId },
-            { id: secondVenueId.toString(), nonHumanizedId: secondVenueId },
+            { nonHumanizedId: firstvenueId },
+            { nonHumanizedId: secondVenueId },
           ]),
         },
         {
           nonHumanizedId: secondOffererId,
           managedVenues: managedVenuesFactory([
-            { id: thirdVenueId.toString(), nonHumanizedId: thirdVenueId },
-            { id: fourthVenueId.toString(), nonHumanizedId: fourthVenueId },
+            { nonHumanizedId: thirdVenueId },
+            { nonHumanizedId: fourthVenueId },
           ]),
         },
       ]),

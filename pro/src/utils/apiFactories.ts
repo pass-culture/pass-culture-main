@@ -212,13 +212,11 @@ export const defautGetOffererResponseModel: GetOffererResponseModel = {
 
 export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
   {
-    id: '1',
     collectiveDmsApplications: [],
     hasAdageId: false,
     hasCreatedOffer: false,
     hasMissingReimbursementPoint: false,
     isVirtual: false,
-    managingOffererId: '1',
     name: 'Mon super lieu',
     nonHumanizedId: 0,
     venueTypeCode: VenueTypeCode.LIEU_ADMINISTRATIF,

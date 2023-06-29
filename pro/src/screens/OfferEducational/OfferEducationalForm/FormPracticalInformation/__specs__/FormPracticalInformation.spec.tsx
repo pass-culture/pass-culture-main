@@ -55,7 +55,6 @@ describe('FormPracticalInformation', () => {
               publicName: 'Venue1',
               name: 'Venue1',
             }),
-            id: 'V1',
             nonHumanizedId: 1,
           },
           {
@@ -63,7 +62,6 @@ describe('FormPracticalInformation', () => {
               publicName: 'Venue2',
               name: 'Venue2',
             }),
-            id: 'V2',
             nonHumanizedId: 1,
           },
         ],

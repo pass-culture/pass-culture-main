@@ -34,15 +34,17 @@ describe('getLastCollectiveDmsApplication', () => {
 
   describe('getLastDmsApplicationForOfferer', () => {
     it('should return the last DMS application for a specific venue', () => {
+      const venueId = 1
       const offerer: GetOffererResponseModel = {
         ...defautGetOffererResponseModel,
         managedVenues: [
           {
             ...defaultGetOffererVenueResponseModel,
-            id: 'venue1',
+            nonHumanizedId: venueId,
             collectiveDmsApplications: [
               {
                 ...defaultCollectiveDmsApplication,
+                venueId: venueId,
                 application: 1,
                 lastChangeDate: '2021-01-01T00:00:00Z',
               },
@@ -50,10 +52,11 @@ describe('getLastCollectiveDmsApplication', () => {
           },
           {
             ...defaultGetOffererVenueResponseModel,
-            id: 'venue2',
+            nonHumanizedId: venueId + 1, // not the same venue
             collectiveDmsApplications: [
               {
                 ...defaultCollectiveDmsApplication,
+                venueId: venueId + 1, // not the same venue
                 application: 2,
                 lastChangeDate: '2023-01-01T00:00:00Z',
               },
@@ -63,7 +66,7 @@ describe('getLastCollectiveDmsApplication', () => {
       }
 
       const lastDmsApplication = getLastDmsApplicationForOfferer(
-        'venue1',
+        venueId.toString(),
         offerer
       )
       expect(lastDmsApplication?.application).toEqual(1)
@@ -75,7 +78,6 @@ describe('getLastCollectiveDmsApplication', () => {
         managedVenues: [
           {
             ...defaultGetOffererVenueResponseModel,
-            id: 'venue1',
             collectiveDmsApplications: [
               {
                 ...defaultCollectiveDmsApplication,
@@ -86,7 +88,6 @@ describe('getLastCollectiveDmsApplication', () => {
           },
           {
             ...defaultGetOffererVenueResponseModel,
-            id: 'venue2',
             collectiveDmsApplications: [
               {
                 ...defaultCollectiveDmsApplication,
@@ -123,12 +124,10 @@ describe('getLastCollectiveDmsApplication', () => {
         managedVenues: [
           {
             ...defaultGetOffererVenueResponseModel,
-            id: 'venue1',
             collectiveDmsApplications: [],
           },
           {
             ...defaultGetOffererVenueResponseModel,
-            id: 'venue2',
             collectiveDmsApplications: [],
           },
         ],

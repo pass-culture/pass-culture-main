@@ -250,9 +250,9 @@ describe('screens | OfferEducational : creation offerer step', () => {
         userOfferers: userOfferersFactory([
           {
             managedVenues: managedVenuesFactory([
-              { id: 'VENUE_1', name: 'Venue 1', nonHumanizedId: venue1Id },
-              { id: 'VENUE_2', name: 'Venue 2', nonHumanizedId: venue2Id },
-              { id: 'VENUE_3', name: 'A - Venue 3', nonHumanizedId: venue3Id },
+              { name: 'Venue 1', nonHumanizedId: venue1Id },
+              { name: 'Venue 2', nonHumanizedId: venue2Id },
+              { name: 'A - Venue 3', nonHumanizedId: venue3Id },
             ]),
           },
         ]),

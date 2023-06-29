@@ -90,7 +90,7 @@ describe('homepage', () => {
         siren: '111111111',
         managedVenues: [
           {
-            id: 'test_venue_id_1',
+            nonHumanizedId: 1,
             isVirtual: true,
             managingOffererId: 'GE',
             name: 'Le Sous-sol (Offre numérique)',
@@ -99,7 +99,7 @@ describe('homepage', () => {
             nOffers: 2,
           },
           {
-            id: 'test_venue_id_2',
+            nonHumanizedId: 2,
             isVirtual: false,
             managingOffererId: 'GE',
             name: 'Le Sous-sol (Offre physique)',
@@ -108,7 +108,7 @@ describe('homepage', () => {
             nOffers: 2,
           },
           {
-            id: 'test_venue_id_3',
+            nonHumanizedId: 3,
             isVirtual: false,
             managingOffererId: 'GE',
             name: 'Le deuxième Sous-sol (Offre physique)',
