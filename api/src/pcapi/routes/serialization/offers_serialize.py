@@ -261,10 +261,10 @@ class GetOfferStockResponseModel(BaseModel):
         # here we have N+1 requests (for each stock we query an activation code)
         # but it should be more efficient than loading all activationCodes of all stocks
         if stock.canHaveActivationCodes:
-            availble_activation_code = offers_repository.get_available_activation_code(stock)
-            stock.hasActivationCode = availble_activation_code is not None
+            available_activation_code = offers_repository.get_available_activation_code(stock)
+            stock.hasActivationCode = available_activation_code is not None
             stock.activationCodesExpirationDatetime = (
-                availble_activation_code.expirationDate if availble_activation_code else None
+                available_activation_code.expirationDate if available_activation_code else None
             )
         else:
             stock.hasActivationCode = False
