@@ -561,7 +561,7 @@ describe('route CollectiveOffers', () => {
         // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offers)
       await renderOffers(store)
-      const nextIcon = screen.getByAltText('Page suivante')
+      const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
       // When
       await userEvent.click(nextIcon)
       // Then
@@ -578,8 +578,10 @@ describe('route CollectiveOffers', () => {
         // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offers)
       await renderOffers(store)
-      const nextIcon = screen.getByAltText('Page suivante')
-      const previousIcon = screen.getByAltText('Page précédente')
+      const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
+      const previousIcon = screen.getByRole('button', {
+        name: 'Page précédente',
+      })
       await userEvent.click(nextIcon)
       // When
       await userEvent.click(previousIcon)
@@ -615,7 +617,7 @@ describe('route CollectiveOffers', () => {
           // @ts-expect-error FIX ME
           .mockResolvedValueOnce(offersRecap)
         await renderOffers(store)
-        const nextIcon = screen.getByAltText('Page suivante')
+        const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
         // When
         for (let i = 1; i < 51; i++) {
           await userEvent.click(nextIcon)

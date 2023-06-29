@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React, { MouseEventHandler, useId } from 'react'
 import { Link } from 'react-router-dom'
 
-import fullRight from 'icons/full-right.svg'
+import fullRightIcon from 'icons/full-right.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import Tooltip from 'ui-kit/Tooltip'
 
@@ -73,7 +73,7 @@ const ButtonLink = ({
         /* istanbul ignore next: graphic variation */ variant ===
           ButtonVariant.BOX && (
           <SvgIcon
-            src={fullRight}
+            src={fullRightIcon}
             alt=""
             className={cn(styles['button-icon'], styles['button-icon-arrow'])}
           />

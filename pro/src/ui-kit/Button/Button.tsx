@@ -3,7 +3,7 @@
 import cn from 'classnames'
 import React, { useId } from 'react'
 
-import fullRight from 'icons/full-right.svg'
+import fullRightIcon from 'icons/full-right.svg'
 import { ReactComponent as SpinnerIcon } from 'icons/loader.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import Tooltip from 'ui-kit/Tooltip'
@@ -90,7 +90,7 @@ const Button = ({
       )}
       {variant === ButtonVariant.BOX && (
         <SvgIcon
-          src={fullRight}
+          src={fullRightIcon}
           alt=""
           className={cn(styles['button-icon'], styles['button-icon-arrow'])}
         />

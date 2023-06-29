@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React, { ChangeEvent } from 'react'
 
-import fullRight from 'icons/full-right.svg'
+import fullRightIcon from 'icons/full-right.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { PhoneCodeSelectOption } from '../types'
@@ -26,7 +26,7 @@ const CountryCodeSelect = ({
   return (
     <div className={cn(styles['select-input-wrapper'], className)}>
       <SvgIcon
-        src={fullRight}
+        src={fullRightIcon}
         alt=""
         className={cn(styles['select-input-icon'], {
           [styles['select-input-icon-disabled']]: disabled,
