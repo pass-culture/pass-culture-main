@@ -563,7 +563,14 @@ class Returns400Test:
 
         # Then
         assert response.status_code == 400
-        assert response.json == {"offerId": ["Ce champ est obligatoire"]}
+        assert response.json == {
+            "offerId": ["Ce champ est obligatoire"],
+            "stocks.0.id": ["Ce champ est obligatoire"],
+            "stocks.0.quantity": [
+                "Saisissez un nombre supérieur ou égal à 1",
+                "Saisissez un nombre supérieur ou égal à 1",
+            ],
+        }
 
     def test_update_thing_stock_without_price(self, client):
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
@@ -581,6 +588,28 @@ class Returns400Test:
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
 
         assert response.json["price"] == ["Le prix est obligatoire pour les offres produit"]
+
+    def test_exceed_max_stock_quantity(self, client):
+        offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        existing_stock = offers_factories.StockFactory(offer=offer, price=10)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_data = {
+            "offerId": offer.id,
+            "stocks": [{"id": existing_stock.id, "price": 20, "quantity": 1234567890987654}],
+        }
+
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        print(response.json)
+
+        assert response.json["stocks.0.quantity"] == [
+            "ensure this value is less than or equal to 1000000",
+            "ensure this value is less than or equal to 1000000",
+        ]
 
     def test_update_product_stock_without_price_is_forbidden(self, client):
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
