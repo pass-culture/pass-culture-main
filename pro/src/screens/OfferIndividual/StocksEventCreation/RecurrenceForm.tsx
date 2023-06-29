@@ -12,15 +12,10 @@ import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { OfferIndividual } from 'core/Offers/types'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
-import {
-  CalendarCheckIcon,
-  ClockIcon,
-  DateIcon,
-  EventsIcon,
-  TrashFilledIcon,
-} from 'icons'
+import { CalendarCheckIcon, ClockIcon, DateIcon, TrashFilledIcon } from 'icons'
 import { ReactComponent as FullMoreIcon } from 'icons/full-more.svg'
 import { ReactComponent as FullNextIcon } from 'icons/full-next.svg'
+import strokeEventsIcon from 'icons/stroke-events.svg'
 import {
   Button,
   ButtonLink,
@@ -34,6 +29,7 @@ import {
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { FieldError } from 'ui-kit/form/shared'
 import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
 import { getPriceCategoryOptions } from '../StocksEventEdition/StocksEventEdition'
@@ -354,8 +350,12 @@ export const RecurrenceForm = ({
 
           <div className={styles['section']}>
             <div className={styles['legend']}>
-              <EventsIcon className={styles['legend-icon']} /> Places et tarifs
-              par horaire
+              <SvgIcon
+                src={strokeEventsIcon}
+                alt=""
+                className={styles['legend-icon']}
+              />
+              Places et tarifs par horaire
             </div>
 
             <FieldArray
