@@ -66,7 +66,6 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-duo.svg' },
   { src: 'icons/stroke-mail.svg' }, // TODO 2 uses left in <Dialog>
   { src: 'icons/stroke-phone.svg' },
-  { src: 'icons/stroke-signal.svg' },
   { src: 'icons/stroke-home.svg' },
   { src: 'icons/stroke-building.svg' },
   { src: 'icons/stroke-desk.svg' },
@@ -80,6 +79,7 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-accessibility-leg.svg' },
   { src: 'icons/stroke-accessibility-brain.svg' },
   { src: 'icons/stroke-duplicate-offer.svg' },
+  { src: 'icons/stroke-pie.svg' },
   { src: 'icons/stroke-close.svg' },
   { src: 'icons/stroke-left.svg' },
   { src: 'icons/stroke-right.svg' },
