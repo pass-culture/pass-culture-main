@@ -1,3 +1,6 @@
+import flask
+from sqlalchemy import orm as sqla_orm
+
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import models as booking_models
@@ -13,6 +16,58 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 
 from . import blueprint
 from . import bookings_serialization as serialization
+
+
+def _get_bookings_query(offer_id: int) -> sqla_orm.Query:
+    return (
+        booking_models.Booking.query.join(offerers_models.Venue)
+        .join(providers_models.VenueProvider)
+        .filter(providers_models.VenueProvider.providerId == current_api_key.providerId)
+        .filter(providers_models.VenueProvider.isActive == True)
+        .join(offers_models.Stock)
+        .join(offers_models.Offer)
+        .filter(offers_models.Offer.id == offer_id)
+        .order_by(booking_models.Booking.dateCreated.desc())
+    )
+
+
+@blueprint.v1_bookings_blueprint.route("/bookings", methods=["GET"])
+@spectree_serialize(
+    api=blueprint.v1_bookings_schema,
+    response_model=serialization.GetFilteredBookingsResponse,
+    tags=[constants.BOOKING_TAG],
+)
+@api_key_required
+def get_bookings_by_offer(
+    query: serialization.GetFilteredBookingsRequest,
+) -> serialization.GetFilteredBookingsResponse:
+    """
+    Get paginated bookings for a given offer.
+    """
+
+    bookings_count = _get_bookings_query(query.offer_id).count()
+    offset = query.limit * (query.page - 1)
+
+    if offset > bookings_count:
+        raise api_errors.ApiErrors(
+            {
+                "page": f"The page you requested does not exist. The maximum page for the specified limit is {bookings_count//query.limit+1}"
+            },
+            status_code=404,
+        )
+
+    bookings = _get_bookings_query(query.offer_id).offset(offset).limit(query.limit).all()
+
+    return serialization.GetFilteredBookingsResponse(
+        bookings=[serialization.GetBookingResponse.build_booking(booking) for booking in bookings],
+        pagination=serialization.Pagination.build_pagination(
+            flask.url_for(".get_bookings_by_offer", _external=True),
+            query.page,
+            len(bookings),
+            bookings_count,
+            query.limit,
+        ),
+    )
 
 
 def _get_booking_by_token(token: str) -> booking_models.Booking:
