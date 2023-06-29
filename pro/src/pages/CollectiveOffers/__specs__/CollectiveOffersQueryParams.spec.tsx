@@ -168,7 +168,8 @@ describe('route CollectiveOffers', () => {
         // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offersRecap)
       await renderOffers(store)
-      const nextPageIcon = screen.getByAltText('Page suivante')
+      const nextPageIcon = screen.getByRole('button', { name: 'Page suivante' })
+
       // When
       await userEvent.click(nextPageIcon)
 
