@@ -11,7 +11,7 @@ import { ReactComponent as IconSignout } from 'icons/ico-signout.svg'
 import deskIcon from 'icons/stroke-desk.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import strokeHomeIcon from 'icons/stroke-home.svg'
-import strokeSignalIcon from 'icons/stroke-signal.svg'
+import strokePieIcon from 'icons/stroke-pie.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { ROOT_PATH } from 'utils/config'
 
@@ -118,11 +118,7 @@ const Header = () => {
               role="menuitem"
               to="/statistiques"
             >
-              <SvgIcon
-                src={strokeSignalIcon}
-                alt=""
-                className="nav-item-icon"
-              />
+              <SvgIcon src={strokePieIcon} alt="" className="nav-item-icon" />
               Statistiques
             </NavLink>
           )}
