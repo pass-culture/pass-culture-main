@@ -3,10 +3,10 @@ import React from 'react'
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { InfoWrongIcon } from 'icons'
 import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
 import { ReactComponent as FullLink } from 'icons/full-link.svg'
 import strokeValidIcon from 'icons/stroke-valid.svg'
+import strokeWrongIcon from 'icons/stroke-wrong.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -262,7 +262,11 @@ const CollectiveDmsTimeline = ({
   const refusedByDms = (
     <>
       <div className={styles['refused-state']}>
-        <InfoWrongIcon className={styles['refused-state-icon']} />
+        <SvgIcon
+          src={strokeWrongIcon}
+          className={styles['refused-state-icon']}
+          alt=""
+        />
         <span>Votre demande de référencement a été refusée</span>
       </div>
       <div>
@@ -302,7 +306,11 @@ const CollectiveDmsTimeline = ({
   const droppedByDms = (
     <>
       <div className={styles['refused-state']}>
-        <InfoWrongIcon className={styles['refused-state-icon']} />
+        <SvgIcon
+          src={strokeWrongIcon}
+          className={styles['refused-state-icon']}
+          alt=""
+        />
         <span>Votre demande de référencement a été classée sans suite</span>
       </div>
       <div className={styles['timeline-step-description']}>

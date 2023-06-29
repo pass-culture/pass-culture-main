@@ -1,9 +1,9 @@
 import cn from 'classnames'
+import fullClearIcon from 'icons/full-clear.svg'
 import React, { ReactNode } from 'react'
 
-import { InfoWrongIcon } from 'icons'
-import fullClearIcon from 'icons/full-clear.svg'
 import { ReactComponent as SuccessSvg } from 'icons/ico-notification-success.svg'
+import strokeWrongIcon from 'icons/stroke-wrong.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { ReactComponent as DisabledSvg } from './disabled.svg'
@@ -74,9 +74,10 @@ const getIconComponent = (type: TimelineStepType, hasErrorSteps: boolean) => {
       )
     case TimelineStepType.REFUSED:
       return (
-        <InfoWrongIcon
-          title="Étape refusée"
+        <SvgIcon
+          src={strokeWrongIcon}
           className={cn(styles.icon, styles['icon-wrong'])}
+          alt="Étape refusée"
         />
       )
     default:

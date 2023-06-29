@@ -57,6 +57,7 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-error.svg' },
   { src: 'icons/stroke-info.svg' },
   { src: 'icons/stroke-valid.svg' }, // TODO 1 use left inside <Banner>
+  { src: 'icons/stroke-wrong.svg' },
   { src: 'icons/stroke-more.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/stroke-euro.svg' }, // TODO 3 use left inside a <TextInput>
   { src: 'icons/stroke-thing.svg' },
@@ -158,7 +159,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-date.svg', viewBox: '0 0 48 48' },
   { src: 'icons/ico-disconnect-full.svg', viewBox: '0 0 40 40' },
   { src: 'icons/ico-events.svg', viewBox: '0 0 24 24' },
-  { src: 'icons/ico-info-wrong.svg', viewBox: '0 0 78 78' },
   { src: 'icons/ico-key.svg', viewBox: '0 0 20 20' },
   { src: 'icons/logo-pass-culture-dark.svg', viewBox: '0 0 71 24' },
   { src: 'icons/offer-card-euro.svg', viewBox: '0 0 30 30' },
