@@ -227,6 +227,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     expect(api.postOffer).toHaveBeenCalledWith({
       audioDisabilityCompliant: false,
       bookingEmail: null,
+      bookingContact: null,
       description: null,
       durationMinutes: null,
       externalTicketOfficeUrl: null,
@@ -317,6 +318,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     expect(api.postOffer).toHaveBeenCalledWith({
       audioDisabilityCompliant: false,
       bookingEmail: null,
+      bookingContact: null,
       description: null,
       durationMinutes: null,
       externalTicketOfficeUrl: null,
@@ -359,6 +361,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     expect(api.postOffer).toHaveBeenCalledWith({
       audioDisabilityCompliant: false,
       bookingEmail: null,
+      bookingContact: null,
       description: null,
       durationMinutes: null,
       externalTicketOfficeUrl: null,

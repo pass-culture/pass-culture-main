@@ -195,4 +195,5 @@ export interface OfferIndividual {
   lastProviderName: string | null
   lastProvider: OfferIndividualVenueProvider | null
   status: OfferStatus
+  bookingContact?: string | null
 }

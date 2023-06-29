@@ -81,6 +81,9 @@ const Informations = ({
   const isWithdrawalUpdatedMailActive = useActiveFeature(
     'WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL'
   )
+  const isBookingContactEnabled = useActiveFeature(
+    'WIP_MANDATORY_BOOKING_CONTACT'
+  )
 
   const [isSubmittingDraft, setIsSubmittingDraft] = useState<boolean>(false)
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
@@ -97,7 +100,8 @@ const Informations = ({
           venueId,
           venueList
         )
-      : setInitialFormValues(offer, subCategories)
+      : setInitialFormValues(offer, subCategories, isBookingContactEnabled)
+
   const [filteredCategories, filteredSubCategories] = filterCategories(
     categories,
     subCategories,

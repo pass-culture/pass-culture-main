@@ -2,7 +2,8 @@ import { OfferSubCategory } from 'core/Offers/types'
 
 const buildSubCategoryFields = (
   subCategoryId: string,
-  subCategories: OfferSubCategory[]
+  subCategories: OfferSubCategory[],
+  isBookingContactEnabled: boolean
 ): {
   subCategoryFields: string[]
   isEvent: boolean
@@ -19,6 +20,10 @@ const buildSubCategoryFields = (
   subCategory?.canBeWithdrawable &&
     subCategoryFields.push('withdrawalType') &&
     subCategoryFields.push('withdrawalDelay')
+
+  isBookingContactEnabled &&
+    subCategory?.canBeWithdrawable &&
+    subCategoryFields.push('bookingContact')
 
   return { subCategoryFields, isEvent }
 }

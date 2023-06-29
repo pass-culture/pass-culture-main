@@ -7,6 +7,7 @@ import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { OffererName } from 'core/Offerers/types'
 import { OfferSubCategory } from 'core/Offers/types'
 import { OfferIndividualVenue } from 'core/Venue/types'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { Checkbox, InfoBox, TextArea, TextInput } from 'ui-kit'
 
 import styles from '../OfferIndividualForm.module.scss'
@@ -35,12 +36,18 @@ const UsefulInformations = ({
   const {
     values: { subCategoryFields },
   } = useFormikContext<OfferIndividualFormValues>()
+  const isBookingContactEnabled = useActiveFeature(
+    'WIP_MANDATORY_BOOKING_CONTACT'
+  )
 
   const displayNoRefundWarning =
     offerSubCategory?.reimbursementRule === REIMBURSEMENT_RULES.NOT_REIMBURSED
 
   const displayWithdrawalReminder =
     !offerSubCategory?.isEvent && !isVenueVirtual
+
+  const displayBookingContact =
+    isBookingContactEnabled && offerSubCategory?.canBeWithdrawable
 
   return (
     <FormLayout.Section title="Informations pratiques">
@@ -97,6 +104,26 @@ const UsefulInformations = ({
           }
         />
       </FormLayout.Row>
+
+      {displayBookingContact && (
+        <FormLayout.Row
+          sideComponent={
+            <InfoBox>
+              Cette adresse email sera communiquée aux bénéficiaires ayant
+              réservé votre offre.
+            </InfoBox>
+          }
+        >
+          <TextInput
+            label="Email de contact"
+            maxLength={90}
+            name="bookingContact"
+            placeholder="email@exemple.com"
+            disabled={readOnlyFields?.includes('bookingContact')}
+          />
+        </FormLayout.Row>
+      )}
+
       {isVenueVirtual && (
         <FormLayout.Row
           sideComponent={

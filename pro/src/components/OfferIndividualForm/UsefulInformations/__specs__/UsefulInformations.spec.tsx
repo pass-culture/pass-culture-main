@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
 import React from 'react'
@@ -13,8 +13,10 @@ import {
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { OffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS } from 'core/Offers'
+import { OfferSubCategory } from 'core/Offers/types'
 import { OfferIndividualVenue } from 'core/Venue/types'
 import { SubmitButton } from 'ui-kit'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import UsefulInformations, {
   UsefulInformationsProps,
@@ -30,7 +32,20 @@ const renderUsefulInformations = async ({
   onSubmit: () => void
   props: UsefulInformationsProps
 }) => {
-  return render(
+  const storeOverrides = {
+    user: {
+      initialized: true,
+      currentUser: {
+        isAdmin: false,
+        email: 'email@example.com',
+      },
+    },
+    features: {
+      list: [{ isActive: true, nameKey: 'WIP_MANDATORY_BOOKING_CONTACT' }],
+    },
+  }
+
+  return renderWithProviders(
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
@@ -40,7 +55,8 @@ const renderUsefulInformations = async ({
         <UsefulInformations {...props} />
         <SubmitButton isLoading={false}>Submit</SubmitButton>
       </Form>
-    </Formik>
+    </Formik>,
+    { storeOverrides }
   )
 
   await screen.findByRole('heading', { name: 'Informations pratiques' })
@@ -126,7 +142,11 @@ describe('OfferIndividual section: UsefulInformations', () => {
 
   it('should submit valid form', async () => {
     initialValues.subcategoryId = 'CONCERT'
-    initialValues.subCategoryFields = ['withdrawalType']
+    initialValues.subCategoryFields = ['withdrawalType', 'bookingContact']
+    props.offerSubCategory = {
+      id: 'CONCERT',
+      canBeWithdrawable: true,
+    } as OfferSubCategory
     await renderUsefulInformations({
       initialValues,
       onSubmit,
@@ -143,10 +163,14 @@ describe('OfferIndividual section: UsefulInformations', () => {
     const withEmail = screen.getByLabelText('Envoi par email')
     await userEvent.click(withEmail)
 
+    const bookingContactField = screen.getByLabelText('Email de contact')
+    await userEvent.type(bookingContactField, 'robertoDu36@example.com')
+
     await userEvent.click(await screen.findByText('Submit'))
 
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
+        bookingContact: 'robertoDu36@example.com',
         accessibility: {
           audio: false,
           mental: false,
@@ -156,7 +180,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
         },
         isVenueVirtual: false,
         offererId: offererId.toString(),
-        subCategoryFields: ['withdrawalType'],
+        subCategoryFields: ['withdrawalType', 'bookingContact'],
         url: '',
         subcategoryId: 'CONCERT',
         venueId: venueList[0].nonHumanizedId.toString(),
