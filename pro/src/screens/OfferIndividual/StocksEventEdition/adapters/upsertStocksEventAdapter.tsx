@@ -6,7 +6,7 @@ import {
   StockEditionBodyModel,
 } from 'apiClient/v1'
 
-type SuccessPayload = { stockIds: string[] }
+type SuccessPayload = { stockIds: number[] }
 type FailurePayload = { errors: Record<string, string>[] }
 type UpdateStocksAdapter = Adapter<
   {

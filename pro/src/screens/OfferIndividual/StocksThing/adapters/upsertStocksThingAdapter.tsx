@@ -7,7 +7,7 @@ import { IStockThingFormValues } from '../'
 
 import { serializeStockThingList } from './serializers'
 
-type SuccessPayload = { stockIds: string[] }
+type SuccessPayload = { stockIds: number[] }
 type FailurePayload = { errors: Record<string, string> }
 type UpdateStocksAdapter = Adapter<
   {

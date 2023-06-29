@@ -219,7 +219,7 @@ describe('screens:StocksThing', () => {
   })
 
   it('should allow user to delete a stock', async () => {
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     renderStockThingScreen(storeOverride)
     await screen.findByTestId('stock-thing-form')
 
@@ -257,7 +257,7 @@ describe('screens:StocksThing', () => {
       name: 'Provider',
     }
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     renderStockThingScreen(storeOverride)
     await screen.findByTestId('stock-thing-form')
 
@@ -323,7 +323,7 @@ describe('screens:StocksThing', () => {
   })
 
   it('should not display any message when user delete empty stock', async () => {
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     renderStockThingScreen(storeOverride)
     apiOffer.stocks = []
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
