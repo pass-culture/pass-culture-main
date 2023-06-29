@@ -8,7 +8,6 @@ import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveOfferTemplate
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.utils.human_ids import dehumanize
 
 
 base_collective_offer_payload = {
@@ -57,7 +56,7 @@ class Returns200Test:
         # Then
 
         assert response.status_code == 201
-        offer_id = dehumanize(response.json["id"])
+        offer_id = response.json["nonHumanizedId"]
         offer = CollectiveOfferTemplate.query.get(offer_id)
         assert offer.bookingEmails == ["offer1@example.com", "offer2@example.com"]
         assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id

@@ -11,8 +11,6 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
 from pcapi.utils.date import format_into_utc_date
-from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.human_ids import humanize
 
 import tests
 
@@ -53,7 +51,7 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
 
         # Then
-        duplicate = educational_models.CollectiveOffer.query.filter_by(id=dehumanize(response.json["id"])).one()
+        duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["nonHumanizedId"]).one()
         assert response.status_code == 201
         assert response.json["imageCredit"] == offer.imageCredit
         assert response.json["imageUrl"] == duplicate.imageUrl
@@ -76,13 +74,12 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 201
-        duplicate = educational_models.CollectiveOffer.query.filter_by(id=dehumanize(response.json["id"])).one()
+        duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["nonHumanizedId"]).one()
         assert response.json == {
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
-            "id": humanize(duplicate.id),
             "bookingEmails": [
                 "collectiveofferfactory+booking@example.com",
                 "collectiveofferfactory+booking@example2.com",
@@ -102,52 +99,16 @@ class Returns200Test:
             "name": offer.name,
             "subcategoryId": offer.subcategoryId,
             "venue": {
-                "audioDisabilityCompliant": False,
-                "mentalDisabilityCompliant": False,
-                "motorDisabilityCompliant": False,
-                "visualDisabilityCompliant": False,
-                "address": "1 boulevard Poissonnière",
-                "bookingEmail": venue.bookingEmail,
-                "city": "Paris",
-                "comment": None,
-                "dateCreated": format_into_utc_date(venue.dateCreated),
-                "dateModifiedAtLastProvider": format_into_utc_date(venue.dateModifiedAtLastProvider),
                 "departementCode": "75",
-                "fieldsUpdated": [],
-                "id": humanize(venue.id),
-                "idAtProviders": None,
-                "isVirtual": False,
-                "lastProviderId": None,
-                "latitude": 48.87004,
-                "longitude": 2.3785,
                 "managingOfferer": {
-                    "address": "1 boulevard Poissonnière",
-                    "city": "Paris",
-                    "dateCreated": format_into_utc_date(venue.managingOfferer.dateCreated),
-                    "dateModifiedAtLastProvider": format_into_utc_date(
-                        venue.managingOfferer.dateModifiedAtLastProvider
-                    ),
-                    "id": humanize(offerer.id),
                     "nonHumanizedId": offerer.id,
-                    "idAtProviders": None,
-                    "isActive": True,
-                    "isValidated": True,
-                    "lastProviderId": None,
                     "name": venue.managingOfferer.name,
-                    "postalCode": "75000",
                     "siren": venue.managingOfferer.siren,
-                    "thumbCount": 0,
                 },
-                "managingOffererId": humanize(offerer.id),
                 "nonHumanizedId": venue.id,
                 "name": venue.name,
-                "postalCode": "75000",
                 "publicName": venue.publicName,
-                "siret": venue.siret,
-                "thumbCount": 0,
-                "venueLabelId": None,
             },
-            "venueId": humanize(offer.venueId),
             "status": "DRAFT",
             "domains": [],
             "interventionArea": ["93", "94", "95"],
@@ -156,7 +117,6 @@ class Returns200Test:
             "imageUrl": None,
             "isBookable": False,
             "collectiveStock": {
-                "id": humanize(duplicate.collectiveStock.id),
                 "nonHumanizedId": duplicate.collectiveStock.id,
                 "isBooked": False,
                 "isCancellable": False,
@@ -244,5 +204,4 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
 
         # Then
-        # duplicate = educational_models.CollectiveOffer.query.filter_by(id=dehumanize(response.json["id"])).one()
         assert response.status_code == 404

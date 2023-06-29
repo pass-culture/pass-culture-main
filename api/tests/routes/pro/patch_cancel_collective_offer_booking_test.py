@@ -8,7 +8,6 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as user_factories
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
-from pcapi.utils.human_ids import humanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -25,7 +24,7 @@ class Returns204Test:
             status=CollectiveBookingStatus.PENDING, collectiveStock__collectiveOffer__venue__managingOfferer=offerer
         )
 
-        offer_id = humanize(collective_booking.collectiveStock.collectiveOffer.id)
+        offer_id = collective_booking.collectiveStock.collectiveOffer.id
         client = client.with_session_auth(user.email)
         response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
 
@@ -45,7 +44,7 @@ class Returns204Test:
             status=CollectiveBookingStatus.CONFIRMED, collectiveStock__collectiveOffer__venue__managingOfferer=offerer
         )
 
-        offer_id = humanize(collective_booking.collectiveStock.collectiveOffer.id)
+        offer_id = collective_booking.collectiveStock.collectiveOffer.id
         client = client.with_session_auth(user.email)
         response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
 
@@ -61,7 +60,7 @@ class Returns204Test:
 class Returns404Test:
     def test_no_collective_offer_found(self, client):
         user = user_factories.AdminFactory()
-        offer_id = humanize(123789654)
+        offer_id = 123789654
 
         client = client.with_session_auth(user.email)
         response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
@@ -82,7 +81,7 @@ class Returns403Test:
 
         offer = CollectiveOfferFactory(venue__managingOfferer=offerer)
 
-        offer_id = humanize(offer.id)
+        offer_id = offer.id
         client = client.with_session_auth(user.email)
         response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
 
@@ -97,7 +96,7 @@ class Returns400Test:
     def test_offer_has_no_booking_to_cancel(self, client):
         user = user_factories.AdminFactory()
         educational_booking = CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED)
-        offer_id = humanize(educational_booking.collectiveStock.collectiveOffer.id)
+        offer_id = educational_booking.collectiveStock.collectiveOffer.id
 
         client = client.with_session_auth(user.email)
         response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
@@ -109,7 +108,7 @@ class Returns400Test:
     def test_booking_is_already_used(self, client):
         user = user_factories.AdminFactory()
         collective_booking = CollectiveBookingFactory(status=CollectiveBookingStatus.USED)
-        offer_id = humanize(collective_booking.collectiveStock.collectiveOffer.id)
+        offer_id = collective_booking.collectiveStock.collectiveOffer.id
 
         client = client.with_session_auth(user.email)
         response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")
@@ -121,7 +120,7 @@ class Returns400Test:
     def test_booking_is_already_reimbursed(self, client):
         user = user_factories.AdminFactory()
         collective_booking = CollectiveBookingFactory(status=CollectiveBookingStatus.REIMBURSED)
-        offer_id = humanize(collective_booking.collectiveStock.collectiveOffer.id)
+        offer_id = collective_booking.collectiveStock.collectiveOffer.id
 
         client = client.with_session_auth(user.email)
         response = client.patch(f"/collective/offers/{offer_id}/cancel_booking")

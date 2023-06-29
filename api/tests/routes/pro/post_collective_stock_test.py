@@ -7,7 +7,6 @@ from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import StudentLevels
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.utils.human_ids import dehumanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -39,7 +38,7 @@ class Return200Test:
         # Then
         assert response.status_code == 201
         response_dict = response.json
-        created_stock: CollectiveStock = CollectiveStock.query.get(dehumanize(response_dict["id"]))
+        created_stock: CollectiveStock = CollectiveStock.query.get(response_dict["nonHumanizedId"])
         offer = CollectiveOffer.query.get(offer.id)
         assert offer.id == created_stock.collectiveOfferId
         assert created_stock.price == 1500
@@ -73,7 +72,7 @@ class Return200Test:
         # Then
         assert response.status_code == 201
         response_dict = response.json
-        created_stock: CollectiveStock = CollectiveStock.query.get(dehumanize(response_dict["id"]))
+        created_stock: CollectiveStock = CollectiveStock.query.get(response_dict["nonHumanizedId"])
         assert created_stock
         assert offer.students == [StudentLevels.COLLEGE4]
 
