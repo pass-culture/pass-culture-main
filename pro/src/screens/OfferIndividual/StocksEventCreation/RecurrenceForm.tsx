@@ -18,9 +18,9 @@ import {
   ClockIcon,
   DateIcon,
   EventsIcon,
-  PlusCircleIcon,
   TrashFilledIcon,
 } from 'icons'
+import { ReactComponent as FullMoreIcon } from 'icons/full-more.svg'
 import {
   Button,
   ButtonLink,
@@ -44,10 +44,10 @@ import { INITIAL_QUANTITY_PER_PRICE_CATEGORY } from './form/constants'
 import { onSubmit } from './form/onSubmit'
 import { isLastWeekOfMonth } from './form/recurrenceUtils'
 import {
-  RecurrenceDays,
-  RecurrenceType,
-  RecurrenceFormValues,
   MonthlyOption,
+  RecurrenceDays,
+  RecurrenceFormValues,
+  RecurrenceType,
 } from './form/types'
 import { getValidationSchema } from './form/validationSchema'
 import styles from './RecurrenceForm.module.scss'
@@ -335,7 +335,7 @@ export const RecurrenceForm = ({
 
                     <ButtonLink
                       variant={ButtonVariant.TERNARY}
-                      Icon={PlusCircleIcon}
+                      Icon={FullMoreIcon}
                       onClick={() => arrayHelpers.push('')}
                       link={{
                         to: `#beginningTimes[${
@@ -408,7 +408,7 @@ export const RecurrenceForm = ({
                     priceCategoryOptions.length && (
                     <ButtonLink
                       variant={ButtonVariant.TERNARY}
-                      Icon={PlusCircleIcon}
+                      Icon={FullMoreIcon}
                       onClick={() =>
                         arrayHelpers.push(INITIAL_QUANTITY_PER_PRICE_CATEGORY)
                       }

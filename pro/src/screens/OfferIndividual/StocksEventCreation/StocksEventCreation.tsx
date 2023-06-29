@@ -21,7 +21,7 @@ import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { PlusCircleIcon } from 'icons'
+import { ReactComponent as FullMoreIcon } from 'icons/full-more.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -210,7 +210,7 @@ export const StocksEventCreation = ({
         variant={ButtonVariant.PRIMARY}
         type="button"
         onClick={() => setIsRecurrenceModalOpen(true)}
-        Icon={PlusCircleIcon}
+        Icon={FullMoreIcon}
       >
         Ajouter une ou plusieurs dates
       </Button>
