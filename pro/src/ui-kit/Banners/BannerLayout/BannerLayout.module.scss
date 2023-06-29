@@ -94,6 +94,7 @@ $banner-left-padding: rem.torem(16px);
 
     .close-icon-banner {
       fill: colors.$primary;
+      color: colors.$primary;
     }
   }
 
@@ -103,10 +104,12 @@ $banner-left-padding: rem.torem(16px);
 
     svg {
       fill: colors.$tertiary;
+      color: colors.$tertiary;
     }
 
     .bi-link > svg {
       fill: colors.$black;
+      color: colors.$black;
     }
   }
 
@@ -137,6 +140,7 @@ $banner-left-padding: rem.torem(16px);
     .close-icon,
     path {
       fill: colors.$white;
+      color: colors.$white;
     }
   }
 
@@ -165,6 +169,7 @@ $banner-left-padding: rem.torem(16px);
       .close-icon-banner,
       path {
         fill: colors.$white;
+        color: colors.$white;
       }
     }
   }
@@ -212,7 +217,7 @@ $banner-left-padding: rem.torem(16px);
 
 .container {
   @include fonts.bold;
-  
+
   display: flex;
   position: absolute;
   height: rem.torem(26px);

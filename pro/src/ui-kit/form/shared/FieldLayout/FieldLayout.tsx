@@ -1,7 +1,8 @@
 import cn from 'classnames'
 import React, { useId } from 'react'
 
-import { ClearIcon } from 'icons'
+import fullClearIcon from 'icons/full-clear.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import Tooltip from 'ui-kit/Tooltip'
 
 import FieldError from '../FieldError'
@@ -71,7 +72,11 @@ const FieldLayout = ({
       aria-describedby={tooltipId}
       className={styles['clear-button']}
     >
-      <ClearIcon className={styles['clear-button-icon']} />
+      <SvgIcon
+        src={fullClearIcon}
+        alt=""
+        className={styles['clear-button-icon']}
+      />
     </button>
   )
   const showFooter =

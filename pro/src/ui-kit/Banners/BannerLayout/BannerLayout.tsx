@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { ReactComponent as IcoClearIcon } from 'icons/ico-clear.svg'
+import fullClearIcon from 'icons/full-clear.svg'
 import TipsHelpIcon from 'icons/shadow-tips_help.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import strokeErrorIcon from 'icons/stroke-error.svg'
@@ -72,8 +72,9 @@ const BannerLayout = ({
             {
               /* istanbul ignore next: graphic variation */
               type != 'new' && type != 'light' && type != 'image' ? (
-                <IcoClearIcon
-                  title="Masquer le bandeau"
+                <SvgIcon
+                  src={fullClearIcon}
+                  alt="Masquer le bandeau"
                   className={cn(styles['close-icon-banner'])}
                 />
               ) : (
