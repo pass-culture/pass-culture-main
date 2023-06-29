@@ -25,6 +25,7 @@ const fullIcons: IconListItem[] = [
   { src: 'icons/full-pause.svg' },
   { src: 'icons/full-play.svg' },
   { src: 'icons/full-validate.svg' }, // TODO 1 in CollectiveOfferConfirmation
+  { src: 'icons/full-clear.svg' },
   { src: 'icons/full-info.svg' },
   { src: 'icons/full-error.svg' },
   { src: 'icons/full-help.svg' },
@@ -153,7 +154,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-calendar-check.svg', viewBox: '0 0 48 48' },
   { src: 'icons/icon-calendar.svg', viewBox: '0 0 30 30' },
   { src: 'icons/ico-case.svg', viewBox: '0 0 48 48' },
-  { src: 'icons/ico-clear.svg', viewBox: '4 4 40 40' },
   { src: 'icons/ico-clock.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-date.svg', viewBox: '0 0 48 48' },
   { src: 'icons/ico-disconnect-full.svg', viewBox: '0 0 40 40' },

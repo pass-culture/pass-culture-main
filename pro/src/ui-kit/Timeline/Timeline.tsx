@@ -2,8 +2,9 @@ import cn from 'classnames'
 import React, { ReactNode } from 'react'
 
 import { InfoWrongIcon } from 'icons'
-import { ReactComponent as ErrorSvg } from 'icons/ico-clear.svg'
+import fullClearIcon from 'icons/full-clear.svg'
 import { ReactComponent as SuccessSvg } from 'icons/ico-notification-success.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { ReactComponent as DisabledSvg } from './disabled.svg'
 import styles from './Timeline.module.scss'
@@ -43,8 +44,9 @@ const getIconComponent = (type: TimelineStepType, hasErrorSteps: boolean) => {
       )
     case TimelineStepType.ERROR:
       return (
-        <ErrorSvg
-          title="Étape en erreur"
+        <SvgIcon
+          src={fullClearIcon}
+          alt="Étape en erreur"
           className={cn(styles.icon, styles['icon-error'])}
         />
       )
@@ -64,8 +66,9 @@ const getIconComponent = (type: TimelineStepType, hasErrorSteps: boolean) => {
       )
     case TimelineStepType.CANCELLED:
       return (
-        <ErrorSvg
-          title="Étape annulée"
+        <SvgIcon
+          src={fullClearIcon}
+          alt="Étape annulée"
           className={cn(styles.icon, styles['icon-error'])}
         />
       )
