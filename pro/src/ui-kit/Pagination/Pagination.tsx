@@ -1,7 +1,7 @@
 import React from 'react'
 
-import strokeLeft from 'icons/stroke-left.svg'
-import strokeRight from 'icons/stroke-right.svg'
+import strokeLeftIcon from 'icons/stroke-left.svg'
+import strokeRightIcon from 'icons/stroke-right.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Pagination.module.scss'
@@ -27,7 +27,7 @@ export const Pagination = ({
         type="button"
         className={styles['button']}
       >
-        <SvgIcon src={strokeLeft} alt="Page précédente" />
+        <SvgIcon src={strokeLeftIcon} alt="Page précédente" />
       </button>
 
       <span>
@@ -40,7 +40,7 @@ export const Pagination = ({
         type="button"
         className={styles['button']}
       >
-        <SvgIcon src={strokeRight} alt="Page suivante" />
+        <SvgIcon src={strokeRightIcon} alt="Page suivante" />
       </button>
     </div>
   ) : null

@@ -5,7 +5,7 @@ import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
 import { Venue } from 'core/Venue'
 import { Providers } from 'core/Venue/types'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as StrokeMore } from 'icons/stroke-more.svg'
+import { ReactComponent as StrokeMoreIcon } from 'icons/stroke-more.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
@@ -65,7 +65,7 @@ const AddVenueProviderButton = ({
       <Button
         onClick={setCreationMode}
         variant={ButtonVariant.SECONDARY}
-        Icon={StrokeMore}
+        Icon={StrokeMoreIcon}
       >
         Synchroniser des offres
       </Button>

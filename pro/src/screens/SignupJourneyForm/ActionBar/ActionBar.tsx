@@ -6,8 +6,8 @@ import { SIGNUP_JOURNEY_STEP_IDS } from 'components/SignupJourneyBreadcrumb/cons
 import { OnboardingFormNavigationAction } from 'components/SignupJourneyFormLayout/constants'
 import { logEventType } from 'context/analyticsContext'
 import { Events } from 'core/FirebaseEvents/constants'
-import { ReactComponent as LeftIcon } from 'icons/full-left.svg'
-import { ReactComponent as RightIcon } from 'icons/full-right.svg'
+import { ReactComponent as FullLeftIcon } from 'icons/full-left.svg'
+import { ReactComponent as FullRightIcon } from 'icons/full-right.svg'
 import { Button, SubmitButton } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 
@@ -55,7 +55,7 @@ const ActionBar = ({
 
     return (
       <Button
-        Icon={LeftIcon}
+        Icon={FullLeftIcon}
         onClick={() => {
           onClickPrevious()
           previousTo && logActionBarNavigation(previousTo)
@@ -75,7 +75,7 @@ const ActionBar = ({
 
     return (
       <SubmitButton
-        Icon={withRightIcon ? RightIcon : undefined}
+        Icon={withRightIcon ? FullRightIcon : undefined}
         iconPosition={IconPositionEnum.RIGHT}
         disabled={isDisabled}
         onClick={() => {
