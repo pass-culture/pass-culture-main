@@ -144,3 +144,16 @@ class UserGeneratorTest:
 
         assert user.age == age
         self.assert_user_is_beneficiary(user)
+
+    def test_profile_completion_is_consistent_with_user_data(self):
+        user_data = users_generator.GenerateUserData(
+            age=users_constants.ELIGIBILITY_AGE_18,
+            step=users_generator.GeneratedSubscriptionStep.PROFILE_COMPLETION,
+        )
+        user = users_generator.generate_user(user_data)
+        profile_completion = user.beneficiaryFraudChecks[-1]
+        assert profile_completion.resultContent["address"] == user.address
+        assert profile_completion.resultContent["city"] == user.city
+        assert profile_completion.resultContent["firstName"] == user.firstName
+        assert profile_completion.resultContent["lastName"] == user.lastName
+        assert profile_completion.resultContent["postalCode"] == user.postalCode
