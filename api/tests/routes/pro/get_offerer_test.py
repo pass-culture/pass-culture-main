@@ -10,7 +10,6 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
-from pcapi.utils.human_ids import humanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -101,9 +100,7 @@ def test_basics(client):
                 "hasAdageId": bool(venue.adageId),
                 "hasMissingReimbursementPoint": venue.hasMissingReimbursementPoint,
                 "hasCreatedOffer": venue.has_individual_offers or venue.has_collective_offers,
-                "id": humanize(venue.id),
                 "isVirtual": venue.isVirtual,
-                "managingOffererId": humanize(venue.managingOffererId),
                 "mentalDisabilityCompliant": False,
                 "motorDisabilityCompliant": False,
                 "name": venue.name,
@@ -111,7 +108,6 @@ def test_basics(client):
                 "postalCode": venue.postalCode,
                 "publicName": venue.publicName,
                 "siret": venue.siret,
-                "venueLabelId": humanize(venue.venueLabelId),
                 "venueTypeCode": venue.venueTypeCode.name,
                 "visualDisabilityCompliant": False,
                 "withdrawalDetails": venue.withdrawalDetails,

@@ -103,7 +103,7 @@ describe('screens:StocksThing', () => {
 
   it('should track when clicking on "Sauvegarder le brouillon" on creation', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+      stocks: [{ id: 1 } as StockResponseModel],
     })
     renderStockThingScreen(props, contextValue)
 
@@ -127,7 +127,7 @@ describe('screens:StocksThing', () => {
 
   it('should track when clicking on "Sauvegarder le brouillon" on draft', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+      stocks: [{ id: 1 } as StockResponseModel],
     })
     renderStockThingScreen(props, contextValue, '/brouillon/stocks')
 
@@ -151,7 +151,7 @@ describe('screens:StocksThing', () => {
 
   it('should track when clicking on "Étape suivante" on creation', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+      stocks: [{ id: 1 } as StockResponseModel],
     })
     renderStockThingScreen(props, contextValue)
 
@@ -175,7 +175,7 @@ describe('screens:StocksThing', () => {
 
   it('should track when clicking on "Étape suivante" on brouillon', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+      stocks: [{ id: 1 } as StockResponseModel],
     })
     renderStockThingScreen(props, contextValue, '/brouillon/stocks')
 
@@ -199,7 +199,7 @@ describe('screens:StocksThing', () => {
 
   it('should track when clicking on "Enregistrer les modifications" on edition', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+      stocks: [{ id: 1 } as StockResponseModel],
     })
     renderStockThingScreen(props, contextValue, '/stocks')
 
@@ -223,7 +223,7 @@ describe('screens:StocksThing', () => {
 
   it('should track when clicking on "Étape précédente" on creation', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+      stocks: [{ id: 1 } as StockResponseModel],
     })
 
     renderStockThingScreen(props, contextValue)
@@ -247,7 +247,7 @@ describe('screens:StocksThing', () => {
 
   it('should track when clicking on "Étape précédente" on draft', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+      stocks: [{ id: 1 } as StockResponseModel],
     })
 
     renderStockThingScreen(props, contextValue, '/brouillon/stocks')
@@ -271,7 +271,7 @@ describe('screens:StocksThing', () => {
 
   it('should track when clicking on "Annuler et quitter" on edition', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+      stocks: [{ id: 1 } as StockResponseModel],
     })
 
     renderStockThingScreen(props, contextValue, '/stocks')

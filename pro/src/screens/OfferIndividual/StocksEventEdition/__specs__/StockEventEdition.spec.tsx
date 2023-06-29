@@ -251,7 +251,7 @@ describe('screens:StocksEventEdition', () => {
       },
     ]
     await renderStockEventScreen(apiOffer)
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[0]
@@ -285,7 +285,7 @@ describe('screens:StocksEventEdition', () => {
       },
     ]
     await renderStockEventScreen(apiOffer)
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[1]
@@ -303,7 +303,7 @@ describe('screens:StocksEventEdition', () => {
       name: 'Provider',
     }
     await renderStockEventScreen(apiOffer)
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[1]
@@ -359,7 +359,7 @@ describe('screens:StocksEventEdition', () => {
       name: 'Provider',
     }
     await renderStockEventScreen(apiOffer)
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
     expect(screen.getByText('Ajouter une ou plusieurs dates')).toBeDisabled()
   })
@@ -372,7 +372,7 @@ describe('screens:StocksEventEdition', () => {
     await renderStockEventScreen(apiOffer)
     jest
       .spyOn(api, 'upsertStocks')
-      .mockResolvedValue({ stocks: [{ id: 'STOCK_ID' } as StockResponseModel] })
+      .mockResolvedValue({ stocks: [{ id: 1 } as StockResponseModel] })
 
     await userEvent.type(screen.getByLabelText('Quantité restante'), '30')
     await userEvent.click(
@@ -424,7 +424,7 @@ describe('screens:StocksEventEdition', () => {
     await renderStockEventScreen(apiOffer)
     jest
       .spyOn(api, 'upsertStocks')
-      .mockResolvedValue({ stocks: [{ id: 'STOCK_ID' } as StockResponseModel] })
+      .mockResolvedValue({ stocks: [{ id: 1 } as StockResponseModel] })
 
     await userEvent.selectOptions(
       screen.getByLabelText('Tarif'),
@@ -440,7 +440,7 @@ describe('screens:StocksEventEdition', () => {
   it('should show a warning on "Enregistrer les modifications" button click then save the offer', async () => {
     jest
       .spyOn(api, 'upsertStocks')
-      .mockResolvedValue({ stocks: [{ id: 'STOCK_ID' } as StockResponseModel] })
+      .mockResolvedValue({ stocks: [{ id: 1 } as StockResponseModel] })
     await renderStockEventScreen(apiOffer)
 
     await userEvent.selectOptions(
@@ -473,7 +473,7 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should not display any message when user delete empty stock', async () => {
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'BQ' })
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     apiOffer.stocks = []
     await renderStockEventScreen(apiOffer)
 

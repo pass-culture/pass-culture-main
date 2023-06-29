@@ -4,7 +4,6 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.users.factories as users_factories
 from pcapi.notifications.push import testing as push_testing
-from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
 
@@ -26,7 +25,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        assert response.json == {"id": humanize(stock.id)}
+        assert response.json == {"id": stock.id}
         assert stock.isSoftDeleted
         assert push_testing.requests[-1] == {
             "group_id": "Cancel_booking",

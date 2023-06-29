@@ -11,7 +11,7 @@ describe('screens::StockThing::adapter:upsertStocksThingAdapter', () => {
   it('should send StockCreationBodyModel to api', async () => {
     jest
       .spyOn(api, 'upsertStocks')
-      .mockResolvedValue({ stocks: [{ id: 'STOCK_ID' } as StockResponseModel] })
+      .mockResolvedValue({ stocks: [{ id: 1 } as StockResponseModel] })
     upsertStocksThingAdapter({
       offerId: 1,
       formValues: {
@@ -41,7 +41,7 @@ describe('screens::StockThing::adapter:upsertStocksThingAdapter', () => {
   it('should send StockEditionBodyModel to api', async () => {
     jest
       .spyOn(api, 'upsertStocks')
-      .mockResolvedValue({ stocks: [{ id: 'STOCK_ID' } as StockResponseModel] })
+      .mockResolvedValue({ stocks: [{ id: 1 } as StockResponseModel] })
     upsertStocksThingAdapter({
       offerId: 1,
       formValues: {

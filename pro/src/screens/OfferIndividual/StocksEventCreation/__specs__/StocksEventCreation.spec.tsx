@@ -80,7 +80,7 @@ const renderStockEventCreation = (props: StocksEventCreationProps) =>
 describe('StocksEventCreation', () => {
   beforeEach(() => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'AA' })
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     jest
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
@@ -404,7 +404,7 @@ describe('navigation and submit', () => {
 describe('deletion', () => {
   beforeEach(() => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 'AA' })
+    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     jest
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
