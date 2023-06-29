@@ -12,8 +12,8 @@ import { computeOffersUrl, OFFER_WIZARD_MODE } from 'core/Offers'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as IcoMiniArrowLeft } from 'icons/ico-mini-arrow-left.svg'
-import { ReactComponent as IcoMiniArrowRight } from 'icons/ico-mini-arrow-right.svg'
+import { ReactComponent as LeftIcon } from 'icons/full-left.svg'
+import { ReactComponent as RightIcon } from 'icons/full-right.svg'
 import { RootState } from 'store/reducers'
 import { Button, ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
@@ -77,7 +77,7 @@ const ActionBar = ({
     if (mode === OFFER_WIZARD_MODE.CREATION) {
       return (
         <Button
-          Icon={IcoMiniArrowLeft}
+          Icon={LeftIcon}
           onClick={onClickPrevious}
           variant={ButtonVariant.SECONDARY}
           disabled={isDisabled}
@@ -98,7 +98,7 @@ const ActionBar = ({
             </ButtonLink>
           ) : (
             <Button
-              Icon={IcoMiniArrowLeft}
+              Icon={LeftIcon}
               onClick={onClickPrevious}
               variant={ButtonVariant.SECONDARY}
               disabled={isDisabled}
@@ -175,7 +175,7 @@ const ActionBar = ({
                 Sauvegarder le brouillon
               </Button>
               <SubmitButton
-                Icon={IcoMiniArrowRight}
+                Icon={RightIcon}
                 iconPosition={IconPositionEnum.RIGHT}
                 disabled={isDisabled}
                 onClick={onClickNext}

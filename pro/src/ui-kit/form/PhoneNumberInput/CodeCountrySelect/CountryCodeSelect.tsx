@@ -1,7 +1,8 @@
 import cn from 'classnames'
 import React, { ChangeEvent } from 'react'
 
-import { ReactComponent as Down } from 'icons/ico-mini-arrow-right.svg'
+import fullRight from 'icons/full-right.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { PhoneCodeSelectOption } from '../types'
 
@@ -24,7 +25,9 @@ const CountryCodeSelect = ({
 }: CountryCodeSelectProps) => {
   return (
     <div className={cn(styles['select-input-wrapper'], className)}>
-      <Down
+      <SvgIcon
+        src={fullRight}
+        alt=""
         className={cn(styles['select-input-icon'], {
           [styles['select-input-icon-disabled']]: disabled,
         })}

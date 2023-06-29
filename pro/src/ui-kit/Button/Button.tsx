@@ -3,8 +3,9 @@
 import cn from 'classnames'
 import React, { useId } from 'react'
 
-import { ReactComponent as IcoArrowRight } from 'icons/ico-mini-arrow-right.svg'
+import fullRight from 'icons/full-right.svg'
 import { ReactComponent as SpinnerIcon } from 'icons/loader.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import Tooltip from 'ui-kit/Tooltip'
 
 import styles from './Button.module.scss'
@@ -88,7 +89,9 @@ const Button = ({
         <Icon className={styles['button-icon']} />
       )}
       {variant === ButtonVariant.BOX && (
-        <IcoArrowRight
+        <SvgIcon
+          src={fullRight}
+          alt=""
           className={cn(styles['button-icon'], styles['button-icon-arrow'])}
         />
       )}
