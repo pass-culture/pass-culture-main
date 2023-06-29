@@ -56,12 +56,6 @@ class PcObject:
     def dump(self) -> None:
         pprint(vars(self))
 
-    # FIXME (mageoffray, 2023-01-05) : Temporary property.
-    # It should be deleted once no responses uses humanizedIds
-    @property
-    def nonHumanizedId(self) -> int:
-        return self.id
-
     def populate_from_dict(self, data: dict, skipped_keys: typing.Iterable[str] = ()) -> None:
         self._check_not_soft_deleted()
         mapper: sa_orm.Mapper = self.__mapper__  # type: ignore [attr-defined]
