@@ -13,7 +13,7 @@ import {
 } from 'core/OfferEducational'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { CircleArrowIcon } from 'icons'
+import { ReactComponent as FullNextIcon } from 'icons/full-next.svg'
 import { getCollectiveStatusLabel } from 'pages/Offers/Offers/OfferItem/Cells/CollectiveOfferStatusCell/CollectiveOfferStatusCell'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
@@ -128,7 +128,7 @@ const OfferEducationalActions = ({
                 variant={ButtonVariant.TERNARY}
                 className={style['button-link']}
                 link={{ isExternal: false, to: getBookingLink() }}
-                Icon={CircleArrowIcon}
+                Icon={FullNextIcon}
                 iconPosition={IconPositionEnum.LEFT}
                 onClick={() =>
                   logEvent?.(
