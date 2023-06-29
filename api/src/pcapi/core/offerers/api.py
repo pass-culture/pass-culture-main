@@ -1883,13 +1883,13 @@ def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
     if not offerer_invitations:
         return
     for offerer_invitation in offerer_invitations:
-        user_offerer = grant_user_offerer_access(user=user, offerer=offerer_invitation.offerer)
-        user_offerer.user.add_pro_role()
-        inviter_email = offerer_invitation.user.email
-        db.session.add(user_offerer)
-        db.session.delete(offerer_invitation)
-
         try:
+            inviter_email = offerer_invitation.user.email
+            user_offerer = grant_user_offerer_access(user=user, offerer=offerer_invitation.offerer)
+            user_offerer.user.add_pro_role()
+            db.session.add(user_offerer)
+            db.session.delete(offerer_invitation)
+
             db.session.commit()
         except Exception:  # pylint: disable=broad-except
             db.session.rollback()
