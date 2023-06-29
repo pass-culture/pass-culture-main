@@ -70,7 +70,7 @@ describe('Summary trackers', () => {
 
   beforeEach(() => {
     customContext = {
-      offer: individualOfferFactory({ nonHumanizedId: offerId }),
+      offer: individualOfferFactory({ id: offerId }),
     }
 
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
@@ -181,7 +181,7 @@ describe('Summary trackers', () => {
   describe('On Creation', () => {
     beforeEach(() => {
       customContext.offer = individualOfferFactory({
-        nonHumanizedId: offerId,
+        id: offerId,
         status: OfferStatus.DRAFT,
       })
       jest
@@ -333,7 +333,7 @@ describe('Summary trackers', () => {
   describe('For Draft offers', () => {
     beforeEach(() => {
       customContext.offer = individualOfferFactory({
-        nonHumanizedId: offerId,
+        id: offerId,
         status: OfferStatus.DRAFT,
       })
       jest
@@ -471,7 +471,7 @@ describe('Summary trackers', () => {
       const context = {
         ...defaultContext,
         offer: individualOfferFactory({
-          nonHumanizedId: offerId,
+          id: offerId,
           status: OfferStatus.DRAFT,
         }),
         venueId: venueId,

@@ -10,11 +10,11 @@ export type GetOfferStockResponseModel = {
   dateCreated: string;
   dateModified: string;
   hasActivationCode: boolean;
+  id: number;
   isBookable: boolean;
   isEventDeletable: boolean;
   isEventExpired: boolean;
   isSoftDeleted: boolean;
-  nonHumanizedId: number;
   price: number;
   priceCategoryId?: number | null;
   quantity?: number | null;

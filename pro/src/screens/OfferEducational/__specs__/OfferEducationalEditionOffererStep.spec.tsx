@@ -35,35 +35,35 @@ describe('screens | OfferEducational : edition offerer step', () => {
       ...props,
       userOfferers: userOfferersFactory([
         {
-          nonHumanizedId: firstOffererId,
+          id: firstOffererId,
           managedVenues: managedVenuesFactory([
-            { nonHumanizedId: firstvenueId },
-            { nonHumanizedId: secondVenueId },
+            { id: firstvenueId },
+            { id: secondVenueId },
           ]),
         },
         {
-          nonHumanizedId: secondOffererId,
+          id: secondOffererId,
           managedVenues: managedVenuesFactory([
-            { nonHumanizedId: thirdVenueId },
-            { nonHumanizedId: fourthVenueId },
+            { id: thirdVenueId },
+            { id: fourthVenueId },
           ]),
         },
       ]),
       offer: collectiveOfferFactory(
         {
-          nonHumanizedId: thirdVenueId,
+          id: thirdVenueId,
           venue: {
             ...collectiveOfferVenueFactory({
-              nonHumanizedId: thirdVenueId,
+              id: thirdVenueId,
               managingOfferer: collectiveOfferOffererFactory({
-                nonHumanizedId: secondOffererId,
+                id: secondOffererId,
               }),
             }),
-            nonHumanizedId: thirdVenueId,
+            id: thirdVenueId,
           },
         },
         undefined,
-        collectiveOfferVenueFactory({ nonHumanizedId: secondOffererId })
+        collectiveOfferVenueFactory({ id: secondOffererId })
       ),
     }
 
@@ -92,30 +92,30 @@ describe('screens | OfferEducational : edition offerer step', () => {
       ...props,
       userOfferers: userOfferersFactory([
         {
-          nonHumanizedId: firstOffererId,
+          id: firstOffererId,
           managedVenues: managedVenuesFactory([
-            { nonHumanizedId: firstvenueId },
-            { nonHumanizedId: secondVenueId },
+            { id: firstvenueId },
+            { id: secondVenueId },
           ]),
         },
         {
-          nonHumanizedId: secondOffererId,
+          id: secondOffererId,
           managedVenues: managedVenuesFactory([
-            { nonHumanizedId: thirdVenueId },
-            { nonHumanizedId: fourthVenueId },
+            { id: thirdVenueId },
+            { id: fourthVenueId },
           ]),
         },
       ]),
       offer: collectiveOfferFactory(
         {
-          nonHumanizedId: thirdVenueId,
+          id: thirdVenueId,
           venue: {
             ...collectiveOfferVenueFactory({
               managingOfferer: collectiveOfferOffererFactory({
-                nonHumanizedId: secondOffererId,
+                id: secondOffererId,
               }),
             }),
-            nonHumanizedId: thirdVenueId,
+            id: thirdVenueId,
           },
           lastBookingStatus: CollectiveBookingStatus.USED,
         },

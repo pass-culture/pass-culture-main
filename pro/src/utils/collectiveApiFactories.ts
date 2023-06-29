@@ -51,7 +51,7 @@ const sharedCollectiveOfferData = {
   interventionArea: ['mainland'],
   isEditable: true,
   isPublicApi: false,
-  nonHumanizedId: 123,
+  id: 123,
   offerVenue: {
     venueId: null,
     otherAddress: 'A la mairie',
@@ -74,7 +74,7 @@ export const collectiveOfferFactory = (
   const currentOfferId = offerId++
   return {
     ...sharedCollectiveOfferData,
-    nonHumanizedId: currentOfferId,
+    id: currentOfferId,
     venue: customVenue,
     isBookable: true,
     isVisibilityEditable: true,
@@ -89,7 +89,7 @@ export const collectiveStockFactory = (
 ): GetCollectiveOfferCollectiveStockResponseModel => {
   const currentStockId = stockId++
   return {
-    nonHumanizedId: currentStockId,
+    id: currentStockId,
     price: 100,
     beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
     bookingLimitDatetime: new Date('2021-09-15T12:00:00Z').toISOString(),
@@ -105,7 +105,7 @@ export const collectiveOfferTemplateFactory = (
   customVenue: GetCollectiveOfferVenueResponseModel = collectiveOfferVenueFactory()
 ): CollectiveOfferTemplate => ({
   ...sharedCollectiveOfferData,
-  nonHumanizedId: offerId++,
+  id: offerId++,
   venue: customVenue,
   isTemplate: true,
   ...customCollectiveOfferTemplate,
@@ -120,7 +120,7 @@ export const collectiveOfferVenueFactory = (
     name: `Le nom du lieu ${currentVenueId}`,
     managingOfferer: customOfferer,
     publicName: 'Mon Lieu',
-    nonHumanizedId: currentVenueId,
+    id: currentVenueId,
     departementCode: '973',
     ...customVenue,
   }
@@ -131,7 +131,7 @@ export const collectiveOfferOffererFactory = (
 ): GetCollectiveOfferManagingOffererResponseModel => {
   const currentOffererId = offererId++
   return {
-    nonHumanizedId: currentOffererId,
+    id: currentOffererId,
     name: `La nom de la structure ${currentOffererId}`,
     ...customOfferer,
   }
@@ -353,7 +353,7 @@ export const defaultVenue: Venue = {
     dateModifiedAtLastProvider: undefined,
     demarchesSimplifieesApplicationId: undefined,
     fieldsUpdated: [],
-    nonHumanizedId: 0,
+    id: 0,
     idAtProviders: undefined,
     isValidated: false,
     lastProviderId: undefined,
@@ -361,7 +361,7 @@ export const defaultVenue: Venue = {
     postalCode: '',
     siren: undefined,
   },
-  nonHumanizedId: 0,
+  id: 0,
   pricingPoint: null,
   publicName: '',
   siret: '',
@@ -398,14 +398,14 @@ export const defaultVenueResponseModel: GetVenueResponseModel = {
     isValidated: true,
     lastProviderId: '',
     name: 'Ma super structure',
-    nonHumanizedId: 1,
+    id: 1,
     postalCode: '75000',
     siren: '',
   },
   mentalDisabilityCompliant: null,
   motorDisabilityCompliant: null,
   name: 'Lieu de test',
-  nonHumanizedId: 1,
+  id: 1,
   venueTypeCode: VenueTypeCode.CENTRE_CULTUREL,
 }
 
@@ -427,7 +427,6 @@ export const defaultRequestResponseModel: GetCollectiveOfferRequestResponseModel
   }
 
 export const defaultCollectifOfferResponseModel = {
-  id: 'A1',
   isActive: true,
   offerId: 1,
   bookingEmails: [],
@@ -441,7 +440,7 @@ export const defaultCollectifOfferResponseModel = {
   interventionArea: [],
   isCancellable: true,
   isEditable: true,
-  nonHumanizedId: 1,
+  id: 1,
   offerVenue: {
     addressType: OfferAddressType.OFFERER_VENUE,
     otherAddress: '',
@@ -452,14 +451,12 @@ export const defaultCollectifOfferResponseModel = {
   subcategoryId: SubcategoryIdEnum.CONCERT,
   venue: {
     fieldsUpdated: [],
-    id: 'A1',
     isVirtual: false,
-    nonHumanizedId: 1,
+    id: 1,
     managingOfferer: {
       city: 'Vélizy',
-      nonHumanizedId: 1,
+      id: 1,
       dateCreated: 'date',
-      id: '1',
       isActive: true,
       isValidated: true,
       name: 'mon offerer',

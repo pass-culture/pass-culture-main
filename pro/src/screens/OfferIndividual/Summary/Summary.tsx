@@ -59,7 +59,7 @@ const Summary = () => {
   )?.canBeDuo
 
   const offerConfirmationStepUrl = getOfferIndividualUrl({
-    offerId: offer.nonHumanizedId,
+    offerId: offer.id,
     step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
     mode,
   })
@@ -73,10 +73,10 @@ const Summary = () => {
 
     setIsDisabled(true)
     const response = await publishIndividualOffer({
-      offerId: offer.nonHumanizedId,
+      offerId: offer.id,
     })
     if (response.isOk) {
-      const response = await getOfferIndividualAdapter(offer.nonHumanizedId)
+      const response = await getOfferIndividualAdapter(offer.id)
       if (response.isOk) {
         setOffer && setOffer(response.payload)
       }
@@ -86,7 +86,7 @@ const Summary = () => {
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
         isDraft: true,
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
       })
       if (showVenuePopin[venueId || '']) {
         setDisplayRedirectDialog(true)
@@ -107,12 +107,12 @@ const Summary = () => {
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
       isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-      offerId: offer.nonHumanizedId,
+      offerId: offer.id,
     })
 
     navigate(
       getOfferIndividualUrl({
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
         step: OFFER_WIZARD_STEP_IDS.STOCKS,
         mode,
       })
@@ -165,7 +165,7 @@ const Summary = () => {
             onClickPrevious={handlePreviousStep}
             step={OFFER_WIZARD_STEP_IDS.SUMMARY}
             isDisabled={isDisabled}
-            offerId={offer.nonHumanizedId}
+            offerId={offer.id}
           />
         </SummaryLayout.Content>
 
@@ -184,7 +184,7 @@ const Summary = () => {
           {mode === OFFER_WIZARD_MODE.EDITION && (
             <div className={styles['offer-preview-app-link']}>
               <DisplayOfferInAppLink
-                nonHumanizedId={offer.nonHumanizedId}
+                id={offer.id}
                 tracking={{
                   isTracked: true,
                   trackingFunction:
@@ -196,7 +196,7 @@ const Summary = () => {
                         used: OFFER_FORM_NAVIGATION_MEDIUM.SUMMARY_PREVIEW,
                         isEdition: true,
                         isDraft: false,
-                        offerId: offer.nonHumanizedId,
+                        offerId: offer.id,
                       }),
                 }}
                 variant={ButtonVariant.SECONDARY}
@@ -221,7 +221,7 @@ const Summary = () => {
           title="Félicitations, vous avez créé votre offre !"
           redirectText="Renseigner des coordonnées bancaires"
           redirectLink={{
-            to: `/structures/${offerOfferer?.nonHumanizedId}/lieux/${venueId}?modification#remboursement`,
+            to: `/structures/${offerOfferer?.id}/lieux/${venueId}?modification#remboursement`,
             isExternal: false,
           }}
           onRedirect={() =>

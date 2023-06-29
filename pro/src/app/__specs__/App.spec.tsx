@@ -53,7 +53,7 @@ describe('src | App', () => {
       user: {
         initialized: true,
         currentUser: {
-          nonHumanizedId: 12,
+          id: 12,
           isAdmin: false,
         },
       },
@@ -65,7 +65,7 @@ describe('src | App', () => {
 
     expect(await screen.findByText('Sub component')).toBeInTheDocument()
     expect(setUser).toHaveBeenCalledWith({
-      id: store.user.currentUser.nonHumanizedId.toString(),
+      id: store.user.currentUser.id.toString(),
     })
   })
 

@@ -68,9 +68,7 @@ const OfferIndividualForm = ({
 
   const offerSubCategory = subCategories.find(s => s.id === subcategoryId)
 
-  const venue = filteredVenueList.find(
-    v => v.nonHumanizedId.toString() == venueId
-  )
+  const venue = filteredVenueList.find(v => v.id.toString() == venueId)
 
   const isVenueVirtual = venue?.isVirtual || false
 

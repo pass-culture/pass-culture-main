@@ -29,7 +29,7 @@ jest.mock('core/Notification/constants', () => ({
   NOTIFICATION_SHOW_DURATION: 10,
 }))
 
-const offerer = offererFactory({ id: 'AM' })
+const offerer = offererFactory({ id: 12 })
 const venue = getOfferVenueFactory(undefined, offerer)
 const apiOffer: GetIndividualOfferResponseModel = GetIndividualOfferFactory(
   undefined,
@@ -78,7 +78,7 @@ describe('test OfferIndividualWisard', () => {
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     jest.spyOn(api, 'listOffers').mockResolvedValue([
       {
-        nonHumanizedId: 1,
+        id: 1,
         status: 'ACTIVE',
         isActive: true,
         hasBookingLimitDatetimesPassed: false,
@@ -89,7 +89,7 @@ describe('test OfferIndividualWisard', () => {
           name: 'venue',
           offererName: 'offerer',
           isVirtual: false,
-          nonHumanizedId: 1,
+          id: 1,
         },
         stocks: [],
         isEditable: true,
@@ -199,7 +199,7 @@ describe('test OfferIndividualWisard', () => {
         })
       ) +
         '?structure=' +
-        offerer.nonHumanizedId
+        offerer.id
     )
     expect(
       await screen.findByRole('heading', { name: 'Créer une offre' })
@@ -212,7 +212,7 @@ describe('test OfferIndividualWisard', () => {
     expect(api.getVenues).toHaveBeenCalledWith(
       null, // validated
       true, // activeOfferersOnly,
-      offerer.nonHumanizedId // offererId
+      offerer.id // offererId
     )
     expect(api.getCategories).toHaveBeenCalledWith()
     expect(api.getOffer).not.toHaveBeenCalled()
@@ -256,7 +256,7 @@ describe('test OfferIndividualWisard', () => {
           mode: OFFER_WIZARD_MODE.EDITION,
         }),
         { offerId }
-      ) + `?structure=${apiOffer.venue.managingOfferer.nonHumanizedId}`
+      ) + `?structure=${apiOffer.venue.managingOfferer.id}`
     )
     expect(
       await screen.findByRole('heading', { name: 'Modifier l’offre' })
@@ -269,7 +269,7 @@ describe('test OfferIndividualWisard', () => {
     expect(api.getVenues).toHaveBeenCalledWith(
       null, // validated
       true, // activeOfferersOnly,
-      apiOffer.venue.managingOfferer.nonHumanizedId // offererId
+      apiOffer.venue.managingOfferer.id // offererId
     )
     expect(api.getCategories).toHaveBeenCalledWith()
     expect(api.getOffer).toHaveBeenCalledWith(offerId)

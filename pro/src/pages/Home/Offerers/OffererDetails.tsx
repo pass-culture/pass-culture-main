@@ -29,7 +29,7 @@ const OffererDetails = ({
 
   const hasAtLeastOnePhysicalVenue = selectedOfferer.managedVenues
     ?.filter(venue => !venue.isVirtual)
-    .map(venue => venue.nonHumanizedId)
+    .map(venue => venue.id)
     .some(Boolean)
 
   const hasMissingReimbursementPoints = useMemo(() => {
@@ -78,7 +78,7 @@ const OffererDetails = ({
               id={STEP_OFFERER_HASH}
               name="offererId"
               options={offererOptions}
-              value={selectedOfferer.nonHumanizedId.toString()}
+              value={selectedOfferer.id.toString()}
             />
           </div>
 
@@ -86,14 +86,14 @@ const OffererDetails = ({
           <ButtonLink
             variant={ButtonVariant.TERNARY}
             link={{
-              to: `/structures/${selectedOfferer.nonHumanizedId}`,
+              to: `/structures/${selectedOfferer.id}`,
               isExternal: false,
             }}
             Icon={FullEdit}
             isDisabled={!isUserOffererValidated}
             onClick={() =>
               logEvent?.(Events.CLICKED_MODIFY_OFFERER, {
-                offerer_id: selectedOfferer.nonHumanizedId,
+                offerer_id: selectedOfferer.id,
               })
             }
           >

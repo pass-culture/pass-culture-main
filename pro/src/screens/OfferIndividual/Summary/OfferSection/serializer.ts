@@ -81,7 +81,7 @@ export const serializeOfferSectionData = (
     c => c.id === offerSubCategory?.categoryId
   )
   const baseOffer = {
-    nonHumanizedId: offer.nonHumanizedId,
+    id: offer.id,
     name: offer.name,
     description: offer.description,
     categoryName: offerCategory?.proLabel || ' - ',

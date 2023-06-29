@@ -41,7 +41,7 @@ describe('Summary stock section trackers', () => {
       offer: individualOfferFactory(
         {
           status: OfferStatus.ACTIVE,
-          nonHumanizedId: offerId,
+          id: offerId,
         },
         individualStockFactory({
           quantity: 10,

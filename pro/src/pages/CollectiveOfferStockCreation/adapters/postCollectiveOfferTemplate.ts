@@ -10,11 +10,7 @@ type Params = {
   values: Pick<OfferEducationalStockFormValues, 'priceDetail'>
 }
 
-type PostCollectiveOfferTemplateAdapter = Adapter<
-  Params,
-  { nonHumanizedId: number },
-  null
->
+type PostCollectiveOfferTemplateAdapter = Adapter<Params, { id: number }, null>
 
 const KNOWN_BAD_REQUEST_CODES: Record<string, string> = {
   EDUCATIONAL_STOCK_ALREADY_EXISTS:
@@ -41,15 +37,14 @@ const postCollectiveOfferTemplateAdapter: PostCollectiveOfferTemplateAdapter =
       educationalPriceDetail: values.priceDetail,
     }
     try {
-      const { nonHumanizedId } =
-        await api.createCollectiveOfferTemplateFromCollectiveOffer(
-          offerId,
-          collectiveOfferTemplatePayload
-        )
+      const { id } = await api.createCollectiveOfferTemplateFromCollectiveOffer(
+        offerId,
+        collectiveOfferTemplatePayload
+      )
       return {
         isOk: true,
         message: null,
-        payload: { nonHumanizedId },
+        payload: { id },
       }
     } catch (error) {
       if (hasStatusCodeAndErrorsCode(error) && error.status === 400) {

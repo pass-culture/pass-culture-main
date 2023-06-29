@@ -44,7 +44,7 @@ const EACInformation = ({
 
       <ButtonLink
         link={{
-          to: `/structures/${offererId}/lieux/${venue?.nonHumanizedId}/eac`,
+          to: `/structures/${offererId}/lieux/${venue?.id}/eac`,
           isExternal: false,
         }}
         Icon={collectiveDataIsNotEmpty ? FullEdit : undefined}

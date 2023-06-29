@@ -215,7 +215,7 @@ const OfferEducationalStock = <
                 postForm={() => postForm(formik.values)}
                 modifyStudents={() =>
                   navigate(
-                    `/offre/collectif/${offer.nonHumanizedId}/${
+                    `/offre/collectif/${offer.id}/${
                       mode == Mode.EDITION ? 'edition' : 'creation'
                     }`
                   )
@@ -228,7 +228,7 @@ const OfferEducationalStock = <
                 <ButtonLink
                   variant={ButtonVariant.SECONDARY}
                   link={{
-                    to: `/offre/collectif/${offer.nonHumanizedId}/creation${
+                    to: `/offre/collectif/${offer.id}/creation${
                       requestId ? `?requete=${requestId}` : ''
                     }`,
                     isExternal: false,

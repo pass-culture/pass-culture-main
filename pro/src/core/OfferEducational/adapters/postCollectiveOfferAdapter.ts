@@ -9,7 +9,7 @@ type Params = {
   offerTemplateId?: number
 }
 
-type PayloadSuccess = { nonHumanizedId: number }
+type PayloadSuccess = { id: number }
 type PayloadFailure = { id: null }
 
 type PostOfferAdapter = Adapter<Params, PayloadSuccess, PayloadFailure>
@@ -43,7 +43,7 @@ const postCollectiveOfferAdapter: PostOfferAdapter = async ({
       isOk: true,
       message: null,
       payload: {
-        nonHumanizedId: response.nonHumanizedId,
+        id: response.id,
       },
     }
   } catch (error) {

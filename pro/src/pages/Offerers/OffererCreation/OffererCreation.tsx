@@ -37,7 +37,7 @@ const OffererCreation = (): JSX.Element => {
           siren: siren?.replace(/\s/g, ''),
         })
         .then(offerer => {
-          onHandleSuccess(offerer.nonHumanizedId.toString())
+          onHandleSuccess(offerer.id.toString())
         })
         .catch(() => {
           onHandleFail()

@@ -17,7 +17,7 @@ describe('routes::Summary::serializers', () => {
 
   beforeEach(() => {
     offer = {
-      nonHumanizedId: 12,
+      id: 12,
       author: 'Offer author',
       bookingEmail: 'booking@email.com',
       bookingContact: 'alfonsoLeBg@exampple.com',
@@ -64,7 +64,7 @@ describe('routes::Summary::serializers', () => {
         postalCode: '75001',
         city: 'Paris',
         offerer: {
-          nonHumanizedId: 1,
+          id: 1,
           name: 'Offerer name',
         },
         departmentCode: '75',
@@ -144,7 +144,7 @@ describe('routes::Summary::serializers', () => {
     )
 
     expect(offerSerialized).toEqual({
-      nonHumanizedId: 12,
+      id: 12,
       name: 'Offer name',
       description: 'Offer description',
       categoryName: 'Catégorie',

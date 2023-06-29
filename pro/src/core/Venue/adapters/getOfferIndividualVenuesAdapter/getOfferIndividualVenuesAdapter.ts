@@ -29,7 +29,7 @@ const getOfferIndividualVenuesAdapter: GetOfferIndividualVenuesAdapter =
           [AccessiblityEnum.MOTOR]: venue.motorDisabilityCompliant || false,
         }
         return {
-          nonHumanizedId: venue.nonHumanizedId,
+          id: venue.id,
           managingOffererId: venue.managingOffererId,
           name: venue.publicName || venue.name,
           isVirtual: venue.isVirtual,

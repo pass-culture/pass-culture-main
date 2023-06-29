@@ -88,7 +88,7 @@ describe('offererDetailsLegacy', () => {
     }
 
     virtualVenue = {
-      nonHumanizedId: 1,
+      id: 1,
       isVirtual: true,
       name: 'Le Sous-sol (Offre numérique)',
       offererName: 'Bar des amis',
@@ -96,7 +96,7 @@ describe('offererDetailsLegacy', () => {
       nOffers: 2,
     }
     physicalVenue = {
-      nonHumanizedId: 2,
+      id: 2,
       isVirtual: false,
       name: 'Le Sous-sol (Offre physique)',
       offererName: 'Bar des amis',
@@ -104,7 +104,7 @@ describe('offererDetailsLegacy', () => {
       nOffers: 2,
     }
     physicalVenueWithPublicName = {
-      nonHumanizedId: 3,
+      id: 3,
       isVirtual: false,
       name: 'Le deuxième Sous-sol (Offre physique)',
       offererName: 'Bar des amis',
@@ -124,8 +124,7 @@ describe('offererDetailsLegacy', () => {
         demarchesSimplifieesApplicationId: null,
         fieldsUpdated: [],
         hasDigitalVenueAtLeastOneOffer: true,
-        id: 'FQ',
-        nonHumanizedId: 6,
+        id: 6,
         isValidated: true,
         isActive: true,
         lastProviderId: null,
@@ -135,7 +134,7 @@ describe('offererDetailsLegacy', () => {
         managedVenues: [
           {
             ...virtualVenue,
-            nonHumanizedId: 4,
+            id: 4,
           },
         ],
       },
@@ -151,8 +150,7 @@ describe('offererDetailsLegacy', () => {
         demarchesSimplifieesApplicationId: null,
         fieldsUpdated: [],
         hasDigitalVenueAtLeastOneOffer: true,
-        id: 'GE',
-        nonHumanizedId: 12,
+        id: 12,
         isValidated: true,
         isActive: true,
         lastProviderId: null,
@@ -170,7 +168,6 @@ describe('offererDetailsLegacy', () => {
     baseOfferersNames = baseOfferers.map(offerer => ({
       id: offerer.id,
       name: offerer.name,
-      nonHumanizedId: offerer.nonHumanizedId,
     }))
 
     api.listOfferersNames.mockResolvedValue({
@@ -280,7 +277,7 @@ describe('offererDetailsLegacy', () => {
         ...baseOfferers[0],
         managedVenues: [
           {
-            nonHumanizedId: 1,
+            id: 1,
             isVirtual: true,
             managingOffererId: baseOfferers[0].id,
             name: 'New venue (Offre numérique)',
@@ -289,7 +286,7 @@ describe('offererDetailsLegacy', () => {
             nOffers: 2,
           },
           {
-            nonHumanizedId: 2,
+            id: 2,
             isVirtual: false,
             managingOffererId: baseOfferers[0].id,
             name: 'New venue (Offre physique)',
@@ -298,7 +295,7 @@ describe('offererDetailsLegacy', () => {
             nOffers: 2,
           },
           {
-            nonHumanizedId: 3,
+            id: 3,
             isVirtual: false,
             managingOffererId: baseOfferers[0].id,
             name: 'Second new venue (Offre physique)',
@@ -383,7 +380,6 @@ describe('offererDetailsLegacy', () => {
           {
             id: offererWithPhysicalVenues.id,
             name: offererWithPhysicalVenues.name,
-            nonHumanizedId: offererWithPhysicalVenues.nonHumanizedId,
           },
         ],
       })
@@ -424,7 +420,6 @@ describe('offererDetailsLegacy', () => {
           {
             name: nonValidatedOfferer.name,
             id: nonValidatedOfferer.id,
-            nonHumanizedId: nonValidatedOfferer.nonHumanizedId,
           },
         ],
       })
@@ -463,12 +458,10 @@ describe('offererDetailsLegacy', () => {
           {
             name: firstOffererByAlphabeticalOrder.name,
             id: firstOffererByAlphabeticalOrder.id,
-            nonHumanizedId: firstOffererByAlphabeticalOrder.nonHumanizedId,
           },
           {
             name: baseOfferers[0].name,
             id: baseOfferers[0].id,
-            nonHumanizedId: baseOfferers[0].nonHumanizedId,
           },
         ],
       })
@@ -541,7 +534,7 @@ describe('offererDetailsLegacy', () => {
       // When
       await userEvent.selectOptions(
         screen.getByDisplayValue(firstOffererByAlphabeticalOrder.name),
-        firstOffererByAlphabeticalOrder.nonHumanizedId.toString()
+        firstOffererByAlphabeticalOrder.id.toString()
       )
 
       // Then

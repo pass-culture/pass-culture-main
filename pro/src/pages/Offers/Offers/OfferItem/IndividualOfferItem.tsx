@@ -56,13 +56,13 @@ const IndividualOfferItem = ({
       used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_THUMB,
       isEdition: true,
       isDraft: isDraft,
-      offerId: offer.nonHumanizedId,
+      offerId: offer.id,
     })
   }
   return (
     <>
       <CheckboxCell
-        offerId={offer.nonHumanizedId}
+        offerId={offer.id}
         status={offer.status}
         disabled={disabled}
         isSelected={isSelected}

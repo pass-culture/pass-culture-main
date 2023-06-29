@@ -127,7 +127,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
     offer = {
-      nonHumanizedId: offerId,
+      id: offerId,
       author: 'Offer author',
       bookingEmail: 'booking@email.com',
       description: 'Offer description',
@@ -169,7 +169,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
         postalCode: '75001',
         city: 'Paris',
         offerer: {
-          nonHumanizedId: 1,
+          id: 1,
           name: 'Offerer name',
         },
         departmentCode: '75',
@@ -247,7 +247,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     ]
 
     const venue: OfferIndividualVenue = {
-      nonHumanizedId: 1,
+      id: 1,
       name: 'Lieu offline AA',
       managingOffererId: 1,
       isVirtual: false,
@@ -267,7 +267,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       venueList: [
         venue,
         {
-          nonHumanizedId: 2,
+          id: 2,
           name: 'Lieu online BB',
           managingOffererId: 1,
           isVirtual: true,
@@ -283,24 +283,24 @@ describe('screens:OfferIndividual::Informations::creation', () => {
           hasCreatedOffer: true,
         },
       ],
-      offererNames: [{ nonHumanizedId: 1, name: 'mon offerer A' }],
+      offererNames: [{ id: 1, name: 'mon offerer A' }],
       categories,
       subCategories,
     }
 
     props = {
       venueId: offer.venue.id.toString(),
-      offererId: offer.venue.offerer.nonHumanizedId.toString(),
+      offererId: offer.venue.offerer.id.toString(),
     }
 
     jest
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
     jest.spyOn(api, 'postOffer').mockResolvedValue({
-      nonHumanizedId: offerId,
+      id: offerId,
     } as GetIndividualOfferResponseModel)
     jest.spyOn(api, 'patchOffer').mockResolvedValue({
-      nonHumanizedId: offerId,
+      id: offerId,
     } as GetIndividualOfferResponseModel)
     jest
       .spyOn(utils, 'filterCategories')

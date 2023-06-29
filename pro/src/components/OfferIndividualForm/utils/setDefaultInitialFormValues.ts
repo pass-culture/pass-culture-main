@@ -17,12 +17,10 @@ const setDefaultInitialFormValues = (
   let initialOffererId = FORM_DEFAULT_VALUES.offererId
 
   if (offererNames.length === 1) {
-    initialOffererId = offererNames[0].nonHumanizedId.toString()
+    initialOffererId = offererNames[0].id.toString()
   } else if (
     offererId &&
-    offererNames.find(
-      offerer => offerer.nonHumanizedId.toString() === offererId
-    )
+    offererNames.find(offerer => offerer.id.toString() === offererId)
   ) {
     initialOffererId = offererId
   }
@@ -39,9 +37,7 @@ const setDefaultInitialFormValues = (
   let initialAccessibility = FORM_DEFAULT_VALUES.accessibility
   let initialIsVenueVirtual
 
-  const venue = venueList.find(
-    venue => venue.nonHumanizedId.toString() === initialVenueId
-  )
+  const venue = venueList.find(venue => venue.id.toString() === initialVenueId)
 
   if (initialVenueId && venue) {
     initialAccessibility = venue.accessibility

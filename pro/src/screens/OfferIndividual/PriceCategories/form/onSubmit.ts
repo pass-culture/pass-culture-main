@@ -27,7 +27,7 @@ export const onSubmit = async (
   })
   const { isOk: isOfferOk, message: offerMessage } =
     await updateIndividualOffer({
-      offerId: offer.nonHumanizedId,
+      offerId: offer.id,
       serializedOffer: serializedOffer,
     })
   if (!isOfferOk) {
@@ -36,7 +36,7 @@ export const onSubmit = async (
 
   const { isOk: isPriceCategoriesOk, message: priceCategoriesMessage } =
     await postPriceCategoriesAdapter({
-      offerId: offer.nonHumanizedId,
+      offerId: offer.id,
       requestBody: serializePriceCategories(values),
     })
 
@@ -44,7 +44,7 @@ export const onSubmit = async (
     throw new Error(priceCategoriesMessage)
   }
 
-  const response = await getOfferIndividualAdapter(offer.nonHumanizedId)
+  const response = await getOfferIndividualAdapter(offer.id)
   if (response.isOk) {
     const updatedOffer = response.payload
     setOffer && setOffer(updatedOffer)

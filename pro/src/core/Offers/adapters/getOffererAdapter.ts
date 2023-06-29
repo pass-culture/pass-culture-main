@@ -20,7 +20,7 @@ const getOffererAdapter: GetOffererAdapter = async (offererId: string) => {
       isOk: true,
       message: null,
       payload: {
-        nonHumanizedId: offerer.nonHumanizedId,
+        id: offerer.id,
         name: offerer.name,
       },
     }

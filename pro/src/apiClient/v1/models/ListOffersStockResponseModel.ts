@@ -6,7 +6,7 @@ export type ListOffersStockResponseModel = {
   beginningDatetime?: string | null;
   bookingQuantity?: number | null;
   hasBookingLimitDatetimePassed: boolean;
-  nonHumanizedId: number;
+  id: number;
   remainingQuantity: (number | string);
 };
 

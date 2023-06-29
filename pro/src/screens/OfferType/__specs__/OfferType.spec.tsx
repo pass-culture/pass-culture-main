@@ -73,7 +73,7 @@ describe('screens:OfferIndividual::OfferType', () => {
   let store: any
   beforeAll(() => {
     jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [{ nonHumanizedId: 1, name: 'Ma super structure' }],
+      offerersNames: [{ id: 1, name: 'Ma super structure' }],
     })
     jest.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
     jest.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
@@ -151,8 +151,8 @@ describe('screens:OfferIndividual::OfferType', () => {
   it('should select template offer', async () => {
     jest.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
       offerersNames: [
-        { nonHumanizedId: 1, name: 'Ma super structure' },
-        { nonHumanizedId: 2, name: 'Ma super structure #2' },
+        { id: 1, name: 'Ma super structure' },
+        { id: 2, name: 'Ma super structure #2' },
       ],
     })
     renderOfferTypes(store)
@@ -179,7 +179,7 @@ describe('screens:OfferIndividual::OfferType', () => {
 
   it('should display non eligible banner if offerer can not create collective offer', async () => {
     jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [{ nonHumanizedId: 1, name: 'Ma super structure' }],
+      offerersNames: [{ id: 1, name: 'Ma super structure' }],
     })
     jest.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValue({})
     renderOfferTypes(store)
@@ -198,7 +198,7 @@ describe('screens:OfferIndividual::OfferType', () => {
 
   it('should display dms application banner if offerer can not create collective offer but as dms application', async () => {
     jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [{ nonHumanizedId: 1, name: 'Ma super structure' }],
+      offerersNames: [{ id: 1, name: 'Ma super structure' }],
     })
     const offerer: GetOffererResponseModel = {
       ...defautGetOffererResponseModel,
@@ -286,7 +286,7 @@ describe('screens:OfferIndividual::OfferType', () => {
 
   it('should select duplicate template offer', async () => {
     jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [{ nonHumanizedId: 1, name: 'Ma super structure' }],
+      offerersNames: [{ id: 1, name: 'Ma super structure' }],
     })
     jest.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
     const offersRecap = [collectiveOfferFactory()]
@@ -340,7 +340,7 @@ describe('screens:OfferIndividual::OfferType', () => {
 
   it('should display error message if trying to duplicate without template offer', async () => {
     jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [{ nonHumanizedId: 1, name: 'Ma super structure' }],
+      offerersNames: [{ id: 1, name: 'Ma super structure' }],
     })
     jest.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
     jest.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])

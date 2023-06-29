@@ -116,7 +116,7 @@ describe('screens:StocksEventEdition', () => {
 
   beforeEach(() => {
     offer = {
-      nonHumanizedId: offerId,
+      id: offerId,
       venue: {
         departmentCode: '75',
       } as OfferIndividualVenue,

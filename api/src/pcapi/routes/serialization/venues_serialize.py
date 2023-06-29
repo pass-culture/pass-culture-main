@@ -131,7 +131,7 @@ class GetVenueManagingOffererResponseModel(BaseModel):
     dateModifiedAtLastProvider: datetime | None
     demarchesSimplifieesApplicationId: str | None
     fieldsUpdated: list[str]
-    nonHumanizedId: int
+    id: int
     idAtProviders: str | None
     isValidated: bool
     lastProviderId: str | None
@@ -193,7 +193,7 @@ class LegalStatusResponseModel(BaseModel):
 
 class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin):
     dateCreated: datetime
-    nonHumanizedId: int
+    id: int
     bannerMeta: BannerMetaModel | None
     bookingEmail: str | None
     comment: str | None
@@ -346,7 +346,7 @@ class EditVenueCollectiveDataBodyModel(BaseModel):
 
 
 class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
-    nonHumanizedId: int
+    id: int
     managingOffererId: int
     name: str
     offererName: str

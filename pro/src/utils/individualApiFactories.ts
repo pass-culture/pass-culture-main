@@ -39,7 +39,7 @@ export const individualOfferFactory = (
   const stock = customStock === null ? null : customStock
 
   return {
-    nonHumanizedId: offerId++,
+    id: offerId++,
     venue: customVenue,
     name: "Un sale quart d'heure en 3 minutes",
     description: 'Ça va faire mal',
@@ -48,7 +48,7 @@ export const individualOfferFactory = (
     musicType: 'douleur',
     musicSubType: 'cassage de genoux',
     durationMinutes: 3,
-    offererId: customVenue.offerer.nonHumanizedId,
+    offererId: customVenue.offerer.id,
     offererName: 'Chuck Norris',
     performer: 'Le Poing de Chuck',
     ean: "Chuck n'est pas identifiable par un EAN",
@@ -89,7 +89,7 @@ export const individualStockFactory = (
 ): OfferIndividualStock => {
   const id = stockId++
   return {
-    nonHumanizedId: id,
+    id: id,
     price: 100,
     beginningDatetime: new Date('2021-10-15T12:00:00Z').toISOString(),
     bookingLimitDatetime: new Date('2021-09-15T12:00:00Z').toISOString(),
@@ -140,7 +140,7 @@ export const individualOfferOffererFactory = (
   const currentOffererId = offererId++
 
   return {
-    nonHumanizedId: currentOffererId,
+    id: currentOffererId,
     name: `La nom de la structure ${currentOffererId}`,
     ...customOfferer,
   }

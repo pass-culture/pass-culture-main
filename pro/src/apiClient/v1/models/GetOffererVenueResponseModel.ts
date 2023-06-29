@@ -17,11 +17,11 @@ export type GetOffererVenueResponseModel = {
   hasAdageId: boolean;
   hasCreatedOffer: boolean;
   hasMissingReimbursementPoint: boolean;
+  id: number;
   isVirtual: boolean;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
-  nonHumanizedId: number;
   postalCode?: string | null;
   publicName?: string | null;
   siret?: string | null;

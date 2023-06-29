@@ -3,8 +3,8 @@
 /* eslint-disable */
 
 export type GetCollectiveOfferManagingOffererResponseModel = {
+  id: number;
   name: string;
-  nonHumanizedId: number;
   siren?: string | null;
 };
 

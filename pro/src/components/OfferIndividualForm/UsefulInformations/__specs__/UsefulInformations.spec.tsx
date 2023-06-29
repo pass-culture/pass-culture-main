@@ -72,14 +72,14 @@ describe('OfferIndividual section: UsefulInformations', () => {
   beforeEach(() => {
     const offererNames: OffererName[] = [
       {
-        nonHumanizedId: offererId,
+        id: offererId,
         name: 'Offerer AE',
       },
     ]
 
     venueList = [
       {
-        nonHumanizedId: 1,
+        id: 1,
         name: 'Venue AAAA',
         managingOffererId: 1,
         isVirtual: false,
@@ -95,7 +95,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
         hasCreatedOffer: true,
       },
       {
-        nonHumanizedId: 2,
+        id: 2,
         name: 'Venue BBBB',
         managingOffererId: 1,
         isVirtual: true,
@@ -156,10 +156,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
     const offererSelect = screen.getByLabelText('Structure')
     await userEvent.selectOptions(offererSelect, offererId.toString())
     const venueSelect = screen.getByLabelText('Lieu')
-    await userEvent.selectOptions(
-      venueSelect,
-      venueList[0].nonHumanizedId.toString()
-    )
+    await userEvent.selectOptions(venueSelect, venueList[0].id.toString())
     const withEmail = screen.getByLabelText('Envoi par email')
     await userEvent.click(withEmail)
 
@@ -183,7 +180,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
         subCategoryFields: ['withdrawalType', 'bookingContact'],
         url: '',
         subcategoryId: 'CONCERT',
-        venueId: venueList[0].nonHumanizedId.toString(),
+        venueId: venueList[0].id.toString(),
         withdrawalDelay: (60 * 60 * 24).toString(),
         withdrawalDetails: '',
         withdrawalType: 'by_email',
@@ -296,10 +293,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       const offererSelect = screen.getByLabelText('Structure')
       await userEvent.selectOptions(offererSelect, offererId.toString())
       const venueSelect = screen.getByLabelText('Lieu')
-      await userEvent.selectOptions(
-        venueSelect,
-        venueList[1].nonHumanizedId.toString()
-      )
+      await userEvent.selectOptions(venueSelect, venueList[1].id.toString())
 
       const urlField = await screen.findByLabelText('URL d’accès à l’offre')
 
@@ -324,7 +318,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
           subCategoryFields: [],
           subcategoryId: 'VIRTUAL_SUB_CATEGORY',
           url: 'https://example.com/routes?params={offerId}',
-          venueId: venueList[1].nonHumanizedId.toString(),
+          venueId: venueList[1].id.toString(),
           withdrawalDelay: undefined,
           withdrawalDetails: '',
           withdrawalType: undefined,
@@ -343,10 +337,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       const offererSelect = screen.getByLabelText('Structure')
       await userEvent.selectOptions(offererSelect, offererId.toString())
       const venueSelect = screen.getByLabelText('Lieu')
-      await userEvent.selectOptions(
-        venueSelect,
-        venueList[1].nonHumanizedId.toString()
-      )
+      await userEvent.selectOptions(venueSelect, venueList[1].id.toString())
 
       const urlField = await screen.findByLabelText('URL d’accès à l’offre')
       await userEvent.click(urlField)

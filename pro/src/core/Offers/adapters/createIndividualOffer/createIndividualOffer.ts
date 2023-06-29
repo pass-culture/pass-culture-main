@@ -6,7 +6,7 @@ import { OfferIndividualFormValues } from 'components/OfferIndividualForm'
 
 import { serializePostOffer } from './serializers'
 
-type SuccessPayload = { nonHumanizedId: number }
+type SuccessPayload = { id: number }
 type FailurePayload = { errors: Record<string, string> }
 type CreateIndividualOffer = Adapter<
   OfferIndividualFormValues,
@@ -21,7 +21,7 @@ const createIndividualOffer: CreateIndividualOffer = async formValues => {
       isOk: true,
       message: '',
       payload: {
-        nonHumanizedId: response.nonHumanizedId,
+        id: response.id,
       },
     }
   } catch (error) {

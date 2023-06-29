@@ -103,7 +103,7 @@ const FormPracticalInformation = ({
     ) {
       if (currentOfferer) {
         const selectedVenue = currentOfferer.managedVenues.find(
-          venue => venue.nonHumanizedId === values.eventAddress.venueId
+          venue => venue.id === values.eventAddress.venueId
         )
         return setCurrentVenue(selectedVenue ?? null)
       }
@@ -117,7 +117,7 @@ const FormPracticalInformation = ({
     ) {
       if (currentOfferer) {
         const selectedVenue = currentOfferer.managedVenues.find(
-          venue => venue.nonHumanizedId === Number(values.venueId)
+          venue => venue.id === Number(values.venueId)
         )
         if (selectedVenue) {
           setFieldValue('eventAddress.venueId', values.venueId)

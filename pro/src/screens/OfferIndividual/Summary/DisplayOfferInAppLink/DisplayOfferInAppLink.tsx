@@ -5,15 +5,15 @@ import { SharedButtonProps } from 'ui-kit/Button/types'
 import { WEBAPP_URL } from 'utils/config'
 
 interface DisplayOfferInAppLinkProps extends SharedButtonProps {
-  nonHumanizedId: number
+  id: number
   tracking?: { isTracked: boolean; trackingFunction: () => void }
   text?: string
 }
 
 export const DisplayOfferInAppLink: FunctionComponent<
   DisplayOfferInAppLinkProps
-> = ({ nonHumanizedId, tracking, Icon, variant, text }) => {
-  const offerPreviewUrl = `${WEBAPP_URL}/offre/${nonHumanizedId}`
+> = ({ id, tracking, Icon, variant, text }) => {
+  const offerPreviewUrl = `${WEBAPP_URL}/offre/${id}`
 
   return (
     <ButtonLinkNewWindow

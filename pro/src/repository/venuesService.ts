@@ -22,7 +22,7 @@ const sortAlphabeticallyByLabel = (a: SelectOption, b: SelectOption) => {
 export const formatAndOrderVenues = (venues: VenueListItemResponseModel[]) =>
   venues
     .map(venue => ({
-      value: venue.nonHumanizedId.toString(),
+      value: venue.id.toString(),
       label: computeVenueDisplayName(venue),
     }))
     .sort(sortAlphabeticallyByLabel)

@@ -23,7 +23,7 @@ export const getLastDmsApplicationForOfferer = (
 ) => {
   if (venueId) {
     const venue = offerer.managedVenues?.find(
-      venue => venue.nonHumanizedId.toString() === venueId
+      venue => venue.id.toString() === venueId
     )
     if (venue)
       return getLastCollectiveDmsApplication(venue.collectiveDmsApplications)

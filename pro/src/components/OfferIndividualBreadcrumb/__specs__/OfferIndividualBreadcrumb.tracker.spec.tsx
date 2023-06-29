@@ -96,7 +96,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
   let contextOverride: Partial<OfferIndividualContextValues>
   const offerId = 1
   beforeEach(() => {
-    offer = individualOfferFactory({ nonHumanizedId: offerId })
+    offer = individualOfferFactory({ id: offerId })
     contextOverride = {
       offer: offer as OfferIndividual,
     }

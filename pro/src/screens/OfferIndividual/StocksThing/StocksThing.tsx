@@ -63,7 +63,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const [afterSubmitUrl, setAfterSubmitUrl] = useState<string>(
     getOfferIndividualUrl({
-      offerId: offer.nonHumanizedId,
+      offerId: offer.id,
       step: OFFER_WIZARD_STEP_IDS.SUMMARY,
       mode,
     })
@@ -96,7 +96,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     })
     const { isOk: isOfferOk, message: offerMessage } =
       await updateIndividualOffer({
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
         serializedOffer: serializedOffer,
       })
     if (!isOfferOk) {
@@ -104,7 +104,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     }
 
     const { isOk, payload, message } = await upsertStocksThingAdapter({
-      offerId: offer.nonHumanizedId,
+      offerId: offer.id,
       formValues,
       departementCode: offer.venue.departmentCode,
       mode,
@@ -112,7 +112,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
     /* istanbul ignore next: DEBT, TO FIX */
     if (isOk) {
-      const response = await getOfferIndividualAdapter(offer.nonHumanizedId)
+      const response = await getOfferIndividualAdapter(offer.id)
       if (response.isOk) {
         setOffer && setOffer(response.payload)
         formik.resetForm({ values: buildInitialValues(response.payload) })
@@ -129,7 +129,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
           : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
         isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
       })
     } else {
       /* istanbul ignore next: DEBT, TO FIX */
@@ -180,7 +180,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       }
 
       const nextStepUrl = getOfferIndividualUrl({
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
         step: saveDraft
           ? OFFER_WIZARD_STEP_IDS.STOCKS
           : OFFER_WIZARD_STEP_IDS.SUMMARY,
@@ -231,13 +231,13 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
         isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
       })
     }
     /* istanbul ignore next: DEBT, TO FIX */
     navigate(
       getOfferIndividualUrl({
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
         step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         mode,
       })
@@ -252,7 +252,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     }
     try {
       await api.deleteStock(formik.values.stockId)
-      const response = await getOfferIndividualAdapter(offer.nonHumanizedId)
+      const response = await getOfferIndividualAdapter(offer.id)
       /* istanbul ignore next: DEBT, TO FIX */
       if (response.isOk) {
         setOffer && setOffer(response.payload)
@@ -489,7 +489,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
               onClickSaveDraft={handleNextStep({ saveDraft: true })}
               step={OFFER_WIZARD_STEP_IDS.STOCKS}
               isDisabled={formik.isSubmitting || isDisabled}
-              offerId={offer.nonHumanizedId}
+              offerId={offer.id}
               shouldTrack={shouldTrack}
               submitAsButton={isFormEmpty()}
             />
@@ -531,7 +531,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
             used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
             isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
             isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-            offerId: offer?.nonHumanizedId,
+            offerId: offer?.id,
           })
         }
       />

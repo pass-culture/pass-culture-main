@@ -57,7 +57,7 @@ const FormVenue = ({
       disabledBookingStatus.includes(lastBookingStatus))
 
   let offerersOptions = userOfferers.map(item => ({
-    value: item['nonHumanizedId'].toString(),
+    value: item['id'].toString(),
     label: item['name'] as string,
   }))
   if (offerersOptions.length > 1) {

@@ -91,11 +91,11 @@ describe('Confirmation', () => {
       },
     }
     offer = {
-      nonHumanizedId: 12,
+      id: 12,
       venueId: venueId,
       venue: {
         offerer: {
-          nonHumanizedId: offererId,
+          id: offererId,
           name: 'Offerer name',
         },
       },
@@ -121,7 +121,7 @@ describe('Confirmation', () => {
       screen.getByText('Visualiser l’offre dans l’application', {
         selector: 'a',
       })
-    ).toHaveAttribute('href', `https://localhost/offre/${offer.nonHumanizedId}`)
+    ).toHaveAttribute('href', `https://localhost/offre/${offer.id}`)
     expect(
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
     ).toHaveAttribute(
@@ -140,7 +140,7 @@ describe('Confirmation', () => {
       screen.getByText('Visualiser l’offre dans l’application', {
         selector: 'a',
       })
-    ).toHaveAttribute('href', `https://localhost/offre/${offer.nonHumanizedId}`)
+    ).toHaveAttribute('href', `https://localhost/offre/${offer.id}`)
     expect(
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
     ).toHaveAttribute(

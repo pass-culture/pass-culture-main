@@ -20,13 +20,13 @@ export type SharedCurrentUserResponseModel = {
   hasPhysicalVenues?: boolean | null;
   hasSeenProRgs?: boolean | null;
   hasSeenProTutorials?: boolean | null;
+  id: number;
   idPieceNumber?: string | null;
   isAdmin: boolean;
   isEmailValidated: boolean;
   lastConnectionDate?: string | null;
   lastName?: string | null;
   needsToFillCulturalSurvey?: boolean | null;
-  nonHumanizedId: number;
   notificationSubscriptions?: Record<string, any> | null;
   phoneNumber?: string | null;
   phoneValidationStatus?: PhoneValidationStatusType | null;

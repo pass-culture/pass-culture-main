@@ -28,7 +28,7 @@ export const serializeVenueApi = (venue: GetVenueResponseModel): Venue => {
         : null,
     managingOfferer: venue.managingOfferer || [],
     reimbursementPointId: venue.reimbursementPointId || null,
-    nonHumanizedId: venue.nonHumanizedId || 0,
+    id: venue.id || 0,
     pricingPoint: venue.pricingPoint || null,
     accessibility: venueAccessibility,
     address: venue.address || '',

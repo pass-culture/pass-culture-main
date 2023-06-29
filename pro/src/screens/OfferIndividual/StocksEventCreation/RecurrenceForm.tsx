@@ -129,7 +129,7 @@ export const RecurrenceForm = ({
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECURRENCE_POPIN,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
       isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-      offerId: offer.nonHumanizedId,
+      offerId: offer.id,
       recurrenceType: values.recurrenceType,
     })
   }

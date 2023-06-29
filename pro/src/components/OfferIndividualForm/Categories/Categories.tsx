@@ -107,12 +107,8 @@ const Categories = ({
       venueList
     )
     if (venues.length === 1) {
-      setFieldValue('venueId', venues[0].nonHumanizedId)
-      onVenueChange(
-        setFieldValue,
-        venueList,
-        venues[0].nonHumanizedId.toString()
-      )
+      setFieldValue('venueId', venues[0].id)
+      onVenueChange(setFieldValue, venueList, venues[0].id.toString())
     }
   }
 

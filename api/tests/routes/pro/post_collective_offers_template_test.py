@@ -56,7 +56,7 @@ class Returns200Test:
         # Then
 
         assert response.status_code == 201
-        offer_id = response.json["nonHumanizedId"]
+        offer_id = response.json["id"]
         offer = CollectiveOfferTemplate.query.get(offer_id)
         assert offer.bookingEmails == ["offer1@example.com", "offer2@example.com"]
         assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id

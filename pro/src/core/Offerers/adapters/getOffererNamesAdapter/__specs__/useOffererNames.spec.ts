@@ -11,7 +11,7 @@ describe('useOffererNames', () => {
     const offererNames: GetOffererNameResponseModel[] = [
       {
         name: 'Structure AA',
-        nonHumanizedId: 123,
+        id: 123,
       },
     ]
 

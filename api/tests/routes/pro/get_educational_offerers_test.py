@@ -32,14 +32,14 @@ class GetEducationalOfferersTest:
         assert response.json == {
             "educationalOfferers": [
                 {
-                    "nonHumanizedId": offerer_1.id,
+                    "id": offerer_1.id,
                     "name": offerer_1.name,
                     "managedVenues": [
                         {
                             "address": venue_offerer_1.address,
                             "audioDisabilityCompliant": venue_offerer_1.audioDisabilityCompliant,
                             "city": venue_offerer_1.city,
-                            "nonHumanizedId": venue_offerer_1.id,
+                            "id": venue_offerer_1.id,
                             "isVirtual": venue_offerer_1.isVirtual,
                             "mentalDisabilityCompliant": venue_offerer_1.mentalDisabilityCompliant,
                             "motorDisabilityCompliant": venue_offerer_1.motorDisabilityCompliant,
@@ -55,14 +55,14 @@ class GetEducationalOfferersTest:
                     ],
                 },
                 {
-                    "nonHumanizedId": offerer_2.id,
+                    "id": offerer_2.id,
                     "name": offerer_2.name,
                     "managedVenues": [
                         {
                             "address": venue_offerer_2.address,
                             "audioDisabilityCompliant": venue_offerer_2.audioDisabilityCompliant,
                             "city": venue_offerer_2.city,
-                            "nonHumanizedId": venue_offerer_2.id,
+                            "id": venue_offerer_2.id,
                             "isVirtual": venue_offerer_2.isVirtual,
                             "mentalDisabilityCompliant": venue_offerer_2.mentalDisabilityCompliant,
                             "motorDisabilityCompliant": venue_offerer_2.motorDisabilityCompliant,
@@ -114,14 +114,14 @@ class GetEducationalOfferersTest:
         assert response.json == {
             "educationalOfferers": [
                 {
-                    "nonHumanizedId": offerer_2.id,
+                    "id": offerer_2.id,
                     "name": offerer_2.name,
                     "managedVenues": [
                         {
                             "address": venue_offerer_2.address,
                             "audioDisabilityCompliant": venue_offerer_2.audioDisabilityCompliant,
                             "city": venue_offerer_2.city,
-                            "nonHumanizedId": venue_offerer_2.id,
+                            "id": venue_offerer_2.id,
                             "isVirtual": venue_offerer_2.isVirtual,
                             "mentalDisabilityCompliant": venue_offerer_2.mentalDisabilityCompliant,
                             "motorDisabilityCompliant": venue_offerer_2.motorDisabilityCompliant,

@@ -50,25 +50,25 @@ const VenueProviderForm = ({
       isCreatedEntity
       providerId={Number(provider.id)}
       saveVenueProvider={createVenueProvider}
-      venueId={venue.nonHumanizedId}
-      offererId={venue.managingOfferer.nonHumanizedId}
+      venueId={venue.id}
+      offererId={venue.managingOfferer.id}
     />
   ) : displayCDSProviderForm ? (
     <CinemaProviderForm
       isCreatedEntity
       providerId={Number(provider.id)}
       saveVenueProvider={createVenueProvider}
-      venueId={venue.nonHumanizedId}
-      offererId={venue.managingOfferer.nonHumanizedId}
+      venueId={venue.id}
+      offererId={venue.managingOfferer.id}
     />
   ) : (
     <StocksProviderForm
       providerId={Number(provider.id)}
       saveVenueProvider={createVenueProvider}
       siret={venue.siret}
-      venueId={venue.nonHumanizedId}
+      venueId={venue.id}
       hasOffererProvider={provider.hasOffererProvider}
-      offererId={venue.managingOfferer.nonHumanizedId}
+      offererId={venue.managingOfferer.id}
     />
   )
 }

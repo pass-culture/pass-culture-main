@@ -84,7 +84,7 @@ export function OfferIndividualContextProvider({
     setOfferOfferer(
       offer
         ? {
-            nonHumanizedId: offer.venue.offerer.nonHumanizedId,
+            id: offer.venue.offerer.id,
             name: offer.venue.offerer.name,
           }
         : null
@@ -122,7 +122,7 @@ export function OfferIndividualContextProvider({
         setVenueList(response.payload.venueList)
         const venuesPopinDisplaying: Record<string, boolean> = {}
         response.payload.venueList.forEach(v => {
-          venuesPopinDisplaying[v.nonHumanizedId] =
+          venuesPopinDisplaying[v.id] =
             !v.hasCreatedOffer && v.hasMissingReimbursementPoint
         })
         setShowVenuePopin(venuesPopinDisplaying)
@@ -148,7 +148,7 @@ export function OfferIndividualContextProvider({
   return (
     <OfferIndividualContext.Provider
       value={{
-        offerId: offer?.nonHumanizedId || null,
+        offerId: offer?.id || null,
         offer,
         setOffer,
         categories,

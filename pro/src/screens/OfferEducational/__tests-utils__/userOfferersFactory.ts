@@ -14,8 +14,7 @@ export const managedVenueFactory = (
   return merge(
     {},
     {
-      id: 'VENUE_ID',
-      nonHumanizedId: currentVenueId,
+      id: currentVenueId,
       name: 'Venue name',
       address: '2 bis Street Name',
       postalCode: '93100',
@@ -38,7 +37,7 @@ export const userOffererFactory = (
 ): GetEducationalOffererResponseModel => {
   const currentOffererId = offererId++
   return {
-    nonHumanizedId: currentOffererId,
+    id: currentOffererId,
     name: 'offerer name',
     managedVenues: [managedVenueFactory({})],
     ...userOffererExtends,

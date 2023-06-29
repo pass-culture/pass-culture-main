@@ -41,16 +41,16 @@ const CollectiveOfferSummaryEdition = ({
   const navigate = useNavigate()
 
   const offerEditLink = `/offre/${computeURLCollectiveOfferId(
-    offer.nonHumanizedId,
+    offer.id,
     offer.isTemplate
   )}/collectif/edition`
 
   const stockEditLink = `/offre/${computeURLCollectiveOfferId(
-    offer.nonHumanizedId,
+    offer.id,
     offer.isTemplate
   )}/collectif/stocks/edition`
 
-  const visibilityEditLink = `/offre/${offer.nonHumanizedId}/collectif/visibilite/edition`
+  const visibilityEditLink = `/offre/${offer.id}/collectif/visibilite/edition`
 
   const { logEvent } = useAnalytics()
 
@@ -83,7 +83,7 @@ const CollectiveOfferSummaryEdition = ({
               logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
                 from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
               })
-              createOfferFromTemplate(navigate, notify, offer.nonHumanizedId)
+              createOfferFromTemplate(navigate, notify, offer.id)
             }}
           >
             Créer une offre réservable pour un établissement scolaire

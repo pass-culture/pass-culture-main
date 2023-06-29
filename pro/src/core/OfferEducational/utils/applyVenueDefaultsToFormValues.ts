@@ -13,12 +13,8 @@ export const applyVenueDefaultsToFormValues = (
   categories: EducationalCategories
 ): OfferEducationalFormValues => {
   const venue = offerers
-    ?.find(
-      ({ nonHumanizedId }) => nonHumanizedId.toString() === values.offererId
-    )
-    ?.managedVenues?.find(
-      ({ nonHumanizedId }) => nonHumanizedId.toString() === values.venueId
-    )
+    ?.find(({ id }) => id.toString() === values.offererId)
+    ?.managedVenues?.find(({ id }) => id.toString() === values.venueId)
 
   if (isOfferCreated || venue === undefined) {
     return { ...values }

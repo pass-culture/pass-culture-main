@@ -3,7 +3,7 @@
 /* eslint-disable */
 
 export type GetOfferManagingOffererResponseModel = {
+  id: number;
   name: string;
-  nonHumanizedId: number;
 };
 

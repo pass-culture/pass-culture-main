@@ -171,7 +171,7 @@ describe('components | BookingsRecap | Pro user', () => {
     // When
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
-      venue.nonHumanizedId.toString()
+      venue.id.toString()
     )
     await submitFilters()
 
@@ -179,7 +179,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await screen.findAllByText(bookingRecap.stock.offerName)
     expect(
       spyGetBookingsPro.mock.calls[0][NTH_ARGUMENT_GET_BOOKINGS.venueId - 1]
-    ).toBe(venue.nonHumanizedId.toString())
+    ).toBe(venue.id.toString())
   })
 
   it('should warn user that his prefilters returned no booking when no bookings where returned by selected pre-filters', async () => {
@@ -213,7 +213,7 @@ describe('components | BookingsRecap | Pro user', () => {
     const { submitFilters } = await renderBookingsRecap(store)
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
-      venue.nonHumanizedId.toString()
+      venue.id.toString()
     )
     await submitFilters()
 
@@ -259,7 +259,7 @@ describe('components | BookingsRecap | Pro user', () => {
     const { submitFilters } = await renderBookingsRecap(store)
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
-      venue.nonHumanizedId.toString()
+      venue.id.toString()
     )
     const defaultBookingPeriodBeginningDateInput = '16/05/2020'
     const defaultBookingPeriodEndingDateInput = '15/06/2020'
@@ -303,7 +303,7 @@ describe('components | BookingsRecap | Pro user', () => {
     const { submitFilters } = await renderBookingsRecap(store)
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
-      venue.nonHumanizedId.toString()
+      venue.id.toString()
     )
     await submitFilters()
 
@@ -411,7 +411,7 @@ describe('components | BookingsRecap | Pro user', () => {
     // When
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
-      venue.nonHumanizedId.toString()
+      venue.id.toString()
     )
     await submitFilters()
 
@@ -429,13 +429,13 @@ describe('components | BookingsRecap | Pro user', () => {
     ).toBe(1)
     expect(
       spyGetBookingsPro.mock.calls[0][NTH_ARGUMENT_GET_BOOKINGS.venueId - 1]
-    ).toBe(venue.nonHumanizedId.toString())
+    ).toBe(venue.id.toString())
     expect(
       spyGetBookingsPro.mock.calls[1][NTH_ARGUMENT_GET_BOOKINGS.page - 1]
     ).toBe(2)
     expect(
       spyGetBookingsPro.mock.calls[1][NTH_ARGUMENT_GET_BOOKINGS.venueId - 1]
-    ).toBe(venue.nonHumanizedId.toString())
+    ).toBe(venue.id.toString())
   })
 
   it('should request bookings of event date requested by user when user clicks on "Afficher"', async () => {
@@ -680,7 +680,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
-      otherVenue.nonHumanizedId.toString()
+      otherVenue.id.toString()
     )
     await submitFilters()
     await screen.findAllByText(otherVenueBooking.stock.offerName)
@@ -688,7 +688,7 @@ describe('components | BookingsRecap | Pro user', () => {
     // When
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
-      venue.nonHumanizedId.toString()
+      venue.id.toString()
     )
     await submitFilters()
 
@@ -724,7 +724,7 @@ describe('components | BookingsRecap | Pro user', () => {
     // when
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
-      venue.nonHumanizedId.toString()
+      venue.id.toString()
     )
     await userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
 
@@ -756,7 +756,7 @@ describe('components | BookingsRecap | Pro user', () => {
     // when
     await userEvent.selectOptions(
       screen.getByLabelText('Lieu'),
-      venue.nonHumanizedId.toString()
+      venue.id.toString()
     )
     await userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
 

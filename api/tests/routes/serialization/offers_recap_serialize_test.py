@@ -49,7 +49,7 @@ def should_return_serialized_offers_with_relevant_informations():
     expected_serialized_offer = [
         {
             "hasBookingLimitDatetimesPassed": False,
-            "nonHumanizedId": offer_id,
+            "id": offer_id,
             "isActive": True,
             "isEditable": True,
             "isEvent": False,
@@ -61,7 +61,7 @@ def should_return_serialized_offers_with_relevant_informations():
             "stocks": [
                 {
                     "hasBookingLimitDatetimePassed": False,
-                    "nonHumanizedId": stock_id,
+                    "id": stock_id,
                     "remainingQuantity": 10,
                     "beginningDatetime": None,
                     "bookingQuantity": 0,
@@ -70,7 +70,7 @@ def should_return_serialized_offers_with_relevant_informations():
             "subcategoryId": "SUPPORT_PHYSIQUE_FILM",
             "thumbUrl": "/thumb/url",
             "venue": {
-                "nonHumanizedId": venue_id,
+                "id": venue_id,
                 "isVirtual": False,
                 "departementCode": departement_code,
                 "name": "La petite librairie",

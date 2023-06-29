@@ -180,7 +180,7 @@ class PatchAllOffersActiveStatusResponseModel(BaseModel):
 
 
 class ListOffersStockResponseModel(BaseModel):
-    nonHumanizedId: int
+    id: int
     hasBookingLimitDatetimePassed: bool
     remainingQuantity: int | str
     beginningDatetime: datetime | None
@@ -195,7 +195,7 @@ class ListOffersStockResponseModel(BaseModel):
 
 class ListOffersOfferResponseModel(BaseModel):
     hasBookingLimitDatetimesPassed: bool
-    nonHumanizedId: int
+    id: int
     isActive: bool
     isEditable: bool
     isEvent: bool
@@ -250,7 +250,7 @@ class GetOfferStockResponseModel(BaseModel):
     isEventDeletable: bool
     isEventExpired: bool
     isSoftDeleted: bool
-    nonHumanizedId: int
+    id: int
     price: float
     priceCategoryId: int | None
     quantity: int | None
@@ -278,7 +278,7 @@ class GetOfferStockResponseModel(BaseModel):
 
 
 class GetOfferManagingOffererResponseModel(BaseModel):
-    nonHumanizedId: int
+    id: int
     name: str
 
     class Config:
@@ -290,7 +290,7 @@ class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     bookingEmail: str | None
     city: str | None
     departementCode: str | None
-    nonHumanizedId: int
+    id: int
     isVirtual: bool
     managingOfferer: GetOfferManagingOffererResponseModel
     name: str
@@ -343,7 +343,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     isEvent: bool
     isNational: bool
     isThing: bool
-    nonHumanizedId: int
+    id: int
     lastProvider: GetOfferLastProviderResponseModel | None
     name: str
     priceCategories: list[PriceCategoryResponseModel] | None

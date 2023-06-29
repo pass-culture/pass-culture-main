@@ -96,7 +96,7 @@ const OfferEducational = ({
         response = await patchCollectiveOfferTemplateAdapter({
           offer: offerValues,
           initialValues,
-          offerId: offer.nonHumanizedId,
+          offerId: offer.id,
         })
       }
     } else {
@@ -106,7 +106,7 @@ const OfferEducational = ({
         response = await patchCollectiveOfferAdapter({
           offer: offerValues,
           initialValues,
-          offerId: offer.nonHumanizedId,
+          offerId: offer.id,
         })
       }
     }
@@ -115,7 +115,7 @@ const OfferEducational = ({
     if (!isOk) {
       return notify.error(message)
     }
-    const offerId = offer?.nonHumanizedId ?? payload.nonHumanizedId
+    const offerId = offer?.id ?? payload.id
     await handleImageOnSubmit(offerId)
     if (
       offer &&
@@ -130,7 +130,7 @@ const OfferEducational = ({
     if (mode === Mode.EDITION && offer !== undefined) {
       return navigate(
         `/offre/${computeURLCollectiveOfferId(
-          offer.nonHumanizedId,
+          offer.id,
           offer.isTemplate
         )}/collectif/recapitulatif`
       )
@@ -138,8 +138,8 @@ const OfferEducational = ({
     const requestIdParams = requestId ? `?requete=${requestId}` : ''
     navigate(
       isTemplate
-        ? `/offre/${payload.nonHumanizedId}/collectif/vitrine/creation/recapitulatif`
-        : `/offre/${payload.nonHumanizedId}/collectif/stocks${requestIdParams}`
+        ? `/offre/${payload.id}/collectif/vitrine/creation/recapitulatif`
+        : `/offre/${payload.id}/collectif/stocks${requestIdParams}`
     )
   }
 

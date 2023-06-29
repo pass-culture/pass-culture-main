@@ -82,7 +82,7 @@ const OffererDetails = () => {
     <div className={styles['offerer-page']}>
       <ButtonLink
         link={{
-          to: `/accueil?structure=${offerer.nonHumanizedId}`,
+          to: `/accueil?structure=${offerer.id}`,
           isExternal: false,
         }}
         variant={ButtonVariant.TERNARY}
@@ -119,12 +119,12 @@ const OffererDetails = () => {
 
       <ApiKey
         maxAllowedApiKeys={offerer.apiKey.maxAllowed}
-        offererId={offerer.nonHumanizedId}
+        offererId={offerer.id}
         reloadOfferer={loadOfferer}
         savedApiKeys={offerer.apiKey.savedApiKeys}
       />
 
-      <Venues offererId={offerer.nonHumanizedId} venues={physicalVenues} />
+      <Venues offererId={offerer.id} venues={physicalVenues} />
     </div>
   ) : (
     <></>

@@ -218,7 +218,7 @@ describe('DuplicateOfferCell', () => {
       expect(api.duplicateCollectiveOffer).toHaveBeenCalledTimes(1)
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        `/offre/collectif/${offerDuplicate.nonHumanizedId}/creation?structure=${offer.venue.managingOfferer.nonHumanizedId}`
+        `/offre/collectif/${offerDuplicate.id}/creation?structure=${offer.venue.managingOfferer.id}`
       )
     })
 
@@ -233,7 +233,7 @@ describe('DuplicateOfferCell', () => {
 
       await userEvent.click(button)
 
-      const response = await getCollectiveOfferAdapter(offer.nonHumanizedId)
+      const response = await getCollectiveOfferAdapter(offer.id)
 
       expect(response.isOk).toBeFalsy()
 

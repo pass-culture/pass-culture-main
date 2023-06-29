@@ -38,7 +38,7 @@ class Return200Test:
         # Then
         assert response.status_code == 201
         response_dict = response.json
-        created_stock: CollectiveStock = CollectiveStock.query.get(response_dict["nonHumanizedId"])
+        created_stock: CollectiveStock = CollectiveStock.query.get(response_dict["id"])
         offer = CollectiveOffer.query.get(offer.id)
         assert offer.id == created_stock.collectiveOfferId
         assert created_stock.price == 1500
@@ -72,7 +72,7 @@ class Return200Test:
         # Then
         assert response.status_code == 201
         response_dict = response.json
-        created_stock: CollectiveStock = CollectiveStock.query.get(response_dict["nonHumanizedId"])
+        created_stock: CollectiveStock = CollectiveStock.query.get(response_dict["id"])
         assert created_stock
         assert offer.students == [StudentLevels.COLLEGE4]
 

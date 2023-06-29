@@ -213,7 +213,7 @@ describe('OfferEducationalActions', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: collectiveOfferFactory({
-        nonHumanizedId: offerId,
+        id: offerId,
         isActive: false,
         collectiveStock: collectiveStockFactory({
           bookingLimitDatetime: bookingLimitDateTomorrow.toDateString(),
