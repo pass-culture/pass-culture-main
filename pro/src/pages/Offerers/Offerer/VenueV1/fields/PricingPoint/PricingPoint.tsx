@@ -41,9 +41,9 @@ const PricingPoint = ({
 
   const handleClick = async () => {
     const pricingPointId = pricingPointSelectField.value
-    if (venue?.nonHumanizedId) {
+    if (venue?.id) {
       api
-        .linkVenueToPricingPoint(venue.nonHumanizedId, {
+        .linkVenueToPricingPoint(venue.id, {
           pricingPointId: pricingPointId,
         })
         .then(() => {
@@ -62,7 +62,7 @@ const PricingPoint = ({
     ?.filter(venue => venue.siret)
     .forEach(venue =>
       pricingPointOptions.push({
-        value: venue.nonHumanizedId.toString(),
+        value: venue.id.toString(),
         label: `${venue.name} - ${venue.siret}`,
       })
     )

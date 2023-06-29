@@ -98,11 +98,10 @@ const VenueForm = ({
   const [isSiretValued, setIsSiretValued] = useState(true)
 
   useEffect(() => {
-    canOffererCreateCollectiveOfferAdapter(offerer.nonHumanizedId).then(
-      response =>
-        setCanOffererCreateCollectiveOffer(
-          response.payload.isOffererEligibleToEducationalOffer
-        )
+    canOffererCreateCollectiveOfferAdapter(offerer.id).then(response =>
+      setCanOffererCreateCollectiveOffer(
+        response.payload.isOffererEligibleToEducationalOffer
+      )
     )
   }, [])
 
@@ -195,7 +194,7 @@ const VenueForm = ({
         <RouteLeavingGuard
           shouldBlockNavigation={shouldBlockVenueNavigation({
             isCreatingVenue,
-            offererId: offerer.nonHumanizedId,
+            offererId: offerer.id,
             user: user.currentUser,
           })}
           dialogTitle="Voulez-vous quitter la création de lieu ?"
@@ -203,7 +202,7 @@ const VenueForm = ({
           <p>Les informations non enregistrées seront perdues.</p>
         </RouteLeavingGuard>
         <VenueFormActionBar
-          offererId={offerer.nonHumanizedId}
+          offererId={offerer.id}
           isCreatingVenue={isCreatingVenue}
         />
       </FormLayout>

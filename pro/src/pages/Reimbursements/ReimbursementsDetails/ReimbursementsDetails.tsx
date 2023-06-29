@@ -60,7 +60,7 @@ const ReimbursementsDetails = (): JSX.Element => {
   ) =>
     sortByLabel(
       venues.map(venue => ({
-        value: venue.nonHumanizedId.toString(),
+        value: venue.id.toString(),
         label: venue.isVirtual
           ? `${venue.offererName} - Offre numérique`
           : /* istanbul ignore next: TO FIX */

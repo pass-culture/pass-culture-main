@@ -59,15 +59,13 @@ const categoriesAndSubcategories = {
 
 const proVenues = [
   {
-    id: 'AE',
-    nonHumanizedId: 1,
+    id: 1,
     name: 'Ma venue',
     offererName: 'Mon offerer',
     isVirtual: false,
   },
   {
-    id: 'A9',
-    nonHumanizedId: 2,
+    id: 2,
     name: 'Ma venue virtuelle',
     offererName: 'Mon offerer',
     isVirtual: true,
@@ -244,7 +242,7 @@ describe('route Offers', () => {
         describe('status filter can only be used with an offerer or a venue filter for performance reasons', () => {
           it('should reset and disable status filter when venue filter is deselected', async () => {
             // Given
-            const { nonHumanizedId: venueId, name: venueName } = proVenues[0]
+            const { id: venueId, name: venueName } = proVenues[0]
             const filters = {
               venueId: venueId.toString(),
               status: OfferStatus.INACTIVE,
@@ -276,7 +274,7 @@ describe('route Offers', () => {
 
           it('should not reset or disable status filter when venue filter is deselected while offerer filter is applied', async () => {
             // Given
-            const { nonHumanizedId: venueId, name: venueName } = proVenues[0]
+            const { id: venueId, name: venueName } = proVenues[0]
             const filters = {
               venueId: venueId.toString(),
               status: OfferStatus.INACTIVE,
@@ -344,7 +342,7 @@ describe('route Offers', () => {
             // @ts-expect-error FIX ME
             jest.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
             const filters = {
-              venueId: venueId,
+              venueId: venueId.toString(),
               status: OfferStatus.INACTIVE,
               offererId: offerer.id,
             }
@@ -361,7 +359,7 @@ describe('route Offers', () => {
               undefined,
               undefined,
               'INACTIVE',
-              venueId,
+              venueId.toString(),
               undefined,
               undefined,
               undefined,
@@ -437,7 +435,7 @@ describe('route Offers', () => {
             undefined,
             undefined,
             undefined,
-            proVenues[0].nonHumanizedId.toString(),
+            proVenues[0].id.toString(),
             undefined,
             undefined,
             undefined,
@@ -619,7 +617,7 @@ describe('route Offers', () => {
         undefined,
         undefined,
         undefined,
-        proVenues[0].nonHumanizedId.toString(),
+        proVenues[0].id.toString(),
         undefined,
         undefined,
         undefined,
@@ -938,7 +936,7 @@ describe('route Offers', () => {
         undefined,
         undefined,
         undefined,
-        proVenues[0].nonHumanizedId.toString(),
+        proVenues[0].id.toString(),
         undefined,
         undefined,
         undefined,
@@ -987,7 +985,7 @@ describe('route Offers', () => {
         undefined,
         undefined,
         undefined,
-        proVenues[0].nonHumanizedId.toString(),
+        proVenues[0].id.toString(),
         undefined,
         undefined,
         undefined,

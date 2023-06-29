@@ -40,7 +40,7 @@ const getWizardData: GetOfferIndividualAdapter = async ({
   queryOffererId,
   isAdmin,
 }) => {
-  const offererId = isAdmin && offerer ? offerer.nonHumanizedId : queryOffererId
+  const offererId = isAdmin && offerer ? offerer.id : queryOffererId
 
   const successPayload: OfferWizardData = {
     offererNames: [],
@@ -80,7 +80,7 @@ const getWizardData: GetOfferIndividualAdapter = async ({
   if (isAdmin && offerer) {
     successPayload.offererNames = [
       {
-        nonHumanizedId: 1,
+        id: 1,
         name: offerer.name,
       },
     ]

@@ -16,14 +16,13 @@ export interface Offerer {
   fieldsUpdated: Array<string>
   hasAvailablePricingPoints: boolean
   hasDigitalVenueAtLeastOneOffer: boolean
-  id: string
   idAtProviders?: string | null
   isActive: boolean
   isValidated: boolean
   lastProviderId?: string | null
   managedVenues: Array<GetOffererVenueResponseModel>
   name: string
-  nonHumanizedId: number
+  id: number
   postalCode: string
   siren: string
 }

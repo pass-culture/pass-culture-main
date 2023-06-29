@@ -101,13 +101,13 @@ describe('OfferIndividualForm', () => {
     ]
     offererNames = [
       {
-        nonHumanizedId: 1,
+        id: 1,
         name: 'Offerer virtual and physical',
       },
     ]
     venueList = [
       {
-        nonHumanizedId: 1,
+        id: 1,
         name: 'Venue AAAA',
         managingOffererId: 1,
         isVirtual: false,
@@ -123,7 +123,7 @@ describe('OfferIndividualForm', () => {
         hasCreatedOffer: true,
       },
       {
-        nonHumanizedId: 2,
+        id: 2,
         name: 'Venue AAAA',
         managingOffererId: 1,
         isVirtual: true,
@@ -162,9 +162,8 @@ describe('OfferIndividualForm', () => {
     it('should display venue banner when subcategory is not virtual and venue is only virtual', async () => {
       const onlyVirtualVenueList = [
         {
-          id: 'virtual',
           name: 'Venue AAAA',
-          nonHumanizedId: 3,
+          id: 3,
           managingOffererId: 1,
           isVirtual: true,
           withdrawalDetails: '',
@@ -198,9 +197,8 @@ describe('OfferIndividualForm', () => {
     it('should not display venue banner when subcategory is virtual', async () => {
       const onlyVirtualVenueList = [
         {
-          id: 'virtual',
           name: 'Venue AAAA',
-          nonHumanizedId: 4,
+          id: 4,
           managingOffererId: 1,
           isVirtual: true,
           withdrawalDetails: '',

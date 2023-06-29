@@ -68,7 +68,7 @@ const Homepage = (): JSX.Element => {
             isValidated: false,
             managedVenues: [],
             name: '',
-            nonHumanizedId: Number(offererId) ?? 0,
+            id: Number(offererId) ?? 0,
             postalCode: '',
           })
           setVenues(INITIAL_OFFERER_VENUES)

@@ -40,7 +40,7 @@ describe('getLastCollectiveDmsApplication', () => {
         managedVenues: [
           {
             ...defaultGetOffererVenueResponseModel,
-            nonHumanizedId: venueId,
+            id: venueId,
             collectiveDmsApplications: [
               {
                 ...defaultCollectiveDmsApplication,
@@ -52,7 +52,7 @@ describe('getLastCollectiveDmsApplication', () => {
           },
           {
             ...defaultGetOffererVenueResponseModel,
-            nonHumanizedId: venueId + 1, // not the same venue
+            id: venueId + 1, // not the same venue
             collectiveDmsApplications: [
               {
                 ...defaultCollectiveDmsApplication,

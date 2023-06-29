@@ -55,14 +55,14 @@ describe('FormPracticalInformation', () => {
               publicName: 'Venue1',
               name: 'Venue1',
             }),
-            nonHumanizedId: 1,
+            id: 1,
           },
           {
             ...getOfferVenueFactory({
               publicName: 'Venue2',
               name: 'Venue2',
             }),
-            nonHumanizedId: 1,
+            id: 1,
           },
         ],
       },

@@ -81,7 +81,7 @@ const ReimbursementPoint = ({
 
   const closeDmsDialog = useCallback(async () => {
     setIsDmsDialogOpen(false)
-    const venueRequest = await api.getVenue(venue.nonHumanizedId)
+    const venueRequest = await api.getVenue(venue.id)
     setVenue(serializeVenueApi(venueRequest))
   }, [])
 
@@ -98,8 +98,7 @@ const ReimbursementPoint = ({
       }
       setHasAlreadyAddReimbursementPoint(
         reimbursementPointsResponse.find(
-          reimbursementPoint =>
-            reimbursementPoint.venueId === venue.nonHumanizedId
+          reimbursementPoint => reimbursementPoint.venueId === venue.id
         )
       )
 
@@ -116,8 +115,8 @@ const ReimbursementPoint = ({
       )
       setIsLoading(false)
     }
-    loadReimbursementPoints(offerer.nonHumanizedId)
-  }, [isCreatingVenue, offerer.nonHumanizedId, readOnly, venue])
+    loadReimbursementPoints(offerer.id)
+  }, [isCreatingVenue, offerer.id, readOnly, venue])
   const { logEvent } = useAnalytics()
 
   const onCancelNoSiretDialog = () => {

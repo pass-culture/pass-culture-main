@@ -75,7 +75,7 @@ const renderStockThingScreen = (
         getOfferIndividualUrl({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.DRAFT,
-          offerId: contextValue.offer?.nonHumanizedId || undefined,
+          offerId: contextValue.offer?.id || undefined,
         }),
       ],
     }
@@ -90,7 +90,7 @@ describe('screens:StocksThing::draft', () => {
 
   beforeEach(() => {
     stock = {
-      nonHumanizedId: 1,
+      id: 1,
       quantity: 10,
       price: 10.01,
       remainingQuantity: 6,
@@ -98,7 +98,7 @@ describe('screens:StocksThing::draft', () => {
       isEventDeletable: true,
     }
     offer = {
-      nonHumanizedId: 1,
+      id: 1,
       lastProvider: null,
       venue: {
         departmentCode: '75',

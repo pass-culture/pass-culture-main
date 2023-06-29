@@ -109,7 +109,7 @@ const CollectiveOfferVisibility = ({
   const onSubmit = async (values: VisibilityFormValues) => {
     setButtonPressed(true)
     const result = await patchInstitution({
-      offerId: offer.nonHumanizedId,
+      offerId: offer.id,
       institutionId: values.visibility === 'all' ? null : values.institution,
       teacherEmail: selectedTeacher ? selectedTeacher.email : null,
     })
@@ -118,7 +118,7 @@ const CollectiveOfferVisibility = ({
       return notify.error(result.message)
     }
     onSuccess({
-      offerId: offer.nonHumanizedId.toString(),
+      offerId: offer.id.toString(),
       message: result.message ?? '',
       payload: result.payload,
     })
@@ -358,7 +358,7 @@ const CollectiveOfferVisibility = ({
                 <ButtonLink
                   variant={ButtonVariant.SECONDARY}
                   link={{
-                    to: `/offre/${offer.nonHumanizedId}/collectif/stocks${
+                    to: `/offre/${offer.id}/collectif/stocks${
                       requestId ? `?requete=${requestId}` : ''
                     }`,
                     isExternal: false,

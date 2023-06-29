@@ -10,7 +10,7 @@ import { VenueBannerMetaProps } from 'components/VenueForm/ImageUploaderVenue/Im
 import { AccessibiltyFormValues } from 'core/shared'
 
 export type OfferIndividualVenue = {
-  nonHumanizedId: number
+  id: number
   managingOffererId: number
   name: string
   isVirtual: boolean
@@ -63,7 +63,7 @@ export interface Venue {
   mail: string
   name: string
   managingOfferer: GetVenueManagingOffererResponseModel
-  nonHumanizedId: number
+  id: number
   pricingPoint: {
     id: number
     siret: string

@@ -72,13 +72,13 @@ describe('OfferIndividual section: venue', () => {
   beforeEach(() => {
     const offererNames: OffererName[] = [
       {
-        nonHumanizedId: 1,
+        id: 1,
         name: 'Offerer AE',
       },
     ]
 
     venueAccessible = {
-      nonHumanizedId: 1,
+      id: 1,
       name: 'Venue AAAA',
       managingOffererId: 1,
       isVirtual: false,
@@ -94,7 +94,7 @@ describe('OfferIndividual section: venue', () => {
       hasCreatedOffer: true,
     }
     venueNotAccessible = {
-      nonHumanizedId: 2,
+      id: 2,
       name: 'Venue AABB',
       managingOffererId: 1,
       isVirtual: false,
@@ -146,20 +146,14 @@ describe('OfferIndividual section: venue', () => {
     })
     await screen.findByRole('heading', { name: 'Accessibilité' })
 
-    await userEvent.selectOptions(
-      selectVenue,
-      venueAccessible.nonHumanizedId.toString()
-    )
+    await userEvent.selectOptions(selectVenue, venueAccessible.id.toString())
     expect(checkboxVisuel).not.toBeChecked()
     expect(checkboxMental).toBeChecked()
     expect(checkboxAuditif).toBeChecked()
     expect(checkboxMoteur).not.toBeChecked()
     expect(checkboxNone).not.toBeChecked()
 
-    await userEvent.selectOptions(
-      selectVenue,
-      venueNotAccessible.nonHumanizedId.toString()
-    )
+    await userEvent.selectOptions(selectVenue, venueNotAccessible.id.toString())
     expect(checkboxVisuel).not.toBeChecked()
     expect(checkboxMental).not.toBeChecked()
     expect(checkboxAuditif).not.toBeChecked()

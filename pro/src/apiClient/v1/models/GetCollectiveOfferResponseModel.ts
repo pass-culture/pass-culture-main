@@ -24,6 +24,7 @@ export type GetCollectiveOfferResponseModel = {
   domains: Array<OfferDomain>;
   durationMinutes?: number | null;
   hasBookingLimitDatetimesPassed: boolean;
+  id: number;
   imageCredit?: string | null;
   imageUrl?: string | null;
   institution?: EducationalInstitutionResponseModel | null;
@@ -39,7 +40,6 @@ export type GetCollectiveOfferResponseModel = {
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
-  nonHumanizedId: number;
   offerId?: number | null;
   offerVenue: CollectiveOfferOfferVenueResponseModel;
   status: OfferStatus;

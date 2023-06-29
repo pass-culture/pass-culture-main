@@ -66,7 +66,7 @@ class Returns200Test:
         assert "bic" not in response_json["venue"]["managingOfferer"]
         assert "validationStatus" not in response_json["venue"]["managingOfferer"]
         assert "thumbUrl" in response_json
-        assert response_json["nonHumanizedId"] == offer.id
+        assert response_json["id"] == offer.id
 
     def test_performance(self, client):
         # Given
@@ -183,7 +183,7 @@ class Returns200Test:
             "isThing": False,
             "lastProvider": None,
             "name": "Derrick",
-            "nonHumanizedId": stock.offer.id,
+            "id": stock.offer.id,
             "status": "ACTIVE",
             "stocks": [
                 {
@@ -195,7 +195,7 @@ class Returns200Test:
                     "dateModified": "2020-10-15T00:00:00Z",
                     "hasActivationCode": False,
                     "priceCategoryId": stock.priceCategoryId,
-                    "nonHumanizedId": stock.id,
+                    "id": stock.id,
                     "isBookable": True,
                     "isEventDeletable": True,
                     "isEventExpired": False,
@@ -215,10 +215,10 @@ class Returns200Test:
                 "bookingEmail": "test@test.com",
                 "city": "Paris",
                 "departementCode": "75",
-                "nonHumanizedId": venue.id,
+                "id": venue.id,
                 "isVirtual": False,
                 "managingOfferer": {
-                    "nonHumanizedId": offerer.id,
+                    "id": offerer.id,
                     "name": "Test Offerer",
                 },
                 "mentalDisabilityCompliant": False,

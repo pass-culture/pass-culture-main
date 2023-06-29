@@ -104,7 +104,7 @@ def test_basics(client):
                 "mentalDisabilityCompliant": False,
                 "motorDisabilityCompliant": False,
                 "name": venue.name,
-                "nonHumanizedId": venue.id,
+                "id": venue.id,
                 "postalCode": venue.postalCode,
                 "publicName": venue.publicName,
                 "siret": venue.siret,
@@ -115,7 +115,7 @@ def test_basics(client):
             for venue in sorted(offerer.managedVenues, key=lambda v: v.publicName)
         ],
         "name": offerer.name,
-        "nonHumanizedId": offerer.id,
+        "id": offerer.id,
         "postalCode": offerer.postalCode,
         "siren": offerer.siren,
     }

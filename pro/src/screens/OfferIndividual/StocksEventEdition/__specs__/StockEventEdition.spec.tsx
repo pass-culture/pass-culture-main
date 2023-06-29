@@ -44,7 +44,7 @@ const renderStockEventScreen = async (
   jest.spyOn(api, 'upsertStocks').mockResolvedValue({} as StocksResponseModel)
   jest.spyOn(api, 'listOffers').mockResolvedValue([
     {
-      nonHumanizedId: 1,
+      id: 1,
       status: 'ACTIVE',
       isActive: true,
       hasBookingLimitDatetimesPassed: false,
@@ -55,7 +55,7 @@ const renderStockEventScreen = async (
         name: 'venue',
         offererName: 'offerer',
         isVirtual: false,
-        nonHumanizedId: 1,
+        id: 1,
       },
       stocks: [],
       isEditable: true,
@@ -72,8 +72,7 @@ const renderStockEventScreen = async (
         isAdmin: false,
         dateCreated: '2001-01-01',
         email: 'test@email.com',
-        id: 'USER_ID',
-        nonHumanizedId: 'ISER_ID',
+        id: 12,
         roles: [],
         isEmailValidated: true,
       },
@@ -137,8 +136,7 @@ describe('screens:StocksEventEdition', () => {
     bookingsQuantity: 4,
     dateCreated: '2022-05-18T08:25:31.015652Z',
     hasActivationCode: false,
-    id: 'STOCK_ID',
-    nonHumanizedId: 1,
+    id: 1,
     isEventDeletable: true,
     isEventExpired: false,
     isSoftDeleted: false,
@@ -171,7 +169,7 @@ describe('screens:StocksEventEdition', () => {
       audioDisabilityCompliant: false,
       mentalDisabilityCompliant: false,
       motorDisabilityCompliant: false,
-      nonHumanizedId: 12,
+      id: 12,
       visualDisabilityCompliant: false,
       lastProvider: null,
       name: 'Séance ciné duo',
@@ -189,10 +187,10 @@ describe('screens:StocksEventEdition', () => {
         bookingEmail: 'venue29@example.net',
         city: 'Paris',
         departementCode: '75',
-        nonHumanizedId: 1,
+        id: 1,
         isVirtual: false,
         managingOfferer: {
-          nonHumanizedId: 1,
+          id: 1,
           name: 'Le Petit Rintintin Management 6',
         },
         name: 'Cinéma synchro avec booking provider',
@@ -237,7 +235,7 @@ describe('screens:StocksEventEdition', () => {
         bookingsQuantity: 5,
         dateCreated: '2022-05-18T08:25:31.015652Z',
         hasActivationCode: false,
-        nonHumanizedId: 1,
+        id: 1,
         isEventDeletable: true,
         isEventExpired: false,
         isSoftDeleted: false,
@@ -268,7 +266,7 @@ describe('screens:StocksEventEdition', () => {
     expect(
       await screen.findByText('Le stock a été supprimé.')
     ).toBeInTheDocument()
-    expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.nonHumanizedId)
+    expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.id)
 
     jest.spyOn(api, 'upsertStocks')
     await userEvent.click(
@@ -322,7 +320,7 @@ describe('screens:StocksEventEdition', () => {
     expect(
       await screen.findByText('Le stock a été supprimé.')
     ).toBeInTheDocument()
-    expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.nonHumanizedId)
+    expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.id)
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
   })
 
@@ -411,7 +409,7 @@ describe('screens:StocksEventEdition', () => {
       )
     ).toBeInTheDocument()
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
-    expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.nonHumanizedId)
+    expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.id)
   })
 
   it('should save the offer without warning on "Enregistrer les modifications" button click', async () => {

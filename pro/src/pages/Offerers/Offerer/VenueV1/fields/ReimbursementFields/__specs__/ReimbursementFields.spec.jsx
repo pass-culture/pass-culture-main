@@ -34,18 +34,15 @@ jest.mock('apiClient/api', () => ({
 
 describe('src | Venue | ReimbursementFields', () => {
   const venue = {
-    id: 'AA',
-    nonHumanizedId: 1,
+    id: 1,
     name: 'fake venue name',
   }
   const otherVenue = {
-    id: 'CC',
-    nonHumanizedId: 2,
+    id: 2,
     name: 'Offerer Venue',
   }
   const offerer = {
-    id: 'BB',
-    nonHumanizedId: 2,
+    id: 2,
     name: 'fake offerer name',
     managedVenues: [otherVenue],
     hasAvailablePricingPoints: true,

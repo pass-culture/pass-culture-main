@@ -20,6 +20,7 @@ export type GetCollectiveOfferTemplateResponseModel = {
   durationMinutes?: number | null;
   educationalPriceDetail?: string | null;
   hasBookingLimitDatetimesPassed: boolean;
+  id: number;
   imageCredit?: string | null;
   imageUrl?: string | null;
   interventionArea: Array<string>;
@@ -29,7 +30,6 @@ export type GetCollectiveOfferTemplateResponseModel = {
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
-  nonHumanizedId: number;
   offerId?: number | null;
   offerVenue: CollectiveOfferOfferVenueResponseModel;
   status: OfferStatus;

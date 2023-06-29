@@ -71,7 +71,7 @@ describe('test OfferIndividualTemplate', () => {
   it('should render when offer is given', () => {
     const offer: Partial<OfferIndividual> = {
       name: 'Titre de l’offre',
-      nonHumanizedId: offerId,
+      id: offerId,
       stocks: [],
     }
     const contextOverride = {
@@ -94,7 +94,7 @@ describe('test OfferIndividualTemplate', () => {
   it('should render when no offer is given on edition mode', () => {
     const offer: Partial<OfferIndividual> = {
       name: 'Titre de l’offre',
-      nonHumanizedId: offerId,
+      id: offerId,
       stocks: [],
     }
     const contextOverride = {
@@ -137,7 +137,7 @@ describe('test OfferIndividualTemplate', () => {
     it('should display status and button in edition', () => {
       const offer: Partial<OfferIndividual> = {
         name: 'Titre de l’offre',
-        nonHumanizedId: offerId,
+        id: offerId,
         isActive: true,
         status: OfferStatus.ACTIVE,
         stocks: [],
@@ -166,7 +166,7 @@ describe('test OfferIndividualTemplate', () => {
     it('should display draft status in draft', () => {
       const offer: Partial<OfferIndividual> = {
         name: 'Titre de l’offre',
-        nonHumanizedId: offerId,
+        id: offerId,
         isActive: false,
         status: OfferStatus.DRAFT,
         stocks: [],
@@ -193,7 +193,7 @@ describe('test OfferIndividualTemplate', () => {
     it('should display nothing in creation', () => {
       const offer: Partial<OfferIndividual> = {
         name: 'Titre de l’offre',
-        nonHumanizedId: offerId,
+        id: offerId,
         isActive: false,
         status: OfferStatus.DRAFT,
         stocks: [],

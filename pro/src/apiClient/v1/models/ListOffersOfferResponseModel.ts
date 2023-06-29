@@ -8,6 +8,7 @@ import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 
 export type ListOffersOfferResponseModel = {
   hasBookingLimitDatetimesPassed: boolean;
+  id: number;
   isActive: boolean;
   isEditable: boolean;
   isEducational: boolean;
@@ -15,7 +16,6 @@ export type ListOffersOfferResponseModel = {
   isShowcase?: boolean | null;
   isThing: boolean;
   name: string;
-  nonHumanizedId: number;
   productIsbn?: string | null;
   status: string;
   stocks: Array<ListOffersStockResponseModel>;

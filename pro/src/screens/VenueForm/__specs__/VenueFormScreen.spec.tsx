@@ -64,7 +64,7 @@ const renderForm = (
               <VenueFormScreen
                 initialValues={initialValues}
                 isCreatingVenue={isCreatingVenue}
-                offerer={{ id: 'AE', siren: '881457238' } as Offerer}
+                offerer={{ id: 12, siren: '881457238' } as Offerer}
                 venueTypes={venueTypes}
                 venueLabels={venueLabels}
                 providers={[]}
@@ -212,7 +212,7 @@ const venueResponse: GetVenueResponseModel = {
   longitude: 0,
   bookingEmail: 'a@b.c',
   name: 'name',
-  nonHumanizedId: 0,
+  id: 0,
   pricingPoint: null,
   postalCode: '75008',
   publicName: 'name',
@@ -240,7 +240,7 @@ const venueResponse: GetVenueResponseModel = {
     dateModifiedAtLastProvider: null,
     demarchesSimplifieesApplicationId: null,
     fieldsUpdated: [],
-    nonHumanizedId: 1,
+    id: 1,
     idAtProviders: null,
     isValidated: true,
     lastProviderId: null,
@@ -327,7 +327,7 @@ describe('screen | VenueForm', () => {
       longitude: 0,
       mail: 'a@b.c',
       name: 'name',
-      nonHumanizedId: 15,
+      id: 15,
       pricingPoint: null,
       postalCode: '75008',
       publicName: 'name',
@@ -352,7 +352,7 @@ describe('screen | VenueForm', () => {
         dateModifiedAtLastProvider: null,
         demarchesSimplifieesApplicationId: null,
         fieldsUpdated: [],
-        nonHumanizedId: 1,
+        id: 1,
         idAtProviders: null,
         isValidated: true,
         lastProviderId: null,
@@ -370,7 +370,7 @@ describe('screen | VenueForm', () => {
       jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
       renderForm(
         {
-          nonHumanizedId: 12,
+          id: 12,
           isAdmin: true,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -389,7 +389,7 @@ describe('screen | VenueForm', () => {
     it('User should be redirected with the creation popin displayed', async () => {
       renderForm(
         {
-          nonHumanizedId: 12,
+          id: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -410,7 +410,7 @@ describe('screen | VenueForm', () => {
     it('User should be redirected to the edit page after creating a venue', async () => {
       renderForm(
         {
-          nonHumanizedId: 12,
+          id: 12,
           isAdmin: true,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -433,7 +433,7 @@ describe('screen | VenueForm', () => {
     it('should display an error when the venue could not be created', async () => {
       renderForm(
         {
-          nonHumanizedId: 12,
+          id: 12,
           isAdmin: true,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -465,7 +465,7 @@ describe('screen | VenueForm', () => {
     it('should display an error when the venue could not be updated', async () => {
       renderForm(
         {
-          nonHumanizedId: 12,
+          id: 12,
           isAdmin: true,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -497,7 +497,7 @@ describe('screen | VenueForm', () => {
     it('Submit creation form that fails with unknown error', async () => {
       renderForm(
         {
-          nonHumanizedId: 12,
+          id: 12,
           isAdmin: true,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -523,7 +523,7 @@ describe('screen | VenueForm', () => {
       formValues.isVenueVirtual = true
       renderForm(
         {
-          nonHumanizedId: 12,
+          id: 12,
           isAdmin: true,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -548,7 +548,7 @@ describe('screen | VenueForm', () => {
 
     renderForm(
       {
-        nonHumanizedId: 12,
+        id: 12,
         isAdmin: true,
       } as SharedCurrentUserResponseModel,
       formValues,
@@ -571,7 +571,7 @@ describe('screen | VenueForm', () => {
     formValues.isVenueVirtual = true
     renderForm(
       {
-        nonHumanizedId: 12,
+        id: 12,
         isAdmin: true,
       } as SharedCurrentUserResponseModel,
       formValues,
@@ -596,7 +596,7 @@ describe('screen | VenueForm', () => {
 
       renderForm(
         {
-          nonHumanizedId: 12,
+          id: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -644,7 +644,7 @@ describe('screen | VenueForm', () => {
       venue.isVirtual = false
       renderForm(
         {
-          nonHumanizedId: 12,
+          id: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -676,7 +676,7 @@ describe('screen | VenueForm', () => {
       formValues.publicName = ''
       renderForm(
         {
-          nonHumanizedId: 12,
+          id: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -745,7 +745,7 @@ describe('screen | VenueForm', () => {
     it('should display withdrawal and submit on confirm dialog button when offer has bookingQuantity and withdrawalDetails is updated and isWithdrawalAppliedOnAllOffers is true', async () => {
       renderForm(
         {
-          nonHumanizedId: 12,
+          id: 12,
           isAdmin: true,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -757,7 +757,7 @@ describe('screen | VenueForm', () => {
 
       const editVenue = jest
         .spyOn(api, 'editVenue')
-        .mockResolvedValue({ nonHumanizedId: 1 } as GetVenueResponseModel)
+        .mockResolvedValue({ id: 1 } as GetVenueResponseModel)
 
       await waitFor(() => {
         expect(
@@ -815,7 +815,7 @@ describe('screen | VenueForm', () => {
     it('should display withdrawal dialog and submit on cancel click and should not send mail', async () => {
       renderForm(
         {
-          nonHumanizedId: 12,
+          id: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -827,7 +827,7 @@ describe('screen | VenueForm', () => {
 
       const editVenue = jest
         .spyOn(api, 'editVenue')
-        .mockResolvedValue({ nonHumanizedId: 1 } as GetVenueResponseModel)
+        .mockResolvedValue({ id: 1 } as GetVenueResponseModel)
 
       await waitFor(() => {
         expect(
@@ -883,7 +883,7 @@ describe('screen | VenueForm', () => {
 
       renderForm(
         {
-          nonHumanizedId: 12,
+          id: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -895,7 +895,7 @@ describe('screen | VenueForm', () => {
 
       const editVenue = jest
         .spyOn(api, 'editVenue')
-        .mockResolvedValue({ nonHumanizedId: 1 } as GetVenueResponseModel)
+        .mockResolvedValue({ id: 1 } as GetVenueResponseModel)
 
       await waitFor(() => {
         expect(
@@ -925,7 +925,7 @@ describe('screen | VenueForm', () => {
     it('should close withdrawal dialog and not submit if user close dialog', async () => {
       renderForm(
         {
-          nonHumanizedId: 12,
+          id: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -937,7 +937,7 @@ describe('screen | VenueForm', () => {
 
       const editVenue = jest
         .spyOn(api, 'editVenue')
-        .mockResolvedValue({ nonHumanizedId: 1 } as GetVenueResponseModel)
+        .mockResolvedValue({ id: 1 } as GetVenueResponseModel)
 
       await waitFor(() => {
         expect(
@@ -992,7 +992,7 @@ describe('screen | VenueForm', () => {
     it('should not display withdrawal dialog if withdrawalDetails value after update is the same', async () => {
       renderForm(
         {
-          nonHumanizedId: 12,
+          id: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -1038,7 +1038,7 @@ describe('screen | VenueForm', () => {
     it('should display eac section if offerer is eligble to eac and ff active', async () => {
       renderForm(
         {
-          nonHumanizedId: 12,
+          id: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -1068,7 +1068,7 @@ describe('screen | VenueForm', () => {
         .mockRejectedValueOnce('error')
       renderForm(
         {
-          nonHumanizedId: 12,
+          id: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -1096,7 +1096,7 @@ describe('screen | VenueForm', () => {
         .mockRejectedValueOnce('error')
       renderForm(
         {
-          nonHumanizedId: 12,
+          id: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,
@@ -1123,7 +1123,7 @@ describe('screen | VenueForm', () => {
     it('should display eac section during venue creation if venue has siret and is eligible to eac', async () => {
       renderForm(
         {
-          nonHumanizedId: 12,
+          id: 12,
           isAdmin: false,
         } as SharedCurrentUserResponseModel,
         formValues,

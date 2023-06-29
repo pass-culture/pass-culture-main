@@ -37,7 +37,7 @@ const OfferSummary = ({
   const offerData = serializeOfferSectionData(offer, categories, subCategories)
 
   const editLink = getOfferIndividualUrl({
-    offerId: offerData.nonHumanizedId,
+    offerId: offerData.id,
     step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
     mode,
   })
@@ -48,7 +48,7 @@ const OfferSummary = ({
       to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,
       isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-      offerId: offerData.nonHumanizedId,
+      offerId: offerData.id,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
     })
   }

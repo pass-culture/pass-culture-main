@@ -64,7 +64,7 @@ describe('EACInformation', () => {
       const venueId = 1
       const offererId = 1
       const venue = {
-        nonHumanizedId: venueId,
+        id: venueId,
         collectiveDescription: '',
         collectiveDomains: [],
         collectiveEmail: '',

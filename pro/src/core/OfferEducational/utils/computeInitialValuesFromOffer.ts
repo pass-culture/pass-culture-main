@@ -59,7 +59,7 @@ const getInitialOffererId = (
   offererIdQueryParam?: string | null
 ): string => {
   if (offer !== undefined) {
-    return offer.venue.managingOfferer.nonHumanizedId.toString()
+    return offer.venue.managingOfferer.id.toString()
   }
 
   if (offererIdQueryParam) {
@@ -67,7 +67,7 @@ const getInitialOffererId = (
   }
 
   if (offerers.length === 1) {
-    return offerers[0].nonHumanizedId.toString()
+    return offerers[0].id.toString()
   }
 
   return DEFAULT_EAC_FORM_VALUES.offererId
@@ -80,7 +80,7 @@ const getInitialVenueId = (
   venueIdQueryParam?: string | null
 ): string => {
   if (offer !== undefined) {
-    return offer.venue.nonHumanizedId.toString()
+    return offer.venue.id.toString()
   }
 
   if (venueIdQueryParam) {
@@ -89,11 +89,11 @@ const getInitialVenueId = (
 
   if (offererId) {
     const currentOfferer = offerers.find(
-      offerer => offerer.nonHumanizedId.toString() === offererId
+      offerer => offerer.id.toString() === offererId
     )
 
     if (currentOfferer?.managedVenues.length === 1) {
-      return currentOfferer.managedVenues[0].nonHumanizedId.toString()
+      return currentOfferer.managedVenues[0].id.toString()
     }
   }
 

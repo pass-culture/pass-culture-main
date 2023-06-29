@@ -22,6 +22,7 @@ export type GetIndividualOfferResponseModel = {
   externalTicketOfficeUrl?: string | null;
   extraData?: any;
   hasBookingLimitDatetimesPassed: boolean;
+  id: number;
   isActive: boolean;
   isDigital: boolean;
   isDuo: boolean;
@@ -33,7 +34,6 @@ export type GetIndividualOfferResponseModel = {
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
-  nonHumanizedId: number;
   priceCategories?: Array<PriceCategoryResponseModel> | null;
   status: OfferStatus;
   stocks: Array<GetOfferStockResponseModel>;

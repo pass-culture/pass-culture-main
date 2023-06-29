@@ -5,15 +5,13 @@ describe('venuesService', () => {
     it('should sort venues alphabetically', () => {
       const venues = [
         {
-          id: 'AF',
-          nonHumanizedId: 1,
+          id: 1,
           name: 'Librairie Fnac',
           offererName: 'gilbert Joseph',
           isVirtual: false,
         },
         {
-          id: 'AE',
-          nonHumanizedId: 2,
+          id: 2,
           name: 'Offre numérique',
           offererName: 'gilbert Joseph',
           isVirtual: true,
@@ -25,11 +23,11 @@ describe('venuesService', () => {
       expect(sortingValues).toStrictEqual([
         {
           label: 'gilbert Joseph - Offre numérique',
-          value: venues[1].nonHumanizedId.toString(),
+          value: venues[1].id.toString(),
         },
         {
           label: 'Librairie Fnac',
-          value: venues[0].nonHumanizedId.toString(),
+          value: venues[0].id.toString(),
         },
       ])
     })
@@ -37,8 +35,7 @@ describe('venuesService', () => {
     it('should format venue option with "offerer name - offre numérique" when venue is virtual', () => {
       const venues = [
         {
-          id: 'AE',
-          nonHumanizedId: 1,
+          id: 1,
           name: 'Offre numérique',
           offererName: 'gilbert Joseph',
           isVirtual: true,
@@ -50,7 +47,7 @@ describe('venuesService', () => {
       expect(formattedValues).toStrictEqual([
         {
           label: 'gilbert Joseph - Offre numérique',
-          value: venues[0].nonHumanizedId.toString(),
+          value: venues[0].id.toString(),
         },
       ])
     })
@@ -60,7 +57,7 @@ describe('venuesService', () => {
     it('should give venue name when venue is not virtual and has no public name', () => {
       // given
       const venue = {
-        id: 'AF',
+        id: 12,
         name: 'Librairie Fnac',
         offererName: 'gilbert Joseph',
         isVirtual: false,
@@ -76,7 +73,7 @@ describe('venuesService', () => {
     it('should give venue public name when venue is not virtual and has a public name', () => {
       // given
       const venue = {
-        id: 'AF',
+        id: 12,
         name: 'Librairie Fnac',
         offererName: 'gilbert Joseph',
         publicName: 'Ma petite librairie',
@@ -93,7 +90,7 @@ describe('venuesService', () => {
     it('should give the offerer name with "- Offre numérique" when venue is virtual', () => {
       // given
       const venue = {
-        id: 'AF',
+        id: 12,
         name: 'Librairie Fnac',
         offererName: 'gilbert Joseph',
         isVirtual: true,

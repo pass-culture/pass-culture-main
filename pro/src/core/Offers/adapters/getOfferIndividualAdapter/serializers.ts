@@ -16,7 +16,7 @@ import { AccessiblityEnum } from 'core/shared'
 export const serializeOffererApi = (
   apiOffer: GetIndividualOfferResponseModel
 ): OfferIndividualOfferer => ({
-  nonHumanizedId: apiOffer.venue.managingOfferer.nonHumanizedId,
+  id: apiOffer.venue.managingOfferer.id,
   name: apiOffer.venue.managingOfferer.name,
 })
 
@@ -32,7 +32,7 @@ export const serializeVenueApi = (
     [AccessiblityEnum.MOTOR]: apiOffer.venue.motorDisabilityCompliant || false,
   }
   return {
-    id: apiOffer.venue.nonHumanizedId,
+    id: apiOffer.venue.id,
     name: apiOffer.venue.name,
     publicName: apiOffer.venue.publicName || '',
     isVirtual: apiOffer.venue.isVirtual,
@@ -60,7 +60,7 @@ export const serializeStockApi = (
     bookingsQuantity: apiStock.bookingsQuantity,
     dateCreated: new Date(apiStock.dateCreated),
     hasActivationCode: apiStock.hasActivationCode,
-    nonHumanizedId: apiStock.nonHumanizedId,
+    id: apiStock.id,
     isEventDeletable: apiStock.isEventDeletable,
     isEventExpired: apiStock.isEventExpired,
     isSoftDeleted: apiStock.isSoftDeleted,
@@ -136,7 +136,7 @@ export const serializeOfferApi = (
   }
 
   const offer: OfferIndividual = {
-    nonHumanizedId: apiOffer.nonHumanizedId,
+    id: apiOffer.id,
     bookingEmail: apiOffer.bookingEmail || '',
     bookingContact: apiOffer.bookingContact || '',
     description: apiOffer.description || '',
@@ -147,13 +147,13 @@ export const serializeOfferApi = (
     isDigital: apiOffer.isDigital,
     isNational: apiOffer.isNational,
     name: apiOffer.name,
-    offererId: apiOffer.venue.managingOfferer.nonHumanizedId,
+    offererId: apiOffer.venue.managingOfferer.id,
     offererName: apiOffer.venue.managingOfferer.name,
     priceCategories: apiOffer.priceCategories,
     subcategoryId: apiOffer.subcategoryId,
     url: apiOffer.url || '',
     externalTicketOfficeUrl: apiOffer.externalTicketOfficeUrl || '',
-    venueId: apiOffer.venue.nonHumanizedId,
+    venueId: apiOffer.venue.id,
     venue: serializeVenueApi(apiOffer),
     withdrawalDetails: apiOffer.withdrawalDetails || '',
     withdrawalDelay:

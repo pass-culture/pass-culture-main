@@ -206,7 +206,7 @@ const PriceCategories = ({ offer }: PriceCategoriesProps): JSX.Element => {
 
   const afterSubmitCallback = () => {
     const afterSubmitUrl = getOfferIndividualUrl({
-      offerId: offer.nonHumanizedId,
+      offerId: offer.id,
       step:
         mode === OFFER_WIZARD_MODE.EDITION
           ? OFFER_WIZARD_STEP_IDS.SUMMARY
@@ -227,7 +227,7 @@ const PriceCategories = ({ offer }: PriceCategoriesProps): JSX.Element => {
         : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
       isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-      offerId: offer.nonHumanizedId,
+      offerId: offer.id,
     })
     navigate(afterSubmitUrl)
     notify.success(getSuccessMessage(mode))
@@ -250,12 +250,12 @@ const PriceCategories = ({ offer }: PriceCategoriesProps): JSX.Element => {
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
         isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
       })
     }
     navigate(
       getOfferIndividualUrl({
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
         step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         mode,
       })
@@ -284,7 +284,7 @@ const PriceCategories = ({ offer }: PriceCategoriesProps): JSX.Element => {
         } else {
           navigate(
             getOfferIndividualUrl({
-              offerId: offer.nonHumanizedId,
+              offerId: offer.id,
               step: OFFER_WIZARD_STEP_IDS.SUMMARY,
               mode,
             })
@@ -332,7 +332,7 @@ const PriceCategories = ({ offer }: PriceCategoriesProps): JSX.Element => {
 
       <form onSubmit={formik.handleSubmit}>
         <PriceCategoriesForm
-          offerId={offer.nonHumanizedId}
+          offerId={offer.id}
           mode={mode}
           stocks={offer.stocks}
           setOffer={setOffer}
@@ -346,7 +346,7 @@ const PriceCategories = ({ offer }: PriceCategoriesProps): JSX.Element => {
           onClickSaveDraft={handleNextStep({ saveDraft: true })}
           step={OFFER_WIZARD_STEP_IDS.TARIFS}
           isDisabled={formik.isSubmitting}
-          offerId={offer.nonHumanizedId}
+          offerId={offer.id}
         />
       </form>
 
@@ -359,7 +359,7 @@ const PriceCategories = ({ offer }: PriceCategoriesProps): JSX.Element => {
             used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
             isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
             isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-            offerId: offer?.nonHumanizedId,
+            offerId: offer?.id,
           })
         }
       />

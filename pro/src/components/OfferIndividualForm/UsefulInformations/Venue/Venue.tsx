@@ -21,7 +21,7 @@ export const onVenueChange = (
   venueList: OfferIndividualVenue[],
   venueId: string
 ) => {
-  const newVenue = venueList.find(v => v.nonHumanizedId.toString() === venueId)
+  const newVenue = venueList.find(v => v.id.toString() === venueId)
 
   if (!newVenue) {
     return

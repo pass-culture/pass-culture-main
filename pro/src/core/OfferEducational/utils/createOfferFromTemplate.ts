@@ -22,8 +22,7 @@ export const createOfferFromTemplate = async (
   if (!offerTemplateResponse.isOk) {
     return notify.error(offerTemplateResponse.message)
   }
-  const offererId =
-    offerTemplateResponse.payload.venue.managingOfferer.nonHumanizedId
+  const offererId = offerTemplateResponse.payload.venue.managingOfferer.id
   const result = await getCollectiveOfferFormDataApdater({
     offererId: offererId,
     offer: offerTemplateResponse.payload,
@@ -53,9 +52,7 @@ export const createOfferFromTemplate = async (
   await postCollectiveOfferImage({ initialValues, notify, payload })
 
   navigate(
-    `/offre/collectif/${
-      payload.nonHumanizedId
-    }/creation?structure=${offererId}${
+    `/offre/collectif/${payload.id}/creation?structure=${offererId}${
       requestId ? `&requete=${requestId}` : ''
     }`
   )

@@ -15,7 +15,7 @@ const renderVanueFormActionBar = ({
     user: {
       initialized: true,
       currentUser: {
-        nonHumanizedId: 12,
+        id: 12,
         isAdmin: true,
       },
     },

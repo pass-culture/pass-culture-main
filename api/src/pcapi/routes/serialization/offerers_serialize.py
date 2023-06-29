@@ -25,7 +25,7 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     hasAdageId: bool
     isVirtual: bool
     name: str
-    nonHumanizedId: int
+    id: int
     postalCode: str | None
     publicName: str | None
     siret: str | None
@@ -80,7 +80,7 @@ class GetOffererResponseModel(BaseModel):
     # see end of `from_orm()`
     managedVenues: list[GetOffererVenueResponseModel] = []
     name: str
-    nonHumanizedId: int
+    id: int
     postalCode: str
     # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
     siren: str | None
@@ -123,7 +123,7 @@ class GetOffererResponseModel(BaseModel):
 
 
 class GetOffererNameResponseModel(BaseModel):
-    nonHumanizedId: int
+    id: int
     name: str
 
     class Config:
@@ -150,7 +150,7 @@ class GetOfferersNamesQueryModel(BaseModel):
 class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     address: str | None
     city: str | None
-    nonHumanizedId: int
+    id: int
     isVirtual: bool
     publicName: str | None
     name: str
@@ -165,7 +165,7 @@ class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityCompliance
 
 
 class GetEducationalOffererResponseModel(BaseModel):
-    nonHumanizedId: int
+    id: int
     name: str
     managedVenues: list[GetEducationalOffererVenueResponseModel]
 

@@ -69,7 +69,7 @@ const Offerers = ({
       if (receivedOffererNames.offerersNames.length > 0) {
         const initialOffererOptions = sortByLabel(
           receivedOffererNames.offerersNames.map(item => ({
-            value: item['nonHumanizedId'].toString(),
+            value: item['id'].toString(),
             label: item['name'],
           }))
         )
@@ -95,7 +95,7 @@ const Offerers = ({
     const newOffererId = event.target.value
     if (newOffererId === CREATE_OFFERER_SELECT_ID) {
       navigate('/structures/creation')
-    } else if (newOffererId !== selectedOfferer?.nonHumanizedId.toString()) {
+    } else if (newOffererId !== selectedOfferer?.id.toString()) {
       onSelectedOffererChange(newOffererId)
       setQuery(newOffererId)
     }
@@ -137,7 +137,7 @@ const Offerers = ({
               icon={strokePartyIcon}
               redirectText="Créer une offre"
               redirectLink={{
-                to: `/offre/creation?structure=${selectedOfferer.nonHumanizedId}`,
+                to: `/offre/creation?structure=${selectedOfferer.id}`,
                 isExternal: false,
               }}
               cancelText="Plus tard"
@@ -181,7 +181,7 @@ const Offerers = ({
           {!isOffererSoftDeleted && (
             <VenueList
               physicalVenues={venues.physicalVenues}
-              selectedOffererId={selectedOfferer.nonHumanizedId}
+              selectedOffererId={selectedOfferer.id}
               virtualVenue={
                 selectedOfferer.hasDigitalVenueAtLeastOneOffer
                   ? venues.virtualVenue
@@ -207,7 +207,7 @@ const Offerers = ({
           }
           offererId={
             /* istanbul ignore next: DEBT, TO FIX */ selectedOfferer
-              ? selectedOfferer.nonHumanizedId
+              ? selectedOfferer.id
               : undefined
           }
         />

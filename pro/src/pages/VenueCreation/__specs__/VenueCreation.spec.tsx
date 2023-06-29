@@ -18,7 +18,6 @@ const renderVenueCreation = async (offererId: string) => {
         dateCreated: '2022-07-29T12:18:43.087097Z',
         email: 'john@do.net',
         id: '1',
-        nonHumanizedId: '1',
         isAdmin: false,
         isEmailValidated: true,
         roles: [],
@@ -65,7 +64,7 @@ describe('route VenueCreation', () => {
 
   beforeEach(() => {
     offerer = {
-      nonHumanizedId: 1,
+      id: 1,
     } as GetOffererResponseModel
 
     jest.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
@@ -75,7 +74,7 @@ describe('route VenueCreation', () => {
 
   it('should display venue form screen with creation title', async () => {
     // When
-    await renderVenueCreation(offerer.nonHumanizedId.toString())
+    await renderVenueCreation(offerer.id.toString())
     // Then
     const venueCreationTitle = await screen.findByText('Création d’un lieu')
     expect(venueCreationTitle).toBeInTheDocument()
@@ -83,7 +82,7 @@ describe('route VenueCreation', () => {
 
   it('should display modal when user try to quite venue creation', async () => {
     // When
-    await renderVenueCreation(offerer.nonHumanizedId.toString())
+    await renderVenueCreation(offerer.id.toString())
     // Then
     const homeNavBarButton = await screen.findByText('Accueil')
     await userEvent.click(homeNavBarButton)
@@ -99,7 +98,7 @@ describe('route VenueCreation', () => {
 
   it('should display modal when user cancel venue creation', async () => {
     // When
-    await renderVenueCreation(offerer.nonHumanizedId.toString())
+    await renderVenueCreation(offerer.id.toString())
     // Then
     const cancelFormButton = await screen.findByText('Annuler et quitter')
     await userEvent.click(cancelFormButton)
@@ -115,7 +114,7 @@ describe('route VenueCreation', () => {
 
   it('should not display modal when user submit venue creation', async () => {
     // When
-    await renderVenueCreation(offerer.nonHumanizedId.toString())
+    await renderVenueCreation(offerer.id.toString())
     // Then
     const homeNavBarButton = await screen.findByText(
       'Enregistrer et créer le lieu'

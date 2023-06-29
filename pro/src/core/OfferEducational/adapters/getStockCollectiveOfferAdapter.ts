@@ -26,7 +26,7 @@ export const getStockCollectiveOfferAdapter: GetStockCollectiveOfferAdapter =
         isOk: true,
         message: '',
         payload: {
-          managingOffererId: offer.venue.managingOfferer.nonHumanizedId,
+          managingOffererId: offer.venue.managingOfferer.id,
           isActive: offer.isActive,
           status: offer.status,
           venueDepartmentCode: offer.venue.departementCode ?? '',

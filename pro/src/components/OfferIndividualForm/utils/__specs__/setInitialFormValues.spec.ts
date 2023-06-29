@@ -13,7 +13,7 @@ describe('setFormReadOnlyFields', () => {
 
   beforeEach(() => {
     offer = {
-      nonHumanizedId: 12,
+      id: 12,
       author: 'Offer author',
       bookingEmail: 'booking@email.com',
       bookingContact: 'roberto@example.com',
@@ -56,7 +56,7 @@ describe('setFormReadOnlyFields', () => {
         postalCode: '75001',
         city: 'Paris',
         offerer: {
-          nonHumanizedId: 1,
+          id: 1,
           name: 'Offerer name',
         },
         departmentCode: '75',

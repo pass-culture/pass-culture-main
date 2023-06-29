@@ -123,7 +123,7 @@ const StocksEventEdition = ({
   const mode = useOfferWizardMode()
   const [afterSubmitUrl, setAfterSubmitUrl] = useState<string>(
     getOfferIndividualUrl({
-      offerId: offer.nonHumanizedId,
+      offerId: offer.id,
       step: OFFER_WIZARD_STEP_IDS.SUMMARY,
       mode,
     })
@@ -220,13 +220,13 @@ const StocksEventEdition = ({
     }
 
     const { isOk, payload } = await upsertStocksEventAdapter({
-      offerId: offer.nonHumanizedId,
+      offerId: offer.id,
       stocks: serializeStockEventEdition(allStocks, offer.venue.departmentCode),
     })
 
     /* istanbul ignore next: DEBT, TO FIX */
     if (isOk) {
-      const response = await getOfferIndividualAdapter(offer.nonHumanizedId)
+      const response = await getOfferIndividualAdapter(offer.id)
       if (response.isOk) {
         const updatedOffer = response.payload
         setOffer && setOffer(updatedOffer)
@@ -252,7 +252,7 @@ const StocksEventEdition = ({
           : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: true,
         isDraft: false,
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
       })
       notify.success(getSuccessMessage(mode))
     } else {
@@ -274,7 +274,7 @@ const StocksEventEdition = ({
     }
     try {
       await api.deleteStock(stockId)
-      const response = await getOfferIndividualAdapter(offer.nonHumanizedId)
+      const response = await getOfferIndividualAdapter(offer.id)
       /* istanbul ignore next: DEBT, TO FIX */
       if (response.isOk) {
         setOffer && setOffer(response.payload)
@@ -352,7 +352,7 @@ const StocksEventEdition = ({
       }
 
       const nextStepUrl = getOfferIndividualUrl({
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
         step: saveDraft
           ? OFFER_WIZARD_STEP_IDS.STOCKS
           : OFFER_WIZARD_STEP_IDS.SUMMARY,
@@ -415,13 +415,13 @@ const StocksEventEdition = ({
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: true,
         isDraft: false,
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
       })
     }
     /* istanbul ignore next: DEBT, TO FIX */
     navigate(
       getOfferIndividualUrl({
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
         step: OFFER_WIZARD_STEP_IDS.TARIFS,
         mode,
       })
@@ -492,7 +492,7 @@ const StocksEventEdition = ({
               onClickPrevious={handlePreviousStep}
               onClickSaveDraft={handleNextStep({ saveDraft: true })}
               step={OFFER_WIZARD_STEP_IDS.STOCKS}
-              offerId={offer.nonHumanizedId}
+              offerId={offer.id}
               shouldTrack={shouldTrack}
               submitAsButton={isFormEmpty()}
             />
@@ -509,7 +509,7 @@ const StocksEventEdition = ({
             used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
             isEdition: true,
             isDraft: false,
-            offerId: offer?.nonHumanizedId,
+            offerId: offer?.id,
           })
         }
       />

@@ -311,11 +311,11 @@ describe('src | components | pages | SignIn', () => {
         .mockResolvedValue({
           offerersNames: [
             {
-              nonHumanizedId: 1,
+              id: 1,
               name: 'Mon super cinéma',
             },
             {
-              nonHumanizedId: 1,
+              id: 1,
               name: 'Ma super librairie',
             },
           ],
@@ -364,11 +364,11 @@ describe('src | components | pages | SignIn', () => {
       jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
         offerersNames: [
           {
-            nonHumanizedId: 1,
+            id: 1,
             name: 'Mon super cinéma',
           },
           {
-            nonHumanizedId: 1,
+            id: 1,
             name: 'Ma super librairie',
           },
         ],
@@ -397,11 +397,11 @@ describe('src | components | pages | SignIn', () => {
       jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
         offerersNames: [
           {
-            nonHumanizedId: 1,
+            id: 1,
             name: 'Mon super cinéma',
           },
           {
-            nonHumanizedId: 1,
+            id: 1,
             name: 'Ma super librairie',
           },
         ],

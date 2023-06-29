@@ -32,7 +32,7 @@ class Returns200Test:
         assert response_json["imageCredit"] is None
         assert response_json["imageUrl"] is None
         assert response_json["name"] == offer.name
-        assert response_json["nonHumanizedId"] == offer.id
+        assert response_json["id"] == offer.id
 
     def test_performance(self, client):
         # Given

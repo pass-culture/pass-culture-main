@@ -97,7 +97,7 @@ const renderStockThingScreen = (
         getOfferIndividualUrl({
           step: OFFER_WIZARD_STEP_IDS.STOCKS,
           mode: OFFER_WIZARD_MODE.CREATION,
-          offerId: contextValue.offer?.nonHumanizedId || undefined,
+          offerId: contextValue.offer?.id || undefined,
         }),
       ],
     }
@@ -111,7 +111,7 @@ describe('screens:StocksThing', () => {
 
   beforeEach(() => {
     offer = {
-      nonHumanizedId: offerId,
+      id: offerId,
       venue: {
         departmentCode: '75',
       } as OfferIndividualVenue,
@@ -229,7 +229,7 @@ describe('screens:StocksThing', () => {
         /Les bénéficiaires ont 30 jours pour faire valider leur contremarque/
       )
     ).toBeInTheDocument()
-    expect(api.getOffer).toHaveBeenCalledWith(offer.nonHumanizedId)
+    expect(api.getOffer).toHaveBeenCalledWith(offer.id)
   }) <
     it('should submit stock form when click on "Étape suivante"', async () => {
       jest.spyOn(api, 'upsertStocks').mockResolvedValue({
@@ -250,7 +250,7 @@ describe('screens:StocksThing', () => {
         ).toBeInTheDocument()
       })
       expect(api.upsertStocks).toHaveBeenCalledWith({
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
         stocks: [
           {
             bookingLimitDatetime: null,
@@ -260,7 +260,7 @@ describe('screens:StocksThing', () => {
         ],
       })
       expect(screen.getByText('Next page')).toBeInTheDocument()
-      expect(api.getOffer).toHaveBeenCalledWith(offer.nonHumanizedId)
+      expect(api.getOffer).toHaveBeenCalledWith(offer.id)
     })
 
   it('should submit stock form with duo informations when clicking on on "Étape suivante"', async () => {
@@ -281,11 +281,11 @@ describe('screens:StocksThing', () => {
       ).toBeInTheDocument()
     })
     expect(api.patchOffer).toHaveBeenCalledWith(
-      offer.nonHumanizedId,
+      offer.id,
       expect.objectContaining({ isDuo: true })
     )
     expect(screen.getByText('Next page')).toBeInTheDocument()
-    expect(api.getOffer).toHaveBeenCalledWith(offer.nonHumanizedId)
+    expect(api.getOffer).toHaveBeenCalledWith(offer.id)
   })
 
   it('should not submit stock form when click on "Étape précédente"', async () => {
@@ -394,7 +394,7 @@ describe('screens:StocksThing', () => {
       expect(expirationInput).toHaveValue(date.toLocaleDateString('en-GB'))
       await userEvent.click(screen.getByText('Étape suivante'))
       expect(api.upsertStocks).toHaveBeenCalledWith({
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
         stocks: [
           {
             bookingLimitDatetime: null,

@@ -153,7 +153,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
     ]
 
     const venue: OfferIndividualVenue = {
-      nonHumanizedId: physicalVenueId,
+      id: physicalVenueId,
       name: 'Venue name',
       isVirtual: false,
       accessibility: {
@@ -170,7 +170,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
     }
 
     offer = {
-      nonHumanizedId: offerId,
+      id: offerId,
       author: 'Offer author',
       bookingEmail: 'booking@email.com',
       description: 'Offer description',
@@ -212,7 +212,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
         postalCode: '75001',
         city: 'Paris',
         offerer: {
-          nonHumanizedId: 1,
+          id: 1,
           name: 'Offerer name',
         },
         departmentCode: '75',
@@ -235,12 +235,12 @@ describe('screens:OfferIndividual::Informations:draft', () => {
     }
 
     contextOverride = {
-      offerId: offer.nonHumanizedId,
+      offerId: offer.id,
       offer: offer,
       venueList: [
         venue,
         {
-          nonHumanizedId: 2,
+          id: 2,
           name: 'Lieu online BB',
           managingOffererId: 1,
           isVirtual: true,
@@ -256,7 +256,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
           hasCreatedOffer: true,
         },
       ],
-      offererNames: [{ nonHumanizedId: 1, name: 'Offerer name' }],
+      offererNames: [{ id: 1, name: 'Offerer name' }],
       categories,
       subCategories,
     }
@@ -271,10 +271,10 @@ describe('screens:OfferIndividual::Informations:draft', () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .mockImplementation((c, s, _v) => [c, s])
     jest.spyOn(api, 'patchOffer').mockResolvedValue({
-      nonHumanizedId: offerId,
+      id: offerId,
     } as GetIndividualOfferResponseModel)
     jest.spyOn(api, 'postOffer').mockResolvedValue({
-      nonHumanizedId: offerId,
+      id: offerId,
     } as GetIndividualOfferResponseModel)
     jest
       .spyOn(api, 'getOffer')

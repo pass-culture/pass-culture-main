@@ -66,7 +66,7 @@ const App = ({ children }: AppProps): JSX.Element | null => {
 
   const isMaintenanceActivated = useSelector(maintenanceSelector)
   useConfigureFirebase({
-    currentUserId: currentUser?.nonHumanizedId.toString(),
+    currentUserId: currentUser?.id.toString(),
     isCookieEnabled: consentedToFirebase,
   })
   usePageTitle()
@@ -86,7 +86,7 @@ const App = ({ children }: AppProps): JSX.Element | null => {
             user_firstname: currentUser.firstName,
             user_lastname: currentUser.lastName,
             user_email: currentUser.email,
-            user_id: currentUser.nonHumanizedId.toString(),
+            user_id: currentUser.id.toString(),
           })
           window.Beamer.init()
         }
@@ -98,7 +98,7 @@ const App = ({ children }: AppProps): JSX.Element | null => {
 
   useEffect(() => {
     if (currentUser !== null) {
-      setSentryUser({ id: currentUser.nonHumanizedId.toString() })
+      setSentryUser({ id: currentUser.id.toString() })
     }
   }, [currentUser])
 

@@ -53,7 +53,7 @@ describe('getStockCollectiveOfferTemplateAdapter', () => {
         interventionArea: [],
         isCancellable: true,
         isEditable: true,
-        nonHumanizedId: 1,
+        id: 1,
         offerVenue: {
           addressType: OfferAddressType.OFFERER_VENUE,
           otherAddress: '',
@@ -63,9 +63,9 @@ describe('getStockCollectiveOfferTemplateAdapter', () => {
         students: [],
         subcategoryId: SubcategoryIdEnum.CONCERT,
         venue: {
-          nonHumanizedId: 1,
+          id: 1,
           managingOfferer: {
-            nonHumanizedId: 1,
+            id: 1,
             name: 'mon offerer',
           },
           name: 'mon lieu',

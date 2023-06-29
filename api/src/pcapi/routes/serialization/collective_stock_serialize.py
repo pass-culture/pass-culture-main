@@ -136,7 +136,7 @@ class CollectiveStockEditionBodyModel(BaseModel):
 
 
 class CollectiveStockResponseModel(BaseModel):
-    nonHumanizedId: int
+    id: int
     beginningDatetime: datetime | None
     bookingLimitDatetime: datetime | None
     price: float

@@ -18,7 +18,7 @@ describe('StockThingForm::utils::buildInitialValues', () => {
   it('should build form initial values from offer', () => {
     offer.stocks = [
       {
-        nonHumanizedId: 1,
+        id: 1,
         remainingQuantity: 10,
         bookingsQuantity: 20,
         quantity: 40,
@@ -42,7 +42,7 @@ describe('StockThingForm::utils::buildInitialValues', () => {
   it('should normalize null values', () => {
     offer.stocks = [
       {
-        nonHumanizedId: 1,
+        id: 1,
         bookingsQuantity: 20,
         quantity: null,
         bookingLimitDatetime: null,

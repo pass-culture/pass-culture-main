@@ -143,7 +143,7 @@ describe('screens:OfferIndividual::Informations', () => {
   describe('when a subCategory is selected', () => {
     beforeEach(async () => {
       const venue: OfferIndividualVenue = {
-        nonHumanizedId: 1,
+        id: 1,
         name: 'Lieu offline AA',
         managingOffererId: 1,
         isVirtual: false,
@@ -158,11 +158,11 @@ describe('screens:OfferIndividual::Informations', () => {
         hasMissingReimbursementPoint: false,
         hasCreatedOffer: true,
       }
-      props.venueId = venue.nonHumanizedId.toString()
+      props.venueId = venue.id.toString()
       contextValue.venueList = [
         venue,
         {
-          nonHumanizedId: 1,
+          id: 1,
           name: 'Lieu offline BB',
           managingOffererId: 1,
           isVirtual: false,

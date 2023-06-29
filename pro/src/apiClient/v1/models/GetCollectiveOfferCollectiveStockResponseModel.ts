@@ -6,10 +6,10 @@ export type GetCollectiveOfferCollectiveStockResponseModel = {
   beginningDatetime?: string | null;
   bookingLimitDatetime?: string | null;
   educationalPriceDetail?: string | null;
+  id: number;
   isBooked: boolean;
   isCancellable: boolean;
   isEducationalStockEditable: boolean;
-  nonHumanizedId: number;
   numberOfTickets?: number | null;
   price: number;
 };

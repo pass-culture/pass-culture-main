@@ -138,7 +138,7 @@ class SharedLoginUserResponseModel(BaseModel):
     # FIXME (mageoffray, 2022-04-04): Optional can be removed after
     # post-deploy migrations have been done
     hasSeenProRgs: bool | None
-    nonHumanizedId: int
+    id: int
     isAdmin: bool
     isEmailValidated: bool
     lastConnectionDate: datetime | None
@@ -177,7 +177,7 @@ class SharedCurrentUserResponseModel(BaseModel):
     hasPhysicalVenues: bool | None
     hasSeenProTutorials: bool | None
     hasSeenProRgs: bool | None
-    nonHumanizedId: int
+    id: int
     idPieceNumber: str | None
     isAdmin: bool
     isEmailValidated: bool

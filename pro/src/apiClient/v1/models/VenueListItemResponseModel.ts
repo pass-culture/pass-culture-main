@@ -8,12 +8,12 @@ export type VenueListItemResponseModel = {
   collectiveSubCategoryId?: string | null;
   hasCreatedOffer: boolean;
   hasMissingReimbursementPoint: boolean;
+  id: number;
   isVirtual: boolean;
   managingOffererId: number;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
-  nonHumanizedId: number;
   offererName: string;
   publicName?: string | null;
   siret?: string | null;

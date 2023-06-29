@@ -57,7 +57,7 @@ const useOfferEducationalFormData = (
     if (!isReady) {
       loadData(offer)
     }
-  }, [isReady, offer?.nonHumanizedId, loadData, history])
+  }, [isReady, offer?.id, loadData, history])
 
   return {
     isReady,

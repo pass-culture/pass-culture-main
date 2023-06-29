@@ -42,8 +42,7 @@ const ERROR_RESPONSE = {
 const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdater =
   async ({ offererId, offer }) => {
     try {
-      const targetOffererId =
-        offer?.venue.managingOfferer.nonHumanizedId || offererId
+      const targetOffererId = offer?.venue.managingOfferer.id || offererId
       const responses = await Promise.all([
         getEducationalCategoriesAdapter(),
         getEducationalDomainsAdapter(),

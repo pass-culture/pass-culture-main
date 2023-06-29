@@ -81,8 +81,7 @@ describe('homepage', () => {
         demarchesSimplifieesApplicationId: null,
         fieldsUpdated: [],
         hasDigitalVenueAtLeastOneOffer: true,
-        id: 'GE',
-        nonHumanizedId: 6,
+        id: 6,
         isValidated: true,
         lastProviderId: null,
         name: 'Bar des amis',
@@ -90,7 +89,7 @@ describe('homepage', () => {
         siren: '111111111',
         managedVenues: [
           {
-            nonHumanizedId: 1,
+            id: 1,
             isVirtual: true,
             managingOffererId: 'GE',
             name: 'Le Sous-sol (Offre numérique)',
@@ -99,7 +98,7 @@ describe('homepage', () => {
             nOffers: 2,
           },
           {
-            nonHumanizedId: 2,
+            id: 2,
             isVirtual: false,
             managingOffererId: 'GE',
             name: 'Le Sous-sol (Offre physique)',
@@ -108,7 +107,7 @@ describe('homepage', () => {
             nOffers: 2,
           },
           {
-            nonHumanizedId: 3,
+            id: 3,
             isVirtual: false,
             managingOffererId: 'GE',
             name: 'Le deuxième Sous-sol (Offre physique)',
@@ -130,8 +129,7 @@ describe('homepage', () => {
         demarchesSimplifieesApplicationId: null,
         fieldsUpdated: [],
         hasDigitalVenueAtLeastOneOffer: true,
-        id: 'FQ',
-        nonHumanizedId: 12,
+        id: 12,
         isValidated: true,
         lastProviderId: null,
         name: 'Club Dorothy',
@@ -144,7 +142,6 @@ describe('homepage', () => {
     baseOfferersNames = baseOfferers.map(offerer => ({
       id: offerer.id,
       name: offerer.name,
-      nonHumanizedId: offerer.nonHumanizedId,
     }))
     api.getOfferer.mockResolvedValue(baseOfferers[0])
     api.listOfferersNames.mockResolvedValue({

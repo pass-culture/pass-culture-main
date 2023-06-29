@@ -115,7 +115,7 @@ describe('CollectiveDataEdition', () => {
       .mockResolvedValue({ partners: [] })
     jest
       .spyOn(api, 'editVenueCollectiveData')
-      .mockResolvedValue({ nonHumanizedId: 1 } as GetVenueResponseModel)
+      .mockResolvedValue({ id: 1 } as GetVenueResponseModel)
 
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       success: notifySuccessMock,

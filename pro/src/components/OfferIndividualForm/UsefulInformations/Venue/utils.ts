@@ -10,7 +10,7 @@ export const buildOffererOptions = (
 } => {
   let offererOptions = offererNames
     .map(offerer => ({
-      value: offerer.nonHumanizedId.toString(),
+      value: offerer.id.toString(),
       label: offerer.name,
     }))
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
@@ -43,7 +43,7 @@ export const buildVenueOptions = (
 
   let venueOptions = offererVenues
     .map(venue => ({
-      value: venue.nonHumanizedId.toString(),
+      value: venue.id.toString(),
       label: venue.name,
     }))
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))

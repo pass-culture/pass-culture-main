@@ -231,7 +231,7 @@ const Offers = ({
 
   const getUpdateOffersStatusMessage = (tmpSelectedOfferIds: string[]) => {
     const selectedOffers = offers.filter(offer =>
-      tmpSelectedOfferIds.includes(offer.nonHumanizedId.toString())
+      tmpSelectedOfferIds.includes(offer.id.toString())
     )
     if (selectedOffers.some(offer => offer.status === OFFER_STATUS_DRAFT)) {
       return 'Vous ne pouvez pas publier des brouillons depuis cette liste'
@@ -248,7 +248,7 @@ const Offers = ({
   /* istanbul ignore next: DEBT, TO FIX */
   const canDeleteOffers = (tmpSelectedOfferIds: string[]) => {
     const selectedOffers = offers.filter(offer =>
-      tmpSelectedOfferIds.includes(offer.nonHumanizedId.toString())
+      tmpSelectedOfferIds.includes(offer.id.toString())
     )
     return !selectedOffers.some(offer => offer.status !== OFFER_STATUS_DRAFT)
   }

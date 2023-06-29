@@ -261,7 +261,7 @@ describe('navigation and submit', () => {
         from: 'stocks',
         isDraft: true,
         isEdition: false,
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
         to: 'tarifs',
         used: 'StickyButtons',
       }
@@ -273,7 +273,7 @@ describe('navigation and submit', () => {
     const offer = individualOfferFactory({
       stocks: [
         individualStockFactory({
-          nonHumanizedId: undefined,
+          id: undefined,
           priceCategoryId: 1,
         }),
       ],
@@ -295,7 +295,7 @@ describe('navigation and submit', () => {
         from: 'stocks',
         isDraft: true,
         isEdition: false,
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
         to: 'recapitulatif',
         used: 'StickyButtons',
       }
@@ -306,7 +306,7 @@ describe('navigation and submit', () => {
     const offer = individualOfferFactory({
       stocks: [
         individualStockFactory({
-          nonHumanizedId: undefined,
+          id: undefined,
           priceCategoryId: 1,
         }),
       ],
@@ -330,7 +330,7 @@ describe('navigation and submit', () => {
         from: 'stocks',
         isDraft: true,
         isEdition: false,
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
         to: 'stocks',
         used: 'DraftButtons',
       }
@@ -343,7 +343,7 @@ describe('navigation and submit', () => {
     const offer = individualOfferFactory({
       stocks: [
         individualStockFactory({
-          nonHumanizedId: undefined,
+          id: undefined,
           priceCategoryId: 1,
         }),
       ],
@@ -371,7 +371,7 @@ describe('navigation and submit', () => {
     const offer = individualOfferFactory({
       stocks: [
         individualStockFactory({
-          nonHumanizedId: undefined,
+          id: undefined,
           priceCategoryId: 1,
         }),
       ],
@@ -393,7 +393,7 @@ describe('navigation and submit', () => {
         from: 'stocks',
         isDraft: true,
         isEdition: false,
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
         to: '/outside',
         used: 'RouteLeavingGuard',
       }
@@ -451,9 +451,7 @@ describe('deletion', () => {
   it('should delete already created stocks', async () => {
     renderStockEventCreation({
       offer: individualOfferFactory({
-        stocks: [
-          individualStockFactory({ nonHumanizedId: 12, priceCategoryId: 1 }),
-        ],
+        stocks: [individualStockFactory({ id: 12, priceCategoryId: 1 })],
       }),
     })
 

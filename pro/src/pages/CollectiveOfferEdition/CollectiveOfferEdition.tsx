@@ -17,7 +17,7 @@ const CollectiveOfferEdition = ({
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps): JSX.Element => {
   const { isReady, ...offerEducationalFormData } = useOfferEducationalFormData(
-    offer.venue.managingOfferer.nonHumanizedId ?? null,
+    offer.venue.managingOfferer.id ?? null,
     offer
   )
 

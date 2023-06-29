@@ -110,7 +110,7 @@ describe('OfferEducationalStock', () => {
   describe('wrong students modal', () => {
     it('should navigate to offer creation if user click modify participants', async () => {
       const offer = collectiveOfferFactory({
-        nonHumanizedId: 1,
+        id: 1,
         students: [StudentLevels.COLL_GE_6E, StudentLevels.COLL_GE_5E],
       })
       const testProps: OfferEducationalStockProps = {
@@ -137,7 +137,7 @@ describe('OfferEducationalStock', () => {
 
     it('should navigate to offer creation if user click modify participants', async () => {
       const offer = collectiveOfferFactory({
-        nonHumanizedId: 1,
+        id: 1,
         students: [StudentLevels.COLL_GE_6E, StudentLevels.COLL_GE_5E],
       })
       const testProps: OfferEducationalStockProps = {
@@ -165,7 +165,7 @@ describe('OfferEducationalStock', () => {
 
     it('should call onSubmit  if user click create offer', async () => {
       const offer = collectiveOfferFactory({
-        nonHumanizedId: 1,
+        id: 1,
         students: [
           StudentLevels.COLL_GE_6E,
           StudentLevels.COLL_GE_5E,
@@ -194,7 +194,7 @@ describe('OfferEducationalStock', () => {
 
     it('should close modal if user click modify date', async () => {
       const offer = collectiveOfferFactory({
-        nonHumanizedId: 1,
+        id: 1,
         students: [
           StudentLevels.COLL_GE_6E,
           StudentLevels.COLL_GE_5E,
@@ -230,7 +230,7 @@ describe('OfferEducationalStock', () => {
       }))
 
       const offer = collectiveOfferFactory({
-        nonHumanizedId: 1,
+        id: 1,
         students: [StudentLevels.COLL_GE_6E, StudentLevels.COLL_GE_5E],
       })
       const testProps: OfferEducationalStockProps = {
@@ -259,7 +259,7 @@ describe('OfferEducationalStock', () => {
       }))
 
       const offer = collectiveOfferFactory({
-        nonHumanizedId: 1,
+        id: 1,
         students: [StudentLevels.COLL_GE_6E, StudentLevels.LYC_E_SECONDE],
       })
       const testProps: OfferEducationalStockProps = {

@@ -9,11 +9,11 @@ export type GetVenueManagingOffererResponseModel = {
   dateModifiedAtLastProvider?: string | null;
   demarchesSimplifieesApplicationId?: string | null;
   fieldsUpdated: Array<string>;
+  id: number;
   idAtProviders?: string | null;
   isValidated: boolean;
   lastProviderId?: string | null;
   name: string;
-  nonHumanizedId: number;
   postalCode: string;
   siren?: string | null;
 };

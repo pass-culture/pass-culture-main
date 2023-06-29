@@ -43,6 +43,7 @@ export type GetVenueResponseModel = {
   fieldsUpdated: Array<string>;
   hasAdageId: boolean;
   hasPendingBankInformationApplication?: boolean | null;
+  id: number;
   idAtProviders?: string | null;
   isPermanent?: boolean | null;
   isVirtual: boolean;
@@ -53,7 +54,6 @@ export type GetVenueResponseModel = {
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
-  nonHumanizedId: number;
   postalCode?: string | null;
   pricingPoint?: GetVenuePricingPointResponseModel | null;
   publicName?: string | null;

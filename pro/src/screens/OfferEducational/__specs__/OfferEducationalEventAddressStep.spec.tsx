@@ -105,13 +105,13 @@ describe('screens | OfferEducational : event address step', () => {
         ...defaultCreationProps,
         userOfferers: userOfferersFactory([
           {
-            nonHumanizedId: 1,
+            id: 1,
             managedVenues: [
               managedVenueFactory({
-                nonHumanizedId: Number(firstVenueId),
+                id: Number(firstVenueId),
               }),
               managedVenueFactory({
-                nonHumanizedId: Number(secondVenueId),
+                id: Number(secondVenueId),
               }),
             ],
           },
@@ -177,11 +177,11 @@ describe('screens | OfferEducational : event address step', () => {
           userOfferers={[
             ...props.userOfferers,
             userOffererFactory({
-              nonHumanizedId: Number(offererId),
+              id: Number(offererId),
               managedVenues: [
                 managedVenueFactory({}),
                 managedVenueFactory({
-                  nonHumanizedId: Number(venueId),
+                  id: Number(venueId),
                   collectiveInterventionArea: ['01', '02'],
                 }),
               ],

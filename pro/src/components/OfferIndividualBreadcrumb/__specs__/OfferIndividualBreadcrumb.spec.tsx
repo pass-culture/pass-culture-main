@@ -286,8 +286,8 @@ describe('test OfferIndividualBreadcrumb', () => {
   describe('in edition', () => {
     it('should render default breadcrumb in edition', () => {
       const offer: Partial<OfferIndividual> = {
-        nonHumanizedId: offerId,
-        stocks: [{ nonHumanizedId: stockId } as OfferIndividualStock],
+        id: offerId,
+        stocks: [{ id: stockId } as OfferIndividualStock],
       }
 
       const contextOverride: Partial<OfferIndividualContextValues> = {
@@ -310,8 +310,8 @@ describe('test OfferIndividualBreadcrumb', () => {
 
     it('should render steps on Information', () => {
       const offer: Partial<OfferIndividual> = {
-        nonHumanizedId: offerId,
-        stocks: [{ nonHumanizedId: stockId } as OfferIndividualStock],
+        id: offerId,
+        stocks: [{ id: stockId } as OfferIndividualStock],
       }
 
       const contextOverride: Partial<OfferIndividualContextValues> = {
@@ -339,8 +339,8 @@ describe('test OfferIndividualBreadcrumb', () => {
 
     it('should render steps on Stocks', () => {
       const offer: Partial<OfferIndividual> = {
-        nonHumanizedId: offerId,
-        stocks: [{ nonHumanizedId: stockId } as OfferIndividualStock],
+        id: offerId,
+        stocks: [{ id: stockId } as OfferIndividualStock],
       }
 
       const contextOverride: Partial<OfferIndividualContextValues> = {

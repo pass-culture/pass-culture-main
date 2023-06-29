@@ -122,12 +122,12 @@ const VenueFormScreen = ({
       ? api.postCreateVenue(
           serializePostVenueBodyModel(value, {
             hideSiret: !isSiretValued,
-            offererId: offerer.nonHumanizedId,
+            offererId: offerer.id,
           })
         )
       : api.editVenue(
           /* istanbul ignore next: there will always be a venue id on update screen */
-          venue?.nonHumanizedId || 0,
+          venue?.id || 0,
           serializeEditVenueBodyModel(
             value,
             {
@@ -142,11 +142,7 @@ const VenueFormScreen = ({
       .then(() => {
         savedSuccess = true
         navigate(
-          venueSubmitRedirectUrl(
-            isCreatingVenue,
-            offerer.nonHumanizedId,
-            currentUser
-          )
+          venueSubmitRedirectUrl(isCreatingVenue, offerer.id, currentUser)
         )
 
         if (currentUser.isAdmin) {
@@ -208,7 +204,7 @@ const VenueFormScreen = ({
   })
 
   const {
-    nonHumanizedId: initialId,
+    id: initialId,
     isVirtual: initialIsVirtual,
     publicName: publicName,
     name: initialName,
@@ -223,7 +219,7 @@ const VenueFormScreen = ({
           </Title>
           {!isCreatingVenue && (
             <a
-              href={`/offre/creation?lieu=${initialId}&structure=${offerer.nonHumanizedId}`}
+              href={`/offre/creation?lieu=${initialId}&structure=${offerer.id}`}
             >
               <Button
                 variant={ButtonVariant.PRIMARY}

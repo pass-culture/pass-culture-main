@@ -26,7 +26,6 @@ const renderOffererStatsScreen = (offererOptions: SelectOption[]) => {
         dateCreated: '2022-07-29T12:18:43.087097Z',
         email: 'john@do.net',
         id: '1',
-        nonHumanizedId: '1',
         isAdmin: false,
         isEmailValidated: true,
         roles: [],
@@ -57,32 +56,30 @@ describe('OffererStatsScreen', () => {
     ]
     offerers = [
       {
-        nonHumanizedId: 1,
+        id: 1,
         hasDigitalVenueAtLeastOneOffer: true,
         managedVenues: [
           {
             name: 'Offre numérique',
             isVirtual: true,
-            nonHumanizedId: venueId,
+            id: venueId,
           },
-          { id: 'V1', name: 'Salle 1', nonHumanizedId: 2 },
-          { id: 'V2', name: 'Stand popcorn', nonHumanizedId: 3 },
+          { name: 'Salle 1', id: 2 },
+          { name: 'Stand popcorn', id: 3 },
         ],
       },
       {
-        nonHumanizedId: 2,
+        id: 2,
         managedVenues: [
-          { id: 'L1', name: 'Terre de livres', nonHumanizedId: 4 },
-          { id: 'L2', name: 'La voie aux chapitres', nonHumanizedId: 5 },
+          { name: 'Terre de livres', id: 4 },
+          { name: 'La voie aux chapitres', id: 5 },
         ],
       },
     ] as GetOffererResponseModel[]
 
     jest.spyOn(api, 'getOfferer').mockImplementation(offererId => {
       return new CancelablePromise(resolve =>
-        resolve(
-          offerers.filter(offerer => offerer.nonHumanizedId == offererId)[0]
-        )
+        resolve(offerers.filter(offerer => offerer.id == offererId)[0])
       )
     })
     jest
@@ -137,7 +134,7 @@ describe('OffererStatsScreen', () => {
   it('should display not display venue select if offerer has no venue', async () => {
     jest
       .spyOn(api, 'getOfferer')
-      .mockResolvedValue({ nonHumanizedId: 1 } as GetOffererResponseModel)
+      .mockResolvedValue({ id: 1 } as GetOffererResponseModel)
     renderOffererStatsScreen(offererOptions)
     await waitFor(() => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)

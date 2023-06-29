@@ -28,14 +28,13 @@ export const collectiveOfferFactory = (
   const currentOfferId = offerId++
 
   return {
-    id: `OFFER${currentOfferId}`,
     name: `Le nom de l’offre ${currentOfferId}`,
     isActive: true,
     isEditable: true,
     isEvent: true,
     isFullyBooked: false,
     isThing: false,
-    nonHumanizedId: currentOfferId,
+    id: currentOfferId,
     status: OfferStatus.ACTIVE,
     stocks,
     venue: customVenue,
@@ -73,7 +72,7 @@ export const GetIndividualOfferFactory = (
     isEditable: true,
     isEvent: false,
     isThing: true,
-    nonHumanizedId: currentOfferId,
+    id: currentOfferId,
     status: OfferStatus.ACTIVE,
     stocks,
     venue: customVenue,
@@ -95,7 +94,7 @@ export const getOfferVenueFactory = (
   return {
     address: 'Ma Rue',
     city: 'Ma Ville',
-    nonHumanizedId: currentVenueId,
+    id: currentVenueId,
     isVirtual: false,
     name: `Le nom du lieu ${currentVenueId}`,
     managingOfferer: customOfferer,
@@ -112,10 +111,10 @@ export const getVenueListItemFactory = (
 ): VenueListItemResponseModel => {
   const currentVenueId = venueId++
   return {
-    nonHumanizedId: currentVenueId,
+    id: currentVenueId,
     isVirtual: false,
     name: `Le nom du lieu ${currentVenueId}`,
-    managingOffererId: customOfferer.nonHumanizedId,
+    managingOffererId: customOfferer.id,
     publicName: 'Mon Lieu',
     hasCreatedOffer: true,
     hasMissingReimbursementPoint: true,
@@ -130,7 +129,7 @@ export const offererFactory = (
   const currentOffererId = offererId++
   return {
     name: `La nom de la structure ${currentOffererId}`,
-    nonHumanizedId: 3,
+    id: 3,
     ...customOfferer,
   }
 }
@@ -139,7 +138,7 @@ export const stockFactory = (customStock = {}): GetOfferStockResponseModel => {
   const id = stockId++
   return {
     bookingsQuantity: 0,
-    nonHumanizedId: id,
+    id: id,
     price: 10,
     quantity: null,
     remainingQuantity: 2,
@@ -181,10 +180,10 @@ export const bookingRecapFactory = (
     bookingToken: `TOKEN${bookingId++}`,
     stock: {
       offerIdentifier: 'AA',
-      offerId: offer.nonHumanizedId,
+      offerId: offer.id,
       offerName: offer.name,
       offerIsEducational: false,
-      stockIdentifier: offer.stocks[0].nonHumanizedId,
+      stockIdentifier: offer.stocks[0].id,
       offerIsbn: '123456789',
     },
     ...customBookingRecap,
@@ -206,7 +205,7 @@ export const defautGetOffererResponseModel: GetOffererResponseModel = {
   isValidated: false,
   managedVenues: [],
   name: 'Ma super structure',
-  nonHumanizedId: 0,
+  id: 0,
   postalCode: '00000',
 }
 
@@ -218,6 +217,6 @@ export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
     hasMissingReimbursementPoint: false,
     isVirtual: false,
     name: 'Mon super lieu',
-    nonHumanizedId: 0,
+    id: 0,
     venueTypeCode: VenueTypeCode.LIEU_ADMINISTRATIF,
   }

@@ -34,7 +34,7 @@ const Template = ({
 
   /* istanbul ignore next: DEBT, TO FIX */
   const reloadOffer = async () => {
-    const response = await getOfferIndividualAdapter(offer?.nonHumanizedId)
+    const response = await getOfferIndividualAdapter(offer?.id)
     if (response.isOk) {
       setOffer && setOffer(response.payload)
     } else {
@@ -52,7 +52,7 @@ const Template = ({
     offer &&
     withStatus && (
       <Status
-        offerId={offer.nonHumanizedId}
+        offerId={offer.id}
         status={offer.status}
         isActive={offer.isActive}
         canDeactivate={mode !== OFFER_WIZARD_MODE.DRAFT}

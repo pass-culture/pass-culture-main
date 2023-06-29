@@ -145,13 +145,13 @@ const OfferIndividualBreadcrumb = ({
             used: OFFER_FORM_NAVIGATION_MEDIUM.BREADCRUMB,
             isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
             isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-            offerId: offer?.nonHumanizedId,
+            offerId: offer?.id,
           })
       },
     }
     if (stepPattern.isActive && stepPattern.path && offer) {
       step.url = generatePath(stepPattern.path, {
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
       })
     }
     return step

@@ -48,7 +48,7 @@ class Returns200Test:
             "hasPhysicalVenues": False,
             "hasSeenProTutorials": True,
             "hasSeenProRgs": False,
-            "nonHumanizedId": user.id,
+            "id": user.id,
             "isAdmin": False,
             "isEmailValidated": True,
             "lastConnectionDate": format_into_utc_date(user.lastConnectionDate),

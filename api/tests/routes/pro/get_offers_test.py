@@ -40,7 +40,7 @@ class Returns200Test:
         assert response.json == [
             {
                 "hasBookingLimitDatetimesPassed": False,
-                "nonHumanizedId": offer_on_requested_venue.id,
+                "id": offer_on_requested_venue.id,
                 "isActive": True,
                 "isEditable": True,
                 "isEvent": False,
@@ -52,7 +52,7 @@ class Returns200Test:
                 "stocks": [
                     {
                         "hasBookingLimitDatetimePassed": False,
-                        "nonHumanizedId": stock.id,
+                        "id": stock.id,
                         "remainingQuantity": 1000,
                         "beginningDatetime": None,
                         "bookingQuantity": 0,
@@ -62,7 +62,7 @@ class Returns200Test:
                 "subcategoryId": "SUPPORT_PHYSIQUE_FILM",
                 "venue": {
                     "departementCode": departement_code,
-                    "nonHumanizedId": requested_venue.id,
+                    "id": requested_venue.id,
                     "isVirtual": False,
                     "name": "My Venue",
                     "offererName": "My Offerer",
