@@ -206,7 +206,7 @@ describe('screens:StocksThing', () => {
 
   it('should submit stock and stay in creation mode when click on "Sauvegarder le brouillon"', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+      stocks: [{ id: 1 } as StockResponseModel],
     })
     renderStockThingScreen(props, contextValue)
     const nextButton = screen.getByRole('button', { name: 'Étape suivante' })
@@ -233,7 +233,7 @@ describe('screens:StocksThing', () => {
   }) <
     it('should submit stock form when click on "Étape suivante"', async () => {
       jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-        stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+        stocks: [{ id: 1 } as StockResponseModel],
       })
       renderStockThingScreen(props, contextValue)
       const nextButton = screen.getByRole('button', { name: 'Étape suivante' })
@@ -265,7 +265,7 @@ describe('screens:StocksThing', () => {
 
   it('should submit stock form with duo informations when clicking on on "Étape suivante"', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+      stocks: [{ id: 1 } as StockResponseModel],
     })
     renderStockThingScreen(props, contextValue)
     const nextButton = screen.getByRole('button', { name: 'Étape suivante' })
@@ -290,7 +290,7 @@ describe('screens:StocksThing', () => {
 
   it('should not submit stock form when click on "Étape précédente"', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+      stocks: [{ id: 1 } as StockResponseModel],
     })
 
     renderStockThingScreen(props, contextValue)
@@ -340,7 +340,7 @@ describe('screens:StocksThing', () => {
   describe('activation codes', () => {
     it('should submit activation codes and freeze quantity when a csv is provided', async () => {
       jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-        stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+        stocks: [{ id: 1 } as StockResponseModel],
       })
       props.offer = {
         ...(offer as OfferIndividual),
@@ -410,7 +410,7 @@ describe('screens:StocksThing', () => {
 
     it('should display an error when activation code file is incorrect', async () => {
       jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-        stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+        stocks: [{ id: 1 } as StockResponseModel],
       })
       props.offer = {
         ...(offer as OfferIndividual),

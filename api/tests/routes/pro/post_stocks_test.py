@@ -17,7 +17,6 @@ from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.serialization import serialize
-from pcapi.utils.human_ids import dehumanize
 
 
 @pytest.mark.usefixtures("db_session")
@@ -43,7 +42,7 @@ class Returns201Test:
         response_dict = response.json
         assert len(response_dict["stocks"]) == len(stock_data["stocks"])
 
-        created_stock = Stock.query.get(dehumanize(response_dict["stocks"][0]["id"]))
+        created_stock = Stock.query.get(response_dict["stocks"][0]["id"])
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
         assert offer.isActive is False
@@ -181,7 +180,7 @@ class Returns201Test:
         }
 
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-        created_stock = Stock.query.get(dehumanize(response.json["stocks"][0]["id"]))
+        created_stock = Stock.query.get(response.json["stocks"][0]["id"])
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
         assert len(Stock.query.all()) == 1
@@ -215,7 +214,7 @@ class Returns201Test:
             ],
         }
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-        created_stock = Stock.query.get(dehumanize(response.json["stocks"][0]["id"]))
+        created_stock = Stock.query.get(response.json["stocks"][0]["id"])
         assert offer.id == created_stock.offerId
         assert price_category.price == created_stock.price
         assert len(Stock.query.all()) == 1
@@ -255,7 +254,7 @@ class Returns201Test:
             ],
         }
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-        created_stock = Stock.query.get(dehumanize(response.json["stocks"][0]["id"]))
+        created_stock = Stock.query.get(response.json["stocks"][0]["id"])
         assert offer.id == created_stock.offerId
         assert len(Stock.query.all()) == 1
         assert created_stock.priceCategory == new_price_category
@@ -293,7 +292,7 @@ class Returns201Test:
         response_dict = response.json
         assert len(response_dict["stocks"]) == len(stock_data["stocks"])
 
-        created_stock: Stock = Stock.query.get(dehumanize(response_dict["stocks"][0]["id"]))
+        created_stock: Stock = Stock.query.get(response_dict["stocks"][0]["id"])
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
         assert created_stock.quantity == 2  # Same as the activation codes length
@@ -344,7 +343,7 @@ class Returns201Test:
 
         for idx, result_stock_id in enumerate(response_dict["stocks"]):
             expected_stock = stock_data["stocks"][idx]
-            result_stock = Stock.query.get(dehumanize(result_stock_id["id"]))
+            result_stock = Stock.query.get(result_stock_id["id"])
             assert result_stock.price == expected_stock["price"]
             assert result_stock.quantity == expected_stock["quantity"]
             assert result_stock.bookingLimitDatetime == booking_limit_datetime
@@ -532,7 +531,7 @@ class Returns201Test:
 
         response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
 
-        created_stock = Stock.query.get(dehumanize(response.json["stocks"][0]["id"]))
+        created_stock = Stock.query.get(response.json["stocks"][0]["id"])
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
         assert created_stock.bookingLimitDatetime is None

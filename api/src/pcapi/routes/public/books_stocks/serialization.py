@@ -10,7 +10,6 @@ from pydantic.types import NonNegativeInt
 from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Stock
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 
@@ -26,15 +25,11 @@ class StockResponseModel(BaseModel):
     dnBookedQuantity: int = Field(alias="bookingsQuantity")
     dateCreated: datetime
     dateModified: datetime
-    id: str
+    id: int
     isEventDeletable: bool
     isEventExpired: bool
-    offerId: str
     price: float
     quantity: int | None
-
-    _humanize_id = humanize_field("id")
-    _humanize_offer_id = humanize_field("offerId")
 
     @classmethod
     def from_orm(cls, stock: Stock) -> "StockResponseModel":
@@ -89,22 +84,7 @@ class StockEditionBodyModel(BaseModel):
 
 
 class StockIdResponseModel(BaseModel):
-    id: str
-
-    _humanize_stock_id = humanize_field("id")
-
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
-
-
-class EducationalStockIdResponseModel(BaseModel):
-    id: str
-    collectiveOfferTemplateId: str
-
-    _humanize_stock_id = humanize_field("id")
-    _humanize_collective_offer_template_id = humanize_field("collectiveOfferTemplateId")
+    id: int
 
     class Config:
         orm_mode = True

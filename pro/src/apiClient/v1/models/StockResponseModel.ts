@@ -10,10 +10,9 @@ export type StockResponseModel = {
   dateCreated: string;
   dateModified: string;
   hasActivationCodes: boolean;
-  id: string;
+  id: number;
   isEventDeletable: boolean;
   isEventExpired: boolean;
-  offerId: string;
   price: number;
   quantity?: number | null;
 };

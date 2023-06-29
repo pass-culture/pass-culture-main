@@ -115,7 +115,7 @@ describe('screens:StocksEventEdition', () => {
 
   it('should track when clicking on "Enregistrer les modifications" on edition', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+      stocks: [{ id: 1 } as StockResponseModel],
     })
     renderStockEventScreen(props, contextValue, '/stocks')
 
@@ -145,7 +145,7 @@ describe('screens:StocksEventEdition', () => {
 
   it('should track when clicking on "Annuler et quitter" on edition', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+      stocks: [{ id: 1 } as StockResponseModel],
     })
 
     renderStockEventScreen(props, contextValue, '/stocks')

@@ -142,7 +142,7 @@ describe('screens:StocksThing', () => {
 
   it('should not block when going outside and form is not touched', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+      stocks: [{ id: 1 } as StockResponseModel],
     })
 
     renderStockThingScreen(props, contextValue)
@@ -154,7 +154,7 @@ describe('screens:StocksThing', () => {
 
   it('should be able to stay on stock form after click on "Annuler"', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+      stocks: [{ id: 1 } as StockResponseModel],
     })
 
     renderStockThingScreen(props, contextValue)
@@ -169,7 +169,7 @@ describe('screens:StocksThing', () => {
 
   it('should be able to quit without submitting from RouteLeavingGuard', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+      stocks: [{ id: 1 } as StockResponseModel],
     })
 
     renderStockThingScreen(props, contextValue)
@@ -190,7 +190,7 @@ describe('screens:StocksThing', () => {
 
   it('should track when quitting without submit from RouteLeavingGuard', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+      stocks: [{ id: 1 } as StockResponseModel],
     })
     renderStockThingScreen(props, contextValue)
 
@@ -216,7 +216,7 @@ describe('screens:StocksThing', () => {
 
   it('should be able to submit from Action Bar without Guard after changing price in draft', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+      stocks: [{ id: 1 } as StockResponseModel],
     })
     const stock = {
       id: 'STOCK_ID',

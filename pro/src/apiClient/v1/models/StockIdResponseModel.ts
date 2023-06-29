@@ -3,6 +3,6 @@
 /* eslint-disable */
 
 export type StockIdResponseModel = {
-  id: string;
+  id: number;
 };
 

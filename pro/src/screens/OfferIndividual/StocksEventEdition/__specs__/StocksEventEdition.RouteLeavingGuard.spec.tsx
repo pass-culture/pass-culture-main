@@ -153,7 +153,7 @@ describe('screens:StocksEventEdition', () => {
 
   it('should not block when going outside and form is not touched', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+      stocks: [{ id: 1 } as StockResponseModel],
     })
 
     renderStockEventScreen(props, contextValue)
@@ -165,7 +165,7 @@ describe('screens:StocksEventEdition', () => {
 
   it('should be able to quit without submitting from RouteLeavingGuard', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+      stocks: [{ id: 1 } as StockResponseModel],
     })
 
     renderStockEventScreen(props, contextValue)
@@ -184,7 +184,7 @@ describe('screens:StocksEventEdition', () => {
 
   it('should track when quitting without submit from RouteLeavingGuard', async () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 'CREATED_STOCK_ID' } as StockResponseModel],
+      stocks: [{ id: 1 } as StockResponseModel],
     })
 
     renderStockEventScreen(props, contextValue)
