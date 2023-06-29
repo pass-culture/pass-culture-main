@@ -47,4 +47,6 @@ class SendEacNewBookingEmailToProTest:
             "REDACTOR_EMAIL": request.educationalRedactor.email,
             "REDACTOR_PHONE_NUMBER": None,
             "OFFER_CREATION_URL": f"{settings.PRO_URL}/offre/collectif/creation/{request.collectiveOfferTemplateId}/requete/{request.id}",
+            "OFFERER_ID": request.collectiveOfferTemplate.venue.managingOffererId,
+            "VENUE_ID": request.collectiveOfferTemplate.venue.id,
         }
