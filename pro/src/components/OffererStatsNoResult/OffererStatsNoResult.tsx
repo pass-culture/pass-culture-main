@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import strokeSignalIcon from 'icons/stroke-signal.svg'
+import strokePieIcon from 'icons/stroke-pie.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './OffererStatsNoResult.module.scss'
@@ -25,7 +25,7 @@ const OffererStatsNoResult = ({
       )}
     >
       <SvgIcon
-        src={strokeSignalIcon}
+        src={strokePieIcon}
         alt=""
         className={styles['offerer-stats-no-result-icon']}
       />
