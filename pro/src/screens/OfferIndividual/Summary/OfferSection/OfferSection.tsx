@@ -13,6 +13,7 @@ import { OfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { AccessiblityEnum } from 'core/shared'
 import { useOfferWizardMode } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 
 import { serializeOfferSectionData } from './serializer'
@@ -30,6 +31,9 @@ const OfferSummary = ({
   const mode = useOfferWizardMode()
   const { logEvent } = useAnalytics()
   const { categories, subCategories } = useOfferIndividualContext()
+  const isBookingContactEnabled = useActiveFeature(
+    'WIP_MANDATORY_BOOKING_CONTACT'
+  )
   const offerData = serializeOfferSectionData(offer, categories, subCategories)
 
   const editLink = getOfferIndividualUrl({
@@ -192,6 +196,15 @@ const OfferSummary = ({
             offerData.venueName
           }
         />
+
+        <SummaryLayout.Row
+          title="Informations de retrait"
+          description={
+            /* istanbul ignore next: DEBT, TO FIX */
+            offerData.withdrawalDetails || ' - '
+          }
+        />
+
         {
           /* istanbul ignore next: DEBT, TO FIX */
           offerData.withdrawalType && (
@@ -216,13 +229,15 @@ const OfferSummary = ({
           )
         }
 
-        <SummaryLayout.Row
-          title="Informations de retrait"
-          description={
-            /* istanbul ignore next: DEBT, TO FIX */
-            offerData.withdrawalDetails || ' - '
-          }
-        />
+        {isBookingContactEnabled && offerData.bookingContact && (
+          <SummaryLayout.Row
+            title="Email de contact"
+            description={
+              /* istanbul ignore next: DEBT, TO FIX */
+              offerData.bookingContact || ' - '
+            }
+          />
+        )}
 
         {conditionalFields.includes('url') && (
           <SummaryLayout.Row
