@@ -688,7 +688,7 @@ def delete_offer_image(
 ) -> None:
     try:
         offer = educational_api_offer.get_collective_offer_by_id(offer_id)
-    except offerers_exceptions.CannotFindOffererForOfferId:
+    except educational_exceptions.CollectiveOfferNotFound:
         raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
@@ -707,7 +707,7 @@ def delete_offer_template_image(
 ) -> None:
     try:
         offer = educational_api_offer.get_collective_offer_template_by_id(offer_id)
-    except offerers_exceptions.CannotFindOffererForOfferId:
+    except educational_exceptions.CollectiveOfferTemplateNotFound:
         raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
 
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)

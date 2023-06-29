@@ -9,7 +9,6 @@ from pcapi.core.educational.models import CollectiveOffer
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
-from pcapi.utils.human_ids import dehumanize
 
 
 @pytest.mark.usefixtures("db_session")
@@ -52,7 +51,7 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 201
-        offer_id = dehumanize(response.json["id"])
+        offer_id = response.json["nonHumanizedId"]
         offer = CollectiveOffer.query.get(offer_id)
         assert offer.bookingEmails == ["offer1@example.com", "offer2@example.com"]
         assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
@@ -119,7 +118,7 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 201
-        offer_id = dehumanize(response.json["id"])
+        offer_id = response.json["nonHumanizedId"]
         offer = CollectiveOffer.query.get(offer_id)
         assert offer.bookingEmails == ["offer1@example.com", "offer2@example.com"]
         assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
@@ -219,7 +218,7 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 201
-        offer_id = dehumanize(response.json["id"])
+        offer_id = response.json["nonHumanizedId"]
         offer = CollectiveOffer.query.get(offer_id)
         assert offer.interventionArea == []
         assert len(offer.domains) == 0
@@ -265,7 +264,7 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 201
-        offer_id = dehumanize(response.json["id"])
+        offer_id = response.json["nonHumanizedId"]
         offer = CollectiveOffer.query.get(offer_id)
         assert offer.bookingEmails == ["offer1@example.com", "offer2@example.com"]
         assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id

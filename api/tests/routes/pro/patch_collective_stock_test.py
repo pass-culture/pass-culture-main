@@ -14,7 +14,6 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import override_settings
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
-from pcapi.utils.human_ids import humanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -60,13 +59,11 @@ class Return200Test:
         assert response.json == {
             "beginningDatetime": "2022-01-17T22:00:00Z",
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
-            "id": humanize(stock.id),
             "nonHumanizedId": stock.id,
             "price": 1500.0,
             "numberOfTickets": 38,
             "isEducationalStockEditable": True,
             "educationalPriceDetail": "Nouvelle description du prix",
-            "stockId": None,
         }
 
     def test_edit_collective_stock_begining_datedame_same_day(self, client):
@@ -100,13 +97,11 @@ class Return200Test:
         assert response.json == {
             "beginningDatetime": "2021-12-18T00:00:00Z",
             "bookingLimitDatetime": "2021-12-18T00:00:00Z",
-            "id": humanize(stock.id),
             "nonHumanizedId": stock.id,
             "price": 1200.0,
             "numberOfTickets": 32,
             "isEducationalStockEditable": True,
             "educationalPriceDetail": "Détail du prix",
-            "stockId": None,
         }
 
     def test_edit_collective_stock_6_5_too_early(self, client):
