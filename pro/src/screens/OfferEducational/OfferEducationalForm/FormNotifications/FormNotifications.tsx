@@ -3,7 +3,7 @@ import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { OfferEducationalFormValues } from 'core/OfferEducational'
-import { ReactComponent as PlusCircleIcon } from 'icons/ico-plus-circle.svg'
+import { ReactComponent as FullMoreIcon } from 'icons/full-more.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -35,7 +35,7 @@ const FormNotifications = ({
             ))}
             <Button
               variant={ButtonVariant.TERNARY}
-              Icon={PlusCircleIcon}
+              Icon={FullMoreIcon}
               onClick={() => push('')}
               disabled={values.notificationEmails.length >= 5}
               className={styles['add-notification-button']}

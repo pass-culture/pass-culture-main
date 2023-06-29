@@ -1,6 +1,6 @@
 import cn from 'classnames'
-import { FieldArray, useFormikContext } from 'formik'
 import type { FieldArrayRenderProps } from 'formik'
+import { FieldArray, useFormikContext } from 'formik'
 import React, { useState } from 'react'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
@@ -9,7 +9,8 @@ import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import { OfferIndividual, OfferIndividualStock } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
-import { PlusCircleIcon, TrashFilledIcon } from 'icons'
+import { TrashFilledIcon } from 'icons'
+import { ReactComponent as FullMoreIcon } from 'icons/full-more.svg'
 import { ReactComponent as StrokeEuro } from 'icons/stroke-euro.svg'
 import { Button, Checkbox, InfoBox, TextInput } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
@@ -231,7 +232,7 @@ export const PriceCategoriesForm = ({
 
               <Button
                 variant={ButtonVariant.TERNARY}
-                Icon={PlusCircleIcon}
+                Icon={FullMoreIcon}
                 onClick={() => {
                   arrayHelpers.push(INITIAL_PRICE_CATEGORY)
                   if (values.priceCategories[0].label === UNIQUE_PRICE) {

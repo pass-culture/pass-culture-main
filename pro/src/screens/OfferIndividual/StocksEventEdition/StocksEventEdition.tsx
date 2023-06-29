@@ -1,6 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import isEqual from 'lodash/isEqual'
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -24,7 +24,7 @@ import { SelectOption } from 'custom_types/form'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { PlusCircleIcon } from 'icons'
+import { ReactComponent as FullMoreIcon } from 'icons/full-more.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { getToday } from 'utils/date'
@@ -42,10 +42,10 @@ import { logTo } from '../utils/logTo'
 import { upsertStocksEventAdapter } from './adapters'
 import { serializeStockEventEdition } from './adapters/serializers'
 import {
-  getValidationSchema,
   buildInitialValues,
-  StockEventFormValues,
+  getValidationSchema,
   STOCK_EVENT_FORM_DEFAULT_VALUES,
+  StockEventFormValues,
   StockFormList,
 } from './StockFormList'
 import styles from './StocksEventEdition.module.scss'
@@ -456,7 +456,7 @@ const StocksEventEdition = ({
             <div className={styles['add-dates-button']}>
               <Button
                 variant={ButtonVariant.PRIMARY}
-                Icon={PlusCircleIcon}
+                Icon={FullMoreIcon}
                 onClick={() => setIsRecurrenceModalOpen(true)}
                 disabled={isSynchronized || isDisabled}
               >

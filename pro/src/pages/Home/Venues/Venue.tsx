@@ -18,8 +18,8 @@ import useAnalytics from 'hooks/useAnalytics'
 import fullDisclosureClose from 'icons/full-disclosure-close.svg'
 import fullDisclosureOpen from 'icons/full-disclosure-open.svg'
 import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
+import { ReactComponent as FullMoreIcon } from 'icons/full-more.svg'
 import { ReactComponent as IcoPlus } from 'icons/full-plus.svg'
-import { ReactComponent as IcoPlusCircle } from 'icons/ico-plus-circle.svg'
 import { ReactComponent as StrokeErrorIcon } from 'icons/stroke-error.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -275,7 +275,7 @@ const Venue = ({
                           ...venueIdTrackParam,
                         })
                       }}
-                      Icon={IcoPlusCircle}
+                      Icon={FullMoreIcon}
                     >
                       Ajouter un RIB
                     </ButtonLink>
