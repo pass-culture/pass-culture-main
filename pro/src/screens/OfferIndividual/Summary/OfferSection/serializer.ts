@@ -94,6 +94,7 @@ export const serializeOfferSectionData = (
     isVenueVirtual: offer.venue.isVirtual,
     offererName: offer.venue.offerer.name,
     bookingEmail: offer.bookingEmail,
+    bookingContact: offer.bookingContact,
     withdrawalDetails: offer.withdrawalDetails || '',
     withdrawalType: offer.withdrawalType || null,
     withdrawalDelay: offer.withdrawalDelay || null,
