@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { GetOffererVenueResponseModel } from 'apiClient/v1'
-import { getLastCollectiveDmsApplication } from 'core/Venue/adapters/getVenueAdapter/serializers'
+import { getLastCollectiveDmsApplication } from 'utils/getLastCollectiveDmsApplication'
 
 import Venue from './Venue'
 
