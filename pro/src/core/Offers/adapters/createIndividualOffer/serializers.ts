@@ -63,6 +63,7 @@ export const serializePostOffer = (
 ): PostOfferBodyModel => {
   return {
     audioDisabilityCompliant: formValues.accessibility[AccessiblityEnum.AUDIO],
+    bookingContact: formValues.bookingContact || null,
     bookingEmail: formValues.bookingEmail || null,
     description: formValues.description || null,
     extraData: serializeExtraData(formValues),

@@ -313,6 +313,7 @@ describe('serializer', () => {
       },
       author: '',
       bookingEmail: '',
+      bookingContact: '',
       description: '',
       durationMinutes: null,
       ean: '',

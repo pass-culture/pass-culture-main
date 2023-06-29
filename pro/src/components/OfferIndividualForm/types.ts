@@ -34,6 +34,7 @@ export interface OfferIndividualFormValues {
   externalTicketOfficeUrl: string
   url: string
   isVenueVirtual?: boolean
+  bookingContact?: string
 }
 
 export type OfferIndividualForm = FormikProps<OfferIndividualFormValues>

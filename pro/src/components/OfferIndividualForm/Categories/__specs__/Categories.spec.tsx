@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
 import React from 'react'
@@ -9,6 +9,7 @@ import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS, INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
 import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
 import { SubmitButton } from 'ui-kit'
+import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Categories, { CategoriesProps } from '../Categories'
 import { CATEGORIES_DEFAULT_VALUES } from '../constants'
@@ -23,7 +24,7 @@ const renderCategories = ({
   onSubmit: () => void
   props: CategoriesProps
 }) => {
-  render(
+  renderWithProviders(
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
