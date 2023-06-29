@@ -15,7 +15,7 @@ const setInitialFormValues = (venue: Venue): VenueFormValues => {
     comment: venue.comment,
     description: venue.description || '',
     email: venue.contact.email || '',
-    id: venue.nonHumanizedId,
+    id: venue.id,
     isAccessibilityAppliedOnAllOffers: false,
     isPermanent: venue.isPermanent,
     departmentCode: venue.departmentCode,

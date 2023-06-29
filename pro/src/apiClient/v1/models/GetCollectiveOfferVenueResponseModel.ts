@@ -6,9 +6,9 @@ import type { GetCollectiveOfferManagingOffererResponseModel } from './GetCollec
 
 export type GetCollectiveOfferVenueResponseModel = {
   departementCode?: string | null;
+  id: number;
   managingOfferer: GetCollectiveOfferManagingOffererResponseModel;
   name: string;
-  nonHumanizedId: number;
   publicName?: string | null;
 };
 

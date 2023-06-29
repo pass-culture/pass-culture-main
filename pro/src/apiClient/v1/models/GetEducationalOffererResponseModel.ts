@@ -5,8 +5,8 @@
 import type { GetEducationalOffererVenueResponseModel } from './GetEducationalOffererVenueResponseModel';
 
 export type GetEducationalOffererResponseModel = {
+  id: number;
   managedVenues: Array<GetEducationalOffererVenueResponseModel>;
   name: string;
-  nonHumanizedId: number;
 };
 

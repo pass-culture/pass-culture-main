@@ -86,7 +86,7 @@ describe('updateIndividualOffer', () => {
 
     const nonHumanizedofferId = 1234
     const offer = {
-      nonHumanizedId: nonHumanizedofferId,
+      id: nonHumanizedofferId,
     } as OfferIndividual
 
     jest
@@ -95,7 +95,7 @@ describe('updateIndividualOffer', () => {
 
     await updateIndividualOffer({
       serializedOffer: serializePatchOffer({ offer, formValues }),
-      offerId: offer.nonHumanizedId,
+      offerId: offer.id,
     })
     expect(api.patchOffer).toHaveBeenCalledWith(
       nonHumanizedofferId,
@@ -164,7 +164,7 @@ describe('updateIndividualOffer', () => {
 
     const nonHumanizedofferId = 1234
     const offer = {
-      nonHumanizedId: nonHumanizedofferId,
+      id: nonHumanizedofferId,
       lastProvider: {
         name: 'provider',
       },
@@ -175,7 +175,7 @@ describe('updateIndividualOffer', () => {
 
     await updateIndividualOffer({
       serializedOffer: serializePatchOffer({ offer, formValues }),
-      offerId: offer.nonHumanizedId,
+      offerId: offer.id,
     })
     expect(api.patchOffer).toHaveBeenCalledWith(
       nonHumanizedofferId,

@@ -50,7 +50,7 @@ class Returns200ForProUserTest:
 
         # then
         assert response.status_code == 200
-        assert response.json == {"offerersNames": [{"name": offerer.name, "nonHumanizedId": offerer.id}]}
+        assert response.json == {"offerersNames": [{"name": offerer.name, "id": offerer.id}]}
 
     @pytest.mark.usefixtures("db_session")
     def test_get_offerers_names_for_id(self, client):
@@ -66,7 +66,7 @@ class Returns200ForProUserTest:
         assert response.status_code == 200
         assert "offerersNames" in response.json
         assert len(response.json["offerersNames"]) == 1
-        assert response.json["offerersNames"][0]["nonHumanizedId"] == offerers["owned_offerer_validated"].id
+        assert response.json["offerersNames"][0]["id"] == offerers["owned_offerer_validated"].id
         assert response.json["offerersNames"][0]["name"] == offerers["owned_offerer_validated"].name
 
     @pytest.mark.usefixtures("db_session")
@@ -84,7 +84,7 @@ class Returns200ForProUserTest:
         assert "offerersNames" in response.json
         assert len(response.json["offerersNames"]) == 4
 
-        offerer_ids = [offererName["nonHumanizedId"] for offererName in response.json["offerersNames"]]
+        offerer_ids = [offererName["id"] for offererName in response.json["offerersNames"]]
         assert offerers["owned_offerer_validated"].id in offerer_ids
         assert offerers["owned_offerer_not_validated"].id in offerer_ids
         assert offerers["owned_offerer_validated_for_user"].id in offerer_ids
@@ -105,7 +105,7 @@ class Returns200ForProUserTest:
         assert "offerersNames" in response.json
         assert len(response.json["offerersNames"]) == 3
 
-        offerer_ids = [offererName["nonHumanizedId"] for offererName in response.json["offerersNames"]]
+        offerer_ids = [offererName["id"] for offererName in response.json["offerersNames"]]
         assert offerers["owned_offerer_validated"].id in offerer_ids
         assert offerers["owned_offerer_validated_for_user"].id in offerer_ids
         assert offerers["owned_offerer_not_validated_for_user"].id in offerer_ids
@@ -125,7 +125,7 @@ class Returns200ForProUserTest:
         assert "offerersNames" in response.json
         assert len(response.json["offerersNames"]) == 3
 
-        offerer_ids = [offererName["nonHumanizedId"] for offererName in response.json["offerersNames"]]
+        offerer_ids = [offererName["id"] for offererName in response.json["offerersNames"]]
         assert offerers["owned_offerer_validated"].id in offerer_ids
         assert offerers["owned_offerer_not_validated"].id in offerer_ids
         assert offerers["owned_offerer_validated_for_user"].id in offerer_ids
@@ -166,7 +166,7 @@ class Returns200ForAdminTest:
         assert "offerersNames" in response.json
         assert len(response.json["offerersNames"]) == 4
 
-        offerer_ids = [offererName["nonHumanizedId"] for offererName in response.json["offerersNames"]]
+        offerer_ids = [offererName["id"] for offererName in response.json["offerersNames"]]
         assert offerers["offerer"].id in offerer_ids
         assert offerers["offerer_not_validated"].id in offerer_ids
         assert offerers["other_offerer"].id in offerer_ids
@@ -187,7 +187,7 @@ class Returns200ForAdminTest:
         assert "offerersNames" in response.json
         assert len(response.json["offerersNames"]) == 2
 
-        offerer_ids = [offererName["nonHumanizedId"] for offererName in response.json["offerersNames"]]
+        offerer_ids = [offererName["id"] for offererName in response.json["offerersNames"]]
         assert offerers["offerer"].id in offerer_ids
         assert offerers["other_offerer"].id in offerer_ids
 
@@ -206,7 +206,7 @@ class Returns200ForAdminTest:
         assert "offerersNames" in response.json
         assert len(response.json["offerersNames"]) == 2
 
-        offerer_ids = [offererName["nonHumanizedId"] for offererName in response.json["offerersNames"]]
+        offerer_ids = [offererName["id"] for offererName in response.json["offerersNames"]]
         assert offerers["offerer_not_validated"].id in offerer_ids
         assert offerers["other_offerer_not_validated"].id in offerer_ids
 

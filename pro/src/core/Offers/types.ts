@@ -24,7 +24,7 @@ export type SearchFiltersParams = {
 }
 
 export type Offerer = {
-  nonHumanizedId: number
+  id: number
   name: string
 }
 
@@ -44,7 +44,7 @@ export type Stock = {
 }
 
 export type Offer = {
-  nonHumanizedId: number
+  id: number
   status: OfferStatus
   isActive: boolean
   hasBookingLimitDatetimesPassed: boolean
@@ -100,7 +100,7 @@ export interface OfferIndividualStock {
   isEventDeletable: boolean
   isEventExpired: boolean
   isSoftDeleted: boolean
-  nonHumanizedId: number
+  id: number
   price: number
   priceCategoryId?: number | null
   quantity?: number | null
@@ -111,7 +111,7 @@ export interface OfferIndividualStock {
 
 export interface OfferIndividualOfferer {
   name: string
-  nonHumanizedId: number
+  id: number
 }
 
 export interface OfferIndividualVenue {
@@ -158,7 +158,7 @@ export interface OfferIndividualImage {
 }
 
 export interface OfferIndividual {
-  nonHumanizedId: number
+  id: number
   author: string
   bookingEmail: string
   description: string

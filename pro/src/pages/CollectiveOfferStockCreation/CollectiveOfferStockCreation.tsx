@@ -96,19 +96,17 @@ export const CollectiveOfferStockCreation = ({
       values.educationalOfferType === EducationalOfferType.SHOWCASE
     if (isTemplate) {
       const response = await postCollectiveOfferTemplateAdapter({
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
         values,
       })
       isOk = response.isOk
       message = response.message
-      createdOfferTemplateId = response.payload
-        ? response.payload.nonHumanizedId
-        : null
+      createdOfferTemplateId = response.payload ? response.payload.id : null
     } else {
       const response = offer.collectiveStock
         ? await patchCollectiveStockAdapter({
             offer,
-            stockId: offer.collectiveStock.nonHumanizedId,
+            stockId: offer.collectiveStock.id,
             values,
             initialValues,
           })
@@ -139,7 +137,7 @@ export const CollectiveOfferStockCreation = ({
     let url = `/offre/${computeURLCollectiveOfferId(
       isTemplate && createdOfferTemplateId != null
         ? createdOfferTemplateId
-        : offer.nonHumanizedId,
+        : offer.id,
       isTemplate
     )}/collectif`
 

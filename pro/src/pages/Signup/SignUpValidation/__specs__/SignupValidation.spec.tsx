@@ -53,7 +53,7 @@ describe('src | components | pages | Signup | validation', () => {
     const validateUser = jest.spyOn(api, 'validateUser')
     jest.spyOn(useCurrentUser, 'default').mockReturnValue({
       currentUser: {
-        nonHumanizedId: 123,
+        id: 123,
       },
     } as UseCurrentUserReturn)
     // when the user is logged in and lands on signup validation page

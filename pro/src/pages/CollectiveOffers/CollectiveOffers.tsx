@@ -78,13 +78,13 @@ const CollectiveOffers = (): JSX.Element => {
   useEffect(() => {
     const loadAllVenuesByProUser = () =>
       getVenuesForOffererAdapter({
-        offererId: offerer?.nonHumanizedId.toString(),
+        offererId: offerer?.id.toString(),
       }).then(venuesResponse =>
         setVenues(formatAndOrderVenues(venuesResponse.payload))
       )
 
     loadAllVenuesByProUser()
-  }, [offerer?.nonHumanizedId])
+  }, [offerer?.id])
 
   const loadAndUpdateOffers = useCallback(
     async (filters: SearchFiltersParams) => {

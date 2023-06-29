@@ -35,7 +35,6 @@ const renderOffererStats = () => {
         dateCreated: '2022-07-29T12:18:43.087097Z',
         email: 'john@do.net',
         id: '1',
-        nonHumanizedId: '1',
         isAdmin: false,
         isEmailValidated: true,
         roles: [],
@@ -52,18 +51,18 @@ describe('OffererStatsScreen', () => {
   beforeEach(() => {
     jest.spyOn(api, 'getOfferer').mockResolvedValue({
       managedVenues: [
-        { name: 'Salle 1', nonHumanizedId: firstVenueId },
-        { name: 'Stand popcorn', nonHumanizedId: secondVenueId },
+        { name: 'Salle 1', id: firstVenueId },
+        { name: 'Stand popcorn', id: secondVenueId },
       ],
     } as GetOffererResponseModel)
     jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
         {
-          nonHumanizedId: 1,
+          id: 1,
           name: 'Mon super cinéma',
         },
         {
-          nonHumanizedId: 2,
+          id: 2,
           name: 'Ma super librairie',
         },
       ],

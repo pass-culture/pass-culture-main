@@ -34,12 +34,12 @@ const StockSection = ({ offer, canBeDuo }: StockSectionProps): JSX.Element => {
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
       isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-      offerId: offer.nonHumanizedId,
+      offerId: offer.id,
     })
   }
 
   const editLink = getOfferIndividualUrl({
-    offerId: offer.nonHumanizedId,
+    offerId: offer.id,
     step: OFFER_WIZARD_STEP_IDS.STOCKS,
     mode,
   })

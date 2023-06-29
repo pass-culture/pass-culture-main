@@ -122,7 +122,7 @@ const Offers = ({
         ? []
         : currentPageOffersSubset
             .filter(offer => !isOfferDisabled(offer.status))
-            .map(offer => offer.nonHumanizedId.toString())
+            .map(offer => offer.id.toString())
     )
 
     toggleSelectAllCheckboxes()

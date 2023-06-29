@@ -33,7 +33,7 @@ describe('serializer', () => {
       dateCreated: '01-01-1999',
       dateModified: '01-12-1999',
       hasActivationCode: false,
-      nonHumanizedId: 1,
+      id: 1,
       isBookable: true,
       isEventDeletable: false,
       isEventExpired: false,
@@ -52,7 +52,7 @@ describe('serializer', () => {
       isEventDeletable: false,
       isEventExpired: false,
       isSoftDeleted: false,
-      nonHumanizedId: 1,
+      id: 1,
       price: 150,
       quantity: 20,
       remainingQuantity: 10,
@@ -70,7 +70,7 @@ describe('serializer', () => {
       dateCreated: '01-01-1999',
       dateModified: '01-12-1999',
       hasActivationCode: false,
-      nonHumanizedId: 1,
+      id: 1,
       isBookable: true,
       isEventDeletable: false,
       isEventExpired: false,
@@ -89,7 +89,7 @@ describe('serializer', () => {
       isEventDeletable: false,
       isEventExpired: false,
       isSoftDeleted: false,
-      nonHumanizedId: 1,
+      id: 1,
       price: 150,
       quantity: 20,
       remainingQuantity: 0,
@@ -106,7 +106,7 @@ describe('serializer', () => {
       dateCreated: '01-01-1999',
       dateModified: '01-12-1999',
       hasActivationCode: false,
-      nonHumanizedId: 1,
+      id: 1,
       isBookable: true,
       isEventDeletable: false,
       isEventExpired: false,
@@ -124,7 +124,7 @@ describe('serializer', () => {
       isEventDeletable: false,
       isEventExpired: false,
       isSoftDeleted: false,
-      nonHumanizedId: 1,
+      id: 1,
       price: 150,
       quantity: 20,
       remainingQuantity: 'unlimited',
@@ -195,14 +195,13 @@ describe('serializer', () => {
     const offerApi = {
       venue: {
         managingOfferer: {
-          id: 'Offerer ID',
-          nonHumanizedId: 1,
+          id: 1,
           name: 'Offerer name',
         },
       },
     } as unknown as GetIndividualOfferResponseModel
     const offerer: OfferIndividualOfferer = {
-      nonHumanizedId: 1,
+      id: 1,
       name: 'Offerer name',
     }
 
@@ -213,8 +212,7 @@ describe('serializer', () => {
     const venueId = 1
     const offerApi = {
       venue: {
-        id: 'venue id',
-        nonHumanizedId: venueId,
+        id: venueId,
         name: 'venue name',
         publicName: 'venue publicName',
         isVirtual: false,
@@ -228,8 +226,7 @@ describe('serializer', () => {
         audioDisabilityCompliant: true,
         motorDisabilityCompliant: true,
         managingOfferer: {
-          id: 'Offerer ID',
-          nonHumanizedId: 1,
+          id: 1,
           name: 'Offerer name',
         },
       },
@@ -244,7 +241,7 @@ describe('serializer', () => {
       departmentCode: '75',
       city: 'venue city',
       offerer: {
-        nonHumanizedId: 1,
+        id: 1,
         name: 'Offerer name',
       },
       accessibility: {
@@ -329,8 +326,8 @@ describe('serializer', () => {
       musicSubType: '',
       musicType: '',
       name: 'Le nom de l’offre 1',
-      nonHumanizedId: 1,
-      offererId: offerApi.venue.managingOfferer.nonHumanizedId,
+      id: 1,
+      offererId: offerApi.venue.managingOfferer.id,
       offererName: 'La nom de la structure 1',
       performer: '',
       priceCategories: undefined,
@@ -348,7 +345,7 @@ describe('serializer', () => {
           bookingsQuantity: 0,
           dateCreated: new Date('2020-04-12T19:31:12.000Z'),
           hasActivationCode: false,
-          nonHumanizedId: 1,
+          id: 1,
           isEventDeletable: true,
           isEventExpired: false,
           isSoftDeleted: false,
@@ -375,7 +372,7 @@ describe('serializer', () => {
         name: 'Le nom du lieu 1',
         offerer: {
           name: 'La nom de la structure 1',
-          nonHumanizedId: 3,
+          id: 3,
         },
         postalCode: '11100',
         publicName: 'Mon Lieu',

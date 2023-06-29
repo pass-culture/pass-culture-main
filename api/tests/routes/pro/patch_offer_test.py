@@ -37,8 +37,8 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 200
-        assert response.json["nonHumanizedId"] == offer.id
-        assert response.json["venue"]["nonHumanizedId"] == offer.venue.id
+        assert response.json["id"] == offer.id
+        assert response.json["venue"]["id"] == offer.venue.id
 
         updated_offer = Offer.query.get(offer.id)
         assert updated_offer.name == "New name"

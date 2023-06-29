@@ -41,7 +41,7 @@ describe('screens | OfferEducational : event address step', () => {
   beforeEach(() => {
     offer = collectiveOfferFactory()
 
-    offer.venue.managingOfferer.nonHumanizedId = 1
+    offer.venue.managingOfferer.id = 1
 
     props = {
       ...defaultCreationProps,

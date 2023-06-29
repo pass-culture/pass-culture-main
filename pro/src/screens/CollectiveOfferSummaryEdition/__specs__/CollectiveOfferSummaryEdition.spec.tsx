@@ -44,7 +44,6 @@ const renderCollectiveOfferSummaryEdition = (
         dateCreated: '2022-07-29T12:18:43.087097Z',
         email: 'john@do.net',
         id: '1',
-        nonHumanizedId: '1',
         isAdmin: false,
         isEmailValidated: true,
         roles: [],

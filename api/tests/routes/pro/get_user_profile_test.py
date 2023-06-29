@@ -46,7 +46,7 @@ class Returns200Test:
             "hasPhysicalVenues": False,
             "hasSeenProTutorials": True,
             "hasSeenProRgs": False,
-            "nonHumanizedId": user.id,
+            "id": user.id,
             "idPieceNumber": None,
             "isAdmin": False,
             "isEmailValidated": True,

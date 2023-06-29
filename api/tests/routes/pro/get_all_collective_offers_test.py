@@ -35,8 +35,8 @@ class Returns200Test:
         assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 1
-        assert response_json[0]["venue"]["nonHumanizedId"] == venue.id
-        assert response_json[0]["nonHumanizedId"] == offer.id
+        assert response_json[0]["venue"]["id"] == venue.id
+        assert response_json[0]["id"] == offer.id
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["isShowcase"] is False
         assert response_json[0]["educationalInstitution"]["name"] == institution.name
@@ -92,7 +92,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert len(response_json) == 1
         assert response_json[0]["status"] == "INACTIVE"
-        assert response_json[0]["nonHumanizedId"] == stock.collectiveOffer.id
+        assert response_json[0]["id"] == stock.collectiveOffer.id
 
     def test_if_collective_offer_is_public_api(self, app):
         # Given
@@ -129,8 +129,8 @@ class Returns200Test:
         assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 1
-        assert response_json[0]["venue"]["nonHumanizedId"] == venue.id
-        assert response_json[0]["nonHumanizedId"] == offer.id
+        assert response_json[0]["venue"]["id"] == venue.id
+        assert response_json[0]["id"] == offer.id
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["isShowcase"] is True
         assert response_json[0]["imageCredit"] is None
@@ -167,8 +167,8 @@ class Returns200Test:
         assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 2
-        assert response_json[0]["venue"]["nonHumanizedId"] == venue.id
-        assert response_json[0]["nonHumanizedId"] == template.id
+        assert response_json[0]["venue"]["id"] == venue.id
+        assert response_json[0]["id"] == template.id
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["isShowcase"] is True
         assert response_json[0]["imageCredit"] == "template"
@@ -176,8 +176,8 @@ class Returns200Test:
             response_json[0]["imageUrl"]
             == f"http://localhost/storage/thumbs/collectiveoffertemplate/{template.imageId}.jpg"
         )
-        assert response_json[1]["venue"]["nonHumanizedId"] == venue.id
-        assert response_json[1]["nonHumanizedId"] == offer.id
+        assert response_json[1]["venue"]["id"] == venue.id
+        assert response_json[1]["id"] == offer.id
         assert len(response_json[1]["stocks"]) == 1
         assert response_json[1]["isShowcase"] is False
         assert response_json[1]["imageCredit"] == "offer"
@@ -235,7 +235,7 @@ class Returns200Test:
         assert isinstance(response_json, list)
         assert len(response_json) == 501
         for i in range(501):
-            assert response_json[i]["nonHumanizedId"] == offers[-(i + 1)].id
+            assert response_json[i]["id"] == offers[-(i + 1)].id
             assert response_json[i]["isShowcase"] != isinstance(offers[-(i + 1)], educational_models.CollectiveOffer)
 
     def test_mix_collective_offer_and_template_no_user(self, app):
@@ -294,7 +294,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 1
-        assert response_json[0]["nonHumanizedId"] == offer.id
+        assert response_json[0]["id"] == offer.id
 
     def test_select_only_collective_offer(self, app):
         # Given
@@ -315,8 +315,8 @@ class Returns200Test:
         assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 1
-        assert response_json[0]["venue"]["nonHumanizedId"] == venue.id
-        assert response_json[0]["nonHumanizedId"] == offer.id
+        assert response_json[0]["venue"]["id"] == venue.id
+        assert response_json[0]["id"] == offer.id
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["isShowcase"] is False
 
@@ -343,7 +343,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 1
-        assert response_json[0]["venue"]["nonHumanizedId"] == venue.id
-        assert response_json[0]["nonHumanizedId"] == template.id
+        assert response_json[0]["venue"]["id"] == venue.id
+        assert response_json[0]["id"] == template.id
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["isShowcase"] is True

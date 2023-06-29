@@ -40,9 +40,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
       renderWithProviders(<OfferEducational {...props} />)
       const offererSelect = await screen.findByLabelText('Structure')
 
-      expect(offererSelect).toHaveValue(
-        props.userOfferers[0].nonHumanizedId.toString()
-      )
+      expect(offererSelect).toHaveValue(props.userOfferers[0].id.toString())
       expect(offererSelect).toBeDisabled()
       expect(offererSelect.children).toHaveLength(1)
     })
@@ -145,9 +143,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
       const venueSelect = await screen.findByLabelText('Lieu')
 
       expect(offererSelect).toBeInTheDocument()
-      expect(offererSelect).toHaveValue(
-        props.userOfferers[0].nonHumanizedId.toString()
-      )
+      expect(offererSelect).toHaveValue(props.userOfferers[0].id.toString())
       expect(offererSelect.children).toHaveLength(1)
       expect(offererSelect).toBeDisabled()
 
@@ -155,7 +151,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
 
       expect(venueSelect).toBeInTheDocument()
       expect(venueSelect).toHaveValue(
-        props.userOfferers[0].managedVenues[0].nonHumanizedId.toString()
+        props.userOfferers[0].managedVenues[0].id.toString()
       )
       expect(venueSelect.children).toHaveLength(1)
       expect(venueSelect).toBeDisabled()
@@ -172,8 +168,8 @@ describe('screens | OfferEducational : creation offerer step', () => {
       props = {
         ...defaultCreationProps,
         userOfferers: userOfferersFactory([
-          { nonHumanizedId: firstOffererId },
-          { nonHumanizedId: secondOffererId },
+          { id: firstOffererId },
+          { id: secondOffererId },
         ]),
       }
 
@@ -250,9 +246,9 @@ describe('screens | OfferEducational : creation offerer step', () => {
         userOfferers: userOfferersFactory([
           {
             managedVenues: managedVenuesFactory([
-              { name: 'Venue 1', nonHumanizedId: venue1Id },
-              { name: 'Venue 2', nonHumanizedId: venue2Id },
-              { name: 'A - Venue 3', nonHumanizedId: venue3Id },
+              { name: 'Venue 1', id: venue1Id },
+              { name: 'Venue 2', id: venue2Id },
+              { name: 'A - Venue 3', id: venue3Id },
             ]),
           },
         ]),

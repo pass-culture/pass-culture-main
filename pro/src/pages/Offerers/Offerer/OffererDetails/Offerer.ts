@@ -12,7 +12,7 @@ export interface Offerer {
   name: string
   postalCode: string
   siren: string
-  nonHumanizedId: number
+  id: number
   demarchesSimplifieesApplicationId: string
 }
 
@@ -28,7 +28,7 @@ export const transformOffererResponseModelToOfferer = (
   name: offerer.name || '',
   postalCode: offerer.postalCode || '',
   siren: offerer.siren || '',
-  nonHumanizedId: offerer.nonHumanizedId || 0,
+  id: offerer.id || 0,
   demarchesSimplifieesApplicationId:
     offerer.demarchesSimplifieesApplicationId || '',
 })

@@ -17,11 +17,7 @@ const CollectiveOfferPracticalInformationSection = ({
   offer,
 }: CollectiveOfferPracticalInformationSectionProps) => {
   const notify = useNotification()
-  const {
-    error,
-    isLoading,
-    data: venue,
-  } = useGetVenue(offer.venue.nonHumanizedId)
+  const { error, isLoading, data: venue } = useGetVenue(offer.venue.id)
   if (isLoading) {
     return <Spinner />
   }

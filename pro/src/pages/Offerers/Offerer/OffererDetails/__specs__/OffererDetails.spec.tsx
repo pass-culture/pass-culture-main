@@ -24,7 +24,7 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
   const offererId = 1
 
   jest.spyOn(api, 'getOfferer').mockResolvedValue({
-    nonHumanizedId: offererId,
+    id: offererId,
     name: 'fake offerer name',
     city: 'Paris',
     postalCode: '75000',
@@ -46,7 +46,7 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
         publicName: 'fake venue',
         postalCode: '75000',
         city: 'Paris',
-        nonHumanizedId: 1,
+        id: 1,
         collectiveDmsApplications: [],
         isVirtual: false,
         hasAdageId: false,

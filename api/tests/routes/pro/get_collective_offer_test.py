@@ -40,7 +40,7 @@ class Returns200Test:
         assert "dateCreated" in response_json
         assert "institution" in response.json
         assert response.json["isVisibilityEditable"] is True
-        assert response_json["nonHumanizedId"] == offer.id
+        assert response_json["id"] == offer.id
         assert response_json["lastBookingStatus"] is None
         assert response_json["lastBookingId"] is None
         assert response_json["isPublicApi"] is False

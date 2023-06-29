@@ -149,7 +149,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     ]
 
     const venue: OfferIndividualVenue = {
-      nonHumanizedId: 1,
+      id: 1,
       name: 'Lieu offline AA',
       managingOffererId: 1,
       isVirtual: false,
@@ -169,7 +169,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       venueList: [
         venue,
         {
-          nonHumanizedId: 2,
+          id: 2,
           name: 'Lieu online BB',
           managingOffererId: 1,
           isVirtual: true,
@@ -185,21 +185,21 @@ describe('screens:OfferIndividual::Informations::creation', () => {
           hasCreatedOffer: true,
         },
       ],
-      offererNames: [{ nonHumanizedId: offererId, name: 'mon offerer A' }],
+      offererNames: [{ id: offererId, name: 'mon offerer A' }],
       categories,
       subCategories,
     }
 
     props = {
       offererId: offererId.toString(),
-      venueId: venue.nonHumanizedId.toString(),
+      venueId: venue.id.toString(),
     }
 
     jest
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
     jest.spyOn(api, 'postOffer').mockResolvedValue({
-      nonHumanizedId: offerId,
+      id: offerId,
     } as GetIndividualOfferResponseModel)
     jest
       .spyOn(utils, 'filterCategories')

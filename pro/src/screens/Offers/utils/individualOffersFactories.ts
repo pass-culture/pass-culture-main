@@ -6,7 +6,7 @@ let offerId = 1
 export const individualOfferFactory = (customOffer = {}): Offer => {
   const currentOfferId = offerId++
   return {
-    nonHumanizedId: currentOfferId,
+    id: currentOfferId,
     status: OfferStatus.ACTIVE,
     isActive: true,
     hasBookingLimitDatetimesPassed: true,

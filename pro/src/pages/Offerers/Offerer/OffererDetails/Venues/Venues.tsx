@@ -29,11 +29,7 @@ const Venues = ({ venues, offererId }: VenuesProps) => {
 
       <ul className="main-list venues-list">
         {venues.map(venue => (
-          <VenueItem
-            key={venue.nonHumanizedId}
-            venue={venue}
-            offererId={offererId}
-          />
+          <VenueItem key={venue.id} venue={venue} offererId={offererId} />
         ))}
       </ul>
 

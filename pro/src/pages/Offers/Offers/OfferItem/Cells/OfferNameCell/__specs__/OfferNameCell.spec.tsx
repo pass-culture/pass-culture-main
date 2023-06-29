@@ -32,7 +32,7 @@ describe('OfferNameCell', () => {
   let defaultOffer: Offer
   beforeEach(() => {
     defaultOffer = {
-      nonHumanizedId: 1,
+      id: 1,
       isActive: true,
       isEditable: true,
       isEvent: true,

@@ -107,7 +107,7 @@ describe('screens:StocksThing', () => {
 
   beforeEach(() => {
     offer = {
-      nonHumanizedId: offerId,
+      id: offerId,
       venue: {
         departmentCode: '75',
       } as OfferIndividualVenue,
@@ -219,8 +219,7 @@ describe('screens:StocksThing', () => {
       stocks: [{ id: 1 } as StockResponseModel],
     })
     const stock = {
-      id: 'STOCK_ID',
-      nonHumanizedId: 1,
+      id: 1,
       quantity: 10,
       price: 17.11,
       remainingQuantity: 6,
@@ -238,7 +237,7 @@ describe('screens:StocksThing', () => {
     }
 
     offer = {
-      nonHumanizedId: offerId,
+      id: offerId,
       venue: {
         departmentCode: '75',
       } as OfferIndividualVenue,

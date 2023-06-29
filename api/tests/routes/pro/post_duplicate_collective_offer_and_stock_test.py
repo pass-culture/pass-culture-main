@@ -51,7 +51,7 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
 
         # Then
-        duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["nonHumanizedId"]).one()
+        duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
         assert response.status_code == 201
         assert response.json["imageCredit"] == offer.imageCredit
         assert response.json["imageUrl"] == duplicate.imageUrl
@@ -74,7 +74,7 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 201
-        duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["nonHumanizedId"]).one()
+        duplicate = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
         assert response.json == {
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": False,
@@ -95,17 +95,17 @@ class Returns200Test:
             "offerId": None,
             "isActive": True,
             "isEditable": True,
-            "nonHumanizedId": duplicate.id,
+            "id": duplicate.id,
             "name": offer.name,
             "subcategoryId": offer.subcategoryId,
             "venue": {
                 "departementCode": "75",
                 "managingOfferer": {
-                    "nonHumanizedId": offerer.id,
+                    "id": offerer.id,
                     "name": venue.managingOfferer.name,
                     "siren": venue.managingOfferer.siren,
                 },
-                "nonHumanizedId": venue.id,
+                "id": venue.id,
                 "name": venue.name,
                 "publicName": venue.publicName,
             },
@@ -117,7 +117,7 @@ class Returns200Test:
             "imageUrl": None,
             "isBookable": False,
             "collectiveStock": {
-                "nonHumanizedId": duplicate.collectiveStock.id,
+                "id": duplicate.collectiveStock.id,
                 "isBooked": False,
                 "isCancellable": False,
                 "beginningDatetime": format_into_utc_date(offer.collectiveStock.beginningDatetime),

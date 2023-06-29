@@ -63,15 +63,13 @@ const categoriesAndSubcategories = {
 
 const proVenues = [
   {
-    id: 'JI',
-    nonHumanizedId: 1,
+    id: 1,
     name: 'Ma venue',
     offererName: 'Mon offerer',
     isVirtual: false,
   },
   {
-    id: 'JQ',
-    nonHumanizedId: 2,
+    id: 2,
     name: 'Ma venue virtuelle',
     offererName: 'Mon offerer',
     isVirtual: true,
@@ -230,7 +228,7 @@ describe('route CollectiveOffers', () => {
         describe('status filter can only be used with an offerer or a venue filter for performance reasons', () => {
           it('should reset and disable status filter when venue filter is deselected', async () => {
             // Given
-            const { nonHumanizedId: venueId, name: venueName } = proVenues[0]
+            const { id: venueId, name: venueName } = proVenues[0]
             const filters = {
               venueId: venueId.toString(),
               status: OfferStatus.INACTIVE,
@@ -263,7 +261,7 @@ describe('route CollectiveOffers', () => {
 
           it('should not reset or disable status filter when venue filter is deselected while offerer filter is applied', async () => {
             // Given
-            const { nonHumanizedId: venueId, name: venueName } = proVenues[0]
+            const { id: venueId, name: venueName } = proVenues[0]
             const filters = {
               venueId: venueId.toString(),
               status: OfferStatus.INACTIVE,
@@ -328,7 +326,7 @@ describe('route CollectiveOffers', () => {
 
           it('should not reset or disable status filter when offerer filter is removed while venue filter is applied', async () => {
             // Given
-            const { nonHumanizedId: venueId } = proVenues[0]
+            const { id: venueId } = proVenues[0]
             const offerer = { name: 'La structure', id: 'EF' }
             // @ts-expect-error FIX ME
             jest.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
@@ -361,7 +359,7 @@ describe('route CollectiveOffers', () => {
 
           it('should enable status filters when venue filter is applied', async () => {
             // Given
-            const filters = { venueId: proVenues[0].nonHumanizedId.toString() }
+            const filters = { venueId: proVenues[0].id.toString() }
             // When
             await renderOffers(store, filters)
             // Then
@@ -449,7 +447,7 @@ describe('route CollectiveOffers', () => {
             undefined,
             undefined,
             undefined,
-            proVenues[0].nonHumanizedId.toString(),
+            proVenues[0].id.toString(),
             undefined,
             undefined,
             undefined,
@@ -670,7 +668,7 @@ describe('route CollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
-        proVenues[0].nonHumanizedId.toString(),
+        proVenues[0].id.toString(),
         undefined,
         undefined,
         undefined,
@@ -735,7 +733,7 @@ describe('route CollectiveOffers', () => {
         undefined,
         undefined,
         undefined,
-        proVenues[0].nonHumanizedId.toString(),
+        proVenues[0].id.toString(),
         undefined,
         undefined,
         undefined,

@@ -42,7 +42,7 @@ describe('creationLinks', () => {
 
   beforeEach(() => {
     virtualVenue = {
-      nonHumanizedId: 1,
+      id: 1,
       isVirtual: true,
       managingOffererId: 'GE',
       name: 'Le Sous-sol (Offre numérique)',
@@ -51,7 +51,7 @@ describe('creationLinks', () => {
     }
 
     physicalVenue = {
-      nonHumanizedId: 2,
+      id: 2,
       isVirtual: false,
       managingOffererId: 'GE',
       name: 'Le Sous-sol (Offre physique)',
@@ -60,7 +60,7 @@ describe('creationLinks', () => {
     }
 
     physicalVenueWithPublicName = {
-      nonHumanizedId: 3,
+      id: 3,
       isVirtual: false,
       managingOffererId: 'GE',
       name: 'Le deuxième Sous-sol (Offre physique)',
@@ -81,7 +81,7 @@ describe('creationLinks', () => {
         demarchesSimplifieesApplicationId: null,
         fieldsUpdated: [],
         hasDigitalVenueAtLeastOneOffer: true,
-        nonHumanizedId: 6,
+        id: 6,
         isValidated: true,
         isActive: true,
         lastProviderId: null,
@@ -106,7 +106,7 @@ describe('creationLinks', () => {
         demarchesSimplifieesApplicationId: null,
         fieldsUpdated: [],
         hasDigitalVenueAtLeastOneOffer: true,
-        nonHumanizedId: 12,
+        id: 12,
         isValidated: true,
         isActive: true,
         lastProviderId: null,
@@ -119,7 +119,6 @@ describe('creationLinks', () => {
     baseOfferersNames = baseOfferers.map(offerer => ({
       id: offerer.id,
       name: offerer.name,
-      nonHumanizedId: offerer.nonHumanizedId,
     }))
 
     api.getOfferer.mockResolvedValue(baseOfferers[0])

@@ -8,7 +8,7 @@ const buildInitialValues = (offer: OfferIndividual): IStockThingFormValues => {
     return STOCK_THING_FORM_DEFAULT_VALUES
   }
   return {
-    stockId: offer.stocks[0].nonHumanizedId,
+    stockId: offer.stocks[0].id,
     remainingQuantity:
       offer.stocks[0].remainingQuantity?.toString() || 'unlimited',
     bookingsQuantity: offer.stocks[0].bookingsQuantity.toString(),

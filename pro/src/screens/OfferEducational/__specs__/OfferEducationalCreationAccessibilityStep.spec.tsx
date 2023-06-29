@@ -37,11 +37,11 @@ describe('screens | OfferEducational : event address step', () => {
     props.userOfferers = [
       ...props.userOfferers,
       userOffererFactory({
-        nonHumanizedId: offererId,
+        id: offererId,
         managedVenues: [
           managedVenueFactory({}),
           managedVenueFactory({
-            nonHumanizedId: 43,
+            id: 43,
             mentalDisabilityCompliant: true,
             motorDisabilityCompliant: true,
             visualDisabilityCompliant: false,
@@ -72,14 +72,14 @@ describe('screens | OfferEducational : event address step', () => {
     props.userOfferers = [
       ...props.userOfferers,
       userOffererFactory({
-        nonHumanizedId: offererId,
+        id: offererId,
         managedVenues: [
           managedVenueFactory({
-            nonHumanizedId: firstVenueId,
+            id: firstVenueId,
             name: 'First venue name',
           }),
           managedVenueFactory({
-            nonHumanizedId: secondVenueId,
+            id: secondVenueId,
             name: 'Second venue name',
           }),
         ],

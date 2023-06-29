@@ -35,16 +35,14 @@ const CollectiveOfferSummaryCreation = ({
 
   const publishOffer = async () => {
     const confirmationUrl = offer.isTemplate
-      ? `/offre/${offer.nonHumanizedId}/collectif/vitrine/confirmation`
+      ? `/offre/${offer.id}/collectif/vitrine/confirmation`
       : `/offre/${computeURLCollectiveOfferId(
-          offer.nonHumanizedId,
+          offer.id,
           offer.isTemplate
         )}/collectif/confirmation`
 
     if (offer.isTemplate) {
-      const response = await publishCollectiveOfferTemplateAdapter(
-        offer.nonHumanizedId
-      )
+      const response = await publishCollectiveOfferTemplateAdapter(offer.id)
       if (!response.isOk) {
         return notify.error(response.message)
       }
@@ -52,7 +50,7 @@ const CollectiveOfferSummaryCreation = ({
       return navigate(confirmationUrl)
     }
 
-    const response = await publishCollectiveOfferAdapter(offer.nonHumanizedId)
+    const response = await publishCollectiveOfferAdapter(offer.id)
     if (!response.isOk) {
       return notify.error(response.message)
     }
@@ -60,8 +58,8 @@ const CollectiveOfferSummaryCreation = ({
     return navigate(confirmationUrl)
   }
   const backRedirectionUrl = offer.isTemplate
-    ? `/offre/collectif/vitrine/${offer.nonHumanizedId}/creation`
-    : `/offre/${offer.nonHumanizedId}/collectif/visibilite${
+    ? `/offre/collectif/vitrine/${offer.id}/creation`
+    : `/offre/${offer.id}/collectif/visibilite${
         requestId ? `?requete=${requestId}` : ''
       }`
 
@@ -75,10 +73,10 @@ const CollectiveOfferSummaryCreation = ({
         offer={offer}
         categories={categories}
         offerEditLink={`/offre/collectif${offer.isTemplate ? '/vitrine' : ''}/${
-          offer.nonHumanizedId
+          offer.id
         }/creation`}
-        stockEditLink={`/offre/${offer.nonHumanizedId}/collectif/stocks`}
-        visibilityEditLink={`/offre/${offer.nonHumanizedId}/collectif/visibilite`}
+        stockEditLink={`/offre/${offer.id}/collectif/stocks`}
+        visibilityEditLink={`/offre/${offer.id}/collectif/visibilite`}
       />
       <ActionsBarSticky>
         <ActionsBarSticky.Left>

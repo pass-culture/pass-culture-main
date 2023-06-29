@@ -134,13 +134,13 @@ describe('OfferIndividualForm', () => {
     ]
     offererNames = [
       {
-        nonHumanizedId: offererId,
+        id: offererId,
         name: 'Offerer virtual and physical',
       },
     ]
     venueList = [
       {
-        nonHumanizedId: physicalVenueId,
+        id: physicalVenueId,
         name: 'Venue AAAA',
         managingOffererId: 1,
         isVirtual: false,
@@ -156,7 +156,7 @@ describe('OfferIndividualForm', () => {
         hasCreatedOffer: true,
       },
       {
-        nonHumanizedId: virtualVenueId,
+        id: virtualVenueId,
         name: 'Venue AAAA',
         managingOffererId: 1,
         isVirtual: true,
@@ -201,11 +201,11 @@ describe('OfferIndividualForm', () => {
 
   it('should render synchronized banner when lastProviderName is set', async () => {
     const offer = {
-      nonHumanizedId: 12,
+      id: 12,
       venueId: 5,
       venue: {
         offerer: {
-          nonHumanizedId: 12,
+          id: 12,
           name: 'Offerer name',
         },
       },

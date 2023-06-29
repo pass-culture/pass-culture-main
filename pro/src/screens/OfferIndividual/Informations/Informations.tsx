@@ -200,7 +200,7 @@ const Informations = ({
             formValues,
             shouldSendMail,
           }),
-          offerId: offer.nonHumanizedId,
+          offerId: offer.id,
         })
 
     const nextStep = computeNextStep(
@@ -209,7 +209,7 @@ const Informations = ({
       Boolean(isOfferSubtypeEvent(offerSubtype))
     )
     if (isOk) {
-      const receivedOfferId = payload.nonHumanizedId
+      const receivedOfferId = payload.id
       await handleImageOnSubmit(receivedOfferId)
 
       const response = await getOfferIndividualAdapter(receivedOfferId)
@@ -279,7 +279,7 @@ const Informations = ({
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
         isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-        offerId: offer?.nonHumanizedId,
+        offerId: offer?.id,
       })
     }
     const queryParams = new URLSearchParams(location.search)
@@ -323,7 +323,7 @@ const Informations = ({
               Boolean(offer && isOfferDisabled(offer.status)) ||
               isWithdrawalDialogOpen
             }
-            offerId={offer?.nonHumanizedId}
+            offerId={offer?.id}
             shouldTrack={shouldTrack}
           />
         </form>
@@ -357,7 +357,7 @@ const Informations = ({
             isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
             isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
             // FIX ME: it is always undefined at first creation (not sure it is possible)
-            offerId: offer?.nonHumanizedId,
+            offerId: offer?.id,
           })
         }
       />

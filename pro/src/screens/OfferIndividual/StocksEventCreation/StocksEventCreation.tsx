@@ -52,7 +52,7 @@ const getInitialStocks = (offer: OfferIndividual) =>
       throw 'Error: this stock is not a stockEvent'
     }
     return {
-      id: stock?.nonHumanizedId ? stock.nonHumanizedId.toString() : undefined,
+      id: stock?.id ? stock.id.toString() : undefined,
       beginningDatetime: stock.beginningDatetime,
       bookingLimitDatetime: stock.bookingLimitDatetime,
       priceCategoryId: stock.priceCategoryId,
@@ -110,13 +110,13 @@ export const StocksEventCreation = ({
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
         isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
       })
     }
     /* istanbul ignore next: DEBT, TO FIX */
     navigate(
       getOfferIndividualUrl({
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
         step: OFFER_WIZARD_STEP_IDS.TARIFS,
         mode,
       })
@@ -128,11 +128,7 @@ export const StocksEventCreation = ({
     .map(({ uuid, ...rest }) => rest)
   const stocksToDelete = offer.stocks.filter(
     s =>
-      !stocks.find(
-        stock =>
-          stock.id ===
-          (s?.nonHumanizedId ? s.nonHumanizedId.toString() : undefined)
-      )
+      !stocks.find(stock => stock.id === (s?.id ? s.id.toString() : undefined))
   )
 
   const handleNextStep =
@@ -141,9 +137,7 @@ export const StocksEventCreation = ({
       setIsClickingFromActionBar(true)
 
       if (stocksToDelete.length > 0) {
-        await Promise.all(
-          stocksToDelete.map(s => api.deleteStock(s.nonHumanizedId))
-        )
+        await Promise.all(stocksToDelete.map(s => api.deleteStock(s.id)))
       }
 
       if (stocks.length < 1) {
@@ -156,19 +150,19 @@ export const StocksEventCreation = ({
       }
 
       const { isOk } = await upsertStocksEventAdapter({
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
         stocks: stocksToCreate,
       })
 
       if (isOk) {
-        const response = await getOfferIndividualAdapter(offer.nonHumanizedId)
+        const response = await getOfferIndividualAdapter(offer.id)
         if (response.isOk) {
           const updatedOffer = response.payload
           setOffer && setOffer(updatedOffer)
         }
         navigate(
           getOfferIndividualUrl({
-            offerId: offer.nonHumanizedId,
+            offerId: offer.id,
             step: saveDraft
               ? OFFER_WIZARD_STEP_IDS.STOCKS
               : OFFER_WIZARD_STEP_IDS.SUMMARY,
@@ -185,7 +179,7 @@ export const StocksEventCreation = ({
             : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
           isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
           isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-          offerId: offer.nonHumanizedId,
+          offerId: offer.id,
         })
         setIsClickingFromActionBar(false)
         notify.success(getSuccessMessage(mode))
@@ -222,7 +216,7 @@ export const StocksEventCreation = ({
           setStocks={setStocks}
           priceCategories={offer.priceCategories}
           departmentCode={offer.venue.departmentCode}
-          offerId={offer.nonHumanizedId}
+          offerId={offer.id}
         />
       )}
 
@@ -247,7 +241,7 @@ export const StocksEventCreation = ({
         onClickPrevious={handlePreviousStep}
         onClickSaveDraft={handleNextStep({ saveDraft: true })}
         step={OFFER_WIZARD_STEP_IDS.STOCKS}
-        offerId={offer.nonHumanizedId}
+        offerId={offer.id}
       />
 
       <RouteLeavingGuardOfferIndividual
@@ -259,7 +253,7 @@ export const StocksEventCreation = ({
             used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
             isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
             isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-            offerId: offer?.nonHumanizedId,
+            offerId: offer?.id,
           })
         }
       />

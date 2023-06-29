@@ -33,7 +33,7 @@ const BASE_VENUES: VenueListItemResponseModel[] = [
     withdrawalDetails: '',
     hasCreatedOffer: true,
     hasMissingReimbursementPoint: false,
-    nonHumanizedId: venueId,
+    id: venueId,
   },
   {
     managingOffererId: 1,
@@ -45,7 +45,7 @@ const BASE_VENUES: VenueListItemResponseModel[] = [
     withdrawalDetails: '',
     hasCreatedOffer: true,
     hasMissingReimbursementPoint: false,
-    nonHumanizedId: 2,
+    id: 2,
   },
 ]
 

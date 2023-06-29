@@ -43,7 +43,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
   beforeEach(() => {
     eventOffer = {
-      nonHumanizedId: offerId,
+      id: offerId,
       isActive: true,
       isEditable: true,
       isEvent: true,
@@ -106,7 +106,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         expect(stockLink).toBeInTheDocument()
         expect(stockLink).toHaveAttribute(
           'href',
-          `/offre/individuelle/${eventOffer.nonHumanizedId}/stocks`
+          `/offre/individuelle/${eventOffer.id}/stocks`
         )
       })
       describe('draft delete button', () => {
@@ -177,7 +177,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           const links = screen.getAllByRole('link')
           expect(links[links.length - 1]).toHaveAttribute(
             'href',
-            `/offre/individuelle/${eventOffer.nonHumanizedId}/recapitulatif`
+            `/offre/individuelle/${eventOffer.id}/recapitulatif`
           )
         })
 
@@ -191,7 +191,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           const links = screen.getAllByRole('link')
           expect(links[links.length - 1]).not.toHaveAttribute(
             'href',
-            `/offre/individuelle/${eventOffer.nonHumanizedId}/edition`
+            `/offre/individuelle/${eventOffer.id}/edition`
           )
         })
       })
@@ -209,7 +209,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         expect(offerTitle).toBeInTheDocument()
         expect(offerTitle).toHaveAttribute(
           'href',
-          `/offre/individuelle/${props.offer.nonHumanizedId}/recapitulatif`
+          `/offre/individuelle/${props.offer.id}/recapitulatif`
         )
       })
     })
@@ -501,7 +501,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       const links = screen.getAllByRole('link')
       expect(links[links.length - 1]).toHaveAttribute(
         'href',
-        `/offre/individuelle/${eventOffer.nonHumanizedId}/brouillon/informations`
+        `/offre/individuelle/${eventOffer.id}/brouillon/informations`
       )
     })
 

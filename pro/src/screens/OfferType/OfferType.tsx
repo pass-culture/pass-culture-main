@@ -95,8 +95,7 @@ const OfferType = (): JSX.Element => {
       setIsLoadingEligibility(true)
       const offererNames = await api.listOfferersNames()
 
-      const offererId =
-        queryOffererId ?? offererNames.offerersNames[0].nonHumanizedId
+      const offererId = queryOffererId ?? offererNames.offerersNames[0].id
       if (offererNames.offerersNames.length > 1 && !queryOffererId) {
         setIsEligible(true)
         setIsLoadingEligibility(false)

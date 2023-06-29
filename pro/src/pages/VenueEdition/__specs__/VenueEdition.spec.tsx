@@ -76,7 +76,7 @@ describe('route VenueEdition', () => {
 
   beforeEach(() => {
     venue = {
-      nonHumanizedId: 12,
+      id: 12,
       publicName: 'Cinéma des iles',
       dmsToken: 'dms-token-12345',
     } as GetVenueResponseModel
@@ -111,7 +111,7 @@ describe('route VenueEdition', () => {
     ] as Providers[]
 
     offerer = {
-      nonHumanizedId: 13,
+      id: 13,
     } as GetOffererResponseModel
 
     jest.spyOn(api, 'getVenue').mockResolvedValue(venue)
@@ -125,7 +125,7 @@ describe('route VenueEdition', () => {
   })
   it('should call getVenue and display Venue Form screen on success', async () => {
     // When
-    renderVenueEdition(venue.nonHumanizedId, offerer.nonHumanizedId)
+    renderVenueEdition(venue.id, offerer.id)
 
     // Then
     const venuePublicName = await screen.findByRole('heading', {
@@ -144,7 +144,7 @@ describe('route VenueEdition', () => {
       motorDisabilityCompliant: false,
     })
 
-    renderVenueEdition(venue.nonHumanizedId, offerer.nonHumanizedId)
+    renderVenueEdition(venue.id, offerer.id)
 
     await screen.findByRole('heading', {
       name: 'Cinéma des iles',
@@ -164,7 +164,7 @@ describe('route VenueEdition', () => {
       motorDisabilityCompliant: null,
     })
 
-    renderVenueEdition(venue.nonHumanizedId, offerer.nonHumanizedId)
+    renderVenueEdition(venue.id, offerer.id)
 
     await screen.findByRole('heading', {
       name: 'Cinéma des iles',
@@ -191,7 +191,7 @@ describe('route VenueEdition', () => {
     const mockNavigate = jest.fn()
     jest.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
     // When
-    renderVenueEdition(venue.nonHumanizedId, offerer.nonHumanizedId)
+    renderVenueEdition(venue.id, offerer.id)
 
     await waitForElementToBeRemoved(screen.getByTestId('spinner'))
     // Then

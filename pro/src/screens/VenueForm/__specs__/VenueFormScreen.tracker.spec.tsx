@@ -89,7 +89,7 @@ const renderForm = (isCreation: boolean) => {
           <VenueFormScreen
             initialValues={formValues}
             isCreatingVenue={isCreation}
-            offerer={{ id: 'AE', siren: '881457238' } as Offerer}
+            offerer={{ id: 12, siren: '881457238' } as Offerer}
             venueTypes={venueTypes}
             venueLabels={venueLabels}
             providers={[]}

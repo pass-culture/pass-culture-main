@@ -22,11 +22,10 @@ export interface VenueItemProps {
 }
 
 const VenueItem = ({ venue, offererId }: VenueItemProps) => {
-  const { address, city, name, postalCode, publicName, nonHumanizedId } =
-    venue || {}
+  const { address, city, name, postalCode, publicName, id } = venue || {}
 
   const { logEvent } = useAnalytics()
-  const showPath = `/structures/${offererId}/lieux/${nonHumanizedId}`
+  const showPath = `/structures/${offererId}/lieux/${id}`
 
   return (
     <li>
@@ -53,7 +52,7 @@ const VenueItem = ({ venue, offererId }: VenueItemProps) => {
             <ButtonLink
               className={styles['create-offer-button']}
               link={{
-                to: `/offre/creation?lieu=${nonHumanizedId}&structure=${offererId}`,
+                to: `/offre/creation?lieu=${id}&structure=${offererId}`,
                 isExternal: false,
               }}
               onClick={() =>

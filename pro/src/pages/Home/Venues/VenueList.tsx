@@ -20,7 +20,7 @@ const VenueList = ({
     <div className="h-venue-list">
       {virtualVenue && (
         <Venue
-          venueId={virtualVenue.nonHumanizedId}
+          venueId={virtualVenue.id}
           isVirtual
           name="Offres numériques"
           offererId={selectedOffererId}
@@ -38,8 +38,8 @@ const VenueList = ({
 
       {physicalVenues?.map(venue => (
         <Venue
-          venueId={venue.nonHumanizedId}
-          key={selectedOffererId + '-' + venue.nonHumanizedId}
+          venueId={venue.id}
+          key={selectedOffererId + '-' + venue.id}
           name={venue.name}
           offererId={selectedOffererId}
           publicName={venue.publicName}

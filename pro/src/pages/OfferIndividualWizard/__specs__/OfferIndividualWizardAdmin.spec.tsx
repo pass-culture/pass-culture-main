@@ -19,7 +19,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OfferIndividualWizard } from '..'
 
-const offerer = offererFactory({ id: 'AM' })
+const offerer = offererFactory({ id: 12 })
 const venue = getOfferVenueFactory(undefined, offerer)
 const apiOffer: GetIndividualOfferResponseModel = GetIndividualOfferFactory(
   undefined,
@@ -67,7 +67,7 @@ describe('OfferIndividualWizard', () => {
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     jest.spyOn(api, 'listOffers').mockResolvedValue([
       {
-        nonHumanizedId: 1,
+        id: 1,
         status: 'ACTIVE',
         isActive: true,
         hasBookingLimitDatetimesPassed: false,
@@ -78,7 +78,7 @@ describe('OfferIndividualWizard', () => {
           name: 'venue',
           offererName: 'offerer',
           isVirtual: false,
-          nonHumanizedId: 1,
+          id: 1,
         },
         stocks: [],
         isEditable: true,
@@ -100,7 +100,7 @@ describe('OfferIndividualWizard', () => {
         })
       ) +
         '?structure=' +
-        offerer.nonHumanizedId
+        offerer.id
     )
     expect(
       await screen.findByRole('heading', { name: 'Créer une offre' })
@@ -109,12 +109,12 @@ describe('OfferIndividualWizard', () => {
     expect(api.getVenues).toHaveBeenCalledWith(
       null, // validated,
       true, // activeOfferersOnly,
-      offerer.nonHumanizedId // offererId
+      offerer.id // offererId
     )
     expect(api.listOfferersNames).toHaveBeenCalledWith(
       null, // validated
       null, // validatedForUser
-      offerer.nonHumanizedId // offererId
+      offerer.id // offererId
     )
 
     expect(api.getCategories).toHaveBeenCalledWith()
@@ -187,7 +187,7 @@ describe('OfferIndividualWizard', () => {
         { offerId }
       ) +
         '?structure=' +
-        offerer.nonHumanizedId
+        offerer.id
     )
     expect(
       await screen.findByRole('heading', { name: 'Modifier l’offre' })
@@ -195,7 +195,7 @@ describe('OfferIndividualWizard', () => {
     expect(api.getVenues).toHaveBeenCalledWith(
       null, // validated
       true, // activeOfferersOnly,
-      offerer.nonHumanizedId // offererId
+      offerer.id // offererId
     )
     expect(api.getCategories).toHaveBeenCalledWith()
 

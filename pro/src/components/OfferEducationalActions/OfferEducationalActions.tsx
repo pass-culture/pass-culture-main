@@ -70,7 +70,7 @@ const OfferEducationalActions = ({
       : patchIsCollectiveOfferActiveAdapter
     const { isOk, message } = await patchAdapter({
       isActive,
-      offerId: offer.nonHumanizedId,
+      offerId: offer.id,
     })
 
     if (!isOk) {

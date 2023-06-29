@@ -12,6 +12,7 @@ export type CollectiveOfferResponseModel = {
   booking?: CollectiveOffersBookingResponseModel | null;
   educationalInstitution?: EducationalInstitutionResponseModel | null;
   hasBookingLimitDatetimesPassed: boolean;
+  id: number;
   imageCredit?: string | null;
   imageUrl?: string | null;
   interventionArea: Array<string>;
@@ -21,7 +22,6 @@ export type CollectiveOfferResponseModel = {
   isPublicApi: boolean;
   isShowcase: boolean;
   name: string;
-  nonHumanizedId: number;
   status: string;
   stocks: Array<CollectiveOffersStockResponseModel>;
   subcategoryId: SubcategoryIdEnum;

@@ -15,13 +15,13 @@ export type GetOffererResponseModel = {
   fieldsUpdated: Array<string>;
   hasAvailablePricingPoints: boolean;
   hasDigitalVenueAtLeastOneOffer: boolean;
+  id: number;
   idAtProviders?: string | null;
   isActive: boolean;
   isValidated: boolean;
   lastProviderId?: string | null;
   managedVenues?: Array<GetOffererVenueResponseModel>;
   name: string;
-  nonHumanizedId: number;
   postalCode: string;
   siren?: string | null;
 };

@@ -44,13 +44,11 @@ const CollectiveOfferStockEdition = ({
 
     const stockResponse = await patchCollectiveStockAdapter({
       offer,
-      stockId: offer.collectiveStock.nonHumanizedId,
+      stockId: offer.collectiveStock.id,
       values,
       initialValues,
     })
-    const offerResponse = await getStockCollectiveOfferAdapter(
-      offer.nonHumanizedId
-    )
+    const offerResponse = await getStockCollectiveOfferAdapter(offer.id)
 
     if (!stockResponse.isOk) {
       return notify.error(stockResponse.message)
@@ -63,7 +61,7 @@ const CollectiveOfferStockEdition = ({
     reloadCollectiveOffer()
     navigate(
       `/offre/${computeURLCollectiveOfferId(
-        offer.nonHumanizedId,
+        offer.id,
         false
       )}/collectif/recapitulatif`
     )

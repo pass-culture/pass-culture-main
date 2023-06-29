@@ -83,15 +83,13 @@ const categoriesAndSubcategories = {
 
 const proVenues = [
   {
-    id: 'JI',
-    nonHumanizedId: 1,
+    id: 1,
     name: 'Ma venue',
     offererName: 'Mon offerer',
     isVirtual: false,
   },
   {
-    id: 'JQ',
-    nonHumanizedId: 2,
+    id: 2,
     name: 'Ma venue virtuelle',
     offererName: 'Mon offerer',
     isVirtual: true,
@@ -215,7 +213,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(screen.getByText('Lancer la recherche'))
       // Then
       expect(mockNavigate).toHaveBeenCalledWith(
-        `/offres/collectives?lieu=${proVenues[0].nonHumanizedId}`
+        `/offres/collectives?lieu=${proVenues[0].id}`
       )
     })
 

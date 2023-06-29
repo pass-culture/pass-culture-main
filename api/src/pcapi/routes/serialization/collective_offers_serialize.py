@@ -84,7 +84,7 @@ class CollectiveOffersBookingResponseModel(BaseModel):
 
 class CollectiveOfferResponseModel(BaseModel):
     hasBookingLimitDatetimesPassed: bool
-    nonHumanizedId: int
+    id: int
     isActive: bool
     isEditable: bool
     isEducational: bool
@@ -130,7 +130,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
 
     return CollectiveOfferResponseModel(
         hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed if not is_offer_template else False,
-        nonHumanizedId=offer.id,
+        id=offer.id,
         isActive=False if offer.status == OfferStatus.INACTIVE else offer.isActive,
         isEditable=offer.isEditable,
         isEducational=True,
@@ -154,7 +154,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
 def _serialize_stock(stock: CollectiveStock | None = None) -> dict:
     if stock:
         return {
-            "nonHumanizedId": stock.id,
+            "id": stock.id,
             "hasBookingLimitDatetimePassed": stock.hasBookingLimitDatetimePassed,
             "remainingQuantity": 0 if stock.isSoldOut else 1,
             "beginningDatetime": stock.beginningDatetime,
@@ -170,7 +170,7 @@ def _serialize_stock(stock: CollectiveStock | None = None) -> dict:
 
 def _serialize_venue(venue: Venue) -> dict:
     return {
-        "nonHumanizedId": venue.id,
+        "id": venue.id,
         "isVirtual": venue.isVirtual,
         "name": venue.name,
         "offererName": venue.managingOfferer.name,
@@ -199,7 +199,7 @@ class OfferDomain(BaseModel):
 
 
 class GetCollectiveOfferManagingOffererResponseModel(BaseModel):
-    nonHumanizedId: int
+    id: int
     name: str
     # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
     siren: str | None
@@ -210,7 +210,7 @@ class GetCollectiveOfferManagingOffererResponseModel(BaseModel):
 
 class GetCollectiveOfferVenueResponseModel(BaseModel):
     departementCode: str | None
-    nonHumanizedId: int
+    id: int
     managingOfferer: GetCollectiveOfferManagingOffererResponseModel
     name: str
     publicName: str | None
@@ -233,7 +233,7 @@ class CollectiveOfferOfferVenueResponseModel(BaseModel):
 
 
 class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
-    nonHumanizedId: int
+    id: int
     isSoldOut: bool = Field(alias="isBooked")
     is_cancellable_from_offerer: bool = Field(alias="isCancellable")
     beginningDatetime: datetime | None
@@ -262,7 +262,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     offerId: int | None
     isActive: bool
     isEditable: bool
-    nonHumanizedId: int
+    id: int
     name: str
     subcategoryId: SubcategoryIdEnum
     venue: GetCollectiveOfferVenueResponseModel
@@ -338,7 +338,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
 
 
 class CollectiveOfferResponseIdModel(BaseModel):
-    nonHumanizedId: int
+    id: int
 
     class Config:
         orm_mode = True
@@ -470,7 +470,7 @@ class CollectiveOfferTemplateBodyModel(BaseModel):
 
 
 class CollectiveOfferTemplateResponseIdModel(BaseModel):
-    nonHumanizedId: int
+    id: int
 
     class Config:
         orm_mode = True

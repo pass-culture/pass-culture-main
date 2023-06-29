@@ -46,7 +46,7 @@ const OffererStatsScreen = ({ offererOptions }: OffererStatsScreenProps) => {
                 offerer.hasDigitalVenueAtLeastOneOffer || !venue.isVirtual
             )
             .map(venue => ({
-              value: venue.nonHumanizedId.toString(),
+              value: venue.id.toString(),
               label: venue.publicName || venue.name,
             }))
         )

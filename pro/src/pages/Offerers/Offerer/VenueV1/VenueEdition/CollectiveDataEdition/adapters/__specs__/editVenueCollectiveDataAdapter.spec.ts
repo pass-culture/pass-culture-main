@@ -32,7 +32,7 @@ describe('editVenueCollectiveDataAdapter', () => {
   it('should return success message', async () => {
     const venueId = 1
     jest.spyOn(api, 'editVenueCollectiveData').mockResolvedValueOnce({
-      nonHumanizedId: venueId,
+      id: venueId,
     } as GetVenueResponseModel)
     const response = await editVenueCollectiveDataAdapter({
       venueId: venueId,
@@ -46,7 +46,7 @@ describe('editVenueCollectiveDataAdapter', () => {
 
     expect(response).toStrictEqual({
       isOk: true,
-      payload: { nonHumanizedId: venueId },
+      payload: { id: venueId },
       message: 'Vos informations ont bien été enregistrées',
     })
     expect(api.editVenueCollectiveData).toHaveBeenCalledWith(venueId, {

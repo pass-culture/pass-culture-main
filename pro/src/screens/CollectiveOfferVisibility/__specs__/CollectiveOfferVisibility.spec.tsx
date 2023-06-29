@@ -95,7 +95,7 @@ describe('CollectiveOfferVisibility', () => {
       onSuccess: jest.fn(),
       institutions,
       isLoadingInstitutions: false,
-      offer: collectiveOfferFactory({ nonHumanizedId: offerId }),
+      offer: collectiveOfferFactory({ id: offerId }),
     }
   })
 

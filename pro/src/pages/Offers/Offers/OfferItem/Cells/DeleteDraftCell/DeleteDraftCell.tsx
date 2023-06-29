@@ -32,7 +32,7 @@ const DeleteDraftCell = ({ offer, refreshOffers }: DeleteDraftOffersProps) => {
 
   const onConfirmDeleteDraftOffer = useCallback(async () => {
     const { isOk, message } = await deleteDraftOffersAdapter({
-      ids: [offer.nonHumanizedId.toString()],
+      ids: [offer.id.toString()],
     })
 
     if (!isOk) {
@@ -42,7 +42,7 @@ const DeleteDraftCell = ({ offer, refreshOffers }: DeleteDraftOffersProps) => {
       logEvent?.(Events.DELETE_DRAFT_OFFER, {
         from: OFFER_FORM_NAVIGATION_IN.OFFERS,
         used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_TRASH_ICON,
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
         isDraft: true,
       })
       refreshOffers()

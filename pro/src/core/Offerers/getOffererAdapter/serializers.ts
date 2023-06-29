@@ -22,7 +22,7 @@ export const serializeOffererApi = (
     isActive: offerer.isActive || undefined,
     lastProviderId: offerer.lastProviderId || '',
     name: offerer.name || '',
-    nonHumanizedId: offerer.nonHumanizedId || 0,
+    id: offerer.id || 0,
     postalCode: offerer.postalCode || '',
     siren: offerer.siren || '',
     managedVenues: offerer.managedVenues || [],

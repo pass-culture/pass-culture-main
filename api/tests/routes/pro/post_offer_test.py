@@ -26,13 +26,13 @@ class Returns200Test:
             "motorDisabilityCompliant": False,
         }
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
-        offer_id = response.json["nonHumanizedId"]
+        offer_id = response.json["id"]
         offer = Offer.query.get(offer_id)
         response_dict = response.json
         assert offer.isActive is False
-        assert response_dict["venue"]["nonHumanizedId"] == offer.venue.id
+        assert response_dict["venue"]["id"] == offer.venue.id
         assert response_dict["name"] == "Celeste"
-        assert response_dict["nonHumanizedId"] == offer.id
+        assert response_dict["id"] == offer.id
 
     def test_create_event_offer(self, client):
         # Given
@@ -60,7 +60,7 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 201
-        offer_id = response.json["nonHumanizedId"]
+        offer_id = response.json["id"]
         offer = Offer.query.get(offer_id)
         assert offer.bookingContact == "offer@example.com"
         assert offer.bookingEmail == "offer@example.com"
@@ -100,7 +100,7 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 201
-        offer_id = response.json["nonHumanizedId"]
+        offer_id = response.json["id"]
         offer = Offer.query.get(offer_id)
         assert offer.bookingEmail == "offer@example.com"
         assert offer.subcategoryId == subcategories.JEU_EN_LIGNE.id
@@ -138,7 +138,7 @@ class Returns200Test:
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
         assert response.status_code == 201
-        offer_id = response.json["nonHumanizedId"]
+        offer_id = response.json["id"]
         offer = Offer.query.get(offer_id)
         assert offer.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert offer.venue == venue
@@ -167,7 +167,7 @@ class Returns200Test:
         response = client.with_session_auth("user@example.com").post("/offers", json=data)
 
         # Then
-        offer_id = response.json["nonHumanizedId"]
+        offer_id = response.json["id"]
         offer = Offer.query.get(offer_id)
         assert offer.withdrawalDetails == "Veuillez récuperer vos billets à l'accueil :)"
         assert offer.withdrawalType == WithdrawalTypeEnum.NO_TICKET

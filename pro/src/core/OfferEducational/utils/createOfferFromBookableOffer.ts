@@ -19,7 +19,7 @@ export const createOfferFromBookableOffer = async (
   if (!offerResponse.isOk) {
     return notify.error(offerResponse.message)
   }
-  const offererId = offerResponse.payload.venue.managingOfferer.nonHumanizedId
+  const offererId = offerResponse.payload.venue.managingOfferer.id
   const result = await getCollectiveOfferFormDataApdater({
     offererId: offererId,
     offer: offerResponse.payload,
@@ -47,7 +47,5 @@ export const createOfferFromBookableOffer = async (
 
   await postCollectiveOfferImage({ initialValues, notify, payload })
 
-  navigate(
-    `/offre/collectif/${payload.nonHumanizedId}/creation?structure=${offererId}`
-  )
+  navigate(`/offre/collectif/${payload.id}/creation?structure=${offererId}`)
 }

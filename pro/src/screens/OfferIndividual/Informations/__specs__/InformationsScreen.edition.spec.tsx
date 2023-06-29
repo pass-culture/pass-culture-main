@@ -168,7 +168,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     ]
 
     const venue: OfferIndividualVenue = {
-      nonHumanizedId: physicalVenueId,
+      id: physicalVenueId,
       name: 'Venue name',
       isVirtual: false,
       accessibility: {
@@ -185,7 +185,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     }
 
     offer = {
-      nonHumanizedId: offerId,
+      id: offerId,
       author: 'Offer author',
       bookingEmail: 'booking@email.com',
       description: 'Offer description',
@@ -227,7 +227,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         postalCode: '75001',
         city: 'Paris',
         offerer: {
-          nonHumanizedId: 1,
+          id: 1,
           name: 'Offerer name',
         },
         departmentCode: '75',
@@ -250,12 +250,12 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     }
 
     contextOverride = {
-      offerId: offer.nonHumanizedId,
+      offerId: offer.id,
       offer: offer,
       venueList: [
         venue,
         {
-          nonHumanizedId: virtualVenueId,
+          id: virtualVenueId,
           name: 'Lieu online BB',
           managingOffererId: 1,
           isVirtual: true,
@@ -271,7 +271,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
           hasCreatedOffer: true,
         },
       ],
-      offererNames: [{ nonHumanizedId: offererId, name: 'Offerer name' }],
+      offererNames: [{ id: offererId, name: 'Offerer name' }],
       categories,
       subCategories,
     }
@@ -286,10 +286,10 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .mockImplementation((c, s, _v) => [c, s])
     jest.spyOn(api, 'patchOffer').mockResolvedValue({
-      nonHumanizedId: offerId,
+      id: offerId,
     } as GetIndividualOfferResponseModel)
     jest.spyOn(api, 'postOffer').mockResolvedValue({
-      nonHumanizedId: offerId,
+      id: offerId,
     } as GetIndividualOfferResponseModel)
     jest
       .spyOn(api, 'getOffer')
@@ -312,7 +312,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     )
 
     expect(api.patchOffer).toHaveBeenCalledTimes(1)
-    expect(api.patchOffer).toHaveBeenCalledWith(offer.nonHumanizedId, {
+    expect(api.patchOffer).toHaveBeenCalledWith(offer.id, {
       audioDisabilityCompliant: true,
       bookingEmail: 'booking@email.com',
       description: 'Offer description',
@@ -374,7 +374,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     )
 
     expect(api.patchOffer).toHaveBeenCalledTimes(1)
-    expect(api.patchOffer).toHaveBeenCalledWith(offer.nonHumanizedId, {
+    expect(api.patchOffer).toHaveBeenCalledWith(offer.id, {
       audioDisabilityCompliant: true,
       bookingEmail: 'booking@email.com',
       description: 'Offer description',
@@ -434,7 +434,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     await userEvent.click(screen.getByRole('button', { name: /Supprimer/ }))
     await screen.findByText('Souhaitez-vous vraiment supprimer cette image ?')
     await userEvent.click(screen.getByTestId('confirm-dialog-button-confirm'))
-    expect(api.deleteThumbnail).toHaveBeenCalledWith(offer.nonHumanizedId)
+    expect(api.deleteThumbnail).toHaveBeenCalledWith(offer.id)
     expect(
       await screen.findByRole('button', { name: /Ajouter une image/ })
     ).toBeInTheDocument()
@@ -471,7 +471,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         { exact: false }
       )
     ).toBeInTheDocument()
-    expect(api.deleteThumbnail).toHaveBeenCalledWith(offer.nonHumanizedId)
+    expect(api.deleteThumbnail).toHaveBeenCalledWith(offer.id)
 
     expect(
       screen.queryByRole('button', { name: /Ajouter une image/ })
@@ -497,7 +497,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         from: 'informations',
         isDraft: false,
         isEdition: true,
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
         to: 'recapitulatif',
         used: 'StickyButtons',
       }
@@ -517,7 +517,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         from: 'informations',
         isDraft: false,
         isEdition: true,
-        offerId: offer.nonHumanizedId,
+        offerId: offer.id,
         to: 'Offers',
         used: 'StickyButtons',
       }
@@ -636,10 +636,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       ).not.toBeInTheDocument()
 
       expect(api.patchOffer).toHaveBeenCalledTimes(1)
-      expect(api.patchOffer).toHaveBeenCalledWith(
-        offer.nonHumanizedId,
-        expectedBody
-      )
+      expect(api.patchOffer).toHaveBeenCalledWith(offer.id, expectedBody)
       expect(api.getOffer).toHaveBeenCalledTimes(1)
       expect(
         await screen.findByText('There is the summary route content')
@@ -783,10 +780,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         ).not.toBeInTheDocument()
 
         expect(api.patchOffer).toHaveBeenCalledTimes(1)
-        expect(api.patchOffer).toHaveBeenCalledWith(
-          offer.nonHumanizedId,
-          expectedBody
-        )
+        expect(api.patchOffer).toHaveBeenCalledWith(offer.id, expectedBody)
         await waitFor(() => {
           expect(api.getOffer).toHaveBeenCalledTimes(1)
         })
@@ -849,10 +843,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       await waitFor(() => {
         expect(api.patchOffer).toHaveBeenCalledTimes(1)
       })
-      expect(api.patchOffer).toHaveBeenCalledWith(
-        offer.nonHumanizedId,
-        expectedBody
-      )
+      expect(api.patchOffer).toHaveBeenCalledWith(offer.id, expectedBody)
       expect(
         await screen.findByText('There is the summary route content')
       ).toBeInTheDocument()
@@ -970,10 +961,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         ).not.toBeInTheDocument()
 
         expect(api.patchOffer).toHaveBeenCalledTimes(1)
-        expect(api.patchOffer).toHaveBeenCalledWith(
-          offer.nonHumanizedId,
-          expectedBody
-        )
+        expect(api.patchOffer).toHaveBeenCalledWith(offer.id, expectedBody)
         expect(api.getOffer).toHaveBeenCalledTimes(1)
         expect(
           await screen.findByText('There is the summary route content')

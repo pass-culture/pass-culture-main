@@ -27,7 +27,7 @@ const VenueProviderList = ({
           key={venueProvider.id}
           venueProvider={venueProvider}
           venueDepartmentCode={venue.departmentCode}
-          offererId={venue.managingOfferer.nonHumanizedId}
+          offererId={venue.managingOfferer.id}
         />
       ))}
     </ul>

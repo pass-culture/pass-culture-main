@@ -3,13 +3,13 @@ import { SharedCurrentUserResponseModel } from 'apiClient/v1'
 import { Offerer } from '../../../core/Offerers/types'
 import { venueSubmitRedirectUrl } from '../utils/venueSubmitRedirectUrl'
 
-const offerer = { nonHumanizedId: 1 } as Offerer
+const offerer = { id: 1 } as Offerer
 
 describe('redirect url after submit', () => {
   it.each([true, false])(
     `Redirect admin user to the right url, when creation is %s`,
     creationMode => {
-      const url = venueSubmitRedirectUrl(creationMode, offerer.nonHumanizedId, {
+      const url = venueSubmitRedirectUrl(creationMode, offerer.id, {
         isAdmin: true,
       } as SharedCurrentUserResponseModel)
 
@@ -18,7 +18,7 @@ describe('redirect url after submit', () => {
   )
 
   it('Redirect non admin user to the right url on creation', () => {
-    const url = venueSubmitRedirectUrl(true, offerer.nonHumanizedId, {
+    const url = venueSubmitRedirectUrl(true, offerer.id, {
       isAdmin: false,
     } as SharedCurrentUserResponseModel)
 
@@ -26,7 +26,7 @@ describe('redirect url after submit', () => {
   })
 
   it('Redirect non admin user to the right url on update', () => {
-    const url = venueSubmitRedirectUrl(false, offerer.nonHumanizedId, {
+    const url = venueSubmitRedirectUrl(false, offerer.id, {
       isAdmin: false,
     } as SharedCurrentUserResponseModel)
 
@@ -34,15 +34,15 @@ describe('redirect url after submit', () => {
   })
 
   it('Redirect admin user to the right url on update', () => {
-    const url = venueSubmitRedirectUrl(false, offerer.nonHumanizedId, {
+    const url = venueSubmitRedirectUrl(false, offerer.id, {
       isAdmin: true,
     } as SharedCurrentUserResponseModel)
 
-    expect(url).toEqual(`/structures/${offerer.nonHumanizedId}`)
+    expect(url).toEqual(`/structures/${offerer.id}`)
   })
 
   it('Redirect non admin user to the right url on update', () => {
-    const url = venueSubmitRedirectUrl(false, offerer.nonHumanizedId, {
+    const url = venueSubmitRedirectUrl(false, offerer.id, {
       isAdmin: false,
     } as SharedCurrentUserResponseModel)
 

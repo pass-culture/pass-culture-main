@@ -101,8 +101,7 @@ describe('screens:StocksThing', () => {
     bookingsQuantity: 4,
     dateCreated: '2022-05-18T08:25:31.015652Z',
     hasActivationCode: false,
-    id: 'STOCK_ID',
-    nonHumanizedId: 1,
+    id: 1,
     isEventDeletable: false,
     isEventExpired: true,
     isSoftDeleted: false,
@@ -134,7 +133,7 @@ describe('screens:StocksThing', () => {
       audioDisabilityCompliant: false,
       mentalDisabilityCompliant: false,
       motorDisabilityCompliant: false,
-      nonHumanizedId: 12,
+      id: 12,
       visualDisabilityCompliant: false,
       lastProvider: null,
       name: 'Séance ciné duo',
@@ -149,10 +148,10 @@ describe('screens:StocksThing', () => {
         bookingEmail: 'venue29@example.net',
         city: 'Paris',
         departementCode: '75',
-        nonHumanizedId: 1,
+        id: 1,
         isVirtual: false,
         managingOfferer: {
-          nonHumanizedId: 1,
+          id: 1,
           name: 'Le Petit Rintintin Management 6',
         },
         name: 'Cinéma synchro avec booking provider',
@@ -175,7 +174,7 @@ describe('screens:StocksThing', () => {
           isAdmin: false,
           dateCreated: '2001-01-01',
           email: 'test@email.com',
-          nonHumanizedId: 12,
+          id: 12,
           roles: [],
           isEmailValidated: true,
         },
@@ -192,7 +191,7 @@ describe('screens:StocksThing', () => {
       .mockResolvedValue({ offerersNames: [] })
     jest.spyOn(api, 'listOffers').mockResolvedValue([
       {
-        nonHumanizedId: 1,
+        id: 1,
         status: 'ACTIVE',
         isActive: true,
         hasBookingLimitDatetimesPassed: false,
@@ -203,7 +202,7 @@ describe('screens:StocksThing', () => {
           name: 'venue',
           offererName: 'offerer',
           isVirtual: false,
-          nonHumanizedId: 1,
+          id: 1,
         },
         stocks: [],
         isEditable: true,
@@ -243,7 +242,7 @@ describe('screens:StocksThing', () => {
     await waitFor(() => {
       expect(screen.getByLabelText('Prix')).toHaveValue(null)
     })
-    expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.nonHumanizedId)
+    expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.id)
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
 
     await userEvent.click(
@@ -275,7 +274,7 @@ describe('screens:StocksThing', () => {
     expect(
       await screen.findByText('Le stock a été supprimé.')
     ).toBeInTheDocument()
-    expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.nonHumanizedId)
+    expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.id)
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
   })
 
@@ -299,7 +298,7 @@ describe('screens:StocksThing', () => {
       await screen.findByText('Supprimer', { selector: 'button' })
     )
     expect(api.deleteStock).toHaveBeenCalledTimes(1)
-    expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.nonHumanizedId)
+    expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.id)
     expect(
       screen.getByText(
         'Une erreur est survenue lors de la suppression du stock.'
