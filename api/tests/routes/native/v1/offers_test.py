@@ -478,6 +478,17 @@ class OffersTest:
         assert isinstance(response.json["metadata"], dict)
         assert response.json["metadata"]["@type"] == "Product"
 
+    def should_not_return_soft_deleted_offer(self, client):
+        offer = offers_factories.OfferFactory()
+        offers_factories.StockFactory(offer=offer, quantity=1, isSoftDeleted=True)
+        non_deleted_stock = offers_factories.StockFactory(offer=offer, quantity=1)
+
+        response = client.get(f"/native/v1/offer/{offer.id}")
+
+        assert response.status_code == 200
+        assert len(response.json["stocks"]) == 1
+        assert response.json["stocks"][0]["id"] == non_deleted_stock.id
+
 
 class SendOfferWebAppLinkTest:
     def test_sendinblue_send_offer_webapp_link_by_email(self, client):
