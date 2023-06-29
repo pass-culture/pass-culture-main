@@ -46,7 +46,6 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
         publicName: 'fake venue',
         postalCode: '75000',
         city: 'Paris',
-        id: 'AA',
         nonHumanizedId: 1,
         collectiveDmsApplications: [],
         isVirtual: false,
@@ -54,7 +53,6 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
         hasCreatedOffer: false,
         hasMissingReimbursementPoint: false,
         venueTypeCode: VenueTypeCode.AUTRE,
-        managingOffererId: 'AA',
       },
     ],
   })

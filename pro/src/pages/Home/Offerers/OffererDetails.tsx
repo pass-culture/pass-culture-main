@@ -29,7 +29,7 @@ const OffererDetails = ({
 
   const hasAtLeastOnePhysicalVenue = selectedOfferer.managedVenues
     ?.filter(venue => !venue.isVirtual)
-    .map(venue => venue.id)
+    .map(venue => venue.nonHumanizedId)
     .some(Boolean)
 
   const hasMissingReimbursementPoints = useMemo(() => {

@@ -61,7 +61,6 @@ describe('OffererStatsScreen', () => {
         hasDigitalVenueAtLeastOneOffer: true,
         managedVenues: [
           {
-            id: 'D1',
             name: 'Offre numérique',
             isVirtual: true,
             nonHumanizedId: venueId,

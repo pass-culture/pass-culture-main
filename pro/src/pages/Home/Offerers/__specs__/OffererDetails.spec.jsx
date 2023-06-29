@@ -88,27 +88,24 @@ describe('offererDetailsLegacy', () => {
     }
 
     virtualVenue = {
-      id: 'test_venue_id_1',
+      nonHumanizedId: 1,
       isVirtual: true,
-      managingOffererId: 'GE',
       name: 'Le Sous-sol (Offre numérique)',
       offererName: 'Bar des amis',
       publicName: null,
       nOffers: 2,
     }
     physicalVenue = {
-      id: 'test_venue_id_2',
+      nonHumanizedId: 2,
       isVirtual: false,
-      managingOffererId: 'GE',
       name: 'Le Sous-sol (Offre physique)',
       offererName: 'Bar des amis',
       publicName: null,
       nOffers: 2,
     }
     physicalVenueWithPublicName = {
-      id: 'test_venue_id_3',
+      nonHumanizedId: 3,
       isVirtual: false,
-      managingOffererId: 'GE',
       name: 'Le deuxième Sous-sol (Offre physique)',
       offererName: 'Bar des amis',
       publicName: 'Le deuxième Sous-sol',
@@ -138,8 +135,7 @@ describe('offererDetailsLegacy', () => {
         managedVenues: [
           {
             ...virtualVenue,
-            id: 'test_venue_id_4',
-            managingOffererId: 'FQ',
+            nonHumanizedId: 4,
           },
         ],
       },
@@ -284,7 +280,7 @@ describe('offererDetailsLegacy', () => {
         ...baseOfferers[0],
         managedVenues: [
           {
-            id: 'test_venue_id_3',
+            nonHumanizedId: 1,
             isVirtual: true,
             managingOffererId: baseOfferers[0].id,
             name: 'New venue (Offre numérique)',
@@ -293,7 +289,7 @@ describe('offererDetailsLegacy', () => {
             nOffers: 2,
           },
           {
-            id: 'test_venue_id_4',
+            nonHumanizedId: 2,
             isVirtual: false,
             managingOffererId: baseOfferers[0].id,
             name: 'New venue (Offre physique)',
@@ -302,7 +298,7 @@ describe('offererDetailsLegacy', () => {
             nOffers: 2,
           },
           {
-            id: 'test_venue_id_5',
+            nonHumanizedId: 3,
             isVirtual: false,
             managingOffererId: baseOfferers[0].id,
             name: 'Second new venue (Offre physique)',

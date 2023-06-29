@@ -41,7 +41,6 @@ describe('screens | OfferEducational : event address step', () => {
         managedVenues: [
           managedVenueFactory({}),
           managedVenueFactory({
-            id: '43',
             nonHumanizedId: 43,
             mentalDisabilityCompliant: true,
             motorDisabilityCompliant: true,
@@ -76,12 +75,10 @@ describe('screens | OfferEducational : event address step', () => {
         nonHumanizedId: offererId,
         managedVenues: [
           managedVenueFactory({
-            id: firstVenueId.toString(),
             nonHumanizedId: firstVenueId,
             name: 'First venue name',
           }),
           managedVenueFactory({
-            id: secondVenueId.toString(),
             nonHumanizedId: secondVenueId,
             name: 'Second venue name',
           }),
