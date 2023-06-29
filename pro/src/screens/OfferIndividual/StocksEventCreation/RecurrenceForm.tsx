@@ -14,13 +14,13 @@ import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import {
   CalendarCheckIcon,
-  CircleArrowIcon,
   ClockIcon,
   DateIcon,
   EventsIcon,
   TrashFilledIcon,
 } from 'icons'
 import { ReactComponent as FullMoreIcon } from 'icons/full-more.svg'
+import { ReactComponent as FullNextIcon } from 'icons/full-next.svg'
 import {
   Button,
   ButtonLink,
@@ -456,7 +456,7 @@ export const RecurrenceForm = ({
           </Button>
 
           <SubmitButton
-            Icon={CircleArrowIcon}
+            Icon={FullNextIcon}
             iconPosition={IconPositionEnum.RIGHT}
           >
             Valider
