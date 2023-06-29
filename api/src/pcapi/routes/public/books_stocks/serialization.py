@@ -3,6 +3,7 @@ import decimal
 import logging
 import typing
 
+import pydantic
 from pydantic import Field
 from pydantic import condecimal
 from pydantic.types import NonNegativeInt
@@ -68,7 +69,7 @@ class StockCreationBodyModel(BaseModel):
     booking_limit_datetime: datetime | None
     price: decimal.Decimal | None
     price_category_id: int | None
-    quantity: int | None
+    quantity: int | None = Field(None, ge=1, le=1_000_000)
 
     class Config:
         alias_generator = to_camel
@@ -81,7 +82,7 @@ class StockEditionBodyModel(BaseModel):
     id: int
     price: decimal.Decimal | None
     price_category_id: int | None
-    quantity: int | None
+    quantity: int | None = Field(None, ge=1, le=1_000_000)
 
     class Config:
         alias_generator = to_camel
