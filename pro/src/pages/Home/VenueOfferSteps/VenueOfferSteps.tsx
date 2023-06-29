@@ -2,6 +2,7 @@ import cn from 'classnames'
 import React from 'react'
 
 import { ReactComponent as FullInfoIcon } from 'icons/full-info.svg'
+import { ReactComponent as FullNextIcon } from 'icons/full-next.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -14,7 +15,6 @@ import {
 } from '../../../core/FirebaseEvents/constants'
 import useActiveFeature from '../../../hooks/useActiveFeature'
 import useAnalytics from '../../../hooks/useAnalytics'
-import { CircleArrowIcon } from '../../../icons'
 import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 
 import styles from './VenueOfferSteps.module.scss'
@@ -62,7 +62,7 @@ const VenueOfferSteps = ({
                   <ButtonLink
                     className={styles['step-button-width']}
                     variant={ButtonVariant.BOX}
-                    Icon={CircleArrowIcon}
+                    Icon={FullNextIcon}
                     link={{
                       to: venueCreationUrl,
                       isExternal: false,
@@ -101,7 +101,7 @@ const VenueOfferSteps = ({
                   className={styles['step-button-width']}
                   isDisabled={!hasVenue}
                   variant={ButtonVariant.BOX}
-                  Icon={CircleArrowIcon}
+                  Icon={FullNextIcon}
                   link={{
                     to: `/offre/creation?lieu=${venueId}&structure=${offererId}`,
                     isExternal: false,
@@ -123,7 +123,7 @@ const VenueOfferSteps = ({
                   className={styles['step-button-width']}
                   isDisabled={!hasVenue}
                   variant={ButtonVariant.BOX}
-                  Icon={CircleArrowIcon}
+                  Icon={FullNextIcon}
                   link={{
                     to: `/structures/${offererId}/lieux/${venueId}#reimbursement`,
                     isExternal: false,
@@ -143,7 +143,7 @@ const VenueOfferSteps = ({
                   className={styles['step-button-width']}
                   isDisabled={!hasAdageId}
                   variant={ButtonVariant.BOX}
-                  Icon={CircleArrowIcon}
+                  Icon={FullNextIcon}
                   link={{
                     to: `/structures/${offererId}/lieux/${venueId}/eac`,
                     isExternal: false,
@@ -163,7 +163,7 @@ const VenueOfferSteps = ({
                   <ButtonLink
                     className={styles['step-button-width']}
                     variant={ButtonVariant.BOX}
-                    Icon={CircleArrowIcon}
+                    Icon={FullNextIcon}
                     link={{
                       to: `/structures/${offererId}/lieux/${venueId}#venue-collective-data`,
                       isExternal: false,

@@ -5,7 +5,7 @@ import React from 'react'
 import { ReactComponent as backFullIcon } from 'icons/full-back.svg'
 import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
 import { ReactComponent as FullLink } from 'icons/full-link.svg'
-import { ReactComponent as circleArrowIcon } from 'icons/ico-circle-arrow.svg'
+import { ReactComponent as fullNextIcon } from 'icons/full-next.svg'
 
 import { withRouterDecorator } from '../../stories/decorators/withRouter'
 
@@ -120,5 +120,5 @@ BoxButtonWithIcon.args = {
   disabled: false,
   variant: ButtonVariant.BOX,
   iconPosition: IconPositionEnum.LEFT,
-  Icon: circleArrowIcon,
+  Icon: fullNextIcon,
 }

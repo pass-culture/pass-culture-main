@@ -38,7 +38,8 @@ const fullIcons: IconListItem[] = [
   { src: 'icons/full-like.svg' },
   { src: 'icons/full-back.svg' },
   { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
-  { src: 'icons/full-refresh.svg' }, // TODO still unsed in <Button>
+  { src: 'icons/full-next.svg' }, // TODO still used
+  { src: 'icons/full-refresh.svg' }, // TODO still unsed in <Button>s
   { src: 'icons/full-parameters.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-key.svg' }, // TODO 1 use left inside a <ButtonLink>
   { src: 'icons/full-plus.svg' }, // TODO still in 2 ButtonLink and 1 Button
@@ -149,7 +150,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-warning.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-subcategory.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-chevron-adage.svg', viewBox: '0 0 20 20' },
-  { src: 'icons/ico-circle-arrow.svg', viewBox: '0 0 20 20' },
   { src: 'icons/add-user.svg', viewBox: '0 0 106 74' },
   { src: 'icons/ico-arrow-up-b.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-calendar-check.svg', viewBox: '0 0 48 48' },
