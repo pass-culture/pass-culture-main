@@ -1,7 +1,7 @@
 import cn from 'classnames'
-import fullClearIcon from 'icons/full-clear.svg'
 import React, { ReactNode } from 'react'
 
+import fullClearIcon from 'icons/full-clear.svg'
 import { ReactComponent as SuccessSvg } from 'icons/ico-notification-success.svg'
 import strokeWrongIcon from 'icons/stroke-wrong.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
