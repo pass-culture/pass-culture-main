@@ -24,9 +24,11 @@
               </h5>
             </div>
             <div>
-              <div class="mb-1">
-                <span class="fw-bold">User ID :</span> {{ user.id }}
-              </div>
+              <a href="{{ url_for('backoffice_v3_web.public_accounts.get_public_account', user_id=user.id) }}">
+                <div class="mb-1">
+                  <span class="fw-bold">User ID :</span> {{ user.id }}
+                </div>
+              </a>
               <div class="mb-1">
                 <span class="fw-bold">Email :</span> {{ user.email }}
               </div>
