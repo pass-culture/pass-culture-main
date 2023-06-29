@@ -21,9 +21,7 @@ describe('VenueItem', () => {
   beforeEach(() => {
     props = {
       venue: {
-        id: 'AAA',
         nonHumanizedId: venueId,
-        managingOffererId: 'ABC',
         name: 'fake name',
         publicName: null,
         collectiveDmsApplications: [],

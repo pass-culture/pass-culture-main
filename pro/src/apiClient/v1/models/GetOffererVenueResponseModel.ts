@@ -17,9 +17,7 @@ export type GetOffererVenueResponseModel = {
   hasAdageId: boolean;
   hasCreatedOffer: boolean;
   hasMissingReimbursementPoint: boolean;
-  id: string;
   isVirtual: boolean;
-  managingOffererId: string;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
@@ -27,7 +25,6 @@ export type GetOffererVenueResponseModel = {
   postalCode?: string | null;
   publicName?: string | null;
   siret?: string | null;
-  venueLabelId?: string | null;
   venueTypeCode: VenueTypeCode;
   visualDisabilityCompliant?: boolean | null;
   withdrawalDetails?: string | null;

@@ -52,8 +52,8 @@ describe('OffererStatsScreen', () => {
   beforeEach(() => {
     jest.spyOn(api, 'getOfferer').mockResolvedValue({
       managedVenues: [
-        { id: 'V1', name: 'Salle 1', nonHumanizedId: firstVenueId },
-        { id: 'V2', name: 'Stand popcorn', nonHumanizedId: secondVenueId },
+        { name: 'Salle 1', nonHumanizedId: firstVenueId },
+        { name: 'Stand popcorn', nonHumanizedId: secondVenueId },
       ],
     } as GetOffererResponseModel)
     jest.spyOn(api, 'listOfferersNames').mockResolvedValue({

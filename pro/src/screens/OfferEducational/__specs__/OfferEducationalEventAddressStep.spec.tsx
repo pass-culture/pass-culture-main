@@ -108,11 +108,9 @@ describe('screens | OfferEducational : event address step', () => {
             nonHumanizedId: 1,
             managedVenues: [
               managedVenueFactory({
-                id: firstVenueId,
                 nonHumanizedId: Number(firstVenueId),
               }),
               managedVenueFactory({
-                id: secondVenueId,
                 nonHumanizedId: Number(secondVenueId),
               }),
             ],
@@ -183,7 +181,6 @@ describe('screens | OfferEducational : event address step', () => {
               managedVenues: [
                 managedVenueFactory({}),
                 managedVenueFactory({
-                  id: venueId,
                   nonHumanizedId: Number(venueId),
                   collectiveInterventionArea: ['01', '02'],
                 }),
