@@ -14,7 +14,8 @@ const serializeDurationHour = (durationMinute: number): string => {
 
 const setInitialFormValues = (
   offer: OfferIndividual,
-  subCategoryList: OfferSubCategory[]
+  subCategoryList: OfferSubCategory[],
+  isBookingContactEnabled: boolean
 ): OfferIndividualFormValues => {
   const subCategory = subCategoryList.find(
     (s: OfferSubCategory) => s.id === offer.subcategoryId
@@ -26,7 +27,8 @@ const setInitialFormValues = (
 
   const { subCategoryFields } = buildSubCategoryFields(
     offer.subcategoryId,
-    subCategoryList
+    subCategoryList,
+    isBookingContactEnabled
   )
 
   return {
@@ -51,6 +53,7 @@ const setInitialFormValues = (
     withdrawalType: offer.withdrawalType || undefined,
     accessibility: offer.accessibility,
     bookingEmail: offer.bookingEmail,
+    bookingContact: offer.bookingContact || undefined,
     receiveNotificationEmails: !!offer.bookingEmail,
     author: offer.author,
     performer: offer.performer,

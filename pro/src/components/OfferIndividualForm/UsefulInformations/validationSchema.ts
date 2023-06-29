@@ -23,6 +23,14 @@ const validationSchema = {
             url ? url.match(offerFormUrlRegex) !== null : true,
         }),
   }),
+  bookingContact: yup.string().when('subCategoryFields', {
+    is: (subCategoryFields: string[]) =>
+      subCategoryFields.includes('bookingContact'),
+    then: schema =>
+      schema
+        .required('Veuillez renseigner une adresse email')
+        .email('Veuillez renseigner un email valide'),
+  }),
 }
 
 export default validationSchema

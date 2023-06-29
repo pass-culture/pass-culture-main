@@ -16,6 +16,7 @@ describe('setFormReadOnlyFields', () => {
       nonHumanizedId: 12,
       author: 'Offer author',
       bookingEmail: 'booking@email.com',
+      bookingContact: 'roberto@example.com',
       description: 'Offer description',
       durationMinutes: 140,
       isActive: true,
@@ -103,6 +104,7 @@ describe('setFormReadOnlyFields', () => {
         [AccessiblityEnum.NONE]: false,
       },
       bookingEmail: 'booking@email.com',
+      bookingContact: 'roberto@example.com',
       categoryId: 'CID',
       description: 'Offer description',
       isEvent: true,
@@ -139,12 +141,12 @@ describe('setFormReadOnlyFields', () => {
       externalTicketOfficeUrl: 'https://external.example.com',
     }
 
-    const initialFormValues = setInitialFormValues(offer, subCategoryList)
+    const initialFormValues = setInitialFormValues(offer, subCategoryList, true)
     expect(initialFormValues).toStrictEqual(expectedResult)
   })
 
   it("should throw error if sub category don't exist", () => {
-    expect(() => setInitialFormValues(offer, [])).toThrow(
+    expect(() => setInitialFormValues(offer, [], true)).toThrow(
       'La categorie de l’offre est introuvable'
     )
   })

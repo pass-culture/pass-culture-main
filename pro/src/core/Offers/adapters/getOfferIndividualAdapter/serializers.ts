@@ -138,6 +138,7 @@ export const serializeOfferApi = (
   const offer: OfferIndividual = {
     nonHumanizedId: apiOffer.nonHumanizedId,
     bookingEmail: apiOffer.bookingEmail || '',
+    bookingContact: apiOffer.bookingContact || '',
     description: apiOffer.description || '',
     durationMinutes: apiOffer.durationMinutes || null,
     isActive: apiOffer.isActive,

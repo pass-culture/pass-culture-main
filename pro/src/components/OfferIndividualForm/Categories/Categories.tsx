@@ -12,6 +12,7 @@ import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
 import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
 import { OfferIndividualVenue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { InfoBox, Select } from 'ui-kit'
 
 import styles from '../OfferIndividualForm.module.scss'
@@ -63,12 +64,19 @@ const Categories = ({
     values: { categoryId, subCategoryFields, offererId },
     setFieldValue,
   } = useFormikContext<OfferIndividualFormValues>()
+  const isBookingContactEnabled = useActiveFeature(
+    'WIP_MANDATORY_BOOKING_CONTACT'
+  )
   const categoryOptions = buildCategoryOptions(categories)
   const subcategoryOptions = buildSubcategoryOptions(subCategories, categoryId)
 
   const onSubCategoryChange = (newSubCategory: string) => {
     const { subCategoryFields: newSubCategoryFields, isEvent } =
-      buildSubCategoryFields(newSubCategory, subCategories)
+      buildSubCategoryFields(
+        newSubCategory,
+        subCategories,
+        isBookingContactEnabled
+      )
     setFieldValue('subCategoryFields', newSubCategoryFields)
     setFieldValue('isEvent', isEvent)
     setFieldValue(
