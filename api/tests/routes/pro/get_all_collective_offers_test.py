@@ -7,7 +7,6 @@ import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.factories as offerer_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
 
@@ -25,7 +24,7 @@ class Returns200Test:
         venue = offerer_factories.VenueFactory(managingOfferer=offerer)
         institution = educational_factories.EducationalInstitutionFactory()
         offer = educational_factories.CollectiveOfferFactory(venue=venue, offerId=1, institution=institution)
-        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
+        educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
 
         # When
         client = TestClient(app.test_client()).with_session_auth(email=user.email)
@@ -39,7 +38,6 @@ class Returns200Test:
         assert response_json[0]["venue"]["nonHumanizedId"] == venue.id
         assert response_json[0]["nonHumanizedId"] == offer.id
         assert len(response_json[0]["stocks"]) == 1
-        assert response_json[0]["stocks"][0]["id"] == humanize(stock.id)
         assert response_json[0]["isShowcase"] is False
         assert response_json[0]["educationalInstitution"]["name"] == institution.name
         assert response_json[0]["imageCredit"] is None
@@ -134,7 +132,6 @@ class Returns200Test:
         assert response_json[0]["venue"]["nonHumanizedId"] == venue.id
         assert response_json[0]["nonHumanizedId"] == offer.id
         assert len(response_json[0]["stocks"]) == 1
-        assert response_json[0]["stocks"][0]["id"] == ""
         assert response_json[0]["isShowcase"] is True
         assert response_json[0]["imageCredit"] is None
         assert response_json[0]["imageUrl"] is None
@@ -159,7 +156,7 @@ class Returns200Test:
             imageId="00000125999999",
             imageCredit="template",
         )
-        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
+        educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
 
         # When
         client = TestClient(app.test_client()).with_session_auth(email=user.email)
@@ -173,7 +170,6 @@ class Returns200Test:
         assert response_json[0]["venue"]["nonHumanizedId"] == venue.id
         assert response_json[0]["nonHumanizedId"] == template.id
         assert len(response_json[0]["stocks"]) == 1
-        assert response_json[0]["stocks"][0]["id"] == ""
         assert response_json[0]["isShowcase"] is True
         assert response_json[0]["imageCredit"] == "template"
         assert (
@@ -183,7 +179,6 @@ class Returns200Test:
         assert response_json[1]["venue"]["nonHumanizedId"] == venue.id
         assert response_json[1]["nonHumanizedId"] == offer.id
         assert len(response_json[1]["stocks"]) == 1
-        assert response_json[1]["stocks"][0]["id"] == humanize(stock.id)
         assert response_json[1]["isShowcase"] is False
         assert response_json[1]["imageCredit"] == "offer"
         assert response_json[1]["imageUrl"] == f"http://localhost/storage/thumbs/collectiveoffer/{offer.imageId}.jpg"
@@ -240,7 +235,7 @@ class Returns200Test:
         assert isinstance(response_json, list)
         assert len(response_json) == 501
         for i in range(501):
-            assert response_json[i]["id"] == humanize(offers[-(i + 1)].id)
+            assert response_json[i]["nonHumanizedId"] == offers[-(i + 1)].id
             assert response_json[i]["isShowcase"] != isinstance(offers[-(i + 1)], educational_models.CollectiveOffer)
 
     def test_mix_collective_offer_and_template_no_user(self, app):
@@ -308,7 +303,7 @@ class Returns200Test:
         offerer_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerer_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.CollectiveOfferFactory(venue=venue, offerId=1)
-        stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
+        educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
         educational_factories.CollectiveOfferTemplateFactory(venue=venue, offerId=1)
 
         # When
@@ -323,7 +318,6 @@ class Returns200Test:
         assert response_json[0]["venue"]["nonHumanizedId"] == venue.id
         assert response_json[0]["nonHumanizedId"] == offer.id
         assert len(response_json[0]["stocks"]) == 1
-        assert response_json[0]["stocks"][0]["id"] == humanize(stock.id)
         assert response_json[0]["isShowcase"] is False
 
     def test_select_only_collective_offer_template(self, app):
@@ -352,5 +346,4 @@ class Returns200Test:
         assert response_json[0]["venue"]["nonHumanizedId"] == venue.id
         assert response_json[0]["nonHumanizedId"] == template.id
         assert len(response_json[0]["stocks"]) == 1
-        assert response_json[0]["stocks"][0]["id"] == ""
         assert response_json[0]["isShowcase"] is True

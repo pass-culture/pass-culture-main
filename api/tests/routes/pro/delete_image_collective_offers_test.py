@@ -7,7 +7,6 @@ from pcapi import settings
 from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.utils.human_ids import humanize
 
 import tests
 
@@ -38,14 +37,12 @@ class DeleteImageFromFileTest:
         }
 
         response = client.with_session_auth(email="user@example.com").post(
-            f"/collective/offers/{humanize(offer.id)}/image", form=data
+            f"/collective/offers/{offer.id}/image", form=data
         )
 
         # when
 
-        response = client.with_session_auth(email="user@example.com").delete(
-            f"/collective/offers/{humanize(offer.id)}/image"
-        )
+        response = client.with_session_auth(email="user@example.com").delete(f"/collective/offers/{offer.id}/image")
 
         # then
 
@@ -64,9 +61,7 @@ class DeleteImageFromFileTest:
         )
 
         # when
-        response = client.with_session_auth(email="user@example.com").delete(
-            f"/collective/offers/{humanize(offer2.id)}/image"
-        )
+        response = client.with_session_auth(email="user@example.com").delete(f"/collective/offers/{offer2.id}/image")
 
         # then
         assert response.status_code == 403

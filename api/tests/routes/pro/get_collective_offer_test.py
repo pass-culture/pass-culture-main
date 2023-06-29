@@ -10,7 +10,6 @@ import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.utils.human_ids import humanize
 
 
 @pytest.mark.usefixtures("db_session")
@@ -51,7 +50,7 @@ class Returns200Test:
             "lastName": offer.teacher.lastName,
             "civility": offer.teacher.civility,
         }
-        assert response_json["templateId"] == humanize(template.id)
+        assert response_json["templateId"] == template.id
 
     def test_sold_out(self, client):
         # Given
