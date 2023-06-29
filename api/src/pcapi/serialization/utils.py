@@ -6,7 +6,6 @@ import pydantic
 import pytz
 
 from pcapi.models.api_errors import ApiErrors
-from pcapi.utils import human_ids
 
 
 def to_camel(string: str) -> str:
@@ -52,30 +51,6 @@ def before_handler(
         raise api_errors
 
 
-def humanize_id(id_to_humanize: int | str | None) -> str | None:
-    if id_to_humanize is None:
-        return None
-
-    # This is because humanize_id will be called on a int the first time
-    # and then on ids already humanized. humanize can't work with string
-    if isinstance(id_to_humanize, int):
-        return human_ids.humanize(id_to_humanize)
-
-    return str(id_to_humanize)
-
-
-def dehumanize_id(id_to_dehumanize: int | str | None) -> int | None:
-    if id_to_dehumanize is None:
-        return None
-
-    # This is because dehumanize_id will be called on a str the first time
-    # and then on ids already dehumanized. dehumanize can't work with int
-    if isinstance(id_to_dehumanize, str):
-        return human_ids.dehumanize(id_to_dehumanize)
-
-    return int(id_to_dehumanize)
-
-
 def check_string_is_not_empty(string: str) -> str:
     if not string or string.isspace():
         raise pydantic.MissingError()
@@ -98,18 +73,6 @@ def string_to_boolean(string: str) -> bool | None:
         return {"true": True, "false": False}[string]
     except KeyError:
         raise pydantic.ValidationError("La valeur reçu doit être soit 'true' soit 'false'")  # type: ignore [call-arg]
-
-
-def humanize_field(field_name: str) -> classmethod:
-    return pydantic.validator(field_name, pre=True, allow_reuse=True)(humanize_id)
-
-
-def dehumanize_field(field_name: str) -> classmethod:
-    return pydantic.validator(field_name, pre=True, allow_reuse=True)(dehumanize_id)
-
-
-def dehumanize_list_field(field_name: str) -> classmethod:
-    return pydantic.validator(field_name, pre=True, allow_reuse=True)(human_ids.dehumanize_ids_list)
 
 
 def validate_not_empty_string_when_provided(field_name: str) -> classmethod:
