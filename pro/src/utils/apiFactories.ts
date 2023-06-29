@@ -4,9 +4,12 @@ import {
   GetOfferManagingOffererResponseModel,
   GetOfferStockResponseModel,
   GetOfferVenueResponseModel,
+  GetOffererResponseModel,
+  GetOffererVenueResponseModel,
   OfferStatus,
   SubcategoryIdEnum,
   VenueListItemResponseModel,
+  VenueTypeCode,
 } from 'apiClient/v1'
 import { BookingRecapStatus } from 'apiClient/v1/models/BookingRecapStatus'
 
@@ -187,3 +190,36 @@ export const bookingRecapFactory = (
     ...customBookingRecap,
   }
 }
+
+export const defautGetOffererResponseModel: GetOffererResponseModel = {
+  address: 'Fake Address',
+  apiKey: {
+    maxAllowed: 10,
+    prefixes: [],
+  },
+  city: 'Fake City',
+  dateCreated: '2022-01-01T00:00:00Z',
+  fieldsUpdated: [],
+  hasAvailablePricingPoints: false,
+  hasDigitalVenueAtLeastOneOffer: false,
+  isActive: false,
+  isValidated: false,
+  managedVenues: [],
+  name: 'Ma super structure',
+  nonHumanizedId: 0,
+  postalCode: '00000',
+}
+
+export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
+  {
+    id: '1',
+    collectiveDmsApplications: [],
+    hasAdageId: false,
+    hasCreatedOffer: false,
+    hasMissingReimbursementPoint: false,
+    isVirtual: false,
+    managingOffererId: '1',
+    name: 'Mon super lieu',
+    nonHumanizedId: 0,
+    venueTypeCode: VenueTypeCode.LIEU_ADMINISTRATIF,
+  }

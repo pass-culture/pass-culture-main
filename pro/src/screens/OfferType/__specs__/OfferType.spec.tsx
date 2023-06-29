@@ -8,7 +8,12 @@ import { CancelablePromise, GetOffererResponseModel } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as useNotification from 'hooks/useNotification'
-import { collectiveOfferFactory } from 'utils/apiFactories'
+import {
+  collectiveOfferFactory,
+  defaultGetOffererVenueResponseModel,
+  defautGetOffererResponseModel,
+} from 'utils/apiFactories'
+import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferType from '../OfferType'
@@ -187,6 +192,42 @@ describe('screens:OfferIndividual::OfferType', () => {
     expect(
       await screen.findByText(
         'Pour proposer des offres à destination d’un groupe scolaire, vous devez être référencé auprès du ministère de l’Éducation Nationale et du ministère de la Culture.'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should display dms application banner if offerer can not create collective offer but as dms application', async () => {
+    jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [{ nonHumanizedId: 1, name: 'Ma super structure' }],
+    })
+    const offerer: GetOffererResponseModel = {
+      ...defautGetOffererResponseModel,
+      managedVenues: [
+        {
+          ...defaultGetOffererVenueResponseModel,
+          id: 'venue1',
+          collectiveDmsApplications: [
+            {
+              ...defaultCollectiveDmsApplication,
+              application: 1,
+              lastChangeDate: '2021-01-01T00:00:00Z',
+            },
+          ],
+        },
+      ],
+    }
+    jest.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
+    jest.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValue({})
+    renderOfferTypes(store, 'offererId')
+
+    await userEvent.click(
+      screen.getByRole('radio', { name: 'À un groupe scolaire' })
+    )
+    expect(api.canOffererCreateEducationalOffer).toHaveBeenCalledTimes(1)
+
+    expect(
+      await screen.findByText(
+        'Vous avez une demande de référencement en cours de traitement'
       )
     ).toBeInTheDocument()
   })

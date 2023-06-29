@@ -1,11 +1,8 @@
-import {
-  BannerMetaModel,
-  DMSApplicationForEAC,
-  GetVenueResponseModel,
-} from 'apiClient/v1'
+import { BannerMetaModel, GetVenueResponseModel } from 'apiClient/v1'
 import { VenueBannerMetaProps } from 'components/VenueForm/ImageUploaderVenue/ImageUploaderVenue'
 import { AccessiblityEnum } from 'core/shared'
 import { Venue } from 'core/Venue'
+import { getLastCollectiveDmsApplication } from 'utils/getLastCollectiveDmsApplication'
 
 export const serializeVenueApi = (venue: GetVenueResponseModel): Venue => {
   const venueAccessibility = {
@@ -96,18 +93,4 @@ const serializeBannerMetaApi = (
       height_crop_percent: apiBannerMeta.crop_params?.height_crop_percent || 0,
     },
   }
-}
-
-/* istanbul ignore next: DEBT, TO FIX */
-export const getLastCollectiveDmsApplication = (
-  collectiveDmsApplications: DMSApplicationForEAC[]
-) => {
-  if (!collectiveDmsApplications || collectiveDmsApplications.length === 0) {
-    return null
-  }
-  return collectiveDmsApplications.reduce((previous, current) =>
-    new Date(previous.lastChangeDate) > new Date(current.lastChangeDate)
-      ? previous
-      : current
-  )
 }

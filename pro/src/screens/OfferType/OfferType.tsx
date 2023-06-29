@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { DMSApplicationForEAC } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import {
@@ -38,6 +39,7 @@ import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapt
 import { Banner } from 'ui-kit'
 import RadioButtonWithImage from 'ui-kit/RadioButtonWithImage'
 import Spinner from 'ui-kit/Spinner/Spinner'
+import { getLastDmsApplicationForOfferer } from 'utils/getLastCollectiveDmsApplication'
 
 import ActionsBar from './ActionsBar/ActionsBar'
 import styles from './OfferType.module.scss'
@@ -65,6 +67,9 @@ const OfferType = (): JSX.Element => {
   const [isLoadingValidation, setIsLoadingValidation] = useState(false)
   const [isEligible, setIsEligible] = useState(false)
   const [isValidated, setIsValidated] = useState(true)
+  const [lastDmsApplication, setLastDmsApplication] = useState<
+    DMSApplicationForEAC | null | undefined
+  >(null)
 
   useEffect(() => {
     const getTemplateCollectiveOffers = async () => {
@@ -114,6 +119,11 @@ const OfferType = (): JSX.Element => {
       if (queryOffererId !== null) {
         const response = await api.getOfferer(Number(queryOffererId))
         setIsValidated(response.isValidated)
+        const lastDmsApplication = getLastDmsApplicationForOfferer(
+          queryVenueId,
+          response
+        )
+        setLastDmsApplication(lastDmsApplication)
       }
       setIsLoadingValidation(false)
     }
@@ -372,7 +382,20 @@ const OfferType = (): JSX.Element => {
             )}
             {values.offerType === OFFER_TYPES.EDUCATIONAL &&
               !isEligible &&
-              !isLoadingEligibility && (
+              !isLoadingEligibility &&
+              !isLoadingValidation &&
+              (lastDmsApplication ? (
+                <Banner
+                  links={[
+                    {
+                      href: `/structures/${queryOffererId}/lieux/${lastDmsApplication?.venueId}#venue-collective-data`,
+                      linkTitle: 'Voir ma demande de référencement',
+                    },
+                  ]}
+                >
+                  Vous avez une demande de référencement en cours de traitement
+                </Banner>
+              ) : (
                 <Banner
                   links={[
                     {
@@ -390,7 +413,7 @@ const OfferType = (): JSX.Element => {
                   vous devez être référencé auprès du ministère de l’Éducation
                   Nationale et du ministère de la Culture.
                 </Banner>
-              )}
+              ))}
             <ActionsBar
               disableNextButton={
                 values.offerType === OFFER_TYPES.EDUCATIONAL && !isEligible
