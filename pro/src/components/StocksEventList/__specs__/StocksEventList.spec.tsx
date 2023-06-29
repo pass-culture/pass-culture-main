@@ -338,7 +338,7 @@ describe('StocksEventList', () => {
     ).toBeInTheDocument()
 
     // going page 2 ...and select one less line
-    await userEvent.click(screen.getByAltText('Page suivante'))
+    await userEvent.click(screen.getByRole('button', { name: 'Page suivante' }))
     expect(screen.getByText('Page 2/3')).toBeInTheDocument()
     const secondPageCheckboxes = screen.getAllByRole('checkbox')
     await userEvent.click(secondPageCheckboxes[1])
@@ -346,7 +346,7 @@ describe('StocksEventList', () => {
       screen.getByText(`${STOCKS_PER_PAGE} dates sélectionnées`)
     ).toBeInTheDocument()
 
-    await userEvent.click(screen.getByAltText('Page suivante'))
+    await userEvent.click(screen.getByRole('button', { name: 'Page suivante' }))
     expect(screen.getByText('Page 3/3')).toBeInTheDocument()
 
     // delete by action bar
@@ -420,8 +420,8 @@ describe('StocksEventList', () => {
     })
 
     // going page 3 (last page)
-    await userEvent.click(screen.getByAltText('Page suivante'))
-    await userEvent.click(screen.getByAltText('Page suivante'))
+    await userEvent.click(screen.getByRole('button', { name: 'Page suivante' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Page suivante' }))
     expect(screen.getByText('Page 3/3')).toBeInTheDocument()
     // delete by trash icon
     await userEvent.click(screen.getAllByText('Supprimer')[0])

@@ -353,7 +353,7 @@ describe('components | BookingsRecapTable', () => {
     // When
     renderBookingRecap(props)
 
-    const nextPageButton = await screen.findByAltText('Page suivante')
+    const nextPageButton = screen.getByRole('button', { name: 'Page suivante' })
 
     expect(screen.getByText('Page 1/11'))
 
