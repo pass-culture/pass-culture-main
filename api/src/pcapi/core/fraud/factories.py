@@ -11,6 +11,7 @@ from factory.declarations import LazyAttribute
 import factory.fuzzy
 import pytz
 
+from pcapi import settings
 from pcapi.core import testing
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
@@ -133,12 +134,12 @@ class ProfileCompletionContentFactory(factory.Factory):
         model = models.ProfileCompletionContent
 
     activity = "Lycéen"
-    address = factory.Faker("address")
+    address = factory.Faker("address", locale="fr_FR")
     city = factory.Faker("city")
     first_name = factory.Faker("first_name")
     last_name = factory.Faker("last_name")
     origin = "In app"
-    postal_code = factory.Faker("postcode")
+    postal_code = factory.Faker("postcode", locale="fr_FR")
     school_type = None
 
 

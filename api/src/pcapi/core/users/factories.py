@@ -161,8 +161,10 @@ class ProfileCompletedUserFactory(PhoneValidatedUserFactory):
 
     address = factory.Faker("street_address", locale="fr_FR")
     city = factory.Faker("city", locale="fr_FR")
-    firstName = factory.Faker("first_name", locale="fr_FR")
-    lastName = factory.Faker("last_name", locale="fr_FR")
+    # locale is set to "en_UK" not to have accents, 'ç' or other french fantaisies
+    # An easy way to generate email from names without any conversion
+    firstName = factory.Faker("first_name", locale="en_UK")
+    lastName = factory.Faker("last_name", locale="en_UK")
     postalCode = factory.Faker("postcode")
 
     @classmethod
@@ -171,8 +173,19 @@ class ProfileCompletedUserFactory(PhoneValidatedUserFactory):
     ) -> list[fraud_models.BeneficiaryFraudCheck]:
         import pcapi.core.fraud.factories as fraud_factories
 
+        obj.email = f"{obj.firstName}.{obj.lastName}.{obj.id}@passculture.gen".lower()
+
         fraud_checks = super().beneficiary_fraud_checks(obj, **kwargs)
-        fraud_checks.append(fraud_factories.ProfileCompletionFraudCheckFactory(user=obj))
+        fraud_checks.append(
+            fraud_factories.ProfileCompletionFraudCheckFactory(
+                user=obj,
+                resultContent__address=obj.address,
+                resultContent__city=obj.city,
+                resultContent__firstName=obj.firstName,
+                resultContent__lastName=obj.lastName,
+                resultContent__postalCode=obj.postalCode,
+            )
+        )
         return fraud_checks
 
     @factory.post_generation
