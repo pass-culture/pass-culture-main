@@ -77,6 +77,8 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-accessibility-brain.svg' },
   { src: 'icons/stroke-duplicate-offer.svg' },
   { src: 'icons/stroke-close.svg' },
+  { src: 'icons/stroke-left.svg' },
+  { src: 'icons/stroke-right.svg' },
 ]
 
 const shadowIcons: IconListItem[] = [
@@ -93,7 +95,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-eye-open-filled-black.svg' },
   { src: 'icons/fraud.svg', viewBox: '0 0 88 88' },
   { src: 'icons/ico-guichet-full.svg' },
-  { src: 'icons/ico-left-arrow.svg', viewBox: '0 0 24 24' },
   { src: 'icons/library.svg', viewBox: '0 0 49 48' },
   { src: 'icons/linear-gradient.svg', viewBox: '0 0 623 1024' }, // TODO replace by a jpg/png
   { src: 'icons/loader.svg', viewBox: '0 0 32 32' },
@@ -102,10 +103,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/logo-pass-culture.svg', viewBox: '0 0 114 84' },
   { src: 'icons/logo-pass-culture-header.svg', viewBox: '0 0 119 40' },
   { src: 'icons/logo-pass-culture-white.svg', viewBox: '0 0 282 120' },
-  { src: 'icons/ico-mini-arrow-left.svg', viewBox: '0 0 24 24' },
-  { src: 'icons/ico-mini-arrow-right.svg', viewBox: '0 0 24 24' },
-  { src: 'icons/ico-more-circle.svg', viewBox: '0 0 25 24' },
-  { src: 'icons/ico-more-horiz.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-new-offer.svg', viewBox: '0 0 40 40' },
   { src: 'icons/ico-no-bookings.svg', viewBox: '0 0 124 124' },
   { src: 'icons/ico-404.svg', viewBox: '0 0 308 194' },
@@ -118,7 +115,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/pending.svg', viewBox: '0 0 44 44' },
   { src: 'icons/ico-radio-off.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-radio-on.svg', viewBox: '0 0 16 16' },
-  { src: 'icons/ico-right-arrow.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-search-gray.svg', viewBox: '0 0 124 125' },
   { src: 'icons/ico-separator.svg', viewBox: '0 0 20 1' },
   { src: 'icons/ico-signout.svg', viewBox: '0 0 48 49' },
