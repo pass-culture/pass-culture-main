@@ -21,7 +21,10 @@
   width: fit-content;
 }
 
-.booking-status-wrapper img {
+.booking-status-icon {
+  width: rem.torem(17px);
+  height: rem.torem(17px);
+  color: colors.$white;
   padding-right: rem.torem(4px);
   vertical-align: middle;
 }
