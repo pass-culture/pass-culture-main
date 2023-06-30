@@ -662,11 +662,16 @@ def delete_past_draft_collective_offers() -> None:
 
 
 def get_available_activation_code(stock: models.Stock) -> models.ActivationCode | None:
-    return models.ActivationCode.query.filter(
-        models.ActivationCode.stockId == stock.id,
-        models.ActivationCode.bookingId.is_(None),
-        sa.or_(models.ActivationCode.expirationDate.is_(None), models.ActivationCode.expirationDate > sa.func.now()),
-    ).first()
+    activable_code = next(
+        (
+            code
+            for code in stock.activationCodes
+            if code.bookingId is None
+            and (code.expirationDate is None or code.expirationDate > datetime.datetime.utcnow())
+        ),
+        None,
+    )
+    return activable_code
 
 
 def get_offer_by_id(offer_id: int) -> models.Offer:
