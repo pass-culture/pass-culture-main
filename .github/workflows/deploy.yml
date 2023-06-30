@@ -148,6 +148,7 @@ jobs:
     with:
       ENV: testing
       CHANNEL: "live"
+      REF: ${{ github.ref }}
   
   deploy-pro-on-firebase:
     name: Deploy pro
