@@ -3,9 +3,9 @@ import React from 'react'
 
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
 import { ReactComponent as DateIcon } from 'icons/ico-date.svg'
-import { ReactComponent as VirtualEventIcon } from 'icons/ico-virtual-event.svg'
-import { ReactComponent as VirtualThingIcon } from 'icons/ico-virtual-thing.svg'
 import thingStrokeIcon from 'icons/stroke-thing.svg'
+import strokeVirtualEventIcon from 'icons/stroke-virtual-event.svg'
+import strokeVirtualThingIcon from 'icons/stroke-virtual-thing.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import style from './OfferSubtypeTag.module.scss'
@@ -48,14 +48,14 @@ export const OfferSubtypeTag = ({
     case INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT:
       return (
         <Tag className={className}>
-          <VirtualEventIcon />
+          <SvgIcon src={strokeVirtualEventIcon} alt="" />
           Évènement numérique
         </Tag>
       )
     case INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD:
       return (
         <Tag className={className}>
-          <VirtualThingIcon />
+          <SvgIcon src={strokeVirtualThingIcon} alt="" />
           Bien numérique
         </Tag>
       )

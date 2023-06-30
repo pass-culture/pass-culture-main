@@ -26,15 +26,15 @@ import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import calendarCheckIcon from 'icons/ico-calendar-check.svg'
-import caseIcon from 'icons/ico-case.svg'
 import dateIcon from 'icons/ico-date.svg'
-import newOfferIcon from 'icons/ico-new-offer.svg'
-import templateOfferIcon from 'icons/ico-template-offer.svg'
-import virtualEventIcon from 'icons/ico-virtual-event.svg'
-import virtualThingIcon from 'icons/ico-virtual-thing.svg'
 import duplicateOfferIcon from 'icons/stroke-duplicate-offer.svg'
+import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
+import strokeProfIcon from 'icons/stroke-prof.svg'
+import strokeTemplateOfferIcon from 'icons/stroke-template-offer.svg'
 import thingStrokeIcon from 'icons/stroke-thing.svg'
+import strokeVirtualEventIcon from 'icons/stroke-virtual-event.svg'
+import strokeVirtualThingIcon from 'icons/stroke-virtual-thing.svg'
 import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapters'
 import { Banner } from 'ui-kit'
 import RadioButtonWithImage from 'ui-kit/RadioButtonWithImage'
@@ -209,7 +209,7 @@ const OfferType = (): JSX.Element => {
                 />
                 <RadioButtonWithImage
                   name="offerType"
-                  icon={caseIcon}
+                  icon={strokeProfIcon}
                   isChecked={values.offerType === OFFER_TYPES.EDUCATIONAL}
                   label="À un groupe scolaire"
                   onChange={handleChange}
@@ -245,7 +245,7 @@ const OfferType = (): JSX.Element => {
                   <FormLayout.Row inline mdSpaceAfter>
                     <RadioButtonWithImage
                       name="collectiveOfferSubtype"
-                      icon={templateOfferIcon}
+                      icon={strokeTemplateOfferIcon}
                       isChecked={
                         values.collectiveOfferSubtype ===
                         COLLECTIVE_OFFER_SUBTYPE.TEMPLATE
@@ -284,7 +284,7 @@ const OfferType = (): JSX.Element => {
                   <RadioButtonWithImage
                     className={styles['individual-radio-button']}
                     name="individualOfferSubtype"
-                    icon={virtualThingIcon}
+                    icon={strokeVirtualThingIcon}
                     isChecked={
                       values.individualOfferSubtype ===
                       INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD
@@ -318,7 +318,7 @@ const OfferType = (): JSX.Element => {
                   <RadioButtonWithImage
                     className={styles['individual-radio-button']}
                     name="individualOfferSubtype"
-                    icon={virtualEventIcon}
+                    icon={strokeVirtualEventIcon}
                     isChecked={
                       values.individualOfferSubtype ===
                       INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT
@@ -344,7 +344,7 @@ const OfferType = (): JSX.Element => {
                   <FormLayout.Row inline mdSpaceAfter>
                     <RadioButtonWithImage
                       name="collectiveOfferSubtypeDuplicate"
-                      icon={newOfferIcon}
+                      icon={strokeNewOfferIcon}
                       isChecked={
                         values.collectiveOfferSubtypeDuplicate ===
                         COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER

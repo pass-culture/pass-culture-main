@@ -1,7 +1,7 @@
 import React from 'react'
 
-import { CaseIcon } from 'icons'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
+import strokeProfIcon from 'icons/stroke-prof.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { StepComponentProps } from '../types'
@@ -28,7 +28,7 @@ const CreateOffer = ({
         </p>
       </div>
       <div className={styles['two-columns-section-block']}>
-        <CaseIcon />
+        <SvgIcon src={strokeProfIcon} alt="" />
         <h2>Des établissements scolaires</h2>
         <p>
           Les offres seront publiées et réservables par les enseignants sur la
