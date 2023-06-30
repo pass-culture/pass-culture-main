@@ -16,13 +16,17 @@ import {
   FacetFiltersContext,
   FiltersContext,
 } from 'pages/AdageIframe/app/providers'
+import { AnalyticsContext } from 'pages/AdageIframe/app/providers/AnalyticsContextProvider'
+import { Filters } from 'pages/AdageIframe/app/types'
 import Tabs from 'ui-kit/Tabs'
+import { LOGS_DATA } from 'utils/config'
 import { getDefaultFacetFilterUAICodeValue } from 'utils/facetFilters'
 
 import { populateFacetFilters } from '../utils'
 
-import { OfferFilters } from './OfferFilters/OfferFilters'
+import { OfferFilters } from './OfferFilters/OldOfferFilters'
 import { Offers } from './Offers/Offers'
+import { SearchBox } from './SearchBox/SearchBox'
 
 export interface SearchProps extends SearchBoxProvided {
   removeVenueFilter: () => void
@@ -34,7 +38,7 @@ enum OfferTab {
   ASSOCIATED_TO_INSTITUTION = 'associatedToInstitution',
 }
 
-export const OffersSearchComponent = ({
+export const OldOffersSearchComponent = ({
   removeVenueFilter,
   venueFilter,
   refine,
@@ -44,7 +48,8 @@ export const OffersSearchComponent = ({
 
   const { dispatchCurrentFilters, currentFilters } = useContext(FiltersContext)
   const { setFacetFilters } = useContext(FacetFiltersContext)
-  const { removeQuery } = useContext(AlgoliaQueryContext)
+  const { query, removeQuery, setQueryTag } = useContext(AlgoliaQueryContext)
+  const { setFiltersKeys, setHasClickedSearch } = useContext(AnalyticsContext)
   const adageUser = useAdageUser()
   const userUAICode = adageUser.uai
   const uaiCodeAllInstitutionsTab = userUAICode ? ['all', userUAICode] : ['all']
@@ -60,6 +65,7 @@ export const OffersSearchComponent = ({
         ...currentFilters,
         venueFilter,
         uai:
+          /* istanbul ignore next: DEBT to fix and the file will be deleted at the same time as the ff */
           tab === OfferTab.ASSOCIATED_TO_INSTITUTION
             ? uaiCodeShareWithMyInstitutionTab
             : uaiCodeAllInstitutionsTab,
@@ -67,6 +73,7 @@ export const OffersSearchComponent = ({
     )
   }
 
+  /* istanbul ignore next: DEBT to fix and the file will be deleted at the same time as the ff */
   const tabs = [
     {
       label: 'Toutes les offres',
@@ -82,11 +89,33 @@ export const OffersSearchComponent = ({
     },
   ]
 
+  const handleLaunchSearchButton = (filters: Filters): void => {
+    setIsLoading(true)
+    const updatedFilters = populateFacetFilters({
+      ...filters,
+      venueFilter,
+      uai:
+        /* istanbul ignore next: DEBT to fix and the file will be deleted at the same time as the ff */
+        activeTab === OfferTab.ASSOCIATED_TO_INSTITUTION
+          ? uaiCodeShareWithMyInstitutionTab
+          : uaiCodeAllInstitutionsTab,
+    })
+    setFacetFilters(updatedFilters.queryFilters)
+    /* istanbul ignore next: DEBT to fix and the file will be deleted at the same time as the ff */
+    if (LOGS_DATA) {
+      setFiltersKeys(updatedFilters.filtersKeys)
+      setHasClickedSearch(true)
+    }
+    setQueryTag(query)
+    refine(query)
+  }
+
   const handleResetFiltersAndLaunchSearch = useCallback(() => {
     setIsLoading(true)
     removeQuery()
     removeVenueFilter()
     dispatchCurrentFilters({ type: 'RESET_CURRENT_FILTERS' })
+    /* istanbul ignore next: DEBT to fix and the file will be deleted at the same time as the ff */
     setFacetFilters(
       activeTab === OfferTab.ASSOCIATED_TO_INSTITUTION
         ? [`offer.educationalInstitutionUAICode:${adageUser.uai}`]
@@ -102,10 +131,14 @@ export const OffersSearchComponent = ({
       {!!adageUser.uai && !isNewHeaderActive && (
         <Tabs selectedKey={activeTab} tabs={tabs} />
       )}
+      <SearchBox refine={refine} />
       <OfferFilters
         className="search-filters"
+        handleLaunchSearchButton={handleLaunchSearchButton}
         isLoading={isLoading}
-        refine={refine}
+        removeVenueFilter={removeVenueFilter}
+        user={adageUser}
+        venueFilter={venueFilter}
       />
       <div className="search-results">
         <Offers
@@ -119,4 +152,6 @@ export const OffersSearchComponent = ({
   )
 }
 
-export const OffersSearch = connectSearchBox<SearchProps>(OffersSearchComponent)
+export const OldOffersSearch = connectSearchBox<SearchProps>(
+  OldOffersSearchComponent
+)
