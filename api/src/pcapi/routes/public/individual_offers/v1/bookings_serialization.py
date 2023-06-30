@@ -6,6 +6,7 @@ import pydantic
 from pcapi.core.bookings import models as booking_models
 from pcapi.core.finance import utils as finance_utils
 from pcapi.routes import serialization
+from pcapi.routes.public.individual_offers.v1.base_serialization import PaginationQueryParams
 from pcapi.routes.public.individual_offers.v1.serialization import Pagination
 from pcapi.utils import date as date_utils
 
@@ -14,11 +15,6 @@ class StrEnum(str, enum.Enum):
     # StrEnum is needed so that swagger ui displays the enum values
     # see https://github.com/swagger-api/swagger-ui/issues/6906
     pass
-
-
-class PaginationQueryParams(serialization.ConfiguredBaseModel):
-    limit: int = pydantic.Field(50, le=50, gt=0, description="Maximum number of items per page.")
-    page: int = pydantic.Field(1, ge=1, description="Page number of the items to return.")
 
 
 class GetBookingResponse(serialization.ConfiguredBaseModel):
