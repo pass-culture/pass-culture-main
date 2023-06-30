@@ -64,51 +64,53 @@ export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
           <Icon svg="logo-pass-culture-adage" alt="Logo du pass Culture" />
         </div>
         <div className={styles['adage-header-menu']}>
-          <NavLink
-            to={`/adage-iframe?token=${adageAuthToken}`}
-            end
-            className={({ isActive }) => {
-              return cn(styles['adage-header-item'], {
-                [styles['adage-header-item-active']]: isActive,
-              })
-            }}
-            onClick={() => logAdageLinkClick(AdageHeaderLink.SEARCH)}
-          >
-            <SearchIcon className={styles['adage-header-item-icon']} />
-            Rechercher
-          </NavLink>
           {adageUser.role !== AdageFrontRoles.READONLY && (
-            <NavLink
-              to={`/adage-iframe/mon-etablissement?token=${adageAuthToken}`}
-              className={({ isActive }) => {
-                return cn(styles['adage-header-item'], {
-                  [styles['adage-header-item-active']]: isActive,
-                })
-              }}
-              onClick={() =>
-                logAdageLinkClick(AdageHeaderLink.MY_INSTITUTION_OFFERS)
-              }
-            >
-              <InstitutionIcon className={styles['adage-header-item-icon']} />
-              Pour mon établissement
-              <div className={styles['adage-header-nb-hits']}>
-                {hits.length}
-              </div>
-            </NavLink>
+            <>
+              <NavLink
+                to={`/adage-iframe?token=${adageAuthToken}`}
+                end
+                className={({ isActive }) => {
+                  return cn(styles['adage-header-item'], {
+                    [styles['adage-header-item-active']]: isActive,
+                  })
+                }}
+                onClick={() => logAdageLinkClick(AdageHeaderLink.SEARCH)}
+              >
+                <SearchIcon className={styles['adage-header-item-icon']} />
+                Rechercher
+              </NavLink>
+              <NavLink
+                to={`/adage-iframe/mon-etablissement?token=${adageAuthToken}`}
+                className={({ isActive }) => {
+                  return cn(styles['adage-header-item'], {
+                    [styles['adage-header-item-active']]: isActive,
+                  })
+                }}
+                onClick={() =>
+                  logAdageLinkClick(AdageHeaderLink.MY_INSTITUTION_OFFERS)
+                }
+              >
+                <InstitutionIcon className={styles['adage-header-item-icon']} />
+                Pour mon établissement
+                <div className={styles['adage-header-nb-hits']}>
+                  {hits.length}
+                </div>
+              </NavLink>
+              <a
+                href={`${document.referrer}adage/passculture/index`}
+                className={styles['adage-header-item']}
+                target="_parent"
+                onClick={() => logAdageLinkClick(AdageHeaderLink.ADAGE_LINK)}
+              >
+                <SvgIcon
+                  alt=""
+                  src={strokeBookedIcon}
+                  className={styles['adage-header-item-icon']}
+                />
+                Suivi
+              </a>
+            </>
           )}
-          <a
-            href={`${document.referrer}adage/passculture/index`}
-            className={styles['adage-header-item']}
-            target="_parent"
-            onClick={() => logAdageLinkClick(AdageHeaderLink.ADAGE_LINK)}
-          >
-            <SvgIcon
-              alt=""
-              src={strokeBookedIcon}
-              className={styles['adage-header-item-icon']}
-            />
-            Suivi
-          </a>
         </div>
         {!isLoading && (
           <div className={styles['adage-header-menu-budget']}>
@@ -124,22 +126,24 @@ export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
           </div>
         )}
       </nav>
-      <div className={styles['adage-header-help']}>
-        Besoin d'aide pour réserver des offres pass Culture ?
-        <ButtonLink
-          variant={ButtonVariant.TERNARY}
-          link={{
-            to: `${document.referrer}adage/index/docGet/format/pptx/doc/PRESENTATION_J_UTILISE_PASS_CULTURE`,
-            isExternal: true,
-            download: true,
-            rel: 'noreferrer',
-            target: '_blank',
-          }}
-          Icon={FullDownloadIcon}
-        >
-          Télécharger l'aide
-        </ButtonLink>
-      </div>
+      {adageUser.role !== AdageFrontRoles.READONLY && (
+        <div className={styles['adage-header-help']}>
+          Besoin d'aide pour réserver des offres pass Culture ?
+          <ButtonLink
+            variant={ButtonVariant.TERNARY}
+            link={{
+              to: `${document.referrer}adage/index/docGet/format/pptx/doc/PRESENTATION_J_UTILISE_PASS_CULTURE`,
+              isExternal: true,
+              download: true,
+              rel: 'noreferrer',
+              target: '_blank',
+            }}
+            Icon={FullDownloadIcon}
+          >
+            Télécharger l'aide
+          </ButtonLink>
+        </div>
+      )}
     </div>
   )
 }
