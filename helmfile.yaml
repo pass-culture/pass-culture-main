@@ -33,4 +33,4 @@ environments:
       - chartVersion: 0.21.7
   perf:
     values:
-      - chartVersion: 0.21.8
+      - chartVersion: 0.21.9
