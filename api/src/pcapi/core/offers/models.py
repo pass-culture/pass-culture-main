@@ -364,6 +364,8 @@ class WithdrawalTypeEnum(enum.Enum):
 class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, AccessibilityMixin):
     __tablename__ = "offer"
 
+    MAX_STOCKS_PER_OFFER = 10_000
+
     ageMin = sa.Column(sa.Integer, nullable=True)
     ageMax = sa.Column(sa.Integer, nullable=True)
     author: sa_orm.Mapped["User"] | None = relationship("User", backref="offers", uselist=False)
