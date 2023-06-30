@@ -190,8 +190,6 @@ class OfferResponse(BaseModel):
         offer.expense_domains = get_expense_domains(offer)
         offer.isExpired = offer.hasBookingLimitDatetimesPassed
         offer.metadata = offer_metadata.get_metadata_from_offer(offer)
-        if offer.stocks:
-            offer.stocks = offer.activeStocks
 
         result = super().from_orm(offer)
 
@@ -204,6 +202,8 @@ class OfferResponse(BaseModel):
             result.extraData.durationMinutes = offer.durationMinutes
         else:
             result.extraData = OfferExtraData(durationMinutes=offer.durationMinutes)
+
+        result.stocks = [OfferStockResponse.from_orm(stock) for stock in offer.activeStocks]
 
         return result
 
