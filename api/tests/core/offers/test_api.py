@@ -2106,7 +2106,8 @@ class UnindexExpiredOffersTest:
 
 @pytest.mark.usefixtures("db_session")
 class DeleteUnwantedExistingProductTest:
-    def test_delete_product_when_ean_found(self):
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_delete_product_when_ean_found(self, mocked_async_index_offer_ids):
         ean = "1111111111111"
         product_to_delete = factories.ProductFactory(
             idAtProviders=ean,
@@ -2129,7 +2130,10 @@ class DeleteUnwantedExistingProductTest:
         assert models.Offer.query.count() == 0
         assert users_models.Favorite.query.count() == 0
 
-    def test_keep_but_modify_product_if_booked(self):
+        mocked_async_index_offer_ids.assert_called_once_with([offer_to_delete.id])
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_keep_but_modify_product_if_booked(self, mocked_async_index_offer_ids):
         ean = "1111111111111"
         product = factories.ProductFactory(
             idAtProviders=ean,
@@ -2147,6 +2151,7 @@ class DeleteUnwantedExistingProductTest:
         assert models.Product.query.one() == product
         assert not product.isGcuCompatible
         assert not product.isSynchronizationCompatible
+        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
 
 @pytest.mark.usefixtures("db_session")

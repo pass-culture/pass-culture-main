@@ -1265,6 +1265,8 @@ def delete_unwanted_existing_product(idAtProviders: str) -> None:
         product.isGcuCompatible = False
         product.isSynchronizationCompatible = False
         repository.save(product)
+        offer_ids = [id_ for id_, in offers.with_entities(models.Offer.id)]
+        search.async_index_offer_ids(offer_ids)
         raise exceptions.CannotDeleteProductWithBookings()
 
     objects_to_delete = []
@@ -1279,6 +1281,7 @@ def delete_unwanted_existing_product(idAtProviders: str) -> None:
     favorites = users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).all()
     objects_to_delete = objects_to_delete + favorites
     repository.delete(*objects_to_delete)
+    search.async_index_offer_ids(offer_ids)
 
 
 def batch_delete_draft_offers(query: BaseQuery) -> None:
