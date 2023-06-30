@@ -16,6 +16,7 @@ import type { EducationalInstitutionWithBudgetResponseModel } from '../models/Ed
 import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
 import type { OfferIdBody } from '../models/OfferIdBody';
 import type { PostCollectiveRequestBodyModel } from '../models/PostCollectiveRequestBodyModel';
+import type { RedactorPreferences } from '../models/RedactorPreferences';
 import type { SearchBody } from '../models/SearchBody';
 import type { StockIdBody } from '../models/StockIdBody';
 import type { VenueResponse } from '../models/VenueResponse';
@@ -378,6 +379,27 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/offers/categories',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * save_redactor_preferences <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public saveRedactorPreferences(
+    requestBody?: RedactorPreferences,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/redactor/preferences',
+      body: requestBody,
+      mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
