@@ -14,7 +14,17 @@ on:
         type: string
 
 jobs:
+  build-and-tag-version:
+    name: Build and tag version
+    uses: ./.github/workflows/reusable--build-and-tag.yml
+    secrets: inherit
+    with:
+      base_ref: ${{ github.event.inputs.commitHash }}
+      tag_number: ${{ github.event.inputs.releaseNumber }}.0.0
+
   create-pro-staging-release:
+    needs:
+      - build-and-tag-version
     uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
     secrets:
       GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -24,8 +34,11 @@ jobs:
       CHANNEL: "${{ github.event.inputs.releaseNumber }}.0.0"
       EXPIRES: "30d"
       PUSH_RELEASE_TO_SENTRY: true
+      REF: v${{ github.event.inputs.releaseNumber }}.0.0
 
   create-pro-integration-release:
+    needs:
+      - build-and-tag-version
     uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
     secrets:
       GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -34,8 +47,11 @@ jobs:
       ENV: integration
       CHANNEL: "${{ github.event.inputs.releaseNumber }}.0.0"
       EXPIRES: "30d"
+      REF: v${{ github.event.inputs.releaseNumber }}.0.0
 
   create-pro-production-release:
+    needs:
+      - build-and-tag-version
     uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
     secrets:
       GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -44,14 +60,7 @@ jobs:
       ENV: production
       CHANNEL: "${{ github.event.inputs.releaseNumber }}.0.0"
       EXPIRES: "30d"
-
-  build-and-tag-version:
-    name: Build and tag version
-    uses: ./.github/workflows/reusable--build-and-tag.yml
-    secrets: inherit
-    with:
-      base_ref: ${{ github.event.inputs.commitHash }}
-      tag_number: ${{ github.event.inputs.releaseNumber }}.0.0
+      REF: v${{ github.event.inputs.releaseNumber }}.0.0
 
   create-maintenance-branch:
     name: Create maintenance branch
@@ -59,6 +68,7 @@ jobs:
       - build-and-tag-version
       - create-pro-production-release
       - create-pro-staging-release
+      - create-pro-integration-release
     runs-on: [self-hosted, linux, x64]
     env:
       MAINTENANCE_BRANCH: maint/v${{ github.event.inputs.releaseNumber }}
