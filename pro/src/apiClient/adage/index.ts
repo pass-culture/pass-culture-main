@@ -38,6 +38,7 @@ export type { OfferManagingOffererResponse } from './models/OfferManagingOfferer
 export type { OfferStockResponse } from './models/OfferStockResponse';
 export type { OfferVenueResponse } from './models/OfferVenueResponse';
 export type { PostCollectiveRequestBodyModel } from './models/PostCollectiveRequestBodyModel';
+export type { RedactorPreferences } from './models/RedactorPreferences';
 export type { SearchBody } from './models/SearchBody';
 export type { StockIdBody } from './models/StockIdBody';
 export { StudentLevels } from './models/StudentLevels';
