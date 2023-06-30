@@ -483,11 +483,23 @@ class OffersTest:
         offers_factories.StockFactory(offer=offer, quantity=1, isSoftDeleted=True)
         non_deleted_stock = offers_factories.StockFactory(offer=offer, quantity=1)
 
-        response = client.get(f"/native/v1/offer/{offer.id}")
+        with assert_no_duplicated_queries():
+            response = client.get(f"/native/v1/offer/{offer.id}")
 
         assert response.status_code == 200
         assert len(response.json["stocks"]) == 1
         assert response.json["stocks"][0]["id"] == non_deleted_stock.id
+
+    def should_not_update_offer_stocks_when_getting_offer(self, client):
+        offer = offers_factories.OfferFactory()
+        offers_factories.StockFactory(offer=offer, quantity=1, isSoftDeleted=True)
+        offers_factories.StockFactory(offer=offer, quantity=1)
+
+        response = client.get(f"/native/v1/offer/{offer.id}")
+
+        assert response.status_code == 200
+        assert len(response.json["stocks"]) == 1
+        assert len(offer.stocks) == 2
 
 
 class SendOfferWebAppLinkTest:
