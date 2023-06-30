@@ -64,6 +64,9 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-events.svg' },
   { src: 'icons/stroke-thing.svg' },
   { src: 'icons/stroke-duo.svg' },
+  { src: 'icons/stroke-virtual-event.svg' },
+  { src: 'icons/stroke-virtual-thing.svg' },
+  { src: 'icons/stroke-template-offer.svg' },
   { src: 'icons/stroke-mail.svg' }, // TODO 2 uses left in <Dialog>
   { src: 'icons/stroke-phone.svg' },
   { src: 'icons/stroke-home.svg' },
@@ -73,6 +76,7 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-hide.svg' }, // TODO 1 use left inside Button (PasswordInput)
   { src: 'icons/stroke-hourglass.svg' },
   { src: 'icons/stroke-like.svg' }, // TODO 1 use left inside Button
+  { src: 'icons/stroke-case.svg' },
   { src: 'icons/stroke-code.svg' },
   { src: 'icons/stroke-accessibility-eye.svg' },
   { src: 'icons/stroke-accessibility-ear.svg' },
@@ -80,6 +84,7 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-accessibility-brain.svg' },
   { src: 'icons/stroke-duplicate-offer.svg' },
   { src: 'icons/stroke-pie.svg' },
+  { src: 'icons/stroke-new-offer.svg' },
   { src: 'icons/stroke-close.svg' },
   { src: 'icons/stroke-left.svg' },
   { src: 'icons/stroke-right.svg' },
@@ -107,7 +112,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/logo-pass-culture.svg', viewBox: '0 0 114 84' },
   { src: 'icons/logo-pass-culture-header.svg', viewBox: '0 0 119 40' },
   { src: 'icons/logo-pass-culture-white.svg', viewBox: '0 0 282 120' },
-  { src: 'icons/ico-new-offer.svg', viewBox: '0 0 40 40' },
   { src: 'icons/ico-no-bookings.svg', viewBox: '0 0 124 124' },
   { src: 'icons/ico-404.svg', viewBox: '0 0 308 194' },
   { src: 'icons/ico-notification-success.svg', viewBox: '0 0 20 20' },
@@ -138,7 +142,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-status-validated-white.svg', viewBox: '0 0 17 17' },
   { src: 'icons/ico-success.svg', viewBox: '0 0 88 88' },
   { src: 'icons/ico-tag.svg', viewBox: '0 0 33 33' },
-  { src: 'icons/ico-template-offer.svg' },
   { src: 'icons/ticket-cross.svg', viewBox: '0 0 100 80' },
   { src: 'icons/ico-trash.svg' },
   { src: 'icons/ico-trophee.svg', viewBox: '0 0 24 25' },
@@ -153,7 +156,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-arrow-up-b.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-calendar-check.svg', viewBox: '0 0 48 48' },
   { src: 'icons/icon-calendar.svg', viewBox: '0 0 30 30' },
-  { src: 'icons/ico-case.svg', viewBox: '0 0 48 48' },
   { src: 'icons/ico-clock.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-date.svg', viewBox: '0 0 48 48' },
   { src: 'icons/ico-disconnect-full.svg', viewBox: '0 0 40 40' },
@@ -168,8 +170,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-trash-filled.svg', viewBox: '0 0 48 48' },
   { src: 'icons/venue-2.svg', viewBox: '0 0 40 40' },
   { src: 'icons/ico-venue.svg', viewBox: '0 0 28 23' },
-  { src: 'icons/ico-virtual-event.svg', viewBox: '0 0 48 48' },
-  { src: 'icons/ico-virtual-thing.svg', viewBox: '0 0 48 48' },
   { src: 'icons/ico-institution.svg', viewBox: '0 0 18 18' },
   { src: 'icons/logo-pass-culture-adage.svg', viewBox: '0 0 120 39' },
 ]

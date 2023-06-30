@@ -1,8 +1,8 @@
 import type { Story } from '@storybook/react'
 import React, { useState } from 'react'
 
-import CaseIcon from 'icons/ico-case.svg'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
+import strokeProfIcon from 'icons/stroke-prof.svg'
 
 import RadioButtonWithImage, {
   RadioButtonWithImageProps,
@@ -35,7 +35,7 @@ const Template: Story<RadioButtonWithImageProps> = ({ description }) => {
         description={description}
         isChecked={offerType == 'collective'}
         onChange={handleChange}
-        icon={CaseIcon}
+        icon={strokeProfIcon}
         value="collective"
       />
     </div>
