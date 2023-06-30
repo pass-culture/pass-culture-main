@@ -336,6 +336,28 @@ class GetPricingPointLinkTest:
         )
         assert api._get_pricing_point_link(booking) == current_link
 
+    def test_used_between_inactive_and_active_link(self):
+        # link:      |------|     |-----------
+        # used:                ^
+        booking = bookings_factories.BookingFactory(
+            dateUsed=datetime.datetime.utcnow() - datetime.timedelta(days=15),
+        )
+        _link1 = offerers_factories.VenuePricingPointLinkFactory(
+            venue=booking.venue,
+            timespan=(
+                datetime.datetime.utcnow() - datetime.timedelta(days=30),
+                datetime.datetime.utcnow() - datetime.timedelta(days=20),
+            ),
+        )
+        current_link = offerers_factories.VenuePricingPointLinkFactory(
+            venue=booking.venue,
+            timespan=(
+                datetime.datetime.utcnow() - datetime.timedelta(days=10),
+                None,
+            ),
+        )
+        assert api._get_pricing_point_link(booking) == current_link
+
     def test_used_before_start_of_only_inactive_link(self):
         # link:      |------|
         # used:   ^

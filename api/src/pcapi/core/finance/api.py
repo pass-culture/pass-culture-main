@@ -213,23 +213,29 @@ def price_bookings(
 def _get_pricing_point_link(
     booking: bookings_models.Booking | educational_models.CollectiveBooking,
 ) -> offerers_models.VenuePricingPointLink:
-    """Return the venue-pricing point link to use at the requested
-    datetime.
+    """Return the venue-pricing point link to use at the time the
+    booking was marked as used.
     """
     timestamp = booking.dateUsed
     links = booking.venue.pricing_point_links
+
     # Look for a link that was active at the requested date.
     for link in links:
         if timestamp < link.timespan.lower:
             continue
         if not link.timespan.upper or timestamp < link.timespan.upper:
             return link
-    # If a (single) link was added after and it's still active, we can
-    # use it.
-    if len(links) == 1 and links[0].timespan.upper is None:
-        return links[0]
-    # Otherwise, we just cannot know what to do. Raise an error so
-    # that we can investigate such cases.
+
+    # If a link was added after and it's still active, we can use it.
+    # On the other hand, if there are two links, and the second one is
+    # inactive, and the booking has been used before the *first* link,
+    # it's not clear what we should do (and we'll raise below).
+    links_after = [link for link in links if timestamp < link.timespan.lower]
+    if len(links_after) == 1 and links_after[0].timespan.upper is None:
+        return links_after[0]
+
+    # Otherwise, it's not clear what we should do. Raise an error so
+    # that we can investigate.
     raise ValueError(f"Could not find pricing point for booking {booking.id}")
 
 
