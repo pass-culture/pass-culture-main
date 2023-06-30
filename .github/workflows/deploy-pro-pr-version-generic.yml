@@ -16,6 +16,9 @@ on:
       EXPIRES:
         type: string
         default: "2d"
+      REF:
+        type: string
+        required: true
     secrets:
       GCP_SERVICE_ACCOUNT:
         required: true
@@ -32,6 +35,8 @@ jobs:
     if: ${{ github.actor != 'dependabot[bot]' }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.REF }}
       - id: openid-auth
         name: "OpenID Connect Authentication"
         uses: "google-github-actions/auth@v1"
