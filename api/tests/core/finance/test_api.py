@@ -41,6 +41,7 @@ import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.models import db
 from pcapi.utils import human_ids
+import pcapi.utils.db as db_utils
 
 import tests
 
@@ -290,6 +291,116 @@ class PriceCollectiveBookingTest:
         booking = UsedCollectiveBookingFactory(collectiveStock=collective_stock_factory(price=10))
         pricing = api.price_booking(booking)
         assert pricing.revenue == 0
+
+
+class GetPricingPointLinkTest:
+    def test_used_before_start_of_only_active_link(self):
+        # link:      |----------------------
+        # used:  ^
+        booking = bookings_factories.BookingFactory(
+            dateUsed=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            stock__offer__venue__pricing_point="self",
+        )
+        link = api._get_pricing_point_link(booking)
+        assert link.pricingPoint == booking.venue
+
+    def test_used_after_start_of_only_active_link(self):
+        # link:      |---------------------
+        # used:          ^
+        booking = bookings_factories.BookingFactory(
+            stock__offer__venue__pricing_point="self",
+            dateUsed=datetime.datetime.utcnow() + datetime.timedelta(days=1),
+        )
+        link = api._get_pricing_point_link(booking)
+        assert link.pricingPoint == booking.venue
+
+    def test_used_after_start_of_subsequent_active_link(self):
+        # link:      |----|   |---------------------
+        # used:                    ^
+        booking = bookings_factories.BookingFactory(
+            dateUsed=datetime.datetime.utcnow(),
+        )
+        _link1 = offerers_factories.VenuePricingPointLinkFactory(
+            venue=booking.venue,
+            timespan=(
+                datetime.datetime.utcnow() - datetime.timedelta(days=30),
+                datetime.datetime.utcnow() - datetime.timedelta(days=10),
+            ),
+        )
+        current_link = offerers_factories.VenuePricingPointLinkFactory(
+            venue=booking.venue,
+            timespan=(
+                datetime.datetime.utcnow() - datetime.timedelta(days=10),
+                None,
+            ),
+        )
+        assert api._get_pricing_point_link(booking) == current_link
+
+    def test_used_before_start_of_only_inactive_link(self):
+        # link:      |------|
+        # used:   ^
+        booking = bookings_factories.BookingFactory(
+            dateUsed=datetime.datetime.utcnow() - datetime.timedelta(days=10),
+            stock__offer__venue__pricing_point="self",
+        )
+        link = booking.venue.pricing_point_links[0]
+        link.timespan = db_utils.make_timerange(
+            datetime.datetime.utcnow() - datetime.timedelta(days=5),
+            datetime.datetime.utcnow() - datetime.timedelta(days=2),
+        )
+        db.session.commit()
+
+        with pytest.raises(ValueError):
+            api._get_pricing_point_link(booking)
+
+    def test_used_after_end_of_inactive_link(self):
+        # link:      |------|
+        # used:                 ^
+        booking = bookings_factories.BookingFactory(
+            dateUsed=datetime.datetime.utcnow() + datetime.timedelta(days=10),
+            stock__offer__venue__pricing_point="self",
+        )
+        link = booking.venue.pricing_point_links[0]
+        link.timespan = db_utils.make_timerange(
+            link.timespan.lower,
+            datetime.datetime.utcnow(),
+        )
+        db.session.commit()
+
+        with pytest.raises(ValueError):
+            api._get_pricing_point_link(booking)
+
+    def test_used_before_inactive_link_followed_by_active_link(self):
+        # link:      |------| |-----------
+        # used:   ^
+        #
+        # The behaviour is not clearly defined. We could raise an
+        # error, or choose the second (active) link (assuming that the
+        # first link was a mistake). We choose the former.
+        booking = bookings_factories.BookingFactory(
+            dateUsed=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            stock__offer__venue__siret=None,
+            stock__offer__venue__comment="no SIRET",
+        )
+        offerer = booking.venue.managingOfferer
+        pricing_point_1 = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_api.link_venue_to_pricing_point(booking.venue, pricing_point_1.id)
+        pricing_point_2 = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_api.link_venue_to_pricing_point(
+            booking.venue,
+            pricing_point_2.id,
+            force_link=True,
+        )
+
+        with pytest.raises(ValueError):
+            api._get_pricing_point_link(booking)
+
+    def test_no_link(self):
+        booking = bookings_factories.UsedBookingFactory()
+        assert not booking.venue.pricing_point_links
+
+        with pytest.raises(ValueError):
+            api._get_pricing_point_link(booking)
 
 
 class GetRevenuePeriodTest:
