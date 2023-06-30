@@ -1,4 +1,10 @@
 import { BOOKING_STATUS } from 'core/Bookings'
+import strokeCheckIcon from 'icons/stroke-check.svg'
+import strokeClockIcon from 'icons/stroke-clock.svg'
+import strokeDoubleCheckIcon from 'icons/stroke-double-check.svg'
+import strokeEuroIcon from 'icons/stroke-euro.svg'
+import strokeHourglassIcon from 'icons/stroke-hourglass.svg'
+import strokeWrongIcon from 'icons/stroke-wrong.svg'
 import { FORMAT_DD_MM_YYYY, FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
 
 import styles from './BookingStatus.module.scss'
@@ -11,7 +17,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     historyClassName: 'bs-history-validated',
     statusClassName: styles['booking-status-validated'],
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
-    svgIconFilename: 'ico-status-double-validated',
+    icon: strokeDoubleCheckIcon,
   },
   {
     id: BOOKING_STATUS.CANCELLED,
@@ -20,8 +26,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     historyClassName: 'bs-history-cancelled',
     statusClassName: styles['booking-status-cancelled'],
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
-    icon: 'ico-status-cancelled',
-    svgIconFilename: 'ico-status-cancelled',
+    icon: strokeWrongIcon,
   },
   {
     id: BOOKING_STATUS.BOOKED,
@@ -30,7 +35,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     historyClassName: 'bs-history-booked',
     statusClassName: styles['booking-status-booked'],
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
-    svgIconFilename: 'ico-status-booked',
+    icon: strokeClockIcon,
   },
   {
     id: BOOKING_STATUS.PENDING,
@@ -39,7 +44,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     historyClassName: 'bs-history-pending',
     statusClassName: styles['booking-status-pending'],
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
-    svgIconFilename: 'ico-status-pending-tag',
+    icon: strokeHourglassIcon,
   },
   {
     id: BOOKING_STATUS.REIMBURSED,
@@ -48,7 +53,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     historyClassName: 'bs-history-reimbursed',
     statusClassName: styles['booking-status-reimbursed'],
     dateFormat: FORMAT_DD_MM_YYYY,
-    svgIconFilename: 'ico-status-reimbursed',
+    icon: strokeEuroIcon,
   },
   {
     id: BOOKING_STATUS.CONFIRMED,
@@ -57,7 +62,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     historyClassName: 'bs-history-confirmed',
     statusClassName: styles['booking-status-confirmed'],
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
-    svgIconFilename: 'ico-status-validated-white',
+    icon: strokeCheckIcon,
   },
 ]
 
@@ -67,43 +72,42 @@ const COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     status: 'Terminée',
     label: 'Votre évènement a eu lieu',
     statusClassName: styles['booking-status-validated'],
-    svgIconFilename: 'ico-status-double-validated',
+    icon: strokeDoubleCheckIcon,
   },
   {
     id: BOOKING_STATUS.CANCELLED,
     status: 'Annulée',
     label: 'Réservation annulée',
     statusClassName: styles['booking-status-cancelled'],
-    icon: 'ico-status-cancelled',
-    svgIconFilename: 'ico-status-cancelled',
+    icon: strokeWrongIcon,
   },
   {
     id: BOOKING_STATUS.BOOKED,
     status: 'Réservée',
     label: 'Le chef d’établissement scolaire a réservé.',
     statusClassName: styles['booking-status-booked'],
-    svgIconFilename: 'ico-status-booked',
+    icon: strokeClockIcon,
   },
   {
     id: BOOKING_STATUS.PENDING,
     status: 'Préréservée',
     label: 'L’enseignant a préréservé.',
     statusClassName: styles['booking-status-pending'],
-    svgIconFilename: 'ico-status-pending-tag',
+    icon: strokeHourglassIcon,
   },
   {
     id: BOOKING_STATUS.REIMBURSED,
     status: 'Remboursée',
     label: 'La réservation a été remboursée',
     statusClassName: styles['booking-status-reimbursed'],
-    svgIconFilename: 'ico-status-reimbursed',
+    icon: strokeEuroIcon,
   },
   {
     id: BOOKING_STATUS.CONFIRMED,
     status: 'Confirmée',
     label: 'L’établissement scolaire ne peut plus annuler la réservation',
     statusClassName: styles['booking-status-confirmed'],
-    svgIconFilename: 'ico-status-validated-white',
+    icon: strokeCheckIcon,
   },
 ]
 

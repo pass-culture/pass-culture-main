@@ -6,7 +6,7 @@ import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
-import Icon from 'ui-kit/Icon/Icon'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import Tooltip from 'ui-kit/Tooltip'
 
 import {
@@ -32,9 +32,10 @@ const BookingStatusCell = ({
     const bookingDisplayInfo =
       getCollectiveBookingStatusDisplayInformations(lastBookingStatus)
     const tooltipId = `tooltip-${bookingRecapInfo.id}`
+    if (!bookingDisplayInfo) return null
 
     return (
-      <Tooltip content={bookingDisplayInfo?.label} id={tooltipId}>
+      <Tooltip content={bookingDisplayInfo.label} id={tooltipId}>
         <div
           className={cn(
             styles['booking-status-label'],
@@ -43,8 +44,12 @@ const BookingStatusCell = ({
           )}
           aria-describedby={tooltipId}
         >
-          <Icon svg={bookingDisplayInfo?.svgIconFilename} />
-          <span>{bookingDisplayInfo?.status.toLowerCase()}</span>
+          <SvgIcon
+            src={bookingDisplayInfo.icon}
+            alt={bookingDisplayInfo.label}
+            className={styles['booking-status-icon']}
+          />
+          <span>{bookingDisplayInfo.status.toLowerCase()}</span>
         </div>
       </Tooltip>
     )
@@ -57,8 +62,6 @@ const BookingStatusCell = ({
 
   const statusName = bookingDisplayInfo?.status.toLowerCase()
   const amount = computeBookingAmount(bookingRecapInfo.original.bookingAmount)
-  const icon = bookingDisplayInfo?.svgIconFilename
-
   function computeBookingAmount(amount: number) {
     const FREE_AMOUNT = 'Gratuit'
     const AMOUNT_SUFFIX = '\u00a0€'
@@ -73,7 +76,14 @@ const BookingStatusCell = ({
         bookingDisplayInfo?.statusClassName
       )}
     >
-      <Icon svg={icon} />
+      {bookingDisplayInfo && (
+        <SvgIcon
+          src={bookingDisplayInfo.icon}
+          alt={bookingDisplayInfo.label}
+          className={styles['booking-status-icon']}
+        />
+      )}
+
       <span>{statusName}</span>
       <div className={styles['bs-tooltip']}>
         <div className={styles['bs-offer-title']}>{offerName}</div>
