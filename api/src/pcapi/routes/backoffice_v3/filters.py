@@ -361,8 +361,16 @@ def format_offer_validation_sub_rule_field(sub_rule_field: offers_models.OfferVa
             return "La description de l'offre collective vitrine"
         case offers_models.OfferValidationSubRuleField.SUBCATEGORY_OFFER:
             return "La sous-catégorie de l'offre individuelle"
+        case offers_models.OfferValidationSubRuleField.SUBCATEGORY_COLLECTIVE_OFFER:
+            return "La sous-catégorie de l'offre collective"
+        case offers_models.OfferValidationSubRuleField.SUBCATEGORY_COLLECTIVE_OFFER_TEMPLATE:
+            return "La sous-catégorie de l'offre collective vitrine"
         case offers_models.OfferValidationSubRuleField.CATEGORY_OFFER:
             return "La catégorie de l'offre individuelle"
+        case offers_models.OfferValidationSubRuleField.CATEGORY_COLLECTIVE_OFFER:
+            return "La catégorie de l'offre collective"
+        case offers_models.OfferValidationSubRuleField.CATEGORY_COLLECTIVE_OFFER_TEMPLATE:
+            return "La catégorie de l'offre collective vitrine"
         case offers_models.OfferValidationSubRuleField.SHOW_SUB_TYPE_OFFER:
             return "Le sous-type de spectacle de l'offre individuelle"
         case offers_models.OfferValidationSubRuleField.ID_OFFERER:

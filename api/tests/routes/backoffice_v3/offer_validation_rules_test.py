@@ -47,7 +47,7 @@ class ListRulesTest(GetEndpointHelper):
             model=offers_models.OfferValidationModel.OFFER,
             attribute=offers_models.OfferValidationAttribute.NAME,
             operator=offers_models.OfferValidationRuleOperator.CONTAINS,
-            comparated={"comparated": ["suspicious", "verboten", "interdit"]},
+            comparated={"comparated": ["interdit", "suspicious", "verboten"]},
         )
 
         response = authenticated_client.get(url_for(self.endpoint))
@@ -120,13 +120,13 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
                 {
                     "sub_rules-0-sub_rule_type": "DESCRIPTION_OFFER",
                     "sub_rules-0-operator": "CONTAINS_EXACTLY",
-                    "sub_rules-0-list_field": "suspicious, verboten, interdit",
+                    "sub_rules-0-list_field": "interdit, suspicious, verboten",
                 },
                 {
                     "model": offers_models.OfferValidationModel.OFFER,
                     "attribute": offers_models.OfferValidationAttribute.DESCRIPTION,
                     "operator": offers_models.OfferValidationRuleOperator.CONTAINS_EXACTLY,
-                    "comparated": {"comparated": ["suspicious", "verboten", "interdit"]},
+                    "comparated": {"comparated": ["interdit", "suspicious", "verboten"]},
                 },
             ),
             (
@@ -146,7 +146,7 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
                 {
                     "sub_rules-0-sub_rule_type": "OFFER_TYPE",
                     "sub_rules-0-operator": "NOT_IN",
-                    "sub_rules-0-offer_type": ["COLLECTIVE_OFFER_TEMPLATE"],
+                    "sub_rules-0-offer_type": ["CollectiveOfferTemplate"],
                 },
                 {
                     "model": None,
@@ -280,7 +280,7 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
         sub_rule_data = get_empty_sub_rule_data() | {
             "sub_rules-0-sub_rule_type": "DESCRIPTION_OFFER",
             "sub_rules-0-operator": "CONTAINS_EXACTLY",
-            "sub_rules-0-list_field": "suspicious, verboten, interdit",
+            "sub_rules-0-list_field": "interdit, suspicious, verboten",
         }
         form = {"name": ""} | sub_rule_data
 
@@ -311,7 +311,7 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
     def test_create_offer_validation_rule_without_operator(self, authenticated_client):
         sub_rule_data = get_empty_sub_rule_data() | {
             "sub_rules-0-sub_rule_type": "DESCRIPTION_OFFER",
-            "sub_rules-0-list_field": "suspicious, verboten, interdit",
+            "sub_rules-0-list_field": "interdit, suspicious, verboten",
         }
         form = {"name": "First rule of robotics"} | sub_rule_data
 
@@ -347,7 +347,7 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
         sub_rule_data = get_empty_sub_rule_data() | {
             "sub_rules-0-sub_rule_type": "DESCRIPTION_OFFER",
             "sub_rules-0-operator": "EQUALS",
-            "sub_rules-0-list_field": "suspicious, verboten, interdit",
+            "sub_rules-0-list_field": "interdit, suspicious, verboten",
         }
         form = {"name": ""} | sub_rule_data
 
@@ -374,7 +374,7 @@ class GetDeleteOfferValidationRuleFormTest(GetEndpointHelper):
             model=offers_models.OfferValidationModel.OFFER,
             attribute=offers_models.OfferValidationAttribute.NAME,
             operator=offers_models.OfferValidationRuleOperator.CONTAINS,
-            comparated={"comparated": ["suspicious", "verboten", "interdit"]},
+            comparated={"comparated": ["interdit", "suspicious", "verboten"]},
         )
         form_url = url_for(self.endpoint, rule_id=rule.id)
 
@@ -395,14 +395,14 @@ class DeleteOfferValidationRuleTest(PostEndpointHelper):
             model=offers_models.OfferValidationModel.OFFER,
             attribute=offers_models.OfferValidationAttribute.NAME,
             operator=offers_models.OfferValidationRuleOperator.CONTAINS,
-            comparated={"comparated": ["suspicious", "verboten", "interdit"]},
+            comparated={"comparated": ["interdit", "suspicious", "verboten"]},
         )
         sub_rule_2 = offers_factories.OfferValidationSubRuleFactory(
             validationRule=rule,
             model=offers_models.OfferValidationModel.OFFER,
             attribute=offers_models.OfferValidationAttribute.DESCRIPTION,
             operator=offers_models.OfferValidationRuleOperator.CONTAINS_EXACTLY,
-            comparated={"comparated": ["suspicious", "verboten", "interdit"]},
+            comparated={"comparated": ["interdit", "suspicious", "verboten"]},
         )
 
         response = self.post_to_endpoint(authenticated_client, rule_id=rule.id)
@@ -429,7 +429,7 @@ class GetEditOfferValidationRuleFormTest(GetEndpointHelper):
             model=offers_models.OfferValidationModel.OFFER,
             attribute=offers_models.OfferValidationAttribute.NAME,
             operator=offers_models.OfferValidationRuleOperator.CONTAINS,
-            comparated={"comparated": ["suspicious", "verboten", "interdit"]},
+            comparated={"comparated": ["interdit", "suspicious", "verboten"]},
         )
         form_url = url_for(self.endpoint, rule_id=rule.id)
 
@@ -443,14 +443,6 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
     endpoint_kwargs = {"rule_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
-    ## edit one rule to one rule
-    # modify only comparated
-    # modify operator
-    # modify sub_rule_type
-    # modify only name
-    ## edit one rule to two rule
-    ## edit two rule to one rule
-
     def test_edit_offer_validation_rule(self, legit_user, authenticated_client):
         rule = offers_factories.OfferValidationRuleFactory(
             name="First rule of robotics", dateModified=datetime.datetime.utcnow() - datetime.timedelta(days=1)
@@ -460,13 +452,13 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
             model=offers_models.OfferValidationModel.OFFER,
             attribute=offers_models.OfferValidationAttribute.NAME,
             operator=offers_models.OfferValidationRuleOperator.CONTAINS,
-            comparated={"comparated": ["suspicious", "verboten", "interdit"]},
+            comparated={"comparated": ["interdit", "suspicious", "verboten"]},
         )
         sub_rule_data = get_empty_sub_rule_data() | {
             "sub_rules-0-id": str(sub_rule.id),
             "sub_rules-0-sub_rule_type": "DESCRIPTION_OFFER",
             "sub_rules-0-operator": "CONTAINS",
-            "sub_rules-0-list_field": "suspicious, verboten, interdit, pifpafpouf",
+            "sub_rules-0-list_field": "interdit, suspicious, verboten, ajout",
         }
         form = {"name": "Second rule of robotics"} | sub_rule_data
 
@@ -485,7 +477,7 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
         assert rule.subRules[0].model == offers_models.OfferValidationModel.OFFER
         assert rule.subRules[0].attribute == offers_models.OfferValidationAttribute.DESCRIPTION
         assert rule.subRules[0].operator == offers_models.OfferValidationRuleOperator.CONTAINS
-        assert rule.subRules[0].comparated == {"comparated": ["suspicious", "verboten", "interdit", "pifpafpouf"]}
+        assert rule.subRules[0].comparated == {"comparated": ["ajout", "interdit", "suspicious", "verboten"]}
 
     def test_edit_offer_validation_rule_add_sub_rule(self, legit_user, authenticated_client):
         rule = offers_factories.OfferValidationRuleFactory(
@@ -496,19 +488,20 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
             model=offers_models.OfferValidationModel.OFFER,
             attribute=offers_models.OfferValidationAttribute.NAME,
             operator=offers_models.OfferValidationRuleOperator.CONTAINS,
-            comparated={"comparated": ["suspicious", "verboten", "interdit"]},
+            comparated={"comparated": ["interdit", "suspicious", "verboten"]},
         )
+        old_sub_rule_id = sub_rule.id
         sub_rule_data_0 = get_empty_sub_rule_data(0) | {
-            "sub_rules-0-id": str(sub_rule.id),
+            "sub_rules-0-id": str(old_sub_rule_id),
             "sub_rules-0-sub_rule_type": "DESCRIPTION_OFFER",
             "sub_rules-0-operator": "CONTAINS",
-            "sub_rules-0-list_field": "suspicious, verboten, interdit, pifpafpouf",
+            "sub_rules-0-list_field": "interdit, suspicious, verboten, ajout",
         }
         sub_rule_data_1 = get_empty_sub_rule_data(1) | {
             "sub_rules-1-id": None,
             "sub_rules-1-sub_rule_type": "DESCRIPTION_COLLECTIVE_OFFER",
             "sub_rules-1-operator": "CONTAINS_EXACTLY",
-            "sub_rules-1-list_field": "suspicious, verboten, interdit",
+            "sub_rules-1-list_field": "interdit, suspicious, verboten",
         }
         form = {"name": "Second rule of robotics"} | sub_rule_data_0 | sub_rule_data_1
 
@@ -523,16 +516,16 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
         assert rule.name == "Second rule of robotics"
         assert rule.latestAuthor == legit_user
         assert rule.dateModified.date() == datetime.date.today()
-        assert rule.subRules[0].id == sub_rule.id
+        assert rule.subRules[0].id == old_sub_rule_id
         assert rule.subRules[0].model == offers_models.OfferValidationModel.OFFER
         assert rule.subRules[0].attribute == offers_models.OfferValidationAttribute.DESCRIPTION
         assert rule.subRules[0].operator == offers_models.OfferValidationRuleOperator.CONTAINS
-        assert rule.subRules[0].comparated == {"comparated": ["suspicious", "verboten", "interdit", "pifpafpouf"]}
-        assert rule.subRules[1].id != sub_rule.id
+        assert rule.subRules[0].comparated == {"comparated": ["ajout", "interdit", "suspicious", "verboten"]}
+        assert rule.subRules[1].id != old_sub_rule_id
         assert rule.subRules[1].model == offers_models.OfferValidationModel.COLLECTIVE_OFFER
         assert rule.subRules[1].attribute == offers_models.OfferValidationAttribute.DESCRIPTION
         assert rule.subRules[1].operator == offers_models.OfferValidationRuleOperator.CONTAINS_EXACTLY
-        assert rule.subRules[1].comparated == {"comparated": ["suspicious", "verboten", "interdit"]}
+        assert rule.subRules[1].comparated == {"comparated": ["interdit", "suspicious", "verboten"]}
 
     def test_edit_offer_validation_rule_delete_sub_rule(self, legit_user, authenticated_client):
         rule = offers_factories.OfferValidationRuleFactory(
@@ -543,14 +536,14 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
             model=offers_models.OfferValidationModel.OFFER,
             attribute=offers_models.OfferValidationAttribute.NAME,
             operator=offers_models.OfferValidationRuleOperator.CONTAINS,
-            comparated={"comparated": ["suspicious", "verboten", "interdit"]},
+            comparated={"comparated": ["interdit", "suspicious", "verboten"]},
         )
         sub_rule_2 = offers_factories.OfferValidationSubRuleFactory(
             validationRule=rule,
             model=offers_models.OfferValidationModel.COLLECTIVE_OFFER,
             attribute=offers_models.OfferValidationAttribute.NAME,
             operator=offers_models.OfferValidationRuleOperator.CONTAINS_EXACTLY,
-            comparated={"comparated": ["suspicious", "verboten", "interdit"]},
+            comparated={"comparated": ["interdit", "suspicious", "verboten"]},
         )
         sub_rule_data_0 = get_empty_sub_rule_data(0) | {
             "sub_rules-0-id": None,
@@ -587,6 +580,6 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
         assert rule.subRules[1].model == offers_models.OfferValidationModel.OFFER
         assert rule.subRules[1].attribute == offers_models.OfferValidationAttribute.DESCRIPTION
         assert rule.subRules[1].operator == offers_models.OfferValidationRuleOperator.CONTAINS
-        assert rule.subRules[1].comparated == {"comparated": ["Riri", "Fifi", "Loulou"]}
+        assert rule.subRules[1].comparated == {"comparated": ["Fifi", "Loulou", "Riri"]}
 
         assert not offers_models.OfferValidationRule.query.filter_by(id=sub_rule_2.id).one_or_none()

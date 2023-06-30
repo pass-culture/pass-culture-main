@@ -788,8 +788,24 @@ class OfferValidationSubRuleField(enum.Enum):
         "model": OfferValidationModel.OFFER,
         "attribute": OfferValidationAttribute.SUBCATEGORY_ID,
     }
+    SUBCATEGORY_COLLECTIVE_OFFER = {
+        "model": OfferValidationModel.COLLECTIVE_OFFER,
+        "attribute": OfferValidationAttribute.SUBCATEGORY_ID,
+    }
+    SUBCATEGORY_COLLECTIVE_OFFER_TEMPLATE = {
+        "model": OfferValidationModel.COLLECTIVE_OFFER_TEMPLATE,
+        "attribute": OfferValidationAttribute.SUBCATEGORY_ID,
+    }
     CATEGORY_OFFER = {
         "model": OfferValidationModel.OFFER,
+        "attribute": OfferValidationAttribute.CATEGORY,
+    }
+    CATEGORY_COLLECTIVE_OFFER = {
+        "model": OfferValidationModel.COLLECTIVE_OFFER,
+        "attribute": OfferValidationAttribute.CATEGORY,
+    }
+    CATEGORY_COLLECTIVE_OFFER_TEMPLATE = {
+        "model": OfferValidationModel.COLLECTIVE_OFFER_TEMPLATE,
         "attribute": OfferValidationAttribute.CATEGORY,
     }
     SHOW_SUB_TYPE_OFFER = {

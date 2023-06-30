@@ -57,10 +57,14 @@ def _get_offerers_data_for_rules(rules: list[offers_models.OfferValidationRule])
 def list_rules() -> utils.BackofficeResponse:
     form = forms.SearchRuleForm(formdata=utils.get_query_params())
 
-    base_query = offers_models.OfferValidationRule.query.outerjoin(offers_models.OfferValidationSubRule).options(
-        sa.orm.joinedload(offers_models.OfferValidationRule.latestAuthor).load_only(
-            users_models.User.firstName, users_models.User.lastName, users_models.User.email
+    base_query = (
+        offers_models.OfferValidationRule.query.outerjoin(offers_models.OfferValidationSubRule)
+        .options(
+            sa.orm.joinedload(offers_models.OfferValidationRule.latestAuthor).load_only(
+                users_models.User.firstName, users_models.User.lastName, users_models.User.email
+            )
         )
+        .order_by(offers_models.OfferValidationRule.name)
     )
 
     if not form.validate():

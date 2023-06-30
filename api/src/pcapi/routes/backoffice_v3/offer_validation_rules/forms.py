@@ -55,7 +55,11 @@ OFFER_VALIDATION_SUB_RULE_FORM_FIELD_CONFIGURATION = {
         "operator": ["CONTAINS", "CONTAINS_EXACTLY"],
     },
     "SUBCATEGORY_OFFER": {"field": "subcategories", "operator": ["IN", "NOT_IN"]},
+    "SUBCATEGORY_COLLECTIVE_OFFER": {"field": "subcategories", "operator": ["IN", "NOT_IN"]},
+    "SUBCATEGORY_COLLECTIVE_OFFER_TEMPLATE": {"field": "subcategories", "operator": ["IN", "NOT_IN"]},
     "CATEGORY_OFFER": {"field": "categories", "operator": ["IN", "NOT_IN"]},
+    "CATEGORY_COLLECTIVE_OFFER": {"field": "categories", "operator": ["IN", "NOT_IN"]},
+    "CATEGORY_COLLECTIVE_OFFER_TEMPLATE": {"field": "categories", "operator": ["IN", "NOT_IN"]},
     "SHOW_SUB_TYPE_OFFER": {"field": "show_sub_type", "operator": ["IN", "NOT_IN"]},
     "ID_OFFERER": {"field": "offerer", "operator": ["IN", "NOT_IN"]},
 }
@@ -72,9 +76,9 @@ class SearchRuleForm(FlaskForm):
 
 
 class OfferType(enum.Enum):
-    OFFER = "Offre"
-    COLLECTIVE_OFFER = "Offre collective"
-    COLLECTIVE_OFFER_TEMPLATE = "Offre collective vitrine"
+    Offer = "Offre individuelle"
+    ColelctiveOffer = "Offre collective"
+    CollectiveOfferTemplate = "Offre collective vitrine"
 
 
 class OfferValidationSubRuleForm(FlaskForm):
@@ -159,6 +163,7 @@ class OfferValidationSubRuleForm(FlaskForm):
                     "Seuls des groupes de mots séparés par des virgules sont autorisés"
                 )
             list_field.data = [keyword.strip() for keyword in re.split(r",+", list_field.data) if keyword.strip()]
+            list_field.data.sort()
         else:
             list_field.data = []
         return list_field
@@ -169,12 +174,6 @@ class OfferValidationSubRuleForm(FlaskForm):
             if self.form_field_configuration.get(self.sub_rule_type.data, {}).get("field") == "offer_type"
             else []
         )
-        offer_type_dict = {
-            "OFFER": "Offer",
-            "COLLECTIVE_OFFER": "CollectiveOffer",
-            "COLLECTIVE_OFFER_TEMPLATE": "CollectiveOfferTemplate",
-        }
-        offer_type.data = [offer_type_dict[offer_type] for offer_type in offer_type.data]
         return offer_type
 
     def validate_offerer(self, offerer: fields.PCTomSelectField) -> fields.PCSelectMultipleField:
@@ -219,7 +218,13 @@ class OfferValidationSubRuleForm(FlaskForm):
 
 
 class CreateOfferValidationRuleForm(FlaskForm):
-    name = fields.PCStringField("Nom de la règle")
+    name = fields.PCStringField(
+        "Nom de la règle",
+        validators=(
+            wtforms.validators.InputRequired("Information obligatoire"),
+            wtforms.validators.Length(max=256, message="ne doit pas dépasser %(max)d caractères"),
+        ),
+    )
     sub_rules = fields.PCFieldListField(
         fields.PCFormField(OfferValidationSubRuleForm), label="Sous-règles", min_entries=1
     )
