@@ -142,4 +142,24 @@ describe('AdageHeader', () => {
 
     expect(apiAdage.getEducationalInstitutionWithBudget).not.toHaveBeenCalled()
   })
+
+  it('should not display adage link when user is readonly ', async () => {
+    jest.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
+
+    renderAdageHeader([], { ...user, role: AdageFrontRoles.READONLY })
+
+    expect(
+      screen.queryByRole('link', { name: 'Suivi' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should not display help download link when user is readonly ', async () => {
+    jest.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
+
+    renderAdageHeader([], { ...user, role: AdageFrontRoles.READONLY })
+
+    expect(
+      screen.queryByRole('link', { name: "Télécharger l'aide" })
+    ).not.toBeInTheDocument()
+  })
 })
