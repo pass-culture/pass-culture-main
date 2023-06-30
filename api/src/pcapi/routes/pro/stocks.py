@@ -35,6 +35,10 @@ def _get_existing_stocks(
     return {existing_stocks.id: existing_stocks for existing_stocks in existing_stocks}
 
 
+def _get_number_of_existing_stocks(offer_id: int) -> int:
+    return offers_models.Stock.query.filter_by(offerId=offer_id).count()
+
+
 @private_api.route("/stocks/bulk", methods=["POST"])
 @login_required
 @spectree_serialize(
@@ -57,6 +61,17 @@ def upsert_stocks(body: serialization.StocksUpsertBodyModel) -> serialization.St
 
     stocks_to_edit = [stock for stock in body.stocks if isinstance(stock, serialization.StockEditionBodyModel)]
     stocks_to_create = [stock for stock in body.stocks if isinstance(stock, serialization.StockCreationBodyModel)]
+    if stocks_to_create:
+        number_of_existing_stocks = _get_number_of_existing_stocks(body.offer_id)
+        if number_of_existing_stocks + len(stocks_to_create) > offers_models.Offer.MAX_STOCKS_PER_OFFER:
+            raise ApiErrors(
+                {
+                    "stocks": [
+                        "Le nombre maximum de stocks par offre est de %s" % offers_models.Offer.MAX_STOCKS_PER_OFFER
+                    ]
+                },
+                status_code=400,
+            )
     if stocks_to_edit:
         existing_stocks = _get_existing_stocks(body.offer_id, stocks_to_edit)
 

@@ -8,6 +8,7 @@ from pydantic import Field
 from pydantic import condecimal
 from pydantic.types import NonNegativeInt
 
+from pcapi.core.offers import models
 from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Stock
 from pcapi.routes.serialization import BaseModel
@@ -115,7 +116,9 @@ class EducationalStockIdResponseModel(BaseModel):
 
 class StocksUpsertBodyModel(BaseModel):
     offer_id: int
-    stocks: list[StockCreationBodyModel | StockEditionBodyModel]
+    stocks: pydantic.conlist(  # type: ignore
+        StockCreationBodyModel | StockEditionBodyModel, min_items=1, max_items=models.Offer.MAX_STOCKS_PER_OFFER
+    )
 
     class Config:
         alias_generator = to_camel
