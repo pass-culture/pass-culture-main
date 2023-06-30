@@ -19,6 +19,7 @@ from pcapi.domain import music_types
 from pcapi.domain import show_types
 from pcapi.models import offer_mixin
 from pcapi.routes import serialization
+from pcapi.routes.public.individual_offers.v1.base_serialization import PaginationQueryParams
 from pcapi.serialization import utils as serialization_utils
 from pcapi.utils import date as date_utils
 
@@ -797,11 +798,6 @@ class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
             ],
             **base_offer_response.dict(),
         )
-
-
-class PaginationQueryParams(serialization.ConfiguredBaseModel):
-    limit: int = pydantic.Field(50, le=50, gt=0, description="Maximum number of items per page.")
-    page: int = pydantic.Field(1, ge=1, description="Page number of the items to return.")
 
 
 class GetOffersQueryParams(PaginationQueryParams):
