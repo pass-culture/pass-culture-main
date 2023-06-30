@@ -66,6 +66,7 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-valid.svg' }, // TODO 1 use left inside <Banner>
   { src: 'icons/stroke-wrong.svg' },
   { src: 'icons/stroke-more.svg' }, // TODO 1 use left inside a <Button>
+  { src: 'icons/stroke-check.svg' },
   { src: 'icons/stroke-double-check.svg' },
   { src: 'icons/stroke-euro.svg' }, // TODO 3 use left inside a <TextInput>
   { src: 'icons/stroke-events.svg' },
@@ -140,14 +141,9 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-search-gray.svg', viewBox: '0 0 124 125' },
   { src: 'icons/ico-separator.svg', viewBox: '0 0 20 1' },
   { src: 'icons/ico-star.svg', viewBox: '0 0 38 36' },
-  { src: 'icons/ico-status-booked.svg', viewBox: '0 0 16 16' },
-  { src: 'icons/ico-status-cancelled.svg', viewBox: '0 0 16 16' },
-  { src: 'icons/ico-status-double-validated.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-status-expired.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-status-pending.svg', viewBox: '0 0 16 16' },
-  { src: 'icons/ico-status-pending-tag.svg', viewBox: '0 0 12 14' },
   { src: 'icons/ico-status-reimbursed.svg', viewBox: '0 0 22 14' },
-  { src: 'icons/ico-status-validated-white.svg', viewBox: '0 0 17 17' },
   { src: 'icons/ico-tag.svg', viewBox: '0 0 33 33' },
   { src: 'icons/ticket-cross.svg', viewBox: '0 0 100 80' },
   { src: 'icons/ico-trophee.svg', viewBox: '0 0 24 25' },
