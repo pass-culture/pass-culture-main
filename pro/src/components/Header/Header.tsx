@@ -6,11 +6,11 @@ import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as IconOffers } from 'icons/ico-offers.svg'
-import { ReactComponent as IconSignout } from 'icons/ico-signout.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import deskIcon from 'icons/stroke-desk.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import strokeHomeIcon from 'icons/stroke-home.svg'
+import strokeLogoutIcon from 'icons/stroke-logout.svg'
 import strokePieIcon from 'icons/stroke-pie.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { ROOT_PATH } from 'utils/config'
@@ -135,7 +135,11 @@ const Header = () => {
             role="menuitem"
             type="button"
           >
-            <IconSignout className="nav-item-icon signout-icon" />
+            <SvgIcon
+              src={strokeLogoutIcon}
+              alt="Déconnexion"
+              className="nav-item-icon signout-icon"
+            />
           </button>
         </div>
       </nav>
