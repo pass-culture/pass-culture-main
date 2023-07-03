@@ -15,7 +15,7 @@ import { useAdapter } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullUpIcon from 'icons/full-up.svg'
-import { ReactComponent as TempStrokeAddUserIcon } from 'icons/temp-stroke-add-user.svg'
+import tempStrokeAddUserIcon from 'icons/temp-stroke-add-user.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -196,7 +196,7 @@ const Offerers = (): JSX.Element => {
       {showLinkDialog && (
         <ConfirmDialog
           // TODO: add definitive icon add user
-          icon={TempStrokeAddUserIcon}
+          icon={tempStrokeAddUserIcon}
           onCancel={cancelLinkUserToOfferer}
           title="Êtes-vous sûr de vouloir rejoindre cet espace ?"
           onConfirm={doLinkAccount}

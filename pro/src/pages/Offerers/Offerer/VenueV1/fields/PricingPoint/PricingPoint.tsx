@@ -6,9 +6,7 @@ import { GetOffererResponseModel } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { Venue } from 'core/Venue'
 import { ReactComponent as FullLink } from 'icons/full-link.svg'
-import strokeValidIcon, {
-  ReactComponent as StrokeValidIcon,
-} from 'icons/stroke-valid.svg'
+import strokeValidIcon from 'icons/stroke-valid.svg'
 import { ButtonLink } from 'ui-kit/Button'
 import Button from 'ui-kit/Button/Button'
 import { Select } from 'ui-kit/form'
@@ -103,7 +101,7 @@ const PricingPoint = ({
             setIsConfirmSiretDialogOpen(false)
           }}
           onConfirm={handleClick}
-          icon={StrokeValidIcon}
+          icon={strokeValidIcon}
           title="Êtes-vous sûr de vouloir sélectionner"
           secondTitle={`ce lieu avec SIRET\u00a0?`}
         >

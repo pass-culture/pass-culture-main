@@ -8,7 +8,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import { Venue } from 'core/Venue'
 import { serializeVenueApi } from 'core/Venue/adapters/getVenueAdapter/serializers'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as StrokeWarningIcon } from 'icons/stroke-warning.svg'
+import strokeWarningIcon from 'icons/stroke-warning.svg'
 import ApplicationBanner from 'pages/Offerers/Offerer/VenueV1/fields/ApplicationBanner'
 import { Button } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -145,7 +145,7 @@ const ReimbursementPoint = ({
         <>
           {isNoSiretDialogOpen && (
             <Dialog
-              icon={StrokeWarningIcon}
+              icon={strokeWarningIcon}
               title="Vous devez sélectionner un lieu avec SIRET pour ajouter de nouvelles coordonnées bancaires"
               explanation="Sélectionner un lieu avec SIRET parmi la liste puis valider votre sélection."
               onCancel={onCancelNoSiretDialog}

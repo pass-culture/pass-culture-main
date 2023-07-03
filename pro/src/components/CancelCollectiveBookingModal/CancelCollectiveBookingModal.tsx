@@ -1,7 +1,7 @@
 import React from 'react'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
-import { ReactComponent as StrokeTrashIcon } from 'icons/stroke-trash.svg'
+import strokeTrashIcon from 'icons/stroke-trash.svg'
 
 interface OfferEducationalModalProps {
   onDismiss(): void
@@ -18,7 +18,7 @@ const CancelCollectiveBookingModal = ({
       onConfirm={onValidate}
       cancelText="Retour"
       confirmText="Confirmer"
-      icon={StrokeTrashIcon}
+      icon={strokeTrashIcon}
       title="Voulez-vous annuler la réservation ?"
     >
       <p>

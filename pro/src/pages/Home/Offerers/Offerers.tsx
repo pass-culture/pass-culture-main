@@ -16,7 +16,7 @@ import {
 import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as StatusPendingFullIcon } from 'icons/ico-status-pending-full.svg'
-import { ReactComponent as StrokePartyIcon } from 'icons/stroke-party.svg'
+import strokePartyIcon from 'icons/stroke-party.svg'
 import { OffererVenues } from 'pages/Home/OffererVenues'
 import { VenueList } from 'pages/Home/Venues'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -134,7 +134,7 @@ const Offerers = ({
         <>
           {openSuccessDialog && (
             <RedirectDialog
-              icon={StrokePartyIcon}
+              icon={strokePartyIcon}
               redirectText="Créer une offre"
               redirectLink={{
                 to: `/offre/creation?structure=${selectedOfferer.nonHumanizedId}`,

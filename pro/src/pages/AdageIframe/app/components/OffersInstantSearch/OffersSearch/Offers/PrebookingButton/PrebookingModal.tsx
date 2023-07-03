@@ -1,7 +1,7 @@
 import React from 'react'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog/ConfirmDialog'
-import { ReactComponent as StrokePassIcon } from 'icons/stroke-pass.svg'
+import strokePassIcon from 'icons/stroke-pass.svg'
 
 interface PrebookingModal {
   closeModal: () => void
@@ -13,7 +13,7 @@ const PrebookingModal = ({
 }: PrebookingModal): JSX.Element => {
   return (
     <ConfirmDialog
-      icon={StrokePassIcon}
+      icon={strokePassIcon}
       onConfirm={preBookCurrentStock}
       onCancel={closeModal}
       title="Êtes-vous sûr de vouloir préréserver ?"
