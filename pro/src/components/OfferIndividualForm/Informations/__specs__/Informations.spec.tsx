@@ -42,6 +42,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       performer: '',
       speaker: '',
       stageDirector: '',
+      ean: '',
       visa: '',
       durationMinutes: '',
     }

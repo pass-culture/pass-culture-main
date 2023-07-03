@@ -59,6 +59,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
       name: '',
       description: '',
       author: '',
+      ean: '',
       performer: '',
       speaker: '',
       stageDirector: '',
@@ -102,6 +103,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
           'visa',
           'durationMinutes',
         ],
+        ean: '',
         visa: '',
       },
       expect.anything()

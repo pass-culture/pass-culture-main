@@ -108,6 +108,7 @@ const Informations = ({
           <TextInput
             isOptional
             label="EAN"
+            countCharacters
             name="ean"
             maxLength={13}
             disabled={readOnlyFields.includes('ean')}
