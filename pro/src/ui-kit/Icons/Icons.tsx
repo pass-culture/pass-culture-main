@@ -75,6 +75,7 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-offer.svg' }, // TODO 1 use left inside a <Tab>
   { src: 'icons/stroke-repayment.svg' },
   { src: 'icons/stroke-euro.svg' }, // TODO 3 use left inside a <TextInput>
+  { src: 'icons/stroke-price.svg' },
   { src: 'icons/stroke-events.svg' },
   { src: 'icons/stroke-thing.svg' },
   { src: 'icons/stroke-duo.svg' },
@@ -112,11 +113,14 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-right.svg' },
   { src: 'icons/stroke-up.svg' },
   { src: 'icons/stroke-pass.svg' },
+  { src: 'icons/stroke-wip.svg' },
+  { src: 'icons/stroke-no-booking.svg' },
   { src: 'icons/stroke-venue.svg' },
 ]
 
 const shadowIcons: IconListItem[] = [
   { src: 'icons/shadow-tips-help.svg', viewBox: '0 0 22 26' },
+  { src: 'icons/shadow-trophee.svg' },
   { src: 'icons/shadow-calendar.svg', viewBox: '0 0 24 24' },
 ]
 
@@ -138,11 +142,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-radio-on.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-star.svg', viewBox: '0 0 38 36' },
   { src: 'icons/ico-status-pending.svg', viewBox: '0 0 16 16' },
-  { src: 'icons/ico-tag.svg', viewBox: '0 0 33 33' },
-  { src: 'icons/ticket-cross.svg', viewBox: '0 0 100 80' },
-  { src: 'icons/ico-trophee.svg', viewBox: '0 0 24 25' },
-  { src: 'icons/ico-unavailable-gradient.svg', viewBox: '0 0 178 100' },
-  { src: 'icons/ico-unavailable-page.svg', viewBox: '0 0 317 198' },
   { src: 'icons/ico-unavailable-page-white.svg', viewBox: '0 0 317 198' },
   { src: 'icons/ico-warning.svg', viewBox: '0 0 16 16' },
   { src: 'icons/logo-pass-culture-dark.svg', viewBox: '0 0 71 24' },
