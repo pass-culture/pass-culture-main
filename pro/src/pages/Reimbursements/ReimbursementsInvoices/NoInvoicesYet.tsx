@@ -1,11 +1,12 @@
 import React from 'react'
 
-import { ReactComponent as OfferCardEuro } from 'icons/offer-card-euro.svg'
+import strokeRepaymentIcon from 'icons/stroke-repayment.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 const NoInvoicesYet = (): JSX.Element => {
   return (
     <div className="no-refunds admin-view">
-      <OfferCardEuro />
+      <SvgIcon src={strokeRepaymentIcon} alt="" />
       <p className="no-refunds-title">
         Vous n’avez pas encore de justificatifs de remboursement disponibles
       </p>

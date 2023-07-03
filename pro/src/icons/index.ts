@@ -1,5 +1,4 @@
 export { ReactComponent as LogoPassCultureDarkIcon } from 'icons/logo-pass-culture-dark.svg'
-export { ReactComponent as OfferCardEuroIcon } from 'icons/offer-card-euro.svg'
 export { ReactComponent as OtherOfferIcon } from 'icons/other-offer.svg'
 export { ReactComponent as SearchIcon } from 'icons/ico-search.svg'
 export { ReactComponent as TicketPlusFullIcon } from 'icons/ico-ticket-plus-full.svg'
