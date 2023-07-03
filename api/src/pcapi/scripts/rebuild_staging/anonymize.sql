@@ -184,49 +184,6 @@ SET
   "lastName" = pg_temp.fake_last_name(id)
 ;
 
--- Anonymize beneficiary_fraud_check table content
-UPDATE beneficiary_fraud_check
-SET "resultContent" = "resultContent" || (
-    '{"email": "user' || "userId" || '@anonymized.email", "address": "42 rue de la ville", "lastName": "' || pg_temp.fake_last_name("userId") || '", "firstName": "' || pg_temp.fake_first_name("userId") || '", "phoneNumber": "' || pg_temp.fake_phone_number_from_id("userId") || '", "bodyPieceNumber": "000000000000"}'
-  )::text::jsonb
-WHERE "type" = 'JOUVE'
-;
-
-UPDATE beneficiary_fraud_check
-SET "resultContent" = "resultContent" || (
-    '{"last_name": "' || pg_temp.fake_last_name("userId") || '", "first_name": "' || pg_temp.fake_first_name("userId") || '"}'
-  )::text::jsonb
-WHERE "type" = 'EDUCONNECT'
-;
-
-UPDATE beneficiary_fraud_check
-SET "resultContent" = "resultContent" || (
-    '{"last_name": "' || pg_temp.fake_last_name("userId") || '", "first_name": "' || pg_temp.fake_first_name("userId") || '", "married_name": "marriedName", "id_document_number": null, "identification_url": null}'
-  )::text::jsonb
-WHERE "type" = 'UBBLE'
-;
-
-UPDATE beneficiary_fraud_check
-SET "resultContent" = "resultContent" || (
-    '{"email": "user' || "userId" || '@anonymized.email", "phone": "' || pg_temp.fake_phone_number_from_id("userId") || '", "address": "42 rue de la ville 44000 Nantes", "last_name": "' || pg_temp.fake_last_name("userId") || '", "first_name": "' || pg_temp.fake_first_name("userId") || '", "id_piece_number": "00000000 1 ZZ0"}'
-  )::text::jsonb
-WHERE "type" = 'DMS'
-;
-
-UPDATE beneficiary_fraud_check
-SET "resultContent" = "resultContent" || (
-    '{"phone_number": "' || pg_temp.fake_phone_number_from_id("userId") || '"}'
-  )::text::jsonb
-WHERE "type" in ('INTERNAL_REVIEW', 'PHONE_VALIDATION')
-;
-
-UPDATE beneficiary_fraud_check
-SET "resultContent" = "resultContent" || (
-    '{"account_email": "user' || "userId" || '@anonymized.email"}'
-  )::text::jsonb
-WHERE "type" = 'USER_PROFILING'
-;
-
 -- Delete all other beneficiary_fraud_check rows
 DELETE from beneficiary_fraud_check
 WHERE "type" not in (
@@ -239,6 +196,41 @@ WHERE "type" not in (
     'HONOR_STATEMENT',
     'USER_PROFILING'
   )
+;
+
+-- Anonymize beneficiary_fraud_check table content
+UPDATE beneficiary_fraud_check
+SET "resultContent" = CASE
+  WHEN "type" = 'JOUVE'
+    THEN "resultContent" || (
+        '{"email": "user' || "userId" || '@anonymized.email", "address": "42 rue de la ville", "lastName": "' || pg_temp.fake_last_name("userId") || '", "firstName": "' || pg_temp.fake_first_name("userId") || '", "phoneNumber": "' || pg_temp.fake_phone_number_from_id("userId") || '", "bodyPieceNumber": "000000000000"}'
+      )::text::jsonb
+  WHEN "type" = 'EDUCONNECT' 
+    THEN "resultContent" || (
+        '{"last_name": "' || pg_temp.fake_last_name("userId") || '", "first_name": "' || pg_temp.fake_first_name("userId") || '"}'
+      )::text::jsonb
+  WHEN "type" = 'DMS'
+    THEN "resultContent" || (
+        '{"email": "user' || "userId" || '@anonymized.email", "phone": "' || pg_temp.fake_phone_number_from_id("userId") || '", "address": "42 rue de la ville 44000 Nantes", "last_name": "' || pg_temp.fake_last_name("userId") || '", "first_name": "' || pg_temp.fake_first_name("userId") || '", "id_piece_number": "00000000 1 ZZ0"}'
+      )::text::jsonb
+  WHEN "type" = 'UBBLE'
+    THEN "resultContent" || (
+      '{"last_name": "' || pg_temp.fake_last_name("userId") || '", "first_name": "' || pg_temp.fake_first_name("userId") || '", "married_name": "marriedName", "id_document_number": null, "identification_url": null}'
+    )::text::jsonb
+  WHEN "type" = 'INTERNAL_REVIEW'
+    THEN "resultContent" || (
+        '{"phone_number": "' || pg_temp.fake_phone_number_from_id("userId") || '"}'
+      )::text::jsonb
+  WHEN "type" = 'PHONE_VALIDATION'
+    THEN "resultContent" || (
+        '{"phone_number": "' || pg_temp.fake_phone_number_from_id("userId") || '"}'
+      )::text::jsonb
+  WHEN "type" = 'USER_PROFILING'
+    THEN "resultContent" || (
+        '{"account_email": "user' || "userId" || '@anonymized.email"}'
+      )::text::jsonb
+  ELSE "resultContent"
+END
 ;
 
 UPDATE orphan_dms_application
