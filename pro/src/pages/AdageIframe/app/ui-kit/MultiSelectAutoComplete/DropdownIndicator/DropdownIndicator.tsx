@@ -3,16 +3,18 @@ import React from 'react'
 import { components } from 'react-select'
 import type { DropdownIndicatorProps } from 'react-select'
 
-import { ReactComponent as ChevronIconAdage } from 'icons/ico-chevron-adage.svg'
+import strokeUpIcon from 'icons/stroke-up.svg'
 import { Option } from 'pages/AdageIframe/app/types'
-
 import './DropdownIndicator.scss'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 const DropdownIndicator = <T,>(
   props: DropdownIndicatorProps<Option<T>>
 ): JSX.Element => (
   <components.DropdownIndicator {...props}>
-    <ChevronIconAdage
+    <SvgIcon
+      alt=""
+      src={strokeUpIcon}
       className={cn('dropdown-indicator', {
         'dropdown-indicator-is-closed': !props.selectProps.menuIsOpen,
       })}

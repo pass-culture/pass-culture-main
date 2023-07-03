@@ -60,9 +60,11 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-error.svg' },
   { src: 'icons/stroke-warning.svg' },
   { src: 'icons/stroke-info.svg' },
+  { src: 'icons/stroke-clock.svg' },
   { src: 'icons/stroke-valid.svg' }, // TODO 1 use left inside <Banner>
   { src: 'icons/stroke-wrong.svg' },
   { src: 'icons/stroke-more.svg' }, // TODO 1 use left inside a <Button>
+  { src: 'icons/stroke-double-check.svg' },
   { src: 'icons/stroke-euro.svg' }, // TODO 3 use left inside a <TextInput>
   { src: 'icons/stroke-events.svg' },
   { src: 'icons/stroke-thing.svg' },
@@ -99,6 +101,7 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-right.svg' },
   { src: 'icons/stroke-pass.svg' },
   { src: 'icons/stroke-venue.svg' },
+  { src: 'icons/stroke-up.svg' },
 ]
 
 const shadowIcons: IconListItem[] = [
@@ -111,9 +114,7 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/checkbox-check.svg', viewBox: '0 0 10 8' },
   { src: 'icons/checkbox.svg', viewBox: '0 0 10 8' },
   { src: 'icons/close-tag.svg', viewBox: '0 0 10 10' },
-  { src: 'icons/ico-double-check.svg' },
   { src: 'icons/ico-eye-open-filled-black.svg' },
-  { src: 'icons/ico-guichet-full.svg' },
   { src: 'icons/library.svg', viewBox: '0 0 49 48' },
   { src: 'icons/linear-gradient.svg', viewBox: '0 0 623 1024' }, // TODO replace by a jpg/png
   { src: 'icons/loader.svg', viewBox: '0 0 32 32' },
@@ -155,12 +156,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-unavailable-page-white.svg', viewBox: '0 0 317 198' },
   { src: 'icons/ico-warning.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-subcategory.svg', viewBox: '0 0 24 24' },
-  { src: 'icons/ico-chevron-adage.svg', viewBox: '0 0 20 20' },
-  // TODO: replace this icon when the new design is done
-  // done to migrate icon of <Dialog> component
-  { src: 'icons/temp-stroke-add-user.svg' },
-  { src: 'icons/ico-arrow-up-b.svg', viewBox: '0 0 24 24' },
-  { src: 'icons/ico-clock.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-disconnect-full.svg', viewBox: '0 0 40 40' },
   { src: 'icons/ico-key.svg', viewBox: '0 0 20 20' },
   { src: 'icons/logo-pass-culture-dark.svg', viewBox: '0 0 71 24' },
