@@ -45,6 +45,7 @@ const fullIcons: IconListItem[] = [
   { src: 'icons/full-key.svg' }, // TODO 1 use left inside a <ButtonLink>
   { src: 'icons/full-plus.svg' }, // TODO still in 2 ButtonLink and 1 Button
   { src: 'icons/full-sort.svg' },
+  { src: 'icons/full-logout.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-down.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-up.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-left.svg' }, // TODO 2 use left inside a <Button>
@@ -156,7 +157,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-unavailable-page-white.svg', viewBox: '0 0 317 198' },
   { src: 'icons/ico-warning.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-subcategory.svg', viewBox: '0 0 24 24' },
-  { src: 'icons/ico-disconnect-full.svg', viewBox: '0 0 40 40' },
   { src: 'icons/ico-key.svg', viewBox: '0 0 20 20' },
   { src: 'icons/logo-pass-culture-dark.svg', viewBox: '0 0 71 24' },
   { src: 'icons/offer-card-euro.svg', viewBox: '0 0 30 30' },
