@@ -84,11 +84,14 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-date.svg' },
   { src: 'icons/stroke-show.svg' }, // TODO 1 use left inside Button (PasswordInput)
   { src: 'icons/stroke-hide.svg' }, // TODO 1 use left inside Button (PasswordInput)
+  { src: 'icons/stroke-calendar.svg' },
   { src: 'icons/stroke-hourglass.svg' },
   { src: 'icons/stroke-like.svg' }, // TODO 1 use left inside Button
   { src: 'icons/stroke-logout.svg' },
   { src: 'icons/stroke-trash.svg' },
+
   { src: 'icons/stroke-download.svg' }, // TODO 1 use left inside ButtonLink (AddActivationCodeForm)
+  { src: 'icons/stroke-draft.svg' },
   { src: 'icons/stroke-case.svg' },
   { src: 'icons/stroke-code.svg' },
   { src: 'icons/stroke-accessibility-eye.svg' },
@@ -140,14 +143,10 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-status-booked.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-status-cancelled.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-status-double-validated.svg', viewBox: '0 0 16 16' },
-  { src: 'icons/ico-status-draft.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-status-expired.svg', viewBox: '0 0 16 16' },
-  { src: 'icons/ico-status-inactive.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-status-pending.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-status-pending-tag.svg', viewBox: '0 0 12 14' },
   { src: 'icons/ico-status-reimbursed.svg', viewBox: '0 0 22 14' },
-  { src: 'icons/ico-status-rejected.svg', viewBox: '0 0 16 16' },
-  { src: 'icons/ico-status-sold-out.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-status-validated-white.svg', viewBox: '0 0 17 17' },
   { src: 'icons/ico-tag.svg', viewBox: '0 0 33 33' },
   { src: 'icons/ticket-cross.svg', viewBox: '0 0 100 80' },
