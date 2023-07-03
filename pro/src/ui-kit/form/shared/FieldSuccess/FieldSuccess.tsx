@@ -20,7 +20,7 @@ const FieldSuccess = ({
   iconAlt = '',
 }: FieldSuccessProps): JSX.Element => (
   <div className={cn(styles['field-success'], className)} id={name}>
-    <SvgIcon src={strokeValidIcon} alt={iconAlt} />
+    <SvgIcon src={strokeValidIcon} alt={iconAlt} width="16" />
     <span
       className={styles['field-success-text']}
       data-testid={`success-${name}`}

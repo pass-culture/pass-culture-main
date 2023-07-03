@@ -24,7 +24,7 @@ const FieldError = ({
     id={`error-${name}`}
     role="alert"
   >
-    <SvgIcon src={strokeErrorIcon} alt={iconAlt} />
+    <SvgIcon src={strokeErrorIcon} alt={iconAlt} width="16" />
     <span className={styles['field-error-text']} data-testid={`error-${name}`}>
       {children}
     </span>
