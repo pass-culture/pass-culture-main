@@ -1,11 +1,8 @@
 import React from 'react'
 
-import {
-  CalendarIcon,
-  OfferCardEuroIcon,
-  OtherOfferIcon,
-  PasscultureIcon,
-} from 'icons'
+import { CalendarIcon, OfferCardEuroIcon, OtherOfferIcon } from 'icons'
+import strokePassIcon from 'icons/stroke-pass.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { StepComponentProps } from '../types'
 
@@ -29,7 +26,7 @@ const Welcome = ({
       <div className={styles['tw-steps']}>
         <div>
           <div className={styles['tw-icon']}>
-            <PasscultureIcon />
+            <SvgIcon src={strokePassIcon} alt="" className={styles['icon']} />
           </div>
           <p>Paramétrez votre espace</p>
         </div>

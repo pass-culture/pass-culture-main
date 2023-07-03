@@ -1,9 +1,9 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { PasscultureIcon } from 'icons'
 import { ReactComponent as TagSvg } from 'icons/ico-tag.svg'
 import strokeDuoIcon from 'icons/stroke-duo.svg'
+import strokePassIcon from 'icons/stroke-pass.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import style from './OptionsIcons.module.scss'
@@ -22,10 +22,7 @@ const OptionsIcons = ({
   return (
     <div className={cn(className, style['options-container'])}>
       <div className={style['option']}>
-        <PasscultureIcon
-          aria-hidden
-          className={cn(style['icon'], style['passculture'])}
-        />
+        <SvgIcon src={strokePassIcon} alt="" className={style['icon']} />
         <span className={style['text']}>Type</span>
       </div>
 

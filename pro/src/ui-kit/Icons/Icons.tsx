@@ -164,7 +164,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/offer-card-euro.svg', viewBox: '0 0 30 30' },
   { src: 'icons/other-offer.svg', viewBox: '0 0 30 30' },
   { src: 'icons/party.svg', viewBox: '0 0 48 48' },
-  { src: 'icons/ico-passculture.svg', viewBox: '0 0 30 30' },
   { src: 'icons/ico-search.svg', viewBox: '0 0 48 48' },
   { src: 'icons/ico-ticket-plus-full.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-trash-filled.svg', viewBox: '0 0 48 48' },
