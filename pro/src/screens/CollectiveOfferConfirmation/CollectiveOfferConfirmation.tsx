@@ -1,10 +1,12 @@
+import cn from 'classnames'
 import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
-import { ReactComponent as FullValidateIcon } from 'icons/full-validate.svg'
-import { ReactComponent as PendingIcon } from 'icons/pending.svg'
+import fullValidateIcon from 'icons/full-validate.svg'
+import fullWaitIcon from 'icons/full-wait.svg'
 import { Banner, ButtonLink, Title } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './CollectiveOfferConfirmation.module.scss'
 
@@ -36,7 +38,16 @@ const activeOffer = (institutionDisplayName?: string) => ({
       )}
     </>
   ),
-  Icon: FullValidateIcon,
+  icon: (
+    <SvgIcon
+      src={fullValidateIcon}
+      alt=""
+      className={cn(
+        styles['confirmation-icon'],
+        styles['confirmation-icon-validate']
+      )}
+    />
+  ),
 })
 
 const pendingOffer = {
@@ -48,7 +59,13 @@ const pendingOffer = {
       jusqu’à 72h.
     </>
   ),
-  Icon: PendingIcon,
+  icon: (
+    <SvgIcon
+      src={fullWaitIcon}
+      alt=""
+      className={styles['confirmation-icon']}
+    />
+  ),
 }
 
 const showcaseOffer = {
@@ -60,7 +77,16 @@ const showcaseOffer = {
       contact avec vous pour co-construire une offre adaptée à leurs classes.
     </>
   ),
-  Icon: FullValidateIcon,
+  icon: (
+    <SvgIcon
+      src={fullValidateIcon}
+      alt=""
+      className={cn(
+        styles['confirmation-icon'],
+        styles['confirmation-icon-validate']
+      )}
+    />
+  ),
 }
 
 const mapOfferStatusToData = (
@@ -85,7 +111,7 @@ const CollectiveOfferConfirmation = ({
   isShowcase,
   institutionDisplayName,
 }: CollectiveOfferConfirmationProps): JSX.Element => {
-  const { title, description, Icon } = mapOfferStatusToData(
+  const { title, description, icon } = mapOfferStatusToData(
     offerStatus,
     isShowcase,
     institutionDisplayName
@@ -94,7 +120,7 @@ const CollectiveOfferConfirmation = ({
   return (
     <div className={styles['confirmation-wrapper']}>
       <div className={styles['confirmation']}>
-        <Icon className={styles['confirmation-icon']} />
+        {icon}
         <div className={styles['confirmation-section']}>
           <div className={styles['confirmation-section-header']}>
             <Title as="h1" level={3}>

@@ -12,7 +12,7 @@ import { OfferIndividual } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as FullLink } from 'icons/full-link.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
-import { ReactComponent as PendingIcon } from 'icons/pending.svg'
+import fullWaitIcon from 'icons/full-wait.svg'
 import { DisplayOfferInAppLink } from 'screens/OfferIndividual/Summary/DisplayOfferInAppLink'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -37,7 +37,11 @@ const OfferIndividualConfirmation = ({
     <div className={styles['confirmation-container']}>
       <div>
         {isPendingOffer ? (
-          <PendingIcon className={styles['pending-icon']} />
+          <SvgIcon
+            src={fullWaitIcon}
+            alt=""
+            className={styles['pending-icon']}
+          />
         ) : (
           <SvgIcon
             src={fullValidateIcon}
