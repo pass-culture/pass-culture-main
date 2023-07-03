@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import logging
 
 import pytz
@@ -17,13 +17,21 @@ def import_dms_applications(procedure_number: int) -> None:
     """import dms applications for eac status"""
     previous_import = _get_previous_import(procedure_number)
     if previous_import and previous_import.isProcessing:
-        logger.info(
-            "[DMS] Procedure %s is already being processed.",
-            procedure_number,
-            extra={
-                "procedure_number": procedure_number,
-            },
-        )
+        if datetime.datetime.utcnow() < previous_import.latestImportDatetime + datetime.timedelta(days=1):
+            logger.info(
+                "[DMS] Procedure %s is already being processed.",
+                procedure_number,
+                extra={
+                    "procedure_number": procedure_number,
+                },
+            )
+        # So as to avoid the import being stuck for too long;
+        # the import will be relaunched in the next hour
+        else:
+            previous_import.isProcessing = False
+            db.session.add(previous_import)
+            db.session.commit()
+
     else:
         since = previous_import.latestImportDatetime if previous_import else None
         update_dms_applications_for_procedure(
@@ -32,7 +40,7 @@ def import_dms_applications(procedure_number: int) -> None:
         )
 
 
-def update_dms_applications_for_procedure(procedure_number: int, since: datetime | None) -> None:
+def update_dms_applications_for_procedure(procedure_number: int, since: datetime.datetime | None) -> None:
     logger.info(
         "[DMS] Started processing EAC procedure %s.",
         procedure_number,
@@ -43,7 +51,7 @@ def update_dms_applications_for_procedure(procedure_number: int, since: datetime
 
     current_import = dms_models.LatestDmsImport(
         procedureId=procedure_number,
-        latestImportDatetime=datetime.utcnow(),
+        latestImportDatetime=datetime.datetime.utcnow(),
         isProcessing=True,
         processedApplications=[],
     )
@@ -137,10 +145,10 @@ def _get_or_create_application(procedure_number: int, node: dict) -> None:
     db.session.commit()
 
 
-def _convert_iso_string_to_naive_utc_datetime(date_str: str | None) -> datetime | None:
+def _convert_iso_string_to_naive_utc_datetime(date_str: str | None) -> datetime.datetime | None:
     if not date_str:
         return None
-    date = datetime.fromisoformat(date_str)
+    date = datetime.datetime.fromisoformat(date_str)
     return date.astimezone(pytz.utc).replace(tzinfo=None)
 
 
