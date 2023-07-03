@@ -1,7 +1,8 @@
 import cn from 'classnames'
 import React, { useEffect, useState } from 'react'
 
-import Icon from 'ui-kit/Icon/Icon'
+import strokePass from 'icons/stroke-pass.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 interface SpinnerProps {
   message?: string
@@ -30,7 +31,8 @@ const Spinner = ({
 
   return (
     <div className={cn('loading-spinner', className)} data-testid="spinner">
-      <Icon svg="loader-pc" />
+      <SvgIcon src={strokePass} alt="" className="loading-spinner-icon" />
+
       <div className="content" data-dots={Array(nbDots).fill('.').join('')}>
         {message}
       </div>
