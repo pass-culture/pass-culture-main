@@ -1,6 +1,8 @@
 import React from 'react'
 
-import { OfferCardEuroIcon, Venue2Icon } from 'icons'
+import { Venue2Icon } from 'icons'
+import strokeRepaymentIcon from 'icons/stroke-repayment.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { StepComponentProps } from '../types'
 
@@ -14,7 +16,7 @@ const CreateVenue = ({
     <h1 id={titleId}>Paramétrez votre espace PRO</h1>
     <section className={contentClassName}>
       <div className={styles['two-columns-section-block']}>
-        <OfferCardEuroIcon />
+        <SvgIcon src={strokeRepaymentIcon} alt="" />
         <h2>Renseignez vos coordonnées bancaires</h2>
         <p>
           Ajoutez vos informations bancaires pour percevoir les remboursements
