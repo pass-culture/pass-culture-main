@@ -1,4 +1,3 @@
-export { ReactComponent as DisconnectFullIcon } from 'icons/ico-disconnect-full.svg'
 export { ReactComponent as LogoPassCultureDarkIcon } from 'icons/logo-pass-culture-dark.svg'
 export { ReactComponent as OfferCardEuroIcon } from 'icons/offer-card-euro.svg'
 export { ReactComponent as OtherOfferIcon } from 'icons/other-offer.svg'
