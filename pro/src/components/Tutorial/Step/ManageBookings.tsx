@@ -1,9 +1,9 @@
 import React from 'react'
 
-import { ReactComponent as IconOffers } from 'icons/ico-offers.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
-import deskIcon from 'icons/stroke-desk.svg'
-import strokeEuro from 'icons/stroke-euro.svg'
+import strokeDeskIcon from 'icons/stroke-desk.svg'
+import strokeEuroIcon from 'icons/stroke-euro.svg'
+import strokeOffersIcon from 'icons/stroke-offers.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { StepComponentProps } from '../types'
@@ -26,13 +26,17 @@ const ManageBookings = ({ titleId }: StepComponentProps): JSX.Element => (
         <span className={styles['header-element']}>
           <SvgIcon
             className={styles['header-element-icon']}
-            src={deskIcon}
+            src={strokeDeskIcon}
             alt=""
           />
           Guichet
         </span>
         <span className={styles['header-element']}>
-          <IconOffers className={styles['header-element-icon']} />
+          <SvgIcon
+            className={styles['header-element-icon']}
+            src={strokeOffersIcon}
+            alt=""
+          />
           Offres
         </span>
         <span className={styles['header-element']}>
@@ -46,7 +50,7 @@ const ManageBookings = ({ titleId }: StepComponentProps): JSX.Element => (
         <span className={styles['header-element']}>
           <SvgIcon
             className={styles['header-element-icon']}
-            src={strokeEuro}
+            src={strokeEuroIcon}
             alt=""
           />
           Remboursements

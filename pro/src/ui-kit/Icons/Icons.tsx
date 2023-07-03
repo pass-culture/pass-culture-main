@@ -68,6 +68,7 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-more.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/stroke-check.svg' },
   { src: 'icons/stroke-double-check.svg' },
+  { src: 'icons/stroke-offers.svg' },
   { src: 'icons/stroke-repayment.svg' },
   { src: 'icons/stroke-euro.svg' }, // TODO 3 use left inside a <TextInput>
   { src: 'icons/stroke-events.svg' },
@@ -134,7 +135,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-404.svg', viewBox: '0 0 308 194' },
   { src: 'icons/ico-notification-success.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-placeholder-offer-image.svg', viewBox: '0 0 80 80' },
-  { src: 'icons/ico-offers.svg', viewBox: '0 0 48 49' },
   { src: 'icons/open-dropdown.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-other.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-radio-off.svg', viewBox: '0 0 16 16' },
@@ -155,7 +155,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-subcategory.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-key.svg', viewBox: '0 0 20 20' },
   { src: 'icons/logo-pass-culture-dark.svg', viewBox: '0 0 71 24' },
-  { src: 'icons/other-offer.svg', viewBox: '0 0 30 30' },
   { src: 'icons/ico-passculture.svg', viewBox: '0 0 30 30' },
   { src: 'icons/ico-search.svg', viewBox: '0 0 48 48' },
   { src: 'icons/ico-ticket-plus-full.svg', viewBox: '0 0 20 20' },
