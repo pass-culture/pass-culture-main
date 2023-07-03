@@ -1,7 +1,7 @@
 import React from 'react'
 
 import Dialog from 'components/Dialog/Dialog/Dialog'
-import { ReactComponent as IcoWarningGrey } from 'icons/ico-warning-grey.svg'
+import { ReactComponent as StrokeWarningIcon } from 'icons/stroke-warning.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -23,7 +23,7 @@ const WrongStudentsModal = ({
   return (
     <Dialog
       onCancel={hasOnlyWrongStudents ? modifyStudents : closeModal}
-      icon={IcoWarningGrey}
+      icon={StrokeWarningIcon}
       title="Cette offre ne peut pas s’adresser aux 6e et 5e"
       explanation={
         <>

@@ -2,13 +2,13 @@ import React, { useCallback, useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
-import InfoDialog from 'components/InfoDialog'
+import Dialog from 'components/Dialog/Dialog/Dialog'
 import ReimbursmentPointDialog from 'components/reimbursementPointDialog'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Venue } from 'core/Venue'
 import { serializeVenueApi } from 'core/Venue/adapters/getVenueAdapter/serializers'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as IcoWarningGrey } from 'icons/ico-warning-grey.svg'
+import { ReactComponent as StrokeWarningIcon } from 'icons/stroke-warning.svg'
 import ApplicationBanner from 'pages/Offerers/Offerer/VenueV1/fields/ApplicationBanner'
 import { Button } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -119,6 +119,14 @@ const ReimbursementPoint = ({
     loadReimbursementPoints(offerer.nonHumanizedId)
   }, [isCreatingVenue, offerer.nonHumanizedId, readOnly, venue])
   const { logEvent } = useAnalytics()
+
+  const onCancelNoSiretDialog = () => {
+    setIsNoSiretDialogOpen(false)
+    logEvent?.(Events.CLICKED_NO_PRICING_POINT_SELECTED_YET, {
+      from: location.pathname,
+    })
+  }
+
   if (isLoading) {
     return <Spinner />
   }
@@ -136,18 +144,19 @@ const ReimbursementPoint = ({
       ) : (
         <>
           {isNoSiretDialogOpen && (
-            <InfoDialog
-              buttonText="J'ai compris"
-              componentIcon={<IcoWarningGrey />}
+            <Dialog
+              icon={StrokeWarningIcon}
               title="Vous devez sélectionner un lieu avec SIRET pour ajouter de nouvelles coordonnées bancaires"
-              subTitle="Sélectionner un lieu avec SIRET parmi la liste puis valider votre sélection."
-              closeDialog={() => {
-                setIsNoSiretDialogOpen(false)
-                logEvent?.(Events.CLICKED_NO_PRICING_POINT_SELECTED_YET, {
-                  from: location.pathname,
-                })
-              }}
-            />
+              explanation="Sélectionner un lieu avec SIRET parmi la liste puis valider votre sélection."
+              onCancel={onCancelNoSiretDialog}
+            >
+              <Button
+                onClick={onCancelNoSiretDialog}
+                className={styles['dialog-confirm-button']}
+              >
+                J’ai compris
+              </Button>
+            </Dialog>
           )}
           <p className={styles['section-description']}>
             Ces coordonnées bancaires seront utilisées pour les remboursements

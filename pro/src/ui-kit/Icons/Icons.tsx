@@ -56,6 +56,7 @@ const fullIcons: IconListItem[] = [
 const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-user.svg' }, // TODO 4 uses left inside <Tabs>
   { src: 'icons/stroke-error.svg' },
+  { src: 'icons/stroke-warning.svg' },
   { src: 'icons/stroke-info.svg' },
   { src: 'icons/stroke-valid.svg' }, // TODO 1 use left inside <Banner>
   { src: 'icons/stroke-wrong.svg' },
@@ -148,7 +149,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-unavailable-gradient.svg', viewBox: '0 0 178 100' },
   { src: 'icons/ico-unavailable-page.svg', viewBox: '0 0 317 198' },
   { src: 'icons/ico-unavailable-page-white.svg', viewBox: '0 0 317 198' },
-  { src: 'icons/ico-warning-grey.svg' },
   { src: 'icons/ico-warning.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-subcategory.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-chevron-adage.svg', viewBox: '0 0 20 20' },
