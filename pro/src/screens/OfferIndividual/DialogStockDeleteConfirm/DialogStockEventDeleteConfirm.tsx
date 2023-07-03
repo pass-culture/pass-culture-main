@@ -1,7 +1,7 @@
 import React from 'react'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
-import { ReactComponent as Trash } from 'icons/ico-trash.svg'
+import { ReactComponent as StrokeTrashIcon } from 'icons/stroke-trash.svg'
 
 import styles from './DialogStockDeleteConfirm.module.scss'
 
@@ -21,7 +21,7 @@ const DialogStockEventDeleteConfirm = ({
       title="Voulez-vous supprimer cette occurrence ?"
       confirmText="Confirmer la suppression"
       cancelText="Annuler"
-      icon={Trash}
+      icon={StrokeTrashIcon}
     >
       <p className={styles['first-block']}>
         {'Elle ne sera plus disponible à la réservation et '}

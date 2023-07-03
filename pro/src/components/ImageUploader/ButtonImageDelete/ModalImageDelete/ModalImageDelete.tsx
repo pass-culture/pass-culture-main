@@ -1,7 +1,7 @@
 import React from 'react'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
-import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
+import { ReactComponent as StrokeTrashIcon } from 'icons/stroke-trash.svg'
 
 interface ModalImageDeleteProps {
   isLoading: boolean
@@ -18,7 +18,7 @@ const ModalImageDelete = ({
     <ConfirmDialog
       cancelText="Retour"
       confirmText="Supprimer"
-      icon={TrashIcon}
+      icon={StrokeTrashIcon}
       isLoading={isLoading}
       onCancel={onDismiss}
       onConfirm={onConfirm}
