@@ -9,6 +9,7 @@ from pcapi.utils.blueprint import Blueprint
 
 from . import models
 from . import tasks
+from .titelive_utils import generate_titelive_gtl_from_file
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -99,3 +100,9 @@ def update_providables(provider_name: str, venue_provider_id: int, limit: int): 
 def update_providables_by_provider_id(provider_id: int, limit: int | None) -> None:
     venue_providers = providers_repository.get_active_venue_providers_by_provider(provider_id)
     provider_manager.synchronize_venue_providers(venue_providers, limit)
+
+
+@blueprint.cli.command("update_gtl")  # type: ignore [arg-type]
+@click.option("-f", "--file", required=True, help="CSV extract of GTL_2023.xlsx with tab as separator", type=str)
+def update_gtl(file: str) -> None:
+    generate_titelive_gtl_from_file(file)
