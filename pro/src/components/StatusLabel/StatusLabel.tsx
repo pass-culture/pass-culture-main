@@ -2,13 +2,14 @@ import cn from 'classnames'
 import React, { ReactElement } from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
-import { ReactComponent as StatusDraftIcon } from 'icons/ico-status-draft.svg'
-import { ReactComponent as StatusExpiredIcon } from 'icons/ico-status-expired.svg'
-import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
+import fullHideIcon from 'icons/full-hide.svg'
 import { ReactComponent as StatusPendingIcon } from 'icons/ico-status-pending.svg'
-import { ReactComponent as StatusRejectedIcon } from 'icons/ico-status-rejected.svg'
-import { ReactComponent as StatusSoldOutIcon } from 'icons/ico-status-sold-out.svg'
+import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import { ReactComponent as StrokeCheckIcon } from 'icons/stroke-check.svg'
+import strokeCloseIcon from 'icons/stroke-close.svg'
+import strokeDraftIcon from 'icons/stroke-draft.svg'
+import strokeWarningIcon from 'icons/stroke-warning.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import style from './StatusLabel.module.scss'
 
@@ -22,12 +23,12 @@ const OFFER_STATUS_PROPERTIES: Record<
 > = {
   [OfferStatus.EXPIRED]: {
     className: style['status-expired'],
-    Icon: <StatusExpiredIcon />,
+    Icon: <SvgIcon alt="" src={strokeCalendarIcon} />,
     label: 'expirée',
   },
   [OfferStatus.SOLD_OUT]: {
     className: style['status-sold-out'],
-    Icon: <StatusSoldOutIcon />,
+    Icon: <SvgIcon alt="" src={strokeWarningIcon} />,
     label: 'épuisée',
   },
   [OfferStatus.ACTIVE]: {
@@ -37,12 +38,12 @@ const OFFER_STATUS_PROPERTIES: Record<
   },
   [OfferStatus.DRAFT]: {
     className: style['status-draft'],
-    Icon: <StatusDraftIcon />,
+    Icon: <SvgIcon alt="" src={strokeDraftIcon} />,
     label: 'brouillon',
   },
   [OfferStatus.REJECTED]: {
     className: style['status-rejected'],
-    Icon: <StatusRejectedIcon />,
+    Icon: <SvgIcon alt="" src={strokeCloseIcon} />,
     label: 'refusée',
   },
   [OfferStatus.PENDING]: {
@@ -52,7 +53,7 @@ const OFFER_STATUS_PROPERTIES: Record<
   },
   [OfferStatus.INACTIVE]: {
     className: style['status-inactive'],
-    Icon: <StatusInactiveIcon />,
+    Icon: <SvgIcon alt="" src={fullHideIcon} />,
     label: 'désactivée',
   },
 }
