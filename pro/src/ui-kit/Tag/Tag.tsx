@@ -1,7 +1,8 @@
 import cx from 'classnames'
 import React from 'react'
 
-import Icon from 'ui-kit/Icon/Icon'
+import strokeCloseIcon from 'icons/stroke-close.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Tag.module.scss'
 
@@ -36,10 +37,10 @@ const Tag = ({ label, className, closeable }: TagProps): JSX.Element => {
           disabled={closeable.disabled}
         >
           {label}
-          <Icon
-            alt={closeable.closeLabel}
+          <SvgIcon
+            src={strokeCloseIcon}
+            alt={closeable.closeLabel ?? ''}
             className={styles['tag-close-button-icon']}
-            svg="close-tag"
           />
         </button>
       ) : (
