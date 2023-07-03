@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
-import TrashFilledIcon from 'icons/full-trash.svg'
+import FullTrashIcon from 'icons/full-trash.svg'
 
 import StockFormActions, { StockFormActionsProps } from '../StockFormActions'
 import { StockFormRowAction } from '../types'
@@ -19,7 +19,7 @@ describe('StockFormActions', () => {
       {
         callback: mockActionCallback,
         label: 'Action label',
-        icon: TrashFilledIcon,
+        icon: FullTrashIcon,
       },
     ]
   })
