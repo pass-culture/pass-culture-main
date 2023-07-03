@@ -1,7 +1,7 @@
 import React from 'react'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
-import { ReactComponent as Trash } from 'icons/ico-trash.svg'
+import { ReactComponent as StrokeTrashIcon } from 'icons/stroke-trash.svg'
 
 interface DialogStockDeleteConfirmProps {
   onConfirm: () => void
@@ -19,7 +19,7 @@ const DialogStockThingDeleteConfirm = ({
       title="Voulez-vous supprimer ce stock ?"
       confirmText="Supprimer"
       cancelText="Annuler"
-      icon={Trash}
+      icon={StrokeTrashIcon}
     >
       <p>
         {'Ce stock ne sera plus disponible à la réservation et '}

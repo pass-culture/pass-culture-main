@@ -77,7 +77,7 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-hide.svg' }, // TODO 1 use left inside Button (PasswordInput)
   { src: 'icons/stroke-hourglass.svg' },
   { src: 'icons/stroke-like.svg' }, // TODO 1 use left inside Button
-  { src: 'icons/stroke-case.svg' },
+  { src: 'icons/stroke-trash.svg' },
   { src: 'icons/stroke-code.svg' },
   { src: 'icons/stroke-accessibility-eye.svg' },
   { src: 'icons/stroke-accessibility-ear.svg' },
@@ -144,7 +144,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-success.svg', viewBox: '0 0 88 88' },
   { src: 'icons/ico-tag.svg', viewBox: '0 0 33 33' },
   { src: 'icons/ticket-cross.svg', viewBox: '0 0 100 80' },
-  { src: 'icons/ico-trash.svg' },
   { src: 'icons/ico-trophee.svg', viewBox: '0 0 24 25' },
   { src: 'icons/ico-unavailable-gradient.svg', viewBox: '0 0 178 100' },
   { src: 'icons/ico-unavailable-page.svg', viewBox: '0 0 317 198' },

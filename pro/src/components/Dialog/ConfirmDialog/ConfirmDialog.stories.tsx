@@ -1,7 +1,7 @@
 import type { ComponentMeta, ComponentStory } from '@storybook/react'
 import React from 'react'
 
-import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
+import { ReactComponent as StrokeTrashIcon } from 'icons/stroke-trash.svg'
 
 import ConfirmDialog from './ConfirmDialog'
 
@@ -37,5 +37,5 @@ WithIcon.args = {
   confirmText: 'confirm',
   cancelText: 'cancel',
   children: 'lorem ipsum dolor sit amet',
-  icon: TrashIcon,
+  icon: StrokeTrashIcon,
 }
