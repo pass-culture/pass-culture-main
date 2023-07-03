@@ -8,9 +8,10 @@ import { AdageFrontRoles } from 'apiClient/adage'
 import { AdageHeaderLink } from 'apiClient/adage/models/AdageHeaderLink'
 import { apiAdage } from 'apiClient/api'
 import useNotification from 'hooks/useNotification'
-import { InstitutionIcon, SearchIcon } from 'icons'
+import { InstitutionIcon } from 'icons'
 import { ReactComponent as FullDownloadIcon } from 'icons/full-download.svg'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
+import strokeSearchIcon from 'icons/stroke-search.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Icon from 'ui-kit/Icon/Icon'
@@ -76,7 +77,7 @@ export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
                 }}
                 onClick={() => logAdageLinkClick(AdageHeaderLink.SEARCH)}
               >
-                <SearchIcon className={styles['adage-header-item-icon']} />
+                <SvgIcon src={strokeSearchIcon} alt="" width="20" />
                 Rechercher
               </NavLink>
               <NavLink
