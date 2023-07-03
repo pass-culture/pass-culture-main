@@ -6,17 +6,7 @@ from pcapi.core.users.factories import ProFactory
 from tests.conftest import TestClient
 
 
-class Returns401Test:
-    @pytest.mark.usefixtures("db_session")
-    def when_the_user_is_not_authenticated(self, app):
-        # When
-        response = TestClient(app.test_client()).get("/venue-labels")
-
-        # then
-        assert response.status_code == 401
-
-
-class Returns200Test:
+class GetVenueLabelsTest:
     @pytest.mark.usefixtures("db_session")
     def when_the_user_is_authenticated(self, app):
         # Given
@@ -34,3 +24,11 @@ class Returns200Test:
             {"id": venue_label_1.id, "label": venue_label_1.label},
             {"id": venue_label_2.id, "label": venue_label_2.label},
         ]
+
+    @pytest.mark.usefixtures("db_session")
+    def when_the_user_is_not_authenticated(self, app):
+        # When
+        response = TestClient(app.test_client()).get("/venue-labels")
+
+        # then
+        assert response.status_code == 401

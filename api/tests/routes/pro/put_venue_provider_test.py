@@ -8,7 +8,7 @@ import pcapi.core.users.factories as user_factories
 from tests.conftest import TestClient
 
 
-class Returns200Test:
+class PutVenueProviderTest:
     @pytest.mark.usefixtures("db_session")
     def test_allocine_venue_provider_is_successfully_updated(self, app):
         # Given
@@ -99,8 +99,6 @@ class Returns200Test:
         assert response.status_code == 200
         assert not response.json["isActive"]
 
-
-class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def test_user_is_not_logged_in(self, app):
         # when
@@ -109,8 +107,6 @@ class Returns401Test:
         # then
         assert response.status_code == 401
 
-
-class Returns403Test:
     @pytest.mark.usefixtures("db_session")
     def test_user_has_right_on_venue(self, app):
         # Given

@@ -21,7 +21,7 @@ BOOKING_PERIOD = (datetime(2022, 3, 10, tzinfo=timezone.utc).date(), datetime(20
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns200Test:
+class GetAllCollectiveBookingTest:
     @freeze_time("2022-05-01 15:00:00")
     def test_when_user_is_admin(self, client):
         admin = users_factories.AdminFactory()
@@ -654,9 +654,6 @@ class Returns200Test:
         assert response.json["total"] == 1
         assert response.json["bookingsRecap"] == expected_bookings_recap
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns400Test:
     def when_page_number_is_not_a_number(self, client):
         pro = users_factories.ProFactory()
 

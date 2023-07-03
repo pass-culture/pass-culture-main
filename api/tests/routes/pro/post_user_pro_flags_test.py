@@ -9,7 +9,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 ROUTE_PATH = "/users/pro_flags"
 
 
-class Returns204Test:
+class PostUserProGlagsTest:
     def test_new_flags(self, client):
         user = users_factories.UserFactory()
 
@@ -36,8 +36,6 @@ class Returns204Test:
 
         assert response.status_code == 204
 
-
-class Returns400Test:
     def test_uknown_flags(self, client):
         flags = users_factories.UserProFlagsFactory()
         user = flags.user

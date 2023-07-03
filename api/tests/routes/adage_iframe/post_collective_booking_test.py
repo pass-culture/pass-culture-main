@@ -22,7 +22,7 @@ educational_year_dates = {"start": datetime(2020, 9, 1), "end": datetime(2021, 8
 
 
 @freeze_time("2020-11-17 15:00:00")
-class Returns200Test:
+class PostCollectiveBookingTest:
     def test_post_educational_booking(self, app, caplog):
         # Given
         stock = educational_factories.CollectiveStockFactory(beginningDatetime=stock_date)
@@ -105,11 +105,8 @@ class Returns200Test:
 
         assert len(adage_api_testing.adage_requests) == 1
 
-
-@freeze_time("2020-11-17 15:00:00")
-class Returns400Test:
     @pytest.fixture()
-    def test_data(self):
+    def test_data_fail_400(self):
         stock = educational_factories.CollectiveStockFactory(beginningDatetime=stock_date)
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalYearFactory(
@@ -165,11 +162,8 @@ class Returns400Test:
         assert response.json == {"stock": "Cette offre n'est pas disponible à la réservation"}
         assert len(adage_api_testing.adage_requests) == 0
 
-
-@freeze_time("2020-11-17 15:00:00")
-class Returns403Test:
     @pytest.fixture()
-    def test_data(self):
+    def test_data_fail_403(self):
         stock = educational_factories.CollectiveStockFactory(beginningDatetime=stock_date)
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_factories.EducationalYearFactory(

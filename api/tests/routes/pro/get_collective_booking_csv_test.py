@@ -19,7 +19,7 @@ def reader_from_response(response):
     return list(reader)
 
 
-class Returns200Test:
+class GetCollectiveBookingCsvTest:
     def test_complete_booking_single(self, app):
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(

@@ -16,7 +16,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 
-class Returns201Test:
+class UpsertVenueBanner:
     @freeze_time("2020-10-15 00:00:00")
     @patch("pcapi.core.search.async_index_venue_ids")
     def test_upload_image(self, mock_search_async_index_venue_ids, client, tmpdir):
@@ -63,8 +63,6 @@ class Returns201Test:
                 },
             }
 
-
-class Returns400Test:
     def test_upload_image_missing(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)

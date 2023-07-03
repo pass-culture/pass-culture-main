@@ -22,7 +22,7 @@ UPLOAD_FOLDER = settings.LOCAL_STORAGE_DIR / educational_models.CollectiveOffer.
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns200Test:
+class PostDuplicateCollectiveOfferAndStockTest:
     def teardown_method(self, *args):
         """clear images after each tests"""
         storage_folder = UPLOAD_FOLDER / educational_models.CollectiveOffer.__name__.lower()

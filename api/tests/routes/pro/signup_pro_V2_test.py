@@ -15,7 +15,7 @@ BASE_DATA_PRO = {
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns204Test:
+class SignupProV2Test:
     def test_when_user_data_is_valid(self, client):
         # Given
         data = BASE_DATA_PRO.copy()
@@ -57,9 +57,6 @@ class Returns204Test:
         user = User.query.filter_by(email="toto_pro@example.com").first()
         assert user.needsToFillCulturalSurvey is False
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns400Test:
     def test_when_email_is_missing(self, client):
         # Given
         data = BASE_DATA_PRO.copy()

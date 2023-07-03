@@ -14,7 +14,7 @@ from pcapi.utils.human_ids import humanize
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns200Test:
+class GetCollectiveOfferTest:
     def test_basics(self, client):
         # Given
         template = educational_factories.CollectiveOfferTemplateFactory()
@@ -164,9 +164,6 @@ class Returns200Test:
         assert response.json["status"] == "INACTIVE"
         assert response.json["isActive"] is False
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns403Test:
     def test_access_by_unauthorized_pro_user(self, client):
         # Given
         pro_user = users_factories.ProFactory()

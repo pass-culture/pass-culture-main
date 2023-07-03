@@ -7,7 +7,7 @@ VALID_UAI = "0470009E"
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns200Test:
+class GetAutocompleteEducationalRedactorForUaiTest:
     def test_get_one_redactor(self, client):
         # Given
         user = users_factories.UserFactory()
@@ -112,9 +112,6 @@ class Returns200Test:
         assert response.status_code == 200
         assert response_json == []
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns404Test:
     def test_uai_not_found(self, client):
         # Given
         user = users_factories.UserFactory()
@@ -127,9 +124,6 @@ class Returns404Test:
         # Then
         assert response.status_code == 404
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns400Test:
     def test_uai_too_short(self, client):
         # Given
         user = users_factories.UserFactory()
@@ -154,9 +148,6 @@ class Returns400Test:
         # Then
         assert response.status_code == 400
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns401Test:
     def test_user_not_logged_in(self, client):
         # When
         response = client.get("/collective/offers/redactors?uai=X&candidate=sklodowska")

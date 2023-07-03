@@ -13,7 +13,7 @@ from tests.conftest import TestClient
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class Returns200Test:
+class GetOffersTest:
     def should_filter_by_venue_when_user_is_admin_and_request_specific_venue_with_no_rights_on_it(self, client):
         admin = users_factories.AdminFactory()
         offerer = offerers_factories.OffererFactory(name="My Offerer")
@@ -267,8 +267,6 @@ class Returns200Test:
             creation_mode=None,
         )
 
-
-class Returns404Test:
     def should_return_no_offers_when_user_has_no_rights_on_requested_venue(self, app, db_session):
         # Given
         pro = users_factories.ProFactory()

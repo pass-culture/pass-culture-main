@@ -8,7 +8,7 @@ import pcapi.core.offers.models as offers_models
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class Return200Test:
+class DeletePriceCategoriesTest:
     def test_delete_price_category(self, client):
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)
         price_category = offers_factories.PriceCategoryFactory(offer=offer)
@@ -26,8 +26,6 @@ class Return200Test:
         assert offers_models.PriceCategory.query.count() == 0
         assert offers_models.Stock.query.count() == 0
 
-
-class Return400Test:
     def test_offer_not_draft(self, client):
         validated_offer = offers_factories.ThingOfferFactory()
         undeletable_price_category = offers_factories.PriceCategoryFactory(offer=validated_offer)

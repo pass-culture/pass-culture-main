@@ -20,7 +20,7 @@ from tests.conftest import clean_database
 from tests.local_providers.cinema_providers.cds import fixtures as cds_fixtures
 
 
-class Returns201Test:
+class PostVenueProviderTest:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
     @patch("pcapi.core.providers.api._siret_can_be_synchronized")
@@ -309,8 +309,6 @@ class Returns201Test:
         assert response.json["venueId"] == venue.id
         assert response.json["venueIdAtOfferProvider"] == cds_pivot.idAtProvider
 
-
-class Returns400Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_api_error_raise_when_missing_fields(self, client):
         # Given
@@ -374,8 +372,6 @@ class Returns400Test:
         assert response.json["price"] == ["Il est obligatoire de saisir un prix."]
         assert VenueProvider.query.count() == 0
 
-
-class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_user_is_not_logged_in(self, client):
         # when
@@ -384,8 +380,6 @@ class Returns401Test:
         # then
         assert response.status_code == 401
 
-
-class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_venue_does_not_exist(self, client):
         # Given
@@ -432,8 +426,6 @@ class Returns404Test:
         }
         assert VenueProvider.query.count() == 0
 
-
-class Returns422Test:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.core.providers.api._siret_can_be_synchronized")
     def test_when_provider_api_not_available(self, mock_siret_can_be_synchronized, client):

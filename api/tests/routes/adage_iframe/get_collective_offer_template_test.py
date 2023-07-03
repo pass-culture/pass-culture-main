@@ -19,7 +19,7 @@ educational_year_dates = {"start": datetime(2020, 9, 1), "end": datetime(2021, 8
 
 
 @freeze_time("2020-11-17 15:00:00")
-class Returns200Test:
+class GetCollectiveOfferTemplateTest:
     def test_get_collective_offer_template(self, client):
         # Given
         offer = educational_factories.CollectiveOfferTemplateFactory(
@@ -150,8 +150,6 @@ class Returns200Test:
             "imageCredit": None,
         }
 
-
-class Returns404Test:
     def test_should_return_404_when_no_collective_offer_template(self, client):
         # Given
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="toto@mail.com", uai="12890AI")

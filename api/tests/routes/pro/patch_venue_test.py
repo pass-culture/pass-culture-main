@@ -34,7 +34,7 @@ def populate_missing_data_from_venue(venue_data: dict, venue: offerers_models.Ve
     }
 
 
-class Returns200Test:
+class PatchVenueTest:
     def test_should_update_venue(self, app) -> None:
         # given
         user_offerer = offerers_factories.UserOffererFactory()
@@ -280,8 +280,6 @@ class Returns200Test:
         assert response.json["reimbursementPointId"] is None
         assert len(external_testing.sendinblue_requests) == 1
 
-
-class Returns400Test:
     @pytest.mark.parametrize("data, key", venue_malformed_test_data)
     def test_update_venue_malformed(self, client, data, key):
         user_offerer = offerers_factories.UserOffererFactory()

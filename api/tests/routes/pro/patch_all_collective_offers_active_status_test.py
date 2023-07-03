@@ -16,7 +16,7 @@ from tests.conftest import TestClient
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns204Test:
+class PatchAllCollectiveOffersActiveStatusTest:
     def when_activating_all_existing_offers(self, app):
         # Given
         offer1 = CollectiveOfferFactory(isActive=False)
@@ -116,9 +116,6 @@ class Returns204Test:
         assert not pending_offer.isActive
         assert not rejected_offer.isActive
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns403Test:
     def test_when_activating_all_existing_offers_active_status_when_cultural_partners_not_found(self, client):
         # Given
         offer1 = CollectiveOfferFactory(isActive=False)

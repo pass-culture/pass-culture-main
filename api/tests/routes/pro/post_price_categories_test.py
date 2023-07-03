@@ -11,7 +11,7 @@ import pcapi.core.offers.models as offers_models
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class Returns200Test:
+class PostPriceCategoriesTest:
     def test_create_one_price_category(self, client):
         offer = offers_factories.EventOfferFactory()
         offerers_factories.UserOffererFactory(
@@ -144,8 +144,6 @@ class Returns200Test:
         assert all((stock.price == 25 for stock in offer.stocks if not stock.isEventExpired))
         assert expired_stock.price != 25
 
-
-class Returns400Test:
     def test_create_too_expensive_price_category(self, client):
         offer = offers_factories.EventOfferFactory()
         offerers_factories.UserOffererFactory(

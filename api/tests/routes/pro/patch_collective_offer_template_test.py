@@ -15,7 +15,7 @@ import pcapi.core.users.factories as users_factories
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class Returns200Test:
+class PatchCollectiveOfferTemplateTest:
     @freeze_time("2019-01-01T12:00:00Z")
     def test_patch_collective_offer_template(self, client):
         # Given
@@ -66,8 +66,6 @@ class Returns200Test:
         assert updated_offer.priceDetail == "pouet"
         assert updated_offer.domains == [domain]
 
-
-class Returns400Test:
     def test_patch_non_approved_offer_fails(self, app, client):
         offer = CollectiveOfferTemplateFactory(validation=OfferValidationStatus.PENDING)
         offerers_factories.UserOffererFactory(
@@ -164,8 +162,6 @@ class Returns400Test:
         # Then
         assert response.status_code == 400
 
-
-class Returns403Test:
     def test_when_user_is_not_attached_to_offerer(self, app, client):
         # Given
         offer = CollectiveOfferTemplateFactory(name="Old name")
@@ -184,8 +180,6 @@ class Returns403Test:
         ]
         assert CollectiveOfferTemplate.query.get(offer.id).name == "Old name"
 
-
-class Returns404Test:
     def test_returns_404_if_offer_does_not_exist(self, app, client):
         # given
         users_factories.UserFactory(email="user@example.com")

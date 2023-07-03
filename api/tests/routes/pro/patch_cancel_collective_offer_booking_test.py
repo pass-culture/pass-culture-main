@@ -16,7 +16,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 @override_settings(ADAGE_API_URL="https://adage_base_url")
 @override_settings(ADAGE_API_KEY="adage-api-key")
-class Returns204Test:
+class PatchCancelCollectiveOfferBookingTest:
     def test_cancel_pending_booking(self, client):
         user = user_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
@@ -57,8 +57,6 @@ class Returns204Test:
         assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
         assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-annule"
 
-
-class Returns404Test:
     def test_no_collective_offer_found(self, client):
         user = user_factories.AdminFactory()
         offer_id = humanize(123789654)
@@ -73,8 +71,6 @@ class Returns404Test:
         }
         assert len(adage_api_testing.adage_requests) == 0
 
-
-class Returns403Test:
     def test_user_does_not_have_access_to_offerer(self, client):
         user = user_factories.UserFactory()
         offerer = offerers_factories.OffererFactory()
@@ -92,8 +88,6 @@ class Returns403Test:
         }
         assert len(adage_api_testing.adage_requests) == 0
 
-
-class Returns400Test:
     def test_offer_has_no_booking_to_cancel(self, client):
         user = user_factories.AdminFactory()
         educational_booking = CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED)

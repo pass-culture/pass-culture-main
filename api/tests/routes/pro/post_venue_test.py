@@ -54,7 +54,7 @@ venue_malformed_test_data = [
 ]
 
 
-class Returns201Test:
+class PostVenueTest:
     @testing.override_features(ENABLE_ZENDESK_SELL_CREATION=True)
     def test_register_new_venue(self, client):
         user = ProFactory()
@@ -89,8 +89,6 @@ class Returns201Test:
             {"action": "create", "type": "Venue", "id": response.json["id"]}
         ]
 
-
-class Returns400Test:
     def test_latitude_out_of_range_and_longitude_wrong_format(self, client):
         user = ProFactory()
         venue_data = create_valid_venue_data(user)
@@ -195,8 +193,6 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["withdrawalDetails"] == ["ensure this value has at most 500 characters"]
 
-
-class Returns403Test:
     def test_user_is_not_managing_offerer_create_venue(self, client):
         user = ProFactory()
         venue_data = create_valid_venue_data()

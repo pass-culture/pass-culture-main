@@ -6,7 +6,7 @@ from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 
 
-class Returns200ForProUserTest:
+class GetOfferersNamesForProUserTest:
     def _setup_offerers_for_pro_user(self, user):
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
@@ -131,7 +131,7 @@ class Returns200ForProUserTest:
         assert offerers["owned_offerer_validated_for_user"].id in offerer_ids
 
 
-class Returns200ForAdminTest:
+class GetOfferersNameForAdminUserTest:
     def _setup_offerers_for_users(self):
         offerer = offerers_factories.OffererFactory()
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)

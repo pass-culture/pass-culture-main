@@ -23,7 +23,7 @@ BOOKING_PERIOD_PARAMS = "bookingPeriodBeginningDate=2020-08-10&bookingPeriodEndi
 BOOKING_PERIOD = (datetime(2020, 8, 10, tzinfo=timezone.utc).date(), datetime(2020, 8, 12, tzinfo=timezone.utc).date())
 
 
-class GetAllBookingsTest:
+class GetAllBookingsWithPatchTest:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.core.bookings.repository.find_by_pro_user")
     def test_call_repository_with_user_and_page(self, find_by_pro_user, app):
@@ -87,7 +87,7 @@ class GetAllBookingsTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns200Test:
+class GetAllBookingTest:
     def when_user_is_admin(self, app):
         admin = users_factories.AdminFactory()
         user_offerer = offerers_factories.UserOffererFactory()
@@ -229,9 +229,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["bookingsRecap"][0]["bookingToken"] is None
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns400Test:
+    @pytest.mark.usefixtures("db_session")
     def when_page_number_is_not_a_number(self, app):
         pro = users_factories.ProFactory()
 
@@ -241,6 +239,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["page"] == ["Saisissez un nombre valide"]
 
+    @pytest.mark.usefixtures("db_session")
     def when_booking_period_and_event_date_is_not_given(self, app):
         pro = users_factories.ProFactory()
 

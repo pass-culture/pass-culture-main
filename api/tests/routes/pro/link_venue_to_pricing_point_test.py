@@ -7,7 +7,7 @@ import pcapi.core.offerers.models as offerers_models
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class Returns201Test:
+class LinkVenueToPricingPointTest:
     def test_no_pre_existing_link(self, client):
         venue = offerers_factories.VenueWithoutSiretFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=venue.managingOfferer)
@@ -22,8 +22,6 @@ class Returns201Test:
         assert new_link.pricingPoint == pricing_point
         assert new_link.timespan.upper is None
 
-
-class Returns400Test:
     def test_pricing_point_does_not_exist(self, client):
         venue = offerers_factories.VenueWithoutSiretFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=venue.managingOfferer)

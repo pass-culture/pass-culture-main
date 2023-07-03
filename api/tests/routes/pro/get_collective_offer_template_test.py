@@ -8,7 +8,7 @@ from pcapi.utils.human_ids import humanize
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns200Test:
+class GetCollectiveOfferTemplateTest:
     def test_access_by_beneficiary(self, client):
         # Given
         offer = educational_factories.CollectiveOfferTemplateFactory()
@@ -48,9 +48,6 @@ class Returns200Test:
         with testing.assert_no_duplicated_queries():
             client.get(f"/collective/offers-template/{humanized_offer_id}")
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns403Test:
     def test_access_by_unauthorized_pro_user(self, client):
         # Given
         pro_user = users_factories.ProFactory()

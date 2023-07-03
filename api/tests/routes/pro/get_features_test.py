@@ -3,7 +3,7 @@ import pytest
 from pcapi.core.users import factories as users_factories
 
 
-class Returns200Test:
+class GetFeaturesTest:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_logged_in(self, client):
         # given

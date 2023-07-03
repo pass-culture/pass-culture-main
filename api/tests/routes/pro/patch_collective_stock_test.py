@@ -21,7 +21,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 @freeze_time("2020-11-17 15:00:00")
-class Return200Test:
+class PatchCollectiveStockTest:
     def test_edit_collective_stock(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
@@ -277,9 +277,6 @@ class Return200Test:
         edited_collective_booking = CollectiveBooking.query.get(collective_booking.id)
         assert edited_collective_booking.educationalYearId == educational_year_2022_2023.adageId
 
-
-@freeze_time("2020-11-17 15:00:00")
-class Return403Test:
     def test_edit_collective_stocks_should_not_be_possible_when_user_not_linked_to_offerer(self, client):
         stock = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime(2021, 12, 18),
@@ -347,9 +344,6 @@ class Return403Test:
         # Then
         assert response.status_code == 403
 
-
-@freeze_time("2020-11-17 15:00:00")
-class Return400Test:
     def should_not_allow_number_of_tickets_to_be_negative_on_edition(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(

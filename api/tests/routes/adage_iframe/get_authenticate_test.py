@@ -13,7 +13,7 @@ from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_f
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns200Test:
+class GetAuthenticateTest:
     valid_user = {
         "mail": "sabine.laprof@example.com",
         "uai": "EAU123",
@@ -77,9 +77,6 @@ class Returns200Test:
             "email": None,
         }
 
-
-@pytest.mark.usefixtures("db_session")
-class ReturnsErrorTest:
     valid_user = {
         "civilite": "Mme.",
         "nom": "LAPROF",

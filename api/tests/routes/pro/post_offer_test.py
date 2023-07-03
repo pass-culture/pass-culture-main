@@ -9,7 +9,7 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns200Test:
+class PostOfferTest:
     def test_created_offer_should_be_inactive(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -172,9 +172,6 @@ class Returns200Test:
         assert offer.withdrawalDetails == "Veuillez récuperer vos billets à l'accueil :)"
         assert offer.withdrawalType == WithdrawalTypeEnum.NO_TICKET
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns400Test:
     def test_fail_if_venue_is_not_found(self, client):
         # Given
         offerers_factories.UserOffererFactory(user__email="user@example.com")
@@ -423,9 +420,6 @@ class Returns400Test:
         # Then
         assert response.status_code == 400
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns403Test:
     def test_when_user_is_not_attached_to_offerer(self, client):
         # Given
         users_factories.ProFactory(email="user@example.com")

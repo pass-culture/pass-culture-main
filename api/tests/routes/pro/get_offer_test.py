@@ -18,7 +18,7 @@ from tests.conftest import TestClient
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns403Test:
+class GetOfferTest:
     def test_access_by_beneficiary(self, app):
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -43,9 +43,6 @@ class Returns403Test:
         # Then
         assert response.status_code == 403
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns200Test:
     def test_access_by_pro_user(self, app):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()

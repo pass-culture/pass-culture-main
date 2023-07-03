@@ -68,7 +68,7 @@ import pcapi.core.users.factories as users_factories
         ),
     ),
 )
-class Returns200Test:
+class GetCategoriesTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_categories(self, app, client):
         # Given

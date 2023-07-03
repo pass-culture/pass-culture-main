@@ -14,7 +14,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 @freeze_time("2020-11-17 15:00:00")
-class Return200Test:
+class PostCollectiveStockTest:
     def test_create_valid_stock_for_collective_offer(self, client):
         # Given
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.DRAFT)
@@ -77,9 +77,6 @@ class Return200Test:
         assert created_stock
         assert offer.students == [StudentLevels.COLLEGE4]
 
-
-@freeze_time("2020-11-17 15:00:00")
-class Return400Test:
     def test_create_collective_stocks_should_not_be_available_if_user_not_linked_to_offerer(self, client):
         # Given
         offer = educational_factories.CollectiveOfferFactory()
@@ -255,7 +252,7 @@ class Return400Test:
         assert response.status_code == 409
         assert response.json == {"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"}
 
-    def test_create_valid_stock_for_collective_offer(self, client):
+    def test_create_valid_stock_for_collective_offer_date_issue(self, client):
         # Given
         offer = educational_factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(
@@ -280,9 +277,6 @@ class Return400Test:
         assert response.status_code == 400
         assert response.json == {"beginningDatetime": ["L'évènement ne peut commencer dans le passé."]}
 
-
-@freeze_time("2020-11-17 15:00:00")
-class Return403Test:
     def test_create_collective_stock_for_offer_with_6_5_only_too_early(self, client):
         # Given
         offer = educational_factories.CollectiveOfferFactory(

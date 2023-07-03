@@ -10,7 +10,7 @@ from pcapi.core.providers.repository import get_provider_by_local_class
 from tests.conftest import TestClient
 
 
-class Returns200Test:
+class GetVenueProvidersTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_list_with_valid_venue_id(self, app):
         # given
@@ -72,8 +72,6 @@ class Returns200Test:
         assert response.json["venue_providers"][0].get("venueId") == allocine_venue_provider.venue.id
         assert response.json["venue_providers"][0].get("price") == 123.2
 
-
-class Returns400Test:
     @pytest.mark.usefixtures("db_session")
     def when_listing_all_venues_without_venue_id_argument(self, app):
         # given

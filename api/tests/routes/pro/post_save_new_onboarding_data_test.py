@@ -25,7 +25,7 @@ REQUEST_BODY = {
 }
 
 
-class Returns200Test:
+class PostSaveNewOnboardingDataTest:
     @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_nominal(self, client):
         user = users_factories.UserFactory(email="pro@example.com")
@@ -57,8 +57,6 @@ class Returns200Test:
         assert created_venue.venueTypeCode == offerers_models.VenueTypeCode.MOVIE
         assert created_venue.withdrawalDetails is None
 
-
-class Returns400Test:
     @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     @patch("pcapi.connectors.sirene.get_siret", side_effect=sirene.UnknownEntityException())
     def test_siret_unknown(self, _get_siret_mock, client):
@@ -86,10 +84,8 @@ class Returns400Test:
         assert offerers_models.UserOfferer.query.count() == 0
         assert offerers_models.Venue.query.count() == 0
 
-
-class Returns403Test:
     @override_features(WIP_ENABLE_NEW_ONBOARDING=False)
-    def test_siret_unknown(self, client):
+    def test_siret_unknown_error403(self, client):
         user = users_factories.UserFactory()
 
         client = client.with_session_auth(user.email)
@@ -97,8 +93,6 @@ class Returns403Test:
 
         assert response.status_code == 403
 
-
-class Returns500Test:
     @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     @patch("pcapi.connectors.sirene.get_siret", side_effect=sirene.SireneApiException())
     def test_sirene_api_ko(self, _get_siret_mock, client):

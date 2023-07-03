@@ -8,7 +8,7 @@ import pcapi.core.users.factories as users_factories
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class Return200Test:
+class GetEducationalPartnersTest:
     def test_get_educational_partners(self, client: Any) -> None:
         # Given
         pro_user = users_factories.ProFactory()
@@ -35,8 +35,6 @@ class Return200Test:
             ]
         }
 
-
-class Return401Test:
     def test_get_educational_partners_no_user_login(self, client: Any) -> None:
         # Given
 

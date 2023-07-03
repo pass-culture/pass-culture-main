@@ -10,7 +10,7 @@ from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_d
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class Returns200Test:
+class GetVenueBySiretTest:
     def _create_adage_valid_token(self) -> ByteString:
         return create_adage_jwt_default_fake_valid_token(
             civility="Mme.",
@@ -85,8 +85,6 @@ class Returns200Test:
             "relative": [venue2.id],
         }
 
-
-class ReturnsErrorTest:
     def _create_adage_valid_token(self) -> ByteString:
         return create_adage_jwt_default_fake_valid_token(
             civility="M.",

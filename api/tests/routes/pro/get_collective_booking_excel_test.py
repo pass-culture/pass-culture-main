@@ -20,7 +20,7 @@ def reader_from_response(response):
     return wb.active
 
 
-class Returns200Test:
+class GetCollectiveBookingExcelTest:
     def test_complete_booking_single(self, app):
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(

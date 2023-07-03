@@ -9,7 +9,7 @@ from pcapi.utils.human_ids import humanize
 from tests.conftest import TestClient
 
 
-class Returns200Test:
+class DeleteStockTest:
     def when_current_user_has_rights_on_offer(self, app, db_session):
         # given
         offer = offers_factories.OfferFactory()
@@ -38,8 +38,6 @@ class Returns200Test:
             "can_be_asynchronously_retried": False,
         }
 
-
-class Returns400Test:
     def test_delete_non_approved_offer_fails(self, app, db_session):
         pending_validation_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
         stock = offers_factories.StockFactory(offer=pending_validation_offer)
@@ -51,8 +49,6 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
 
-
-class Returns403Test:
     def when_current_user_has_no_rights_on_offer(self, app, db_session):
         # given
         pro = users_factories.ProFactory(email="notadmin@example.com")

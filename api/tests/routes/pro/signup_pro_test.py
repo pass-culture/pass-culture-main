@@ -26,7 +26,7 @@ BASE_DATA_PRO = {
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns204Test:
+class SignupProTest:
     def test_when_user_data_is_valid(self, client):
         # Given
         data = BASE_DATA_PRO.copy()
@@ -204,9 +204,6 @@ class Returns204Test:
         assert actions_list[1].user == user
         assert actions_list[1].offerer == offerer
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns400Test:
     def test_when_email_is_missing(self, client):
         # Given
         data = BASE_DATA_PRO.copy()

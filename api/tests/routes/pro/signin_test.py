@@ -9,7 +9,7 @@ from pcapi.repository import repository
 from pcapi.utils.date import format_into_utc_date
 
 
-class Returns200Test:
+class SigninTest:
     @pytest.mark.usefixtures("db_session")
     def when_account_is_known(self, client, caplog):
         # given
@@ -111,8 +111,6 @@ class Returns200Test:
         session = users_models.UserSession.query.filter_by(userId=user.id).first()
         assert session is not None
 
-
-class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def when_identifier_is_missing(self, client, caplog):
         # Given

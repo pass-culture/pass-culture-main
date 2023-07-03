@@ -14,7 +14,7 @@ from tests.conftest import TestClient
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns200Test:
+class GetVenueTest:
     def when_user_has_rights_on_managing_offerer(self, client, db_session):
         now = datetime.datetime.utcnow()
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
@@ -368,8 +368,6 @@ class Returns200Test:
             "original_image_url": None,
         }
 
-
-class Returns403Test:
     @pytest.mark.usefixtures("db_session")
     def when_current_user_doesnt_have_rights(self, app):
         # given

@@ -7,14 +7,12 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
 
 
-class Returns401Test:
+class GetVenuesEducationalStatustest:
     @pytest.mark.usefixtures("db_session")
     def test_when_user_not_logged_in(self, client: typing.Any):
         response = client.get("/venues-educational-statuses")
         assert response.status_code == 401
 
-
-class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_when_user_can_retrieve_the_statues(self, client: typing.Any):
         pro = users_factories.ProFactory()

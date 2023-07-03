@@ -6,7 +6,7 @@ from pcapi.core.users.factories import UserFactory
 from tests.conftest import TestClient
 
 
-class Returns401Test:
+class GetVenueTypesTest:
     @pytest.mark.usefixtures("db_session")
     def when_the_user_is_not_authenticated(self, app):
         # When
@@ -15,8 +15,6 @@ class Returns401Test:
         # then
         assert response.status_code == 401
 
-
-class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_the_user_is_authenticated(self, client):
         # Given

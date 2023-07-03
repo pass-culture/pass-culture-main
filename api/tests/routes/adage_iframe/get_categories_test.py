@@ -66,7 +66,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
         ),
     ),
 )
-class Returns200Test:
+class GetCategoriesTest:
     def test_get_categories(self, client):
         # Given
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="toto@mail.com", uai="12890AI")

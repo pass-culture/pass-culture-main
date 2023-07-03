@@ -9,7 +9,7 @@ from pcapi.utils.human_ids import humanize
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns200Test:
+class PostCreateCollectiveOfferTemplate:
     def test_create_collective_offer_template_with_educational_price_detail(self, client):
         # Given
         venue = offerers_factories.VenueFactory()
@@ -61,9 +61,6 @@ class Returns200Test:
         assert template.offerVenue == offer.offerVenue
         assert template.bookingEmails == offer.bookingEmails
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns400Test:
     def test_create_collective_offer_template_from_offer_with_stock(self, client):
         # Given
         venue = offerers_factories.VenueFactory()
@@ -80,9 +77,6 @@ class Returns400Test:
         assert response.status_code == 400
         assert CollectiveOffer.query.filter_by(id=offer.id).one_or_none() is not None
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns403Test:
     def test_create_collective_offer_template_random_user(self, client):
         # Given
         offerers_factories.UserOffererFactory(user__email="azerty@example.com")
@@ -99,9 +93,6 @@ class Returns403Test:
         assert response.status_code == 403
         assert CollectiveOffer.query.filter_by(id=offer.id).one_or_none() is not None
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns404Test:
     def test_create_collective_offer_template_without_collective_offer(self, client):
         # Given
         venue = offerers_factories.VenueFactory()

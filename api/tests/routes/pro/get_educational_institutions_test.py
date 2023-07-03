@@ -9,7 +9,7 @@ import pcapi.core.users.factories as users_factories
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class Return200Test:
+class GetEducationalInstitutionsTest:
     def test_get_educational_institutions(self, client: Any) -> None:
         # Given
         institution1 = EducationalInstitutionFactory(
@@ -127,8 +127,6 @@ class Return200Test:
             "total": 3,
         }
 
-
-class Return401Test:
     def test_get_educational_institutions_no_user_login(self, client: Any) -> None:
         # Given
         EducationalInstitutionFactory()

@@ -24,7 +24,7 @@ SIMPLE_OFFER_VALIDATION_CONFIG = """
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns204Test:
+class PatchCollectiveOfferTemplatePublicationTest:
     def expect_offer_to_be_approved(self, client):
         offer = educational_factories.CollectiveOfferTemplateFactory(validation=OfferValidationStatus.DRAFT)
         user_offerer = offerers_factories.UserOffererFactory(offerer=offer.venue.managingOfferer)
@@ -51,10 +51,7 @@ class Returns204Test:
         assert response.json["status"] == OfferStatus.PENDING.value
         assert not response.json["isActive"]
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns403Test:
-    def expect_offer_to_be_approved(self, client):
+    def expect_offer_to_be_approved_fail_403(self, client):
         offer = educational_factories.CollectiveOfferTemplateFactory(validation=OfferValidationStatus.DRAFT)
         user_offerer = offerers_factories.UserOffererFactory()
 
@@ -66,10 +63,7 @@ class Returns403Test:
         offer = educational_models.CollectiveOfferTemplate.query.filter_by(id=offer.id).one()
         assert offer.validation == OfferValidationStatus.DRAFT
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns401Test:
-    def expect_offer_to_be_approved(self, client):
+    def expect_offer_to_be_approved_no_authentification(self, client):
         offer = educational_factories.CollectiveOfferTemplateFactory(validation=OfferValidationStatus.DRAFT)
 
         url = f"/collective/offers-template/{offer.id}/publish"

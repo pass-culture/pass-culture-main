@@ -13,7 +13,7 @@ from pcapi.utils.human_ids import dehumanize
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns200Test:
+class PostCollectiveOffersTest:
     def test_create_collective_offer(self, client):
         # Given
         venue = offerers_factories.VenueFactory()
@@ -292,9 +292,6 @@ class Returns200Test:
         assert offer.description == "Ma super description"
         assert offer.templateId == template.id
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns403Test:
     def test_create_collective_offer_random_user(self, client):
         # Given
         user = users_factories.UserFactory()
@@ -373,9 +370,6 @@ class Returns403Test:
         assert response.status_code == 403
         assert CollectiveOffer.query.count() == 0
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns400Test:
     def test_create_collective_offer_unknown_category(self, client):
         # Given
         user = users_factories.UserFactory()
@@ -525,9 +519,6 @@ class Returns400Test:
         assert response.status_code == 400
         assert CollectiveOffer.query.count() == 0
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns404Test:
     def test_create_collective_offer_with_unknown_domain(self, client):
         # Given
         venue = offerers_factories.VenueFactory()

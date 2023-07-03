@@ -13,7 +13,7 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 from tests.conftest import TestClient
 
 
-class Returns200Test:
+class GetVenueStatsTest:
     @pytest.mark.usefixtures("db_session")
     def when_pro_user_has_rights_on_managing_offerer(self, app):
         # given
@@ -64,8 +64,6 @@ class Returns200Test:
         assert response_json["activeOffersCount"] == 2
         assert response_json["soldOutOffersCount"] == 1
 
-
-class Returns403Test:
     @pytest.mark.usefixtures("db_session")
     def when_pro_user_does_not_have_rights(self, app):
         # given

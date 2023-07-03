@@ -10,7 +10,7 @@ from pcapi.utils.date import format_into_utc_date
 from tests.conftest import TestClient
 
 
-class Returns200Test:
+class GetUserProfileTest:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_logged_in_and_has_no_deposit(self, app):
         user = users_factories.BeneficiaryGrant18Factory(
@@ -60,8 +60,6 @@ class Returns200Test:
             "roles": ["BENEFICIARY"],
         }
 
-
-class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_not_logged_in(self, app):
         # When

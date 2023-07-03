@@ -10,7 +10,7 @@ import pcapi.core.users.factories as users_factories
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class Return200Test:
+class GetEducationalPartnerTest:
     def test_get_educational_partner(self, client: Any) -> None:
         # Given
         pro_user = users_factories.ProFactory()
@@ -27,8 +27,6 @@ class Return200Test:
             "domaineIds": [1, 11],
         }
 
-
-class Return401Test:
     def test_get_educational_partners_no_user_login(self, client: Any) -> None:
         # Given
 
@@ -37,8 +35,6 @@ class Return401Test:
         # Then
         assert response.status_code == 401
 
-
-class Return404Test:
     @override_settings(
         ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
         ADAGE_API_URL="https://fake-url",

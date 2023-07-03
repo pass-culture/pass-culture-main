@@ -10,7 +10,7 @@ from pcapi.core.testing import override_features
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class Returns200Test:
+class GetAvailableReimbursementPointsTest:
     @pytest.mark.skip("Keep single function WIP_ENABLE_NEW_ONBOARDING FF is removed")
     def test_available_reimbursement_points_sorted_by_common_name(self, client):
         user_offerer = offerers_factories.UserOffererFactory(

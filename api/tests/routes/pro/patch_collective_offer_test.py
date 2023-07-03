@@ -27,7 +27,7 @@ from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class Returns200Test:
+class PatchCollectiveOfferTest:
     @freeze_time("2019-01-01T12:00:00Z")
     @override_settings(ADAGE_API_URL="https://adage_base_url")
     def test_patch_collective_offer(self, client):
@@ -270,8 +270,6 @@ class Returns200Test:
         assert len(offer.students) == 1
         assert offer.students[0].value == "Collège - 4e"
 
-
-class Returns400Test:
     def test_patch_non_approved_offer_fails(self, app, client):
         offer = CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
         offerers_factories.UserOffererFactory(
@@ -459,9 +457,6 @@ class Returns400Test:
         # Then
         assert response.status_code == 400
 
-
-@pytest.mark.usefixtures("db_session")
-class Returns403Test:
     def when_user_is_not_attached_to_offerer(self, app, client):
         # Given
         offer = CollectiveOfferFactory(name="Old name")
@@ -627,8 +622,6 @@ class Returns403Test:
         # Then
         assert response.status_code == 403
 
-
-class Returns404Test:
     def test_returns_404_if_offer_does_not_exist(self, app, client):
         # given
         users_factories.UserFactory(email="user@example.com")

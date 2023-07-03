@@ -6,7 +6,7 @@ import pcapi.core.users.factories as users_factories
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns200Test:
+class GetUserHasCollectiveBookingsTest:
     def test_user_has_collective_bookings(self, client):
         # given
         user = users_factories.UserFactory()

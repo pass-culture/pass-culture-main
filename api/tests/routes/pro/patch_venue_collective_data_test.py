@@ -9,7 +9,7 @@ import pcapi.core.offerers.models as offerers_models
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class Returns200Test:
+class PatchVenueCollectiveDataTest:
     def test_should_update_venue_with_no_empty_data(self, client) -> None:
         # given
         user_offerer = offerers_factories.UserOffererFactory()

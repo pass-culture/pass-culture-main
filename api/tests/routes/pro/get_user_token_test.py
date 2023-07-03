@@ -3,7 +3,7 @@ import pytest
 from pcapi.core.users import factories as users_factories
 
 
-class Returns200Test:
+class GetUserTokenTest:
     @pytest.mark.usefixtures("db_session")
     def when_activation_token_exists(self, client):
         # given
@@ -17,8 +17,6 @@ class Returns200Test:
         # then
         assert request.status_code == 204
 
-
-class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_activation_token_does_not_exist(self, client):
         # when

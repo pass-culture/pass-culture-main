@@ -13,7 +13,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 @freeze_time("2020-11-17 15:00:00")
-class Return200Test:
+class GetCollectiveStockTest:
     def test_get_educational_stock(self, client):
         # Given
         stock = CollectiveStockFactory(
@@ -44,9 +44,6 @@ class Return200Test:
             "stockId": None,
         }
 
-
-@freeze_time("2020-11-17 15:00:00")
-class Return403Test:
     def test_get_collective_stock_should_not_be_possible_when_user_not_linked_to_offerer(self, app, client):
         stock = CollectiveStockFactory(
             beginningDatetime=datetime(2021, 12, 18),
@@ -68,9 +65,6 @@ class Return403Test:
             "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
         }
 
-
-@freeze_time("2020-11-17 15:00:00")
-class Return404Test:
     def test_get_collective_stock_when_no_stock_exists_for_offer(self, app, client):
         offer = CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)

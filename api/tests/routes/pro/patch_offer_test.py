@@ -18,7 +18,7 @@ from pcapi.routes.serialization import serialize
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class Returns200Test:
+class PatchOfferTest:
     def test_patch_offer(self, app, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
@@ -122,8 +122,6 @@ class Returns200Test:
         assert response.status_code == 200
         assert len(mails_testing.outbox) == 0
 
-
-class Returns400Test:
     def when_trying_to_patch_forbidden_attributes(self, app, client):
         # Given
         offer = offers_factories.OfferFactory()
@@ -306,8 +304,6 @@ class Returns400Test:
             "Une offre qui a un ticket retirable doit avoir l'email du contact de réservation"
         ]
 
-
-class Returns403Test:
     def when_user_is_not_attached_to_offerer(self, app, client):
         # Given
         offer = offers_factories.OfferFactory(name="Old name")
@@ -324,8 +320,6 @@ class Returns403Test:
         ]
         assert Offer.query.get(offer.id).name == "Old name"
 
-
-class Returns404Test:
     def test_returns_404_if_offer_does_not_exist(self, app, client):
         # given
         users_factories.UserFactory(email="user@example.com")

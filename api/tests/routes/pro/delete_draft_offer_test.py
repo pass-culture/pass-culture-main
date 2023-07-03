@@ -10,7 +10,7 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class Returns204Test:
+class DeleteDraftOfferTest:
     def test_delete_draft(self, client):
         pro = users_factory.ProFactory()
         draft_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.DRAFT)
@@ -38,8 +38,6 @@ class Returns204Test:
 
         assert offer_models.Offer.query.count() == 1
 
-
-class Returns401Test:
     def test_delete_not_connected_draft(self, client):
         pro = users_factory.ProFactory()
         draft_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.DRAFT)
