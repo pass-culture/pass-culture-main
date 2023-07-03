@@ -5,18 +5,17 @@
   color: colors.$grey-dark;
   text-align: center;
 
-  @media screen and (prefers-reduced-motion: reduce) {
-    img,
-    svg {
+  &-icon {
+    width: rem.torem(48px);
+    height: rem.torem(48px);
+    color: colors.$primary;
+    animation: rotation 3s infinite linear;
+    margin-bottom: rem.torem(15px);
+
+    @media screen and (prefers-reduced-motion: reduce) {
       animation: none;
       margin-bottom: rem.torem(15px);
     }
-  }
-
-  img,
-  svg {
-    animation: rotation 3s infinite linear;
-    margin-bottom: rem.torem(15px);
   }
 
   .content::after {
