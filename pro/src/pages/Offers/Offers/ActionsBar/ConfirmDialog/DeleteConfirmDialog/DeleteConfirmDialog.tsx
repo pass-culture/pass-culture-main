@@ -1,7 +1,7 @@
 import React from 'react'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
-import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
+import { ReactComponent as StrokeTrashIcon } from 'icons/stroke-trash.svg'
 
 interface DeleteConfirmDialogProps {
   onCancel: () => void
@@ -24,7 +24,7 @@ const DeleteConfirmDialog = ({
       onConfirm={() => {
         handleDelete()
       }}
-      icon={TrashIcon}
+      icon={StrokeTrashIcon}
       title={
         nbSelectedOffers === 1
           ? `Voulez-vous supprimer ce brouillon ?`

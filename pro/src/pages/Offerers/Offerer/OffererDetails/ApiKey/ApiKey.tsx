@@ -4,7 +4,7 @@ import React, { useCallback, useState } from 'react'
 import { api } from 'apiClient/api'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
+import { ReactComponent as StrokeTrashIcon } from 'icons/stroke-trash.svg'
 import { Banner, Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { ENV_WORDING } from 'utils/config'
@@ -123,7 +123,7 @@ const ApiKey = ({
                 className={styles['action']}
                 onClick={() => setApiKeyToDelete(savedApiKey)}
                 variant={ButtonVariant.TERNARY}
-                Icon={TrashIcon}
+                Icon={StrokeTrashIcon}
               >
                 supprimer
               </Button>
@@ -174,7 +174,7 @@ const ApiKey = ({
           title="Êtes-vous sûr de vouloir supprimer votre clé API ?"
           confirmText="Confirmer la suppression"
           cancelText="Annuler"
-          icon={TrashIcon}
+          icon={StrokeTrashIcon}
         >
           <div className={styles['explanation']}>
             <p>
