@@ -5,9 +5,9 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
-import { CalendarIcon } from 'icons'
 import { ReactComponent as IconOffers } from 'icons/ico-offers.svg'
 import { ReactComponent as IconSignout } from 'icons/ico-signout.svg'
+import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import deskIcon from 'icons/stroke-desk.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import strokeHomeIcon from 'icons/stroke-home.svg'
@@ -89,7 +89,11 @@ const Header = () => {
             role="menuitem"
             to="/reservations"
           >
-            <CalendarIcon aria-hidden className="nav-item-icon" />
+            <SvgIcon
+              alt=""
+              src={strokeCalendarIcon}
+              className="nav-item-icon"
+            />
             Réservations
           </NavLink>
 

@@ -1,7 +1,7 @@
 import React from 'react'
 
-import { CalendarIcon } from 'icons'
 import { ReactComponent as IconOffers } from 'icons/ico-offers.svg'
+import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import deskIcon from 'icons/stroke-desk.svg'
 import strokeEuro from 'icons/stroke-euro.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -36,7 +36,11 @@ const ManageBookings = ({ titleId }: StepComponentProps): JSX.Element => (
           Offres
         </span>
         <span className={styles['header-element']}>
-          <CalendarIcon className={styles['header-element-icon']} />
+          <SvgIcon
+            alt=""
+            src={strokeCalendarIcon}
+            className="header-element-icon"
+          />
           Réservations
         </span>
         <span className={styles['header-element']}>

@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React from 'react'
 
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
-import { ReactComponent as DateIcon } from 'icons/ico-date.svg'
+import strokeDateIcon from 'icons/stroke-date.svg'
 import thingStrokeIcon from 'icons/stroke-thing.svg'
 import strokeVirtualEventIcon from 'icons/stroke-virtual-event.svg'
 import strokeVirtualThingIcon from 'icons/stroke-virtual-thing.svg'
@@ -34,7 +34,7 @@ export const OfferSubtypeTag = ({
     case INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT:
       return (
         <Tag className={className}>
-          <DateIcon />
+          <SvgIcon alt="" src={strokeDateIcon} />
           Évènement physique
         </Tag>
       )

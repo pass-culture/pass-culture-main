@@ -1,8 +1,5 @@
 export { ReactComponent as ArrowUpBIcon } from 'icons/ico-arrow-up-b.svg'
-export { ReactComponent as CalendarCheckIcon } from 'icons/ico-calendar-check.svg'
-export { ReactComponent as CalendarIcon } from 'icons/icon-calendar.svg'
 export { ReactComponent as ClockIcon } from 'icons/ico-clock.svg'
-export { ReactComponent as DateIcon } from 'icons/ico-date.svg'
 export { ReactComponent as DisconnectFullIcon } from 'icons/ico-disconnect-full.svg'
 export { ReactComponent as LogoPassCultureDarkIcon } from 'icons/logo-pass-culture-dark.svg'
 export { ReactComponent as OfferCardEuroIcon } from 'icons/offer-card-euro.svg'

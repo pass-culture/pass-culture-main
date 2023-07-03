@@ -25,8 +25,8 @@ import {
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import calendarCheckIcon from 'icons/ico-calendar-check.svg'
-import dateIcon from 'icons/ico-date.svg'
+import strokeBookedIcon from 'icons/stroke-booked.svg'
+import strokeDateIcon from 'icons/stroke-date.svg'
 import duplicateOfferIcon from 'icons/stroke-duplicate-offer.svg'
 import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
@@ -230,7 +230,7 @@ const OfferType = (): JSX.Element => {
                   <FormLayout.Row inline mdSpaceAfter>
                     <RadioButtonWithImage
                       name="collectiveOfferSubtype"
-                      icon={calendarCheckIcon}
+                      icon={strokeBookedIcon}
                       isChecked={
                         values.collectiveOfferSubtype ===
                         COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE
@@ -301,7 +301,7 @@ const OfferType = (): JSX.Element => {
                   <RadioButtonWithImage
                     className={styles['individual-radio-button']}
                     name="individualOfferSubtype"
-                    icon={dateIcon}
+                    icon={strokeDateIcon}
                     isChecked={
                       values.individualOfferSubtype ===
                       INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT
