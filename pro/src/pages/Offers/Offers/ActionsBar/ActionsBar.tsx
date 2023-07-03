@@ -5,7 +5,7 @@ import ActionsBarSticky from 'components/ActionsBarSticky'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
+import { ReactComponent as FullHideIcon } from 'icons/full-hide.svg'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
 import { ReactComponent as StrokeCheckIcon } from 'icons/stroke-check.svg'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
@@ -180,10 +180,7 @@ const ActionsBar = ({
       <Button onClick={handleClose} variant={ButtonVariant.SECONDARY}>
         Annuler
       </Button>
-      <Button
-        onClick={() => setIsConfirmDialogOpen(true)}
-        Icon={StatusInactiveIcon}
-      >
+      <Button onClick={() => setIsConfirmDialogOpen(true)} Icon={FullHideIcon}>
         Désactiver
       </Button>
       {audience == Audience.INDIVIDUAL && (

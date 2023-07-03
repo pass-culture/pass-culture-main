@@ -4,11 +4,11 @@ import React from 'react'
 import { OfferStatus } from 'apiClient/v1'
 import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel'
 import { Offer } from 'core/Offers/types'
-import { ReactComponent as StatusExpiredIcon } from 'icons/ico-status-expired.svg'
-import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
-import { ReactComponent as StatusRejectedIcon } from 'icons/ico-status-rejected.svg'
+import fullHideIcon from 'icons/full-hide.svg'
+import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import { ReactComponent as StrokeCheckIcon } from 'icons/stroke-check.svg'
 import strokeClockIcon from 'icons/stroke-clock.svg'
+import strokeCloseIcon from 'icons/stroke-close.svg'
 import strokeDoubleCheckIcon from 'icons/stroke-double-check.svg'
 import strokeHourglassIcon from 'icons/stroke-hourglass.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -41,7 +41,13 @@ export const getCollectiveStatusLabel = (
       return (
         <CollectiveStatusLabel
           className={style['status-rejected']}
-          icon={<StatusRejectedIcon className={style['status-label-icon']} />}
+          icon={
+            <SvgIcon
+              alt=""
+              src={strokeCloseIcon}
+              className={style['status-label-icon']}
+            />
+          }
           label="refusée"
         />
       )
@@ -49,7 +55,13 @@ export const getCollectiveStatusLabel = (
       return (
         <CollectiveStatusLabel
           className={style['status-inactive']}
-          icon={<StatusInactiveIcon className={style['status-label-icon']} />}
+          icon={
+            <SvgIcon
+              alt=""
+              src={fullHideIcon}
+              className={style['status-label-icon']}
+            />
+          }
           label="désactivée"
         />
       )
@@ -100,7 +112,13 @@ export const getCollectiveStatusLabel = (
       ) : (
         <CollectiveStatusLabel
           className={style['status-expired']}
-          icon={<StatusExpiredIcon className={style['status-label-icon']} />}
+          icon={
+            <SvgIcon
+              alt=""
+              src={strokeCalendarIcon}
+              className={style['status-label-icon']}
+            />
+          }
           label="expirée"
         />
       )
