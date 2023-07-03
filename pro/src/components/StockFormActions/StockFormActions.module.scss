@@ -11,10 +11,13 @@
   display: flex;
 
   &-icon {
+    width: rem.torem(20px);
+    height: rem.torem(20px);
+
     &:focus,
     &:focus-visible,
     &:hover {
-      fill: colors.$primary;
+      color: colors.$primary;
     }
   }
 }
