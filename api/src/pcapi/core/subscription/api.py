@@ -915,6 +915,9 @@ def get_stepper_title_and_subtitle(
     if _has_subscription_issues(user_subscription_state):
         return models.SubscriptionStepperDetails(title=models.STEPPER_HAS_ISSUES_TITLE)
 
+    if not _can_access_stepper(user_subscription_state):
+        return models.SubscriptionStepperDetails(title=models.STEPPER_FOR_NON_ELIGIBLE)
+
     if not user.age:
         logger.error("Eligible user has no age", extra={"user": user.id})
         return models.SubscriptionStepperDetails(title=models.STEPPER_DEFAULT_TITLE)
@@ -929,3 +932,7 @@ def _has_subscription_issues(user_subscription_state: models.UserSubscriptionSta
     return user_subscription_state.young_status == young_status_module.Eligible(
         subscription_status=young_status_module.SubscriptionStatus.HAS_SUBSCRIPTION_ISSUES
     )
+
+
+def _can_access_stepper(user_subscription_state: models.UserSubscriptionState) -> bool:
+    return not user_subscription_state.young_status.status_type == young_status_module.YoungStatusType.NON_ELIGIBLE
