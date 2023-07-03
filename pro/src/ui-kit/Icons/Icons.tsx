@@ -127,7 +127,6 @@ const notCleandIcons: IconListItem[] = [
   // Not cleaned
   { src: 'icons/checkbox-check.svg', viewBox: '0 0 10 8' },
   { src: 'icons/checkbox.svg', viewBox: '0 0 10 8' },
-  { src: 'icons/close-tag.svg', viewBox: '0 0 10 10' },
   { src: 'icons/ico-eye-open-filled-black.svg' },
   { src: 'icons/library.svg', viewBox: '0 0 49 48' },
   { src: 'icons/linear-gradient.svg', viewBox: '0 0 623 1024' }, // TODO replace by a jpg/png
@@ -143,7 +142,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-other.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-radio-off.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-radio-on.svg', viewBox: '0 0 16 16' },
-  { src: 'icons/ico-search-gray.svg', viewBox: '0 0 124 125' },
   { src: 'icons/ico-separator.svg', viewBox: '0 0 20 1' },
   { src: 'icons/ico-star.svg', viewBox: '0 0 38 36' },
   { src: 'icons/ico-status-expired.svg', viewBox: '0 0 16 16' },
@@ -159,10 +157,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-key.svg', viewBox: '0 0 20 20' },
   { src: 'icons/logo-pass-culture-dark.svg', viewBox: '0 0 71 24' },
   { src: 'icons/ico-passculture.svg', viewBox: '0 0 30 30' },
-  { src: 'icons/ico-search.svg', viewBox: '0 0 48 48' },
-  { src: 'icons/ico-ticket-plus-full.svg', viewBox: '0 0 20 20' },
-  { src: 'icons/ico-trash-filled.svg', viewBox: '0 0 48 48' },
-  { src: 'icons/venue-2.svg', viewBox: '0 0 40 40' },
   { src: 'icons/ico-institution.svg', viewBox: '0 0 18 18' },
   { src: 'icons/logo-pass-culture-adage.svg', viewBox: '0 0 120 39' },
 ]
