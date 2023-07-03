@@ -14,7 +14,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import useNotification from 'hooks/useNotification'
 import { usePagination } from 'hooks/usePagination'
-import { TrashFilledIcon } from 'icons'
+import { ReactComponent as FullTrashIcon } from 'icons/full-trash.svg'
 import { getPriceCategoryOptions } from 'screens/OfferIndividual/StocksEventEdition/StocksEventEdition'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -426,7 +426,7 @@ const StocksEventList = ({
                   <Button
                     variant={ButtonVariant.TERNARY}
                     onClick={() => onDeleteStock(index, stock.uuid)}
-                    Icon={TrashFilledIcon}
+                    Icon={FullTrashIcon}
                     hasTooltip
                   >
                     Supprimer

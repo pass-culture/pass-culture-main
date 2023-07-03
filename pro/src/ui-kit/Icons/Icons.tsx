@@ -37,6 +37,8 @@ const fullIcons: IconListItem[] = [
   { src: 'icons/full-hide.svg' },
   { src: 'icons/full-like.svg' },
   { src: 'icons/full-back.svg' },
+  { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
+  { src: 'icons/full-trash.svg' }, // TODO 2 left inside <Button>
   { src: 'icons/full-next.svg' }, // TODO still used
   { src: 'icons/full-wait.svg' },
   { src: 'icons/full-refresh.svg' }, // TODO still unsed in <Button>s
@@ -47,6 +49,7 @@ const fullIcons: IconListItem[] = [
   { src: 'icons/full-plus.svg' }, // TODO still in 2 ButtonLink and 1 Button
   { src: 'icons/full-sort.svg' },
   { src: 'icons/full-logout.svg' }, // TODO 1 use left inside a <Button>
+  { src: 'icons/full-code.svg' },
   { src: 'icons/full-down.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-up.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-left.svg' }, // TODO 2 use left inside a <Button>

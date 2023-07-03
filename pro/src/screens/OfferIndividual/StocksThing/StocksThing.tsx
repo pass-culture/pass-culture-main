@@ -1,5 +1,6 @@
 import cn from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
+import fullCodeIcon from 'icons/full-code.svg'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -30,7 +31,7 @@ import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { TicketPlusFullIcon, TrashFilledIcon } from 'icons'
+import fullTrashIcon from 'icons/full-trash.svg'
 import { ReactComponent as StrokeEuro } from 'icons/stroke-euro.svg'
 import { Checkbox, DatePicker, InfoBox, TextInput } from 'ui-kit'
 import { getToday } from 'utils/date'
@@ -306,7 +307,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       },
       label: 'Supprimer le stock',
       disabled: false,
-      Icon: TrashFilledIcon,
+      icon: fullTrashIcon,
     },
   ]
 
@@ -330,7 +331,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       callback: () => setIsActivationCodeFormVisible(true),
       label: "Ajouter des codes d'activation",
       disabled: isDisabled,
-      Icon: TicketPlusFullIcon,
+      icon: fullCodeIcon,
     })
   }
 

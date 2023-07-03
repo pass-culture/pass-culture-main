@@ -2,9 +2,9 @@ import { Menu, MenuButton, MenuItem, MenuPopover } from '@reach/menu-button'
 import { positionRight } from '@reach/popover'
 import cn from 'classnames'
 import React from 'react'
-import '@reach/menu-button/styles.css'
 
 import fullOtherIcon from 'icons/full-other.svg'
+import '@reach/menu-button/styles.css'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './StockFormActions.module.scss'
@@ -45,10 +45,10 @@ const StockFormActions = ({
               onSelect={action.callback}
               title={action.label}
             >
-              {action.Icon && (
-                <action.Icon
-                  title={action.label}
-                  aria-hidden
+              {action.icon && (
+                <SvgIcon
+                  src={action.icon}
+                  alt=""
                   className={styles['menu-item-icon']}
                 />
               )}
