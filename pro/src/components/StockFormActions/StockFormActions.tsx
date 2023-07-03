@@ -4,11 +4,11 @@ import cn from 'classnames'
 import React from 'react'
 import '@reach/menu-button/styles.css'
 
-import { ReactComponent as OtherIcon } from 'icons/ico-other.svg'
+import fullOtherIcon from 'icons/full-other.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './StockFormActions.module.scss'
 import { StockFormRowAction } from './types'
-
 export interface StockFormActionsProps {
   disabled?: boolean
   actions: StockFormRowAction[]
@@ -27,8 +27,9 @@ const StockFormActions = ({
           type="button"
           data-testid="stock-form-actions-button-open"
         >
-          <OtherIcon
-            title="Opérations sur le stock"
+          <SvgIcon
+            src={fullOtherIcon}
+            alt="Opérations sur le stock"
             className={styles['menu-button-icon']}
           />
         </MenuButton>
