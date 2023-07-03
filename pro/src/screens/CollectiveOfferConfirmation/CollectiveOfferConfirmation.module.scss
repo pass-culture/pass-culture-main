@@ -10,7 +10,10 @@
   &-icon {
     height: rem.torem(56px);
     margin-bottom: rem.torem(19px);
-    color: colors.$green-valid;
+
+    &-validate {
+      color: colors.$green-valid;
+    }
   }
 
   &-section {
