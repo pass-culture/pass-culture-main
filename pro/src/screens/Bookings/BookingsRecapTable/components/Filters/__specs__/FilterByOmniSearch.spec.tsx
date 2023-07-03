@@ -32,8 +32,8 @@ describe('components | FilterByOmniSearch', () => {
     expect(options[0]).toHaveValue('offre')
     expect(options[1]).toHaveTextContent('Bénéficiaire')
     expect(options[1]).toHaveValue('bénéficiaire')
-    expect(options[2]).toHaveTextContent('ISBN')
-    expect(options[2]).toHaveValue('isbn')
+    expect(options[2]).toHaveTextContent('EAN')
+    expect(options[2]).toHaveValue('ean')
     expect(options[3]).toHaveTextContent('Contremarque')
     expect(options[3]).toHaveValue('contremarque')
   })
@@ -95,7 +95,7 @@ describe('components | FilterByOmniSearch', () => {
     const omniSearchSelect = screen.getByRole('combobox')
 
     // When
-    await userEvent.selectOptions(omniSearchSelect, 'isbn')
+    await userEvent.selectOptions(omniSearchSelect, 'ean')
 
     // Then
     expect(props.updateFilters).toHaveBeenCalledWith(
@@ -107,7 +107,7 @@ describe('components | FilterByOmniSearch', () => {
         bookingInstitution: '',
         bookingId: '',
       },
-      { keywords: '12548', selectedOmniSearchCriteria: 'isbn' }
+      { keywords: '12548', selectedOmniSearchCriteria: 'ean' }
     )
   })
 })
