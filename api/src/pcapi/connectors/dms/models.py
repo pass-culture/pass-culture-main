@@ -13,7 +13,7 @@ from pcapi.models.pc_object import PcObject
 
 class LatestDmsImport(PcObject, Base, Model):
     procedureId = sa.Column(sa.Integer, nullable=False)
-    latestImportDatetime = sa.Column(sa.DateTime, nullable=False)
+    latestImportDatetime: datetime.datetime = sa.Column(sa.DateTime, nullable=False)
     isProcessing = sa.Column(sa.Boolean, nullable=False)
     processedApplications: list[int] = sa.Column(postgresql.ARRAY(sa.Integer), nullable=False, default=[])
 
