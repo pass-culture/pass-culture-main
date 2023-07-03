@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ReactComponent as StrokeErrorIcon } from 'icons/stroke-error.svg'
+import strokeErrorIcon from 'icons/stroke-error.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -29,14 +29,12 @@ const ConfirmDialog = ({
   extraClassNames,
   leftButtonAction = onCancel,
 }: ConfirmDialogProps): JSX.Element => {
-  const Icon = icon ?? StrokeErrorIcon
-
   return (
     <Dialog
       onCancel={onCancel}
       title={title}
       secondTitle={secondTitle}
-      icon={Icon}
+      icon={icon ?? strokeErrorIcon}
       hideIcon={hideIcon}
       explanation={children}
       extraClassNames={`${extraClassNames} ${styles['confirm-dialog-explanation']}`}

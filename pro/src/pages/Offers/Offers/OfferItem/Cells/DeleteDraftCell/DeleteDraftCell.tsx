@@ -10,7 +10,7 @@ import { Offer } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import trashFilledIcon from 'icons/ico-trash-filled.svg'
-import { ReactComponent as StrokeTrashIcon } from 'icons/stroke-trash.svg'
+import strokeTrashIcon from 'icons/stroke-trash.svg'
 import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
 
 import { deleteDraftOffersAdapter } from '../../../adapters/deleteDraftOffers'
@@ -55,7 +55,7 @@ const DeleteDraftCell = ({ offer, refreshOffers }: DeleteDraftOffersProps) => {
     <>
       {isConfirmDialogOpen && (
         <ConfirmDialog
-          icon={StrokeTrashIcon}
+          icon={strokeTrashIcon}
           cancelText="Annuler"
           confirmText="Supprimer ce brouillon"
           onCancel={closeDeleteDraftDialog}

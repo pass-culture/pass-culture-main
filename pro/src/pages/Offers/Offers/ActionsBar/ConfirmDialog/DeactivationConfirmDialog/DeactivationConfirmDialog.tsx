@@ -5,7 +5,7 @@ import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Audience, NBSP } from 'core/shared'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as EyeIcon } from 'icons/full-hide.svg'
+import fullEyeIcon from 'icons/full-hide.svg'
 
 export interface DeactivationConfirmDialogProps {
   areAllOffersSelected: boolean
@@ -48,7 +48,7 @@ const DeactivationConfirmDialog = ({
         })
         onConfirm()
       }}
-      icon={EyeIcon}
+      icon={fullEyeIcon}
       title={
         nbSelectedOffers === 1
           ? `Vous avez sélectionné ${nbSelectedOffers} offre,`

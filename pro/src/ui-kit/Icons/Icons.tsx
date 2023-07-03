@@ -34,7 +34,7 @@ const fullIcons: IconListItem[] = [
   { src: 'icons/full-mail.svg' }, // TODO 2 uses left inside ButtonLink, 1 use left inside SubmitButton
   { src: 'icons/full-edit.svg' }, // TODO 7 uses left in <ButtonLink>s
   { src: 'icons/full-duplicate.svg' }, // TODO still used in 1 Button
-  { src: 'icons/full-hide.svg' }, // TODO still used in 1 ConfirmDialog
+  { src: 'icons/full-hide.svg' },
   { src: 'icons/full-like.svg' },
   { src: 'icons/full-back.svg' },
   { src: 'icons/full-next.svg' }, // TODO still used
@@ -73,7 +73,7 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-virtual-thing.svg' },
   { src: 'icons/stroke-booked.svg' },
   { src: 'icons/stroke-template-offer.svg' },
-  { src: 'icons/stroke-mail.svg' }, // TODO 2 uses left in <Dialog>
+  { src: 'icons/stroke-mail.svg' },
   { src: 'icons/stroke-phone.svg' },
   { src: 'icons/stroke-home.svg' },
   { src: 'icons/stroke-building.svg' },
