@@ -5,9 +5,10 @@ import type { Row } from 'react-table'
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as DropdownIcon } from 'icons/ico-arrow-up-b.svg'
+import fullUpIcon from 'icons/full-up.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './CellFormatter.module.scss'
 
@@ -27,7 +28,9 @@ const DetailsButtonCell = ({
       variant={ButtonVariant.TERNARY}
     >
       Détails
-      <DropdownIcon
+      <SvgIcon
+        alt=""
+        src={fullUpIcon}
         className={cn(styles['details-dropdown-icon'], {
           [styles['details-dropdown-icon-up']]: !bookingRow.isExpanded,
         })}

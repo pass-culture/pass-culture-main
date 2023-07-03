@@ -6,10 +6,10 @@ import { apiAdage } from 'apiClient/api'
 import DialogBox from 'components/DialogBox/DialogBox'
 import useActiveFeature from 'hooks/useActiveFeature'
 import fullLikeIcon from 'icons/full-like.svg'
-import { ReactComponent as ChevronIconAdage } from 'icons/ico-chevron-adage.svg'
 import { ReactComponent as ImagePlaceholder } from 'icons/ico-placeholder-offer-image.svg'
 import { ReactComponent as StrokeLikeIcon } from 'icons/stroke-like.svg'
 import strokePassIcon from 'icons/stroke-pass.svg'
+import strokeUpIcon from 'icons/stroke-up.svg'
 import {
   HydratedCollectiveOffer,
   HydratedCollectiveOfferTemplate,
@@ -163,7 +163,9 @@ const Offer = ({
               onClick={() => openOfferDetails(offer)}
               type="button"
             >
-              <ChevronIconAdage
+              <SvgIcon
+                alt=""
+                src={strokeUpIcon}
                 className={cn(style['offer-see-more-icon'], {
                   [style['offer-see-more-icon-closed']]: !displayDetails,
                 })}
