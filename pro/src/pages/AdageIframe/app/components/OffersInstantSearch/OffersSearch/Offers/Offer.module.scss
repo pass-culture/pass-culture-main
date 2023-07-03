@@ -62,9 +62,9 @@ $offer-image-width: rem.torem(176px);
     justify-content: center;
 
     svg {
-      height: 75%;
-      width: 75%;
-      fill: colors.$grey-semi-dark;
+      height: rem.torem(80px);
+      width: rem.torem(80px);
+      color: colors.$grey-semi-dark;
     }
   }
 

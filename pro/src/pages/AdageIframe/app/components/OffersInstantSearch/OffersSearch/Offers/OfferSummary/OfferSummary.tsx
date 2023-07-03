@@ -3,11 +3,11 @@ import './OfferSummary.scss'
 import React from 'react'
 
 import { OfferAddressType } from 'apiClient/adage'
-import { ReactComponent as SubcategoryIcon } from 'icons/ico-subcategory.svg'
 import { ReactComponent as LocationIcon } from 'icons/location.svg'
 import buildingStrokeIcon from 'icons/stroke-building.svg'
 import strokeDateIcon from 'icons/stroke-date.svg'
-import strokeEuro from 'icons/stroke-euro.svg'
+import strokeEuroIcon from 'icons/stroke-euro.svg'
+import strokeOfferIcon from 'icons/stroke-offer.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
 import {
   HydratedCollectiveOffer,
@@ -97,8 +97,11 @@ const OfferSummary = ({
       <dl className="offer-summary">
         <div className="offer-summary-item">
           <dt>
-            {/* TODO : add alt when changing to SvgIcon */}
-            <SubcategoryIcon className="offer-summary-item-icon" />
+            <SvgIcon
+              alt="Sous-catégorie"
+              src={strokeOfferIcon}
+              className="offer-summary-item-icon"
+            />
           </dt>
           <dd>{subcategoryLabel}</dd>
         </div>
@@ -141,7 +144,7 @@ const OfferSummary = ({
           <div className="offer-summary-item">
             <dt>
               <SvgIcon
-                src={strokeEuro}
+                src={strokeEuroIcon}
                 alt="Prix"
                 className="offer-summary-item-icon"
               />
