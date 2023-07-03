@@ -6,8 +6,8 @@ import { apiAdage } from 'apiClient/api'
 import DialogBox from 'components/DialogBox/DialogBox'
 import useActiveFeature from 'hooks/useActiveFeature'
 import fullLikeIcon from 'icons/full-like.svg'
-import { ReactComponent as ImagePlaceholder } from 'icons/ico-placeholder-offer-image.svg'
 import { ReactComponent as StrokeLikeIcon } from 'icons/stroke-like.svg'
+import strokeOfferIcon from 'icons/stroke-offer.svg'
 import strokePassIcon from 'icons/stroke-pass.svg'
 import strokeUpIcon from 'icons/stroke-up.svg'
 import {
@@ -98,7 +98,7 @@ const Offer = ({
             />
           ) : (
             <div className={style['offer-image-default']}>
-              <ImagePlaceholder />
+              <SvgIcon src={strokeOfferIcon} alt="" />
             </div>
           )}
         </div>

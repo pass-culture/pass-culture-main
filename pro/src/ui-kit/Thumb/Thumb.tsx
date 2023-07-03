@@ -1,7 +1,8 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { ReactComponent as SVGOffers } from 'icons/ico-placeholder-offer-image.svg'
+import strokeOfferIcon from 'icons/stroke-offer.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Thumb.module.scss'
 
@@ -21,7 +22,7 @@ const Thumb = ({ url = '', alt = '', className }: ThumbProps) => {
     />
   ) : (
     <div className={cn(styles['default-thumb'], className)}>
-      <SVGOffers title={alt} />
+      <SvgIcon alt={alt} src={strokeOfferIcon} />
     </div>
   )
 }
