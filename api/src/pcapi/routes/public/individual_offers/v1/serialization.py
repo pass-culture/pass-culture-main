@@ -983,6 +983,7 @@ class GetOfferersVenuesQuery(serialization.ConfiguredBaseModel):
 
 class GetProductsListByEansQuery(serialization.ConfiguredBaseModel):
     eans: str | None = pydantic.Field(example="0123456789123,0123456789124")
+    venueId: int = pydantic.Field(example=1)
 
     @pydantic.validator("eans")
     def validate_ean_list(cls, eans: str) -> list[str]:

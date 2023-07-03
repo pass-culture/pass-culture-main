@@ -1915,7 +1915,7 @@ class GetProductByEanTest:
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/products/ean?eans={product_offer.extraData['ean']}"
+            f"/public/offers/v1/products/ean?eans={product_offer.extraData['ean']}&venueId={venue.id}"
         )
 
         assert response.status_code == 200
@@ -1972,7 +1972,7 @@ class GetProductByEanTest:
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/products/ean?eans={product_offer.extraData['ean']},{product_offer_2.extraData['ean']},{product_offer_3.extraData['ean']}"
+            f"/public/offers/v1/products/ean?eans={product_offer.extraData['ean']},{product_offer_2.extraData['ean']},{product_offer_3.extraData['ean']}&venueId={venue.id}"
         )
 
         assert response.status_code == 200
@@ -2061,7 +2061,7 @@ class GetProductByEanTest:
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/products/ean?eans={newest_product_offer.extraData['ean']}"
+            f"/public/offers/v1/products/ean?eans={newest_product_offer.extraData['ean']}&venueId={venue.id}"
         )
 
         assert response.status_code == 200
@@ -2072,7 +2072,7 @@ class GetProductByEanTest:
         product_offer = offers_factories.ThingOfferFactory(venue=venue, extraData={"ean": "123456789"})
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/products/ean?eans={product_offer.extraData['ean']}"
+            f"/public/offers/v1/products/ean?eans={product_offer.extraData['ean']}&venueId={venue.id}"
         )
 
         assert response.status_code == 400
@@ -2086,22 +2086,33 @@ class GetProductByEanTest:
         product_offer_4 = offers_factories.ThingOfferFactory(venue=venue, extraData={"ean": "0987654321123"})
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/products/ean?eans={product_offer.extraData['ean']},{product_offer_2.extraData['ean']},{product_offer_3.extraData['ean']},{product_offer_4.extraData['ean']}"
+            f"/public/offers/v1/products/ean?eans={product_offer.extraData['ean']},{product_offer_2.extraData['ean']},{product_offer_3.extraData['ean']},{product_offer_4.extraData['ean']}&venueId={venue.id}"
         )
 
         assert response.status_code == 400
         assert response.json == {"eans": ["Only 13 characters EAN are accepted"]}
 
+    def test_400_when_missing_venue_id(self, client):
+        venue, _ = create_offerer_provider_linked_to_venue()
+        product_offer = offers_factories.ThingOfferFactory(venue=venue, extraData={"ean": "1234567891234"})
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/products/ean?eans={product_offer.extraData['ean']}"
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"venueId": ["Ce champ est obligatoire"]}
+
     def test_404_when_ean_not_found(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
+        venue, _ = create_offerer_provider_linked_to_venue()
         offers_factories.ThingOfferFactory(
-            venue__managingOfferer=api_key.offerer,
+            venue=venue,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            "/public/offers/v1/products/ean?eans=1234567890123"
+            f"/public/offers/v1/products/ean?eans=1234567890123&venueId={venue.id}"
         )
 
         assert response.status_code == 200
@@ -2118,7 +2129,7 @@ class GetProductByEanTest:
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/products/ean?eans={product_offer.extraData['ean']},0123456789123"
+            f"/public/offers/v1/products/ean?eans={product_offer.extraData['ean']},0123456789123&venueId={venue.id}"
         )
 
         assert response.status_code == 200
