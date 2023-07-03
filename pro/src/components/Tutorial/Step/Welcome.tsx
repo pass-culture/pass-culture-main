@@ -1,7 +1,7 @@
 import React from 'react'
 
-import { OtherOfferIcon } from 'icons'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
+import strokeOffersIcon from 'icons/stroke-offers.svg'
 import strokePassIcon from 'icons/stroke-pass.svg'
 import strokeRepaymentIcon from 'icons/stroke-repayment.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -34,7 +34,7 @@ const Welcome = ({
         </div>
         <div>
           <div className={styles['tw-icon']}>
-            <OtherOfferIcon />
+            <SvgIcon src={strokeOffersIcon} alt="" />
           </div>
           <p>Créez et publiez vos offres</p>
         </div>
