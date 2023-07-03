@@ -55,6 +55,7 @@ const fullIcons: IconListItem[] = [
 
 const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-user.svg' }, // TODO 4 uses left inside <Tabs>
+  { src: 'icons/stroke-fraud.svg' },
   { src: 'icons/stroke-error.svg' },
   { src: 'icons/stroke-warning.svg' },
   { src: 'icons/stroke-info.svg' },
@@ -105,7 +106,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/close-tag.svg', viewBox: '0 0 10 10' },
   { src: 'icons/ico-double-check.svg' },
   { src: 'icons/ico-eye-open-filled-black.svg' },
-  { src: 'icons/fraud.svg', viewBox: '0 0 88 88' },
   { src: 'icons/ico-guichet-full.svg' },
   { src: 'icons/library.svg', viewBox: '0 0 49 48' },
   { src: 'icons/linear-gradient.svg', viewBox: '0 0 623 1024' }, // TODO replace by a jpg/png
