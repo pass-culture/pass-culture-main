@@ -1,7 +1,8 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import { ReactComponent as RightIcon } from 'icons/icon-calendar.svg'
+import strokeCalendarIcon from 'icons/stroke-calendar.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import BaseInput from './BaseInput'
 
@@ -27,5 +28,5 @@ export const Default = Template.bind({})
 
 Default.args = {
   hasError: false,
-  RightIcon,
+  RightIcon: () => <SvgIcon alt="" src={strokeCalendarIcon} />,
 }

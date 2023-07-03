@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ReactComponent as DownloadIcon } from 'icons/ico-other-download.svg'
+import { ReactComponent as strokeDownloadIcon } from 'icons/stroke-download.svg'
 import { ButtonLink } from 'ui-kit'
 import { BaseFileInput } from 'ui-kit/form/shared'
 
@@ -55,7 +55,7 @@ const AddActivationCodeForm = ({
             rel: 'noopener noreferrer',
             type: 'text/csv',
           }}
-          Icon={DownloadIcon}
+          Icon={strokeDownloadIcon}
         >
           Gabarit CSV
           <span className="activation-codes-upload-gabarit-type-and-size">

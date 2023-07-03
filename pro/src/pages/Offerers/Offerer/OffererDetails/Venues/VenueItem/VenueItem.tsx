@@ -10,8 +10,9 @@ import {
 } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as FullMoreIcon } from 'icons/full-more.svg'
-import { ReactComponent as IcoVenue } from 'icons/ico-venue.svg'
+import strokeVenueIcon from 'icons/stroke-venue.svg'
 import { ButtonLink } from 'ui-kit'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './VenueItem.module.scss'
 
@@ -29,7 +30,7 @@ const VenueItem = ({ venue, offererId }: VenueItemProps) => {
 
   return (
     <li>
-      <IcoVenue className={styles['picto']} />
+      <SvgIcon alt="" src={strokeVenueIcon} className={styles['picto']} />
 
       <div className="list-content">
         <ButtonLink

@@ -12,9 +12,11 @@ import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { OfferIndividual } from 'core/Offers/types'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
-import { CalendarCheckIcon, ClockIcon, DateIcon, TrashFilledIcon } from 'icons'
+import { ClockIcon, TrashFilledIcon } from 'icons'
 import { ReactComponent as FullMoreIcon } from 'icons/full-more.svg'
 import { ReactComponent as FullNextIcon } from 'icons/full-next.svg'
+import strokeBookedIcon from 'icons/stroke-booked.svg'
+import strokeDateIcon from 'icons/stroke-date.svg'
 import strokeEventsIcon from 'icons/stroke-events.svg'
 import {
   Button,
@@ -150,8 +152,12 @@ export const RecurrenceForm = ({
         <FormLayout.Section title="Ajouter une ou plusieurs dates">
           <div className={styles['section']}>
             <div className={styles['legend']}>
-              <DateIcon className={styles['legend-icon']} /> Cet évènement aura
-              lieu
+              <SvgIcon
+                alt=""
+                src={strokeDateIcon}
+                className={styles['legend-icon']}
+              />{' '}
+              Cet évènement aura lieu
             </div>
 
             <div className={styles['radio-group']}>
@@ -429,8 +435,12 @@ export const RecurrenceForm = ({
 
           <div className={styles['section']}>
             <div className={styles['legend']}>
-              <CalendarCheckIcon className={styles['legend-icon']} /> Date
-              limite de réservation
+              <SvgIcon
+                alt=""
+                src={strokeBookedIcon}
+                className={styles['legend-icon']}
+              />{' '}
+              Date limite de réservation
             </div>
 
             <div className={styles['booking-date-limit-container']}>

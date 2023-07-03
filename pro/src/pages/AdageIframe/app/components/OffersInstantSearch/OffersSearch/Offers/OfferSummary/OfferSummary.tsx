@@ -3,10 +3,10 @@ import './OfferSummary.scss'
 import React from 'react'
 
 import { OfferAddressType } from 'apiClient/adage'
-import { ReactComponent as DateIcon } from 'icons/ico-date.svg'
 import { ReactComponent as SubcategoryIcon } from 'icons/ico-subcategory.svg'
 import { ReactComponent as LocationIcon } from 'icons/location.svg'
 import buildingStrokeIcon from 'icons/stroke-building.svg'
+import strokeDateIcon from 'icons/stroke-date.svg'
 import strokeEuro from 'icons/stroke-euro.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
 import {
@@ -114,8 +114,11 @@ const OfferSummary = ({
         {beginningDatetime && (
           <div className="offer-summary-item">
             <dt>
-              {/* TODO : add alt when changing to SvgIcon */}
-              <DateIcon className="offer-summary-item-icon" />
+              <SvgIcon
+                alt=""
+                src={strokeDateIcon}
+                className="offer-summary-item-icon"
+              />
             </dt>
             <dd>
               {getLocalBeginningDatetime(beginningDatetime, venue.postalCode)}
