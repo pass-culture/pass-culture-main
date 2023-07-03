@@ -71,10 +71,13 @@ def get_offerer_venues(
     return serialization.GetOfferersVenuesResponse(__root__=accessible_venues_and_offerer)
 
 
-def _retrieve_offer_by_eans_query(eans: list[str]) -> sqla.orm.Query:
+def _retrieve_offer_by_eans_query(eans: list[str], venueId: int) -> sqla.orm.Query:
     return (
         utils._retrieve_offer_tied_to_user_query()
-        .filter(offers_models.Offer.extraData["ean"].astext.in_(eans))
+        .filter(
+            offers_models.Offer.extraData["ean"].astext.in_(eans),
+            offers_models.Offer.venueId == venueId,
+        )
         .order_by(offers_models.Offer.id.desc())
     )
 
@@ -353,7 +356,7 @@ def get_product_by_ean(
     Get bulk product offers using their European Article Number (EAN-13).
     """
     offers: list[offers_models.Offer] | None = (
-        utils.retrieve_offer_relations_query(_retrieve_offer_by_eans_query(query.eans))  # type: ignore [arg-type]
+        utils.retrieve_offer_relations_query(_retrieve_offer_by_eans_query(query.eans, query.venueId))  # type: ignore [arg-type]
         .filter(sqla.not_(offers_models.Offer.isEvent))
         .all()
     )
