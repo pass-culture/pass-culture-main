@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
@@ -64,12 +64,12 @@ class UpdateDmsStatusTest:
         assert venue1.collectiveDmsApplications[0].procedure == 123
         assert venue1.collectiveDmsApplications[0].application == 1
         assert venue1.collectiveDmsApplications[0].siret == venue1.siret
-        assert venue1.collectiveDmsApplications[0].lastChangeDate == datetime(2023, 4, 9, 15, 17, 38)
-        assert venue1.collectiveDmsApplications[0].depositDate == datetime(2023, 3, 6, 15, 17, 37)
-        assert venue1.collectiveDmsApplications[0].expirationDate == datetime(2024, 3, 6, 15, 17, 37)
-        assert venue1.collectiveDmsApplications[0].buildDate == datetime(2023, 3, 7, 15, 17, 37)
-        assert venue1.collectiveDmsApplications[0].instructionDate == datetime(2023, 4, 8, 15, 17, 37)
-        assert venue1.collectiveDmsApplications[0].processingDate == datetime(2023, 4, 9, 15, 19, 37)
+        assert venue1.collectiveDmsApplications[0].lastChangeDate == datetime.datetime(2023, 4, 9, 15, 17, 38)
+        assert venue1.collectiveDmsApplications[0].depositDate == datetime.datetime(2023, 3, 6, 15, 17, 37)
+        assert venue1.collectiveDmsApplications[0].expirationDate == datetime.datetime(2024, 3, 6, 15, 17, 37)
+        assert venue1.collectiveDmsApplications[0].buildDate == datetime.datetime(2023, 3, 7, 15, 17, 37)
+        assert venue1.collectiveDmsApplications[0].instructionDate == datetime.datetime(2023, 4, 8, 15, 17, 37)
+        assert venue1.collectiveDmsApplications[0].processingDate == datetime.datetime(2023, 4, 9, 15, 19, 37)
         assert venue1.collectiveDmsApplications[0].userDeletionDate is None
 
         assert len(venue2.collectiveDmsApplications) == 1
@@ -77,10 +77,10 @@ class UpdateDmsStatusTest:
         assert venue2.collectiveDmsApplications[0].procedure == 123
         assert venue2.collectiveDmsApplications[0].application == 2
         assert venue2.collectiveDmsApplications[0].siret == venue2.siret
-        assert venue2.collectiveDmsApplications[0].lastChangeDate == datetime(2023, 3, 6, 15, 17, 38)
-        assert venue2.collectiveDmsApplications[0].depositDate == datetime(2023, 3, 6, 15, 17, 37)
-        assert venue2.collectiveDmsApplications[0].expirationDate == datetime(2024, 3, 6, 15, 17, 37)
-        assert venue2.collectiveDmsApplications[0].buildDate == datetime(2023, 3, 6, 15, 17, 37)
+        assert venue2.collectiveDmsApplications[0].lastChangeDate == datetime.datetime(2023, 3, 6, 15, 17, 38)
+        assert venue2.collectiveDmsApplications[0].depositDate == datetime.datetime(2023, 3, 6, 15, 17, 37)
+        assert venue2.collectiveDmsApplications[0].expirationDate == datetime.datetime(2024, 3, 6, 15, 17, 37)
+        assert venue2.collectiveDmsApplications[0].buildDate == datetime.datetime(2023, 3, 6, 15, 17, 37)
         assert venue2.collectiveDmsApplications[0].instructionDate is None
         assert venue2.collectiveDmsApplications[0].processingDate is None
         assert venue2.collectiveDmsApplications[0].userDeletionDate is None
@@ -109,12 +109,12 @@ class UpdateDmsStatusTest:
         assert venue.collectiveDmsApplications[0].procedure == 123
         assert venue.collectiveDmsApplications[0].application == 1
         assert venue.collectiveDmsApplications[0].siret == venue.siret
-        assert venue.collectiveDmsApplications[0].lastChangeDate == datetime(2023, 4, 9, 15, 17, 38)
-        assert venue.collectiveDmsApplications[0].depositDate == datetime(2023, 3, 6, 15, 17, 37)
-        assert venue.collectiveDmsApplications[0].expirationDate == datetime(2024, 3, 6, 15, 17, 37)
-        assert venue.collectiveDmsApplications[0].buildDate == datetime(2023, 3, 7, 15, 17, 37)
-        assert venue.collectiveDmsApplications[0].instructionDate == datetime(2023, 4, 8, 15, 17, 37)
-        assert venue.collectiveDmsApplications[0].processingDate == datetime(2023, 4, 9, 15, 19, 37)
+        assert venue.collectiveDmsApplications[0].lastChangeDate == datetime.datetime(2023, 4, 9, 15, 17, 38)
+        assert venue.collectiveDmsApplications[0].depositDate == datetime.datetime(2023, 3, 6, 15, 17, 37)
+        assert venue.collectiveDmsApplications[0].expirationDate == datetime.datetime(2024, 3, 6, 15, 17, 37)
+        assert venue.collectiveDmsApplications[0].buildDate == datetime.datetime(2023, 3, 7, 15, 17, 37)
+        assert venue.collectiveDmsApplications[0].instructionDate == datetime.datetime(2023, 4, 8, 15, 17, 37)
+        assert venue.collectiveDmsApplications[0].processingDate == datetime.datetime(2023, 4, 9, 15, 19, 37)
         assert venue.collectiveDmsApplications[0].userDeletionDate is None
 
     def test_only_call_from_last_update(self):
@@ -142,3 +142,18 @@ class UpdateDmsStatusTest:
         with patch("pcapi.connectors.dms.api.DMSGraphQLClient", return_value=mock):
             import_dms_applications(procedure_number=123)
         mock.get_eac_nodes_siret_states.assert_not_called()
+
+    def test_reset_import_if_stuck(self):
+        mock = MagicMock()
+        mock.get_eac_nodes_siret_states = MagicMock(return_value=DEFAULT_API_RESULT)
+
+        latest_import = dms_factories.LatestDmsImportFactory(
+            procedureId=123,
+            isProcessing=True,
+            latestImportDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+        )
+
+        with patch("pcapi.connectors.dms.api.DMSGraphQLClient", return_value=mock):
+            import_dms_applications(procedure_number=123)
+        mock.get_eac_nodes_siret_states.assert_not_called()
+        assert not latest_import.isProcessing
