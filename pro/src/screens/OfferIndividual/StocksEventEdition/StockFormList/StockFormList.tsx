@@ -13,7 +13,7 @@ import { SelectOption } from 'custom_types/form'
 import { useOfferWizardMode } from 'hooks'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import { usePagination } from 'hooks/usePagination'
-import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
+import fullTrashIcon from 'icons/full-trash.svg'
 import DialogStockEventDeleteConfirm from 'screens/OfferIndividual/DialogStockDeleteConfirm/DialogStockEventDeleteConfirm'
 import { DatePicker, Select, TextInput, TimePicker } from 'ui-kit'
 import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
@@ -378,7 +378,7 @@ const StockFormList = ({
                         !stockValues.isDeletable ||
                         isDisabled ||
                         disableAllStockFields,
-                      Icon: TrashFilledIcon,
+                      icon: fullTrashIcon,
                     },
                   ]
 

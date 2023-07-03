@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 
-import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
+import TrashFilledIcon from 'icons/full-trash.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './ButtonImageDelete.module.scss'
 import { ModalImageDelete } from './ModalImageDelete'
@@ -28,7 +29,11 @@ const ButtonImageDelete = ({
         onClick={() => setIsModalOpen(true)}
         variant={ButtonVariant.TERNARY}
       >
-        <TrashFilledIcon className={styles['button-image-delete-icon']} />
+        <SvgIcon
+          alt=""
+          className={styles['button-image-delete-icon']}
+          src={TrashFilledIcon}
+        />
         Supprimer
       </Button>
 

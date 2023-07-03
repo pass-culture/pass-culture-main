@@ -9,7 +9,7 @@ import {
 import { Offer } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import trashFilledIcon from 'icons/ico-trash-filled.svg'
+import fullTrashIcon from 'icons/full-trash.svg'
 import strokeTrashIcon from 'icons/stroke-trash.svg'
 import ListIconButton from 'ui-kit/ListIconButton/ListIconButton'
 
@@ -66,7 +66,7 @@ const DeleteDraftCell = ({ offer, refreshOffers }: DeleteDraftOffersProps) => {
       <ListIconButton
         onClick={() => setIsConfirmDialogOpen(true)}
         className={styles['button']}
-        icon={trashFilledIcon}
+        icon={fullTrashIcon}
         hasTooltip
       >
         Supprimer

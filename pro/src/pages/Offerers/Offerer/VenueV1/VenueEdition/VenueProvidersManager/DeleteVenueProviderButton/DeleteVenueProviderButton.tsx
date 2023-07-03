@@ -2,9 +2,10 @@ import React, { useCallback, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
+import fullTrashIcon from 'icons/full-trash.svg'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Button } from 'ui-kit/index'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import DeleteVenueProviderDialog from '../DeleteVenueProviderDialog/DeleteVenueProviderDialog'
 import style from '../VenueProviderItem/VenueProviderItem.module.scss'
@@ -45,8 +46,9 @@ const DeleteVenueProviderButton = ({
         onClick={() => setIsModalOpen(true)}
         variant={ButtonVariant.TERNARY}
       >
-        <TrashFilledIcon
-          title="Continuer"
+        <SvgIcon
+          src={fullTrashIcon}
+          alt=""
           className={style['provider-action-icon']}
         />
         Supprimer
