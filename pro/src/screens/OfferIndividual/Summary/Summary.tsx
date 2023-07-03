@@ -20,7 +20,7 @@ import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { PartyIcon } from 'icons'
+import { ReactComponent as StrokePartyIcon } from 'icons/stroke-party.svg'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import { DisplayOfferInAppLink } from 'screens/OfferIndividual/Summary/DisplayOfferInAppLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -208,7 +208,7 @@ const Summary = () => {
 
       {displayRedirectDialog && (
         <RedirectDialog
-          icon={PartyIcon}
+          icon={StrokePartyIcon}
           onCancel={() => {
             logEvent?.(
               Events.CLICKED_SEE_LATER_FROM_SUCCESS_OFFER_CREATION_MODAL,
