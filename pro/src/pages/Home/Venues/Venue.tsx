@@ -41,6 +41,7 @@ export interface VenueProps {
   dmsInformations?: DMSApplicationForEAC | null
   hasAdageId?: boolean
   adageInscriptionDate?: string | null
+  hasPendingBankInformationApplication?: boolean
 }
 
 const Venue = ({
@@ -54,6 +55,7 @@ const Venue = ({
   dmsInformations,
   hasAdageId,
   adageInscriptionDate,
+  hasPendingBankInformationApplication = false,
 }: VenueProps) => {
   const isCollectiveDmsTrackingActive = useActiveFeature(
     'WIP_ENABLE_COLLECTIVE_DMS_TRACKING'
@@ -313,6 +315,9 @@ const Venue = ({
                     hasAdageId={hasAdageId}
                     shouldDisplayEACInformationSection={
                       shouldDisplayEACInformationSection
+                    }
+                    hasPendingBankInformationApplication={
+                      hasPendingBankInformationApplication
                     }
                   />
 

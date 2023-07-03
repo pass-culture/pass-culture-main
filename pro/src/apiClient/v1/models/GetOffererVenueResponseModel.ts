@@ -19,6 +19,7 @@ export type GetOffererVenueResponseModel = {
   hasCreatedOffer: boolean;
   hasMissingReimbursementPoint: boolean;
   id: number;
+  hasPendingBankInformationApplication?: boolean;
   isVirtual: boolean;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
@@ -30,4 +31,3 @@ export type GetOffererVenueResponseModel = {
   visualDisabilityCompliant?: boolean | null;
   withdrawalDetails?: string | null;
 };
-
