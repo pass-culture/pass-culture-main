@@ -151,7 +151,9 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-warning.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-subcategory.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-chevron-adage.svg', viewBox: '0 0 20 20' },
-  { src: 'icons/add-user.svg', viewBox: '0 0 106 74' },
+  // TODO: replace this icon when the new design is done
+  // done to migrate icon of <Dialog> component
+  { src: 'icons/temp-stroke-add-user.svg' },
   { src: 'icons/ico-arrow-up-b.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-calendar-check.svg', viewBox: '0 0 48 48' },
   { src: 'icons/icon-calendar.svg', viewBox: '0 0 30 30' },

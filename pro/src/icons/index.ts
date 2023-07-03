@@ -1,4 +1,3 @@
-export { ReactComponent as AddUserIcon } from 'icons/add-user.svg'
 export { ReactComponent as ArrowUpBIcon } from 'icons/ico-arrow-up-b.svg'
 export { ReactComponent as CalendarCheckIcon } from 'icons/ico-calendar-check.svg'
 export { ReactComponent as CalendarIcon } from 'icons/icon-calendar.svg'
