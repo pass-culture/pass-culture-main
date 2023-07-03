@@ -12,9 +12,9 @@ import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { OfferIndividual } from 'core/Offers/types'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
-import { TrashFilledIcon } from 'icons'
 import { ReactComponent as FullMoreIcon } from 'icons/full-more.svg'
 import { ReactComponent as FullNextIcon } from 'icons/full-next.svg'
+import { ReactComponent as FullTrashIcon } from 'icons/full-trash.svg'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
 import strokeClockIcon from 'icons/stroke-clock.svg'
 import strokeDateIcon from 'icons/stroke-date.svg'
@@ -401,7 +401,7 @@ export const RecurrenceForm = ({
                         <div className={styles['align-icon']}>
                           <Button
                             variant={ButtonVariant.TERNARY}
-                            Icon={TrashFilledIcon}
+                            Icon={FullTrashIcon}
                             iconPosition={IconPositionEnum.CENTER}
                             disabled={
                               values.quantityPerPriceCategories.length <= 1

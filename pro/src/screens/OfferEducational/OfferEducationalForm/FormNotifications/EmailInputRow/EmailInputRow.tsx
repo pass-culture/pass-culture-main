@@ -1,7 +1,7 @@
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
+import { ReactComponent as FullTrashIcon } from 'icons/full-trash.svg'
 import { NOTIFICATIONS_EMAIL_LABEL } from 'screens/OfferEducational/constants/labels'
 import { Button, TextInput } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
@@ -33,7 +33,7 @@ const EmailInputRow = ({
         <div className={styles['trash']}>
           <Button
             onClick={onDelete}
-            Icon={TrashFilledIcon}
+            Icon={FullTrashIcon}
             iconPosition={IconPositionEnum.CENTER}
             variant={ButtonVariant.TERNARY}
             hasTooltip

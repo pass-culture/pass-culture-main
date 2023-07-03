@@ -19,7 +19,7 @@ import {
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
-import { TrashFilledIcon } from 'icons'
+import { ReactComponent as FullTrashIcon } from 'icons/full-trash.svg'
 import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
 import { PatchEducationalInstitutionAdapter } from 'pages/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
 import {
@@ -294,7 +294,7 @@ const CollectiveOfferVisibility = ({
                             <Button
                               variant={ButtonVariant.TERNARY}
                               onClick={() => clearAllFields()}
-                              Icon={TrashFilledIcon}
+                              Icon={FullTrashIcon}
                               iconPosition={IconPositionEnum.CENTER}
                               hasTooltip
                             >
@@ -340,7 +340,7 @@ const CollectiveOfferVisibility = ({
                               formik.setFieldValue('search-teacher', '')
                               formik.setFieldValue('teacher', null)
                             }}
-                            Icon={TrashFilledIcon}
+                            Icon={FullTrashIcon}
                             iconPosition={IconPositionEnum.CENTER}
                             hasTooltip
                           >

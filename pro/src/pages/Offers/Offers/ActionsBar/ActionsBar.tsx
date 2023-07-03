@@ -6,7 +6,7 @@ import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import useNotification from 'hooks/useNotification'
 import { ReactComponent as FullHideIcon } from 'icons/full-hide.svg'
-import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
+import { ReactComponent as FullTrashIcon } from 'icons/full-trash.svg'
 import { ReactComponent as StrokeCheckIcon } from 'icons/stroke-check.svg'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
 import { searchFiltersSelector } from 'store/offers/selectors'
@@ -184,7 +184,7 @@ const ActionsBar = ({
         Désactiver
       </Button>
       {audience == Audience.INDIVIDUAL && (
-        <Button onClick={() => handleOpenDeleteDialog()} Icon={TrashFilledIcon}>
+        <Button onClick={() => handleOpenDeleteDialog()} Icon={FullTrashIcon}>
           Supprimer
         </Button>
       )}

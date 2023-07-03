@@ -5,7 +5,7 @@ import React from 'react'
 import FormLayout from 'components/FormLayout'
 import { SelectOption } from 'custom_types/form'
 import { ReactComponent as FullMoreIcon } from 'icons/full-more.svg'
-import trashFilledIcon from 'icons/ico-trash-filled.svg'
+import fullTrashIcon from 'icons/full-trash.svg'
 import { Button, CheckboxGroup, Select, TextInput } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import ListIconButton from 'ui-kit/ListIconButton'
@@ -75,7 +75,7 @@ const ActivityForm = ({ venueTypes }: ActivityFormProps): JSX.Element => {
                 >
                   <ListIconButton
                     hasTooltip
-                    icon={trashFilledIcon}
+                    icon={fullTrashIcon}
                     onClick={() => arrayHelpers.remove(index)}
                     disabled={values.socialUrls.length <= 1}
                     className={styles['delete-button']}
