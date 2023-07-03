@@ -33,6 +33,9 @@ class BookingRecapResponseBeneficiaryModel(BaseModel):
 
 class BookingRecapResponseStockModel(BaseModel):
     event_beginning_datetime: datetime | None
+    # FIXME (mageoffray, 2023-07-03): The stock_identifier field is unused by our front but used by pims.
+    # Once our booking api is released and pims uses it we can remove it.
+    stock_identifier: int
     offer_id: int
     offer_is_educational: bool
     # Field should be called offerEan but it is shared with
@@ -126,6 +129,7 @@ def _serialize_booking_status_history(
 def _serialize_booking_recap(booking_recap: BookingRecap) -> BookingRecapResponseModel:
     serialized_booking_recap = BookingRecapResponseModel(
         stock={
+            "stockIdentifier": booking_recap.stock_identifier,
             "offerName": booking_recap.offer_name,
             "offerId": booking_recap.offer_identifier,
             "eventBeginningDatetime": isoformat(booking_recap.event_beginning_datetime)
