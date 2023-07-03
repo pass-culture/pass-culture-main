@@ -24,7 +24,7 @@ interface IconListItem {
 const fullIcons: IconListItem[] = [
   { src: 'icons/full-pause.svg' },
   { src: 'icons/full-play.svg' },
-  { src: 'icons/full-validate.svg' }, // TODO 1 in CollectiveOfferConfirmation
+  { src: 'icons/full-validate.svg' },
   { src: 'icons/full-clear.svg' },
   { src: 'icons/full-info.svg' },
   { src: 'icons/full-error.svg' },
@@ -37,9 +37,10 @@ const fullIcons: IconListItem[] = [
   { src: 'icons/full-hide.svg' }, // TODO still used in 1 ConfirmDialog
   { src: 'icons/full-like.svg' },
   { src: 'icons/full-back.svg' },
-  { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
   { src: 'icons/full-next.svg' }, // TODO still used
+  { src: 'icons/full-wait.svg' },
   { src: 'icons/full-refresh.svg' }, // TODO still unsed in <Button>s
+  { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
   { src: 'icons/full-parameters.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-key.svg' }, // TODO 1 use left inside a <ButtonLink>
   { src: 'icons/full-plus.svg' }, // TODO still in 2 ButtonLink and 1 Button
@@ -121,7 +122,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/open-dropdown.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-other-download.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-other.svg', viewBox: '0 0 20 20' },
-  { src: 'icons/pending.svg', viewBox: '0 0 44 44' },
   { src: 'icons/ico-radio-off.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-radio-on.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-search-gray.svg', viewBox: '0 0 124 125' },
