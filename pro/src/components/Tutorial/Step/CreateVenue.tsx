@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Venue2Icon } from 'icons'
+import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeRepaymentIcon from 'icons/stroke-repayment.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -25,7 +25,7 @@ const CreateVenue = ({
         </p>
       </div>
       <div className={styles['two-columns-section-block']}>
-        <Venue2Icon />
+        <SvgIcon src={strokeBuildingIcon} alt="" />
         <h2>Ajoutez des lieux</h2>
         <p>
           Vous ne disposez pas d'un lieu physique ?
