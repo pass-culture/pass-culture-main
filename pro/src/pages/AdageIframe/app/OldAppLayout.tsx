@@ -3,8 +3,9 @@ import './OldAppLayout.scss'
 import * as React from 'react'
 
 import { VenueResponse } from 'apiClient/adage'
-import { ReactComponent as Download } from 'icons/ico-other-download.svg'
 import { ReactComponent as Logo } from 'icons/logo-pass-culture-dark.svg'
+import strokeDownloadIcon from 'icons/stroke-download.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { OffersInstantSearch } from './components/OffersInstantSearch/OffersInstantSearch'
 
@@ -28,7 +29,11 @@ export const OldAppLayout = ({
               rel="noreferrer"
               target="_blank"
             >
-              <Download className="app-layout-header-help-link-icon" />
+              <SvgIcon
+                alt=""
+                src={strokeDownloadIcon}
+                className="app-layout-header-help-link-icon"
+              />
               Télécharger l’aide
             </a>
           </div>

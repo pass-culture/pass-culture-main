@@ -8,11 +8,13 @@ import { AdageFrontRoles } from 'apiClient/adage'
 import { AdageHeaderLink } from 'apiClient/adage/models/AdageHeaderLink'
 import { apiAdage } from 'apiClient/api'
 import useNotification from 'hooks/useNotification'
-import { CalendarCheckIcon, InstitutionIcon, SearchIcon } from 'icons'
+import { InstitutionIcon, SearchIcon } from 'icons'
 import { ReactComponent as FullDownloadIcon } from 'icons/full-download.svg'
+import strokeBookedIcon from 'icons/stroke-booked.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Icon from 'ui-kit/Icon/Icon'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { formatPrice } from 'utils/formatPrice'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 import { ResultType } from 'utils/types'
@@ -100,7 +102,11 @@ export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
             target="_parent"
             onClick={() => logAdageLinkClick(AdageHeaderLink.ADAGE_LINK)}
           >
-            <CalendarCheckIcon className={styles['adage-header-item-icon']} />
+            <SvgIcon
+              alt=""
+              src={strokeBookedIcon}
+              className={styles['adage-header-item-icon']}
+            />
             Suivi
           </a>
         </div>

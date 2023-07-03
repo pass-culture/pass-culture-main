@@ -68,17 +68,22 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-duo.svg' },
   { src: 'icons/stroke-virtual-event.svg' },
   { src: 'icons/stroke-virtual-thing.svg' },
+  { src: 'icons/stroke-booked.svg' },
   { src: 'icons/stroke-template-offer.svg' },
   { src: 'icons/stroke-mail.svg' }, // TODO 2 uses left in <Dialog>
   { src: 'icons/stroke-phone.svg' },
   { src: 'icons/stroke-home.svg' },
   { src: 'icons/stroke-building.svg' },
   { src: 'icons/stroke-desk.svg' },
+  { src: 'icons/stroke-calendar.svg' },
+  { src: 'icons/stroke-date.svg' },
   { src: 'icons/stroke-show.svg' }, // TODO 1 use left inside Button (PasswordInput)
   { src: 'icons/stroke-hide.svg' }, // TODO 1 use left inside Button (PasswordInput)
   { src: 'icons/stroke-hourglass.svg' },
   { src: 'icons/stroke-like.svg' }, // TODO 1 use left inside Button
   { src: 'icons/stroke-trash.svg' },
+  { src: 'icons/stroke-download.svg' }, // TODO 1 use left inside ButtonLink (AddActivationCodeForm)
+  { src: 'icons/stroke-case.svg' },
   { src: 'icons/stroke-code.svg' },
   { src: 'icons/stroke-accessibility-eye.svg' },
   { src: 'icons/stroke-accessibility-ear.svg' },
@@ -92,6 +97,7 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-left.svg' },
   { src: 'icons/stroke-right.svg' },
   { src: 'icons/stroke-pass.svg' },
+  { src: 'icons/stroke-venue.svg' },
 ]
 
 const shadowIcons: IconListItem[] = [
@@ -120,7 +126,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-placeholder-offer-image.svg', viewBox: '0 0 80 80' },
   { src: 'icons/ico-offers.svg', viewBox: '0 0 48 49' },
   { src: 'icons/open-dropdown.svg', viewBox: '0 0 20 20' },
-  { src: 'icons/ico-other-download.svg', viewBox: '0 0 24 24' },
   { src: 'icons/ico-other.svg', viewBox: '0 0 20 20' },
   { src: 'icons/pending.svg', viewBox: '0 0 44 44' },
   { src: 'icons/ico-radio-off.svg', viewBox: '0 0 16 16' },
@@ -155,10 +160,7 @@ const notCleandIcons: IconListItem[] = [
   // done to migrate icon of <Dialog> component
   { src: 'icons/temp-stroke-add-user.svg' },
   { src: 'icons/ico-arrow-up-b.svg', viewBox: '0 0 24 24' },
-  { src: 'icons/ico-calendar-check.svg', viewBox: '0 0 48 48' },
-  { src: 'icons/icon-calendar.svg', viewBox: '0 0 30 30' },
   { src: 'icons/ico-clock.svg', viewBox: '0 0 24 24' },
-  { src: 'icons/ico-date.svg', viewBox: '0 0 48 48' },
   { src: 'icons/ico-disconnect-full.svg', viewBox: '0 0 40 40' },
   { src: 'icons/ico-key.svg', viewBox: '0 0 20 20' },
   { src: 'icons/logo-pass-culture-dark.svg', viewBox: '0 0 71 24' },
@@ -169,7 +171,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-ticket-plus-full.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-trash-filled.svg', viewBox: '0 0 48 48' },
   { src: 'icons/venue-2.svg', viewBox: '0 0 40 40' },
-  { src: 'icons/ico-venue.svg', viewBox: '0 0 28 23' },
   { src: 'icons/ico-institution.svg', viewBox: '0 0 18 18' },
   { src: 'icons/logo-pass-culture-adage.svg', viewBox: '0 0 120 39' },
 ]

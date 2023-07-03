@@ -50,6 +50,8 @@ main.app-layout {
   font-size: rem.torem(12px);
 
   &-icon {
+    width: rem.torem(16px);
+    height: rem.torem(16px);
     margin-right: rem.torem(4px);
   }
 }
