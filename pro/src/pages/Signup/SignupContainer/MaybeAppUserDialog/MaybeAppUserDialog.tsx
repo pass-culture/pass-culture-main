@@ -3,12 +3,12 @@ import './MaybeAppUserDialog.scss'
 import React from 'react'
 
 import RedirectDialog from 'components/Dialog/RedirectDialog'
-import { ReactComponent as FraudIcon } from 'icons/fraud.svg'
+import { ReactComponent as StrokeFraudIcon } from 'icons/stroke-fraud.svg'
 
 const MaybeAppUserDialog = ({ onCancel }: { onCancel: () => void }) => {
   return (
     <RedirectDialog
-      icon={FraudIcon}
+      icon={StrokeFraudIcon}
       redirectText="S’inscrire sur l’application pass Culture"
       redirectLink={{
         to: 'https://passculture.app/',
