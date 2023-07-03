@@ -31,6 +31,7 @@ const CountryCodeSelect = ({
         className={cn(styles['select-input-icon'], {
           [styles['select-input-icon-disabled']]: disabled,
         })}
+        width="16"
       />
       <select
         className={styles['select-input']}
