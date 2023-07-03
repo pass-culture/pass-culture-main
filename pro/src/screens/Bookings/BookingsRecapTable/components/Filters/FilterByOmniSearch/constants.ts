@@ -28,11 +28,11 @@ const institutionOmnisearchFilter: OmnisearchFilter = {
   selectOptionText: 'Établissement',
 }
 
-const isbnOmnisearchFilter: OmnisearchFilter = {
-  id: 'isbn',
-  placeholderText: 'Rechercher par ISBN',
+const eanOmnisearchFilter: OmnisearchFilter = {
+  id: 'ean',
+  placeholderText: 'Rechercher par EAN',
   stateKey: 'offerISBN',
-  selectOptionText: 'ISBN',
+  selectOptionText: 'EAN',
 }
 
 const tokenOmnisearchFilter: OmnisearchFilter = {
@@ -52,7 +52,7 @@ export const bookingIdOmnisearchFilter: OmnisearchFilter = {
 export const INDIVIDUAL_OMNISEARCH_FILTERS: OmnisearchFilter[] = [
   offerOmnisearchFilter,
   beneficiaryOmnisearchFilter,
-  isbnOmnisearchFilter,
+  eanOmnisearchFilter,
   tokenOmnisearchFilter,
 ]
 export const COLLECTIVE_OMNISEARCH_FILTERS: OmnisearchFilter[] = [
