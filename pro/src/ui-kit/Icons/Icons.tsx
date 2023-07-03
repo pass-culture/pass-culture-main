@@ -88,6 +88,7 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-close.svg' },
   { src: 'icons/stroke-left.svg' },
   { src: 'icons/stroke-right.svg' },
+  { src: 'icons/stroke-pass.svg' },
 ]
 
 const shadowIcons: IconListItem[] = [
@@ -107,7 +108,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/library.svg', viewBox: '0 0 49 48' },
   { src: 'icons/linear-gradient.svg', viewBox: '0 0 623 1024' }, // TODO replace by a jpg/png
   { src: 'icons/loader.svg', viewBox: '0 0 32 32' },
-  { src: 'icons/loader-pc.svg', viewBox: '0 0 56 56' },
   { src: 'icons/location.svg', viewBox: '0 0 24 24' },
   { src: 'icons/logo-pass-culture.svg', viewBox: '0 0 114 84' },
   { src: 'icons/logo-pass-culture-header.svg', viewBox: '0 0 119 40' },
