@@ -1,8 +1,9 @@
 import React from 'react'
 
-import { OfferCardEuroIcon, OtherOfferIcon } from 'icons'
+import { OtherOfferIcon } from 'icons'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import strokePassIcon from 'icons/stroke-pass.svg'
+import strokeRepaymentIcon from 'icons/stroke-repayment.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { StepComponentProps } from '../types'
@@ -45,7 +46,7 @@ const Welcome = ({
         </div>
         <div>
           <div className={styles['tw-icon']}>
-            <OfferCardEuroIcon />
+            <SvgIcon src={strokeRepaymentIcon} alt="" />
           </div>
           <p>Suivez vos remboursements</p>
         </div>

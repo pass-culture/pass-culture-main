@@ -19,6 +19,11 @@ p.tw-icon svg {
   height: rem.torem(30px);
 }
 
+.tw-icon svg {
+  width: rem.torem(30px);
+  height: rem.torem(30px);
+}
+
 .tw-strong {
   @include fonts.title4;
 
