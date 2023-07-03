@@ -3,7 +3,8 @@ import React from 'react'
 
 import { SummaryLayout } from 'components/SummaryLayout'
 import { CollectiveOfferTemplate, CollectiveOffer } from 'core/OfferEducational'
-import { ReactComponent as OfferImagePlaceholderIcon } from 'icons/ico-placeholder-offer-image.svg'
+import strokeOfferIcon from 'icons/stroke-offer.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './CollectiveOfferImagePreview.module.scss'
 
@@ -24,7 +25,7 @@ const CollectiveOfferImagePreview = ({
         />
       ) : (
         <div className={cn(styles['default-preview'], styles['image-preview'])}>
-          <OfferImagePlaceholderIcon title={offer.name} />
+          <SvgIcon alt={offer.name} src={strokeOfferIcon} />
         </div>
       )}
     </SummaryLayout.SubSection>
