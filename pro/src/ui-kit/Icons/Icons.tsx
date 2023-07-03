@@ -85,6 +85,7 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-hide.svg' }, // TODO 1 use left inside Button (PasswordInput)
   { src: 'icons/stroke-hourglass.svg' },
   { src: 'icons/stroke-like.svg' }, // TODO 1 use left inside Button
+  { src: 'icons/stroke-logout.svg' },
   { src: 'icons/stroke-trash.svg' },
   { src: 'icons/stroke-download.svg' }, // TODO 1 use left inside ButtonLink (AddActivationCodeForm)
   { src: 'icons/stroke-case.svg' },
@@ -134,7 +135,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-radio-on.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-search-gray.svg', viewBox: '0 0 124 125' },
   { src: 'icons/ico-separator.svg', viewBox: '0 0 20 1' },
-  { src: 'icons/ico-signout.svg', viewBox: '0 0 48 49' },
   { src: 'icons/ico-star.svg', viewBox: '0 0 38 36' },
   { src: 'icons/ico-status-booked.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-status-cancelled.svg', viewBox: '0 0 16 16' },
