@@ -184,7 +184,7 @@ export const bookingRecapFactory = (
       offerId: offer.nonHumanizedId,
       offerName: offer.name,
       offerIsEducational: false,
-      stockIdentifier: offer.stocks[0].nonHumanizedId.toString(),
+      stockIdentifier: offer.stocks[0].nonHumanizedId,
       offerIsbn: '123456789',
     },
     ...customBookingRecap,

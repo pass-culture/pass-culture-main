@@ -8,5 +8,6 @@ export type BookingRecapResponseStockModel = {
   offerIsEducational: boolean;
   offerIsbn?: string | null;
   offerName: string;
+  stockIdentifier: number;
 };
 

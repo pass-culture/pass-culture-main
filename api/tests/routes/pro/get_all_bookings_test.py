@@ -124,6 +124,7 @@ class Returns200Test:
         expected_bookings_recap = [
             {
                 "stock": {
+                    "stockIdentifier": booking.stock.id,
                     "offerName": booking.stock.offer.name,
                     "offerId": booking.stock.offer.id,
                     "offerIsEducational": False,
