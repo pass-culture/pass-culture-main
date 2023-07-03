@@ -1,7 +1,8 @@
 import React, { useId } from 'react'
 
 import DialogBox from 'components/DialogBox/DialogBox'
-import { ReactComponent as StrokeErrorIcon } from 'icons/stroke-error.svg'
+import strokeErrorIcon from 'icons/stroke-error.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Dialog.module.scss'
 
@@ -11,7 +12,7 @@ export interface DialogProps {
   secondTitle?: string
   explanation?: React.ReactNode | React.ReactNode[]
   children?: React.ReactNode | React.ReactNode[]
-  icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
+  icon?: string
   hideIcon?: boolean
   extraClassNames?: string
 }
@@ -26,7 +27,6 @@ const Dialog = ({
   hideIcon = false,
   extraClassNames,
 }: DialogProps): JSX.Element => {
-  const Icon = icon ?? StrokeErrorIcon
   const titleId = useId()
 
   return (
@@ -36,7 +36,13 @@ const Dialog = ({
       labelledBy={titleId}
       onDismiss={onCancel}
     >
-      {!hideIcon && <Icon className={styles['dialog-icon']} />}
+      {!hideIcon && (
+        <SvgIcon
+          src={icon ?? strokeErrorIcon}
+          alt=""
+          className={styles['dialog-icon']}
+        />
+      )}
       <div className={styles['dialog-title']} id={titleId}>
         {title}
         <span>{secondTitle}</span>

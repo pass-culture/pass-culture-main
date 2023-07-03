@@ -36,7 +36,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as StrokeMailIcon } from 'icons/stroke-mail.svg'
+import strokeMailIcon from 'icons/stroke-mail.svg'
 
 import { ActionBar } from '../ActionBar'
 import { useIndividualOfferImageUpload } from '../hooks'
@@ -342,7 +342,7 @@ const Informations = ({
             saveDraft: true,
             sendMail: true,
           })}
-          icon={StrokeMailIcon}
+          icon={strokeMailIcon}
           title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
         />
       )}
