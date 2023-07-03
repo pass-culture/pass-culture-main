@@ -14,7 +14,8 @@ import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenue
 import { useAdapter } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { AddUserIcon, ArrowUpBIcon } from 'icons'
+import { ArrowUpBIcon } from 'icons'
+import { ReactComponent as TempStrokeAddUserIcon } from 'icons/temp-stroke-add-user.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -191,7 +192,8 @@ const Offerers = (): JSX.Element => {
       />
       {showLinkDialog && (
         <ConfirmDialog
-          icon={AddUserIcon}
+          // TODO: add definitive icon add user
+          icon={TempStrokeAddUserIcon}
           onCancel={cancelLinkUserToOfferer}
           title="Êtes-vous sûr de vouloir rejoindre cet espace ?"
           onConfirm={doLinkAccount}
