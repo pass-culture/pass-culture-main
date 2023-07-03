@@ -28,6 +28,7 @@ $offer-image-width: rem.torem(176px);
     .ico-logo-passculture {
       width: rem.torem(44px);
       height: rem.torem(44px);
+      color: colors.$white;
     }
   }
 
@@ -140,8 +141,8 @@ $offer-image-width: rem.torem(176px);
 
     // TODO delete important on button icon refactor
     svg {
-      width: rem.torem(40px)!important;
-      height: rem.torem(40px)!important;
+      width: rem.torem(40px) !important;
+      height: rem.torem(40px) !important;
     }
   }
 

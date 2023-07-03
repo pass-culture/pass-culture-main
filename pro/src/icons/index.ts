@@ -9,7 +9,6 @@ export { ReactComponent as LogoPassCultureDarkIcon } from 'icons/logo-pass-cultu
 export { ReactComponent as OfferCardEuroIcon } from 'icons/offer-card-euro.svg'
 export { ReactComponent as OtherOfferIcon } from 'icons/other-offer.svg'
 export { ReactComponent as PartyIcon } from 'icons/party.svg'
-export { ReactComponent as PasscultureIcon } from 'icons/ico-passculture.svg'
 export { ReactComponent as SearchIcon } from 'icons/ico-search.svg'
 export { ReactComponent as TicketPlusFullIcon } from 'icons/ico-ticket-plus-full.svg'
 export { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
