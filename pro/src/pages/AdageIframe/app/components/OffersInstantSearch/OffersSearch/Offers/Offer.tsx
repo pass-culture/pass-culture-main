@@ -7,9 +7,9 @@ import DialogBox from 'components/DialogBox/DialogBox'
 import useActiveFeature from 'hooks/useActiveFeature'
 import fullLikeIcon from 'icons/full-like.svg'
 import { ReactComponent as ChevronIconAdage } from 'icons/ico-chevron-adage.svg'
-import { ReactComponent as Logo } from 'icons/ico-passculture.svg'
 import { ReactComponent as ImagePlaceholder } from 'icons/ico-placeholder-offer-image.svg'
 import { ReactComponent as StrokeLikeIcon } from 'icons/stroke-like.svg'
+import strokePassIcon from 'icons/stroke-pass.svg'
 import {
   HydratedCollectiveOffer,
   HydratedCollectiveOfferTemplate,
@@ -81,7 +81,11 @@ const Offer = ({
         })}
         data-testid="thumb-placeholder"
       >
-        <Logo className={style['ico-logo-passculture']} />
+        <SvgIcon
+          src={strokePassIcon}
+          alt=""
+          className={style['ico-logo-passculture']}
+        />
       </div>
       <div className={style['offer-main-container']}>
         <div className={style['offer-image-container']}>

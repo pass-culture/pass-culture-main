@@ -23,11 +23,11 @@ import {
 } from 'pages/AdageIframe/app/types/offers'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import Spinner from 'ui-kit/Spinner/Spinner'
 import { LOGS_DATA } from 'utils/config'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 import { ResultType } from 'utils/types'
 
-import { Spinner } from '../../../Layout/Spinner/Spinner'
 import { SurveySatisfaction } from '../../../SurveySatisfaction/SurveySatisfaction'
 
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
@@ -182,7 +182,7 @@ export const OffersComponent = ({
           {hasMore &&
             (queriesAreLoading ? (
               <div className={styles['offers-loader']}>
-                <Spinner message="Chargement en cours" />
+                <Spinner />
               </div>
             ) : (
               <Button onClick={refineNext} variant={ButtonVariant.SECONDARY}>

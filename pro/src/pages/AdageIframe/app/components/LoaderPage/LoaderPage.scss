@@ -11,14 +11,5 @@ main.loader-page {
     align-items: center;
     display: flex;
     flex-direction: column;
-
-    svg {
-      height: rem.torem(56px);
-      width: rem.torem(56px);
-
-      .logo {
-        fill: #870087;
-      }
-    }
   }
 }

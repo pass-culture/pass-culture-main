@@ -27,11 +27,6 @@
       }
     }
 
-    .passculture {
-      fill: colors.$grey-dark;
-      width: rem.torem(22px);
-    }
-
     .text {
       @include fonts.mini-highlight;
 

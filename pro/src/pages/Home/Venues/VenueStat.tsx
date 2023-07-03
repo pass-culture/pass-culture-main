@@ -1,8 +1,8 @@
 import React from 'react'
 
-import { ReactComponent as LoaderSvg } from 'icons/ico-passculture.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 interface VenueStatProps {
   count?: string
@@ -15,13 +15,14 @@ interface VenueStatProps {
   }
   onClick: () => void
 }
+
 const VenueStat = ({ count, label, link, onClick }: VenueStatProps) => (
   <div className="h-card-col" data-testid="venue-stat">
     {
       /* istanbul ignore next: DEBT, TO FIX */ count ? (
         <div className="venue-stat-count">{count}</div>
       ) : (
-        <LoaderSvg className="venue-stat-spinner" title="Chargement en cours" />
+        <Spinner />
       )
     }
     <div>{label}</div>
