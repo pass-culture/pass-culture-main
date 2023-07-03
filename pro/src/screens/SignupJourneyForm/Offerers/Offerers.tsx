@@ -14,11 +14,12 @@ import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenue
 import { useAdapter } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { ArrowUpBIcon } from 'icons'
+import fullUpIcon from 'icons/full-up.svg'
 import { ReactComponent as TempStrokeAddUserIcon } from 'icons/temp-stroke-add-user.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { ActionBar } from '../ActionBar'
 
@@ -151,7 +152,9 @@ const Offerers = (): JSX.Element => {
               }}
               variant={ButtonVariant.TERNARY}
               Icon={() => (
-                <ArrowUpBIcon
+                <SvgIcon
+                  alt=""
+                  src={fullUpIcon}
                   className={cn(styles['icon-more-venue'], {
                     [styles['icon-more-venue-down']]: isVenueListOpen,
                   })}
