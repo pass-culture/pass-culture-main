@@ -2,7 +2,8 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import { Audience } from 'core/shared/types'
-import Icon from 'ui-kit/Icon/Icon'
+import strokeSearchIcon from 'icons/stroke-search.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './NoResults.module.scss'
 
@@ -13,10 +14,11 @@ interface NoResultsProps {
 
 const NoResults = ({ resetFilters, audience }: NoResultsProps): JSX.Element => (
   <div className={styles['search-no-results']}>
-    <Icon
+    <SvgIcon
+      src={strokeSearchIcon}
       alt="Illustration de recherche"
       className={styles['search-no-results-icon']}
-      svg="ico-search-gray"
+      width="124"
     />
     <p className={styles['search-no-results-text']}>
       Aucune offre trouvée pour votre recherche

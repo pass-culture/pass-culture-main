@@ -93,6 +93,7 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-hide.svg' }, // TODO 1 use left inside Button (PasswordInput)
   { src: 'icons/stroke-calendar.svg' },
   { src: 'icons/stroke-hourglass.svg' },
+  { src: 'icons/stroke-search.svg' }, // TODO 1 use left inside SubmitButton (CollectiveOfferSelectionDuplicationScreen)
   { src: 'icons/stroke-like.svg' }, // TODO 1 use left inside Button
   { src: 'icons/stroke-logout.svg' },
   { src: 'icons/stroke-trash.svg' },

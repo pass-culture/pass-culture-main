@@ -3,13 +3,14 @@ import './NoResultsPage.scss'
 import React, { useContext } from 'react'
 
 import { ReactComponent as FullRefresh } from 'icons/full-refresh.svg'
-import { ReactComponent as SearchGrayIcon } from 'icons/ico-search-gray.svg'
+import strokeSearchIcon from 'icons/stroke-search.svg'
 import {
   AlgoliaQueryContext,
   FacetFiltersContext,
 } from 'pages/AdageIframe/app/providers'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 export const NoResultsPage = ({
   handleResetFiltersAndLaunchSearch,
@@ -21,7 +22,12 @@ export const NoResultsPage = ({
 
   return (
     <div className="no-results">
-      <SearchGrayIcon className="no-results-icon" />
+      <SvgIcon
+        src={strokeSearchIcon}
+        alt=""
+        className="no-results-icon"
+        width="124"
+      />
       <p className="no-results-text">
         Aucun résultat trouvé pour cette recherche.
       </p>
