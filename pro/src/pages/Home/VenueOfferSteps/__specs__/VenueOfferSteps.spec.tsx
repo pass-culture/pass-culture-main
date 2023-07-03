@@ -16,6 +16,7 @@ const renderVenueOfferSteps = ({
   hasMissingReimbursementPoint = true,
   hasAdageId = false,
   shouldDisplayEACInformationSection = false,
+  hasPendingBankInformationApplication = false,
 }) => {
   const currentUser = {
     id: 'EY',
@@ -35,6 +36,9 @@ const renderVenueOfferSteps = ({
       hasCreatedOffer={hasCreatedOffer}
       hasAdageId={hasAdageId}
       shouldDisplayEACInformationSection={shouldDisplayEACInformationSection}
+      hasPendingBankInformationApplication={
+        hasPendingBankInformationApplication
+      }
     />,
     { storeOverrides, initialRouterEntries: ['/accueil'] }
   )
@@ -79,6 +83,18 @@ describe('VenueOfferSteps', () => {
     ).toBeInTheDocument()
   })
 
+  it('Should display bank information status follow link when condition to display it is true', async () => {
+    renderVenueOfferSteps({
+      hasVenue: false,
+      shouldDisplayEACInformationSection: false,
+      hasPendingBankInformationApplication: true,
+    })
+    expect(screen.getByText('Démarche en cours :')).toBeInTheDocument()
+    expect(
+      screen.getByText('Suivre mon dossier de coordonnées bancaires')
+    ).toBeInTheDocument()
+  })
+
   it('Should display link for eac informations if has adage id and already created offer', async () => {
     renderVenueOfferSteps({
       hasVenue: false,
@@ -120,7 +136,16 @@ describe('VenueOfferSteps', () => {
       hasCreatedOffer: true,
       shouldDisplayEACInformationSection: false,
     })
+    expect(screen.queryByText('Prochaines étapes :')).not.toBeInTheDocument()
     expect(screen.queryByTestId('venue-offer-steps')).not.toBeInTheDocument()
     expect(screen.queryByTestId('home-offer-steps')).not.toBeInTheDocument()
+  })
+
+  it('should display venueOfferSteps if condition to display it', async () => {
+    renderVenueOfferSteps({
+      hasCreatedOffer: true,
+      shouldDisplayEACInformationSection: true,
+    })
+    expect(screen.getByText('Prochaines étapes :')).toBeInTheDocument()
   })
 })
