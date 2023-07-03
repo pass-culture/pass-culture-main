@@ -91,7 +91,7 @@ def get_by_ean13(ean13: str) -> dict[str, typing.Any]:
         if 400 <= response.status_code < 500:
             core_logging.log_for_supervision(
                 logger,
-                logging.ERROR,
+                logging.WARNING if response.status_code == 404 else logging.ERROR,
                 "Titelive get by ean 13: External error: %s",
                 response.status_code,
                 extra={
