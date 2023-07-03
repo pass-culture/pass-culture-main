@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import TrashFilledIcon from 'icons/full-trash.svg'
+import fullTrashIcon from 'icons/full-trash.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -32,7 +32,7 @@ const ButtonImageDelete = ({
         <SvgIcon
           alt=""
           className={styles['button-image-delete-icon']}
-          src={TrashFilledIcon}
+          src={fullTrashIcon}
         />
         Supprimer
       </Button>
