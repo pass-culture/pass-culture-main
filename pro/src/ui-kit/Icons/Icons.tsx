@@ -40,7 +40,11 @@ const fullIcons: IconListItem[] = [
   { src: 'icons/full-next.svg' }, // TODO still used
   { src: 'icons/full-wait.svg' },
   { src: 'icons/full-refresh.svg' }, // TODO still unsed in <Button>s
+<<<<<<< HEAD
   { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
+=======
+  { src: 'icons/full-other.svg' },
+>>>>>>> 54106bdd73 ((PC-23096)[PRO] refactor: clean ico-other)
   { src: 'icons/full-parameters.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-key.svg' }, // TODO 1 use left inside a <ButtonLink>
   { src: 'icons/full-plus.svg' }, // TODO still in 2 ButtonLink and 1 Button
