@@ -1,9 +1,9 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { ReactComponent as TagSvg } from 'icons/ico-tag.svg'
 import strokeDuoIcon from 'icons/stroke-duo.svg'
 import strokePassIcon from 'icons/stroke-pass.svg'
+import strokePriceIcon from 'icons/stroke-price.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import style from './OptionsIcons.module.scss'
@@ -36,7 +36,7 @@ const OptionsIcons = ({
       </div>
 
       <div className={style['option']}>
-        <TagSvg aria-hidden className={style['icon']} />
+        <SvgIcon src={strokePriceIcon} alt="" className={style['icon']} />
         <span className={style['text']}>- - €</span>
       </div>
     </div>

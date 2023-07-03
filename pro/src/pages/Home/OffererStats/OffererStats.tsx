@@ -3,8 +3,8 @@ import { useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as TropheeIcon } from 'icons/ico-trophee.svg'
 import { ReactComponent as ShadowCalendar } from 'icons/shadow-calendar.svg'
+import { ReactComponent as ShadowTropheeIcon } from 'icons/shadow-trophee.svg'
 import { ReactComponent as StrokeEuro } from 'icons/stroke-euro.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -39,7 +39,7 @@ const OffererStats = () => {
         <div className={styles['offerer-stats-boxes']}>
           <IconLinkBox
             title="Top de vos offres"
-            IconHeader={TropheeIcon}
+            IconHeader={ShadowTropheeIcon}
             {...defaultIconLinkProps}
           />
           <IconLinkBox

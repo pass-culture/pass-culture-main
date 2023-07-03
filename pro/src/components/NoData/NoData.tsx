@@ -1,7 +1,8 @@
 import React from 'react'
 
 import { Audience } from 'core/shared'
-import Icon from 'ui-kit/Icon/Icon'
+import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './NoData.module.scss'
 
@@ -25,7 +26,13 @@ const wordingMapping = {
 const NoOffers = ({ page, audience }: NoOffers): JSX.Element => {
   return (
     <div className={styles['no-data']}>
-      <Icon className={styles['no-data-icon']} svg="ticket-cross" />
+      <SvgIcon
+        src={strokeNoBookingIcon}
+        alt=""
+        className={styles['no-data-icon']}
+        viewBox="0 0 200 156"
+        width="100"
+      />
       <p>{wordingMapping[page][audience]}</p>
     </div>
   )
