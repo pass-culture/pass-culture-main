@@ -6,11 +6,11 @@ import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel'
 import { Offer } from 'core/Offers/types'
 import { ReactComponent as StatusExpiredIcon } from 'icons/ico-status-expired.svg'
 import { ReactComponent as StatusInactiveIcon } from 'icons/ico-status-inactive.svg'
-import { ReactComponent as StatusPendingIcon } from 'icons/ico-status-pending.svg'
 import { ReactComponent as StatusRejectedIcon } from 'icons/ico-status-rejected.svg'
 import { ReactComponent as StrokeCheckIcon } from 'icons/stroke-check.svg'
+import strokeClockIcon from 'icons/stroke-clock.svg'
 import strokeDoubleCheckIcon from 'icons/stroke-double-check.svg'
-import strokeHourglass from 'icons/stroke-hourglass.svg'
+import strokeHourglassIcon from 'icons/stroke-hourglass.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from '../../OfferItem.module.scss'
@@ -26,7 +26,13 @@ export const getCollectiveStatusLabel = (
       return (
         <CollectiveStatusLabel
           className={style['status-pending']}
-          icon={<StatusPendingIcon className={style['status-label-icon']} />}
+          icon={
+            <SvgIcon
+              className={cn(style['status-label-icon'])}
+              src={strokeClockIcon}
+              alt=""
+            />
+          }
           label="en attente"
         />
       )
@@ -65,7 +71,7 @@ export const getCollectiveStatusLabel = (
                 style['status-label-icon'],
                 style['status-pre-booked-icon']
               )}
-              src={strokeHourglass}
+              src={strokeHourglassIcon}
               alt=""
             />
           }

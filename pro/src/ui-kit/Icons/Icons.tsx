@@ -40,11 +40,8 @@ const fullIcons: IconListItem[] = [
   { src: 'icons/full-next.svg' }, // TODO still used
   { src: 'icons/full-wait.svg' },
   { src: 'icons/full-refresh.svg' }, // TODO still unsed in <Button>s
-<<<<<<< HEAD
-  { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
-=======
   { src: 'icons/full-other.svg' },
->>>>>>> 54106bdd73 ((PC-23096)[PRO] refactor: clean ico-other)
+  { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
   { src: 'icons/full-parameters.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-key.svg' }, // TODO 1 use left inside a <ButtonLink>
   { src: 'icons/full-plus.svg' }, // TODO still in 2 ButtonLink and 1 Button
@@ -147,7 +144,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-status-expired.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-status-inactive.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-status-pending.svg', viewBox: '0 0 16 16' },
-  { src: 'icons/ico-status-pending-full.svg', viewBox: '0 0 21 20' },
   { src: 'icons/ico-status-pending-tag.svg', viewBox: '0 0 12 14' },
   { src: 'icons/ico-status-reimbursed.svg', viewBox: '0 0 22 14' },
   { src: 'icons/ico-status-rejected.svg', viewBox: '0 0 16 16' },

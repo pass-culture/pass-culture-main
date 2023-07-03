@@ -3,7 +3,8 @@
 @use "styles/variables/_colors.scss" as colors;
 
 .status-label-icon {
-  fill: white;
+  fill: colors.$white; // TODO remove fill once all icons are migrated
+  color: colors.$white;
   height: rem.torem(16px);
   margin-right: rem.torem(4px);
   width: rem.torem(16px);
@@ -29,7 +30,7 @@
     color: colors.$black;
 
     &-icon {
-      fill: colors.$black;
+      fill: colors.$black; // TODO remove fill once all icons are migrated
     }
   }
 
