@@ -2,11 +2,17 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import './NoBookingsForPreFiltersMessage.scss'
-import Icon from 'ui-kit/Icon/Icon'
+import strokeSearchIcon from 'icons/stroke-search.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 const NoBookingsForPreFiltersMessage = ({ resetPreFilters }) => (
   <div className="br-warning no-bookings-for-pre-filters">
-    <Icon svg="ico-search-gray" />
+    <SvgIcon
+      src={strokeSearchIcon}
+      alt=""
+      width="124"
+      className="stroke-search-icon"
+    />
     <p>Aucune réservation trouvée pour votre recherche</p>
     <p>
       {'Vous pouvez modifier vos filtres et lancer une nouvelle recherche ou '}

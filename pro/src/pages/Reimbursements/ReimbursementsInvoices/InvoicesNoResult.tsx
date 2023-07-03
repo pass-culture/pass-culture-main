@@ -1,6 +1,7 @@
 import React, { Dispatch, SetStateAction } from 'react'
 
-import { ReactComponent as SearchSvg } from 'icons/ico-search-gray.svg'
+import strokeSearchIcon from 'icons/stroke-search.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { FiltersType } from './types'
 
@@ -27,7 +28,12 @@ const InvoicesNoResult = ({
 
   return (
     <div className="no-refunds">
-      <SearchSvg />
+      <SvgIcon
+        src={strokeSearchIcon}
+        alt=""
+        className="no-refunds-icon"
+        width="124"
+      />
       <p className="no-refunds-title">
         Aucun justificatif de remboursement trouvé pour votre recherche
       </p>

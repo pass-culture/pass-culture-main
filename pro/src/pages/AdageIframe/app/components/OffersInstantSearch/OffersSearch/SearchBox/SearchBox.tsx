@@ -2,8 +2,9 @@ import './SearchBox.scss'
 import React, { useCallback, useContext } from 'react'
 import type { SearchBoxProvided } from 'react-instantsearch-core'
 
-import { ReactComponent as SearchIco } from 'icons/search-ico.svg'
+import strokeSearchIcon from 'icons/stroke-search.svg'
 import { AlgoliaQueryContext } from 'pages/AdageIframe/app/providers'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 const SearchBoxComponent = ({
   refine,
@@ -23,7 +24,12 @@ const SearchBoxComponent = ({
 
   return (
     <form className="search-wrapper" onSubmit={onSubmit}>
-      <SearchIco className="search-icon" />
+      <SvgIcon
+        src={strokeSearchIcon}
+        alt=""
+        className="search-icon"
+        width="20"
+      />
       <input
         className="search-box"
         onChange={e => setQuery(e.target.value)}

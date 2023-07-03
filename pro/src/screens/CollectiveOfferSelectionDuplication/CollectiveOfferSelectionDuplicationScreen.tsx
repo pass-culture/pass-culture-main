@@ -8,10 +8,12 @@ import { createOfferFromTemplate } from 'core/OfferEducational'
 import { computeOffersUrl, DEFAULT_SEARCH_FILTERS } from 'core/Offers'
 import { Offer } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as SearchIco } from 'icons/search-ico.svg'
+import strokeSearchIcon, {
+  ReactComponent as StrokeSearchIcon,
+} from 'icons/stroke-search.svg'
 import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapters'
 import { RadioButton, SubmitButton, TextInput, Thumb, Title } from 'ui-kit'
-import Icon from 'ui-kit/Icon/Icon'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import Titles from 'ui-kit/Titles/Titles'
 import { pluralize } from 'utils/pluralize'
 
@@ -99,7 +101,7 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
               className={styles['search-button']}
               isLoading={isLoading}
               aria-label="Button de recherche"
-              Icon={SearchIco}
+              Icon={StrokeSearchIcon}
             >
               Rechercher
             </SubmitButton>
@@ -142,10 +144,11 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
             ))}
             {offers?.length < 1 && (
               <div className={styles['search-no-results']}>
-                <Icon
+                <SvgIcon
+                  src={strokeSearchIcon}
                   alt="Illustration de recherche"
                   className={styles['search-no-results-icon']}
-                  svg="ico-search-gray"
+                  width="124"
                 />
                 <p className={styles['search-no-results-text']}>
                   Aucune offre trouvée pour votre recherche

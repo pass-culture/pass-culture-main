@@ -79,6 +79,10 @@
     &.admin-view {
       margin-top: rem.torem(32px);
     }
+
+    &-icon {
+      color: colors.$grey-medium;
+    }
   }
 
   .no-refunds-title {
