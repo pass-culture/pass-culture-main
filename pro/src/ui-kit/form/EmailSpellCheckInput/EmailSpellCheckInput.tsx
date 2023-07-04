@@ -58,10 +58,10 @@ const EmailSpellCheckInput = <FormType,>({
         placeholder={placeholder}
         onBlur={handleEmailValidation}
         onFocus={resetEmailValidation}
-        hideFooter={emailValidationTip != null} // This is needed to hide the footer div that takes some space
+        hideFooter={emailValidationTip !== null} // This is needed to hide the footer div that takes some space
         autoComplete="email"
         ErrorDetails={
-          emailValidationTip ? (
+          emailValidationTip && (
             <div className={styles['email-validation-error']}>
               <div className={styles['email-validation-tip']}>
                 Voulez-vous plutôt dire {emailValidationTip} ?
@@ -76,8 +76,6 @@ const EmailSpellCheckInput = <FormType,>({
                 Appliquer la modification
               </Button>
             </div>
-          ) : (
-            <></>
           )
         }
       />

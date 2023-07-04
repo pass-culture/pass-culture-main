@@ -23,6 +23,7 @@ const FieldError = ({
     className={cn(styles['field-error'], className)}
     id={`error-${name}`}
     role="alert"
+    aria-live="assertive"
   >
     <SvgIcon src={strokeErrorIcon} alt={iconAlt} width="16" />
     <span className={styles['field-error-text']} data-testid={`error-${name}`}>

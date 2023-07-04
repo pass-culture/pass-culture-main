@@ -134,13 +134,17 @@ const FieldLayout = ({
         {showFooter && (
           <div className={cn(classNameFooter, styles['field-layout-footer'])}>
             {(hasError || Boolean(ErrorDetails)) && (
-              <div
-                className={styles['field-layout-error']}
-                id={`error-details-${name}`}
-                aria-live="polite"
-              >
+              <div className={styles['field-layout-error']}>
                 {hasError && <FieldError name={name}>{error}</FieldError>}
-                {ErrorDetails}
+                {Boolean(ErrorDetails) && (
+                  <div
+                    id={`error-details-${name}`}
+                    role="alert"
+                    aria-live="assertive"
+                  >
+                    {ErrorDetails}
+                  </div>
+                )}
               </div>
             )}
             {hasCounter && (

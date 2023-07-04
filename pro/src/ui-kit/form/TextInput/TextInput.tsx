@@ -89,6 +89,7 @@ const TextInput = ({
         <BaseInput
           disabled={disabled}
           hasError={meta.touched && !!meta.error}
+          hasErrorDetails={Boolean(ErrorDetails)}
           maxLength={maxLength}
           placeholder={placeholder}
           step={step}

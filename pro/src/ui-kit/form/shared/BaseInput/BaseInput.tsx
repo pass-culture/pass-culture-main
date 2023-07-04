@@ -7,6 +7,7 @@ interface BaseInputProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
   className?: string
   hasError?: boolean
+  hasErrorDetails?: boolean
   filterVariant?: boolean
   rightIcon?: () => JSX.Element | null
   rightButton?: () => JSX.Element
@@ -17,6 +18,7 @@ const BaseInput = forwardRef(
     {
       className,
       hasError,
+      hasErrorDetails,
       filterVariant,
       name,
       rightIcon,
@@ -25,6 +27,10 @@ const BaseInput = forwardRef(
     }: BaseInputProps,
     ref: ForwardedRef<HTMLInputElement>
   ): JSX.Element => {
+    const describedBy = `${hasError ? 'error-' + name : ''} ${
+      hasErrorDetails ? 'error-details-' + name : ''
+    }`
+
     if (rightIcon || rightButton) {
       const hasIcon = !!rightIcon
       const hasButton = !!rightButton
@@ -34,8 +40,8 @@ const BaseInput = forwardRef(
           <input
             {...props}
             aria-invalid={hasError}
-            {...(hasError
-              ? { 'aria-describedby': `error-details-${name}` }
+            {...(hasError || hasErrorDetails
+              ? { 'aria-describedby': describedBy }
               : {})}
             className={cn(
               styles['base-input'],
@@ -66,7 +72,9 @@ const BaseInput = forwardRef(
         <input
           {...props}
           aria-invalid={hasError}
-          {...(hasError ? { 'aria-describedby': `error-${name}` } : {})}
+          {...(hasError || hasErrorDetails
+            ? { 'aria-describedby': describedBy }
+            : {})}
           className={cn(
             styles['base-input'],
             {
