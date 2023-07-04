@@ -26,7 +26,7 @@ describe('src | components | layout | Banner', () => {
       render(<Tag label={label} closeable={closeable} />)
 
       // when
-      await userEvent.click(screen.getByAltText('Supprimer l’option'))
+      await userEvent.click(screen.getByTitle('Supprimer l’option'))
 
       // then
       expect(spyClose).toHaveBeenCalledTimes(1)

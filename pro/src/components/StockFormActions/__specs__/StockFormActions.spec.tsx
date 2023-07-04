@@ -41,8 +41,5 @@ describe('StockFormActions', () => {
     })
     await userEvent.click(screen.getByTestId('stock-form-actions-button-open'))
     expect(screen.getByText('Action label')).toBeInTheDocument()
-    expect(
-      screen.getByTestId('stock-form-actions-action-icon')
-    ).toBeInTheDocument()
   })
 })
