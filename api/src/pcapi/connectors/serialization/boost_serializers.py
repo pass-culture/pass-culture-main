@@ -120,7 +120,7 @@ class TicketResponse4(BaseModel):
 
 class SaleResponse3(BaseModel):
     id: int
-    code: str | None
+    code: str
     type: str
     amountTaxesIncluded: float | None
     tickets: list[TicketResponse4]
