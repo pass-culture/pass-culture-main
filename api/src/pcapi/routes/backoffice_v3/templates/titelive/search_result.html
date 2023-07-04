@@ -58,7 +58,15 @@
                         {% if not article.gtl.first %}Non renseigné{% endif %}
                         {% if article.gtl.first %}
                           <ul class="mt-2">
-                            {% for key, value in article.gtl.first.items() %}<li>{{ value.libelle|unescape }} ({{ value.code }})</li>{% endfor %}
+                            {% for key, value in article.gtl.first.items() %}
+                                <li>
+                                    {{ value.libelle|unescape }} ({{ value.code|format_gtl_id }})
+                                    <ul class="mt-2">
+                                        {% set csr = value.code|format_gtl_id|format_gtl_as_csr %}
+                                        {% if csr %}<li>Rayon (CSR): {{ csr.label }} ({{ csr.csr_id }})</li>{% endif %}
+                                    </ul>
+                                </li>
+                            {% endfor %}
                           </ul>
                         {% endif %}
                       </li>

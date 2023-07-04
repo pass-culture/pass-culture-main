@@ -16,6 +16,7 @@ from yaml.scanner import ScannerError
 from pcapi import settings
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
+from pcapi.connectors.titelive import get_new_product_from_ean13
 from pcapi.core import search
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.models as bookings_models
@@ -53,7 +54,6 @@ from . import models
 from . import offer_validation
 from . import repository as offers_repository
 from . import validation
-from ...connectors.titelive import get_new_product_from_ean13
 
 
 logger = logging.getLogger(__name__)
