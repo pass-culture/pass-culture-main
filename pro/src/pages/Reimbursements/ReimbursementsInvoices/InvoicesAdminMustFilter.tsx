@@ -6,7 +6,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 const InvoicesAdminMustFilter = (): JSX.Element => {
   return (
     <div className="no-refunds admin-view">
-      <SvgIcon src={strokeRepaymentIcon} alt="" />
+      <SvgIcon src={strokeRepaymentIcon} alt="" width="30" />
       <p className="admin-view-description">
         Pour visualiser vos justificatifs de remboursement, veuillez
         sélectionner un ou plusieurs des filtres précédents et cliquer sur
