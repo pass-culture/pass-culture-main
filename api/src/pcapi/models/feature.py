@@ -118,6 +118,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY = "Changer le template d'email de confirmation de réservation"
     WIP_ENABLE_EAC_CANCEL_30_DAYS = "EAC délai annulation 30 Jours par defaut au lieu de 15"
     WIP_ENABLE_TRUSTED_DEVICE = "Active la fonctionnalité d'appareil de confiance"
+    WIP_ENABLE_SUSPICIOUS_EMAIL_SEND = "Active l'envoie d'email lors de la détection d'une connexion suspicieuse"
     WIP_EAC_ENABLE_NEW_AUTHENTICATION_PUBLIC_API = "Active la gestion des providers dans l'api publique EAC"
     WIP_ENABLE_COLLECTIVE_REQUEST = "Active la demande de création d'offre collective de la part des utilisateurs adage"
     WIP_ENABLE_NEW_ADAGE_HEADER = "Active le nouveau header dans l'iframe adage"
@@ -187,6 +188,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_ENABLE_EAC_CANCEL_30_DAYS,
     FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE,
+    FeatureToggle.WIP_ENABLE_SUSPICIOUS_EMAIL_SEND,
     FeatureToggle.WIP_EAC_ENABLE_NEW_AUTHENTICATION_PUBLIC_API,
     FeatureToggle.WIP_ENABLE_COLLECTIVE_REQUEST,
     FeatureToggle.WIP_ENABLE_NEW_ADAGE_HEADER,
