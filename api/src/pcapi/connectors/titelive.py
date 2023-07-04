@@ -12,6 +12,7 @@ import pcapi.core.offers.models as offers_models
 from pcapi.domain.titelive import read_things_date
 from pcapi.utils import requests
 from pcapi.utils.cache import get_from_cache
+from pcapi.utils.csr import get_closest_csr
 
 
 logger = logging.getLogger(__name__)
@@ -114,30 +115,61 @@ def get_by_ean13(ean13: str) -> dict[str, typing.Any]:
     return response.json()
 
 
-def get_new_product_from_ean13(ean: str) -> offers_models.Product | None:
+class GtlIdError(Exception):
+    """Exception when GTL is not found."""
+
+
+def get_new_product_from_ean13(ean: str) -> offers_models.Product:
     json = get_by_ean13(ean)
-
-    if not json:
-        return None
-
     oeuvre = json["oeuvre"]
     article = oeuvre["article"][0]
+    gtl_id = None
+
+    if article and "gtl" in article and "first" in article["gtl"]:
+        # this will reverse the position and take the highest gtl which is the most precise
+        for key, gtl_from_api in sorted(  # pylint:disable=unused-variable
+            list(article["gtl"]["first"].items()), reverse=True
+        ):
+            gtl_id = gtl_from_api["code"].zfill(8)
+            break
+
+    if gtl_id is None:
+        # EAN without GTL exist (DVD, ...), ex: 3597660004235
+        core_logging.log_for_supervision(
+            logger,
+            logging.ERROR,
+            "Titelive get_new_product_from_ean13: External error: %s",
+            extra={
+                "alert": "Titelive API no gtl_id",
+                "error_type": "http",
+                "ean": ean,
+                "request_type": "get-new-product-from-ean13",
+            },
+        )
+        raise GtlIdError(f"EAN {ean} does not have a titelive gtl_id")
+
+    csr = get_closest_csr(gtl_id)
+
     return offers_models.Product(
         idAtProviders=ean,
         description=html.unescape(article["resume"]),
+        name=html.unescape(oeuvre["titre"]),
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
         thumbCount=article["image"],  # 0 or 1
         extraData=offers_models.OfferExtraData(
             author=oeuvre["auteurs"],
             ean=ean,
             prix_livre=article["prix"],
-            collection=article["collection"],
+            collection=article["collection"] if "collection" in article else None,
             comic_series=article["serie"],
-            date_parution=read_things_date(article["dateparution"]) if article["dateparution"] else None,
+            date_parution=read_things_date(article["dateparution"]) if "dateparution" in article else None,
             distributeur=article["distributeur"],
             editeur=article["editeur"],
-            num_in_collection=article["collection_no"] if article["collection_no"] else None,
+            num_in_collection=article["collection_no"] if "collection_no" in article else None,
             schoolbook=article["scolaire"] == "1",
+            csr_id=csr["csr_id"] if csr else None,
+            gtl_id=gtl_id,
+            # remove rayon when removing csr
+            rayon=csr["label"] if csr else None,
         ),
-        name=oeuvre["titre"],
-        subcategoryId=subcategories.LIVRE_PAPIER.id,
     )
