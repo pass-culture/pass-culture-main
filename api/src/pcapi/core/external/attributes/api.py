@@ -200,13 +200,15 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         for venue in venues:
             offerers_names.add(venue.managingOfferer.name)
             offerers_tags.update(tag.label for tag in venue.managingOfferer.tags)
+        has_individual_offers = offerers_repository.venues_have_offers(*venues)
         attributes.update(
             {
                 "dms_application_submitted": any(venue.hasPendingBankInformationApplication for venue in venues),
                 "dms_application_approved": all(venue.demarchesSimplifieesIsAccepted for venue in venues),
                 "isVirtual": any(venue.isVirtual for venue in venues),
                 "isPermanent": any(venue.isPermanent for venue in venues),
-                "has_offers": offerers_repository.venues_have_offers(*venues),
+                "has_offers": has_individual_offers or has_collective_offers,
+                "has_individual_offers": has_individual_offers,
                 "has_bookings": bookings_repository.venues_have_bookings(*venues),
             }
         )
@@ -232,7 +234,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         venues_labels={venue.venueLabel.label for venue in all_venues if venue.venueLabelId},  # type: ignore [misc]
         departement_code={venue.departementCode for venue in all_venues if venue.departementCode},
         postal_code={venue.postalCode for venue in all_venues if venue.postalCode},
-        has_collective_offers=bool(has_collective_offers),
+        has_collective_offers=has_collective_offers,
         **attributes,
     )
 

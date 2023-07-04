@@ -87,9 +87,10 @@ class ProAttributes:
     dms_application_approved: bool | None = None  # All venues have bank information approved
     isVirtual: bool | None = None  # At least one venue is virtual
     isPermanent: bool | None = None  # At least one venue is permanent
-    has_offers: bool | None = None  # At least one venue has at least one active offer
     has_bookings: bool | None = None  # At least one venue has at least one booking not canceled, at least once
-    has_collective_offers: bool | None = False  # At list one collective offer or collective offer template active
+    has_collective_offers: bool | None = False  # At least one collective offer or collective offer template active
+    has_individual_offers: bool | None = None  # At least one venue has at least one active offer
+    has_offers: bool | None = None  # has_collective_offers or has_individual_offers
 
 
 @dataclass
