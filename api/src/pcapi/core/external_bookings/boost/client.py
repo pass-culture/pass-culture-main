@@ -60,7 +60,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         sale_cancel_items = []
         for barcode in barcodes:
             sale_cancel_item = boost_serializers.SaleCancelItem(
-                code=constants.BOOST_SALE_PREFIX + barcode, refundType=constants.BOOST_PASS_CULTURE_REFUND_TYPE
+                code=barcode, refundType=constants.BOOST_PASS_CULTURE_REFUND_TYPE
             )
             sale_cancel_items.append(sale_cancel_item)
 
@@ -86,7 +86,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         add_to_queue(
             bookings_constants.REDIS_EXTERNAL_BOOKINGS_NAME,
             {
-                "barcode": str(sale_confirmation_response.data.id),
+                "barcode": sale_confirmation_response.data.code,
                 "venue_id": booking.venueId,
                 "timestamp": datetime.datetime.utcnow().timestamp(),
             },
@@ -95,7 +95,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         tickets = []
         for ticket_response in sale_confirmation_response.data.tickets:
             # same barcode for each Ticket of the sale
-            barcode = str(sale_confirmation_response.data.id)
+            barcode = sale_confirmation_response.data.code
             seat_number = str(ticket_response.seat.id) if ticket_response.seat else None
             extra_data = {
                 "barcode": barcode,

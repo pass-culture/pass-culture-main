@@ -119,13 +119,13 @@ class BookTicketTest:
         }
         assert len(tickets) == 2
         assert tickets == [
-            external_bookings_models.Ticket(barcode="90474", seat_number=None),
-            external_bookings_models.Ticket(barcode="90474", seat_number=None),
+            external_bookings_models.Ticket(barcode="sale-90474", seat_number=None),
+            external_bookings_models.Ticket(barcode="sale-90474", seat_number=None),
         ]
         redis_external_bookings = app.redis_client.lrange("api:external_bookings:barcodes", 0, -1)
         assert len(redis_external_bookings) == 1
         external_bookings_infos = json.loads(redis_external_bookings[0])
-        assert external_bookings_infos["barcode"] == "90474"
+        assert external_bookings_infos["barcode"] == "sale-90474"
         assert external_bookings_infos["venue_id"] == venue_id
         assert external_bookings_infos["timestamp"]
 
