@@ -93,7 +93,7 @@ class Returns200Test:
             "contactPhone": "+33199006328",
             "hasBookingLimitDatetimesPassed": False,
             "offerId": None,
-            "isActive": True,
+            "isActive": False,
             "isEditable": True,
             "id": duplicate.id,
             "name": offer.name,

@@ -671,6 +671,8 @@ def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | No
 
     if offer.validation in (models.OfferValidationStatus.PENDING, models.OfferValidationStatus.REJECTED):
         offer.isActive = False
+    else:
+        offer.isActive = True
 
     db.session.add(offer)
 
