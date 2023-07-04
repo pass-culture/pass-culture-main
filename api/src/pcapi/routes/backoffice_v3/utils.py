@@ -1,5 +1,6 @@
 from functools import wraps
 import logging
+import operator as op
 import random
 import typing
 
@@ -8,6 +9,7 @@ from flask import Response as FlaskResponse
 from flask import request
 from flask import url_for
 from flask_login import current_user
+from flask_sqlalchemy import BaseQuery
 from flask_wtf import FlaskForm
 import werkzeug
 from werkzeug.datastructures import ImmutableMultiDict
@@ -29,6 +31,19 @@ logger = logging.getLogger(__name__)
 
 # perhaps one day we will be able to define it as str | tuple[str, int]
 BackofficeResponse = typing.Union[str, typing.Tuple[str, int], WerkzeugResponse, Forbidden]
+
+OPERATOR_DICT = {
+    "EQUALS": op.eq,
+    "NOT_EQUALS": op.ne,
+    "GREATER_THAN": op.gt,
+    "GREATER_THAN_OR_EQUAL_TO": op.ge,
+    "LESS_THAN": op.lt,
+    "LESS_THAN_OR_EQUAL_TO": op.le,
+    "IN": lambda x, y: x.in_(y),
+    "NOT_IN": lambda x, y: x.not_in(y),
+    "CONTAINS": lambda x, y: x.ilike(f"%{y}%"),
+    "NO_CONTAINS": lambda x, y: ~x.ilike(f"%{y}%"),
+}
 
 
 class UnauthenticatedUserError(Exception):
@@ -170,3 +185,69 @@ def get_setting(setting_name: str) -> typing.Any:
 
 def get_regions_choices() -> list[tuple]:
     return [(key, key) for key in get_all_regions()]
+
+
+def generate_search_query(
+    query: BaseQuery,
+    *,
+    search_parameters: typing.Iterable[dict[str, typing.Any]],
+    fields_definition: dict[str, dict[str, typing.Any]],
+    joins_definition: dict[str, list[tuple[str, tuple]]],
+    operators_definition: dict | None = None,
+) -> tuple[BaseQuery, set[str], set[str]]:
+    """
+    Generate a search query from a list of dict (from a ListField of FormFields).
+
+    query: the query object to use
+    search_parameters: list of dict representing the user's query. each dict must have at least the fields:
+        - operator: a key for operators_definition
+        - search_field: a key for fields_definition
+    fields_definition: a dict defining the fields, joins and special operations
+    joins_definition: a dict defining how to do each join
+    operators_definition: a dict mapping str to actual operations
+    """
+    operators_definition = operators_definition or OPERATOR_DICT
+    joins: set[tuple] = set()
+    filters: list = []
+    warnings: set[str] = set()
+    for search_data in search_parameters:
+        operator = search_data.get("operator", "")
+        if operator not in operators_definition:
+            continue
+
+        search_field = search_data.get("search_field")
+        if not search_field:
+            continue
+
+        if search_field not in fields_definition:
+            warnings.add(f"La règle de recherche '{search_field}' n'est pas supportée, merci de prévenir les devs")
+            continue
+
+        meta_field = fields_definition.get(search_field)
+        if not meta_field:
+            warnings.add(f"La règle de recherche '{search_field}' n'est pas supportée, merci de prévenir les devs")
+            continue
+        field_value = meta_field.get("special", lambda x: x)(search_data.get(meta_field["field"]))
+        column = meta_field["column"]
+        if "join" in meta_field:
+            joins.add(meta_field["join"])
+        filters.append(operators_definition[operator](column, field_value))
+
+    query, join_log = _manage_joins(query=query, joins=joins, joins_definition=joins_definition)
+    if filters:
+        query = query.filter(*filters)
+    return query, join_log, warnings
+
+
+def _manage_joins(
+    query: BaseQuery, joins: set, joins_definition: dict[str, list[tuple[str, tuple]]]
+) -> tuple[BaseQuery, set[str]]:
+    join_log = set()
+    join_containers = sorted((joins_definition[join] for join in joins), key=len, reverse=True)
+    for join_continer in join_containers:
+        for join_tuple in join_continer:
+            join_name, *join_args = join_tuple
+            if not join_name in join_log:
+                query = query.join(*join_args)
+                join_log.add(join_name)
+    return query, join_log

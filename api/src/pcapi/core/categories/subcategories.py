@@ -723,6 +723,7 @@ assert set(subcategory.id for subcategory in ALL_SUBCATEGORIES) == set(
 )
 
 SubcategoryIdEnum = Enum("SubcategoryIdEnum", {subcategory.id: subcategory.id for subcategory in ALL_SUBCATEGORIES})  # type: ignore [misc]
+SubcategoryIdLabelEnum = Enum("SubcategoryIdLabelEnum", {subcategory.id: subcategory.pro_label for subcategory in ALL_SUBCATEGORIES})  # type: ignore [misc]
 SearchGroupNameEnum = Enum(  # type: ignore [misc]
     "SearchGroupNameEnum",
     {search_group_name: search_group_name for search_group_name in [c.name for c in SearchGroups]},

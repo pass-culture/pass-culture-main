@@ -47,6 +47,13 @@ input {
   }
 }
 
+.pc-search-inline{
+  height: 3.6em;
+  .form-select {
+    height:100%;
+  }
+}
+
 .daterangepicker {
   td.in-range {
     color: $white !important;

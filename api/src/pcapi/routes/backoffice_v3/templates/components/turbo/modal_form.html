@@ -1,11 +1,11 @@
 <turbo-frame id="turbo-{{ div_id }}">
 <form action="{{ dst }}"
       name="{{ dst | action_to_name }}"
-      method="post"
+      method="{% if form.method %}form.method{% else %}post{% endif %}"
       target="_top"
       data-turbo="{{ data_turbo or 'false' }}"
       class="modal-content">
-  {{ csrf_token }}
+  {% if form.meta.csrf %}{{ csrf_token }}{% endif %}
   <div class="modal-header">
     <h5 class="modal-title">{{ title }}</h5>
     <button type="button"

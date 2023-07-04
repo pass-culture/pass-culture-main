@@ -16,12 +16,12 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.routes.backoffice_v3.collective_offers import forms as collective_offer_forms
 from pcapi.utils import date as date_utils
 
 from . import autocomplete
 from . import utils
 from .forms import empty as empty_forms
-from .forms import offer as offer_forms
 
 
 list_collective_offer_templates_blueprint = utils.child_backoffice_blueprint(
@@ -33,7 +33,7 @@ list_collective_offer_templates_blueprint = utils.child_backoffice_blueprint(
 
 
 def _get_collective_offer_templates(
-    form: offer_forms.GetCollectiveOfferTemplatesListForm,
+    form: collective_offer_forms.GetCollectiveOffersListForm,
 ) -> list[educational_models.CollectiveOfferTemplate]:
     base_query = educational_models.CollectiveOfferTemplate.query.options(
         sa.orm.load_only(
@@ -106,7 +106,7 @@ def _get_collective_offer_templates(
 
 @list_collective_offer_templates_blueprint.route("", methods=["GET"])
 def list_collective_offer_templates() -> utils.BackofficeResponse:
-    form = offer_forms.GetCollectiveOfferTemplatesListForm(formdata=utils.get_query_params())
+    form = collective_offer_forms.GetCollectiveOffersListForm(formdata=utils.get_query_params())
     if not form.validate():
         return render_template("collective_offer_template/list.html", rows=[], form=form), 400
 
