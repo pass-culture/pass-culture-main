@@ -249,11 +249,18 @@ class PCSelectMultipleField(wtforms.SelectMultipleField):
     widget = partial(widget, template="components/forms/select_multiple_field.html")
     validators = [validators.Optional()]
 
+    def __init__(self, *args: typing.Any, **kwargs: typing.Any):
+        if "search_inline" in kwargs:
+            self.search_inline = kwargs.pop("search_inline")
+        super().__init__(*args, **kwargs)
+
 
 class PCTomSelectField(PCSelectMultipleField):
     widget = partial(widget, template="components/forms/tom_select_field.html")
 
     def __init__(self, label: str, endpoint: str, multiple: bool = False, **kwargs: typing.Any):
+        if "search_inline" in kwargs:
+            self.search_inline = kwargs.pop("search_inline")
         super().__init__(label, **kwargs)
         self.tomselect_autocomplete_url = url_for(endpoint)
         self.multiple = multiple

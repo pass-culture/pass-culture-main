@@ -25,8 +25,8 @@ from pcapi.models import offer_mixin
 from pcapi.routes.backoffice_v3 import autocomplete
 from pcapi.routes.backoffice_v3 import utils
 from pcapi.routes.backoffice_v3.collective_offers.forms import EditCollectiveOfferPrice
+from pcapi.routes.backoffice_v3.collective_offers.forms import GetCollectiveOffersListForm
 from pcapi.routes.backoffice_v3.forms import empty as empty_forms
-from pcapi.routes.backoffice_v3.forms import offer as offer_forms
 from pcapi.utils import date as date_utils
 
 
@@ -39,7 +39,7 @@ blueprint = utils.child_backoffice_blueprint(
 
 
 def _get_collective_offers(
-    form: offer_forms.GetCollectiveOffersListForm,
+    form: GetCollectiveOffersListForm,
 ) -> list[educational_models.CollectiveOffer]:
     base_query = educational_models.CollectiveOffer.query.options(
         sa.orm.load_only(
@@ -115,7 +115,7 @@ def _get_collective_offers(
 
 @blueprint.route("", methods=["GET"])
 def list_collective_offers() -> utils.BackofficeResponse:
-    form = offer_forms.GetCollectiveOffersListForm(formdata=utils.get_query_params())
+    form = GetCollectiveOffersListForm(formdata=utils.get_query_params())
     if not form.validate():
         return render_template("collective_offer/list.html", rows=[], form=form), 400
 

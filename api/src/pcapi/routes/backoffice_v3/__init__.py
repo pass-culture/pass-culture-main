@@ -18,7 +18,6 @@ def install_routes(app: Flask) -> None:
     from . import i18n
     from . import individual_bookings
     from . import move_siret
-    from . import offers
     from . import pro
     from . import pro_users
     from . import tags
@@ -32,6 +31,7 @@ def install_routes(app: Flask) -> None:
     from .offerers import offerer_blueprint
     from .offerers import offerer_tag_blueprint
     from .offerers import validation_blueprint
+    from .offers import blueprint as offers_blueprint
     from .pivots import blueprint as pivots_blueprint
     from .providers import blueprint as providers_blueprint
     from .titelive import blueprint as titelive_blueprint
