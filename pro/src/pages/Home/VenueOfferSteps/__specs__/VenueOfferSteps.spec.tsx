@@ -17,6 +17,15 @@ const renderVenueOfferSteps = ({
   hasAdageId = false,
   shouldDisplayEACInformationSection = false,
   hasPendingBankInformationApplication = false,
+  demarchesSimplifieesApplicationId,
+}: {
+  hasVenue?: boolean
+  hasCreatedOffer?: boolean
+  hasMissingReimbursementPoint?: boolean
+  hasAdageId?: boolean
+  shouldDisplayEACInformationSection?: boolean
+  hasPendingBankInformationApplication?: boolean
+  demarchesSimplifieesApplicationId?: number
 }) => {
   const currentUser = {
     id: 'EY',
@@ -39,6 +48,7 @@ const renderVenueOfferSteps = ({
       hasPendingBankInformationApplication={
         hasPendingBankInformationApplication
       }
+      demarchesSimplifieesApplicationId={demarchesSimplifieesApplicationId}
     />,
     { storeOverrides, initialRouterEntries: ['/accueil'] }
   )
@@ -88,11 +98,30 @@ describe('VenueOfferSteps', () => {
       hasVenue: false,
       shouldDisplayEACInformationSection: false,
       hasPendingBankInformationApplication: true,
+      demarchesSimplifieesApplicationId: 1232799,
     })
     expect(screen.getByText('Démarche en cours :')).toBeInTheDocument()
     expect(
-      screen.getByText('Suivre mon dossier de coordonnées bancaires')
-    ).toBeInTheDocument()
+      screen.getByRole('link', {
+        name: 'Suivre mon dossier de coordonnées bancaires',
+      })
+    ).toHaveAttribute(
+      'href',
+      'https://www.demarches-simplifiees.fr/dossiers/1232799/messagerie'
+    )
+  })
+
+  it('redirect to dms even if there is no dms application id', async () => {
+    renderVenueOfferSteps({
+      hasVenue: false,
+      shouldDisplayEACInformationSection: false,
+      hasPendingBankInformationApplication: true,
+    })
+    expect(
+      screen.getByRole('link', {
+        name: 'Suivre mon dossier de coordonnées bancaires',
+      })
+    ).toHaveAttribute('href', 'https://www.demarches-simplifiees.fr/dossiers')
   })
 
   it('Should display link for eac informations if has adage id and already created offer', async () => {

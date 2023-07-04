@@ -41,7 +41,8 @@ export interface VenueProps {
   dmsInformations?: DMSApplicationForEAC | null
   hasAdageId?: boolean
   adageInscriptionDate?: string | null
-  hasPendingBankInformationApplication?: boolean
+  hasPendingBankInformationApplication?: boolean | null
+  demarchesSimplifieesApplicationId?: number | null
 }
 
 const Venue = ({
@@ -55,6 +56,7 @@ const Venue = ({
   dmsInformations,
   hasAdageId,
   adageInscriptionDate,
+  demarchesSimplifieesApplicationId,
   hasPendingBankInformationApplication = false,
 }: VenueProps) => {
   const isCollectiveDmsTrackingActive = useActiveFeature(
@@ -81,7 +83,9 @@ const Venue = ({
     !hasRefusedApplicationForMoreThan30Days
 
   const initialOpenState =
-    shouldDisplayEACInformationSection || !hasCreatedOffer
+    shouldDisplayEACInformationSection ||
+    !hasCreatedOffer ||
+    hasPendingBankInformationApplication
 
   const [prevInitialOpenState, setPrevInitialOpenState] =
     useState(initialOpenState)
@@ -318,6 +322,9 @@ const Venue = ({
                     }
                     hasPendingBankInformationApplication={
                       hasPendingBankInformationApplication
+                    }
+                    demarchesSimplifieesApplicationId={
+                      demarchesSimplifieesApplicationId
                     }
                   />
 
