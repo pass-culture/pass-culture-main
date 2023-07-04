@@ -1878,9 +1878,20 @@ class ResolveOfferValidationRuleTest:
         offer = factories.OfferFactory(subcategoryId=subcategories.ESCAPE_GAME.id)
         factories.OfferValidationSubRuleFactory(
             model=models.OfferValidationModel.OFFER,
-            attribute=models.OfferValidationAttribute.CATEGORY,
-            operator=models.OfferValidationRuleOperator.NOT_IN,
+            attribute=models.OfferValidationAttribute.CATEGORY_ID,
+            operator=models.OfferValidationRuleOperator.IN,
             comparated={"comparated": ["MUSEE", "LIVRE", "CINEMA"]},
+        )
+
+        assert api.set_offer_status_based_on_fraud_criteria_v2(offer) == models.OfferValidationStatus.APPROVED
+
+    def test_offer_validation_with_one_rule_with_categories(self):
+        offer = factories.OfferFactory(subcategoryId=subcategories.ESCAPE_GAME.id)
+        factories.OfferValidationSubRuleFactory(
+            model=models.OfferValidationModel.OFFER,
+            attribute=models.OfferValidationAttribute.CATEGORY_ID,
+            operator=models.OfferValidationRuleOperator.IN,
+            comparated={"comparated": ["JEU"]},
         )
 
         assert api.set_offer_status_based_on_fraud_criteria_v2(offer) == models.OfferValidationStatus.PENDING

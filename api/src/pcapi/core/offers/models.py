@@ -602,6 +602,10 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return self.subcategory.category
 
     @property
+    def categoryId(self) -> str:  # used in validation rule, do not remove
+        return self.subcategory.category.id
+
+    @property
     def image(self) -> OfferImage | None:
         activeMediation = self.activeMediation
         if activeMediation:
@@ -726,7 +730,7 @@ class OfferValidationAttribute(enum.Enum):
     NAME = "name"
     DESCRIPTION = "description"
     ID = "id"
-    CATEGORY = "category"
+    CATEGORY_ID = "categoryId"
     SUBCATEGORY_ID = "subcategoryId"
     WITHDRAWAL_DETAILS = "withdrawalDetails"
     MAX_PRICE = "max_price"
@@ -798,15 +802,15 @@ class OfferValidationSubRuleField(enum.Enum):
     }
     CATEGORY_OFFER = {
         "model": OfferValidationModel.OFFER,
-        "attribute": OfferValidationAttribute.CATEGORY,
+        "attribute": OfferValidationAttribute.CATEGORY_ID,
     }
     CATEGORY_COLLECTIVE_OFFER = {
         "model": OfferValidationModel.COLLECTIVE_OFFER,
-        "attribute": OfferValidationAttribute.CATEGORY,
+        "attribute": OfferValidationAttribute.CATEGORY_ID,
     }
     CATEGORY_COLLECTIVE_OFFER_TEMPLATE = {
         "model": OfferValidationModel.COLLECTIVE_OFFER_TEMPLATE,
-        "attribute": OfferValidationAttribute.CATEGORY,
+        "attribute": OfferValidationAttribute.CATEGORY_ID,
     }
     SHOW_SUB_TYPE_OFFER = {
         "model": OfferValidationModel.OFFER,

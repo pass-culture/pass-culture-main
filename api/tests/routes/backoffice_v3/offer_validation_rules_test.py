@@ -163,7 +163,7 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
                 },
                 {
                     "model": offers_models.OfferValidationModel.OFFER,
-                    "attribute": offers_models.OfferValidationAttribute.CATEGORY,
+                    "attribute": offers_models.OfferValidationAttribute.CATEGORY_ID,
                     "operator": offers_models.OfferValidationRuleOperator.IN,
                     "comparated": {"comparated": ["FILM", "CINEMA"]},
                 },
@@ -272,7 +272,7 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
         assert rule.subRules[0].operator == offers_models.OfferValidationRuleOperator.GREATER_THAN
         assert rule.subRules[0].comparated == {"comparated": 200}
         assert rule.subRules[1].model == offers_models.OfferValidationModel.OFFER
-        assert rule.subRules[1].attribute == offers_models.OfferValidationAttribute.CATEGORY
+        assert rule.subRules[1].attribute == offers_models.OfferValidationAttribute.CATEGORY_ID
         assert rule.subRules[1].operator == offers_models.OfferValidationRuleOperator.NOT_IN
         assert rule.subRules[1].comparated == {"comparated": ["INSTRUMENT"]}
 
