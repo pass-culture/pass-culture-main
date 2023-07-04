@@ -166,7 +166,9 @@ describe('CollectiveOfferConfirmation', () => {
 
     expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
 
-    const searchIcon = screen.getByAltText('Illustration de recherche')
+    const searchIcon = screen.getByRole('img', {
+      name: 'Illustration de recherche',
+    })
 
     expect(
       screen.getByText('Les dernières offres vitrines créées')

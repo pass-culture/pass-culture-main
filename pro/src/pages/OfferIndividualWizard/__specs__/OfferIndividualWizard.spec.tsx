@@ -1,4 +1,8 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import {
+  screen,
+  waitForElementToBeRemoved,
+  waitFor,
+} from '@testing-library/react'
 import React from 'react'
 import { generatePath, Route, Routes } from 'react-router-dom'
 
@@ -125,11 +129,14 @@ describe('test OfferIndividualWisard', () => {
     await waitForElementToBeRemoved(() =>
       screen.getByText(/Chargement en cours/)
     )
-    expect(
-      await screen.findByText(
-        /Une erreur est survenue lors de la récupération de votre offre/
-      )
-    ).toBeInTheDocument()
+
+    waitFor(() => {
+      expect(
+        screen.getByText(
+          /Une erreur est survenue lors de la récupération de votre offre/
+        )
+      ).toBeInTheDocument()
+    })
   })
 
   it('should display an error when unable to load categories', async () => {
