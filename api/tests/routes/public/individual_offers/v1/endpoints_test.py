@@ -1025,7 +1025,6 @@ class PostProductByEanTest:
                 "products": [
                     {
                         "ean": product.extraData["ean"],
-                        "idAtProvider": "id",
                         "stock": {
                             "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
                             "price": 1234,
@@ -1050,7 +1049,6 @@ class PostProductByEanTest:
         assert created_offer.bookingEmail == venue.bookingEmail
         assert created_offer.description == product.description
         assert created_offer.extraData == product.extraData
-        assert created_offer.idAtProvider == "id"
         assert created_offer.lastProvider.name == "Technical provider"
         assert created_offer.name == product.name
         assert created_offer.product == product
@@ -1087,7 +1085,6 @@ class PostProductByEanTest:
                 "products": [
                     {
                         "ean": product.extraData["ean"],
-                        "idAtProvider": "id",
                         "stock": {
                             "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
                             "price": 1234,
@@ -1115,7 +1112,6 @@ class PostProductByEanTest:
                 "products": [
                     {
                         "ean": product.extraData["ean"],
-                        "idAtProvider": "id",
                         "stock": {
                             "price": 1234,
                             "quantity": 3,
@@ -1138,7 +1134,6 @@ class PostProductByEanTest:
                 "products": [
                     {
                         "ean": product.extraData["ean"],
-                        "idAtProvider": "id",
                         "stock": {
                             "price": 1234,
                             "quantity": 3,
