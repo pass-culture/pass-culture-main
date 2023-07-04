@@ -7,6 +7,7 @@ from flask_login import current_user
 import sqlalchemy as sa
 from sqlalchemy import orm
 
+from pcapi.connectors.titelive import GtlIdError
 from pcapi.connectors.titelive import get_by_ean13
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offers import exceptions as offers_exceptions
@@ -104,9 +105,12 @@ def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
             )
             db.session.add(product_whitelist)
             db.session.commit()
-        except sa.exc.IntegrityError as err:
+        except sa.exc.IntegrityError as error:
             db.session.rollback()
-            flash(f"L'EAN \"{ean}\" n'a pas été rajouté dans la whitelist : {err}", "danger")
+            flash(f"L'EAN \"{ean}\" n'a pas été rajouté dans la whitelist : {error}", "danger")
+        except GtlIdError as gtl_error:
+            db.session.rollback()
+            flash(f"L'EAN \"{ean}\" n'a pas été rajouté dans la whitelist : {gtl_error}", "danger")
         else:
             flash(f'L\'EAN "{ean}" a été ajouté dans la whitelist', "success")
 

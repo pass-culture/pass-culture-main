@@ -83,7 +83,7 @@ class OfferExtraData(typing.TypedDict, total=False):
     theater: dict | None
     type: str | None
 
-    # titelive
+    # titelive prior gtl (csr)
     bookFormat: str | None
     collection: str | None
     comic_series: str | None
@@ -94,10 +94,14 @@ class OfferExtraData(typing.TypedDict, total=False):
     editeur: str | None
     num_in_collection: str | None
     prix_livre: str | None
-    rayon: str | None
+    rayon: str | None  # this is csr_label, it should be stored as csr_id as titelive can update them
     top: str | None
     schoolbook: bool | None
     titelive_regroup: str | None
+
+    # titelive after gtl
+    csr_id: str | None
+    gtl_id: str | None
 
 
 class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):

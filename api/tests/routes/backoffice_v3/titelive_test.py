@@ -71,7 +71,8 @@ class SearchEanTest(GetEndpointHelper):
         assert "Taux TVA : " + article["taux_tva"] + " %" in card_text[0]
         assert "Code CLIL : " + article["code_clil"] in card_text[0]
         assert "Code support : " + article["libellesupport"] + " (" + article["codesupport"] + ")" in card_text[0]
-        assert "Code GTL : Littérature (1000000)Récit (1050000)" in card_text[0]
+        assert "Code GTL : Littérature (01000000) Rayon (CSR): Littérature française (0100)" in card_text[0]
+        assert "Récit (01050000) Rayon (CSR): Littérature française Récits, Aventures, Voyages (0105)" in card_text[0]
         assert "EAN white listé : Non" in card_text[0]
 
     @patch("pcapi.routes.backoffice_v3.titelive.blueprint.get_by_ean13")
