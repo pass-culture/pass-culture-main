@@ -443,6 +443,10 @@ class CollectiveOffer(
     def category(self) -> categories.Category:
         return self.subcategory.category
 
+    @property
+    def categoryId(self) -> str:  # used in validation rule, do not remove
+        return self.subcategory.category.id
+
     @hybrid_property
     def isEvent(self) -> bool:
         return self.subcategory.is_event
