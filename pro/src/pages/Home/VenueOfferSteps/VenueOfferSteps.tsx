@@ -2,6 +2,7 @@ import cn from 'classnames'
 import React from 'react'
 
 import { ReactComponent as FullInfoIcon } from 'icons/full-info.svg'
+import { ReactComponent as FullLink } from 'icons/full-link.svg'
 import { ReactComponent as FullNextIcon } from 'icons/full-next.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -19,7 +20,7 @@ import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 
 import styles from './VenueOfferSteps.module.scss'
 
-interface VenueOfferStepsProps {
+export interface VenueOfferStepsProps {
   hasVenue: boolean
   hasMissingReimbursementPoint?: boolean
   offererId: number
@@ -27,7 +28,8 @@ interface VenueOfferStepsProps {
   hasCreatedOffer?: boolean
   hasAdageId?: boolean
   shouldDisplayEACInformationSection?: boolean
-  hasPendingBankInformationApplication?: boolean
+  hasPendingBankInformationApplication?: boolean | null
+  demarchesSimplifieesApplicationId?: number | null
 }
 
 const VenueOfferSteps = ({
@@ -39,6 +41,7 @@ const VenueOfferSteps = ({
   hasAdageId = false,
   shouldDisplayEACInformationSection = false,
   hasPendingBankInformationApplication = false,
+  demarchesSimplifieesApplicationId,
 }: VenueOfferStepsProps) => {
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
   const venueCreationUrl = isVenueCreationAvailable
@@ -190,9 +193,13 @@ const VenueOfferSteps = ({
                     <ButtonLink
                       className={styles['step-button-width']}
                       variant={ButtonVariant.BOX}
-                      Icon={FullNextIcon}
+                      Icon={FullLink}
                       link={{
-                        to: '',
+                        to: `https://www.demarches-simplifiees.fr/dossiers${
+                          demarchesSimplifieesApplicationId
+                            ? `/${demarchesSimplifieesApplicationId}/messagerie`
+                            : ''
+                        }`,
                         isExternal: true,
                         target: '_blank',
                       }}

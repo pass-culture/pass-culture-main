@@ -96,9 +96,11 @@ def test_basics(client):
                     for a in venue.collectiveDmsApplications
                 ],
                 "comment": venue.comment,
+                "demarchesSimplifieesApplicationId": venue.demarchesSimplifieesApplicationId,
                 "departementCode": venue.departementCode,
                 "hasAdageId": bool(venue.adageId),
                 "hasMissingReimbursementPoint": venue.hasMissingReimbursementPoint,
+                "hasPendingBankInformationApplication": venue.hasPendingBankInformationApplication,
                 "hasCreatedOffer": venue.has_individual_offers or venue.has_collective_offers,
                 "isVirtual": venue.isVirtual,
                 "mentalDisabilityCompliant": False,

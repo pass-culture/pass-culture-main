@@ -14,12 +14,13 @@ export type GetOffererVenueResponseModel = {
   city?: string | null;
   collectiveDmsApplications: Array<DMSApplicationForEAC>;
   comment?: string | null;
+  demarchesSimplifieesApplicationId?: number | null;
   departementCode?: string | null;
   hasAdageId: boolean;
   hasCreatedOffer: boolean;
   hasMissingReimbursementPoint: boolean;
+  hasPendingBankInformationApplication?: boolean | null;
   id: number;
-  hasPendingBankInformationApplication?: boolean;
   isVirtual: boolean;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
@@ -31,3 +32,4 @@ export type GetOffererVenueResponseModel = {
   visualDisabilityCompliant?: boolean | null;
   withdrawalDetails?: string | null;
 };
+

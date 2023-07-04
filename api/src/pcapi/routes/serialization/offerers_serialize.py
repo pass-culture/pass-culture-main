@@ -22,6 +22,7 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     departementCode: str | None
     hasMissingReimbursementPoint: bool
     hasPendingBankInformationApplication: bool | None
+    demarchesSimplifieesApplicationId: int | None
     hasCreatedOffer: bool
     hasAdageId: bool
     isVirtual: bool
