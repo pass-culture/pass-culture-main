@@ -6,7 +6,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 const NoInvoicesYet = (): JSX.Element => {
   return (
     <div className="no-refunds admin-view">
-      <SvgIcon src={strokeRepaymentIcon} alt="" />
+      <SvgIcon src={strokeRepaymentIcon} alt="" width="30" />
       <p className="no-refunds-title">
         Vous n’avez pas encore de justificatifs de remboursement disponibles
       </p>
