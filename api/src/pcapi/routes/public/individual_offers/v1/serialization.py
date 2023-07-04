@@ -128,9 +128,6 @@ EXTERNAL_TICKET_OFFICE_URL_FIELD = pydantic.Field(
     description="Link displayed to users wishing to book the offer but who do not have (anymore) credit.",
     example="https://example.com",
 )
-ID_AT_PROVIDER_FIELD = pydantic.Field(
-    description="The ID of the offer in your database. May be used to assert proper synchronization."
-)
 IMAGE_CREDIT_FIELD = pydantic.Field(None, description="Image owner or author.", example="Jane Doe")
 WITHDRAWAL_DETAILS_FIELD = pydantic.Field(
     None,
@@ -465,7 +462,6 @@ class ProductOfferByEanCreation(serialization.ConfiguredBaseModel):
         ean: str = EAN_FIELD
     else:
         ean: pydantic.constr(min_length=13, max_length=13) = EAN_FIELD
-    id_at_provider: str | None = ID_AT_PROVIDER_FIELD
     stock: StockCreation
 
     class Config:
