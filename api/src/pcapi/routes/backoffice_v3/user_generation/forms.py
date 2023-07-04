@@ -1,3 +1,5 @@
+import wtforms
+
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users.generator import GeneratedIdProvider
 from pcapi.core.users.generator import GeneratedSubscriptionStep
@@ -6,7 +8,13 @@ from pcapi.routes.backoffice_v3.forms import utils
 
 
 class UserGeneratorForm(utils.PCForm):
-    age = fields.PCIntegerField("Age", default=users_constants.ELIGIBILITY_AGE_18)
+    age = fields.PCIntegerField(
+        "Age",
+        default=users_constants.ELIGIBILITY_AGE_18,
+        validators=[
+            wtforms.validators.NumberRange(min=15, max=20, message="L'âge doit être entre 15 et 20 ans."),
+        ],
+    )
     id_provider = fields.PCSelectField(
         "Méthode d'identification",
         choices=[

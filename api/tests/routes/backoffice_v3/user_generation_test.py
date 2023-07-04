@@ -61,3 +61,25 @@ class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermis
             "backoffice_v3_web.get_generated_user"
         )
         assert number_of_users_before == number_of_users_after
+
+    def test_user_not_created_when_age_below_valid_range(self, authenticated_client):
+        number_of_users_before = users_models.User.query.count()
+        form = {"age": "14", "id_provider": "EDUCONNECT", "step": "EMAIL_VALIDATION"}
+        response = self.post_to_endpoint(authenticated_client, form=form)
+        number_of_users_after = users_models.User.query.count()
+        assert response.status_code == 303
+        assert urllib.parse.urlparse(response.headers["location"]).path == url_for(
+            "backoffice_v3_web.get_generated_user"
+        )
+        assert number_of_users_before == number_of_users_after
+
+    def test_user_not_created_when_age_above_valid_range(self, authenticated_client):
+        number_of_users_before = users_models.User.query.count()
+        form = {"age": "21", "id_provider": "UBBLE", "step": "EMAIL_VALIDATION"}
+        response = self.post_to_endpoint(authenticated_client, form=form)
+        number_of_users_after = users_models.User.query.count()
+        assert response.status_code == 303
+        assert urllib.parse.urlparse(response.headers["location"]).path == url_for(
+            "backoffice_v3_web.get_generated_user"
+        )
+        assert number_of_users_before == number_of_users_after
