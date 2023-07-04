@@ -7,6 +7,19 @@
     <h2 class="fw-light">Offres individuelles</h2>
     {{ build_filters_form(form, dst) }}
     <div>
+      {% for search_data_tag in search_data_tags %}<span class="border border-secondary rounded px-2">{{ search_data_tag }}</span>{% endfor %}
+    </div>
+    {% if advanced_query %}
+      {% set advanced_url = url_for("backoffice_v3_web.offer.get_advanced_search_form") + advanced_query %}
+    {% else %}
+      {% set advanced_url = url_for("backoffice_v3_web.offer.get_advanced_search_form") %}
+    {% endif %}
+    <button class="btn btn-primary lead fw-bold mt-2"
+            data-bs-toggle="modal"
+            data-bs-target="#advanced-offer-search"
+            type="button">Recherche avancée</button>
+    {{ build_lazy_modal(advanced_url, "advanced-offer-search") }}
+    <div>
       {% if rows %}
         <div class="d-flex justify-content-between">
           <p class="lead num-results">

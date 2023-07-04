@@ -1,4 +1,4 @@
-<div class="form-floating {{ field.name }}-container pc-field-{{ field.name }}"
+<div class="form-floating {{ field.name }}-container pc-field-{{ field.name }} {% if field.search_inline %}pc-search-inline{% endif %}"
      data-clone-function-name="_tomSelectCloneFunction">
   {% set select_field_id = random_hash() %}
   <select multiple
@@ -18,7 +18,7 @@
          for="{{ select_field_id }}">{{ field.label.text }}</label>
 </div>
 <!-- (Almost) duplicated html for field list field widget -->
-<div class="form-floating {{ field.name }}-container pc-field-{{ field.name }} d-none empty-tom-select-form-container"
+<div class="form-floating {{ field.name }}-container pc-field-{{ field.name }} d-none empty-tom-select-form-container {% if field.search_inline %}pc-search-inline{% endif %}"
      data-clone-function-name="_tomSelectCloneFunction">
   {% set select_field_id = random_hash() %}
   <select multiple

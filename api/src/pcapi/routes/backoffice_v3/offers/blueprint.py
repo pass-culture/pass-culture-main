@@ -1,4 +1,5 @@
 import datetime
+from functools import partial
 from functools import reduce
 import re
 
@@ -20,13 +21,12 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
+from pcapi.routes.backoffice_v3 import autocomplete
+from pcapi.routes.backoffice_v3 import utils
+from pcapi.routes.backoffice_v3.forms import empty as empty_forms
+from pcapi.routes.backoffice_v3.offers import forms
 from pcapi.utils import date as date_utils
 from pcapi.workers import push_notification_job
-
-from . import autocomplete
-from . import utils
-from .forms import empty as empty_forms
-from .forms import offer as offer_forms
 
 
 list_offers_blueprint = utils.child_backoffice_blueprint(
@@ -37,8 +37,82 @@ list_offers_blueprint = utils.child_backoffice_blueprint(
 )
 
 
-def _get_offers(form: offer_forms.GetOffersListForm) -> list[offers_models.Offer]:
-    base_query = offers_models.Offer.query.options(
+SEARCH_FIELD_TO_PYTHON = {
+    "CATEGORY": {
+        "field": "category",
+        "column": offers_models.Offer.subcategoryId,
+        "special": lambda l: [
+            subcategory.id for subcategory in subcategories_v2.ALL_SUBCATEGORIES if subcategory.category.id in l
+        ],
+    },
+    "CREATION_DATE": {
+        "field": "date",
+        "column": offers_models.Offer.dateCreated,
+        "special": partial(date_utils.date_to_localized_datetime, time_=datetime.datetime.min.time()),
+    },
+    "DEPARTMENT": {
+        "field": "department",
+        "column": offerers_models.Venue.departementCode,
+        "join": "venue",
+    },
+    "EAN": {
+        "field": "string",
+        "column": offers_models.Offer.extraData["ean"].astext,
+        "special": utils.format_ean_or_visa,
+    },
+    "EVENT_DATE": {
+        "field": "date",
+        "column": offers_models.Stock.beginningDatetime,
+        "special": partial(date_utils.date_to_localized_datetime, time_=datetime.datetime.min.time()),
+        "join": "stock",
+    },
+    "ID": {
+        "field": "integer",
+        "column": offers_models.Offer.id,
+    },
+    "NAME": {
+        "field": "string",
+        "column": offers_models.Offer.name,
+    },
+    "OFFERER": {
+        "field": "offerer",
+        "column": offerers_models.Venue.managingOffererId,
+        "join": "venue",
+    },
+    "TAG": {
+        "field": "criteria",
+        "column": criteria_models.Criterion.id,
+        "join": "criterion",
+    },
+    "STATUS": {
+        "field": "status",
+        "column": offers_models.Offer.status,
+    },
+    "SUBCATEGORY": {
+        "field": "subcategory",
+        "column": offers_models.Offer.subcategoryId,
+    },
+    "VENUE": {
+        "field": "venue",
+        "column": offers_models.Offer.venueId,
+    },
+    "VALIDATION": {"field": "validation", "column": offers_models.Offer.validation},
+    "VISA": {
+        "field": "string",
+        "column": offers_models.Offer.extraData["visa"].astext,
+        "special": utils.format_ean_or_visa,
+    },
+}
+
+JOIN_DICT: dict[str, list[tuple[str, tuple]]] = {
+    "criterion": [("criterion", (criteria_models.Criterion, offers_models.Offer.criteria))],
+    "stock": [("stock", (offers_models.Stock, offers_models.Offer.stocks))],
+    "venue": [("venue", (offerers_models.Venue, offers_models.Offer.venue))],
+}
+
+
+def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
+    query = offers_models.Offer.query.options(
         sa.orm.load_only(
             offers_models.Offer.id,
             offers_models.Offer.name,
@@ -68,66 +142,49 @@ def _get_offers(form: offer_forms.GetOffersListForm) -> list[offers_models.Offer
             offerers_models.Offerer.name, offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus
         ),
     )
-    if form.from_date.data:
-        from_datetime = date_utils.date_to_localized_datetime(form.from_date.data, datetime.datetime.min.time())
-        base_query = base_query.filter(offers_models.Offer.dateCreated >= from_datetime)
-
-    if form.to_date.data:
-        to_datetime = date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time())
-        base_query = base_query.filter(offers_models.Offer.dateCreated <= to_datetime)
-
-    if form.criteria.data:
-        base_query = base_query.outerjoin(offers_models.Offer.criteria).filter(
-            criteria_models.Criterion.id.in_(form.criteria.data)
+    if not forms.GetOfferAdvancedSearchForm.is_search_empty(form.search.data):
+        query, joins, warnings = utils.generate_search_query(
+            query=query,
+            search_parameters=form.search.data,
+            fields_definition=SEARCH_FIELD_TO_PYTHON,
+            joins_definition=JOIN_DICT,
         )
+        for warning in warnings:
+            flash(warning, "warning")
 
-    if form.category.data:
-        base_query = base_query.filter(
-            offers_models.Offer.subcategoryId.in_(
-                subcategory.id
-                for subcategory in subcategories_v2.ALL_SUBCATEGORIES
-                if subcategory.category.id in form.category.data
+        if form.only_validated_offerers.data:
+            if "venue" not in joins:
+                query = query.join(offerers_models.Venue, offers_models.Offer.venue)
+            if "offerer" not in joins:
+                query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
+            query = query.filter(offerers_models.Offerer.isValidated)
+    else:
+        if form.category.data:
+            query = query.filter(
+                offers_models.Offer.subcategoryId.in_(
+                    subcategory.id
+                    for subcategory in subcategories_v2.ALL_SUBCATEGORIES
+                    if subcategory.category.id in form.category.data
+                )
             )
-        )
 
-    if form.department.data:
-        base_query = base_query.join(offers_models.Offer.venue).filter(
-            offerers_models.Venue.departementCode.in_(form.department.data)
-        )
+        if form.offerer.data:
+            query = query.join(offers_models.Offer.venue).filter(
+                offerers_models.Venue.managingOffererId.in_(form.offerer.data)
+            )
 
-    if form.venue.data:
-        base_query = base_query.filter(offers_models.Offer.venueId.in_(form.venue.data))
+        if form.q.data:
+            search_query = form.q.data
+            or_filters = []
 
-    if form.offerer.data:
-        base_query = base_query.join(offers_models.Offer.venue).filter(
-            offerers_models.Venue.managingOffererId.in_(form.offerer.data)
-        )
+            if utils.is_ean_valid(search_query):
+                or_filters.append(offers_models.Offer.extraData["ean"].astext == utils.format_ean_or_visa(search_query))
 
-    if form.status.data:
-        base_query = base_query.filter(offers_models.Offer.validation.in_(form.status.data))
+            if utils.is_visa_valid(search_query):
+                or_filters.append(
+                    offers_models.Offer.extraData["visa"].astext == utils.format_ean_or_visa(search_query)
+                )
 
-    if form.only_validated_offerers.data:
-        base_query = (
-            base_query.join(offers_models.Offer.venue)
-            .join(offerers_models.Venue.managingOfferer)
-            .filter(offerers_models.Offerer.isValidated)
-        )
-
-    if form.q.data:
-        search_query = form.q.data
-        or_filters = []
-
-        if form.where.data == offer_forms.OfferSearchColumn.EAN.name or (
-            form.where.data == offer_forms.OfferSearchColumn.ALL.name and utils.is_ean_valid(search_query)
-        ):
-            or_filters.append(offers_models.Offer.extraData["ean"].astext == utils.format_ean_or_visa(search_query))
-
-        if form.where.data == offer_forms.OfferSearchColumn.VISA.name or (
-            form.where.data == offer_forms.OfferSearchColumn.ALL.name and utils.is_visa_valid(search_query)
-        ):
-            or_filters.append(offers_models.Offer.extraData["visa"].astext == utils.format_ean_or_visa(search_query))
-
-        if form.where.data in (offer_forms.OfferSearchColumn.ALL.name, offer_forms.OfferSearchColumn.ID.name):
             if search_query.isnumeric():
                 or_filters.append(offers_models.Offer.id == int(search_query))
             else:
@@ -135,25 +192,19 @@ def _get_offers(form: offer_forms.GetOffersListForm) -> list[offers_models.Offer
                 if all(term.isnumeric() for term in terms):
                     or_filters.append(offers_models.Offer.id.in_([int(term) for term in terms]))
 
-        if form.where.data == offer_forms.OfferSearchColumn.NAME.name or (
-            form.where.data == offer_forms.OfferSearchColumn.ALL.name and not or_filters
-        ):
-            name_query = "%{}%".format(search_query)
-            or_filters.append(offers_models.Offer.name.ilike(name_query))
+            if not or_filters:
+                name_query = "%{}%".format(search_query)
+                or_filters.append(offers_models.Offer.name.ilike(name_query))
 
-        if or_filters:
-            query = base_query.filter(or_filters[0])
+            if or_filters:
+                main_query = query.filter(or_filters[0])
             if len(or_filters) > 1:
                 # Same as for bookings, where union has better performance than or_
-                query = query.union(*(base_query.filter(f) for f in or_filters[1:]))
-        else:
-            # Fallback, no result -- this should not happen when validate_q() checks searched string
-            query = base_query.filter(False)
-    else:
-        query = base_query
+                query = main_query.union(*(query.filter(f) for f in or_filters[1:]))
 
     if form.sort.data:
-        query = query.order_by(getattr(getattr(offers_models.Offer, form.sort.data), form.order.data)())
+        order = form.order.data or "desc"
+        query = query.order_by(getattr(getattr(offers_models.Offer, form.sort.data), order)())
 
     # +1 to check if there are more results than requested
     return query.limit(form.limit.data + 1).all()
@@ -177,14 +228,16 @@ def _get_remaining_stock(offer: offers_models.Offer) -> int | str:
 
 @list_offers_blueprint.route("", methods=["GET"])
 def list_offers() -> utils.BackofficeResponse:
-    form = offer_forms.GetOffersListForm(formdata=utils.get_query_params())
+    display_form = forms.GetOffersSearchForm(formdata=utils.get_query_params())
+    form = forms.InternalSearchForm(formdata=utils.get_query_params())
     if not form.validate():
-        return render_template("offer/list.html", rows=[], form=form), 400
+        return render_template("offer/list.html", rows=[], form=display_form), 400
 
     if form.is_empty():
-        return render_template("offer/list.html", rows=[], form=form)
+        return render_template("offer/list.html", rows=[], form=display_form)
 
     offers = _get_offers(form)
+    advanced_query = ""
 
     if len(offers) > form.limit.data:
         flash(
@@ -193,18 +246,44 @@ def list_offers() -> utils.BackofficeResponse:
             "info",
         )
         offers = offers[: form.limit.data]
-
-    autocomplete.prefill_criteria_choices(form.criteria)
     autocomplete.prefill_offerers_choices(form.offerer)
-    autocomplete.prefill_venues_choices(form.venue)
+
+    search_data_tags = set()
+    if form.search.data:
+        advanced_query = f"?{request.query_string.decode()}"
+
+        for data in form.search.data:
+            if not (data["operator"] and data["search_field"]):
+                continue
+            value = data[forms.form_field_configuration.get(data["search_field"], {}).get("field")]
+            if isinstance(value, list):
+                value = ", ".join(value)
+
+            search_data_tags.add(getattr(forms.SearchAttributes, data["search_field"]).value)
 
     return render_template(
         "offer/list.html",
         rows=offers,
-        form=form,
-        date_created_sort_url=form.get_sort_link(".list_offers") if form.sort.data else None,
+        form=display_form,
+        date_created_sort_url=display_form.get_sort_link(".list_offers") if form.sort.data else None,
         get_initial_stock=_get_initial_stock,
         get_remaining_stock=_get_remaining_stock,
+        advanced_query=advanced_query,
+        search_data_tags=search_data_tags,
+    )
+
+
+@list_offers_blueprint.route("get-advanced-search-form", methods=["GET"])
+def get_advanced_search_form() -> utils.BackofficeResponse:
+    form = forms.GetOfferAdvancedSearchForm(formdata=utils.get_query_params())
+
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for("backoffice_v3_web.offer.list_offers"),
+        div_id="advanced-offer-search",  # must be consistent with parameter passed to build_lazy_modal
+        title="Recherche avancée d'offres individuelles",
+        button_text="Lycos va chercher !",
     )
 
 
@@ -223,7 +302,7 @@ def get_edit_offer_form(offer_id: int) -> utils.BackofficeResponse:
     if not offer:
         raise NotFound()
 
-    form = offer_forms.EditOfferForm()
+    form = forms.EditOfferForm()
     form.criteria.choices = [(criterion.id, criterion.name) for criterion in offer.criteria]
     if offer.rankingWeight:
         form.rankingWeight.data = offer.rankingWeight
@@ -295,7 +374,7 @@ def batch_reject_offers() -> utils.BackofficeResponse:
 @list_offers_blueprint.route("/batch/edit", methods=["GET", "POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def get_batch_edit_offer_form() -> utils.BackofficeResponse:
-    form = offer_forms.BatchEditOfferForm()
+    form = forms.BatchEditOfferForm()
     if form.object_ids.data:
         if not form.validate():
             flash(utils.build_form_error_msg(form), "warning")
@@ -328,7 +407,7 @@ def get_batch_edit_offer_form() -> utils.BackofficeResponse:
 @list_offers_blueprint.route("/batch-edit", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def batch_edit_offer() -> utils.BackofficeResponse:
-    form = offer_forms.BatchEditOfferForm()
+    form = forms.BatchEditOfferForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(request.referrer, 400)
@@ -364,7 +443,7 @@ def batch_edit_offer() -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
 def edit_offer(offer_id: int) -> utils.BackofficeResponse:
     offer = offers_models.Offer.query.get_or_404(offer_id)
-    form = offer_forms.EditOfferForm()
+    form = forms.EditOfferForm()
 
     if not form.validate():
         flash("Le formulaire n'est pas valide", "danger")
