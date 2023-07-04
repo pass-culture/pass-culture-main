@@ -24,6 +24,7 @@ from pcapi.core.finance import utils as finance_utils
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
+from pcapi.core.providers.titelive_csr_to_gtl import get_csr
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.domain.show_types import SHOW_SUB_TYPES_LABEL_BY_CODE
@@ -523,6 +524,14 @@ def format_date_range(daterange: list[datetime.date]) -> str:
         return ""
 
 
+def format_gtl_id(gtl_id: str) -> str:
+    return gtl_id.zfill(8)
+
+
+def format_gtl_as_csr(gtl_id: str) -> str | None:
+    return get_csr(gtl_id)
+
+
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
@@ -555,6 +564,8 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_reason_label"] = format_reason_label
     app.jinja_env.filters["format_adage_referred"] = format_adage_referred
     app.jinja_env.filters["format_modified_info_value"] = format_modified_info_value
+    app.jinja_env.filters["format_gtl_id"] = format_gtl_id
+    app.jinja_env.filters["format_gtl_as_csr"] = format_gtl_as_csr
     app.jinja_env.filters["format_offer_validation_sub_rule"] = format_offer_validation_sub_rule
     app.jinja_env.filters["format_offer_validation_operator"] = format_offer_validation_operator
     app.jinja_env.filters["get_comparated_format_function"] = get_comparated_format_function
