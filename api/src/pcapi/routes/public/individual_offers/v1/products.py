@@ -190,7 +190,6 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
                 created_offer = _create_offer_from_product(
                     venue,
                     product_by_ean[ean],
-                    stock_data["id_at_provider"],
                     provider,
                 )
                 created_offers.append(created_offer)
@@ -278,7 +277,6 @@ def _serialize_products_from_body(
             "quantity": product.stock.quantity,
             "price": product.stock.price,
             "booking_limit_datetime": product.stock.booking_limit_datetime,
-            "id_at_provider": product.id_at_provider,
         }
     return stock_details
 
@@ -286,13 +284,14 @@ def _serialize_products_from_body(
 def _create_offer_from_product(
     venue: offerers_models.Venue,
     product: offers_models.Product,
-    id_at_provider: str | None,
     provider: providers_models.Provider,
 ) -> offers_models.Offer:
+    ean = None
     if product.extraData:
-        offers_validation.check_ean_does_not_exist(product.extraData.get("ean"), venue)
+        ean = product.extraData.get("ean")
+        offers_validation.check_ean_does_not_exist(ean, venue)
 
-    offer = offers_api.build_new_offer_from_product(venue, product, id_at_provider, provider.id)
+    offer = offers_api.build_new_offer_from_product(venue, product, ean, provider.id)
 
     offer.audioDisabilityCompliant = venue.audioDisabilityCompliant
     offer.mentalDisabilityCompliant = venue.mentalDisabilityCompliant
