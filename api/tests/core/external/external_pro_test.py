@@ -48,7 +48,7 @@ def _build_params(subs, virt, perman, draft, accep, offer, book, attach, colloff
 
 @pytest.mark.parametrize(
     "enable_subscription,create_virtual,create_permanent,create_dms_draft,create_dms_accepted,"
-    "create_offer,create_booking,attached,create_collective_offer,create_template_offer",
+    "create_individual_offer,create_booking,attached,create_collective_offer,create_template_offer",
     [
         #             subs, virt, perman, draft, accep, offer, book, attach, colloff, tploff
         _build_params(False, False, False, False, False, False, False, "none", False, False),
@@ -65,7 +65,7 @@ def test_update_external_pro_user_attributes(
     create_permanent,
     create_dms_draft,
     create_dms_accepted,
-    create_offer,
+    create_individual_offer,
     create_booking,
     attached,
     create_collective_offer,
@@ -163,7 +163,7 @@ def test_update_external_pro_user_attributes(
         venueLabelId=None,
     )
 
-    if create_offer:
+    if create_individual_offer:
         offer1 = OfferFactory(validation=OfferValidationStatus.APPROVED, isActive=True, venue=venue3)
         stock1 = StockFactory(offer=offer1)
         offer2 = OfferFactory(validation=OfferValidationStatus.APPROVED, isActive=True, venue=venue3)
@@ -267,9 +267,10 @@ def test_update_external_pro_user_attributes(
     assert attributes.dms_application_approved is (create_dms_accepted and not create_dms_draft)
     assert attributes.isVirtual is create_virtual
     assert attributes.isPermanent is create_permanent
-    assert attributes.has_offers is create_offer
+    assert attributes.has_individual_offers is create_individual_offer
     assert attributes.has_bookings is create_booking
     assert attributes.has_collective_offers == (create_collective_offer or create_template_offer)
+    assert attributes.has_offers == (create_individual_offer or create_collective_offer or create_template_offer)
 
 
 def test_update_external_pro_user_attributes_no_offerer_no_venue():
