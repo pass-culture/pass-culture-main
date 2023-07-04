@@ -1,6 +1,7 @@
 import pytest
 
 from pcapi.core.bookings import models as bookings_models
+from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
@@ -22,6 +23,7 @@ class SaveIndustrialSandboxTest:
         assert 170 <= bookings_models.Booking.query.count() <= 200
         assert finance_models.Invoice.query.count() == 3
         assert finance_models.Cashflow.query.count() == 4
+        assert educational_models.EducationalInstitution.query.count() == 27
         assert (
             finance_models.Pricing.query.filter(
                 finance_models.Pricing.status != finance_models.PricingStatus.INVOICED
