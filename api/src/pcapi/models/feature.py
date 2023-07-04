@@ -123,7 +123,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_COLLECTIVE_REQUEST = "Active la demande de création d'offre collective de la part des utilisateurs adage"
     WIP_ENABLE_NEW_ADAGE_HEADER = "Active le nouveau header dans l'iframe adage"
     WIP_ENABLE_COOKIES_BANNER = "Active la nouvelle bannière de cookies"
-    WIP_RECURRENCE_FILTERS = "Ajoute les filtres et le tri sur la vue liste des récurrences"
     WIP_ENABLE_SATISFACTION_SURVEY = "Activer l'affichage du questionnaire de satisfaction adage"
     WIP_ENABLE_NEW_ADAGE_FILTERS = "Active les nouveaux filtres adage"
     WIP_MANDATORY_BOOKING_CONTACT = "Rend obligatoire offer.bookingContact pour les offres retirables"
@@ -193,7 +192,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_COLLECTIVE_REQUEST,
     FeatureToggle.WIP_ENABLE_NEW_ADAGE_HEADER,
     FeatureToggle.WIP_ENABLE_COOKIES_BANNER,
-    FeatureToggle.WIP_RECURRENCE_FILTERS,
     FeatureToggle.WIP_ENABLE_SATISFACTION_SURVEY,
     FeatureToggle.ENABLE_PROVIDER_AUTHENTIFICATION,
     FeatureToggle.WIP_ENABLE_NEW_ADAGE_FILTERS,
