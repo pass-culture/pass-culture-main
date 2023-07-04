@@ -71,14 +71,6 @@ def create_offers(
         reimbursed_booking=False,
     )
 
-    # eac_rejected
-    offerer = next(offerers_iterator)
-    create_offers_base_list(
-        offerer=offerer,
-        institutions=institutions,
-        domains=domains,
-    )
-
 
 def create_offers_base_list(
     offerer: offerers_models.Offerer,
