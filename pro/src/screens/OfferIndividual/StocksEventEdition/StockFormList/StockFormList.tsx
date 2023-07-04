@@ -11,7 +11,6 @@ import { isOfferDisabled, OFFER_WIZARD_MODE } from 'core/Offers'
 import { OfferIndividual } from 'core/Offers/types'
 import { SelectOption } from 'custom_types/form'
 import { useOfferWizardMode } from 'hooks'
-import useActiveFeature from 'hooks/useActiveFeature'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import { usePagination } from 'hooks/usePagination'
 import { ReactComponent as TrashFilledIcon } from 'icons/ico-trash-filled.svg'
@@ -64,7 +63,6 @@ const StockFormList = ({
     getToday(),
     offer.venue.departmentCode
   )
-  const areFiltersEnabled = useActiveFeature('WIP_RECURRENCE_FILTERS')
 
   const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
     useColumnSorting<StocksEventFormSortingColumn>()
@@ -125,33 +123,28 @@ const StockFormList = ({
                 >
                   <span className={styles['header-name']}>Date</span>
 
-                  {areFiltersEnabled && (
-                    <>
-                      <SortArrow
-                        onClick={() =>
-                          onColumnHeaderClick(StocksEventFormSortingColumn.DATE)
-                        }
-                        sortingMode={
-                          currentSortingColumn ===
-                          StocksEventFormSortingColumn.DATE
-                            ? currentSortingMode
-                            : SortingMode.NONE
-                        }
-                      />
+                  <SortArrow
+                    onClick={() =>
+                      onColumnHeaderClick(StocksEventFormSortingColumn.DATE)
+                    }
+                    sortingMode={
+                      currentSortingColumn === StocksEventFormSortingColumn.DATE
+                        ? currentSortingMode
+                        : SortingMode.NONE
+                    }
+                  />
 
-                      <div className={cn(styles['filter-input'])}>
-                        <BaseDatePicker
-                          onChange={date => {
-                            setDateFilter(date)
-                            onFilterChange()
-                          }}
-                          value={dateFilter}
-                          filterVariant
-                          aria-label="Filtrer par date"
-                        />
-                      </div>
-                    </>
-                  )}
+                  <div className={cn(styles['filter-input'])}>
+                    <BaseDatePicker
+                      onChange={date => {
+                        setDateFilter(date)
+                        onFilterChange()
+                      }}
+                      value={dateFilter}
+                      filterVariant
+                      aria-label="Filtrer par date"
+                    />
+                  </div>
                 </th>
 
                 <th
@@ -160,32 +153,27 @@ const StockFormList = ({
                 >
                   <span className={styles['header-name']}>Horaire</span>
 
-                  {areFiltersEnabled && (
-                    <>
-                      <SortArrow
-                        onClick={() =>
-                          onColumnHeaderClick(StocksEventFormSortingColumn.HOUR)
-                        }
-                        sortingMode={
-                          currentSortingColumn ===
-                          StocksEventFormSortingColumn.HOUR
-                            ? currentSortingMode
-                            : SortingMode.NONE
-                        }
-                      />
-                      <div className={cn(styles['filter-input'])}>
-                        <BaseTimePicker
-                          onChange={date => {
-                            setHourFilter(date)
-                            onFilterChange()
-                          }}
-                          value={hourFilter}
-                          filterVariant
-                          aria-label="Filtrer par horaire"
-                        />
-                      </div>
-                    </>
-                  )}
+                  <SortArrow
+                    onClick={() =>
+                      onColumnHeaderClick(StocksEventFormSortingColumn.HOUR)
+                    }
+                    sortingMode={
+                      currentSortingColumn === StocksEventFormSortingColumn.HOUR
+                        ? currentSortingMode
+                        : SortingMode.NONE
+                    }
+                  />
+                  <div className={cn(styles['filter-input'])}>
+                    <BaseTimePicker
+                      onChange={date => {
+                        setHourFilter(date)
+                        onFilterChange()
+                      }}
+                      value={hourFilter}
+                      filterVariant
+                      aria-label="Filtrer par horaire"
+                    />
+                  </div>
                 </th>
 
                 <th
@@ -194,37 +182,33 @@ const StockFormList = ({
                 >
                   <span className={styles['header-name']}>Tarif</span>
 
-                  {areFiltersEnabled && (
-                    <>
-                      <SortArrow
-                        onClick={() =>
-                          onColumnHeaderClick(
-                            StocksEventFormSortingColumn.PRICE_CATEGORY
-                          )
-                        }
-                        sortingMode={
-                          currentSortingColumn ===
-                          StocksEventFormSortingColumn.PRICE_CATEGORY
-                            ? currentSortingMode
-                            : SortingMode.NONE
-                        }
-                      />
-                      <div className={cn(styles['filter-input'])}>
-                        <SelectInput
-                          name="priceCategoryFilter"
-                          defaultOption={{ label: '', value: '' }}
-                          options={priceCategoriesOptions}
-                          value={priceCategoryFilter}
-                          onChange={event => {
-                            setPriceCategoryFilter(event.target.value)
-                            onFilterChange()
-                          }}
-                          filterVariant
-                          aria-label="Filtrer par tarif"
-                        />
-                      </div>
-                    </>
-                  )}
+                  <SortArrow
+                    onClick={() =>
+                      onColumnHeaderClick(
+                        StocksEventFormSortingColumn.PRICE_CATEGORY
+                      )
+                    }
+                    sortingMode={
+                      currentSortingColumn ===
+                      StocksEventFormSortingColumn.PRICE_CATEGORY
+                        ? currentSortingMode
+                        : SortingMode.NONE
+                    }
+                  />
+                  <div className={cn(styles['filter-input'])}>
+                    <SelectInput
+                      name="priceCategoryFilter"
+                      defaultOption={{ label: '', value: '' }}
+                      options={priceCategoriesOptions}
+                      value={priceCategoryFilter}
+                      onChange={event => {
+                        setPriceCategoryFilter(event.target.value)
+                        onFilterChange()
+                      }}
+                      filterVariant
+                      aria-label="Filtrer par tarif"
+                    />
+                  </div>
                 </th>
 
                 <th
@@ -240,24 +224,20 @@ const StockFormList = ({
                     de réservation
                   </span>
 
-                  {areFiltersEnabled && (
-                    <>
-                      <SortArrow
-                        onClick={() =>
-                          onColumnHeaderClick(
-                            StocksEventFormSortingColumn.BOOKING_LIMIT_DATETIME
-                          )
-                        }
-                        sortingMode={
-                          currentSortingColumn ===
-                          StocksEventFormSortingColumn.BOOKING_LIMIT_DATETIME
-                            ? currentSortingMode
-                            : SortingMode.NONE
-                        }
-                      />
-                      <div className={cn(styles['filter-input'])}>&nbsp;</div>
-                    </>
-                  )}
+                  <SortArrow
+                    onClick={() =>
+                      onColumnHeaderClick(
+                        StocksEventFormSortingColumn.BOOKING_LIMIT_DATETIME
+                      )
+                    }
+                    sortingMode={
+                      currentSortingColumn ===
+                      StocksEventFormSortingColumn.BOOKING_LIMIT_DATETIME
+                        ? currentSortingMode
+                        : SortingMode.NONE
+                    }
+                  />
+                  <div className={cn(styles['filter-input'])}>&nbsp;</div>
                 </th>
 
                 <th
@@ -271,24 +251,20 @@ const StockFormList = ({
                     Quantité restante
                   </span>
 
-                  {areFiltersEnabled && (
-                    <>
-                      <SortArrow
-                        onClick={() =>
-                          onColumnHeaderClick(
-                            StocksEventFormSortingColumn.REMAINING_QUANTITY
-                          )
-                        }
-                        sortingMode={
-                          currentSortingColumn ===
-                          StocksEventFormSortingColumn.REMAINING_QUANTITY
-                            ? currentSortingMode
-                            : SortingMode.NONE
-                        }
-                      />
-                      <div className={cn(styles['filter-input'])}>&nbsp;</div>
-                    </>
-                  )}
+                  <SortArrow
+                    onClick={() =>
+                      onColumnHeaderClick(
+                        StocksEventFormSortingColumn.REMAINING_QUANTITY
+                      )
+                    }
+                    sortingMode={
+                      currentSortingColumn ===
+                      StocksEventFormSortingColumn.REMAINING_QUANTITY
+                        ? currentSortingMode
+                        : SortingMode.NONE
+                    }
+                  />
+                  <div className={cn(styles['filter-input'])}>&nbsp;</div>
                 </th>
 
                 <th
@@ -300,24 +276,20 @@ const StockFormList = ({
                 >
                   <span className={styles['header-name']}>Réservations</span>
 
-                  {areFiltersEnabled && (
-                    <>
-                      <SortArrow
-                        onClick={() =>
-                          onColumnHeaderClick(
-                            StocksEventFormSortingColumn.BOOKINGS_QUANTITY
-                          )
-                        }
-                        sortingMode={
-                          currentSortingColumn ===
-                          StocksEventFormSortingColumn.BOOKINGS_QUANTITY
-                            ? currentSortingMode
-                            : SortingMode.NONE
-                        }
-                      />
-                      <div className={cn(styles['filter-input'])}>&nbsp;</div>
-                    </>
-                  )}
+                  <SortArrow
+                    onClick={() =>
+                      onColumnHeaderClick(
+                        StocksEventFormSortingColumn.BOOKINGS_QUANTITY
+                      )
+                    }
+                    sortingMode={
+                      currentSortingColumn ===
+                      StocksEventFormSortingColumn.BOOKINGS_QUANTITY
+                        ? currentSortingMode
+                        : SortingMode.NONE
+                    }
+                  />
+                  <div className={cn(styles['filter-input'])}>&nbsp;</div>
                 </th>
 
                 <th className={styles['head-actions']}></th>

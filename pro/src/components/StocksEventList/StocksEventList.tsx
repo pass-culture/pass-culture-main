@@ -10,7 +10,6 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { useOfferWizardMode } from 'hooks'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import useNotification from 'hooks/useNotification'
@@ -71,7 +70,6 @@ const StocksEventList = ({
     Array(stocks.length).fill(false)
   )
   const priceCategoryOptions = getPriceCategoryOptions(priceCategories)
-  const areFiltersEnabled = useActiveFeature('WIP_RECURRENCE_FILTERS')
 
   const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
     useColumnSorting<StocksEventListSortingColumn>()
@@ -209,32 +207,28 @@ const StocksEventList = ({
             >
               <span className={styles['header-name']}>Date</span>
 
-              {areFiltersEnabled && (
-                <>
-                  <SortArrow
-                    onClick={() =>
-                      onColumnHeaderClick(StocksEventListSortingColumn.DATE)
-                    }
-                    sortingMode={
-                      currentSortingColumn === StocksEventListSortingColumn.DATE
-                        ? currentSortingMode
-                        : SortingMode.NONE
-                    }
-                  />
+              <SortArrow
+                onClick={() =>
+                  onColumnHeaderClick(StocksEventListSortingColumn.DATE)
+                }
+                sortingMode={
+                  currentSortingColumn === StocksEventListSortingColumn.DATE
+                    ? currentSortingMode
+                    : SortingMode.NONE
+                }
+              />
 
-                  <div className={cn(styles['filter-input'])}>
-                    <BaseDatePicker
-                      onChange={date => {
-                        setDateFilter(date)
-                        onFilterChange()
-                      }}
-                      value={dateFilter}
-                      filterVariant
-                      aria-label="Filtrer par date"
-                    />
-                  </div>
-                </>
-              )}
+              <div className={cn(styles['filter-input'])}>
+                <BaseDatePicker
+                  onChange={date => {
+                    setDateFilter(date)
+                    onFilterChange()
+                  }}
+                  value={dateFilter}
+                  filterVariant
+                  aria-label="Filtrer par date"
+                />
+              </div>
             </th>
 
             <th
@@ -243,67 +237,59 @@ const StocksEventList = ({
             >
               <span className={styles['header-name']}>Horaire</span>
 
-              {areFiltersEnabled && (
-                <>
-                  <SortArrow
-                    onClick={() =>
-                      onColumnHeaderClick(StocksEventListSortingColumn.HOUR)
-                    }
-                    sortingMode={
-                      currentSortingColumn === StocksEventListSortingColumn.HOUR
-                        ? currentSortingMode
-                        : SortingMode.NONE
-                    }
-                  />
-                  <div className={cn(styles['filter-input'])}>
-                    <BaseTimePicker
-                      onChange={date => {
-                        setHourFilter(date)
-                        onFilterChange()
-                      }}
-                      value={hourFilter}
-                      filterVariant
-                      aria-label="Filtrer par horaire"
-                    />
-                  </div>
-                </>
-              )}
+              <SortArrow
+                onClick={() =>
+                  onColumnHeaderClick(StocksEventListSortingColumn.HOUR)
+                }
+                sortingMode={
+                  currentSortingColumn === StocksEventListSortingColumn.HOUR
+                    ? currentSortingMode
+                    : SortingMode.NONE
+                }
+              />
+              <div className={cn(styles['filter-input'])}>
+                <BaseTimePicker
+                  onChange={date => {
+                    setHourFilter(date)
+                    onFilterChange()
+                  }}
+                  value={hourFilter}
+                  filterVariant
+                  aria-label="Filtrer par horaire"
+                />
+              </div>
             </th>
 
             <th scope="col" className={styles['header']}>
               <span className={styles['header-name']}>Tarif</span>
 
-              {areFiltersEnabled && (
-                <>
-                  <SortArrow
-                    onClick={() =>
-                      onColumnHeaderClick(
-                        StocksEventListSortingColumn.PRICE_CATEGORY
-                      )
-                    }
-                    sortingMode={
-                      currentSortingColumn ===
-                      StocksEventListSortingColumn.PRICE_CATEGORY
-                        ? currentSortingMode
-                        : SortingMode.NONE
-                    }
-                  />
-                  <div className={cn(styles['filter-input'])}>
-                    <SelectInput
-                      name="priceCategoryFilter"
-                      defaultOption={{ label: '', value: '' }}
-                      options={priceCategoryOptions}
-                      value={priceCategoryFilter}
-                      onChange={event => {
-                        setPriceCategoryFilter(event.target.value)
-                        onFilterChange()
-                      }}
-                      filterVariant
-                      aria-label="Filtrer par tarif"
-                    />
-                  </div>
-                </>
-              )}
+              <SortArrow
+                onClick={() =>
+                  onColumnHeaderClick(
+                    StocksEventListSortingColumn.PRICE_CATEGORY
+                  )
+                }
+                sortingMode={
+                  currentSortingColumn ===
+                  StocksEventListSortingColumn.PRICE_CATEGORY
+                    ? currentSortingMode
+                    : SortingMode.NONE
+                }
+              />
+              <div className={cn(styles['filter-input'])}>
+                <SelectInput
+                  name="priceCategoryFilter"
+                  defaultOption={{ label: '', value: '' }}
+                  options={priceCategoryOptions}
+                  value={priceCategoryFilter}
+                  onChange={event => {
+                    setPriceCategoryFilter(event.target.value)
+                    onFilterChange()
+                  }}
+                  filterVariant
+                  aria-label="Filtrer par tarif"
+                />
+              </div>
             </th>
 
             <th
@@ -319,24 +305,20 @@ const StocksEventList = ({
                 de réservation
               </span>
 
-              {areFiltersEnabled && (
-                <>
-                  <SortArrow
-                    onClick={() =>
-                      onColumnHeaderClick(
-                        StocksEventListSortingColumn.BOOKING_LIMIT_DATETIME
-                      )
-                    }
-                    sortingMode={
-                      currentSortingColumn ===
-                      StocksEventListSortingColumn.BOOKING_LIMIT_DATETIME
-                        ? currentSortingMode
-                        : SortingMode.NONE
-                    }
-                  />
-                  <div className={cn(styles['filter-input'])}>&nbsp;</div>
-                </>
-              )}
+              <SortArrow
+                onClick={() =>
+                  onColumnHeaderClick(
+                    StocksEventListSortingColumn.BOOKING_LIMIT_DATETIME
+                  )
+                }
+                sortingMode={
+                  currentSortingColumn ===
+                  StocksEventListSortingColumn.BOOKING_LIMIT_DATETIME
+                    ? currentSortingMode
+                    : SortingMode.NONE
+                }
+              />
+              <div className={cn(styles['filter-input'])}>&nbsp;</div>
             </th>
 
             <th
@@ -345,22 +327,17 @@ const StocksEventList = ({
             >
               <span className={styles['header-name']}>Places</span>
 
-              {areFiltersEnabled && (
-                <>
-                  <SortArrow
-                    onClick={() =>
-                      onColumnHeaderClick(StocksEventListSortingColumn.QUANTITY)
-                    }
-                    sortingMode={
-                      currentSortingColumn ===
-                      StocksEventListSortingColumn.QUANTITY
-                        ? currentSortingMode
-                        : SortingMode.NONE
-                    }
-                  />
-                  <div className={cn(styles['filter-input'])}>&nbsp;</div>
-                </>
-              )}
+              <SortArrow
+                onClick={() =>
+                  onColumnHeaderClick(StocksEventListSortingColumn.QUANTITY)
+                }
+                sortingMode={
+                  currentSortingColumn === StocksEventListSortingColumn.QUANTITY
+                    ? currentSortingMode
+                    : SortingMode.NONE
+                }
+              />
+              <div className={cn(styles['filter-input'])}>&nbsp;</div>
             </th>
 
             <th className={cn(styles['actions-column'], styles['header'])} />
