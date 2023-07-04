@@ -20,18 +20,6 @@ const mockLogEvent = jest.fn()
 const mockSetSotcks = jest.fn()
 
 const renderStocksEventList = (props: Partial<StocksEventListProps>) => {
-  const storeOverrides = {
-    features: {
-      list: [
-        {
-          nameKey: 'WIP_RECURRENCE_FILTERS',
-          isActive: true,
-        },
-      ],
-      initialized: true,
-    },
-  }
-
   renderWithProviders(
     <StocksEventList
       stocks={props.stocks ?? []}
@@ -43,8 +31,7 @@ const renderStocksEventList = (props: Partial<StocksEventListProps>) => {
       departmentCode="78"
       setStocks={mockSetSotcks}
       offerId={1}
-    />,
-    { storeOverrides }
+    />
   )
 }
 
