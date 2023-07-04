@@ -191,7 +191,7 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
                     venue,
                     product_by_ean[ean],
                     stock_data["id_at_provider"],
-                    current_api_key.provider,
+                    provider,
                 )
                 created_offers.append(created_offer)
 
