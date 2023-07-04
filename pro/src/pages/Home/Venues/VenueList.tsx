@@ -36,6 +36,9 @@ const VenueList = ({
           hasPendingBankInformationApplication={
             virtualVenue.hasPendingBankInformationApplication
           }
+          demarchesSimplifieesApplicationId={
+            virtualVenue.demarchesSimplifieesApplicationId
+          }
         />
       )}
 
@@ -55,6 +58,9 @@ const VenueList = ({
           adageInscriptionDate={venue.adageInscriptionDate}
           hasPendingBankInformationApplication={
             venue.hasPendingBankInformationApplication
+          }
+          demarchesSimplifieesApplicationId={
+            venue.demarchesSimplifieesApplicationId
           }
         />
       ))}
