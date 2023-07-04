@@ -261,6 +261,7 @@ def create_collective_offer(
     educational_domains = get_educational_domains_from_ids(offer_data.domains)
 
     collective_offer = educational_models.CollectiveOffer(
+        isActive=False,  # a DRAFT offer cannot be active
         venueId=venue.id,
         name=offer_data.name,
         offerId=offer_id,
@@ -719,7 +720,7 @@ def duplicate_offer_and_stock(
         raise exceptions.OffererNotAllowedToDuplicate()
 
     offer = educational_models.CollectiveOffer(
-        isActive=original_offer.isActive,
+        isActive=False,  # a DRAFT offer cannot be active
         venue=original_offer.venue,
         name=original_offer.name,
         bookingEmails=original_offer.bookingEmails,
