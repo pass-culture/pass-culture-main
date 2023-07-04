@@ -234,7 +234,10 @@ class TrustedDeviceFeatureTest:
         assert TrustedDevice.query.count() == 0
         assert user.trusted_devices == []
 
-    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
+    @override_features(
+        WIP_ENABLE_TRUSTED_DEVICE=True,
+        WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
+    )
     def should_send_email_when_login_is_suspicious(self, client):
         users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
 
@@ -260,6 +263,17 @@ class TrustedDeviceFeatureTest:
 
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=False)
     def should_not_send_email_when_feature_flag_is_inactive(self, client):
+        users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
+
+        client.post("/native/v1/signin", json=self.data)
+
+        assert len(mails_testing.outbox) == 0
+
+    @override_features(
+        WIP_ENABLE_TRUSTED_DEVICE=True,
+        WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=False,
+    )
+    def should_not_send_email_when_feature_flag_is_active_but_email_is_inactive(self, client):
         users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
 
         client.post("/native/v1/signin", json=self.data)
