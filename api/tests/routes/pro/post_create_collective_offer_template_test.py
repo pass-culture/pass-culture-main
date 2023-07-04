@@ -4,8 +4,6 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.utils.human_ids import dehumanize_or_raise
-from pcapi.utils.human_ids import humanize
 
 
 @pytest.mark.usefixtures("db_session")
@@ -22,13 +20,12 @@ class Returns200Test:
             "educationalPriceDetail": "pouet",
         }
         response = client.with_session_auth(offer.venue.managingOfferer.UserOfferers[0].user.email).post(
-            f"/collective/offers-template/{humanize(offer.id)}/", json=data
+            f"/collective/offers-template/{offer.id}/", json=data
         )
 
         # Then
         assert response.status_code == 201
-        template_id = dehumanize_or_raise(response.json["id"])
-        template = CollectiveOfferTemplate.query.filter_by(id=template_id).one_or_none()
+        template = CollectiveOfferTemplate.query.filter_by(id=response.json["id"]).one_or_none()
         assert template is not None
         assert CollectiveOffer.query.filter_by(id=offer.id).one_or_none() is None
         assert template.name == offer.name
@@ -46,13 +43,12 @@ class Returns200Test:
 
         # When
         response = client.with_session_auth(offer.venue.managingOfferer.UserOfferers[0].user.email).post(
-            f"/collective/offers-template/{humanize(offer.id)}/",
+            f"/collective/offers-template/{offer.id}/",
         )
 
         # Then
         assert response.status_code == 201
-        template_id = dehumanize_or_raise(response.json["id"])
-        template = CollectiveOfferTemplate.query.filter_by(id=template_id).one_or_none()
+        template = CollectiveOfferTemplate.query.filter_by(id=response.json["id"]).one_or_none()
         assert template is not None
         assert CollectiveOffer.query.filter_by(id=offer.id).one_or_none() is None
         assert template.name == offer.name
@@ -73,7 +69,7 @@ class Returns400Test:
 
         # When
         response = client.with_session_auth(offer.venue.managingOfferer.UserOfferers[0].user.email).post(
-            f"/collective/offers-template/{humanize(offer.id)}/",
+            f"/collective/offers-template/{offer.id}/",
         )
 
         # Then
@@ -92,7 +88,7 @@ class Returns403Test:
 
         # When
         response = client.with_session_auth("azerty@example.com").post(
-            f"/collective/offers-template/{humanize(offer.id)}/",
+            f"/collective/offers-template/{offer.id}/",
         )
 
         # Then
