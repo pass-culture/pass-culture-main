@@ -52,11 +52,11 @@ const fullIcons: IconListItem[] = [
   { src: 'icons/full-code.svg' },
   { src: 'icons/full-down.svg' }, // TODO 1 use left inside a <Button>
   { src: 'icons/full-up.svg' }, // TODO 1 use left inside a <Button>
-  { src: 'icons/full-left.svg' }, // TODO 2 use left inside a <Button>
   { src: 'icons/full-right.svg' }, // TODO 2 use left inside a <Button>
+  { src: 'icons/full-left.svg' }, // TODO 2 use left inside a <Button>
   { src: 'icons/full-arrow-right.svg' },
-  { src: 'icons/full-disclosure-close.svg' },
-  { src: 'icons/full-disclosure-open.svg' },
+  { src: 'icons/full-disclosure-close.svg', viewBox: '0 0 16 16' }, // TODO clean viewbox
+  { src: 'icons/full-disclosure-open.svg', viewBox: '0 0 16 16' }, // TODO clean viewbox
 ]
 
 const strokeIcons: IconListItem[] = [
@@ -80,8 +80,8 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-duo.svg' },
   { src: 'icons/stroke-virtual-event.svg' },
   { src: 'icons/stroke-virtual-thing.svg' },
-  { src: 'icons/stroke-booked.svg' },
   { src: 'icons/stroke-template-offer.svg' },
+  { src: 'icons/stroke-booked.svg' },
   { src: 'icons/stroke-mail.svg' },
   { src: 'icons/stroke-phone.svg' },
   { src: 'icons/stroke-home.svg' },
@@ -89,33 +89,30 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-desk.svg' },
   { src: 'icons/stroke-calendar.svg' },
   { src: 'icons/stroke-date.svg' },
+  { src: 'icons/stroke-hourglass.svg' },
   { src: 'icons/stroke-show.svg' }, // TODO 1 use left inside Button (PasswordInput)
   { src: 'icons/stroke-hide.svg' }, // TODO 1 use left inside Button (PasswordInput)
-  { src: 'icons/stroke-calendar.svg' },
-  { src: 'icons/stroke-hourglass.svg' },
-  { src: 'icons/stroke-search.svg' }, // TODO 1 use left inside SubmitButton (CollectiveOfferSelectionDuplicationScreen)
   { src: 'icons/stroke-like.svg' }, // TODO 1 use left inside Button
   { src: 'icons/stroke-logout.svg' },
-  { src: 'icons/stroke-trash.svg' },
-
   { src: 'icons/stroke-download.svg' }, // TODO 1 use left inside ButtonLink (AddActivationCodeForm)
+  { src: 'icons/stroke-search.svg' }, // TODO 1 use left inside SubmitButton (CollectiveOfferSelectionDuplicationScreen)
+  { src: 'icons/stroke-trash.svg' },
   { src: 'icons/stroke-draft.svg' },
-  { src: 'icons/stroke-case.svg' },
   { src: 'icons/stroke-code.svg' },
   { src: 'icons/stroke-accessibility-eye.svg' },
   { src: 'icons/stroke-accessibility-ear.svg' },
   { src: 'icons/stroke-accessibility-leg.svg' },
   { src: 'icons/stroke-accessibility-brain.svg' },
-  { src: 'icons/stroke-duplicate-offer.svg' },
   { src: 'icons/stroke-pie.svg' },
   { src: 'icons/stroke-party.svg' },
   { src: 'icons/stroke-new-offer.svg' },
+  { src: 'icons/stroke-duplicate-offer.svg' },
   { src: 'icons/stroke-close.svg' },
   { src: 'icons/stroke-left.svg' },
   { src: 'icons/stroke-right.svg' },
+  { src: 'icons/stroke-up.svg' },
   { src: 'icons/stroke-pass.svg' },
   { src: 'icons/stroke-venue.svg' },
-  { src: 'icons/stroke-up.svg' },
 ]
 
 const shadowIcons: IconListItem[] = [
@@ -126,7 +123,6 @@ const shadowIcons: IconListItem[] = [
 const notCleandIcons: IconListItem[] = [
   // Not cleaned
   { src: 'icons/checkbox-check.svg', viewBox: '0 0 10 8' },
-  { src: 'icons/checkbox.svg', viewBox: '0 0 10 8' },
   { src: 'icons/ico-eye-open-filled-black.svg' },
   { src: 'icons/library.svg', viewBox: '0 0 49 48' },
   { src: 'icons/linear-gradient.svg', viewBox: '0 0 623 1024' }, // TODO replace by a jpg/png
@@ -134,19 +130,14 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/location.svg', viewBox: '0 0 24 24' },
   { src: 'icons/logo-pass-culture.svg', viewBox: '0 0 114 84' },
   { src: 'icons/logo-pass-culture-header.svg', viewBox: '0 0 119 40' },
-  { src: 'icons/logo-pass-culture-white.svg', viewBox: '0 0 282 120' },
   { src: 'icons/ico-no-bookings.svg', viewBox: '0 0 124 124' },
   { src: 'icons/ico-404.svg', viewBox: '0 0 308 194' },
   { src: 'icons/ico-notification-success.svg', viewBox: '0 0 20 20' },
   { src: 'icons/open-dropdown.svg', viewBox: '0 0 20 20' },
-  { src: 'icons/ico-other.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-radio-off.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-radio-on.svg', viewBox: '0 0 16 16' },
-  { src: 'icons/ico-separator.svg', viewBox: '0 0 20 1' },
   { src: 'icons/ico-star.svg', viewBox: '0 0 38 36' },
-  { src: 'icons/ico-status-expired.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-status-pending.svg', viewBox: '0 0 16 16' },
-  { src: 'icons/ico-status-reimbursed.svg', viewBox: '0 0 22 14' },
   { src: 'icons/ico-tag.svg', viewBox: '0 0 33 33' },
   { src: 'icons/ticket-cross.svg', viewBox: '0 0 100 80' },
   { src: 'icons/ico-trophee.svg', viewBox: '0 0 24 25' },
@@ -154,9 +145,7 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-unavailable-page.svg', viewBox: '0 0 317 198' },
   { src: 'icons/ico-unavailable-page-white.svg', viewBox: '0 0 317 198' },
   { src: 'icons/ico-warning.svg', viewBox: '0 0 16 16' },
-  { src: 'icons/ico-key.svg', viewBox: '0 0 20 20' },
   { src: 'icons/logo-pass-culture-dark.svg', viewBox: '0 0 71 24' },
-  { src: 'icons/ico-passculture.svg', viewBox: '0 0 30 30' },
   { src: 'icons/ico-institution.svg', viewBox: '0 0 18 18' },
   { src: 'icons/logo-pass-culture-adage.svg', viewBox: '0 0 120 39' },
 ]
