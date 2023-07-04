@@ -1,5 +1,4 @@
 import logging
-import random
 
 from pcapi.core.categories import subcategories_v2
 import pcapi.core.offers.factories as offers_factories
@@ -27,6 +26,8 @@ def create_industrial_thing_products() -> dict[str, offers_models.Product]:
     thing_subcategories = [s for s in subcategories_v2.ALL_SUBCATEGORIES if not s.is_event]
 
     id_at_providers = 1234
+
+    base_ean = 1234567890123
 
     for product_creation_counter in range(0, THINGS_PER_SUBCATEGORY):
         for thing_subcategories_list_index, thing_subcategory in enumerate(thing_subcategories):
@@ -74,7 +75,8 @@ def create_industrial_thing_products() -> dict[str, offers_models.Product]:
                     music_sub_type = music_type.children[music_sub_type_index]
                     extraData["musicSubType"] = str(music_sub_type.code)
                 elif conditionalField_name == "ean":
-                    extraData["ean"] = "".join(random.choices("123456789", k=13))
+                    extraData["ean"] = str(base_ean)
+                    base_ean += 1
                 extra_data_index += 1
             thing_product.extraData = extraData
             thing_products_by_name[name] = thing_product
