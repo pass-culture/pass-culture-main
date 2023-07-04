@@ -38,14 +38,14 @@ def generate_user() -> utils.BackofficeResponse:
     # >18yo user cannot be identified with Educonnect
     age = form.age.data
     id_provider = form.id_provider.data
-    if age == users_constants.ELIGIBILITY_AGE_18 and id_provider == users_generator.GeneratedIdProvider.EDUCONNECT.name:
+    if age >= users_constants.ELIGIBILITY_AGE_18 and id_provider == users_generator.GeneratedIdProvider.EDUCONNECT.name:
         flash("Un utilisateur de plus de 18 ans ne peut pas être identifié via Educonnect", "warning")
         return redirect(url_for("backoffice_v3_web.get_generated_user"), code=303)
 
     # <18yo user cannot validate phone number
     step = form.step.data
     if (
-        age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
+        age < users_constants.ELIGIBILITY_AGE_18
         and step == users_generator.GeneratedSubscriptionStep.PHONE_VALIDATION.name
     ):
         flash("Un utilisateur de moins de 18 ans ne peut pas valider son numéro de téléphone", "warning")
