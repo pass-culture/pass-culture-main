@@ -64,6 +64,18 @@ def venue_fixture(offerer) -> offerers_models.Venue:
     return venue
 
 
+@pytest.fixture(scope="function", name="venue_with_no_siret")
+def venue_with_no_siret_fixture(offerer) -> offerers_models.Venue:
+    venue = offerers_factories.VenueFactory(
+        venueLabel=offerers_factories.VenueLabelFactory(label="Lieu test"),
+        contact__website="www.example.com",
+        siret=None,
+        isVirtual=True,
+    )
+    offerers_factories.VenuePricingPointLinkFactory(venue=venue)
+    return venue
+
+
 @pytest.fixture(scope="function", name="venues")
 def venues_fixture(criteria) -> list[offerers_models.Venue]:
     return [
@@ -473,7 +485,9 @@ class GetVenueStatsTest(GetEndpointHelper):
     # get venue stats (1 query)
     expected_num_queries = 5
 
-    def test_get_venue_bank_information(self, authenticated_client, venue_with_accepted_bank_info):
+    def test_get_venue_with_no_reimbursement_point_bank_information(
+        self, authenticated_client, venue_with_accepted_bank_info
+    ):
         venue_id = venue_with_accepted_bank_info.id
         url = url_for(self.endpoint, venue_id=venue_id)
 
@@ -484,16 +498,9 @@ class GetVenueStatsTest(GetEndpointHelper):
         cards_content = html_parser.extract_cards_text(response.data)
 
         assert venue_with_accepted_bank_info.name is not None
-        assert f"Point de remboursement : {venue_with_accepted_bank_info.name} " in cards_content[2]
+        assert len(venue_with_accepted_bank_info.reimbursement_point_links) == 0
+        assert f"Point de remboursement : {venue_with_accepted_bank_info.name} " not in cards_content[2]
         assert f"Siret de valorisation : {venue_with_accepted_bank_info.name} " in cards_content[2]
-        assert (
-            venue_with_accepted_bank_info.bic is not None
-            and f"BIC : {venue_with_accepted_bank_info.bic}" in cards_content[2]
-        )
-        assert (
-            venue_with_accepted_bank_info.iban is not None
-            and f"IBAN : {venue_with_accepted_bank_info.iban}" in cards_content[2]
-        )
 
     def test_get_venue_with_no_bank_info_bank_information(self, authenticated_client, venue_with_no_bank_info):
         venue_id = venue_with_no_bank_info.id
@@ -507,6 +514,7 @@ class GetVenueStatsTest(GetEndpointHelper):
 
         assert len(venue_with_no_bank_info.reimbursement_point_links) == 0
         assert f"Point de remboursement : {venue_with_no_bank_info.name}" not in cards_content[2]
+        assert f"Siret de valorisation : {venue_with_no_bank_info.name}" in cards_content[2]
 
     def test_get_venue_with_accepted_reimbursement_point_bank_information(
         self, authenticated_client, venue_with_accepted_reimbursement_point
@@ -524,6 +532,7 @@ class GetVenueStatsTest(GetEndpointHelper):
         )
 
         assert f"Point de remboursement : {expected_reimbursement_point.name}" in cards_content[2]
+        assert f"Siret de valorisation : {venue_with_accepted_reimbursement_point.name}" in cards_content[2]
         assert f"BIC : {expected_reimbursement_point.bic}" in cards_content[2]
         assert f"IBAN : {expected_reimbursement_point.iban}" in cards_content[2]
 
@@ -543,8 +552,22 @@ class GetVenueStatsTest(GetEndpointHelper):
         ].reimbursementPoint
 
         assert f"Point de remboursement : {expired_reimbursement_point.name}" not in cards_content[2]
+        assert f"Siret de valorisation : {venue_with_expired_reimbursement_point.name}" in cards_content[2]
         assert f"BIC : {expired_reimbursement_point.bic}" not in cards_content[2]
         assert f"IBAN : {expired_reimbursement_point.iban}" not in cards_content[2]
+
+    def test_get_venue_with_no_siret_bank_information(self, authenticated_client, venue_with_no_siret):
+        venue_id = venue_with_no_siret.id
+        url = url_for(self.endpoint, venue_id=venue_id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        cards_content = html_parser.extract_cards_text(response.data)
+        pricing_point = venue_with_no_siret.pricing_point_links[0].pricingPoint
+        assert venue_with_no_siret.siret is None
+        assert f"Siret de valorisation : {pricing_point.name}" in cards_content[2]
 
     def test_get_stats(self, authenticated_client, venue):
         booking = bookings_factories.BookingFactory(stock__offer__venue=venue)
