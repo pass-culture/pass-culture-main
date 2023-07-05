@@ -81,7 +81,7 @@ def test_basics(client):
                 "city": venue.city,
                 "collectiveDmsApplications": [
                     {
-                        "venueId": a.venueId,
+                        "venueId": a.venue.id,
                         "state": a.state,
                         "procedure": a.procedure,
                         "application": a.application,

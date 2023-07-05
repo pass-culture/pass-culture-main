@@ -132,8 +132,15 @@ def handle_pending_collective_booking_j3() -> None:
 
 
 @blueprint.cli.command("import_eac_dms_application")
+@click.option(
+    "--ignore_previous",
+    type=bool,
+    is_flag=True,
+    default=False,
+    help="Import all application ignoring previous import date",
+)
 @log_cron_with_transaction
-def import_eac_dms_application() -> None:
+def import_eac_dms_application(ignore_previous: bool = False) -> None:
     """Import procedures from dms."""
     procedures = [
         settings.DMS_EAC_PROCEDURE_INDEPENDANTS_CANDIDATE_ID,
@@ -141,7 +148,7 @@ def import_eac_dms_application() -> None:
         settings.DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID,
     ]
     for procedure_number in procedures:
-        import_dms_applications(procedure_number=procedure_number)
+        import_dms_applications(procedure_number=procedure_number, ignore_previous=ignore_previous)
 
 
 @blueprint.cli.command("notify_reimburse_collective_booking")
