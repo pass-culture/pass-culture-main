@@ -5,7 +5,7 @@ from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFr
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
 
 
-class PostLogsTest:
+class LogsTest:
     def test_log_catalog_view(self, client, caplog):
         # given
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
