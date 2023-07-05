@@ -35,7 +35,6 @@ class Permissions(enum.Enum):
 
     SUSPEND_USER = "suspendre un compte utilisateur"
     UNSUSPEND_USER = "réactiver un compte utilisateur"
-    BATCH_SUSPEND_USERS = "suspendre en masse des comptes bénéficiaires/grand public"
 
     READ_PRO_ENTITY = "visualiser une structure, un lieu ou un compte pro"
     MANAGE_PRO_ENTITY = "gérer une structure, un lieu ou un compte pro"
