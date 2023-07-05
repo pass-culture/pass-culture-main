@@ -10,6 +10,7 @@ import pcapi.core.bookings.constants as bookings_constants
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.users.models as users_models
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils.queue import add_to_queue
 
 from . import constants
@@ -43,6 +44,17 @@ def get_pcu_pricing_if_exists(
     return first_pcu_pricing
 
 
+def get_boost_external_booking_barcode(barcode: str) -> str:
+    if FeatureToggle.WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING.is_active():
+        return barcode if barcode.startswith(constants.BOOST_SALE_PREFIX) else constants.BOOST_SALE_PREFIX + barcode
+
+    return (
+        barcode
+        if not barcode.startswith(constants.BOOST_SALE_PREFIX)
+        else barcode.replace(constants.BOOST_SALE_PREFIX, "")
+    )
+
+
 class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     def __init__(self, cinema_str_id: str):
         self.cinema_str_id = cinema_str_id
@@ -59,6 +71,9 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         barcodes = list(set(barcodes))
         sale_cancel_items = []
         for barcode in barcodes:
+            barcode = (
+                barcode if barcode.startswith(constants.BOOST_SALE_PREFIX) else constants.BOOST_SALE_PREFIX + barcode
+            )
             sale_cancel_item = boost_serializers.SaleCancelItem(
                 code=barcode, refundType=constants.BOOST_PASS_CULTURE_REFUND_TYPE
             )
