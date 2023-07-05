@@ -209,7 +209,7 @@ const OfferSummary = ({
           /* istanbul ignore next: DEBT, TO FIX */
           offerData.withdrawalType && (
             <SummaryLayout.Row
-              title="Comment les billets, places seront-ils transmis ?"
+              title="Précisez la façon dont vous distribuerez les billets :"
               description={
                 OFFER_WITHDRAWAL_TYPE_LABELS[offerData.withdrawalType]
               }

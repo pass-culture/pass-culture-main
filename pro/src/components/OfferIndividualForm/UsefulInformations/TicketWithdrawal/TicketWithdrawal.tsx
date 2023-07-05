@@ -53,7 +53,7 @@ const TicketWithdrawal = ({
       <FormLayout.Row>
         <RadioGroup
           group={ticketWithdrawalTypeRadios}
-          legend="Comment les billets, places seront-ils transmis ?"
+          legend="Précisez la façon dont vous distribuerez les billets :"
           name="withdrawalType"
           disabled={readOnlyFields.includes('withdrawalType')}
         />

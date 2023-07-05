@@ -157,7 +157,9 @@ describe('OfferIndividual section: UsefulInformations', () => {
     await userEvent.selectOptions(offererSelect, offererId.toString())
     const venueSelect = screen.getByLabelText('Lieu')
     await userEvent.selectOptions(venueSelect, venueList[0].id.toString())
-    const withEmail = screen.getByLabelText('Envoi par email')
+    const withEmail = screen.getByLabelText(
+      'Les billets seront envoyés par email'
+    )
     await userEvent.click(withEmail)
 
     const bookingContactField = screen.getByLabelText('Email de contact')
@@ -246,7 +248,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
     })
 
     expect(
-      screen.getByText('Comment les billets, places seront-ils transmis ?')
+      screen.getByText('Précisez la façon dont vous distribuerez les billets :')
     ).toBeInTheDocument()
   })
 
@@ -259,7 +261,9 @@ describe('OfferIndividual section: UsefulInformations', () => {
     })
 
     expect(
-      screen.queryByText('Comment les billets, places seront-ils transmis ?')
+      screen.queryByText(
+        'Précisez la façon dont vous distribuerez les billets :'
+      )
     ).not.toBeInTheDocument()
   })
 
