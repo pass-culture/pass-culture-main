@@ -126,6 +126,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_SATISFACTION_SURVEY = "Activer l'affichage du questionnaire de satisfaction adage"
     WIP_ENABLE_NEW_ADAGE_FILTERS = "Active les nouveaux filtres adage"
     WIP_MANDATORY_BOOKING_CONTACT = "Rend obligatoire offer.bookingContact pour les offres retirables"
+    WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING = "Active les réservations externe boost avec préfix"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -195,6 +196,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_SATISFACTION_SURVEY,
     FeatureToggle.ENABLE_PROVIDER_AUTHENTIFICATION,
     FeatureToggle.WIP_ENABLE_NEW_ADAGE_FILTERS,
+    FeatureToggle.WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:

@@ -363,7 +363,14 @@ class GetBookingsTest:
     @override_features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_get_bookings_with_external_booking_infos(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
-        booking = booking_factories.BookingFactory(user=user, stock__offer__subcategoryId=subcategories.SEANCE_CINE.id)
+
+        provider = providers_api.get_provider_by_local_class("CDSStocks")
+        booking = booking_factories.BookingFactory(
+            user=user,
+            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
+            stock__idAtProviders="11#11#CDS",
+            stock__lastProvider=provider,
+        )
         ExternalBookingFactory(booking=booking, barcode="111111111", seat="A_1")
         ExternalBookingFactory(booking=booking, barcode="111111112", seat="A_2")
 
@@ -377,6 +384,34 @@ class GetBookingsTest:
             {"barcode": "111111111", "seat": "A_1"},
             {"barcode": "111111112", "seat": "A_2"},
         ]
+
+    @pytest.mark.parametrize(
+        "barcode, ff_is_active, expected_barcode",
+        [
+            ("90577", True, "sale-90577"),
+            ("sale-90577", True, "sale-90577"),
+            ("90577", False, "90577"),
+            ("sale-90577", False, "90577"),
+        ],
+    )
+    def test_get_boost_bookings_with_external_booking_infos(self, barcode, ff_is_active, expected_barcode, client):
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        provider = providers_api.get_provider_by_local_class("BoostStocks")
+        booking = booking_factories.BookingFactory(
+            user=user,
+            stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
+            stock__idAtProviders="11#11#BOOST",
+            stock__lastProvider=provider,
+        )
+        ExternalBookingFactory(booking=booking, barcode=barcode, seat="A_1")
+        with override_features(WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING=ff_is_active):
+            response = client.with_token(self.identifier).get("/native/v1/bookings")
+
+        assert response.status_code == 200
+        booking_response = response.json["ongoing_bookings"][0]
+        assert booking_response["token"] is None  # do not display CM when it is an external booking
+        assert booking_response["qrCodeData"] is not None
+        assert booking_response["externalBookings"] == [{"barcode": expected_barcode, "seat": "A_1"}]
 
 
 class CancelBookingTest:
