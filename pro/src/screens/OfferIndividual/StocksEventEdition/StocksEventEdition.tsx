@@ -91,6 +91,23 @@ export const hasChangesOnStockWithBookings = (
   })
 }
 
+const hasStocksChanged = (
+  stocks: StockEventFormValues[],
+  initialsStocks: StockEventFormValues[]
+): boolean => {
+  if (stocks.length !== initialsStocks.length) {
+    return true
+  }
+
+  return stocks.some(stock => {
+    const initialStock = initialsStocks.find(
+      initialStock => initialStock.stockId === stock.stockId
+    )
+
+    return !isEqual(stock, initialStock)
+  })
+}
+
 export const getPriceCategoryOptions = (
   priceCategories?: PriceCategoryResponseModel[] | null
 ): SelectOption[] => {
@@ -139,7 +156,6 @@ const StocksEventEdition = ({
   const [showStocksEventConfirmModal, setShowStocksEventConfirmModal] =
     useState(false)
   const priceCategoriesOptions = getPriceCategoryOptions(offer.priceCategories)
-
   let description
   let links
 
@@ -325,6 +341,12 @@ const StocksEventEdition = ({
     validationSchema: getValidationSchema(priceCategoriesOptions),
   })
 
+  // Replace formik.dirty who was true when it should not be
+  const areStocksChanged = hasStocksChanged(
+    formik.values.stocks,
+    formik.initialValues.stocks
+  )
+
   const isFormEmpty = () => {
     const allStockValues = [...formik.values.stocks, ...hiddenStocksRef.current]
     return allStockValues.every(val =>
@@ -339,8 +361,8 @@ const StocksEventEdition = ({
 
   useEffect(() => {
     // when form is dirty it's tracked by RouteLeavingGuard
-    setShouldTrack(!formik.dirty)
-  }, [formik.dirty])
+    setShouldTrack(!areStocksChanged)
+  }, [areStocksChanged])
 
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
@@ -501,7 +523,7 @@ const StocksEventEdition = ({
       </FormLayout>
 
       <RouteLeavingGuardOfferIndividual
-        when={formik.dirty && !isClickingFromActionBar}
+        when={areStocksChanged && !isClickingFromActionBar}
         tracking={nextLocation =>
           logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
             from: OFFER_WIZARD_STEP_IDS.STOCKS,
