@@ -83,7 +83,7 @@ def _apply_query_filters(
     if dms_adage_status:
         query = (
             query.join(offerers_models.Venue)
-            .join(educational_models.CollectiveDmsApplication)
+            .join(educational_models.CollectiveDmsApplication, offerers_models.Venue.collectiveDmsApplications)
             .filter(
                 educational_models.CollectiveDmsApplication.state.in_(
                     [GraphQLApplicationStates[str(state)].value for state in dms_adage_status]
