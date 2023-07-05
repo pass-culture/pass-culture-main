@@ -6,14 +6,13 @@ import pytz
 from pcapi.connectors.dms import api as dms_api
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.educational import models as educational_models
-from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 
 
 logger = logging.getLogger(__name__)
 
 
-def import_dms_applications(procedure_number: int) -> None:
+def import_dms_applications(procedure_number: int, ignore_previous: bool = False) -> None:
     """import dms applications for eac status"""
     previous_import = _get_previous_import(procedure_number)
     if previous_import and previous_import.isProcessing:
@@ -36,7 +35,7 @@ def import_dms_applications(procedure_number: int) -> None:
         since = previous_import.latestImportDatetime if previous_import else None
         update_dms_applications_for_procedure(
             procedure_number=procedure_number,
-            since=since,
+            since=None if ignore_previous else since,
         )
 
 
@@ -124,19 +123,8 @@ def _get_or_create_application(procedure_number: int, node: dict) -> None:
         for key, value in data.items():
             setattr(application, key, value)
     else:
-        venue = offerers_models.Venue.query.filter(offerers_models.Venue.siret == data["siret"]).one_or_none()
-        if not venue:
-            logger.info(
-                "[DMS] Application parsing failed: unknown siret",
-                extra={
-                    "application_number": data["application"],
-                    "application_scalar_id": node.get("id"),
-                    "procedure_number": procedure_number,
-                },
-            )
-            return
         try:
-            application = educational_models.CollectiveDmsApplication(venue=venue, **data)
+            application = educational_models.CollectiveDmsApplication(**data)
             db.session.add(application)
         except Exception as exp:
             db.session.rollback()

@@ -57,6 +57,13 @@ class DMSApplicationForEAC(BaseModel):
         orm_mode = True
         json_encoders = {datetime: format_into_utc_date}
 
+    @classmethod
+    def from_orm(
+        cls, collective_dms_applicaiton: educational_models.CollectiveDmsApplication
+    ) -> "DMSApplicationForEAC":
+        collective_dms_applicaiton.venueId = collective_dms_applicaiton.venue.id
+        return super().from_orm(collective_dms_applicaiton)
+
 
 class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     address: base.VenueAddress

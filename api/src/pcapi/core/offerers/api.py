@@ -374,8 +374,9 @@ def _delete_objects_linked_to_venue(venue_id: int) -> dict:
         synchronize_session=False
     )
 
+    venue_siret_query = db.session.query(offerers_models.Venue.siret).filter(offerers_models.Venue.id == venue_id)
     educational_models.CollectiveDmsApplication.query.filter(
-        educational_models.CollectiveDmsApplication.venueId == venue_id
+        educational_models.CollectiveDmsApplication.siret == venue_siret_query.scalar_subquery()
     ).delete(synchronize_session=False)
 
     return offer_ids_to_delete

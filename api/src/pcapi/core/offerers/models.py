@@ -355,7 +355,8 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
     )
     collectiveDmsApplications: Mapped[list[educational_models.CollectiveDmsApplication]] = relationship(
         educational_models.CollectiveDmsApplication,
-        back_populates="venue",
+        backref=backref("venue"),
+        primaryjoin="foreign(CollectiveDmsApplication.siret) == Venue.siret",
         uselist=True,
     )
     collectiveInterventionArea: list[str] | None = sa.Column(
@@ -456,7 +457,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
         return (
             db.session.query(educational_models.CollectiveDmsApplication.state)
             .select_from(educational_models.CollectiveDmsApplication)
-            .filter(educational_models.CollectiveDmsApplication.venueId == cls.id)
+            .filter(educational_models.CollectiveDmsApplication.siret == cls.siret)
             .order_by(educational_models.CollectiveDmsApplication.lastChangeDate.desc())
             .limit(1)
             .scalar_subquery()

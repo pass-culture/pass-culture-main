@@ -136,7 +136,7 @@ class Returns200Test:
             "hasPendingBankInformationApplication": False,
             "collectiveDmsApplications": [
                 {
-                    "venueId": dmsapplication.venueId,
+                    "venueId": dmsapplication.venue.id,
                     "state": dmsapplication.state,
                     "procedure": dmsapplication.procedure,
                     "application": dmsapplication.application,
