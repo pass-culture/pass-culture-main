@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
 
-import { ReactComponent as LibraryIcon } from 'icons/library.svg'
-import { ReactComponent as strokeUserIcon } from 'icons/stroke-user.svg'
+import strokeLibraryIcon from 'icons/stroke-library.svg'
+import strokeUserIcon from 'icons/stroke-user.svg'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Tabs from '../Tabs'
@@ -16,13 +16,13 @@ describe('src | components | Tabs', () => {
             label: 'Offres individuelles',
             url: '/offres',
             key: 'individual',
-            Icon: strokeUserIcon,
+            icon: strokeUserIcon,
           },
           {
             label: 'Offres collectives',
             url: '/offres/collectives',
             key: 'collective',
-            Icon: LibraryIcon,
+            icon: strokeLibraryIcon,
           },
         ]}
       />

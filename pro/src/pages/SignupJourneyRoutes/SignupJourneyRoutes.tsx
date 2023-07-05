@@ -8,7 +8,7 @@ import SkipLinks from 'components/SkipLinks'
 import { SignupJourneyContextProvider } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as FullLogoutIcon } from 'icons/full-logout.svg'
+import fullLogoutIcon from 'icons/full-logout.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { ROOT_PATH } from 'utils/config'
@@ -48,7 +48,7 @@ const SignupJourneyRoutes = () => {
           <Button
             onClick={onSignoutClick}
             variant={ButtonVariant.TERNARY}
-            Icon={FullLogoutIcon}
+            icon={fullLogoutIcon}
           >
             Se déconnecter
           </Button>

@@ -14,12 +14,12 @@ import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenue
 import { useAdapter } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
+import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import tempStrokeAddUserIcon from 'icons/temp-stroke-add-user.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { ActionBar } from '../ActionBar'
 
@@ -151,15 +151,7 @@ const Offerers = (): JSX.Element => {
                 setIsVenueListOpen(!isVenueListOpen)
               }}
               variant={ButtonVariant.TERNARY}
-              Icon={() => (
-                <SvgIcon
-                  alt=""
-                  src={fullUpIcon}
-                  className={cn(styles['icon-more-venue'], {
-                    [styles['icon-more-venue-down']]: isVenueListOpen,
-                  })}
-                />
-              )}
+              icon={isVenueListOpen ? fullDownIcon : fullUpIcon}
             >
               {isVenueListOpen
                 ? 'Afficher moins de structures'

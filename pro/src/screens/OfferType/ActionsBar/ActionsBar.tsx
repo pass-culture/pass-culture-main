@@ -4,7 +4,7 @@ import ActionsBarSticky from 'components/ActionsBarSticky'
 import { Events } from 'core/FirebaseEvents/constants'
 import { computeOffersUrl } from 'core/Offers/utils'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as FullRightIcon } from 'icons/full-right.svg'
+import fullRightIcon from 'icons/full-right.svg'
 import { ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 
@@ -30,7 +30,7 @@ const ActionsBar = ({
       </ActionsBarSticky.Left>
       <ActionsBarSticky.Right>
         <SubmitButton
-          Icon={FullRightIcon}
+          icon={fullRightIcon}
           iconPosition={IconPositionEnum.RIGHT}
           disabled={disableNextButton}
         >

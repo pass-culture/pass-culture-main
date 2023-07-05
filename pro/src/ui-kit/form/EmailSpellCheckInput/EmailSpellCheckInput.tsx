@@ -1,7 +1,7 @@
 import { useField, useFormikContext } from 'formik'
 import React, { useState } from 'react'
 
-import { ReactComponent as FullNextIcon } from 'icons/full-next.svg'
+import fullNextIcon from 'icons/full-next.svg'
 import { Button } from 'ui-kit/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { suggestEmail } from 'ui-kit/form/EmailSpellCheckInput/suggestEmail'
@@ -68,7 +68,7 @@ const EmailSpellCheckInput = <FormType,>({
               </div>
               <Button
                 variant={ButtonVariant.TERNARY}
-                Icon={FullNextIcon}
+                icon={fullNextIcon}
                 iconPosition={IconPositionEnum.LEFT}
                 onClick={applyTip}
                 autoFocus

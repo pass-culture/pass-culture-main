@@ -23,8 +23,8 @@ import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as LibraryIcon } from 'icons/library.svg'
-import { ReactComponent as strokeUserIcon } from 'icons/stroke-user.svg'
+import strokeLibraryIcon from 'icons/stroke-library.svg'
+import strokeUserIcon from 'icons/stroke-user.svg'
 import ChoosePreFiltersMessage from 'pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import NoBookingsForPreFiltersMessage from 'pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -250,13 +250,13 @@ const Bookings = <
             label: 'Réservations individuelles',
             url: '/reservations',
             key: 'individual',
-            Icon: strokeUserIcon,
+            icon: strokeUserIcon,
           },
           {
             label: 'Réservations collectives',
             url: '/reservations/collectives',
             key: 'collective',
-            Icon: LibraryIcon,
+            icon: strokeLibraryIcon,
           },
         ]}
       />

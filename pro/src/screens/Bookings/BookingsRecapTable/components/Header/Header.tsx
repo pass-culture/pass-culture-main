@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ReactComponent as RefreshIcon } from 'icons/full-refresh.svg'
+import fullRefreshIcon from 'icons/full-refresh.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { pluralize } from 'utils/pluralize'
@@ -37,7 +37,7 @@ const Header = ({
           <Button
             variant={ButtonVariant.TERNARY}
             onClick={resetBookings}
-            Icon={RefreshIcon}
+            icon={fullRefreshIcon}
             iconPosition={IconPositionEnum.LEFT}
           >
             Voir toutes les réservations

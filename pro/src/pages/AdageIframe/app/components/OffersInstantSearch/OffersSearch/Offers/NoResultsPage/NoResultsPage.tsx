@@ -2,7 +2,7 @@ import './NoResultsPage.scss'
 
 import React, { useContext } from 'react'
 
-import { ReactComponent as FullRefresh } from 'icons/full-refresh.svg'
+import fullRefreshIcon from 'icons/full-refresh.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import {
   AlgoliaQueryContext,
@@ -34,7 +34,7 @@ export const NoResultsPage = ({
       {(query || facetFilters.length > 1) &&
         handleResetFiltersAndLaunchSearch && ( // la longueur de facetFilters doit être > 1 car il y aura toujours [offer.isEducational:true] dans les facetFilters
           <Button
-            Icon={FullRefresh}
+            icon={fullRefreshIcon}
             className="no-results-button"
             onClick={handleResetFiltersAndLaunchSearch}
             variant={ButtonVariant.SECONDARY}

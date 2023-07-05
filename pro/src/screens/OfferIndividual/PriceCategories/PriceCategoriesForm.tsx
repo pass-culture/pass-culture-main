@@ -9,8 +9,8 @@ import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import { OfferIndividual, OfferIndividualStock } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as FullMoreIcon } from 'icons/full-more.svg'
-import { ReactComponent as FullTrashIcon } from 'icons/full-trash.svg'
+import fullMoreIcon from 'icons/full-more.svg'
+import fullTrashIcon from 'icons/full-trash.svg'
 import { ReactComponent as StrokeEuro } from 'icons/stroke-euro.svg'
 import { Button, Checkbox, InfoBox, TextInput } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
@@ -204,7 +204,7 @@ export const PriceCategoriesForm = ({
                         className={styles['delete-icon']}
                         data-testid={'delete-button'}
                         variant={ButtonVariant.TERNARY}
-                        Icon={FullTrashIcon}
+                        icon={fullTrashIcon}
                         iconPosition={IconPositionEnum.CENTER}
                         disabled={
                           values.priceCategories.length <= 1 || isDisabled
@@ -232,7 +232,7 @@ export const PriceCategoriesForm = ({
 
               <Button
                 variant={ButtonVariant.TERNARY}
-                Icon={FullMoreIcon}
+                icon={fullMoreIcon}
                 onClick={() => {
                   arrayHelpers.push(INITIAL_PRICE_CATEGORY)
                   if (values.priceCategories[0].label === UNIQUE_PRICE) {

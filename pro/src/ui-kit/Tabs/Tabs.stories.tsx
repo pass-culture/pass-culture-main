@@ -1,8 +1,8 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import { ReactComponent as LibraryIcon } from 'icons/library.svg'
-import { ReactComponent as strokeUserIcon } from 'icons/stroke-user.svg'
+import strokeLibraryIcon from 'icons/stroke-library.svg'
+import strokeUserIcon from 'icons/stroke-user.svg'
 import { withRouterDecorator } from 'stories/decorators/withRouter'
 
 import Tabs, { FilterTabsProps } from './Tabs'
@@ -25,13 +25,13 @@ Default.args = {
       label: 'Offres individuelles',
       url: 'offres/indiv',
       key: 'individual',
-      Icon: strokeUserIcon,
+      icon: strokeUserIcon,
     },
     {
       label: 'Offres collectives',
       url: 'offres/collectives',
       key: 'collective',
-      Icon: LibraryIcon,
+      icon: strokeLibraryIcon,
     },
   ],
 }

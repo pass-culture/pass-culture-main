@@ -11,7 +11,7 @@ import Tooltip from 'ui-kit/Tooltip'
 import styles from './Button.module.scss'
 import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
 
-interface ButtonProps
+export interface ButtonProps
   extends SharedButtonProps,
     React.HTMLProps<HTMLButtonElement> {
   type?: 'button' | 'submit'
@@ -24,7 +24,7 @@ interface ButtonProps
 const Button = ({
   className,
   children,
-  Icon,
+  icon,
   iconPosition = IconPositionEnum.LEFT,
   variant = ButtonVariant.PRIMARY,
   type = 'button',
@@ -51,8 +51,10 @@ const Button = ({
       {...(hasTooltip ? { 'aria-describedby': tooltipId } : {})}
       {...buttonAttrs}
     >
-      {Icon && iconPosition !== IconPositionEnum.RIGHT && (
-        <Icon
+      {icon && iconPosition !== IconPositionEnum.RIGHT && (
+        <SvgIcon
+          src={icon}
+          alt=""
           className={cn(styles['button-icon'], {
             [styles['has-tooltip']]: hasTooltip,
           })}
@@ -85,8 +87,8 @@ const Button = ({
       ) : (
         children
       )}
-      {Icon && iconPosition === IconPositionEnum.RIGHT && (
-        <Icon className={styles['button-icon']} />
+      {icon && iconPosition === IconPositionEnum.RIGHT && (
+        <SvgIcon src={icon} alt="" className={styles['button-icon']} />
       )}
       {variant === ButtonVariant.BOX && (
         <SvgIcon
