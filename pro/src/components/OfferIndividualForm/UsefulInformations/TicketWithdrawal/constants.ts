@@ -9,11 +9,11 @@ export const TICKET_WITHDRAWAL_DEFAULT_VALUES = {
 
 export const ticketWithdrawalTypeRadios = [
   {
-    label: 'Évènement sans billet',
+    label: 'Aucun billet n’est nécessaire',
     value: WithdrawalTypeEnum.NO_TICKET,
   },
   {
-    label: 'Envoi par email',
+    label: 'Les billets seront envoyés par email',
     value: WithdrawalTypeEnum.BY_EMAIL,
   },
   {

@@ -56,7 +56,9 @@ describe('OfferIndividual section: TicketWithdrawal', () => {
     })
 
     // should contain sent date information when tickets are sent by mail
-    await userEvent.click(await screen.findByText('Envoi par email'))
+    await userEvent.click(
+      await screen.findByText('Les billets seront envoyés par email')
+    )
     expect(await screen.findByText('Date d’envoi')).toBeInTheDocument()
 
     // should contain withdrawal hour information when tickets are to withdraw on place
@@ -65,7 +67,9 @@ describe('OfferIndividual section: TicketWithdrawal', () => {
     )
     expect(await screen.findByText('Heure de retrait')).toBeInTheDocument()
 
-    await userEvent.click(await screen.findByText('Évènement sans billet'))
+    await userEvent.click(
+      await screen.findByText('Aucun billet n’est nécessaire')
+    )
     expect(await screen.queryByText('Date d’envoi')).not.toBeInTheDocument()
     expect(await screen.queryByText('Heure de retrait')).not.toBeInTheDocument()
   })
@@ -95,8 +99,12 @@ describe('OfferIndividual section: TicketWithdrawal', () => {
       onSubmit,
     })
 
-    expect(screen.getByLabelText('Envoi par email')).toBeDisabled()
-    expect(screen.getByLabelText('Évènement sans billet')).toBeDisabled()
+    expect(
+      screen.getByLabelText('Les billets seront envoyés par email')
+    ).toBeDisabled()
+    expect(
+      screen.getByLabelText('Aucun billet n’est nécessaire')
+    ).toBeDisabled()
     expect(
       screen.getByLabelText('Retrait sur place (guichet, comptoir...)')
     ).toBeDisabled()

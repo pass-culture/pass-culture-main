@@ -926,7 +926,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
 
         if (withdrawalInformations.withdrawalType) {
           const withdrawalTypeField = await screen.findByLabelText(
-            'Envoi par email'
+            'Les billets seront envoyés par email'
           )
           await userEvent.click(withdrawalTypeField)
           expectedBody.withdrawalType = WithdrawalTypeEnum.BY_EMAIL
