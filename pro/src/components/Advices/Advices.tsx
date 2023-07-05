@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useRef } from 'react'
 
 import { NBSP } from 'core/shared'
-import { ReactComponent as fullDownIcon } from 'icons/full-down.svg'
+import fullDownIcon from 'icons/full-down.svg'
 import { ReactComponent as FullLink } from 'icons/full-link.svg'
-import { ReactComponent as fullUpIcon } from 'icons/full-up.svg'
+import fullUpIcon from 'icons/full-up.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 
@@ -32,7 +32,7 @@ const Advices = ({ teaserText, hidden = true, setHidden }: AdvicesProps) => {
         variant={ButtonVariant.TERNARY}
         onClick={toggle}
         type="button"
-        Icon={hidden ? fullDownIcon : fullUpIcon}
+        icon={hidden ? fullDownIcon : fullUpIcon}
         iconPosition={IconPositionEnum.RIGHT}
       >
         Conseils pour votre image

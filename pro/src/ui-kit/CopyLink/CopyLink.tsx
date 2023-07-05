@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
-import { ReactComponent as FullDuplicate } from 'icons/full-duplicate.svg'
-import { ReactComponent as FullValidateIcon } from 'icons/full-validate.svg'
+import fullDuplicate from 'icons/full-duplicate.svg'
+import fullValidateIcon from 'icons/full-validate.svg'
 import { Button } from 'ui-kit/Button'
 
 import styles from './CopyLink.module.scss'
@@ -37,7 +37,7 @@ const CopyLink = ({ textToCopy }: CopyLinkProps): JSX.Element => {
             setIsClicked(false)
           }, 2900)
         }}
-        Icon={isClicked ? FullValidateIcon : FullDuplicate}
+        icon={isClicked ? fullValidateIcon : fullDuplicate}
       >
         {isClicked ? <>Copié</> : <>Copier</>}
       </Button>

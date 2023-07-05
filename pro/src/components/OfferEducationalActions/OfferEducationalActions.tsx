@@ -13,7 +13,9 @@ import {
 } from 'core/OfferEducational'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
+import fullHideIcon from 'icons/full-hide.svg'
 import { ReactComponent as FullNextIcon } from 'icons/full-next.svg'
+import strokeCheck from 'icons/stroke-check.svg'
 import { getCollectiveStatusLabel } from 'pages/Offers/Offers/OfferItem/Cells/CollectiveOfferStatusCell/CollectiveOfferStatusCell'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
@@ -23,8 +25,6 @@ import {
   toDateStrippedOfTimezone,
 } from 'utils/date'
 
-import { ReactComponent as IconActive } from './assets/icon-active.svg'
-import { ReactComponent as IconInactive } from './assets/icon-inactive.svg'
 import style from './OfferEducationalActions.module.scss'
 
 export interface OfferEducationalActionsProps {
@@ -109,7 +109,7 @@ const OfferEducationalActions = ({
         <div className={cn(style['actions'], className)}>
           {!isBooked && offer.status != OfferStatus.EXPIRED && (
             <Button
-              Icon={offer.isActive ? IconInactive : IconActive}
+              icon={offer.isActive ? fullHideIcon : strokeCheck}
               onClick={activateOffer}
               variant={ButtonVariant.TERNARY}
               className={style['button-link']}

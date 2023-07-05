@@ -1,9 +1,10 @@
 import cn from 'classnames'
-import React, { FunctionComponent, SVGProps } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 
 import { Button } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Tabs.module.scss'
 
@@ -12,7 +13,7 @@ interface Tab {
   key: string
   url?: string
   onClick?: () => void
-  Icon?: FunctionComponent<SVGProps<SVGSVGElement>>
+  icon?: string
 }
 export interface FilterTabsProps {
   tabs: Tab[]
@@ -22,7 +23,7 @@ export interface FilterTabsProps {
 const Tabs = ({ selectedKey, tabs }: FilterTabsProps): JSX.Element => {
   return (
     <ul className={styles['tabs']}>
-      {tabs.map(({ key, label, url, Icon, onClick }) => {
+      {tabs.map(({ key, label, url, icon, onClick }) => {
         return (
           <li
             className={cn(styles['tabs-tab'], {
@@ -36,13 +37,19 @@ const Tabs = ({ selectedKey, tabs }: FilterTabsProps): JSX.Element => {
                 key={`tab${url}`}
                 to={url}
               >
-                {Icon && <Icon className={styles['tabs-tab-icon']} />}
+                {icon && (
+                  <SvgIcon
+                    src={icon}
+                    alt=""
+                    className={styles['tabs-tab-icon']}
+                  />
+                )}
                 <span>{label}</span>
               </Link>
             ) : (
               <Button
                 variant={ButtonVariant.TERNARY}
-                Icon={Icon}
+                icon={icon}
                 onClick={onClick}
                 className={styles['tabs-tab-button']}
               >

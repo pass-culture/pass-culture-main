@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { ReactComponent as fullEdit } from 'icons/full-edit.svg'
+import fullEditIcon from 'icons/full-edit.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -32,7 +32,7 @@ const ButtonImageEdit = ({
           onClick={() => setIsModalOpen(true)}
           variant={ButtonVariant.TERNARY}
           alt="Modifier l’image"
-          Icon={fullEdit}
+          icon={fullEditIcon}
         >
           Modifier
         </Button>

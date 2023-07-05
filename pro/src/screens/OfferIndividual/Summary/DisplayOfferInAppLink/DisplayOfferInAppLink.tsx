@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent, SVGProps } from 'react'
 
 import { ButtonLinkNewWindow } from 'components/ButtonLinkNewWindow'
 import { SharedButtonProps } from 'ui-kit/Button/types'
@@ -8,6 +8,11 @@ interface DisplayOfferInAppLinkProps extends SharedButtonProps {
   id: number
   tracking?: { isTracked: boolean; trackingFunction: () => void }
   text?: string
+  Icon?: FunctionComponent<
+    SVGProps<SVGSVGElement> & {
+      title?: string | undefined
+    }
+  >
 }
 
 export const DisplayOfferInAppLink: FunctionComponent<

@@ -10,7 +10,7 @@ import { modeValidationConstraints } from 'components/ImageUploadBrowserForm/con
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { useGetImageBitmap } from 'hooks/useGetBitmap'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as DownloadIcon } from 'icons/full-download.svg'
+import fullDownloadIcon from 'icons/full-download.svg'
 import { Button, Divider } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -151,7 +151,7 @@ const ModalImageCrop = ({
       <Divider />
       <footer className={style['modal-image-crop-footer']}>
         <Button
-          Icon={DownloadIcon}
+          icon={fullDownloadIcon}
           onClick={onReplaceImage}
           variant={ButtonVariant.TERNARY}
         >

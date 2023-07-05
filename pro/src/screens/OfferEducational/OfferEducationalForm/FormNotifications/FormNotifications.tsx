@@ -3,18 +3,20 @@ import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { OfferEducationalFormValues } from 'core/OfferEducational'
-import { ReactComponent as FullMoreIcon } from 'icons/full-more.svg'
+import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import EmailInputRow from './EmailInputRow/EmailInputRow'
 import styles from './FormNotifications.module.scss'
 
+interface FormNotificationsProps {
+  disableForm: boolean
+}
+
 const FormNotifications = ({
   disableForm,
-}: {
-  disableForm: boolean
-}): JSX.Element => {
+}: FormNotificationsProps): JSX.Element => {
   const { values } = useFormikContext<OfferEducationalFormValues>()
 
   return (
@@ -35,7 +37,7 @@ const FormNotifications = ({
             ))}
             <Button
               variant={ButtonVariant.TERNARY}
-              Icon={FullMoreIcon}
+              icon={fullMoreIcon}
               onClick={() => push('')}
               disabled={values.notificationEmails.length >= 5}
               className={styles['add-notification-button']}

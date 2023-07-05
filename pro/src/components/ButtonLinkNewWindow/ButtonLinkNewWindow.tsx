@@ -1,9 +1,19 @@
-import React, { FunctionComponent, useCallback, MouseEventHandler } from 'react'
+import React, {
+  FunctionComponent,
+  SVGProps,
+  useCallback,
+  MouseEventHandler,
+} from 'react'
 
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant, SharedButtonProps } from 'ui-kit/Button/types'
 
 export interface ButtonLinkNewWindowProps extends SharedButtonProps {
+  Icon?: FunctionComponent<
+    SVGProps<SVGSVGElement> & {
+      title?: string | undefined
+    }
+  >
   className?: string
   linkTo: string
   children?: React.ReactNode

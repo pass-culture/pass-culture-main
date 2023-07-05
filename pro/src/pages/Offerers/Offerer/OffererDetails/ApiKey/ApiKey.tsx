@@ -4,9 +4,7 @@ import React, { useCallback, useState } from 'react'
 import { api } from 'apiClient/api'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import useNotification from 'hooks/useNotification'
-import strokeTrashIcon, {
-  ReactComponent as StrokeTrashIcon,
-} from 'icons/stroke-trash.svg'
+import strokeTrashIcon from 'icons/stroke-trash.svg'
 import { Banner, Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { ENV_WORDING } from 'utils/config'
@@ -125,7 +123,7 @@ const ApiKey = ({
                 className={styles['action']}
                 onClick={() => setApiKeyToDelete(savedApiKey)}
                 variant={ButtonVariant.TERNARY}
-                Icon={StrokeTrashIcon}
+                icon={strokeTrashIcon}
               >
                 supprimer
               </Button>

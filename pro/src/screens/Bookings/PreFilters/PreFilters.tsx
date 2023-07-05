@@ -12,7 +12,7 @@ import {
 } from 'core/Bookings'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as RefreshIcon } from 'icons/full-refresh.svg'
+import fullRefreshIcon from 'icons/full-refresh.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -194,7 +194,7 @@ const PreFilters = ({
 
         <div className={styles['reset-filters']}>
           <Button
-            Icon={RefreshIcon}
+            icon={fullRefreshIcon}
             disabled={!hasPreFilters}
             onClick={resetPreFilters}
             variant={ButtonVariant.TERNARY}

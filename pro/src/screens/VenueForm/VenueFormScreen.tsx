@@ -25,7 +25,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as FullPlusIcon } from 'icons/full-more.svg'
+import fullPlusIcon from 'icons/full-more.svg'
 import strokeMailIcon from 'icons/stroke-mail.svg'
 import { Button, Title } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -229,7 +229,7 @@ const VenueFormScreen = ({
                     isEdition: false,
                   })
                 }
-                Icon={FullPlusIcon}
+                icon={fullPlusIcon}
               >
                 <span>Créer une offre</span>
               </Button>
