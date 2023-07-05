@@ -68,7 +68,7 @@ Notamment quand on a besoin d'appliquer une fonction à l'attribut de classe (G�
 
 ## Feature Flags
 
-Les Feature Flags (ou Feature Toggle) permettent de désactiver / activer une fonctionnalité depuis l'admin (ex: [admin staging](https://backend.staging.passculture.team/pc/back-office/feature/)) sans avoir besoin de déployer de code.
+Les Feature Flags (ou Feature Toggle) permettent de désactiver / activer une fonctionnalité depuis l'admin (ex: [admin staging](https://backoffice.staging.passculture.team/admin/feature-flipping)) sans avoir besoin de déployer de code.
 
 ### Installer un nouveau Feature Flag
 
