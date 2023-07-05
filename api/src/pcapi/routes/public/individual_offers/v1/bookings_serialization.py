@@ -6,8 +6,7 @@ import pydantic
 from pcapi.core.bookings import models as booking_models
 from pcapi.core.finance import utils as finance_utils
 from pcapi.routes import serialization
-from pcapi.routes.public.individual_offers.v1.base_serialization import PaginationQueryParams
-from pcapi.routes.public.individual_offers.v1.serialization import Pagination
+from pcapi.routes.public.individual_offers.v1.base_serialization import IndexPaginationQueryParams
 from pcapi.utils import date as date_utils
 
 
@@ -72,10 +71,9 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
         )
 
 
-class GetFilteredBookingsRequest(PaginationQueryParams):
+class GetFilteredBookingsRequest(IndexPaginationQueryParams):
     offer_id: int
 
 
 class GetFilteredBookingsResponse(serialization.ConfiguredBaseModel):
     bookings: typing.List[GetBookingResponse]
-    pagination: Pagination
