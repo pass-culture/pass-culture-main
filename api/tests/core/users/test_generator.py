@@ -157,3 +157,14 @@ class UserGeneratorTest:
         assert profile_completion.resultContent["firstName"] == user.firstName
         assert profile_completion.resultContent["lastName"] == user.lastName
         assert profile_completion.resultContent["postalCode"] == user.postalCode
+
+    def test_identity_check_is_consistent_with_user_data(self):
+        user_data = users_generator.GenerateUserData(
+            age=users_constants.ELIGIBILITY_AGE_18,
+            step=users_generator.GeneratedSubscriptionStep.IDENTITY_CHECK,
+        )
+        user = users_generator.generate_user(user_data)
+        identity_check = user.beneficiaryFraudChecks[-1]
+        assert identity_check.resultContent["first_name"] == user.firstName
+        assert identity_check.resultContent["last_name"] == user.lastName
+        assert identity_check.resultContent["birth_date"] == str(user.birth_date)

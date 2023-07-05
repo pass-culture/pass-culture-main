@@ -4,6 +4,7 @@ from datetime import time
 import random
 import string
 import typing
+import urllib.parse
 import uuid
 
 from dateutil.relativedelta import relativedelta
@@ -167,6 +168,19 @@ class BeneficiaryFraudCheckFactory(testing.BaseFactory):
     )
 
     @classmethod
+    def generate_content_from_user(cls, factory_class: typing.Type[factory.Factory], user: users_models.User) -> dict:
+        identification_id = str(uuid.uuid4())
+        identification_url = urllib.parse.urljoin(settings.UBBLE_API_URL, f"/identifications/{identification_id}")
+        kwargs = dict(identification_id=identification_id, identification_url=identification_url)
+        if user.firstName:
+            kwargs.update(first_name=user.firstName)
+        if user.lastName:
+            kwargs.update(last_name=user.lastName)
+        if user.birth_date:
+            kwargs.update(birth_date=user.birth_date.isoformat())  # type: ignore [attr-defined]
+        return factory_class(**kwargs).dict(by_alias=True)
+
+    @classmethod
     def _create(
         cls,
         model_class: typing.Type[models.BeneficiaryFraudCheck],
@@ -175,13 +189,23 @@ class BeneficiaryFraudCheckFactory(testing.BaseFactory):
     ) -> models.BeneficiaryFraudCheck:
         """Override the default ``_create`` with our custom call."""
         factory_class = FRAUD_CHECK_TYPE_MODEL_ASSOCIATION.get(kwargs["type"])
-        content = {}
-        if factory_class and "resultContent" not in kwargs:
-            content = factory_class().dict(by_alias=True)
-        if factory_class and isinstance(kwargs.get("resultContent"), factory_class._meta.get_model_class()):
+        if not factory_class:
+            kwargs["resultContent"] = None
+            return super()._create(model_class, *args, **kwargs)
+
+        content = None
+        if "resultContent" not in kwargs:
+            content = (
+                cls.generate_content_from_user(factory_class, kwargs["user"])
+                if "user" in kwargs
+                else factory_class().dict(by_alias=True)
+            )
+        elif isinstance(kwargs.get("resultContent"), dict):
+            content = factory_class(**kwargs["resultContent"]).dict(by_alias=True)
+        elif isinstance(kwargs.get("resultContent"), factory_class._meta.get_model_class()):
             content = kwargs["resultContent"].dict(by_alias=True)
 
-        kwargs["resultContent"] = content or None
+        kwargs["resultContent"] = content
         return super()._create(model_class, *args, **kwargs)
 
 
