@@ -7438,10 +7438,10 @@ commander@2.11.x:
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.11.0.tgz#157152fd1e7a6c8d98a5b715cf376df928004563"
   integrity sha512-b0553uYA5YAEGgyYIGYROzKQ7X5RAqedkfjiZxwi0kL1g3bOaBNNZfYkzt/CL0umgD5wc9Jec2FbB98CjkMRvQ==
 
-commander@^10.0.0:
-  version "10.0.1"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-10.0.1.tgz#881ee46b4f77d1c1dccc5823433aa39b022cbe06"
-  integrity sha512-y4Mg2tXshplEbSGzx7amzPwKKOCGuoSRP/CjEdwwk0FOGlUbq6lKuoyDZTNZkmxHdJtp54hdfY/JUrdL7Xfdug==
+commander@^11.0.0:
+  version "11.0.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-11.0.0.tgz#43e19c25dbedc8256203538e8d7e9346877a6f67"
+  integrity sha512-9HMlXtt/BNoYr8ooyjjNRdIilOTkVJXB+GhxMTtOKwk0R4j4lS4NpjuqmRxroBfnfTSHQIHQB7wryHhXarNjmQ==
 
 commander@^2.19.0, commander@^2.20.0:
   version "2.20.3"
@@ -14066,13 +14066,13 @@ open@^8.0.9, open@^8.4.0:
     is-docker "^2.1.1"
     is-wsl "^2.2.0"
 
-openapi-typescript-codegen@^0.24.0:
-  version "0.24.0"
-  resolved "https://registry.yarnpkg.com/openapi-typescript-codegen/-/openapi-typescript-codegen-0.24.0.tgz#b3e6ade5bae75cd47868e5e3e4dc3bcf899cadab"
-  integrity sha512-rSt8t1XbMWhv6Db7GUI24NNli7FU5kzHLxcE8BpzgGWRdWyWt9IB2YoLyPahxNrVA7yOaVgnXPkrcTDRMQtJYg==
+openapi-typescript-codegen@^0.25.0:
+  version "0.25.0"
+  resolved "https://registry.yarnpkg.com/openapi-typescript-codegen/-/openapi-typescript-codegen-0.25.0.tgz#0cb028f54b33b0a63bd9da3756c1c41b4e1a70e2"
+  integrity sha512-nN/TnIcGbP58qYgwEEy5FrAAjePcYgfMaCe3tsmYyTgI3v4RR9v8os14L+LEWDvV50+CmqiyTzRkKKtJeb6Ybg==
   dependencies:
     camelcase "^6.3.0"
-    commander "^10.0.0"
+    commander "^11.0.0"
     fs-extra "^11.1.1"
     handlebars "^4.7.7"
     json-schema-ref-parser "^9.0.9"
