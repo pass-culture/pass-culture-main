@@ -8,6 +8,7 @@ from pcapi.core.bookings.constants import FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE
 import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.external_bookings.boost.client import get_boost_external_booking_barcode
 from pcapi.core.external_bookings.exceptions import ExternalBookingException
 import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers.models import Venue
@@ -19,6 +20,7 @@ from pcapi.core.offers.models import PriceCategoryLabel
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.exceptions import InactiveProvider
+from pcapi.core.providers.models import Provider
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
@@ -145,6 +147,13 @@ def get_bookings(user: User) -> BookingsResponse:
                 Venue.publicName,
             )
         )
+        .options(
+            joinedload(Booking.stock)
+            .joinedload(Stock.lastProvider)
+            .load_only(
+                Provider.localClass
+            )  # TODO(yacine) to be removed with WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING
+        )
         .options(joinedload(Booking.stock).joinedload(Stock.offer).joinedload(Offer.mediations))
         .options(joinedload(Booking.activationCode))
         .options(joinedload(Booking.externalBookings))
@@ -160,6 +169,12 @@ def get_bookings(user: User) -> BookingsResponse:
     ongoing_bookings = []
 
     for booking in individual_bookings:
+        if (
+            booking.externalBookings and booking.stock.lastProvider.localClass == "BoostStocks"
+        ):  # TODO(yacine) to be removed with WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING
+            for external_booking in booking.externalBookings:
+                external_booking.barcode = get_boost_external_booking_barcode(external_booking.barcode)
+
         if is_ended_booking(booking):
             ended_bookings.append(booking)
         else:
