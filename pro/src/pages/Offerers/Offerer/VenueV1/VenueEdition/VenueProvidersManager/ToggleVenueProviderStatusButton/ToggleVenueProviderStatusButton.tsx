@@ -29,10 +29,13 @@ const ToggleVenueProviderStatusButton = ({
     setIsLoading(true)
     const payload = {
       ...venueProvider,
+      // Price is a number in VenueProviderResponse but PostVenueProviderBody expects a string
+      // We should probably fix this at some point
+      price: venueProvider.price?.toString(),
+      providerId: venueProvider.provider.id,
       isActive: !venueProvider.isActive,
     }
     api
-      // @ts-expect-error boolean | null is not assignable to boolean | undefined
       .updateVenueProvider(payload)
       .then(editedVenueProvider => {
         afterEdit(editedVenueProvider)
