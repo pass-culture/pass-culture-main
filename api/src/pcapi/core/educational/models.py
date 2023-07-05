@@ -609,6 +609,10 @@ class CollectiveOfferTemplate(
             raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for collective offer template {self.id}")
         return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
 
+    @property
+    def categoryId(self) -> str:  # used in validation rule, do not remove
+        return self.subcategory.category.id
+
     @hybrid_property
     def isEvent(self) -> bool:
         return self.subcategory.is_event
