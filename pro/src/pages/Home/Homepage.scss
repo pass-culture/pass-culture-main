@@ -9,6 +9,8 @@
   }
 
   .h-description-list {
+    margin-top: rem.torem(16px);
+
     .h-dl-row {
       display: flex;
       flex-direction: row;
@@ -124,7 +126,7 @@
   }
 
   .h-section {
-    margin-top: rem.torem(40px);
+    margin-top: rem.torem(32px);
 
     &:first-child {
       margin-top: 0;
