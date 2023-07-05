@@ -7,8 +7,8 @@ import { BaseCheckbox, BaseInput } from '../shared'
 import styles from './AdageMultiselect.module.scss'
 
 export interface ItemProps {
-  key: string
-  value: string
+  label: string
+  value: number
 }
 
 interface AdageMultiselectProps {
@@ -25,7 +25,7 @@ const filterAndSortItems = (
 ) => {
   const regExp = new RegExp(inputValue, 'i')
   return items
-    .filter(item => item.value.match(regExp))
+    .filter(item => item.label.match(regExp))
     .sort((a, b) => {
       if (selectedItems.includes(b) && !selectedItems.includes(a)) {
         return 1
@@ -33,7 +33,7 @@ const filterAndSortItems = (
       if (!selectedItems.includes(b) && selectedItems.includes(a)) {
         return -1
       }
-      return a.value.localeCompare(b.value)
+      return a.label.localeCompare(b.label)
     })
 }
 
@@ -109,8 +109,8 @@ const AdageMultiselect = ({
             return (
               <li key={`${item.value}${index}`}>
                 <BaseCheckbox
-                  key={`${name}-${item.value}`}
-                  label={item.value}
+                  key={`${name}-${item.label}`}
+                  label={item.label}
                   name={name}
                   aria-selected={field.value.includes(item)}
                   checked={field.value.includes(item)}
