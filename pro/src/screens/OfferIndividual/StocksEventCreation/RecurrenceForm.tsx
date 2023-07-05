@@ -146,6 +146,9 @@ export const RecurrenceForm = ({
     setFieldValue('startingDate', '')
     setFieldValue('endingDate', '')
   }
+  const minDateForEndingDate = values.startingDate
+    ? values.startingDate
+    : new Date()
 
   return (
     <FormikProvider value={formik}>
@@ -271,7 +274,7 @@ export const RecurrenceForm = ({
                     name="endingDate"
                     label="Au"
                     className={styles['date-input']}
-                    minDateTime={new Date()}
+                    minDateTime={minDateForEndingDate}
                   />
                 )}
               </FormLayout.Row>
@@ -301,7 +304,7 @@ export const RecurrenceForm = ({
                   name="endingDate"
                   label="Fin de la récurrence"
                   className={styles['date-input']}
-                  minDateTime={new Date()}
+                  minDateTime={minDateForEndingDate}
                 />
               </FormLayout.Row>
             )}
