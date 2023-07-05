@@ -216,7 +216,7 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
                 price=finance_utils.to_euros(stock_data["price"]),
                 quantity=serialization.deserialize_quantity(stock_data["quantity"]),
                 booking_limit_datetime=stock_data["booking_limit_datetime"],
-                creating_provider=current_api_key.provider,
+                creating_provider=provider,
             )
     for offer in offers_to_update:
         try:
