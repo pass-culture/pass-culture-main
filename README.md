@@ -104,7 +104,7 @@ Ces utilisateurs existent également pour le 97, en remplaçant `93` par `97`.
 #### Backoffice v3
 
 - `pc start-backoffice`
-- `http://localhost:5001/backofficev3/` devrait être lancé et fonctionnel
+- `http://localhost:5001/` devrait être lancé et fonctionnel
 - Cliquez sur _Se connecter via Google_
 - Vous arriverez alors sur la page d'accueil du BO v3, en tant qu'utilisateur admin `admin@passculture.local`
 
@@ -112,6 +112,7 @@ Ces utilisateurs existent également pour le 97, en remplaçant `93` par `97`.
 
 - Rebuild : `pc rebuild-backend` (reconstruire l'image docker sans cache)
 - Restart : `pc restart-backend` (effacer la base de données, et relancer tous les containers)
+- Restart : `pc restart-backoffice` (effacer la base de données, et relancer tous les containers, équivalent pour `pc start-backoffice`)
 - Reset :
   - `pc reset-sandbox-db` : si vos serveurs de dev tournent, et que vous souhaitez juste réinitialiser la db
   - `pc reset-reco-db` : (si vous voulez juste enlever les recommandations et bookings créés en dev par votre

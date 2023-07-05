@@ -34,12 +34,8 @@ ZENDESK_TAG_ID_CHECK_COMPLETED = "id_check_terminé"
 ZENDESK_TAG_SUSPENDED = "suspendu"
 
 
-def _get_backoffice_support_beneficiary_user_links(user_id: int) -> list[str]:
-    return [
-        f"{settings.BACKOFFICE_URL}/public-accounts/{user_id}",
-        f"{settings.API_URL}/pc/back-office/support_beneficiary/details/?id={user_id}",
-        f"{settings.API_URL}/pc/back-office/beneficiary_users/details/?id={user_id}",
-    ]
+def _get_backoffice_support_beneficiary_user_links(user_id: int) -> str:
+    return f"{settings.BACKOFFICE_URL}/public-accounts/{user_id}"
 
 
 def _get_backoffice_pro_user_link(user_id: int) -> str:
@@ -114,7 +110,7 @@ def _format_user_attributes(email: str, attributes: attributes_models.UserAttrib
         "tags": tags,
         # https://developer.zendesk.com/api-reference/ticketing/users/users/#user-fields
         "user_fields": {
-            "backoffice_url": _get_backoffice_support_beneficiary_user_links(attributes.user_id)[0],
+            "backoffice_url": _get_backoffice_support_beneficiary_user_links(attributes.user_id),
             "user_id": attributes.user_id,
             "first_name": attributes.first_name,
             "last_name": attributes.last_name,
@@ -213,8 +209,8 @@ def _add_internal_note(
                 remaining=float(attributes.domains_credit.all.remaining) if attributes.domains_credit else 0,
                 initial=float(attributes.domains_credit.all.initial) if attributes.domains_credit else 0,
             )
-        for bo_link in _get_backoffice_support_beneficiary_user_links(attributes.user_id):
-            html_body += Markup('<br/><a href="{}" target="_blank">{}</a>').format(bo_link, bo_link)
+        bo_link = _get_backoffice_support_beneficiary_user_links(attributes.user_id)
+        html_body += Markup('<br/><a href="{}" target="_blank">{}</a>').format(bo_link, bo_link)
 
     data = {
         "ticket": {
