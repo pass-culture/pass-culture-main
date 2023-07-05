@@ -13,8 +13,9 @@ interface SkipLinksProps {
 const SkipLinks = ({ displayMenu = false }: SkipLinksProps): JSX.Element => {
   return (
     <>
-      <input
+      <a
         tabIndex={-1}
+        href="#"
         id="top-page"
         className={styles['input-focus-top-page']}
       />
