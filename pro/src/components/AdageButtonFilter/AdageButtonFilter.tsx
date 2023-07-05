@@ -9,6 +9,7 @@ export interface AdageButtonFilterProps
   extends React.HTMLProps<HTMLButtonElement> {
   title: string
   isActive: boolean
+  itemsLength?: number
 }
 
 const AdageButtonFilter = ({
@@ -16,6 +17,7 @@ const AdageButtonFilter = ({
   children,
   isActive,
   disabled,
+  itemsLength,
 }: AdageButtonFilterProps): JSX.Element => {
   const [filterModal, setFilterModal] = useState(false)
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -27,6 +29,7 @@ const AdageButtonFilter = ({
   return (
     <div ref={containerRef} className={styles['adage-container']}>
       <button
+        type="button"
         disabled={disabled}
         onClick={() => setFilterModal(!filterModal)}
         className={cn([styles['adage-button']], {
@@ -40,7 +43,7 @@ const AdageButtonFilter = ({
             [styles['adage-button-active-disabled']]: disabled,
           })}
         ></div>
-        {title}
+        {title} {isActive && `(${itemsLength})`}
       </button>
 
       <dialog open={filterModal} className={styles['adage-button-children']}>

@@ -11,18 +11,18 @@
 
         line-height: fonts.$body-line-height;
         color: colors.$grey-dark;
-        margin-bottom: rem.torem(32px);
+        margin-bottom: rem.torem(24px);
     }
 
     &-children {
-        max-height: rem.torem(240px);
-        overflow: scroll;
+        max-height: rem.torem(250px);
+        overflow: hidden;
     }
 
     &-separator {
-        margin-top: rem.torem(32px);
+        margin-top: rem.torem(24px);
         border-bottom: rem.torem(1px) solid colors.$grey-medium;
-        margin-bottom: rem.torem(16px);
+        margin-bottom: rem.torem(24px);
     }
 
     &-footer {

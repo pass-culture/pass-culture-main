@@ -6,9 +6,9 @@ import React from 'react'
 import AdageMultiselect, { ItemProps } from '../AdageMultiselect'
 
 const options = [
-  { key: '1', value: 'Architecture' },
-  { key: '2', value: 'Danse' },
-  { key: '3', value: 'Théatre' },
+  { value: 1, label: 'Architecture' },
+  { value: 2, label: 'Danse' },
+  { value: 3, label: 'Théatre' },
 ]
 
 const renderAdageMultiselect = (initialValues: ItemProps[] = []) => {
