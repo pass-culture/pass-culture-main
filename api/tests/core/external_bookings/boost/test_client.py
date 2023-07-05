@@ -9,6 +9,7 @@ from pcapi.core.external_bookings.boost import client as boost_client
 import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.utils import date
 
@@ -53,6 +54,20 @@ class GetPcuPricingIfExistsTest:
 
         assert boost_client.get_pcu_pricing_if_exists(showtime_pricing_list) == PCU_PRICING
         assert caplog.records[0].message == "There are several pass Culture Pricings for this Showtime, we will use PCU"
+
+
+@pytest.mark.parametrize(
+    "barcode, ff_is_active, expected_barcode",
+    [
+        ("123456", True, "sale-123456"),
+        ("sale-123456", True, "sale-123456"),
+        ("123456", False, "123456"),
+        ("sale-123456", False, "123456"),
+    ],
+)
+def test_get_boost_external_booking_barcode(barcode: str, ff_is_active: bool, expected_barcode: str):
+    with override_features(WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING=ff_is_active):
+        assert boost_client.get_boost_external_booking_barcode(barcode) == expected_barcode
 
 
 class GetShowtimesTest:
@@ -131,10 +146,21 @@ class BookTicketTest:
 
 
 class CancelBookingTest:
-    def test_should_cancel_booking_with_success(self, requests_mock):
+    @pytest.mark.parametrize(
+        "barcode, ff_is_active, expected_barcode",
+        [
+            ("90577", True, "sale-90577"),
+            ("sale-90577", True, "sale-90577"),
+            ("90577", False, "sale-90577"),
+            ("sale-90577", False, "sale-90577"),
+        ],
+    )
+    def test_should_cancel_booking_with_success(
+        self, barcode: str, ff_is_active: bool, expected_barcode: str, requests_mock
+    ):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
-        requests_mock.put(
+        put_adapter = requests_mock.put(
             "https://cinema-0.example.com/api/sale/orderCancel",
             json=fixtures.CANCEL_ORDER_SALE_90577,
             headers={"Content-Type": "application/json"},
@@ -142,9 +168,11 @@ class CancelBookingTest:
         boost = boost_client.BoostClientAPI(cinema_str_id)
 
         try:
-            boost.cancel_booking(barcodes=["90577"])
+            with override_features(WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING=ff_is_active):
+                boost.cancel_booking(barcodes=[barcode])
         except Exception:  # pylint: disable=broad-except
             assert False, "Should not raise exception"
+        assert put_adapter.last_request.json() == {"sales": [{"code": expected_barcode, "refundType": "pcu"}]}
 
     def test_when_boost_return_element_not_found(self, requests_mock):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
