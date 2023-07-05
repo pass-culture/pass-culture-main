@@ -1,4 +1,3 @@
-import flask
 from sqlalchemy import orm as sqla_orm
 
 from pcapi.core.bookings import api as bookings_api
@@ -39,7 +38,6 @@ def _get_bookings_query(offer_id: int) -> sqla_orm.Query:
         .join(offers_models.Stock)
         .join(offers_models.Offer)
         .filter(offers_models.Offer.id == offer_id)
-        .order_by(booking_models.Booking.dateCreated.desc())
     )
 
 
@@ -57,28 +55,12 @@ def get_bookings_by_offer(
     Get paginated bookings for a given offer.
     """
 
-    bookings_count = _get_bookings_query(query.offer_id).count()
-    offset = query.limit * (query.page - 1)
-
-    if offset > bookings_count:
-        raise api_errors.ApiErrors(
-            {
-                "page": f"The page you requested does not exist. The maximum page for the specified limit is {bookings_count//query.limit+1}"
-            },
-            status_code=404,
-        )
-
-    bookings = _get_bookings_query(query.offer_id).offset(offset).limit(query.limit).all()
+    bookings = (
+        _get_bookings_query(query.offer_id).filter(booking_models.Booking.id >= query.firstIndex).limit(query.limit)
+    )
 
     return serialization.GetFilteredBookingsResponse(
-        bookings=[serialization.GetBookingResponse.build_booking(booking) for booking in bookings],
-        pagination=serialization.Pagination.build_pagination(
-            flask.url_for(".get_bookings_by_offer", _external=True),
-            query.page,
-            len(bookings),
-            bookings_count,
-            query.limit,
-        ),
+        bookings=[serialization.GetBookingResponse.build_booking(booking) for booking in bookings]
     )
 
 
