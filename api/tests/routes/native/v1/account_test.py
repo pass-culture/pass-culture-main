@@ -954,6 +954,70 @@ class UpdateUserEmailTest:
         # We record the email validation in the user's email history
         assert user.email_history[-1].eventType == users_models.EmailHistoryEventTypeEnum.VALIDATION
 
+    def test_end_to_end_update_email_with_cancellation(self, client):
+        password = "some_random_string"
+        old_email = self.identifier
+        new_email = "updated_" + old_email
+        user = users_factories.UserFactory(email=old_email, password=password)
+        client.with_token(user.email)
+
+        # User requests email update
+        response = client.post(
+            "/native/v1/profile/update_email",
+            json={
+                "email": new_email,
+                "password": password,
+            },
+        )
+        assert response.status_code == 204
+
+        # User receives an email to his current email asking to confirm that he wants to change email or to cancel if he is not the one who requested it
+        assert mails_testing.outbox
+        confirmation_email = mails_testing.outbox[-1]
+        assert confirmation_email.sent_data["To"] == old_email
+        confirmation_link = urlparse(confirmation_email.sent_data["params"]["CONFIRMATION_LINK"])
+        cancellation_link = urlparse(confirmation_email.sent_data["params"]["CANCELLATION_LINK"])
+        base_url_confirmation = parse_qs(confirmation_link.query)["link"][0]
+        base_url_cancellation = parse_qs(cancellation_link.query)["link"][0]
+        base_url_params_confirmation = parse_qs(urlparse(base_url_confirmation).query)
+        base_url_params_cancellation = parse_qs(urlparse(base_url_cancellation).query)
+        assert {"new_email", "token", "expiration_timestamp"} <= base_url_params_confirmation.keys()
+        assert {"new_email", "token", "expiration_timestamp"} <= base_url_params_cancellation.keys()
+        assert base_url_params_confirmation["new_email"] == [new_email]
+        assert base_url_params_cancellation["new_email"] == [new_email]
+        assert base_url_params_cancellation["token"] == base_url_params_confirmation["token"]
+
+        # the email doesn't change yet
+        user = users_models.User.query.get(user.id)
+        assert user.email == old_email
+
+        # We record the email update request in the user's email history
+        assert user.email_history[-1].eventType == users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST
+
+        # User cancels (from the link sent to their current e-mail address)
+        response = client.post(
+            "/native/v1/profile/email_update/cancel",
+            json={
+                "token": base_url_params_confirmation["token"][0],
+            },
+        )
+
+        assert response.status_code == 204
+
+        # the email doesn't change
+        user = users_models.User.query.get(user.id)
+        assert user.email == old_email
+
+        # User account is suspended
+        assert not user.isActive
+
+        # User receives an e-mail on their current email adress confirming the account suspenssion
+        assert len(mails_testing.outbox) == 2
+        assert mails_testing.outbox[-1].sent_data["To"] == old_email
+
+        # We record the email cancellation in the user's email history
+        assert user.email_history[-1].eventType == users_models.EmailHistoryEventTypeEnum.CANCELLATION
+
 
 class GetEMailUpdateStatusTest:
     old_email = "old@email.com"
