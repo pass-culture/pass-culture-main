@@ -11,6 +11,7 @@ import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.ubble.models as ubble_fraud_models
 import pcapi.core.history.factories as history_factories
+import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_settings
 import pcapi.core.users.constants as users_constants
@@ -293,6 +294,53 @@ class FindDuplicateUserTest:
         new_user = users_factories.UserFactory()
 
         assert fraud_api.find_duplicate_id_piece_number_user(new_id_piece_number, new_user.id) == existing_user
+
+    def test_handle_duplicated_beneficiary_fraud_suspicion(self):
+        id_number = "123456789012"
+        # 2 years ago
+        with freeze_time(datetime.datetime.utcnow() - relativedelta(years=2)):
+            user1 = users_factories.BeneficiaryFactory(
+                age=17,
+                idPieceNumber=None,
+                beneficiaryFraudChecks__type=fraud_models.FraudCheckType.EDUCONNECT,
+            )
+            user2 = users_factories.BeneficiaryFactory(
+                age=16,
+                idPieceNumber=None,
+                beneficiaryFraudChecks__type=fraud_models.FraudCheckType.EDUCONNECT,
+            )
+
+        # A year ago
+        with freeze_time(datetime.datetime.utcnow() - relativedelta(years=1)):
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user1,
+                status=fraud_models.FraudCheckStatus.OK,
+                type=fraud_models.FraudCheckType.UBBLE,
+            )
+            user1.idPieceNumber = id_number
+
+        # Today
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user2,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.UBBLE,
+        )
+
+        fraud_api.handle_fraud_suspicion(user2, user1)
+        assert mails_testing.outbox
+
+        sent_mail = mails_testing.outbox[-1]
+        assert not user1.isActive
+        assert not user2.isActive
+        assert sent_mail.sent_data["To"] == "fraude@passculture.app"
+        assert (
+            f'<a href="{settings.BACKOFFICE_URL}/public-accounts/{user1.id}">{user1.id}</a>'
+            in sent_mail.sent_data["html_content"]
+        )
+        assert (
+            f'<a href="{settings.BACKOFFICE_URL}/public-accounts/{user2.id}">{user2.id}</a>'
+            in sent_mail.sent_data["html_content"]
+        )
 
 
 @pytest.mark.usefixtures("db_session")
