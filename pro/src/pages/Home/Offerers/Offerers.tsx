@@ -15,7 +15,7 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as FullWaitIcon } from 'icons/full-wait.svg'
+import fullWaitIcon from 'icons/full-wait.svg'
 import strokePartyIcon from 'icons/stroke-party.svg'
 import { OffererVenues } from 'pages/Home/OffererVenues'
 import { VenueList } from 'pages/Home/Venues'
@@ -163,7 +163,7 @@ const Offerers = ({
                 )
                 setOpenSuccessDialog(false)
               }}
-              cancelIcon={FullWaitIcon}
+              cancelIcon={fullWaitIcon}
             >
               <p>Vous pouvez dès à présent créer une offre.</p>
             </RedirectDialog>

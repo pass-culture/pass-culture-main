@@ -1,5 +1,3 @@
-import { FunctionComponent, SVGProps } from 'react'
-
 export enum ButtonVariant {
   PRIMARY = 'primary',
   SECONDARY = 'secondary',
@@ -15,11 +13,7 @@ export enum IconPositionEnum {
 }
 
 export type SharedButtonProps = {
-  Icon?: FunctionComponent<
-    SVGProps<SVGSVGElement> & {
-      title?: string | undefined
-    }
-  >
+  icon?: string
   variant?: ButtonVariant
   iconPosition?: IconPositionEnum
   testId?: string

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ReactComponent as FullLink } from 'icons/full-link.svg'
+import fullLinkIcon from 'icons/full-link.svg'
 import { Button } from 'ui-kit/Button'
 import CopyLink from 'ui-kit/CopyLink'
 import { REACT_APP_DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID_V4 } from 'utils/config'
@@ -53,7 +53,7 @@ const ReimbursmentPointDialog = ({
         <Button
           className={styles['link-button']}
           onClick={openDmsProcedure}
-          Icon={FullLink}
+          icon={fullLinkIcon}
         >
           Continuer sur Démarches Simplifiées
         </Button>

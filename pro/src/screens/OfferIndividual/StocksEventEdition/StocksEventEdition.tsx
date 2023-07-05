@@ -24,7 +24,7 @@ import { SelectOption } from 'custom_types/form'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as FullMoreIcon } from 'icons/full-more.svg'
+import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { getToday } from 'utils/date'
@@ -467,7 +467,7 @@ const StocksEventEdition = ({
             <div className={styles['add-dates-button']}>
               <Button
                 variant={ButtonVariant.PRIMARY}
-                Icon={FullMoreIcon}
+                icon={fullMoreIcon}
                 onClick={() => setIsRecurrenceModalOpen(true)}
                 disabled={isSynchronized || isDisabled}
               >

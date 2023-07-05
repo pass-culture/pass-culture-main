@@ -5,9 +5,9 @@ import ActionsBarSticky from 'components/ActionsBarSticky'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as FullHideIcon } from 'icons/full-hide.svg'
-import { ReactComponent as FullTrashIcon } from 'icons/full-trash.svg'
-import { ReactComponent as StrokeCheckIcon } from 'icons/stroke-check.svg'
+import fullHideIcon from 'icons/full-hide.svg'
+import fullTrashIcon from 'icons/full-trash.svg'
+import strokeCheckIcon from 'icons/stroke-check.svg'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
 import { searchFiltersSelector } from 'store/offers/selectors'
 import { Button } from 'ui-kit'
@@ -180,15 +180,15 @@ const ActionsBar = ({
       <Button onClick={handleClose} variant={ButtonVariant.SECONDARY}>
         Annuler
       </Button>
-      <Button onClick={() => setIsConfirmDialogOpen(true)} Icon={FullHideIcon}>
+      <Button onClick={() => setIsConfirmDialogOpen(true)} icon={fullHideIcon}>
         Désactiver
       </Button>
       {audience == Audience.INDIVIDUAL && (
-        <Button onClick={() => handleOpenDeleteDialog()} Icon={FullTrashIcon}>
+        <Button onClick={() => handleOpenDeleteDialog()} icon={fullTrashIcon}>
           Supprimer
         </Button>
       )}
-      <Button onClick={handleActivate} Icon={StrokeCheckIcon}>
+      <Button onClick={handleActivate} icon={strokeCheckIcon}>
         Publier
       </Button>
     </>

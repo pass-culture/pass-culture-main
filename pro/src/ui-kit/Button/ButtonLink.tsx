@@ -1,5 +1,10 @@
 import cn from 'classnames'
-import React, { MouseEventHandler, useId } from 'react'
+import React, {
+  FunctionComponent,
+  SVGProps,
+  MouseEventHandler,
+  useId,
+} from 'react'
 import { Link } from 'react-router-dom'
 
 import fullRightIcon from 'icons/full-right.svg'
@@ -19,7 +24,12 @@ export type LinkProps = {
   download?: boolean
 }
 
-interface ButtonLinkProps extends SharedButtonProps {
+export interface ButtonLinkProps extends SharedButtonProps {
+  Icon?: FunctionComponent<
+    SVGProps<SVGSVGElement> & {
+      title?: string | undefined
+    }
+  >
   link: LinkProps
   children?: React.ReactNode | React.ReactNode[]
   className?: string

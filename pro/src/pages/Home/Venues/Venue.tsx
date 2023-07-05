@@ -20,7 +20,7 @@ import fullDisclosureOpen from 'icons/full-disclosure-open.svg'
 import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
 import { ReactComponent as FullMoreIcon } from 'icons/full-more.svg'
 import { ReactComponent as IcoPlus } from 'icons/full-plus.svg'
-import { ReactComponent as StrokeErrorIcon } from 'icons/stroke-error.svg'
+import strokeErrorIcon from 'icons/stroke-error.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -247,7 +247,7 @@ const Venue = ({
               </button>
               {initialOpenState && !isVirtual && (
                 <Button
-                  Icon={StrokeErrorIcon}
+                  icon={strokeErrorIcon}
                   className="needs-payment-icon"
                   variant={ButtonVariant.TERNARY}
                   hasTooltip

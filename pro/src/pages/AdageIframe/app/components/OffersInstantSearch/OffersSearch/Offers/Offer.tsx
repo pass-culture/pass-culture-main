@@ -6,7 +6,7 @@ import { apiAdage } from 'apiClient/api'
 import DialogBox from 'components/DialogBox/DialogBox'
 import useActiveFeature from 'hooks/useActiveFeature'
 import fullLikeIcon from 'icons/full-like.svg'
-import { ReactComponent as StrokeLikeIcon } from 'icons/stroke-like.svg'
+import strokeLikeIcon from 'icons/stroke-like.svg'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import strokePassIcon from 'icons/stroke-pass.svg'
 import strokeUpIcon from 'icons/stroke-up.svg'
@@ -173,7 +173,7 @@ const Offer = ({
             </button>
             {isLikeActive && (
               <Button
-                Icon={StrokeLikeIcon}
+                icon={strokeLikeIcon}
                 className={style['offer-like-button']}
                 title="bouton j'aime"
                 variant={ButtonVariant.TERNARY}

@@ -1,7 +1,7 @@
-import React, { FunctionComponent, SVGProps } from 'react'
+import React from 'react'
 
 import { ReactComponent as FullLink } from 'icons/full-link.svg'
-import { ReactComponent as FullNextIcon } from 'icons/full-next.svg'
+import fullNextIcon from 'icons/full-next.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { LinkProps } from 'ui-kit/Button/ButtonLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -17,11 +17,7 @@ type RedirectDialogProps = DialogProps & {
   onCancel: () => void
   onRedirect?: () => void
   withRedirectLinkIcon?: boolean
-  cancelIcon?: FunctionComponent<
-    SVGProps<SVGSVGElement> & {
-      title?: string | undefined
-    }
-  >
+  cancelIcon?: string
 }
 
 const RedirectDialog = ({
@@ -61,7 +57,7 @@ const RedirectDialog = ({
         </ButtonLink>
 
         <Button
-          Icon={cancelIcon || FullNextIcon}
+          icon={cancelIcon || fullNextIcon}
           onClick={() => {
             onCancel()
           }}

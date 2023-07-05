@@ -113,9 +113,10 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-right.svg' },
   { src: 'icons/stroke-up.svg' },
   { src: 'icons/stroke-pass.svg' },
+  { src: 'icons/stroke-library.svg' },
+  { src: 'icons/stroke-venue.svg' },
   { src: 'icons/stroke-wip.svg' },
   { src: 'icons/stroke-no-booking.svg' },
-  { src: 'icons/stroke-venue.svg' },
 ]
 
 const shadowIcons: IconListItem[] = [
@@ -129,7 +130,6 @@ const notCleandIcons: IconListItem[] = [
   // Not cleaned
   { src: 'icons/checkbox-check.svg', viewBox: '0 0 10 8' },
   { src: 'icons/ico-eye-open-filled-black.svg' },
-  { src: 'icons/library.svg', viewBox: '0 0 49 48' },
   { src: 'icons/linear-gradient.svg', viewBox: '0 0 623 1024' }, // TODO replace by a jpg/png
   { src: 'icons/loader.svg', viewBox: '0 0 32 32' },
   { src: 'icons/location.svg', viewBox: '0 0 24 24' },

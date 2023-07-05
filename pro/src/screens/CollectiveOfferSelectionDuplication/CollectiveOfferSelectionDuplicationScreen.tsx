@@ -8,9 +8,7 @@ import { createOfferFromTemplate } from 'core/OfferEducational'
 import { computeOffersUrl, DEFAULT_SEARCH_FILTERS } from 'core/Offers'
 import { Offer } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
-import strokeSearchIcon, {
-  ReactComponent as StrokeSearchIcon,
-} from 'icons/stroke-search.svg'
+import strokeSearchIcon from 'icons/stroke-search.svg'
 import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapters'
 import { RadioButton, SubmitButton, TextInput, Thumb, Title } from 'ui-kit'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -101,7 +99,7 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
               className={styles['search-button']}
               isLoading={isLoading}
               aria-label="Button de recherche"
-              Icon={StrokeSearchIcon}
+              icon={strokeSearchIcon}
             >
               Rechercher
             </SubmitButton>

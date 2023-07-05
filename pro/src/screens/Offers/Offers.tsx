@@ -23,8 +23,8 @@ import getUserValidatedOfferersNamesAdapter from 'core/shared/adapters/getUserVa
 import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as FullPlusIcon } from 'icons/full-plus.svg'
-import { ReactComponent as LibraryIcon } from 'icons/library.svg'
-import { ReactComponent as strokeUserIcon } from 'icons/stroke-user.svg'
+import strokeLibraryIcon from 'icons/stroke-library.svg'
+import strokeUserIcon from 'icons/stroke-user.svg'
 import ActionsBar from 'pages/Offers/Offers/ActionsBar'
 import OffersContainer from 'pages/Offers/Offers/Offers'
 import { ButtonLink } from 'ui-kit'
@@ -268,7 +268,7 @@ const Offers = ({
               currentPageNumber
             ),
             key: 'individual',
-            Icon: strokeUserIcon,
+            icon: strokeUserIcon,
           },
           {
             label: 'Offres collectives',
@@ -280,7 +280,7 @@ const Offers = ({
               currentPageNumber
             ),
             key: 'collective',
-            Icon: LibraryIcon,
+            icon: strokeLibraryIcon,
           },
         ]}
       />

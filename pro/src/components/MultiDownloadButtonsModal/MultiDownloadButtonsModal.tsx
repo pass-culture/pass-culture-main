@@ -5,7 +5,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
 import fullDownIcon from 'icons/full-down.svg'
-import { ReactComponent as DownloadSvg } from 'icons/full-download.svg'
+import fullDownloadIcon from 'icons/full-download.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -66,7 +66,7 @@ const MultiDownloadButtonsModal = ({
         <div className={style['download-modal-option']}>
           <Button
             variant={ButtonVariant.TERNARY}
-            Icon={DownloadSvg}
+            icon={fullDownloadIcon}
             className={style['inside-modal-button']}
             onClick={() => {
               logEvent?.(Events.CLICKED_DOWNLOAD_BOOKINGS_XLS, {
@@ -81,7 +81,7 @@ const MultiDownloadButtonsModal = ({
 
           <Button
             variant={ButtonVariant.TERNARY}
-            Icon={DownloadSvg}
+            icon={fullDownloadIcon}
             className={style['inside-modal-button']}
             onClick={() => {
               logEvent?.(Events.CLICKED_DOWNLOAD_BOOKINGS_CSV, {

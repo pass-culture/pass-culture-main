@@ -6,7 +6,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { ReactComponent as FullLink } from 'icons/full-link.svg'
 import { ReactComponent as FullMail } from 'icons/full-mail.svg'
-import { ReactComponent as SettingsIcon } from 'icons/full-parameters.svg'
+import fullParametersIcon from 'icons/full-parameters.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { initCookieConsent } from 'utils/cookieConsentModal'
@@ -104,7 +104,7 @@ const Support: () => JSX.Element | null = () => {
               <li>
                 <Button
                   variant={ButtonVariant.TERNARY}
-                  Icon={SettingsIcon}
+                  icon={fullParametersIcon}
                   onClick={() => {
                     /* istanbul ignore next : library should be tested */
                     initCookieConsent().show()

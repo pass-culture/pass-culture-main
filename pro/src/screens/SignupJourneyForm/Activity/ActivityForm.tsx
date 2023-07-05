@@ -4,7 +4,7 @@ import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { SelectOption } from 'custom_types/form'
-import { ReactComponent as FullMoreIcon } from 'icons/full-more.svg'
+import fullMoreIcon from 'icons/full-more.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import { Button, CheckboxGroup, Select, TextInput } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -88,7 +88,7 @@ const ActivityForm = ({ venueTypes }: ActivityFormProps): JSX.Element => {
 
             <Button
               variant={ButtonVariant.TERNARY}
-              Icon={FullMoreIcon}
+              icon={fullMoreIcon}
               onClick={() => {
                 arrayHelpers.push('')
               }}
