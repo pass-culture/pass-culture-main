@@ -253,6 +253,8 @@ const Informations = ({
       )
     } else {
       formik.setErrors(payload.errors)
+      // This is used from scroll to error
+      formik.setStatus('apiError')
     }
     setIsClickingFromActionBar(false)
   }
