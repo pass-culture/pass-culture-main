@@ -16,7 +16,7 @@ import { Offerer, SearchFiltersParams } from 'core/Offers/types'
 import { hasSearchFilters } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
-import { ReactComponent as FullRefresh } from 'icons/full-refresh.svg'
+import fullRefreshIcon from 'icons/full-refresh.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -217,7 +217,7 @@ const SearchFilters = ({
 
         <div className={styles['reset-filters']}>
           <ButtonLink
-            Icon={FullRefresh}
+            icon={fullRefreshIcon}
             {...resetFilterButtonProps}
             onClick={resetFilters}
             link={{

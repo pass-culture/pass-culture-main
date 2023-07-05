@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ReactComponent as FullNextIcon } from 'icons/full-next.svg'
+import fullNextIcon from 'icons/full-next.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -27,7 +27,7 @@ const SkipLinks = ({ displayMenu = false }: SkipLinksProps): JSX.Element => {
                 to: '#content',
                 isExternal: true,
               }}
-              Icon={FullNextIcon}
+              icon={fullNextIcon}
               className={styles['skip-list-button']}
               variant={ButtonVariant.QUATERNARY}
             >

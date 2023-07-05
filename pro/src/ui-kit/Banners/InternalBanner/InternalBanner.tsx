@@ -1,4 +1,4 @@
-import React, { FunctionComponent, SVGProps } from 'react'
+import React from 'react'
 
 import { ButtonLink } from 'ui-kit/Button'
 
@@ -8,11 +8,7 @@ import styles from '../BannerLayout/BannerLayout.module.scss'
 
 interface InternalBannerProps extends BannerLayoutProps {
   extraClassName?: string
-  Icon?: FunctionComponent<
-    SVGProps<SVGSVGElement> & {
-      title?: string | undefined
-    }
-  >
+  icon?: string
   linkTitle: string
   subtitle?: string
   to?: string
@@ -22,7 +18,7 @@ const InternalBanner = ({
   extraClassName,
   subtitle,
   to,
-  Icon,
+  icon,
   linkTitle,
   ...bannerLayoutProps
 }: InternalBannerProps): JSX.Element => (
@@ -30,7 +26,7 @@ const InternalBanner = ({
     linkNode={
       to ? (
         <ButtonLink
-          Icon={Icon}
+          icon={icon}
           link={{ isExternal: false, to }}
           className={styles['bi-link']}
         >

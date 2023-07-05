@@ -74,7 +74,7 @@ const ProfileAndSupport = () => {
                 variant={ButtonVariant.TERNARY}
                 link={{ to: '/profil', isExternal: false }}
                 type="button"
-                Icon={FullEdit}
+                icon={FullEdit}
                 onClick={() => logEvent?.(Events.CLICKED_EDIT_PROFILE)}
               >
                 Modifier

@@ -9,7 +9,7 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as FullMoreIcon } from 'icons/full-more.svg'
+import fullMoreIcon from 'icons/full-more.svg'
 import strokeVenueIcon from 'icons/stroke-venue.svg'
 import { ButtonLink } from 'ui-kit'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -63,7 +63,7 @@ const VenueItem = ({ venue, offererId }: VenueItemProps) => {
                   isEdition: false,
                 })
               }
-              Icon={FullMoreIcon}
+              icon={fullMoreIcon}
             >
               {' Créer une offre'}
             </ButtonLink>

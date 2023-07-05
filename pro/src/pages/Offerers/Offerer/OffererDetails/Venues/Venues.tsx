@@ -4,7 +4,7 @@ import { GetOffererVenueResponseModel } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as FullMoreIcon } from 'icons/full-more.svg'
+import fullMoreIcon from 'icons/full-more.svg'
 import { ButtonLink } from 'ui-kit'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
@@ -44,7 +44,7 @@ const Venues = ({ venues, offererId }: VenuesProps) => {
               from: location.pathname,
             })
           }}
-          Icon={FullMoreIcon}
+          icon={fullMoreIcon}
         >
           Ajouter un lieu
         </ButtonLink>

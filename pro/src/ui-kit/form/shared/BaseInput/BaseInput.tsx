@@ -3,7 +3,7 @@ import React, { ForwardedRef, forwardRef } from 'react'
 
 import styles from './BaseInput.module.scss'
 
-interface BaseInputProps
+export interface BaseInputProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
   className?: string
   hasError?: boolean
