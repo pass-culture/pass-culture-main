@@ -734,12 +734,6 @@ describe('screen | VenueForm', () => {
         visualDisabilityCompliant: false,
         withdrawalDetails: 'Nouvelle information de retrait',
       }
-
-      features = {
-        list: [
-          { isActive: true, nameKey: 'WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL' },
-        ],
-      }
     })
 
     it('should display withdrawal and submit on confirm dialog button when offer has bookingQuantity and withdrawalDetails is updated and isWithdrawalAppliedOnAllOffers is true', async () => {
