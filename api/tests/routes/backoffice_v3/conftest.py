@@ -73,7 +73,6 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     "fraude-jeunes": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS,
-        perm_models.Permissions.BATCH_SUSPEND_USERS,
         perm_models.Permissions.MANAGE_BOOKINGS,
         perm_models.Permissions.READ_BOOKINGS,
     ],
