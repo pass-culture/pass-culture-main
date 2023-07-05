@@ -2,9 +2,9 @@ import cn from 'classnames'
 import React from 'react'
 
 import fullClearIcon from 'icons/full-clear.svg'
-import TipsHelpIcon from 'icons/shadow-tips_help.svg'
+import shadowTipsWarningIcon from 'icons/shadow-tips-warning.svg'
+import shadowTipsHelpIcon from 'icons/shadow-tips_help.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
-import strokeErrorIcon from 'icons/stroke-error.svg'
 import Icon from 'ui-kit/Icon/Icon'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -46,7 +46,7 @@ const BannerLayout = ({
       {type === 'notification-info' && showTitle && (
         <div className={styles['container']}>
           <SvgIcon
-            src={TipsHelpIcon}
+            src={shadowTipsHelpIcon}
             alt=""
             className={styles['icon']}
             viewBox="0 0 22 26"
@@ -58,10 +58,9 @@ const BannerLayout = ({
       {type === 'attention' && showTitle && (
         <div className={styles['container']}>
           <SvgIcon
-            src={strokeErrorIcon}
+            src={shadowTipsWarningIcon}
             alt=""
             className={styles['icon']}
-            width="22"
           />
           <span className={styles['container-title']}>IMPORTANT</span>
         </div>
