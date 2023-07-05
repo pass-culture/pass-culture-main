@@ -17,3 +17,4 @@ jobs:
     with:
       ENV: testing
       CHANNEL: ""
+      REF: "${{ github.ref }}"
