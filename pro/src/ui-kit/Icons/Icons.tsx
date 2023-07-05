@@ -119,10 +119,10 @@ const strokeIcons: IconListItem[] = [
 ]
 
 const shadowIcons: IconListItem[] = [
-  { src: 'icons/shadow-tips-help.svg', viewBox: '0 0 22 26' },
+  { src: 'icons/shadow-tips-help.svg' },
   { src: 'icons/shadow-tips-warning.svg' },
   { src: 'icons/shadow-trophee.svg' },
-  { src: 'icons/shadow-calendar.svg', viewBox: '0 0 24 24' },
+  { src: 'icons/shadow-calendar.svg' },
 ]
 
 const notCleandIcons: IconListItem[] = [
