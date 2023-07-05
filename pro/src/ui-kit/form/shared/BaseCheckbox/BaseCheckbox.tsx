@@ -11,6 +11,7 @@ export interface BaseCheckboxProps
   className?: string
   icon?: string
   withBorder?: boolean
+  ref?: React.Ref<HTMLInputElement>
 }
 
 const BaseCheckbox = ({
