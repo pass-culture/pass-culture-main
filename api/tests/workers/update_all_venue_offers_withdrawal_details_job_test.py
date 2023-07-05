@@ -5,11 +5,9 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.testing import override_features
 from pcapi.workers.update_all_venue_offers_withdrawal_details_job import update_all_venue_offers_withdrawal_details_job
 
 
-@override_features(WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL=True)
 @pytest.mark.usefixtures("db_session")
 def test_update_all_venue_offers_withdrawal_details_job():
     venue = offerers_factories.VenueFactory()
@@ -29,7 +27,6 @@ def test_update_all_venue_offers_withdrawal_details_job():
     assert not mailer_mock.called
 
 
-@override_features(WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL=True)
 @pytest.mark.usefixtures("db_session")
 def test_update_all_venue_offers_withdrawal_with_email_notif():
     venue = offerers_factories.VenueFactory()

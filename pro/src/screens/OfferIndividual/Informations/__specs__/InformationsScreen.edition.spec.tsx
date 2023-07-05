@@ -559,12 +559,6 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         withdrawalType: undefined,
         shouldSendMail: false,
       }
-
-      features = {
-        list: [
-          { isActive: true, nameKey: 'WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL' },
-        ],
-      }
     })
 
     it('should submit when user click onCancel button, but should not send mail', async () => {
