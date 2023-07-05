@@ -1,12 +1,12 @@
 import React from 'react'
 
 import Breadcrumb, { BreadcrumbStyle } from 'components/Breadcrumb'
+import useActiveStep from 'hooks/useActiveStep'
 
-import { STEP_LIST } from './constants'
-import useActiveStep from './hooks/useActiveStep'
+import { STEP_LIST, STEP_NAMES } from './constants'
 
 const ReimbursementsBreadcrumb = () => {
-  const activeStep = useActiveStep()
+  const activeStep = useActiveStep(STEP_NAMES)
   return (
     <Breadcrumb
       activeStep={activeStep}

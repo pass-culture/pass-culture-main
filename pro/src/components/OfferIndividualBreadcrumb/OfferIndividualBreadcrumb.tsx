@@ -14,6 +14,7 @@ import {
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useOfferWizardMode } from 'hooks'
+import useActiveStep from 'hooks/useActiveStep'
 import useAnalytics from 'hooks/useAnalytics'
 import {
   getOfferSubtypeFromParamsOrOffer,
@@ -21,7 +22,6 @@ import {
 } from 'screens/OfferIndividual/Informations/utils/filterCategories/filterCategories'
 
 import { OFFER_WIZARD_STEP_IDS } from './constants'
-import { useActiveStep } from './hooks'
 import styles from './OfferIndividualStepper.module.scss'
 
 interface OfferIndividualBreadcrumbProps {
@@ -32,7 +32,7 @@ const OfferIndividualBreadcrumb = ({
   shouldTrack = true,
 }: OfferIndividualBreadcrumbProps) => {
   const { offer } = useOfferIndividualContext()
-  const activeStep = useActiveStep()
+  const activeStep = useActiveStep(Object.values(OFFER_WIZARD_STEP_IDS))
   const { logEvent } = useAnalytics()
   const mode = useOfferWizardMode()
   const hasOffer = offer !== null
