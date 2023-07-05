@@ -13,6 +13,29 @@ export const computeVenueFacetFilter = (venueFilter: VenueResponse): string[] =>
     venueId => `venue.id:${venueId}`
   )
 
+export const adageFiltersToFacetFilters = ({
+  domains,
+}: {
+  domains: Option[]
+}) => {
+  const updatedFilters: Facets = []
+  const filtersKeys: string[] = []
+
+  const filteredDomains: string[] = domains.map(
+    domain => `offer.domains:${domain.value}`
+  )
+
+  if (filteredDomains.length > 0) {
+    filtersKeys.push('domains')
+    updatedFilters.push(filteredDomains)
+  }
+
+  return {
+    queryFilters: updatedFilters,
+    filtersKeys: filtersKeys,
+  }
+}
+
 export const populateFacetFilters = ({
   departments,
   categories,
