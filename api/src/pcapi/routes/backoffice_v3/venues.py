@@ -294,7 +294,6 @@ def get_stats_data(venue_id: int) -> serialization.VenueStats:
 
 def get_venue_bank_information(venue: offerers_models.Venue) -> serialization.VenueBankInformation:
     now = datetime.utcnow()
-    has_bank_information = venue.bic and venue.iban
     reimbursement_point_name = None
     pricing_point_name = None
     bic = None
@@ -318,15 +317,13 @@ def get_venue_bank_information(venue: offerers_models.Venue) -> serialization.Ve
         None,
     )
 
-    if has_bank_information:
-        bic = venue.bic
-        iban = venue.iban
-        reimbursement_point_name = venue.name
-    elif current_reimbursement_point is not None:
+    if current_reimbursement_point:
         bic = current_reimbursement_point.bic
         iban = current_reimbursement_point.iban
         reimbursement_point_name = current_reimbursement_point.name
-        reimbursement_point_url = url_for("backoffice_v3_web.venue.get", venue_id=current_reimbursement_point.id)
+
+        if current_reimbursement_point.id != venue.id:
+            reimbursement_point_url = url_for("backoffice_v3_web.venue.get", venue_id=current_reimbursement_point.id)
 
     if venue.siret:
         pricing_point_name = venue.name
