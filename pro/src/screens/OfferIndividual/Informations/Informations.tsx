@@ -78,9 +78,6 @@ const Informations = ({
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useIndividualOfferImageUpload()
 
-  const isWithdrawalUpdatedMailActive = useActiveFeature(
-    'WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL'
-  )
   const isBookingContactEnabled = useActiveFeature(
     'WIP_MANDATORY_BOOKING_CONTACT'
   )
@@ -164,7 +161,7 @@ const Informations = ({
     async () => {
       setIsClickingFromActionBar(true)
 
-      if (isWithdrawalUpdatedMailActive && mode === OFFER_WIZARD_MODE.EDITION) {
+      if (mode === OFFER_WIZARD_MODE.EDITION) {
         await handleSendMail(sendMail)
       }
 
@@ -331,7 +328,7 @@ const Informations = ({
         </form>
       </FormLayout>
 
-      {isWithdrawalUpdatedMailActive && isWithdrawalDialogOpen && (
+      {isWithdrawalDialogOpen && (
         <ConfirmDialog
           cancelText="Ne pas envoyer"
           confirmText="Envoyer un email"

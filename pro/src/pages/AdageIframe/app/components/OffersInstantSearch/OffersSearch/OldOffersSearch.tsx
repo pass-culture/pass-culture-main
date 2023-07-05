@@ -8,7 +8,7 @@ import { connectSearchBox } from 'react-instantsearch-dom'
 import { VenueResponse } from 'apiClient/adage'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { ReactComponent as InstitutionIcon } from 'icons/ico-institution.svg'
-import { ReactComponent as OffersIcon } from 'icons/ico-offers.svg'
+import { ReactComponent as StrokeOffersIcon } from 'icons/stroke-offers.svg'
 import { INITIAL_QUERY } from 'pages/AdageIframe/app/constants'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import {
@@ -79,7 +79,7 @@ export const OldOffersSearchComponent = ({
       label: 'Toutes les offres',
       key: OfferTab.ALL,
       onClick: () => handleTabChange(OfferTab.ALL),
-      Icon: OffersIcon,
+      Icon: StrokeOffersIcon,
     },
     {
       label: 'Partagé avec mon établissement',

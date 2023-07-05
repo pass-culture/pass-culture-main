@@ -310,7 +310,7 @@ def update_offer(
     if product_has_been_updated:
         logger.info("Product has been updated", extra={"product": offer.product.id})
 
-    if shouldSendMail and withdrawal_updated and FeatureToggle.WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL.is_active():
+    if shouldSendMail and withdrawal_updated:
         transactional_mails.send_email_for_each_ongoing_booking(offer)
 
     search.async_index_offer_ids([offer.id])
@@ -434,11 +434,7 @@ def batch_update_offers(query: BaseQuery, update_fields: dict, send_email_notifi
         withdrawal_updated = {"withdrawalDetails", "withdrawalType", "withdrawalDelay"}.intersection(
             update_fields.keys()
         )
-        if (
-            send_email_notification
-            and withdrawal_updated
-            and FeatureToggle.WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL.is_active()
-        ):
+        if send_email_notification and withdrawal_updated:
             for offer in query_to_update.all():
                 transactional_mails.send_email_for_each_ongoing_booking(offer)
 

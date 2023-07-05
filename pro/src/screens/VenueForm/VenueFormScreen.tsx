@@ -68,9 +68,7 @@ const VenueFormScreen = ({
   )
 
   const isNewOnboardingActive = useActiveFeature('WIP_ENABLE_NEW_ONBOARDING')
-  const isWithdrawalUpdatedMailActive = useActiveFeature(
-    'WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL'
-  )
+
   const { logEvent } = useAnalytics()
 
   const { currentUser } = useCurrentUser()
@@ -109,7 +107,6 @@ const VenueFormScreen = ({
 
   const onSubmit = async (value: VenueFormValues) => {
     if (
-      isWithdrawalUpdatedMailActive &&
       !isCreatingVenue &&
       value.isWithdrawalAppliedOnAllOffers &&
       hasBookingQuantity &&
@@ -133,7 +130,7 @@ const VenueFormScreen = ({
             {
               hideSiret: venue?.siret.length === 0,
             },
-            isWithdrawalUpdatedMailActive ? shouldSendMail : false
+            shouldSendMail
           )
         )
 
@@ -279,7 +276,7 @@ const VenueFormScreen = ({
           />
         </form>
 
-        {isWithdrawalUpdatedMailActive && isWithdrawalDialogOpen && (
+        {isWithdrawalDialogOpen && (
           <ConfirmDialog
             cancelText="Ne pas envoyer"
             confirmText="Envoyer un email"

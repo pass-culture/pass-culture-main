@@ -10,7 +10,6 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import WithdrawalTypeEnum
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.serialization import serialize
 
@@ -62,7 +61,6 @@ class Returns200Test:
         assert offer.withdrawalDetails == "Veuillez récuperer vos billets à l'accueil :)"
         assert offer.withdrawalType == WithdrawalTypeEnum.NO_TICKET
 
-    @override_features(WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL=True)
     def test_withdrawal_update_send_email_to_each_related_booker(self, client):
         # given
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id, bookingContact="booking@conta.ct")
@@ -101,7 +99,6 @@ class Returns200Test:
             f"{offer.venue.address} {offer.venue.postalCode} {offer.venue.city}"
         ] * 3
 
-    @override_features(WIP_ENABLE_WITHDRAWAL_UPDATED_MAIL=True)
     def test_withdrawal_update_does_not_send_email_if_not_specified_so(self, client):
         # given
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id, bookingContact="booking@conta.ct")
