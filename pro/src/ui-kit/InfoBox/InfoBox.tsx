@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React, { ReactNode } from 'react'
 
-import { ReactComponent as FullLink } from 'icons/full-link.svg'
+import fullLinkIcon from 'icons/full-link.svg'
 import shadowTipsHelpIcon from 'icons/shadow-tips-help.svg'
 import { ButtonLink } from 'ui-kit/Button'
 import type { LinkProps } from 'ui-kit/Button/ButtonLink'
@@ -39,7 +39,7 @@ const InfoBox = ({ children, link }: InfoBoxProps): JSX.Element => {
       {link && (
         <ButtonLink
           link={link}
-          Icon={FullLink}
+          icon={fullLinkIcon}
           className={styles['info-box-link']}
         >
           {link.text}

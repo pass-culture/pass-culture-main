@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef } from 'react'
 
 import { NBSP } from 'core/shared'
 import fullDownIcon from 'icons/full-down.svg'
-import { ReactComponent as FullLink } from 'icons/full-link.svg'
+import fullLinkIcon from 'icons/full-link.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
@@ -53,7 +53,7 @@ const Advices = ({ teaserText, hidden = true, setHidden }: AdvicesProps) => {
                   rel: 'noopener noreferrer',
                   target: '_blank',
                 }}
-                Icon={FullLink}
+                icon={fullLinkIcon}
               >
                 Pexels
                 <span>{`${NBSP}(nouvel onglet)`}</span>
@@ -67,7 +67,7 @@ const Advices = ({ teaserText, hidden = true, setHidden }: AdvicesProps) => {
                   rel: 'noopener noreferrer',
                   target: '_blank',
                 }}
-                Icon={FullLink}
+                icon={fullLinkIcon}
               >
                 Pixabay
                 <span>{`${NBSP}(nouvel onglet)`}</span>
@@ -81,7 +81,7 @@ const Advices = ({ teaserText, hidden = true, setHidden }: AdvicesProps) => {
                   rel: 'noopener noreferrer',
                   target: '_blank',
                 }}
-                Icon={FullLink}
+                icon={fullLinkIcon}
               >
                 Shutterstock
                 <span>{`${NBSP}(nouvel onglet)`}</span>

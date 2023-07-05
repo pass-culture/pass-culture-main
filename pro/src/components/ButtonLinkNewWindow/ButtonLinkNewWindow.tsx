@@ -1,19 +1,9 @@
-import React, {
-  FunctionComponent,
-  SVGProps,
-  useCallback,
-  MouseEventHandler,
-} from 'react'
+import React, { FunctionComponent, useCallback, MouseEventHandler } from 'react'
 
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant, SharedButtonProps } from 'ui-kit/Button/types'
 
 export interface ButtonLinkNewWindowProps extends SharedButtonProps {
-  Icon?: FunctionComponent<
-    SVGProps<SVGSVGElement> & {
-      title?: string | undefined
-    }
-  >
   className?: string
   linkTo: string
   children?: React.ReactNode
@@ -27,7 +17,7 @@ export const ButtonLinkNewWindow: FunctionComponent<
   linkTo,
   children,
   tracking,
-  Icon,
+  icon,
   variant = ButtonVariant.TERNARY,
 }) => {
   const openWindow: MouseEventHandler = useCallback(
@@ -49,7 +39,7 @@ export const ButtonLinkNewWindow: FunctionComponent<
     <ButtonLink
       className={className}
       link={{ to: linkTo, isExternal: true }}
-      Icon={Icon}
+      icon={icon}
       onClick={openWindow}
       variant={variant}
     >

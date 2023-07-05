@@ -1,6 +1,6 @@
-import React, { FunctionComponent, SVGProps } from 'react'
+import React from 'react'
 
-import { ReactComponent as FullLink } from 'icons/full-link.svg'
+import fullLinkIcon from 'icons/full-link.svg'
 import styles from 'ui-kit/Banners/BannerLayout/BannerLayout.module.scss'
 import { ButtonLink } from 'ui-kit/Button'
 
@@ -8,11 +8,7 @@ import BannerLayout from '../BannerLayout'
 import { BannerLayoutProps } from '../BannerLayout/BannerLayout'
 
 export type Link = {
-  Icon?: FunctionComponent<
-    SVGProps<SVGSVGElement> & {
-      title?: string | undefined
-    }
-  >
+  icon?: string
   href: string
   linkTitle: string
   targetLink?: string
@@ -40,9 +36,9 @@ const Banner = ({
         target: link.targetLink || '_blank',
         rel: 'noopener noreferrer',
       }}
-      Icon={
+      icon={
         /* istanbul ignore next: DEBT to fix */
-        link.hideLinkIcon ? undefined : link.Icon || FullLink
+        link.hideLinkIcon ? undefined : link.icon || fullLinkIcon
       }
       className={styles['bi-link']}
       onClick={link.onClick ?? undefined}

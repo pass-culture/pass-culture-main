@@ -9,7 +9,7 @@ import { AdageHeaderLink } from 'apiClient/adage/models/AdageHeaderLink'
 import { apiAdage } from 'apiClient/api'
 import useNotification from 'hooks/useNotification'
 import { InstitutionIcon } from 'icons'
-import { ReactComponent as FullDownloadIcon } from 'icons/full-download.svg'
+import fullDownloadIcon from 'icons/full-download.svg'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import { ButtonLink } from 'ui-kit'
@@ -139,7 +139,7 @@ export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
               rel: 'noreferrer',
               target: '_blank',
             }}
-            Icon={FullDownloadIcon}
+            icon={fullDownloadIcon}
           >
             Télécharger l'aide
           </ButtonLink>

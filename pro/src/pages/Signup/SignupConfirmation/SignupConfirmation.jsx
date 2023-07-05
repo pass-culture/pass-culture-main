@@ -37,7 +37,7 @@ const SignupConfirmation = () => (
                 target: '_blank',
                 rel: 'noopener noreferrer',
               }}
-              Icon={fullMailIcon}
+              icon={fullMailIcon}
               className={styles['contact-link']}
             >
               Contacter le support

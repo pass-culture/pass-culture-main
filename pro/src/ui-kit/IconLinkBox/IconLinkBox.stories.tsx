@@ -1,13 +1,15 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import { ReactComponent as TropheeIcon } from 'icons/shadow-trophee.svg'
-import Icon from 'ui-kit/Icon/Icon'
+import fullShowIcon from 'icons/full-show.svg'
+import shadowTropheeIcon from 'icons/shadow-trophee.svg'
+
+import { withRouterDecorator } from '../../stories/decorators/withRouter'
 
 import IconLinkBox, { IconLinkBoxProps } from './IconLinkBox'
-
 export default {
   title: 'ui-kit/StatBox',
+  decorators: [withRouterDecorator],
   component: IconLinkBox,
 }
 
@@ -22,6 +24,6 @@ Default.args = {
   title: 'Répartition de votre chiffre d’affaires',
   linkTitle: 'Voir le tableau',
   linkUrl: '#',
-  IconHeader: TropheeIcon,
-  IconLink: () => <Icon svg="ico-eye-open-filled-black" />,
+  iconHeader: shadowTropheeIcon,
+  iconLink: fullShowIcon,
 }

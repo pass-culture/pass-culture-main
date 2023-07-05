@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ReactComponent as FullLink } from 'icons/full-link.svg'
+import fullLinkIcon from 'icons/full-link.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { LinkProps } from 'ui-kit/Button/ButtonLink'
@@ -51,7 +51,7 @@ const RedirectDialog = ({
           link={redirectLink}
           variant={ButtonVariant.PRIMARY}
           onClick={onRedirect}
-          Icon={withRedirectLinkIcon ? FullLink : undefined}
+          icon={withRedirectLinkIcon ? fullLinkIcon : undefined}
         >
           {redirectText}
         </ButtonLink>

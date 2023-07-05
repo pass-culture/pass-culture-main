@@ -11,7 +11,7 @@ import {
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as backFullIcon } from 'icons/full-back.svg'
+import fullBackIcon from 'icons/full-back.svg'
 import { Banner, Title, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -131,7 +131,7 @@ const CollectiveDataEdition = (): JSX.Element | null => {
           isExternal: false,
         }}
         variant={ButtonVariant.TERNARY}
-        Icon={backFullIcon}
+        icon={fullBackIcon}
         className={styles['go-back-link']}
       >
         Retour page lieu

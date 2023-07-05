@@ -1,9 +1,9 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { ReactComponent as FullInfoIcon } from 'icons/full-info.svg'
-import { ReactComponent as FullLinkIcon } from 'icons/full-link.svg'
-import { ReactComponent as FullNextIcon } from 'icons/full-next.svg'
+import fullInfoIcon from 'icons/full-info.svg'
+import fullLinkIcon from 'icons/full-link.svg'
+import fullNextIcon from 'icons/full-next.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -70,7 +70,7 @@ const VenueOfferSteps = ({
                     <ButtonLink
                       className={styles['step-button-width']}
                       variant={ButtonVariant.BOX}
-                      Icon={FullNextIcon}
+                      icon={fullNextIcon}
                       link={{
                         to: venueCreationUrl,
                         isExternal: false,
@@ -93,7 +93,7 @@ const VenueOfferSteps = ({
                         rel: 'noopener noreferrer',
                         target: '_blank',
                       }}
-                      Icon={FullInfoIcon}
+                      icon={fullInfoIcon}
                       onClick={() => {
                         logEvent?.(Events.CLICKED_NO_VENUE, {
                           from: location.pathname,
@@ -110,7 +110,7 @@ const VenueOfferSteps = ({
                     className={styles['step-button-width']}
                     isDisabled={!hasVenue}
                     variant={ButtonVariant.BOX}
-                    Icon={FullNextIcon}
+                    icon={fullNextIcon}
                     link={{
                       to: `/offre/creation?lieu=${venueId}&structure=${offererId}`,
                       isExternal: false,
@@ -132,7 +132,7 @@ const VenueOfferSteps = ({
                     className={styles['step-button-width']}
                     isDisabled={!hasVenue}
                     variant={ButtonVariant.BOX}
-                    Icon={FullNextIcon}
+                    icon={fullNextIcon}
                     link={{
                       to: `/structures/${offererId}/lieux/${venueId}#reimbursement`,
                       isExternal: false,
@@ -152,7 +152,7 @@ const VenueOfferSteps = ({
                     className={styles['step-button-width']}
                     isDisabled={!hasAdageId}
                     variant={ButtonVariant.BOX}
-                    Icon={FullNextIcon}
+                    icon={fullNextIcon}
                     link={{
                       to: `/structures/${offererId}/lieux/${venueId}/eac`,
                       isExternal: false,
@@ -175,7 +175,7 @@ const VenueOfferSteps = ({
                     <ButtonLink
                       className={styles['step-button-width']}
                       variant={ButtonVariant.BOX}
-                      Icon={FullNextIcon}
+                      icon={fullNextIcon}
                       link={{
                         to: `/structures/${offererId}/lieux/${venueId}#venue-collective-data`,
                         isExternal: false,
@@ -193,7 +193,7 @@ const VenueOfferSteps = ({
                     <ButtonLink
                       className={styles['step-button-width']}
                       variant={ButtonVariant.BOX}
-                      Icon={FullLinkIcon}
+                      icon={fullLinkIcon}
                       link={{
                         to: `https://www.demarches-simplifiees.fr/dossiers${
                           demarchesSimplifieesApplicationId

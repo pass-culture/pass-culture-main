@@ -10,7 +10,7 @@ import {
 import { OFFER_STATUS_PENDING } from 'core/Offers'
 import { OfferIndividual } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as FullLink } from 'icons/full-link.svg'
+import fullLinkIcon from 'icons/full-link.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
 import { DisplayOfferInAppLink } from 'screens/OfferIndividual/Summary/DisplayOfferInAppLink'
@@ -83,7 +83,7 @@ const OfferIndividualConfirmation = ({
               }),
           }}
           text="Visualiser l’offre dans l’application"
-          Icon={FullLink}
+          icon={fullLinkIcon}
         />
       </div>
       <div className={styles['confirmation-actions']}>

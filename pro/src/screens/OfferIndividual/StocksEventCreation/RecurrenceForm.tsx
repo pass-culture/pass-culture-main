@@ -12,7 +12,7 @@ import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { OfferIndividual } from 'core/Offers/types'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as FullMoreIcon } from 'icons/full-more.svg'
+import fullMoreIcon from 'icons/full-more.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
@@ -345,7 +345,7 @@ export const RecurrenceForm = ({
 
                     <ButtonLink
                       variant={ButtonVariant.TERNARY}
-                      Icon={FullMoreIcon}
+                      icon={fullMoreIcon}
                       onClick={() => arrayHelpers.push('')}
                       link={{
                         to: `#beginningTimes[${
@@ -422,7 +422,7 @@ export const RecurrenceForm = ({
                     priceCategoryOptions.length && (
                     <ButtonLink
                       variant={ButtonVariant.TERNARY}
-                      Icon={FullMoreIcon}
+                      icon={fullMoreIcon}
                       onClick={() =>
                         arrayHelpers.push(INITIAL_QUANTITY_PER_PRICE_CATEGORY)
                       }

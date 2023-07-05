@@ -14,7 +14,7 @@ import {
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
-import { ReactComponent as FullNextIcon } from 'icons/full-next.svg'
+import fullNextIcon from 'icons/full-next.svg'
 import strokeCheck from 'icons/stroke-check.svg'
 import { getCollectiveStatusLabel } from 'pages/Offers/Offers/OfferItem/Cells/CollectiveOfferStatusCell/CollectiveOfferStatusCell'
 import { Button, ButtonLink } from 'ui-kit'
@@ -128,7 +128,7 @@ const OfferEducationalActions = ({
                 variant={ButtonVariant.TERNARY}
                 className={style['button-link']}
                 link={{ isExternal: false, to: getBookingLink() }}
-                Icon={FullNextIcon}
+                icon={fullNextIcon}
                 iconPosition={IconPositionEnum.LEFT}
                 onClick={() =>
                   logEvent?.(
