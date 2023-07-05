@@ -34,6 +34,7 @@ const fullIcons: IconListItem[] = [
   { src: 'icons/full-mail.svg' }, // TODO 2 uses left inside ButtonLink, 1 use left inside SubmitButton
   { src: 'icons/full-edit.svg' }, // TODO 7 uses left in <ButtonLink>s
   { src: 'icons/full-duplicate.svg' }, // TODO still used in 1 Button
+  { src: 'icons/full-show.svg' },
   { src: 'icons/full-hide.svg' },
   { src: 'icons/full-like.svg' },
   { src: 'icons/full-back.svg' },
@@ -123,13 +124,13 @@ const shadowIcons: IconListItem[] = [
   { src: 'icons/shadow-tips-help.svg' },
   { src: 'icons/shadow-tips-warning.svg' },
   { src: 'icons/shadow-trophee.svg' },
+  { src: 'icons/shadow-euro.svg' },
   { src: 'icons/shadow-calendar.svg' },
 ]
 
 const notCleandIcons: IconListItem[] = [
   // Not cleaned
   { src: 'icons/checkbox-check.svg', viewBox: '0 0 10 8' },
-  { src: 'icons/ico-eye-open-filled-black.svg' },
   { src: 'icons/linear-gradient.svg', viewBox: '0 0 623 1024' }, // TODO replace by a jpg/png
   { src: 'icons/loader.svg', viewBox: '0 0 32 32' },
   { src: 'icons/location.svg', viewBox: '0 0 24 24' },

@@ -2,10 +2,8 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import { ReactComponent as fullBackIcon } from 'icons/full-back.svg'
-import fullEditIcon, {
-  ReactComponent as FullEditIcon,
-} from 'icons/full-edit.svg'
+import fullBackIcon from 'icons/full-back.svg'
+import fullEditIcon from 'icons/full-edit.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullNextIcon from 'icons/full-next.svg'
 
@@ -80,7 +78,7 @@ export const LinkButtonWithIcon = TemplateLink.bind({})
 
 LinkButtonWithIcon.args = {
   ...LinkButton.args,
-  Icon: FullEditIcon,
+  icon: fullEditIcon,
 }
 
 export const LinkQuaternaryButtonWithIcon = TemplateLink.bind({})
@@ -88,7 +86,7 @@ export const LinkQuaternaryButtonWithIcon = TemplateLink.bind({})
 LinkQuaternaryButtonWithIcon.args = {
   children: 'Accueil',
   variant: ButtonVariant.QUATERNARY,
-  Icon: fullBackIcon,
+  icon: fullBackIcon,
   link: { to: '/my-path', isExternal: false },
 }
 

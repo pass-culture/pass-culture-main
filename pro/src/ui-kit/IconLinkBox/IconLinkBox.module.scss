@@ -45,12 +45,11 @@
     &-link {
       @include fonts.caption;
 
-      gap: rem.torem(5px);
-    }
-
-    img {
-      width: rem.torem(16px);
-      height: rem.torem(16px);
+      svg {
+        // !important overrides button styles
+        width: rem.torem(16px) !important;
+        height: rem.torem(16px) !important;
+      }
     }
   }
 }

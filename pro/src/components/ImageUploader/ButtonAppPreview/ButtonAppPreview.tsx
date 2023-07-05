@@ -1,12 +1,11 @@
 import React, { useState } from 'react'
 
+import fullShowIcon from 'icons/full-show.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import Icon from 'ui-kit/Icon/Icon'
 
 import { UploaderModeEnum } from '../types'
 
-import styles from './ButtonAppPreview.module.scss'
 import { ModalAppPreview } from './ModalAppPreview'
 
 export interface ButtonAppPreviewProps {
@@ -25,11 +24,8 @@ const ButtonAppPreview = ({
       <Button
         onClick={() => setIsModalOpen(true)}
         variant={ButtonVariant.TERNARY}
+        icon={fullShowIcon}
       >
-        <Icon
-          className={styles['image-venue-uploader-section-icon']}
-          svg="ico-eye-open-filled-black"
-        />
         Prévisualiser
       </Button>
 

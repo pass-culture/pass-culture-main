@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { InvoiceResponseModel } from 'apiClient/v1'
-import { ReactComponent as DownloadSvg } from 'icons/full-download.svg'
+import fullDownloadIcon from 'icons/full-download.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -35,7 +35,7 @@ const ReimbursementsTableBody = ({ invoices }: TableBody): JSX.Element => {
                   'aria-label': 'Télécharger le PDF',
                   download: true,
                 }}
-                Icon={DownloadSvg}
+                icon={fullDownloadIcon}
                 variant={ButtonVariant.TERNARY}
               >
                 PDF

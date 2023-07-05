@@ -17,9 +17,9 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullDisclosureClose from 'icons/full-disclosure-close.svg'
 import fullDisclosureOpen from 'icons/full-disclosure-open.svg'
-import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
-import { ReactComponent as FullMoreIcon } from 'icons/full-more.svg'
-import { ReactComponent as IcoPlus } from 'icons/full-plus.svg'
+import fullEditIcon from 'icons/full-edit.svg'
+import fullMoreIcon from 'icons/full-more.svg'
+import fullPlusIcon from 'icons/full-plus.svg'
 import strokeErrorIcon from 'icons/stroke-error.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -281,7 +281,7 @@ const Venue = ({
                           ...venueIdTrackParam,
                         })
                       }}
-                      Icon={FullMoreIcon}
+                      icon={fullMoreIcon}
                     >
                       Ajouter un RIB
                     </ButtonLink>
@@ -294,7 +294,7 @@ const Venue = ({
                   to: editVenueLink,
                   isExternal: false,
                 }}
-                Icon={FullEdit}
+                icon={fullEditIcon}
                 onClick={() =>
                   logEvent?.(
                     VenueEvents.CLICKED_VENUE_PUBLISHED_OFFERS_LINK,
@@ -345,7 +345,7 @@ const Venue = ({
                           ),
                           isExternal: false,
                         }}
-                        Icon={IcoPlus}
+                        icon={fullPlusIcon}
                         onClick={() =>
                           logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                             from: OFFER_FORM_NAVIGATION_IN.HOME,

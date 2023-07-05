@@ -1,10 +1,5 @@
 import cn from 'classnames'
-import React, {
-  FunctionComponent,
-  SVGProps,
-  MouseEventHandler,
-  useId,
-} from 'react'
+import React, { MouseEventHandler, useId } from 'react'
 import { Link } from 'react-router-dom'
 
 import fullRightIcon from 'icons/full-right.svg'
@@ -25,11 +20,6 @@ export type LinkProps = {
 }
 
 export interface ButtonLinkProps extends SharedButtonProps {
-  Icon?: FunctionComponent<
-    SVGProps<SVGSVGElement> & {
-      title?: string | undefined
-    }
-  >
   link: LinkProps
   children?: React.ReactNode | React.ReactNode[]
   className?: string
@@ -41,7 +31,7 @@ export interface ButtonLinkProps extends SharedButtonProps {
 const ButtonLink = ({
   className,
   children,
-  Icon,
+  icon,
   isDisabled = false,
   onClick,
   variant = ButtonVariant.TERNARY,
@@ -61,8 +51,8 @@ const ButtonLink = ({
     <>
       {
         /* istanbul ignore next: graphic variation */
-        Icon && iconPosition !== IconPositionEnum.RIGHT && (
-          <Icon className={styles['button-icon']} />
+        icon && iconPosition !== IconPositionEnum.RIGHT && (
+          <SvgIcon src={icon} alt="" className={styles['button-icon']} />
         )
       }
       {hasTooltip ? (
@@ -75,8 +65,8 @@ const ButtonLink = ({
       )}
       {
         /* istanbul ignore next: graphic variation */
-        Icon && iconPosition === IconPositionEnum.RIGHT && (
-          <Icon className={styles['button-icon']} />
+        icon && iconPosition === IconPositionEnum.RIGHT && (
+          <SvgIcon src={icon} alt="" className={styles['button-icon']} />
         )
       }
       {

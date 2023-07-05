@@ -11,7 +11,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as FullKeyIcon } from 'icons/full-key.svg'
+import fullKeyIcon from 'icons/full-key.svg'
 import { setCurrentUser } from 'store/user/actions'
 import { ButtonLink, PasswordInput, SubmitButton, TextInput } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -106,7 +106,7 @@ const SigninForm = (): JSX.Element => {
               </div>
 
               <ButtonLink
-                Icon={FullKeyIcon}
+                icon={fullKeyIcon}
                 variant={ButtonVariant.TERNARY}
                 link={{
                   to: '/demande-mot-de-passe',

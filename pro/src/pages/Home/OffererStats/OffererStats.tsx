@@ -3,12 +3,12 @@ import { useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as ShadowCalendar } from 'icons/shadow-calendar.svg'
-import { ReactComponent as ShadowTropheeIcon } from 'icons/shadow-trophee.svg'
-import { ReactComponent as StrokeEuro } from 'icons/stroke-euro.svg'
+import fullShowIcon from 'icons/full-show.svg'
+import shadowCalendarIcon from 'icons/shadow-calendar.svg'
+import shadowEuroIcon from 'icons/shadow-euro.svg'
+import shadowTropheeIcon from 'icons/shadow-trophee.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import Icon from 'ui-kit/Icon/Icon'
 import { IconLinkBox } from 'ui-kit/IconLinkBox'
 
 import { STEP_STATS_HASH } from '../HomepageBreadcrumb'
@@ -22,7 +22,7 @@ const OffererStats = () => {
   const location = useLocation()
 
   const defaultIconLinkProps = {
-    IconLink: () => <Icon svg="ico-eye-open-filled-black" />,
+    iconLink: fullShowIcon,
     linkUrl: offererStatsUrl,
     linkTitle: 'Voir le tableau',
     onClick: () => {
@@ -39,17 +39,17 @@ const OffererStats = () => {
         <div className={styles['offerer-stats-boxes']}>
           <IconLinkBox
             title="Top de vos offres"
-            IconHeader={ShadowTropheeIcon}
+            iconHeader={shadowTropheeIcon}
             {...defaultIconLinkProps}
           />
           <IconLinkBox
             title="Nombre de réservations"
-            IconHeader={ShadowCalendar}
+            iconHeader={shadowCalendarIcon}
             {...defaultIconLinkProps}
           />
           <IconLinkBox
             title="Répartition de votre chiffre d’affaires"
-            IconHeader={StrokeEuro}
+            iconHeader={shadowEuroIcon}
             {...defaultIconLinkProps}
           />
         </div>
