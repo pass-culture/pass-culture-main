@@ -20,6 +20,7 @@ class TransactionalSender(Enum):
     SUPPORT = EmailInfo(settings.SUPPORT_EMAIL_ADDRESS, "pass Culture")
     SUPPORT_PRO = EmailInfo(settings.SUPPORT_PRO_EMAIL_ADDRESS, "pass Culture")
     COMPLIANCE = EmailInfo(settings.COMPLIANCE_EMAIL_ADDRESS, "pass Culture")
+    DEV = EmailInfo(settings.DEV_EMAIL_ADDRESS, "pass Culture")
 
 
 @dataclasses.dataclass

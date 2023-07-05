@@ -7,9 +7,12 @@ import sqlalchemy as sa
 from sqlalchemy.orm import Query
 
 from pcapi import settings
+from pcapi.core import mails
 import pcapi.core.finance.exceptions as finance_exceptions
+import pcapi.core.finance.models as finance_models
 import pcapi.core.fraud.utils as fraud_utils
 from pcapi.core.history import models as history_models
+from pcapi.core.mails import models as mails_models
 import pcapi.core.mails.transactional as transaction_mails
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
@@ -771,6 +774,33 @@ def invalidate_fraud_check_for_duplicate_user(
     fraud_check.reason = f"Fraud check invalidé: duplicat de l'utilisateur {duplicate_user_id}"
 
     repository.save(fraud_check)
+
+
+def handle_fraud_suspicion(user: users_models.User, duplicate: users_models.User) -> None:
+    if user.deposit_type == finance_models.DepositType.GRANT_15_17 and finance_models.DepositType.GRANT_15_17 in [
+        deposit.type for deposit in duplicate.deposits
+    ]:
+        users_api.suspend_account(user, constants.SuspensionReason.FRAUD_SUSPICION, actor=None)
+        users_api.suspend_account(duplicate, constants.SuspensionReason.FRAUD_SUSPICION, actor=None)
+        user_backoffice_link = f'<a href="{settings.BACKOFFICE_URL}/public-accounts/{user.id}">{user.id}</a>'
+        duplicate_backoffice_link = (
+            f'<a href="{settings.BACKOFFICE_URL}/public-accounts/{duplicate.id}">{duplicate.id}</a>'
+        )
+        mails.send(
+            recipients=["fraude@passculture.app"],
+            data=mails_models.TransactionalWithoutTemplateEmailData(
+                sender=mails_models.TransactionalSender.DEV,
+                subject="Doublon détecté",
+                html_content=f"""<h2>Un doublon a été détecté</h2>
+<body>
+    <p>L'utilisateur {user_backoffice_link} essaie d'obtenir son crédit 18 ans. 
+    Or il semble être un doublon de l'utilisateur {duplicate_backoffice_link}.</p>
+    <p>Les deux ont déjà été crédités de leur crédit 15-17 ans et
+    {duplicate_backoffice_link} a aussi reçu le crédit 18 ans.</p>
+    <p>Ces deux comptes ont donc été suspendus pour suspicion de fraude.</p>
+</body>""",
+            ),
+        )
 
 
 def _anonymize_email(email: str) -> str:
