@@ -131,6 +131,45 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
             ),
             (
                 {
+                    "sub_rules-0-sub_rule_type": "TEXT_OFFER",
+                    "sub_rules-0-operator": "CONTAINS_EXACTLY",
+                    "sub_rules-0-list_field": "interdit, suspicious, verboten",
+                },
+                {
+                    "model": offers_models.OfferValidationModel.OFFER,
+                    "attribute": offers_models.OfferValidationAttribute.TEXT,
+                    "operator": offers_models.OfferValidationRuleOperator.CONTAINS_EXACTLY,
+                    "comparated": {"comparated": ["interdit", "suspicious", "verboten"]},
+                },
+            ),
+            (
+                {
+                    "sub_rules-0-sub_rule_type": "TEXT_COLLECTIVE_OFFER",
+                    "sub_rules-0-operator": "CONTAINS_EXACTLY",
+                    "sub_rules-0-list_field": "interdit, suspicious, verboten",
+                },
+                {
+                    "model": offers_models.OfferValidationModel.COLLECTIVE_OFFER,
+                    "attribute": offers_models.OfferValidationAttribute.TEXT,
+                    "operator": offers_models.OfferValidationRuleOperator.CONTAINS_EXACTLY,
+                    "comparated": {"comparated": ["interdit", "suspicious", "verboten"]},
+                },
+            ),
+            (
+                {
+                    "sub_rules-0-sub_rule_type": "TEXT_COLLECTIVE_OFFER_TEMPLATE",
+                    "sub_rules-0-operator": "CONTAINS_EXACTLY",
+                    "sub_rules-0-list_field": "interdit, suspicious, verboten",
+                },
+                {
+                    "model": offers_models.OfferValidationModel.COLLECTIVE_OFFER_TEMPLATE,
+                    "attribute": offers_models.OfferValidationAttribute.TEXT,
+                    "operator": offers_models.OfferValidationRuleOperator.CONTAINS_EXACTLY,
+                    "comparated": {"comparated": ["interdit", "suspicious", "verboten"]},
+                },
+            ),
+            (
+                {
                     "sub_rules-0-sub_rule_type": "MAX_PRICE_OFFER",
                     "sub_rules-0-operator": "NOT_EQUALS",
                     "sub_rules-0-decimal_field": "300",
