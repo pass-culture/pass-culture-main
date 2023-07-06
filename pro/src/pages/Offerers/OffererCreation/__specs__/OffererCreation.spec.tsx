@@ -5,7 +5,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffererCreation from '../OffererCreation'
 
-const renderOffererCreation = storeOverrides =>
+const renderOffererCreation = (storeOverrides: any) =>
   renderWithProviders(<OffererCreation />, { storeOverrides })
 
 describe('src | components | OffererCreation', () => {
