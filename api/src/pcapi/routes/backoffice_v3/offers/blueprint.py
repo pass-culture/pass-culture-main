@@ -21,7 +21,6 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
-from pcapi.routes.backoffice_v3 import autocomplete
 from pcapi.routes.backoffice_v3 import utils
 from pcapi.routes.backoffice_v3.forms import empty as empty_forms
 from pcapi.routes.backoffice_v3.offers import forms
@@ -201,6 +200,8 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
             if len(or_filters) > 1:
                 # Same as for bookings, where union has better performance than or_
                 query = main_query.union(*(query.filter(f) for f in or_filters[1:]))
+            else:
+                query = main_query
 
     if form.sort.data:
         order = form.order.data or "desc"
@@ -246,7 +247,6 @@ def list_offers() -> utils.BackofficeResponse:
             "info",
         )
         offers = offers[: form.limit.data]
-    autocomplete.prefill_offerers_choices(form.offerer)
 
     search_data_tags = set()
     if form.search.data:

@@ -11,6 +11,7 @@ from flask import url_for
 from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
 from flask_wtf import FlaskForm
+from sqlalchemy import func
 import werkzeug
 from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.exceptions import Forbidden
@@ -35,6 +36,8 @@ BackofficeResponse = typing.Union[str, typing.Tuple[str, int], WerkzeugResponse,
 OPERATOR_DICT = {
     "EQUALS": op.eq,
     "NOT_EQUALS": op.ne,
+    "STR_EQUALS": lambda x, y: func.lower(x) == y.lower(),
+    "STR_NOT_EQUALS": lambda x, y: func.lower(x) != y.lower(),
     "GREATER_THAN": op.gt,
     "GREATER_THAN_OR_EQUAL_TO": op.ge,
     "LESS_THAN": op.lt,
@@ -80,12 +83,12 @@ def permission_required(permission: perm_models.Permissions) -> typing.Callable:
     expected permissions.
     """
 
-    def wrapper(func: typing.Callable) -> typing.Callable:
-        @wraps(func)
+    def wrapper(function: typing.Callable) -> typing.Callable:
+        @wraps(function)
         def wrapped(*args: typing.Any, **kwargs: typing.Any) -> tuple[FlaskResponse, int] | typing.Callable:
             _check_permission(permission)
 
-            return func(*args, **kwargs)
+            return function(*args, **kwargs)
 
         return wrapped
 
@@ -107,13 +110,13 @@ def child_backoffice_blueprint(
 
 
 def custom_login_required(redirect_to: str) -> typing.Callable:
-    def wrapper(func: typing.Callable) -> typing.Callable:
-        @wraps(func)
+    def wrapper(function: typing.Callable) -> typing.Callable:
+        @wraps(function)
         def wrapped(*args: typing.Any, **kwargs: typing.Any) -> tuple[FlaskResponse, int] | typing.Callable:
             if not current_user.is_authenticated:
                 return werkzeug.utils.redirect(url_for(redirect_to))
 
-            return func(*args, **kwargs)
+            return function(*args, **kwargs)
 
         return wrapped
 
