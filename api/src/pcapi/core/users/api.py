@@ -1294,3 +1294,9 @@ def create_suspicious_login_email_token(login_info: users_models.LoginDeviceHist
         },
         expiration_date=expiration_date,
     )
+
+
+def delete_old_trusted_devices() -> None:
+    five_years_ago = datetime.datetime.utcnow() - relativedelta(years=5)
+
+    return users_models.TrustedDevice.query.filter(users_models.TrustedDevice.dateCreated <= five_years_ago).delete()
