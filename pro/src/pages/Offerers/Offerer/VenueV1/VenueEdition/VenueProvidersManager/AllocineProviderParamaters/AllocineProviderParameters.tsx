@@ -2,16 +2,16 @@ import React, { useCallback, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'
-import { VenueProviderResponse } from 'apiClient/v1'
+import { PostVenueProviderBody, VenueProviderResponse } from 'apiClient/v1'
 import useNotification from 'hooks/useNotification'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Button } from 'ui-kit/index'
 
+import { InitialValuesProps } from '../AllocineProviderForm/AllocineProviderForm'
 import AllocineProviderFormDialog from '../AllocineProviderFormDialog/AllocineProviderFormDialog'
 import { getRequestErrorStringFromErrors } from '../utils/getRequestErrorStringFromErrors'
 
 import style from './AllocineProviderParameters.module.scss'
-import { AllocineProviderParametersValues } from './types'
 
 interface AllocineProviderParametersProps {
   venueProvider: VenueProviderResponse
@@ -28,7 +28,7 @@ const AllocineProviderParameters = ({
   const notification = useNotification()
 
   const editVenueProvider = useCallback(
-    (payload: AllocineProviderParametersValues) => {
+    (payload: PostVenueProviderBody) => {
       api
         .updateVenueProvider(payload)
         .then(editedVenueProvider => {
@@ -55,7 +55,7 @@ const AllocineProviderParameters = ({
   }, [])
 
   const onConfirmDialog = useCallback(
-    (payload: AllocineProviderParametersValues) => {
+    (payload: PostVenueProviderBody) => {
       payload = {
         ...payload,
         isActive: venueProvider.isActive,
@@ -67,11 +67,12 @@ const AllocineProviderParameters = ({
     [closeFormDialog, editVenueProvider]
   )
 
+  // FIX ME: we should not use as but type of initialValues is strange
   const initialValues = {
     price: venueProvider.price,
     quantity: venueProvider.quantity,
     isDuo: venueProvider.isDuo ?? true,
-  }
+  } as InitialValuesProps
 
   return (
     <div className={style['allocine-provider-parameters-container']}>
@@ -108,7 +109,6 @@ const AllocineProviderParameters = ({
       </Button>
       {isOpenedFormDialog && (
         <AllocineProviderFormDialog
-          // @ts-expect-error
           initialValues={initialValues}
           onCancel={closeFormDialog}
           onConfirm={onConfirmDialog}
