@@ -11,7 +11,7 @@ import { OfferIndividual, OfferIndividualStock } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
-import { ReactComponent as StrokeEuro } from 'icons/stroke-euro.svg'
+import strokeEuroIcon from 'icons/stroke-euro.svg'
 import { Button, Checkbox, InfoBox, TextInput } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { BaseCheckbox } from 'ui-kit/form/shared'
@@ -180,7 +180,7 @@ export const PriceCategoriesForm = ({
                     type="number"
                     step="0.01"
                     max={PRICE_CATEGORY_PRICE_MAX}
-                    rightIcon={() => <StrokeEuro />}
+                    rightIcon={strokeEuroIcon}
                     className={styles['price-input']}
                     isLabelHidden={index !== 0}
                     disabled={isDisabled}
