@@ -24,7 +24,7 @@ interface FormProps {
   handleSubmit: () => void
 }
 
-interface FormValuesProps {
+export interface FormValuesProps {
   isDuo: boolean
   price?: number
   quantity: string | number | null
@@ -33,7 +33,7 @@ interface FormValuesProps {
 export type InitialValuesProps = FormProps & FormValuesProps
 
 export interface AllocineProviderFormProps {
-  saveVenueProvider: (payload?: PostVenueProviderBody) => void
+  saveVenueProvider: (payload: PostVenueProviderBody) => void
   providerId: number
   offererId: number
   venueId: number
