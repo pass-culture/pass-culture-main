@@ -1,6 +1,8 @@
 import cn from 'classnames'
 import React, { ForwardedRef, forwardRef } from 'react'
 
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+
 import styles from './BaseInput.module.scss'
 
 export interface BaseInputProps
@@ -8,7 +10,7 @@ export interface BaseInputProps
   className?: string
   hasError?: boolean
   filterVariant?: boolean
-  rightIcon?: () => JSX.Element | null
+  rightIcon?: string
   rightButton?: () => JSX.Element
 }
 
@@ -57,7 +59,11 @@ const BaseInput = forwardRef(
               [styles['filter-variant']]: filterVariant,
             })}
           >
-            {hasIcon ? rightIcon() : hasButton && rightButton()}
+            {hasIcon ? (
+              <SvgIcon src={rightIcon} alt="" />
+            ) : (
+              hasButton && rightButton()
+            )}
           </span>
         </div>
       )
