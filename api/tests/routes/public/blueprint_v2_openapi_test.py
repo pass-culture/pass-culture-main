@@ -89,7 +89,7 @@ def test_public_api(client, app):
                     "type": "array",
                 },
                 "CollectiveOffersListVenuesResponseModel": {
-                    "items": {"$ref": "#/components/schemas/CollectiveOffersVenueResponseModel"},
+                    "items": {"$ref": "#/components/schemas/VenueResponse"},
                     "title": "CollectiveOffersListVenuesResponseModel",
                     "type": "array",
                 },
@@ -122,18 +122,6 @@ def test_public_api(client, app):
                     },
                     "required": ["id", "label", "category", "categoryId"],
                     "title": "CollectiveOffersSubCategoryResponseModel",
-                    "type": "object",
-                },
-                "CollectiveOffersVenueResponseModel": {
-                    "properties": {
-                        "address": {"nullable": True, "title": "Address", "type": "string"},
-                        "city": {"nullable": True, "title": "City", "type": "string"},
-                        "id": {"title": "Id", "type": "integer"},
-                        "name": {"title": "Name", "type": "string"},
-                        "postalCode": {"nullable": True, "title": "Postalcode", "type": "string"},
-                    },
-                    "required": ["id", "name"],
-                    "title": "CollectiveOffersVenueResponseModel",
                     "type": "object",
                 },
                 "ErrorResponseModel": {
@@ -339,6 +327,33 @@ def test_public_api(client, app):
                     "title": "OfferVenueModel",
                     "type": "object",
                 },
+                "PartialAccessibility": {
+                    "description": "Accessibility for people with disabilities. Fields are null for digital venues.",
+                    "properties": {
+                        "audioDisabilityCompliant": {
+                            "nullable": True,
+                            "title": "Audiodisabilitycompliant",
+                            "type": "boolean",
+                        },
+                        "mentalDisabilityCompliant": {
+                            "nullable": True,
+                            "title": "Mentaldisabilitycompliant",
+                            "type": "boolean",
+                        },
+                        "motorDisabilityCompliant": {
+                            "nullable": True,
+                            "title": "Motordisabilitycompliant",
+                            "type": "boolean",
+                        },
+                        "visualDisabilityCompliant": {
+                            "nullable": True,
+                            "title": "Visualdisabilitycompliant",
+                            "type": "boolean",
+                        },
+                    },
+                    "title": "PartialAccessibility",
+                    "type": "object",
+                },
                 "PatchCollectiveOfferBodyModel": {
                     "additionalProperties": False,
                     "properties": {
@@ -532,6 +547,112 @@ def test_public_api(client, app):
                     "required": ["loc", "msg", "type"],
                     "title": "ValidationErrorElement",
                     "type": "object",
+                },
+                "VenueDigitalLocation": {
+                    "properties": {
+                        "type": {"default": "digital", "enum": ["digital"], "title": "Type", "type": "string"}
+                    },
+                    "title": "VenueDigitalLocation",
+                    "type": "object",
+                },
+                "VenuePhysicalLocation": {
+                    "properties": {
+                        "address": {
+                            "example": "55 rue du Faubourg-Saint-Honoré",
+                            "nullable": True,
+                            "title": "Address",
+                            "type": "string",
+                        },
+                        "city": {"example": "Paris", "nullable": True, "title": "City", "type": "string"},
+                        "postalCode": {"example": "75008", "nullable": True, "title": "Postalcode", "type": "string"},
+                        "type": {"default": "physical", "enum": ["physical"], "title": "Type", "type": "string"},
+                    },
+                    "title": "VenuePhysicalLocation",
+                    "type": "object",
+                },
+                "VenueResponse": {
+                    "properties": {
+                        "accessibility": {"$ref": "#/components/schemas/PartialAccessibility"},
+                        "activityDomain": {"$ref": "#/components/schemas/VenueTypeEnum"},
+                        "createdDatetime": {"format": "date-time", "title": "Createddatetime", "type": "string"},
+                        "id": {"title": "Id", "type": "integer"},
+                        "legalName": {"example": "Palais de l'Élysée", "title": "Legalname", "type": "string"},
+                        "location": {
+                            "description": "Location where the offers will be available or will take place. There is exactly one digital venue per offerer, which is listed although its id is not required to create a digital offer (see DigitalLocation model).",
+                            "discriminator": {
+                                "mapping": {
+                                    "digital": "#/components/schemas/VenueDigitalLocation",
+                                    "physical": "#/components/schemas/VenuePhysicalLocation",
+                                },
+                                "propertyName": "type",
+                            },
+                            "oneOf": [
+                                {"$ref": "#/components/schemas/VenuePhysicalLocation"},
+                                {"$ref": "#/components/schemas/VenueDigitalLocation"},
+                            ],
+                            "title": "Location",
+                        },
+                        "publicName": {
+                            "description": "If null, legalName is used.",
+                            "example": "Élysée",
+                            "nullable": True,
+                            "title": "Publicname",
+                            "type": "string",
+                        },
+                        "siret": {
+                            "description": "Null when venue is digital or when siretComment field is not null.",
+                            "example": "12345678901234",
+                            "nullable": True,
+                            "title": "Siret",
+                            "type": "string",
+                        },
+                        "siretComment": {
+                            "description": "Applicable if siret is null and venue is physical.",
+                            "example": None,
+                            "nullable": True,
+                            "title": "Siretcomment",
+                            "type": "string",
+                        },
+                    },
+                    "required": [
+                        "createdDatetime",
+                        "id",
+                        "location",
+                        "legalName",
+                        "publicName",
+                        "activityDomain",
+                        "accessibility",
+                    ],
+                    "title": "VenueResponse",
+                    "type": "object",
+                },
+                "VenueTypeEnum": {
+                    "description": "An enumeration.",
+                    "enum": [
+                        "ADMINISTRATIVE",
+                        "ARTISTIC_COURSE",
+                        "BOOKSTORE",
+                        "CONCERT_HALL",
+                        "CREATIVE_ARTS_STORE",
+                        "CULTURAL_CENTRE",
+                        "DIGITAL",
+                        "DISTRIBUTION_STORE",
+                        "FESTIVAL",
+                        "GAMES",
+                        "LIBRARY",
+                        "MOVIE",
+                        "MUSEUM",
+                        "MUSICAL_INSTRUMENT_STORE",
+                        "OTHER",
+                        "PATRIMONY_TOURISM",
+                        "PERFORMING_ARTS",
+                        "RECORD_STORE",
+                        "SCIENTIFIC_CULTURE",
+                        "TRAVELING_CINEMA",
+                        "VISUAL_ARTS",
+                    ],
+                    "title": "VenueTypeEnum",
+                    "type": "string",
                 },
             },
             "securitySchemes": {

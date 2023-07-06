@@ -19,6 +19,7 @@ from pcapi.core.providers import models as providers_models
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
+from pcapi.routes.public.serialization import venues as venues_serialization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import rate_limiting
 from pcapi.validation.routes.users_authentifications import api_key_required
@@ -65,7 +66,7 @@ def get_offerer_venues(
         accessible_venues_and_offerer.append(
             {
                 "offerer": offerer,
-                "venues": [serialization.VenueResponse.build_model(row.Venue) for row in group],
+                "venues": [venues_serialization.VenueResponse.build_model(row.Venue) for row in group],
             }
         )
     return serialization.GetOfferersVenuesResponse(__root__=accessible_venues_and_offerer)

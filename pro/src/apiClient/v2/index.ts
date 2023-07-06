@@ -26,7 +26,6 @@ export type { CollectiveOffersListVenuesResponseModel } from './models/Collectiv
 export type { CollectiveOffersResponseModel } from './models/CollectiveOffersResponseModel';
 export type { CollectiveOffersStudentLevelResponseModel } from './models/CollectiveOffersStudentLevelResponseModel';
 export type { CollectiveOffersSubCategoryResponseModel } from './models/CollectiveOffersSubCategoryResponseModel';
-export type { CollectiveOffersVenueResponseModel } from './models/CollectiveOffersVenueResponseModel';
 export type { ErrorResponseModel } from './models/ErrorResponseModel';
 export type { GetBookingResponse } from './models/GetBookingResponse';
 export type { GetListEducationalInstitutionsQueryModel } from './models/GetListEducationalInstitutionsQueryModel';
@@ -35,10 +34,15 @@ export type { ListCollectiveOffersQueryModel } from './models/ListCollectiveOffe
 export { OfferAddressType } from './models/OfferAddressType';
 export { OfferStatus } from './models/OfferStatus';
 export type { OfferVenueModel } from './models/OfferVenueModel';
+export type { PartialAccessibility } from './models/PartialAccessibility';
 export type { PatchCollectiveOfferBodyModel } from './models/PatchCollectiveOfferBodyModel';
 export type { PostCollectiveOfferBodyModel } from './models/PostCollectiveOfferBodyModel';
 export type { ValidationError } from './models/ValidationError';
 export type { ValidationErrorElement } from './models/ValidationErrorElement';
+export { VenueDigitalLocation } from './models/VenueDigitalLocation';
+export { VenuePhysicalLocation } from './models/VenuePhysicalLocation';
+export type { VenueResponse } from './models/VenueResponse';
+export { VenueTypeEnum } from './models/VenueTypeEnum';
 
 export { ApiContremarqueService } from './services/ApiContremarqueService';
 export { ApiOffresCollectivesService } from './services/ApiOffresCollectivesService';
