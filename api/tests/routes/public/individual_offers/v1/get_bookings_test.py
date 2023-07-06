@@ -57,6 +57,9 @@ class GetBookingsByTokenReturns200Test:
                     "venueDepartementCode": "75",
                     "venueId": venue.id,
                     "venueName": venue.name,
+                    "userFirstName": booking.user.firstName,
+                    "userLastName": booking.user.lastName,
+                    "userPhoneNumber": booking.user.phoneNumber,
                 }
             ],
             "pagination": {
@@ -126,6 +129,9 @@ class GetBookingsByTokenReturns200Test:
                     "venueDepartementCode": "75",
                     "venueId": venue.id,
                     "venueName": venue.name,
+                    "userFirstName": booking_2.user.firstName,
+                    "userLastName": booking_2.user.lastName,
+                    "userPhoneNumber": booking_2.user.phoneNumber,
                 },
                 {
                     "confirmationDate": booking.cancellationLimitDate.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
@@ -145,6 +151,9 @@ class GetBookingsByTokenReturns200Test:
                     "venueDepartementCode": "75",
                     "venueId": venue.id,
                     "venueName": venue.name,
+                    "userFirstName": booking.user.firstName,
+                    "userLastName": booking.user.lastName,
+                    "userPhoneNumber": booking.user.phoneNumber,
                 },
             ],
             "pagination": {
@@ -222,6 +231,9 @@ class GetBookingsByTokenReturns200Test:
                     "venueDepartementCode": "75",
                     "venueId": venue.id,
                     "venueName": venue.name,
+                    "userFirstName": booking_2.user.firstName,
+                    "userLastName": booking_2.user.lastName,
+                    "userPhoneNumber": booking_2.user.phoneNumber,
                 },
                 {
                     "confirmationDate": booking_3.cancellationLimitDate.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
@@ -241,6 +253,9 @@ class GetBookingsByTokenReturns200Test:
                     "venueDepartementCode": "75",
                     "venueId": venue.id,
                     "venueName": venue.name,
+                    "userFirstName": booking_3.user.firstName,
+                    "userLastName": booking_3.user.lastName,
+                    "userPhoneNumber": booking_3.user.phoneNumber,
                 },
             ],
             "pagination": {
@@ -318,6 +333,9 @@ class GetBookingsByTokenReturns200Test:
                     "venueDepartementCode": "75",
                     "venueId": venue.id,
                     "venueName": venue.name,
+                    "userFirstName": booking.user.firstName,
+                    "userLastName": booking.user.lastName,
+                    "userPhoneNumber": booking.user.phoneNumber,
                 },
             ],
             "pagination": {
