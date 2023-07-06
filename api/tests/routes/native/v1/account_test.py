@@ -1987,11 +1987,16 @@ class UnsuspendAccountTest:
         response = client.with_token(email=user.email).post("/native/v1/account/unsuspend")
         self.assert_code(response, "ALREADY_UNSUSPENDED")
 
-    def test_error_when_not_suspended_upon_user_request(self, client):
+    @pytest.mark.parametrize(
+        "suspension_reason",
+        [
+            users_constants.SuspensionReason.FRAUD_SUSPICION,
+            users_constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER,
+        ],
+    )
+    def test_error_when_not_suspended_upon_user_request(self, client, suspension_reason):
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
-        history_factories.SuspendedUserActionHistoryFactory(
-            user=user, reason=users_constants.SuspensionReason.FRAUD_SUSPICION
-        )
+        history_factories.SuspendedUserActionHistoryFactory(user=user, reason=suspension_reason)
 
         response = client.with_token(email=user.email).post("/native/v1/account/unsuspend")
         self.assert_code_and_not_active(response, user, "UNSUSPENSION_NOT_ALLOWED")
