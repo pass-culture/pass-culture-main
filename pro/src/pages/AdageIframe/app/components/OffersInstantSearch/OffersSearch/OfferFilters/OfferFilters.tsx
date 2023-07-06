@@ -2,9 +2,11 @@ import { Form, FormikProvider, useFormik } from 'formik'
 import React from 'react'
 import type { SearchBoxProvided } from 'react-instantsearch-core'
 
+import AdageButtonFilter from 'components/AdageButtonFilter/AdageButtonFilter'
 import FormLayout from 'components/FormLayout'
 import { Button, TextInput } from 'ui-kit'
 
+import ModalFilterLayout from './ModalFilterLayout/ModalFilterLayout'
 import styles from './OfferFilters.module.scss'
 
 export interface OfferFiltersProps {
@@ -52,6 +54,13 @@ export const OfferFilters = ({
               Rechercher
             </Button>
           </div>
+        </FormLayout.Row>
+        <FormLayout.Row>
+          <AdageButtonFilter isActive={false} title="Domaine artistique">
+            <ModalFilterLayout title="Choisir un domaine artistique">
+              {/* Ajouter le MultiSelect d'Antoine*/}
+            </ModalFilterLayout>
+          </AdageButtonFilter>
         </FormLayout.Row>
       </Form>
     </FormikProvider>
