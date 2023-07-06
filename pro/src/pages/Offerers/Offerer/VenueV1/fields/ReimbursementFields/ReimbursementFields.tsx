@@ -9,7 +9,7 @@ import InternalBanner from 'ui-kit/Banners/InternalBanner'
 
 import PricingPoint from '../PricingPoint'
 
-interface ReimbursementFieldsProps {
+export interface ReimbursementFieldsProps {
   offerer: GetOffererResponseModel
   readOnly: boolean
   scrollToSection?: boolean
