@@ -82,12 +82,7 @@ const App = ({ children }: AppProps): JSX.Element | null => {
           location.pathname.indexOf('/parcours-inscription') === -1 &&
           isBeamerEnabled
         ) {
-          window.Beamer.update({
-            user_firstname: currentUser.firstName,
-            user_lastname: currentUser.lastName,
-            user_email: currentUser.email,
-            user_id: currentUser.id.toString(),
-          })
+          window.Beamer.update({ user_id: currentUser.id.toString() })
           window.Beamer.init()
         }
       }, 1000)
