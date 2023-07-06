@@ -21,7 +21,9 @@ from pcapi.routes.backoffice_v3.forms import utils
 
 class SearchOperators(enum.Enum):
     NOT_EQUALS = "est différent de"
-    EQUALS = "est egal à"
+    EQUALS = "est égal à"
+    STR_NOT_EQUALS = "est différent de\0"  # the \0 is here to force wtforms to display NOT_EQUALS and STR_NOT_EQUALS
+    STR_EQUALS = "est égal à\0"  # the \0 is here to force wtforms to display EQUALS and STR_EQUALS
     GREATER_THAN = "supérieur strict"
     GREATER_THAN_OR_EQUAL_TO = "supérieur ou égal"
     LESS_THAN = "inférieur strict"
@@ -59,7 +61,7 @@ form_field_configuration = {
         ],
     },
     "DEPARTMENT": {"field": "department", "operator": ["IN", "NOT_IN"]},
-    "EAN": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "EQUALS", "NOT_EQUALS"]},
+    "EAN": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "STR_EQUALS", "STR_NOT_EQUALS"]},
     "EVENT_DATE": {
         "field": "date",
         "operator": [
@@ -68,14 +70,14 @@ form_field_configuration = {
         ],
     },
     "ID": {"field": "integer", "operator": ["EQUALS", "NOT_EQUALS"]},
-    "NAME": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "EQUALS", "NOT_EQUALS"]},
+    "NAME": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "STR_EQUALS", "STR_NOT_EQUALS"]},
     "OFFERER": {"field": "offerer", "operator": ["IN", "NOT_IN"]},
     "STATUS": {"field": "status", "operator": ["IN", "NOT_IN"]},
     "SUBCATEGORY": {"field": "subcategory", "operator": ["IN", "NOT_IN"]},
     "TAG": {"field": "criteria", "operator": ["IN", "NOT_IN"]},
     "VENUE": {"field": "venue", "operator": ["IN", "NOT_IN"]},
     "VALIDATION": {"field": "validation", "operator": ["IN", "NOT_IN"]},
-    "VISA": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "EQUALS", "NOT_EQUALS"]},
+    "VISA": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "STR_EQUALS", "STR_NOT_EQUALS"]},
 }
 
 
@@ -145,7 +147,7 @@ class OfferAdvancedSearchSubForm(utils.PCForm):
     )
     operator = fields.PCSelectWithPlaceholderValueField(
         "Opérateur",
-        choices=utils.choices_from_enum(SearchOperators, formatter=filters.format_offer_validation_operator),
+        choices=utils.choices_from_enum(SearchOperators),
         validators=[
             wtforms.validators.Optional(""),
         ],
@@ -280,6 +282,7 @@ class GetOffersSearchForm(GetOffersBaseFields):
         self._fields.move_to_end("category")
         self._fields.move_to_end("offerer")
         self._fields.move_to_end("limit")
+        autocomplete.prefill_offerers_choices(self.offerer)
 
     def is_empty(self) -> bool:
         empty = not any(

@@ -148,7 +148,7 @@
                 <td>{{ offer.venue.departementCode | empty_string_if_null }}</td>
                 <td>{{ links.build_offerer_name_to_details_link(offer.venue.managingOfferer) }}</td>
                 <td>{{ links.build_venue_name_to_details_link(offer.venue) }}</td>
-                <td>{{ links.build_venue_offers_icon_link(".list_offers", "Offres individuelles", offer.venue) }}</td>
+                <td>{{ links.build_venue_offers_icon_link_advanced(".list_offers", "Offres individuelles", offer.venue) }}</td>
               </tr>
             {% endfor %}
           </tbody>
