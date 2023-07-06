@@ -5,7 +5,11 @@ import './NoBookingsForPreFiltersMessage.scss'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-const NoBookingsForPreFiltersMessage = ({ resetPreFilters }) => (
+const NoBookingsForPreFiltersMessage = ({
+  resetPreFilters,
+}: {
+  resetPreFilters: () => void
+}) => (
   <div className="br-warning no-bookings-for-pre-filters">
     <SvgIcon
       src={strokeSearchIcon}
