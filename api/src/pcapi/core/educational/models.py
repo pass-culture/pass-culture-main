@@ -274,7 +274,7 @@ class CollectiveOffer(
         server_default="{}",
     )
 
-    description = sa.Column(sa.Text, nullable=False, server_default="", default="")
+    description: str = sa.Column(sa.Text, nullable=False, server_default="", default="")
 
     durationMinutes = sa.Column(sa.Integer, nullable=True)
 
@@ -447,6 +447,13 @@ class CollectiveOffer(
     def categoryId(self) -> str:  # used in validation rule, do not remove
         return self.subcategory.category.id
 
+    @property
+    def visibleText(self) -> str:  # used in validation rule, do not remove
+        text_data: list[str] = [self.name, self.description]
+        if self.collectiveStock and self.collectiveStock.priceDetail:
+            text_data.append(self.collectiveStock.priceDetail)
+        return " ".join(text_data)
+
     @hybrid_property
     def isEvent(self) -> bool:
         return self.subcategory.is_event
@@ -612,6 +619,10 @@ class CollectiveOfferTemplate(
     @property
     def categoryId(self) -> str:  # used in validation rule, do not remove
         return self.subcategory.category.id
+
+    @property
+    def visibleText(self) -> str:  # used in validation rule, do not remove
+        return f"{self.name} {self.description} {self.priceDetail}"
 
     @hybrid_property
     def isEvent(self) -> bool:
