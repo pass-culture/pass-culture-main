@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React from 'react'
 
 import { ReactComponent as FullInfoIcon } from 'icons/full-info.svg'
-import { ReactComponent as FullLink } from 'icons/full-link.svg'
+import { ReactComponent as FullLinkIcon } from 'icons/full-link.svg'
 import { ReactComponent as FullNextIcon } from 'icons/full-next.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -193,7 +193,7 @@ const VenueOfferSteps = ({
                     <ButtonLink
                       className={styles['step-button-width']}
                       variant={ButtonVariant.BOX}
-                      Icon={FullLink}
+                      Icon={FullLinkIcon}
                       link={{
                         to: `https://www.demarches-simplifiees.fr/dossiers${
                           demarchesSimplifieesApplicationId
@@ -203,7 +203,6 @@ const VenueOfferSteps = ({
                         isExternal: true,
                         target: '_blank',
                       }}
-                      onClick={() => {}}
                     >
                       Suivre mon dossier de coordonnées bancaires
                     </ButtonLink>
