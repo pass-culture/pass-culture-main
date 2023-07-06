@@ -1934,6 +1934,14 @@ class SuspensionStatusTest:
 
         self.assert_status(client, user, "SUSPENDED_UPON_USER_REQUEST")
 
+    def test_suspicious_login_reported_by_user_request_status(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(isActive=False)
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, reason=users_constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER
+        )
+
+        self.assert_status(client, user, "SUSPICIOUS_LOGIN_REPORTED_BY_USER")
+
     def test_deleted_account_status(self, client):
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
         history_factories.SuspendedUserActionHistoryFactory(user=user, reason=users_constants.SuspensionReason.DELETED)

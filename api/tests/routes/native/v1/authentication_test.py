@@ -60,6 +60,18 @@ def test_account_suspended_upon_user_request_account_state(client):
     assert response.json["accountState"] == AccountState.SUSPENDED_UPON_USER_REQUEST.value
 
 
+def test_account_suspended_by_user_for_suspicious_login_account_state(client):
+    data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+    user = users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=False)
+    history_factories.SuspendedUserActionHistoryFactory(
+        user=user, reason=users_constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER
+    )
+
+    response = client.post("/native/v1/signin", json=data)
+    assert response.status_code == 200
+    assert response.json["accountState"] == AccountState.SUSPICIOUS_LOGIN_REPORTED_BY_USER.value
+
+
 def test_account_deleted_account_state(client):
     data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
     user = users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=False)
