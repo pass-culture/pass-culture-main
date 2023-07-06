@@ -39,6 +39,9 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
     venue_departement_code: str
 
     user_email: str
+    user_phone_number: str | None
+    user_first_name: str | None
+    user_last_name: str | None
     user_birth_date: str | None
 
     @classmethod
@@ -63,6 +66,9 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
             venue_departement_code=booking.venue.departementCode,
             user_email=booking.email,
             user_birth_date=birth_date,
+            user_first_name=booking.user.firstName,
+            user_last_name=booking.user.lastName,
+            user_phone_number=booking.user.phoneNumber,
         )
 
 
