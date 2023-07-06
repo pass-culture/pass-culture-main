@@ -78,9 +78,9 @@ class PostProductByEanTest:
         assert created_stock.offer == created_offer
         assert created_stock.bookingLimitDatetime == datetime.datetime(2022, 1, 1, 12, 0, 0)
 
-    @mock.patch("pcapi.tasks.sendinblue_tasks.update_pro_attributes_task")
+    @mock.patch("pcapi.tasks.sendinblue_tasks.update_sib_pro_attributes_task")
     @freezegun.freeze_time("2022-01-01 12:00:00")
-    def test_valid_ean_without_task_autoflush(self, update_pro_task_mock, client):
+    def test_valid_ean_without_task_autoflush(self, update_sib_pro_task_mock, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
@@ -89,7 +89,7 @@ class PostProductByEanTest:
 
         # the update task autoflushes the SQLAlchemy session, but is not executed synchronously in cloud
         # environments, therefore we cannot rely on its side effects
-        update_pro_task_mock.side_effect = None
+        update_sib_pro_task_mock.side_effect = None
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products/ean",

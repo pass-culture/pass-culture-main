@@ -4,8 +4,8 @@ from pcapi import settings
 from pcapi.core.external import sendinblue
 from pcapi.core.mails.transactional.send_transactional_email import send_transactional_email
 from pcapi.tasks.decorator import task
+from pcapi.tasks.serialization.external_pro_tasks import UpdateProAttributesRequest
 from pcapi.tasks.serialization.sendinblue_tasks import SendTransactionalEmailRequest
-from pcapi.tasks.serialization.sendinblue_tasks import UpdateProAttributesRequest
 from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRequest
 
 
@@ -43,12 +43,12 @@ def send_transactional_email_secondary_task(payload: SendTransactionalEmailReque
 # So time_id parameter in UpdateProAttributesRequest helps to generate different hashes, so different task ids, every
 # 15 minutes. Keep delayed_seconds below consistent with time_id generation.
 @task(SENDINBLUE_PRO_QUEUE_NAME, "/sendinblue/update_pro_attributes", True, 900)  # type: ignore [arg-type]
-def update_pro_attributes_task(payload: UpdateProAttributesRequest) -> None:
+def update_sib_pro_attributes_task(payload: UpdateProAttributesRequest) -> None:
     from pcapi.core.external.attributes.api import get_pro_attributes
     from pcapi.core.external.sendinblue import update_contact_attributes
 
     # Keep at least to validate/debug on testing environment
-    logger.info("update_pro_attributes_task", extra={"email": payload.email, "time_id": payload.time_id})
+    logger.info("update_sib_pro_attributes_task", extra={"email": payload.email, "time_id": payload.time_id})
 
     attributes = get_pro_attributes(payload.email)
     update_contact_attributes(payload.email, attributes, asynchronous=False)

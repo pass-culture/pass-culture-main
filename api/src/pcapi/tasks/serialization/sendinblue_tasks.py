@@ -19,8 +19,3 @@ class SendTransactionalEmailRequest(BaseModel):
     html_content: str | None = None
     attachment: dict | None = None
     reply_to: dict
-
-
-class UpdateProAttributesRequest(BaseModel):
-    email: str
-    time_id: str  # see comment in update_pro_attributes_task
