@@ -1962,6 +1962,71 @@ class ResolveOfferValidationRuleTest:
         assert api.set_offer_status_based_on_fraud_criteria_v2(offer) == models.OfferValidationStatus.PENDING
         assert api.set_offer_status_based_on_fraud_criteria_v2(collective_offer) == models.OfferValidationStatus.PENDING
 
+    @pytest.mark.parametrize(
+        "offer_kwargs, expected_status",
+        [
+            ({"name": "Come to the dark side, we have cookies"}, models.OfferValidationStatus.PENDING),
+            ({"description": "Come to the dark side, we have cookies"}, models.OfferValidationStatus.PENDING),
+            ({}, models.OfferValidationStatus.APPROVED),
+        ],
+    )
+    def test_offer_validation_rule_with_offer_text(self, offer_kwargs, expected_status):
+        offer = factories.OfferFactory(**offer_kwargs)
+        offer_validation_rule = factories.OfferValidationRuleFactory(name="Règle sur les texte d'offres")
+        factories.OfferValidationSubRuleFactory(
+            validationRule=offer_validation_rule,
+            model=models.OfferValidationModel.OFFER,
+            attribute=models.OfferValidationAttribute.TEXT,
+            operator=models.OfferValidationRuleOperator.CONTAINS_EXACTLY,
+            comparated={"comparated": ["dark"]},
+        )
+        assert api.set_offer_status_based_on_fraud_criteria_v2(offer) == expected_status
+
+    @pytest.mark.parametrize(
+        "offer_kwargs, expected_status",
+        [
+            ({"collectiveOffer__name": "Come to the dark side, we have cookies"}, models.OfferValidationStatus.PENDING),
+            (
+                {"collectiveOffer__description": "Come to the dark side, we have cookies"},
+                models.OfferValidationStatus.PENDING,
+            ),
+            ({"priceDetail": "Come to the dark side, we have cookies"}, models.OfferValidationStatus.PENDING),
+            ({}, models.OfferValidationStatus.APPROVED),
+        ],
+    )
+    def test_collective_offer_validation_rule_with_offer_text(self, offer_kwargs, expected_status):
+        stock = educational_factories.CollectiveStockFactory(**offer_kwargs)
+        offer_validation_rule = factories.OfferValidationRuleFactory(name="Règle sur les texte d'offres")
+        factories.OfferValidationSubRuleFactory(
+            validationRule=offer_validation_rule,
+            model=models.OfferValidationModel.COLLECTIVE_OFFER,
+            attribute=models.OfferValidationAttribute.TEXT,
+            operator=models.OfferValidationRuleOperator.CONTAINS_EXACTLY,
+            comparated={"comparated": ["dark"]},
+        )
+        assert api.set_offer_status_based_on_fraud_criteria_v2(stock.collectiveOffer) == expected_status
+
+    @pytest.mark.parametrize(
+        "offer_kwargs, expected_status",
+        [
+            ({"name": "Come to the dark side, we have cookies"}, models.OfferValidationStatus.PENDING),
+            ({"description": "Come to the dark side, we have cookies"}, models.OfferValidationStatus.PENDING),
+            ({"priceDetail": "Come to the dark side, we have cookies"}, models.OfferValidationStatus.PENDING),
+            ({}, models.OfferValidationStatus.APPROVED),
+        ],
+    )
+    def test_collective_offer_template_validation_rule_with_offer_text(self, offer_kwargs, expected_status):
+        offer = educational_factories.CollectiveOfferTemplateFactory(**offer_kwargs)
+        offer_validation_rule = factories.OfferValidationRuleFactory(name="Règle sur les texte d'offres")
+        factories.OfferValidationSubRuleFactory(
+            validationRule=offer_validation_rule,
+            model=models.OfferValidationModel.COLLECTIVE_OFFER_TEMPLATE,
+            attribute=models.OfferValidationAttribute.TEXT,
+            operator=models.OfferValidationRuleOperator.CONTAINS_EXACTLY,
+            comparated={"comparated": ["dark"]},
+        )
+        assert api.set_offer_status_based_on_fraud_criteria_v2(offer) == expected_status
+
     def test_offer_validation_with_multiple_rules(self):
         offer = factories.OfferFactory(name="offer with a verboten name")
         factories.StockFactory(offer=offer, price=15)

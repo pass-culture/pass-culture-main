@@ -643,6 +643,10 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
             return self.extraData.get("showSubType")
         return None
 
+    @property
+    def visibleText(self) -> str:  # used in validation rule, do not remove
+        return f"{self.name} {self.description}"
+
     @hybrid_property
     def status(self) -> OfferStatus:
         if self.validation == OfferValidationStatus.REJECTED:
@@ -743,6 +747,7 @@ class OfferValidationAttribute(enum.Enum):
     PRICE = "price"
     PRICE_DETAIL = "priceDetail"
     SHOW_SUB_TYPE = "showSubType"
+    TEXT = "visibleText"
 
 
 class OfferValidationSubRuleField(enum.Enum):
@@ -769,6 +774,18 @@ class OfferValidationSubRuleField(enum.Enum):
     WITHDRAWAL_DETAILS_OFFER = {
         "model": OfferValidationModel.OFFER,
         "attribute": OfferValidationAttribute.WITHDRAWAL_DETAILS,
+    }
+    TEXT_OFFER = {
+        "model": OfferValidationModel.OFFER,
+        "attribute": OfferValidationAttribute.TEXT,
+    }
+    TEXT_COLLECTIVE_OFFER = {
+        "model": OfferValidationModel.COLLECTIVE_OFFER,
+        "attribute": OfferValidationAttribute.TEXT,
+    }
+    TEXT_COLLECTIVE_OFFER_TEMPLATE = {
+        "model": OfferValidationModel.COLLECTIVE_OFFER_TEMPLATE,
+        "attribute": OfferValidationAttribute.TEXT,
     }
     NAME_OFFER = {
         "model": OfferValidationModel.OFFER,

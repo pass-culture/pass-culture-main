@@ -8,6 +8,7 @@ from flask_sqlalchemy import BaseQuery
 from psycopg2.errorcodes import CHECK_VIOLATION
 from psycopg2.errorcodes import UNIQUE_VIOLATION
 import sentry_sdk
+import sqlalchemy as sa
 import sqlalchemy.exc as sqla_exc
 from werkzeug.exceptions import BadRequest
 import yaml
@@ -1017,7 +1018,9 @@ def rule_flags_offer(rule: models.OfferValidationRule, offer: AnyOffer) -> bool:
 
 
 def set_offer_status_based_on_fraud_criteria_v2(offer: AnyOffer) -> models.OfferValidationStatus:
-    offer_validation_rules = models.OfferValidationRule.query.all()
+    offer_validation_rules = models.OfferValidationRule.query.options(
+        sa.orm.joinedload(models.OfferValidationSubRule, models.OfferValidationRule.subRules)
+    ).all()
 
     flagging_rules = dict()
     for rule in offer_validation_rules:
