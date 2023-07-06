@@ -4,6 +4,8 @@
 @use "styles/variables/_colors.scss" as colors;
 
 .base-checkbox {
+  display: flex;
+
   &-label-row {
     display: inline-flex;
     cursor: pointer;

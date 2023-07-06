@@ -42,7 +42,7 @@ const BaseCheckbox = ({
         })}
         data-testid={'checkbox'}
       />
-      {!!icon && (
+      {Boolean(icon) && (
         <span className={styles['base-checkbox-icon']}>
           <img src={icon} className={styles['base-checkbox-icon-svg']} />
         </span>
