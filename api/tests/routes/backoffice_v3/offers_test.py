@@ -241,7 +241,9 @@ class ListOffersTest(GetEndpointHelper):
     def test_list_offers_by_offerer(self, authenticated_client, offers):
         # when
         offerer_id = offers[1].venue.managingOffererId
-        with assert_num_queries(self.expected_num_queries + 1):  # +1 because of reloading selected offerer in the form
+        # +1 because of reloading selected offerer in the form
+        # +1 because of reloading selected offerer in the form for display
+        with assert_num_queries(self.expected_num_queries + 2):
             response = authenticated_client.get(url_for(self.endpoint, offerer=[offerer_id]))
 
         # then
