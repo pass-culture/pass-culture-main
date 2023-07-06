@@ -424,3 +424,9 @@ def _send_notification_favorites_not_booked() -> None:
         except Exception:  # pylint: disable=broad-except
             log_extra = {"offer": row.offer_id, "users": row.user_ids, "count": len(row.user_ids)}
             logger.error("Favorites not booked: failed to send notification", extra=log_extra)
+
+
+@blueprint.cli.command("delete_old_trusted_devices")
+@log_cron_with_transaction
+def delete_old_trusted_devices() -> None:
+    users_api.delete_old_trusted_devices()
