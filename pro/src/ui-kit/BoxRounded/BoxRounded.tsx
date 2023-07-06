@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
+import { ReactComponent as FullEditIcon } from 'icons/full-edit.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -28,7 +28,7 @@ const BoxRounded = ({
         <Button
           variant={ButtonVariant.TERNARY}
           onClick={() => onClickModify()}
-          Icon={FullEdit}
+          Icon={FullEditIcon}
         >
           Modifier
         </Button>

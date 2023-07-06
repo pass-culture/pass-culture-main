@@ -3,8 +3,8 @@ import React from 'react'
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
-import { ReactComponent as FullLink } from 'icons/full-link.svg'
+import { ReactComponent as FullEditIcon } from 'icons/full-edit.svg'
+import { ReactComponent as FullLinkIcon } from 'icons/full-link.svg'
 import strokeValidIcon from 'icons/stroke-valid.svg'
 import strokeWrongIcon from 'icons/stroke-wrong.svg'
 import { ButtonLink } from 'ui-kit'
@@ -90,7 +90,7 @@ const CollectiveDmsTimeline = ({
             to: collectiveDmsApplicationLink,
             isExternal: true,
           }}
-          Icon={FullLink}
+          Icon={FullLinkIcon}
           onClick={() =>
             logClickOnDmsLink(DMSApplicationstatus.EN_CONSTRUCTION)
           }
@@ -103,7 +103,7 @@ const CollectiveDmsTimeline = ({
             to: collectiveDmsContactSupport,
             isExternal: true,
           }}
-          Icon={FullLink}
+          Icon={FullLinkIcon}
         >
           Contacter les services des Ministères de l’Education Nationale et de
           la Culture
@@ -135,7 +135,7 @@ const CollectiveDmsTimeline = ({
             to: collectiveDmsApplicationLink,
             isExternal: true,
           }}
-          Icon={FullLink}
+          Icon={FullLinkIcon}
           onClick={() => logClickOnDmsLink(DMSApplicationstatus.EN_INSTRUCTION)}
         >
           Consulter ma messagerie sur Démarches Simplifiées
@@ -177,7 +177,7 @@ const CollectiveDmsTimeline = ({
             to: collectiveDmsApplicationLink,
             isExternal: true,
           }}
-          Icon={FullLink}
+          Icon={FullLinkIcon}
           onClick={() => logClickOnDmsLink(DMSApplicationstatus.ACCEPTE)}
         >
           Consulter ma messagerie sur Démarches Simplifiées
@@ -241,7 +241,7 @@ const CollectiveDmsTimeline = ({
               to: collectiveVenueInformationsLink,
               isExternal: true,
             }}
-            Icon={FullEdit}
+            Icon={FullEditIcon}
           >
             Vérifier les informations de mon lieu
           </ButtonLink>
@@ -283,7 +283,7 @@ const CollectiveDmsTimeline = ({
               to: collectiveDmsApplicationLink,
               isExternal: true,
             }}
-            Icon={FullLink}
+            Icon={FullLinkIcon}
             onClick={() => logClickOnDmsLink(DMSApplicationstatus.REFUSE)}
           >
             Consulter ma messagerie sur Démarches Simplifiées
@@ -294,7 +294,7 @@ const CollectiveDmsTimeline = ({
               to: collectiveDmsContactSupport,
               isExternal: true,
             }}
-            Icon={FullLink}
+            Icon={FullLinkIcon}
           >
             Contacter les services des Ministères de l’Education Nationale et de
             la Culture
@@ -323,7 +323,7 @@ const CollectiveDmsTimeline = ({
               to: collectiveDmsApplicationLink,
               isExternal: true,
             }}
-            Icon={FullLink}
+            Icon={FullLinkIcon}
             onClick={() => logClickOnDmsLink(DMSApplicationstatus.SANS_SUITE)}
           >
             Consulter ma messagerie sur Démarches Simplifiées
@@ -334,7 +334,7 @@ const CollectiveDmsTimeline = ({
               to: collectiveDmsContactSupport,
               isExternal: true,
             }}
-            Icon={FullLink}
+            Icon={FullLinkIcon}
           >
             Contacter les services des Ministères de l’Education Nationale et de
             la Culture

@@ -3,7 +3,7 @@ import React from 'react'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
-import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
+import { ReactComponent as FullEditIcon } from 'icons/full-edit.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -74,7 +74,7 @@ const ProfileAndSupport = () => {
                 variant={ButtonVariant.TERNARY}
                 link={{ to: '/profil', isExternal: false }}
                 type="button"
-                Icon={FullEdit}
+                Icon={FullEditIcon}
                 onClick={() => logEvent?.(Events.CLICKED_EDIT_PROFILE)}
               >
                 Modifier

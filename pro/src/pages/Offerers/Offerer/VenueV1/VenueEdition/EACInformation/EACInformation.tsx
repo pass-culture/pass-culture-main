@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React from 'react'
 
 import { GetVenueResponseModel } from 'apiClient/v1'
-import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
+import { ReactComponent as FullEditIcon } from 'icons/full-edit.svg'
 import { Banner, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -47,7 +47,7 @@ const EACInformation = ({
           to: `/structures/${offererId}/lieux/${venue?.id}/eac`,
           isExternal: false,
         }}
-        Icon={collectiveDataIsNotEmpty ? FullEdit : undefined}
+        Icon={collectiveDataIsNotEmpty ? FullEditIcon : undefined}
         variant={ButtonVariant.SECONDARY}
         isDisabled={isCreatingVenue}
         className={cn({ [styles['button']]: collectiveDataIsNotEmpty })}

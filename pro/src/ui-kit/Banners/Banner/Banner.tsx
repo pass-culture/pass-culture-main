@@ -1,6 +1,6 @@
 import React, { FunctionComponent, SVGProps } from 'react'
 
-import { ReactComponent as FullLink } from 'icons/full-link.svg'
+import { ReactComponent as FullLinkIcon } from 'icons/full-link.svg'
 import styles from 'ui-kit/Banners/BannerLayout/BannerLayout.module.scss'
 import { ButtonLink } from 'ui-kit/Button'
 
@@ -42,7 +42,7 @@ const Banner = ({
       }}
       Icon={
         /* istanbul ignore next: DEBT to fix */
-        link.hideLinkIcon ? undefined : link.Icon || FullLink
+        link.hideLinkIcon ? undefined : link.Icon || FullLinkIcon
       }
       className={styles['bi-link']}
       onClick={link.onClick ?? undefined}

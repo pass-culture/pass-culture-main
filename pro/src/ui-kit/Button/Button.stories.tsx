@@ -3,8 +3,8 @@ import type { Story } from '@storybook/react'
 import React from 'react'
 
 import { ReactComponent as backFullIcon } from 'icons/full-back.svg'
-import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
-import { ReactComponent as FullLink } from 'icons/full-link.svg'
+import { ReactComponent as FullEditIcon } from 'icons/full-edit.svg'
+import { ReactComponent as FullLinkIcon } from 'icons/full-link.svg'
 import { ReactComponent as fullNextIcon } from 'icons/full-next.svg'
 
 import { withRouterDecorator } from '../../stories/decorators/withRouter'
@@ -69,7 +69,7 @@ export const DefaultButtonWithIcon = Template.bind({})
 
 DefaultButtonWithIcon.args = {
   ...DefaultButton.args,
-  Icon: FullLink,
+  Icon: FullLinkIcon,
 }
 
 export const DefaultSecondaryButton = Template.bind({})
@@ -92,7 +92,7 @@ export const LinkButtonWithIcon = TemplateLink.bind({})
 
 LinkButtonWithIcon.args = {
   ...LinkButton.args,
-  Icon: FullEdit,
+  Icon: FullEditIcon,
 }
 
 export const LinkQuaternaryButtonWithIcon = TemplateLink.bind({})
@@ -108,7 +108,7 @@ export const WithTooltip = Template.bind({})
 WithTooltip.args = {
   ...DefaultButton.args,
   children: 'Créer une offre réservable pour un établissement scolaire',
-  Icon: FullEdit,
+  Icon: FullEditIcon,
   iconPosition: IconPositionEnum.CENTER,
   variant: ButtonVariant.SECONDARY,
   hasTooltip: true,

@@ -5,7 +5,7 @@ import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { Venue } from 'core/Venue'
-import { ReactComponent as FullLink } from 'icons/full-link.svg'
+import { ReactComponent as FullLinkIcon } from 'icons/full-link.svg'
 import strokeValidIcon from 'icons/stroke-valid.svg'
 import { ButtonLink } from 'ui-kit/Button'
 import Button from 'ui-kit/Button/Button'
@@ -80,7 +80,7 @@ const PricingPoint = ({
             {
               href: `https://aide.passculture.app/hc/fr/articles/4413973462929--Acteurs-Culturels-Comment-rattacher-mes-points-de-remboursement-et-mes-coordonn%C3%A9es-bancaires-%C3%A0-un-SIRET-de-r%C3%A9f%C3%A9rence-`,
               linkTitle: 'En savoir plus sur les barèmes de remboursement',
-              Icon: FullLink,
+              Icon: FullLinkIcon,
             },
           ]}
           type="notification-info"
@@ -112,7 +112,7 @@ const PricingPoint = ({
             Ce choix ne pourra pas être modifié.
           </p>
           <ButtonLink
-            Icon={FullLink}
+            Icon={FullLinkIcon}
             link={{
               to: 'https://aide.passculture.app/hc/fr/sections/4411991876241-Modalités-de-remboursements',
               isExternal: true,

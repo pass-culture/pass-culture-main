@@ -17,7 +17,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullDisclosureClose from 'icons/full-disclosure-close.svg'
 import fullDisclosureOpen from 'icons/full-disclosure-open.svg'
-import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
+import { ReactComponent as FullEditIcon } from 'icons/full-edit.svg'
 import { ReactComponent as FullMoreIcon } from 'icons/full-more.svg'
 import { ReactComponent as IcoPlus } from 'icons/full-plus.svg'
 import { ReactComponent as StrokeErrorIcon } from 'icons/stroke-error.svg'
@@ -288,7 +288,7 @@ const Venue = ({
                   to: editVenueLink,
                   isExternal: false,
                 }}
-                Icon={FullEdit}
+                Icon={FullEditIcon}
                 onClick={() =>
                   logEvent?.(
                     VenueEvents.CLICKED_VENUE_PUBLISHED_OFFERS_LINK,

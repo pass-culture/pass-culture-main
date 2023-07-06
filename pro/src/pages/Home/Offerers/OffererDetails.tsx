@@ -4,8 +4,8 @@ import { GetOffererResponseModel } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
-import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
-import { ReactComponent as FullLink } from 'icons/full-link.svg'
+import { ReactComponent as FullEditIcon } from 'icons/full-edit.svg'
+import { ReactComponent as FullLinkIcon } from 'icons/full-link.svg'
 import { Banner, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
@@ -89,7 +89,7 @@ const OffererDetails = ({
               to: `/structures/${selectedOfferer.id}`,
               isExternal: false,
             }}
-            Icon={FullEdit}
+            Icon={FullEditIcon}
             isDisabled={!isUserOffererValidated}
             onClick={() =>
               logEvent?.(Events.CLICKED_MODIFY_OFFERER, {
@@ -112,7 +112,7 @@ const OffererDetails = ({
                   {
                     href: `https://aide.passculture.app/hc/fr/articles/4514252662172--Acteurs-Culturels-S-inscrire-et-comprendre-le-fonctionnement-du-pass-Culture-cr%C3%A9ation-d-offres-gestion-des-r%C3%A9servations-remboursements-etc-`,
                     linkTitle: 'En savoir plus',
-                    Icon: FullLink,
+                    Icon: FullLinkIcon,
                   },
                 ]}
               >
@@ -136,7 +136,7 @@ const OffererDetails = ({
                     href: `https://aide.passculture.app/hc/fr/articles/4514252662172--Acteurs-Culturels-S-inscrire-et-comprendre-le-fonctionnement-du-pass-Culture-cr%C3%A9ation-d-offres-gestion-des-r%C3%A9servations-remboursements-etc-`,
                     linkTitle:
                       'En savoir plus sur le fonctionnement du pass Culture',
-                    Icon: FullLink,
+                    Icon: FullLinkIcon,
                   },
                 ]}
               >
@@ -158,7 +158,7 @@ const OffererDetails = ({
                   {
                     href: `https://aide.passculture.app/hc/fr/articles/4514252662172--Acteurs-Culturels-S-inscrire-et-comprendre-le-fonctionnement-du-pass-Culture-cr%C3%A9ation-d-offres-gestion-des-r%C3%A9servations-remboursements-etc-`,
                     linkTitle: 'En savoir plus',
-                    Icon: FullLink,
+                    Icon: FullLinkIcon,
                   },
                 ]}
               >
@@ -183,7 +183,7 @@ const OffererDetails = ({
                   {
                     href: `https://aide.passculture.app/hc/fr/articles/4411992075281--Acteurs-Culturels-Comment-cr%C3%A9er-un-lieu-`,
                     linkTitle: 'En savoir plus sur la création d’un lieu',
-                    Icon: FullLink,
+                    Icon: FullLinkIcon,
                   },
                 ]}
               >

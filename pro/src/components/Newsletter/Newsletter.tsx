@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ReactComponent as FullLink } from 'icons/full-link.svg'
+import { ReactComponent as FullLinkIcon } from 'icons/full-link.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -19,7 +19,7 @@ const Newsletter = () => {
             isExternal: true,
             target: '_blank',
           }}
-          Icon={FullLink}
+          Icon={FullLinkIcon}
         >
           Inscrivez-vous à notre newsletter pour recevoir les actualités du pass
           Culture

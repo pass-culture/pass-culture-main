@@ -13,7 +13,7 @@ import { Events } from 'core/FirebaseEvents/constants'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import { ReactComponent as FullEdit } from 'icons/full-edit.svg'
+import { ReactComponent as FullEditIcon } from 'icons/full-edit.svg'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { Banner, ButtonLink } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
@@ -111,7 +111,7 @@ const Validation = (): JSX.Element => {
             }}
             variant={ButtonVariant.TERNARY}
             iconPosition={IconPositionEnum.LEFT}
-            Icon={FullEdit}
+            Icon={FullEditIcon}
           >
             Modifier
           </ButtonLink>
@@ -148,7 +148,7 @@ const Validation = (): JSX.Element => {
             }}
             variant={ButtonVariant.TERNARY}
             iconPosition={IconPositionEnum.LEFT}
-            Icon={FullEdit}
+            Icon={FullEditIcon}
           >
             Modifier
           </ButtonLink>
