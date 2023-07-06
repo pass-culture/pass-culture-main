@@ -4,11 +4,21 @@ import React from 'react'
 import { Form } from 'react-final-form'
 
 import { api } from 'apiClient/api'
+import {
+  GetOffererResponseModel,
+  GetOffererVenueResponseModel,
+} from 'apiClient/v1'
+import { Venue } from 'core/Venue'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import ReimbursementFields from '../ReimbursementFields'
+import ReimbursementFields, {
+  ReimbursementFieldsProps,
+} from '../ReimbursementFields'
 
-const renderReimbursementFields = async (props, storeOverrides) => {
+const renderReimbursementFields = async (
+  props: ReimbursementFieldsProps,
+  storeOverrides: any
+) => {
   const rtlReturn = renderWithProviders(
     <Formik onSubmit={() => {}} initialValues={{}}>
       {({ handleSubmit }) => (
@@ -36,22 +46,23 @@ describe('src | Venue | ReimbursementFields', () => {
   const venue = {
     id: 1,
     name: 'fake venue name',
-  }
+  } as Venue
   const otherVenue = {
     id: 2,
     name: 'Offerer Venue',
-  }
+  } as GetOffererVenueResponseModel
   const offerer = {
     id: 2,
     name: 'fake offerer name',
     managedVenues: [otherVenue],
     hasAvailablePricingPoints: true,
-  }
+  } as GetOffererResponseModel
+
   const mockLogEvent = jest.fn()
-  let props
-  let store
+  let props: ReimbursementFieldsProps
+  let store: any
   beforeEach(() => {
-    props = { venue, offerer }
+    props = { venue, offerer, readOnly: false }
     store = {
       app: { logEvent: mockLogEvent },
     }
@@ -94,7 +105,7 @@ describe('src | Venue | ReimbursementFields', () => {
     // Given
     const venueWithoutSiret = {
       ...venue,
-      siret: null,
+      siret: '',
     }
     props.venue = venueWithoutSiret
 
