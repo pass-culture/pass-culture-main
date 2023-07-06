@@ -3,6 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { CollectiveOffersVenueResponseModel } from './CollectiveOffersVenueResponseModel';
+import type { VenueResponse } from './VenueResponse';
 
-export type CollectiveOffersListVenuesResponseModel = Array<CollectiveOffersVenueResponseModel>;
+export type CollectiveOffersListVenuesResponseModel = Array<VenueResponse>;
