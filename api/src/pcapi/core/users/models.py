@@ -169,6 +169,7 @@ class AccountState(enum.Enum):
     INACTIVE = "INACTIVE"
     SUSPENDED = "SUSPENDED"
     SUSPENDED_UPON_USER_REQUEST = "SUSPENDED_UPON_USER_REQUEST"
+    SUSPICIOUS_LOGIN_REPORTED_BY_USER = "SUSPICIOUS_LOGIN_REPORTED_BY_USER"
     DELETED = "DELETED"
 
     @property
@@ -529,6 +530,8 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
                     return AccountState.DELETED
                 if self.suspension_reason == constants.SuspensionReason.UPON_USER_REQUEST:
                     return AccountState.SUSPENDED_UPON_USER_REQUEST
+                if self.suspension_reason == constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER:
+                    return AccountState.SUSPICIOUS_LOGIN_REPORTED_BY_USER
 
                 return AccountState.SUSPENDED
 

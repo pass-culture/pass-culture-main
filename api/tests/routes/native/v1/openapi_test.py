@@ -34,7 +34,14 @@ def test_public_api(client):
                 },
                 "AccountState": {
                     "description": "An enumeration.",
-                    "enum": ["ACTIVE", "INACTIVE", "SUSPENDED", "SUSPENDED_UPON_USER_REQUEST", "DELETED"],
+                    "enum": [
+                        "ACTIVE",
+                        "INACTIVE",
+                        "SUSPENDED",
+                        "SUSPENDED_UPON_USER_REQUEST",
+                        "SUSPICIOUS_LOGIN_REPORTED_BY_USER",
+                        "DELETED",
+                    ],
                     "title": "AccountState",
                 },
                 "ActivityIdEnum": {
