@@ -1493,3 +1493,23 @@ class CreateSuspiciousLoginEmailTokenTest:
             "dateCreated": "2023-06-02T16:10:00.000000Z",
             "exp": datetime.datetime(2023, 6, 9, 16, 10).timestamp(),
         }
+
+
+class DeleteOldTrustedDevicesTest:
+    def should_delete_trusted_devices_older_than_five_years_ago(self):
+        five_years_ago = datetime.datetime.utcnow() - relativedelta(years=5)
+        six_years_ago = datetime.datetime.utcnow() - relativedelta(years=6)
+        users_factories.TrustedDeviceFactory(dateCreated=five_years_ago)
+        users_factories.TrustedDeviceFactory(dateCreated=six_years_ago)
+
+        users_api.delete_old_trusted_devices()
+
+        assert users_models.TrustedDevice.query.count() == 0
+
+    def should_not_delete_trusted_devices_created_less_than_five_years_ago(self):
+        less_than_five_years_ago = datetime.datetime.utcnow() - relativedelta(years=5) + datetime.timedelta(days=1)
+        users_factories.TrustedDeviceFactory(dateCreated=less_than_five_years_ago)
+
+        users_api.delete_old_trusted_devices()
+
+        assert users_models.TrustedDevice.query.count() == 1
