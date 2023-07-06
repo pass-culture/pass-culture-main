@@ -13,24 +13,20 @@ import typing_extensions
 from pcapi import settings
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import utils as finance_utils
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.domain import music_types
 from pcapi.domain import show_types
 from pcapi.models import offer_mixin
 from pcapi.routes import serialization
 from pcapi.routes.public.individual_offers.v1.base_serialization import PaginationQueryParams
+import pcapi.routes.public.serialization.accessibility as accessibility_serialization
+from pcapi.routes.public.serialization.utils import StrEnum
+import pcapi.routes.public.serialization.venues as venues_serialization
 from pcapi.serialization import utils as serialization_utils
 from pcapi.utils import date as date_utils
 
 
 logger = logging.getLogger(__name__)
-
-
-class StrEnum(str, enum.Enum):
-    # StrEnum is needed so that swagger ui displays the enum values
-    # see https://github.com/swagger-api/swagger-ui/issues/6906
-    pass
 
 
 MusicTypeEnum = StrEnum(  # type: ignore [call-overload]
@@ -52,10 +48,6 @@ ShowTypeEnum = StrEnum(  # type: ignore [call-overload]
     },
 )
 
-VenueTypeEnum = StrEnum(  # type: ignore [call-overload]
-    "VenueTypeEnum", {venue_type.name: venue_type.name for venue_type in offerers_models.VenueTypeCode}
-)
-
 
 class Accessibility(serialization.ConfiguredBaseModel):
     """Accessibility for people with disabilities."""
@@ -64,15 +56,6 @@ class Accessibility(serialization.ConfiguredBaseModel):
     mental_disability_compliant: bool
     motor_disability_compliant: bool
     visual_disability_compliant: bool
-
-
-class PartialAccessibility(serialization.ConfiguredBaseModel):
-    """Accessibility for people with disabilities. Fields are null for digital venues."""
-
-    audio_disability_compliant: bool | None
-    mental_disability_compliant: bool | None
-    motor_disability_compliant: bool | None
-    visual_disability_compliant: bool | None
 
 
 class PhysicalLocation(serialization.ConfiguredBaseModel):
@@ -554,7 +537,7 @@ class EventOfferCreation(OfferCreationBase):
 
 
 class OfferEditionBase(serialization.ConfiguredBaseModel):
-    accessibility: PartialAccessibility | None = pydantic.Field(
+    accessibility: accessibility_serialization.PartialAccessibility | None = pydantic.Field(
         description="Accessibility to disabled people. Leave fields undefined to keep current value"
     )
     booking_contact: pydantic.EmailStr | None = BOOKING_CONTACT_FIELD
@@ -941,61 +924,11 @@ class OffererResponse(serialization.ConfiguredBaseModel):
     siren: str | None = pydantic.Field(example="123456789")
 
 
-class VenuePhysicalLocation(serialization.ConfiguredBaseModel):
-    address: str | None = pydantic.Field(example="55 rue du Faubourg-Saint-Honoré")
-    city: str | None = pydantic.Field(example="Paris")
-    postalCode: str | None = pydantic.Field(example="75008")
-    type: typing.Literal["physical"] = "physical"
-
-
-class VenueDigitalLocation(serialization.ConfiguredBaseModel):
-    type: typing.Literal["digital"] = "digital"
-
-
-class VenueResponse(serialization.ConfiguredBaseModel):
-    comment: str | None = pydantic.Field(
-        None, description="Applicable if siret is null and venue is physical.", alias="siretComment", example=None
-    )
-    dateCreated: datetime.datetime = pydantic.Field(..., alias="createdDatetime")
-    id: int
-    location: VenuePhysicalLocation | VenueDigitalLocation = pydantic.Field(
-        ...,
-        description="Location where the offers will be available or will take place. There is exactly one digital venue per offerer, which is listed although its id is not required to create a digital offer (see DigitalLocation model).",
-        discriminator="type",
-    )
-    name: str = pydantic.Field(alias="legalName", example="Palais de l'Élysée")
-    publicName: str | None = pydantic.Field(..., description="If null, legalName is used.", example="Élysée")
-    siret: str | None = pydantic.Field(
-        description="Null when venue is digital or when siretComment field is not null.", example="12345678901234"
-    )
-    venueTypeCode: VenueTypeEnum = pydantic.Field(alias="activityDomain")  # type: ignore [valid-type]
-    accessibility: PartialAccessibility
-
-    @classmethod
-    def build_model(cls, venue: offerers_models.Venue) -> "VenueResponse":
-        return cls(
-            comment=venue.comment,
-            dateCreated=venue.dateCreated,
-            id=venue.id,
-            location=VenuePhysicalLocation(address=venue.address, city=venue.city, postalCode=venue.postalCode)
-            if not venue.isVirtual
-            else VenueDigitalLocation(),
-            name=venue.name,
-            publicName=venue.publicName,
-            siret=venue.siret,
-            venueTypeCode=venue.venueTypeCode.name,
-            accessibility=PartialAccessibility.from_orm(venue),
-        )
-
-    class Config:
-        json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
-
-
 class GetOffererVenuesResponse(serialization.ConfiguredBaseModel):
     offerer: OffererResponse = pydantic.Field(
         ..., description="Offerer to which the venues belong. Entity linked to the api key used."
     )
-    venues: typing.List[VenueResponse]
+    venues: typing.List[venues_serialization.VenueResponse]
 
 
 class GetOfferersVenuesResponse(serialization.BaseModel):

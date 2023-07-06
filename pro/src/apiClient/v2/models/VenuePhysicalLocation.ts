@@ -3,11 +3,19 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type CollectiveOffersVenueResponseModel = {
+export type VenuePhysicalLocation = {
   address?: string | null;
   city?: string | null;
-  id: number;
-  name: string;
   postalCode?: string | null;
+  type?: VenuePhysicalLocation.type;
 };
+
+export namespace VenuePhysicalLocation {
+
+  export enum type {
+    PHYSICAL = 'physical',
+  }
+
+
+}
 

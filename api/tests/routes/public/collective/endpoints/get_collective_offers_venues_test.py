@@ -1,4 +1,3 @@
-from operator import attrgetter
 from operator import itemgetter
 
 from flask import url_for
@@ -35,10 +34,24 @@ class CollectiveOffersGetVenuesTest:
         assert response_list == [
             {
                 "id": venue.id,
-                "name": venue.name,
-                "address": venue.address,
-                "postalCode": venue.postalCode,
-                "city": venue.city,
+                "legalName": venue.name,
+                "location": {
+                    "address": venue.address,
+                    "city": venue.city,
+                    "postalCode": venue.postalCode,
+                    "type": "physical" if not venue.isVirtual else "digital",
+                },
+                "siretComment": venue.comment,
+                "createdDatetime": venue.dateCreated.isoformat(),
+                "publicName": venue.publicName,
+                "siret": venue.siret,
+                "activityDomain": venue.venueTypeCode.name,
+                "accessibility": {
+                    "audioDisabilityCompliant": venue.audioDisabilityCompliant,
+                    "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
+                    "motorDisabilityCompliant": venue.motorDisabilityCompliant,
+                    "visualDisabilityCompliant": venue.visualDisabilityCompliant,
+                },
             }
             for venue in [venue1, venue2]
         ]
@@ -107,12 +120,26 @@ class CollectiveOffersGetVenuesWithFFTest:
         assert response_list == [
             {
                 "id": venue.id,
-                "name": venue.name,
-                "address": venue.address,
-                "postalCode": venue.postalCode,
-                "city": venue.city,
+                "legalName": venue.name,
+                "location": {
+                    "address": venue.address,
+                    "city": venue.city,
+                    "postalCode": venue.postalCode,
+                    "type": "physical" if not venue.isVirtual else "digital",
+                },
+                "siretComment": venue.comment,
+                "createdDatetime": venue.dateCreated.isoformat(),
+                "publicName": venue.publicName,
+                "siret": venue.siret,
+                "activityDomain": venue.venueTypeCode.name,
+                "accessibility": {
+                    "audioDisabilityCompliant": venue.audioDisabilityCompliant,
+                    "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
+                    "motorDisabilityCompliant": venue.motorDisabilityCompliant,
+                    "visualDisabilityCompliant": venue.visualDisabilityCompliant,
+                },
             }
-            for venue in sorted([venue1, venue2], key=attrgetter("id"))
+            for venue in [venue1, venue2]
         ]
 
     @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=True)
