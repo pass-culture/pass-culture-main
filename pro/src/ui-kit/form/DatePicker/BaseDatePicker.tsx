@@ -4,7 +4,6 @@ import ReactDatePicker, { registerLocale } from 'react-datepicker'
 import type { ReactDatePickerProps } from 'react-datepicker'
 
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { FORMAT_DD_MM_YYYY } from 'utils/date'
 
 import { BaseInput } from '../shared'
@@ -33,7 +32,7 @@ export const BaseDatePicker = ({
     {...props}
     customInput={
       <BaseInput
-        rightIcon={() => <SvgIcon alt="" src={strokeCalendarIcon} />}
+        rightIcon={strokeCalendarIcon}
         hasError={hasError}
         filterVariant={filterVariant}
         aria-label={ariaLabel}

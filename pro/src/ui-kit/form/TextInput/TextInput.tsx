@@ -12,7 +12,7 @@ export type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> &
     type?: 'text' | 'number' | 'email' | 'url' | 'password' | 'tel'
     countCharacters?: boolean
     rightButton?: () => JSX.Element
-    rightIcon?: () => JSX.Element
+    rightIcon?: string
     step?: number | string
     hasDecimal?: boolean
     refForInput?: ForwardedRef<HTMLInputElement>

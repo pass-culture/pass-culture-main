@@ -32,7 +32,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullCodeIcon from 'icons/full-code.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
-import { ReactComponent as StrokeEuro } from 'icons/stroke-euro.svg'
+import strokeEuroIcon from 'icons/stroke-euro.svg'
 import { Checkbox, DatePicker, InfoBox, TextInput } from 'ui-kit'
 import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
@@ -398,7 +398,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                   disabled={readOnlyFields.includes('price')}
                   type="number"
                   data-testid="input-price"
-                  rightIcon={() => <StrokeEuro tabIndex={-1} />}
+                  rightIcon={strokeEuroIcon}
                   step="0.01"
                 />
                 <DatePicker

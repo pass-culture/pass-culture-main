@@ -3,7 +3,7 @@ import React from 'react'
 
 import FormLayout from 'components/FormLayout'
 import { Mode, OfferEducationalStockFormValues } from 'core/OfferEducational'
-import { ReactComponent as StrokeEuro } from 'icons/stroke-euro.svg'
+import strokeEuroIcon from 'icons/stroke-euro.svg'
 import { DatePicker, TextInput, TimePicker } from 'ui-kit'
 
 import {
@@ -67,7 +67,7 @@ const FormStock = ({
         smallLabel
         step={0.01} // allow user to enter a price with cents
         type="number"
-        rightIcon={() => <StrokeEuro />}
+        rightIcon={strokeEuroIcon}
       />
       <DatePicker
         disabled={mode === Mode.READ_ONLY}
