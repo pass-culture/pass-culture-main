@@ -14,6 +14,7 @@ describe('src | components | pages | OffererCreationForm', () => {
       <Form
         backTo="/accueil"
         onSubmit={() => {}}
+        // @ts-expect-error FIXME: migrate component to formik
         component={OffererCreationForm}
       />
     )
@@ -27,11 +28,10 @@ describe('src | components | pages | OffererCreationForm', () => {
         values: {
           address: '4 rue du test',
           city: 'Plessix-Balisson',
-          latitude: 1.1,
-          longitude: 1.1,
           name: 'Ma Petite structure',
           postalCode: '22350',
           siren: '881457238',
+          apeCode: '',
         },
       },
     })
