@@ -58,6 +58,9 @@ class GetBookingByTokenReturns200Test:
             "venueDepartementCode": venue.departementCode,
             "venueId": venue.id,
             "venueName": venue.name,
+            "userFirstName": "Jeanne",
+            "userLastName": "Doux",
+            "userPhoneNumber": "+33101010101",
         }
 
     def test_key_has_rights_and_regular_event_offer(self, client):
@@ -101,6 +104,9 @@ class GetBookingByTokenReturns200Test:
             "venueDepartementCode": venue.departementCode,
             "venueId": venue.id,
             "venueName": venue.name,
+            "userFirstName": "Jeanne",
+            "userLastName": "Doux",
+            "userPhoneNumber": "+33101010101",
         }
 
 
