@@ -1,11 +1,22 @@
 import './AllocineProviderFormDialog.scss'
 
-import PropTypes from 'prop-types'
 import React from 'react'
 
+import { PostVenueProviderBody } from 'apiClient/v1'
 import DialogBox from 'components/DialogBox/DialogBox'
 
-import AllocineProviderForm from '../AllocineProviderForm/AllocineProviderForm'
+import AllocineProviderForm, {
+  InitialValuesProps,
+} from '../AllocineProviderForm/AllocineProviderForm'
+
+interface AllocineProviderFormDialogProps {
+  initialValues: InitialValuesProps
+  onCancel: () => void
+  onConfirm: (payload: PostVenueProviderBody) => void
+  providerId: number
+  venueId: number
+  offererId: number
+}
 
 const AllocineProviderFormDialog = ({
   onCancel,
@@ -14,7 +25,7 @@ const AllocineProviderFormDialog = ({
   providerId,
   venueId,
   offererId,
-}) => {
+}: AllocineProviderFormDialogProps) => {
   return (
     <DialogBox
       extraClassNames="allocine-provider-form-dialog"
@@ -38,19 +49,6 @@ const AllocineProviderFormDialog = ({
       />
     </DialogBox>
   )
-}
-
-AllocineProviderFormDialog.propTypes = {
-  initialValues: PropTypes.shape({
-    price: PropTypes.number.isRequired,
-    quantity: PropTypes.number.isRequired,
-    isDuo: PropTypes.bool.isRequired,
-  }).isRequired,
-  onCancel: PropTypes.func.isRequired,
-  onConfirm: PropTypes.func.isRequired,
-  providerId: PropTypes.number.isRequired,
-  venueId: PropTypes.number.isRequired,
-  offererId: PropTypes.number.isRequired,
 }
 
 export default AllocineProviderFormDialog
