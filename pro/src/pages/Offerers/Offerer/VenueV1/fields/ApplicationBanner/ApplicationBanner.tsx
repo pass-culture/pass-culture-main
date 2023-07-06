@@ -3,7 +3,11 @@ import React from 'react'
 
 import { Banner } from 'ui-kit'
 
-const ApplicationBanner = ({ applicationId }) => (
+interface ApplicationBannerProps {
+  applicationId: string
+}
+
+const ApplicationBanner = ({ applicationId }: ApplicationBannerProps) => (
   <Banner
     links={[
       {
