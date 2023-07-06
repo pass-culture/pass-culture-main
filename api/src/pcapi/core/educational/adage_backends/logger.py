@@ -172,6 +172,15 @@ class AdageLoggerClient(AdageClient):
                     "mail": "confusion.raymar@example.com",
                 },
             ]
+        elif uai == "0560071Y":
+            response_content = [
+                {
+                    "civilite": "Mme.",
+                    "nom": "COMPTE",
+                    "prenom": "TEST",
+                    "mail": "compte.test@example.com",
+                },
+            ]
         else:
             raise exceptions.EducationalRedactorNotFound("No educational redactor found for the given UAI")
 
