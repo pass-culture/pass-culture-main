@@ -24,6 +24,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
 
 
@@ -53,14 +54,19 @@ def update_external_user(
 def update_external_pro(email: str | None) -> None:
     # Call this function instead of update_external_user in actions which are only available for pro
     # ex. updating a venue, in which bookingEmail is not a User parameter
-    from pcapi.tasks.sendinblue_tasks import update_pro_attributes_task
-    from pcapi.tasks.serialization.sendinblue_tasks import UpdateProAttributesRequest
+    from pcapi.tasks.beamer_tasks import update_beamer_pro_attributes_task
+    from pcapi.tasks.sendinblue_tasks import update_sib_pro_attributes_task
+    from pcapi.tasks.serialization.external_pro_tasks import UpdateProAttributesRequest
 
     if email:
         now = datetime.utcnow()
-        update_pro_attributes_task.delay(
+        update_sib_pro_attributes_task.delay(
             UpdateProAttributesRequest(email=email, time_id=f"{now.hour}:{now.minute // 15}")
         )
+        if FeatureToggle.ENABLE_BEAMER.is_active():
+            update_beamer_pro_attributes_task.delay(
+                UpdateProAttributesRequest(email=email, time_id=f"{now.hour}:{now.minute // 15}")
+            )
 
 
 def get_user_or_pro_attributes(user: users_models.User) -> models.UserAttributes | models.ProAttributes:
