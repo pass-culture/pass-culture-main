@@ -30,9 +30,9 @@ const institutionOmnisearchFilter: OmnisearchFilter = {
 
 const eanOmnisearchFilter: OmnisearchFilter = {
   id: 'ean',
-  placeholderText: 'Rechercher par EAN',
+  placeholderText: 'Rechercher par EAN-13',
   stateKey: 'offerISBN',
-  selectOptionText: 'EAN',
+  selectOptionText: 'EAN-13',
 }
 
 const tokenOmnisearchFilter: OmnisearchFilter = {
