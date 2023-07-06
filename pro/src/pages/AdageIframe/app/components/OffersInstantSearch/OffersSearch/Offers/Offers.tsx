@@ -73,6 +73,15 @@ export const OffersComponent = ({
   const isSatisfactionSurveyActive = useActiveFeature(
     'WIP_ENABLE_SATISFACTION_SURVEY'
   )
+  const [isCookieEnabled, setIsCookieEnabled] = useState(true)
+
+  useEffect(() => {
+    try {
+      setIsCookieEnabled(window.localStorage && true)
+    } catch (e) {
+      setIsCookieEnabled(false)
+    }
+  }, [])
 
   const { filtersKeys, hasClickedSearch, setHasClickedSearch } =
     useContext(AnalyticsContext)
@@ -166,7 +175,7 @@ export const OffersComponent = ({
               userEmail={userEmail}
               userRole={userRole}
             />
-            {index === 1 && isSatisfactionSurveyActive && (
+            {index === 1 && isSatisfactionSurveyActive && isCookieEnabled && (
               <SurveySatisfaction />
             )}
           </div>
