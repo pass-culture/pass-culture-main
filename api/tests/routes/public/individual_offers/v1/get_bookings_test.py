@@ -7,7 +7,7 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 
-from .endpoints_test import create_offerer_provider_linked_to_venue
+from . import utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -15,7 +15,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class GetBookingsByOfferReturns200Test:
     def test_request_inexisting_page(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             description="Un livre de contrepèterie",
@@ -39,7 +39,7 @@ class GetBookingsByOfferReturns200Test:
         assert response.json == {"bookings": []}
 
     def test_key_has_rights_and_regular_product_offer(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             description="Un livre de contrepèterie",
@@ -89,7 +89,7 @@ class GetBookingsByOfferReturns200Test:
         }
 
     def test_multiple_event_bookings(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             description="Un livre de contrepèterie",
@@ -169,7 +169,7 @@ class GetBookingsByOfferReturns200Test:
         }
 
     def test_multiple_pages(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             description="Un livre de contrepèterie",
@@ -257,7 +257,7 @@ class GetBookingsByOfferReturns200Test:
         }
 
     def test_second_page(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             description="Un livre de contrepèterie",
@@ -345,7 +345,7 @@ class GetBookingsByOfferReturns200Test:
         }
 
     def test_offer_has_no_bookings(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             description="Un livre de contrepèterie",
@@ -374,7 +374,7 @@ class GetBookingsByOfferReturns401Test:
 
 class GetBookingsByOfferReturns400Test:
     def test_no_offer_id_provided(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
         )
