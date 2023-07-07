@@ -14,8 +14,6 @@ export interface ContactButtonProps {
   className?: string
   contactEmail?: string
   contactPhone?: string | null
-  venueName: string
-  offererName: string
   offerId: number
   position: number
   queryId: string
@@ -27,8 +25,6 @@ const ContactButton = ({
   className,
   contactEmail,
   contactPhone,
-  venueName,
-  offererName,
   offerId,
   position,
   queryId,
@@ -72,8 +68,6 @@ const ContactButton = ({
           closeModal={closeModal}
           contactEmail={contactEmail}
           contactPhone={contactPhone}
-          venueName={venueName}
-          offererName={offererName}
           offerId={offerId}
           userEmail={userEmail}
           userRole={userRole}
