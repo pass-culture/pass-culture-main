@@ -14,6 +14,7 @@ import pcapi.core.users.models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice_v3 import autocomplete
 from pcapi.routes.backoffice_v3.forms import empty as empty_forms
+from pcapi.routes.backoffice_v3.offer_validation_rules.utils import convert_to_unaccent_lowercase
 from pcapi.utils.clean_accents import clean_accents
 
 from . import forms
@@ -77,10 +78,63 @@ def list_rules() -> utils.BackofficeResponse:
         rules = base_query.all()
 
     else:
-        query = clean_accents(form.q.data.replace(" ", "%").replace("-", "%"))
-        rules = base_query.filter(
-            sa.func.unaccent(offers_models.OfferValidationRule.name).ilike(f"%{query}%")
-        ).distinct()
+        query = base_query
+        if form.q.data:
+            search_query = clean_accents(form.q.data.replace(" ", "%").replace("-", "%"))
+            split_search = [convert_to_unaccent_lowercase(word) for word in form.q.data.split()]
+            query = query.filter(
+                sa.or_(
+                    sa.func.unaccent(offers_models.OfferValidationRule.name).ilike(f"%{search_query}%"),
+                    offers_models.OfferValidationRule.subRules.any(
+                        # operator @> checks if `comparated` includes all elements of `split_search` array
+                        offers_models.OfferValidationSubRule.comparated["comparated"].op("@>")(split_search)
+                    ),
+                )
+            )
+
+        if form.offerer.data:
+            offerer_ids = [int(id_str) for id_str in form.offerer.data]
+            query = query.filter(
+                sa.and_(
+                    offers_models.OfferValidationRule.subRules.any(
+                        offers_models.OfferValidationSubRule.model == offers_models.OfferValidationModel.OFFERER
+                    ),
+                    offers_models.OfferValidationRule.subRules.any(
+                        # operator @> checks if `comparated` includes all filtered offerer ids
+                        offers_models.OfferValidationSubRule.comparated["comparated"].op("@>")(offerer_ids)
+                    ),
+                )
+            )
+
+        if form.category.data:
+            query = query.filter(
+                sa.and_(
+                    offers_models.OfferValidationRule.subRules.any(
+                        offers_models.OfferValidationSubRule.attribute
+                        == offers_models.OfferValidationAttribute.CATEGORY_ID
+                    ),
+                    offers_models.OfferValidationRule.subRules.any(
+                        # operator @> checks if `comparated` includes all filtered categories
+                        offers_models.OfferValidationSubRule.comparated["comparated"].op("@>")(form.category.data)
+                    ),
+                )
+            )
+
+        if form.subcategory.data:
+            query = query.filter(
+                sa.and_(
+                    offers_models.OfferValidationRule.subRules.any(
+                        offers_models.OfferValidationSubRule.attribute
+                        == offers_models.OfferValidationAttribute.SUBCATEGORY_ID
+                    ),
+                    offers_models.OfferValidationRule.subRules.any(
+                        # operator @> checks if `comparated` includes all filtered subcategories
+                        offers_models.OfferValidationSubRule.comparated["comparated"].op("@>")(form.subcategory.data)
+                    ),
+                )
+            )
+
+        rules = query.distinct()
 
     offerer_dict = _get_offerers_data_for_rules(rules)
 
@@ -122,7 +176,7 @@ def create_rule() -> utils.BackofficeResponse:
         for sub_rule_data in form.sub_rules.data:
             comparated = (
                 sub_rule_data["decimal_field"]
-                or sub_rule_data["list_field"]
+                or [convert_to_unaccent_lowercase(word) for word in sub_rule_data["list_field"]]
                 or sub_rule_data["offer_type"]
                 or sub_rule_data["offerer"]
                 or sub_rule_data["subcategories"]
@@ -244,7 +298,7 @@ def edit_rule(rule_id: int) -> utils.BackofficeResponse:
         for sub_rule_data in form.sub_rules.data:
             comparated = (
                 sub_rule_data["decimal_field"]
-                or sub_rule_data["list_field"]
+                or [convert_to_unaccent_lowercase(word) for word in sub_rule_data["list_field"]]
                 or sub_rule_data["offer_type"]
                 or sub_rule_data["offerer"]
                 or sub_rule_data["subcategories"]
