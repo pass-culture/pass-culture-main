@@ -51,7 +51,7 @@ def generate_invoices() -> None:
     finance_api.generate_invoices()
 
 
-@blueprint.cli.command("add_custom_offer_reimbursement_rule")
+@blueprint.cli.command("add_custom_offer_reimbursement_rule")  # type: ignore [arg-type]
 @click.option("--offer-humanized-id", required=True)
 @click.option("--offer-original-amount", required=True)
 @click.option("--offerer-id", type=int, required=True)
@@ -128,7 +128,7 @@ def add_custom_offer_reimbursement_rule(
     print(f"Created new rule: {rule.id}")
 
 
-@blueprint.cli.command("move_siret")
+@blueprint.cli.command("move_siret")  # type: ignore [arg-type]
 @click.option("--src-venue-id", type=int, required=True)
 @click.option("--dst-venue-id", type=int, required=True)
 @click.option("--siret", required=True)

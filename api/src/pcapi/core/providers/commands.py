@@ -57,7 +57,7 @@ def _synchronize_venue_providers_apis() -> None:
             )
 
 
-@blueprint.cli.command("update_providables")
+@blueprint.cli.command("update_providables")  # type: ignore [arg-type]
 @click.option("-p", "--provider-name", help="Limit update to this provider name")
 @click.option(
     "-l",
@@ -91,7 +91,7 @@ def update_providables(provider_name: str, venue_provider_id: int, limit: int): 
     )
 
 
-@blueprint.cli.command("update_providables_by_provider_id")
+@blueprint.cli.command("update_providables_by_provider_id")  # type: ignore [arg-type]
 @click.option("-p", "--provider-id", required=True, help="Update providables for this provider", type=int)
 @click.option(
     "-l", "--limit", help="Limit update to n items per venue provider" + " (for test purposes)", type=int, default=None
