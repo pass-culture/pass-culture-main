@@ -332,7 +332,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
 
     expect(
       screen.getByText(
-        'Restez sur la page et cliquez sur "Sauvegarder le brouillon" pour ne rien perdre de vos modifications.'
+        'Restez sur la page et cliquez sur “Sauvegarder le brouillon” pour ne rien perdre de vos modifications.'
       )
     ).toBeInTheDocument()
   })
