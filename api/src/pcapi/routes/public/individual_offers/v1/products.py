@@ -251,6 +251,7 @@ def _get_existing_products(ean_to_create: set[str]) -> list[offers_models.Produc
     ]
     return offers_models.Product.query.filter(
         offers_models.Product.extraData["ean"].astext.in_(ean_to_create),
+        offers_models.Product.owningOffererId.is_(None),
         offers_models.Product.can_be_synchronized == True,
         offers_models.Product.subcategoryId.in_(allowed_product_subcategories),
     ).all()
