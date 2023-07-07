@@ -198,7 +198,6 @@ export const defautGetOffererResponseModel: GetOffererResponseModel = {
   },
   city: 'Fake City',
   dateCreated: '2022-01-01T00:00:00Z',
-  fieldsUpdated: [],
   hasAvailablePricingPoints: false,
   hasDigitalVenueAtLeastOneOffer: false,
   isActive: false,

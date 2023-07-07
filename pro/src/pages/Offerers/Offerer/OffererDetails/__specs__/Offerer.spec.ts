@@ -11,7 +11,6 @@ describe('transformOffererResponseModelToOfferer', () => {
       postalCode: '75001',
       city: 'PARIS',
       dateCreated: '2020-01-01T00:00:00.000Z',
-      fieldsUpdated: ['postalCode', 'city'],
       apiKey: {
         maxAllowed: 100,
         prefixes: [],

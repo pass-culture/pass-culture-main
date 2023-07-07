@@ -61,15 +61,11 @@ def test_basics(client):
         "apiKey": {"maxAllowed": 5, "prefixes": ["testenv_prefix", "testenv_prefix2"]},
         "city": offerer.city,
         "dateCreated": format_into_utc_date(offerer.dateCreated),
-        "dateModifiedAtLastProvider": format_into_utc_date(offerer.dateModifiedAtLastProvider),
         "demarchesSimplifieesApplicationId": None,
         "hasAvailablePricingPoints": True,
         "hasDigitalVenueAtLeastOneOffer": False,
-        "fieldsUpdated": offerer.fieldsUpdated,
-        "idAtProviders": offerer.idAtProviders,
         "isActive": offerer.isActive,
         "isValidated": offerer.isValidated,
-        "lastProviderId": offerer.lastProviderId,
         "managedVenues": [
             {
                 "adageInscriptionDate": format_into_utc_date(venue.adageInscriptionDate)

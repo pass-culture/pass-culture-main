@@ -10,17 +10,13 @@ export const serializeOffererApi = (
     apiKey: offerer.apiKey || null,
     city: offerer.city || '',
     dateCreated: offerer.dateCreated || '',
-    dateModifiedAtLastProvider: offerer.dateModifiedAtLastProvider || '',
     demarchesSimplifieesApplicationId:
       offerer.demarchesSimplifieesApplicationId || '',
-    fieldsUpdated: offerer.fieldsUpdated || [],
     hasAvailablePricingPoints: offerer.hasAvailablePricingPoints || undefined,
     hasDigitalVenueAtLeastOneOffer:
       offerer.hasDigitalVenueAtLeastOneOffer || undefined,
-    idAtProviders: offerer.idAtProviders || '',
     isValidated: offerer.isValidated || undefined,
     isActive: offerer.isActive || undefined,
-    lastProviderId: offerer.lastProviderId || '',
     name: offerer.name || '',
     id: offerer.id || 0,
     postalCode: offerer.postalCode || '',

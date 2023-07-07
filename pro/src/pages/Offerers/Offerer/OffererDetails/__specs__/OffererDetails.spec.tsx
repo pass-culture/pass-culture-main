@@ -30,7 +30,6 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
     postalCode: '75000',
     address: 'fake address',
     dateCreated: '2020-01-01T00:00:00.000Z',
-    fieldsUpdated: ['postalCode', 'city'],
     apiKey: {
       maxAllowed: 100,
       prefixes: [],
