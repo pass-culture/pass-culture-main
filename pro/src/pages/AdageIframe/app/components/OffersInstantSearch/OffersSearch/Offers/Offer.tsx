@@ -169,6 +169,7 @@ const Offer = ({
                 className={cn(style['offer-see-more-icon'], {
                   [style['offer-see-more-icon-closed']]: !displayDetails,
                 })}
+                width="16"
               />
               en savoir plus
             </button>
