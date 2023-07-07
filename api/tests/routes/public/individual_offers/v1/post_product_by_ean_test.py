@@ -5,6 +5,7 @@ from unittest import mock
 import freezegun
 import pytest
 
+from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.offerers import factories as offerers_factories
@@ -77,6 +78,86 @@ class PostProductByEanTest:
         assert created_stock.quantity == 3
         assert created_stock.offer == created_offer
         assert created_stock.bookingLimitDatetime == datetime.datetime(2022, 1, 1, 12, 0, 0)
+
+    @freezegun.freeze_time("2022-01-01 12:00:00")
+    def test_update_stock_quantity_with_previous_bookings(self, client):
+        venue_data = {
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": False,
+            "motorDisabilityCompliant": True,
+            "visualDisabilityCompliant": False,
+        }
+        venue, api_key = utils.create_offerer_provider_linked_to_venue(venue_data)
+        product = offers_factories.ThingProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
+        )
+
+        offer = offers_factories.ThingOfferFactory(
+            product=product, venue=venue, lastProvider=api_key.provider, extraData=product.extraData
+        )
+        stock = offers_factories.ThingStockFactory(offer=offer, quantity=10, price=100)
+        bookings_factories.BookingFactory(stock=stock, quantity=2)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products/ean",
+            json={
+                "location": {"type": "physical", "venueId": venue.id},
+                "products": [
+                    {
+                        "ean": product.extraData["ean"],
+                        "stock": {
+                            "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
+                            "price": 1234,
+                            "quantity": 3,
+                        },
+                    }
+                ],
+            },
+        )
+
+        assert response.status_code == 204
+        assert stock.quantity == 5
+        assert stock.price == decimal.Decimal("12.34")
+
+    @freezegun.freeze_time("2022-01-01 12:00:00")
+    def test_update_stock_quantity_0_with_previous_bookings(self, client):
+        venue_data = {
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": False,
+            "motorDisabilityCompliant": True,
+            "visualDisabilityCompliant": False,
+        }
+        venue, api_key = utils.create_offerer_provider_linked_to_venue(venue_data)
+        product = offers_factories.ThingProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
+        )
+
+        offer = offers_factories.ThingOfferFactory(
+            product=product, venue=venue, lastProvider=api_key.provider, extraData=product.extraData
+        )
+        stock = offers_factories.ThingStockFactory(offer=offer, quantity=10, price=100)
+        bookings_factories.BookingFactory(stock=stock, quantity=2)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products/ean",
+            json={
+                "location": {"type": "physical", "venueId": venue.id},
+                "products": [
+                    {
+                        "ean": product.extraData["ean"],
+                        "stock": {
+                            "bookingLimitDatetime": "2022-01-01T16:00:00+04:00",
+                            "price": 1234,
+                            "quantity": 0,
+                        },
+                    }
+                ],
+            },
+        )
+
+        assert response.status_code == 204
+        assert stock.quantity == 2
+        assert stock.price == decimal.Decimal("12.34")
 
     @mock.patch("pcapi.tasks.sendinblue_tasks.update_sib_pro_attributes_task")
     @freezegun.freeze_time("2022-01-01 12:00:00")
@@ -158,8 +239,6 @@ class PostProductByEanTest:
                 "location": {"type": "physical", "venueId": venue.id},
             },
         )
-
-        print(response.json)
 
         assert response.status_code == 400
         assert response.json == {"products.0.stock.quantity": ["Value must be less than 1000000"]}

@@ -515,10 +515,10 @@ def _upsert_product_stock(
 
     stock_update_body = stock_body.dict(exclude_unset=True)
     price = stock_update_body.get("price", offers_api.UNCHANGED)
-    quantity = stock_update_body.get("quantity", offers_api.UNCHANGED)
+    quantity = serialization.deserialize_quantity(stock_update_body.get("quantity", offers_api.UNCHANGED))
     offers_api.edit_stock(
         existing_stock,
-        quantity=serialization.deserialize_quantity(quantity),
+        quantity=quantity + existing_stock.dnBookedQuantity if isinstance(quantity, int) else quantity,
         price=finance_utils.to_euros(price) if price != offers_api.UNCHANGED else offers_api.UNCHANGED,
         booking_limit_datetime=stock_update_body.get("booking_limit_datetime", offers_api.UNCHANGED),
         editing_provider=provider,
