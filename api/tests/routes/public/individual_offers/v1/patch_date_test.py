@@ -3,6 +3,7 @@ import datetime
 import freezegun
 import pytest
 
+from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 
@@ -149,8 +150,8 @@ class PatchDateTest:
                 "quantity": 3,
             },
         )
-        assert response.status_code == 400
-        assert response.json == {"quantity": ["Le stock total ne peut être inférieur au nombre de réservations"]}
+        assert response.status_code == 200
+        assert event_stock.quantity == 11
 
     def test_does_not_accept_extra_fields(self, client):
         _, api_key = utils.create_offerer_provider_linked_to_venue()
@@ -166,3 +167,61 @@ class PatchDateTest:
         )
         assert response.status_code == 400
         assert response.json == {"testForbidField": ["Vous ne pouvez pas changer cette information"]}
+
+    @freezegun.freeze_time("2022-01-01 12:00:00")
+    def test_update_stock_with_existing_booking(self, client):
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        event_offer = offers_factories.EventOfferFactory(
+            venue=venue,
+            lastProvider=api_key.provider,
+        )
+        price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
+        event_stock = offers_factories.EventStockFactory(
+            offer=event_offer,
+            quantity=2,
+            priceCategory=price_category,
+            bookingLimitDatetime=datetime.datetime(2022, 1, 7),
+            beginningDatetime=datetime.datetime(2022, 1, 12),
+        )
+        bookings_factories.BookingFactory(stock=event_stock, quantity=2)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/events/{event_stock.offer.id}/dates/{event_stock.id}",
+            json={
+                "quantity": 10,
+            },
+        )
+
+        assert response.status_code == 200
+        assert event_stock.price == price_category.price
+        assert event_stock.quantity == 12
+        assert event_stock.priceCategory == price_category
+
+    @freezegun.freeze_time("2022-01-01 12:00:00")
+    def test_update_stock_quantity_0_with_existing_booking(self, client):
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        event_offer = offers_factories.EventOfferFactory(
+            venue=venue,
+            lastProvider=api_key.provider,
+        )
+        price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
+        event_stock = offers_factories.EventStockFactory(
+            offer=event_offer,
+            quantity=20,
+            priceCategory=price_category,
+            bookingLimitDatetime=datetime.datetime(2022, 1, 7),
+            beginningDatetime=datetime.datetime(2022, 1, 12),
+        )
+        bookings_factories.BookingFactory(stock=event_stock)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/events/{event_stock.offer.id}/dates/{event_stock.id}",
+            json={
+                "quantity": 0,
+            },
+        )
+
+        assert response.status_code == 200
+        assert event_stock.price == price_category.price
+        assert event_stock.quantity == 1
+        assert event_stock.priceCategory == price_category

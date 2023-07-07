@@ -465,10 +465,10 @@ def patch_event_date(
                     {"price_category_id": ["The price category could not be found"]}, status_code=404
                 )
 
-            quantity = update_body.get("quantity", offers_api.UNCHANGED)
+            quantity = serialization.deserialize_quantity(update_body.get("quantity", offers_api.UNCHANGED))
             edited_date, _ = offers_api.edit_stock(
                 stock_to_edit,
-                quantity=serialization.deserialize_quantity(quantity),
+                quantity=quantity + stock_to_edit.dnBookedQuantity if isinstance(quantity, int) else quantity,
                 price_category=price_category,
                 booking_limit_datetime=update_body.get("booking_limit_datetime", offers_api.UNCHANGED),
                 beginning_datetime=update_body.get("beginning_datetime", offers_api.UNCHANGED),
