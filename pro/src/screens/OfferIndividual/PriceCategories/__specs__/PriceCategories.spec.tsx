@@ -17,16 +17,6 @@ describe('PriceCategories', () => {
     expect(screen.getByText('Tarifs')).toBeInTheDocument()
   })
 
-  it('should render provider banner', () => {
-    renderPriceCategories({
-      offer: individualOfferFactory({ lastProviderName: 'allociné' }),
-    })
-
-    expect(
-      screen.getByText('Offre synchronisée avec Allociné')
-    ).toBeInTheDocument()
-  })
-
   it('should not disabled field for allociné', () => {
     renderPriceCategories({
       offer: individualOfferFactory({ lastProviderName: 'allociné' }),

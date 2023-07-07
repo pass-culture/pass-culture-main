@@ -35,7 +35,6 @@ import { ActionBar } from '../ActionBar'
 import DialogStocksEventEditConfirm from '../DialogStocksEventEditConfirm/DialogStocksEventEditConfirm'
 import { useNotifyFormError } from '../hooks'
 import { RecurrenceForm } from '../StocksEventCreation/RecurrenceForm'
-import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
 import { getSuccessMessage } from '../utils'
 import { logTo } from '../utils/logTo'
 
@@ -152,7 +151,6 @@ const StocksEventEdition = ({
   const navigate = useNavigate()
   const notify = useNotification()
   const { setOffer, shouldTrack, setShouldTrack } = useOfferIndividualContext()
-  const providerName = offer?.lastProviderName
   const [showStocksEventConfirmModal, setShowStocksEventConfirmModal] =
     useState(false)
   const priceCategoriesOptions = getPriceCategoryOptions(offer.priceCategories)
@@ -455,10 +453,6 @@ const StocksEventEdition = ({
 
   return (
     <FormikProvider value={formik}>
-      {providerName && (
-        <SynchronizedProviderInformation providerName={providerName} />
-      )}
-
       {showStocksEventConfirmModal && (
         <DialogStocksEventEditConfirm
           onConfirm={formik.submitForm}

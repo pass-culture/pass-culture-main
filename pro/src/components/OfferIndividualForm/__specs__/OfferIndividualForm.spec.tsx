@@ -199,33 +199,6 @@ describe('OfferIndividualForm', () => {
     expect(await screen.findByText('Type d’offre')).toBeInTheDocument()
   })
 
-  it('should render synchronized banner when lastProviderName is set', async () => {
-    const offer = {
-      id: 12,
-      venueId: 5,
-      venue: {
-        offerer: {
-          id: 12,
-          name: 'Offerer name',
-        },
-      },
-      lastProviderName: 'Ciné Office',
-    } as OfferIndividual
-    const contextOverride: Partial<OfferIndividualContextValues> = {
-      offer: offer,
-    }
-
-    renderOfferIndividualForm({
-      initialValues,
-      onSubmit,
-      props,
-      contextOverride,
-    })
-    expect(
-      screen.getByText('Offre synchronisée avec Ciné Office')
-    ).toBeInTheDocument()
-  })
-
   const imageSectionDataset: (Partial<OfferIndividual> | undefined)[] = [
     {
       stocks: [],
