@@ -535,6 +535,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
             offerId: offer?.id,
           })
         }
+        isEdition={mode === OFFER_WIZARD_MODE.EDITION}
       />
     </FormikProvider>
   )
