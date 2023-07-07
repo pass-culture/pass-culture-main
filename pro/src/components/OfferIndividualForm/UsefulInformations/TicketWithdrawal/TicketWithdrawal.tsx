@@ -50,7 +50,7 @@ const TicketWithdrawal = ({
 
   return (
     <>
-      <FormLayout.Row>
+      <FormLayout.Row mdSpaceAfter>
         <RadioGroup
           group={ticketWithdrawalTypeRadios}
           legend="Précisez la façon dont vous distribuerez les billets :"
