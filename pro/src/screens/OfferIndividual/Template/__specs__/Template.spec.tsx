@@ -208,5 +208,26 @@ describe('test OfferIndividualTemplate', () => {
       expect(screen.queryByTestId('status')).not.toBeInTheDocument()
       expect(screen.queryByRole('button')).not.toBeInTheDocument()
     })
+
+    it('should display provider banner', () => {
+      const offer: Partial<OfferIndividual> = {
+        name: 'Titre de l’offre',
+        id: offerId,
+        isActive: false,
+        status: OfferStatus.DRAFT,
+        stocks: [],
+        lastProviderName: 'boost',
+      }
+      const contextOverride = {
+        offer: offer as OfferIndividual,
+      }
+      renderTemplate({
+        contextOverride,
+      })
+
+      expect(
+        screen.getByText('Offre synchronisée avec Boost')
+      ).toBeInTheDocument()
+    })
   })
 })

@@ -23,7 +23,6 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 
 import { ActionBar } from '../ActionBar'
-import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
 import { getSuccessMessage } from '../utils'
 import { logTo } from '../utils/logTo'
 
@@ -169,7 +168,6 @@ const PriceCategories = ({ offer }: PriceCategoriesProps): JSX.Element => {
   const [isClickingDraft, setIsClickingDraft] = useState<boolean>(false)
   const notify = useNotification()
   const [popinType, setPopinType] = useState<POPIN_TYPE | null>(null)
-  const providerName = offer?.lastProviderName
 
   const isDisabledBySynchronization =
     Boolean(offer.lastProvider) && !isOfferAllocineSynchronized(offer)
@@ -305,9 +303,6 @@ const PriceCategories = ({ offer }: PriceCategoriesProps): JSX.Element => {
 
   return (
     <FormikProvider value={formik}>
-      {providerName && (
-        <SynchronizedProviderInformation providerName={providerName} />
-      )}
       {popinType === POPIN_TYPE.PRICE && (
         <ConfirmDialog
           onCancel={() => setPopinType(null)}

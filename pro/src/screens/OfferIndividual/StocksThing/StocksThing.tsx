@@ -40,7 +40,6 @@ import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 import { ActionBar } from '../ActionBar'
 import { DialogStockThingDeleteConfirm } from '../DialogStockDeleteConfirm'
 import { useNotifyFormError } from '../hooks'
-import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
 import { getSuccessMessage } from '../utils'
 import { logTo } from '../utils/logTo'
 
@@ -88,7 +87,6 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
   /* istanbul ignore next: DEBT, TO FIX */
   const isDisabled = isOfferDisabled(offer.status)
-  const providerName = offer?.lastProviderName
 
   const onSubmit = async (formValues: IStockThingFormValues) => {
     const serializedOffer = serializePatchOffer({
@@ -379,9 +377,6 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
         />
       )}
 
-      {providerName && (
-        <SynchronizedProviderInformation providerName={providerName} />
-      )}
       <FormLayout>
         <div aria-current="page">
           <FormLayoutDescription

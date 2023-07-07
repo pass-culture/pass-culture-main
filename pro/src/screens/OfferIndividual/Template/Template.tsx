@@ -9,6 +9,7 @@ import { useOfferWizardMode } from 'hooks'
 import useNotification from 'hooks/useNotification'
 
 import { Status } from '../Status'
+import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
 
 import OfferStatusBanner from './OfferStatusBanner'
 import styles from './Template.module.scss'
@@ -59,6 +60,7 @@ const Template = ({
         reloadOffer={reloadOffer}
       />
     )
+  const providerName = offer?.lastProviderName
 
   return (
     <OfferFormLayout>
@@ -72,6 +74,10 @@ const Template = ({
         </OfferFormLayout.TitleBlock>
       )}
       {offer && withBanner && <OfferStatusBanner status={offer.status} />}
+      {providerName && (
+        <SynchronizedProviderInformation providerName={providerName} />
+      )}
+
       {withStepper && (
         <OfferFormLayout.Stepper>
           <OfferIndividualBreadcrumb shouldTrack={shouldTrack} />
