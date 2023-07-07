@@ -145,6 +145,22 @@ class UserGeneratorTest:
         assert user.age == age
         self.assert_user_is_beneficiary(user)
 
+    def test_email_is_consistent_with_user_data_when_no_names(self):
+        user_data = users_generator.GenerateUserData(
+            age=users_constants.ELIGIBILITY_AGE_18,
+            step=users_generator.GeneratedSubscriptionStep.EMAIL_VALIDATION,
+        )
+        user = users_generator.generate_user(user_data)
+        assert user.email == f"user.{user.id}@passculture.gen"
+
+    def test_email_is_consistent_with_user_data_when_names(self):
+        user_data = users_generator.GenerateUserData(
+            age=users_constants.ELIGIBILITY_AGE_18,
+            step=users_generator.GeneratedSubscriptionStep.PROFILE_COMPLETION,
+        )
+        user = users_generator.generate_user(user_data)
+        assert user.email == f"{user.firstName}.{user.lastName}.{user.id}@passculture.gen".lower()
+
     def test_profile_completion_is_consistent_with_user_data(self):
         user_data = users_generator.GenerateUserData(
             age=users_constants.ELIGIBILITY_AGE_18,

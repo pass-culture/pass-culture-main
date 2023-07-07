@@ -8,7 +8,7 @@ import uuid
 
 from dateutil.relativedelta import relativedelta
 import factory
-from factory.declarations import LazyAttribute
+from factory import LazyAttribute
 
 from pcapi import settings
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
@@ -16,7 +16,6 @@ import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.models as finance_models
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.testing import BaseFactory
-from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 import pcapi.core.users.constants as users_constants
 from pcapi.models import db
@@ -24,6 +23,7 @@ from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.beneficiary_import_status import ImportStatus
+from pcapi.repository import repository
 from pcapi.utils import crypto
 
 from . import constants
@@ -50,7 +50,7 @@ class BaseUserFactory(BaseFactory):
     class Params:
         age = 40
 
-    email = factory.Faker("email")
+    email = f"{uuid.uuid4()}@passculture.gen"
     dateOfBirth = LazyAttribute(lambda o: datetime.utcnow().date() - relativedelta(years=o.age))
     isEmailValidated = False
 
@@ -65,6 +65,8 @@ class BaseUserFactory(BaseFactory):
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._create(model_class, *args, **kwargs)
         instance.clearTextPassword = password
+        cls.on_init(instance)
+        repository.save(instance)
         return instance
 
     @classmethod
@@ -78,7 +80,13 @@ class BaseUserFactory(BaseFactory):
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._build(model_class, *args, **kwargs)
         instance.clearTextPassword = password
+        cls.on_init(instance)
+        repository.save(instance)
         return instance
+
+    @classmethod
+    def on_init(cls, obj: models.User) -> None:
+        obj.email = f"user.{obj.id}@passculture.gen"
 
     @classmethod
     def beneficiary_fraud_checks(
@@ -119,9 +127,7 @@ class PhoneValidatedUserFactory(EmailValidatedUserFactory):
         lambda o: "+33612345678" if o.age == users_constants.ELIGIBILITY_AGE_18 else None
     )
     phoneValidationStatus = factory.LazyAttribute(
-        lambda o: users_models.PhoneValidationStatusType.VALIDATED
-        if o.age == users_constants.ELIGIBILITY_AGE_18
-        else None
+        lambda o: models.PhoneValidationStatusType.VALIDATED if o.age == users_constants.ELIGIBILITY_AGE_18 else None
     )
 
     @classmethod
@@ -168,6 +174,13 @@ class ProfileCompletedUserFactory(PhoneValidatedUserFactory):
     postalCode = factory.Faker("postcode")
 
     @classmethod
+    def on_init(cls, obj: models.User):
+        super().on_init(obj)
+        obj.email = f"user.{obj.id}@passculture.gen"
+        obj.postalCode = str(random.randint(1, 959) * 100)
+        obj.address = obj.address.replace(",", "")
+
+    @classmethod
     def beneficiary_fraud_checks(
         cls, obj: models.User, **kwargs: typing.Any
     ) -> list[fraud_models.BeneficiaryFraudCheck]:
@@ -212,6 +225,11 @@ class IdentityValidatedUserFactory(ProfileCompletedUserFactory):
 
     validatedBirthDate = LazyAttribute(lambda o: datetime.utcnow().date() - relativedelta(years=o.age))
     idPieceNumber = factory.Faker("ssn", locale="fr_FR")
+
+    @classmethod
+    def on_init(cls, obj: models.User) -> None:
+        super().on_init(obj)
+        obj.idPieceNumber = obj.idPieceNumber[:12]
 
     @classmethod
     def beneficiary_fraud_checks(
