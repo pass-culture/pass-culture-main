@@ -27,7 +27,7 @@ def _get_eta(end: int, current: int, elapsed_per_batch: list[int]) -> str:
     return str_eta
 
 
-@blueprint.cli.command("fill_product_ean")
+@blueprint.cli.command("fill_product_ean")  # type: ignore [arg-type]
 @click.argument("start", type=int, required=True)
 @click.argument("end", type=int, required=True)
 def fill_product_ean(start: int, end: int) -> None:
@@ -55,7 +55,7 @@ def fill_product_ean(start: int, end: int) -> None:
             print(f"BATCH : id from {i} | eta = {eta}")
 
 
-@blueprint.cli.command("fill_offer_ean")
+@blueprint.cli.command("fill_offer_ean")  # type: ignore [arg-type]
 @click.argument("start", type=int, required=True)
 @click.argument("end", type=int, required=True)
 def fill_offer_ean(start: int, end: int) -> None:
@@ -84,7 +84,7 @@ def fill_offer_ean(start: int, end: int) -> None:
             print(f"BATCH : id from {i} | eta = {eta}")
 
 
-@blueprint.cli.command("delete_offer_ean")
+@blueprint.cli.command("delete_offer_ean")  # type: ignore [arg-type]
 @click.argument("start", type=int, required=True)
 @click.argument("end", type=int, required=True)
 def delete_offer_ean(start: int, end: int) -> None:
@@ -112,7 +112,7 @@ def delete_offer_ean(start: int, end: int) -> None:
             print(f"BATCH : id from {i} | eta = {eta}")
 
 
-@blueprint.cli.command("delete_product_ean")
+@blueprint.cli.command("delete_product_ean")  # type: ignore [arg-type]
 @click.argument("start", type=int, required=True)
 @click.argument("end", type=int, required=True)
 def delete_product_ean(start: int, end: int) -> None:

@@ -129,7 +129,7 @@ def _partially_index(
         page += 1
 
 
-@blueprint.cli.command("partially_index_offers")
+@blueprint.cli.command("partially_index_offers")  # type: ignore [arg-type]
 @click.option("--clear", help="Clear search index first", type=bool, default=False)
 @click.option("--batch-size", help="Number of offers per page", type=int, default=10_000)
 @click.option("--starting-page", help="Starting page (first is 1)", type=int, default=1)
@@ -152,7 +152,7 @@ def partially_index_offers(
     )
 
 
-@blueprint.cli.command("partially_index_collective_offers")
+@blueprint.cli.command("partially_index_collective_offers")  # type: ignore [arg-type]
 @click.option("--clear", help="Clear search index first", type=bool, default=False)
 @click.option("--batch-size", help="Number of offers per page", type=int, default=10_000)
 @click.option("--starting-page", help="Starting page (first is 1)", type=int, default=1)
@@ -181,7 +181,7 @@ def partially_index_collective_offers(
     )
 
 
-@blueprint.cli.command("partially_index_collective_offer_templates")
+@blueprint.cli.command("partially_index_collective_offer_templates")  # type: ignore [arg-type]
 @click.option("--clear", help="Clear search index first", type=bool, default=False)
 @click.option("--batch-size", help="Number of templates per page", type=int, default=10_000)
 @click.option("--starting-page", help="Starting page (first is 1)", type=int, default=1)
@@ -210,7 +210,7 @@ def partially_index_collective_offer_templates(
     )
 
 
-@blueprint.cli.command("partially_index_venues")
+@blueprint.cli.command("partially_index_venues")  # type: ignore [arg-type]
 @click.option("--clear", help="Clear search index first", type=bool, default=False)
 @click.option("--batch-size", help="Batch size (Algolia)", type=int, default=10_000)
 @click.option("--max-venues", help="Max number of venues (total)", type=int, default=10_000)

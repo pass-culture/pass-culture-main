@@ -28,7 +28,7 @@ def _get_eta(end: int, current: int, elapsed_per_batch: list) -> str:
     return eta
 
 
-@blueprint.cli.command("full_index_collective_offers")
+@blueprint.cli.command("full_index_collective_offers")  # type: ignore [arg-type]
 @click.argument("start", type=int, required=True)
 @click.argument("end", type=int, required=True)
 def full_index_collective_offers(start: int, end: int) -> None:
@@ -86,7 +86,7 @@ def full_index_collective_offers(start: int, end: int) -> None:
     print("Done")
 
 
-@blueprint.cli.command("full_index_collective_template_offers")
+@blueprint.cli.command("full_index_collective_template_offers")  # type: ignore [arg-type]
 @click.argument("start", type=int, required=True)
 @click.argument("end", type=int, required=True)
 def full_index_collective_template_offers(start: int, end: int) -> None:
