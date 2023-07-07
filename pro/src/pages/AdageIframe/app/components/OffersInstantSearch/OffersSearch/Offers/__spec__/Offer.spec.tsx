@@ -309,7 +309,7 @@ describe('offer', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should display request form modal with venue public name', async () => {
+    it('should display request form modal', async () => {
       renderOffers(
         {
           ...offerProps,
@@ -323,31 +323,7 @@ describe('offer', () => {
       })
       await userEvent.click(contactButton)
 
-      expect(screen.getByText('Mon lieu nom publique - Ma super structure'))
-    })
-
-    it('should display request form modal with venue name if venue has no public name', async () => {
-      renderOffers(
-        {
-          ...offerProps,
-          offer: {
-            ...defaultCollectiveTemplateOffer,
-            venue: {
-              ...defaultCollectiveTemplateOffer.venue,
-              publicName: '',
-            },
-            isTemplate: true,
-          },
-        },
-        [{ nameKey: 'WIP_ENABLE_COLLECTIVE_REQUEST', isActive: true }]
-      )
-
-      const contactButton = screen.getByRole('button', {
-        name: 'Contacter',
-      })
-      await userEvent.click(contactButton)
-
-      expect(screen.getByText('Mon lieu - Ma super structure'))
+      expect(screen.getByText('Contacter le partenaire culturel'))
     })
   })
 })
