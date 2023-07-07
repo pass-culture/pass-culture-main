@@ -160,6 +160,8 @@ class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Deactivab
 class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
     __tablename__ = "stock"
 
+    MAX_STOCK_QUANTITY = 1_000_000
+
     activationCodes: sa_orm.Mapped["ActivationCode"] = sa.orm.relationship("ActivationCode", back_populates="stock")
     beginningDatetime = sa.Column(sa.DateTime, index=True, nullable=True)
     bookingLimitDatetime = sa.Column(sa.DateTime, nullable=True)

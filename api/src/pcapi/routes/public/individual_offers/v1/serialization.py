@@ -364,9 +364,13 @@ class BaseStockCreation(serialization.ConfiguredBaseModel):
     quantity: pydantic.StrictInt | UNLIMITED_LITERAL = QUANTITY_FIELD
 
     @pydantic.validator("quantity")
-    def quantity_must_be_positive(cls, quantity: int | str) -> int | str:
-        if isinstance(quantity, int) and quantity < 0:
-            raise ValueError("Value must be positive")
+    def quantity_must_be_in_range(cls, quantity: int | str) -> int | str:
+        if isinstance(quantity, int):
+            if quantity < 0:
+                raise ValueError("Value must be positive")
+            if quantity > offers_models.Stock.MAX_STOCK_QUANTITY:
+                raise ValueError(f"Value must be less than {offers_models.Stock.MAX_STOCK_QUANTITY}")
+
         return quantity
 
 
@@ -394,9 +398,13 @@ class BaseStockEdition(serialization.ConfiguredBaseModel):
     quantity: pydantic.StrictInt | UNLIMITED_LITERAL | None = QUANTITY_FIELD
 
     @pydantic.validator("quantity")
-    def quantity_must_be_positive(cls, quantity: int | str | None) -> int | str | None:
-        if isinstance(quantity, int) and quantity < 0:
-            raise ValueError("Value must be positive")
+    def quantity_must_be_in_range(cls, quantity: int | str | None) -> int | str | None:
+        if isinstance(quantity, int):
+            if quantity < 0:
+                raise ValueError("Value must be positive")
+            if quantity > offers_models.Stock.MAX_STOCK_QUANTITY:
+                raise ValueError(f"Value must be less than {offers_models.Stock.MAX_STOCK_QUANTITY}")
+
         return quantity
 
     class Config:
