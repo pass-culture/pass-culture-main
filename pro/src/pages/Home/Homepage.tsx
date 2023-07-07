@@ -61,7 +61,6 @@ const Homepage = (): JSX.Element => {
             },
             city: '',
             dateCreated: '',
-            fieldsUpdated: [],
             hasAvailablePricingPoints: false,
             hasDigitalVenueAtLeastOneOffer: false,
             isActive: false,

@@ -68,15 +68,11 @@ class GetOffererResponseModel(BaseModel):
     apiKey: OffererApiKey
     city: str
     dateCreated: datetime
-    dateModifiedAtLastProvider: datetime | None
     demarchesSimplifieesApplicationId: str | None
-    fieldsUpdated: list[str]
     hasAvailablePricingPoints: bool
     hasDigitalVenueAtLeastOneOffer: bool
-    idAtProviders: str | None
     isValidated: bool
     isActive: bool
-    lastProviderId: str | None
     # see end of `from_orm()`
     managedVenues: list[GetOffererVenueResponseModel] = []
     name: str
