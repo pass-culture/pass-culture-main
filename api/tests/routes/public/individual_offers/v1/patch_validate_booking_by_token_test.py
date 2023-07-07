@@ -9,7 +9,7 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.utils import date as date_utils
 
-from .endpoints_test import create_offerer_provider_linked_to_venue
+from . import utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -17,7 +17,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class ValidateBookingByTokenReturns200Test:
     def test_key_has_rights_and_regular_product_offer(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             description="Un livre de contrepèterie",
@@ -41,7 +41,7 @@ class ValidateBookingByTokenReturns200Test:
         assert booking.is_used_or_reimbursed is True
 
     def test_key_has_rights_and_regular_event_offer(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             description="Un livre de contrepèterie",
@@ -80,7 +80,7 @@ class PatchBookingByTokenReturns401Test:
 
 class PatchBookingByTokenReturns403Test:
     def test_when_booking_not_confirmed(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         next_week = datetime.datetime.utcnow() + datetime.timedelta(weeks=1)
 
         offer = offers_factories.ThingOfferFactory(
@@ -107,7 +107,7 @@ class PatchBookingByTokenReturns403Test:
 
     def test_when_booking_is_refunded(self, client):
         # Given
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         offer = offers_factories.ThingOfferFactory(
             venue=venue,
@@ -131,7 +131,7 @@ class PatchBookingByTokenReturns404Test:
         assert response.status_code == 404
 
     def test_key_has_no_rights_and_regular_offer(self, client):
-        create_offerer_provider_linked_to_venue()
+        utils.create_offerer_provider_linked_to_venue()
         venue = offerers_factories.VenueFactory()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
@@ -158,7 +158,7 @@ class PatchBookingByTokenReturns404Test:
 
 class PatchBookingByTokenReturns410Test:
     def test_when_booking_is_already_validated(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
         )
@@ -173,7 +173,7 @@ class PatchBookingByTokenReturns410Test:
         assert response.json == {"booking": "This booking has already been validated"}
 
     def test_when_booking_is_cancelled(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
         )

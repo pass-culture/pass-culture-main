@@ -14,10 +14,8 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
-from pcapi.core.providers import factories as providers_factories
 from pcapi.models import offer_mixin
 from pcapi.utils import human_ids
 
@@ -25,208 +23,13 @@ import tests
 from tests import conftest
 from tests.routes import image_data
 
-
-ACCESSIBILITY_FIELDS = {
-    "audioDisabilityCompliant": True,
-    "mentalDisabilityCompliant": True,
-    "motorDisabilityCompliant": True,
-    "visualDisabilityCompliant": True,
-}
-
-
-def create_offerer_provider():
-    offerer = offerers_factories.OffererFactory(name="Technical provider")
-    provider = providers_factories.ProviderFactory(
-        name="Technical provider", localClass=None, isActive=True, enabledForPro=True
-    )
-    api_key = offerers_factories.ApiKeyFactory(
-        offerer=offerer,
-        provider=provider,
-    )
-    providers_factories.OffererProviderFactory(
-        offerer=offerer,
-        provider=provider,
-    )
-    return provider, api_key
-
-
-def create_offerer_provider_linked_to_venue(venue_params=None, is_virtual=False):
-    venue_params = venue_params if venue_params else {}
-    provider, api_key = create_offerer_provider()
-    if is_virtual:
-        venue = offerers_factories.VirtualVenueFactory(**venue_params)
-    else:
-        venue = offerers_factories.VenueFactory(**venue_params)
-    providers_factories.VenueProviderFactory(venue=venue, provider=provider, venueIdAtOfferProvider="Test")
-    return venue, api_key
-
-
-@pytest.mark.usefixtures("db_session")
-class GetOffererVenuesTest:
-    def create_multiple_venue_providers(self):
-        provider, _ = create_offerer_provider()
-        offerer_with_two_venues = offerers_factories.OffererFactory(
-            name="Offreur de fleurs", dateCreated=datetime.datetime(2022, 2, 22, 22, 22, 22), siren="123456789"
-        )
-        digital_venue = offerers_factories.VirtualVenueFactory(
-            managingOfferer=offerer_with_two_venues,
-            dateCreated=datetime.datetime(2023, 1, 16),
-            name="Do you diji",
-            publicName="Diji",
-            venueTypeCode=offerers_models.VenueTypeCode.ARTISTIC_COURSE,
-        )
-        providers_factories.VenueProviderFactory(venue=digital_venue, provider=provider, venueIdAtOfferProvider="Test")
-        physical_venue = offerers_factories.VenueFactory(
-            managingOfferer=offerer_with_two_venues,
-            dateCreated=datetime.datetime(2023, 1, 16, 1, 1, 1),
-            name="Coiffeur Librairie",
-            publicName="Tiff tuff",
-            siret="12345678912345",
-            venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
-        )
-        providers_factories.VenueProviderFactory(venue=physical_venue, provider=provider, venueIdAtOfferProvider="Test")
-
-        offerer_with_one_venue = offerers_factories.OffererFactory(
-            name="Offreur de prune", dateCreated=datetime.datetime(2022, 2, 22, 22, 22, 22), siren="123456781"
-        )
-        other_physical_venue = offerers_factories.VenueFactory(
-            managingOfferer=offerer_with_one_venue,
-            dateCreated=datetime.datetime(2023, 1, 16, 1, 1, 1),
-            name="Toiletteur Librairie",
-            publicName="wiff wuff",
-            siret="12345678112345",
-            venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
-        )
-        providers_factories.VenueProviderFactory(
-            venue=other_physical_venue, provider=provider, venueIdAtOfferProvider="Test"
-        )
-        return offerer_with_two_venues, digital_venue, physical_venue, offerer_with_one_venue, other_physical_venue
-
-    def test_get_offerer_venues(self, client):
-        (
-            offerer_with_two_venues,
-            digital_venue,
-            physical_venue,
-            offerer_with_one_venue,
-            other_physical_venue,
-        ) = self.create_multiple_venue_providers()
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            "/public/offers/v1/offerer_venues",
-        )
-        assert response.status_code == 200
-        assert len(response.json) == 2
-        assert response.json[0] == {
-            "offerer": {
-                "createdDatetime": "2022-02-22T22:22:22Z",
-                "id": offerer_with_two_venues.id,
-                "name": "Offreur de fleurs",
-                "siren": "123456789",
-            },
-            "venues": [
-                {
-                    "accessibility": {
-                        "audioDisabilityCompliant": None,
-                        "mentalDisabilityCompliant": None,
-                        "motorDisabilityCompliant": None,
-                        "visualDisabilityCompliant": None,
-                    },
-                    "activityDomain": "ARTISTIC_COURSE",
-                    "createdDatetime": "2023-01-16T00:00:00Z",
-                    "id": digital_venue.id,
-                    "legalName": "Do you diji",
-                    "location": {"type": "digital"},
-                    "publicName": "Diji",
-                    "siret": None,
-                    "siretComment": None,
-                },
-                {
-                    "accessibility": {
-                        "audioDisabilityCompliant": False,
-                        "mentalDisabilityCompliant": False,
-                        "motorDisabilityCompliant": False,
-                        "visualDisabilityCompliant": False,
-                    },
-                    "activityDomain": "BOOKSTORE",
-                    "createdDatetime": "2023-01-16T01:01:01Z",
-                    "id": physical_venue.id,
-                    "legalName": "Coiffeur Librairie",
-                    "location": {
-                        "address": "1 boulevard Poissonnière",
-                        "city": "Paris",
-                        "postalCode": "75000",
-                        "type": "physical",
-                    },
-                    "publicName": "Tiff tuff",
-                    "siret": "12345678912345",
-                    "siretComment": None,
-                },
-            ],
-        }
-        assert response.json[1] == {
-            "offerer": {
-                "createdDatetime": "2022-02-22T22:22:22Z",
-                "id": offerer_with_one_venue.id,
-                "name": "Offreur de prune",
-                "siren": "123456781",
-            },
-            "venues": [
-                {
-                    "accessibility": {
-                        "audioDisabilityCompliant": False,
-                        "mentalDisabilityCompliant": False,
-                        "motorDisabilityCompliant": False,
-                        "visualDisabilityCompliant": False,
-                    },
-                    "activityDomain": "BOOKSTORE",
-                    "createdDatetime": "2023-01-16T01:01:01Z",
-                    "id": other_physical_venue.id,
-                    "legalName": "Toiletteur Librairie",
-                    "location": {
-                        "address": "1 boulevard Poissonnière",
-                        "city": "Paris",
-                        "postalCode": "75000",
-                        "type": "physical",
-                    },
-                    "publicName": "wiff wuff",
-                    "siret": "12345678112345",
-                    "siretComment": None,
-                }
-            ],
-        }
-
-    def test_get_filtered_offerer_venues(self, client):
-        (
-            offerer_with_two_venues,
-            _,
-            _,
-            _,
-            _,
-        ) = self.create_multiple_venue_providers()
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/offerer_venues?siren={offerer_with_two_venues.siren}",
-        )
-        assert response == 200
-        json_dict = response.json
-        assert len(json_dict) == 1
-        assert json_dict[0]["offerer"]["siren"] == offerer_with_two_venues.siren
-        assert len(json_dict[0]["venues"]) == 2
-
-    def test_when_no_venues(self, client):
-        create_offerer_provider()
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            "/public/offers/v1/offerer_venues",
-        )
-        assert response == 200
-        assert response.json == []
+from . import utils
 
 
 class PostProductTest:
     @pytest.mark.usefixtures("db_session")
     def test_physical_product_minimal_body(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -239,7 +42,7 @@ class PostProductTest:
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
-                        "accessibility": ACCESSIBILITY_FIELDS,
+                        "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
                     }
                 ],
@@ -296,7 +99,7 @@ class PostProductTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_create_multiple_products(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -309,7 +112,7 @@ class PostProductTest:
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
-                        "accessibility": ACCESSIBILITY_FIELDS,
+                        "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
                     },
                     {
@@ -318,7 +121,7 @@ class PostProductTest:
                             "ean": "1234567890987",
                             "musicType": "HIP_HOP_RAP-RAP_OLD_SCHOOL",
                         },
-                        "accessibility": ACCESSIBILITY_FIELDS,
+                        "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Pump it",
                     },
                 ],
@@ -410,7 +213,7 @@ class PostProductTest:
     @pytest.mark.usefixtures("db_session")
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_product_creation_with_full_body(self, client, clear_tests_assets_bucket):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -533,7 +336,7 @@ class PostProductTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_unlimited_quantity(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -546,7 +349,7 @@ class PostProductTest:
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
-                        "accessibility": ACCESSIBILITY_FIELDS,
+                        "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
                         "stock": {
                             "bookedQuantity": 0,
@@ -584,7 +387,7 @@ class PostProductTest:
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
-                        "accessibility": ACCESSIBILITY_FIELDS,
+                        "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
                         "stock": {
                             "price": 12.34,
@@ -614,7 +417,7 @@ class PostProductTest:
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
-                        "accessibility": ACCESSIBILITY_FIELDS,
+                        "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
                         "stock": {
                             "price": -1200,
@@ -644,7 +447,7 @@ class PostProductTest:
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
-                        "accessibility": ACCESSIBILITY_FIELDS,
+                        "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
                         "stock": {
                             "price": 1200,
@@ -660,7 +463,7 @@ class PostProductTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_is_duo_not_applicable(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -674,7 +477,7 @@ class PostProductTest:
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
-                        "accessibility": ACCESSIBILITY_FIELDS,
+                        "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
                     },
                 ],
@@ -697,7 +500,7 @@ class PostProductTest:
                 "productOffers": [
                     {
                         "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE"},
-                        "accessibility": ACCESSIBILITY_FIELDS,
+                        "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
                     },
                 ],
@@ -710,7 +513,7 @@ class PostProductTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_extra_data_deserialization(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -724,7 +527,7 @@ class PostProductTest:
                             "musicType": "ROCK-LO_FI",
                             "performer": "Ichika Nito",
                         },
-                        "accessibility": ACCESSIBILITY_FIELDS,
+                        "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
                     },
                 ],
@@ -751,7 +554,7 @@ class PostProductTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_physical_product_attached_to_digital_venue(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue(is_virtual=True)
+        venue, _ = utils.create_offerer_provider_linked_to_venue(is_virtual=True)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -764,7 +567,7 @@ class PostProductTest:
                             "ean": "1234567891234",
                             "musicType": "CHANSON_VARIETE-OTHER",
                         },
-                        "accessibility": ACCESSIBILITY_FIELDS,
+                        "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
                     },
                 ],
@@ -787,7 +590,7 @@ class PostProductTest:
                 "productOffers": [
                     {
                         "categoryRelatedFields": {"category": "EVENEMENT_JEU"},
-                        "accessibility": ACCESSIBILITY_FIELDS,
+                        "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
                     },
                 ],
@@ -814,7 +617,7 @@ class PostProductTest:
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
-                        "accessibility": ACCESSIBILITY_FIELDS,
+                        "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
                     },
                 ],
@@ -829,7 +632,7 @@ class PostProductTest:
     @mock.patch("pcapi.core.offers.api.create_thumb", side_effect=Exception)
     # this test needs "clean_database" instead of "db_session" fixture because with the latter, the mediation would still be present in databse
     def test_no_objects_saved_on_image_error(self, create_thumb_mock, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -842,7 +645,7 @@ class PostProductTest:
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
-                        "accessibility": ACCESSIBILITY_FIELDS,
+                        "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
                         "image": {"file": image_data.GOOD_IMAGE},
                         "stock": {"quantity": 1, "price": 100},
@@ -859,7 +662,7 @@ class PostProductTest:
 
     @conftest.clean_database
     def test_image_too_small(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -872,7 +675,7 @@ class PostProductTest:
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
-                        "accessibility": ACCESSIBILITY_FIELDS,
+                        "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
                         "image": {"file": image_data.WRONG_IMAGE_SIZE},
                         "stock": {"quantity": 1, "price": 100},
@@ -889,7 +692,7 @@ class PostProductTest:
 
     @conftest.clean_database
     def test_bad_image_ratio(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         image_bytes = (pathlib.Path(tests.__path__[0]) / "files" / "mouette_square.jpg").read_bytes()
         encoded_bytes = base64.b64encode(image_bytes)
@@ -905,7 +708,7 @@ class PostProductTest:
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
-                        "accessibility": ACCESSIBILITY_FIELDS,
+                        "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
                         "image": {"file": encoded_bytes.decode()},
                         "stock": {"quantity": 1, "price": 100},
@@ -936,7 +739,7 @@ class PostProductTest:
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
-                        "accessibility": ACCESSIBILITY_FIELDS,
+                        "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "Le champ des possibles",
                         "stock": {"bookingLimitDatetime": "2021-01-01T00:00:00", "price": 10, "quantity": 10},
                     },
@@ -962,7 +765,7 @@ class PostProductTest:
                 "product_offers": [
                     {
                         "categoryRelatedFields": {"category": "SPECTACLE_ENREGISTRE", "showType": "OPERA-GRAND_OPERA"},
-                        "accessibility": ACCESSIBILITY_FIELDS,
+                        "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "location": {"type": "digital", "url": "https://la-flute-en-chantier.fr"},
                         "name": "La flûte en chantier",
                     },
@@ -991,7 +794,7 @@ class PostProductTest:
                             "ean": "1234567890123",
                             "author": "Maurice",
                         },
-                        "accessibility": ACCESSIBILITY_FIELDS,
+                        "accessibility": utils.ACCESSIBILITY_FIELDS,
                         "name": "A qui mieux mieux",
                     },
                 ],
@@ -1012,7 +815,7 @@ class PostProductByEanTest:
             "motorDisabilityCompliant": True,
             "visualDisabilityCompliant": False,
         }
-        venue, _ = create_offerer_provider_linked_to_venue(venue_data)
+        venue, _ = utils.create_offerer_provider_linked_to_venue(venue_data)
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
         )
@@ -1069,7 +872,7 @@ class PostProductByEanTest:
     @mock.patch("pcapi.tasks.sendinblue_tasks.update_pro_attributes_task")
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_valid_ean_without_task_autoflush(self, update_pro_task_mock, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
         )
@@ -1148,7 +951,7 @@ class PostProductByEanTest:
         assert response.json == {"products.0.ean": ["ensure this value has at least 13 characters"]}
 
     def test_update_offer_when_ean_already_exists(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         product = offers_factories.ProductFactory(
             subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
         )
@@ -1190,7 +993,7 @@ class PostProductByEanTest:
         assert created_stock.quantity == 3
 
     def test_create_and_update_offer(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         ean_to_update = "1234567890123"
         ean_to_create = "1234567897123"
         offers_factories.ProductFactory(
@@ -1252,13 +1055,13 @@ class PostProductByEanTest:
 @pytest.mark.usefixtures("db_session")
 class PostEventTest:
     def test_event_minimal_body(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events",
             json={
                 "categoryRelatedFields": {"category": "RENCONTRE"},
-                "accessibility": ACCESSIBILITY_FIELDS,
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
             },
@@ -1285,7 +1088,7 @@ class PostEventTest:
 
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_event_creation_with_full_body(self, client, clear_tests_assets_bucket):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events",
@@ -1392,13 +1195,13 @@ class PostEventTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_other_music_type_serialization(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events",
             json={
                 "categoryRelatedFields": {"category": "CONCERT", "musicType": "OTHER"},
-                "accessibility": ACCESSIBILITY_FIELDS,
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "bookingContact": "booking@conta.ct",
@@ -1417,13 +1220,13 @@ class PostEventTest:
         }
 
     def test_event_without_ticket(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events",
             json={
                 "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
-                "accessibility": ACCESSIBILITY_FIELDS,
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "ticketCollection": None,
@@ -1436,13 +1239,13 @@ class PostEventTest:
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.NO_TICKET
 
     def test_event_with_on_site_ticket(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events",
             json={
                 "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
-                "accessibility": ACCESSIBILITY_FIELDS,
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "ticketCollection": {"way": "on_site", "minutesBeforeEvent": 30},
@@ -1456,13 +1259,13 @@ class PostEventTest:
         assert created_offer.withdrawalDelay == 30 * 60
 
     def test_event_with_email_ticket(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events",
             json={
                 "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
-                "accessibility": ACCESSIBILITY_FIELDS,
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "ticketCollection": {"way": "by_email", "daysBeforeEvent": 3},
@@ -1476,13 +1279,13 @@ class PostEventTest:
         assert created_offer.withdrawalDelay == 3 * 24 * 3600
 
     def test_error_when_ticket_specified_but_not_applicable(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events",
             json={
                 "categoryRelatedFields": {"category": "EVENEMENT_PATRIMOINE"},
-                "accessibility": ACCESSIBILITY_FIELDS,
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "ticketCollection": {"way": "on_site", "minutesBeforeEvent": 30},
@@ -1496,13 +1299,13 @@ class PostEventTest:
         }
 
     def test_error_when_withdrawable_event_but_no_booking_contact(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events",
             json={
                 "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
-                "accessibility": ACCESSIBILITY_FIELDS,
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
                 "ticketCollection": {"way": "by_email", "daysBeforeEvent": 3},
@@ -1520,7 +1323,7 @@ class PostEventTest:
 class PostDatesTest:
     @freezegun.freeze_time("2022-01-01 10:00:00")
     def test_new_dates_are_added(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
@@ -1620,7 +1423,7 @@ class PostDatesTest:
 
     @freezegun.freeze_time("2022-01-01 10:00:00")
     def test_404_price_category_id(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
@@ -1715,7 +1518,7 @@ class PostDatesTest:
 @pytest.mark.usefixtures("db_session")
 class PostPriceCategoriesTest:
     def test_create_price_categories(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
@@ -1796,7 +1599,7 @@ class PostPriceCategoriesTest:
 @pytest.mark.usefixtures("db_session")
 class GetProductTest:
     def test_product_without_stock(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             description="Un livre de contrepèterie",
@@ -1831,7 +1634,7 @@ class GetProductTest:
         }
 
     def test_books_can_be_retrieved(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -1845,7 +1648,7 @@ class GetProductTest:
         assert response.json["categoryRelatedFields"] == {"author": None, "category": "LIVRE_PAPIER", "ean": None}
 
     def test_product_with_not_selectable_category_can_be_retrieved(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             subcategoryId=subcategories.ABO_LUDOTHEQUE.id,
@@ -1859,7 +1662,7 @@ class GetProductTest:
         assert response.json["categoryRelatedFields"] == {"category": "ABO_LUDOTHEQUE"}
 
     def test_product_with_stock_and_image(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(venue=venue)
         offers_factories.StockFactory(offer=product_offer, isSoftDeleted=True)
         bookable_stock = offers_factories.StockFactory(
@@ -1906,7 +1709,7 @@ class GetProductTest:
 @pytest.mark.usefixtures("db_session")
 class GetProductByEanTest:
     def test_valid_ean(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             description="Un livre de contrepèterie",
@@ -1949,7 +1752,7 @@ class GetProductByEanTest:
         }
 
     def test_multiple_valid_eans(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             description="Un livre de contrepèterie",
@@ -2054,7 +1857,7 @@ class GetProductByEanTest:
         }
 
     def test_get_newest_ean_product(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         offers_factories.ThingOfferFactory(venue=venue, extraData={"ean": "1234567890123"}, isActive=False)
         newest_product_offer = offers_factories.ThingOfferFactory(
             venue=venue, extraData={"ean": "1234567890123"}, isActive=False
@@ -2068,7 +1871,7 @@ class GetProductByEanTest:
         assert response.json["products"][0]["id"] == newest_product_offer.id
 
     def test_400_when_wrong_ean_format(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(venue=venue, extraData={"ean": "123456789"})
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
@@ -2079,7 +1882,7 @@ class GetProductByEanTest:
         assert response.json == {"eans": ["Only 13 characters EAN are accepted"]}
 
     def test_400_when_one_wrong_ean_format_in_list(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(venue=venue, extraData={"ean": "1234567891234"})
         product_offer_2 = offers_factories.ThingOfferFactory(venue=venue, extraData={"ean": "0123456789123"})
         product_offer_3 = offers_factories.ThingOfferFactory(venue=venue, extraData={"ean": "123455678"})
@@ -2093,7 +1896,7 @@ class GetProductByEanTest:
         assert response.json == {"eans": ["Only 13 characters EAN are accepted"]}
 
     def test_400_when_missing_venue_id(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(venue=venue, extraData={"ean": "1234567891234"})
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
@@ -2104,7 +1907,7 @@ class GetProductByEanTest:
         assert response.json == {"venueId": ["Ce champ est obligatoire"]}
 
     def test_404_when_ean_not_found(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         offers_factories.ThingOfferFactory(
             venue=venue,
             description="Un livre de contrepèterie",
@@ -2119,7 +1922,7 @@ class GetProductByEanTest:
         assert response.json == {"products": []}
 
     def test_200_when_one_ean_in_list_not_found(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
@@ -2177,7 +1980,7 @@ class GetEventTest:
         assert response.json == {"event_id": ["The event offer could not be found"]}
 
     def test_get_event(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         product = offers_factories.ProductFactory(thumbCount=1)
         event_offer = offers_factories.EventOfferFactory(
             subcategoryId=subcategories.SEANCE_CINE.id,
@@ -2226,7 +2029,7 @@ class GetEventTest:
         }
 
     def test_event_with_not_selectable_category_can_be_retrieved(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             subcategoryId=subcategories.DECOUVERTE_METIERS.id,
@@ -2240,7 +2043,7 @@ class GetEventTest:
         assert response.json["categoryRelatedFields"] == {"category": "DECOUVERTE_METIERS", "speaker": None}
 
     def test_get_show_offer_without_show_type(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id,
             venue=venue,
@@ -2259,7 +2062,7 @@ class GetEventTest:
         }
 
     def test_get_music_offer_without_music_type(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             subcategoryId=subcategories.CONCERT.id,
             venue=venue,
@@ -2277,7 +2080,7 @@ class GetEventTest:
         }
 
     def test_ticket_collection_by_email(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
@@ -2292,7 +2095,7 @@ class GetEventTest:
         assert response.json["ticketCollection"] == {"daysBeforeEvent": 3, "way": "by_email"}
 
     def test_ticket_collection_on_site(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             withdrawalType=offers_models.WithdrawalTypeEnum.ON_SITE,
@@ -2307,7 +2110,7 @@ class GetEventTest:
         assert response.json["ticketCollection"] == {"minutesBeforeEvent": 30, "way": "on_site"}
 
     def test_ticket_collection_no_ticket(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             withdrawalType=offers_models.WithdrawalTypeEnum.NO_TICKET,
@@ -2325,7 +2128,7 @@ class GetEventTest:
 class GetEventDatesTest:
     @freezegun.freeze_time("2023-01-01 12:00:00")
     def test_event_with_dates(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(venue=venue)
         offers_factories.StockFactory(offer=event_offer, isSoftDeleted=True)
         price_category = offers_factories.PriceCategoryFactory(
@@ -2380,7 +2183,7 @@ class GetEventDatesTest:
         )
 
     def test_event_without_dates(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(venue=venue)
         offers_factories.EventStockFactory(offer=event_offer, isSoftDeleted=True)  # deleted stock, not returned
 
@@ -2409,7 +2212,7 @@ class GetEventDatesTest:
         }
 
     def test_404_when_page_is_too_high(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(venue=venue)
         offers_factories.EventStockFactory(offer=event_offer)  # deleted stock, not returned
 
@@ -2429,7 +2232,7 @@ class GetProductsTest:
     ENDPOINT_URL = "http://localhost/public/offers/v1/products"
 
     def test_get_first_page(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         offers = offers_factories.ThingOfferFactory.create_batch(12, venue=venue)
 
         with testing.assert_no_duplicated_queries():
@@ -2455,7 +2258,7 @@ class GetProductsTest:
         assert [product["id"] for product in response.json["products"]] == [offer.id for offer in offers[0:5]]
 
     def test_get_last_page(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         offers = offers_factories.ThingOfferFactory.create_batch(12, venue=venue)
 
         with testing.assert_no_duplicated_queries():
@@ -2481,7 +2284,7 @@ class GetProductsTest:
         assert [product["id"] for product in response.json["products"]] == [offer.id for offer in offers[10:12]]
 
     def test_404_when_the_page_is_too_high(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         with testing.assert_no_duplicated_queries():
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
@@ -2493,7 +2296,7 @@ class GetProductsTest:
         }
 
     def test_200_for_first_page_if_no_items(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         with testing.assert_no_duplicated_queries():
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
@@ -2520,7 +2323,7 @@ class GetProductsTest:
         }
 
     def test_400_when_limit_is_too_high(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         with testing.assert_no_duplicated_queries():
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
@@ -2531,7 +2334,7 @@ class GetProductsTest:
         assert response.json == {"limit": ["ensure this value is less than or equal to 50"]}
 
     def test_get_filtered_venue_offer(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         offer = offers_factories.ThingOfferFactory(venue=venue)
         offers_factories.ThingOfferFactory(
             venue__managingOfferer=venue.managingOfferer
@@ -2575,7 +2378,7 @@ class GetEventsTest:
     ENDPOINT_URL = "http://localhost/public/offers/v1/events"
 
     def test_get_first_page(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         offers = offers_factories.EventOfferFactory.create_batch(12, venue=venue)
         offers_factories.ThingOfferFactory.create_batch(3, venue=venue)  # not returned
 
@@ -2615,7 +2418,7 @@ class GetEventsTest:
 @pytest.mark.usefixtures("db_session")
 class PatchProductTest:
     def test_deactivate_offer(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             isActive=True,
@@ -2637,7 +2440,7 @@ class PatchProductTest:
         assert product_offer.isActive is False
 
     def test_sets_field_to_none_and_leaves_other_unchanged(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             withdrawalDetails="Des conditions de retrait sur la sellette",
@@ -2661,7 +2464,7 @@ class PatchProductTest:
         assert product_offer.bookingEmail == "notify@example.com"
 
     def test_updates_booking_email(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             bookingEmail="notify@example.com",
@@ -2682,7 +2485,7 @@ class PatchProductTest:
         assert product_offer.bookingEmail == "spam@example.com"
 
     def test_sets_accessibility_partially(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             audioDisabilityCompliant=True,
@@ -2715,7 +2518,7 @@ class PatchProductTest:
         assert product_offer.visualDisabilityCompliant is True
 
     def test_update_extra_data_partially(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             subcategoryId="SUPPORT_PHYSIQUE_MUSIQUE",
@@ -2758,7 +2561,7 @@ class PatchProductTest:
         }
 
     def test_create_stock(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
@@ -2785,7 +2588,7 @@ class PatchProductTest:
         assert product_offer.activeStocks[0].price == 10
 
     def test_update_stock_quantity(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
@@ -2813,7 +2616,7 @@ class PatchProductTest:
         assert product_offer.activeStocks[0].quantity is None
 
     def test_update_multiple_offers(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
@@ -2861,7 +2664,7 @@ class PatchProductTest:
         assert stock != None
 
     def test_error_if_no_offer_is_found(self, client):
-        create_offerer_provider_linked_to_venue()
+        utils.create_offerer_provider_linked_to_venue()
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             "/public/offers/v1/products",
             json={
@@ -2876,7 +2679,7 @@ class PatchProductTest:
         assert response.json == {"productOffers": ["The product offers could not be found"]}
 
     def test_error_if_at_least_one_offer_is_found(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
@@ -2896,7 +2699,7 @@ class PatchProductTest:
         assert response.json == {"productOffers": ["The product offers could not be found"]}
 
     def test_remove_stock_booking_limit_datetime(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
@@ -2920,7 +2723,7 @@ class PatchProductTest:
         assert product_offer.activeStocks[0].bookingLimitDatetime is None
 
     def test_update_stock_booking_limit_datetime(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
@@ -2944,7 +2747,7 @@ class PatchProductTest:
         assert product_offer.activeStocks[0].bookingLimitDatetime == datetime.datetime(2021, 1, 15, 0, 0, 0)
 
     def test_delete_stock(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
@@ -2972,7 +2775,7 @@ class PatchProductTest:
         assert used_booking.status == bookings_models.BookingStatus.USED
 
     def test_update_subcategory_raises_error(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             subcategoryId=subcategories.ABO_LUDOTHEQUE.id,
@@ -3000,7 +2803,7 @@ class PatchProductTest:
         }
 
     def test_update_unallowed_subcategory_product_raises_error(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             bookingEmail="notify@example.com",
@@ -3023,7 +2826,7 @@ class PatchProductTest:
 @pytest.mark.usefixtures("db_session")
 class DeleteDateTest:
     def test_delete_date(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
@@ -3039,7 +2842,7 @@ class DeleteDateTest:
         assert to_delete_stock.isSoftDeleted is True
 
     def test_404_if_already_soft_deleted(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
@@ -3082,7 +2885,7 @@ class PatchEventTest:
         assert thing_offer.isActive is True
 
     def test_deactivate_offer(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(venue=venue, isActive=True, lastProvider=api_key.provider)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -3095,7 +2898,7 @@ class PatchEventTest:
         assert event_offer.isActive is False
 
     def test_sets_field_to_none_and_leaves_other_unchanged(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             subcategoryId="CONCERT",
             venue=venue,
@@ -3120,7 +2923,7 @@ class PatchEventTest:
         assert event_offer.withdrawalDelay == 86400
 
     def test_sets_accessibility_partially(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             audioDisabilityCompliant=True,
@@ -3148,7 +2951,7 @@ class PatchEventTest:
         assert event_offer.visualDisabilityCompliant is True
 
     def test_update_extra_data_partially(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             subcategoryId="FESTIVAL_ART_VISUEL",
@@ -3185,7 +2988,7 @@ class PatchEventTest:
         }
 
     def test_patch_all_fields(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             bookingContact="contact@example.com",
@@ -3223,7 +3026,7 @@ class PatchEventTest:
 @pytest.mark.usefixtures("db_session")
 class PatchDateTest:
     def test_find_no_stock_returns_404(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
@@ -3236,7 +3039,7 @@ class PatchDateTest:
         assert response.json == {"date_id": ["No date could be found"]}
 
     def test_find_no_price_category_returns_404(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
@@ -3252,7 +3055,7 @@ class PatchDateTest:
 
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_update_all_fields_on_date_with_price(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
@@ -3285,7 +3088,7 @@ class PatchDateTest:
 
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_update_all_fields_on_date_with_price_category(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(venue=venue, lastProvider=api_key.provider)
 
         old_price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
@@ -3317,7 +3120,7 @@ class PatchDateTest:
 
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_update_only_one_field(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
@@ -3346,7 +3149,7 @@ class PatchDateTest:
         assert event_stock.priceCategory == price_category
 
     def test_update_with_error(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
 
         event_stock = offers_factories.EventStockFactory(
             offer__venue=venue,
@@ -3391,7 +3194,7 @@ class PatchPriceCategoryTest:
         assert response.status_code == 404
 
     def test_update_price_category(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(venue=venue, lastProvider=api_key.provider)
         price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
 
@@ -3405,7 +3208,7 @@ class PatchPriceCategoryTest:
         assert price_category.label == "carre or"
 
     def test_update_only_one_field(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(venue=venue, lastProvider=api_key.provider)
 
         price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
@@ -3419,7 +3222,7 @@ class PatchPriceCategoryTest:
         assert price_category.price == decimal.Decimal("25")
 
     def test_update_with_error(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(venue=venue, lastProvider=api_key.provider)
         price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
 
@@ -3430,7 +3233,7 @@ class PatchPriceCategoryTest:
         assert response.status_code == 400
 
     def test_does_not_accept_extra_fields(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(venue=venue, lastProvider=api_key.provider)
         price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
 
@@ -3442,7 +3245,7 @@ class PatchPriceCategoryTest:
         assert response.json == {"unrecognized_key": ["Vous ne pouvez pas changer cette information"]}
 
     def test_stock_price_update(self, client):
-        venue, api_key = create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
         offer = offers_factories.EventOfferFactory(venue=venue, lastProvider=api_key.provider)
         price_category = offers_factories.PriceCategoryFactory(
             offer=offer,
