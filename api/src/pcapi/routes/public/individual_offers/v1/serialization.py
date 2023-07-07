@@ -353,7 +353,7 @@ BOOKING_LIMIT_DATETIME_FIELD = pydantic.Field(
 )
 PRICE_FIELD = pydantic.Field(description="Offer price in euro cents.", example=1000)
 QUANTITY_FIELD = pydantic.Field(
-    description="Quantity of items allocated to pass Culture. Value 'unlimited' is used for infinite quantity of items.",
+    description="Quantity of items currently available to pass Culture. Value 'unlimited' is used for infinite quantity of items.",
     example=10,
 )
 
