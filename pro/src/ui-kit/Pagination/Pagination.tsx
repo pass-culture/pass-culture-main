@@ -27,7 +27,7 @@ export const Pagination = ({
         type="button"
         className={styles['button']}
       >
-        <SvgIcon src={strokeLeftIcon} alt="Page précédente" />
+        <SvgIcon src={strokeLeftIcon} alt="Page précédente" width="16" />
       </button>
 
       <span>
@@ -40,7 +40,7 @@ export const Pagination = ({
         type="button"
         className={styles['button']}
       >
-        <SvgIcon src={strokeRightIcon} alt="Page suivante" />
+        <SvgIcon src={strokeRightIcon} alt="Page suivante" width="16" />
       </button>
     </div>
   ) : null
