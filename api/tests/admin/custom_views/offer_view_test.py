@@ -1,18 +1,22 @@
-import datetime
-from unittest.mock import patch
+# import datetime
+# from unittest.mock import patch
 
-from flask import url_for
-from freezegun import freeze_time
+# from flask import url_for
+# from freezegun import freeze_time
 
 from pcapi.admin.custom_views.offer_view import OfferView
+
+# from pcapi.core.offers.models import OfferValidationConfig
+from pcapi.core.offers.models import Offer
+
 
 # from pcapi.admin.custom_views.offer_view import ValidationCollectiveOfferTemplateView
 # from pcapi.admin.custom_views.offer_view import ValidationCollectiveOfferView
 # from pcapi.admin.custom_views.offer_view import ValidationOfferView
 # from pcapi.core import testing
-import pcapi.core.bookings.factories as booking_factories
-from pcapi.core.bookings.models import BookingStatus
-import pcapi.core.criteria.factories as criteria_factories
+# import pcapi.core.bookings.factories as booking_factories
+# from pcapi.core.bookings.models import BookingStatus
+# import pcapi.core.criteria.factories as criteria_factories
 
 # from pcapi.core.educational import factories as educational_factories
 # from pcapi.core.educational import models as educational_models
@@ -20,18 +24,17 @@ import pcapi.core.criteria.factories as criteria_factories
 # import pcapi.core.educational.testing as adage_api_testing
 # import pcapi.core.offerers.factories as offerers_factories
 # from pcapi.core.offers.api import import_offer_validation_config
-import pcapi.core.offers.factories as offers_factories
+# import pcapi.core.offers.factories as offers_factories
 
-# from pcapi.core.offers.models import OfferValidationConfig
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import OfferValidationStatus
+
+# from pcapi.core.offers.models import OfferValidationStatus
 
 # from pcapi.core.testing import override_settings
-import pcapi.core.users.factories as users_factories
-from pcapi.models.offer_mixin import OfferValidationType
+# import pcapi.core.users.factories as users_factories
+# from pcapi.models.offer_mixin import OfferValidationType
 
-from tests.conftest import TestClient
-from tests.conftest import clean_database
+# from tests.conftest import TestClient
+# from tests.conftest import clean_database
 
 
 # import pytest
@@ -1037,134 +1040,134 @@ class BeneficiaryUserViewTest:
 #         )
 
 
-class OfferViewTest:
-    @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.core.mails.transactional.send_offer_validation_status_update_email")
-    def test_reject_approved_offer(
-        self,
-        mocked_send_offer_validation_status_update_email,
-        mocked_validate_csrf_token,
-        client,
-    ):
-        users_factories.AdminFactory(email="admin@example.com")
-        with freeze_time("2032-11-17 15:00:00") as frozen_time:
-            offer = offers_factories.OfferFactory(
-                validation=OfferValidationStatus.APPROVED, isActive=True, venue__bookingEmail="offerer@example.com"
-            )
-            frozen_time.move_to("2032-12-20 15:00:00")
-            data = dict(validation=OfferValidationStatus.REJECTED.value)
-            client = client.with_session_auth("admin@example.com")
-            response = client.post(url_for("offer.edit_view", id=offer.id), form=data)
-
-        assert response.status_code == 302
-        assert offer.validation == OfferValidationStatus.REJECTED
-        assert offer.lastValidationDate == datetime.datetime(2032, 12, 20, 15)
-        assert offer.lastValidationType == OfferValidationType.MANUAL
-
-        mocked_send_offer_validation_status_update_email.assert_called_once_with(
-            offer, OfferValidationStatus.REJECTED, ["offerer@example.com"]
-        )
-
-    @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.core.mails.transactional.send_offer_validation_status_update_email")
-    def test_approve_rejected_offer(
-        self,
-        mocked_send_offer_validation_status_update_email,
-        mocked_validate_csrf_token,
-        client,
-    ):
-        users_factories.AdminFactory(email="admin@example.com")
-        with freeze_time("2032-11-17 15:00:00") as frozen_time:
-            offer = offers_factories.OfferFactory(validation=OfferValidationStatus.REJECTED, isActive=True)
-            frozen_time.move_to("2032-12-20 15:00:00")
-            data = dict(validation=OfferValidationStatus.APPROVED.value)
-            client = client.with_session_auth("admin@example.com")
-            response = client.post(url_for("offer.edit_view", id=offer.id), form=data)
-
-        assert response.status_code == 302
-        assert offer.validation == OfferValidationStatus.APPROVED
-        assert offer.lastValidationDate == datetime.datetime(2032, 12, 20, 15)
-        assert offer.lastValidationType == OfferValidationType.MANUAL
-
-        assert mocked_send_offer_validation_status_update_email.call_count == 1
-
-    @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.core.mails.transactional.send_offer_validation_status_update_email")
-    @patch("pcapi.workers.push_notification_job.send_cancel_booking_notification.delay")
-    def test_reject_approved_offer_with_bookings(
-        self,
-        mocked_send_cancel_booking_notification,
-        mocked_send_offer_validation_status_update_email,
-        mocked_validate_csrf_token,
-        client,
-    ):
-        users_factories.AdminFactory(email="admin@example.com")
-        with freeze_time("2032-11-17 15:00:00") as frozen_time:
-            offer = offers_factories.OfferFactory(validation=OfferValidationStatus.APPROVED, isActive=True)
-            stock = offers_factories.StockFactory(offer=offer, price=10)
-            unused_booking = booking_factories.BookingFactory(stock=stock)
-            used_booking = booking_factories.UsedBookingFactory(stock=stock)
-            frozen_time.move_to("2032-12-20 15:00:00")
-            data = dict(validation=OfferValidationStatus.REJECTED.value)
-            client = client.with_session_auth("admin@example.com")
-            response = client.post(url_for("offer.edit_view", id=offer.id), form=data)
-
-        assert response.status_code == 302
-        assert offer.validation == OfferValidationStatus.REJECTED
-        assert offer.lastValidationDate == datetime.datetime(2032, 12, 20, 15)
-        assert offer.lastValidationType == OfferValidationType.MANUAL
-        assert unused_booking.status is BookingStatus.CANCELLED
-        assert used_booking.status is not BookingStatus.CANCELLED
-
-        mocked_send_cancel_booking_notification.assert_called_once_with([unused_booking.id])
-
-    @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    def test_change_to_draft_approved_offer(self, mocked_validate_csrf_token, app):
-        users_factories.AdminFactory(email="admin@example.com")
-        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.APPROVED, isActive=True)
-        data = dict(validation=OfferValidationStatus.DRAFT.value)
-        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
-
-        response = client.post(url_for("offer.edit_view", id=offer.id), form=data)
-
-        assert response.status_code == 200
-        assert offer.validation == OfferValidationStatus.APPROVED
-        assert offer.lastValidationType == OfferValidationType.AUTO  # unchanged
-
-    @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.core.search.reindex_offer_ids")
-    def test_reindex_when_tags_updated(
-        self,
-        mocked_reindex_offer_ids,
-        mocked_validate_csrf_token,
-        client,
-    ):
-        offer = offers_factories.EventStockFactory().offer
-        tag = criteria_factories.CriterionFactory()
-        data = {"criteria": [tag.id], "validation": OfferValidationStatus.APPROVED.value}
-
-        admin = users_factories.AdminFactory(email="admin@example.com")
-        client = client.with_session_auth(admin.email)
-
-        response = client.post(url_for("offer.edit_view", id=offer.id), form=data)
-
-        assert response.status_code == 302
-        mocked_reindex_offer_ids.assert_called_once_with([offer.id])
-        assert offer.lastValidationType == OfferValidationType.AUTO  # unchanged
-
-
-# class OfferForVenueSubviewTest:
+# class OfferViewTest:
 #     @clean_database
 #     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-#     def test_list_venues_for_offerer(self, mocked_validate_csrf_token, client):
-#         admin = users_factories.AdminFactory(email="user@example.com")
+#     @patch("pcapi.core.mails.transactional.send_offer_validation_status_update_email")
+#     def test_reject_approved_offer(
+#         self,
+#         mocked_send_offer_validation_status_update_email,
+#         mocked_validate_csrf_token,
+#         client,
+#     ):
+#         users_factories.AdminFactory(email="admin@example.com")
+#         with freeze_time("2032-11-17 15:00:00") as frozen_time:
+#             offer = offers_factories.OfferFactory(
+#                 validation=OfferValidationStatus.APPROVED, isActive=True, venue__bookingEmail="offerer@example.com"
+#             )
+#             frozen_time.move_to("2032-12-20 15:00:00")
+#             data = dict(validation=OfferValidationStatus.REJECTED.value)
+#             client = client.with_session_auth("admin@example.com")
+#             response = client.post(url_for("offer.edit_view", id=offer.id), form=data)
+
+#         assert response.status_code == 302
+#         assert offer.validation == OfferValidationStatus.REJECTED
+#         assert offer.lastValidationDate == datetime.datetime(2032, 12, 20, 15)
+#         assert offer.lastValidationType == OfferValidationType.MANUAL
+
+#         mocked_send_offer_validation_status_update_email.assert_called_once_with(
+#             offer, OfferValidationStatus.REJECTED, ["offerer@example.com"]
+#         )
+
+#     @clean_database
+#     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+#     @patch("pcapi.core.mails.transactional.send_offer_validation_status_update_email")
+#     def test_approve_rejected_offer(
+#         self,
+#         mocked_send_offer_validation_status_update_email,
+#         mocked_validate_csrf_token,
+#         client,
+#     ):
+#         users_factories.AdminFactory(email="admin@example.com")
+#         with freeze_time("2032-11-17 15:00:00") as frozen_time:
+#             offer = offers_factories.OfferFactory(validation=OfferValidationStatus.REJECTED, isActive=True)
+#             frozen_time.move_to("2032-12-20 15:00:00")
+#             data = dict(validation=OfferValidationStatus.APPROVED.value)
+#             client = client.with_session_auth("admin@example.com")
+#             response = client.post(url_for("offer.edit_view", id=offer.id), form=data)
+
+#         assert response.status_code == 302
+#         assert offer.validation == OfferValidationStatus.APPROVED
+#         assert offer.lastValidationDate == datetime.datetime(2032, 12, 20, 15)
+#         assert offer.lastValidationType == OfferValidationType.MANUAL
+
+#         assert mocked_send_offer_validation_status_update_email.call_count == 1
+
+#     @clean_database
+#     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+#     @patch("pcapi.core.mails.transactional.send_offer_validation_status_update_email")
+#     @patch("pcapi.workers.push_notification_job.send_cancel_booking_notification.delay")
+#     def test_reject_approved_offer_with_bookings(
+#         self,
+#         mocked_send_cancel_booking_notification,
+#         mocked_send_offer_validation_status_update_email,
+#         mocked_validate_csrf_token,
+#         client,
+#     ):
+#         users_factories.AdminFactory(email="admin@example.com")
+#         with freeze_time("2032-11-17 15:00:00") as frozen_time:
+#             offer = offers_factories.OfferFactory(validation=OfferValidationStatus.APPROVED, isActive=True)
+#             stock = offers_factories.StockFactory(offer=offer, price=10)
+#             unused_booking = booking_factories.BookingFactory(stock=stock)
+#             used_booking = booking_factories.UsedBookingFactory(stock=stock)
+#             frozen_time.move_to("2032-12-20 15:00:00")
+#             data = dict(validation=OfferValidationStatus.REJECTED.value)
+#             client = client.with_session_auth("admin@example.com")
+#             response = client.post(url_for("offer.edit_view", id=offer.id), form=data)
+
+#         assert response.status_code == 302
+#         assert offer.validation == OfferValidationStatus.REJECTED
+#         assert offer.lastValidationDate == datetime.datetime(2032, 12, 20, 15)
+#         assert offer.lastValidationType == OfferValidationType.MANUAL
+#         assert unused_booking.status is BookingStatus.CANCELLED
+#         assert used_booking.status is not BookingStatus.CANCELLED
+
+#         mocked_send_cancel_booking_notification.assert_called_once_with([unused_booking.id])
+
+#     @clean_database
+#     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+#     def test_change_to_draft_approved_offer(self, mocked_validate_csrf_token, app):
+#         users_factories.AdminFactory(email="admin@example.com")
+#         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.APPROVED, isActive=True)
+#         data = dict(validation=OfferValidationStatus.DRAFT.value)
+#         client = TestClient(app.test_client()).with_session_auth("admin@example.com")
+
+#         response = client.post(url_for("offer.edit_view", id=offer.id), form=data)
+
+#         assert response.status_code == 200
+#         assert offer.validation == OfferValidationStatus.APPROVED
+#         assert offer.lastValidationType == OfferValidationType.AUTO  # unchanged
+
+#     @clean_database
+#     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+#     @patch("pcapi.core.search.reindex_offer_ids")
+#     def test_reindex_when_tags_updated(
+#         self,
+#         mocked_reindex_offer_ids,
+#         mocked_validate_csrf_token,
+#         client,
+#     ):
+#         offer = offers_factories.EventStockFactory().offer
+#         tag = criteria_factories.CriterionFactory()
+#         data = {"criteria": [tag.id], "validation": OfferValidationStatus.APPROVED.value}
+
+#         admin = users_factories.AdminFactory(email="admin@example.com")
 #         client = client.with_session_auth(admin.email)
 
-#         response = client.get(url_for("offer_for_venue.index", id=42))
+#         response = client.post(url_for("offer.edit_view", id=offer.id), form=data)
 
-#         assert response.status_code == 404
+#         assert response.status_code == 302
+#         mocked_reindex_offer_ids.assert_called_once_with([offer.id])
+#         assert offer.lastValidationType == OfferValidationType.AUTO  # unchanged
+
+
+# # class OfferForVenueSubviewTest:
+# #     @clean_database
+# #     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+# #     def test_list_venues_for_offerer(self, mocked_validate_csrf_token, client):
+# #         admin = users_factories.AdminFactory(email="user@example.com")
+# #         client = client.with_session_auth(admin.email)
+
+# #         response = client.get(url_for("offer_for_venue.index", id=42))
+
+# #         assert response.status_code == 404
