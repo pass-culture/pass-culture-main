@@ -38,6 +38,7 @@ def _get_bookings_query(offer_id: int) -> sqla_orm.Query:
         .join(offers_models.Stock)
         .join(offers_models.Offer)
         .filter(offers_models.Offer.id == offer_id)
+        .order_by(booking_models.Booking.id)
     )
 
 
