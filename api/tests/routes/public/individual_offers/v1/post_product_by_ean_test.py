@@ -139,6 +139,31 @@ class PostProductByEanTest:
         )
         assert offers_models.Offer.query.all() == []
 
+    def test_400_when_quantity_is_too_big(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        product = offers_factories.ProductFactory(extraData={"ean": "1234567890123"})
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products/ean",
+            json={
+                "products": [
+                    {
+                        "ean": product.extraData["ean"],
+                        "stock": {
+                            "price": 1234,
+                            "quantity": 1_000_001,
+                        },
+                    }
+                ],
+                "location": {"type": "physical", "venueId": venue.id},
+            },
+        )
+
+        print(response.json)
+
+        assert response.status_code == 400
+        assert response.json == {"products.0.stock.quantity": ["Value must be less than 1000000"]}
+
     def test_400_when_ean_wrong_format(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         product = offers_factories.ProductFactory(extraData={"ean": "123456789"})
