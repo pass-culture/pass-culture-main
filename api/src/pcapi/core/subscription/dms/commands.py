@@ -10,14 +10,14 @@ from pcapi.utils.blueprint import Blueprint
 blueprint = Blueprint(__name__, __name__)
 
 
-@blueprint.cli.command("import_dms_application")
+@blueprint.cli.command("import_dms_application")  # type: ignore [arg-type]
 @click.argument("application_number", type=int, required=True)
 def import_dms_application(application_number: int) -> None:
     dms_application = dms_connector_api.DMSGraphQLClient().get_single_application_details(application_number)
     dms_api.handle_dms_application(dms_application)
 
 
-@blueprint.cli.command("activate_user")
+@blueprint.cli.command("activate_user")  # type: ignore [arg-type]
 @click.argument("user_id", type=int, required=True)
 def activate_user(user_id: int) -> None:
     user = users_models.User.query.get(user_id)

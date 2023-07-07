@@ -78,7 +78,7 @@ def _set_settings(index: SearchIndex, path: str, dry: bool = True) -> list[str]:
     return outputs
 
 
-@blueprint.cli.command("get_algolia_settings")
+@blueprint.cli.command("get_algolia_settings")  # type: ignore [arg-type]
 @click.argument("index_type_name", type=click.Choice([it.name for it in IndexTypes], case_sensitive=False))
 def get_settings(index_type_name: str) -> None:
     try:
@@ -90,7 +90,7 @@ def get_settings(index_type_name: str) -> None:
     click.echo("\n".join(_get_settings(index)))
 
 
-@blueprint.cli.command("set_algolia_settings")
+@blueprint.cli.command("set_algolia_settings")  # type: ignore [arg-type]
 @click.argument("index_type_name", type=click.Choice([it.name for it in IndexTypes], case_sensitive=False))
 @click.option(
     "--path",
