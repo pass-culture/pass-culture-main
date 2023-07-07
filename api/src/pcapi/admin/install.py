@@ -4,7 +4,11 @@ from flask import Flask
 from flask_admin.base import Admin
 from sqlalchemy.orm.session import Session
 
-from pcapi.admin.custom_views import offer_view
+from . import base_configuration
+from . import templating
+
+
+# from pcapi.admin.custom_views import offer_view
 
 # from pcapi.admin.custom_views.admin_user_view import AdminUserView
 # from pcapi.admin.custom_views.allocine_pivot_view import AllocinePivotView
@@ -38,10 +42,7 @@ from pcapi.admin.custom_views import offer_view
 # import pcapi.core.educational.models as educational_models
 # import pcapi.core.finance.models as finance_models
 # import pcapi.core.offerers.models as offerers_models
-import pcapi.core.offers.models as offers_models
-
-from . import base_configuration
-from . import templating
+# import pcapi.core.offers.models as offers_models
 
 
 # import pcapi.core.providers.models as providers_models
@@ -77,9 +78,10 @@ def install_admin(app: Flask, session: Session) -> None:
 
 
 def install_views(admin: Admin, session: Session) -> None:
-    admin.add_view(
-        offer_view.OfferView(offers_models.Offer, session, name="Offres", category=Category.OFFRES_STRUCTURES_LIEUX)
-    )
+    pass
+    # admin.add_view(
+    #     offer_view.OfferView(offers_models.Offer, session, name="Offres", category=Category.OFFRES_STRUCTURES_LIEUX)
+    # )
     # admin.add_view(
     #     view.BeneficiaryView(
     #         users_models.User, session, name="Bénéficiaires", endpoint="support_beneficiary", category=Category.SUPPORT
@@ -281,15 +283,15 @@ def install_views(admin: Admin, session: Session) -> None:
     #     )
     # )
 
-    admin.add_view(
-        offer_view.ImportConfigValidationOfferView(
-            offers_models.OfferValidationConfig,
-            session,
-            name="Configuration des règles de fraude",
-            endpoint="fraud_rules_configuration",
-            category=Category.CUSTOM_OPERATIONS,
-        )
-    )
+    # admin.add_view(
+    #     offer_view.ImportConfigValidationOfferView(
+    #         offers_models.OfferValidationConfig,
+    #         session,
+    #         name="Configuration des règles de fraude",
+    #         endpoint="fraud_rules_configuration",
+    #         category=Category.CUSTOM_OPERATIONS,
+    #     )
+    # )
 
     # admin.add_view(
     #     SuspendFraudulentUsersByEmailProvidersView(
