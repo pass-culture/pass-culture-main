@@ -403,5 +403,17 @@ class EditPriceCategoryModel(BaseModel):
 class PriceCategoryBody(BaseModel):
     price_categories: list[CreatePriceCategoryModel | EditPriceCategoryModel]
 
+    @validator("price_categories")
+    def get_unique_price_categories(
+        cls,
+        price_categories: list[CreatePriceCategoryModel | EditPriceCategoryModel],
+    ) -> list[CreatePriceCategoryModel | EditPriceCategoryModel]:
+        unique_price_categories = []
+        for price_category in price_categories:
+            if (price_category.label, price_category.price) in unique_price_categories:
+                raise ValueError("Price categories must be unique")
+            unique_price_categories.append((price_category.label, price_category.price))
+        return price_categories
+
     class Config:
         alias_generator = to_camel
