@@ -22,8 +22,6 @@ export interface RequestFormDialogProps {
   closeModal: () => void
   contactEmail?: string
   contactPhone?: string | null
-  venueName: string
-  offererName: string
   offerId: number
   userEmail?: string | null
   userRole: AdageFrontRoles
@@ -33,8 +31,6 @@ const RequestFormDialog = ({
   closeModal,
   contactEmail,
   contactPhone,
-  venueName,
-  offererName,
   offerId,
   userEmail,
   userRole,
@@ -79,12 +75,9 @@ const RequestFormDialog = ({
     <Dialog
       extraClassNames={styles['dialog-container']}
       onCancel={closeRequestFormDialog}
-      title="Entrer en contact avec"
+      title="Contacter le partenaire culturel"
       hideIcon
     >
-      <div className={styles.subtitle}>
-        {venueName} - {offererName}
-      </div>
       <div className={styles['contact-info-container']}>
         <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
         {contactPhone}
