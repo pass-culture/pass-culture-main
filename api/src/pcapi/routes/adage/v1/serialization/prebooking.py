@@ -17,6 +17,12 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 
 
+class MergeInstitutionPrebookingsQueryModel(AdageBaseResponseModel):
+    source_uai: str
+    destination_uai: str
+    bookings_ids: list[int]
+
+
 class GetEducationalBookingsRequest(BaseModel):
     redactorEmail: str | None = Field(description="Email of querying redactor")
 
