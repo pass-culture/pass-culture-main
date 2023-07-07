@@ -28,7 +28,6 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 
 import { ActionBar } from '../ActionBar'
-import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
 
 import { OfferSection } from './OfferSection'
 import { PriceCategoriesSection } from './PriceCategoriesSection/PriceCategoriesSection'
@@ -136,17 +135,9 @@ const Summary = () => {
 
   return (
     <>
-      {(mode !== OFFER_WIZARD_MODE.EDITION ||
-        offer.lastProviderName !== null) && (
+      {mode !== OFFER_WIZARD_MODE.EDITION && (
         <div className={styles['offer-preview-banners']}>
-          {mode !== OFFER_WIZARD_MODE.EDITION && <BannerSummary mode={mode} />}
-          {offer.lastProviderName !== null && (
-            <div className={styles['offer-preview-banner']}>
-              <SynchronizedProviderInformation
-                providerName={offer.lastProviderName}
-              />
-            </div>
-          )}
+          <BannerSummary mode={mode} />
         </div>
       )}
 

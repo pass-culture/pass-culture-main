@@ -283,7 +283,7 @@ describe('test OfferIndividualWisard', () => {
   })
 
   describe('stepper', () => {
-    it('should not render stepper on information page', async () => {
+    it('should render stepper on information page', async () => {
       renderOfferIndividualWizardRoute(
         store,
         generatePath(

@@ -194,9 +194,6 @@ describe('Summary', () => {
   })
 
   const expectOfferFields = () => {
-    expect(
-      screen.getByText('Offre synchronisée avec Ciné Office')
-    ).toBeInTheDocument()
     expect(screen.getAllByText('Modifier')).toHaveLength(2)
     expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
     expect(screen.getByText('Type d’offre')).toBeInTheDocument()

@@ -327,7 +327,6 @@ const Informations = ({
           />
         </form>
       </FormLayout>
-
       {isWithdrawalDialogOpen && (
         <ConfirmDialog
           cancelText="Ne pas envoyer"
@@ -345,7 +344,6 @@ const Informations = ({
           title="Souhaitez-vous prévenir les bénéficiaires de la modification des modalités de retrait ?"
         />
       )}
-
       <RouteLeavingGuardOfferIndividual
         when={formik.dirty && !isClickingFromActionBar}
         tracking={nextLocation =>
