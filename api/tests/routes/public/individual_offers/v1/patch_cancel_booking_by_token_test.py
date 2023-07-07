@@ -9,7 +9,7 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 
-from .endpoints_test import create_offerer_provider_linked_to_venue
+from . import utils
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -17,7 +17,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class CancelBookingByTokenReturns200Test:
     def test_key_has_rights_and_regular_product_offer(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             description="Un livre de contrepèterie",
@@ -41,7 +41,7 @@ class CancelBookingByTokenReturns200Test:
         assert booking.status is BookingStatus.CANCELLED
 
     def test_key_has_rights_and_regular_event_offer(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             description="Un livre de contrepèterie",
@@ -81,7 +81,7 @@ class PatchBookingByTokenReturns401Test:
 
 class PatchBookingByTokenReturns403Test:
     def test_when_booking_event_in_less_than_48_hours(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
 
         offer = offers_factories.EventOfferFactory(
@@ -98,7 +98,7 @@ class PatchBookingByTokenReturns403Test:
         assert response.status_code == 403
 
     def test_when_cancelling_after_48_hours_following_booking_date(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         in_2_weeks = datetime.datetime.utcnow() + datetime.timedelta(weeks=1)
         two_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=2)
 
@@ -116,7 +116,7 @@ class PatchBookingByTokenReturns403Test:
         assert response.status_code == 403
 
     def test_when_cancelling_less_than_48_hours_before_beginning_date(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         in_36_hours = datetime.datetime.utcnow() + datetime.timedelta(hours=36)
 
@@ -135,7 +135,7 @@ class PatchBookingByTokenReturns403Test:
 
     def test_when_booking_is_refunded(self, client):
         # Given
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         offer = offers_factories.ThingOfferFactory(
             venue=venue,
@@ -159,7 +159,7 @@ class PatchBookingByTokenReturns404Test:
         assert response.status_code == 404
 
     def test_key_has_no_rights_and_regular_offer(self, client):
-        create_offerer_provider_linked_to_venue()
+        utils.create_offerer_provider_linked_to_venue()
         venue = offerers_factories.VenueFactory()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
@@ -186,7 +186,7 @@ class PatchBookingByTokenReturns404Test:
 
 class PatchBookingByTokenReturns410Test:
     def test_when_booking_is_already_canceled(self, client):
-        venue, _ = create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
         )
