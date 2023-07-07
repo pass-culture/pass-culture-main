@@ -93,7 +93,7 @@ class CGRStocks(LocalProvider):
         if product.extraData is None:
             product.extraData = {}
         if self.film_infos.NumVisa:
-            product.extraData["visa"] = str(self.film_infos.NumVisa)  # type: ignore [index]
+            product.extraData["visa"] = str(self.film_infos.NumVisa)  # type: ignore [index, unused-ignore]
 
         is_new_product_to_insert = product.id is None
 
@@ -112,7 +112,7 @@ class CGRStocks(LocalProvider):
         if offer.extraData is None:
             offer.extraData = {}
         if self.film_infos.NumVisa:
-            offer.extraData["visa"] = str(self.film_infos.NumVisa)  # type: ignore [index]
+            offer.extraData["visa"] = str(self.film_infos.NumVisa)  # type: ignore [index, unused-ignore]
         assert self.last_product
         offer.product = self.last_product
 

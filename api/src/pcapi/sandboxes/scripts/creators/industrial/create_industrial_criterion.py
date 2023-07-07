@@ -38,4 +38,4 @@ def associate_criterion_to_one_offer_with_mediation(
 ) -> None:
     offer = list(filter(lambda o: o.mediations is not None, list(offers_by_name.values())))[0]
     criterion = criteria_by_name["Offre de médiation spécifique"]
-    offer.criteria = [criterion]
+    offer.criteria = [criterion]  # type: ignore [call-overload]
