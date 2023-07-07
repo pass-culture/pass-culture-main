@@ -208,9 +208,9 @@ describe('StocksEventList', () => {
     expect(allCheckboxes[1]).toBeChecked()
     expect(allCheckboxes[2]).toBeChecked()
 
-    // line checkbox uncheck "all checkbox"
+    // line checkbox partial check "all checkbox"
     await userEvent.click(allCheckboxes[1])
-    expect(selectAllCheckbox).not.toBeChecked()
+    expect(selectAllCheckbox).toBeChecked()
     expect(allCheckboxes[1]).not.toBeChecked()
     expect(allCheckboxes[2]).toBeChecked()
 

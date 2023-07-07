@@ -40,6 +40,7 @@ type OffersProps = {
   toggleSelectAllCheckboxes: () => void
   urlSearchFilters: SearchFiltersParams
   refreshOffers: () => void
+  isAtLeastOneOfferChecked: boolean
 }
 
 const Offers = ({
@@ -62,6 +63,7 @@ const Offers = ({
   urlSearchFilters,
   audience,
   refreshOffers,
+  isAtLeastOneOfferChecked,
 }: OffersProps) => {
   const isAdminForbidden = useCallback(
     (searchFilters: SearchFiltersParams) => {
@@ -159,6 +161,7 @@ const Offers = ({
               selectAllOffers={selectAllOffers}
               updateStatusFilter={updateStatusFilter}
               audience={audience}
+              isAtLeastOneOfferChecked={isAtLeastOneOfferChecked}
             />
             <OffersTableBody
               areAllOffersSelected={areAllOffersSelected}

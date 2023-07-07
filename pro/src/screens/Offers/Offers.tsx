@@ -321,6 +321,7 @@ const Offers = ({
           toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
           urlSearchFilters={urlSearchFilters}
           refreshOffers={refreshOffers}
+          isAtLeastOneOfferChecked={selectedOfferIds.length > 0}
         />
       )}
       {nbSelectedOffers > 0 && (

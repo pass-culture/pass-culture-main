@@ -12,6 +12,7 @@ export interface BaseCheckboxProps
   icon?: string
   withBorder?: boolean
   ref?: React.Ref<HTMLInputElement>
+  partialCheck?: boolean
 }
 
 const BaseCheckbox = ({
@@ -21,6 +22,7 @@ const BaseCheckbox = ({
   className,
   icon,
   withBorder,
+  partialCheck,
   ...props
 }: BaseCheckboxProps): JSX.Element => (
   <label
@@ -39,6 +41,7 @@ const BaseCheckbox = ({
         {...props}
         className={cn(styles['base-checkbox-input'], {
           [styles['has-error']]: hasError,
+          ['partial-check']: partialCheck,
         })}
         data-testid={'checkbox'}
       />
