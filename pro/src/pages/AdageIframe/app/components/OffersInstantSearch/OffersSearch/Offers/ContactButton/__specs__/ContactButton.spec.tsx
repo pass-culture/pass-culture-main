@@ -31,8 +31,6 @@ describe('ContactButton', () => {
     offerId: 1,
     position: 1,
     queryId: 'test',
-    venueName: 'Mon lieu',
-    offererName: 'Ma structure',
     userRole: AdageFrontRoles.REDACTOR,
   }
   it('should display modal on click', async () => {
@@ -70,6 +68,8 @@ describe('ContactButton', () => {
     const contactButton = screen.getByRole('button', { name: 'Contacter' })
     await userEvent.click(contactButton)
 
-    expect(screen.getByText('Mon lieu - Ma structure')).toBeInTheDocument()
+    expect(
+      screen.getByText('Contacter le partenaire culturel')
+    ).toBeInTheDocument()
   })
 })

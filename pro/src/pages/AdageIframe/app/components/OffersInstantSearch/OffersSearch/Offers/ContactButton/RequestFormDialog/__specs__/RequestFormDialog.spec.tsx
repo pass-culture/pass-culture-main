@@ -14,8 +14,6 @@ const renderRequestFormDialog = (props?: Partial<RequestFormDialogProps>) => {
   renderWithProviders(
     <RequestFormDialog
       closeModal={jest.fn()}
-      venueName={'Venue 1'}
-      offererName={'Offerer 1'}
       offerId={1}
       userEmail={'contact@example.com'}
       userRole={AdageFrontRoles.REDACTOR}
@@ -32,12 +30,6 @@ jest.mock('apiClient/api', () => ({
 }))
 
 describe('RequestFormDialog', () => {
-  it('should display venueName and offererName', () => {
-    renderRequestFormDialog()
-
-    expect(screen.getByText('Venue 1 - Offerer 1')).toBeInTheDocument()
-  })
-
   it('should display user email', () => {
     renderRequestFormDialog()
 
