@@ -107,6 +107,7 @@ const UsefulInformations = ({
 
       {displayBookingContact && (
         <FormLayout.Row
+          mdSpaceAfter
           sideComponent={
             <InfoBox>
               Cette adresse email sera communiquée aux bénéficiaires ayant
