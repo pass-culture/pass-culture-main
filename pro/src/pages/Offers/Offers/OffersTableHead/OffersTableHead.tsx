@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React from 'react'
 import { useSelector } from 'react-redux'
 
@@ -21,6 +22,7 @@ type OffersTableHeadProps = {
     status: OfferStatus | CollectiveOfferStatus | 'all'
   ) => void
   audience: Audience
+  isAtLeastOneOfferChecked: boolean
 }
 
 const OffersTableHead = ({
@@ -32,15 +34,20 @@ const OffersTableHead = ({
   selectAllOffers,
   updateStatusFilter,
   audience,
+  isAtLeastOneOfferChecked,
 }: OffersTableHeadProps): JSX.Element => {
   const savedSearchFilters = useSelector(searchFiltersSelector)
+
   return (
     <thead>
       <tr>
         <th className="th-checkbox">
           <input
-            checked={areAllOffersSelected}
-            className="select-offer-checkbox"
+            checked={areAllOffersSelected || isAtLeastOneOfferChecked}
+            className={cn('select-offer-checkbox', {
+              ['partial-check']:
+                !areAllOffersSelected && isAtLeastOneOfferChecked,
+            })}
             disabled={isAdminForbidden(savedSearchFilters) || !areOffersPresent}
             id="select-offer-checkbox"
             onChange={selectAllOffers}
