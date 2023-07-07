@@ -2,7 +2,6 @@
 @use "styles/variables/_z-index.scss" as zIndex;
 @use "styles/variables/_size.scss" as size;
 
-$dialog-box-padding: rem.torem(32px);
 
 .dialog-box-overlay {
   align-items: center;
@@ -13,7 +12,7 @@ $dialog-box-padding: rem.torem(32px);
   [data-reach-dialog-content] {
     width: initial;
     margin: rem.torem(32px) auto;
-    padding: $dialog-box-padding;
+    padding: size.$dialog-box-padding;
   }
 }
 
