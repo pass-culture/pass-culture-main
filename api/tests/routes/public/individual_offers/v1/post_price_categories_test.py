@@ -46,7 +46,7 @@ class PostPriceCategoriesTest:
         }
 
     def test_invalid_offer_id(self, client):
-        offerers_factories.ApiKeyFactory()
+        utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events/inexistent_event_id/price_categories",
@@ -60,7 +60,7 @@ class PostPriceCategoriesTest:
         assert response.status_code == 404
 
     def test_404_for_other_offerer_offer(self, client):
-        offerers_factories.ApiKeyFactory()
+        utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
@@ -75,8 +75,8 @@ class PostPriceCategoriesTest:
         assert response.json == {"event_id": ["The event could not be found"]}
 
     def test_404_for_product_offer(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        product_offer = offers_factories.ThingOfferFactory(venue__managingOfferer=api_key.offerer)
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        product_offer = offers_factories.ThingOfferFactory(venue=venue)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             f"/public/offers/v1/events/{product_offer.id}/price_categories",

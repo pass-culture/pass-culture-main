@@ -368,8 +368,7 @@ class PostProductTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_price_must_be_integer_strict(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -398,8 +397,7 @@ class PostProductTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_price_must_be_positive(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -428,8 +426,7 @@ class PostProductTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_quantity_must_be_positive(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -485,8 +482,7 @@ class PostProductTest:
     @pytest.mark.usefixtures("db_session")
     @testing.override_features(WIP_ENABLE_OFFER_CREATION_API_V1=False)
     def test_api_disabled(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -575,8 +571,7 @@ class PostProductTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_event_category_not_accepted(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -598,7 +593,7 @@ class PostProductTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_venue_allowed(self, client):
-        offerers_factories.ApiKeyFactory()
+        utils.create_offerer_provider_linked_to_venue()
         not_allowed_venue = offerers_factories.VenueFactory()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
@@ -720,8 +715,7 @@ class PostProductTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_stock_booking_limit_without_timezone(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -750,8 +744,7 @@ class PostProductTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_only_physical_music_is_allowed(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        offerers_factories.VirtualVenueFactory(managingOfferer=api_key.offerer)
+        utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",
@@ -775,8 +768,7 @@ class PostProductTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_books_are_not_allowed(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/products",

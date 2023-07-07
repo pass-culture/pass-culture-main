@@ -153,7 +153,7 @@ class PatchDateTest:
         assert response.json == {"quantity": ["Le stock total ne peut être inférieur au nombre de réservations"]}
 
     def test_does_not_accept_extra_fields(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
+        _, api_key = utils.create_offerer_provider_linked_to_venue()
         event_stock = offers_factories.EventStockFactory(
             offer__venue__managingOfferer=api_key.offerer,
             offer__lastProvider=api_key.provider,

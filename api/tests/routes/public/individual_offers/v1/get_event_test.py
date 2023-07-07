@@ -13,8 +13,8 @@ from . import utils
 @pytest.mark.usefixtures("db_session")
 class GetEventTest:
     def test_404_when_requesting_a_product(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        event_offer = offers_factories.ThingOfferFactory(venue__managingOfferer=api_key.offerer)
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        event_offer = offers_factories.ThingOfferFactory(venue=venue)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
             f"/public/offers/v1/events/{event_offer.id}"

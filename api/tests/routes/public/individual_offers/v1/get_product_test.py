@@ -111,8 +111,8 @@ class GetProductTest:
         assert response.json["status"] == "EXPIRED"
 
     def test_404_when_requesting_an_event(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        event_offer = offers_factories.EventOfferFactory(venue__managingOfferer=api_key.offerer)
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        event_offer = offers_factories.EventOfferFactory(venue=venue)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
             f"/public/offers/v1/products/{event_offer.id}"

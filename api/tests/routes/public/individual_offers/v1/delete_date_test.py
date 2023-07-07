@@ -40,7 +40,7 @@ class DeleteDateTest:
         assert response.json == {"date_id": ["The date could not be found"]}
 
     def test_404_if_others_offerer_offer(self, client):
-        offerers_factories.ApiKeyFactory()
+        utils.create_offerer_provider_linked_to_venue()
         others_stock = offers_factories.EventStockFactory()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).delete(
