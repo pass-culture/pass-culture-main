@@ -12,7 +12,7 @@ from . import utils
 @pytest.mark.usefixtures("db_session")
 class PatchPriceCategoryTest:
     def test_find_no_offer_returns_404(self, client):
-        offerers_factories.ApiKeyFactory()
+        utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             "/public/offers/v1/events/inexistent_event_id/price_categories/inexistent_price_category_id",

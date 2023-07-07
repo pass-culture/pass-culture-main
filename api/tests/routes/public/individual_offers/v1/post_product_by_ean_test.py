@@ -140,8 +140,7 @@ class PostProductByEanTest:
         assert offers_models.Offer.query.all() == []
 
     def test_400_when_ean_wrong_format(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=api_key.offerer)
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
         product = offers_factories.ProductFactory(extraData={"ean": "123456789"})
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
