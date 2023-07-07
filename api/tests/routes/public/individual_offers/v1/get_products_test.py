@@ -143,7 +143,7 @@ class GetProductsTest:
         assert [product["id"] for product in response.json["products"]] == [offer.id]
 
     def test_404_when_venue_id_not_tied_to_api_key(self, client):
-        offerers_factories.ApiKeyFactory()
+        utils.create_offerer_provider_linked_to_venue()
         unrelated_venue = offerers_factories.VenueFactory()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(

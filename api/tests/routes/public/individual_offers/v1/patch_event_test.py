@@ -10,7 +10,7 @@ from . import utils
 @pytest.mark.usefixtures("db_session")
 class PatchEventTest:
     def test_edit_product_offer_returns_404(self, client):
-        api_key = offerers_factories.ApiKeyFactory()
+        _, api_key = utils.create_offerer_provider_linked_to_venue()
         thing_offer = offers_factories.ThingOfferFactory(
             venue__managingOfferer=api_key.offerer, isActive=True, lastProvider=api_key.provider
         )
