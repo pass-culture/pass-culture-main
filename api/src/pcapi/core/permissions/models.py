@@ -148,6 +148,7 @@ class Roles(enum.Enum):
     HOMOLOGATION = "homologation"
     LECTURE_SEULE = "lecture-seule"
     QA = "qa"
+    GLOBAL_ACCESS = "global-access"
 
 
 def sync_db_roles(session: sa.orm.Session) -> None:
