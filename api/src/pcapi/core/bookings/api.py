@@ -122,7 +122,7 @@ def book_offer(
         )
 
         if is_activation_code_applicable:
-            booking.activationCode = offers_repository.get_available_activation_code(stock)
+            booking.activationCode = offers_repository.get_available_activation_code(stock)  # type: ignore [assignment]
             booking.mark_as_used()
         if stock.price == 0 and stock.offer.subcategoryId in constants.FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE:
             booking.mark_as_used()
