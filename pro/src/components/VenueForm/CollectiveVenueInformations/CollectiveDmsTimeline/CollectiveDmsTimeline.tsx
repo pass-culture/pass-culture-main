@@ -74,14 +74,23 @@ const CollectiveDmsTimeline = ({
         <div className={styles['timeline-step-title-disabled']}>
           Votre dossier a été déposé
         </div>
+        <div>{buildDate}</div>
+      </>
+    ),
+  }
+  const confirmationWaitingNextStep = {
+    type: TimelineStepType.WAITING,
+    content: (
+      <>
+        <div className={styles['timeline-step-title']}>
+          Votre dossier est en attente d’un passage en instruction
+        </div>
         <div>
-          {buildDate}
-          <br />
           <div className={styles['timeline-step-description']}>
-            Votre demande de référencement a bien été déposée. Elle sera étudiée
-            par les services du Ministère de l’Education Nationale et de la
-            Culture lors d’une commission mensuelle. En fonction du nombre de
-            dossiers en cours, cela peut prendre jusqu’à 3 mois.
+            Votre dossier sera analysé par les services du Ministère de
+            l’Education Nationale et de la Culture lors d’une commission
+            mensuelle. En fonction du nombre de dossiers en cours, cela peut
+            prendre jusqu’à 3 mois.
           </div>
         </div>
         <ButtonLink
@@ -361,6 +370,7 @@ const CollectiveDmsTimeline = ({
         <Timeline
           steps={[
             confirmationSubmittedStep,
+            confirmationWaitingNextStep,
             disabledInstructionStep,
             disabledDoneStep,
             disabledAcceptedAdageStep,
