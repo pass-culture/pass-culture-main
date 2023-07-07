@@ -185,7 +185,8 @@ const StocksEventList = ({
       <div className={styles['select-all-container']}>
         <BaseCheckbox
           label="Tout sélectionner"
-          checked={areAllChecked}
+          checked={areAllChecked || isAtLeastOneStockChecked}
+          partialCheck={!areAllChecked && isAtLeastOneStockChecked}
           onChange={handleOnChangeSelectAll}
         />
 

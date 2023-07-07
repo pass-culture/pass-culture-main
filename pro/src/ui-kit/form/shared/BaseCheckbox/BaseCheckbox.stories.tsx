@@ -38,6 +38,17 @@ WithDescription.args = {
   icon: strokeAccessibilityEye,
 }
 
+export const WithPartialCheck = Template.bind({})
+
+WithPartialCheck.args = {
+  label: 'Checkbox Label',
+  hasError: false,
+  disabled: false,
+  onChange: () => {},
+  icon: strokeAccessibilityEye,
+  partialCheck: true,
+}
+
 export const WithBorder = Template.bind({})
 
 WithBorder.args = {

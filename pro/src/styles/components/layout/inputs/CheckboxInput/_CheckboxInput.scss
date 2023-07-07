@@ -17,6 +17,14 @@ input[type="checkbox"] {
   height: size.$checkbox-size;
   width: size.$checkbox-size;
 
+  &.partial-check {
+    &:checked {
+      &::after {
+        background-image: url("./checkbox-partial.svg");
+      }
+    }
+  }
+
   &:checked {
     background-color: colors.$grey-dark;
 
