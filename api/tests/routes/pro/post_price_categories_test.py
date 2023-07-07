@@ -217,3 +217,24 @@ class Returns400Test:
         assert response.json == {
             "price_category_id": [f"Le tarif avec l'id {unreachable_price_category.id} n'existe pas"]
         }
+
+    def test_create_multiple_price_categories_with_duplicates(self, client):
+        offer = offers_factories.EventOfferFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        data = {
+            "priceCategories": [
+                {"price": 20, "label": "Behind a post"},
+                {"price": 12.3, "label": "On your friend knees"},
+                {"price": 28.71, "label": "The throne"},
+                {"price": 20, "label": "Behind a post"},
+            ],
+        }
+
+        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"priceCategories": ["Price categories must be unique"]}
