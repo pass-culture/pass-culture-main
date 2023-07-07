@@ -2,9 +2,8 @@ import logging
 
 from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.educational import exceptions
+from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import booking as educational_api_booking
-from pcapi.core.educational.repository import find_collective_bookings_for_adage
-from pcapi.core.educational.repository import get_paginated_collective_bookings_for_educational_year
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.educational_institution import educational_institution_path
@@ -26,7 +25,7 @@ from . import blueprint
 def get_educational_bookings(
     query: prebooking_serialization.GetEducationalBookingsRequest, year_id: str, uai_code: str
 ) -> prebooking_serialization.EducationalBookingsResponse:
-    educational_bookings = find_collective_bookings_for_adage(
+    educational_bookings = educational_repository.find_collective_bookings_for_adage(
         uai_code=uai_code,
         year_id=year_id,
         redactor_email=query.redactorEmail,
@@ -101,9 +100,33 @@ def get_all_bookings_per_year(
     educational_year_id: str,
     query: prebooking_serialization.GetAllBookingsPerYearQueryModel,
 ) -> prebooking_serialization.EducationalBookingsPerYearResponse:
-    educational_bookings = get_paginated_collective_bookings_for_educational_year(
+    educational_bookings = educational_repository.get_paginated_collective_bookings_for_educational_year(
         educational_year_id,
         query.page,
         query.per_page,
     )
     return prebooking_serialization.get_collective_bookings_per_year_response(educational_bookings)
+
+
+@blueprint.adage_v1.route("/prebookings/move", methods=["POST"])
+@spectree_serialize(
+    api=blueprint.api,
+    on_success_status=204,
+    on_error_statuses=[404, 422],
+    tags=("merge institution"),
+)
+@adage_api_key_required
+def merge_institution_prebookings(body: prebooking_serialization.MergeInstitutionPrebookingsQueryModel) -> None:
+    institution_source = educational_repository.find_educational_institution_by_uai_code(body.source_uai)
+    if not institution_source:
+        raise ApiErrors({"code": "Source institution not found"}, status_code=404)
+    institution_destination = educational_repository.find_educational_institution_by_uai_code(body.destination_uai)
+    if not institution_destination:
+        raise ApiErrors({"code": "destination institution not found"}, status_code=404)
+
+    educational_api_booking.update_collective_bookings_for_new_institution(
+        booking_ids=body.bookings_ids,
+        institution_source=institution_source,
+        institution_destination=institution_destination,
+    )
+    return
