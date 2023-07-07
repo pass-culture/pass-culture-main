@@ -50,7 +50,7 @@ jobs:
       base_ref_is_a_branch: true
 
   create-pro-staging-release:
-    needs: build-and-tag-version
+    needs: [build-and-tag-version, find-hotfix-tag-number]
     uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
     secrets:
       GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -63,7 +63,7 @@ jobs:
       REF: v${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}
 
   create-pro-integration-release:
-    needs: build-and-tag-version
+    needs: [build-and-tag-version, find-hotfix-tag-number]
     uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
     secrets:
       GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -75,7 +75,7 @@ jobs:
       REF: v${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}
 
   create-pro-production-release:
-    needs: build-and-tag-version
+    needs: [build-and-tag-version, find-hotfix-tag-number]
     uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
     secrets:
       GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
