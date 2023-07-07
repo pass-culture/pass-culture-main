@@ -359,6 +359,7 @@ const Informations = ({
             offerId: offer?.id,
           })
         }
+        isEdition={mode === OFFER_WIZARD_MODE.EDITION}
       />
     </FormikProvider>
   )

@@ -256,6 +256,7 @@ export const StocksEventCreation = ({
             offerId: offer?.id,
           })
         }
+        isEdition={false}
       />
     </div>
   )

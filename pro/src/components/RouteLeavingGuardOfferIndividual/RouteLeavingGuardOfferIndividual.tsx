@@ -7,11 +7,13 @@ import RouteLeavingGuard, {
 interface RouteLeavingGuardOfferIndividual {
   tracking?: (p: string) => void
   when: boolean
+  isEdition: boolean
 }
 
 const RouteLeavingGuardOfferIndividual = ({
   tracking,
   when,
+  isEdition,
 }: RouteLeavingGuardOfferIndividual): JSX.Element => {
   const shouldBlockNavigation: BlockerFunction = () => when
 
@@ -25,8 +27,9 @@ const RouteLeavingGuardOfferIndividual = ({
       closeModalOnRightButton
     >
       <p>
-        Restez sur la page et cliquez sur "Sauvegarder le brouillon" pour ne
-        rien perdre de vos modifications.
+        {isEdition
+          ? 'Restez sur la page et cliquez sur “Enregistrer les modifications” pour ne rien perdre de vos modifications.'
+          : 'Restez sur la page et cliquez sur “Sauvegarder le brouillon” pour ne rien perdre de vos modifications.'}
       </p>
     </RouteLeavingGuard>
   )

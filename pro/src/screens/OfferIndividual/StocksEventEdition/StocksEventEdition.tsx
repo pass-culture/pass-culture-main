@@ -534,6 +534,7 @@ const StocksEventEdition = ({
             offerId: offer?.id,
           })
         }
+        isEdition
       />
     </FormikProvider>
   )
