@@ -8,6 +8,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.routes.backoffice_v3.offer_validation_rules import utils
 
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
@@ -120,13 +121,13 @@ class CreateOfferValidationRuleTest(PostEndpointHelper):
                 {
                     "sub_rules-0-sub_rule_type": "DESCRIPTION_OFFER",
                     "sub_rules-0-operator": "CONTAINS_EXACTLY",
-                    "sub_rules-0-list_field": "interdit, suspicious, verboten",
+                    "sub_rules-0-list_field": "Interdit, âne, Célèbre",
                 },
                 {
                     "model": offers_models.OfferValidationModel.OFFER,
                     "attribute": offers_models.OfferValidationAttribute.DESCRIPTION,
                     "operator": offers_models.OfferValidationRuleOperator.CONTAINS_EXACTLY,
-                    "comparated": {"comparated": ["interdit", "suspicious", "verboten"]},
+                    "comparated": {"comparated": ["celebre", "interdit", "ane"]},
                 },
             ),
             (
@@ -614,11 +615,160 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
         assert rule.subRules[0].model == offers_models.OfferValidationModel.COLLECTIVE_OFFER
         assert rule.subRules[0].attribute == offers_models.OfferValidationAttribute.DESCRIPTION
         assert rule.subRules[0].operator == offers_models.OfferValidationRuleOperator.CONTAINS_EXACTLY
-        assert rule.subRules[0].comparated == {"comparated": ["Astérix", "Obélix"]}
+        assert rule.subRules[0].comparated == {"comparated": ["asterix", "obelix"]}
         assert rule.subRules[1].id != sub_rule_1.id
         assert rule.subRules[1].model == offers_models.OfferValidationModel.OFFER
         assert rule.subRules[1].attribute == offers_models.OfferValidationAttribute.DESCRIPTION
         assert rule.subRules[1].operator == offers_models.OfferValidationRuleOperator.CONTAINS
-        assert rule.subRules[1].comparated == {"comparated": ["Fifi", "Loulou", "Riri"]}
+        assert rule.subRules[1].comparated == {"comparated": ["fifi", "loulou", "riri"]}
 
         assert not offers_models.OfferValidationRule.query.filter_by(id=sub_rule_2.id).one_or_none()
+
+
+class SearchRulesTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.offer_validation_rules.list_rules"
+    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+
+    def test_search_rule_by_rule_name(self, authenticated_client):
+        rule = offers_factories.OfferValidationRuleFactory(
+            name="Ma règle de conformité", dateModified=datetime.datetime.utcnow()
+        )
+
+        response = authenticated_client.get(url_for(self.endpoint, q="ma regle"))
+
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+
+        assert rows[0]["ID"] == str(rule.id)
+
+    def test_search_rule_by_key_word(self, authenticated_client):
+        rule = offers_factories.OfferValidationRuleFactory(
+            name="Ma règle de conformité", dateModified=datetime.datetime.utcnow()
+        )
+
+        offers_factories.OfferValidationSubRuleFactory(
+            validationRule=rule,
+            model=offers_models.OfferValidationModel.OFFER,
+            attribute=offers_models.OfferValidationAttribute.NAME,
+            operator=offers_models.OfferValidationRuleOperator.CONTAINS,
+            comparated={"comparated": ["suspicious"]},
+        )
+
+        response = authenticated_client.get(url_for(self.endpoint, q="suspicious"))
+
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+
+        assert rows[0]["ID"] == str(rule.id)
+
+        extra_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
+        assert "Le nom de l'offre individuelle" in extra_data
+        assert "suspicious" in extra_data
+
+    def test_search_rule_by_offerer(self, authenticated_client, offerer):
+        rule = offers_factories.OfferValidationRuleFactory(
+            name="Ma règle de conformité", dateModified=datetime.datetime.utcnow()
+        )
+        offers_factories.OfferValidationSubRuleFactory(
+            validationRule=rule,
+            model=offers_models.OfferValidationModel.OFFERER,
+            attribute=offers_models.OfferValidationAttribute.ID,
+            operator=offers_models.OfferValidationRuleOperator.IN,
+            comparated={"comparated": [offerer.id]},
+        )
+
+        response = authenticated_client.get(url_for(self.endpoint, offerer=offerer.id))
+
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+
+        assert rows[0]["ID"] == str(rule.id)
+
+    def test_search_rule_by_category(self, authenticated_client):
+        rule = offers_factories.OfferValidationRuleFactory(
+            name="Ma règle de conformité", dateModified=datetime.datetime.utcnow()
+        )
+        offers_factories.OfferValidationSubRuleFactory(
+            validationRule=rule,
+            model=offers_models.OfferValidationModel.OFFER,
+            attribute=offers_models.OfferValidationAttribute.CATEGORY_ID,
+            operator=offers_models.OfferValidationRuleOperator.IN,
+            comparated={"comparated": ["CINEMA"]},
+        )
+
+        response = authenticated_client.get(url_for(self.endpoint, category="CINEMA"))
+
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+
+        assert rows[0]["ID"] == str(rule.id)
+
+    def test_search_rule_by_subcategory(self, authenticated_client):
+        rule = offers_factories.OfferValidationRuleFactory(
+            name="Ma règle de conformité", dateModified=datetime.datetime.utcnow()
+        )
+        offers_factories.OfferValidationSubRuleFactory(
+            validationRule=rule,
+            model=offers_models.OfferValidationModel.OFFER,
+            attribute=offers_models.OfferValidationAttribute.SUBCATEGORY_ID,
+            operator=offers_models.OfferValidationRuleOperator.IN,
+            comparated={"comparated": ["ABO_CONCERT"]},
+        )
+
+        response = authenticated_client.get(url_for(self.endpoint, subcategory="ABO_CONCERT"))
+
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+
+        assert rows[0]["ID"] == str(rule.id)
+
+    def test_search_rule_with_multiple_filters(self, authenticated_client, offerer):
+        rule = offers_factories.OfferValidationRuleFactory(
+            name="Ma règle de conformité", dateModified=datetime.datetime.utcnow()
+        )
+
+        offers_factories.OfferValidationSubRuleFactory(
+            validationRule=rule,
+            model=offers_models.OfferValidationModel.OFFERER,
+            attribute=offers_models.OfferValidationAttribute.ID,
+            operator=offers_models.OfferValidationRuleOperator.IN,
+            comparated={"comparated": [offerer.id]},
+        )
+        offers_factories.OfferValidationSubRuleFactory(
+            validationRule=rule,
+            model=offers_models.OfferValidationModel.OFFER,
+            attribute=offers_models.OfferValidationAttribute.NAME,
+            operator=offers_models.OfferValidationRuleOperator.CONTAINS,
+            comparated={"comparated": ["suspicious"]},
+        )
+        offers_factories.OfferValidationSubRuleFactory(
+            validationRule=rule,
+            model=offers_models.OfferValidationModel.OFFER,
+            attribute=offers_models.OfferValidationAttribute.SUBCATEGORY_ID,
+            operator=offers_models.OfferValidationRuleOperator.IN,
+            comparated={"comparated": ["ABO_CONCERT"]},
+        )
+        offers_factories.OfferValidationSubRuleFactory(
+            validationRule=rule,
+            model=offers_models.OfferValidationModel.OFFER,
+            attribute=offers_models.OfferValidationAttribute.CATEGORY_ID,
+            operator=offers_models.OfferValidationRuleOperator.IN,
+            comparated={"comparated": ["CINEMA"]},
+        )
+
+        response = authenticated_client.get(
+            url_for(self.endpoint, q="suspicious", offerer=offerer.id, category="CINEMA", subcategory="ABO_CONCERT")
+        )
+
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+
+        assert rows[0]["ID"] == str(rule.id)
+
+
+class UtilsTest:
+    @pytest.mark.parametrize(
+        "input_str,expected", [("mot-clé", "mot-cle"), ("MAJ", "maj"), ("Je suis un MOT-CLÉ", "je suis un mot-cle")]
+    )
+    def test_format_key_word(self, input_str, expected):
+        assert utils.convert_to_unaccent_lowercase(input_str) == expected

@@ -9,6 +9,7 @@ from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2
 import pcapi.core.offers.models as offers_models
 from pcapi.domain.show_types import SHOW_SUB_TYPES_LABEL_BY_CODE
+from pcapi.routes.backoffice_v3 import autocomplete
 
 from .. import filters
 from ..forms import fields
@@ -72,15 +73,32 @@ class SearchRuleForm(FlaskForm):
     class Meta:
         csrf = False
 
-    q = fields.PCOptSearchField("Nom de la règle")
+    q = fields.PCOptSearchField("Nom de la règle, mots clés")
+    offerer = fields.PCTomSelectField(
+        "Structures",
+        multiple=True,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_v3_web.autocomplete_offerers",
+    )
+    category = fields.PCSelectMultipleField(
+        "Catégories", choices=utils.choices_from_enum(categories.CategoryIdLabelEnum)
+    )
+    subcategory = fields.PCSelectMultipleField(
+        "Sous-catégories", choices=utils.choices_from_enum(subcategories_v2.SubcategoryIdEnumv2)
+    )
 
     def is_empty(self) -> bool:
-        return not any((self.q.data,))
+        return not any((self.q.data, self.offerer.data, self.category.data, self.subcategory.data))
+
+    def __init__(self, *args: list, **kwargs: dict):
+        super().__init__(*args, **kwargs)
+        autocomplete.prefill_offerers_choices(self.offerer)
 
 
 class OfferType(enum.Enum):
     Offer = "Offre individuelle"
-    ColelctiveOffer = "Offre collective"
+    CollectiveOffer = "Offre collective"
     CollectiveOfferTemplate = "Offre collective vitrine"
 
 
