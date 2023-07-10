@@ -279,3 +279,34 @@ class PostEventTest:
         assert response.json == {
             "offer": ["Une offre qui a un ticket retirable doit avoir l'email du contact de réservation"]
         }
+
+    def test_error_when_duplicate_price_categories(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/events",
+            json={
+                "enableDoubleBookings": True,
+                "bookingContact": "contact@example.com",
+                "bookingEmail": "nicoj@example.com",
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+                "categoryRelatedFields": {
+                    "author": "Ray Charles",
+                    "category": "CONCERT",
+                    "musicType": "ELECTRO-HOUSE",
+                    "performer": "Nicolas Jaar",
+                    "stageDirector": "Alfred",  # field not applicable
+                },
+                "priceCategories": [
+                    {"price": 2500, "label": "triangle or"},
+                    {"price": 12, "label": "triangle argent"},
+                    {"price": 100, "label": "triangle bronze"},
+                    {"price": 2500, "label": "triangle or"},
+                ],
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"priceCategories": ["Price categories must be unique"]}
