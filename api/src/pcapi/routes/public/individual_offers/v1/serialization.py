@@ -506,6 +506,18 @@ class PriceCategoryCreation(serialization.ConfiguredBaseModel):
 class PriceCategoriesCreation(serialization.ConfiguredBaseModel):
     price_categories: typing.List[PriceCategoryCreation] = PRICE_CATEGORIES_FIELD
 
+    @pydantic.validator("price_categories")
+    def get_unique_price_categories(
+        cls,
+        price_categories: list[PriceCategoryCreation],
+    ) -> list[PriceCategoryCreation]:
+        unique_price_categories = []
+        for price_category in price_categories:
+            if (price_category.label, price_category.price) in unique_price_categories:
+                raise ValueError("Price categories must be unique")
+            unique_price_categories.append((price_category.label, price_category.price))
+        return price_categories
+
     class Config:
         extra = "forbid"
 
