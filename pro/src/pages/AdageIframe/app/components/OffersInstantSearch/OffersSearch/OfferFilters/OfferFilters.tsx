@@ -5,12 +5,10 @@ import type { SearchBoxProvided } from 'react-instantsearch-core'
 import AdageButtonFilter from 'components/AdageButtonFilter/AdageButtonFilter'
 import FormLayout from 'components/FormLayout'
 import { getEducationalDomainsOptionsAdapter } from 'pages/AdageIframe/app/adapters/getEducationalDomainsOptionsAdapter'
-import { AnalyticsContext } from 'pages/AdageIframe/app/providers/AnalyticsContextProvider'
 import { FacetFiltersContext } from 'pages/AdageIframe/app/providers/FacetFiltersContextProvider'
 import { Option } from 'pages/AdageIframe/app/types'
 import { Button, TextInput } from 'ui-kit'
 import AdageMultiselect from 'ui-kit/form/AdageMultiselect/AdageMultiselect'
-import { LOGS_DATA } from 'utils/config'
 
 import { adageFiltersToFacetFilters } from '../../utils'
 
@@ -21,9 +19,10 @@ export interface OfferFiltersProps {
   className?: string
   isLoading: boolean
   refine: SearchBoxProvided['refine']
+  uai: string[] | null
 }
 
-interface SearchFormValues {
+export interface SearchFormValues {
   query: string
   domains: Option[]
 }
@@ -32,10 +31,23 @@ export const OfferFilters = ({
   className,
   isLoading,
   refine,
+  uai,
 }: OfferFiltersProps): JSX.Element => {
+  const [modalOpenStatus, setModalOpenStatus] = useState<{
+    [key: string]: boolean
+  }>({})
   const [domainsOptions, setDomainsOptions] = useState<Option<number>[]>([])
   const { setFacetFilters } = useContext(FacetFiltersContext)
-  const { setFiltersKeys, setHasClickedSearch } = useContext(AnalyticsContext)
+
+  const onClean = (modalName: string) => {
+    clearFormikFieldValue('domains')
+    setModalOpenStatus(prevState => ({ ...prevState, [modalName]: false }))
+  }
+
+  const onSearch = (modalName: string) => {
+    handleSubmit(formik.values)
+    setModalOpenStatus(prevState => ({ ...prevState, [modalName]: false }))
+  }
 
   useEffect(() => {
     const loadFiltersOptions = async () => {
@@ -52,12 +64,10 @@ export const OfferFilters = ({
   const handleSubmit = (formValues: SearchFormValues): void => {
     const updatedFilters = adageFiltersToFacetFilters({
       ...formValues,
+      uai,
     })
     setFacetFilters(updatedFilters.queryFilters)
-    if (LOGS_DATA) {
-      setFiltersKeys(updatedFilters.filtersKeys)
-      setHasClickedSearch(true)
-    }
+
     refine(formValues.query)
   }
 
@@ -70,7 +80,8 @@ export const OfferFilters = ({
   })
 
   const clearFormikFieldValue = (fieldName: string) => {
-    formik.setFieldValue(fieldName, '')
+    formik.setFieldValue(fieldName, [])
+    handleSubmit({ ...formik.values, [fieldName]: [] })
   }
 
   return (
@@ -98,10 +109,15 @@ export const OfferFilters = ({
             isActive={formik.values.domains.length > 0}
             title="Domaine artistique"
             itemsLength={formik.values.domains.length}
+            isOpen={modalOpenStatus['domains']}
+            setIsOpen={setModalOpenStatus}
+            filterName="domains"
+            handleSubmit={formValue => handleSubmit(formValue)}
+            formikValues={formik.values}
           >
             <ModalFilterLayout
-              onClean={() => clearFormikFieldValue('domains')}
-              onSearch={() => handleSubmit(formik.values)}
+              onClean={() => onClean('domains')}
+              onSearch={() => onSearch('domains')}
               title="Choisir un domaine artistique"
             >
               <AdageMultiselect

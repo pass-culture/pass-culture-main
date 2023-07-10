@@ -1,7 +1,9 @@
 import React, { createContext, ReactNode, useMemo, useState } from 'react'
 
 import { VenueResponse } from 'apiClient/adage'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { getDefaultFacetFilterUAICodeValue } from 'utils/facetFilters'
+import { oldGetDefaultFacetFilterUAICodeValue } from 'utils/oldFacetFilters'
 
 import { computeVenueFacetFilter } from '../components/OffersInstantSearch/utils'
 import { Facets } from '../types'
@@ -31,13 +33,34 @@ export const FacetFiltersContextProvider = ({
   departmentCode?: string | null
   venueFilter?: VenueResponse | null
 }): JSX.Element => {
+  const newAdageFilters = useActiveFeature('WIP_ENABLE_NEW_ADAGE_FILTERS')
+
   const defaultFacetFilters = venueFilter
     ? [
         computeVenueFacetFilter(venueFilter),
         ...getDefaultFacetFilterUAICodeValue(uai, departmentCode, venueFilter),
       ]
     : [...getDefaultFacetFilterUAICodeValue(uai, departmentCode, venueFilter)]
-  const [facetFilters, setFacetFilters] = useState<Facets>(defaultFacetFilters)
+
+  const oldDefaultFacetFilters = venueFilter
+    ? [
+        computeVenueFacetFilter(venueFilter),
+        ...oldGetDefaultFacetFilterUAICodeValue(
+          uai,
+          departmentCode,
+          venueFilter
+        ),
+      ]
+    : [
+        ...oldGetDefaultFacetFilterUAICodeValue(
+          uai,
+          departmentCode,
+          venueFilter
+        ),
+      ]
+  const [facetFilters, setFacetFilters] = useState<Facets>(
+    newAdageFilters ? defaultFacetFilters : oldDefaultFacetFilters
+  )
 
   const value = useMemo(
     () => ({

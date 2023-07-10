@@ -1,7 +1,8 @@
 import cn from 'classnames'
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 
 import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
+import { SearchFormValues } from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/OfferFilters/OfferFilters'
 
 import styles from './AdageButtonFilter.module.scss'
 
@@ -10,6 +11,11 @@ export interface AdageButtonFilterProps
   title: string
   isActive: boolean
   itemsLength?: number
+  isOpen: boolean
+  setIsOpen: (value: { [key: string]: boolean }) => void
+  filterName: string
+  handleSubmit: (value: SearchFormValues) => void
+  formikValues: SearchFormValues
 }
 
 const AdageButtonFilter = ({
@@ -18,23 +24,32 @@ const AdageButtonFilter = ({
   isActive,
   disabled,
   itemsLength,
+  isOpen,
+  setIsOpen,
+  filterName,
+  handleSubmit,
+  formikValues,
 }: AdageButtonFilterProps): JSX.Element => {
-  const [filterModal, setFilterModal] = useState(false)
   const containerRef = useRef<HTMLDivElement | null>(null)
 
   useOnClickOrFocusOutside(containerRef, () => {
-    setFilterModal(false)
+    setIsOpen({ [filterName]: false })
+    handleSubmit(formikValues)
   })
+
+  const modalButton = () => {
+    setIsOpen({ [filterName]: !isOpen })
+  }
 
   return (
     <div ref={containerRef} className={styles['adage-container']}>
       <button
         type="button"
         disabled={disabled}
-        onClick={() => setFilterModal(!filterModal)}
+        onClick={modalButton}
         className={cn([styles['adage-button']], {
           [styles['adage-button-is-active']]: isActive,
-          [styles['adage-button-selected']]: filterModal,
+          [styles['adage-button-selected']]: isOpen,
         })}
       >
         <div
@@ -46,7 +61,7 @@ const AdageButtonFilter = ({
         {title} {isActive && `(${itemsLength})`}
       </button>
 
-      <dialog open={filterModal} className={styles['adage-button-children']}>
+      <dialog open={isOpen} className={styles['adage-button-children']}>
         {children}
       </dialog>
     </div>
