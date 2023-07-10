@@ -45,13 +45,7 @@ const BannerLayout = ({
     >
       {type === 'notification-info' && showTitle && (
         <div className={styles['container']}>
-          <SvgIcon
-            src={shadowTipsHelpIcon}
-            alt=""
-            className={styles['icon']}
-            viewBox="0 0 22 26"
-            width="22"
-          />
+          <SvgIcon src={shadowTipsHelpIcon} alt="" className={styles['icon']} />
           <span className={styles['container-title']}>À SAVOIR</span>
         </div>
       )}
