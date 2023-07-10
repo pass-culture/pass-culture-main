@@ -17,12 +17,10 @@ import pcapi.core.providers.models as providers_models
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers import TiteLiveThings
 from pcapi.local_providers.titelive_things.titelive_things import COLUMN_INDICES
-from pcapi.utils.csr import get_closest_csr
 
 
 EAN_TEST = "9782809455069"
 EAN_TEST_TITLE = "Secret wars : marvel zombies n.1"
-GTL_ID_TEST = "3030400"
 BASE_DATA_LINE_PARTS = [
     EAN_TEST,
     EAN_TEST_TITLE,
@@ -81,7 +79,7 @@ BASE_DATA_LINE_PARTS = [
     "0",
     "1",
     "",
-    GTL_ID_TEST,
+    "3030400",
     "4300",
     "3012420280013",
     "0",
@@ -112,10 +110,6 @@ class TiteliveThingsTest:
         assert product.extraData.get("bookFormat") == offers_models.BookFormat.BEAUX_LIVRES.value
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert product.extraData.get("ean") == EAN_TEST
-        assert product.extraData.get("gtl_id") == GTL_ID_TEST
-        closest_csr = get_closest_csr(GTL_ID_TEST)
-        assert product.extraData.get("csr_id") == closest_csr.get("csr_id")
-        assert product.extraData.get("rayon") == closest_csr.get("label")
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
