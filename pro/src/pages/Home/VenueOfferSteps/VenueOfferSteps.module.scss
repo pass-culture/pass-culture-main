@@ -31,3 +31,14 @@
 .step-button-width {
   max-width: rem.torem(577px);
 }
+
+.step-button-with-info {
+  min-width: rem.torem(577px);
+}
+
+.step-button-info {
+  & > svg, &-text {
+    display: flex;
+    align-self: flex-start;
+  }
+}
