@@ -60,6 +60,13 @@ BEGIN
 END; $$
 LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION pg_temp.fake_id_piece_number_from_id(id BIGINT)
+  RETURNS TEXT AS $$
+BEGIN
+  RETURN lpad(id::text, 12, '0');
+END; $$
+LANGUAGE plpgsql;
+
 BEGIN;
   -- Temporarily disable trigger to speed up updates.
   ALTER TABLE booking DISABLE TRIGGER stock_update_cancellation_date;
@@ -109,6 +116,7 @@ SET
     "lastName" = pg_temp.fake_last_name(id),
     "dateOfBirth" = '01/01/2001',
     "validatedBirthDate" = case when "validatedBirthDate" is null then null else '2001-01-01'::timestamp end,
+    "idPieceNumber" = case when "idPieceNumber" is null then null else pg_temp.fake_id_piece_number_from_id(id) end,
     "phoneNumber" = pg_temp.fake_phone_number_from_id(id),
     "validationToken" = NULL
 WHERE email NOT LIKE '%@passculture.app';
