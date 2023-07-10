@@ -15,8 +15,10 @@ export const computeVenueFacetFilter = (venueFilter: VenueResponse): string[] =>
 
 export const adageFiltersToFacetFilters = ({
   domains,
+  uai,
 }: {
   domains: Option[]
+  uai?: string[] | null
 }) => {
   const updatedFilters: Facets = []
   const filtersKeys: string[] = []
@@ -28,6 +30,15 @@ export const adageFiltersToFacetFilters = ({
   if (filteredDomains.length > 0) {
     filtersKeys.push('domains')
     updatedFilters.push(filteredDomains)
+  }
+
+  if (uai) {
+    if (!uai.includes('all')) {
+      filtersKeys.push('uaiCode')
+    }
+    updatedFilters.push(
+      uai.map(uaiCode => `offer.educationalInstitutionUAICode:${uaiCode}`)
+    )
   }
 
   return {
