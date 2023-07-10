@@ -550,18 +550,6 @@ def complete_profile(
     logger.info("User completed profile step", extra={"user": user.id})
 
 
-def is_identity_check_with_document_method_allowed_for_underage(user: users_models.User) -> bool:
-    if not FeatureToggle.ALLOW_IDCHECK_UNDERAGE_REGISTRATION.is_active():
-        return False
-
-    if user.schoolType in (
-        users_models.SchoolTypeEnum.PUBLIC_HIGH_SCHOOL,
-        users_models.SchoolTypeEnum.PUBLIC_SECONDARY_SCHOOL,
-    ):
-        return FeatureToggle.ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE.is_active()
-    return True
-
-
 def get_allowed_identity_check_methods(user: users_models.User) -> list[models.IdentityCheckMethod]:
     allowed_methods = []
 
@@ -569,7 +557,7 @@ def get_allowed_identity_check_methods(user: users_models.User) -> list[models.I
         if FeatureToggle.ENABLE_EDUCONNECT_AUTHENTICATION.is_active():
             allowed_methods.append(models.IdentityCheckMethod.EDUCONNECT)
 
-        if is_identity_check_with_document_method_allowed_for_underage(user):
+        if FeatureToggle.ALLOW_IDCHECK_UNDERAGE_REGISTRATION.is_active():
             if FeatureToggle.ENABLE_UBBLE.is_active() and _is_ubble_allowed_if_subscription_overflow(user):
                 allowed_methods.append(models.IdentityCheckMethod.UBBLE)
 
