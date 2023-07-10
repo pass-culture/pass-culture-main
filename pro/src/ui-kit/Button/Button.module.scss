@@ -63,10 +63,12 @@
     &:disabled .button-icon,
     &.button-disabled .button-icon {
       fill: colors.$grey-medium;
+      color: colors.$grey-medium;
     }
 
     .button-icon {
       fill: colors.$white;
+      color: colors.$white;
     }
   }
 
@@ -83,6 +85,7 @@
 
       .button-icon {
         fill: colors.$white;
+        color: colors.$white;
       }
     }
 
@@ -96,10 +99,12 @@
     &:disabled .button-icon,
     &.button-disabled .button-icon {
       fill: colors.$grey-medium;
+      color: colors.$grey-medium;
     }
 
     .button-icon {
       fill: colors.$primary;
+      color: colors.$primary;
     }
   }
 
@@ -129,6 +134,7 @@
     &:disabled .button-icon,
     &.button-disabled .button-icon {
       fill: colors.$grey-semi-dark;
+      color: colors.$grey-semi-dark;
     }
 
     .button-icon:not(.has-tooltip) {
@@ -139,6 +145,7 @@
 
     .button-icon {
       fill: colors.$black;
+      color: colors.$black;
     }
 
     &.button-center {
@@ -223,10 +230,12 @@
     .button-icon {
       &:not(.button-icon-arrow) {
         fill: colors.$primary;
+        color: colors.$primary;
       }
 
       &.button-icon-arrow {
         fill: colors.$black;
+        color: colors.$black;
       }
     }
 
@@ -238,6 +247,7 @@
 
       .button-icon {
         fill: colors.$grey-dark;
+        color: colors.$grey-dark;
       }
     }
   }
