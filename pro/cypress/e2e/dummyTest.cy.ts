@@ -1,4 +1,4 @@
-describe('Dummy test', () => {
+describe('Login', () => {
   it('should login', () => {
     cy.login('pctest.admin93.0@example.com', 'user@AZERTY123')
       .url()

@@ -55,31 +55,36 @@ export const useConfigureFirebase = ({
           },
         })
       const remoteConfig = getRemoteConfig(initializeApp)
-      fetchAndActivate(remoteConfig).then(() => {
-        setRemoteConfig && setRemoteConfig(remoteConfig)
-        setLogEvent &&
-          setLogEvent(
-            () =>
-              (
-                event: string,
-                params:
-                  | { [key: string]: string | boolean | string[] | undefined }
-                  | Record<string, never> = {}
-              ) => {
-                const remoteConfigValues = getAll(remoteConfig)
-                const remoteConfigParams: Record<string, string> = {}
-                Object.keys(remoteConfigValues).forEach(k => {
-                  remoteConfigParams[k] = remoteConfigValues[k].asString()
-                })
-                setRemoteConfigData && setRemoteConfigData(remoteConfigParams)
-                analyticsLogEvent(getAnalytics(app), event, {
-                  ...params,
-                  ...utmParameters,
-                  ...remoteConfigParams,
-                })
-              }
-          )
-      })
+      fetchAndActivate(remoteConfig)
+        .then(() => {
+          setRemoteConfig && setRemoteConfig(remoteConfig)
+          setLogEvent &&
+            setLogEvent(
+              () =>
+                (
+                  event: string,
+                  params:
+                    | { [key: string]: string | boolean | string[] | undefined }
+                    | Record<string, never> = {}
+                ) => {
+                  const remoteConfigValues = getAll(remoteConfig)
+                  const remoteConfigParams: Record<string, string> = {}
+                  Object.keys(remoteConfigValues).forEach(k => {
+                    remoteConfigParams[k] = remoteConfigValues[k].asString()
+                  })
+                  setRemoteConfigData && setRemoteConfigData(remoteConfigParams)
+                  analyticsLogEvent(getAnalytics(app), event, {
+                    ...params,
+                    ...utmParameters,
+                    ...remoteConfigParams,
+                  })
+                }
+            )
+        })
+        .catch(() => {
+          // eslint-disable-next-line
+          console.error('Impossible d’activer Remote Config')
+        })
     }
   }, [isCookieEnabled, app, isFirebaseSupported])
 
