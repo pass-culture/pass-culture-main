@@ -19,70 +19,53 @@ from pcapi.local_providers import TiteLiveThings
 from pcapi.local_providers.titelive_things.titelive_things import COLUMN_INDICES
 
 
-EAN_TEST = "9782809455069"
-EAN_TEST_TITLE = "Secret wars : marvel zombies n.1"
 BASE_DATA_LINE_PARTS = [
-    EAN_TEST,
-    EAN_TEST_TITLE,
-    "1905",
-    "6",
-    "Secret Wars : Marvel Zombies",
+    "9782895026310",
+    "2895026319",
+    "nouvelles du Chili",
+    "",
+    "0203",
     "1",
-    "4,90",
-    "Panini Comics Mag",
-    "Makassar",
-    "24/12/2015",
+    "",
+    "",
+    "",
+    "18,99",
+    "LES EDITIONS DE L'INSTANT MEME",
+    "EPAGINE",
+    "11/05/2011",
     "BL",
     "2",
     "0",
-    "26,0",
-    "17,0",
     "0,0",
-    "198",
+    "0,0",
+    "0,0",
+    "0",
+    "0",
+    "0",
+    "0",
     "Collectif",
-    "18/10/2015",
-    "30/04/2023",
+    "15/01/2013",
+    "02/03/2018",
     "5,50",
+    "Littérature Hispano-Portugaise",
     "",
-    "ANGLAIS (ETATS-UNIS)",
+    "",
+    "",
     "",
     "",
     "1",
-    "Non précisée",
-    "",
-    "",
-    "5621564",
-    "0",
-    "0",
-    "0",
-    "",
-    "0",
-    "0",
-    "93",
-    "0",
-    "0",
-    "0",
-    "0",
-    "0",
-    "",
-    "0",
-    "20303",
-    "0",
-    "0",
-    "412952",
-    "",
-    "0",
-    "0",
-    "0",
-    "0",
-    "0",
-    "0",
-    "1",
-    "",
-    "3030400",
-    "4300",
     "3012420280013",
+    "",
+    "",
+    "",
+    "",
+    "",
     "0",
+    "",
+    "369",
+    "860",
+    "3694440",
+    "",
 ]
 
 
@@ -108,7 +91,7 @@ class TiteliveThingsTest:
         product = offers_models.Product.query.one()
         assert product.extraData.get("bookFormat") == offers_models.BookFormat.BEAUX_LIVRES.value
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
-        assert product.extraData.get("ean") == EAN_TEST
+        assert product.extraData.get("ean") == "9782895026310"
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
@@ -120,6 +103,7 @@ class TiteliveThingsTest:
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
         DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = "livre scolaire"
+        DATA_LINE_PARTS[COLUMN_INDICES["libelle_code_rayon_csr"]] = "Littérature scolaire"
         DATA_LINE_PARTS[COLUMN_INDICES["scolaire"]] = "1"
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
@@ -144,6 +128,7 @@ class TiteliveThingsTest:
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
         DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = "livre scolaire"
+        DATA_LINE_PARTS[COLUMN_INDICES["libelle_code_rayon_csr"]] = "Littérature scolaire"
         DATA_LINE_PARTS[COLUMN_INDICES["scolaire"]] = "1"
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
@@ -173,7 +158,7 @@ class TiteliveThingsTest:
 
         offers_factories.ProductFactory(
             name="Old name",
-            idAtProviders=EAN_TEST,
+            idAtProviders="9782895026310",
             dateModifiedAtLastProvider=datetime(2001, 1, 1),
             lastProviderId=titelive_things_provider.id,
         )
@@ -184,7 +169,7 @@ class TiteliveThingsTest:
 
         # Then
         updated_product = offers_models.Product.query.first()
-        assert updated_product.name == EAN_TEST_TITLE
+        assert updated_product.name == "nouvelles du Chili"
         assert updated_product.extraData.get("bookFormat") == offers_models.BookFormat.BEAUX_LIVRES.value
 
     @pytest.mark.usefixtures("db_session")
@@ -211,7 +196,7 @@ class TiteliveThingsTest:
         # Given
         get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
-        data_line = EAN_TEST
+        data_line = "9782895026310"
         get_lines_from_thing_file.return_value = iter([data_line])
 
         providers_factories.TiteLiveThingsProviderFactory()
@@ -234,6 +219,7 @@ class TiteliveThingsTest:
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
         DATA_LINE_PARTS[COLUMN_INDICES["code_support"]] = "LE"
+        DATA_LINE_PARTS[COLUMN_INDICES["libelle_code_rayon_csr"]] = "Littérature scolaire"
         DATA_LINE_PARTS[COLUMN_INDICES["scolaire"]] = "1"
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
@@ -259,6 +245,7 @@ class TiteliveThingsTest:
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
         DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = "livre scolaire"
         DATA_LINE_PARTS[COLUMN_INDICES["code_rayon_csr"]] = "2704"
+        DATA_LINE_PARTS[COLUMN_INDICES["libelle_code_rayon_csr"]] = "Littérature scolaire"
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
@@ -283,12 +270,13 @@ class TiteliveThingsTest:
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
         DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = "livre scolaire"
         DATA_LINE_PARTS[COLUMN_INDICES["code_rayon_csr"]] = "2704"
+        DATA_LINE_PARTS[COLUMN_INDICES["libelle_code_rayon_csr"]] = "Littérature scolaire"
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
         titelive_provider = providers_factories.TiteLiveThingsProviderFactory()
         offers_factories.ProductFactory(
-            idAtProviders=EAN_TEST,
+            idAtProviders="9782895026310",
             dateModifiedAtLastProvider=datetime(2001, 1, 1),
             lastProviderId=titelive_provider.id,
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -315,13 +303,14 @@ class TiteliveThingsTest:
         DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = "jeux de société"
         DATA_LINE_PARTS[COLUMN_INDICES["code_rayon_csr"]] = "1234"
         DATA_LINE_PARTS[COLUMN_INDICES["code_support"]] = "O"
+        DATA_LINE_PARTS[COLUMN_INDICES["libelle_code_rayon_csr"]] = "Littérature scolaire"
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
         titelive_provider = providers_factories.TiteLiveThingsProviderFactory()
         offers_factories.ProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            idAtProviders=EAN_TEST,
+            idAtProviders="9782895026310",
             dateModifiedAtLastProvider=datetime(2001, 1, 1),
             lastProviderId=titelive_provider.id,
         )
@@ -346,13 +335,14 @@ class TiteliveThingsTest:
         data_line_parts[COLUMN_INDICES["titre"]] = "jeux de société"
         data_line_parts[COLUMN_INDICES["code_rayon_csr"]] = "1234"
         data_line_parts[COLUMN_INDICES["code_support"]] = "O"
+        data_line_parts[COLUMN_INDICES["libelle_code_rayon_csr"]] = "Littérature scolaire"
         data_line = "~".join(data_line_parts)
         get_lines_from_thing_file.return_value = iter([data_line])
 
         provider = providers_factories.TiteLiveThingsProviderFactory()
         bookings_factories.BookingFactory(
             stock__offer__product__dateModifiedAtLastProvider=datetime(2001, 1, 1),
-            stock__offer__product__idAtProviders=EAN_TEST,
+            stock__offer__product__idAtProviders="9782895026310",
             stock__offer__product__lastProviderId=provider.id,
             stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
@@ -366,7 +356,7 @@ class TiteliveThingsTest:
         provider_log_error = providers_models.LocalProviderEvent.query.filter_by(
             type=providers_models.LocalProviderEventType.SyncError
         ).one()
-        assert provider_log_error.payload == f"Error deleting product with EAN: {EAN_TEST}"
+        assert provider_log_error.payload == "Error deleting product with EAN: 9782895026310"
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
@@ -397,7 +387,7 @@ class TiteliveThingsTest:
 
         # Then
         assert len(products) == 1
-        assert product.extraData["ean"] == EAN_TEST
+        assert product.extraData["ean"] == "9782895026310"
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
@@ -416,7 +406,7 @@ class TiteliveThingsTest:
 
         titelive_provider = providers_factories.TiteLiveThingsProviderFactory()
         offers_factories.ProductFactory(
-            idAtProviders=EAN_TEST,
+            idAtProviders="9782895026310",
             dateModifiedAtLastProvider=datetime(2001, 1, 1),
             lastProviderId=titelive_provider.id,
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -450,7 +440,7 @@ class TiteliveThingsTest:
         offerer = offerers_factories.OffererFactory(siren="123456789")
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         product = ThingProductFactory(
-            idAtProviders=EAN_TEST,
+            idAtProviders="9782895026310",
             name="Presse papier",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             dateModifiedAtLastProvider=datetime(2001, 1, 1),
@@ -501,10 +491,10 @@ class TiteliveThingsTest:
     ):
         get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
-        book_ean = EAN_TEST
+        book_ean = "9782895026310"
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
-        DATA_LINE_PARTS[COLUMN_INDICES["ean"]] = book_ean
+        DATA_LINE_PARTS[COLUMN_INDICES["isbn"]] = book_ean
         DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = "xxx"
         DATA_LINE_PARTS[COLUMN_INDICES["auteurs"]] = "Xxx"
         data_line = "~".join(DATA_LINE_PARTS)
