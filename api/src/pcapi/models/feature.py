@@ -28,9 +28,6 @@ class FeatureToggle(enum.Enum):
         "Active le calcul du nombre des réservations lors de l'indexation des offres sur Algolia"
     )
     ALLOW_IDCHECK_REGISTRATION = "Autoriser les utilisateurs de 18 ans à suivre le parcours d inscription ID Check"
-    ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE = (
-        "Autoriser la redirection vers Ubble (en backup) pour les utilisateurs éligibles à éduconnect"
-    )
     ALLOW_IDCHECK_UNDERAGE_REGISTRATION = (
         "Autoriser les utilisateurs de moins de 15 à 17 ans à suivre le parcours d inscription ID Check"
     )
@@ -155,7 +152,6 @@ class Feature(PcObject, Base, Model, DeactivableMixin):
 
 
 FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
-    FeatureToggle.ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE,
     FeatureToggle.DISABLE_ENTERPRISE_API,
     FeatureToggle.DISABLE_BOOST_EXTERNAL_BOOKINGS,
     FeatureToggle.DISABLE_CDS_EXTERNAL_BOOKINGS,

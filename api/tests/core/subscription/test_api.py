@@ -390,19 +390,17 @@ class NextSubscriptionStepTest:
         assert subscription_api.get_user_subscription_state(user).next_step is None
 
     @pytest.mark.parametrize(
-        "feature_flags,user_age,user_school_type,expected_result",
+        "feature_flags,user_age,expected_result",
         [
             # User 18
             (
                 {"ALLOW_IDCHECK_REGISTRATION": True, "ENABLE_UBBLE": True},
                 18,
-                None,
                 [subscription_models.IdentityCheckMethod.UBBLE],
             ),
             (
                 {"ALLOW_IDCHECK_REGISTRATION": False},
                 18,
-                None,
                 [],
             ),
             # User 15 - 17
@@ -411,42 +409,34 @@ class NextSubscriptionStepTest:
                 {
                     "ENABLE_EDUCONNECT_AUTHENTICATION": True,
                     "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
-                    "ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE": False,
                 },
                 15,
-                users_models.SchoolTypeEnum.PUBLIC_HIGH_SCHOOL,
-                [subscription_models.IdentityCheckMethod.EDUCONNECT],
+                [subscription_models.IdentityCheckMethod.EDUCONNECT, subscription_models.IdentityCheckMethod.UBBLE],
             ),
             (
                 {
                     "ENABLE_EDUCONNECT_AUTHENTICATION": True,
                     "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
-                    "ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE": False,
                 },
                 15,
-                users_models.SchoolTypeEnum.PUBLIC_SECONDARY_SCHOOL,
-                [subscription_models.IdentityCheckMethod.EDUCONNECT],
+                [subscription_models.IdentityCheckMethod.EDUCONNECT, subscription_models.IdentityCheckMethod.UBBLE],
             ),
             (
                 {
                     "ENABLE_EDUCONNECT_AUTHENTICATION": False,
                     "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
-                    "ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE": True,
                     "ENABLE_UBBLE": True,
                 },
                 15,
-                users_models.SchoolTypeEnum.PUBLIC_SECONDARY_SCHOOL,
                 [subscription_models.IdentityCheckMethod.UBBLE],
             ),
             (
                 {
                     "ENABLE_EDUCONNECT_AUTHENTICATION": False,
                     "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
-                    "ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE": False,
                 },
                 15,
-                users_models.SchoolTypeEnum.PUBLIC_SECONDARY_SCHOOL,
-                [],
+                [subscription_models.IdentityCheckMethod.UBBLE],
             ),
             # Other schools
             (
@@ -456,7 +446,6 @@ class NextSubscriptionStepTest:
                     "ENABLE_UBBLE": True,
                 },
                 15,
-                None,
                 [subscription_models.IdentityCheckMethod.EDUCONNECT, subscription_models.IdentityCheckMethod.UBBLE],
             ),
             (
@@ -466,7 +455,6 @@ class NextSubscriptionStepTest:
                     "ENABLE_UBBLE": True,
                 },
                 15,
-                None,
                 [subscription_models.IdentityCheckMethod.EDUCONNECT],
             ),
             (
@@ -476,7 +464,6 @@ class NextSubscriptionStepTest:
                     "ENABLE_UBBLE": True,
                 },
                 15,
-                None,
                 [subscription_models.IdentityCheckMethod.UBBLE],
             ),
             (
@@ -485,14 +472,13 @@ class NextSubscriptionStepTest:
                     "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": False,
                 },
                 15,
-                None,
                 [subscription_models.IdentityCheckMethod.EDUCONNECT],
             ),
         ],
     )
-    def test_get_allowed_identity_check_methods(self, feature_flags, user_age, user_school_type, expected_result):
+    def test_get_allowed_identity_check_methods(self, feature_flags, user_age, expected_result):
         dateOfBirth = datetime.today() - relativedelta(years=user_age, months=1)
-        user = users_factories.UserFactory(dateOfBirth=dateOfBirth, schoolType=user_school_type)
+        user = users_factories.UserFactory(dateOfBirth=dateOfBirth)
         with override_features(**feature_flags):
             assert subscription_api.get_allowed_identity_check_methods(user) == expected_result
 
