@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy import orm as sqla_orm
 
 from pcapi.core.bookings import api as bookings_api
@@ -29,7 +31,7 @@ BASE_CODE_DESCRIPTIONS = {
 }
 
 
-def _get_bookings_query(offer_id: int) -> sqla_orm.Query:
+def _get_base_booking_query() -> sqla_orm.Query:
     return (
         booking_models.Booking.query.join(offerers_models.Venue)
         .join(providers_models.VenueProvider)
@@ -37,8 +39,36 @@ def _get_bookings_query(offer_id: int) -> sqla_orm.Query:
         .filter(providers_models.VenueProvider.isActive == True)
         .join(offers_models.Stock)
         .join(offers_models.Offer)
-        .filter(offers_models.Offer.id == offer_id)
-        .order_by(booking_models.Booking.id)
+    )
+
+
+def _get_paginated_and_filtered_bookings(
+    offer_id: int,
+    price_category_id: int | None,
+    stock_id: int | None,
+    status: booking_models.BookingStatus | None,
+    begining_datetime: datetime | None,
+    firstIndex: int,
+    limit: int,
+) -> sqla_orm.Query:
+    bookings_query = _get_base_booking_query().filter(offers_models.Offer.id == offer_id)
+
+    if price_category_id:
+        bookings_query = bookings_query.join(offers_models.PriceCategory).filter(
+            offers_models.PriceCategory.id == price_category_id
+        )
+
+    if stock_id:
+        bookings_query = bookings_query.filter(booking_models.Booking.stockId == stock_id)
+
+    if status:
+        bookings_query = bookings_query.filter(booking_models.Booking.status == status)
+
+    if begining_datetime:
+        bookings_query = bookings_query.filter(offers_models.Stock.beginningDatetime == begining_datetime)
+
+    return (
+        bookings_query.filter(booking_models.Booking.id >= firstIndex).order_by(booking_models.Booking.id).limit(limit)
     )
 
 
@@ -56,8 +86,14 @@ def get_bookings_by_offer(
     Get paginated bookings for a given offer.
     """
 
-    bookings = (
-        _get_bookings_query(query.offer_id).filter(booking_models.Booking.id >= query.firstIndex).limit(query.limit)
+    bookings = _get_paginated_and_filtered_bookings(
+        query.offer_id,
+        query.price_category_id,
+        query.stock_id,
+        query.status,
+        query.begining_datetime,
+        query.firstIndex,
+        query.limit,
     )
 
     return serialization.GetFilteredBookingsResponse(
@@ -65,17 +101,8 @@ def get_bookings_by_offer(
     )
 
 
-def _get_booking_by_token(token: str) -> booking_models.Booking:
-    return (
-        booking_models.Booking.query.filter_by(token=token.upper())
-        .join(offerers_models.Venue)
-        .join(providers_models.VenueProvider)
-        .filter(providers_models.VenueProvider.providerId == current_api_key.providerId)
-        .filter(providers_models.VenueProvider.isActive == True)
-        .join(offers_models.Stock)
-        .join(offers_models.Offer)
-        .one_or_none()
-    )
+def _get_booking_by_token(token: str) -> booking_models.Booking | None:
+    return _get_base_booking_query().filter(booking_models.Booking.token == token.upper()).one_or_none()
 
 
 @blueprint.v1_bookings_blueprint.route("/token/<string:token>", methods=["GET"])
