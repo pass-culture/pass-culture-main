@@ -227,7 +227,7 @@ const Summary = () => {
           <p>Vous pouvez dès à présent renseigner des coordonnées bancaires.</p>
           <p>
             Vos remboursements seront rétroactifs une fois vos coordonnées
-            bancaires ajoutées.
+            bancaires validées.
           </p>
         </RedirectDialog>
       )}
