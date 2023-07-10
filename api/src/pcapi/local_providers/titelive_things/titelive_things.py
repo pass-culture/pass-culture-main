@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 DATE_REGEXP = re.compile(r"([a-zA-Z]+)(\d+).tit")
 THINGS_FOLDER_NAME_TITELIVE = "livre3_19"
 THINGS_FOLDER_ENCODING_TITELIVE = "iso-8859-1"
-NUMBER_OF_ELEMENTS_PER_LINE = 62  # (61 elements from line + \n)
+NUMBER_OF_ELEMENTS_PER_LINE = 61  # (62 elements from line + \n)
 PAPER_PRESS_TVA = "2,10"
 COLUMN_INDICES = {
     "ean": 0,
@@ -228,9 +228,6 @@ class TiteLiveThings(LocalProvider):
         providable_info = self.create_providable_info(
             offers_models.Product, book_unique_identifier, book_information_last_update, book_unique_identifier
         )
-        logger.info(
-            "Providable info %s with date_updated: %s", book_unique_identifier, self.product_infos["date_updated"]
-        )
         return [providable_info]
 
     def get_ineligibility_reason(self) -> str | None:
@@ -271,19 +268,10 @@ class TiteLiveThings(LocalProvider):
     def get_remaining_files_to_check(self, ordered_thing_files: list) -> iter:  # type: ignore [valid-type]
         latest_sync_part_end_event = providers_repository.find_latest_sync_part_end_event(self.provider)
         if latest_sync_part_end_event is None:
-            logger.info(
-                "get_remaining_files_to_check: %s (ALL)",
-                ",".join(ordered_thing_files),
-            )
             return iter(ordered_thing_files)
         for index, filename in enumerate(ordered_thing_files):
             if get_date_from_filename(filename, DATE_REGEXP) == int(latest_sync_part_end_event.payload):  # type: ignore [arg-type]
-                ordered_thing_files_from_date = ordered_thing_files[index + 1 :]
-                logger.info(
-                    "get_remaining_files_to_check: %s",
-                    ",".join(ordered_thing_files_from_date),
-                )
-                return iter(ordered_thing_files_from_date)
+                return iter(ordered_thing_files[index + 1 :])
         return iter([])
 
 
