@@ -19,7 +19,9 @@ const mockLogEvent = jest.fn()
 const renderVenueOfferSteps = (
   venueId: number | null = null,
   hasMissingReimbursementPoint = true,
-  shouldDisplayEacSection = false
+  shouldDisplayEacSection = false,
+  hasPendingBankInformationApplication = false,
+  demarchesSimplifieesApplicationId?: number
 ) => {
   const currentUser = {
     id: 'EY',
@@ -38,6 +40,10 @@ const renderVenueOfferSteps = (
       offererId={12}
       hasMissingReimbursementPoint={hasMissingReimbursementPoint}
       shouldDisplayEACInformationSection={shouldDisplayEacSection}
+      hasPendingBankInformationApplication={
+        hasPendingBankInformationApplication
+      }
+      demarchesSimplifieesApplicationId={demarchesSimplifieesApplicationId}
     />,
     { storeOverrides, initialRouterEntries: ['/accueil'] }
   )
@@ -127,5 +133,21 @@ describe('VenueOfferSteps', () => {
     expect(mockLogEvent).toHaveBeenCalledWith(Events.CLICKED_EAC_DMS_TIMELINE, {
       from: location.pathname,
     })
+  })
+
+  it('should track click on dms redirect link', async () => {
+    renderVenueOfferSteps(venueId, false, false, true, 123456)
+
+    await userEvent.click(
+      screen.getByText('Suivre mon dossier de coordonnées bancaires')
+    )
+
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    expect(mockLogEvent).toHaveBeenCalledWith(
+      VenueEvents.CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP,
+      {
+        from: location.pathname,
+      }
+    )
   })
 })

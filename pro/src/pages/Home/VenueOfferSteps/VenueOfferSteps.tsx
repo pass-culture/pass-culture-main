@@ -211,6 +211,14 @@ const VenueOfferSteps = ({
                         isExternal: true,
                         target: '_blank',
                       }}
+                      onClick={() => {
+                        logEvent?.(
+                          VenueEvents.CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP,
+                          {
+                            from: location.pathname,
+                          }
+                        )
+                      }}
                     >
                       Suivre mon dossier de coordonnées bancaires
                     </ButtonLink>
