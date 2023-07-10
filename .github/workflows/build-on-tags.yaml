@@ -1,0 +1,168 @@
+name: Build release
+
+on:
+  push:
+
+env:
+  PROJECT_ID: passculture-infra-prod
+  REGION: europe-west1
+  REPOSITORY: pass-culture-artifact-registry
+
+jobs:
+  find-hotfix-tag-number:
+    # Find the next hotfix version available
+    # Example: given branch maint/v200 and existing tags v200.0.0, v200.0.1 then output == 200.0.2
+    name: Find hotfix tag number
+    outputs:
+      version: ${{ steps.find-hotfix-tag-number.outputs.version }}
+    runs-on: [self-hosted, linux, x64]
+    steps:
+      - name: find-hotfix-tag-number
+        id: find-hotfix-tag-number
+        run: |
+          #if ! echo ${{ github.ref }} | grep -E '^refs/tags/v.*';
+          #then
+          #	echo "This workflow can only be triggered from a tag like 'refs/tags/v*'"
+          #      exit 1
+          #else
+          #      VERSION=$(echo "${{ github.ref }}" | awk -F "/v" '{print $2}')
+          #      echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          #fi
+          echo "version=0.0.22-cinew" >> $GITHUB_OUTPUT
+
+  build-docker:
+    name: 'Build and push Docker images'
+      #if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    runs-on: [self-hosted, linux, x64]
+    needs:
+      - find-hotfix-tag-number
+    permissions:
+      id-token: write
+      contents: write
+    env:
+      GIT_CONFIG_EMAIL: github-actions-bot@passculture.app
+      GIT_CONFIG_NAME: ${{ github.actor }}
+      TAG_NAME: mutating-webhook_v${{ inputs.tag_number }}
+      DOCKER_REPO: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry
+    steps:
+      - name: Checkout ref
+        uses: actions/checkout@v3
+        with:
+          ref: "${{ github.ref }}"
+          fetch-depth: 0
+
+      - id: openid-auth
+        name: "OpenID Connect Authentication"
+        uses: 'google-github-actions/auth@v1'
+        with:
+          create_credentials_file: false
+          token_format: 'access_token'
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+
+      - id: docker-login
+        uses: 'docker/login-action@v1'
+        name: 'Docker login'
+        with:
+          registry: '${{ env.REGION }}-docker.pkg.dev'
+          username: 'oauth2accesstoken'
+          password: '${{ steps.openid-auth.outputs.access_token }}'
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          driver: docker
+
+      - name: "Build and push pcapi image"
+        uses: docker/build-push-action@v2
+        with:
+          context: api
+          push: true
+          target: pcapi
+          tags: ${{ env.DOCKER_REPO }}/pcapi:${{ needs.find-hotfix-tag-number.outputs.version }}
+
+      - name: "Build and push pcapi-console image"
+        uses: docker/build-push-action@v2
+        with:
+          context: api
+          push: true
+          target: pcapi-console
+          tags: ${{ env.DOCKER_REPO }}/pcapi-console:${{ needs.find-hotfix-tag-number.outputs.version }}
+
+  create-pro-staging-release:
+    uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
+    needs:
+      - find-hotfix-tag-number
+    secrets:
+      GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    with:
+      ENV: staging
+      CHANNEL: "${{ needs.find-hotfix-tag-number.outputs.version }}"
+      EXPIRES: "30d"
+      PUSH_RELEASE_TO_SENTRY: true
+      REF: v${{ needs.find-hotfix-tag-number.outputs.version }}
+
+  create-pro-integration-release:
+    uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
+    needs:
+      - find-hotfix-tag-number
+    secrets:
+      GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    with:
+      ENV: integration
+      CHANNEL: "${{ needs.find-hotfix-tag-number.outputs.version }}"
+      EXPIRES: "30d"
+      REF: v${{ needs.find-hotfix-tag-number.outputs.version }}
+
+  create-pro-production-release:
+    uses: ./.github/workflows/deploy-pro-pr-version-generic.yml
+    needs:
+      - find-hotfix-tag-number
+    secrets:
+      GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+    with:
+      ENV: production
+      CHANNEL: "${{ needs.find-hotfix-tag-number.outputs.version }}"
+      EXPIRES: "30d"
+      REF: v${{ needs.find-hotfix-tag-number.outputs.version }}
+
+  notification:
+    name: "Notification"
+    needs: 
+      - build-docker
+      - create-pro-production-release
+      - create-pro-integration-release
+      - create-pro-staging-release
+    runs-on: [self-hosted, linux, x64]
+    if: ${{ always() }}
+    steps:
+      - uses: technote-space/workflow-conclusion-action@v3
+  
+      - name: Post to a Slack channel
+        id: slack
+        if: ${{ always() }}
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: ${{ fromJSON('["C04MMM8H5RS", "C04MMM8H5RS"]')[github.event.inputs.target_environment != 'testing'] }}
+          payload: |
+            {
+                    "attachments": [
+                        {
+                            "mrkdwn_in": ["text"],
+                            "color": "${{ fromJSON('["#36a64f", "#A30002"]')[ env.WORKFLOW_CONCLUSION == 'failure'] }}",
+                            "author_name": "${{github.actor}}",
+                            "author_link": "https://github.com/${{github.actor}}",
+                            "author_icon": "https://github.com/${{github.actor}}.png",
+                            "title": "Build release",
+                            "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
+                            "text": "Le build `${{ github.ref }}` a ${{ fromJSON('["réussi", "échoué"]')[env.WORKFLOW_CONCLUSION == 'failure'] }} ${{ fromJSON('[":muscle:", ":boom:"]')[env.WORKFLOW_CONCLUSION == 'failure'] }} !"
+                        }
+                    ],
+                    "unfurl_links": false,
+                    "unfurl_media": false
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
