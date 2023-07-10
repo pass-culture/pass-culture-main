@@ -4,7 +4,7 @@ name = "cz_customize"
 [tool.commitizen.customize]
 message_template = "({{jira_ticket}}){% if affected_repository %}[{{affected_repository}}]{% endif %} {{change_type}}: {{message}}"
 schema = "(<ticket_number>)[<affected_repository>] <type>: <commit_message>"
-schema_pattern = "\\((PC-\\d+|BSR)\\)(\\[(API|PRO|ADAGE)\\])? ?(build|ci|docs|feat|fix|perf|refactor|style|test|chore|revert|bump)(\\[[\\w\\s]+\\])?:[\\w\\s]+"
+schema_pattern = "\\((PC-\\d+|BSR)\\)(\\[(API|PRO|ADAGE|BO)\\])? ?(build|ci|docs|feat|fix|perf|refactor|style|test|chore|revert|bump)(\\[[\\w\\s]+\\])?:[\\w\\s]+"
 example = "(PC-88888)[API] feat: this is such a great commit"
 
 
@@ -19,7 +19,8 @@ name = "affected_repository"
 choices = [
     {value = "API", name = "API"}, 
     {value = "PRO", name = "PRO"}, 
-    {value = "ADAGE", name = "ADAGE"}, 
+    {value = "ADAGE", name = "ADAGE"},
+    {value = "BO", name = "BO"},
     {value = "", name = "None of the above"}
 ]
 message = "Select the repository affected by the change you are committing"
@@ -38,7 +39,8 @@ choices = [
     {value = "build",name = "build: Changes that affect the build system or external dependencies (example scopes: pip, docker, npm)"},
     {value = "ci",name = "ci: Changes to our CI configuration files and scripts (example scopes: GitLabCI)"},
     {value = "bump",name="bump: Dependencies version bump"},
-    {value = "revert",name="revert: Revert a commit"}
+    {value = "revert",name="revert: Revert a commit"},
+    {value = "chore",name="chore: A maintenance task to be done periodically"}
 ]
 message = "Select the type of changes you are committing"
 
