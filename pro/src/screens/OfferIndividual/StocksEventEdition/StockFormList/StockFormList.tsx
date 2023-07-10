@@ -30,7 +30,7 @@ import {
   StocksEventFormSortingColumn,
 } from './stocksFiltering'
 
-import { StockEventFormValues, STOCK_EVENT_FORM_DEFAULT_VALUES } from './'
+import { StockEventFormValues } from './'
 
 interface StockFormListProps {
   offer: OfferIndividual
@@ -367,10 +367,6 @@ const StockFormList = ({
                           }
                         } else {
                           arrayHelpers.remove(index)
-                          /* istanbul ignore next: DEBT, TO FIX */
-                          if (values.stocks.length === 1) {
-                            arrayHelpers.push(STOCK_EVENT_FORM_DEFAULT_VALUES)
-                          }
                         }
                       },
                       label: 'Supprimer le stock',

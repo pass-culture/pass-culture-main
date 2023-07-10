@@ -296,25 +296,23 @@ const StocksEventEdition = ({
         setOffer && setOffer(response.payload)
       }
 
-      const formStocks = [...formik.values.stocks, ...hiddenStocksRef.current]
+      const formStocks = [...formik.values.stocks]
 
       // When we delete a stock we must remove it from the initial values
       // otherwise it will trigger the routeLeavingGuard
-      const initalStocks = [...formik.initialValues.stocks]
-      initalStocks.splice(stockIndex, 1)
+      const initialStocks = [...formik.initialValues.stocks]
+      initialStocks.splice(stockIndex, 1)
       formik.resetForm({
-        values: { stocks: initalStocks },
+        values: { stocks: initialStocks },
       })
 
       // Set back possible user change.
       /* istanbul ignore next: DEBT, TO FIX */
       formStocks.splice(stockIndex, 1)
       /* istanbul ignore next: DEBT, TO FIX */
-      formStocks.length
-        ? formik.setValues({ stocks: formStocks })
-        : formik.resetForm({
-            values: { stocks: [STOCK_EVENT_FORM_DEFAULT_VALUES] },
-          })
+      if (formStocks.length) {
+        formik.setValues({ stocks: formStocks })
+      }
       notify.success('Le stock a été supprimé.')
     } catch {
       notify.error('Une erreur est survenue lors de la suppression du stock.')
