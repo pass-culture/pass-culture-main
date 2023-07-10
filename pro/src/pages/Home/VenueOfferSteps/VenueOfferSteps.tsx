@@ -68,7 +68,10 @@ const VenueOfferSteps = ({
                 {!hasVenue && (
                   <div className={styles['step-venue-creation']}>
                     <ButtonLink
-                      className={styles['step-button-width']}
+                      className={cn(
+                        styles['step-button-width-info'],
+                        styles['step-button-with-info']
+                      )}
                       variant={ButtonVariant.BOX}
                       Icon={FullNextIcon}
                       link={{
@@ -85,8 +88,11 @@ const VenueOfferSteps = ({
                       Créer un lieu
                     </ButtonLink>
                     <ButtonLink
-                      className={styles['step-button-width']}
-                      variant={ButtonVariant.TERNARY}
+                      className={cn(
+                        styles['step-button-width-info'],
+                        styles['step-button-info']
+                      )}
+                      variant={ButtonVariant.QUATERNARY}
                       link={{
                         to: 'https://aide.passculture.app/hc/fr/articles/4411992075281--Acteurs-Culturels-Comment-cr%C3%A9er-un-lieu-',
                         isExternal: true,
@@ -100,8 +106,10 @@ const VenueOfferSteps = ({
                         })
                       }}
                     >
-                      Je ne dispose pas de lieu propre, quel type de lieu créer
-                      ?
+                      <span className={styles['step-button-info-text']}>
+                        Je ne dispose pas de lieu propre, quel type de lieu
+                        créer ?
+                      </span>
                     </ButtonLink>
                   </div>
                 )}
