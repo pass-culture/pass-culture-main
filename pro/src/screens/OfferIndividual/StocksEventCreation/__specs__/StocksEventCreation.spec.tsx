@@ -269,7 +269,7 @@ describe('navigation and submit', () => {
     expect(screen.getByText('Previous page')).toBeInTheDocument()
   })
 
-  it('should submit and redirect to next page on clik to Étape suivante', async () => {
+  it('should submit and redirect to next page on Étape suivante click', async () => {
     const offer = individualOfferFactory({
       stocks: [
         individualStockFactory({
@@ -302,7 +302,7 @@ describe('navigation and submit', () => {
     )
   })
 
-  it('should submit and stay to stocks page on clik to Sauvegarder le brouillon', async () => {
+  it('should submit and stay on stocks page on Sauvegarder le brouillon click', async () => {
     const offer = individualOfferFactory({
       stocks: [
         individualStockFactory({
