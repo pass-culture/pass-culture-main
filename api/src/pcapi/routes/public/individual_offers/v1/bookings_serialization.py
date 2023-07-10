@@ -1,3 +1,4 @@
+from datetime import datetime
 import enum
 import typing
 
@@ -72,7 +73,13 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
 
 
 class GetFilteredBookingsRequest(IndexPaginationQueryParams):
-    offer_id: int
+    offer_id: int = pydantic.Field(description="Id of the bookings' offer.")
+    price_category_id: int | None = pydantic.Field(description="Price category of the bookings' stock.")
+    stock_id: int | None = pydantic.Field(description="Id of the bookings' stock.")
+    status: booking_models.BookingStatus | None = pydantic.Field(
+        description="Booking Status.\n\n* `CONFIRMED`: The bookings is confirmed.\n* `USED`: The bookings has been used.\n* `CANCELLED`: The bookings has been cancelled.\n* `REIMBURSED` The bookings has been reimbursed."
+    )
+    begining_datetime: datetime | None = pydantic.Field(description="Timezone aware datetime of the event.")
 
 
 class GetFilteredBookingsResponse(serialization.ConfiguredBaseModel):
