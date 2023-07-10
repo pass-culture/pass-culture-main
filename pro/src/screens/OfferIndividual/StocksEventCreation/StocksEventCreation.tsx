@@ -140,6 +140,7 @@ export const StocksEventCreation = ({
         await Promise.all(stocksToDelete.map(s => api.deleteStock(s.id)))
       }
 
+      // Check that there is at least one stock left
       if (stocks.length < 1) {
         if (saveDraft) {
           notify.success('Brouillon sauvegardé dans la liste des offres')
@@ -149,45 +150,50 @@ export const StocksEventCreation = ({
         return
       }
 
-      const { isOk } = await upsertStocksEventAdapter({
-        offerId: offer.id,
-        stocks: stocksToCreate,
-      })
+      // Upsert stocks if there are stocks to upsert
+      if (stocksToCreate.length > 0) {
+        const { isOk } = await upsertStocksEventAdapter({
+          offerId: offer.id,
+          stocks: stocksToCreate,
+        })
 
-      if (isOk) {
-        const response = await getOfferIndividualAdapter(offer.id)
-        if (response.isOk) {
-          const updatedOffer = response.payload
-          setOffer && setOffer(updatedOffer)
+        if (isOk) {
+          const response = await getOfferIndividualAdapter(offer.id)
+          if (response.isOk) {
+            const updatedOffer = response.payload
+            setOffer && setOffer(updatedOffer)
+          }
+        } else {
+          notify.error(
+            "Une erreur est survenue lors de l'enregistrement de vos stocks."
+          )
+          return
         }
-        navigate(
-          getOfferIndividualUrl({
-            offerId: offer.id,
-            step: saveDraft
-              ? OFFER_WIZARD_STEP_IDS.STOCKS
-              : OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode,
-          })
-        )
-        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-          from: OFFER_WIZARD_STEP_IDS.STOCKS,
-          to: saveDraft
+      }
+
+      navigate(
+        getOfferIndividualUrl({
+          offerId: offer.id,
+          step: saveDraft
             ? OFFER_WIZARD_STEP_IDS.STOCKS
             : OFFER_WIZARD_STEP_IDS.SUMMARY,
-          used: saveDraft
-            ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
-            : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-          isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-          isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
-          offerId: offer.id,
+          mode,
         })
-        setIsClickingFromActionBar(false)
-        notify.success(getSuccessMessage(mode))
-      } else {
-        notify.error(
-          "Une erreur est survenue lors de l'enregistrement de vos stocks."
-        )
-      }
+      )
+      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        from: OFFER_WIZARD_STEP_IDS.STOCKS,
+        to: saveDraft
+          ? OFFER_WIZARD_STEP_IDS.STOCKS
+          : OFFER_WIZARD_STEP_IDS.SUMMARY,
+        used: saveDraft
+          ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
+          : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        offerId: offer.id,
+      })
+      setIsClickingFromActionBar(false)
+      notify.success(getSuccessMessage(mode))
     }
 
   const hasUnsavedStocks =

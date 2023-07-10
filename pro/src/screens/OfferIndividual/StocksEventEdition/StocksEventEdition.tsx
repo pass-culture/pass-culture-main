@@ -309,10 +309,7 @@ const StocksEventEdition = ({
       // Set back possible user change.
       /* istanbul ignore next: DEBT, TO FIX */
       formStocks.splice(stockIndex, 1)
-      /* istanbul ignore next: DEBT, TO FIX */
-      if (formStocks.length) {
-        formik.setValues({ stocks: formStocks })
-      }
+      formik.setValues({ stocks: formStocks })
       notify.success('Le stock a été supprimé.')
     } catch {
       notify.error('Une erreur est survenue lors de la suppression du stock.')
