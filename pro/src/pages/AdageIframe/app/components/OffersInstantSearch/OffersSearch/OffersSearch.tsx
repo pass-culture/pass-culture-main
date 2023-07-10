@@ -106,6 +106,11 @@ export const OffersSearchComponent = ({
         className="search-filters"
         isLoading={isLoading}
         refine={refine}
+        uai={
+          activeTab === OfferTab.ASSOCIATED_TO_INSTITUTION
+            ? uaiCodeShareWithMyInstitutionTab
+            : uaiCodeAllInstitutionsTab
+        }
       />
       <div className="search-results">
         <Offers

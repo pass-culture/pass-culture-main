@@ -11,6 +11,12 @@ const renderAdageButtonFilter = ({
   isActive,
   children,
   disabled,
+  itemsLength,
+  isOpen,
+  setIsOpen,
+  handleSubmit,
+  formikValues,
+  filterName,
 }: AdageButtonFilterProps) =>
   renderWithProviders(
     <>
@@ -19,27 +25,36 @@ const renderAdageButtonFilter = ({
         isActive={isActive}
         children={children}
         disabled={disabled}
+        itemsLength={itemsLength}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        filterName={filterName}
+        handleSubmit={handleSubmit}
+        formikValues={formikValues}
       />
       <div>Click outside</div>
     </>
   )
 
 describe('AdageButtonFilter', () => {
+  const props = {
+    title: 'Lieu de l’intervention',
+    isActive: false,
+    isOpen: true,
+    setIsOpen: jest.fn(),
+    filterName: 'domains',
+    handleSubmit: jest.fn(),
+    formikValues: { query: '', domains: [] },
+  }
+
   it('should render adageButtonFilter', () => {
-    renderAdageButtonFilter({
-      title: 'Lieu de l’intervention',
-      isActive: false,
-    })
+    renderAdageButtonFilter(props)
 
     expect(screen.getByText('Lieu de l’intervention')).toBeInTheDocument()
   })
 
   it('should open filter dialog on click', async () => {
-    renderAdageButtonFilter({
-      title: 'Lieu de l’intervention',
-      isActive: false,
-      children: 'Test adagebuttonfilter',
-    })
+    renderAdageButtonFilter({ ...props, children: 'Test adagebuttonfilter' })
 
     const filterButton = screen.getByText('Lieu de l’intervention')
 
@@ -51,11 +66,7 @@ describe('AdageButtonFilter', () => {
   })
 
   it('should close dialog when the user focuses outside of the field', async () => {
-    renderAdageButtonFilter({
-      title: 'Lieu de l’intervention',
-      isActive: false,
-      children: 'Test adagebuttonfilter',
-    })
+    renderAdageButtonFilter({ ...props, children: 'Test adagebuttonfilter' })
 
     const filterButton = screen.getByText('Lieu de l’intervention')
     const outsideDiv = screen.getByText('Click outside')
@@ -76,8 +87,7 @@ describe('AdageButtonFilter', () => {
 
   it('should render adageButtonFilter disabled', async () => {
     renderAdageButtonFilter({
-      title: 'Lieu de l’intervention',
-      isActive: false,
+      ...props,
       children: <div>Test adagebuttonfilter</div>,
       disabled: true,
     })
@@ -87,5 +97,21 @@ describe('AdageButtonFilter', () => {
     })
 
     expect(filterButton).toBeDisabled()
+  })
+
+  it('should render adageButtonFilter with number of item selected', async () => {
+    renderAdageButtonFilter({
+      ...props,
+      isActive: true,
+      children: <div>Test adagebuttonfilter</div>,
+      disabled: true,
+      itemsLength: 3,
+    })
+
+    expect(
+      screen.getByRole('button', {
+        name: 'Lieu de l’intervention (3)',
+      })
+    ).toBeInTheDocument()
   })
 })

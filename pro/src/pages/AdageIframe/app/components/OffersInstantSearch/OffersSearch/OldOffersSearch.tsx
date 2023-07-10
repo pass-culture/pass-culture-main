@@ -20,7 +20,7 @@ import { AnalyticsContext } from 'pages/AdageIframe/app/providers/AnalyticsConte
 import { Filters } from 'pages/AdageIframe/app/types'
 import Tabs from 'ui-kit/Tabs'
 import { LOGS_DATA } from 'utils/config'
-import { getDefaultFacetFilterUAICodeValue } from 'utils/facetFilters'
+import { oldGetDefaultFacetFilterUAICodeValue } from 'utils/oldFacetFilters'
 
 import { populateFacetFilters } from '../utils'
 
@@ -119,7 +119,7 @@ export const OldOffersSearchComponent = ({
     setFacetFilters(
       activeTab === OfferTab.ASSOCIATED_TO_INSTITUTION
         ? [`offer.educationalInstitutionUAICode:${adageUser.uai}`]
-        : [...getDefaultFacetFilterUAICodeValue(adageUser.uai)]
+        : [...oldGetDefaultFacetFilterUAICodeValue(adageUser.uai)]
     )
     refine(INITIAL_QUERY)
   }, [activeTab])
