@@ -284,34 +284,50 @@ def delete_venue(venue_id: int) -> None:
 
 
 def _delete_objects_linked_to_venue(venue_id: int) -> dict:
-    offers_models.ActivationCode.query.filter(
-        offers_models.ActivationCode.stockId == offers_models.Stock.id,
-        offers_models.Stock.offerId == offers_models.Offer.id,
-        offers_models.Offer.venueId == venue_id,
-        # All bookingId should be None if venue_has_bookings is False, keep condition to get an exception otherwise
-        offers_models.ActivationCode.bookingId.is_(None),
-    ).delete(synchronize_session=False)
+    STEP = 200
 
-    offers_models.Stock.query.filter(
-        offers_models.Stock.offerId == offers_models.Offer.id, offers_models.Offer.venueId == venue_id
-    ).delete(synchronize_session=False)
-    educational_models.CollectiveStock.query.filter(
-        educational_models.CollectiveStock.collectiveOfferId == educational_models.CollectiveOffer.id,
-        educational_models.CollectiveOffer.venueId == venue_id,
-    ).delete(synchronize_session=False)
+    offer_ids_to_delete: dict[str, list[int]] = {
+        "individual_offer_ids_to_delete": [],
+        "collective_offer_ids_to_delete": [],
+        "collective_offer_template_ids_to_delete": [],
+    }
+    # delete offers and their dependencies
+    packed_offers_id = db.session.query(offers_models.Offer.id).filter(offers_models.Offer.venueId == venue_id).all()
+    offers_id = [i for i, in packed_offers_id]  # an iterable are not enough here we really need a list in memory
+    offer_index = 0
+    while offers_id_chunk := offers_id[offer_index : offer_index + STEP]:
+        offer_index += STEP
+        offer_ids_to_delete["individual_offer_ids_to_delete"].extend(offers_id_chunk)
 
-    users_models.Favorite.query.filter(
-        users_models.Favorite.offerId == offers_models.Offer.id, offers_models.Offer.venueId == venue_id
-    ).delete(synchronize_session=False)
+        packed_stocks_id = (
+            db.session.query(offers_models.Stock.id).filter(offers_models.Stock.offerId.in_(offers_id_chunk)).all()
+        )
+        stocks_id = [i for i, in packed_stocks_id]  # an iterable are not enough here we really need a list in memory
+        stock_index = 0
+        while stocks_id_chunk := stocks_id[stock_index : stock_index + STEP]:
+            stock_index += STEP
 
-    criteria_models.OfferCriterion.query.filter(
-        criteria_models.OfferCriterion.offerId == offers_models.Offer.id, offers_models.Offer.venueId == venue_id
-    ).delete(synchronize_session=False)
+            offers_models.ActivationCode.query.filter(
+                offers_models.ActivationCode.stockId.in_(stocks_id_chunk),
+                # All bookingId should be None if venue_has_bookings is False, keep condition to get an exception otherwise
+                offers_models.ActivationCode.bookingId.is_(None),
+            ).delete(synchronize_session=False)
 
-    offers_models.Mediation.query.filter(
-        offers_models.Mediation.offerId == offers_models.Offer.id, offers_models.Offer.venueId == venue_id
-    ).delete(synchronize_session=False)
+        offers_models.Stock.query.filter(offers_models.Stock.offerId.in_(offers_id_chunk)).delete(
+            synchronize_session=False
+        )
+        users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offers_id_chunk)).delete(
+            synchronize_session=False
+        )
+        criteria_models.OfferCriterion.query.filter(criteria_models.OfferCriterion.offerId.in_(offers_id_chunk)).delete(
+            synchronize_session=False
+        )
+        offers_models.Mediation.query.filter(offers_models.Mediation.offerId.in_(offers_id_chunk)).delete(
+            synchronize_session=False
+        )
+    offers_models.Offer.query.filter(offers_models.Offer.venueId == venue_id).delete(synchronize_session=False)
 
+    # delete all things providers related
     providers_models.AllocineVenueProviderPriceRule.query.filter(
         providers_models.AllocineVenueProviderPriceRule.allocineVenueProviderId
         == providers_models.AllocineVenueProvider.id,
@@ -324,61 +340,49 @@ def _delete_objects_linked_to_venue(venue_id: int) -> dict:
         providers_models.VenueProvider.venueId == venue_id,
         offerers_models.Venue.id == venue_id,
     ).delete(synchronize_session=False)
+    providers_models.VenueProvider.query.filter(providers_models.VenueProvider.venueId == venue_id).delete(
+        synchronize_session=False
+    )
     providers_models.AllocinePivot.query.filter_by(venueId=venue_id).delete(synchronize_session=False)
 
-    individual_offer_ids_to_delete = [
-        id[0] for id in db.session.query(offers_models.Offer.id).filter(offers_models.Offer.venueId == venue_id).all()
-    ]
-    collective_offer_ids_to_delete = [
-        id[0]
-        for id in db.session.query(educational_models.CollectiveOffer.id)
-        .filter(educational_models.CollectiveOffer.venueId == venue_id)
-        .all()
-    ]
-    collective_offer_template_ids_to_delete = [
-        id[0]
-        for id in db.session.query(educational_models.CollectiveOfferTemplate.id)
-        .filter(educational_models.CollectiveOfferTemplate.venueId == venue_id)
-        .all()
-    ]
-
-    offer_ids_to_delete = {
-        "individual_offer_ids_to_delete": individual_offer_ids_to_delete,
-        "collective_offer_ids_to_delete": collective_offer_ids_to_delete,
-        "collective_offer_template_ids_to_delete": collective_offer_template_ids_to_delete,
-    }
-
-    offers_models.Offer.query.filter(offers_models.Offer.venueId == venue_id).delete(synchronize_session=False)
+    # delete collective offers and templates and their dependencies:
+    packed_collective_offers_id = db.session.query(educational_models.CollectiveOffer.id).filter(
+        educational_models.CollectiveOffer.venueId == venue_id
+    )
+    collective_offers_id = [i for i, in packed_collective_offers_id]
+    collective_offer_index = 0
+    while collective_offers_id_chunk := collective_offers_id[collective_offer_index : collective_offer_index + STEP]:
+        collective_offer_index += STEP
+        offer_ids_to_delete["collective_offer_ids_to_delete"].extend(collective_offers_id_chunk)
+        educational_models.CollectiveStock.query.filter(
+            educational_models.CollectiveStock.collectiveOfferId.in_(collective_offers_id_chunk)
+        ).delete(synchronize_session=False)
 
     educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.venueId == venue_id).delete(
         synchronize_session=False
     )
 
-    educational_models.CollectiveOffer.query.filter(
-        educational_models.CollectiveOffer.id.in_(
-            db.session.query(educational_models.CollectiveOffer.id)
-            .join(educational_models.CollectiveOfferTemplate, educational_models.CollectiveOffer.template)
-            .filter(educational_models.CollectiveOfferTemplate.venueId == venue_id)
-        )
-    ).update({"templateId": None}, synchronize_session=False)
+    packed_collective_offer_templates_id = db.session.query(educational_models.CollectiveOfferTemplate.id).filter(
+        educational_models.CollectiveOfferTemplate.venueId == venue_id
+    )
+    collective_offer_templates_id = [i for i, in packed_collective_offer_templates_id]
+    collective_offer_template_index = 0
+    while collective_offer_templates_id_chunk := collective_offer_templates_id[
+        collective_offer_template_index : collective_offer_template_index + STEP
+    ]:
+        collective_offer_template_index += STEP
+        offer_ids_to_delete["collective_offer_template_ids_to_delete"].extend(collective_offer_templates_id_chunk)
+        educational_models.CollectiveOffer.query.filter(
+            educational_models.CollectiveOffer.templateId.in_(collective_offer_templates_id_chunk)
+        ).update({"templateId": None}, synchronize_session=False)
 
     educational_models.CollectiveOfferTemplate.query.filter(
         educational_models.CollectiveOfferTemplate.venueId == venue_id
     ).delete(synchronize_session=False)
 
-    providers_models.VenueProvider.query.filter(providers_models.VenueProvider.venueId == venue_id).delete(
-        synchronize_session=False
-    )
-
     finance_models.BankInformation.query.filter(finance_models.BankInformation.venueId == venue_id).delete(
         synchronize_session=False
     )
-
-    venue_siret_query = db.session.query(offerers_models.Venue.siret).filter(offerers_models.Venue.id == venue_id)
-    educational_models.CollectiveDmsApplication.query.filter(
-        educational_models.CollectiveDmsApplication.siret == venue_siret_query.scalar_subquery()
-    ).delete(synchronize_session=False)
-
     return offer_ids_to_delete
 
 
