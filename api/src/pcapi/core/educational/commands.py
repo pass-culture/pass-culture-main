@@ -97,7 +97,7 @@ def import_deposit_csv(path: str, year: int, ministry: str, conflict: str, final
                 amount_header = "depositAmount" if "depositAmount" in headers else "Crédits de dépenses"
                 amount = Decimal(row[amount_header])
             elif "montant par élève" in headers and "Effectif" in headers:
-                amount = Decimal(row["Effectif"]) * Decimal("montant par élève")
+                amount = Decimal(row["Effectif"]) * Decimal(row["montant par élève"])
             else:
                 print("\033[91mERROR: Now way to get the amount found\033[0m")
                 return
