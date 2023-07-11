@@ -24,13 +24,17 @@ const SynchronizedProviderInformation = ({
       className={styles['banner-provider']}
       isProvider
     >
-      <img
-        alt={providerInfo.name}
-        src={providerInfo.logo}
-        className={styles['provider-logo']}
-      />
+      {providerInfo.logo && (
+        <img
+          alt={providerInfo.name}
+          src={providerInfo.logo}
+          className={styles['provider-logo']}
+        />
+      )}
 
-      <span>{providerInfo.synchronizedOfferMessage}</span>
+      <span className={!providerInfo.logo ? styles['provider-text'] : ''}>
+        {providerInfo.synchronizedOfferMessage}
+      </span>
     </Banner>
   )
 }
