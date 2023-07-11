@@ -21,6 +21,10 @@
   gap: rem.torem(16px);
   max-height: rem.torem(400px);
   overflow-y: scroll;
+
+    li:last-child {
+      margin-bottom: rem.torem(20px);
+    }
 }
 
 .search-input {
@@ -29,4 +33,16 @@
   @include forms.input-theme;
 
   outline: none;
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+  appearance: none;
+  width: rem.torem(20px);
+  height: rem.torem(20px);
+  background-image: url("../../../icons/full-clear.svg");
+  background-size: rem.torem(20px);
+  background-repeat: no-repeat;
+  color: colors.$grey-dark;
+  fill: colors.$grey-dark;
+  cursor: pointer;
 }

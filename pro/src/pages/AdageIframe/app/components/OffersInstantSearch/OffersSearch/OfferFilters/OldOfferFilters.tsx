@@ -19,7 +19,7 @@ import { Button } from 'ui-kit'
 import { BaseCheckbox } from 'ui-kit/form/shared'
 
 import OfferFiltersTags from './OfferFiltersTags'
-import { studentsOptions } from './studentsOptions'
+import { oldStudentsOptions } from './studentsOptions'
 
 interface OfferFiltersProps {
   className?: string
@@ -243,7 +243,7 @@ export const OfferFilters = ({
               studentFilters: [...students],
             })
           }
-          options={studentsOptions}
+          options={oldStudentsOptions}
           pluralLabel="Niveaux scolaires"
         />
       </div>

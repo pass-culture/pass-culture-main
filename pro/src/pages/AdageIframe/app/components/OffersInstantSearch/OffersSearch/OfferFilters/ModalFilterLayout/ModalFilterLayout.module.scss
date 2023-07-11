@@ -17,11 +17,9 @@
 
     &-children {
         max-height: rem.torem(250px);
-        overflow: hidden;
     }
 
     &-separator {
-        margin-top: rem.torem(24px);
         border-bottom: rem.torem(1px) solid colors.$grey-medium;
         margin-bottom: rem.torem(24px);
     }
@@ -29,9 +27,5 @@
     &-footer {
         display: flex;
         justify-content: space-between;
-
-        .search-button {
-            color: colors.$primary;
-        }
     }
 }

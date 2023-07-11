@@ -1,7 +1,6 @@
 import React from 'react'
 
 import fullClear from 'icons/full-clear.svg'
-import fullSearch from 'icons/full-search.svg'
 import Button from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -33,8 +32,7 @@ const ModalFilterLayout = ({
           Effacer
         </Button>
         <Button
-          icon={fullSearch}
-          variant={ButtonVariant.TERNARY}
+          variant={ButtonVariant.PRIMARY}
           className={styles['search-button']}
           onClick={onSearch}
         >

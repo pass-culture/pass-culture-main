@@ -16,9 +16,11 @@ export const computeVenueFacetFilter = (venueFilter: VenueResponse): string[] =>
 export const adageFiltersToFacetFilters = ({
   domains,
   uai,
+  students,
 }: {
   domains: Option[]
   uai?: string[] | null
+  students: Option[]
 }) => {
   const updatedFilters: Facets = []
   const filtersKeys: string[] = []
@@ -26,6 +28,15 @@ export const adageFiltersToFacetFilters = ({
   const filteredDomains: string[] = domains.map(
     domain => `offer.domains:${domain.value}`
   )
+
+  const filteredStudents: string[] = students.map(
+    student => `offer.students:${student.label}`
+  )
+
+  if (filteredStudents.length > 0) {
+    filtersKeys.push('students')
+    updatedFilters.push(filteredStudents)
+  }
 
   if (filteredDomains.length > 0) {
     filtersKeys.push('domains')
