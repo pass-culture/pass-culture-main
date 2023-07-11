@@ -18,4 +18,12 @@ describe('getProviderInfo', () => {
       synchronizedOfferMessage: 'Offre synchronisée avec Tite Live',
     })
   })
+  it('should return provider information if not known by the front', () => {
+    expect(getProviderInfo('Mon provider à moi !')).toStrictEqual({
+      id: 'mon provider à moi !',
+      logo: expect.any(String),
+      name: 'Mon provider à moi !',
+      synchronizedOfferMessage: 'Offre synchronisée avec Mon provider à moi !',
+    })
+  })
 })
