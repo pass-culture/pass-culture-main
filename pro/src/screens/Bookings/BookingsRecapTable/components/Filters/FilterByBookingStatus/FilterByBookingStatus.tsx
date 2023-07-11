@@ -19,7 +19,7 @@ import {
 } from '../../../utils/bookingStatusConverter'
 
 const getAvailableBookingStatuses = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >(
   audience: Audience,
   bookingsRecap: T[]
@@ -48,7 +48,7 @@ const getAvailableBookingStatuses = <
 }
 
 export interface FilterByBookingStatusProps<
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 > {
   bookingStatuses: string[]
   bookingsRecap: T[]
@@ -57,7 +57,7 @@ export interface FilterByBookingStatusProps<
 }
 
 const FilterByBookingStatus = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >({
   bookingStatuses,
   bookingsRecap,

@@ -9,14 +9,14 @@ import {
 import TableRow from './TableRow'
 
 interface TableBodyProps<
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 > {
   row: Row<T>
 }
 
 // This component goal is to keep consistancy with CollectiveTableRow
 const IndividualTableRow = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >({
   row,
 }: TableBodyProps<T>) => <TableRow row={row} />

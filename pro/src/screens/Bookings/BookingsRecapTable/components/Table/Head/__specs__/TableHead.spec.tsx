@@ -10,7 +10,7 @@ import TableHead, { TableHeadProps } from '../TableHead'
 
 describe('TableHead', () => {
   const renderHead = <
-    T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+    T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
   >(
     props: TableHeadProps<T>
   ) => {

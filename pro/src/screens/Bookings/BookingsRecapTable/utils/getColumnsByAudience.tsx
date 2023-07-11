@@ -31,7 +31,7 @@ import {
 } from './sortingFunctions'
 
 export const getColumnsByAudience = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >(
   bookingStatus: string[],
   bookingsRecap: T[],

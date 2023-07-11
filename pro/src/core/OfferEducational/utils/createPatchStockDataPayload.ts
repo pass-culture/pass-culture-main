@@ -95,15 +95,18 @@ const getValuesWithoutEducationalOfferTypeAttribute = (
 ): Omit<OfferEducationalStockFormValues, 'educationalOfferType'> => {
   return (
     Object.keys(values) as (keyof OfferEducationalStockFormValues)[]
-  ).reduce((result, valueKey) => {
-    if (valueKey === 'educationalOfferType') {
-      return result
-    }
-    return {
-      ...result,
-      [valueKey]: values[valueKey],
-    }
-  }, {} as Omit<OfferEducationalStockFormValues, 'educationalOfferType'>)
+  ).reduce(
+    (result, valueKey) => {
+      if (valueKey === 'educationalOfferType') {
+        return result
+      }
+      return {
+        ...result,
+        [valueKey]: values[valueKey],
+      }
+    },
+    {} as Omit<OfferEducationalStockFormValues, 'educationalOfferType'>
+  )
 }
 
 export const createPatchStockDataPayload = (

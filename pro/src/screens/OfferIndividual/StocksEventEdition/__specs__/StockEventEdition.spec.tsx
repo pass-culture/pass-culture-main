@@ -476,9 +476,7 @@ describe('screens:StocksEventEdition', () => {
     await renderStockEventScreen(apiOffer)
 
     await userEvent.click(
-      (
-        await screen.findAllByTitle('Supprimer le stock')
-      )[1]
+      (await screen.findAllByTitle('Supprimer le stock'))[1]
     )
     expect(
       screen.queryByText('Voulez-vous supprimer ce stock ?')

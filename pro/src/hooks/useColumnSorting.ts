@@ -40,7 +40,7 @@ export const useColumnSorting = <SortingColumn>() => {
 
 export const sortColumnByDateString = <
   DateColumn extends string,
-  Items extends { [key in DateColumn]: string }
+  Items extends { [key in DateColumn]: string },
 >(
   items: Items[],
   column: DateColumn,
@@ -54,7 +54,7 @@ export const sortColumnByDateString = <
 
 export const sortColumnByDateObject = <
   DateColumn extends string,
-  Items extends { [key in DateColumn]: Date | null | '' }
+  Items extends { [key in DateColumn]: Date | null | '' },
 >(
   items: Items[],
   column: DateColumn,
@@ -80,7 +80,7 @@ export const sortColumnByDateObject = <
 
 export const sortColumnByNumber = <
   NumberColumn extends string,
-  Items extends { [key in NumberColumn]: number | null | '' }
+  Items extends { [key in NumberColumn]: number | null | '' },
 >(
   items: Items[],
   column: NumberColumn,

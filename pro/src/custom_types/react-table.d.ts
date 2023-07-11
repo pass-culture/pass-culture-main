@@ -67,14 +67,14 @@ declare module 'react-table' {
       Record<string, any> {}
 
   export interface Hooks<
-    D extends Record<string, unknown> = Record<string, unknown>
+    D extends Record<string, unknown> = Record<string, unknown>,
   > extends UseExpandedHooks<D>,
       UseGroupByHooks<D>,
       UseRowSelectHooks<D>,
       UseSortByHooks<D> {}
 
   export interface TableInstance<
-    D extends Record<string, unknown> = Record<string, unknown>
+    D extends Record<string, unknown> = Record<string, unknown>,
   > extends UseColumnOrderInstanceProps<D>,
       UseExpandedInstanceProps<D>,
       UseFiltersInstanceProps<D>,
@@ -86,7 +86,7 @@ declare module 'react-table' {
       UseSortByInstanceProps<D> {}
 
   export interface TableState<
-    D extends Record<string, unknown> = Record<string, unknown>
+    D extends Record<string, unknown> = Record<string, unknown>,
   > extends UseColumnOrderState<D>,
       UseExpandedState<D>,
       UseFiltersState<D>,
@@ -99,7 +99,7 @@ declare module 'react-table' {
       UseSortByState<D> {}
 
   export interface ColumnInterface<
-    D extends Record<string, unknown> = Record<string, unknown>
+    D extends Record<string, unknown> = Record<string, unknown>,
   > extends UseFiltersColumnOptions<D>,
       UseGlobalFiltersColumnOptions<D>,
       UseGroupByColumnOptions<D>,
@@ -107,19 +107,19 @@ declare module 'react-table' {
       UseSortByColumnOptions<D> {}
 
   export interface ColumnInstance<
-    D extends Record<string, unknown> = Record<string, unknown>
+    D extends Record<string, unknown> = Record<string, unknown>,
   > extends UseFiltersColumnProps<D>,
       UseGroupByColumnProps<D>,
       UseResizeColumnsColumnProps<D>,
       UseSortByColumnProps<D> {}
 
   export interface Cell<
-    D extends Record<string, unknown> = Record<string, unknown>
+    D extends Record<string, unknown> = Record<string, unknown>,
   > extends UseGroupByCellProps<D>,
       UseRowStateCellProps<D> {}
 
   export interface Row<
-    D extends Record<string, unknown> = Record<string, unknown>
+    D extends Record<string, unknown> = Record<string, unknown>,
   > extends UseExpandedRowProps<D>,
       UseGroupByRowProps<D>,
       UseRowSelectRowProps<D>,

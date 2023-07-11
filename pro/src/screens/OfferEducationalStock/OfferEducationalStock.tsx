@@ -38,7 +38,7 @@ import {
 import WrongStudentsModal from './WrongStudentsModal/WrongStudentsModal'
 
 export interface OfferEducationalStockProps<
-  T = CollectiveOffer | CollectiveOfferTemplate
+  T = CollectiveOffer | CollectiveOfferTemplate,
 > {
   initialValues: OfferEducationalStockFormValues
   offer: T
@@ -49,7 +49,7 @@ export interface OfferEducationalStockProps<
 }
 
 const OfferEducationalStock = <
-  T extends CollectiveOffer | CollectiveOfferTemplate
+  T extends CollectiveOffer | CollectiveOfferTemplate,
 >({
   initialValues,
   offer,
