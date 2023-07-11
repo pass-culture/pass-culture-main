@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ReactComponent as fullMailIcon } from 'icons/full-mail.svg'
+import fullMailIcon from 'icons/full-mail.svg'
 import { Banner, ButtonLink } from 'ui-kit'
 
 import styles from './SignupConfirmation.module.scss'
