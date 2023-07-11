@@ -13,7 +13,7 @@ from tests.conftest import clean_database
 @pytest.mark.skip("This is a very long-running test used to help working on the sandbox")
 class SaveIndustrialSandboxTest:
     @clean_database
-    def test_creations(self, clear_tests_invoices_bucket):
+    def test_creations(self, clear_tests_invoices_bucket, css_font_http_request_mock):
         save_industrial_sandbox()
 
         assert offerers_models.Offerer.query.count() == 32
