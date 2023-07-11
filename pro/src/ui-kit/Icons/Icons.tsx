@@ -123,7 +123,7 @@ const strokeIcons: IconListItem[] = [
 const shadowIcons: IconListItem[] = [
   { src: 'icons/shadow-tips-help.svg' },
   { src: 'icons/shadow-tips-warning.svg' },
-  { src: 'icons/shadow-trophee.svg' },
+  { src: 'icons/shadow-trophy.svg' },
   { src: 'icons/shadow-euro.svg' },
   { src: 'icons/shadow-calendar.svg' },
 ]

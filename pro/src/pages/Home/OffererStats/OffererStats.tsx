@@ -6,7 +6,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import fullShowIcon from 'icons/full-show.svg'
 import shadowCalendarIcon from 'icons/shadow-calendar.svg'
 import shadowEuroIcon from 'icons/shadow-euro.svg'
-import shadowTropheeIcon from 'icons/shadow-trophee.svg'
+import shadowTrophyIcon from 'icons/shadow-trophy.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { IconLinkBox } from 'ui-kit/IconLinkBox'
@@ -39,7 +39,7 @@ const OffererStats = () => {
         <div className={styles['offerer-stats-boxes']}>
           <IconLinkBox
             title="Top de vos offres"
-            iconHeader={shadowTropheeIcon}
+            iconHeader={shadowTrophyIcon}
             {...defaultIconLinkProps}
           />
           <IconLinkBox
