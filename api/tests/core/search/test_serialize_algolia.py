@@ -64,6 +64,7 @@ def test_serialize_offer():
             "dateCreated": offer.dateCreated.timestamp(),
             "dates": [],
             "description": "livre bien lire",
+            "ean": "2221001648",
             "isDigital": False,
             "isDuo": False,
             "isEducational": False,
