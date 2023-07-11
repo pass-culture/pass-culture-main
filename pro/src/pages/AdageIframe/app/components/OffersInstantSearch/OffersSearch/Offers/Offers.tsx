@@ -90,7 +90,7 @@ export const OffersComponent = ({
     // wait for nbHits to update before sending data results
     if (LOGS_DATA && hasClickedSearch) {
       apiAdage.logSearchButtonClick({
-        AdageHeaderFrom: removeParamsFromUrl(location.pathname),
+        iframeFrom: removeParamsFromUrl(location.pathname),
         filters: filtersKeys,
         resultsCount: nbHits,
       })

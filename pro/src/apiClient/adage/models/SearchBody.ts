@@ -4,8 +4,8 @@
 /* eslint-disable */
 
 export type SearchBody = {
-  AdageHeaderFrom: string;
   filters: Array<string>;
+  iframeFrom: string;
   resultsCount: number;
 };
 

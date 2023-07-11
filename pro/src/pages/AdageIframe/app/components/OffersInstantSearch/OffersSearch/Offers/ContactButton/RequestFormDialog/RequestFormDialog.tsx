@@ -55,7 +55,7 @@ const RequestFormDialog = ({
   }
   const closeRequestFormDialog = () => {
     apiAdage.logRequestFormPopinDismiss({
-      AdageHeaderFrom: removeParamsFromUrl(location.pathname),
+      iframeFrom: removeParamsFromUrl(location.pathname),
       collectiveOfferTemplateId: offerId,
       comment: formik.values.description,
       phoneNumber: formik.values.teacherPhone,
