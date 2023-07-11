@@ -77,7 +77,7 @@ export const App = (): JSX.Element => {
         setIsLoading(false)
         if (LOGS_DATA) {
           apiAdage.logCatalogView({
-            AdageHeaderFrom: removeParamsFromUrl(location.pathname),
+            iframeFrom: removeParamsFromUrl(location.pathname),
             source: siret || venueId ? 'partnersMap' : 'homepage',
           })
         }

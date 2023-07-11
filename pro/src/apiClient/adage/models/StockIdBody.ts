@@ -4,7 +4,7 @@
 /* eslint-disable */
 
 export type StockIdBody = {
-  AdageHeaderFrom: string;
+  iframeFrom: string;
   stockId: number;
 };
 

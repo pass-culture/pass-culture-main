@@ -4,7 +4,7 @@ from pcapi.routes.serialization import BaseModel
 
 
 class AdageBaseModel(BaseModel):
-    AdageHeaderFrom: str
+    iframeFrom: str
 
 
 class CatalogViewBody(AdageBaseModel):

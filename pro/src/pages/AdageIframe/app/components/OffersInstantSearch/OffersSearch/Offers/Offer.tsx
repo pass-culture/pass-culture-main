@@ -54,11 +54,11 @@ const Offer = ({
     if (LOGS_DATA) {
       !offer.isTemplate
         ? apiAdage.logOfferDetailsButtonClick({
-            AdageHeaderFrom: removeParamsFromUrl(location.pathname),
+            iframeFrom: removeParamsFromUrl(location.pathname),
             stockId: offer.stock.id,
           })
         : apiAdage.logOfferTemplateDetailsButtonClick({
-            AdageHeaderFrom: removeParamsFromUrl(location.pathname),
+            iframeFrom: removeParamsFromUrl(location.pathname),
             offerId: offer.id,
           })
     }
@@ -67,7 +67,7 @@ const Offer = ({
 
   const handleLikeClick = () => {
     apiAdage.logFavOfferButtonClick({
-      AdageHeaderFrom: removeParamsFromUrl(location.pathname),
+      iframeFrom: removeParamsFromUrl(location.pathname),
       offerId: offer.id,
     })
     setIsModalLikeOpen(true)

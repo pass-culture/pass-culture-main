@@ -39,7 +39,7 @@ const PrebookingButton = ({
   const handleBookingModalButtonClick = (stockId: number) => {
     if (LOGS_DATA) {
       apiAdage.logBookingModalButtonClick({
-        AdageHeaderFrom: removeParamsFromUrl(location.pathname),
+        iframeFrom: removeParamsFromUrl(location.pathname),
         stockId,
       })
     }

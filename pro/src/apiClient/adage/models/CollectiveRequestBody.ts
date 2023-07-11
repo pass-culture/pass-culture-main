@@ -4,9 +4,9 @@
 /* eslint-disable */
 
 export type CollectiveRequestBody = {
-  AdageHeaderFrom: string;
   collectiveOfferTemplateId: number;
   comment: string;
+  iframeFrom: string;
   phoneNumber?: string | null;
   requestedDate?: string | null;
   totalStudents?: number | null;

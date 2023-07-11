@@ -36,7 +36,7 @@ const ContactButton = ({
   const handleButtonClick = () => {
     setIsModalOpen(true)
     apiAdage.logContactModalButtonClick({
-      AdageHeaderFrom: removeParamsFromUrl(location.pathname),
+      iframeFrom: removeParamsFromUrl(location.pathname),
       offerId,
     })
     logClickOnOffer(offerId.toString(), position, queryId)

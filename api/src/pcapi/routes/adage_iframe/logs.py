@@ -20,7 +20,7 @@ def log_catalog_view(
         event_name="CatalogView",
         extra_data={
             "source": body.source,
-            "AdageHeaderFrom": body.AdageHeaderFrom,
+            "from": body.iframeFrom,
         },
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
@@ -37,10 +37,12 @@ def log_search_button_click(
     body: serialization.SearchBody,
 ) -> None:
     institution = find_educational_institution_by_uai_code(authenticated_information.uai)  # type: ignore [arg-type]
+    extra_data = body.dict()
+    extra_data["from"] = extra_data.pop("iframeFrom")
     educational_utils.log_information_for_data_purpose(
         event_name="SearchButtonClicked",
         user_email=authenticated_information.email,
-        extra_data=body.dict(),
+        extra_data=extra_data,
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
     )
@@ -57,7 +59,7 @@ def log_offer_details_button_click(
     institution = find_educational_institution_by_uai_code(authenticated_information.uai)  # type: ignore [arg-type]
     educational_utils.log_information_for_data_purpose(
         event_name="OfferDetailButtonClick",
-        extra_data={"stockId": body.stockId, "AdageHeaderFrom": body.AdageHeaderFrom},
+        extra_data={"stockId": body.stockId, "from": body.iframeFrom},
         user_email=authenticated_information.email,
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
@@ -75,7 +77,7 @@ def log_offer_template_details_button_click(
     institution = find_educational_institution_by_uai_code(authenticated_information.uai)  # type: ignore [arg-type]
     educational_utils.log_information_for_data_purpose(
         event_name="TemplateOfferDetailButtonClick",
-        extra_data={"offerId": body.offerId, "AdageHeaderFrom": body.AdageHeaderFrom},
+        extra_data={"offerId": body.offerId, "from": body.iframeFrom},
         user_email=authenticated_information.email,
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
@@ -93,7 +95,7 @@ def log_booking_modal_button_click(
     institution = find_educational_institution_by_uai_code(authenticated_information.uai)  # type: ignore [arg-type]
     educational_utils.log_information_for_data_purpose(
         event_name="BookingModalButtonClick",
-        extra_data={"stockId": body.stockId, "AdageHeaderFrom": body.AdageHeaderFrom},
+        extra_data={"stockId": body.stockId, "from": body.iframeFrom},
         user_email=authenticated_information.email,
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
@@ -111,7 +113,7 @@ def log_contact_modal_button_click(
     institution = find_educational_institution_by_uai_code(authenticated_information.uai)  # type: ignore [arg-type]
     educational_utils.log_information_for_data_purpose(
         event_name="ContactModalButtonClick",
-        extra_data={"offerId": body.offerId, "AdageHeaderFrom": body.AdageHeaderFrom},
+        extra_data={"offerId": body.offerId, "from": body.iframeFrom},
         user_email=authenticated_information.email,
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
@@ -129,7 +131,7 @@ def log_fav_offer_button_click(
     institution = find_educational_institution_by_uai_code(authenticated_information.uai)  # type: ignore [arg-type]
     educational_utils.log_information_for_data_purpose(
         event_name="FavOfferButtonClick",
-        extra_data={"offerId": body.offerId, "AdageHeaderFrom": body.AdageHeaderFrom},
+        extra_data={"offerId": body.offerId, "from": body.iframeFrom},
         user_email=authenticated_information.email,
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
@@ -147,7 +149,7 @@ def log_header_link_click(
     institution = find_educational_institution_by_uai_code(authenticated_information.uai)  # type: ignore [arg-type]
     educational_utils.log_information_for_data_purpose(
         event_name="HeaderLinkClick",
-        extra_data={"header_link_name": body.header_link_name.value, "AdageHeaderFrom": body.AdageHeaderFrom},
+        extra_data={"header_link_name": body.header_link_name.value, "from": body.iframeFrom},
         user_email=authenticated_information.email,
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
@@ -162,9 +164,11 @@ def log_request_form_popin_dismiss(
     body: serialization.CollectiveRequestBody,
 ) -> None:
     institution = find_educational_institution_by_uai_code(authenticated_information.uai)  # type: ignore [arg-type]
+    extra_data = body.dict()
+    extra_data["from"] = extra_data.pop("iframeFrom")
     educational_utils.log_information_for_data_purpose(
         event_name="RequestPopinDismiss",
-        extra_data=body.dict(),
+        extra_data=extra_data,
         user_email=authenticated_information.email,
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,

@@ -54,7 +54,7 @@ export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
 
   const logAdageLinkClick = (headerLinkName: AdageHeaderLink) => {
     apiAdage.logHeaderLinkClick({
-      AdageHeaderFrom: removeParamsFromUrl(location.pathname),
+      iframeFrom: removeParamsFromUrl(location.pathname),
       header_link_name: headerLinkName,
     })
   }
