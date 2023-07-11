@@ -15,7 +15,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullNextIcon from 'icons/full-next.svg'
-import strokeCheck from 'icons/stroke-check.svg'
+import strokeCheckIcon from 'icons/stroke-check.svg'
 import { getCollectiveStatusLabel } from 'pages/Offers/Offers/OfferItem/Cells/CollectiveOfferStatusCell/CollectiveOfferStatusCell'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
@@ -109,7 +109,7 @@ const OfferEducationalActions = ({
         <div className={cn(style['actions'], className)}>
           {!isBooked && offer.status != OfferStatus.EXPIRED && (
             <Button
-              icon={offer.isActive ? fullHideIcon : strokeCheck}
+              icon={offer.isActive ? fullHideIcon : strokeCheckIcon}
               onClick={activateOffer}
               variant={ButtonVariant.TERNARY}
               className={style['button-link']}
