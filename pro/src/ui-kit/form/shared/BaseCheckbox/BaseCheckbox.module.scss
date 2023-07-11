@@ -64,6 +64,7 @@
     vertical-align: middle;
     height: size.$checkbox-size;
     width: size.$checkbox-size;
+    cursor: pointer;
 
     &.partial-check {
       &:checked {

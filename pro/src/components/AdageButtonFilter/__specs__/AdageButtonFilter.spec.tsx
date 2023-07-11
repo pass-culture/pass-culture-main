@@ -44,7 +44,7 @@ describe('AdageButtonFilter', () => {
     setIsOpen: jest.fn(),
     filterName: 'domains',
     handleSubmit: jest.fn(),
-    formikValues: { query: '', domains: [] },
+    formikValues: { query: '', domains: [], students: [] },
   }
 
   it('should render adageButtonFilter', () => {
