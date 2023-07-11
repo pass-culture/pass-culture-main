@@ -55,7 +55,7 @@ interface BookingsProps {
 const MAX_LOADED_PAGES = 5
 
 const Bookings = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >({
   locationState,
   audience,

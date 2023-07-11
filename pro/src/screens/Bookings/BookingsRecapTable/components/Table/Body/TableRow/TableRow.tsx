@@ -8,7 +8,7 @@ import {
 
 import styles from './TableRow.module.scss'
 interface TableBodyProps<
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 > {
   row: Row<T>
   isCollective?: boolean
@@ -16,7 +16,7 @@ interface TableBodyProps<
 }
 
 const TableRow = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >({
   row,
   additionalRowAttribute,

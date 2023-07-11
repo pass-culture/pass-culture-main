@@ -22,7 +22,7 @@ import TableHead from '../Head'
 import styles from './TableWrapper.module.scss'
 
 interface TableWrapperProps<
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 > {
   columns: Column<T>[]
   currentPage: number
@@ -36,7 +36,7 @@ interface TableWrapperProps<
 }
 
 const TableWrapper = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >({
   columns,
   currentPage,

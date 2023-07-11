@@ -7,7 +7,7 @@ import { EMPTY_FILTER_VALUE } from '../components/Filters/_constants'
 import { BookingsFilters } from '../types'
 
 const doesOfferNameMatchFilter = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >(
   offerName: string,
   booking: T
@@ -87,7 +87,7 @@ const doesBookingInstitutionMatchFilter = (
 }
 
 const doesBookingTokenMatchFilter = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >(
   bookingToken: string,
   booking: T
@@ -105,7 +105,7 @@ const doesBookingTokenMatchFilter = <
 }
 
 const doesEANMatchFilter = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >(
   ean: string,
   booking: T
@@ -119,7 +119,7 @@ const doesEANMatchFilter = <
 }
 
 const doesBookingStatusMatchFilter = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >(
   statuses: string[] | '',
   booking: T
@@ -136,7 +136,7 @@ const isBookingCollectiveBooking = (
   booking.stock.offerIsEducational === true
 
 const filterBookingsRecap = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >(
   bookingsRecap: T[],
   filters: BookingsFilters

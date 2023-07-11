@@ -18,7 +18,7 @@ export enum StocksEventListSortingColumn {
 export const sortStockByPriceCategory = <
   StockWithPriceCategory extends {
     priceCategoryId: string | number
-  }
+  },
 >(
   stocks: StockWithPriceCategory[],
   priceCategories: PriceCategoryResponseModel[],
