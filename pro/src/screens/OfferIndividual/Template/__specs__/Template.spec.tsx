@@ -229,5 +229,24 @@ describe('test OfferIndividualTemplate', () => {
         screen.getByText('Offre synchronisée avec Boost')
       ).toBeInTheDocument()
     })
+
+    it('should not display provider banner when no provider is provided', () => {
+      const offer: Partial<OfferIndividual> = {
+        name: 'Titre de l’offre',
+        id: offerId,
+        isActive: false,
+        status: OfferStatus.DRAFT,
+        stocks: [],
+        lastProviderName: '',
+      }
+      const contextOverride = {
+        offer: offer as OfferIndividual,
+      }
+      renderTemplate({
+        contextOverride,
+      })
+
+      expect(screen.queryByText('Offre synchronisée')).not.toBeInTheDocument()
+    })
   })
 })
