@@ -427,6 +427,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "dateCreated": date_created,
                 "dates": sorted(dates),
                 "description": remove_stopwords(offer.description or ""),
+                "ean": extra_data.get("ean"),
                 "isDigital": offer.isDigital,
                 "isDuo": offer.isDuo,
                 "isEducational": False,
