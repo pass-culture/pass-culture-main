@@ -22,7 +22,7 @@ export const composeValidators =
 export const createParseNumberValue =
   (type: 'number' | 'text') =>
   (value: number | string): string | number | null => {
-    if (typeof value === undefined) {
+    if (typeof value === 'undefined') {
       return null
     }
 
