@@ -471,15 +471,113 @@ def format_website(website: str) -> str:
 def format_titelive_id_lectorat(id_lectorat: str) -> str:
     match id_lectorat:
         case "0":
-            return "grand public"
+            return "Non précisé"
         case "1":
-            return "entre 0 et 3 ans"
+            return "ENSEIGNANTS"
         case "2":
-            return "entre 3 et 6 ans"
+            return "ELEVES"
         case "3":
-            return "entre 6 et 12 ans"
+            return "Spécialistes"
         case "4":
-            return "entre 12 et 16 ans"
+            return "à partir de 9 ANS"
+        case "5":
+            return "à partir de 8 ANS"
+        case "6":
+            return "5/6 ans"
+        case "7":
+            return "6/7 ans"
+        case "8":
+            return "7/8 ans"
+        case "9":
+            return "9/10 ans"
+        case "10":
+            return "à partir de 1 AN"
+        case "11":
+            return "à partir de 2 ANS"
+        case "12":
+            return "à partir de 3 ANS"
+        case "13":
+            return "à partir de 4 ANS"
+        case "14":
+            return "à partir de 5 ANS"
+        case "15":
+            return "à partir de 6 ANS"
+        case "16":
+            return "à partir de 7 ANS"
+        case "17":
+            return "à partir de 10 ANS"
+        case "18":
+            return "à partir de 11 ANS"
+        case "19":
+            return "à partir de 12 ANS"
+        case "20":
+            return "à partir de 13 ANS"
+        case "21":
+            return "7/9 ans"
+        case "22":
+            return "9/12 ans"
+        case "23":
+            return "5/7 ans"
+        case "24":
+            return "3/5 ans"
+        case "25":
+            return "0/3 ans"
+        case "26":
+            return "12/16 ans"
+        case "27":
+            return "à partir de 14 ans"
+        case "28":
+            return "à partir de 15 ans"
+        case "29":
+            return "3/4 ans"
+        case "30":
+            return "8/9 ans"
+        case "31":
+            return "10/11 ans"
+        case "32":
+            return "9/11 ans"
+        case "33":
+            return "à partir de 18 mois"
+        case "34":
+            return "4/5 ans"
+        case "35":
+            return "6/9 ans"
+        case "36":
+            return "Collégiens"
+        case "37":
+            return "10/12 ans"
+        case "38":
+            return "Tout public"
+        case "39":
+            return "Public motivé"
+        case "40":
+            return "Niveau Bac"
+        case "41":
+            return "6/10 ans"
+        case "42":
+            return "Débutants"
+        case "43":
+            return "Tous niveaux"
+        case "44":
+            return "Perfectionnement"
+        case "45":
+            return "+ de 18 ans"
+        case "46":
+            return "à partir de 16 ans"
+        case "47":
+            return "14/15 ans"
+        case "48":
+            return "2/3 ans"
+        case "49":
+            return "8/10 ans"
+        case "50":
+            return "3/6 ans"
+        case "51":
+            return "6/8 ans"
+        case "52":
+            return "6/12 ans"
+        case "53":
+            return "8/12 ans"
         case _:
             return f'ID lectorat "{id_lectorat}" non renseigné'
 
