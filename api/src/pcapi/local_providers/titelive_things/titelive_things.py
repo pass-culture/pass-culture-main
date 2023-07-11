@@ -17,6 +17,7 @@ from pcapi.domain.titelive import get_date_from_filename
 from pcapi.domain.titelive import read_things_date
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
+from pcapi.utils.csr import get_closest_csr
 
 
 logger = logging.getLogger(__name__)
@@ -140,6 +141,41 @@ SCHOOL_RELATED_CSR_CODE = [
     "9812",
     "9814",
 ]
+INFO_KEYS = {
+    "EAN13": "ean13",
+    "TITRE": "titre",
+    "CODE_CSR": "code_csr",
+    "GTL_ID": "gtl_id",
+    "CODE_DISPO": "code_dispo",
+    "COLLECTION": "collection",
+    "NUM_IN_COLLECTION": "num_in_collection",
+    "PRIX": "prix",
+    "EDITEUR": "editeur",
+    "DISTRIBUTEUR": "distributeur",
+    "DATE_PARUTION": "date_parution",
+    "CODE_SUPPORT": "code_support",
+    "CODE_TVA": "code_tva",
+    "N_PAGES": "n_pages",
+    "LONGUEUR": "longueur",
+    "LARGEUR": "largeur",
+    "EPAISSEUR": "epaisseur",
+    "POIDS": "poids",
+    "IS_UPDATE": "is_update",
+    "AUTEURS": "auteurs",
+    "DATETIME_CREATED": "datetime_created",
+    "DATE_UPDATED": "date_updated",
+    "TAUX_TVA": "taux_tva",
+    "TRADUCTEUR": "traducteur",
+    "LANGUE_ORIG": "langue_orig",
+    "COMMENTAIRE": "commentaire",
+    "CLASSEMENT_TOP": "classement_top",
+    "HAS_IMAGE": "has_image",
+    "CODE_EDI_FOURNISSEUR": "code_edi_fournisseur",
+    "IS_SCOLAIRE": "is_scolaire",
+    "N_EXTRAITS_MP3": "n_extraits_mp3",
+    "INDICE_DEWEY": "indice_dewey",
+    "CODE_REGROUPEMENT": "code_regroupement",
+}
 
 
 def trim_with_ellipsis(string: str, length: int) -> str:
@@ -184,8 +220,8 @@ class TiteLiveThings(LocalProvider):
         (
             self.product_subcategory_id,
             self.product_extra_data["bookFormat"],
-        ) = get_subcategory_and_extra_data_from_titelive_type(self.product_infos["code_support"])
-        book_unique_identifier = self.product_infos["ean13"]
+        ) = get_subcategory_and_extra_data_from_titelive_type(self.product_infos[INFO_KEYS["CODE_SUPPORT"]])
+        book_unique_identifier = self.product_infos[INFO_KEYS["EAN13"]]
 
         ineligibility_reason = self.get_ineligibility_reason()
 
@@ -203,7 +239,7 @@ class TiteLiveThings(LocalProvider):
                 except offers_exceptions.CannotDeleteProductWithBookings:
                     self.log_provider_event(
                         providers_models.LocalProviderEventType.SyncError,
-                        f"Error deleting product with EAN: {self.product_infos['ean13']}",
+                        f"Error deleting product with EAN: {self.product_infos[INFO_KEYS['EAN13']]}",
                     )
                 return []
 
@@ -224,22 +260,27 @@ class TiteLiveThings(LocalProvider):
                 )
             return []
 
-        book_information_last_update = read_things_date(self.product_infos["date_updated"])
+        book_information_last_update = read_things_date(self.product_infos[INFO_KEYS["DATE_UPDATED"]])
         providable_info = self.create_providable_info(
             offers_models.Product, book_unique_identifier, book_information_last_update, book_unique_identifier
         )
         logger.info(
-            "Providable info %s with date_updated: %s", book_unique_identifier, self.product_infos["date_updated"]
+            "Providable info %s with date_updated: %s",
+            book_unique_identifier,
+            self.product_infos[INFO_KEYS["DATE_UPDATED"]],
         )
         return [providable_info]
 
     def get_ineligibility_reason(self) -> str | None:
-        if self.product_infos["is_scolaire"] == "1" or self.product_infos["code_csr"] in SCHOOL_RELATED_CSR_CODE:
+        if (
+            self.product_infos[INFO_KEYS["IS_SCOLAIRE"]] == "1"
+            or self.product_infos[INFO_KEYS["CODE_CSR"]] in SCHOOL_RELATED_CSR_CODE
+        ):
             return "school"
 
         if (
-            self.product_infos["taux_tva"] == PAPER_PRESS_TVA
-            and self.product_infos["code_support"] == PAPER_PRESS_SUPPORT_CODE
+            self.product_infos[INFO_KEYS["TAUX_TVA"]] == PAPER_PRESS_TVA
+            and self.product_infos[INFO_KEYS["CODE_SUPPORT"]] == PAPER_PRESS_SUPPORT_CODE
         ):
             return "press"
 
@@ -249,8 +290,8 @@ class TiteLiveThings(LocalProvider):
         return None
 
     def fill_object_attributes(self, product: offers_models.Product) -> None:
-        product.name = trim_with_ellipsis(self.product_infos["titre"], 140)
-        product.datePublished = read_things_date(self.product_infos["date_parution"])
+        product.name = trim_with_ellipsis(self.product_infos[INFO_KEYS["TITRE"]], 140)
+        product.datePublished = read_things_date(self.product_infos[INFO_KEYS["DATE_PARUTION"]])
         if not self.product_subcategory_id:
             raise ValueError("product subcategory id is missing")
         subcategory = subcategories.ALL_SUBCATEGORIES_DICT[self.product_subcategory_id]
@@ -358,69 +399,76 @@ def get_subcategory_and_extra_data_from_titelive_type(titelive_type: str) -> tup
 
 def get_infos_from_data_line(elts: list) -> dict:
     infos = {}
-    infos["ean13"] = elts[COLUMN_INDICES["ean"]]
-    infos["titre"] = elts[COLUMN_INDICES["titre"]]
-    infos["code_csr"] = elts[COLUMN_INDICES["code_rayon_csr"]]
-    infos["code_dispo"] = elts[COLUMN_INDICES["disponibilite"]]
-    infos["collection"] = elts[COLUMN_INDICES["collection"]]
-    infos["num_in_collection"] = elts[COLUMN_INDICES["num_in_collection"]]
-    infos["prix"] = elts[COLUMN_INDICES["prix_ttc"]]
-    infos["editeur"] = elts[COLUMN_INDICES["editeur"]]
-    infos["distributeur"] = elts[COLUMN_INDICES["distributeur"]]
-    infos["date_parution"] = elts[COLUMN_INDICES["date_commercialisation"]]
-    infos["code_support"] = elts[COLUMN_INDICES["code_support"]]
-    infos["code_tva"] = elts[COLUMN_INDICES["code_tva"]]
-    infos["n_pages"] = elts[COLUMN_INDICES["nb_pages"]]
-    infos["longueur"] = elts[COLUMN_INDICES["longueur"]]
-    infos["largeur"] = elts[COLUMN_INDICES["largeur"]]
-    infos["epaisseur"] = elts[COLUMN_INDICES["epaisseur"]]
-    infos["poids"] = elts[COLUMN_INDICES["poids"]]
-    infos["is_update"] = elts[COLUMN_INDICES["statut_fiche"]]
-    infos["auteurs"] = elts[COLUMN_INDICES["auteurs"]]
-    infos["datetime_created"] = elts[COLUMN_INDICES["date_creation"]]
-    infos["date_updated"] = elts[COLUMN_INDICES["date_derniere_maj"]]
-    infos["taux_tva"] = elts[COLUMN_INDICES["taux_tva"]]
-    infos["traducteur"] = elts[COLUMN_INDICES["traducteur"]]
-    infos["langue_orig"] = elts[COLUMN_INDICES["langue_vo"]]
-    infos["commentaire"] = elts[COLUMN_INDICES["commentaire"]]
-    infos["classement_top"] = elts[COLUMN_INDICES["palmares_pro"]]
-    infos["has_image"] = elts[COLUMN_INDICES["image"]]
-    infos["code_edi_fournisseur"] = elts[COLUMN_INDICES["fournisseur_edi"]]
-    infos["is_scolaire"] = elts[COLUMN_INDICES["scolaire"]]
-    infos["n_extraits_mp3"] = elts[COLUMN_INDICES["compteur_mp3"]]
-    infos["indice_dewey"] = elts[COLUMN_INDICES["indice_dewey"]]
-    infos["code_regroupement"] = elts[COLUMN_INDICES["code_regroupement"]]
+    infos[INFO_KEYS["EAN13"]] = elts[COLUMN_INDICES["ean"]]
+    infos[INFO_KEYS["TITRE"]] = elts[COLUMN_INDICES["titre"]]
+    infos[INFO_KEYS["CODE_CSR"]] = elts[COLUMN_INDICES["code_rayon_csr"]]
+    infos[INFO_KEYS["CODE_DISPO"]] = elts[COLUMN_INDICES["disponibilite"]]
+    infos[INFO_KEYS["COLLECTION"]] = elts[COLUMN_INDICES["collection"]]
+    infos[INFO_KEYS["NUM_IN_COLLECTION"]] = elts[COLUMN_INDICES["num_in_collection"]]
+    infos[INFO_KEYS["PRIX"]] = elts[COLUMN_INDICES["prix_ttc"]]
+    infos[INFO_KEYS["EDITEUR"]] = elts[COLUMN_INDICES["editeur"]]
+    infos[INFO_KEYS["DISTRIBUTEUR"]] = elts[COLUMN_INDICES["distributeur"]]
+    infos[INFO_KEYS["DATE_PARUTION"]] = elts[COLUMN_INDICES["date_commercialisation"]]
+    infos[INFO_KEYS["CODE_SUPPORT"]] = elts[COLUMN_INDICES["code_support"]]
+    infos[INFO_KEYS["CODE_TVA"]] = elts[COLUMN_INDICES["code_tva"]]
+    infos[INFO_KEYS["N_PAGES"]] = elts[COLUMN_INDICES["nb_pages"]]
+    infos[INFO_KEYS["LONGUEUR"]] = elts[COLUMN_INDICES["longueur"]]
+    infos[INFO_KEYS["LARGEUR"]] = elts[COLUMN_INDICES["largeur"]]
+    infos[INFO_KEYS["EPAISSEUR"]] = elts[COLUMN_INDICES["epaisseur"]]
+    infos[INFO_KEYS["POIDS"]] = elts[COLUMN_INDICES["poids"]]
+    infos[INFO_KEYS["IS_UPDATE"]] = elts[COLUMN_INDICES["statut_fiche"]]
+    infos[INFO_KEYS["AUTEURS"]] = elts[COLUMN_INDICES["auteurs"]]
+    infos[INFO_KEYS["DATETIME_CREATED"]] = elts[COLUMN_INDICES["date_creation"]]
+    infos[INFO_KEYS["DATE_UPDATED"]] = elts[COLUMN_INDICES["date_derniere_maj"]]
+    infos[INFO_KEYS["TAUX_TVA"]] = elts[COLUMN_INDICES["taux_tva"]]
+    infos[INFO_KEYS["TRADUCTEUR"]] = elts[COLUMN_INDICES["traducteur"]]
+    infos[INFO_KEYS["LANGUE_ORIG"]] = elts[COLUMN_INDICES["langue_vo"]]
+    infos[INFO_KEYS["COMMENTAIRE"]] = elts[COLUMN_INDICES["commentaire"]]
+    infos[INFO_KEYS["CLASSEMENT_TOP"]] = elts[COLUMN_INDICES["palmares_pro"]]
+    infos[INFO_KEYS["HAS_IMAGE"]] = elts[COLUMN_INDICES["image"]]
+    infos[INFO_KEYS["CODE_EDI_FOURNISSEUR"]] = elts[COLUMN_INDICES["fournisseur_edi"]]
+    infos[INFO_KEYS["IS_SCOLAIRE"]] = elts[COLUMN_INDICES["scolaire"]]
+    infos[INFO_KEYS["N_EXTRAITS_MP3"]] = elts[COLUMN_INDICES["compteur_mp3"]]
+    infos[INFO_KEYS["INDICE_DEWEY"]] = elts[COLUMN_INDICES["indice_dewey"]]
+    infos[INFO_KEYS["CODE_REGROUPEMENT"]] = elts[COLUMN_INDICES["code_regroupement"]]
+    infos[INFO_KEYS["GTL_ID"]] = elts[COLUMN_INDICES["genre_tite_live"]]
     return infos
 
 
 def get_extra_data_from_infos(infos: dict) -> offers_models.OfferExtraData:
     extra_data = offers_models.OfferExtraData()
-    extra_data["author"] = infos["auteurs"]
-    extra_data["ean"] = infos["ean13"]
-    if infos["indice_dewey"] != "":
-        extra_data["dewey"] = infos["indice_dewey"]
-    extra_data["titelive_regroup"] = infos["code_regroupement"]
-    extra_data["prix_livre"] = infos["prix"].replace(",", ".")
-    if infos["is_scolaire"] == "1":
+    extra_data["author"] = infos[INFO_KEYS["AUTEURS"]]
+    extra_data["ean"] = infos[INFO_KEYS["EAN13"]]
+    if infos[INFO_KEYS["GTL_ID"]]:
+        csr_label = get_closest_csr(infos[INFO_KEYS["GTL_ID"]])
+        extra_data["gtl_id"] = infos[INFO_KEYS["GTL_ID"]]
+        if csr_label is not None:
+            extra_data["rayon"] = csr_label.get("label")
+            extra_data["csr_id"] = csr_label.get("csr_id")
+    if infos[INFO_KEYS["INDICE_DEWEY"]] != "":
+        extra_data["dewey"] = infos[INFO_KEYS["INDICE_DEWEY"]]
+    extra_data["titelive_regroup"] = infos[INFO_KEYS["CODE_REGROUPEMENT"]]
+    extra_data["prix_livre"] = infos[INFO_KEYS["PRIX"]].replace(",", ".")
+    if infos[INFO_KEYS["IS_SCOLAIRE"]] == "1":
         extra_data["schoolbook"] = True
-    if infos["classement_top"] != "":
-        extra_data["top"] = infos["classement_top"]
-    if infos["collection"] != "":
-        extra_data["collection"] = infos["collection"]
-    if infos["num_in_collection"] != "":
-        extra_data["num_in_collection"] = infos["num_in_collection"]
-    if infos["commentaire"] != "":
-        extra_data["comment"] = trim_with_ellipsis(infos["commentaire"], 92)
-    if infos["editeur"] != "":
-        extra_data["editeur"] = infos["editeur"]
-    if infos["date_parution"] != "":
-        extra_data["date_parution"] = infos["date_parution"]
-    if infos["distributeur"] != "":
-        extra_data["distributeur"] = infos["distributeur"]
+    if infos[INFO_KEYS["CLASSEMENT_TOP"]] != "":
+        extra_data["top"] = infos[INFO_KEYS["CLASSEMENT_TOP"]]
+    if infos[INFO_KEYS["COLLECTION"]] != "":
+        extra_data["collection"] = infos[INFO_KEYS["COLLECTION"]]
+    if infos[INFO_KEYS["NUM_IN_COLLECTION"]] != "":
+        extra_data["num_in_collection"] = infos[INFO_KEYS["NUM_IN_COLLECTION"]]
+    if infos[INFO_KEYS["COMMENTAIRE"]] != "":
+        extra_data["comment"] = trim_with_ellipsis(infos[INFO_KEYS["COMMENTAIRE"]], 92)
+    if infos[INFO_KEYS["EDITEUR"]] != "":
+        extra_data["editeur"] = infos[INFO_KEYS["EDITEUR"]]
+    if infos[INFO_KEYS["DATE_PARUTION"]] != "":
+        extra_data["date_parution"] = infos[INFO_KEYS["DATE_PARUTION"]]
+    if infos[INFO_KEYS["DISTRIBUTEUR"]] != "":
+        extra_data["distributeur"] = infos[INFO_KEYS["DISTRIBUTEUR"]]
     return extra_data
 
 
 def is_unreleased_book(product_info: dict) -> bool:
-    title = product_info.get("titre", "").lower()
-    authors = product_info.get("auteurs", "").lower()
+    title = product_info.get(INFO_KEYS["TITRE"], "").lower()
+    authors = product_info.get(INFO_KEYS["AUTEURS"], "").lower()
     return title == authors == offers_models.UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER
