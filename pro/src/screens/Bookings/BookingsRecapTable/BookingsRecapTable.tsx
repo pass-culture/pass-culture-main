@@ -25,7 +25,7 @@ import { filterBookingsRecap, getColumnsByAudience } from './utils'
 const FIRST_PAGE_INDEX = 0
 
 interface BookingsRecapTableProps<
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 > {
   bookingsRecap: T[]
   isLoading: boolean
@@ -38,7 +38,7 @@ interface BookingsRecapTableProps<
 }
 
 const BookingsRecapTable = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >({
   bookingsRecap,
   isLoading,

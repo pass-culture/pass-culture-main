@@ -324,9 +324,7 @@ describe('screens:StocksThing', () => {
     jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     await screen.findByTestId('stock-thing-form')
     await userEvent.click(
-      (
-        await screen.findAllByTitle('Supprimer le stock')
-      )[1]
+      (await screen.findAllByTitle('Supprimer le stock'))[1]
     )
     expect(
       screen.queryByText('Voulez-vous supprimer ce stock ?')

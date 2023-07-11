@@ -388,9 +388,9 @@ const StocksEventList = ({
             let price = ''
             /* istanbul ignore next priceCategory would never be null */
             if (priceCategory) {
-              price = `${formatPrice(priceCategory.price)} - ${
-                priceCategory?.label
-              }`
+              price = `${formatPrice(
+                priceCategory.price
+              )} - ${priceCategory?.label}`
             }
 
             const currentStockIndex = (page - 1) * STOCKS_PER_PAGE + index

@@ -6,7 +6,7 @@ import {
 } from 'apiClient/v1'
 
 export const sortByOfferName = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >(
   firstRow: Row<T>,
   secondRow: Row<T>
@@ -54,7 +54,7 @@ export const sortByInstitutionName = (
 }
 
 export const sortByBookingDate = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >(
   firstRow: Row<T>,
   secondRow: Row<T>

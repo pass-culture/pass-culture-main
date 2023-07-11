@@ -16,7 +16,7 @@ import CollectiveTableRow from './TableRow/CollectiveTableRow'
 import IndividualTableRow from './TableRow/IndividualTableRow'
 
 interface TableBodyProps<
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 > {
   page: TableInstance<T>['page']
   prepareRow: TableInstance<T>['prepareRow']
@@ -33,7 +33,7 @@ const isCollectiveRow = (
   audience === Audience.COLLECTIVE
 
 const TableBody = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel
+  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >({
   page,
   prepareRow,
