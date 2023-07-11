@@ -14,13 +14,13 @@ const renderSynchronizedProviderInformation = ({
 }
 
 describe('SynchronizedProviderInformation', () => {
-  it('should not render when provider does not exist', () => {
+  it('should render a default message provider is not from known list', () => {
     renderSynchronizedProviderInformation({
       props: { providerName: 'unknown provider id' },
     })
     expect(
-      screen.queryByText('Offre synchronisée', { exact: false })
-    ).not.toBeInTheDocument()
+      screen.queryByText('unknown provider id', { exact: false })
+    ).toBeInTheDocument()
   })
 
   it('should render for provider "leslibraires.fr"', () => {

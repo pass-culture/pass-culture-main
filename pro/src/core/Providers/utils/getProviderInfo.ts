@@ -16,6 +16,7 @@ import { ProviderInfo } from '../types'
 export const getProviderInfo = (
   providerName: string
 ): ProviderInfo | undefined => {
+  if (!providerName) return
   const providers: ProviderInfo[] = [
     {
       id: 'allociné',
@@ -109,7 +110,16 @@ export const getProviderInfo = (
     },
   ]
 
-  return providers.find(providerInfo =>
+  const provider = providers.find(providerInfo =>
     providerName.toLowerCase().startsWith(providerInfo.id)
   )
+  if (provider) {
+    return provider
+  }
+  return {
+    id: providerName.toLowerCase(),
+    logo: '',
+    name: providerName,
+    synchronizedOfferMessage: `Offre synchronisée avec ${providerName}`,
+  }
 }
