@@ -4,7 +4,7 @@
 /* eslint-disable */
 
 export type OfferIdBody = {
-  AdageHeaderFrom: string;
+  iframeFrom: string;
   offerId: number;
 };
 

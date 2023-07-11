@@ -15,7 +15,7 @@ class LogsTest:
         with caplog.at_level(logging.INFO):
             response = client.post(
                 "/adage-iframe/logs/catalog-view",
-                json={"source": "partnersMap", "AdageHeaderFrom": "for_my_institution"},
+                json={"source": "partnersMap", "iframeFrom": "for_my_institution"},
             )
 
         # then
@@ -24,7 +24,7 @@ class LogsTest:
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
             "source": "partnersMap",
-            "AdageHeaderFrom": "for_my_institution",
+            "from": "for_my_institution",
             "uai": "EAU123",
             "user_role": AdageFrontRoles.READONLY,
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
@@ -44,7 +44,7 @@ class LogsTest:
                         "departments",
                         "institutionId",
                     ],
-                    "AdageHeaderFrom": "for_my_institution",
+                    "iframeFrom": "for_my_institution",
                     "resultsCount": 0,
                 },
             )
@@ -54,7 +54,7 @@ class LogsTest:
         assert caplog.records[0].message == "SearchButtonClicked"
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
-            "AdageHeaderFrom": "for_my_institution",
+            "from": "for_my_institution",
             "filters": ["departments", "institutionId"],
             "resultsCount": 0,
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
@@ -71,7 +71,7 @@ class LogsTest:
         with caplog.at_level(logging.INFO):
             response = client.post(
                 "/adage-iframe/logs/offer-detail",
-                json={"stockId": 1, "AdageHeaderFrom": "for_my_institution"},
+                json={"stockId": 1, "iframeFrom": "for_my_institution"},
             )
 
         # then
@@ -80,7 +80,7 @@ class LogsTest:
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
             "stockId": 1,
-            "AdageHeaderFrom": "for_my_institution",
+            "from": "for_my_institution",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
             "uai": "EAU123",
             "user_role": AdageFrontRoles.READONLY,
@@ -95,7 +95,7 @@ class LogsTest:
         with caplog.at_level(logging.INFO):
             response = client.post(
                 "/adage-iframe/logs/offer-template-detail",
-                json={"offerId": 1, "AdageHeaderFrom": "for_my_institution"},
+                json={"offerId": 1, "iframeFrom": "for_my_institution"},
             )
 
         # then
@@ -104,7 +104,7 @@ class LogsTest:
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
             "offerId": 1,
-            "AdageHeaderFrom": "for_my_institution",
+            "from": "for_my_institution",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
             "uai": "EAU123",
             "user_role": AdageFrontRoles.READONLY,
@@ -119,7 +119,7 @@ class LogsTest:
         with caplog.at_level(logging.INFO):
             response = client.post(
                 "/adage-iframe/logs/booking-modal-button",
-                json={"stockId": 1, "AdageHeaderFrom": "for_my_institution"},
+                json={"stockId": 1, "iframeFrom": "for_my_institution"},
             )
 
         # then
@@ -128,7 +128,7 @@ class LogsTest:
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
             "stockId": 1,
-            "AdageHeaderFrom": "for_my_institution",
+            "from": "for_my_institution",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
             "uai": "EAU123",
             "user_role": AdageFrontRoles.READONLY,
@@ -143,7 +143,7 @@ class LogsTest:
         with caplog.at_level(logging.INFO):
             response = client.post(
                 "/adage-iframe/logs/offer-template-detail",
-                json={"offerId": 1, "AdageHeaderFrom": "for_my_institution"},
+                json={"offerId": 1, "iframeFrom": "for_my_institution"},
             )
 
         # then
@@ -152,7 +152,7 @@ class LogsTest:
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
             "offerId": 1,
-            "AdageHeaderFrom": "for_my_institution",
+            "from": "for_my_institution",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
             "uai": "EAU123",
             "user_role": AdageFrontRoles.READONLY,
@@ -167,7 +167,7 @@ class LogsTest:
         with caplog.at_level(logging.INFO):
             response = client.post(
                 "/adage-iframe/logs/fav-offer",
-                json={"offerId": 1, "AdageHeaderFrom": "for_my_institution"},
+                json={"offerId": 1, "iframeFrom": "for_my_institution"},
             )
 
         # then
@@ -176,7 +176,7 @@ class LogsTest:
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
             "offerId": 1,
-            "AdageHeaderFrom": "for_my_institution",
+            "from": "for_my_institution",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
             "uai": "EAU123",
             "user_role": AdageFrontRoles.READONLY,
@@ -190,7 +190,7 @@ class LogsTest:
         with caplog.at_level(logging.INFO):
             response = test_client.post(
                 "/adage-iframe/logs/header-link-click",
-                json={"header_link_name": "search", "AdageHeaderFrom": "for_my_institution"},
+                json={"header_link_name": "search", "iframeFrom": "for_my_institution"},
             )
 
         # then
@@ -201,7 +201,7 @@ class LogsTest:
         assert record.extra == {
             "analyticsSource": "adage",
             "header_link_name": "search",
-            "AdageHeaderFrom": "for_my_institution",
+            "from": "for_my_institution",
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
             "uai": "123456",
             "user_role": AdageFrontRoles.READONLY,
@@ -222,7 +222,7 @@ class LogsTest:
                     "totalStudents": 30,
                     "totalTeachers": 2,
                     "comment": "La première règle du Fight Club est: il est interdit de parler du Fight Club",
-                    "AdageHeaderFrom": "for_my_institution",
+                    "iframeFrom": "for_my_institution",
                 },
             )
 
@@ -231,7 +231,7 @@ class LogsTest:
         record = [record for record in caplog.records if record.message == "RequestPopinDismiss"][0]
         assert record.extra == {
             "analyticsSource": "adage",
-            "AdageHeaderFrom": "for_my_institution",
+            "from": "for_my_institution",
             "collectiveOfferTemplateId": 1,
             "phoneNumber": "0601020304",
             "requestedDate": "2022-12-02",

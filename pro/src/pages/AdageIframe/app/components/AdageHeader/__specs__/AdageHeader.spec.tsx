@@ -130,7 +130,7 @@ describe('AdageHeader', () => {
       )
       expect(apiAdage.logHeaderLinkClick).toHaveBeenCalledTimes(1)
       expect(apiAdage.logHeaderLinkClick).toHaveBeenCalledWith({
-        AdageHeaderFrom: '/',
+        iframeFrom: '/',
         header_link_name: headerLink.headerLinkName,
       })
     }

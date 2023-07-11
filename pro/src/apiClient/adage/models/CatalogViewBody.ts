@@ -4,7 +4,7 @@
 /* eslint-disable */
 
 export type CatalogViewBody = {
-  AdageHeaderFrom: string;
+  iframeFrom: string;
   source: string;
 };
 
