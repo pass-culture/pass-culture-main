@@ -12,7 +12,6 @@ def install_routes(app: Flask) -> None:
     from . import collective_offer_templates
     from . import custom_reimbursement_rules
     from . import filters
-    from . import finance
     from . import fraud
     from . import health_check
     from . import home
@@ -27,6 +26,7 @@ def install_routes(app: Flask) -> None:
     from .admin import blueprint as admin_blueprint
     from .admin import bo_users_blueprint
     from .collective_offers import blueprint as collective_offers_blueprint
+    from .finance import blueprint as finance_blueprint
     from .multiple_offers import blueprint as multiple_offers_blueprint
     from .offer_validation_rules import blueprint as offer_validation_rule_blueprint
     from .offerers import offerer_blueprint

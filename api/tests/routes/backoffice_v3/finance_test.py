@@ -2,11 +2,17 @@ from flask import url_for
 import pytest
 
 from pcapi.core import testing
+from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
+from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.testing import assert_num_queries
 
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
+from .helpers.post import PostEndpointHelper
 
 
 pytestmark = [
@@ -38,3 +44,144 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["ID"] == str(incidents[0].id)
         assert rows[0]["Statut de l'incident"] == "Créé"
         assert rows[0]["Type d'incident"] == "Trop Perçu"
+
+
+class GetIncidentCreationFormTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.finance_incident.get_incident_creation_form"
+    needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
+
+    error_message = "Seules les réservations ayant le statut 'remboursée' et correspondant au même lieu peuvent faire l'objet d'un incident"
+
+    expected_num_queries = 7
+
+    def test_get_incident_creation_for_one_booking_form(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        offer = offers_factories.OfferFactory(venue=venue)
+        stock = offers_factories.StockFactory(offer=offer)
+        booking = bookings_factories.ReimbursedBookingFactory(stock=stock)
+        object_ids = str(booking.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
+
+        assert response.status_code == 200
+        additionnal_data_text = html_parser.extract_cards_text(response.data)[0]
+        assert f"Lieu : {venue.name}" in additionnal_data_text
+        assert f"ID de la réservation : {booking.id}" in additionnal_data_text
+        assert f"Statut de la réservation : {booking.status.name}" in additionnal_data_text
+        assert f"Contremarque : {booking.token}" in additionnal_data_text
+        assert f"Nom de l'offre : {offer.name}" in additionnal_data_text
+        assert f"Bénéficiaire : {booking.user.full_name}" in additionnal_data_text
+
+    def test_get_incident_creation_for_multiple_bookings_form(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        offer = offers_factories.OfferFactory(venue=venue)
+        stock = offers_factories.StockFactory(offer=offer)
+        selected_bookings = [
+            bookings_factories.ReimbursedBookingFactory(stock=stock),
+            bookings_factories.ReimbursedBookingFactory(stock=stock),
+        ]
+        object_ids = ",".join([str(booking.id) for booking in selected_bookings])
+
+        with assert_num_queries(self.expected_num_queries):
+            response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
+
+        assert response.status_code == 200
+        additionnal_data_text = html_parser.extract_cards_text(response.data)[0]
+        assert f"Lieu : {venue.name}" in additionnal_data_text
+        assert f"Nombre de réservations : {len(selected_bookings)}" in additionnal_data_text
+
+    def test_display_error_if_booking_not_reimbursed(self, authenticated_client):
+        booking = bookings_factories.UsedBookingFactory()
+        object_ids = str(booking.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
+
+        assert self.error_message in html_parser.content_as_text(response.data)
+
+    def test_display_error_if_bookings_from_different_venues_selected(self, authenticated_client):
+        selected_bookings = [
+            bookings_factories.ReimbursedBookingFactory(),
+            bookings_factories.ReimbursedBookingFactory(),
+        ]
+        object_ids = ",".join(str(booking.id) for booking in selected_bookings)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
+
+        assert self.error_message in html_parser.content_as_text(response.data)
+
+
+class CreateIncidentTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.finance_incident.create_incident"
+    needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
+
+    def test_create_incident_from_one_booking(self, authenticated_client):
+        booking = bookings_factories.ReimbursedBookingFactory()
+
+        object_ids = str(booking.id)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "total_amount": booking.amount,
+                "origin": "Origine de la demande",
+                "kind": finance_models.IncidentType.OVERPAYMENT.name,
+                "object_ids": object_ids,
+            },
+        )
+
+        assert response.status_code == 301
+        assert finance_models.FinanceIncident.query.count() == 1
+        assert finance_models.BookingFinanceIncident.query.count() == 1
+        booking_finance_incident = finance_models.BookingFinanceIncident.query.first()
+        assert booking_finance_incident.newTotalAmount == int(
+            booking.amount * 100
+        )  # incident amount is stored as cents
+
+    def test_not_creating_incident_if_already_exists(self, authenticated_client):
+        booking = bookings_factories.ReimbursedBookingFactory()
+        finance_factories.IndividualBookingFinanceIncidentFactory(booking=booking)
+        object_ids = str(booking.id)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "total_amount": booking.amount,
+                "origin": "Origine de la demande",
+                "kind": finance_models.IncidentType.OVERPAYMENT.name,
+                "object_ids": object_ids,
+            },
+        )
+
+        assert response.status_code == 301
+        assert finance_models.FinanceIncident.query.count() == 1  # didn't create new incident
+
+    def test_create_incident_from_multiple_booking(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        offer = offers_factories.OfferFactory(venue=venue)
+        stock = offers_factories.StockFactory(offer=offer)
+        selected_bookings = [
+            bookings_factories.ReimbursedBookingFactory(stock=stock),
+            bookings_factories.ReimbursedBookingFactory(stock=stock),
+            bookings_factories.ReimbursedBookingFactory(stock=stock),
+        ]
+        object_ids = ",".join([str(booking.id) for booking in selected_bookings])
+        total_booking_amount = sum(booking.amount for booking in selected_bookings)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={
+                "total_amount": total_booking_amount,
+                "origin": "Origine de la demande",
+                "kind": finance_models.IncidentType.OVERPAYMENT.name,
+                "object_ids": object_ids,
+            },
+        )
+
+        assert response.status_code == 301
+        assert finance_models.FinanceIncident.query.count() == 1
+        finance_incident = finance_models.FinanceIncident.query.first()
+        assert finance_incident.details["origin"] == "Origine de la demande"
+        assert finance_models.BookingFinanceIncident.query.count() == 3
