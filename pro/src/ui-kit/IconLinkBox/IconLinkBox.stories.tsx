@@ -2,7 +2,7 @@ import type { Story } from '@storybook/react'
 import React from 'react'
 
 import fullShowIcon from 'icons/full-show.svg'
-import shadowTropheeIcon from 'icons/shadow-trophee.svg'
+import shadowTrophyIcon from 'icons/shadow-trophy.svg'
 
 import { withRouterDecorator } from '../../stories/decorators/withRouter'
 
@@ -24,6 +24,6 @@ Default.args = {
   title: 'Répartition de votre chiffre d’affaires',
   linkTitle: 'Voir le tableau',
   linkUrl: '#',
-  iconHeader: shadowTropheeIcon,
+  iconHeader: shadowTrophyIcon,
   iconLink: fullShowIcon,
 }
