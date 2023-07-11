@@ -3,9 +3,9 @@ import React, { ReactElement } from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
 import fullHideIcon from 'icons/full-hide.svg'
-import { ReactComponent as StatusPendingIcon } from 'icons/ico-status-pending.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
-import { ReactComponent as StrokeCheckIcon } from 'icons/stroke-check.svg'
+import strokeCheckIcon from 'icons/stroke-check.svg'
+import strokeClockIcon from 'icons/stroke-clock.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import strokeDraftIcon from 'icons/stroke-draft.svg'
 import strokeWarningIcon from 'icons/stroke-warning.svg'
@@ -33,7 +33,7 @@ const OFFER_STATUS_PROPERTIES: Record<
   },
   [OfferStatus.ACTIVE]: {
     className: style['status-active'],
-    Icon: <StrokeCheckIcon />,
+    Icon: <SvgIcon alt="" src={strokeCheckIcon} />,
     label: 'publiée',
   },
   [OfferStatus.DRAFT]: {
@@ -48,7 +48,7 @@ const OFFER_STATUS_PROPERTIES: Record<
   },
   [OfferStatus.PENDING]: {
     className: style['status-pending'],
-    Icon: <StatusPendingIcon />,
+    Icon: <SvgIcon alt="" src={strokeClockIcon} />,
     label: 'en attente',
   },
   [OfferStatus.INACTIVE]: {

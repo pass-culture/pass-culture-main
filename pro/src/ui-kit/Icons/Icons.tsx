@@ -143,7 +143,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-radio-off.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-radio-on.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-star.svg', viewBox: '0 0 38 36' },
-  { src: 'icons/ico-status-pending.svg', viewBox: '0 0 16 16' },
   { src: 'icons/ico-unavailable-page-white.svg', viewBox: '0 0 317 198' },
   { src: 'icons/ico-warning.svg', viewBox: '0 0 16 16' },
   { src: 'icons/logo-pass-culture-dark.svg', viewBox: '0 0 71 24' },
