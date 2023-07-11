@@ -92,7 +92,11 @@ const AllocineProviderParameters = ({
         <div className={style['parameter-item']}>
           Nombre de places/séance :{' '}
           <span>
-            {`${venueProvider.quantity ? venueProvider.quantity : 'Illimité'}`}
+            {`${
+              typeof venueProvider.quantity === 'number'
+                ? venueProvider.quantity
+                : 'Illimité'
+            }`}
           </span>
         </div>
         <div className={style['parameter-item']}>
