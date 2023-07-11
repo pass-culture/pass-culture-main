@@ -109,8 +109,8 @@ jobs:
       teleport_version: 11.1.1
       teleport_proxy: teleport.ehp.passculture.team:443
       teleport_kubernetes_cluster: passculture-metier-ehp
-      deploy_api: ${{ needs.test-deploy-variable.outputs.deploy }}
-      deploy_pro: ${{ needs.test-deploy-variable.outputs.deploy }}
+      deploy_api: ${{ needs.test-deploy-variable.outputs.deploy == 'true' }}
+      deploy_pro: ${{ needs.test-deploy-variable.outputs.deploy == 'true' }}
     secrets: inherit
 
   notification:
