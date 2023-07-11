@@ -15,24 +15,41 @@
         <div class="d-flex justify-content-between">
           <p class="lead num-results">{{ rows|length }} résultat{{ "s" if rows|length > 1 else "" }}</p>
         </div>
-        {% if has_permission("MANAGE_BOOKINGS") %}
-          <div class="btn-group btn-group-sm"
-               data-toggle="pc-batch-confirm-btn-group"
-               data-toggle-id="table-container-individual-booking-btn-group"
-               data-pc-table-multi-select-id="table-individual-bookings-multiselect"
-               data-input-ids-name="object_ids">
-            <button disabled
-                    type="button"
-                    class="btn btn-outline-primary"
-                    data-use-confirmation-modal="true"
-                    data-modal-selector="#batch-validate-booking-modal">Valider</button>
-            <button disabled
-                    type="button"
-                    class="btn btn-outline-primary"
-                    data-use-confirmation-modal="true"
-                    data-modal-selector="#batch-cancel-booking-modal">Annuler</button>
-          </div>
-        {% endif %}
+        <div class="d-flex justify-content-between align-items-center">
+          {% if has_permission("MANAGE_BOOKINGS") %}
+            <div class="btn-group btn-group-sm"
+                 data-toggle="pc-batch-confirm-btn-group"
+                 data-toggle-id="table-container-individual-booking-btn-group"
+                 data-pc-table-multi-select-id="table-individual-bookings-multiselect"
+                 data-input-ids-name="object_ids">
+              <button disabled
+                      type="button"
+                      class="btn btn-outline-primary"
+                      data-use-confirmation-modal="true"
+                      data-modal-selector="#batch-validate-booking-modal">Valider</button>
+              <button disabled
+                      type="button"
+                      class="btn btn-outline-primary"
+                      data-use-confirmation-modal="true"
+                      data-modal-selector="#batch-cancel-booking-modal">Annuler</button>
+            </div>
+          {% endif %}
+          {% if has_permission("MANAGE_INCIDENTS") %}
+            <div class="btn-group btn-group-sm"
+                 data-toggle="pc-batch-confirm-btn-group"
+                 data-toggle-id="table-container-individual-booking-btn-group"
+                 data-pc-table-multi-select-id="table-individual-bookings-multiselect"
+                 data-input-ids-name="object_ids">
+              <button disabled
+                      type="button"
+                      class="btn btn-outline-primary"
+                      data-modal-selector="#incident-creation-modal"
+                      data-mode="fetch"
+                      data-fetch-url="{{ url_for('backoffice_v3_web.finance_incident.get_incident_creation_form') }}"
+                      data-use-confirmation-modal="true">Créer un incident</button>
+            </div>
+          {% endif %}
+        </div>
         <table class="table mb-4"
                data-table-multi-select-id="table-individual-bookings-multiselect">
           <thead>
@@ -174,6 +191,7 @@
         </table>
         {{ build_lazy_modal(url_for("backoffice_v3_web.individual_bookings.get_batch_validate_individual_bookings_form"), "batch-validate-booking-modal", "true") }}
         {{ build_lazy_modal(url_for("backoffice_v3_web.individual_bookings.get_batch_cancel_individual_bookings_form"), "batch-cancel-booking-modal", "true") }}
+        {{ build_lazy_modal(url_for("backoffice_v3_web.finance_incident.get_incident_creation_form"), "incident-creation-modal", "true") }}
       {% endif %}
     </div>
   </div>

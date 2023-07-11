@@ -651,16 +651,33 @@ def format_finance_incident_status(incident_status: finance_models.IncidentStatu
             return '<span class="badge text-bg-success">Validé</span>'
 
 
-def format_finance_incident_type(incident_kind: finance_models.IncidentType) -> str:
+def format_finance_incident_type_str(incident_kind: finance_models.IncidentType) -> str:
     match incident_kind:
         case finance_models.IncidentType.OVERPAYMENT:
-            return '<span class="badge text-bg-warning">Trop Perçu</span>'
+            return "Trop Perçu"
         case finance_models.IncidentType.FRAUD:
-            return '<span class="badge text-bg-danger">Fraude</span>'
+            return "Fraude"
         case finance_models.IncidentType.COMMERCIAL_GESTURE:
-            return '<span class="badge text-bg-success">Geste Commercial</span>'
+            return "Geste Commercial"
         case finance_models.IncidentType.OFFER_PRICE_REGULATION:
-            return '<span class="badge text-bg-light">Régulation du prix de l\'offre</span>'
+            return "Régulation du prix de l'offre"
+        case _:
+            return incident_kind.value
+
+
+def format_finance_incident_type(incident_kind: finance_models.IncidentType) -> str:
+    kind_str = format_finance_incident_type_str(incident_kind)
+    match incident_kind:
+        case finance_models.IncidentType.OVERPAYMENT:
+            return f'<span class="badge text-bg-warning">{kind_str}</span>'
+        case finance_models.IncidentType.FRAUD:
+            return f'<span class="badge text-bg-danger">{kind_str}</span>'
+        case finance_models.IncidentType.COMMERCIAL_GESTURE:
+            return f'<span class="badge text-bg-success">{kind_str}</span>'
+        case finance_models.IncidentType.OFFER_PRICE_REGULATION:
+            return f'<span class="badge text-bg-light">{kind_str}</span>'
+        case _:
+            return incident_kind.value
 
 
 def install_template_filters(app: Flask) -> None:
@@ -721,3 +738,4 @@ def install_template_filters(app: Flask) -> None:
     ] = urls.build_backoffice_public_account_link_in_comment
     app.jinja_env.filters["format_finance_incident_status"] = format_finance_incident_status
     app.jinja_env.filters["format_finance_incident_type"] = format_finance_incident_type
+    app.jinja_env.filters["format_finance_incident_type_str"] = format_finance_incident_type_str

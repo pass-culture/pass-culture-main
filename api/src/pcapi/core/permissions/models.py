@@ -61,7 +61,7 @@ class Permissions(enum.Enum):
     CREATE_REIMBURSEMENT_RULES = "créer un tarif dérogatoire"
 
     READ_INCIDENTS = "visualiser les incidents"
-    # TODO (akarki): create the permission to manage incidents when it will be needed
+    MANAGE_INCIDENTS = "Gérer les incidents"
 
     @classmethod
     def exists(cls, name: str) -> bool:
