@@ -8,20 +8,27 @@
 }
 
 .adage-button {
-    @include fonts.caption;
+    @include fonts.body;
 
     display: flex;
     align-items: center;
     background-color: colors.$white;
-    padding: rem.torem(6px) rem.torem(16px);
+    padding: rem.torem(8px) rem.torem(16px);
     border-radius: rem.torem(10px);
     border: rem.torem(1px) solid colors.$input-text-color;
+    height: rem.torem(40px);
 
     &-is-active {
+        @include fonts.button;
+
+        line-height: rem.torem(20px);
         border: rem.torem(2px) solid colors.$input-text-color;
     }
 
     &-selected {
+        @include fonts.button;
+
+        line-height: rem.torem(20px);
         border: rem.torem(2px) solid colors.$primary;
     }
 
@@ -53,13 +60,24 @@
         }
 
     }
+
+    &-modal {
+        position: relative;
+    }
         
     &-children {
-        margin-left: rem.torem(16px);
         border-radius: rem.torem(10px);
         box-shadow: 0 rem.torem(2px) rem.torem(16px) 0 rgb(37 2 108 / 15%);
         border: none;
         z-index: zIndex.$modal-z-index;
+    }
+
+    &-children::backdrop {
+        background-color: #448;
+    }
+
+    &-dropdown {
+        margin-left: rem.torem(8px);
     }
 }
 

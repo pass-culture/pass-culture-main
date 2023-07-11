@@ -14,6 +14,7 @@ import { adageFiltersToFacetFilters } from '../../utils'
 
 import ModalFilterLayout from './ModalFilterLayout/ModalFilterLayout'
 import styles from './OfferFilters.module.scss'
+import { studentsOptions } from './studentsOptions'
 
 export interface OfferFiltersProps {
   className?: string
@@ -25,6 +26,7 @@ export interface OfferFiltersProps {
 export interface SearchFormValues {
   query: string
   domains: Option[]
+  students: Option[]
 }
 
 export const OfferFilters = ({
@@ -40,7 +42,7 @@ export const OfferFilters = ({
   const { setFacetFilters } = useContext(FacetFiltersContext)
 
   const onClean = (modalName: string) => {
-    clearFormikFieldValue('domains')
+    clearFormikFieldValue(modalName)
     setModalOpenStatus(prevState => ({ ...prevState, [modalName]: false }))
   }
 
@@ -75,7 +77,9 @@ export const OfferFilters = ({
     initialValues: {
       query: '',
       domains: [],
+      students: [],
     },
+
     onSubmit: handleSubmit,
   })
 
@@ -104,7 +108,7 @@ export const OfferFilters = ({
             </Button>
           </div>
         </FormLayout.Row>
-        <FormLayout.Row>
+        <FormLayout.Row className={styles['filter-container-filter']}>
           <AdageButtonFilter
             isActive={formik.values.domains.length > 0}
             title="Domaine artistique"
@@ -125,6 +129,29 @@ export const OfferFilters = ({
                 name="domains"
                 label="Domaine artistique"
                 options={domainsOptions}
+              />
+            </ModalFilterLayout>
+          </AdageButtonFilter>
+          <AdageButtonFilter
+            isActive={formik.values.students.length > 0}
+            title="Niveau scolaire"
+            itemsLength={formik.values.students.length}
+            isOpen={modalOpenStatus['students']}
+            setIsOpen={setModalOpenStatus}
+            filterName="students"
+            handleSubmit={formValue => handleSubmit(formValue)}
+            formikValues={formik.values}
+          >
+            <ModalFilterLayout
+              onClean={() => onClean('students')}
+              onSearch={() => onSearch('students')}
+              title="Pour quel niveau scolaire ?"
+            >
+              <AdageMultiselect
+                placeholder="Ex: Collège"
+                name="students"
+                label="Niveau scolaire"
+                options={studentsOptions}
               />
             </ModalFilterLayout>
           </AdageButtonFilter>

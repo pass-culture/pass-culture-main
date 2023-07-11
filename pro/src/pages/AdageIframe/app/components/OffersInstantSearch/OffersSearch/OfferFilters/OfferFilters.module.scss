@@ -12,4 +12,10 @@
     border-bottom-left-radius: 0;
     border-top-left-radius: 0;
   }
+
+  &-filter {
+    display: flex;
+    flex-direction: row;
+    gap: rem.torem(16px);
+  }
 }

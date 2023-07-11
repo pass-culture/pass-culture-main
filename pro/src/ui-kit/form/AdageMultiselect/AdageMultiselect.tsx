@@ -94,6 +94,7 @@ const AdageMultiselect = ({
         {label}
       </label>
       <BaseInput
+        type="search"
         name="search"
         className={styles['search-input']}
         placeholder={placeholder}

@@ -1,8 +1,10 @@
 import cn from 'classnames'
-import React, { useRef } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 
-import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
+import fullDownIcon from 'icons/full-down.svg'
+import fullUpIcon from 'icons/full-up.svg'
 import { SearchFormValues } from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/OfferFilters/OfferFilters'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './AdageButtonFilter.module.scss'
 
@@ -32,10 +34,26 @@ const AdageButtonFilter = ({
 }: AdageButtonFilterProps): JSX.Element => {
   const containerRef = useRef<HTMLDivElement | null>(null)
 
-  useOnClickOrFocusOutside(containerRef, () => {
-    setIsOpen({ [filterName]: false })
-    handleSubmit(formikValues)
-  })
+  const handleClickOutside = useCallback(
+    (e: MouseEvent): void => {
+      if (!containerRef.current?.contains(e.target as Node)) {
+        if (isOpen) {
+          setIsOpen({ [filterName]: false })
+          handleSubmit(formikValues)
+        }
+      }
+    },
+    [setIsOpen, handleSubmit]
+  )
+
+  useEffect(() => {
+    if (containerRef.current) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [containerRef, handleClickOutside])
 
   const modalButton = () => {
     setIsOpen({ [filterName]: !isOpen })
@@ -59,11 +77,21 @@ const AdageButtonFilter = ({
           })}
         ></div>
         {title} {isActive && `(${itemsLength})`}
+        {!disabled && (
+          <SvgIcon
+            className={styles['adage-button-dropdown']}
+            alt=""
+            src={isOpen ? fullUpIcon : fullDownIcon}
+            width="16"
+          />
+        )}
       </button>
 
-      <dialog open={isOpen} className={styles['adage-button-children']}>
-        {children}
-      </dialog>
+      <div className={styles['adage-button-modal']}>
+        <dialog open={isOpen} className={styles['adage-button-children']}>
+          {children}
+        </dialog>
+      </div>
     </div>
   )
 }
