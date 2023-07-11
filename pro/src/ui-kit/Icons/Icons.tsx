@@ -29,53 +29,53 @@ const fullIcons: IconListItem[] = [
   { src: 'icons/full-info.svg' },
   { src: 'icons/full-error.svg' },
   { src: 'icons/full-help.svg' },
-  { src: 'icons/full-link.svg' }, // TODO 17 uses left inside <ButtonLink> and <Banner> and <InternalBanner>
-  { src: 'icons/full-more.svg' }, // TODO still in 2 ButtonLink and 1 Button
-  { src: 'icons/full-mail.svg' }, // TODO 2 uses left inside ButtonLink, 1 use left inside SubmitButton
-  { src: 'icons/full-edit.svg' }, // TODO 7 uses left in <ButtonLink>s
-  { src: 'icons/full-duplicate.svg' }, // TODO still used in 1 Button
+  { src: 'icons/full-link.svg' },
+  { src: 'icons/full-more.svg' },
+  { src: 'icons/full-mail.svg' },
+  { src: 'icons/full-edit.svg' },
+  { src: 'icons/full-duplicate.svg' },
   { src: 'icons/full-show.svg' },
   { src: 'icons/full-hide.svg' },
   { src: 'icons/full-like.svg' },
   { src: 'icons/full-back.svg' },
-  { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
-  { src: 'icons/full-trash.svg' }, // TODO 2 left inside <Button>
-  { src: 'icons/full-next.svg' }, // TODO still used
+  { src: 'icons/full-download.svg' },
+  { src: 'icons/full-trash.svg' },
+  { src: 'icons/full-next.svg' },
   { src: 'icons/full-wait.svg' },
-  { src: 'icons/full-refresh.svg' }, // TODO still unsed in <Button>s
+  { src: 'icons/full-refresh.svg' },
   { src: 'icons/full-other.svg' },
-  { src: 'icons/full-download.svg' }, // TODO 3 uses left inside <Button> and <ButtonLink>
-  { src: 'icons/full-parameters.svg' }, // TODO 1 use left inside a <Button>
-  { src: 'icons/full-key.svg' }, // TODO 1 use left inside a <ButtonLink>
-  { src: 'icons/full-plus.svg' }, // TODO still in 2 ButtonLink and 1 Button
+  { src: 'icons/full-download.svg' },
+  { src: 'icons/full-parameters.svg' },
+  { src: 'icons/full-key.svg' },
+  { src: 'icons/full-plus.svg' },
   { src: 'icons/full-sort.svg' },
-  { src: 'icons/full-logout.svg' }, // TODO 1 use left inside a <Button>
+  { src: 'icons/full-logout.svg' },
   { src: 'icons/full-code.svg' },
-  { src: 'icons/full-down.svg' }, // TODO 1 use left inside a <Button>
-  { src: 'icons/full-up.svg' }, // TODO 1 use left inside a <Button>
-  { src: 'icons/full-right.svg' }, // TODO 2 use left inside a <Button>
-  { src: 'icons/full-left.svg' }, // TODO 2 use left inside a <Button>
+  { src: 'icons/full-down.svg' },
+  { src: 'icons/full-up.svg' },
+  { src: 'icons/full-right.svg' },
+  { src: 'icons/full-left.svg' },
   { src: 'icons/full-arrow-right.svg' },
   { src: 'icons/full-disclosure-close.svg', viewBox: '0 0 16 16' }, // TODO clean viewbox
   { src: 'icons/full-disclosure-open.svg', viewBox: '0 0 16 16' }, // TODO clean viewbox
 ]
 
 const strokeIcons: IconListItem[] = [
-  { src: 'icons/stroke-user.svg' }, // TODO 4 uses left inside <Tabs>
+  { src: 'icons/stroke-user.svg' },
   { src: 'icons/stroke-fraud.svg' },
   { src: 'icons/stroke-error.svg' },
   { src: 'icons/stroke-warning.svg' },
   { src: 'icons/stroke-info.svg' },
   { src: 'icons/stroke-clock.svg' },
-  { src: 'icons/stroke-valid.svg' }, // TODO 1 use left inside <Banner>
+  { src: 'icons/stroke-valid.svg' },
   { src: 'icons/stroke-wrong.svg' },
-  { src: 'icons/stroke-more.svg' }, // TODO 1 use left inside a <Button>
+  { src: 'icons/stroke-more.svg' },
   { src: 'icons/stroke-check.svg' },
   { src: 'icons/stroke-double-check.svg' },
-  { src: 'icons/stroke-offers.svg' }, // TODO 1 use left inside a <Tab>
-  { src: 'icons/stroke-offer.svg' }, // TODO 1 use left inside a <Tab>
+  { src: 'icons/stroke-offers.svg' },
+  { src: 'icons/stroke-offer.svg' },
   { src: 'icons/stroke-repayment.svg' },
-  { src: 'icons/stroke-euro.svg' }, // TODO 3 use left inside a <TextInput>
+  { src: 'icons/stroke-euro.svg' },
   { src: 'icons/stroke-price.svg' },
   { src: 'icons/stroke-events.svg' },
   { src: 'icons/stroke-thing.svg' },
@@ -92,12 +92,12 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-calendar.svg' },
   { src: 'icons/stroke-date.svg' },
   { src: 'icons/stroke-hourglass.svg' },
-  { src: 'icons/stroke-show.svg' }, // TODO 1 use left inside Button (PasswordInput)
-  { src: 'icons/stroke-hide.svg' }, // TODO 1 use left inside Button (PasswordInput)
-  { src: 'icons/stroke-like.svg' }, // TODO 1 use left inside Button
+  { src: 'icons/stroke-show.svg' },
+  { src: 'icons/stroke-hide.svg' },
+  { src: 'icons/stroke-like.svg' },
   { src: 'icons/stroke-logout.svg' },
-  { src: 'icons/stroke-download.svg' }, // TODO 1 use left inside ButtonLink (AddActivationCodeForm)
-  { src: 'icons/stroke-search.svg' }, // TODO 1 use left inside SubmitButton (CollectiveOfferSelectionDuplicationScreen)
+  { src: 'icons/stroke-download.svg' },
+  { src: 'icons/stroke-search.svg' },
   { src: 'icons/stroke-trash.svg' },
   { src: 'icons/stroke-draft.svg' },
   { src: 'icons/stroke-code.svg' },
