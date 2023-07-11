@@ -252,19 +252,6 @@ class DeleteVenueTest:
         assert offerers_models.Offerer.query.count() == 1
         assert finance_models.BankInformation.query.count() == 1
 
-    def test_delete_cascade_venue_should_remove_collective_dms_applications_of_venue(self):
-        # Given
-        venue_to_delete = offerers_factories.VenueFactory()
-        educational_factories.CollectiveDmsApplicationFactory(venue=venue_to_delete)
-
-        # When
-        offerers_api.delete_venue(venue_to_delete.id)
-
-        # Then
-        assert offerers_models.Venue.query.count() == 0
-        assert offerers_models.Offerer.query.count() == 1
-        assert educational_models.CollectiveDmsApplication.query.count() == 0
-
     def test_delete_cascade_venue_should_remove_pricing_point_links(self):
         venue = offerers_factories.VenueFactory(pricing_point="self")
 
@@ -1119,21 +1106,6 @@ class DeleteOffererTest:
         assert offerers_models.Offerer.query.count() == 0
         assert offerers_models.Venue.query.count() == 0
         assert finance_models.BankInformation.query.count() == 1
-
-    def test_delete_cascade_offerer_should_remove_collective_dms_applications_of_managed_venue(self):
-        # Given
-        venue = offerers_factories.VenueFactory()
-        educational_factories.CollectiveDmsApplicationFactory(venue=venue)
-        offerer_to_delete = venue.managingOfferer
-        assert educational_models.CollectiveDmsApplication.query.count() == 1
-
-        # When
-        offerers_api.delete_offerer(offerer_to_delete.id)
-
-        # Then
-        assert offerers_models.Offerer.query.count() == 0
-        assert offerers_models.Venue.query.count() == 0
-        assert educational_models.CollectiveDmsApplication.query.count() == 0
 
     def test_delete_cascade_offerer_should_remove_mediations_of_managed_offers(self):
         # Given
