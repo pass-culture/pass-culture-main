@@ -332,7 +332,7 @@ class FindDuplicateUserTest:
         sent_mail = mails_testing.outbox[-1]
         assert not user1.isActive
         assert not user2.isActive
-        assert sent_mail.sent_data["To"] == "fraude@passculture.app"
+        assert sent_mail.sent_data["To"] == settings.FRAUD_EMAIL_ADDRESS
         assert (
             f'<a href="{settings.BACKOFFICE_URL}/public-accounts/{user1.id}">{user1.id}</a>'
             in sent_mail.sent_data["html_content"]
