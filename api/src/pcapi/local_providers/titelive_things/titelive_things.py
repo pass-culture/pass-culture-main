@@ -175,6 +175,7 @@ INFO_KEYS = {
     "N_EXTRAITS_MP3": "n_extraits_mp3",
     "INDICE_DEWEY": "indice_dewey",
     "CODE_REGROUPEMENT": "code_regroupement",
+    "CODE_CLIL": "code_clil",
 }
 
 
@@ -432,6 +433,7 @@ def get_infos_from_data_line(elts: list) -> dict:
     infos[INFO_KEYS["INDICE_DEWEY"]] = elts[COLUMN_INDICES["indice_dewey"]]
     infos[INFO_KEYS["CODE_REGROUPEMENT"]] = elts[COLUMN_INDICES["code_regroupement"]]
     infos[INFO_KEYS["GTL_ID"]] = elts[COLUMN_INDICES["genre_tite_live"]]
+    infos[INFO_KEYS["CODE_CLIL"]] = elts[COLUMN_INDICES["code_clil"]]
     return infos
 
 
@@ -445,6 +447,8 @@ def get_extra_data_from_infos(infos: dict) -> offers_models.OfferExtraData:
         if csr_label is not None:
             extra_data["rayon"] = csr_label.get("label")
             extra_data["csr_id"] = csr_label.get("csr_id")
+    if infos[INFO_KEYS["CODE_CLIL"]]:
+        extra_data["code_clil"] = infos[INFO_KEYS["CODE_CLIL"]]
     if infos[INFO_KEYS["INDICE_DEWEY"]] != "":
         extra_data["dewey"] = infos[INFO_KEYS["INDICE_DEWEY"]]
     extra_data["titelive_regroup"] = infos[INFO_KEYS["CODE_REGROUPEMENT"]]
