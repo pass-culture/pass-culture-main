@@ -787,7 +787,7 @@ def handle_fraud_suspicion(user: users_models.User, duplicate: users_models.User
             f'<a href="{settings.BACKOFFICE_URL}/public-accounts/{duplicate.id}">{duplicate.id}</a>'
         )
         mails.send(
-            recipients=["fraude@passculture.app"],
+            recipients=[settings.FRAUD_EMAIL_ADDRESS],
             data=mails_models.TransactionalWithoutTemplateEmailData(
                 sender=mails_models.TransactionalSender.DEV,
                 subject="Doublon détecté",
