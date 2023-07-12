@@ -65,6 +65,7 @@ class TiteliveTest:
         assert product.extraData["schoolbook"] == (article["scolaire"] == "1")
         assert product.extraData["csr_id"] == "0105"
         assert product.extraData["gtl_id"] == "01050000"
+        assert product.extraData["code_clil"] == "3665"
 
     def test_get_new_product_from_ean_13_without_gtl(self, requests_mock):
         ean = "9782070455379"

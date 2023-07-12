@@ -102,6 +102,7 @@ class OfferExtraData(typing.TypedDict, total=False):
     # titelive after gtl
     csr_id: str | None
     gtl_id: str | None
+    code_clil: str | None
 
 
 class Product(PcObject, Base, Model, HasThumbMixin, ProvidableMixin):
