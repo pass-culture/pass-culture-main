@@ -54,7 +54,7 @@
     "classnames": "^2.2.6",
     "date-fns": "^2.30.0",
     "date-fns-tz": "^2.0.0",
-    "downshift": "^7.6.0",
+    "downshift": "^7.6.1",
     "final-form": "^4.20.9",
     "final-form-calculate": "^1.2.1",
     "formik": "^2.4.2",
