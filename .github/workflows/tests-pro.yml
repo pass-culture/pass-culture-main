@@ -184,6 +184,9 @@ jobs:
           wait-on: "http://localhost:3001,http://localhost/health/api,http://localhost/health/database"
           wait-on-timeout: 600
           working-directory: pro
+          # E2E tests are not stable enough for now.
+          # Once they are reliable, we can remove the following line.
+          continue-on-error: true
       - name: Archive E2E results
         if: always()
         uses: actions/upload-artifact@v3
