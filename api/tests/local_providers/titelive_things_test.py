@@ -23,6 +23,7 @@ from pcapi.utils.csr import get_closest_csr
 EAN_TEST = "9782809455069"
 EAN_TEST_TITLE = "Secret wars : marvel zombies n.1"
 GTL_ID_TEST = "3030400"
+CODE_CLIL_TEST = "4300"
 BASE_DATA_LINE_PARTS = [
     EAN_TEST,
     EAN_TEST_TITLE,
@@ -82,7 +83,7 @@ BASE_DATA_LINE_PARTS = [
     "1",
     "",
     GTL_ID_TEST,
-    "4300",
+    CODE_CLIL_TEST,
     "3012420280013",
     "0",
     "",  #  \n
@@ -116,6 +117,7 @@ class TiteliveThingsTest:
         closest_csr = get_closest_csr(GTL_ID_TEST)
         assert product.extraData.get("csr_id") == closest_csr.get("csr_id")
         assert product.extraData.get("rayon") == closest_csr.get("label")
+        assert product.extraData.get("code_clil") == CODE_CLIL_TEST
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
