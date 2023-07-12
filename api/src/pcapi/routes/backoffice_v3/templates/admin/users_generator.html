@@ -29,6 +29,13 @@
                   <span class="fw-bold">User ID :</span> {{ user.id }}
                 </div>
               </a>
+              {% if link_to_app %}
+                <a href="{{ link_to_app }}">
+                  <div class="mb-1">
+                    <span class="fw-bold">Naviguer vers l'application _//-></span>
+                  </div>
+                </a>
+              {% endif %}
               <div class="mb-1">
                 <span class="fw-bold">Email :</span> {{ user.email }}
               </div>
