@@ -461,6 +461,15 @@ def patch_collective_offer_public(
                 status_code=400,
             )
 
+    if "price" in new_values:
+        if offer.collectiveStock.price < new_values["price"]:
+            raise ApiErrors(
+                errors={
+                    "price": ["Le prix ne peut pas etre supérieur au prix existant"],
+                },
+                status_code=400,
+            )
+
     if "imageFile" in new_values:
         if offer.imageCredit is None and not new_values.get("imageCredit", None):
             raise ApiErrors(
