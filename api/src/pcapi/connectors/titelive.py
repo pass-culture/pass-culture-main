@@ -169,6 +169,7 @@ def get_new_product_from_ean13(ean: str) -> offers_models.Product:
             schoolbook=article["scolaire"] == "1",
             csr_id=csr["csr_id"] if csr else None,
             gtl_id=gtl_id,
+            code_clil=article["code_clil"] if "code_clil" in article else None,
             # remove rayon when removing csr
             rayon=csr["label"] if csr else None,
         ),
