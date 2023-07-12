@@ -14,8 +14,22 @@ from pcapi.core.offers.factories import ThingStockFactory
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
+from pcapi.core.testing import override_features
 from pcapi.local_providers import TiteLiveThings
+from pcapi.local_providers.titelive_things.titelive_things import ADULT_ADVISOR_TEXT
+from pcapi.local_providers.titelive_things.titelive_things import BASE_VAT
+from pcapi.local_providers.titelive_things.titelive_things import BOX_SUPPORT_CODE
+from pcapi.local_providers.titelive_things.titelive_things import CALENDAR_SUPPORT_CODE
 from pcapi.local_providers.titelive_things.titelive_things import COLUMN_INDICES
+from pcapi.local_providers.titelive_things.titelive_things import GTL_LEVEL_01_EXTRACURRICULAR
+from pcapi.local_providers.titelive_things.titelive_things import GTL_LEVEL_01_SCHOOL
+from pcapi.local_providers.titelive_things.titelive_things import GTL_LEVEL_01_YOUNG
+from pcapi.local_providers.titelive_things.titelive_things import GTL_LEVEL_02_AFTER_3_AND_BEFORE_6
+from pcapi.local_providers.titelive_things.titelive_things import GTL_LEVEL_02_BEFORE_3
+from pcapi.local_providers.titelive_things.titelive_things import LECTORAT_EIGHTEEN_ID
+from pcapi.local_providers.titelive_things.titelive_things import OBJECT_SUPPORT_CODE
+from pcapi.local_providers.titelive_things.titelive_things import PAPER_CONSUMABLE_SUPPORT_CODE
+from pcapi.local_providers.titelive_things.titelive_things import POSTER_SUPPORT_CODE
 from pcapi.utils.csr import get_closest_csr
 
 
@@ -118,17 +132,102 @@ class TiteliveThingsTest:
         assert product.extraData.get("rayon") == closest_csr.get("label")
         assert product.extraData.get("code_clil") == CODE_CLIL_TEST
 
+    @override_features(WIP_ENABLE_NEW_TITELIVE_ELIGIBILITY_FILTERS=True)
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
-    def test_does_not_create_product_when_product_is_a_school_book(
+    def test_does_not_create_product_when_product_is_gtl_school_book(
         self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
     ):
         get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
         DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = "livre scolaire"
-        DATA_LINE_PARTS[COLUMN_INDICES["scolaire"]] = "1"
+        DATA_LINE_PARTS[COLUMN_INDICES["genre_tite_live"]] = f"{GTL_LEVEL_01_SCHOOL}000000"
+
+        data_line = "~".join(DATA_LINE_PARTS)
+        get_lines_from_thing_file.return_value = iter([data_line])
+
+        providers_factories.TiteLiveThingsProviderFactory()
+        titelive_things = TiteLiveThings()
+
+        # When
+        titelive_things.updateObjects()
+
+        # Then
+        assert offers_models.Product.query.count() == 0
+
+    @override_features(WIP_ENABLE_NEW_TITELIVE_ELIGIBILITY_FILTERS=True)
+    @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
+    def test_does_not_create_product_when_product_is_vat_20(
+        self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
+    ):
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
+
+        DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
+        DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = "livre scolaire"
+        DATA_LINE_PARTS[COLUMN_INDICES["taux_tva"]] = BASE_VAT
+
+        data_line = "~".join(DATA_LINE_PARTS)
+        get_lines_from_thing_file.return_value = iter([data_line])
+
+        providers_factories.TiteLiveThingsProviderFactory()
+        titelive_things = TiteLiveThings()
+
+        # When
+        titelive_things.updateObjects()
+
+        # Then
+        assert offers_models.Product.query.count() == 0
+
+    @override_features(WIP_ENABLE_NEW_TITELIVE_ELIGIBILITY_FILTERS=True)
+    @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
+    def test_does_not_create_product_when_product_is_extracurricular(
+        self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
+    ):
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
+
+        DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
+        DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = "livre parascolaire"
+        DATA_LINE_PARTS[COLUMN_INDICES["genre_tite_live"]] = f"{GTL_LEVEL_01_EXTRACURRICULAR}000000"
+
+        data_line = "~".join(DATA_LINE_PARTS)
+        get_lines_from_thing_file.return_value = iter([data_line])
+
+        providers_factories.TiteLiveThingsProviderFactory()
+        titelive_things = TiteLiveThings()
+
+        # When
+        titelive_things.updateObjects()
+
+        # Then
+        assert offers_models.Product.query.count() == 0
+
+    @pytest.mark.parametrize(
+        "support_code",
+        [
+            CALENDAR_SUPPORT_CODE,
+            POSTER_SUPPORT_CODE,
+            PAPER_CONSUMABLE_SUPPORT_CODE,
+            BOX_SUPPORT_CODE,
+            OBJECT_SUPPORT_CODE,
+        ],
+    )
+    @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
+    def test_does_not_create_product_when_product_is_non_eligible_support_code(
+        self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app, support_code
+    ):
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
+
+        DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
+        DATA_LINE_PARTS[COLUMN_INDICES["code_support"]] = support_code
+
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
@@ -144,7 +243,7 @@ class TiteliveThingsTest:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
-    def test_create_product_when_product_is_a_school_book_but_in_product_whitelist(
+    def test_create_product_when_product_is_gtl_school_book_but_in_product_whitelist(
         self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
     ):
         fraud_factories.ProductWhitelistFactory(ean=BASE_DATA_LINE_PARTS[0])
@@ -152,7 +251,7 @@ class TiteliveThingsTest:
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
         DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = "livre scolaire"
-        DATA_LINE_PARTS[COLUMN_INDICES["scolaire"]] = "1"
+        DATA_LINE_PARTS[COLUMN_INDICES["genre_tite_live"]] = f"{GTL_LEVEL_01_SCHOOL}000000"
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
@@ -164,6 +263,93 @@ class TiteliveThingsTest:
 
         # Then
         assert offers_models.Product.query.count() == 1
+
+    @override_features(WIP_ENABLE_NEW_TITELIVE_ELIGIBILITY_FILTERS=True)
+    @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
+    def test_does_not_create_product_when_product_is_lectorat_eighteen_with_adult_advisor_comment(
+        self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
+    ):
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
+
+        DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
+        DATA_LINE_PARTS[COLUMN_INDICES["id_lectorat"]] = LECTORAT_EIGHTEEN_ID
+        DATA_LINE_PARTS[COLUMN_INDICES["commentaire"]] = ADULT_ADVISOR_TEXT
+
+        data_line = "~".join(DATA_LINE_PARTS)
+        get_lines_from_thing_file.return_value = iter([data_line])
+
+        providers_factories.TiteLiveThingsProviderFactory()
+        titelive_things = TiteLiveThings()
+
+        # When
+        titelive_things.updateObjects()
+
+        # Then
+        assert offers_models.Product.query.count() == 0
+
+    @override_features(WIP_ENABLE_NEW_TITELIVE_ELIGIBILITY_FILTERS=True)
+    @pytest.mark.parametrize(
+        "level_02_code_gtl",
+        [
+            GTL_LEVEL_02_BEFORE_3,
+            GTL_LEVEL_02_AFTER_3_AND_BEFORE_6,
+        ],
+    )
+    @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
+    def test_does_not_create_product_when_product_is_small_young(
+        self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app, level_02_code_gtl
+    ):
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
+
+        DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
+        DATA_LINE_PARTS[COLUMN_INDICES["genre_tite_live"]] = f"{GTL_LEVEL_01_YOUNG}{level_02_code_gtl}0000"
+
+        data_line = "~".join(DATA_LINE_PARTS)
+        get_lines_from_thing_file.return_value = iter([data_line])
+
+        providers_factories.TiteLiveThingsProviderFactory()
+        titelive_things = TiteLiveThings()
+
+        # When
+        titelive_things.updateObjects()
+
+        # Then
+        assert offers_models.Product.query.count() == 0
+
+    @override_features(WIP_ENABLE_NEW_TITELIVE_ELIGIBILITY_FILTERS=True)
+    @pytest.mark.parametrize(
+        "title",
+        [
+            "bryan pass toeic",
+            "toefl yes we can",
+        ],
+    )
+    @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
+    def test_does_not_create_product_when_product_is_toeic_or_toefl(
+        self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app, title
+    ):
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
+
+        DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
+        DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = title
+
+        data_line = "~".join(DATA_LINE_PARTS)
+        get_lines_from_thing_file.return_value = iter([data_line])
+
+        providers_factories.TiteLiveThingsProviderFactory()
+        titelive_things = TiteLiveThings()
+
+        # When
+        titelive_things.updateObjects()
+
+        # Then
+        assert offers_models.Product.query.count() == 0
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
@@ -255,6 +441,7 @@ class TiteliveThingsTest:
         # Then
         assert offers_models.Product.query.count() == 0
 
+    @override_features(WIP_ENABLE_NEW_TITELIVE_ELIGIBILITY_FILTERS=True)
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
@@ -266,7 +453,7 @@ class TiteliveThingsTest:
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
         DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = "livre scolaire"
-        DATA_LINE_PARTS[COLUMN_INDICES["code_rayon_csr"]] = "2704"
+        DATA_LINE_PARTS[COLUMN_INDICES["genre_tite_live"]] = f"{GTL_LEVEL_01_SCHOOL}000000"
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
@@ -279,10 +466,11 @@ class TiteliveThingsTest:
         # Then
         assert offers_models.Product.query.count() == 0
 
+    @override_features(WIP_ENABLE_NEW_TITELIVE_ELIGIBILITY_FILTERS=True)
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
-    def test_should_delete_product_when_reference_changes_to_school_related_product(
+    def test_should_delete_product_when_gtl_changes_to_school_related_product(
         self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
     ):
         # Given
@@ -290,7 +478,7 @@ class TiteliveThingsTest:
 
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
         DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = "livre scolaire"
-        DATA_LINE_PARTS[COLUMN_INDICES["code_rayon_csr"]] = "2704"
+        DATA_LINE_PARTS[COLUMN_INDICES["genre_tite_live"]] = f"{GTL_LEVEL_01_SCHOOL}000000"
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
