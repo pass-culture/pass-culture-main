@@ -74,7 +74,7 @@ class CollectiveOffersPublicPatchOfferTest:
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
             "bookingLimitDatetime": "2022-09-15T11:00",
-            "totalPrice": 216.25,
+            "totalPrice": 96.25,
             "numberOfTickets": 30,
             "educationalPriceDetail": "Justification du prix",
             # link to educational institution
@@ -122,6 +122,26 @@ class CollectiveOffersPublicPatchOfferTest:
 
         assert offer.institutionId == educational_institution.id
         assert educational_institution.isActive is True
+
+    @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=False)
+    def test_patch_offer_price_should_be_lower(self, client):
+        # Given
+        stock = educational_factories.CollectiveStockFactory()
+        offerer = stock.collectiveOffer.venue.managingOfferer
+        offerers_factories.ApiKeyFactory(offerer=offerer)
+
+        payload = {
+            "totalPrice": 1196.25,
+        }
+
+        # When
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+            )
+
+        # Then
+        assert response.status_code == 400
 
     @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=False)
     @override_features(WIP_ADD_CLG_6_5_COLLECTIVE_OFFER=True)
@@ -342,7 +362,7 @@ class CollectiveOffersPublicPatchOfferTest:
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
             "bookingLimitDatetime": "2022-09-15T11:00",
-            "totalPrice": 35621,
+            "totalPrice": 21,
             "numberOfTickets": 30,
             "educationalPriceDetail": "Justification du prix",
             # link to educational institution
@@ -529,7 +549,7 @@ class CollectiveOffersPublicPatchOfferTest:
             )
 
         # then
-        assert response.status_code == 403
+        assert response.status_code == 400
 
     @override_features(ENABLE_PROVIDER_AUTHENTIFICATION=False)
     def test_add_valid_image(self, client):
