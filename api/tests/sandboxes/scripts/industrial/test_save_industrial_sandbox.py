@@ -16,11 +16,15 @@ class SaveIndustrialSandboxTest:
     def test_creations(self, clear_tests_invoices_bucket, css_font_http_request_mock):
         save_industrial_sandbox()
 
-        assert offerers_models.Offerer.query.count() == 32
-        assert offerers_models.Venue.query.count() == 46
-        assert offers_models.Offer.query.count() == 127
-        assert offers_models.Stock.query.count() == 128
-        assert 170 <= bookings_models.Booking.query.count() <= 200
+        # Yes, this is mostly ridiculous. But we like to keep these
+        # magic numbers here. Developers update them from time to
+        # time, acting as if the numbers made sense. "The number of
+        # stocks in the sandbox? 1336, obviously, why are you asking?"
+        assert offerers_models.Offerer.query.count() == 62
+        assert offerers_models.Venue.query.count() == 78
+        assert offers_models.Offer.query.count() == 328
+        assert offers_models.Stock.query.count() == 1336
+        assert 200 <= bookings_models.Booking.query.count() <= 300
         assert finance_models.Invoice.query.count() == 3
         assert finance_models.Cashflow.query.count() == 4
         assert educational_models.EducationalInstitution.query.count() == 27
@@ -28,4 +32,4 @@ class SaveIndustrialSandboxTest:
             finance_models.Pricing.query.filter(
                 finance_models.Pricing.status != finance_models.PricingStatus.INVOICED
             ).count()
-        ) == 63  # FIXME (dbaty, 2022-09-14): should probably be 0
+        ) == 60  # FIXME (dbaty, 2022-09-14): should probably be 0
