@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AcademiesResponseModel } from '../models/AcademiesResponseModel';
 import type { AdageHeaderLogBody } from '../models/AdageHeaderLogBody';
 import type { AuthenticatedResponse } from '../models/AuthenticatedResponse';
 import type { BookCollectiveOfferRequest } from '../models/BookCollectiveOfferRequest';
@@ -37,6 +38,22 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/authenticate',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_academies <GET>
+   * @returns AcademiesResponseModel OK
+   * @throws ApiError
+   */
+  public getAcademies(): CancelablePromise<AcademiesResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/adage-iframe/collective/academies',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
