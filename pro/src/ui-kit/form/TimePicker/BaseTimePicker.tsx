@@ -1,58 +1,42 @@
-import fr from 'date-fns/locale/fr'
-import React from 'react'
-import ReactDatePicker, { registerLocale } from 'react-datepicker'
-import type { ReactDatePickerProps } from 'react-datepicker'
-
-import { FORMAT_HH_mm } from 'utils/date'
+import React, { useId } from 'react'
 
 import '../DatePicker/BaseDatePicker.module.scss'
+
 import { BaseInput } from '../shared'
-registerLocale('fr', fr)
+import { BaseInputProps } from '../shared/BaseInput/BaseInput'
 
-type Props = Omit<ReactDatePickerProps, 'value'> & {
-  value?: Date | null | ''
-  hasError?: boolean
-  filterVariant?: boolean
-  'aria-label'?: string
+type Props = Omit<BaseInputProps, 'value'> & {
+  value: string
 }
 
-export const isDateValid = (date?: Date | null | ''): date is Date => {
-  return date instanceof Date && !isNaN(date.getTime())
-}
+const TIME_OPTIONS = Array.from({ length: 24 * 4 }, (_, i) => {
+  const hours = Math.floor(i / 4)
+  const minutes = (i % 4) * 15
+  return `${hours.toString().padStart(2, '0')}:${minutes
+    .toString()
+    .padStart(2, '0')}`
+})
 
-export const BaseTimePicker = ({
-  hasError,
-  filterVariant,
-  value,
-  'aria-label': ariaLabel,
-  ...props
-}: Props): JSX.Element => {
-  // react-datepicker crashes if the value is not a Date or an InvalidDate
-  // (InvalidDate is the result of new Date('stringthebrowsercantparse'))
-  const selected = isDateValid(value) ? value : null
+export const BaseTimePicker = (props: Props): JSX.Element => {
+  const optionsListId = useId()
 
   return (
-    <ReactDatePicker
-      {...props}
-      customInput={
-        <BaseInput
-          hasError={hasError}
-          filterVariant={filterVariant}
-          aria-label={ariaLabel}
-        />
-      }
-      dateFormat={FORMAT_HH_mm}
-      dropdownMode="scroll"
-      locale="fr"
-      placeholderText="HH:MM"
-      showTimeSelect
-      showTimeSelectOnly
-      timeCaption="Horaire"
-      timeIntervals={15}
-      onKeyDown={event => {
-        !/[0-9:]|Backspace|Tab/.test(event.key) && event.preventDefault()
-      }}
-      selected={selected}
-    />
+    <>
+      <BaseInput
+        type="time"
+        list={optionsListId}
+        placeholder="HH:MM"
+        autoComplete="off"
+        {...props}
+      />
+
+      <datalist id={optionsListId}>
+        {TIME_OPTIONS.map(time => (
+          <option key={time} value={time}>
+            {time}
+          </option>
+        ))}
+      </datalist>
+    </>
   )
 }
