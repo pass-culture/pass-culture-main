@@ -3,10 +3,10 @@ import './OfferSummary.scss'
 import React from 'react'
 
 import { OfferAddressType } from 'apiClient/adage'
-import { ReactComponent as LocationIcon } from 'icons/location.svg'
 import buildingStrokeIcon from 'icons/stroke-building.svg'
 import strokeDateIcon from 'icons/stroke-date.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
+import strokeLocationIcon from 'icons/stroke-location.svg'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
 import {
@@ -107,8 +107,11 @@ const OfferSummary = ({
         </div>
         <div className="offer-summary-item">
           <dt>
-            {/* TODO : add alt when changing to SvgIcon */}
-            <LocationIcon className="offer-summary-item-icon" />
+            <SvgIcon
+              alt="Lieu"
+              src={strokeLocationIcon}
+              className="offer-summary-item-icon"
+            />
           </dt>
           <dl>{offerVenueLabel}</dl>
         </div>
