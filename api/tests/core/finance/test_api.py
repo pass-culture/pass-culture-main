@@ -137,6 +137,13 @@ class PriceBookingTest:
         assert pricing.customRule is None
         assert pricing.revenue == 1000
 
+    def test_link_to_finance_event(self):
+        booking = bookings_factories.BookingFactory(stock=individual_stock_factory())
+        bookings_api.mark_as_used(booking)
+        pricing = api.price_booking(booking)
+        assert pricing.event is not None
+        assert pricing.event.booking == booking
+
     def test_pricing_lines(self):
         user = users_factories.RichBeneficiaryFactory()
         booking1 = bookings_factories.UsedBookingFactory(
@@ -241,6 +248,7 @@ class PriceBookingTest:
         queries += 1  # select dependent pricings
         queries += 1  # calculate revenue
         queries += 1  # select all CustomReimbursementRule
+        queries += 1  # select FinanceEvent
         queries += 1  # insert 1 Pricing
         queries += 1  # insert 2 PricingLine
         queries += 1  # commit
@@ -261,6 +269,13 @@ class PriceCollectiveBookingTest:
         assert pricing.standardRule == "Remboursement total pour les offres éducationnelles"
         assert pricing.customRule is None
         assert pricing.revenue == 0
+
+    def test_link_to_finance_event(self):
+        booking = UsedCollectiveBookingFactory(collectiveStock=collective_stock_factory())
+        api.add_event(booking, models.FinanceEventMotive.BOOKING_USED)
+        pricing = api.price_booking(booking)
+        assert pricing.event is not None
+        assert pricing.event.collectiveBooking == booking
 
     def test_pricing_lines(self):
         stock = collective_stock_factory(price=19_999)
