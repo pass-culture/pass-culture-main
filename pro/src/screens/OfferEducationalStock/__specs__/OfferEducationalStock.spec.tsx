@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { addMinutes } from 'date-fns'
+import { addDays, addMinutes, format } from 'date-fns'
 import React from 'react'
 
 import { StudentLevels } from 'apiClient/adage'
@@ -12,6 +12,7 @@ import {
 } from 'core/OfferEducational'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
+import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferEducationalStock, {
@@ -25,11 +26,12 @@ const defaultProps: OfferEducationalStockProps = {
   mode: Mode.CREATION,
 }
 
+const tomorrow = addDays(new Date(), 1)
 const initialValuesNotEmpty = {
   ...DEFAULT_EAC_STOCK_FORM_VALUES,
-  eventDate: new Date(),
-  eventTime: addMinutes(new Date(), 15),
-  bookingLimitDatetime: new Date('2023-03-30'),
+  eventDate: format(tomorrow, FORMAT_ISO_DATE_ONLY),
+  eventTime: format(addMinutes(tomorrow, 15), FORMAT_HH_mm),
+  bookingLimitDatetime: '2023-03-30',
   numberOfPlaces: 10,
   totalPrice: 100,
 }
@@ -47,9 +49,9 @@ describe('OfferEducationalStock', () => {
       ...defaultProps,
       offer,
       initialValues: {
-        eventDate: new Date('2022-02-10T00:00:00.000Z'),
-        eventTime: new Date('2022-02-10T00:00:00.000Z'),
-        bookingLimitDatetime: new Date('2022-02-10'),
+        eventDate: '2022-02-10',
+        eventTime: '00:00',
+        bookingLimitDatetime: '2022-02-10',
         numberOfPlaces: 10,
         totalPrice: 100,
         priceDetail: 'Détail du prix',
@@ -288,9 +290,9 @@ describe('OfferEducationalStock', () => {
         offer,
         initialValues: {
           ...DEFAULT_EAC_STOCK_FORM_VALUES,
-          eventDate: new Date(),
-          eventTime: new Date(),
-          bookingLimitDatetime: new Date('2023-03-30'),
+          eventDate: format(new Date(), FORMAT_ISO_DATE_ONLY),
+          eventTime: format(new Date(), FORMAT_ISO_DATE_ONLY),
+          bookingLimitDatetime: '2023-03-30',
           numberOfPlaces: 10,
           totalPrice: 100,
         },

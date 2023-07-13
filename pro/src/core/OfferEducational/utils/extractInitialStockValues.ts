@@ -1,3 +1,5 @@
+import { format } from 'date-fns'
+
 import { GetCollectiveOfferRequestResponseModel } from 'apiClient/v1/models/GetCollectiveOfferRequestResponseModel'
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
@@ -6,6 +8,7 @@ import {
   CollectiveOfferTemplate,
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
+import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 export const extractInitialStockValues = (
@@ -27,7 +30,7 @@ export const extractInitialStockValues = (
       ...DEFAULT_EAC_STOCK_FORM_VALUES,
       numberOfPlaces,
       eventDate: requestedDate
-        ? new Date(requestedDate)
+        ? format(new Date(requestedDate), FORMAT_ISO_DATE_ONLY)
         : DEFAULT_EAC_STOCK_FORM_VALUES.eventDate,
     }
   }
@@ -43,20 +46,31 @@ export const extractInitialStockValues = (
   }
 
   const eventDate = collectiveStock.beginningDatetime
-    ? getLocalDepartementDateTimeFromUtc(
-        collectiveStock.beginningDatetime,
-        offer.venue.departementCode
+    ? format(
+        getLocalDepartementDateTimeFromUtc(
+          collectiveStock.beginningDatetime,
+          offer.venue.departementCode
+        ),
+        FORMAT_ISO_DATE_ONLY
       )
-    : null
+    : ''
   const eventTime = collectiveStock.beginningDatetime
-    ? getLocalDepartementDateTimeFromUtc(
-        collectiveStock.beginningDatetime,
-        offer.venue.departementCode
+    ? format(
+        getLocalDepartementDateTimeFromUtc(
+          collectiveStock.beginningDatetime,
+          offer.venue.departementCode
+        ),
+        FORMAT_HH_mm
       )
-    : null
+    : ''
   const bookingLimitDatetime = collectiveStock.bookingLimitDatetime
-    ? getLocalDepartementDateTimeFromUtc(collectiveStock.bookingLimitDatetime)
-    : null
+    ? format(
+        getLocalDepartementDateTimeFromUtc(
+          collectiveStock.bookingLimitDatetime
+        ),
+        FORMAT_ISO_DATE_ONLY
+      )
+    : ''
 
   return {
     eventDate: eventDate ?? DEFAULT_EAC_STOCK_FORM_VALUES.eventDate,
