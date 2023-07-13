@@ -116,23 +116,6 @@ jobs:
           PCAPI_SECRETS_FILE=<(echo '${{ needs.generate-pcapi-helm-secrets-file.outputs.pcapi_helm_secrets_file_base64 }}' | base64 -d) \
           helmfile -e ${{ inputs.environment }} sync --set image.tag=${{ inputs.app_version }}
 
-  deploy-pro:
-    name: Deploy pro
-    needs: deploy-api
-    if: |
-      always() &&
-      (needs.deploy-api.result == 'success' || needs.deploy-api.result == 'skipped') &&
-      inputs.deploy_pro == true
-    uses: ./.github/workflows/deploy-gcs-front.yml
-    with:
-      app_name: pro
-      app_directory: pro
-      environment: ${{ inputs.environment }}
-    secrets:
-      gcp_project: ${{ secrets.METIER_GCP_PROJECT }}
-      service_account: ${{ secrets.METIER_CIRCLECI_SERVICE_ACCOUNT }}
-      workload_identity_provider: ${{ secrets.METIER_GCP_WORKLOAD_IDENTITY_PROVIDER }}
-
   deploy-pro-on-testing-on-firebase:
     name: Deploy pro on testing live channel
     needs: deploy-api
