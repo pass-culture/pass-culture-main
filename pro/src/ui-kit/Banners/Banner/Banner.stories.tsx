@@ -1,7 +1,6 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import { ReactComponent as BannerImage } from './assets/job_highlights_banner.svg'
 import Banner, { BannerProps } from './Banner'
 
 export default {
@@ -13,19 +12,6 @@ const Template: Story<BannerProps> = props => (
   <Banner {...props}>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
     tempor incididunt ut labore et dolore magna aliqua.
-  </Banner>
-)
-
-const ImageTemplate: Story<BannerProps> = props => (
-  <Banner {...props}>
-    <a
-      href="https://docsend.com/view/n9yniyrtusp82a9m"
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="en savoir plus sur les temps fort des métiers de la culture"
-    >
-      <BannerImage />
-    </a>
   </Banner>
 )
 
@@ -46,9 +32,6 @@ Light.args = { type: 'light', closable: true }
 
 export const Minimal = Template.bind({})
 Minimal.args = { minimalStyle: true }
-
-export const Image = ImageTemplate.bind({})
-Image.args = { type: 'image', closable: true }
 
 export const WithLink = Template.bind({})
 WithLink.args = {
