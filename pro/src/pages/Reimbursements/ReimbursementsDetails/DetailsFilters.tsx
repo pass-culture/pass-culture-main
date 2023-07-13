@@ -9,8 +9,8 @@ import { getToday } from 'utils/date'
 
 type FiltersType = {
   venue: string
-  periodStart: Date
-  periodEnd: Date
+  periodStart: string
+  periodEnd: string
 }
 
 interface ReimbursementsSectionHeaderProps {
@@ -60,7 +60,7 @@ const DetailsFilters = ({
     setAreFiltersDefault(false)
   }
 
-  const setStartDateFilter = (startDate: Date) => {
+  const setStartDateFilter = (startDate: string) => {
     setFilters((prevFilters: FiltersType) => ({
       ...prevFilters,
       periodStart: startDate,
@@ -68,7 +68,7 @@ const DetailsFilters = ({
     setAreFiltersDefault(false)
   }
 
-  const setEndDateFilter = (endDate: Date) => {
+  const setEndDateFilter = (endDate: string) => {
     setFilters((prevFilters: FiltersType) => ({
       ...prevFilters,
       periodEnd: endDate,
@@ -105,8 +105,8 @@ const DetailsFilters = ({
         </FieldLayout>
 
         <PeriodSelector
-          changePeriodBeginningDateValue={setStartDateFilter}
-          changePeriodEndingDateValue={setEndDateFilter}
+          onBeginningDateChange={setStartDateFilter}
+          onEndingDateChange={setEndDateFilter}
           isDisabled={false}
           label="Période"
           maxDateEnding={getToday()}
