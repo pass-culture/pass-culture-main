@@ -16,6 +16,7 @@ FILE_PATH = DIRECTORY / FILENAME
 
 HEADER_LINES_COUNT = 2
 HEADER_DOCUMENTATION = f"""
+# pylint: skip-file
 # This source was generated 
 # DO NOT EDIT !
 # 
