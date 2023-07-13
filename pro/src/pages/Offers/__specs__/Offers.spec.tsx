@@ -497,7 +497,7 @@ describe('route Offers', () => {
 
           await userEvent.type(
             screen.getByLabelText('Début de la période'),
-            '25/12/2020'
+            '2020-12-25'
           )
 
           await userEvent.click(screen.getByText('Lancer la recherche'))
@@ -509,7 +509,7 @@ describe('route Offers', () => {
             undefined,
             undefined,
             undefined,
-            '2020-12-25T00:00:00Z',
+            '2020-12-25',
             undefined
           )
         })
@@ -519,7 +519,7 @@ describe('route Offers', () => {
 
           await userEvent.type(
             screen.getByLabelText('Fin de la période'),
-            '27/12/2020'
+            '2020-12-27'
           )
           await userEvent.click(screen.getByText('Lancer la recherche'))
 
@@ -531,7 +531,7 @@ describe('route Offers', () => {
             undefined,
             undefined,
             undefined,
-            '2020-12-27T23:59:59Z'
+            '2020-12-27'
           )
         })
       })

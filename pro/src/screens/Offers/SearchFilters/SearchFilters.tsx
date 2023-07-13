@@ -1,5 +1,3 @@
-import { endOfDay } from 'date-fns'
-import { utcToZonedTime } from 'date-fns-tz'
 import React, { FormEvent, MouseEventHandler } from 'react'
 
 import FormLayout from 'components/FormLayout/FormLayout'
@@ -22,7 +20,6 @@ import SelectInput from 'ui-kit/form/Select/SelectInput'
 import { BaseInput, FieldLayout } from 'ui-kit/form/shared'
 import PeriodSelector from 'ui-kit/form_raw/PeriodSelector/PeriodSelector'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { formatBrowserTimezonedDateAsUTC } from 'utils/date'
 
 import styles from './SearchFilters.module.scss'
 
@@ -84,17 +81,19 @@ const SearchFilters = ({
     updateSearchFilters({ collectiveOfferType: event.currentTarget.value })
   }
 
-  const changePeriodBeginningDateValue = (periodBeginningDate: Date) => {
-    const dateToFilter = periodBeginningDate
-      ? formatBrowserTimezonedDateAsUTC(periodBeginningDate)
-      : DEFAULT_SEARCH_FILTERS.periodBeginningDate
+  const onBeginningDateChange = (periodBeginningDate: string) => {
+    const dateToFilter =
+      periodBeginningDate !== ''
+        ? periodBeginningDate
+        : DEFAULT_SEARCH_FILTERS.periodBeginningDate
     updateSearchFilters({ periodBeginningDate: dateToFilter })
   }
 
-  const changePeriodEndingDateValue = (periodEndingDate: Date) => {
-    const dateToFilter = periodEndingDate
-      ? formatBrowserTimezonedDateAsUTC(endOfDay(periodEndingDate))
-      : DEFAULT_SEARCH_FILTERS.periodEndingDate
+  const onEndingDateChange = (periodEndingDate: string) => {
+    const dateToFilter =
+      periodEndingDate !== ''
+        ? periodEndingDate
+        : DEFAULT_SEARCH_FILTERS.periodEndingDate
     updateSearchFilters({ periodEndingDate: dateToFilter })
   }
 
@@ -194,20 +193,12 @@ const SearchFilters = ({
           )}
 
           <PeriodSelector
-            changePeriodBeginningDateValue={changePeriodBeginningDateValue}
-            changePeriodEndingDateValue={changePeriodEndingDateValue}
+            onBeginningDateChange={onBeginningDateChange}
+            onEndingDateChange={onEndingDateChange}
             isDisabled={disableAllFilters}
             label="Période de l’évènement"
-            periodBeginningDate={
-              selectedFilters.periodBeginningDate
-                ? utcToZonedTime(selectedFilters.periodBeginningDate, 'UTC')
-                : undefined
-            }
-            periodEndingDate={
-              selectedFilters.periodEndingDate
-                ? utcToZonedTime(selectedFilters.periodEndingDate, 'UTC')
-                : undefined
-            }
+            periodBeginningDate={selectedFilters.periodBeginningDate}
+            periodEndingDate={selectedFilters.periodEndingDate}
           />
         </FormLayout.Row>
 
