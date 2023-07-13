@@ -11,7 +11,7 @@ from pcapi.utils.blueprint import Blueprint
 blueprint = Blueprint(__name__, __name__)
 
 
-@blueprint.cli.command("check_provider_api")  # type: ignore [arg-type]
+@blueprint.cli.command("check_provider_api")
 @click.option("--url", required=True, help="Endpoint url")
 @click.option("--siret", required=True, help="A working siret")
 @click.option("--token", required=True, help="(Optionnal) Basic authentication token")

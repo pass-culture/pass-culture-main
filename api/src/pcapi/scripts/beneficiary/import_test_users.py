@@ -190,7 +190,7 @@ def create_users_from_google_sheet(document_id: str, update_if_exists: bool = Fa
     return []
 
 
-@blueprint.cli.command("import_test_users")  # type: ignore [arg-type]
+@blueprint.cli.command("import_test_users")
 @optgroup.group("User data sources", cls=RequiredMutuallyExclusiveOptionGroup)
 @optgroup.option(
     "-d",

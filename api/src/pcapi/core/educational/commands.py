@@ -34,7 +34,7 @@ def reindex_all_collective_offers() -> None:
     search.index_all_collective_offers_and_templates()
 
 
-@blueprint.cli.command("generate_fake_adage_token")  # type: ignore [arg-type]
+@blueprint.cli.command("generate_fake_adage_token")
 @click.option("--readonly", type=bool, is_flag=True, default=False, help="Generate a readonly token.")
 def generate_fake_adage_token(readonly: bool) -> None:
     """
@@ -44,7 +44,7 @@ def generate_fake_adage_token(readonly: bool) -> None:
     print(f"Adage localhost URL: http://localhost:3001/adage-iframe?token={token}")
 
 
-@blueprint.cli.command("import_deposit_csv")  # type: ignore [arg-type]
+@blueprint.cli.command("import_deposit_csv")
 @click.option(
     "--year",
     type=int,
@@ -151,7 +151,7 @@ def import_eac_dms_application(ignore_previous: bool = False) -> None:
         import_dms_applications(procedure_number=procedure_number, ignore_previous=ignore_previous)
 
 
-@blueprint.cli.command("notify_reimburse_collective_booking")  # type: ignore [arg-type]
+@blueprint.cli.command("notify_reimburse_collective_booking")
 @click.option(
     "--booking_id",
     type=int,

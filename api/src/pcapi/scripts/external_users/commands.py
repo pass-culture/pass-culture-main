@@ -8,7 +8,7 @@ from .unstack_batch_cloud_task_queue import unstack_batch_queue
 blueprint = Blueprint(__name__, __name__)
 
 
-@blueprint.cli.command("unstack_batch_queue")  # type: ignore [arg-type]
+@blueprint.cli.command("unstack_batch_queue")
 @click.option("--queue-name", required=True, help="Queue name (not full path)", type=str)
 @click.option("--chunk-size", required=False, default=1_000, help="Number of users per request (Batch API)", type=int)
 @click.option(
