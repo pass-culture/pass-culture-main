@@ -13,7 +13,7 @@ import styles from './BannerLayout.module.scss'
 export interface BannerLayoutProps {
   children?: React.ReactNode | React.ReactNode[]
   linkNode?: React.ReactNode | React.ReactNode[]
-  type?: 'notification-info' | 'attention' | 'light' | 'new' | 'image'
+  type?: 'notification-info' | 'attention' | 'light' | 'new'
   closable?: boolean
   minimalStyle?: boolean
   handleOnClick?: () => void
@@ -64,7 +64,7 @@ const BannerLayout = ({
           <button onClick={handleOnClick} type="button">
             {
               /* istanbul ignore next: graphic variation */
-              type != 'new' && type != 'light' && type != 'image' ? (
+              type != 'new' && type != 'light' ? (
                 <SvgIcon
                   src={fullClearIcon}
                   alt="Masquer le bandeau"
