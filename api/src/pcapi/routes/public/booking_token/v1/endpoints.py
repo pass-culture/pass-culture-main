@@ -5,6 +5,8 @@ from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as booking_repository
 from pcapi.core.bookings import validation as bookings_validation
+from pcapi.models import api_errors
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.serialization import serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
@@ -39,6 +41,15 @@ def _create_response_to_get_booking_by_token(booking: bookings_models.Booking) -
     return response
 
 
+def _check_activation_of_this_api() -> None:
+    if not FeatureToggle.WIP_ENABLE_API_CONTREMARQUE_V1.is_active():
+        raise api_errors.ResourceNotFoundError(
+            errors={
+                "global": "La version 1 de l'API contremarque n'est plus disponible. Veuillez utiliser la version 2 de l'API ou le guichet de validation du portail pro."
+            }
+        )
+
+
 # TODO (gvanneste, 2021-10-19) : retravailler cette fonction, notamment check_user_is_logged_in_or_email_is_provided
 # À brûler : juste checker si le user a droit de récupérer les bookings
 @blueprint.deprecated_booking_token_api.route("/bookings/token/<token>", methods=["GET"])
@@ -48,6 +59,7 @@ def _create_response_to_get_booking_by_token(booking: bookings_models.Booking) -
     on_empty_status=204,
 )
 def get_booking_by_token(token: str) -> serialization.LegacyBookingResponse | None:
+    _check_activation_of_this_api()
     email: str | None = request.args.get("email", None)
     offer_id = dehumanize(request.args.get("offer_id", None))
 
@@ -67,6 +79,7 @@ def get_booking_by_token(token: str) -> serialization.LegacyBookingResponse | No
 @blueprint.deprecated_booking_token_api.route("/bookings/token/<token>", methods=["PATCH"])
 @spectree_serialize(on_success_status=204)
 def patch_booking_by_token(token: str, query: serialization.PatchBookingByTokenQueryModel) -> None:
+    _check_activation_of_this_api()
     email = query.email
     offer_id = dehumanize(query.offer_id)
     booking = booking_repository.find_by(token, email, offer_id)

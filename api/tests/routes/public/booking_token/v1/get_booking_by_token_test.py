@@ -10,6 +10,7 @@ from pcapi.core.bookings.factories import UsedBookingFactory
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.serialization import serialize
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -296,3 +297,13 @@ class Returns410Test:
         # Then
         assert response.status_code == 410
         assert response.json["booking"] == ["Cette réservation a déjà été validée"]
+
+
+@pytest.mark.usefixtures("db_session")
+class GoodByeV1Test:
+    @override_features(WIP_ENABLE_API_CONTREMARQUE_V1=False)
+    def test_raise_404_if_api_is_deactivated(self, client):
+        admin = users_factories.AdminFactory()
+        client = client.with_session_auth(admin.email)
+        response = client.get("/bookings/token/TOKEN")
+        assert response.status_code == 404
