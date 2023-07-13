@@ -323,7 +323,7 @@ class Returns201Test:
                 },
                 {
                     "price": 30,
-                    "quantity": None,
+                    "quantity": 0,
                     "bookingLimitDatetime": serialize(booking_limit_datetime),
                 },
                 {

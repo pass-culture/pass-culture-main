@@ -65,7 +65,7 @@ class StockCreationBodyModel(BaseModel):
     booking_limit_datetime: datetime | None
     price: decimal.Decimal | None
     price_category_id: int | None
-    quantity: int | None = Field(None, ge=1, le=models.Stock.MAX_STOCK_QUANTITY)
+    quantity: int | None = Field(None, ge=0, le=models.Stock.MAX_STOCK_QUANTITY)
 
     class Config:
         alias_generator = to_camel
@@ -78,7 +78,7 @@ class StockEditionBodyModel(BaseModel):
     id: int
     price: decimal.Decimal | None
     price_category_id: int | None
-    quantity: int | None = Field(None, ge=1, le=models.Stock.MAX_STOCK_QUANTITY)
+    quantity: int | None = Field(None, ge=0, le=models.Stock.MAX_STOCK_QUANTITY)
 
     class Config:
         alias_generator = to_camel
