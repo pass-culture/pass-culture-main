@@ -5,6 +5,7 @@ import FormLayout from 'components/FormLayout'
 import { Mode, OfferEducationalStockFormValues } from 'core/OfferEducational'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import { DatePicker, TextInput, TimePicker } from 'ui-kit'
+import { isDateValid } from 'utils/date'
 
 import {
   BOOKING_LIMIT_DATETIME_LABEL,
@@ -36,12 +37,12 @@ const FormStock = ({
       <DatePicker
         disabled={mode === Mode.READ_ONLY}
         label={EVENT_DATE_LABEL}
-        minDateTime={new Date()}
+        minDate={new Date()}
         name="eventDate"
         smallLabel
-        onChange={(name, date) => {
+        onChange={event => {
           if (mode === Mode.EDITION) {
-            setFieldValue('bookingLimitDatetime', date)
+            setFieldValue('bookingLimitDatetime', event.target.value)
           }
         }}
         className={styles['input-date']}
@@ -73,8 +74,12 @@ const FormStock = ({
         disabled={mode === Mode.READ_ONLY}
         label={BOOKING_LIMIT_DATETIME_LABEL}
         hasLabelLineBreak={false}
-        minDateTime={new Date(offerDateCreated)}
-        maxDateTime={values.eventDate ? values.eventDate : undefined}
+        minDate={new Date(offerDateCreated)}
+        maxDate={
+          isDateValid(new Date(values.eventDate))
+            ? new Date(values.eventDate)
+            : undefined
+        }
         name="bookingLimitDatetime"
         smallLabel
         className={styles['input-date']}

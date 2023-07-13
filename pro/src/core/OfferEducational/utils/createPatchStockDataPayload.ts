@@ -10,11 +10,11 @@ import {
 } from './buildDatetimesForStockPayload'
 
 type OfferEducationalStockFormValuesForSerializer = {
-  eventDate: Date
-  eventTime: Date
+  eventDate: string
+  eventTime: string
   numberOfPlaces: number
   totalPrice: number
-  bookingLimitDatetime: Date | null
+  bookingLimitDatetime: string
   priceDetail: string
 }
 

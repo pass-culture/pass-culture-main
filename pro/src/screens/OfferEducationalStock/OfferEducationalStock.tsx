@@ -26,6 +26,7 @@ import { isOfferDisabled } from 'core/Offers/utils'
 import useAnalytics from 'hooks/useAnalytics'
 import { Banner, ButtonLink, SubmitButton, TextArea } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { isDateValid } from 'utils/date'
 
 import { DETAILS_PRICE_LABEL } from './constants/labels'
 import FormStock from './FormStock'
@@ -98,8 +99,11 @@ const OfferEducationalStock = <
   )
 
   const submitForm = async (values: OfferEducationalStockFormValues) => {
+    const isEventBeforeOpeningDate =
+      !isDateValid(values.eventDate) ||
+      new Date(values.eventDate) < OPENING_DATE_FOR_6E_AND_5E
     if (
-      values.eventDate < OPENING_DATE_FOR_6E_AND_5E &&
+      isEventBeforeOpeningDate &&
       (offer.students.includes(StudentLevels.COLL_GE_6E) ||
         offer.students.includes(StudentLevels.COLL_GE_5E))
     ) {
