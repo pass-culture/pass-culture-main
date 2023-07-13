@@ -10,7 +10,6 @@ from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.offers import exceptions as offers_exceptions
-from pcapi.core.testing import override_features
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.serialization import collective_stock_serialize
 
@@ -177,42 +176,6 @@ class EditCollectiveOfferStocksTest:
         assert stock.price == 1500
 
     @freeze_time("2020-11-17 15:00:00")
-    def should_update_bookings_cancellation_limit_date_if_event_postponed_old(self) -> None:
-        # Given
-        educational_year = educational_factories.EducationalYearFactory(
-            beginningDate=datetime.datetime(2020, 9, 1), expirationDate=datetime.datetime(2021, 8, 31)
-        )
-        initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=20)
-        cancellation_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
-        stock_to_be_updated = educational_factories.CollectiveStockFactory(beginningDatetime=initial_event_date)
-        booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock=stock_to_be_updated,
-            status=CollectiveBookingStatus.PENDING,
-            cancellationLimitDate=cancellation_limit_date,
-            confirmationLimitDate=datetime.datetime.utcnow() + datetime.timedelta(days=30),
-            educationalYear=educational_year,
-        )
-
-        new_event_date = datetime.datetime.now(  # pylint: disable=datetime-now
-            datetime.timezone.utc
-        ) + datetime.timedelta(days=25, hours=5)
-        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
-            beginningDatetime=new_event_date,
-        )
-
-        # When
-        educational_api_stock.edit_collective_stock(
-            stock=stock_to_be_updated, stock_data=new_stock_data.dict(exclude_unset=True)
-        )
-
-        # Then
-        booking_updated = CollectiveBooking.query.filter_by(id=booking.id).one()
-        assert booking_updated.cancellationLimitDate == new_event_date.replace(tzinfo=None) - datetime.timedelta(
-            days=15
-        )
-
-    @freeze_time("2020-11-17 15:00:00")
-    @override_features(WIP_ENABLE_EAC_CANCEL_30_DAYS=True)
     def should_update_bookings_cancellation_limit_date_if_event_postponed(self) -> None:
         # Given
         educational_year = educational_factories.EducationalYearFactory(

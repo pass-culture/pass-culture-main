@@ -114,7 +114,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NEW_FRAUD_RULES = "Active la nouvelle gestion des règles de validation d'offre"
     WIP_ENABLE_COLLECTIVE_DMS_TRACKING = "Active le suivi du référencement DMS pour les acteurs EAC"
     WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY = "Changer le template d'email de confirmation de réservation"
-    WIP_ENABLE_EAC_CANCEL_30_DAYS = "EAC délai annulation 30 Jours par defaut au lieu de 15"
     WIP_ENABLE_TRUSTED_DEVICE = "Active la fonctionnalité d'appareil de confiance"
     WIP_ENABLE_SUSPICIOUS_EMAIL_SEND = "Active l'envoie d'email lors de la détection d'une connexion suspicieuse"
     WIP_EAC_ENABLE_NEW_AUTHENTICATION_PUBLIC_API = "Active la gestion des providers dans l'api publique EAC"
@@ -184,7 +183,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_FRAUD_RULES,
     FeatureToggle.WIP_ENABLE_COLLECTIVE_DMS_TRACKING,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
-    FeatureToggle.WIP_ENABLE_EAC_CANCEL_30_DAYS,
     FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE,
     FeatureToggle.WIP_ENABLE_SUSPICIOUS_EMAIL_SEND,
     FeatureToggle.WIP_EAC_ENABLE_NEW_AUTHENTICATION_PUBLIC_API,
