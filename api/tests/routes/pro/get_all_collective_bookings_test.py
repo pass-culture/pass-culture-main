@@ -84,7 +84,7 @@ class Returns200Test:
                     "institutionId": institution.institutionId,
                 },
                 "bookingIdentifier": humanize(booking.id),
-                "bookingCancellationLimitDate": "2022-04-30T12:15:00+02:00",
+                "bookingCancellationLimitDate": "2022-04-15T12:15:00+02:00",
                 "bookingConfirmationDate": "2022-03-12T11:15:00+01:00",
                 "bookingConfirmationLimitDate": "2022-04-30T17:00:00+02:00",
                 "bookingDate": "2022-03-11T11:15:00+01:00",
@@ -105,7 +105,7 @@ class Returns200Test:
                     },
                     {
                         "status": "confirmed",
-                        "date": "2022-04-30T12:15:00+02:00",
+                        "date": "2022-04-15T12:15:00+02:00",
                     },
                 ],
             }
@@ -226,7 +226,7 @@ class Returns200Test:
             },
             {
                 "status": "confirmed",
-                "date": "2022-04-30T22:00:00+02:00",
+                "date": "2022-04-15T22:00:00+02:00",
             },
             {
                 "status": "cancelled",
@@ -435,7 +435,7 @@ class Returns200Test:
                     "institutionId": institution.institutionId,
                 },
                 "bookingIdentifier": humanize(booking.id),
-                "bookingCancellationLimitDate": "2022-04-30T12:15:00+02:00",
+                "bookingCancellationLimitDate": "2022-04-15T12:15:00+02:00",
                 "bookingConfirmationDate": "2022-03-12T11:15:00+01:00",
                 "bookingConfirmationLimitDate": "2022-04-30T17:00:00+02:00",
                 "bookingDate": "2022-03-11T11:15:00+01:00",
@@ -456,7 +456,7 @@ class Returns200Test:
                     },
                     {
                         "status": "confirmed",
-                        "date": "2022-04-30T12:15:00+02:00",
+                        "date": "2022-04-15T12:15:00+02:00",
                     },
                 ],
             }
@@ -525,7 +525,7 @@ class Returns200Test:
                     "institutionId": institution.institutionId,
                 },
                 "bookingIdentifier": humanize(booking.id),
-                "bookingCancellationLimitDate": "2022-04-30T12:15:00+02:00",
+                "bookingCancellationLimitDate": "2022-04-15T12:15:00+02:00",
                 "bookingConfirmationDate": "2022-03-12T11:15:00+01:00",
                 "bookingConfirmationLimitDate": "2022-04-30T17:00:00+02:00",
                 "bookingDate": "2022-03-11T11:15:00+01:00",
@@ -546,7 +546,7 @@ class Returns200Test:
                     },
                     {
                         "status": "confirmed",
-                        "date": "2022-04-30T12:15:00+02:00",
+                        "date": "2022-04-15T12:15:00+02:00",
                     },
                 ],
             }
@@ -618,7 +618,7 @@ class Returns200Test:
                 },
                 "bookingIdentifier": humanize(booking.id),
                 "bookingDate": "2022-02-11T11:15:00+01:00",
-                "bookingCancellationLimitDate": "2022-02-23T11:15:00+01:00",
+                "bookingCancellationLimitDate": "2022-02-11T11:15:00+01:00",
                 "bookingConfirmationDate": "2022-02-12T11:15:00+01:00",
                 "bookingConfirmationLimitDate": "2022-05-08T17:00:00+02:00",
                 "bookingId": str(booking.id),
@@ -638,7 +638,7 @@ class Returns200Test:
                     },
                     {
                         "status": "confirmed",
-                        "date": "2022-02-23T11:15:00+01:00",
+                        "date": "2022-02-11T11:15:00+01:00",
                     },
                     {
                         "status": "validated",
@@ -724,7 +724,7 @@ class Returns400Test:
             },
             {
                 "status": "confirmed",
-                "date": "2022-04-30T22:00:00+02:00",
+                "date": "2022-04-15T22:00:00+02:00",
             },
             {
                 "status": "cancelled",
