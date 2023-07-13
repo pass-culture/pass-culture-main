@@ -12,8 +12,7 @@
   border: rem.torem(1px) solid colors.$grey-medium;
   background-color: colors.$grey-light;
   color: colors.$black;
-  box-shadow:
-    0 rem.torem(1px) rem.torem(8px)
+  box-shadow: 0 rem.torem(1px) rem.torem(8px)
     rgba(colors.$black-with-transparency, $alpha: 0.15);
   border-radius: rem.torem(4px);
 
@@ -32,8 +31,7 @@
   }
 
   &:hover {
-    box-shadow:
-      0 rem.torem(1px) rem.torem(8px)
+    box-shadow: 0 rem.torem(1px) rem.torem(8px)
       rgba(colors.$black-with-transparency, $alpha: 0.3);
 
     .image-upload-button-label {
@@ -49,6 +47,7 @@
 .icon {
   height: rem.torem(32px);
   width: rem.torem(32px);
+  color: colors.$grey-dark;
 }
 
 .label {
