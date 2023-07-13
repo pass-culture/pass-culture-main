@@ -29,9 +29,9 @@ export type QuantityPerPriceCategoryForm = {
 export type RecurrenceFormValues = {
   recurrenceType: string
   days: RecurrenceDays[]
-  startingDate: Date | null
-  endingDate: Date | null
-  beginningTimes: (Date | null)[]
+  startingDate: string
+  endingDate: string
+  beginningTimes: string[]
   quantityPerPriceCategories: QuantityPerPriceCategoryForm[]
   bookingLimitDateInterval: number | ''
   monthlyOption: MonthlyOption | null

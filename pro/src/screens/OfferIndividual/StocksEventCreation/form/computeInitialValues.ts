@@ -7,9 +7,9 @@ export const computeInitialValues = (
 ): RecurrenceFormValues => ({
   recurrenceType: RecurrenceType.UNIQUE,
   days: [],
-  startingDate: null,
-  endingDate: null,
-  beginningTimes: [null],
+  startingDate: '',
+  endingDate: '',
+  beginningTimes: [''],
   quantityPerPriceCategories: [
     {
       quantity: '',
