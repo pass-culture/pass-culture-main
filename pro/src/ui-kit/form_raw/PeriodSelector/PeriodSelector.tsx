@@ -3,19 +3,19 @@ import React from 'react'
 import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
 
 interface PeriodSelectorProps {
-  changePeriodBeginningDateValue: (date: Date) => void
-  changePeriodEndingDateValue: (date: Date) => void
+  onBeginningDateChange: (date: string) => void
+  onEndingDateChange: (date: string) => void
   isDisabled?: boolean
   label?: string
   maxDateEnding?: Date
   minDateBeginning?: Date
-  periodBeginningDate?: Date
-  periodEndingDate?: Date
+  periodBeginningDate: string
+  periodEndingDate: string
 }
 
 const PeriodSelector = ({
-  changePeriodBeginningDateValue,
-  changePeriodEndingDateValue,
+  onBeginningDateChange,
+  onEndingDateChange,
   isDisabled,
   label,
   maxDateEnding,
@@ -25,16 +25,16 @@ const PeriodSelector = ({
 }: PeriodSelectorProps) => (
   <div className="period-filter">
     <div className="period-filter-label">
-      {label && label}
+      {label}
       <div className={`period-filter-inputs ${isDisabled ? 'disabled' : ''}`}>
         <div className="period-filter-begin-picker">
           <BaseDatePicker
             className="period-filter-input field-date-begin"
             aria-label="Début de la période"
             disabled={isDisabled}
-            maxDate={periodEndingDate}
+            maxDate={new Date(periodEndingDate)}
             minDate={minDateBeginning}
-            onChange={changePeriodBeginningDateValue}
+            onChange={event => onBeginningDateChange(event.target.value)}
             value={periodBeginningDate}
           />
         </div>
@@ -47,8 +47,8 @@ const PeriodSelector = ({
             aria-label="Fin de la période"
             disabled={isDisabled}
             maxDate={maxDateEnding}
-            minDate={periodBeginningDate}
-            onChange={changePeriodEndingDateValue}
+            minDate={new Date(periodBeginningDate)}
+            onChange={event => onEndingDateChange(event.target.value)}
             value={periodEndingDate}
           />
         </div>

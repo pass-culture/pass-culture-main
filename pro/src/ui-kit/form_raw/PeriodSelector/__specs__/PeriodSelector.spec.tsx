@@ -5,30 +5,34 @@ import React from 'react'
 import PeriodSelector from '../PeriodSelector'
 
 describe('PeriodSelector', () => {
-  const mockChangePeriodBeginningDateValue = jest.fn()
-  const mockChangePeriodEndingDateValue = jest.fn()
+  const mockOnBeginningDateChange = jest.fn()
+  const mockOnEndingDateChange = jest.fn()
   const renderPeriodSelector = () => {
     render(
       <PeriodSelector
-        changePeriodBeginningDateValue={mockChangePeriodBeginningDateValue}
-        changePeriodEndingDateValue={mockChangePeriodEndingDateValue}
+        onBeginningDateChange={mockOnBeginningDateChange}
+        onEndingDateChange={mockOnEndingDateChange}
         label="label"
+        periodBeginningDate=""
+        periodEndingDate=""
       />
     )
   }
 
-  it('should call on changePeriodBeginningDateValue and changePeriodEndingDateValue', async () => {
+  it('should call on onBeginningDateChange and onEndingDateChange', async () => {
     renderPeriodSelector()
 
-    const startingDateInput = screen.getByLabelText('Début de la période')
-    await userEvent.click(startingDateInput)
-    await userEvent.click(screen.getByText('10'))
+    await userEvent.type(
+      screen.getByLabelText('Début de la période'),
+      '2020-10-20'
+    )
 
-    const endCalendar = screen.getByLabelText('Fin de la période')
-    await userEvent.click(endCalendar)
-    await userEvent.click(screen.getByText('10'))
+    await userEvent.type(
+      screen.getByLabelText('Fin de la période'),
+      '2020-12-24'
+    )
 
-    expect(mockChangePeriodBeginningDateValue).toHaveBeenCalledTimes(1)
-    expect(mockChangePeriodEndingDateValue).toHaveBeenCalledTimes(1)
+    expect(mockOnBeginningDateChange).toHaveBeenCalledWith('2020-10-20')
+    expect(mockOnEndingDateChange).toHaveBeenCalledWith('2020-12-24')
   })
 })
