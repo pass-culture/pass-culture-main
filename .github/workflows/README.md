@@ -82,7 +82,6 @@ Liste des fichiers
 | build-and-push-docker-images.yml      | Helper   | Automatically |                                                                                                       |
 | check-folder-changes.yml              | Helper   | Automatically |                                                                                                       |
 | deploy-app-engine-image-resizing.yaml | Helper   | Automatically |                                                                                                       |
-| deploy-gcs-front.yml                  | Helper   | Automatically |                                                                                                       |
 | deploy.yml                            | Helper   | Automatically |                                                                                                       |
 | mypy-cop.yml                          | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/mypy-cop.yml)              |
 | node-quality-check.yml                | Helper   | Automatically |                                                                                                       |
