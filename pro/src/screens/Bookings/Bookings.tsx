@@ -1,9 +1,9 @@
-import { startOfDay } from 'date-fns'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import {
   BookingRecapResponseModel,
+  BookingStatusFilter,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 import NoData from 'components/NoData'
@@ -138,6 +138,7 @@ const Bookings = <
   useEffect(() => {
     checkUserHasBookings()
   }, [checkUserHasBookings])
+
   const dateFilterFormat = (date: Date | number) =>
     formatBrowserTimezonedDateAsUTC(date, FORMAT_ISO_DATE_ONLY)
 
@@ -146,50 +147,36 @@ const Bookings = <
 
   useEffect(() => {
     const params = new URLSearchParams(location.search)
-    const paramVenueId: string =
-      params.get('offerVenueId') ?? DEFAULT_PRE_FILTERS.offerVenueId
-    const paramBookingStatusFilter: string =
-      params.get('bookingStatusFilter') ??
-      DEFAULT_PRE_FILTERS.bookingStatusFilter
-    const paramBookingBeginningDate: Date | null = !params.has(
-      'bookingBeginningDate'
-    )
-      ? params.has('offerEventDate')
-        ? null
-        : DEFAULT_PRE_FILTERS.bookingBeginningDate
-      : startOfDay(new Date(params.get('bookingBeginningDate') as string))
-    const paramBookingEndingDate: Date | null = !params.has('bookingEndingDate')
-      ? params.has('offerEventDate')
-        ? null
-        : DEFAULT_PRE_FILTERS.bookingEndingDate
-      : startOfDay(new Date(params.get('bookingEndingDate') as string))
-    const paramOfferType: string =
-      params.get('offerType') ?? DEFAULT_PRE_FILTERS.offerType
-    const paramOfferEventDate: string | Date = params.has('offerEventDate')
-      ? params.get('offerEventDate') === 'all'
-        ? 'all'
-        : startOfDay(new Date(params.get('offerEventDate') as string))
-      : DEFAULT_PRE_FILTERS.offerEventDate
 
     if (
-      !(
-        DEFAULT_PRE_FILTERS.offerVenueId === paramVenueId &&
-        DEFAULT_PRE_FILTERS.bookingStatusFilter === paramBookingStatusFilter &&
-        DEFAULT_PRE_FILTERS.offerEventDate === paramOfferEventDate &&
-        DEFAULT_PRE_FILTERS.offerType === paramOfferType &&
-        DEFAULT_PRE_FILTERS.bookingBeginningDate ===
-          paramBookingBeginningDate &&
-        DEFAULT_PRE_FILTERS.bookingEndingDate === paramBookingEndingDate
-      )
+      params.has('offerVenueId') ||
+      params.has('bookingStatusFilter') ||
+      params.has('bookingBeginningDate') ||
+      params.has('bookingEndingDate') ||
+      params.has('offerType') ||
+      params.has('offerEventDate')
     ) {
       const filterToLoad: PreFiltersParams = {
-        offerVenueId: paramVenueId,
-        bookingStatusFilter: paramBookingStatusFilter,
-        bookingBeginningDate: paramBookingBeginningDate,
-        bookingEndingDate: paramBookingEndingDate,
-        offerType: paramOfferType,
-        offerEventDate: paramOfferEventDate,
-      } as PreFiltersParams
+        offerVenueId:
+          params.get('offerVenueId') ?? DEFAULT_PRE_FILTERS.offerVenueId,
+        // TODO typeguard this to remove the `as`
+        bookingStatusFilter:
+          (params.get('bookingStatusFilter') as BookingStatusFilter) ??
+          DEFAULT_PRE_FILTERS.bookingStatusFilter,
+        bookingBeginningDate:
+          params.get('bookingBeginningDate') ??
+          (params.has('offerEventDate')
+            ? ''
+            : DEFAULT_PRE_FILTERS.bookingBeginningDate),
+        bookingEndingDate:
+          params.get('bookingEndingDate') ??
+          (params.has('offerEventDate')
+            ? ''
+            : DEFAULT_PRE_FILTERS.bookingEndingDate),
+        offerType: params.get('offerType') ?? DEFAULT_PRE_FILTERS.offerType,
+        offerEventDate:
+          params.get('offerEventDate') ?? DEFAULT_PRE_FILTERS.offerEventDate,
+      }
 
       loadBookingsRecap(filterToLoad)
       setAppliedPreFilters(filterToLoad)
@@ -203,11 +190,11 @@ const Bookings = <
         : {}),
       ...(filter.bookingBeginningDate
         ? {
-            bookingBeginningDate: dateFilterFormat(filter.bookingBeginningDate),
+            bookingBeginningDate: filter.bookingBeginningDate,
           }
         : {}),
       ...(filter.bookingEndingDate
-        ? { bookingEndingDate: dateFilterFormat(filter.bookingEndingDate) }
+        ? { bookingEndingDate: filter.bookingEndingDate }
         : {}),
       ...(filter.bookingStatusFilter
         ? { bookingStatusFilter: filter.bookingStatusFilter }

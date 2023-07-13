@@ -29,17 +29,11 @@ export const buildBookingsRecapQuery = ({
     )
   }
   if (bookingBeginningDate) {
-    params.bookingPeriodBeginningDate = formatBrowserTimezonedDateAsUTC(
-      bookingBeginningDate,
-      FORMAT_ISO_DATE_ONLY
-    )
+    params.bookingPeriodBeginningDate = bookingBeginningDate
   }
 
   if (bookingEndingDate) {
-    params.bookingPeriodEndingDate = formatBrowserTimezonedDateAsUTC(
-      bookingEndingDate,
-      FORMAT_ISO_DATE_ONLY
-    )
+    params.bookingPeriodEndingDate = bookingEndingDate
   }
 
   params.bookingStatusFilter = bookingStatusFilter

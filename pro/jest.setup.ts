@@ -11,7 +11,7 @@ fetchMock.mockResponse(req => {
   // eslint-disable-next-line
   console.error(`
   ----------------------------------------------------------------------------
-  /!\\ UNMOCKED FETCH CALL TO :  ${req.url}
+  /!\\ UNMOCKED FETCH CALL TO :  [${req.method}] ${req.url}
   ----------------------------------------------------------------------------
   `)
 
