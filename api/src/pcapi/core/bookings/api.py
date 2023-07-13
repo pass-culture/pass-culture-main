@@ -562,7 +562,9 @@ def auto_mark_as_used_after_event() -> None:
     )
     # `dateUsed` is precise enough that it's very unlikely to get a
     # booking that was marked as used from another channel (and that
-    # would already have an event).
+    # would already have an event). If it happened, `add_event` would
+    # fail because of the PostgreSQL partially unique constraint on
+    # `bookingId`.
     individual_bookings = Booking.query.filter_by(dateUsed=now).options(
         sa.orm.joinedload(Booking.stock, innerjoin=True),
         sa.orm.joinedload(Booking.venue, innerjoin=True),
