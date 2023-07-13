@@ -50,7 +50,6 @@ class BaseUserFactory(BaseFactory):
     class Params:
         age = 40
 
-    email = f"{uuid.uuid4()}@passculture.gen"
     dateOfBirth = LazyAttribute(lambda o: datetime.utcnow().date() - relativedelta(years=o.age))
     isEmailValidated = False
 
@@ -61,10 +60,8 @@ class BaseUserFactory(BaseFactory):
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.User:
-        password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
-        kwargs["password"] = crypto.hash_password(password)
+        kwargs.update(**cls._set_non_nullable_attributes(**kwargs))
         instance = super()._create(model_class, *args, **kwargs)
-        instance.clearTextPassword = password
         cls.set_custom_attributes(instance)
         repository.save(instance)
         return instance
@@ -76,17 +73,23 @@ class BaseUserFactory(BaseFactory):
         *args: typing.Any,
         **kwargs: typing.Any,
     ) -> models.User:
-        password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
-        kwargs["password"] = crypto.hash_password(password)
+        kwargs.update(**cls._set_non_nullable_attributes(**kwargs))
         instance = super()._build(model_class, *args, **kwargs)
-        instance.clearTextPassword = password
         cls.set_custom_attributes(instance)
-        repository.save(instance)
         return instance
 
     @classmethod
-    def set_custom_attributes(cls, obj: models.User) -> None:
+    def _set_non_nullable_attributes(cls, **kwargs: typing.Any) -> dict:
+        kwargs = {}
+        password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
+        kwargs["password"] = crypto.hash_password(password)
+        kwargs["email"] = kwargs.get("email", f"{uuid.uuid4()}@passculture.gen")
+        return kwargs
+
+    @classmethod
+    def set_custom_attributes(cls, obj: models.User, **kwargs: typing.Any) -> None:
         obj.email = f"user.{obj.id}@passculture.gen"
+        obj.clearTextPassword = kwargs.get("password")
 
     @classmethod
     def beneficiary_fraud_checks(
@@ -174,7 +177,7 @@ class ProfileCompletedUserFactory(PhoneValidatedUserFactory):
     postalCode = factory.Faker("postcode")
 
     @classmethod
-    def set_custom_attributes(cls, obj: models.User) -> None:
+    def set_custom_attributes(cls, obj: models.User, **kwargs: typing.Any) -> None:
         super().set_custom_attributes(obj)
         obj.email = f"user.{obj.id}@passculture.gen"
         obj.postalCode = f"{random.randint(10, 959) * 100:05}"
@@ -228,7 +231,7 @@ class IdentityValidatedUserFactory(ProfileCompletedUserFactory):
     idPieceNumber = factory.Faker("ssn", locale="fr_FR")
 
     @classmethod
-    def set_custom_attributes(cls, obj: models.User) -> None:
+    def set_custom_attributes(cls, obj: models.User, **kwargs: typing.Any) -> None:
         super().set_custom_attributes(obj)
         if obj.idPieceNumber:
             obj.idPieceNumber = obj.idPieceNumber[:12]
