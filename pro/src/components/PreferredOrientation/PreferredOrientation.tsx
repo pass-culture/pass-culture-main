@@ -1,7 +1,7 @@
 import React from 'react'
 
-import { ReactComponent as LandscapePreferredOrientation } from './landscape-preferred-orientation.svg'
-import { ReactComponent as PortraitPreferredOrientation } from './portrait-preferred-orientation.svg'
+import landscapePreferredOrientation from './landscape-preferred-orientation.svg'
+import portraitPreferredOrientation from './portrait-preferred-orientation.svg'
 import style from './PreferredOrientation.module.scss'
 
 export type PreferredOrientationProps = {
@@ -12,15 +12,15 @@ export type PreferredOrientationProps = {
 export const PreferredOrientation = ({
   orientation,
 }: PreferredOrientationProps): JSX.Element => {
-  const Image =
+  const imageSrc =
     orientation === 'portrait'
-      ? PortraitPreferredOrientation
-      : LandscapePreferredOrientation
+      ? portraitPreferredOrientation
+      : landscapePreferredOrientation
 
   return (
     <figure className={style['preferred-orientation']}>
       <div className={style['preferred-orientation-image-container']}>
-        <Image />
+        <img src={imageSrc} alt="" />
       </div>
       <figcaption className={style['preferred-orientation-label']}>
         {orientation === 'portrait'
