@@ -315,13 +315,6 @@ DEBUG_ACTIVATED = bool(int(os.environ.get("DEBUG_ACTIVATED", "0")))
 # PHONE NUMBERS
 BLACKLISTED_SMS_RECIPIENTS = set(secrets_utils.get("BLACKLISTED_SMS_RECIPIENTS", "").splitlines())
 
-# APPSFLYER
-APPS_FLYER_ANDROID_ID = os.environ.get("APPS_FLYER_ANDROID_ID", "app.passculture.webapp")
-APPS_FLYER_IOS_ID = os.environ.get("APPS_FLYER_IOS_ID", "id1557887412")
-
-APPS_FLYER_ANDROID_API_KEY = secrets_utils.get("APPS_FLYER_ANDROID_API_KEY", "")
-APPS_FLYER_IOS_API_KEY = secrets_utils.get("APPS_FLYER_IOS_API_KEY", "")
-
 # SEARCH
 SEARCH_BACKEND = os.environ.get("SEARCH_BACKEND")
 
