@@ -3,7 +3,7 @@ import './OldAppLayout.scss'
 import * as React from 'react'
 
 import { VenueResponse } from 'apiClient/adage'
-import { ReactComponent as Logo } from 'icons/logo-pass-culture-dark.svg'
+import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
 import strokeDownloadIcon from 'icons/stroke-download.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -37,7 +37,12 @@ export const OldAppLayout = ({
               Télécharger l’aide
             </a>
           </div>
-          <Logo className="app-logo" />
+          <SvgIcon
+            src={logoPassCultureIcon}
+            alt=""
+            viewBox="0 0 71 24"
+            className="app-logo"
+          />
         </div>
 
         <OffersInstantSearch

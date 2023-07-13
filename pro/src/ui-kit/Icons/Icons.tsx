@@ -131,26 +131,25 @@ const shadowIcons: IconListItem[] = [
   { src: 'icons/shadow-calendar.svg' },
 ]
 
-const notCleandIcons: IconListItem[] = [
-  // Not cleaned
+const otherIcons: IconListItem[] = [
+  { src: 'icons/logo-pass-culture.svg', viewBox: '0 0 71 24' },
+
+  // TODO Not cleaned
   { src: 'icons/checkbox-check.svg', viewBox: '0 0 10 8' },
   { src: 'icons/linear-gradient.svg', viewBox: '0 0 623 1024' }, // TODO replace by a jpg/png
-  { src: 'icons/logo-pass-culture.svg', viewBox: '0 0 114 84' },
   { src: 'icons/logo-pass-culture-header.svg', viewBox: '0 0 119 40' },
   { src: 'icons/ico-no-bookings.svg', viewBox: '0 0 124 124' },
   { src: 'icons/ico-404.svg', viewBox: '0 0 308 194' },
   { src: 'icons/open-dropdown.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-unavailable-page-white.svg', viewBox: '0 0 317 198' },
   { src: 'icons/ico-warning.svg', viewBox: '0 0 16 16' },
-  { src: 'icons/logo-pass-culture-dark.svg', viewBox: '0 0 71 24' },
-  { src: 'icons/logo-pass-culture-adage.svg', viewBox: '0 0 120 39' },
 ]
 
 const iconsSections = [
   { title: 'Full icons', icons: fullIcons },
   { title: 'Stroke icons', icons: strokeIcons },
   { title: 'Shadow icons', icons: shadowIcons },
-  { title: 'Not cleaned icons', icons: notCleandIcons },
+  { title: 'Other icons', icons: otherIcons },
 ]
 
 export const Icons = () => {
