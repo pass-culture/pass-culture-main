@@ -273,6 +273,13 @@ class TiteLiveThings(LocalProvider):
         return [providable_info]
 
     def get_ineligibility_reason(self) -> str | None:
+        product_whitelist = fraud_models.ProductWhitelist.query.filter(
+            fraud_models.ProductWhitelist.ean == self.product_infos[INFO_KEYS["EAN13"]]
+        ).one_or_none()
+
+        if product_whitelist:
+            return None
+
         if (
             self.product_infos[INFO_KEYS["IS_SCOLAIRE"]] == "1"
             or self.product_infos[INFO_KEYS["CODE_CSR"]] in SCHOOL_RELATED_CSR_CODE
