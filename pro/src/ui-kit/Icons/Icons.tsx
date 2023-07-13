@@ -145,7 +145,6 @@ const notCleandIcons: IconListItem[] = [
   { src: 'icons/ico-unavailable-page-white.svg', viewBox: '0 0 317 198' },
   { src: 'icons/ico-warning.svg', viewBox: '0 0 16 16' },
   { src: 'icons/logo-pass-culture-dark.svg', viewBox: '0 0 71 24' },
-  { src: 'icons/ico-institution.svg', viewBox: '0 0 18 18' },
   { src: 'icons/logo-pass-culture-adage.svg', viewBox: '0 0 120 39' },
 ]
 
