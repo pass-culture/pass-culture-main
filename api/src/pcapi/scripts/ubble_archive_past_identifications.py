@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 blueprint = Blueprint(__name__, __name__)
 
 
-@blueprint.cli.command("archive_past_identifications")  # type: ignore [arg-type]
+@blueprint.cli.command("archive_past_identifications")
 @click.argument("start_date", type=click.DateTime(formats=["%Y-%m-%d"]), required=True)
 @click.argument("end_date", type=click.DateTime(formats=["%Y-%m-%d"]), required=True)
 @click.argument("limit", type=int, required=False)

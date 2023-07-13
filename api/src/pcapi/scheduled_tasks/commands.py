@@ -187,7 +187,7 @@ def send_today_events_notifications_metropolitan_france_command() -> None:
     send_today_events_notifications_metropolitan_france()
 
 
-@blueprint.cli.command("send_today_events_notifications_overseas_france")  # type: ignore [arg-type]
+@blueprint.cli.command("send_today_events_notifications_overseas_france")
 @log_cron_with_transaction
 @click.option("--utc-mean-offset", help="UTC offset to use (can be negative)", type=int, required=True)
 @click.argument("departments", nargs=-1)
