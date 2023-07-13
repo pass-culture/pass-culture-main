@@ -55,7 +55,7 @@ const InvoicesFilters = ({
     setAreFiltersDefault(false)
   }
 
-  const setStartDateFilter = (startDate: Date) => {
+  const setStartDateFilter = (startDate: string) => {
     setFilters((prevFilters: FiltersType) => ({
       ...prevFilters,
       periodStart: startDate,
@@ -63,7 +63,7 @@ const InvoicesFilters = ({
     setAreFiltersDefault(false)
   }
 
-  const setEndDateFilter = (endDate: Date) => {
+  const setEndDateFilter = (endDate: string) => {
     setFilters((prevFilters: FiltersType) => ({
       ...prevFilters,
       periodEnd: endDate,
@@ -103,8 +103,8 @@ const InvoicesFilters = ({
         </FieldLayout>
 
         <PeriodSelector
-          changePeriodBeginningDateValue={setStartDateFilter}
-          changePeriodEndingDateValue={setEndDateFilter}
+          onBeginningDateChange={setStartDateFilter}
+          onEndingDateChange={setEndDateFilter}
           isDisabled={disable}
           label="Période"
           maxDateEnding={getToday()}

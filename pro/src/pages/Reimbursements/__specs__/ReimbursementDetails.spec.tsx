@@ -82,27 +82,6 @@ describe('reimbursementsWithFilters', () => {
     jest.spyOn(api, 'getInvoices').mockResolvedValue(BASE_INVOICES)
   })
 
-  it('should disable buttons when one or both of the period dates are not filled', async () => {
-    renderWithProviders(<ReimbursementsDetails />, {
-      storeOverrides,
-    })
-
-    const startFilter = await screen.findByLabelText('Début de la période')
-    const endFilter = screen.getByLabelText('Fin de la période')
-    await userEvent.clear(startFilter)
-    await userEvent.clear(endFilter)
-
-    expect(
-      screen.getByRole('button', {
-        name: /Télécharger/i,
-      })
-    ).toBeDisabled()
-    expect(screen.getByText(/Afficher/)).toHaveAttribute(
-      'aria-disabled',
-      'true'
-    )
-  })
-
   it('should not disable buttons when the period dates are filled', async () => {
     renderWithProviders(<ReimbursementsDetails />, {
       storeOverrides,
@@ -170,10 +149,8 @@ describe('reimbursementsWithFilters', () => {
     const startFilter = await screen.findByLabelText('Début de la période')
     const endFilter = screen.getByLabelText('Fin de la période')
 
-    await userEvent.clear(startFilter)
-    await userEvent.clear(endFilter)
-    await userEvent.type(startFilter, '12/11/1998')
-    await userEvent.type(endFilter, '12/12/1999')
+    await userEvent.type(startFilter, '1998-11-12')
+    await userEvent.type(endFilter, '1999-12-12')
     await userEvent.selectOptions(
       await screen.findByLabelText('Lieu'),
       'Public Name venue 1'
@@ -187,9 +164,9 @@ describe('reimbursementsWithFilters', () => {
 
     expect(screen.getByLabelText('Lieu')).toHaveValue('allVenues')
     expect(screen.getByLabelText('Début de la période')).toHaveValue(
-      '15/11/2020'
+      '2020-11-15'
     )
-    expect(screen.getByLabelText('Fin de la période')).toHaveValue('15/12/2020')
+    expect(screen.getByLabelText('Fin de la période')).toHaveValue('2020-12-15')
   })
 
   it('should order venue option by alphabetical order', async () => {
@@ -228,17 +205,18 @@ describe('reimbursementsWithFilters', () => {
       storeOverrides,
     })
 
-    const startFilter = await screen.findByLabelText('Début de la période')
-    const endFilter = screen.getByLabelText('Fin de la période')
-
     await userEvent.selectOptions(
-      screen.getByLabelText('Lieu'),
+      await screen.findByLabelText('Lieu'),
       'Public Name venue 1'
     )
-    await userEvent.clear(startFilter)
-    await userEvent.clear(endFilter)
-    await userEvent.type(startFilter, '12/11/1998')
-    await userEvent.type(endFilter, '12/12/1999')
+
+    const startInput = screen.getByLabelText('Début de la période')
+    const endInput = screen.getByLabelText('Fin de la période')
+    await userEvent.clear(startInput)
+    await userEvent.clear(endInput)
+    await userEvent.type(startInput, '1998-11-12')
+    await userEvent.type(endInput, '1999-12-12')
+
     expect(screen.getByText(/Afficher/)).toHaveAttribute(
       'href',
       `/remboursements-details?reimbursementPeriodBeginningDate=1998-11-12&reimbursementPeriodEndingDate=1999-12-12&venueId=${venueId}`
