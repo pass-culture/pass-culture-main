@@ -6,7 +6,7 @@ import { CollectiveStatusLabel } from 'components/CollectiveStatusLabel'
 import { Offer } from 'core/Offers/types'
 import fullHideIcon from 'icons/full-hide.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
-import { ReactComponent as StrokeCheckIcon } from 'icons/stroke-check.svg'
+import strokeCheckIcon from 'icons/stroke-check.svg'
 import strokeClockIcon from 'icons/stroke-clock.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import strokeDoubleCheckIcon from 'icons/stroke-double-check.svg'
@@ -69,7 +69,13 @@ export const getCollectiveStatusLabel = (
       return (
         <CollectiveStatusLabel
           className={style['status-active']}
-          icon={<StrokeCheckIcon className={style['status-label-icon']} />}
+          icon={
+            <SvgIcon
+              src={strokeCheckIcon}
+              alt=""
+              className={style['status-label-icon']}
+            />
+          }
           label="publiée"
         />
       )
@@ -92,7 +98,13 @@ export const getCollectiveStatusLabel = (
       ) : (
         <CollectiveStatusLabel
           className={style['status-booked']}
-          icon={<StrokeCheckIcon className={style['status-label-icon']} />}
+          icon={
+            <SvgIcon
+              src={strokeCheckIcon}
+              alt=""
+              className={style['status-label-icon']}
+            />
+          }
           label="réservée"
         />
       )
