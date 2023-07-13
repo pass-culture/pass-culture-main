@@ -1,9 +1,14 @@
+import { format } from 'date-fns'
 import sub from 'date-fns/sub'
 import { v4 as uuidv4 } from 'uuid'
 
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { serializeBeginningDateTime } from 'screens/OfferIndividual/StocksEventEdition/adapters/serializers'
-import { toISOStringWithoutMilliseconds } from 'utils/date'
+import {
+  FORMAT_ISO_DATE_ONLY,
+  isDateValid,
+  toISOStringWithoutMilliseconds,
+} from 'utils/date'
 
 import {
   getDatesInInterval,
@@ -24,39 +29,48 @@ const getRecurrenceDates = (values: RecurrenceFormValues): Date[] => {
   switch (values.recurrenceType) {
     case RecurrenceType.UNIQUE:
       /* istanbul ignore next: should be already validated by yup */
-      if (values.startingDate === null) {
+      if (!isDateValid(values.startingDate)) {
         throw new Error('Starting date is empty')
       }
       return [new Date(values.startingDate)]
 
     case RecurrenceType.DAILY: {
       /* istanbul ignore next: should be already validated by yup */
-      if (values.startingDate === null || values.endingDate === null) {
+      if (
+        !isDateValid(values.startingDate) ||
+        !isDateValid(values.endingDate)
+      ) {
         throw new Error('Starting or ending date is empty')
       }
 
-      return getDatesInInterval(values.startingDate, values.endingDate)
+      return getDatesInInterval(
+        new Date(values.startingDate),
+        new Date(values.endingDate)
+      )
     }
 
     case RecurrenceType.WEEKLY: {
       /* istanbul ignore next: should be already validated by yup */
       if (
-        values.startingDate === null ||
-        values.endingDate === null ||
+        !isDateValid(values.startingDate) ||
+        !isDateValid(values.endingDate) ||
         values.days.length === 0
       ) {
         throw new Error('Starting, ending date or days is empty')
       }
 
       return getDatesInInterval(
-        values.startingDate,
-        values.endingDate,
+        new Date(values.startingDate),
+        new Date(values.endingDate),
         values.days
       )
     }
     case RecurrenceType.MONTHLY: {
       /* istanbul ignore next: should be already validated by yup */
-      if (values.startingDate === null || values.endingDate === null) {
+      if (
+        !isDateValid(values.startingDate) ||
+        !isDateValid(values.endingDate)
+      ) {
         throw new Error('Starting or ending date is empty')
       }
       if (values.monthlyOption === null) {
@@ -64,8 +78,8 @@ const getRecurrenceDates = (values: RecurrenceFormValues): Date[] => {
       }
 
       return getDatesWithMonthlyOption(
-        values.startingDate,
-        values.endingDate,
+        new Date(values.startingDate),
+        new Date(values.endingDate),
         values.monthlyOption
       )
     }
@@ -85,12 +99,12 @@ const generateStocksForDates = (
     values.beginningTimes.flatMap(beginningTime =>
       values.quantityPerPriceCategories.flatMap(quantityPerPriceCategory => {
         /* istanbul ignore next: should be already validated by yup */
-        if (beginningTime === null) {
+        if (beginningTime === '') {
           throw new Error('Some values are empty')
         }
 
         const beginningDatetime = serializeBeginningDateTime(
-          beginningDate,
+          format(beginningDate, FORMAT_ISO_DATE_ONLY),
           beginningTime,
           departmentCode
         )
