@@ -39,27 +39,22 @@ $time-line-width: rem.torem(2px);
 }
 
 .icon-success {
-  fill: colors.$green-valid;
   color: colors.$green-valid;
 }
 
 .icon-success-disabled {
-  fill: colors.$grey-semi-dark;
   color: colors.$grey-semi-dark;
 }
 
 .icon-waiting {
-  fill: colors.$grey-dark;
   color: colors.$grey-dark;
 }
 
 .icon-disabled {
-  fill: colors.$grey-medium;
   color: colors.$grey-medium;
 }
 
 .icon-wrong {
-  fill: colors.$red-warning;
   color: colors.$red-warning;
 }
 
@@ -103,4 +98,3 @@ $time-line-width: rem.torem(2px);
   border-style: dashed;
   border-color: colors.$grey-medium;
 }
-

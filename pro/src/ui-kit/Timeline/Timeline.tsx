@@ -2,13 +2,12 @@ import cn from 'classnames'
 import React, { ReactNode } from 'react'
 
 import fullClearIcon from 'icons/full-clear.svg'
-import { ReactComponent as SuccessSvg } from 'icons/ico-notification-success.svg'
+import fullValidateIcon from 'icons/full-validate.svg'
 import strokeWrongIcon from 'icons/stroke-wrong.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { ReactComponent as DisabledSvg } from './disabled.svg'
+import emptyCircle from './empty-circle.svg'
 import styles from './Timeline.module.scss'
-import { ReactComponent as WaitingSvg } from './waiting.svg'
 
 export enum TimelineStepType {
   SUCCESS = 'SUCCESS',
@@ -32,8 +31,9 @@ const getIconComponent = (type: TimelineStepType, hasErrorSteps: boolean) => {
   switch (type) {
     case TimelineStepType.SUCCESS:
       return (
-        <SuccessSvg
-          title="Étape en succès"
+        <SvgIcon
+          src={fullValidateIcon}
+          alt="Étape en succès"
           className={cn(
             styles.icon,
             hasErrorSteps
@@ -52,16 +52,20 @@ const getIconComponent = (type: TimelineStepType, hasErrorSteps: boolean) => {
       )
     case TimelineStepType.WAITING:
       return (
-        <WaitingSvg
-          title="Étape en attente"
+        <SvgIcon
+          src={emptyCircle}
+          alt="Étape en attente"
           className={cn(styles.icon, styles['icon-waiting'])}
+          viewBox="0 0 21 20"
         />
       )
     case TimelineStepType.DISABLED:
       return (
-        <DisabledSvg
-          title="Étape non disponible"
+        <SvgIcon
+          src={emptyCircle}
+          alt="Étape non disponible"
           className={cn(styles.icon, styles['icon-disabled'])}
+          viewBox="0 0 21 20"
         />
       )
     case TimelineStepType.CANCELLED:
