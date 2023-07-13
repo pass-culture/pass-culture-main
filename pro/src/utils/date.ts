@@ -16,6 +16,16 @@ export const removeTime = (date: Date): Date => {
   return date
 }
 
+export const isDateValid = (
+  date?: Date | null | string
+): date is Date | string => {
+  if (date === null || date === undefined || date === '') {
+    return false
+  }
+  const dateAsDate = typeof date === 'string' ? new Date(date) : date
+  return dateAsDate instanceof Date && !isNaN(dateAsDate.getTime())
+}
+
 export const getToday = () => new Date()
 
 export const formatBrowserTimezonedDateAsUTC = (

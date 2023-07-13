@@ -1,28 +1,22 @@
-import fr from 'date-fns/locale/fr'
 import { useField } from 'formik'
-import React from 'react'
-import { registerLocale } from 'react-datepicker'
+import React, { useCallback } from 'react'
 
 import { FieldLayout } from '../shared'
 import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
 import { BaseDatePicker } from './BaseDatePicker'
 
-registerLocale('fr', fr)
-
 export interface DatePickerProps extends FieldLayoutBaseProps {
   disabled?: boolean
-  maxDateTime?: Date
-  minDateTime?: Date
-  openingDateTime?: Date
-  onChange?: (name: string, date: Date | null) => void
+  maxDate?: Date
+  minDate?: Date
+  onChange?: React.InputHTMLAttributes<HTMLInputElement>['onChange']
 }
 
 const DatePicker = ({
   name,
-  maxDateTime,
-  minDateTime,
-  openingDateTime,
+  maxDate,
+  minDate,
   className,
   classNameLabel,
   classNameFooter,
@@ -32,12 +26,22 @@ const DatePicker = ({
   hasLabelLineBreak = true,
   smallLabel,
   isOptional = false,
-  onChange,
   hideFooter = false,
   filterVariant,
+  onChange,
 }: DatePickerProps): JSX.Element => {
-  const [field, meta, helpers] = useField({ name, type: 'date' })
+  const [field, meta] = useField({ name, type: 'date' })
   const showError = meta.touched && !!meta.error
+
+  const onCustomChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      field.onChange(e)
+      if (onChange) {
+        onChange(e)
+      }
+    },
+    [field, onChange]
+  )
 
   return (
     <FieldLayout
@@ -60,25 +64,9 @@ const DatePicker = ({
         hasError={meta.touched && !!meta.error}
         filterVariant={filterVariant}
         disabled={disabled}
-        maxDate={maxDateTime}
-        minDate={minDateTime}
-        openingDateTime={openingDateTime}
-        value={field.value}
-        onChange={date => {
-          let newDate = date
-          /* istanbul ignore next: DEBT, TO FIX */
-          if (
-            date &&
-            maxDateTime &&
-            date.toLocaleDateString() === maxDateTime.toLocaleDateString()
-          ) {
-            newDate = maxDateTime
-          }
-          onChange && onChange(name, newDate)
-
-          helpers.setTouched(true)
-          helpers.setValue(newDate, true)
-        }}
+        maxDate={maxDate}
+        minDate={minDate}
+        onChange={onCustomChange}
       />
     </FieldLayout>
   )

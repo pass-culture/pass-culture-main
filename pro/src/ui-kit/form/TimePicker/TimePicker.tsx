@@ -4,7 +4,7 @@ import React from 'react'
 import { FieldLayout } from '../shared'
 import { FieldLayoutBaseProps } from '../shared/FieldLayout/FieldLayout'
 
-import { BaseTimePicker, isDateValid } from './BaseTimePicker'
+import { BaseTimePicker } from './BaseTimePicker'
 
 export type TimePickerProps = FieldLayoutBaseProps & {
   disabled?: boolean
@@ -26,7 +26,7 @@ const TimePicker = ({
   filterVariant,
   isOptional = false,
 }: TimePickerProps): JSX.Element => {
-  const [field, meta, helpers] = useField({ name, type: 'text' })
+  const [field, meta] = useField({ name, type: 'text' })
   const showError = meta.touched && !!meta.error
 
   return (
@@ -49,12 +49,6 @@ const TimePicker = ({
         hasError={meta.touched && !!meta.error}
         filterVariant={filterVariant}
         disabled={disabled}
-        onChange={(time: Date | null) => {
-          if (isDateValid(time)) {
-            helpers.setTouched(true)
-            helpers.setValue(time)
-          }
-        }}
       />
     </FieldLayout>
   )

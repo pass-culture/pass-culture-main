@@ -1,6 +1,3 @@
-@use "styles/variables/_z-index.scss" as zIndex;
-
-/* stylelint-disable selector-pseudo-class-no-unknown */
-:global(.react-datepicker-popper) {
-  z-index: zIndex.$datepicker-dropdown !important;
+.date-picker {
+  text-transform: uppercase;
 }
