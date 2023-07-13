@@ -1,6 +1,7 @@
 import React, { FunctionComponent } from 'react'
 
-import { ReactComponent as MobileShell } from './assets/mobile-shell.svg'
+import mobileShell from './assets/mobile-shell.svg'
+import styles from './ImagePreview.module.scss'
 
 interface ImagePreviewScreenProps {
   title: string
@@ -11,9 +12,13 @@ export const ImagePreview: FunctionComponent<ImagePreviewScreenProps> = ({
   title,
   children,
 }) => (
-  <figure className="image-preview-previews-wrapper">
-    <MobileShell />
-    <div className="image-preview-screen">{children}</div>
+  <figure className={styles['image-preview-previews-wrapper']}>
+    <img
+      src={mobileShell}
+      alt=""
+      className={styles['image-preview-previews-shell']}
+    />
+    <div className={styles['image-preview-screen']}>{children}</div>
     <figcaption>{title}</figcaption>
   </figure>
 )
