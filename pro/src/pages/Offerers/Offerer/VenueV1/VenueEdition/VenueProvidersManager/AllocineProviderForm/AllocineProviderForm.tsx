@@ -92,6 +92,12 @@ const AllocineProviderForm = ({
         pristine: formProps.pristine,
       })
 
+      const required = (value: number | undefined) => {
+        return typeof value === 'number'
+          ? undefined
+          : 'Ce champ est obligatoire'
+      }
+
       return (
         <form className="allocine-provider-form">
           {!isLoading && (
@@ -131,6 +137,7 @@ const AllocineProviderForm = ({
                   placeholder="Ex : 12€"
                   step={0.01}
                   required
+                  validate={required}
                 />
               </div>
               <div className="apf-quantity-section">
