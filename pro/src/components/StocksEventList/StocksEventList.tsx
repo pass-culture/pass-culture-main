@@ -73,8 +73,8 @@ const StocksEventList = ({
 
   const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
     useColumnSorting<StocksEventListSortingColumn>()
-  const [dateFilter, setDateFilter] = useState<Date | null>(null)
-  const [hourFilter, setHourFilter] = useState<Date | null>(null)
+  const [dateFilter, setDateFilter] = useState<string>('')
+  const [hourFilter, setHourFilter] = useState<string>('')
   const [priceCategoryFilter, setPriceCategoryFilter] = useState('')
   const onFilterChange = () => {
     setPage(1)
@@ -221,8 +221,8 @@ const StocksEventList = ({
 
               <div className={cn(styles['filter-input'])}>
                 <BaseDatePicker
-                  onChange={date => {
-                    setDateFilter(date)
+                  onChange={event => {
+                    setDateFilter(event.target.value)
                     onFilterChange()
                   }}
                   value={dateFilter}
@@ -250,8 +250,8 @@ const StocksEventList = ({
               />
               <div className={cn(styles['filter-input'])}>
                 <BaseTimePicker
-                  onChange={date => {
-                    setHourFilter(date)
+                  onChange={event => {
+                    setHourFilter(event.target.value)
                     onFilterChange()
                   }}
                   value={hourFilter}
@@ -350,8 +350,8 @@ const StocksEventList = ({
             <FilterResultsRow
               colSpan={6}
               onFiltersReset={() => {
-                setDateFilter(null)
-                setHourFilter(null)
+                setDateFilter('')
+                setHourFilter('')
                 setPriceCategoryFilter('')
                 onFilterChange()
               }}

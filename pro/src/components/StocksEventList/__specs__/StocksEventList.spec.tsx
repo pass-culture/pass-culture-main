@@ -51,8 +51,8 @@ describe('StocksEventList', () => {
     expect(screen.getByText('Date')).toBeInTheDocument()
 
     expect(screen.getByText('ven')).toBeInTheDocument()
-    expect(screen.getByText('15/10/2021')).toBeInTheDocument()
-    expect(screen.getByText('14:00')).toBeInTheDocument()
+    expect(screen.getByLabelText('Filtrer par date')).toBeInTheDocument()
+    expect(screen.getByLabelText('Filtrer par horaire')).toBeInTheDocument()
     expect(screen.getByText('18')).toBeInTheDocument()
     expect(
       screen.getByText('12,5 € - Label', { selector: 'td' })
@@ -142,7 +142,7 @@ describe('StocksEventList', () => {
 
     await userEvent.type(
       screen.getByLabelText('Filtrer par date'),
-      '14/10/2021'
+      '2021-10-14'
     )
     expect(
       screen.getByText('Résultat de recherche', { exact: false })
@@ -181,7 +181,7 @@ describe('StocksEventList', () => {
 
     await userEvent.type(
       screen.getByLabelText('Filtrer par date'),
-      '14/10/2021'
+      '2021-10-14'
     )
     expect(screen.getByText('Réinitialiser les filtres')).toBeInTheDocument()
 
