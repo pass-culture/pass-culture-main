@@ -24,8 +24,7 @@
     visibility: visible;
 
     &.with-sticky-action-bar {
-      transform:
-        translateX(-50%)
+      transform: translateX(-50%)
         translateY(rem.torem(-30px) - size.$action-bar-sticky-height);
     }
   }
@@ -39,8 +38,7 @@
       visibility: visible;
 
       &.with-sticky-action-bar {
-        transform:
-          translateX(-50%)
+        transform: translateX(-50%)
           translateY(rem.torem(-30px) - size.$action-bar-sticky-height);
       }
     }
@@ -92,9 +90,10 @@
     color: colors.$white;
   }
 
-  svg {
+  .icon {
     flex: 0 0 rem.torem(40px);
     padding-right: rem.torem(8px);
     width: rem.torem(40px);
+    color: colors.$white;
   }
 }
