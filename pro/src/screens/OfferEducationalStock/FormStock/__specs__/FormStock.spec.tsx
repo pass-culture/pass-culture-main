@@ -3,6 +3,7 @@ import '@testing-library/jest-dom'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
+import format from 'date-fns/format'
 import { Form, Formik } from 'formik'
 import React from 'react'
 
@@ -13,6 +14,7 @@ import {
 } from 'core/OfferEducational'
 import { generateValidationSchema } from 'screens/OfferEducationalStock/validationSchema'
 import { SubmitButton } from 'ui-kit'
+import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 
 import FormStock, { FormStockProps } from '../FormStock'
 
@@ -59,7 +61,7 @@ describe('TimePicker', () => {
       eventTime: '',
       numberOfPlaces: '',
       totalPrice: '',
-      bookingLimitDatetime: null,
+      bookingLimitDatetime: '',
       priceDetail: '',
       educationalOfferType: EducationalOfferType.SHOWCASE,
     }
@@ -77,7 +79,10 @@ describe('TimePicker', () => {
 
   it('should automatically update bookingLimitDatetime when the user edits the event date', async () => {
     renderFormStock({
-      initialValues: { ...initialValues, eventDate: new Date() },
+      initialValues: {
+        ...initialValues,
+        eventDate: format(new Date(), FORMAT_ISO_DATE_ONLY),
+      },
       onSubmit,
       props: {
         mode: Mode.EDITION,
@@ -86,7 +91,7 @@ describe('TimePicker', () => {
         offerDateCreated: '2023-04-06T13:48:36.304896Z',
       },
     })
-    const userDateInput = addDays(new Date(), 1).toLocaleDateString('fr-FR')
+    const userDateInput = format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
     const dateInput = screen.getByLabelText('Date')
     await userEvent.click(dateInput)
     await userEvent.clear(dateInput)

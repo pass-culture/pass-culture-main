@@ -49,7 +49,7 @@ export const DEFAULT_EAC_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {
   eventTime: '',
   numberOfPlaces: '',
   totalPrice: '',
-  bookingLimitDatetime: null,
+  bookingLimitDatetime: '',
   priceDetail: '',
   educationalOfferType: EducationalOfferType.CLASSIC,
 }

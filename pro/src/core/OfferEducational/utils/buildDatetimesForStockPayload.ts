@@ -1,22 +1,18 @@
-import { endOfDay, isSameDay, set } from 'date-fns'
+import { endOfDay, isSameDay } from 'date-fns'
 
-import { toISOStringWithoutMilliseconds } from '../../../utils/date'
+import { buildDateTime } from 'screens/OfferIndividual/StocksEventEdition/adapters/serializers'
+
+import {
+  isDateValid,
+  toISOStringWithoutMilliseconds,
+} from '../../../utils/date'
 import { getUtcDateTimeFromLocalDepartement } from '../../../utils/timezone'
 
-export const buildBeginningDatetime = (
-  beginningDateIsoString: Date,
-  beginningTimeIsoString: Date
-): Date =>
-  set(beginningDateIsoString, {
-    hours: beginningTimeIsoString.getHours(),
-    minutes: beginningTimeIsoString.getMinutes(),
-  })
-
 export const getBookingLimitDatetime = (
-  bookingLimitDatetime: Date | null,
+  bookingLimitDatetime: string,
   beginningDateTimeInDepartmentTimezone: Date
 ): Date => {
-  if (!bookingLimitDatetime) {
+  if (!isDateValid(bookingLimitDatetime)) {
     return beginningDateTimeInDepartmentTimezone
   }
   if (
@@ -32,11 +28,11 @@ export const getBookingLimitDatetime = (
 }
 
 export const buildBeginningDatetimeForStockPayload = (
-  eventDate: Date,
-  eventTime: Date,
+  eventDate: string,
+  eventTime: string,
   departmentCode: string
 ): string => {
-  const beginningDateTimeInDepartmentTimezone = buildBeginningDatetime(
+  const beginningDateTimeInDepartmentTimezone = buildDateTime(
     eventDate,
     eventTime
   )
@@ -48,12 +44,12 @@ export const buildBeginningDatetimeForStockPayload = (
 }
 
 export const buildBookingLimitDatetimeForStockPayload = (
-  eventDate: Date,
-  eventTime: Date,
-  bookingLimitDatetime: Date | null,
+  eventDate: string,
+  eventTime: string,
+  bookingLimitDatetime: string,
   departmentCode: string
 ): string => {
-  const beginningDateTimeInDepartmentTimezone = buildBeginningDatetime(
+  const beginningDateTimeInDepartmentTimezone = buildDateTime(
     eventDate,
     eventTime
   )
