@@ -1,0 +1,11 @@
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
+
+.choose-prefilters {
+  padding-top: rem.torem(16px);
+}
+
+.icon {
+  height: rem.torem(100px);
+  color: colors.$grey-medium;
+}
