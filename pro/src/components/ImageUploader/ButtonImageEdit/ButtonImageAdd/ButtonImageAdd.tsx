@@ -2,8 +2,9 @@ import cn from 'classnames'
 import React from 'react'
 
 import { UploaderModeEnum } from 'components/ImageUploader/types'
+import strokeMoreIcon from 'icons/stroke-more.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { ReactComponent as PlusIcon } from './assets/plus-icon.svg'
 import style from './ButtonImageAdd.module.scss'
 
 interface ButtonImageAddProps {
@@ -25,7 +26,7 @@ const ButtonImageAdd = ({
     onClick={onClick}
     type="button"
   >
-    <PlusIcon className={style['icon']} />
+    <SvgIcon src={strokeMoreIcon} alt="" className={style['icon']} />
     <span className={style['label']}>
       Ajouter <br /> une image
     </span>
