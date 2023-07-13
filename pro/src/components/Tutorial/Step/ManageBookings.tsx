@@ -1,5 +1,7 @@
 import React from 'react'
 
+import fullDownIcon from 'icons/full-down.svg'
+import fullUpIcon from 'icons/full-up.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import strokeDeskIcon from 'icons/stroke-desk.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
@@ -8,8 +10,6 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { StepComponentProps } from '../types'
 
-import { ReactComponent as DownArrow } from './assets/down-arrow.svg'
-import { ReactComponent as UpArrow } from './assets/up-arrow.svg'
 import styles from './Step.module.scss'
 
 const ManageBookings = ({ titleId }: StepComponentProps): JSX.Element => (
@@ -20,8 +20,18 @@ const ManageBookings = ({ titleId }: StepComponentProps): JSX.Element => (
       <span className={styles['third-column']}>
         Accédez à la liste de vos réservations
       </span>
-      <DownArrow className={styles['first-column']} />
-      <DownArrow className={styles['third-column']} />
+      <SvgIcon
+        src={fullDownIcon}
+        alt=""
+        width="24"
+        className={styles['first-column']}
+      />
+      <SvgIcon
+        src={fullDownIcon}
+        alt=""
+        width="24"
+        className={styles['third-column']}
+      />
       <span className={styles['header-example']}>
         <span className={styles['header-element']}>
           <SvgIcon
@@ -56,8 +66,18 @@ const ManageBookings = ({ titleId }: StepComponentProps): JSX.Element => (
           Remboursements
         </span>
       </span>
-      <UpArrow className={styles['second-column']} />
-      <UpArrow className={styles['fourth-column']} />
+      <SvgIcon
+        src={fullUpIcon}
+        alt=""
+        width="24"
+        className={styles['second-column']}
+      />
+      <SvgIcon
+        src={fullUpIcon}
+        alt=""
+        width="24"
+        className={styles['fourth-column']}
+      />
       <span className={styles['second-column']}>
         Créez, éditez, désactivez vos offres
       </span>
