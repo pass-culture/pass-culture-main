@@ -47,7 +47,7 @@ const AddActivationCodeConfirmationForm = ({
           label={'Date limite de validité'}
           className={styles['date-input']}
           name="activationCodesExpirationDatetime"
-          minDateTime={getMinimumExpirationDatetime(minDate)}
+          minDate={getMinimumExpirationDatetime(minDate)}
           isOptional={true}
         />
       </div>

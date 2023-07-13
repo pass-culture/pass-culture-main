@@ -1,9 +1,12 @@
+import { format } from 'date-fns'
+
 import { OfferIndividual } from 'core/Offers/types'
+import { FORMAT_ISO_DATE_ONLY, isDateValid } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
-import { STOCK_THING_FORM_DEFAULT_VALUES, IStockThingFormValues } from '../'
+import { STOCK_THING_FORM_DEFAULT_VALUES, StockThingFormValues } from '../'
 
-const buildInitialValues = (offer: OfferIndividual): IStockThingFormValues => {
+const buildInitialValues = (offer: OfferIndividual): StockThingFormValues => {
   if (offer.stocks.length === 0) {
     return STOCK_THING_FORM_DEFAULT_VALUES
   }
@@ -15,14 +18,23 @@ const buildInitialValues = (offer: OfferIndividual): IStockThingFormValues => {
     quantity:
       offer.stocks[0].quantity === undefined ? '' : offer.stocks[0].quantity,
     bookingLimitDatetime: offer.stocks[0].bookingLimitDatetime
-      ? getLocalDepartementDateTimeFromUtc(
-          offer.stocks[0].bookingLimitDatetime,
-          offer.venue.departmentCode
+      ? format(
+          getLocalDepartementDateTimeFromUtc(
+            offer.stocks[0].bookingLimitDatetime,
+            offer.venue.departmentCode
+          ),
+          FORMAT_ISO_DATE_ONLY
         )
-      : null,
+      : '',
     price: offer.stocks[0].price,
-    activationCodesExpirationDatetime:
-      offer.stocks[0].activationCodesExpirationDatetime,
+    activationCodesExpirationDatetime: isDateValid(
+      offer.stocks[0].activationCodesExpirationDatetime
+    )
+      ? format(
+          offer.stocks[0].activationCodesExpirationDatetime,
+          FORMAT_ISO_DATE_ONLY
+        )
+      : '',
     activationCodes: offer.stocks[0].activationCodes,
     isDuo: offer.isDuo,
   }

@@ -7,7 +7,7 @@ import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../../'
 import upsertStocksThingAdapter from '../upsertStocksThingAdapter'
 
-describe('screens::StockThing::adapter:upsertStocksThingAdapter', () => {
+describe('upsertStocksThingAdapter', () => {
   it('should send StockCreationBodyModel to api', async () => {
     jest
       .spyOn(api, 'upsertStocks')
@@ -15,11 +15,11 @@ describe('screens::StockThing::adapter:upsertStocksThingAdapter', () => {
     upsertStocksThingAdapter({
       offerId: 1,
       formValues: {
-        activationCodesExpirationDatetime: null,
+        activationCodesExpirationDatetime: '',
         activationCodes: [],
         remainingQuantity: STOCK_THING_FORM_DEFAULT_VALUES.remainingQuantity,
         bookingsQuantity: STOCK_THING_FORM_DEFAULT_VALUES.bookingsQuantity,
-        bookingLimitDatetime: null,
+        bookingLimitDatetime: '',
         quantity: 12,
         price: 10,
         isDuo: undefined,
@@ -45,12 +45,12 @@ describe('screens::StockThing::adapter:upsertStocksThingAdapter', () => {
     upsertStocksThingAdapter({
       offerId: 1,
       formValues: {
-        activationCodesExpirationDatetime: null,
+        activationCodesExpirationDatetime: '',
         activationCodes: [],
         stockId: 1,
         remainingQuantity: STOCK_THING_FORM_DEFAULT_VALUES.remainingQuantity,
         bookingsQuantity: STOCK_THING_FORM_DEFAULT_VALUES.bookingsQuantity,
-        bookingLimitDatetime: null,
+        bookingLimitDatetime: '',
         quantity: 12,
         price: 10,
         isDuo: undefined,
@@ -90,11 +90,11 @@ describe('screens::StockThing::adapter:upsertStocksThingAdapter', () => {
       offerId: 1,
       formValues: {
         stockId: 12,
-        activationCodesExpirationDatetime: null,
+        activationCodesExpirationDatetime: '',
         activationCodes: [],
         remainingQuantity: STOCK_THING_FORM_DEFAULT_VALUES.remainingQuantity,
         bookingsQuantity: STOCK_THING_FORM_DEFAULT_VALUES.bookingsQuantity,
-        bookingLimitDatetime: null,
+        bookingLimitDatetime: '',
         quantity: 12,
         price: 10,
         isDuo: undefined,

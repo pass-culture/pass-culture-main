@@ -4,15 +4,15 @@ import {
   OfferIndividualVenueProvider,
 } from 'core/Offers/types'
 
-import { IStockThingFormValues } from '../..'
+import { StockThingFormValues } from '../..'
 import setFormReadOnlyFields from '../setFormReadOnlyFields'
 
 describe('StockThingForm::utils::setFormReadOnlyFields', () => {
   let offer: OfferIndividual
-  let currentStock: IStockThingFormValues
+  let currentStock: StockThingFormValues
   beforeEach(() => {
     offer = {} as OfferIndividual
-    currentStock = {} as IStockThingFormValues
+    currentStock = {} as StockThingFormValues
   })
   const disabledStatus = [OfferStatus.REJECTED, OfferStatus.PENDING]
   it.each(disabledStatus)(
@@ -56,7 +56,7 @@ describe('StockThingForm::utils::setFormReadOnlyFields', () => {
     offer.lastProvider = { name: 'allociné' } as OfferIndividualVenueProvider
     currentStock = {
       activationCodes: new Array<string>(),
-    } as IStockThingFormValues
+    } as StockThingFormValues
     const readOnlyFields = setFormReadOnlyFields(offer, currentStock)
     expect(readOnlyFields).toEqual([])
   })

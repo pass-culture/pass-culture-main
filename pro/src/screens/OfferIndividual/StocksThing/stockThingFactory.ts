@@ -8,10 +8,10 @@ export const stockThingFactory = (
   remainingQuantity: '10',
   bookingsQuantity: '1',
   quantity: 9,
-  bookingLimitDatetime: new Date('2022-12-29T00:00:00Z'),
+  bookingLimitDatetime: '2022-12-29',
   price: 66.6,
   activationCodes: [],
-  activationCodesExpirationDatetime: null,
+  activationCodesExpirationDatetime: '',
   isDuo: undefined,
   ...customStockThing,
 })
