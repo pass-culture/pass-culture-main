@@ -2,7 +2,7 @@ import * as yup from 'yup'
 
 import { oneOfSelectOption } from 'core/shared/utils/validation'
 import { SelectOption } from 'custom_types/form'
-import { getToday, removeTime } from 'utils/date'
+import { getToday, isDateValid, removeTime } from 'utils/date'
 
 import { RecurrenceType } from './types'
 
@@ -13,10 +13,14 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
       .required()
       .oneOf(Object.values(RecurrenceType)),
     startingDate: yup
-      .date()
+      .string()
+      .transform((curr, orig) => (orig === '' ? null : curr))
       .nullable()
-      .transform((curr, orig) => (orig === null ? null : curr))
-      .min(removeTime(getToday()), 'L’évènement doit être à venir')
+      .test(
+        'is-future',
+        'L’évènement doit être à venir',
+        value => isDateValid(value) && new Date(value) > removeTime(getToday())
+      )
       .when('recurrenceType', {
         is: RecurrenceType.UNIQUE,
         then: schema => schema.required('Veuillez renseigner une date'),
@@ -24,9 +28,9 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
           schema.required('Veuillez renseigner une date de début'),
       }),
     endingDate: yup
-      .date()
+      .string()
+      .transform((curr, orig) => (orig === '' ? null : curr))
       .nullable('Veuillez renseigner une date de fin')
-      .transform((curr, orig) => (orig === null ? null : curr))
       .when('recurrenceType', {
         is: (recurrenceType: RecurrenceType) =>
           recurrenceType !== RecurrenceType.UNIQUE,

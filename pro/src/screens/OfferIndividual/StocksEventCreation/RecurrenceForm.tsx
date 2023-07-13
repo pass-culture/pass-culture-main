@@ -33,6 +33,7 @@ import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { FieldError } from 'ui-kit/form/shared'
 import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { isDateValid } from 'utils/date'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
 import { getPriceCategoryOptions } from '../StocksEventEdition/StocksEventEdition'
@@ -75,13 +76,14 @@ const mapNumberToFrenchOrdinals = (n: number): string => {
 }
 
 const getMonthlyOptions = (values: RecurrenceFormValues) => {
-  const xOfMonth = values.startingDate ? values.startingDate.getDate() : 1
+  const startingDate = new Date(values.startingDate)
+  const xOfMonth = isDateValid(startingDate) ? startingDate.getDate() : 1
 
-  const weekOfMonth = values.startingDate
-    ? Math.floor((values.startingDate.getDate() - 1) / 7)
+  const weekOfMonth = isDateValid(startingDate)
+    ? Math.floor((startingDate.getDate() - 1) / 7)
     : 0
 
-  const lastDayofMonth = isLastWeekOfMonth(values.startingDate)
+  const lastDayofMonth = isLastWeekOfMonth(startingDate)
 
   const dayName = values.startingDate
     ? formatLocalTimeDateString(
@@ -146,8 +148,8 @@ export const RecurrenceForm = ({
     setFieldValue('startingDate', '')
     setFieldValue('endingDate', '')
   }
-  const minDateForEndingDate = values.startingDate
-    ? values.startingDate
+  const minDateForEndingDate = isDateValid(values.startingDate)
+    ? new Date(values.startingDate)
     : new Date()
 
   return (
@@ -266,7 +268,7 @@ export const RecurrenceForm = ({
                       : 'Du'
                   }
                   className={styles['date-input']}
-                  minDateTime={new Date()}
+                  minDate={new Date()}
                 />
 
                 {values.recurrenceType !== RecurrenceType.UNIQUE && (
@@ -274,7 +276,7 @@ export const RecurrenceForm = ({
                     name="endingDate"
                     label="Au"
                     className={styles['date-input']}
-                    minDateTime={minDateForEndingDate}
+                    minDate={minDateForEndingDate}
                   />
                 )}
               </FormLayout.Row>
@@ -286,7 +288,7 @@ export const RecurrenceForm = ({
                   name="startingDate"
                   label={'Premier évènement le'}
                   className={styles['date-input']}
-                  minDateTime={new Date()}
+                  minDate={new Date()}
                 />
 
                 <Select
@@ -304,7 +306,7 @@ export const RecurrenceForm = ({
                   name="endingDate"
                   label="Fin de la récurrence"
                   className={styles['date-input']}
-                  minDateTime={minDateForEndingDate}
+                  minDate={minDateForEndingDate}
                 />
               </FormLayout.Row>
             )}

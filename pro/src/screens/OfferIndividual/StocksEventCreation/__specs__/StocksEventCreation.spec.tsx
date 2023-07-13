@@ -1,5 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { addDays } from 'date-fns'
+import format from 'date-fns/format'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
@@ -16,6 +18,7 @@ import {
 } from 'core/Offers/utils/getOfferIndividualUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { ButtonLink } from 'ui-kit'
+import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import {
   individualOfferFactory,
   individualStockFactory,
@@ -77,6 +80,7 @@ const renderStockEventCreation = (props: StocksEventCreationProps) =>
     }
   )
 
+const tomorrow = format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
 describe('StocksEventCreation', () => {
   beforeEach(() => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
@@ -173,20 +177,11 @@ describe('StocksEventCreation', () => {
 
     await userEvent.click(screen.getByText('Ajouter une ou plusieurs dates'))
 
-    await userEvent.click(
-      screen.getByLabelText('Date de l’évènement', { exact: true })
-    )
-
-    // There is a case where multiple dates can be displayed by the datepicker,
-    // for instance the 27th of the previous month and the 27th of the current month.
-    // We always choose the last one so that we are sure it's in the future
-    const dates = screen.queryAllByText(new Date().getDate())
-    await userEvent.click(dates[dates.length - 1])
-    await userEvent.click(screen.getByLabelText('Horaire 1'))
+    await userEvent.type(screen.getByLabelText('Date de l’évènement'), tomorrow)
+    await userEvent.type(screen.getByLabelText('Horaire 1'), '12:15')
     await userEvent.click(screen.getByText('12:15'))
     await userEvent.click(screen.getByText('Ajouter un créneau'))
-    await userEvent.click(screen.getByLabelText('Horaire 2'))
-    await userEvent.click(screen.getByText('12:30'))
+    await userEvent.type(screen.getByLabelText('Horaire 2'), '12:30')
     await userEvent.click(screen.getByText('Valider'))
 
     expect(
@@ -202,16 +197,8 @@ describe('StocksEventCreation', () => {
     })
 
     await userEvent.click(screen.getByText('Ajouter une ou plusieurs dates'))
-    await userEvent.click(
-      screen.getByLabelText('Date de l’évènement', { exact: true })
-    )
-    // There is a case where multiple dates can be displayed by the datepicker,
-    // for instance the 27th of the previous month and the 27th of the current month.
-    // We always choose the last one so that we are sure it's in the future
-    const dates = screen.queryAllByText(new Date().getDate())
-    await userEvent.click(dates[dates.length - 1])
-    await userEvent.click(screen.getByLabelText('Horaire 1'))
-    await userEvent.click(screen.getByText('12:15'))
+    await userEvent.type(screen.getByLabelText('Date de l’évènement'), tomorrow)
+    await userEvent.type(screen.getByLabelText('Horaire 1'), '12:15')
     await userEvent.click(screen.getByText('Valider'))
 
     expect(
@@ -219,12 +206,11 @@ describe('StocksEventCreation', () => {
     ).toBeInTheDocument()
 
     await userEvent.click(screen.getByText('Ajouter une ou plusieurs dates'))
-    await userEvent.click(
-      screen.getByLabelText('Date de l’évènement', { exact: true })
+    await userEvent.type(
+      screen.getByLabelText('Date de l’évènement'),
+      format(new Date(), FORMAT_ISO_DATE_ONLY)
     )
-    await userEvent.click(dates[dates.length - 1])
-    await userEvent.click(screen.getByLabelText('Horaire 1'))
-    await userEvent.click(screen.getAllByText('12:15')[1])
+    await userEvent.type(screen.getByLabelText('Horaire 1'), '12:15')
     await userEvent.click(screen.getByText('Valider'))
 
     // Only one line was created
@@ -419,17 +405,8 @@ describe('deletion', () => {
 
     await userEvent.click(screen.getByText('Ajouter une ou plusieurs dates'))
 
-    await userEvent.click(
-      screen.getByLabelText('Date de l’évènement', { exact: true })
-    )
-
-    // There is a case where multiple dates can be displayed by the datepicker,
-    // for instance the 27th of the previous month and the 27th of the current month.
-    // We always choose the last one so that we are sure it's in the future
-    const dates = screen.queryAllByText(new Date().getDate())
-    await userEvent.click(dates[dates.length - 1])
-    await userEvent.click(screen.getByLabelText('Horaire 1'))
-    await userEvent.click(screen.getByText('12:00'))
+    await userEvent.type(screen.getByLabelText('Date de l’évènement'), tomorrow)
+    await userEvent.type(screen.getByLabelText('Horaire 1'), '12:00')
     await userEvent.click(screen.getByText('Valider'))
     // stock line are here
     expect(await screen.findByText('Date')).toBeInTheDocument()

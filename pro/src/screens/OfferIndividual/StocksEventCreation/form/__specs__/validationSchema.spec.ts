@@ -11,12 +11,9 @@ const priceCategoriesOptions: SelectOption[] = [
 const baseValidForm: RecurrenceFormValues = {
   recurrenceType: RecurrenceType.UNIQUE,
   days: [],
-  startingDate: new Date('2050-03-03'),
-  endingDate: null,
-  beginningTimes: [
-    new Date('2050-01-01T10:00:00'),
-    new Date('2050-01-01T10:30:00'),
-  ],
+  startingDate: '2050-03-03',
+  endingDate: '',
+  beginningTimes: ['10:00', '10:30'],
   quantityPerPriceCategories: [{ quantity: 5, priceCategory: '1' }],
   bookingLimitDateInterval: 2,
   monthlyOption: null,
@@ -38,7 +35,7 @@ describe('validationSchema', () => {
       formValues: {
         ...baseValidForm,
         recurrenceType: RecurrenceType.DAILY,
-        endingDate: new Date('2020-03-07'),
+        endingDate: '2020-03-07',
       },
       expectedErrors: [],
     },
@@ -47,9 +44,9 @@ describe('validationSchema', () => {
       formValues: {
         ...baseValidForm,
         recurrenceType: RecurrenceType.UNIQUE,
-        startingDate: null,
-        endingDate: null,
-        beginningTimes: [null],
+        startingDate: '',
+        endingDate: '',
+        beginningTimes: [''],
         quantityPerPriceCategories: [
           { quantity: -5, priceCategory: '666' },
           { quantity: '', priceCategory: '' },
@@ -72,7 +69,7 @@ describe('validationSchema', () => {
       formValues: {
         ...baseValidForm,
         recurrenceType: RecurrenceType.DAILY,
-        endingDate: null,
+        endingDate: '',
       },
       expectedErrors: ['Veuillez renseigner une date de fin'],
     },
@@ -93,11 +90,8 @@ describe('validationSchema', () => {
       formValues: {
         ...baseValidForm,
         recurrenceType: RecurrenceType.DAILY,
-        endingDate: new Date('2020-01-01T10:00:00'),
-        beginningTimes: [
-          new Date('2020-01-01T10:00:00'),
-          new Date('2020-01-01T10:00:00'),
-        ],
+        endingDate: '2020-01-01',
+        beginningTimes: ['10:00', '10:00'],
       },
       expectedErrors: [
         'Veuillez renseigner des horaires différents',
@@ -108,7 +102,7 @@ describe('validationSchema', () => {
       description: 'date is in the past',
       formValues: {
         ...baseValidForm,
-        startingDate: new Date('2000-01-01'),
+        startingDate: '2000-01-01',
       },
       expectedErrors: ['L’évènement doit être à venir'],
     },

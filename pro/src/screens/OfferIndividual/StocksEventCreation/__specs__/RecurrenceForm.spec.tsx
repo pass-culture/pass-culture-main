@@ -1,10 +1,12 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { addDays, format } from 'date-fns'
 import { axe } from 'jest-axe'
 import React from 'react'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
+import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import {
   individualOfferFactory,
   priceCategoryFactory,
@@ -43,17 +45,11 @@ describe('RecurrenceForm', () => {
       <RecurrenceForm {...defaultProps} onConfirm={onConfirm} />
     )
 
-    await userEvent.click(
-      screen.getByLabelText('Date de l’évènement', { exact: true })
+    await userEvent.type(
+      screen.getByLabelText('Date de l’évènement'),
+      format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
     )
-
-    // There is a case where multiple dates can be displayed by the datepicker,
-    // for instance the 27th of the previous month and the 27th of the current month.
-    // We always choose the last one so that we are sure it's in the future
-    const dates = screen.queryAllByText(new Date().getDate())
-    await userEvent.click(dates[dates.length - 1])
-    await userEvent.click(screen.getByLabelText('Horaire 1'))
-    await userEvent.click(screen.getByText('12:00'))
+    await userEvent.type(screen.getByLabelText('Horaire 1'), '12:00')
     await userEvent.type(screen.getByLabelText('Nombre de places'), '10')
     await userEvent.type(screen.getByLabelText('Tarif'), '21')
     await userEvent.type(
