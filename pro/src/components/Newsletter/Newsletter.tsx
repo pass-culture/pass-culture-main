@@ -4,13 +4,13 @@ import fullLinkIcon from 'icons/full-link.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import { ReactComponent as NewsletterImg } from './assets/newsletter.svg'
+import newsletterImage from './assets/newsletter.svg'
 import styles from './Newsletter.module.scss'
 
 const Newsletter = () => {
   return (
     <div className={styles['newsletter-container']}>
-      <NewsletterImg className={styles['newsletter-img']} />
+      <img src={newsletterImage} alt="" className={styles['newsletter-img']} />
       <div className={styles['newsletter-link']}>
         <ButtonLink
           variant={ButtonVariant.TERNARY}
