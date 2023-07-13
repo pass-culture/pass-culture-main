@@ -4,7 +4,7 @@ import cn from 'classnames'
 import React, { useId } from 'react'
 
 import fullRightIcon from 'icons/full-right.svg'
-import { ReactComponent as SpinnerIcon } from 'icons/loader.svg'
+import strokePassIcon from 'icons/stroke-pass.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import Tooltip from 'ui-kit/Tooltip'
 
@@ -64,7 +64,7 @@ const Button = ({
         <div className={styles['visually-hidden']}>
           {isLoading ? (
             <div className={styles['spinner-icon']} data-testid="spinner">
-              <SpinnerIcon />
+              <SvgIcon src={strokePassIcon} alt="" />
             </div>
           ) : (
             children
@@ -74,7 +74,7 @@ const Button = ({
         <div className={styles['button-arrow-content']}>
           {isLoading ? (
             <div className={styles['spinner-icon']} data-testid="spinner">
-              <SpinnerIcon />
+              <SvgIcon src={strokePassIcon} alt="" />
             </div>
           ) : (
             children
@@ -82,7 +82,7 @@ const Button = ({
         </div>
       ) : isLoading ? (
         <div className={styles['spinner-icon']} data-testid="spinner">
-          <SpinnerIcon />
+          <SvgIcon src={strokePassIcon} alt="" />
         </div>
       ) : (
         children
