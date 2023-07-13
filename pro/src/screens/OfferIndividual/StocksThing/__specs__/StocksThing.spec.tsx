@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import format from 'date-fns/format'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
@@ -31,6 +32,7 @@ import {
   getOfferIndividualPath,
   getOfferIndividualUrl,
 } from 'core/Offers/utils/getOfferIndividualUrl'
+import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { serializeThingBookingLimitDatetime } from '../adapters/serializers'
@@ -372,8 +374,12 @@ describe('screens:StocksThing', () => {
           'Vous êtes sur le point d’ajouter 5 codes d’activation.'
         )
       ).resolves.toBeInTheDocument()
-      await userEvent.click(await screen.findByText('Date limite de validité'))
-      await userEvent.click(screen.getByText('25'))
+
+      const today = format(new Date(), FORMAT_ISO_DATE_ONLY)
+      await userEvent.type(
+        await screen.findByText('Date limite de validité'),
+        today
+      )
 
       await userEvent.click(screen.getByText('Valider'))
       expect(screen.getByLabelText('Quantité')).toBeDisabled()
@@ -384,10 +390,9 @@ describe('screens:StocksThing', () => {
       const expirationInput = screen.getByLabelText("Date d'expiration")
       expect(expirationInput).toBeDisabled()
       const date = new Date()
-      date.setDate(25)
       date.setUTCHours(22, 59, 59, 999)
-
-      expect(expirationInput).toHaveValue(date.toLocaleDateString('en-GB'))
+      screen.debug()
+      expect(expirationInput).toHaveValue(today)
       await userEvent.click(screen.getByText('Étape suivante'))
       expect(api.upsertStocks).toHaveBeenCalledWith({
         offerId: offer.id,
@@ -463,7 +468,7 @@ describe('screens:StocksThing', () => {
       expect(screen.getByLabelText('Quantité')).toBeDisabled()
       const expirationInput = screen.getByLabelText("Date d'expiration")
       expect(expirationInput).toBeDisabled()
-      expect(expirationInput).toHaveValue('15/12/2020')
+      expect(expirationInput).toHaveValue('2020-12-15')
     })
 
     it('should show a success notification if nothing has been touched', async () => {

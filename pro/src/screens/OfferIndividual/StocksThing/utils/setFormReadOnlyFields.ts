@@ -5,11 +5,11 @@ import {
 import { OfferIndividual } from 'core/Offers/types'
 import { isAllocineProvider } from 'core/Providers'
 
-import { STOCK_THING_FORM_DEFAULT_VALUES, IStockThingFormValues } from '../'
+import { STOCK_THING_FORM_DEFAULT_VALUES, StockThingFormValues } from '../'
 
 const setFormReadOnlyFields = (
   offer: OfferIndividual,
-  currentStock: IStockThingFormValues
+  currentStock: StockThingFormValues
 ): string[] => {
   const isDisabledStatus = offer.status
     ? [OFFER_STATUS_REJECTED, OFFER_STATUS_PENDING].includes(offer.status)

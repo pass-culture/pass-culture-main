@@ -3,7 +3,7 @@ import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { StockResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 
-import { IStockThingFormValues } from '../'
+import { StockThingFormValues } from '../'
 
 import { serializeStockThingList } from './serializers'
 
@@ -12,7 +12,7 @@ type FailurePayload = { errors: Record<string, string> }
 type UpdateStocksAdapter = Adapter<
   {
     offerId: number
-    formValues: IStockThingFormValues
+    formValues: StockThingFormValues
     departementCode: string
     mode: OFFER_WIZARD_MODE
   },

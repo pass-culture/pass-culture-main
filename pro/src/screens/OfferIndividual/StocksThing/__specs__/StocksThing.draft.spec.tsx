@@ -145,6 +145,9 @@ describe('screens:StocksThing::draft', () => {
 
   it('should show a success notification if nothing has been touched and click on next step', async () => {
     renderStockThingScreen(props, contextValue)
+    jest
+      .spyOn(api, 'patchOffer')
+      .mockResolvedValue({} as GetIndividualOfferResponseModel)
 
     await userEvent.click(
       screen.getByRole('button', {

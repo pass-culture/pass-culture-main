@@ -1,10 +1,10 @@
 import endOfDay from 'date-fns/endOfDay'
 
 import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
-import { toISOStringWithoutMilliseconds } from 'utils/date'
+import { isDateValid, toISOStringWithoutMilliseconds } from 'utils/date'
 import { getUtcDateTimeFromLocalDepartement } from 'utils/timezone'
 
-import { IStockThingFormValues } from '../'
+import { StockThingFormValues } from '../'
 
 export const serializeThingBookingLimitDatetime = (
   bookingLimitDatetime: Date,
@@ -18,13 +18,13 @@ export const serializeThingBookingLimitDatetime = (
 }
 
 export const serializeStockThingList = (
-  formValues: IStockThingFormValues,
+  formValues: StockThingFormValues,
   departementCode: string
 ): StockCreationBodyModel[] | StockEditionBodyModel[] => {
   const apiStock: StockCreationBodyModel = {
-    bookingLimitDatetime: formValues.bookingLimitDatetime
+    bookingLimitDatetime: isDateValid(formValues.bookingLimitDatetime)
       ? serializeThingBookingLimitDatetime(
-          formValues.bookingLimitDatetime,
+          new Date(formValues.bookingLimitDatetime),
           departementCode
         )
       : null,
@@ -37,10 +37,10 @@ export const serializeStockThingList = (
   if (formValues.activationCodes.length > 0) {
     apiStock.activationCodes = formValues.activationCodes
     /* istanbul ignore next */
-    if (formValues.activationCodesExpirationDatetime) {
+    if (isDateValid(formValues.activationCodesExpirationDatetime)) {
       apiStock.activationCodesExpirationDatetime =
         serializeThingBookingLimitDatetime(
-          formValues.activationCodesExpirationDatetime,
+          new Date(formValues.activationCodesExpirationDatetime),
           departementCode
         )
     }

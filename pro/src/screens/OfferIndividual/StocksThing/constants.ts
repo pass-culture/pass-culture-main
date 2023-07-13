@@ -5,9 +5,9 @@ export const STOCK_THING_FORM_DEFAULT_VALUES: StockThingFormValues = {
   remainingQuantity: 'unlimited',
   bookingsQuantity: '0',
   quantity: '',
-  bookingLimitDatetime: null,
+  bookingLimitDatetime: '',
   price: '',
   activationCodes: [],
-  activationCodesExpirationDatetime: null,
+  activationCodesExpirationDatetime: '',
   isDuo: undefined,
 }
