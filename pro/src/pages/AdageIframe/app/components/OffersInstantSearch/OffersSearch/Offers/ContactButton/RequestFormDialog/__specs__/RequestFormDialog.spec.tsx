@@ -6,6 +6,7 @@ import React from 'react'
 import { AdageFrontRoles } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import * as useNotification from 'hooks/useNotification'
+import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import RequestFormDialog, { RequestFormDialogProps } from '../RequestFormDialog'
@@ -49,24 +50,23 @@ describe('RequestFormDialog', () => {
 
     renderRequestFormDialog({ closeModal: mockCloseModal })
 
-    const descriptionField = screen.getByLabelText(
-      'Que souhaitez vous organiser ?'
+    const today = format(new Date(), FORMAT_ISO_DATE_ONLY)
+    await userEvent.type(
+      screen.getByLabelText('Que souhaitez vous organiser ?'),
+      'Test description'
     )
-    const dateField = screen.getByLabelText('Date souhaitée', {
-      exact: false,
-    })
+    await userEvent.type(
+      screen.getByLabelText('Date souhaitée', { exact: false }),
+      today
+    )
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Envoyer ma demande' })
+    )
 
-    await userEvent.type(descriptionField, 'Test description')
-    await userEvent.type(dateField, format(new Date(), 'dd/MM/yyyy'))
-
-    const submitButton = screen.getByRole('button', {
-      name: 'Envoyer ma demande',
-    })
-    await userEvent.click(submitButton)
     expect(apiAdage.createCollectiveRequest).toHaveBeenCalledWith(1, {
       comment: 'Test description',
       phoneNumber: undefined,
-      requestedDate: format(new Date(), 'yyyy-MM-dd'),
+      requestedDate: today,
       totalTeachers: undefined,
       totalStudents: undefined,
     })
