@@ -2,8 +2,9 @@ import React from 'react'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
+import fullHelpIcon from 'icons/full-help.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { ReactComponent as Buble } from './assets/buble.svg'
 import styles from './HelpLink.module.scss'
 
 const HelpLink = (): JSX.Element => {
@@ -19,7 +20,7 @@ const HelpLink = (): JSX.Element => {
       rel="noreferrer"
       target="_blank"
     >
-      <Buble />
+      <SvgIcon src={fullHelpIcon} alt="" width="42" />
       <span className={styles['help-link-text']}>Aide</span>
     </a>
   )
