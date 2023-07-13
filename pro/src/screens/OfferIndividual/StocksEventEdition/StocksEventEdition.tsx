@@ -178,9 +178,9 @@ const StocksEventEdition = ({
         bookingsQuantity: 0,
         remainingQuantity: stock.quantity ?? '',
         isDeletable: true,
-        beginningDate: new Date(stock.beginningDatetime),
-        beginningTime: new Date(stock.beginningDatetime),
-        bookingLimitDatetime: new Date(stock.bookingLimitDatetime),
+        beginningDate: stock.beginningDatetime,
+        beginningTime: stock.beginningDatetime,
+        bookingLimitDatetime: stock.bookingLimitDatetime,
         readOnlyFields: [],
       })
     )

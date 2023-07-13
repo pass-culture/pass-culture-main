@@ -3,19 +3,26 @@ import endOfDay from 'date-fns/endOfDay'
 
 import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
 import { StockEventFormValues } from 'screens/OfferIndividual/StocksEventEdition/StockFormList'
-import { getToday, toISOStringWithoutMilliseconds } from 'utils/date'
+import {
+  getToday,
+  isDateValid,
+  toISOStringWithoutMilliseconds,
+} from 'utils/date'
 import { getUtcDateTimeFromLocalDepartement } from 'utils/timezone'
 
 const serializeBookingLimitDatetime = (
-  beginningDate: Date,
-  beginningTime: Date,
-  bookingLimitDatetime: Date,
+  beginningDate: string,
+  beginningTime: string,
+  bookingLimitDatetime: string,
   departementCode: string
 ) => {
   // If the bookingLimitDatetime is the same day as the start of the event
   // the bookingLimitDatetime should be set to beginningDate and beginningTime
   // ie : bookable until the event
-  if (beginningDate.toDateString() === bookingLimitDatetime.toDateString()) {
+  if (
+    new Date(beginningDate).toDateString() ===
+    new Date(bookingLimitDatetime).toDateString()
+  ) {
     return serializeBeginningDateTime(
       beginningDate,
       beginningTime,
@@ -23,21 +30,27 @@ const serializeBookingLimitDatetime = (
     )
   }
   const endOfBookingLimitDayUtcDatetime = getUtcDateTimeFromLocalDepartement(
-    endOfDay(bookingLimitDatetime),
+    endOfDay(new Date(bookingLimitDatetime)),
     departementCode
   )
   return toISOStringWithoutMilliseconds(endOfBookingLimitDayUtcDatetime)
 }
 
-const buildDateTime = (date: Date, time: Date) =>
-  set(date, {
-    hours: time.getHours(),
-    minutes: time.getMinutes(),
+export const buildDateTime = (date: string, time: string) => {
+  const [hours, minutes] = time.split(':')
+  if (!isDateValid(date) || hours === undefined || minutes === undefined) {
+    throw Error('La date ou l’heure est invalide')
+  }
+
+  return set(new Date(date), {
+    hours: parseInt(hours),
+    minutes: parseInt(minutes),
   })
+}
 
 export const serializeBeginningDateTime = (
-  beginningDate: Date,
-  beginningTime: Date,
+  beginningDate: string,
+  beginningTime: string,
   departementCode: string
 ): string => {
   const beginningDateTimeInDepartementTimezone = buildDateTime(
@@ -55,10 +68,10 @@ const serializeStockEvent = (
   formValues: StockEventFormValues,
   departementCode: string
 ): StockCreationBodyModel | StockEditionBodyModel => {
-  if (!(formValues.beginningDate instanceof Date)) {
+  if (!isDateValid(formValues.beginningDate)) {
     throw Error("La date de début d'évenement est invalide")
   }
-  if (!(formValues.beginningTime instanceof Date)) {
+  if (formValues.beginningTime === '') {
     throw Error("L'heure de début d'évenement est invalide")
   }
 
@@ -69,7 +82,7 @@ const serializeStockEvent = (
   )
   const apiStock: StockCreationBodyModel = {
     beginningDatetime: serializedbeginningDatetime,
-    bookingLimitDatetime: formValues.bookingLimitDatetime
+    bookingLimitDatetime: isDateValid(formValues.bookingLimitDatetime)
       ? serializeBookingLimitDatetime(
           formValues.beginningDate,
           formValues.beginningTime,
@@ -103,7 +116,8 @@ export const serializeStockEventEdition = (
   return formValuesList
     .filter(stockFormValues => {
       const beginingDatetime =
-        stockFormValues.beginningDate && stockFormValues.beginningTime
+        stockFormValues.beginningDate !== '' &&
+        stockFormValues.beginningTime !== ''
           ? buildDateTime(
               stockFormValues.beginningDate,
               stockFormValues.beginningTime

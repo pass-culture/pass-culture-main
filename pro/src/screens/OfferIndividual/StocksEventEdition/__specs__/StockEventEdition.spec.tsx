@@ -1,5 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import format from 'date-fns/format'
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 
@@ -23,6 +24,7 @@ import {
   getOfferIndividualUrl,
 } from 'core/Offers/utils/getOfferIndividualUrl'
 import { Stocks } from 'pages/OfferIndividualWizard/Stocks'
+import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 jest.mock('utils/date', () => ({
@@ -329,17 +331,11 @@ describe('screens:StocksEventEdition', () => {
 
     await userEvent.click(screen.getByText('Ajouter une ou plusieurs dates'))
 
-    await userEvent.click(
-      screen.getByLabelText('Date de l’évènement', { exact: true })
+    await userEvent.type(
+      screen.getByLabelText('Date de l’évènement'),
+      format(new Date(), FORMAT_ISO_DATE_ONLY)
     )
-
-    // There is a case where multiple dates can be displayed by the datepicker,
-    // for instance the 27th of the previous month and the 27th of the current month.
-    // We always choose the last one so that we are sure it's in the future
-    const dates = screen.queryAllByText(new Date().getDate())
-    await userEvent.click(dates[dates.length - 1])
-    await userEvent.click(screen.getByLabelText('Horaire 1'))
-    await userEvent.click(screen.getByText('12:15'))
+    await userEvent.type(screen.getByLabelText('Horaire 1'), '12:15')
     await userEvent.selectOptions(
       screen.getAllByLabelText('Tarif')[1],
       priceCategoryId
