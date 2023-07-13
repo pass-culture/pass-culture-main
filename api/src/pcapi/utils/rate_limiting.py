@@ -55,6 +55,7 @@ def ip_rate_limiter(**kwargs: typing.Any) -> typing.Callable:
 def email_rate_limiter(**kwargs: typing.Any) -> typing.Callable:
     base_kwargs = {
         "key_func": get_email_from_request,
+        "exempt_when": lambda: not get_email_from_request(),
         "scope": "rate_limiter",
         "error_message": "rate limit by email exceeded",
     }
