@@ -2,8 +2,9 @@ import cn from 'classnames'
 import React, { ComponentProps } from 'react'
 
 import { SelectOption } from 'custom_types/form'
+import strokeDownIcon from 'icons/stroke-down.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { ReactComponent as Down } from './assets/down.svg'
 import styles from './Select.module.scss'
 
 export interface SelectInputProps extends ComponentProps<'select'> {
@@ -60,7 +61,7 @@ const SelectInput = ({
         [styles['filter-variant']]: filterVariant,
       })}
     >
-      <Down />
+      <SvgIcon src={strokeDownIcon} alt="" />
     </div>
   </div>
 )

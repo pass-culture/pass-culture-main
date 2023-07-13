@@ -113,6 +113,7 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-close.svg' },
   { src: 'icons/stroke-left.svg' },
   { src: 'icons/stroke-right.svg' },
+  { src: 'icons/stroke-down.svg' },
   { src: 'icons/stroke-up.svg' },
   { src: 'icons/stroke-pass.svg' },
   { src: 'icons/stroke-library.svg' },
