@@ -328,7 +328,7 @@ class Returns201Test:
                 },
                 {
                     "price": 40,
-                    "quantity": None,
+                    "quantity": 0,
                     "bookingLimitDatetime": serialize(booking_limit_datetime),
                 },
             ],
@@ -567,8 +567,8 @@ class Returns400Test:
             "offerId": ["Ce champ est obligatoire"],
             "stocks.0.id": ["Ce champ est obligatoire"],
             "stocks.0.quantity": [
-                "Saisissez un nombre supérieur ou égal à 1",
-                "Saisissez un nombre supérieur ou égal à 1",
+                "Saisissez un nombre supérieur ou égal à 0",
+                "Saisissez un nombre supérieur ou égal à 0",
             ],
         }
 
