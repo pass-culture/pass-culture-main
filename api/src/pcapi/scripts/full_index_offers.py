@@ -30,7 +30,7 @@ def _get_eta(end, current, elapsed_per_batch):  # type: ignore [no-untyped-def]
     return eta
 
 
-@blueprint.cli.command("full_index_offers")  # type: ignore [arg-type]
+@blueprint.cli.command("full_index_offers")
 @click.argument("start", type=int, required=True)
 @click.argument("end", type=int, required=True)
 def full_index_offers(start, end):  # type: ignore [no-untyped-def]

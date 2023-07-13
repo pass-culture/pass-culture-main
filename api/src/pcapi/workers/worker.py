@@ -60,7 +60,7 @@ def log_database_connection_status() -> None:
     db.engine.dispose()
 
 
-@blueprint.cli.command("worker")  # type: ignore [arg-type]
+@blueprint.cli.command("worker")
 @click.argument("queues", nargs=-1)
 def run_worker(queues: Iterable = ()) -> None:
     from flask import current_app as app

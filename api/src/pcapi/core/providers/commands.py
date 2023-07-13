@@ -58,7 +58,7 @@ def _synchronize_venue_providers_apis() -> None:
             )
 
 
-@blueprint.cli.command("update_providables")  # type: ignore [arg-type]
+@blueprint.cli.command("update_providables")
 @click.option("-p", "--provider-name", help="Limit update to this provider name")
 @click.option(
     "-l",
@@ -92,7 +92,7 @@ def update_providables(provider_name: str, venue_provider_id: int, limit: int): 
     )
 
 
-@blueprint.cli.command("update_providables_by_provider_id")  # type: ignore [arg-type]
+@blueprint.cli.command("update_providables_by_provider_id")
 @click.option("-p", "--provider-id", required=True, help="Update providables for this provider", type=int)
 @click.option(
     "-l", "--limit", help="Limit update to n items per venue provider" + " (for test purposes)", type=int, default=None
@@ -102,7 +102,7 @@ def update_providables_by_provider_id(provider_id: int, limit: int | None) -> No
     provider_manager.synchronize_venue_providers(venue_providers, limit)
 
 
-@blueprint.cli.command("update_gtl")  # type: ignore [arg-type]
+@blueprint.cli.command("update_gtl")
 @click.option("-f", "--file", required=True, help="CSV extract of GTL_2023.xlsx with tab as separator", type=str)
 def update_gtl(file: str) -> None:
     generate_titelive_gtl_from_file(file)
