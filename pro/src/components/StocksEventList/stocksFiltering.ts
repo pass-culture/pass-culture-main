@@ -4,6 +4,7 @@ import {
   sortColumnByDateString,
   sortColumnByNumber,
 } from 'hooks/useColumnSorting'
+import { isDateValid } from 'utils/date'
 
 import { StocksEvent } from './StocksEventList'
 
@@ -46,8 +47,8 @@ export const filterAndSortStocks = (
   sortingColumn: StocksEventListSortingColumn | null,
   sortingMode: SortingMode,
   filters: {
-    dateFilter: Date | null
-    hourFilter: Date | null
+    dateFilter: string
+    hourFilter: string
     priceCategoryFilter: string
   }
 ): StocksEvent[] => {
@@ -55,21 +56,23 @@ export const filterAndSortStocks = (
   const filteredStocks = stocks.filter(stock => {
     const stockDate = new Date(stock.beginningDatetime)
 
-    if (dateFilter !== null) {
+    const date = new Date(dateFilter)
+    if (isDateValid(date)) {
       const isSameDay =
-        stockDate.getFullYear() === dateFilter.getFullYear() &&
-        stockDate.getMonth() === dateFilter.getMonth() &&
-        stockDate.getDate() === dateFilter.getDate()
+        stockDate.getFullYear() === date.getFullYear() &&
+        stockDate.getMonth() === date.getMonth() &&
+        stockDate.getDate() === date.getDate()
 
       if (!isSameDay) {
         return false
       }
     }
 
-    if (hourFilter !== null) {
+    const [hours, minutes] = hourFilter.split(':')
+    if (hours && minutes) {
       const isSameHour =
-        stockDate.getHours() === hourFilter.getHours() &&
-        stockDate.getMinutes() === hourFilter.getMinutes()
+        stockDate.getHours() === parseInt(hours) &&
+        stockDate.getMinutes() === parseInt(minutes)
 
       if (!isSameHour) {
         return false
