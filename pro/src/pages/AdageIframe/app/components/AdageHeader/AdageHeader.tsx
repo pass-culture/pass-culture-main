@@ -8,10 +8,10 @@ import { AdageFrontRoles } from 'apiClient/adage'
 import { AdageHeaderLink } from 'apiClient/adage/models/AdageHeaderLink'
 import { apiAdage } from 'apiClient/api'
 import useNotification from 'hooks/useNotification'
-import { InstitutionIcon } from 'icons'
 import fullDownloadIcon from 'icons/full-download.svg'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
+import strokeVenueIcon from 'icons/stroke-venue.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Icon from 'ui-kit/Icon/Icon'
@@ -91,7 +91,11 @@ export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
                   logAdageLinkClick(AdageHeaderLink.MY_INSTITUTION_OFFERS)
                 }
               >
-                <InstitutionIcon className={styles['adage-header-item-icon']} />
+                <SvgIcon
+                  src={strokeVenueIcon}
+                  alt=""
+                  className={styles['adage-header-item-icon']}
+                />
                 Pour mon établissement
                 <div className={styles['adage-header-nb-hits']}>
                   {hits.length}
