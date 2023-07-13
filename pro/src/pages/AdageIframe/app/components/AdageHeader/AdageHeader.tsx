@@ -9,12 +9,12 @@ import { AdageHeaderLink } from 'apiClient/adage/models/AdageHeaderLink'
 import { apiAdage } from 'apiClient/api'
 import useNotification from 'hooks/useNotification'
 import fullDownloadIcon from 'icons/full-download.svg'
+import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import strokeVenueIcon from 'icons/stroke-venue.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import Icon from 'ui-kit/Icon/Icon'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { formatPrice } from 'utils/formatPrice'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
@@ -62,7 +62,12 @@ export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
     <div className={styles['adage-header-container']}>
       <nav className={styles['adage-header']}>
         <div className={styles['adage-header-brand']}>
-          <Icon svg="logo-pass-culture-adage" alt="Logo du pass Culture" />
+          <SvgIcon
+            src={logoPassCultureIcon}
+            alt="Logo du pass Culture"
+            width="120"
+            viewBox="0 0 71 24"
+          />
         </div>
         <div className={styles['adage-header-menu']}>
           {adageUser.role !== AdageFrontRoles.READONLY && (

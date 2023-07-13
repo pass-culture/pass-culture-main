@@ -3,6 +3,8 @@ import type { Story } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
+import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
+
 import RadioButton from './RadioButton'
 
 export default {
@@ -64,6 +66,6 @@ const WithImage = ({ src }: { src: string }) => (
 
 export const WithChildren = Template.bind({})
 WithChildren.args = {
-  label1: <WithImage src="/icons/logo-pass-culture-dark.svg" />,
-  label2: <WithImage src="/icons/logo-pass-culture.svg" />,
+  label1: <WithImage src={logoPassCultureIcon} />,
+  label2: <WithImage src={logoPassCultureIcon} />,
 }
