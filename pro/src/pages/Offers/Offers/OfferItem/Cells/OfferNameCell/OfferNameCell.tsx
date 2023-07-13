@@ -17,7 +17,6 @@ import { Audience } from 'core/shared'
 import useAnalytics from 'hooks/useAnalytics'
 import fullErrorIcon from 'icons/full-error.svg'
 import { Tag } from 'ui-kit'
-import Icon from 'ui-kit/Icon/Icon'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
 import { pluralize } from 'utils/pluralize'
@@ -107,16 +106,16 @@ const OfferNameCell = ({
           {getDateInformations()}
           {shouldShowIndividualWarning && (
             <div>
-              <Icon
+              <SvgIcon
                 className={styles['sold-out-icon']}
-                svg="ico-warning"
+                src={fullErrorIcon}
                 alt="Attention"
               />
 
               <span className={styles['sold-out-dates']}>
-                <Icon
+                <SvgIcon
                   className={styles['sold-out-icon']}
-                  svg="ico-warning"
+                  src={fullErrorIcon}
                   alt="Attention"
                 />
                 {pluralize(computeNumberOfSoldOutStocks(), 'date épuisée')}
