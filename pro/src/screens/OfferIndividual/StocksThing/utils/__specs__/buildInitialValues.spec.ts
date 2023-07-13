@@ -32,10 +32,10 @@ describe('StockThingForm::utils::buildInitialValues', () => {
       remainingQuantity: '10',
       bookingsQuantity: '20',
       quantity: 40,
-      bookingLimitDatetime: new Date('2001-06-05T02:00:00.000Z'),
+      bookingLimitDatetime: '2001-06-05',
       price: 12,
       activationCodes: undefined,
-      activationCodesExpirationDatetime: undefined,
+      activationCodesExpirationDatetime: '',
     })
   })
 
@@ -52,12 +52,12 @@ describe('StockThingForm::utils::buildInitialValues', () => {
     const initialValues = buildInitialValues(offer)
     expect(initialValues).toEqual({
       activationCodes: undefined,
-      activationCodesExpirationDatetime: undefined,
+      activationCodesExpirationDatetime: '',
       stockId: 1,
       remainingQuantity: 'unlimited',
       bookingsQuantity: '20',
       quantity: null,
-      bookingLimitDatetime: null,
+      bookingLimitDatetime: '',
       price: 12,
     })
   })

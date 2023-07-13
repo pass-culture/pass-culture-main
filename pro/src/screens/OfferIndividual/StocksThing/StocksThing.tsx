@@ -34,7 +34,7 @@ import fullCodeIcon from 'icons/full-code.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import { Checkbox, DatePicker, InfoBox, TextInput } from 'ui-kit'
-import { getToday } from 'utils/date'
+import { getToday, isDateValid } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { ActionBar } from '../ActionBar'
@@ -51,7 +51,7 @@ import { setFormReadOnlyFields } from './utils'
 import {
   buildInitialValues,
   getValidationSchema,
-  IStockThingFormValues,
+  StockThingFormValues,
   STOCK_THING_FORM_DEFAULT_VALUES,
 } from './'
 
@@ -88,7 +88,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   /* istanbul ignore next: DEBT, TO FIX */
   const isDisabled = isOfferDisabled(offer.status)
 
-  const onSubmit = async (formValues: IStockThingFormValues) => {
+  const onSubmit = async (formValues: StockThingFormValues) => {
     const serializedOffer = serializePatchOffer({
       offer: offer,
       formValues: { isDuo: formValues.isDuo },
@@ -355,9 +355,15 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
   const readOnlyFields = setFormReadOnlyFields(offer, formik.values)
   const showExpirationDate =
-    formik.values.activationCodesExpirationDatetime !== null
-  const maxDateTime =
-    formik.values.activationCodesExpirationDatetime ?? undefined
+    formik.values.activationCodesExpirationDatetime !== ''
+  const minExpirationDate = isDateValid(formik.values.bookingLimitDatetime)
+    ? new Date(formik.values.bookingLimitDatetime)
+    : null
+  const maxDateTime = isDateValid(
+    formik.values.activationCodesExpirationDatetime
+  )
+    ? new Date(formik.values.activationCodesExpirationDatetime)
+    : undefined
 
   return (
     <FormikProvider value={formik}>
@@ -373,7 +379,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
           onSubmit={submitActivationCodes}
           onCancel={() => setIsActivationCodeFormVisible(false)}
           today={today}
-          minExpirationDate={formik.values.bookingLimitDatetime}
+          minExpirationDate={minExpirationDate}
         />
       )}
 
@@ -410,9 +416,8 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
                       !showExpirationDate,
                   })}
                   classNameFooter={styles['field-layout-footer']}
-                  minDateTime={today}
-                  maxDateTime={getMaximumBookingDatetime(maxDateTime)}
-                  openingDateTime={today}
+                  minDate={today}
+                  maxDate={getMaximumBookingDatetime(maxDateTime)}
                   disabled={readOnlyFields.includes('bookingLimitDatetime')}
                 />
 

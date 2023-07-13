@@ -3,9 +3,9 @@ export interface StockThingFormValues {
   remainingQuantity: string
   bookingsQuantity: string
   quantity: number | null | ''
-  bookingLimitDatetime: Date | null
+  bookingLimitDatetime: string
   price: number | ''
   activationCodes: string[]
-  activationCodesExpirationDatetime: Date | null
+  activationCodesExpirationDatetime: string
   isDuo: boolean | undefined
 }

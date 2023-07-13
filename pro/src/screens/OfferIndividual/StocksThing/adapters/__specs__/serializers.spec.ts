@@ -1,10 +1,10 @@
 import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
 
-import { IStockThingFormValues, STOCK_THING_FORM_DEFAULT_VALUES } from '../..'
+import { StockThingFormValues, STOCK_THING_FORM_DEFAULT_VALUES } from '../..'
 import { serializeStockThingList } from '../serializers'
 
-describe('screens::StockThing::serializers:serializeStockThingList', () => {
-  let formValues: IStockThingFormValues
+describe('serializeStockThingList', () => {
+  let formValues: StockThingFormValues
   let departementCode: string
 
   beforeEach(() => {
@@ -12,9 +12,9 @@ describe('screens::StockThing::serializers:serializeStockThingList', () => {
       remainingQuantity: STOCK_THING_FORM_DEFAULT_VALUES.remainingQuantity,
       bookingsQuantity: STOCK_THING_FORM_DEFAULT_VALUES.bookingsQuantity,
       quantity: 12,
-      bookingLimitDatetime: new Date('2022-10-26T23:00:00+0200'),
+      bookingLimitDatetime: '2022-10-26',
       price: 10,
-      activationCodesExpirationDatetime: null,
+      activationCodesExpirationDatetime: '',
       activationCodes: [],
       isDuo: undefined,
     }
@@ -42,7 +42,7 @@ describe('screens::StockThing::serializers:serializeStockThingList', () => {
     const serializedData = serializeStockThingList(
       {
         ...formValues,
-        bookingLimitDatetime: null,
+        bookingLimitDatetime: '',
       },
       departementCode
     )
