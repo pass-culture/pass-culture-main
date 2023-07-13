@@ -4,6 +4,7 @@ import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.utils.human_ids import humanize
 
@@ -191,3 +192,13 @@ class Returns410Test:
         assert response.status_code == 410
         assert response.json["booking_cancelled"] == ["Cette réservation a été annulée"]
         assert Booking.query.get(booking.id).status is not BookingStatus.USED
+
+
+@pytest.mark.usefixtures("db_session")
+class GoodByeV1Test:
+    @override_features(WIP_ENABLE_API_CONTREMARQUE_V1=False)
+    def test_raise_404_if_api_is_deactivated(self, client):
+        admin = users_factories.AdminFactory()
+        client = client.with_session_auth(admin.email)
+        response = client.patch("/bookings/token/TOKEN")
+        assert response.status_code == 404

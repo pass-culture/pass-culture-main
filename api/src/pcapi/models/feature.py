@@ -124,6 +124,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NEW_ADAGE_FILTERS = "Active les nouveaux filtres adage"
     WIP_MANDATORY_BOOKING_CONTACT = "Rend obligatoire offer.bookingContact pour les offres retirables"
     WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING = "Active les réservations externe boost avec préfix"
+    WIP_ENABLE_API_CONTREMARQUE_V1 = "Active l'API Contremarque v1"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
