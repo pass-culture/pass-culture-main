@@ -19,7 +19,7 @@
   &-brand {
     display: flex;
     width: rem.torem(120px);
-    color: #7b1e82;
+    color: #7b1e82; // Not in variables but should be deleted anyway
   }
 
   &-menu {
