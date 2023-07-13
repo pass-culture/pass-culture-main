@@ -391,7 +391,6 @@ describe('screens:StocksThing', () => {
       expect(expirationInput).toBeDisabled()
       const date = new Date()
       date.setUTCHours(22, 59, 59, 999)
-      screen.debug()
       expect(expirationInput).toHaveValue(today)
       await userEvent.click(screen.getByText('Étape suivante'))
       expect(api.upsertStocks).toHaveBeenCalledWith({
