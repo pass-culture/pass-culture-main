@@ -11,6 +11,7 @@ import fullMailIcon from 'icons/full-mail.svg'
 import { Button, DatePicker, SubmitButton, TextArea, TextInput } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
+import { isDateValid } from 'utils/date'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import { createCollectiveRequestAdapter } from './adapter/createCollectiveRequestAdapter'
@@ -39,6 +40,7 @@ const RequestFormDialog = ({
   const initialValues = {
     teacherEmail: userEmail ?? '',
     description: '',
+    offerDate: '',
   }
   const onSubmit = async (formValues: RequestFormValues) => {
     const response = await createCollectiveRequestAdapter({
@@ -59,7 +61,9 @@ const RequestFormDialog = ({
       collectiveOfferTemplateId: offerId,
       comment: formik.values.description,
       phoneNumber: formik.values.teacherPhone,
-      requestedDate: formik.values.offerDate?.toISOString(),
+      requestedDate: isDateValid(formik.values.offerDate)
+        ? new Date(formik.values.offerDate).toISOString()
+        : undefined,
       totalStudents: formik.values.nbStudents,
       totalTeachers: formik.values.nbTeachers,
     })
@@ -111,7 +115,7 @@ const RequestFormDialog = ({
                   <FormLayout.Row>
                     <DatePicker
                       label="Date souhaitée"
-                      minDateTime={new Date()}
+                      minDate={new Date()}
                       name="offerDate"
                       isOptional
                     />
