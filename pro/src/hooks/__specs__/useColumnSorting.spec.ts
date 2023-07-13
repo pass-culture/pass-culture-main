@@ -4,7 +4,6 @@ import {
   SortingMode,
   useColumnSorting,
   sortColumnByDateString,
-  sortColumnByDateObject,
   sortColumnByNumber,
 } from 'hooks/useColumnSorting'
 
@@ -63,28 +62,6 @@ describe('sortColumnByDateString', () => {
       { [SomeColumns.COLUMN_1]: '2019-01-01' },
       { [SomeColumns.COLUMN_1]: '2020-01-01' },
       { [SomeColumns.COLUMN_1]: '2021-01-01' },
-    ])
-  })
-})
-
-describe('sortColumnByDateObject', () => {
-  it('should sort by date object', () => {
-    expect(
-      sortColumnByDateObject(
-        [
-          { [SomeColumns.COLUMN_1]: new Date('2021-01-01') },
-          { [SomeColumns.COLUMN_1]: '' },
-          { [SomeColumns.COLUMN_1]: null },
-          { [SomeColumns.COLUMN_1]: new Date('2019-01-01') },
-        ],
-        SomeColumns.COLUMN_1,
-        SortingMode.ASC
-      )
-    ).toEqual([
-      { [SomeColumns.COLUMN_1]: null },
-      { [SomeColumns.COLUMN_1]: '' },
-      { [SomeColumns.COLUMN_1]: new Date('2019-01-01') },
-      { [SomeColumns.COLUMN_1]: new Date('2021-01-01') },
     ])
   })
 })

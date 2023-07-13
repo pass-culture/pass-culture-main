@@ -14,18 +14,18 @@ jest.mock('utils/date', () => ({
     .mockImplementation(() => new Date('2022-09-26T13:00:00Z')),
 }))
 
-describe('screens::StockEvent::serializers:serializeStockEventEdition', () => {
+describe('serializeStockEventEdition', () => {
   let formValuesList: StockEventFormValues[]
   let departementCode: string
 
   beforeEach(() => {
     formValuesList = [
       stockEventFactory({
-        beginningDate: new Date('2022-10-26T00:00:00.0200'),
-        beginningTime: new Date('2022-10-26T15:00:00.0200'),
+        beginningDate: '2022-10-26',
+        beginningTime: '15:00',
         remainingQuantity: STOCK_EVENT_FORM_DEFAULT_VALUES.remainingQuantity,
         bookingsQuantity: STOCK_EVENT_FORM_DEFAULT_VALUES.bookingsQuantity,
-        bookingLimitDatetime: new Date('2022-10-26T00:00:00'),
+        bookingLimitDatetime: '2022-10-26',
         isDeletable: true,
         readOnlyFields: [],
         stockId: undefined,
@@ -61,7 +61,7 @@ describe('screens::StockEvent::serializers:serializeStockEventEdition', () => {
       [
         ...formValuesList.map((formValues: StockEventFormValues) => ({
           ...formValues,
-          bookingLimitDatetime: null,
+          bookingLimitDatetime: '',
         })),
       ],
       departementCode
@@ -83,9 +83,9 @@ describe('screens::StockEvent::serializers:serializeStockEventEdition', () => {
         ...formValuesList.map((formValues: StockEventFormValues) => ({
           ...formValues,
           stockId: 1,
-          beginningDate: new Date('2022-10-11T00:00:00.0200'),
-          beginningTime: new Date('2022-10-11T15:00:00.0200'),
-          bookingLimitDatetime: new Date('2022-10-10T00:00:00'),
+          beginningDate: '2022-10-11',
+          beginningTime: '15:00',
+          bookingLimitDatetime: '2022-10-10',
           priceCategoryId: '1',
         })),
       ],

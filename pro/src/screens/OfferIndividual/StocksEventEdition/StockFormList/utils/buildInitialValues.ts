@@ -1,6 +1,9 @@
+import { format } from 'date-fns'
+
 import { OfferStatus } from 'apiClient/v1'
 import { OfferIndividualStock } from 'core/Offers/types'
 import { SelectOption } from 'custom_types/form'
+import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY, isDateValid } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { STOCK_EVENT_FORM_DEFAULT_VALUES } from '../constants'
@@ -49,24 +52,33 @@ const buildSingleInitialValues = ({
         ? ''
         : stock.quantity - stock.bookingsQuantity,
     bookingsQuantity: stock.bookingsQuantity,
-    beginningDate: stock.beginningDatetime
-      ? getLocalDepartementDateTimeFromUtc(
-          stock.beginningDatetime,
-          departmentCode
+    beginningDate: isDateValid(stock.beginningDatetime)
+      ? format(
+          getLocalDepartementDateTimeFromUtc(
+            stock.beginningDatetime,
+            departmentCode
+          ),
+          FORMAT_ISO_DATE_ONLY
         )
-      : null,
+      : '',
     beginningTime: stock.beginningDatetime
-      ? getLocalDepartementDateTimeFromUtc(
-          stock.beginningDatetime,
-          departmentCode
+      ? format(
+          getLocalDepartementDateTimeFromUtc(
+            stock.beginningDatetime,
+            departmentCode
+          ),
+          FORMAT_HH_mm
         )
-      : null,
+      : '',
     bookingLimitDatetime: stock.bookingLimitDatetime
-      ? getLocalDepartementDateTimeFromUtc(
-          stock.bookingLimitDatetime,
-          departmentCode
+      ? format(
+          getLocalDepartementDateTimeFromUtc(
+            stock.bookingLimitDatetime,
+            departmentCode
+          ),
+          FORMAT_ISO_DATE_ONLY
         )
-      : null,
+      : '',
     priceCategoryId: stock.priceCategoryId
       ? String(stock.priceCategoryId) ?? defaultPriceCategoryOptionId
       : '',
