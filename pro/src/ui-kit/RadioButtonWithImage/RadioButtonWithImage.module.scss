@@ -22,6 +22,7 @@ $border-size-selected: rem.torem(2px);
 
   &-radio-on,
   &-radio-off {
+    fill: colors.$white;
     position: absolute;
     top: rem.torem(16px);
     right: rem.torem(16px);

@@ -1,10 +1,10 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { ReactComponent as RadioOffIcon } from 'icons/ico-radio-off.svg'
-import { ReactComponent as RadioOnIcon } from 'icons/ico-radio-on.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
+import radioOffIcon from './assets/ico-radio-off.svg'
+import radioOnIcon from './assets/ico-radio-on.svg'
 import styles from './RadioButtonWithImage.module.scss'
 
 export interface RadioButtonWithImageProps {
@@ -46,9 +46,9 @@ const RadioButtonWithImage = ({
     )}
   >
     {isChecked ? (
-      <RadioOnIcon className={styles['button-radio-on']} />
+      <img alt="" src={radioOnIcon} className={styles['button-radio-on']} />
     ) : (
-      <RadioOffIcon className={styles['button-radio-off']} />
+      <img alt="" src={radioOffIcon} className={styles['button-radio-off']} />
     )}
     <SvgIcon src={icon} className={styles['button-icon']} alt="" />
     <input
