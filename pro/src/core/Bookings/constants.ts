@@ -1,8 +1,8 @@
-import { startOfDay, subDays } from 'date-fns'
+import { format, startOfDay, subDays } from 'date-fns'
 
 import { BookingStatusFilter } from 'apiClient/v1'
 import { SelectOption } from 'custom_types/form'
-import { getToday } from 'utils/date'
+import { FORMAT_ISO_DATE_ONLY, getToday } from 'utils/date'
 
 export const BOOKING_STATUS = {
   BOOKED: 'booked',
@@ -24,8 +24,11 @@ export const EMPTY_FILTER_VALUE = ''
 export const DEFAULT_BOOKING_PERIOD = 30
 
 export const DEFAULT_PRE_FILTERS = {
-  bookingBeginningDate: startOfDay(subDays(getToday(), DEFAULT_BOOKING_PERIOD)),
-  bookingEndingDate: startOfDay(getToday()),
+  bookingBeginningDate: format(
+    startOfDay(subDays(getToday(), DEFAULT_BOOKING_PERIOD)),
+    FORMAT_ISO_DATE_ONLY
+  ),
+  bookingEndingDate: format(startOfDay(getToday()), FORMAT_ISO_DATE_ONLY),
   bookingStatusFilter: BookingStatusFilter.BOOKED,
   offerEventDate: ALL_DATES,
   offerVenueId: ALL_VENUES,

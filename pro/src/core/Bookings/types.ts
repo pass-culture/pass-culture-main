@@ -6,9 +6,9 @@ import {
 
 export type PreFiltersParams = {
   offerVenueId: string
-  offerEventDate: Date | string
-  bookingBeginningDate: Date
-  bookingEndingDate: Date
+  offerEventDate: string
+  bookingBeginningDate: string
+  bookingEndingDate: string
   bookingStatusFilter: BookingStatusFilter
   offerType: string
 }
