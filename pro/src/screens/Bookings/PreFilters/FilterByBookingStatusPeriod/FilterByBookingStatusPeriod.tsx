@@ -1,18 +1,15 @@
-import { addDays, subDays } from 'date-fns'
 import React from 'react'
 
-import { DEFAULT_BOOKING_PERIOD } from 'core/Bookings/constants'
 import { PreFiltersParams } from 'core/Bookings/types'
 import PeriodSelector from 'ui-kit/form_raw/PeriodSelector/PeriodSelector'
-import { getToday } from 'utils/date'
 
 import styles from './FilterByBookingStatusPeriod.module.scss'
 import FilterByStatus from './FilterByStatus'
 
 interface FilterByBookingStatusPeriodProps {
   isDisabled: boolean
-  selectedBookingBeginningDate?: Date
-  selectedBookingEndingDate?: Date
+  selectedBookingBeginningDate: string
+  selectedBookingEndingDate: string
   selectedBookingFilter: string
   updateFilters: (filters: Partial<PreFiltersParams>) => void
 }
@@ -24,24 +21,12 @@ const FilterByBookingStatusPeriod = ({
   selectedBookingFilter,
   updateFilters,
 }: FilterByBookingStatusPeriodProps): JSX.Element => {
-  const handleBookingBeginningDateChange = (bookingBeginningDate: Date) => {
-    updateFilters({
-      bookingBeginningDate: bookingBeginningDate
-        ? bookingBeginningDate
-        : selectedBookingEndingDate
-        ? subDays(selectedBookingEndingDate, DEFAULT_BOOKING_PERIOD)
-        : undefined,
-    })
+  const handleBookingBeginningDateChange = (bookingBeginningDate: string) => {
+    updateFilters({ bookingBeginningDate })
   }
 
-  const handleBookingEndingDateChange = (bookingEndingDate: Date) => {
-    updateFilters({
-      bookingEndingDate: bookingEndingDate
-        ? bookingEndingDate
-        : selectedBookingBeginningDate
-        ? addDays(selectedBookingBeginningDate, DEFAULT_BOOKING_PERIOD)
-        : undefined,
-    })
+  const handleBookingEndingDateChange = (bookingEndingDate: string) => {
+    updateFilters({ bookingEndingDate })
   }
 
   return (
@@ -53,11 +38,11 @@ const FilterByBookingStatusPeriod = ({
       />
 
       <PeriodSelector
-        changePeriodBeginningDateValue={handleBookingBeginningDateChange}
-        changePeriodEndingDateValue={handleBookingEndingDateChange}
+        onBeginningDateChange={handleBookingBeginningDateChange}
+        onEndingDateChange={handleBookingEndingDateChange}
         isDisabled={isDisabled}
-        maxDateEnding={getToday()}
-        periodBeginningDate={selectedBookingBeginningDate || undefined}
+        maxDateEnding={new Date()}
+        periodBeginningDate={selectedBookingBeginningDate}
         periodEndingDate={selectedBookingEndingDate}
       />
     </div>

@@ -4,19 +4,15 @@ import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { PreFiltersParams } from 'core/Bookings/types'
 import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
 import { FieldLayout } from 'ui-kit/form/shared'
+import { isDateValid } from 'utils/date'
 
 import styles from './PreFilters.module.scss'
 
 export interface FilterByEventDateProps {
   isDisabled?: boolean
-  selectedOfferDate: Date | string
+  selectedOfferDate: string
   updateFilters: (filters: Partial<PreFiltersParams>) => void
 }
-
-const selectedOfferDateIsDate = (
-  selectedOfferDate: Date | string
-): selectedOfferDate is Date =>
-  selectedOfferDate !== DEFAULT_PRE_FILTERS.offerEventDate
 
 const FilterByEventDate = ({
   isDisabled = false,
@@ -30,15 +26,16 @@ const FilterByEventDate = ({
   >
     <BaseDatePicker
       name="select-filter-date"
-      onChange={(date: Date) =>
+      onChange={event =>
         updateFilters({
-          offerEventDate: date ? date : DEFAULT_PRE_FILTERS.offerEventDate,
+          offerEventDate:
+            event.target.value !== ''
+              ? event.target.value
+              : DEFAULT_PRE_FILTERS.offerEventDate,
         })
       }
       disabled={isDisabled}
-      value={
-        selectedOfferDateIsDate(selectedOfferDate) ? selectedOfferDate : null
-      }
+      value={isDateValid(new Date(selectedOfferDate)) ? selectedOfferDate : ''}
     />
   </FieldLayout>
 )

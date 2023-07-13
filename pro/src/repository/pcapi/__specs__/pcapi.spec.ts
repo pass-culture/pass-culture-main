@@ -80,10 +80,10 @@ describe('pcapi', () => {
       // Given
       const filters = {
         venueId: 'AA',
-        eventDate: new Date(2020, 8, 13),
+        eventDate: '2020-09-13',
         page: 2,
-        bookingPeriodBeginningDate: new Date(2020, 6, 8),
-        bookingPeriodEndingDate: new Date(2020, 8, 4),
+        bookingPeriodBeginningDate: '2020-07-08',
+        bookingPeriodEndingDate: '2020-09-04',
         bookingStatusFilter: 'validated',
       }
 

@@ -15,6 +15,7 @@ import useNotification from 'hooks/useNotification'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { isDateValid } from 'utils/date'
 
 import { Events } from '../../../core/FirebaseEvents/constants'
 
@@ -75,14 +76,12 @@ const PreFilters = ({
     for (key in selectedPreFilters) {
       if (
         key.includes('Date') &&
-        selectedPreFilters[key] instanceof Date &&
-        DEFAULT_PRE_FILTERS[key] instanceof Date
+        isDateValid(selectedPreFilters[key]) &&
+        isDateValid(DEFAULT_PRE_FILTERS[key])
       ) {
         if (
-          // @ts-expect-error
-          selectedPreFilters[key].getTime() !==
-          // @ts-expect-error
-          DEFAULT_PRE_FILTERS[key].getTime()
+          new Date(selectedPreFilters[key]).getTime() !==
+          new Date(DEFAULT_PRE_FILTERS[key]).getTime()
         ) {
           hasFilters = true
         }

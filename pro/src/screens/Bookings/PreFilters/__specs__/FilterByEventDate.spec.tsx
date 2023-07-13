@@ -25,12 +25,12 @@ describe('components | FilterByEventDate', () => {
 
   it('should apply offerDate filter when choosing an offer date', async () => {
     // Given
-    const selectedDate = new Date('2020-05-20')
+    const selectedDate = '2020-05-20'
     render(<FilterByEventDate {...props} />)
     const offerDateInput = screen.getByPlaceholderText('JJ/MM/AAAA')
 
     // When
-    await userEvent.type(offerDateInput, selectedDate.toISOString())
+    await userEvent.type(offerDateInput, selectedDate)
 
     // Then
     expect(props.updateFilters).toHaveBeenCalledWith({

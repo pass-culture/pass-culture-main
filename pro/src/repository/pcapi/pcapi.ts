@@ -1,15 +1,12 @@
 // This file will be replace by apiClient
 /* istanbul ignore file */
+
 import {
   AttachImageResponseModel,
   CreateThumbnailResponseModel,
 } from 'apiClient/v1'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { client } from 'repository/pcapi/pcapiClient'
-import {
-  FORMAT_ISO_DATE_ONLY,
-  formatBrowserTimezonedDateAsUTC,
-} from 'utils/date'
 import { stringify } from 'utils/query-string'
 
 //
@@ -170,25 +167,16 @@ export const buildBookingsRecapQuery = ({
   }
   if (eventDate !== DEFAULT_PRE_FILTERS.offerEventDate) {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'eventDate' does not exist on type '{ pag... Remove this comment to see the full error message
-    params.eventDate = formatBrowserTimezonedDateAsUTC(
-      new Date(eventDate),
-      FORMAT_ISO_DATE_ONLY
-    )
+    params.eventDate = eventDate
   }
   if (bookingPeriodBeginningDate) {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'bookingPeriodBeginningDate' does not exi... Remove this comment to see the full error message
-    params.bookingPeriodBeginningDate = formatBrowserTimezonedDateAsUTC(
-      bookingPeriodBeginningDate,
-      FORMAT_ISO_DATE_ONLY
-    )
+    params.bookingPeriodBeginningDate = bookingPeriodBeginningDate
   }
 
   if (bookingPeriodEndingDate) {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'bookingPeriodEndingDate' does not exist ... Remove this comment to see the full error message
-    params.bookingPeriodEndingDate = formatBrowserTimezonedDateAsUTC(
-      bookingPeriodEndingDate,
-      FORMAT_ISO_DATE_ONLY
-    )
+    params.bookingPeriodEndingDate = bookingPeriodEndingDate
   }
 
   // @ts-expect-error ts-migrate(2339) FIXME: Property 'bookingStatusFilter' does not exist on t... Remove this comment to see the full error message
