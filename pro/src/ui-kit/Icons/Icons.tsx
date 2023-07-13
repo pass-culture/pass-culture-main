@@ -135,7 +135,6 @@ const notCleandIcons: IconListItem[] = [
   // Not cleaned
   { src: 'icons/checkbox-check.svg', viewBox: '0 0 10 8' },
   { src: 'icons/linear-gradient.svg', viewBox: '0 0 623 1024' }, // TODO replace by a jpg/png
-  { src: 'icons/loader.svg', viewBox: '0 0 32 32' },
   { src: 'icons/logo-pass-culture.svg', viewBox: '0 0 114 84' },
   { src: 'icons/logo-pass-culture-header.svg', viewBox: '0 0 119 40' },
   { src: 'icons/ico-no-bookings.svg', viewBox: '0 0 124 124' },
