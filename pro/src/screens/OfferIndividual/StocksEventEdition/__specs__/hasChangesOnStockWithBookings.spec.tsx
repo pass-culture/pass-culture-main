@@ -1,4 +1,7 @@
+import { format } from 'date-fns'
+
 import { stockEventFactory } from 'screens/OfferIndividual/StocksEventEdition/StockFormList/stockEventFactory'
+import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 
 import { hasChangesOnStockWithBookings } from '../StocksEventEdition'
 
@@ -27,7 +30,11 @@ describe('hasChangesOnStockWithBookings', () => {
   it('should return true when detecting change on beginningDate', () => {
     const result = hasChangesOnStockWithBookings(
       [stockEventFactory()],
-      [stockEventFactory({ beginningDate: new Date() })]
+      [
+        stockEventFactory({
+          beginningDate: format(new Date(), FORMAT_ISO_DATE_ONLY),
+        }),
+      ]
     )
     expect(result).toBe(true)
   })
@@ -35,7 +42,11 @@ describe('hasChangesOnStockWithBookings', () => {
   it('should return true when detecting change on beginningTime', () => {
     const result = hasChangesOnStockWithBookings(
       [stockEventFactory()],
-      [stockEventFactory({ beginningTime: new Date() })]
+      [
+        stockEventFactory({
+          beginningTime: format(new Date(), FORMAT_ISO_DATE_ONLY),
+        }),
+      ]
     )
     expect(result).toBe(true)
   })
@@ -45,6 +56,6 @@ describe('hasChangesOnStockWithBookings', () => {
       [stockEventFactory()],
       [stockEventFactory({ bookingsQuantity: 42 })]
     )
-    expect(result).toBe(true)
+    expect(result).toBe(false)
   })
 })

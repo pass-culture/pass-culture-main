@@ -2,9 +2,10 @@ import { PriceCategoryResponseModel } from 'apiClient/v1'
 import { sortStockByPriceCategory } from 'components/StocksEventList/stocksFiltering'
 import {
   SortingMode,
-  sortColumnByDateObject,
+  sortColumnByDateString,
   sortColumnByNumber,
 } from 'hooks/useColumnSorting'
+import { isDateValid } from 'utils/date'
 
 import { StockEventFormValues } from './types'
 
@@ -23,30 +24,32 @@ export const filterAndSortStocks = (
   sortingColumn: StocksEventFormSortingColumn | null,
   sortingMode: SortingMode,
   filters: {
-    dateFilter: Date | null
-    hourFilter: Date | null
+    dateFilter: string
+    hourFilter: string
     priceCategoryFilter: string
   }
 ): StockEventFormValues[] => {
   const { dateFilter, hourFilter, priceCategoryFilter } = filters
   const filteredStocks = stocks.filter(stock => {
-    const stockDate = stock.beginningDate
-    if (dateFilter !== null && stockDate instanceof Date) {
+    const stockDate = new Date(stock.beginningDate)
+
+    const date = new Date(dateFilter)
+    if (isDateValid(date) && isDateValid(stockDate)) {
       const isSameDay =
-        stockDate.getFullYear() === dateFilter.getFullYear() &&
-        stockDate.getMonth() === dateFilter.getMonth() &&
-        stockDate.getDate() === dateFilter.getDate()
+        stockDate.getFullYear() === date.getFullYear() &&
+        stockDate.getMonth() === date.getMonth() &&
+        stockDate.getDate() === date.getDate()
 
       if (!isSameDay) {
         return false
       }
     }
 
-    const stockHour = stock.beginningTime
-    if (hourFilter !== null && stockHour instanceof Date) {
+    const [stockHours, stockMinutes] = stock.beginningTime.split(':')
+    const [filterHours, filterMinutes] = hourFilter.split(':')
+    if (filterHours && filterMinutes) {
       const isSameHour =
-        stockHour.getHours() === hourFilter.getHours() &&
-        stockHour.getMinutes() === hourFilter.getMinutes()
+        stockHours === filterHours && stockMinutes === filterMinutes
 
       if (!isSameHour) {
         return false
@@ -64,7 +67,7 @@ export const filterAndSortStocks = (
   })
 
   if (sortingMode === SortingMode.NONE || sortingColumn === null) {
-    return sortColumnByDateObject(
+    return sortColumnByDateString(
       filteredStocks,
       'beginningDate',
       SortingMode.ASC
@@ -73,13 +76,13 @@ export const filterAndSortStocks = (
 
   switch (sortingColumn) {
     case StocksEventFormSortingColumn.DATE:
-      return sortColumnByDateObject(
+      return sortColumnByDateString(
         filteredStocks,
         'beginningDate',
         sortingMode
       )
     case StocksEventFormSortingColumn.HOUR:
-      return sortColumnByDateObject(
+      return sortColumnByDateString(
         filteredStocks,
         'beginningTime',
         sortingMode
@@ -91,7 +94,7 @@ export const filterAndSortStocks = (
         sortingMode
       )
     case StocksEventFormSortingColumn.BOOKING_LIMIT_DATETIME:
-      return sortColumnByDateObject(
+      return sortColumnByDateString(
         filteredStocks,
         'bookingLimitDatetime',
         sortingMode

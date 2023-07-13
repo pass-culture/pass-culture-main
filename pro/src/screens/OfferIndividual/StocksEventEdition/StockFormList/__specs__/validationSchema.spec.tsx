@@ -30,8 +30,8 @@ describe('validationSchema', () => {
       formValues: {
         stocks: [
           stockEventFactory({
-            beginningDate: new Date('2019-06-15T12:00:00Z'),
-            bookingLimitDatetime: new Date('2019-05-15T12:00:00Z'),
+            beginningDate: '2019-06-15',
+            bookingLimitDatetime: '2019-05-15',
           }),
         ],
       },
@@ -42,8 +42,8 @@ describe('validationSchema', () => {
       formValues: {
         stocks: [
           stockEventFactory({
-            beginningDate: new Date('2022-06-15T12:00:00Z'),
-            bookingLimitDatetime: new Date('2023-05-15T12:00:00Z'),
+            beginningDate: '2022-06-15',
+            bookingLimitDatetime: '2023-05-15',
           }),
         ],
       },

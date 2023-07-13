@@ -52,32 +52,6 @@ export const sortColumnByDateString = <
       (sortingMode === SortingMode.ASC ? 1 : -1)
   )
 
-export const sortColumnByDateObject = <
-  DateColumn extends string,
-  Items extends { [key in DateColumn]: Date | null | '' },
->(
-  items: Items[],
-  column: DateColumn,
-  sortingMode: SortingMode
-): Items[] =>
-  items.sort((a, b) => {
-    const dateA = a[column]
-    const dateB = b[column]
-
-    if (dateA === null || dateA === '') {
-      return -1
-    }
-
-    if (dateB === null || dateB === '') {
-      return 1
-    }
-
-    return (
-      (dateA.getTime() - dateB.getTime()) *
-      (sortingMode === SortingMode.ASC ? 1 : -1)
-    )
-  })
-
 export const sortColumnByNumber = <
   NumberColumn extends string,
   Items extends { [key in NumberColumn]: number | null | '' },

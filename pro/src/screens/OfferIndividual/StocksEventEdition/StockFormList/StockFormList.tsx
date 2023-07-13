@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { isAfter } from 'date-fns'
 import { FieldArray, useFormikContext } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 
 import { StockFormActions } from 'components/StockFormActions'
 import { FilterResultsRow } from 'components/StocksEventList/FilterResultsRow'
@@ -67,8 +67,8 @@ const StockFormList = ({
 
   const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
     useColumnSorting<StocksEventFormSortingColumn>()
-  const [dateFilter, setDateFilter] = useState<Date | null>(null)
-  const [hourFilter, setHourFilter] = useState<Date | null>(null)
+  const [dateFilter, setDateFilter] = useState<string>('')
+  const [hourFilter, setHourFilter] = useState<string>('')
   const [priceCategoryFilter, setPriceCategoryFilter] = useState('')
   const onFilterChange = () => {
     setPage(1)
@@ -137,8 +137,8 @@ const StockFormList = ({
 
                   <div className={cn(styles['filter-input'])}>
                     <BaseDatePicker
-                      onChange={date => {
-                        setDateFilter(date)
+                      onChange={event => {
+                        setDateFilter(event.target.value)
                         onFilterChange()
                       }}
                       value={dateFilter}
@@ -166,8 +166,8 @@ const StockFormList = ({
                   />
                   <div className={cn(styles['filter-input'])}>
                     <BaseTimePicker
-                      onChange={date => {
-                        setHourFilter(date)
+                      onChange={event => {
+                        setHourFilter(event.target.value)
                         onFilterChange()
                       }}
                       value={hourFilter}
@@ -302,8 +302,8 @@ const StockFormList = ({
                 <FilterResultsRow
                   colSpan={7}
                   onFiltersReset={() => {
-                    setDateFilter(null)
-                    setHourFilter(null)
+                    setDateFilter('')
+                    setHourFilter('')
                     setPriceCategoryFilter('')
                     onFilterChange()
                   }}
@@ -328,9 +328,9 @@ const StockFormList = ({
                   const { readOnlyFields } = stockFormValues
 
                   const onChangeBeginningDate = (
-                    _name: string,
-                    date: Date | null
+                    event: ChangeEvent<HTMLInputElement>
                   ) => {
+                    const date = event.target.value
                     const stockBookingLimitDatetime =
                       stockFormValues.bookingLimitDatetime
                     /* istanbul ignore next: DEBT to fix */
@@ -339,7 +339,13 @@ const StockFormList = ({
                     }
                     // tested but coverage don't see it.
                     /* istanbul ignore next */
-                    if (date && isAfter(stockBookingLimitDatetime, date)) {
+                    if (
+                      date !== '' &&
+                      isAfter(
+                        new Date(stockBookingLimitDatetime),
+                        new Date(date)
+                      )
+                    ) {
                       setTouched({
                         [`stocks[${index}]bookingLimitDatetime`]: true,
                       })
@@ -387,8 +393,7 @@ const StockFormList = ({
                           name={`stocks[${index}]beginningDate`}
                           label="Date"
                           isLabelHidden
-                          minDateTime={today}
-                          openingDateTime={today}
+                          minDate={today}
                           disabled={readOnlyFields.includes('beginningDate')}
                           onChange={onChangeBeginningDate}
                           hideFooter
@@ -431,11 +436,12 @@ const StockFormList = ({
                           name={`stocks[${index}]bookingLimitDatetime`}
                           label="Date limite de réservation"
                           isLabelHidden
-                          minDateTime={today}
-                          maxDateTime={
-                            beginningDate ? beginningDate : undefined
+                          minDate={today}
+                          maxDate={
+                            beginningDate !== ''
+                              ? new Date(beginningDate)
+                              : undefined
                           }
-                          openingDateTime={today}
                           disabled={readOnlyFields.includes(
                             'bookingLimitDatetime'
                           )}

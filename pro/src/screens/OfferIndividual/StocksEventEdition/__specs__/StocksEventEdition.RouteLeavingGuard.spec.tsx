@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import format from 'date-fns/format'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
@@ -20,7 +21,7 @@ import { OfferIndividual, OfferIndividualVenue } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { ButtonLink } from 'ui-kit'
-import { getToday } from 'utils/date'
+import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StocksEventEdition, {
@@ -105,7 +106,6 @@ const renderStockEventScreen = (
     { initialRouterEntries: [url] }
   )
 
-const today = getToday()
 const priceCategoryId = '1'
 
 describe('screens:StocksEventEdition', () => {
@@ -193,10 +193,11 @@ describe('screens:StocksEventEdition', () => {
 
     renderStockEventScreen(props, contextValue)
 
-    await userEvent.click(screen.getByLabelText('Date', { exact: true }))
-    await userEvent.click(await screen.getByText(today.getDate()))
-    await userEvent.click(screen.getByLabelText('Horaire'))
-    await userEvent.click(await screen.getByText('12:00'))
+    await userEvent.type(
+      screen.getByLabelText('Date'),
+      format(new Date(), FORMAT_ISO_DATE_ONLY)
+    )
+    await userEvent.type(screen.getByLabelText('Horaire'), '12:00')
     await userEvent.selectOptions(
       screen.getByLabelText('Tarif'),
       priceCategoryId
