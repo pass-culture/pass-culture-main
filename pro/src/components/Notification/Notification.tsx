@@ -4,15 +4,16 @@ import { useSelector } from 'react-redux'
 
 import { NOTIFICATION_TRANSITION_DURATION } from 'core/Notification/constants'
 import useNotification, { NotificationTypeEnum } from 'hooks/useNotification'
+import fullErrorIcon from 'icons/full-error.svg'
+import fullInfoIcon from 'icons/full-info.svg'
+import fullValidateIcon from 'icons/full-validate.svg'
+import strokeClockIcon from 'icons/stroke-clock.svg'
 import {
   isStickyBarOpenSelector,
   notificationSelector,
 } from 'store/selectors/notificationSelector'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { ReactComponent as ErrorIcon } from './assets/notification-error-white.svg'
-import { ReactComponent as InfoIcon } from './assets/notification-information.svg'
-import { ReactComponent as SuccessIcon } from './assets/notification-success-white.svg'
-import { ReactComponent as PendingIcon } from './assets/status-pending.svg'
 import styles from './Notification.module.scss'
 
 const Notification = (): JSX.Element | null => {
@@ -50,14 +51,14 @@ const Notification = (): JSX.Element | null => {
   }
 
   const { text, type } = notification
-  let iconComponent = <SuccessIcon />
+  let icon = fullValidateIcon
   /* istanbul ignore next: DEBT, TO FIX */
   if (type === 'error') {
-    iconComponent = <ErrorIcon />
+    icon = fullErrorIcon
   } else if (type === 'pending') {
-    iconComponent = <PendingIcon />
+    icon = strokeClockIcon
   } else if (type === 'information') {
-    iconComponent = <InfoIcon />
+    icon = fullInfoIcon
   }
 
   const notificationAttribute = {
@@ -88,7 +89,7 @@ const Notification = (): JSX.Element | null => {
         }
         role={notificationAttribute ?? 'status'}
       >
-        {iconComponent}
+        <SvgIcon className={styles['icon']} src={icon} alt="" />
         {text}
       </div>
     )
