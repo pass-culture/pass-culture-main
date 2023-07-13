@@ -245,6 +245,35 @@ class FinanceEvent(Base, Model):
     __table_args__ = (
         # An event relates to an individual or a collective booking, never both.
         sqla.CheckConstraint('num_nonnulls("bookingId", "collectiveBookingId") = 1'),
+        # There cannot be two pending or ready events for the same individual booking.
+        sqla.Index(
+            "idx_uniq_individual_booking_id",
+            bookingId,
+            postgresql_where=status.in_((FinanceEventStatus.PENDING, FinanceEventStatus.READY)),
+            unique=True,
+        ),
+        # Ditto for collective bookings.
+        sqla.Index(
+            "idx_uniq_collective_booking_id",
+            collectiveBookingId,
+            postgresql_where=status.in_((FinanceEventStatus.PENDING, FinanceEventStatus.READY)),
+            unique=True,
+        ),
+        # Check status / pricingPointId / pricingOrderingDate consistency.
+        sqla.CheckConstraint(
+            """
+            (
+              status = 'pending'
+              AND "pricingPointId" IS NULL
+              AND "pricingOrderingDate" IS NULL
+            ) OR (
+              "pricingPointId" IS NOT NULL
+              AND "pricingOrderingDate" IS NOT NULL
+            )
+            OR status in ('cancelled', 'not to be priced')
+            """,
+            name="status_pricing_point_ordering_date_check",
+        ),
     )
 
 
