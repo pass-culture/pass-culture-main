@@ -1,3 +1,4 @@
+import { format, subMonths } from 'date-fns'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { api } from 'apiClient/api'
@@ -7,11 +8,7 @@ import useCurrentUser from 'hooks/useCurrentUser'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import {
-  formatBrowserTimezonedDateAsUTC,
-  FORMAT_ISO_DATE_ONLY,
-  getToday,
-} from 'utils/date'
+import { FORMAT_ISO_DATE_ONLY, getToday } from 'utils/date'
 import { sortByLabel } from 'utils/strings'
 
 import { DEFAULT_INVOICES_FILTERS } from '../_constants'
@@ -28,15 +25,11 @@ const ReimbursementsInvoices = (): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const INITIAL_FILTERS = useMemo(() => {
     const today = getToday()
-    const oneMonthAgo = new Date(
-      today.getFullYear(),
-      today.getMonth() - 1,
-      today.getDate()
-    )
+    const oneMonthAgo = subMonths(today, 1)
     return {
       reimbursementPoint: ALL_REIMBURSEMENT_POINT_OPTION_ID,
-      periodStart: oneMonthAgo,
-      periodEnd: today,
+      periodStart: format(oneMonthAgo, FORMAT_ISO_DATE_ONLY),
+      periodEnd: format(today, FORMAT_ISO_DATE_ONLY),
     }
   }, [])
 
@@ -98,15 +91,10 @@ const ReimbursementsInvoices = (): JSX.Element => {
 
       api
         .getInvoices(
-          periodStart !== DEFAULT_INVOICES_FILTERS.periodBeginningDate
-            ? formatBrowserTimezonedDateAsUTC(periodStart, FORMAT_ISO_DATE_ONLY)
-            : undefined,
-          periodEnd !== DEFAULT_INVOICES_FILTERS.periodEndingDate
-            ? formatBrowserTimezonedDateAsUTC(periodEnd, FORMAT_ISO_DATE_ONLY)
-            : undefined,
-          // @ts-expect-error type string is not assignable to type number
+          periodStart,
+          periodEnd,
           reimbursmentPoint !== DEFAULT_INVOICES_FILTERS.reimbursementPointId
-            ? reimbursmentPoint
+            ? parseInt(reimbursmentPoint)
             : undefined
         )
         .then(invoices => {

@@ -1,3 +1,4 @@
+import { format, subMonths } from 'date-fns'
 import React, { useCallback, useEffect, useState } from 'react'
 
 import { VenueListItemResponseModel } from 'apiClient/v1'
@@ -11,11 +12,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { API_URL } from 'utils/config'
-import {
-  FORMAT_ISO_DATE_ONLY,
-  formatBrowserTimezonedDateAsUTC,
-  getToday,
-} from 'utils/date'
+import { FORMAT_ISO_DATE_ONLY, getToday } from 'utils/date'
 import { stringify } from 'utils/query-string'
 import { sortByLabel } from 'utils/strings'
 
@@ -31,15 +28,11 @@ const ReimbursementsDetails = (): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const ALL_VENUES_OPTION_ID = 'allVenues'
   const today = getToday()
-  const oneMonthAGo = new Date(
-    today.getFullYear(),
-    today.getMonth() - 1,
-    today.getDate()
-  )
+  const oneMonthAGo = subMonths(today, 1)
   const INITIAL_FILTERS = {
     venue: ALL_VENUES_OPTION_ID,
-    periodStart: oneMonthAGo,
-    periodEnd: today,
+    periodStart: format(oneMonthAGo, FORMAT_ISO_DATE_ONLY),
+    periodEnd: format(today, FORMAT_ISO_DATE_ONLY),
   }
 
   const [filters, setFilters] = useState(INITIAL_FILTERS)
@@ -48,8 +41,6 @@ const ReimbursementsDetails = (): JSX.Element => {
   const [venuesOptions, setVenuesOptions] = useState<SelectOption[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
-  const dateFilterFormat = (date: Date) =>
-    formatBrowserTimezonedDateAsUTC(date, FORMAT_ISO_DATE_ONLY)
   const isPeriodFilterSelected = periodStart && periodEnd
   const requireVenueFilterForAdmin =
     currentUser.isAdmin && venue === ALL_VENUES_OPTION_ID
@@ -85,10 +76,10 @@ const ReimbursementsDetails = (): JSX.Element => {
   useEffect(() => {
     const params: CsvQueryParams = {}
     if (periodStart) {
-      params.reimbursementPeriodBeginningDate = dateFilterFormat(periodStart)
+      params.reimbursementPeriodBeginningDate = periodStart
     }
     if (periodEnd) {
-      params.reimbursementPeriodEndingDate = dateFilterFormat(periodEnd)
+      params.reimbursementPeriodEndingDate = periodEnd
     }
     if (venue && venue !== ALL_VENUES_OPTION_ID) {
       params.venueId = venue
