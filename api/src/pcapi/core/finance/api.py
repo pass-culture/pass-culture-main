@@ -855,6 +855,31 @@ def _price_booking(
         )
     )
 
+    # We'll link the new pricing to the FinanceEvent (if there is
+    # one). That will ease the switch to `price_events`.
+    event_id = (
+        models.FinanceEvent.query.filter(
+            models.FinanceEvent.booking == (booking if not is_booking_collective else None),
+            models.FinanceEvent.collectiveBooking == (booking if is_booking_collective else None),
+            models.FinanceEvent.status.in_(
+                (
+                    models.FinanceEventStatus.PENDING,
+                    models.FinanceEventStatus.READY,
+                )
+            ),
+        )
+        .with_entities(models.FinanceEvent.id)
+        .scalar()
+    )
+    if not event_id:
+        logger.info(
+            "Could not find finance event in `price_booking`",
+            extra={
+                "booking": booking.id if not is_booking_collective else None,
+                "collective_booking": booking.id if is_booking_collective else None,
+                "dateUsed": booking.dateUsed,
+            },
+        )
     assert booking.dateUsed  # helps mypy when setting Pricing.valueDate below
     return models.Pricing(
         status=_get_initial_pricing_status(booking),
@@ -867,6 +892,7 @@ def _price_booking(
         lines=lines,
         bookingId=booking.id if not is_booking_collective else None,
         collectiveBookingId=booking.id if is_booking_collective else None,
+        eventId=event_id,
         venueId=booking.venueId,  # denormalized for performance in `_generate_cashflows()`
     )
 
