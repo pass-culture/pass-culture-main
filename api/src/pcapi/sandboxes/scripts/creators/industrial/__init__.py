@@ -14,6 +14,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_occurre
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_offers import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_products import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_stocks import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_incidents import create_industrial_incidents
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_invoices import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_mediations import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offer_validation_config import *
@@ -140,3 +141,5 @@ def save_industrial_sandbox() -> None:
     create_offers_with_ean()
 
     create_industrial_offer_validation_rules()
+
+    create_industrial_incidents()

@@ -1,0 +1,62 @@
+{% from "components/forms.html" import build_filters_form with context %}
+{% import "components/links.html" as links %}
+{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% extends "layouts/connected.html" %}
+{% block page %}
+  <div class="pt-3 px-5">
+    <h2 class="fw-light">Incidents sur les réservations individuelles</h2>
+    <div>
+      {% if rows %}
+        <div class="d-flex justify-content-around">
+          <p class="lead num-results">
+            {{ rows | length }}{{ "+" if rows | length > 100 else "" }}
+            résultat{{ "s" if rows | length > 1 else "" }}
+          </p>
+          <table class="table mb-4"
+                 data-table-multi-select-id="table-individual-incidents-multiselect">
+            <thead>
+              <tr>
+                <th scope="col">
+                  <input type="checkbox"
+                         class="form-check-input"
+                         name="pc-table-multi-select-check-all" />
+                </th>
+                <th scope="col">ID</th>
+                <th scope="col">Statut de l'incident</th>
+                <th scope="col">Type d'incident</th>
+                <th scope="col">Nb. Réservation(s)</th>
+                <th scope="col">Montant total</th>
+                <th scope="col">Structure</th>
+                <th scope="col">Porteur de l'offre (lieu)</th>
+                <th scope="col">Origine de la demande</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for incident in rows %}
+                {% set venue = incident.venue %}
+                <tr>
+                  <td>
+                    <input type="checkbox"
+                           class="form-check-input"
+                           name="pc-table-multi-select-check-{{ incident.id }}"
+                           data-id="{{ incident.id }}" />
+                  </td>
+                  <td>{{ incident.id }}</td>
+                  <td>{{ incident.status | format_finance_incident_status | safe }}</td>
+                  <td>{{ incident.kind | format_finance_incident_type | safe }}</td>
+                  <td>{{ incident.booking_finance_incidents | length }}</td>
+                  <td>{{ incident.booking_finance_incidents | sum(attribute="newTotalAmount") | format_cents }}</td>
+                  <td>{{ links.build_offerer_name_to_details_link(incident.venue.managingOfferer) }}</td>
+                  <td>{{ links.build_venue_name_to_details_link(venue) }}</td>
+                  <td>
+                    {{ incident.details }}
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      {% else %}
+        <div class="lead">Aucun incident en cours n'est enregistré.</div>
+      {% endif %}
+    {% endblock page %}

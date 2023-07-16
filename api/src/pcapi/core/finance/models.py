@@ -811,3 +811,71 @@ class PaymentMessage(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     name: str = sqla.Column(sqla.String(50), unique=True, nullable=False)
     checksum: bytes = sqla.Column(sqla.LargeBinary(32), unique=True, nullable=False)
+
+
+##
+# When an incident is `CREATED` it can be either `CANCELLED` and it's the end of this incident. Or it can be `VALIDATED`.
+##
+class IncidentStatus(enum.Enum):
+    CREATED = "created"
+    VALIDATED = "validated"
+    CANCELLED = "cancelled"
+
+
+class IncidentType(enum.Enum):
+    OVERPAYMENT = "overpayment"
+    COMMERCIAL_GESTURE = "commercial gesture"
+    OFFER_PRICE_REGULATION = "offer price regulation"
+    FRAUD = "fraud"
+
+
+class FinanceIncident(Base, Model):
+    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
+    kind: IncidentType = sqla.Column(
+        sqla.Enum(IncidentType, native_enum=False, create_contraint=False),
+        nullable=False,
+    )
+    status: IncidentStatus = sqla.Column(
+        sqla.Enum(IncidentStatus, native_enum=False, create_constraint=False),
+        nullable=False,
+        server_default=IncidentStatus.CREATED.value,
+        default=IncidentStatus.CREATED,
+    )
+
+    venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), nullable=False)
+    venue: sqla_orm.Mapped["offerers_models.Venue | None"] = sqla_orm.relationship(
+        "Venue", foreign_keys=[venueId], backref="finance_incidents"
+    )
+
+    details: dict | None = sqla.Column(
+        sqla_mutable.MutableDict.as_mutable(sqla_psql.JSONB), nullable=False, default={}, server_default="{}"
+    )
+
+
+class BookingFinanceIncident(Base, Model):
+    id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
+
+    bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=True)
+    booking: sqla_orm.Mapped["bookings_models.Booking | None"] = sqla_orm.relationship(
+        "Booking", foreign_keys=[bookingId]
+    )
+
+    collectiveBookingId = sqla.Column(
+        sqla.BigInteger, sqla.ForeignKey("collective_booking.id"), index=True, nullable=True
+    )
+    collectiveBooking: sqla_orm.Mapped["educational_models.CollectiveBooking | None"] = sqla_orm.relationship(
+        "CollectiveBooking",
+        foreign_keys=[collectiveBookingId],
+    )
+
+    incidentId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("finance_incident.id"), index=True, nullable=False)
+    incident: sqla_orm.Mapped["FinanceIncident | None"] = sqla_orm.relationship(
+        "FinanceIncident", foreign_keys=[incidentId], backref="booking_finance_incidents"
+    )
+
+    beneficiaryId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("user.id"), index=True, nullable=False)
+    beneficiary: sqla_orm.Mapped["users_models.User"] = sqla_orm.relationship(
+        "User", foreign_keys=[beneficiaryId], backref="incidents"
+    )
+
+    newTotalAmount: int = sqla.Column(sqla.Integer, nullable=False)
