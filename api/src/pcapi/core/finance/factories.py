@@ -255,3 +255,22 @@ class PaymentWithCustomRuleFactory(PaymentFactory):
     customReimbursementRule = factory.SubFactory(CustomReimbursementRuleFactory)
     reimbursementRule = None
     reimbursementRate = None
+
+
+class FinanceIncidentFactory(BaseFactory):
+    class Meta:
+        model = models.FinanceIncident
+
+    venue = factory.SubFactory(offerers_factories.VenueFactory)
+    kind = models.IncidentType.OVERPAYMENT
+    status = models.IncidentStatus.CREATED
+
+
+class IndividualBookingFinanceIncidentFactory(BaseFactory):
+    class Meta:
+        model = models.BookingFinanceIncident
+
+    booking = factory.SubFactory(bookings_factories.BookingFactory)
+    incident = factory.SubFactory(FinanceIncidentFactory)
+    beneficiary = factory.SelfAttribute("booking.user")
+    newTotalAmount = 1020

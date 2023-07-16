@@ -40,7 +40,6 @@ from pcapi.utils.human_ids import humanize
 
 
 if TYPE_CHECKING:
-    from pcapi.core.finance.models import Deposit
     from pcapi.core.offerers import models as offerers_models
     from pcapi.core.offers import models as offers_models
     from pcapi.core.users import models as users_models
@@ -140,7 +139,9 @@ class Booking(PcObject, Base, Model):
 
     depositId = Column(BigInteger, ForeignKey("deposit.id"), index=True, nullable=True)
 
-    deposit: Mapped["Deposit | None"] = relationship("Deposit", foreign_keys=[depositId], back_populates="bookings")
+    deposit: Mapped["finance_models.Deposit | None"] = relationship(
+        "Deposit", foreign_keys=[depositId], back_populates="bookings"
+    )
 
     def mark_as_used(self) -> None:
         if self.is_used_or_reimbursed:

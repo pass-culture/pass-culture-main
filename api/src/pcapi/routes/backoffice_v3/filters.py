@@ -637,6 +637,28 @@ def format_gtl_as_csr(gtl_id: str) -> Csr | None:
     return get_csr(gtl_id)
 
 
+def format_finance_incident_status(incident_status: finance_models.IncidentStatus) -> str:
+    match incident_status:
+        case finance_models.IncidentStatus.CREATED:
+            return '<span class="badge text-bg-secondary">Créé</span>'
+        case finance_models.IncidentStatus.CANCELLED:
+            return '<span class="badge text-bg-danger">Annulé</span>'
+        case finance_models.IncidentStatus.VALIDATED:
+            return '<span class="badge text-bg-success">Validé</span>'
+
+
+def format_finance_incident_type(incident_kind: finance_models.IncidentType) -> str:
+    match incident_kind:
+        case finance_models.IncidentType.OVERPAYMENT:
+            return '<span class="badge text-bg-warning">Trop Perçu</span>'
+        case finance_models.IncidentType.FRAUD:
+            return '<span class="badge text-bg-danger">Fraude</span>'
+        case finance_models.IncidentType.COMMERCIAL_GESTURE:
+            return '<span class="badge text-bg-success">Geste Commercial</span>'
+        case finance_models.IncidentType.OFFER_PRICE_REGULATION:
+            return '<span class="badge text-bg-light">Régulation du prix de l\'offre</span>'
+
+
 def install_template_filters(app: Flask) -> None:
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
@@ -692,3 +714,5 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters[
         "pc_backoffice_public_account_link_in_comment"
     ] = urls.build_backoffice_public_account_link_in_comment
+    app.jinja_env.filters["format_finance_incident_status"] = format_finance_incident_status
+    app.jinja_env.filters["format_finance_incident_type"] = format_finance_incident_type
