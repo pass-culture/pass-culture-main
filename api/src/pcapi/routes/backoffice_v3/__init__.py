@@ -12,6 +12,7 @@ def install_routes(app: Flask) -> None:
     from . import collective_offer_templates
     from . import custom_reimbursement_rules
     from . import filters
+    from . import finance
     from . import fraud
     from . import health_check
     from . import home
