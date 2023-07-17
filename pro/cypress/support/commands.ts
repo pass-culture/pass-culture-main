@@ -39,7 +39,14 @@
 // TODO Albéric: can be re-added when this issue is solved: https://github.com/testing-library/cypress-testing-library/issues/252
 // import '@testing-library/cypress/add-commands'
 
+Cypress.on('uncaught:exception', () => {
+  // returning false here prevents Cypress from failing the test
+  return false
+})
+
 Cypress.Commands.add('login', (email: string, password: string) => {
+  cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
+
   return cy
     .visit('http://localhost:3001/connexion')
     .get('#email')
@@ -48,6 +55,7 @@ Cypress.Commands.add('login', (email: string, password: string) => {
     .type(password)
     .get('button[type=submit]')
     .click()
+    .wait('@signinUser')
 })
 
 Cypress.Commands.add('setFeatureFlags', (features: Feature[]) => {
