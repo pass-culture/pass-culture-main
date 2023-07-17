@@ -19,6 +19,7 @@ import fullWaitIcon from 'icons/full-wait.svg'
 import strokePartyIcon from 'icons/stroke-party.svg'
 import { OffererVenues } from 'pages/Home/OffererVenues'
 import { VenueList } from 'pages/Home/Venues'
+import { cleanURLParam } from 'screens/Offers/SearchFilters/utils'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { sortByLabel } from 'utils/strings'
 
@@ -60,9 +61,10 @@ const Offerers = ({
     navigate(`${location.pathname}?${frenchQueryString}`)
   }
 
-  const { structure: offererId } = Object.fromEntries(
+  let { structure: offererId } = Object.fromEntries(
     new URLSearchParams(location.search)
   )
+  offererId = cleanURLParam(offererId)
 
   useEffect(() => {
     if (receivedOffererNames) {
