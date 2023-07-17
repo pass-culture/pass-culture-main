@@ -5,10 +5,11 @@ import ButtonDownloadCSV from 'components/ButtonDownloadCSV'
 import getVenuesForOffererAdapter from 'core/Venue/adapters/getVenuesForOffererAdapter'
 import { SelectOption } from 'custom_types/form'
 import useCurrentUser from 'hooks/useCurrentUser'
+import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
 import { ButtonLink } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import Icon from 'ui-kit/Icon/Icon'
 import Spinner from 'ui-kit/Spinner/Spinner'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { API_URL } from 'utils/config'
 import {
   FORMAT_ISO_DATE_ONLY,
@@ -104,7 +105,13 @@ const ReimbursementsDetails = (): JSX.Element => {
   if (venuesOptions.length === 0) {
     return (
       <div className="no-refunds">
-        <Icon alt="" svg="ico-no-bookings" />
+        <SvgIcon
+          src={strokeNoBookingIcon}
+          alt=""
+          viewBox="0 0 200 156"
+          className="no-refunds-icon"
+          width="124"
+        />
         <span>Aucun remboursement à afficher</span>
       </div>
     )

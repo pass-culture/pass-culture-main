@@ -4,8 +4,9 @@ import { api } from 'apiClient/api'
 import { InvoiceResponseModel } from 'apiClient/v1'
 import { SelectOption } from 'custom_types/form'
 import useCurrentUser from 'hooks/useCurrentUser'
-import Icon from 'ui-kit/Icon/Icon'
+import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
 import Spinner from 'ui-kit/Spinner/Spinner'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import {
   formatBrowserTimezonedDateAsUTC,
   FORMAT_ISO_DATE_ONLY,
@@ -163,7 +164,13 @@ const ReimbursementsInvoices = (): JSX.Element => {
   if (reimbursementPointsOptions.length === 0) {
     return (
       <div className="no-refunds">
-        <Icon alt="" svg="ico-no-bookings" />
+        <SvgIcon
+          src={strokeNoBookingIcon}
+          alt=""
+          viewBox="0 0 200 156"
+          className="no-refunds-icon"
+          width="124"
+        />
         <span>Aucun remboursement à afficher</span>
       </div>
     )
