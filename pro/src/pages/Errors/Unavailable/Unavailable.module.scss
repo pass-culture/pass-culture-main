@@ -22,11 +22,11 @@
     @include fonts.title2;
   }
 
-  img.error-icon {
+  .error-icon {
     width: rem.torem(350px);
   }
 
-  img.brand-logo {
+  .brand-logo {
     bottom: rem.torem(40px);
     position: fixed;
     width: rem.torem(110px);
