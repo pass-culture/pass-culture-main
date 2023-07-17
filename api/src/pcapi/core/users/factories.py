@@ -9,6 +9,7 @@ import uuid
 from dateutil.relativedelta import relativedelta
 import factory
 from factory import LazyAttribute
+from freezegun import freeze_time
 
 from pcapi import settings
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
@@ -327,6 +328,42 @@ class BeneficiaryFactory(HonorStatementValidatedUserFactory):
             kwargs["dateCreated"] = obj.dateCreated
 
         return DepositGrantFactory(user=obj, **kwargs)
+
+
+class Transition1718Factory(BeneficiaryFactory):
+    roles = [models.UserRole.UNDERAGE_BENEFICIARY]
+
+    @factory.post_generation
+    def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
+        obj,
+        create: bool,
+        extracted: fraud_models.BeneficiaryFraudCheck | None,
+        **kwargs: typing.Any,
+    ) -> list[fraud_models.BeneficiaryFraudCheck]:
+        if not create:
+            return []
+
+        with freeze_time(datetime.today() - relativedelta(years=1)):
+            fraud_checks = Transition1718Factory.beneficiary_fraud_checks(obj, **kwargs)
+        return fraud_checks
+
+    @factory.post_generation
+    def deposit(  # pylint: disable=no-self-argument
+        obj,
+        create: bool,
+        extracted: finance_models.Deposit | None,
+        **kwargs: typing.Any,
+    ) -> finance_models.Deposit | None:
+        if not create:
+            return None
+
+        with freeze_time(datetime.today() - relativedelta(years=1)):
+            if "dateCreated" not in kwargs:
+                kwargs["dateCreated"] = obj.dateCreated
+
+            deposit = DepositGrantFactory(user=obj, **kwargs)
+
+        return deposit
 
 
 ####################################

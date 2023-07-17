@@ -1,8 +1,12 @@
+import datetime
+
 import pytest
 
+import pcapi.core.finance.models as finance_models
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.subscription.api as subscription_api
+import pcapi.core.subscription.models as subscription_models
 import pcapi.core.subscription.repository as subscription_repository
 from pcapi.core.users import constants as users_constants
 import pcapi.core.users.generator as users_generator
@@ -196,3 +200,26 @@ class UserGeneratorTest:
         assert identity_check.resultContent["first_name"] == user.firstName
         assert identity_check.resultContent["last_name"] == user.lastName
         assert identity_check.resultContent["birth_date"] == str(user.birth_date)
+
+    def test_user_in_transition_17_18(self):
+        user_data = users_generator.GenerateUserData(transition_17_18=True)
+        user = users_generator.generate_user(user_data)
+        assert user.age == users_constants.ELIGIBILITY_AGE_18
+        assert user.has_underage_beneficiary_role
+        assert user.deposit.type == finance_models.DepositType.GRANT_15_17
+        assert user.deposit.expirationDate < datetime.datetime.utcnow()
+        user_subscription_state = subscription_api.get_user_subscription_state(user)
+        assert user_subscription_state.next_step == subscription_models.SubscriptionStep.PHONE_VALIDATION
+
+    @pytest.mark.parametrize(
+        "id_provider",
+        [
+            users_generator.GeneratedIdProvider.DMS,
+            users_generator.GeneratedIdProvider.EDUCONNECT,
+            users_generator.GeneratedIdProvider.UBBLE,
+        ],
+    )
+    def test_id_provider_in_transition_17_18(self, id_provider):
+        user_data = users_generator.GenerateUserData(transition_17_18=True, id_provider=id_provider)
+        user = users_generator.generate_user(user_data)
+        assert self.has_fraud_check_validated(user, id_provider.value)

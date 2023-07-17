@@ -31,6 +31,7 @@ class GenerateUserData:
     age: int = users_constants.ELIGIBILITY_AGE_18
     id_provider: GeneratedIdProvider = GeneratedIdProvider.UBBLE
     step: GeneratedSubscriptionStep = GeneratedSubscriptionStep.EMAIL_VALIDATION
+    transition_17_18: bool = False
 
 
 def generate_user(user_data: GenerateUserData) -> users_models.User:
@@ -51,6 +52,10 @@ def generate_user(user_data: GenerateUserData) -> users_models.User:
             factory = users_factories.HonorStatementValidatedUserFactory
         case GeneratedSubscriptionStep.BENEFICIARY:
             factory = users_factories.BeneficiaryFactory
+
+    if user_data.transition_17_18:
+        user_data.age = 18
+        factory = users_factories.Transition1718Factory
 
     id_provider = user_data.id_provider.value
     return factory(age=user_data.age, beneficiaryFraudChecks__type=id_provider)
