@@ -429,6 +429,10 @@ def format_offer_validation_sub_rule(sub_rule: offers_models.OfferValidationSubR
     return sub_rule_text
 
 
+def format_offer_validation_rule_list(rules: list[offers_models.OfferValidationRule]) -> str:
+    return ", ".join(rule.name for rule in rules)
+
+
 def get_comparated_format_function(
     sub_rule: offers_models.OfferValidationSubRule,
     offerer_dict: dict,
@@ -693,6 +697,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_modified_info_value"] = format_modified_info_value
     app.jinja_env.filters["format_gtl_id"] = format_gtl_id
     app.jinja_env.filters["format_gtl_as_csr"] = format_gtl_as_csr
+    app.jinja_env.filters["format_offer_validation_rule_list"] = format_offer_validation_rule_list
     app.jinja_env.filters["format_offer_validation_sub_rule"] = format_offer_validation_sub_rule
     app.jinja_env.filters["format_offer_validation_operator"] = format_offer_validation_operator
     app.jinja_env.filters["get_comparated_format_function"] = get_comparated_format_function

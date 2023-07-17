@@ -622,7 +622,7 @@ class EditOfferValidationRuleTest(PostEndpointHelper):
         assert rule.subRules[1].operator == offers_models.OfferValidationRuleOperator.CONTAINS
         assert rule.subRules[1].comparated == {"comparated": ["fifi", "loulou", "riri"]}
 
-        assert not offers_models.OfferValidationRule.query.filter_by(id=sub_rule_2.id).one_or_none()
+        assert not offers_models.OfferValidationSubRule.query.filter_by(id=sub_rule_2.id).one_or_none()
 
 
 class SearchRulesTest(GetEndpointHelper):
