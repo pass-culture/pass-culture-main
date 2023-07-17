@@ -7,6 +7,7 @@ import { ADMINS_DISABLED_FILTERS_MESSAGE } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import { searchFiltersSelector } from 'store/offers/selectors'
+import Tooltip from 'ui-kit/Tooltip'
 
 import StatusFiltersButton from './StatusFiltersButton'
 
@@ -34,6 +35,12 @@ const OffersTableHead = ({
   audience,
 }: OffersTableHeadProps): JSX.Element => {
   const savedSearchFilters = useSelector(searchFiltersSelector)
+  const label = (
+    <label htmlFor="select-offer-checkbox">
+      {areAllOffersSelected ? 'Tout désélectionner' : 'Tout sélectionner'}
+    </label>
+  )
+
   return (
     <thead>
       <tr>
@@ -54,16 +61,16 @@ const OffersTableHead = ({
               : ''
           }`}
         >
-          <label
-            htmlFor="select-offer-checkbox"
-            title={
-              isAdminForbidden(savedSearchFilters)
-                ? ADMINS_DISABLED_FILTERS_MESSAGE
-                : undefined
-            }
-          >
-            {areAllOffersSelected ? 'Tout désélectionner' : 'Tout sélectionner'}
-          </label>
+          {isAdminForbidden(savedSearchFilters) ? (
+            <Tooltip
+              content={ADMINS_DISABLED_FILTERS_MESSAGE}
+              id="tooltip-select-all"
+            >
+              {label}
+            </Tooltip>
+          ) : (
+            label
+          )}
         </th>
         <th />
         <th>Lieu</th>

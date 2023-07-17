@@ -90,12 +90,14 @@
     .th-checkbox-label {
       max-width: rem.torem(82px);
       overflow: visible;
-      white-space: nowrap;
+      
+      label {
+        white-space: nowrap;
+      }
 
       &.label-disabled {
-        opacity: 0.3;
-
         label {
+          opacity: 0.3;
           cursor: not-allowed;
         }
       }
