@@ -26,6 +26,7 @@ const Toggle = ({
       <SvgIcon
         src={strokeDownIcon}
         alt={`${isOpen ? 'Masquer' : 'Afficher'} les options`}
+        width="20"
       />
     </button>
   )

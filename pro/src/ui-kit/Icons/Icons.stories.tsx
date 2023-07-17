@@ -6,137 +6,13 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Title } from 'ui-kit/typography'
 
 import styles from './Icons.module.scss'
+import { fullIcons, otherIcons, shadowIcons, strokeIcons } from './iconsList'
 
 const fuzzyMatch = (pattern: string, str: string) => {
   pattern = '.*' + pattern.toLowerCase().split('').join('.*') + '.*'
   const re = new RegExp(pattern)
   return re.test(str.toLowerCase())
 }
-
-interface IconListItem {
-  src: string
-  viewBox?: string
-}
-
-// Cleaned !
-// Those icons are put in the order of the design library here:
-// https://www.figma.com/file/AEXCkb4KbUyPmB4BRFa88s/PRO---Library?type=design&node-id=8059-111986&t=sLfFXFbaXGFLjdhX-0
-const fullIcons: IconListItem[] = [
-  { src: 'icons/full-pause.svg' },
-  { src: 'icons/full-play.svg' },
-  { src: 'icons/full-validate.svg' },
-  { src: 'icons/full-clear.svg' },
-  { src: 'icons/full-info.svg' },
-  { src: 'icons/full-error.svg' },
-  { src: 'icons/full-help.svg' },
-  { src: 'icons/full-link.svg' },
-  { src: 'icons/full-more.svg' },
-  { src: 'icons/full-mail.svg' },
-  { src: 'icons/full-edit.svg' },
-  { src: 'icons/full-duplicate.svg' },
-  { src: 'icons/full-show.svg' },
-  { src: 'icons/full-hide.svg' },
-  { src: 'icons/full-like.svg' },
-  { src: 'icons/full-back.svg' },
-  { src: 'icons/full-download.svg' },
-  { src: 'icons/full-trash.svg' },
-  { src: 'icons/full-next.svg' },
-  { src: 'icons/full-wait.svg' },
-  { src: 'icons/full-refresh.svg' },
-  { src: 'icons/full-other.svg' },
-  { src: 'icons/full-download.svg' },
-  { src: 'icons/full-parameters.svg' },
-  { src: 'icons/full-key.svg' },
-  { src: 'icons/full-plus.svg' },
-  { src: 'icons/full-sort.svg' },
-  { src: 'icons/full-logout.svg' },
-  { src: 'icons/full-code.svg' },
-  { src: 'icons/full-down.svg' },
-  { src: 'icons/full-up.svg' },
-  { src: 'icons/full-right.svg' },
-  { src: 'icons/full-left.svg' },
-  { src: 'icons/full-arrow-right.svg' },
-  { src: 'icons/full-disclosure-close.svg', viewBox: '0 0 16 16' }, // TODO clean viewbox
-  { src: 'icons/full-disclosure-open.svg', viewBox: '0 0 16 16' }, // TODO clean viewbox
-]
-
-const strokeIcons: IconListItem[] = [
-  { src: 'icons/stroke-user.svg' },
-  { src: 'icons/stroke-fraud.svg' },
-  { src: 'icons/stroke-error.svg' },
-  { src: 'icons/stroke-warning.svg' },
-  { src: 'icons/stroke-info.svg' },
-  { src: 'icons/stroke-clock.svg' },
-  { src: 'icons/stroke-valid.svg' },
-  { src: 'icons/stroke-wrong.svg' },
-  { src: 'icons/stroke-more.svg' },
-  { src: 'icons/stroke-check.svg' },
-  { src: 'icons/stroke-double-check.svg' },
-  { src: 'icons/stroke-offers.svg' },
-  { src: 'icons/stroke-offer.svg' },
-  { src: 'icons/stroke-repayment.svg' },
-  { src: 'icons/stroke-euro.svg' },
-  { src: 'icons/stroke-price.svg' },
-  { src: 'icons/stroke-events.svg' },
-  { src: 'icons/stroke-thing.svg' },
-  { src: 'icons/stroke-duo.svg' },
-  { src: 'icons/stroke-virtual-event.svg' },
-  { src: 'icons/stroke-virtual-thing.svg' },
-  { src: 'icons/stroke-template-offer.svg' },
-  { src: 'icons/stroke-booked.svg' },
-  { src: 'icons/stroke-mail.svg' },
-  { src: 'icons/stroke-phone.svg' },
-  { src: 'icons/stroke-location.svg' },
-  { src: 'icons/stroke-home.svg' },
-  { src: 'icons/stroke-building.svg' },
-  { src: 'icons/stroke-desk.svg' },
-  { src: 'icons/stroke-calendar.svg' },
-  { src: 'icons/stroke-date.svg' },
-  { src: 'icons/stroke-hourglass.svg' },
-  { src: 'icons/stroke-show.svg' },
-  { src: 'icons/stroke-hide.svg' },
-  { src: 'icons/stroke-like.svg' },
-  { src: 'icons/stroke-logout.svg' },
-  { src: 'icons/stroke-download.svg' },
-  { src: 'icons/stroke-search.svg' },
-  { src: 'icons/stroke-trash.svg' },
-  { src: 'icons/stroke-draft.svg' },
-  { src: 'icons/stroke-new.svg' },
-  { src: 'icons/stroke-code.svg' },
-  { src: 'icons/stroke-accessibility-eye.svg' },
-  { src: 'icons/stroke-accessibility-ear.svg' },
-  { src: 'icons/stroke-accessibility-leg.svg' },
-  { src: 'icons/stroke-accessibility-brain.svg' },
-  { src: 'icons/stroke-pie.svg' },
-  { src: 'icons/stroke-party.svg' },
-  { src: 'icons/stroke-new-offer.svg' },
-  { src: 'icons/stroke-duplicate-offer.svg' },
-  { src: 'icons/stroke-close.svg' },
-  { src: 'icons/stroke-left.svg' },
-  { src: 'icons/stroke-right.svg' },
-  { src: 'icons/stroke-down.svg' },
-  { src: 'icons/stroke-up.svg' },
-  { src: 'icons/stroke-pass.svg' },
-  { src: 'icons/stroke-library.svg' },
-  { src: 'icons/stroke-venue.svg' },
-  { src: 'icons/stroke-wip.svg' }, // TODO standardize viewbox
-  { src: 'icons/stroke-no-booking.svg' }, // TODO standardize viewbox
-  { src: 'icons/stroke-404.svg' }, // TODO standardize viewbox
-]
-
-const shadowIcons: IconListItem[] = [
-  { src: 'icons/shadow-tips-help.svg' },
-  { src: 'icons/shadow-tips-warning.svg' },
-  { src: 'icons/shadow-trophy.svg' },
-  { src: 'icons/shadow-euro.svg' },
-  { src: 'icons/shadow-calendar.svg' },
-]
-
-const otherIcons: IconListItem[] = [
-  { src: 'icons/logo-pass-culture.svg', viewBox: '0 0 71 24' },
-  { src: 'icons/logo-pass-culture-pro.svg', viewBox: '0 0 119 40' },
-  { src: 'icons/logo-pass-culture-pro-full.svg', viewBox: '0 0 282 120' },
-]
 
 const iconsSections = [
   { title: 'Full icons', icons: fullIcons },
