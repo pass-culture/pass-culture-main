@@ -131,6 +131,7 @@ class ReimbursementDetails:
 
         # Venue info
         self.venue_name = payment_info.venue_name
+        self.venue_common_name = payment_info.venue_common_name
         self.venue_address = _build_full_address(
             payment_info.venue_address,
             payment_info.venue_postal_code,
@@ -140,11 +141,11 @@ class ReimbursementDetails:
 
         # Reimbursement point info + IBAN
         if using_legacy_models:
-            self.reimbursement_point_name = self.venue_name
+            self.reimbursement_point_common_name = self.venue_common_name
             self.reimbursement_point_siret = self.venue_siret
             self.reimbursement_point_address = self.venue_address
         else:
-            self.reimbursement_point_name = payment_info.reimbursement_point_name
+            self.reimbursement_point_common_name = payment_info.reimbursement_point_common_name
             self.reimbursement_point_siret = payment_info.reimbursement_point_siret
             self.reimbursement_point_address = _build_full_address(
                 payment_info.reimbursement_point_address,
@@ -207,7 +208,7 @@ class ReimbursementDetails:
             self.invoice_date,
             self.invoice_reference,
             self.cashflow_batch_label,
-            self.reimbursement_point_name,
+            self.reimbursement_point_common_name,
             self.reimbursement_point_address,
             self.reimbursement_point_siret,
             self.iban,

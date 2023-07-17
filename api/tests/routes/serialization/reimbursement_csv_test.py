@@ -189,6 +189,7 @@ def test_generate_reimbursement_details_csv() -> None:
     payment = finance_factories.PaymentFactory(
         booking__stock__offer__name='Mon titre ; un peu "spécial"',
         booking__stock__offer__venue__name='Mon lieu ; un peu "spécial"',
+        booking__stock__offer__venue__publicName="Un nom public pas très spécial",
         booking__stock__offer__venue__siret="siret-1234",
         booking__stock__offer__venue__reimbursement_point="self",
         booking__token="0E2722",
@@ -234,11 +235,11 @@ def test_generate_reimbursement_details_csv() -> None:
     )
     assert (  # new pricing+cashflow data
         rows[1]
-        == f'''"Validées et remboursables sur juin : 2nde quinzaine";"{invoice_date_as_str}";"F230000001";"VIR1";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"";"";"";"0E2722";"2022-01-18 12:00:00";"";"21,00";"100{u_nbsp}%";"21,00";"offre grand public"'''
+        == f'''"Validées et remboursables sur juin : 2nde quinzaine";"{invoice_date_as_str}";"F230000001";"VIR1";"Un nom public pas très spécial";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"";"";"";"0E2722";"2022-01-18 12:00:00";"";"21,00";"100{u_nbsp}%";"21,00";"offre grand public"'''
     )
     assert (  # legacy payment data
         rows[2]
-        == '''"Validées et remboursables sur juin : 2nde quinzaine";"";"";"";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"";"";"";"0E2722";"2022-01-18 12:00:00";"";"21,00";"100%";"21,00";"offre grand public"'''
+        == '''"Validées et remboursables sur juin : 2nde quinzaine";"";"";"";"Un nom public pas très spécial";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"";"";"";"0E2722";"2022-01-18 12:00:00";"";"21,00";"100%";"21,00";"offre grand public"'''
     )
 
 
