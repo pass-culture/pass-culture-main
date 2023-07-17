@@ -54,7 +54,12 @@ def generate_user() -> utils.BackofficeResponse:
     # >18yo user cannot be identified with Educonnect
     age = form.age.data
     id_provider = form.id_provider.data
-    if age >= users_constants.ELIGIBILITY_AGE_18 and id_provider == users_generator.GeneratedIdProvider.EDUCONNECT.name:
+    transition_17_18 = form.transition_17_18.data
+    if (
+        not transition_17_18
+        and age >= users_constants.ELIGIBILITY_AGE_18
+        and id_provider == users_generator.GeneratedIdProvider.EDUCONNECT.name
+    ):
         flash("Un utilisateur de plus de 18 ans ne peut pas être identifié via Educonnect", "warning")
         return redirect(url_for("backoffice_v3_web.get_generated_user"), code=303)
 
@@ -72,6 +77,7 @@ def generate_user() -> utils.BackofficeResponse:
             age=form.age.data,
             id_provider=users_generator.GeneratedIdProvider[form.id_provider.data],
             step=users_generator.GeneratedSubscriptionStep[form.step.data],
+            transition_17_18=form.transition_17_18.data,
         )
         user = users_generator.generate_user(user_data=user_data)
     except users_exceptions.UserGenerationForbiddenException:
