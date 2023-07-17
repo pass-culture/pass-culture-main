@@ -5,7 +5,7 @@
   "homepage": "/",
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js' --html build/stats.html",
-    "build": "yarn copy-assets && react-scripts build",
+    "build": "react-scripts build",
     "build:development": "env-cmd -f .env.development yarn build",
     "build:staging": "env-cmd -f .env.staging yarn build",
     "build:testing": "env-cmd -f .env.testing yarn build",
@@ -22,7 +22,7 @@
     "lint:dead-code": "ts-unused-exports tsconfig.json --excludePathsFromReport='stories;apiClient'",
     "prettier:js:changed:fix": "./scripts/lint_diff.sh",
     "serve": "serve -s build -l 3001",
-    "start": "yarn copy-assets && PORT=3001 react-scripts start",
+    "start": "PORT=3001 react-scripts start",
     "test:cafe": "yarn testcafe testcafe",
     "test:e2e": "cypress open --e2e --browser chrome --config baseUrl=http://localhost:3001",
     "test:stylelint": "jest stylelint-pass-culture/tests",
@@ -36,9 +36,8 @@
     "testcafe-firefox:debug": "NODE_ENV=test testcafe --assertion-timeout 1000 --selector-timeout 5000 -s path=testcafe_screenshots,takeOnFails=true 'firefox' --live --sf",
     "testcafe-chromium": "NODE_ENV=test testcafe --assertion-timeout 1000 --selector-timeout 5000 -s path=testcafe_screenshots,takeOnFails=true 'chromium:headless'",
     "testcafe-chromium:debug": "NODE_ENV=test testcafe --assertion-timeout 1000 --selector-timeout 5000 -s path=testcafe_screenshots,takeOnFails=true 'chromium' --live --sf",
-    "storybook": "yarn copy-assets && NODE_PATH=src storybook dev -p 6006",
-    "build-storybook": "yarn copy-assets && NODE_PATH=src storybook build -o docs-build",
-    "copy-assets": "cp ./src/icons/*.svg ./public/icons/"
+    "storybook": "NODE_PATH=src storybook dev -p 6006",
+    "build-storybook": "NODE_PATH=src storybook build -o docs-build"
   },
   "dependencies": {
     "@firebase/analytics": "^0.10.0",
