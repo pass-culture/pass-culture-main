@@ -12,6 +12,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -49,6 +50,9 @@ def _get_collective_offer_templates(
         # needed to check if stock is bookable and compute initial/remaining stock:
         .joinedload(offerers_models.Venue.managingOfferer).load_only(
             offerers_models.Offerer.name, offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus
+        ),
+        sa.orm.joinedload(educational_models.CollectiveOfferTemplate.flaggingValidationRules).load_only(
+            offers_models.OfferValidationRule.name
         ),
     )
     if form.from_date.data:

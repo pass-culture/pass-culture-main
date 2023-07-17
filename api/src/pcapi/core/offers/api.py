@@ -1022,13 +1022,14 @@ def set_offer_status_based_on_fraud_criteria_v2(offer: AnyOffer) -> models.Offer
         sa.orm.joinedload(models.OfferValidationSubRule, models.OfferValidationRule.subRules)
     ).all()
 
-    flagging_rules = dict()
+    flagging_rules = []
     for rule in offer_validation_rules:
         if rule_flags_offer(rule, offer):
-            flagging_rules[rule.id] = rule.name
+            flagging_rules.append(rule)
 
     if flagging_rules:
         status = models.OfferValidationStatus.PENDING
+        offer.flaggingValidationRules = flagging_rules
     else:
         status = models.OfferValidationStatus.APPROVED
 

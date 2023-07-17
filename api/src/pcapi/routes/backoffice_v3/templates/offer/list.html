@@ -73,7 +73,8 @@
               <th scope="col">Catégorie</th>
               <th scope="col">Sous-catégorie</th>
               <th scope="col">Stock restant</th>
-              <th scope="col">Tag</th>
+              {% if has_permission("PRO_FRAUD_ACTIONS") %}<th scope="col">Règles de conformité</th>{% endif %}
+              {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<th scope="col">Tag</th>{% endif %}
               <th scope="col">Pond.</th>
               <th scope="col">État</th>
               <th scope="col">
@@ -140,7 +141,10 @@
                 <td>{{ offer.category.pro_label }}</td>
                 <td>{{ offer.subcategory_v2.pro_label }}</td>
                 <td class="text-nowrap">{{ get_remaining_stock(offer) }} / {{ get_initial_stock(offer) }}</td>
-                <td>{{ offer.criteria | format_criteria | safe }}</td>
+                {% if has_permission("PRO_FRAUD_ACTIONS") %}
+                  <td>{{ offer.flaggingValidationRules | format_offer_validation_rule_list | safe }}</td>
+                {% endif %}
+                {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<td>{{ offer.criteria | format_criteria | safe }}</td>{% endif %}
                 <td>{{ offer.rankingWeight | empty_string_if_null }}</td>
                 <td>{{ offer.validation | format_offer_validation_status }}</td>
                 <td>{{ offer.dateCreated | format_date("%d/%m/%Y") }}</td>
