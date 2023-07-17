@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 import { Button } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -16,12 +16,15 @@ interface Tab {
   icon?: string
 }
 export interface FilterTabsProps {
+  nav?: string
   tabs: Tab[]
   selectedKey?: string
 }
 
-const Tabs = ({ selectedKey, tabs }: FilterTabsProps): JSX.Element => {
-  return (
+const Tabs = ({ nav, selectedKey, tabs }: FilterTabsProps): JSX.Element => {
+  const location = useLocation()
+
+  const content = (
     <ul className={styles['tabs']}>
       {tabs.map(({ key, label, url, icon, onClick }) => {
         return (
@@ -36,6 +39,9 @@ const Tabs = ({ selectedKey, tabs }: FilterTabsProps): JSX.Element => {
                 className={styles['tabs-tab-link']}
                 key={`tab${url}`}
                 to={url}
+                aria-current={
+                  nav && location.pathname === url ? 'page' : undefined
+                }
               >
                 {icon && (
                   <SvgIcon
@@ -61,6 +67,8 @@ const Tabs = ({ selectedKey, tabs }: FilterTabsProps): JSX.Element => {
       })}
     </ul>
   )
+
+  return nav ? <nav aria-label={nav}>{content}</nav> : content
 }
 
 export default Tabs
