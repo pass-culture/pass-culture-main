@@ -1,4 +1,3 @@
-import { action } from '@storybook/addon-actions'
 import type { Story } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
@@ -11,7 +10,7 @@ export default {
 }
 
 const Template: Story<TextInputProps> = props => (
-  <Formik initialValues={{ email: '' }} onSubmit={action('onSubmit')}>
+  <Formik initialValues={{ email: '' }} onSubmit={() => {}}>
     {({ getFieldProps }) => (
       <TextInput
         {...getFieldProps('email')}

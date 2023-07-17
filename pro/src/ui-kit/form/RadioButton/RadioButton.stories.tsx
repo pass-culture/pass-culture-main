@@ -1,4 +1,3 @@
-import { action } from '@storybook/addon-actions'
 import type { Story } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
@@ -17,7 +16,7 @@ const Template: Story<{
   label2: JSX.Element | string
   withBorder?: boolean
 }> = ({ withBorder, label1, label2 }) => (
-  <Formik initialValues={{}} onSubmit={action('onSubmit')}>
+  <Formik initialValues={{}} onSubmit={() => {}}>
     {({ getFieldProps }) => {
       return (
         <>

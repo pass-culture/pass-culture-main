@@ -1,4 +1,3 @@
-import { action } from '@storybook/addon-actions'
 import type { Story } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
@@ -11,10 +10,7 @@ export default {
 }
 
 const Template: Story<CheckboxProps> = props => (
-  <Formik
-    initialValues={{ accessibility: false }}
-    onSubmit={action('onSubmit')}
-  >
+  <Formik initialValues={{ accessibility: false }} onSubmit={() => {}}>
     {({ getFieldProps }) => {
       return <Checkbox {...getFieldProps('accessibility')} {...props} />
     }}

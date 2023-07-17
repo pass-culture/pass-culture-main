@@ -1,4 +1,3 @@
-import { action } from '@storybook/addon-actions'
 import type { Story } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
@@ -11,7 +10,7 @@ export default {
 }
 
 const Template: Story<DatePickerProps> = props => (
-  <Formik initialValues={{ date: '' }} onSubmit={action('onSubmit')}>
+  <Formik initialValues={{ date: '' }} onSubmit={() => {}}>
     <DatePicker {...props} name="date" />
   </Formik>
 )

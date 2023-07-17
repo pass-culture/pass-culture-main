@@ -1,4 +1,3 @@
-import { action } from '@storybook/addon-actions'
 import type { Story } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
@@ -18,7 +17,7 @@ const mockCategoriesOptions = [
 ]
 
 const Template: Story<SelectProps> = props => (
-  <Formik initialValues={{ category: 'theatre' }} onSubmit={action('onSubmit')}>
+  <Formik initialValues={{ category: 'theatre' }} onSubmit={() => {}}>
     {({ getFieldProps }) => {
       return <Select {...getFieldProps('category')} {...props} />
     }}
