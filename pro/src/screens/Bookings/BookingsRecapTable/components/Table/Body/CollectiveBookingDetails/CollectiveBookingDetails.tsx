@@ -2,9 +2,10 @@ import React from 'react'
 
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/CollectiveBookingByIdResponseModel'
-import phoneStrokeIcon from 'icons/stroke-phone.svg'
+import strokeLocationIcon from 'icons/stroke-location.svg'
+import strokeMailIcon from 'icons/stroke-mail.svg'
+import strokePhoneIcon from 'icons/stroke-phone.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
-import Icon from 'ui-kit/Icon/Icon'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import CollectiveActionButtons from '../CollectiveActionButtons'
@@ -42,10 +43,10 @@ const CollectiveBookingDetails = ({
             <dl>
               <div className={styles['contact-detail']}>
                 <dt className={styles['contact-detail-location-icon']}>
-                  <Icon
+                  <SvgIcon
                     className={styles['contact-detail-icon']}
                     alt="Adresse de l’établissement"
-                    svg="location"
+                    src={strokeLocationIcon}
                   />
                 </dt>
                 <dd>
@@ -60,7 +61,7 @@ const CollectiveBookingDetails = ({
                   <SvgIcon
                     className={styles['contact-detail-icon']}
                     alt="Téléphone"
-                    src={phoneStrokeIcon}
+                    src={strokePhoneIcon}
                   />
                 </dt>
                 <dd>{educationalInstitution.phoneNumber}</dd>
@@ -79,10 +80,10 @@ const CollectiveBookingDetails = ({
 
               <div className={styles['contact-detail']}>
                 <dt>
-                  <Icon
+                  <SvgIcon
                     className={styles['contact-detail-icon']}
                     alt="Email"
-                    svg="ico-mail"
+                    src={strokeMailIcon}
                   />
                 </dt>
                 <dd>
