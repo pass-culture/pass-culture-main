@@ -36,8 +36,8 @@
     "testcafe-firefox:debug": "NODE_ENV=test testcafe --assertion-timeout 1000 --selector-timeout 5000 -s path=testcafe_screenshots,takeOnFails=true 'firefox' --live --sf",
     "testcafe-chromium": "NODE_ENV=test testcafe --assertion-timeout 1000 --selector-timeout 5000 -s path=testcafe_screenshots,takeOnFails=true 'chromium:headless'",
     "testcafe-chromium:debug": "NODE_ENV=test testcafe --assertion-timeout 1000 --selector-timeout 5000 -s path=testcafe_screenshots,takeOnFails=true 'chromium' --live --sf",
-    "storybook": "yarn copy-assets && NODE_PATH=src start-storybook -p 6006",
-    "build-storybook": "yarn copy-assets && NODE_PATH=src build-storybook -o docs-build",
+    "storybook": "yarn copy-assets && NODE_PATH=src storybook dev -p 6006",
+    "build-storybook": "yarn copy-assets && NODE_PATH=src storybook build -o docs-build",
     "copy-assets": "cp ./src/icons/*.svg ./public/icons/"
   },
   "dependencies": {
@@ -139,7 +139,7 @@
     "sass": "^1.63.6",
     "serve": "^14.2.0",
     "source-map-explorer": "^2.5.0",
-    "storybook": "^6.5.16",
+    "storybook": "^7.0.27",
     "stylelint": "^15.10.1",
     "stylelint-a11y": "^1.2.3",
     "stylelint-config-standard-scss": "^10.0.0",
