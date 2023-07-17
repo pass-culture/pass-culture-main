@@ -10,21 +10,6 @@
     min-height: rem.torem(24px);
   }
 
-  &::-webkit-inner-spin-button,
-  &::-webkit-calendar-picker-indicator {
-    display: none;
-  }
-
-  // we don't want little arrow for input number
-
-  /* Chrome, Safari, Edge, Opera */
-  &::-webkit-outer-spin-button,
-  &::-webkit-inner-spin-button {
-    appearance: none;
-    appearance: textfield;
-    margin: 0;
-  }
-
   /* Firefox */
   &[type="number"] {
     appearance: textfield;

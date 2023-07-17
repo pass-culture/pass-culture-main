@@ -95,8 +95,8 @@ const PreFilters = ({
   const updateSelectedFilters = useCallback(
     (updatedFilter: any) => {
       if (updatedFilter.offerEventDate) {
-        updatedFilter.bookingBeginningDate = null
-        updatedFilter.bookingEndingDate = null
+        updatedFilter.bookingBeginningDate = ''
+        updatedFilter.bookingEndingDate = ''
         /* istanbul ignore next: DEBT to fix */
         if (updatedFilter.offerEventDate === appliedPreFilters.offerEventDate) {
           updatedFilter.bookingBeginningDate =
