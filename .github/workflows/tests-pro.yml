@@ -3,6 +3,7 @@ on: workflow_call
 
 env:
   use_cache: ${{ github.ref != 'refs/heads/master' }}
+  region: europe-west1
 
 defaults:
   run:
@@ -22,15 +23,40 @@ jobs:
   tests-pro-e2e-tests:
     name: "E2E tests"
     runs-on: [self-hosted, linux, x64]
+    permissions:
+      id-token: write
+      contents: read
     needs: read-node-version
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+      - id: openid-auth
+        name: "OpenID Connect Authentication"
+        uses: 'google-github-actions/auth@v1'
+        with:
+          create_credentials_file: false
+          token_format: 'access_token'
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.ARTIFACT_REGISTRY_SERVICE_ACCOUNT }}
+      - id: docker-login
+        uses: 'docker/login-action@v1'
+        name: 'Docker login'
+        with:
+          registry: '${{ env.region }}-docker.pkg.dev'
+          username: 'oauth2accesstoken'
+          password: '${{ steps.openid-auth.outputs.access_token }}'
       - if: ${{ env.use_cache == false }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ needs.read-node-version.outputs.node_version }}
+      - name: Install yq
+        run: |
+          sudo wget https://github.com/mikefarah/yq/releases/download/v4.34.1/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
       - name: Run API server
-        run: docker-compose -f ../docker-compose-app.yml up --build -d
+        run: |
+          cd .. 
+          cat docker-compose-app.yml | yq 'del(.services.flask.build)' | yq '.services.flask += {"image": "europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-tests:${{ github.sha }}"}' | docker-compose -f - up -d
       - name: Wait for migrations to be run
         uses: iFaxity/wait-on-action@v1
         with:
