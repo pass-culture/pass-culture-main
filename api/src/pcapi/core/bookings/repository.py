@@ -165,13 +165,6 @@ def token_exists(token: str) -> bool:
     return db.session.query(Booking.query.filter_by(token=token.upper()).exists()).scalar()
 
 
-def find_used_by_token(token: str) -> Booking:
-    return Booking.query.filter(
-        Booking.token == token.upper(),
-        Booking.is_used_or_reimbursed.is_(True),  # type: ignore [attr-defined]
-    ).one_or_none()
-
-
 def find_expiring_individual_bookings_query() -> BaseQuery:
     today_at_midnight = datetime.combine(date.today(), time(0, 0))
     return (
