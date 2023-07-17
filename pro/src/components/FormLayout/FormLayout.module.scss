@@ -6,6 +6,8 @@ $info-box-width: rem.torem(316px);
 $info-box-margin-left: rem.torem(24px);
 
 .form-layout {
+  background-color: colors.$white;
+  
   &.small {
     width: rem.torem(486px);
   }

@@ -45,7 +45,12 @@ const BannerLayout = ({
     >
       {type === 'notification-info' && showTitle && (
         <div className={styles['container']}>
-          <SvgIcon src={shadowTipsHelpIcon} alt="" className={styles['icon']} />
+          <SvgIcon
+            src={shadowTipsHelpIcon}
+            alt=""
+            className={styles['icon']}
+            width="24"
+          />
           <span className={styles['container-title']}>À SAVOIR</span>
         </div>
       )}
@@ -55,6 +60,7 @@ const BannerLayout = ({
             src={shadowTipsWarningIcon}
             alt=""
             className={styles['icon']}
+            width="24"
           />
           <span className={styles['container-title']}>IMPORTANT</span>
         </div>
