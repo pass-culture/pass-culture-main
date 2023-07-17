@@ -60,13 +60,6 @@ jobs:
     uses: ./.github/workflows/tests-backoffice-v3.yml
     secrets: inherit
 
-  test-pro:
-    needs: test-deploy-variable
-    if: needs.test-deploy-variable.outputs.deploy == 'true'
-    name: Tests pro
-    uses: ./.github/workflows/tests-pro.yml
-    secrets: inherit
-
   build-api:
     name: Build api docker image on master branch
     needs: test-deploy-variable
@@ -82,7 +75,7 @@ jobs:
 
   dependabot-auto-merge:
     needs:
-      - test-pro
+      - test-api
     if: |
       github.event_name == 'pull_request' &&
       github.actor == 'dependabot[bot]'
@@ -95,13 +88,11 @@ jobs:
       - test-deploy-variable
       - build-api
       - test-backoffice
-      - test-pro
     if: |
       always() &&
       github.ref == 'refs/heads/master' &&
       (needs.build-api.result == 'success' || needs.build-api.result == 'skipped') &&
-      (needs.test-backoffice.result == 'success' || needs.test-backoffice.result == 'skipped') &&
-      (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped')
+      (needs.test-backoffice.result == 'success' || needs.test-backoffice.result == 'skipped')
     uses: ./.github/workflows/deploy.yml
     with:
       environment: testing

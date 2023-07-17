@@ -378,3 +378,10 @@ jobs:
             }
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+  test-pro:
+    needs: build-tests-docker-image
+    name: Tests pro
+    uses: ./.github/workflows/tests-pro.yml
+    secrets: inherit
+
