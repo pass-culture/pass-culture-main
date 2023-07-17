@@ -4,9 +4,9 @@ import { useLocation } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import AppLayout from 'app/AppLayout'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
+import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import Hero from 'ui-kit/Hero'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { ROOT_PATH } from 'utils/config'
 import { parse } from 'utils/query-string'
 import { initReCaptchaScript } from 'utils/recaptcha'
 
@@ -47,7 +47,7 @@ const ResetPassword = (): JSX.Element => {
           className="logo-unlogged"
           viewBox="0 0 282 120"
           alt="Pass Culture pro, l'espace des acteurs culturels"
-          src={`${ROOT_PATH}/icons/logo-pass-culture-primary.svg`}
+          src={logoPassCultureProFullIcon}
         />
       </header>
       <AppLayout

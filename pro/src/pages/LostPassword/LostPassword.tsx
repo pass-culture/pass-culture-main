@@ -6,9 +6,10 @@ import AppLayout from 'app/AppLayout'
 import SkipLinks from 'components/SkipLinks'
 import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
+import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import Hero from 'ui-kit/Hero'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { IS_DEV, ROOT_PATH } from 'utils/config'
+import { IS_DEV } from 'utils/config'
 import { getReCaptchaToken, initReCaptchaScript } from 'utils/recaptcha'
 
 import ChangePasswordRequestForm from './ChangePasswordRequestForm'
@@ -54,7 +55,7 @@ const ResetPassword = (): JSX.Element => {
             className="logo-unlogged"
             viewBox="0 0 282 120"
             alt="Pass Culture pro, l'espace des acteurs culturels"
-            src={`${ROOT_PATH}/icons/logo-pass-culture-primary.svg`}
+            src={logoPassCultureProFullIcon}
           />
         </header>
         <AppLayout

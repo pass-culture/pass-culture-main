@@ -5,6 +5,7 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
+import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import deskIcon from 'icons/stroke-desk.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
@@ -13,7 +14,6 @@ import strokeLogoutIcon from 'icons/stroke-logout.svg'
 import strokeOffersIcon from 'icons/stroke-offers.svg'
 import strokePieIcon from 'icons/stroke-pie.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { ROOT_PATH } from 'utils/config'
 
 const Header = () => {
   const navigate = useNavigate()
@@ -38,7 +38,7 @@ const Header = () => {
           >
             <SvgIcon
               alt="Pass Culture pro, l'espace des acteurs culturels"
-              src={`${ROOT_PATH}/icons/logo-pass-culture-header.svg`}
+              src={logoPassCultureProIcon}
               viewBox="0 0 119 40"
             />
           </NavLink>
