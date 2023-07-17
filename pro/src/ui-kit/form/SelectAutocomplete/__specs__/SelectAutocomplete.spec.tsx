@@ -73,7 +73,9 @@ describe('src | ui-kit | form | SelectAutocomplete', () => {
           </Formik>
         )
         await userEvent.click(screen.getByRole('textbox'))
-        await userEvent.click(screen.getByAltText('Masquer les options'))
+        await userEvent.click(
+          screen.getByRole('img', { name: 'Masquer les options' })
+        )
         expect(screen.queryAllByRole('role')).toHaveLength(0)
       })
 
@@ -139,8 +141,12 @@ describe('src | ui-kit | form | SelectAutocomplete', () => {
         )
         await userEvent.type(screen.getByRole('textbox'), 'al')
         expect(screen.getAllByRole('option')).toHaveLength(6) // Allier, Alpes, Hautes-Alpes, Alpes-Maritimes, Calvados, Cantal
-        await userEvent.click(screen.getByAltText('Masquer les options'))
-        await userEvent.click(screen.getByAltText('Afficher les options'))
+        await userEvent.click(
+          screen.getByRole('img', { name: 'Masquer les options' })
+        )
+        await userEvent.click(
+          screen.getByRole('img', { name: 'Afficher les options' })
+        )
         expect(screen.getAllByRole('option')).toHaveLength(15)
       })
     })
@@ -171,7 +177,9 @@ describe('src | ui-kit | form | SelectAutocomplete', () => {
         screen.queryByText('Veuillez renseigner un Département')
       ).not.toBeInTheDocument()
       await userEvent.click(screen.getByRole('textbox'))
-      await userEvent.click(screen.getByAltText('Masquer les options'))
+      await userEvent.click(
+        screen.getByRole('img', { name: 'Masquer les options' })
+      )
       expect(
         screen.getByText('Veuillez renseigner un département')
       ).toBeInTheDocument()

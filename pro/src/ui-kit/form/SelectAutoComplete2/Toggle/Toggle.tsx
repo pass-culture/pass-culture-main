@@ -1,7 +1,7 @@
-import cx from 'classnames'
 import React from 'react'
 
-import Icon from 'ui-kit/Icon/Icon'
+import strokeDownIcon from 'icons/stroke-down.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Toggle.module.scss'
 
@@ -19,16 +19,13 @@ const Toggle = ({
   return (
     <button
       onClick={toggleField}
-      className={cx(styles['dropdown-indicator'], {
-        [styles['dropdown-indicator-is-closed']]: !isOpen,
-      })}
+      className={styles['dropdown-indicator']}
       type="button"
       disabled={disabled}
     >
-      <Icon
-        svg="open-dropdown"
+      <SvgIcon
+        src={strokeDownIcon}
         alt={`${isOpen ? 'Masquer' : 'Afficher'} les options`}
-        className={styles['dropdown-indicator-icon']}
       />
     </button>
   )

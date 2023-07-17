@@ -1,7 +1,8 @@
 import cx from 'classnames'
 import React from 'react'
 
-import Icon from 'ui-kit/Icon/Icon'
+import strokeDownIcon from 'icons/stroke-down.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './AutocompleteList.module.scss'
 import { AutocompleteItemProps } from './type'
@@ -38,14 +39,12 @@ const AutocompleteList = ({
       {!hideArrow && (
         <button
           onClick={onButtonClick}
-          className={cx(styles['dropdown-indicator'], {
-            [styles['dropdown-indicator-is-closed']]: !isOpen,
-          })}
+          className={styles['dropdown-indicator']}
           type="button"
           disabled={disabled}
         >
-          <Icon
-            svg="open-dropdown"
+          <SvgIcon
+            src={strokeDownIcon}
             alt={`${isOpen ? 'Masquer' : 'Afficher'} les options`}
           />
         </button>
