@@ -136,7 +136,6 @@ const otherIcons: IconListItem[] = [
 
   // TODO Not cleaned
   { src: 'icons/logo-pass-culture-header.svg', viewBox: '0 0 119 40' },
-  { src: 'icons/ico-no-bookings.svg', viewBox: '0 0 124 124' },
   { src: 'icons/ico-404.svg', viewBox: '0 0 308 194' },
 ]
 
