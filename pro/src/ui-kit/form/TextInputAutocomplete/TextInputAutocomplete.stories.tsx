@@ -1,4 +1,3 @@
-import { action } from '@storybook/addon-actions'
 import type { Story } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
@@ -25,7 +24,7 @@ const validationSchema = yup.object().shape({
 const Template: Story<{ label: string }> = ({ label }) => (
   <Formik
     initialValues={{ adress: '', 'search-adress': '' }}
-    onSubmit={action('onSubmit')}
+    onSubmit={() => {}}
     validationSchema={validationSchema}
   >
     <TextInputAutocomplete

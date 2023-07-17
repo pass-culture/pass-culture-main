@@ -25,20 +25,7 @@ module.exports = {
     builder: 'webpack5',
   },
   stories: ['../src/**/*.stories.@(js|jsx|ts|tsx|mdx)'],
-  addons: [
-    '@storybook/addon-docs',
-    '@storybook/addon-actions',
-    '@storybook/addon-links',
-    {
-      name: '@storybook/addon-essentials',
-      options: {
-        // https://github.com/storybookjs/storybook/issues/15901
-        // docs not compatible with webpack 5.
-        docs: false,
-      },
-    },
-    '@storybook/addon-a11y',
-  ],
+  addons: ['@storybook/addon-a11y'],
   staticDirs: ['../src/stories/assets', '../public'],
   plugins: [
     new webpack.DefinePlugin({

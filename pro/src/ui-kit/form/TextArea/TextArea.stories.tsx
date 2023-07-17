@@ -1,4 +1,3 @@
-import { action } from '@storybook/addon-actions'
 import type { Story } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
@@ -14,7 +13,7 @@ const Template: Story<{ label: string; disabled: boolean }> = ({
   label,
   disabled,
 }) => (
-  <Formik initialValues={{ description: '' }} onSubmit={action('onSubmit')}>
+  <Formik initialValues={{ description: '' }} onSubmit={() => {}}>
     {({ getFieldProps }) => {
       return (
         <TextArea
