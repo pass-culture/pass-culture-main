@@ -1,5 +1,6 @@
 describe('Account creation', () => {
   it('should create account', () => {
+    cy.intercept({ method: 'POST', url: '/users/signup/pro' }).as('signupUser')
     cy.visit('http://localhost:3001/inscription')
       .get('#lastName')
       .type('LEMOINE')
@@ -19,8 +20,13 @@ describe('Account creation', () => {
       .click()
       .get('button[type=submit]')
       .click()
-      .url()
-      .should('be.equal', 'http://localhost:3001/inscription/confirmation')
+
+    cy.wait('@signupUser').then(() => {
+      cy.url().should(
+        'be.equal',
+        'http://localhost:3001/inscription/confirmation'
+      )
+    })
   })
 })
 

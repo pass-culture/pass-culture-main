@@ -9,6 +9,15 @@ defaults:
     working-directory: pro
 
 jobs:
+  read-node-version:
+    name: "Read node version from .nvmrc"
+    runs-on: [self-hosted, linux, x64]
+    outputs:
+      node_version: ${{ steps.read-node-version.outputs.node_version }}
+    steps:
+      - uses: actions/checkout@v3
+      - id: read-node-version
+        run: echo "node_version=$(cat .nvmrc | sed -r -e 's/v?(.+)/\1/')" >> $GITHUB_OUTPUT
 
   tests-pro-e2e-tests:
     name: "E2E tests"
@@ -31,20 +40,19 @@ jobs:
       # Doc : https://github.com/cypress-io/github-action
       - name: Cypress run
         uses: cypress-io/github-action@v5
-        # E2E tests are not stable enough for now.
-        # Once they are reliable, we can remove the following line.
-        continue-on-error: true
+        env:
+          DEBUG: "cypress:*"
         with:
           build: yarn build:development
           start: yarn serve
           config: baseUrl=http://localhost:3001
           browser: chrome
           wait-on: "http://localhost:3001,http://localhost/health/api,http://localhost/health/database"
-          wait-on-timeout: 600
+          wait-on-timeout: 2000
           working-directory: pro
       - name: Archive E2E results
-        if: always()
+        if: failure()
         uses: actions/upload-artifact@v3
         with:
           name: e2e-artifacts
-          path: pro/cypress/screenshots
+          path: pro/cypress/videos
