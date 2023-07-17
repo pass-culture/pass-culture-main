@@ -12,6 +12,7 @@ export interface BaseCheckboxProps
   withBorder?: boolean
   ref?: React.Ref<HTMLInputElement>
   partialCheck?: boolean
+  exceptionnallyHideLabelDespiteA11y?: boolean
 }
 
 const BaseCheckbox = ({
@@ -21,6 +22,7 @@ const BaseCheckbox = ({
   icon,
   withBorder,
   partialCheck,
+  exceptionnallyHideLabelDespiteA11y,
   ...props
 }: BaseCheckboxProps): JSX.Element => (
   <label
@@ -47,7 +49,13 @@ const BaseCheckbox = ({
           <img src={icon} className={styles['base-checkbox-icon-svg']} />
         </span>
       )}
-      <span className={styles['base-checkbox-label']}>{label}</span>
+      <span
+        className={cn(styles['base-checkbox-label'], {
+          ['visually-hidden']: Boolean(exceptionnallyHideLabelDespiteA11y),
+        })}
+      >
+        {label}
+      </span>
     </span>
   </label>
 )
