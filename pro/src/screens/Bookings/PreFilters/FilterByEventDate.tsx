@@ -35,7 +35,7 @@ const FilterByEventDate = ({
         })
       }
       disabled={isDisabled}
-      value={isDateValid(new Date(selectedOfferDate)) ? selectedOfferDate : ''}
+      value={isDateValid(selectedOfferDate) ? selectedOfferDate : ''}
     />
   </FieldLayout>
 )
