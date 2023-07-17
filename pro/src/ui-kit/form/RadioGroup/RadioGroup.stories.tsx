@@ -1,4 +1,3 @@
-import { action } from '@storybook/addon-actions'
 import type { Story } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
@@ -37,7 +36,7 @@ const Template: Story<RadioGroupProps> = ({
     initialValues={{
       question: {},
     }}
-    onSubmit={action('onSubmit')}
+    onSubmit={() => {}}
   >
     {({ getFieldProps }) => {
       return (
