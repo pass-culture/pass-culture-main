@@ -105,6 +105,7 @@ def create_offers_base_list(
                 collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name}",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
+                collectiveOffer__bookingEmails=["toto@totoland.com"],
                 beginningDatetime=datetime.utcnow() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
@@ -114,6 +115,7 @@ def create_offers_base_list(
                 collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} with image",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
+                collectiveOffer__bookingEmails=["toto@totoland.com"],
                 beginningDatetime=datetime.utcnow() + timedelta(days=60),
             )
             add_image_to_offer(stock.collectiveOffer, next(image_iterator))
@@ -141,6 +143,7 @@ def create_offers_base_list(
                 collectiveOffer__venue=next(venue_iterator),
                 collectiveOffer__institution=institution,
                 collectiveOffer__teacher=redactor,
+                collectiveOffer__bookingEmails=["toto@totoland.com"],
                 beginningDatetime=datetime.utcnow() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
@@ -153,6 +156,7 @@ def create_offers_base_list(
                 collectiveOffer__institution=next(institution_iterator),
                 collectiveOffer__interventionArea=[],
                 collectiveOffer__isPublicApi=True,
+                collectiveOffer__bookingEmails=["toto@totoland.com"],
                 beginningDatetime=datetime.utcnow() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
@@ -162,6 +166,7 @@ def create_offers_base_list(
                 collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name} expired",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
+                collectiveOffer__bookingEmails=["toto@totoland.com"],
                 bookingLimitDatetime=datetime.utcnow() - timedelta(days=2),
                 beginningDatetime=datetime.utcnow(),
             )
@@ -173,6 +178,7 @@ def create_offers_base_list(
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
                 collectiveOffer__validation=OfferValidationStatus.PENDING,
+                collectiveOffer__bookingEmails=["toto@totoland.com"],
                 beginningDatetime=datetime.utcnow() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
@@ -184,6 +190,7 @@ def create_offers_base_list(
                 collectiveOffer__name=f"offer next year {next(number_iterator)} pour {offerer.name}",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
+                collectiveOffer__bookingEmails=["toto@totoland.com"],
                 beginningDatetime=datetime(target_year, 3, 18),
                 bookingLimitDatetime=datetime(target_year, 3, 3),
             )
@@ -196,6 +203,7 @@ def create_offers_base_list(
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
                 collectiveOffer__interventionArea=["56"],
+                collectiveOffer__bookingEmails=["toto@totoland.com"],
                 beginningDatetime=datetime.utcnow() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
@@ -206,6 +214,7 @@ def create_offers_base_list(
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
                 collectiveOffer__interventionArea=["91"],
+                collectiveOffer__bookingEmails=["toto@totoland.com"],
                 beginningDatetime=datetime.utcnow() + timedelta(days=60),
             )
             offers.append(stock.collectiveOffer)
@@ -215,6 +224,7 @@ def create_offers_base_list(
                 name=f"offer {next(number_iterator)} pour {offerer.name} basic template",
                 educational_domains=[next(domains_iterator)],
                 venue=next(venue_iterator),
+                bookingEmails=["toto@totoland.com"],
             )
             templates.append(template)
         if from_templates_offers:
@@ -225,6 +235,7 @@ def create_offers_base_list(
                     collectiveOffer__venue=next(venue_iterator),
                     collectiveOffer__template=template,
                     collectiveOffer__institution=next(institution_iterator),
+                    collectiveOffer__bookingEmails=["toto@totoland.com"],
                 )
     if image_template:
         for _ in range(5):
@@ -232,6 +243,7 @@ def create_offers_base_list(
                 name=f"offer {next(number_iterator)} pour {offerer.name} template image",
                 educational_domains=[next(domains_iterator)],
                 venue=next(venue_iterator),
+                bookingEmails=["toto@totoland.com"],
             )
             add_image_to_offer(template, next(image_iterator))
             templates.append(template)
@@ -242,6 +254,7 @@ def create_offers_base_list(
                 name=f"offer {number} pour {offerer.name} template request",
                 educational_domains=[next(domains_iterator)],
                 venue=next(venue_iterator),
+                bookingEmails=["toto@totoland.com"],
             )
             educational_factories.CollectiveOfferRequestFactory(
                 collectiveOfferTemplate=template,
