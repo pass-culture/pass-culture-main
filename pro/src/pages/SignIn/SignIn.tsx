@@ -23,6 +23,7 @@ const SignIn = (): JSX.Element => {
             viewBox="0 0 282 120"
             alt="Pass Culture pro, l'espace des acteurs culturels"
             src={`${ROOT_PATH}/icons/logo-pass-culture-primary.svg`}
+            width="282"
           />
         </header>
         <AppLayout
