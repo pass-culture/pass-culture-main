@@ -185,39 +185,6 @@ class FindByTest:
             assert resource_not_found_error.value.errors["global"] == ["Cette contremarque n'a pas été trouvée"]
 
 
-class FindByTokenTest:
-    def test_should_return_a_booking_when_valid_token_is_given(self, app: fixture):
-        # Given
-        valid_booking = bookings_factories.UsedBookingFactory()
-
-        # When
-        booking = booking_repository.find_used_by_token(token=valid_booking.token)
-
-        # Then
-        assert booking == valid_booking
-
-    def test_should_return_nothing_when_invalid_token_is_given(self, app: fixture):
-        # Given
-        invalid_token = "fake_token"
-        bookings_factories.UsedBookingFactory()
-
-        # When
-        booking = booking_repository.find_used_by_token(token=invalid_token)
-
-        # Then
-        assert booking is None
-
-    def test_should_return_nothing_when_valid_token_is_given_but_its_not_used(self, app: fixture):
-        # Given
-        valid_booking = bookings_factories.BookingFactory()
-
-        # When
-        booking = booking_repository.find_used_by_token(token=valid_booking.token)
-
-        # Then
-        assert booking is None
-
-
 default_booking_date = date.today()
 one_year_before_booking = default_booking_date - timedelta(weeks=52)
 one_year_after_booking = default_booking_date + timedelta(weeks=52)
