@@ -106,9 +106,13 @@ const SearchFilters = ({
   }
 
   const searchByOfferNameLabel =
-    audience === Audience.INDIVIDUAL
-      ? 'Nom de l’offre ou EAN'
-      : 'Nom de l’offre'
+    audience === Audience.INDIVIDUAL ? (
+      <span>
+        Nom de l’offre ou <abbr title="European Article Numbering">EAN</abbr>
+      </span>
+    ) : (
+      'Nom de l’offre'
+    )
   const searchByOfferNamePlaceholder =
     audience === Audience.INDIVIDUAL
       ? 'Rechercher par nom d’offre ou par EAN-13'

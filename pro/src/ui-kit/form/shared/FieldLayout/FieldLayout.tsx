@@ -11,7 +11,7 @@ import styles from './FieldLayout.module.scss'
 
 export type FieldLayoutBaseProps = {
   // These props are display options that are applicable to all fields using FieldLayout
-  label: string
+  label: string | JSX.Element
   name: string
   description?: string
   maxLength?: number
