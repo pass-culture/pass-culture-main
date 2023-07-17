@@ -244,6 +244,7 @@ const Bookings = <
     <div className="bookings-page">
       <Titles title="Réservations" />
       <Tabs
+        nav="Réservations individuelles et collectives"
         selectedKey={audience}
         tabs={[
           {

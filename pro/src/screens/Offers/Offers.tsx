@@ -256,6 +256,7 @@ const Offers = ({
     <div className="offers-page">
       <Titles action={actionLink} title="Offres" />
       <Tabs
+        nav="Offres individuelles et collectives"
         selectedKey={audience}
         tabs={[
           {
