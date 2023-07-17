@@ -10,7 +10,6 @@ import {
   useLocation,
   useNavigationType,
 } from 'react-router-dom'
-import smoothscroll from 'smoothscroll-polyfill'
 
 import Root from 'Root'
 import {
@@ -76,8 +75,6 @@ if (!window.location.href.includes('adage-iframe')) {
     a.appendChild(r)
   })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=')
 }
-
-smoothscroll.polyfill()
 
 // Start app
 const root = createRoot(document.getElementById('root'))
