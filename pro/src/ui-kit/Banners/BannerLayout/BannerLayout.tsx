@@ -5,7 +5,6 @@ import fullClearIcon from 'icons/full-clear.svg'
 import shadowTipsHelpIcon from 'icons/shadow-tips-help.svg'
 import shadowTipsWarningIcon from 'icons/shadow-tips-warning.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
-import Icon from 'ui-kit/Icon/Icon'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './BannerLayout.module.scss'
@@ -13,7 +12,7 @@ import styles from './BannerLayout.module.scss'
 export interface BannerLayoutProps {
   children?: React.ReactNode | React.ReactNode[]
   linkNode?: React.ReactNode | React.ReactNode[]
-  type?: 'notification-info' | 'attention' | 'light' | 'new'
+  type?: 'notification-info' | 'attention' | 'light'
   closable?: boolean
   minimalStyle?: boolean
   handleOnClick?: () => void
@@ -70,7 +69,7 @@ const BannerLayout = ({
           <button onClick={handleOnClick} type="button">
             {
               /* istanbul ignore next: graphic variation */
-              type != 'new' && type != 'light' ? (
+              type != 'light' ? (
                 <SvgIcon
                   src={fullClearIcon}
                   alt="Masquer le bandeau"
@@ -88,12 +87,6 @@ const BannerLayout = ({
         )}
 
         <div className={styles['content']}>
-          {
-            /* istanbul ignore next: graphic variation */
-            type === 'new' && (
-              <Icon svg="ico-star" className={styles['ico-new']} />
-            )
-          }
           <div>
             {children && (
               <div
