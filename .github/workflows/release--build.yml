@@ -61,6 +61,7 @@ jobs:
       CHANNEL: "${{ github.event.inputs.releaseNumber }}.0.0"
       EXPIRES: "30d"
       REF: v${{ github.event.inputs.releaseNumber }}.0.0
+      PUSH_RELEASE_TO_SENTRY: true
 
   create-maintenance-branch:
     name: Create maintenance branch
