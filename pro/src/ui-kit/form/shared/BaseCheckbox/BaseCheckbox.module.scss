@@ -4,6 +4,7 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as size;
 
+
 .base-checkbox {
   display: flex;
 
@@ -28,10 +29,11 @@
     display: flex;
     width: 100%;
 
-    :disabled + & {
+    :disabled+& {
       color: forms.$input-text-color-disabled;
       cursor: default;
     }
+
   }
 
   &-icon {
@@ -43,7 +45,7 @@
     &-svg {
       fill: colors.$input-text-color;
 
-      :disabled + & {
+      :disabled+& {
         fill: forms.$input-text-color-disabled;
       }
     }

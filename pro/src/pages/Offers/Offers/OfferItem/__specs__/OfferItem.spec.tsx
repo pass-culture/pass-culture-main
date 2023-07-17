@@ -459,9 +459,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
       renderOfferItem(props)
 
       // Then
-      expect(screen.getByText('My little offer').closest('tr')).toHaveClass(
-        'inactive'
-      )
+      expect(
+        screen.getByLabelText('My little offer').closest('tr')
+      ).toHaveClass('inactive')
     })
 
     const greyedOfferStatusDataSet = [OfferStatus.REJECTED, OfferStatus.PENDING]
@@ -472,9 +472,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
         renderOfferItem(props)
 
         // Then
-        expect(screen.getByText('My little offer').closest('tr')).toHaveClass(
-          'inactive'
-        )
+        expect(
+          screen.getByLabelText('My little offer').closest('tr')
+        ).toHaveClass('inactive')
       }
     )
 
@@ -487,7 +487,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
         // Then
         expect(
-          screen.getByText('My little offer').closest('tr')
+          screen.getByLabelText('My little offer').closest('tr')
         ).not.toHaveClass('inactive')
       }
     )

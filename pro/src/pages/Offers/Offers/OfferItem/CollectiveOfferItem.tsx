@@ -35,6 +35,7 @@ const CollectiveOfferItem = ({
   return (
     <>
       <CheckboxCell
+        offerName={offer.name}
         offerId={offer.id}
         status={offer.status}
         disabled={disabled}

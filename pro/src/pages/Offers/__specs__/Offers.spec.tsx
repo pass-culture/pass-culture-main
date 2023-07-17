@@ -833,8 +833,8 @@ describe('route Offers', () => {
       await userEvent.click(nextIcon)
 
       // Then
-      expect(screen.getByText(offers[10].name)).toBeInTheDocument()
-      expect(screen.queryByText(offers[0].name)).not.toBeInTheDocument()
+      expect(screen.getByLabelText(offers[10].name)).toBeInTheDocument()
+      expect(screen.queryByLabelText(offers[0].name)).not.toBeInTheDocument()
     })
 
     it('should display previous page when clicking on left arrow', async () => {
@@ -855,7 +855,7 @@ describe('route Offers', () => {
       await userEvent.click(previousIcon)
 
       // Then
-      expect(screen.getByText(offers[0].name)).toBeInTheDocument()
+      expect(screen.getByLabelText(offers[0].name)).toBeInTheDocument()
       expect(screen.queryByText(offers[10].name)).not.toBeInTheDocument()
     })
 
@@ -893,9 +893,9 @@ describe('route Offers', () => {
         }
 
         // Then
-        expect(screen.getByText(offersRecap[499].name)).toBeInTheDocument()
+        expect(screen.getByLabelText(offersRecap[499].name)).toBeInTheDocument()
         expect(
-          screen.queryByText(offersRecap[500].name)
+          screen.queryByLabelText(offersRecap[500].name)
         ).not.toBeInTheDocument()
       })
     })

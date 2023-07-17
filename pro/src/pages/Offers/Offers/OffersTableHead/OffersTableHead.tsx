@@ -1,7 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 
-import { ADMINS_DISABLED_FILTERS_MESSAGE } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import { searchFiltersSelector } from 'store/offers/selectors'
@@ -37,35 +36,23 @@ const OffersTableHead = ({
   return (
     <thead>
       <tr>
-        <th className="th-checkbox">
-          <BaseCheckbox
-            checked={areAllOffersSelected || isAtLeastOneOfferChecked}
-            partialCheck={!areAllOffersSelected && isAtLeastOneOfferChecked}
-            disabled={isAdminForbidden(savedSearchFilters) || !areOffersPresent}
-            id="select-offer-checkbox"
-            onChange={selectAllOffers}
-            label=""
-          />
-        </th>
         <th
-          className={`th-checkbox-label ${
+          className={`th-checkbox ${
             isAdminForbidden(savedSearchFilters) || !areOffersPresent
               ? 'label-disabled'
               : ''
           }`}
+          colSpan={3}
         >
-          <label
-            htmlFor="select-offer-checkbox"
-            title={
-              isAdminForbidden(savedSearchFilters)
-                ? ADMINS_DISABLED_FILTERS_MESSAGE
-                : undefined
-            }
-          >
-            {areAllOffersSelected ? 'Tout désélectionner' : 'Tout sélectionner'}
-          </label>
+          <BaseCheckbox
+            checked={areAllOffersSelected || isAtLeastOneOfferChecked}
+            partialCheck={!areAllOffersSelected && isAtLeastOneOfferChecked}
+            disabled={isAdminForbidden(savedSearchFilters) || !areOffersPresent}
+            onChange={selectAllOffers}
+            label="Tout sélectionner"
+          />
         </th>
-        <th />
+
         <th>Lieu</th>
         <th>{audience === Audience.COLLECTIVE ? 'Établissement' : 'Stocks'}</th>
         <th className="th-with-filter">
