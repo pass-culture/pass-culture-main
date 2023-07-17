@@ -52,7 +52,12 @@ const ButtonLink = ({
       {
         /* istanbul ignore next: graphic variation */
         icon && iconPosition !== IconPositionEnum.RIGHT && (
-          <SvgIcon src={icon} alt="" className={styles['button-icon']} />
+          <SvgIcon
+            src={icon}
+            alt=""
+            className={styles['button-icon']}
+            width="22"
+          />
         )
       }
       {hasTooltip ? (
@@ -66,7 +71,12 @@ const ButtonLink = ({
       {
         /* istanbul ignore next: graphic variation */
         icon && iconPosition === IconPositionEnum.RIGHT && (
-          <SvgIcon src={icon} alt="" className={styles['button-icon']} />
+          <SvgIcon
+            src={icon}
+            alt=""
+            className={styles['button-icon']}
+            width="22"
+          />
         )
       }
       {
@@ -76,6 +86,7 @@ const ButtonLink = ({
             src={fullRightIcon}
             alt=""
             className={cn(styles['button-icon'], styles['button-icon-arrow'])}
+            width="22"
           />
         )
       }

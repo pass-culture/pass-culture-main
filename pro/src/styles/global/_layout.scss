@@ -26,7 +26,8 @@ textarea {
 
 body {
   @include fonts.body;
-
+  
+  background-color: colors.$white;
   height: 100%;
 }
 

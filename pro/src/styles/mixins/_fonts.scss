@@ -1,7 +1,8 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_colors.scss" as colors;
 
-$body-line-height: rem.torem(20px);
+// need to use em for accessibility: when root size is 200% line-height should adjust
+$body-line-height: 1.25em;
 $body-font-size: rem.torem(15px);
 $caption-line-height: rem.torem(16px);
 

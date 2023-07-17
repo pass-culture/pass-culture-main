@@ -58,6 +58,7 @@ const Button = ({
           className={cn(styles['button-icon'], {
             [styles['has-tooltip']]: hasTooltip,
           })}
+          width="20"
         />
       )}
       {hasTooltip ? (
@@ -88,13 +89,19 @@ const Button = ({
         children
       )}
       {icon && iconPosition === IconPositionEnum.RIGHT && (
-        <SvgIcon src={icon} alt="" className={styles['button-icon']} />
+        <SvgIcon
+          src={icon}
+          alt=""
+          className={styles['button-icon']}
+          width="20"
+        />
       )}
       {variant === ButtonVariant.BOX && (
         <SvgIcon
           src={fullRightIcon}
           alt=""
           className={cn(styles['button-icon'], styles['button-icon-arrow'])}
+          width="20"
         />
       )}
     </button>
