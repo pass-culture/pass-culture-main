@@ -138,9 +138,10 @@ jobs:
     if: ${{ always() }}
     steps:
       - uses: technote-space/workflow-conclusion-action@v3
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
       - name: Post to a Slack channel
         id: slack
-        if: ${{ always() }}
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
         uses: slackapi/slack-github-action@v1.23.0
         with:
           channel-id: C04MMM8H5RS
