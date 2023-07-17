@@ -44,6 +44,7 @@ from pcapi.utils.phone_number import ParsedPhoneNumber
 if typing.TYPE_CHECKING:
     from pcapi.core.offerers.models import Offerer
     from pcapi.core.offerers.models import Venue
+    from pcapi.core.offers.models import OfferValidationRule
     from pcapi.core.providers.models import Provider
 
 
@@ -348,6 +349,10 @@ class CollectiveOffer(
         "Provider", foreign_keys=providerId, back_populates="collectiveOffers"
     )
 
+    flaggingValidationRules: list["OfferValidationRule"] = sa.orm.relationship(
+        "OfferValidationRule", secondary="validation_rule_collective_offer_link", back_populates="collectiveOffers"
+    )
+
     @property
     def isEducational(self) -> bool:
         # FIXME (rpaoloni, 2022-03-7): Remove legacy support layer
@@ -558,6 +563,12 @@ class CollectiveOfferTemplate(
 
     collectiveOfferRequest: sa_orm.Mapped["CollectiveOfferRequest"] = relationship(
         "CollectiveOfferRequest", back_populates="collectiveOfferTemplate"
+    )
+
+    flaggingValidationRules: list["OfferValidationRule"] = sa.orm.relationship(
+        "OfferValidationRule",
+        secondary="validation_rule_collective_offer_template_link",
+        back_populates="collectiveOfferTemplates",
     )
 
     @property
@@ -1243,3 +1254,23 @@ class CollectiveOfferRequest(PcObject, Base, Model):
     @phoneNumber.expression  # type: ignore [no-redef]
     def phoneNumber(cls) -> str | None:  # pylint: disable=no-self-argument
         return cls._phoneNumber
+
+
+class ValidationRuleCollectiveOfferLink(PcObject, Base, Model):
+    __tablename__ = "validation_rule_collective_offer_link"
+    ruleId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=False
+    )
+    collectiveOfferId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("collective_offer.id", ondelete="CASCADE"), nullable=False
+    )
+
+
+class ValidationRuleCollectiveOfferTemplateLink(PcObject, Base, Model):
+    __tablename__ = "validation_rule_collective_offer_template_link"
+    ruleId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=False
+    )
+    collectiveOfferTemplateId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("collective_offer_template.id", ondelete="CASCADE"), nullable=False
+    )

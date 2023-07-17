@@ -361,6 +361,34 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert [row["Nom de l'offre"] for row in rows] == expected_list
 
+    def test_list_offers_with_flagging_rules(self, authenticated_client):
+        # given
+        rule_1 = offers_factories.OfferValidationRuleFactory(name="Règle magique")
+        rule_2 = offers_factories.OfferValidationRuleFactory(name="Règle moldue")
+        offers_factories.OfferFactory(
+            validation=offers_models.OfferValidationStatus.PENDING, flaggingValidationRules=[rule_1, rule_2]
+        )
+
+        query_args = {
+            "search-0-search_field": "VALIDATION",
+            "search-0-operator": "IN",
+            "search-0-validation": offers_models.OfferValidationStatus.PENDING.value,
+        }
+
+        # when
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(
+                url_for(
+                    self.endpoint,
+                    **query_args,
+                )
+            )
+            assert response.status_code == 200
+
+        # then
+        rows = html_parser.extract_table_rows(response.data)
+        assert rows[0]["Règles de conformité"] == ", ".join([rule_1.name, rule_2.name])
+
 
 class EditOfferTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.offer.edit_offer"

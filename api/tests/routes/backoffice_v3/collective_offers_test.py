@@ -15,6 +15,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
@@ -104,6 +105,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         # then
         assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
+        rows = sorted(rows, key=lambda row: row["Nom de l'offre"])
         assert len(rows) == 2
         assert rows[0]["ID"] == str(collective_offers[1].id)
         assert rows[0]["Nom de l'offre"] == collective_offers[1].name
@@ -236,6 +238,23 @@ class ListCollectiveOffersTest(GetEndpointHelper):
         # then: must be sorted, older first
         rows = html_parser.extract_table_rows(response.data)
         assert [row["Nom de l'offre"] for row in rows] == expected_list
+
+    def test_list_collective_offers_with_flagging_rules(self, authenticated_client):
+        # given
+        rule_1 = offers_factories.OfferValidationRuleFactory(name="Règle magique")
+        rule_2 = offers_factories.OfferValidationRuleFactory(name="Règle moldue")
+        collective_offer = educational_factories.CollectiveStockFactory(
+            collectiveOffer__flaggingValidationRules=[rule_1, rule_2],
+        ).collectiveOffer
+
+        # when
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=str(collective_offer.id)))
+            assert response.status_code == 200
+
+        # then
+        rows = html_parser.extract_table_rows(response.data)
+        assert rows[0]["Règles de conformité"] == ", ".join([rule_1.name, rule_2.name])
 
 
 class ValidateCollectiveOfferTest(PostEndpointHelper):

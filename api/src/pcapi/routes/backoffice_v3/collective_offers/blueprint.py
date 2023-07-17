@@ -19,6 +19,7 @@ from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.models import offer_mixin
@@ -58,6 +59,9 @@ def _get_collective_offers(
         # needed to check if stock is bookable and compute initial/remaining stock:
         .joinedload(offerers_models.Venue.managingOfferer).load_only(
             offerers_models.Offerer.name, offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus
+        ),
+        sa.orm.joinedload(educational_models.CollectiveOffer.flaggingValidationRules).load_only(
+            offers_models.OfferValidationRule.name
         ),
     )
     if form.from_date.data:

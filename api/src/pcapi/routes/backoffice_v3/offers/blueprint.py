@@ -134,11 +134,16 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
         ),
         sa.orm.joinedload(offers_models.Offer.criteria).load_only(criteria_models.Criterion.name),
         sa.orm.joinedload(offers_models.Offer.venue).load_only(
-            offerers_models.Venue.managingOffererId, offerers_models.Venue.departementCode, offerers_models.Venue.name
+            offerers_models.Venue.managingOffererId,
+            offerers_models.Venue.departementCode,
+            offerers_models.Venue.name,
         )
         # needed to check if stock is bookable and compute initial/remaining stock:
         .joinedload(offerers_models.Venue.managingOfferer).load_only(
             offerers_models.Offerer.name, offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus
+        ),
+        sa.orm.joinedload(offers_models.Offer.flaggingValidationRules).load_only(
+            offers_models.OfferValidationRule.name
         ),
     )
     if not forms.GetOfferAdvancedSearchForm.is_search_empty(form.search.data):

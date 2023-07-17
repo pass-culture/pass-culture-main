@@ -16,6 +16,7 @@ from pcapi.core.categories import subcategories
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.educational.factories as educational_factories
+import pcapi.core.educational.models as educational_models
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
@@ -1767,6 +1768,7 @@ class ResolveOfferValidationRuleTest:
         )
 
         assert api.set_offer_status_based_on_fraud_criteria_v2(offer) == models.OfferValidationStatus.PENDING
+        assert models.ValidationRuleOfferLink.query.count() == 1
 
     def test_offer_validation_with_unrelated_rule(self):
         collective_offer = educational_factories.CollectiveOfferFactory(name="REJECTED")
@@ -1780,6 +1782,7 @@ class ResolveOfferValidationRuleTest:
         assert (
             api.set_offer_status_based_on_fraud_criteria_v2(collective_offer) == models.OfferValidationStatus.APPROVED
         )
+        assert models.ValidationRuleOfferLink.query.count() == 0
 
     @pytest.mark.parametrize(
         "price, expected_status",
@@ -1920,7 +1923,7 @@ class ResolveOfferValidationRuleTest:
         assert api.set_offer_status_based_on_fraud_criteria_v2(offer_to_flag) == models.OfferValidationStatus.PENDING
 
     def test_offer_validation_with_contains_rule(self):
-        offer_to_flag = factories.OfferFactory(name="Saprisit, un lot interdit")
+        offer_to_flag = factories.OfferFactory(name="Sapristi, un lot interdit")
         offer_to_flag_too = factories.OfferFactory(name="Les complots de la théorie")
         offer_name_rule = factories.OfferValidationRuleFactory(name="Règle sur le nom des offres")
         factories.OfferValidationSubRuleFactory(
@@ -1935,6 +1938,7 @@ class ResolveOfferValidationRuleTest:
         assert (
             api.set_offer_status_based_on_fraud_criteria_v2(offer_to_flag_too) == models.OfferValidationStatus.PENDING
         )
+        assert models.ValidationRuleOfferLink.query.count() == 2
 
     def test_offer_validation_rule_with_offer_type(self):
         offer = factories.OfferFactory()
@@ -1949,6 +1953,8 @@ class ResolveOfferValidationRuleTest:
         )
         assert api.set_offer_status_based_on_fraud_criteria_v2(offer) == models.OfferValidationStatus.APPROVED
         assert api.set_offer_status_based_on_fraud_criteria_v2(collective_offer) == models.OfferValidationStatus.PENDING
+        assert models.ValidationRuleOfferLink.query.count() == 0
+        assert educational_models.ValidationRuleCollectiveOfferLink.query.count() == 1
 
     def test_offer_validation_rule_with_offerer_id(self):
         offerer = offerers_factories.OffererFactory()
@@ -1966,6 +1972,8 @@ class ResolveOfferValidationRuleTest:
         )
         assert api.set_offer_status_based_on_fraud_criteria_v2(offer) == models.OfferValidationStatus.PENDING
         assert api.set_offer_status_based_on_fraud_criteria_v2(collective_offer) == models.OfferValidationStatus.PENDING
+        assert models.ValidationRuleOfferLink.query.count() == 1
+        assert educational_models.ValidationRuleCollectiveOfferLink.query.count() == 1
 
     @pytest.mark.parametrize(
         "offer_kwargs, expected_status",
@@ -2053,6 +2061,7 @@ class ResolveOfferValidationRuleTest:
         )
 
         assert api.set_offer_status_based_on_fraud_criteria_v2(offer) == models.OfferValidationStatus.PENDING
+        assert models.ValidationRuleOfferLink.query.count() == 1
 
     def test_offer_validation_rule_with_multiple_sub_rules(self):
         offer_to_approve = factories.OfferFactory(name="offer with a verboten name")
@@ -2078,6 +2087,7 @@ class ResolveOfferValidationRuleTest:
             api.set_offer_status_based_on_fraud_criteria_v2(offer_to_approve) == models.OfferValidationStatus.APPROVED
         )
         assert api.set_offer_status_based_on_fraud_criteria_v2(offer_to_flag) == models.OfferValidationStatus.PENDING
+        assert models.ValidationRuleOfferLink.query.count() == 1
 
     def test_offer_validation_rule_with_unrelated_rules(self):
         offer_to_flag = factories.OfferFactory(name="offer with a verboten name")
@@ -2107,6 +2117,8 @@ class ResolveOfferValidationRuleTest:
             api.set_offer_status_based_on_fraud_criteria_v2(collective_offer_to_flag)
             == models.OfferValidationStatus.PENDING
         )
+        assert models.ValidationRuleOfferLink.query.count() == 1
+        assert educational_models.ValidationRuleCollectiveOfferLink.query.count() == 1
 
     def test_offer_validation_with_description_rule_and_offer_without_description(self):
         offer = factories.OfferFactory(description=None)
@@ -2118,6 +2130,39 @@ class ResolveOfferValidationRuleTest:
         )
 
         assert api.set_offer_status_based_on_fraud_criteria_v2(offer) == models.OfferValidationStatus.APPROVED
+
+    def test_validation_rule_offer_link_data(self):
+        offer_to_flag = factories.OfferFactory(name="Sapristi, un lot interdit")
+        factories.StockFactory(offer=offer_to_flag, price=300)
+        offer_to_flag_too = factories.OfferFactory(name="Les complots de la théorie")
+        factories.StockFactory(offer=offer_to_flag_too, price=30)
+        offer_name_rule = factories.OfferValidationRuleFactory(name="Règle sur le nom des offres")
+        factories.OfferValidationSubRuleFactory(
+            validationRule=offer_name_rule,
+            model=models.OfferValidationModel.OFFER,
+            attribute=models.OfferValidationAttribute.NAME,
+            operator=models.OfferValidationRuleOperator.CONTAINS,
+            comparated={"comparated": ["bon", "lot"]},
+        )
+        offer_price_rule = factories.OfferValidationRuleFactory(name="Règle sur le prix des offres")
+        factories.OfferValidationSubRuleFactory(
+            validationRule=offer_price_rule,
+            model=models.OfferValidationModel.OFFER,
+            attribute=models.OfferValidationAttribute.MAX_PRICE,
+            operator=models.OfferValidationRuleOperator.GREATER_THAN,
+            comparated={"comparated": 250},
+        )
+
+        assert api.set_offer_status_based_on_fraud_criteria_v2(offer_to_flag) == models.OfferValidationStatus.PENDING
+        assert (
+            api.set_offer_status_based_on_fraud_criteria_v2(offer_to_flag_too) == models.OfferValidationStatus.PENDING
+        )
+
+        assert models.ValidationRuleOfferLink.query.filter_by(offerId=offer_to_flag.id).count() == 2
+        assert models.ValidationRuleOfferLink.query.filter_by(offerId=offer_to_flag_too.id).count() == 1
+        assert models.ValidationRuleOfferLink.query.filter_by(ruleId=offer_name_rule.id).count() == 2
+        assert models.ValidationRuleOfferLink.query.filter_by(ruleId=offer_price_rule.id).count() == 1
+        assert models.ValidationRuleOfferLink.query.count() == 3
 
 
 @pytest.mark.usefixtures("db_session")

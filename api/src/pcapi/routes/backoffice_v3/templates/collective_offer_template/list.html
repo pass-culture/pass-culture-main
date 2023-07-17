@@ -45,6 +45,7 @@
               <th scope="col">Nom de l'offre</th>
               <th scope="col">Catégorie</th>
               <th scope="col">Sous-catégorie</th>
+              {% if has_permission("PRO_FRAUD_ACTIONS") %}<th scope="col">Règles de conformité</th>{% endif %}
               <th scope="col">État</th>
               <th scope="col">
                 {% if date_created_sort_url %}
@@ -100,6 +101,9 @@
                 <td>{{ links.build_offer_name_to_pc_pro_link(collective_offer_template) }}</td>
                 <td>{{ collective_offer_template.subcategory.category.pro_label }}</td>
                 <td>{{ collective_offer_template.subcategory.pro_label }}</td>
+                {% if has_permission("PRO_FRAUD_ACTIONS") %}
+                  <td>{{ collective_offer_template.flaggingValidationRules | format_offer_validation_rule_list | safe }}</td>
+                {% endif %}
                 <td>{{ collective_offer_template.validation | format_offer_validation_status }}</td>
                 <td>{{ collective_offer_template.dateCreated | format_date("%d/%m/%Y") }}</td>
                 <td>{{ links.build_offerer_name_to_details_link(collective_offer_template.venue.managingOfferer) }}</td>

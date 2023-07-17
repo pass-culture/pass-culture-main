@@ -43,6 +43,8 @@ logger = logging.getLogger(__name__)
 if TYPE_CHECKING:
     from pcapi.core.bookings.models import Booking
     from pcapi.core.criteria.models import Criterion
+    from pcapi.core.educational.models import CollectiveOffer
+    from pcapi.core.educational.models import CollectiveOfferTemplate
     from pcapi.core.offerers.models import Offerer
     from pcapi.core.offerers.models import Venue
     from pcapi.core.users.models import User
@@ -394,6 +396,9 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
     extraData: OfferExtraData | None = sa.Column("jsonData", sa_mutable.MutableDict.as_mutable(postgresql.JSONB))
     fieldsUpdated: list[str] = sa.Column(
         postgresql.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}"
+    )
+    flaggingValidationRules: list["OfferValidationRule"] = sa.orm.relationship(
+        "OfferValidationRule", secondary="validation_rule_offer_link", back_populates="offers"
     )
     # This field replaces the idAtProviders coming from ProvidableMixin
     idAtProvider = sa.Column(
@@ -872,6 +877,25 @@ class OfferValidationRule(PcObject, Base, Model):
     dateModified: datetime.datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
     latestAuthorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=False)
     latestAuthor: sa_orm.Mapped["User"] = sa.orm.relationship("User", foreign_keys=[latestAuthorId])
+    offers: list["Offer"] = sa.orm.relationship(
+        "Offer", secondary="validation_rule_offer_link", back_populates="flaggingValidationRules"
+    )
+    collectiveOffers: list["CollectiveOffer"] = sa.orm.relationship(
+        "CollectiveOffer", secondary="validation_rule_collective_offer_link", back_populates="flaggingValidationRules"
+    )
+    collectiveOfferTemplates: list["CollectiveOfferTemplate"] = sa.orm.relationship(
+        "CollectiveOfferTemplate",
+        secondary="validation_rule_collective_offer_template_link",
+        back_populates="flaggingValidationRules",
+    )
+
+
+class ValidationRuleOfferLink(PcObject, Base, Model):
+    __tablename__ = "validation_rule_offer_link"
+    ruleId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("offer_validation_rule.id", ondelete="CASCADE"), nullable=False
+    )
+    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=False)
 
 
 @dataclass

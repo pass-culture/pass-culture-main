@@ -11,6 +11,7 @@ from pcapi.core.educational import models as educational_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
@@ -230,6 +231,23 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
         # then: must be sorted, older first
         rows = html_parser.extract_table_rows(response.data)
         assert [row["Nom de l'offre"] for row in rows] == expected_list
+
+    def test_list_collective_offer_templates_with_flagging_rules(self, authenticated_client):
+        # given
+        rule_1 = offers_factories.OfferValidationRuleFactory(name="Règle magique")
+        rule_2 = offers_factories.OfferValidationRuleFactory(name="Règle moldue")
+        collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
+            flaggingValidationRules=[rule_1, rule_2]
+        )
+
+        # when
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, q=str(collective_offer_template.id)))
+            assert response.status_code == 200
+
+        # then
+        rows = html_parser.extract_table_rows(response.data)
+        assert rows[0]["Règles de conformité"] == ", ".join([rule_1.name, rule_2.name])
 
 
 class ValidateCollectiveOfferTemplateTest(PostEndpointHelper):
