@@ -556,7 +556,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(nextIcon)
       // Then
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
-      expect(screen.getByText(offers[10].name)).toBeInTheDocument()
+      expect(screen.getByLabelText(offers[10].name)).toBeInTheDocument()
       expect(screen.queryByText(offers[0].name)).not.toBeInTheDocument()
     })
 
@@ -576,7 +576,7 @@ describe('route CollectiveOffers', () => {
       await userEvent.click(previousIcon)
       // Then
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
-      expect(screen.getByText(offers[0].name)).toBeInTheDocument()
+      expect(screen.getByLabelText(offers[0].name)).toBeInTheDocument()
       expect(screen.queryByText(offers[10].name)).not.toBeInTheDocument()
     })
 
@@ -610,7 +610,7 @@ describe('route CollectiveOffers', () => {
           await userEvent.click(nextIcon)
         }
         // Then
-        expect(screen.getByText(offersRecap[499].name)).toBeInTheDocument()
+        expect(screen.getByLabelText(offersRecap[499].name)).toBeInTheDocument()
         expect(
           screen.queryByText(offersRecap[500].name)
         ).not.toBeInTheDocument()

@@ -59,7 +59,6 @@
     }
 
     .th-checkbox {
-      display: flex;
       padding: 0;
 
       input {
@@ -69,21 +68,18 @@
           cursor: not-allowed;
         }
       }
-    }
-
-    .th-checkbox-label {
-      max-width: rem.torem(82px);
-      overflow: visible;
-      white-space: nowrap;
 
       &.label-disabled {
-        opacity: 0.3;
+        opacity: 0.5;
 
         label {
           cursor: not-allowed;
         }
       }
     }
+
+
+
 
     th.th-with-filter {
       position: relative;

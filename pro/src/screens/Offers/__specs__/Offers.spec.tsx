@@ -168,9 +168,8 @@ describe('screen Offers', () => {
       store
     )
 
-    const firstOfferLine = screen.getByText(firstOffer.name)
-    expect(firstOfferLine).toBeInTheDocument()
-    expect(screen.getByText(secondOffer.name)).toBeInTheDocument()
+    expect(screen.getByLabelText(firstOffer.name)).toBeInTheDocument()
+    expect(screen.getByLabelText(secondOffer.name)).toBeInTheDocument()
   })
 
   it('should display an unchecked by default checkbox to select all offers when user is not admin', async () => {
@@ -186,7 +185,6 @@ describe('screen Offers', () => {
       store
     )
 
-    screen.getByText(firstOffer.name)
     const selectAllOffersCheckbox = screen.queryByLabelText('Tout sélectionner')
     expect(selectAllOffersCheckbox).toBeInTheDocument()
     expect(selectAllOffersCheckbox).not.toBeChecked()
@@ -202,14 +200,14 @@ describe('screen Offers', () => {
       store
     )
 
-    screen.getByText(offersRecap[0].name)
+    screen.getByLabelText(offersRecap[0].name)
     expect(screen.getByText('2 offres')).toBeInTheDocument()
   })
 
   it('should display total number of offers in singular if one or no offer', async () => {
     renderOffers({ ...props, offers: offersRecap }, store)
 
-    screen.getByText(offersRecap[0].name)
+    screen.getByLabelText(offersRecap[0].name)
     expect(await screen.findByText('1 offre')).toBeInTheDocument()
   })
 
@@ -218,7 +216,7 @@ describe('screen Offers', () => {
 
     renderOffers({ ...props, offers: offersRecap }, store)
 
-    screen.getByText(offersRecap[0].name)
+    screen.getByLabelText(offersRecap[0].name)
     expect(await screen.findByText('500+ offres')).toBeInTheDocument()
   })
 
@@ -555,10 +553,9 @@ describe('screen Offers', () => {
 
     renderOffers({ ...props, offers }, store)
 
-    screen.getByText(offers[0].name)
-    expect(screen.queryByTestId(`select-offer-${offers[0].id}`)).toBeDisabled()
-    expect(screen.queryByTestId(`select-offer-${offers[1].id}`)).toBeDisabled()
-    expect(screen.queryByTestId(`select-offer-${offers[2].id}`)).toBeEnabled()
+    expect(screen.queryByLabelText(offers[0].name)).toBeDisabled()
+    expect(screen.queryByLabelText(offers[1].name)).toBeDisabled()
+    expect(screen.queryByLabelText(offers[2].name)).toBeEnabled()
   })
 
   it('should load offers on click on search button with default filters when no changes where made', async () => {
@@ -621,7 +618,7 @@ describe('screen Offers', () => {
   it('should display actionsBar when at least one offer is selected', async () => {
     renderWithProviders(<Offers {...props} />, { storeOverrides: store })
 
-    const checkbox = screen.getByTestId(`select-offer-${offersRecap[0].id}`)
+    const checkbox = screen.getByLabelText(offersRecap[0].name)
     await userEvent.click(checkbox)
 
     const actionBar = await screen.findByTestId('actions-bar')
@@ -633,14 +630,6 @@ describe('screen Offers', () => {
   })
 
   describe('on click on select all offers checkbox', () => {
-    it('should display "Tout désélectionner" when initial label was "Tout sélectionner"', async () => {
-      renderOffers(props, store)
-
-      await userEvent.click(screen.getByLabelText('Tout sélectionner'))
-
-      expect(screen.queryByLabelText('Tout désélectionner')).toBeInTheDocument()
-    })
-
     it('should display display error message when trying to activate draft offers', async () => {
       const offers = [
         individualOfferFactory({
@@ -711,18 +700,10 @@ describe('screen Offers', () => {
 
       renderOffers({ ...props, offers }, store)
 
-      const firstOfferCheckbox = screen.getByTestId(
-        `select-offer-${offers[0].id}`
-      )
-      const secondOfferCheckbox = screen.getByTestId(
-        `select-offer-${offers[1].id}`
-      )
-      const thirdOfferCheckbox = screen.getByTestId(
-        `select-offer-${offers[2].id}`
-      )
-      const fourthOfferCheckbox = screen.getByTestId(
-        `select-offer-${offers[3].id}`
-      )
+      const firstOfferCheckbox = screen.getByLabelText(offers[0].name)
+      const secondOfferCheckbox = screen.getByLabelText(offers[1].name)
+      const thirdOfferCheckbox = screen.getByLabelText(offers[2].name)
+      const fourthOfferCheckbox = screen.getByLabelText(offers[3].name)
 
       await userEvent.click(screen.getByLabelText('Tout sélectionner'))
 
@@ -731,7 +712,7 @@ describe('screen Offers', () => {
       expect(thirdOfferCheckbox).not.toBeChecked()
       expect(fourthOfferCheckbox).not.toBeChecked()
 
-      await userEvent.click(screen.getByLabelText('Tout désélectionner'))
+      await userEvent.click(screen.getByLabelText('Tout sélectionner'))
 
       expect(firstOfferCheckbox).not.toBeChecked()
       expect(secondOfferCheckbox).not.toBeChecked()

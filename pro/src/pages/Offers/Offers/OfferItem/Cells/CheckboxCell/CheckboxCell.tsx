@@ -2,9 +2,10 @@ import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
 import { isOfferDisabled } from 'core/Offers/utils'
-import { BaseCheckbox } from 'ui-kit/form/shared'
+import BaseCheckbox from 'ui-kit/form/shared/BaseCheckbox'
 
 interface CheckboxCellProps {
+  offerName: string
   isSelected: boolean
   offerId: number
   status: OfferStatus
@@ -14,6 +15,7 @@ interface CheckboxCellProps {
 }
 
 const CheckboxCell = ({
+  offerName,
   isSelected,
   offerId,
   status,
@@ -29,11 +31,11 @@ const CheckboxCell = ({
     <td>
       <BaseCheckbox
         checked={isSelected}
-        data-testid={`select-offer-${offerId}`}
+        className="select-offer-checkbox"
+        label={offerName}
+        exceptionnallyHideLabelDespiteA11y={true}
         disabled={disabled || isOfferDisabled(status)}
-        id={`select-offer-${offerId}`}
         onChange={handleOnChangeSelected}
-        label=""
       />
     </td>
   )
