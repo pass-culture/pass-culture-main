@@ -239,6 +239,7 @@ def _get_sent_pricings_for_collective_bookings(
             educational_models.CollectiveOffer.name.label("offer_name"),
             sqla.true().label("offer_is_educational"),
             offerers_models.Venue.name.label("venue_name"),
+            offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
             sqla_func.coalesce(
                 offerers_models.Venue.address,
                 offerers_models.Offerer.address,
@@ -253,7 +254,7 @@ def _get_sent_pricings_for_collective_bookings(
             ).label("venue_city"),
             offerers_models.Venue.siret.label("venue_siret"),
             offerers_models.Venue.departementCode.label("venue_departement_code"),
-            ReimbursementPoint.name.label("reimbursement_point_name"),
+            ReimbursementPoint.common_name.label("reimbursement_point_common_name"),
             sqla_func.coalesce(
                 ReimbursementPoint.address,
                 offerers_models.Offerer.address,
@@ -322,6 +323,7 @@ def _get_sent_pricings_for_individual_bookings(
             bookings_models.Booking.amount.label("booking_amount"),
             offers_models.Offer.name.label("offer_name"),
             offerers_models.Venue.name.label("venue_name"),
+            offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
             sqla_func.coalesce(
                 offerers_models.Venue.address,
                 offerers_models.Offerer.address,
@@ -335,7 +337,7 @@ def _get_sent_pricings_for_individual_bookings(
                 offerers_models.Offerer.city,
             ).label("venue_city"),
             offerers_models.Venue.siret.label("venue_siret"),
-            ReimbursementPoint.name.label("reimbursement_point_name"),
+            ReimbursementPoint.common_name.label("reimbursement_point_common_name"),
             sqla_func.coalesce(
                 ReimbursementPoint.address,
                 offerers_models.Offerer.address,
@@ -394,6 +396,7 @@ def _get_legacy_payments_for_individual_bookings(
             bookings_models.Booking.amount.label("booking_amount"),
             offers_models.Offer.name.label("offer_name"),
             offerers_models.Venue.name.label("venue_name"),
+            offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
             sqla_func.coalesce(
                 offerers_models.Venue.address,
                 offerers_models.Offerer.address,
@@ -447,6 +450,7 @@ def _get_legacy_payments_for_collective_bookings(
             educational_models.CollectiveStock.price.label("booking_amount"),
             educational_models.CollectiveOffer.name.label("offer_name"),
             offerers_models.Venue.name.label("venue_name"),
+            offerers_models.Venue.common_name.label("venue_common_name"),  # type: ignore[attr-defined]
             sqla_func.coalesce(
                 offerers_models.Venue.address,
                 offerers_models.Offerer.address,
