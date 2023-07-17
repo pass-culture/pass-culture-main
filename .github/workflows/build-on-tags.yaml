@@ -2,8 +2,6 @@ name: Build release
 
 on:
   push:
-    tags:
-      - v.**
 
 env:
   PROJECT_ID: passculture-infra-prod
@@ -12,6 +10,7 @@ env:
 
 jobs:
   find-hotfix-tag-number:
+    if: ${{ startsWith(github.ref, 'refs/tags/') }}
     name: Find hotfix tag number
     outputs:
       version: ${{ steps.find-hotfix-tag-number.outputs.version }}
@@ -31,7 +30,6 @@ jobs:
 
   build-docker:
     name: 'Build and push Docker images'
-    if: ${{ startsWith(github.ref, 'refs/tags/') }}
     runs-on: [self-hosted, linux, x64]
     needs:
       - find-hotfix-tag-number
