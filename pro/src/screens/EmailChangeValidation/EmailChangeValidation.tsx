@@ -1,10 +1,10 @@
 // react hooks and usages doc : https://reactjs.org/docs/hooks-intro.html
 import React from 'react'
 
+import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { ROOT_PATH } from 'utils/config'
 
 interface EmailChangeValidationProps {
   isSuccess: boolean
@@ -20,7 +20,7 @@ const EmailChangeValidation = ({
           className="logo-unlogged"
           viewBox="0 0 282 120"
           alt="Pass Culture pro, l'espace des acteurs culturels"
-          src={`${ROOT_PATH}/icons/logo-pass-culture-primary.svg`}
+          src={logoPassCultureProFullIcon}
         />
       </div>
       <div className="scrollable-content-side">

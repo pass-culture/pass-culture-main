@@ -134,9 +134,8 @@ const shadowIcons: IconListItem[] = [
 
 const otherIcons: IconListItem[] = [
   { src: 'icons/logo-pass-culture.svg', viewBox: '0 0 71 24' },
-
-  // TODO Not cleaned
-  { src: 'icons/logo-pass-culture-header.svg', viewBox: '0 0 119 40' },
+  { src: 'icons/logo-pass-culture-pro.svg', viewBox: '0 0 119 40' },
+  { src: 'icons/logo-pass-culture-pro-full.svg', viewBox: '0 0 282 120' },
 ]
 
 const iconsSections = [

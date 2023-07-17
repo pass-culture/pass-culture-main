@@ -3,9 +3,9 @@ import React from 'react'
 import AppLayout from 'app/AppLayout'
 import SkipLinks from 'components/SkipLinks'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
+import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import CookiesFooter from 'pages/CookiesFooter/CookiesFooter'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { ROOT_PATH } from 'utils/config'
 
 import styles from './Signin.module.scss'
 import SigninForm from './SigninForm/SigninForm'
@@ -22,7 +22,7 @@ const SignIn = (): JSX.Element => {
             className="logo-unlogged"
             viewBox="0 0 282 120"
             alt="Pass Culture pro, l'espace des acteurs culturels"
-            src={`${ROOT_PATH}/icons/logo-pass-culture-primary.svg`}
+            src={logoPassCultureProFullIcon}
             width="282"
           />
         </header>
