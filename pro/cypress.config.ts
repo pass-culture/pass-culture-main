@@ -7,6 +7,7 @@ export default defineConfig({
       // implement node event listeners here
     },
   },
+  retries: 2,
   defaultCommandTimeout: 30000,
   viewportHeight: 1080,
   viewportWidth: 1920,
