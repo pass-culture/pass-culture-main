@@ -119,8 +119,8 @@ const strokeIcons: IconListItem[] = [
   { src: 'icons/stroke-pass.svg' },
   { src: 'icons/stroke-library.svg' },
   { src: 'icons/stroke-venue.svg' },
-  { src: 'icons/stroke-wip.svg' },
-  { src: 'icons/stroke-no-booking.svg' },
+  { src: 'icons/stroke-wip.svg' }, // TODO standardize viewbox
+  { src: 'icons/stroke-no-booking.svg' }, // TODO standardize viewbox
 ]
 
 const shadowIcons: IconListItem[] = [
@@ -138,7 +138,6 @@ const otherIcons: IconListItem[] = [
   { src: 'icons/logo-pass-culture-header.svg', viewBox: '0 0 119 40' },
   { src: 'icons/ico-no-bookings.svg', viewBox: '0 0 124 124' },
   { src: 'icons/ico-404.svg', viewBox: '0 0 308 194' },
-  { src: 'icons/ico-unavailable-page-white.svg', viewBox: '0 0 317 198' },
 ]
 
 const iconsSections = [
