@@ -84,7 +84,9 @@ describe('MultiSelectAutocomplete', () => {
         </Formik>
       )
       await userEvent.click(screen.getByRole('textbox'))
-      await userEvent.click(screen.getByAltText('Masquer les options'))
+      await userEvent.click(
+        screen.getByRole('img', { name: 'Masquer les options' })
+      )
       expect(screen.queryAllByRole('checkbox')).toHaveLength(0)
     })
 
@@ -157,8 +159,12 @@ describe('MultiSelectAutocomplete', () => {
         </Formik>
       )
       await userEvent.type(screen.getByRole('textbox'), 'al')
-      await userEvent.click(screen.getByAltText('Masquer les options'))
-      await userEvent.click(screen.getByAltText('Afficher les options'))
+      await userEvent.click(
+        screen.getByRole('img', { name: 'Masquer les options' })
+      )
+      await userEvent.click(
+        screen.getByRole('img', { name: 'Afficher les options' })
+      )
       expect(screen.getAllByRole('checkbox')).toHaveLength(15)
     })
   })

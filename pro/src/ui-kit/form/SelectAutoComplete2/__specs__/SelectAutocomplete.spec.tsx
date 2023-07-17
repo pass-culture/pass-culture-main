@@ -73,7 +73,9 @@ describe('SelectAutocomplete', () => {
         </Formik>
       )
       await userEvent.click(screen.getByLabelText('Département'))
-      await userEvent.click(screen.getByAltText('Masquer les options'))
+      await userEvent.click(
+        screen.getByRole('img', { name: 'Masquer les options' })
+      )
       expect(screen.queryByTestId('list')).not.toBeInTheDocument()
     })
 
@@ -194,8 +196,12 @@ describe('SelectAutocomplete', () => {
         </Formik>
       )
       await userEvent.type(screen.getByLabelText('Département'), 'al')
-      await userEvent.click(screen.getByAltText('Masquer les options'))
-      await userEvent.click(screen.getByAltText('Afficher les options'))
+      await userEvent.click(
+        screen.getByRole('img', { name: 'Masquer les options' })
+      )
+      await userEvent.click(
+        screen.getByRole('img', { name: 'Afficher les options' })
+      )
 
       expect(screen.getByTestId('list').children).toHaveLength(15)
     })

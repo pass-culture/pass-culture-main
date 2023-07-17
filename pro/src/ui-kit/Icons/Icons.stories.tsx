@@ -135,12 +135,10 @@ const otherIcons: IconListItem[] = [
   { src: 'icons/logo-pass-culture.svg', viewBox: '0 0 71 24' },
 
   // TODO Not cleaned
-  { src: 'icons/checkbox-check.svg', viewBox: '0 0 10 8' },
   { src: 'icons/linear-gradient.svg', viewBox: '0 0 623 1024' }, // TODO replace by a jpg/png
   { src: 'icons/logo-pass-culture-header.svg', viewBox: '0 0 119 40' },
   { src: 'icons/ico-no-bookings.svg', viewBox: '0 0 124 124' },
   { src: 'icons/ico-404.svg', viewBox: '0 0 308 194' },
-  { src: 'icons/open-dropdown.svg', viewBox: '0 0 20 20' },
   { src: 'icons/ico-unavailable-page-white.svg', viewBox: '0 0 317 198' },
 ]
 
