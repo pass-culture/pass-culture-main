@@ -49,7 +49,7 @@ class OfferMetadataTest:
 
             metadata = get_metadata_from_offer(offer)
 
-            assert "AggregateOffer" == metadata["offers"]["@type"]
+            assert metadata["offers"]["@type"] == "AggregateOffer"
 
         def should_have_a_low_price(self):
             offer = offers_factories.OfferFactory()
@@ -58,7 +58,7 @@ class OfferMetadataTest:
 
             metadata = get_metadata_from_offer(offer)
 
-            assert "2.00" == metadata["offers"]["lowPrice"]
+            assert metadata["offers"]["lowPrice"] == "2.00"
 
         def should_have_a_price_currency(self):
             offer = offers_factories.OfferFactory()
@@ -66,7 +66,7 @@ class OfferMetadataTest:
 
             metadata = get_metadata_from_offer(offer)
 
-            assert "EUR" == metadata["offers"]["priceCurrency"]
+            assert metadata["offers"]["priceCurrency"] == "EUR"
 
     class GivenAnEventTest:
         def should_describe_an_event(self):

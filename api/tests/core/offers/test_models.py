@@ -620,10 +620,10 @@ class OfferMinPriceTest:
     def should_be_zero_when_no_stocks(self):
         offer = factories.OfferFactory()
 
-        assert offer.min_price == 0
+        assert offer.min_price is None
 
     def should_be_zero_when_all_stocks_are_soft_deleted(self):
         offer = factories.OfferFactory()
         factories.StockFactory(offer=offer, isSoftDeleted=True, price=10)
 
-        assert offer.min_price == 0
+        assert offer.min_price is None
