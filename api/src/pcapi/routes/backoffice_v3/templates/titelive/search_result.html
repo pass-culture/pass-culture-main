@@ -39,10 +39,12 @@
                     <li class="list-group-item">
                       <b>Lectorat : </b> {{ article.id_lectorat|format_titelive_id_lectorat }}
                     </li>
-                    <li class="list-group-item">
-                      <b>Prix HT
-                        :</b> {{ article.prixpays.fr.value }} {{ article.prixpays.fr.devise|unescape }}
-                      </li>
+                    {% if article.prixpays.fr %}
+                      <li class="list-group-item">
+                        <b>Prix HT
+                          :</b> {{ article.prixpays.fr.value }} {{ article.prixpays.fr.devise|unescape }}
+                        </li>
+                      {% endif %}
                       <li class="list-group-item">
                         <b>Taux TVA :</b> {{ article.taux_tva }} %
                       </li>
@@ -59,13 +61,13 @@
                         {% if article.gtl.first %}
                           <ul class="mt-2">
                             {% for key, value in article.gtl.first.items() %}
-                                <li>
-                                    {{ value.libelle|unescape }} ({{ value.code|format_gtl_id }})
-                                    <ul class="mt-2">
-                                        {% set csr = value.code|format_gtl_id|format_gtl_as_csr %}
-                                        {% if csr %}<li>Rayon (CSR): {{ csr.label }} ({{ csr.csr_id }})</li>{% endif %}
-                                    </ul>
-                                </li>
+                              <li>
+                                {{ value.libelle|unescape }} ({{ value.code|format_gtl_id }})
+                                <ul class="mt-2">
+                                  {% set csr = value.code|format_gtl_id|format_gtl_as_csr %}
+                                  {% if csr %}<li>Rayon (CSR): {{ csr.label }} ({{ csr.csr_id }})</li>{% endif %}
+                                </ul>
+                              </li>
                             {% endfor %}
                           </ul>
                         {% endif %}
