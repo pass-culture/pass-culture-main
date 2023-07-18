@@ -4,6 +4,7 @@ import { debounce } from 'lodash'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 import { SelectOption } from 'custom_types/form'
+import { getLabelString } from 'utils/getLabelString'
 
 import {
   AutocompleteList,
@@ -173,7 +174,7 @@ const AutocompleteTextInput = ({
               setIsOpen(true)
             }
           }}
-          placeholder={placeholder ?? label}
+          placeholder={placeholder ?? getLabelString(label)}
           hasError={meta.touched && !!meta.error}
           type="text"
           disabled={disabled}
