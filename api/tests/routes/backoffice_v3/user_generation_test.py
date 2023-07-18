@@ -22,12 +22,36 @@ class UserGenerationGetRouteTest:
     needed_permission = None
 
     def test_returns_user_data(self, authenticated_client):
-        generated_user = users_factories.UserFactory()
+        generated_user = users_factories.BaseUserFactory()
 
         response = authenticated_client.get(url_for(self.endpoint, userId=generated_user.id))
 
         assert response.status_code == 200
         assert generated_user.email in html_parser.content_as_text(response.data)
+
+    def test_contains_link_to_app_if_token_and_names(self, authenticated_client):
+        generated_user = users_factories.ProfileCompletedUserFactory()
+        response = authenticated_client.get(url_for(self.endpoint, userId=generated_user.id, accessToken="0"))
+
+        assert response.status_code == 200
+        assert (
+            f"Aller sur l'app en tant que {generated_user.firstName} {generated_user.lastName}"
+            in html_parser.content_as_text(response.data)
+        )
+
+    def test_contains_link_to_app_if_token_and_no_names(self, authenticated_client):
+        generated_user = users_factories.BaseUserFactory()
+        response = authenticated_client.get(url_for(self.endpoint, userId=generated_user.id, accessToken="0"))
+
+        assert response.status_code == 200
+        assert f"Aller sur l'app en tant que User {generated_user.id}" in html_parser.content_as_text(response.data)
+
+    def test_does_not_contain_link_to_app_if_no_token(self, authenticated_client):
+        generated_user = users_factories.ProfileCompletedUserFactory()
+        response = authenticated_client.get(url_for(self.endpoint, userId=generated_user.id, accessToken=""))
+
+        assert response.status_code == 200
+        assert "Aller sur l'app" not in html_parser.content_as_text(response.data)
 
 
 class UserGenerationPostRouteTest(post_endpoint_helper.PostEndpointWithoutPermissionHelper):
