@@ -9,14 +9,31 @@ from pydantic import parse_obj_as
 from pcapi import settings
 from pcapi.connectors.serialization.boost_serializers import LoginBoost
 from pcapi.core.external_bookings.boost.exceptions import BoostAPIException
+from pcapi.core.external_bookings.boost.exceptions import BoostInvalidTokenException
+from pcapi.core.external_bookings.boost.exceptions import BoostLoginException
 from pcapi.core.providers.models import BoostCinemaDetails
 import pcapi.core.providers.repository as providers_repository
 from pcapi.repository import repository
 from pcapi.routes.serialization import BaseModel
 from pcapi.utils import requests
+from pcapi.utils.decorators import retry
 
 
 logger = logging.getLogger(__name__)
+ATTEMPTS_LIMIT = 2
+
+
+def invalid_token_handler(
+    resource: "ResourceBoost",
+    cinema_details: BoostCinemaDetails,
+    pattern_values: dict | None = None,
+    params: dict | None = None,
+) -> None:
+    """
+    `retry` decorator handler. Get rid of the Boost API token if not valide anymore.
+    """
+    cinema_details.token = None
+    repository.save(cinema_details)
 
 
 class ResourceBoost(enum.Enum):
@@ -41,7 +58,7 @@ def build_url(cinema_url: str, resource: ResourceBoost, pattern_values: dict[str
     return f"{cinema_url}{resource_url}"
 
 
-def login(cinema_details: BoostCinemaDetails, ignore_device: bool = False) -> str:
+def login(cinema_details: BoostCinemaDetails, ignore_device: bool = True) -> str:
     """
     This will provide a JWT for authenticated calls to Boost API.
     The token has a duration of 24 hours, and is saved in DB along its expiration date.
@@ -49,6 +66,7 @@ def login(cinema_details: BoostCinemaDetails, ignore_device: bool = False) -> st
     auth_payload = {
         "username": cinema_details.username,
         "password": cinema_details.password,
+        "stationName": f"pcapi - {settings.ENV}",
     }
     url = cinema_details.cinemaUrl + LOGIN_ENDPOINT
     request_date = datetime.datetime.utcnow()
@@ -64,15 +82,15 @@ def login(cinema_details: BoostCinemaDetails, ignore_device: bool = False) -> st
             message = content.get("message", "")
         except json.JSONDecodeError:
             message = response.content
-        raise BoostAPIException(
-            f"Unexpected {response.status_code} response from Boost API on {response.request.url}: {message}"
+        raise BoostLoginException(
+            f"Unexpected {response.status_code} response from Boost login API on {response.request.url}: {message}"
         )
 
     content = response.json()
     login_info = parse_obj_as(LoginBoost, content)
     token = login_info.token
     if not token:
-        raise BoostAPIException("No token received from Boost API")
+        raise BoostLoginException("No token received from Boost API")
     cinema_details.token = token
     cinema_details.tokenExpirationDate = request_date + datetime.timedelta(hours=24)
     repository.save(cinema_details)
@@ -83,10 +101,12 @@ def headers(token: str) -> dict[str, str]:
     return {"Authorization": "Bearer " + token}
 
 
-def check_token_validity(cinema_details: BoostCinemaDetails) -> bool:
+def get_token(cinema_details: BoostCinemaDetails) -> str:
     token = cinema_details.token
     token_expiration_date = cinema_details.tokenExpirationDate
-    return bool(token and token_expiration_date and datetime.datetime.utcnow() < token_expiration_date)
+    if token and token_expiration_date and datetime.datetime.utcnow() < token_expiration_date:
+        return token
+    return login(cinema_details)
 
 
 def get_resource(
@@ -96,52 +116,88 @@ def get_resource(
     pattern_values: dict[str, Any] | None = None,
 ) -> dict | list[dict] | list:
     cinema_details = providers_repository.get_boost_cinema_details(cinema_str_id)
-    token = cinema_details.token if check_token_validity(cinema_details) else login(cinema_details)
-    assert token  # for typing
-    if params:
-        response = requests.get(
-            url=build_url(cinema_details.cinemaUrl, resource, pattern_values), headers=headers(token), params=params
-        )
-    else:
-        response = requests.get(
-            url=build_url(cinema_details.cinemaUrl, resource, pattern_values), headers=headers(token)
-        )
 
+    return _perform_get_resource(resource, cinema_details, pattern_values, params)
+
+
+@retry(
+    exception=BoostInvalidTokenException,
+    exception_handler=invalid_token_handler,
+    max_attempts=ATTEMPTS_LIMIT,
+    logger=logger,
+)
+def _perform_get_resource(
+    resource: ResourceBoost,
+    cinema_details: BoostCinemaDetails,
+    pattern_values: dict[str, Any] | None = None,
+    params: dict[str, Any] | None = None,
+) -> dict | list[dict] | list:
+    """
+    Actually get the resource, and retrying in case the token has been invalidated too earlier
+    """
+    token = get_token(cinema_details)
+    response = requests.get(
+        url=build_url(cinema_details.cinemaUrl, resource, pattern_values), headers=headers(token), params=params
+    )
     _check_response_is_ok(response, token, f"GET {resource}")
-
     return response.json()
 
 
 def put_resource(cinema_str_id: str, resource: ResourceBoost, body: BaseModel) -> dict | list[dict] | list | None:
     cinema_details = providers_repository.get_boost_cinema_details(cinema_str_id)
-    token = cinema_details.token if check_token_validity(cinema_details) else login(cinema_details)
-    assert token  # for typing
+
+    return _perform_put_resource(resource, cinema_details, body)
+
+
+@retry(
+    exception=BoostInvalidTokenException,
+    exception_handler=invalid_token_handler,
+    max_attempts=ATTEMPTS_LIMIT,
+    logger=logger,
+)
+def _perform_put_resource(
+    resource: ResourceBoost, cinema_details: BoostCinemaDetails, body: BaseModel
+) -> dict | list[dict] | list | None:
+    """
+    Actually put the resource, and retrying in case the token has been invalidated too early.
+    """
+    token = get_token(cinema_details)
     response = requests.put(
         url=build_url(cinema_details.cinemaUrl, resource), headers=headers(token), data=body.json(by_alias=True)
     )
-
     _check_response_is_ok(response, token, f"PUT {resource}")
-
     response_headers = response.headers.get("Content-Type")
+    content = None
     if response_headers and "application/json" in response_headers:
-        return response.json()
-    return None
+        content = response.json()
+    return content
 
 
 def post_resource(cinema_str_id: str, resource: ResourceBoost, body: BaseModel) -> dict | list[dict] | list | None:
     cinema_details = providers_repository.get_boost_cinema_details(cinema_str_id)
-    token = cinema_details.token if check_token_validity(cinema_details) else login(cinema_details)
-    assert token  # for typing
+
+    return _perform_post_resource(resource, cinema_details, body)
+
+
+@retry(
+    exception=BoostInvalidTokenException,
+    exception_handler=invalid_token_handler,
+    max_attempts=ATTEMPTS_LIMIT,
+    logger=logger,
+)
+def _perform_post_resource(
+    resource: ResourceBoost, cinema_details: BoostCinemaDetails, body: BaseModel
+) -> dict | list[dict] | list | None:
+    token = get_token(cinema_details)
     response = requests.post(
         url=build_url(cinema_details.cinemaUrl, resource), headers=headers(token), data=body.json(by_alias=True)
     )
-
     _check_response_is_ok(response, token, f"POST {resource}")
-
     response_headers = response.headers.get("Content-Type")
+    content = None
     if response_headers and "application/json" in response_headers:
-        return response.json()
-    return None
+        content = response.json()
+    return content
 
 
 def get_movie_poster_from_api(image_url: str) -> bytes:
@@ -158,6 +214,8 @@ def _check_response_is_ok(response: requests.Response, cinema_api_token: str | N
         reason = _extract_reason_from_response(response)
         message = _extract_message_from_response(response)
         error_message = _filter_token(reason, cinema_api_token)
+        if response.status_code == 401 and message == "Invalid JWT Token":
+            raise BoostInvalidTokenException("Boost token is invalid")
         raise BoostAPIException(f"Error on Boost API on {request_detail} : {error_message} - {message}")
 
 

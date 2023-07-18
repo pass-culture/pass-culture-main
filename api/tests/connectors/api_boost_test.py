@@ -3,6 +3,7 @@ import datetime
 from freezegun import freeze_time
 import pytest
 
+from pcapi import settings
 from pcapi.connectors import boost
 import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
 import pcapi.core.providers.factories as providers_factories
@@ -34,8 +35,9 @@ class BoostLoginTest:
         assert requests_mock.last_request.json() == {
             "password": cinema_details.password,
             "username": cinema_details.username,
+            "stationName": f"pcapi - {settings.ENV}",
         }
-        assert requests_mock.last_request.url == "https://cinema.example.com/api/vendors/login?ignore_device=False"
+        assert requests_mock.last_request.url == "https://cinema.example.com/api/vendors/login?ignore_device=True"
         assert token == cinema_details.token == "new-token"
         assert cinema_details.tokenExpirationDate == datetime.datetime(2022, 10, 13, 17, 9, 25)
 
@@ -54,18 +56,19 @@ class BoostLoginTest:
         assert requests_mock.last_request.json() == {
             "password": cinema_details.password,
             "username": cinema_details.username,
+            "stationName": f"pcapi - {settings.ENV}",
         }
-        assert requests_mock.last_request.url == "https://cinema.example.com/api/vendors/login?ignore_device=False"
+        assert requests_mock.last_request.url == "https://cinema.example.com/api/vendors/login?ignore_device=True"
         assert cinema_details.token == "old-token"
         assert cinema_details.tokenExpirationDate == datetime.datetime(2022, 10, 1)
         assert (
-            str(exc.value) == "Unexpected 400 response from Boost API on "
-            "https://cinema.example.com/api/vendors/login?ignore_device=False: Vendor login failed. Wrong password!"
+            str(exc.value) == "Unexpected 400 response from Boost login API on "
+            "https://cinema.example.com/api/vendors/login?ignore_device=True: Vendor login failed. Wrong password!"
         )
 
 
 class BoostGetResourceTest:
-    def test_with_valid_stored_token(self, requests_mock):
+    def test_with_valid_non_expired_token(self, requests_mock):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(
             cinemaUrl="https://cinema.example.com/",
             token="dG90bw==",
@@ -82,7 +85,7 @@ class BoostGetResourceTest:
         assert get_adapter.last_request.headers["Authorization"] == "Bearer dG90bw=="
         assert json_data == {"key": "value"}
 
-    def test_without_valid_stored_token(self, requests_mock):
+    def test_with_expired_stored_token(self, requests_mock):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(
             cinemaUrl="https://cinema.example.com/",
             token="old-token",
@@ -98,6 +101,36 @@ class BoostGetResourceTest:
         json_data = boost.get_resource(cinema_str_id, resource)
 
         assert login_adapter.call_count == 1
+        assert get_adapter.last_request.headers["Authorization"] == "Bearer new-token"
+        assert json_data == response_data
+
+    def test_with_non_expired_invalid_token(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(
+            cinemaUrl="https://cinema.example.com/",
+            token="invalid-token",
+            tokenExpirationDate=datetime.datetime.utcnow() + datetime.timedelta(hours=24),
+        )
+        resource = boost.ResourceBoost.EXAMPLE
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        invalid_token_response_json = {
+            "code": 401,
+            "message": "Invalid JWT Token",
+        }
+        response_data = {"key": "value"}
+        get_adapter = requests_mock.get(
+            "https://cinema.example.com/example",
+            [
+                {"json": invalid_token_response_json, "status_code": 401},
+                {"json": response_data, "status_code": 200},
+            ],
+        )
+        login_response_json = {"code": 200, "message": "Login successful", "token": "new-token"}
+        login_adapter = requests_mock.post("https://cinema.example.com/api/vendors/login", json=login_response_json)
+
+        json_data = boost.get_resource(cinema_str_id, resource)
+
+        assert login_adapter.call_count == 1
+        assert get_adapter.call_count == 2
         assert get_adapter.last_request.headers["Authorization"] == "Bearer new-token"
         assert json_data == response_data
 
@@ -248,6 +281,41 @@ class BoostPostResourceTest:
             == str(exc.value)
         )
 
+    def test_with_non_expired_invalid_token(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(
+            cinemaUrl="https://cinema.example.com/",
+            token="invalid-token",
+            tokenExpirationDate=datetime.datetime.utcnow() + datetime.timedelta(hours=24),
+        )
+        resource = boost.ResourceBoost.EXAMPLE
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        invalid_token_response_json = {
+            "code": 401,
+            "message": "Invalid JWT Token",
+        }
+        expected_response = {"key": "value"}
+        get_adapter = requests_mock.post(
+            "https://cinema.example.com/example",
+            [
+                {"json": invalid_token_response_json, "status_code": 401},
+                {
+                    "json": expected_response,
+                    "status_code": 204,
+                    "headers": {"Content-Type": "application/json"},
+                },
+            ],
+        )
+        login_response_json = {"code": 200, "message": "Login successful", "token": "new-token"}
+        login_adapter = requests_mock.post("https://cinema.example.com/api/vendors/login", json=login_response_json)
+
+        body = BaseModel(key=1)
+        json_data = boost.post_resource(cinema_str_id, resource, body)
+
+        assert login_adapter.call_count == 1
+        assert get_adapter.call_count == 2
+        assert get_adapter.last_request.headers["Authorization"] == "Bearer new-token"
+        assert json_data == expected_response
+
 
 class BoostPutResourceTest:
     def test_with_valid_stored_token(self, requests_mock):
@@ -348,3 +416,38 @@ class BoostPutResourceTest:
             "Error on Boost API on PUT ResourceBoost.EXAMPLE : Expectation failed - Why must you fail me so often ?"
             == str(exc.value)
         )
+
+    def test_with_non_expired_invalid_token(self, requests_mock):
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(
+            cinemaUrl="https://cinema.example.com/",
+            token="invalid-token",
+            tokenExpirationDate=datetime.datetime.utcnow() + datetime.timedelta(hours=24),
+        )
+        resource = boost.ResourceBoost.EXAMPLE
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        invalid_token_response_json = {
+            "code": 401,
+            "message": "Invalid JWT Token",
+        }
+        expected_response = {"message": "OK"}
+        get_adapter = requests_mock.put(
+            "https://cinema.example.com/example",
+            [
+                {"json": invalid_token_response_json, "status_code": 401},
+                {
+                    "json": expected_response,
+                    "status_code": 204,
+                    "headers": {"Content-Type": "application/json"},
+                },
+            ],
+        )
+        login_response_json = {"code": 200, "message": "Login successful", "token": "new-token"}
+        login_adapter = requests_mock.post("https://cinema.example.com/api/vendors/login", json=login_response_json)
+
+        body = BaseModel(key=1)
+        json_data = boost.put_resource(cinema_str_id, resource, body)
+
+        assert login_adapter.call_count == 1
+        assert get_adapter.call_count == 2
+        assert get_adapter.last_request.headers["Authorization"] == "Bearer new-token"
+        assert json_data == expected_response
