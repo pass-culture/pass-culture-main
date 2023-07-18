@@ -4,16 +4,19 @@ import enum
 import logging
 
 from flask import current_app as app
+import jwt
 import sqlalchemy as sqla
 
 from pcapi import settings
+from pcapi.core import token as token_utils
 from pcapi.core.mails import transactional as transactional_mails
+from pcapi.core.token import Token
 from pcapi.core.users import api
 from pcapi.core.users import constants
 from pcapi.core.users import exceptions
 from pcapi.core.users import models
 from pcapi.core.users import repository as users_repository
-from pcapi.core.users.utils import encode_jwt_payload
+from pcapi.core.users import utils
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
@@ -59,20 +62,25 @@ def generate_and_send_beneficiary_confirmation_email_for_email_change(user: mode
 
     expiration_date = generate_email_change_token_expiration_date()
 
-    token = generate_email_change_token(user, new_email, expiration_date, TokenType.CONFIRMATION)
+    encoded_token = Token.create(
+        token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION,
+        constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
+        user.id,
+        {"new_email": new_email},
+    ).encoded_token
     check_email_address_does_not_exist(new_email)
 
     link_for_email_change_confirmation = _build_link_for_email_change_action(
         EmailChangeAction.CONFIRMATION,
         new_email,
         expiration_date,
-        token=token,
+        token=encoded_token,
     )
     link_for_email_change_cancellation = _build_link_for_email_change_action(
         EmailChangeAction.CANCELLATION,
         new_email,
         expiration_date,
-        token=token,
+        token=encoded_token,
     )
     return transactional_mails.send_confirmation_email_change_email(
         user,
@@ -121,22 +129,37 @@ def _expire_token(user: models.User, token_type: TokenType) -> None:
     app.redis_client.delete(token_key)  # type: ignore [attr-defined]
 
 
-def confirm_email_update_request(token: str) -> None:
+def confirm_email_update_request(encoded_token: str) -> None:
     """Confirm the email update request for the given user"""
-
-    payload = ChangeEmailTokenContent.from_token(token)
-    current_email = payload.current_email
-    new_email = payload.new_email
-    user = users_repository.find_user_by_email(current_email)
+    try:
+        jwt_payload = utils.decode_jwt_token(encoded_token)
+    except jwt.PyJWTError:
+        raise exceptions.InvalidToken()
+    new_token_type = "token_type" in jwt_payload
+    if new_token_type:  # nouveau type de tokens celui de pcapi.core.token
+        token = Token.load_without_checking(encoded_token)
+        user = models.User.query.get(token.user_id)
+        new_email = token.data["new_email"]
+    else:  # old token type. should be removed when old token type is removed
+        payload = ChangeEmailTokenContent.from_token(encoded_token)
+        current_email = payload.current_email
+        new_email = payload.new_email
+        user = users_repository.find_user_by_email(current_email)
     if not user:
         raise exceptions.InvalidEmailError()
-    _check_token(user, token, TokenType.CONFIRMATION)
+    if new_token_type:
+        token.check(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION)
+    else:  # should be removed when old token type is removed
+        _check_token(user, encoded_token, TokenType.CONFIRMATION)
     check_email_address_does_not_exist(new_email)
     try:
         generate_and_send_beneficiary_validation_email_for_email_change(user, new_email)
         with transaction():
             models.UserEmailHistory.build_confirmation(user, new_email)
-        _expire_token(user, TokenType.CONFIRMATION)
+        if new_token_type:
+            token.expire()
+        else:  # should be removed when old token type is removed
+            _expire_token(user, TokenType.CONFIRMATION)
 
     except Exception as error:
         raise ApiErrors(
@@ -144,22 +167,38 @@ def confirm_email_update_request(token: str) -> None:
         )
 
 
-def cancel_email_update_request(token: str) -> None:
+def cancel_email_update_request(encoded_token: str) -> None:
     """Cancel the email update request for the given user"""
 
-    payload = ChangeEmailTokenContent.from_token(token)
-    current_email = payload.current_email
-    new_email = payload.new_email
-    user = users_repository.find_user_by_email(current_email)
+    try:
+        jwt_payload = utils.decode_jwt_token(encoded_token)
+    except jwt.PyJWTError:
+        raise exceptions.InvalidToken()
+    new_token_type = "token_type" in jwt_payload
+    if new_token_type:  # nouveau type de tokens celui de pcapi.core.token
+        token = Token.load_without_checking(encoded_token)
+        user = models.User.query.get(token.user_id)
+        new_email = token.data["new_email"]
+    else:  # old token type. should be removed when old token type is removed
+        payload = ChangeEmailTokenContent.from_token(encoded_token)
+        current_email = payload.current_email
+        new_email = payload.new_email
+        user = users_repository.find_user_by_email(current_email)
     if not user:
         raise exceptions.InvalidEmailError()
-    _check_token(user, token, TokenType.CONFIRMATION)
+    if new_token_type:
+        token.check(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION)
+    else:  # should be removed when old token type is removed
+        _check_token(user, encoded_token, TokenType.CONFIRMATION)
     api.suspend_account(
         user, constants.SuspensionReason.FRAUD_SUSPICION, user, "Suspension suite à un changement d'email annulé"
     )
     transactional_mails.send_email_update_cancellation_email(user)
     models.UserEmailHistory.build_cancellation(user, new_email)
-    _expire_token(user, TokenType.CONFIRMATION)
+    if new_token_type:
+        token.expire()
+    else:  # should be removed when old token type is removed
+        _expire_token(user, TokenType.CONFIRMATION)
 
 
 def validate_email_update_request(
@@ -279,28 +318,26 @@ def get_token_key(user: models.User, token_type: TokenType) -> str:
             raise ValueError(f"Invalid token type: {token_type}")
 
 
-def token_exists(user: models.User, token_type: TokenType) -> bool:
-    """Check if there is an active confirmation token for the user"""
-    key = get_token_key(user, token_type)
-    return app.redis_client.exists(key)  # type: ignore [attr-defined]
-
-
 def generate_email_change_token(
     user: models.User, new_email: str, expiration_date: datetime, token_type: TokenType
 ) -> str:
-    token = encode_jwt_payload({"current_email": user.email, "new_email": new_email}, expiration_date)
+    token = utils.encode_jwt_payload({"current_email": user.email, "new_email": new_email}, expiration_date)
     key = get_token_key(user, token_type)
     app.redis_client.set(key, token, ex=constants.EMAIL_CHANGE_TOKEN_LIFE_TIME)  # type: ignore [attr-defined]
     return token
 
 
 def get_active_token_expiration(user: models.User) -> datetime | None:
-    confirmation_key = get_token_key(user, TokenType.CONFIRMATION)
-    validation_key = get_token_key(user, TokenType.VALIDATION)
-    ttl = max(app.redis_client.ttl(confirmation_key), app.redis_client.ttl(validation_key))  # type: ignore [attr-defined]
-    if ttl < 0:
-        return None
-    return datetime.utcnow() + timedelta(seconds=ttl)
+    """returns the expiration date of the active token (confirmation or validation) or none if no ttl or no token exists"""
+    ttl = app.redis_client.ttl(get_token_key(user, TokenType.CONFIRMATION))  # type: ignore [attr-defined]
+    if ttl > 0:
+        return datetime.utcnow() + timedelta(seconds=ttl)
+    ttl = app.redis_client.ttl(get_token_key(user, TokenType.VALIDATION))  # type: ignore [attr-defined]
+    if ttl > 0:
+        return datetime.utcnow() + timedelta(seconds=ttl)
+    confirmation_token_expiration = Token.get_expiration_date(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id)
+    validation_token_expiration = Token.get_expiration_date(token_utils.TokenType.EMAIL_CHANGE_VALIDATION, user.id)
+    return confirmation_token_expiration or validation_token_expiration
 
 
 def generate_email_change_token_expiration_date() -> datetime:
@@ -328,7 +365,12 @@ def check_email_address_does_not_exist(email: str) -> None:
 
 def check_no_ongoing_email_update_request(user: models.User) -> None:
     """Raise error if user has an ongoing email update request"""
-    if token_exists(user, TokenType.CONFIRMATION) or token_exists(user, TokenType.VALIDATION):
+    if (
+        Token.token_exists(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id)
+        or Token.token_exists(token_utils.TokenType.EMAIL_CHANGE_VALIDATION, user.id)
+        or app.redis_client.exists(f"update_email_confirmation_token_{user.id}")  # type: ignore [attr-defined]  #FIXME : remove this after the old tokens disappear https://passculture.atlassian.net/browse/PC-23343
+        or app.redis_client.exists(f"update_email_validation_token_{user.id}")  # type: ignore [attr-defined]  #FIXME : remove this after the old tokens disappear https://passculture.atlassian.net/browse/PC-23343
+    ):
         raise exceptions.EmailUpdateTokenExists()
 
 
