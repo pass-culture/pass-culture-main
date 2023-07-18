@@ -41,6 +41,23 @@ class CreateTagTest(PostEndpointHelper):
         assert not tag.startDateTime
         assert not tag.endDateTime
 
+    def test_create_tag_with_categories(self, authenticated_client):
+        form = {"name": "my-tag", "description": "description", "categories": [2]}
+
+        response = self.post_to_endpoint(authenticated_client, form=form)
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_v3_web.tags.list_tags", _external=True)
+
+        tag = criteria_models.Criterion.query.first()
+
+        assert tag.name == "my-tag"
+        assert tag.description == "description"
+        assert not tag.startDateTime
+        assert not tag.endDateTime
+        assert len(tag.categories) == 1
+        assert tag.categories[0].label == "Comptage partenaire EPN"
+
 
 class DeleteTagTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.tags.delete_tag"
@@ -78,6 +95,7 @@ class UpdateTagTest(PostEndpointHelper):
             "description": new_tag_description,
             "start_date": new_start_date,
             "end_date": new_end_date,
+            "categories": [2, 3],
         }
 
         response = self.post_to_endpoint(authenticated_client, tag_id=tag.id, form=form)
@@ -91,6 +109,9 @@ class UpdateTagTest(PostEndpointHelper):
         assert tag.description == new_tag_description
         assert tag.startDateTime.date() == new_start_date
         assert tag.endDateTime.date() == new_end_date
+        assert len(tag.categories) == 2
+        assert tag.categories[0].label == "Comptage partenaire EPN"
+        assert tag.categories[1].label == "Playlist lieux et offres"
 
 
 class ListTagsTest(GetEndpointHelper):

@@ -24,6 +24,10 @@ tags_blueprint = utils.child_backoffice_blueprint(
 )
 
 
+def get_tags_categories() -> list[criteria_models.CriterionCategory]:
+    return criteria_models.CriterionCategory.query.order_by(criteria_models.CriterionCategory.label).all()
+
+
 @tags_blueprint.route("", methods=["GET"])
 def list_tags() -> utils.BackofficeResponse:
     form = SearchTagForm(formdata=utils.get_query_params())
@@ -50,6 +54,7 @@ def list_tags() -> utils.BackofficeResponse:
 @tags_blueprint.route("/create", methods=["POST"])
 def create_tag() -> utils.BackofficeResponse:
     form = tags_forms.EditTagForm()
+    form.categories.choices = [(cat.id, cat.label) for cat in get_tags_categories()]
 
     if not form.validate():
         error_msg = utils.build_form_error_msg(form)
@@ -62,6 +67,7 @@ def create_tag() -> utils.BackofficeResponse:
             description=form.description.data,
             startDateTime=form.start_date.data,
             endDateTime=form.end_date.data,
+            categories=[cat for cat in get_tags_categories() if cat.id in form.categories.data],
         )
 
         db.session.add(tag)
@@ -78,6 +84,7 @@ def create_tag() -> utils.BackofficeResponse:
 @tags_blueprint.route("/tags/new", methods=["GET"])
 def get_create_tag_form() -> utils.BackofficeResponse:
     form = tags_forms.EditTagForm()
+    form.categories.choices = [(cat.id, cat.label) for cat in get_tags_categories()]
 
     return render_template(
         "components/turbo/modal_form.html",
@@ -93,6 +100,7 @@ def get_create_tag_form() -> utils.BackofficeResponse:
 def update_tag(tag_id: int) -> utils.BackofficeResponse:
     tag = criteria_models.Criterion.query.get_or_404(tag_id)
     form = tags_forms.EditTagForm()
+    form.categories.choices = [(cat.id, cat.label) for cat in get_tags_categories()]
 
     if not form.validate():
         error_msg = utils.build_form_error_msg(form)
@@ -103,6 +111,7 @@ def update_tag(tag_id: int) -> utils.BackofficeResponse:
     tag.description = form.description.data
     tag.startDateTime = form.start_date.data
     tag.endDateTime = form.end_date.data
+    tag.categories = [cat for cat in get_tags_categories() if cat.id in form.categories.data]
 
     try:
         db.session.add(tag)
@@ -126,6 +135,8 @@ def get_update_tag_form(tag_id: int) -> utils.BackofficeResponse:
         start_date=tag.startDateTime.date() if tag.startDateTime else None,
         end_date=tag.endDateTime.date() if tag.endDateTime else None,
     )
+    form.categories.choices = [(cat.id, cat.label or cat.name) for cat in get_tags_categories()]
+    form.categories.data = [cat.id for cat in tag.categories]
 
     return render_template(
         "components/turbo/modal_form.html",
@@ -160,7 +171,7 @@ def get_delete_tag_form(tag_id: int) -> utils.BackofficeResponse:
 
     escaped_name = escape(tag.name)
     information = f"""
-Le tag <strong>{ escaped_name }</strong> sera définitivement
+Le tag <strong>{escaped_name}</strong> sera définitivement
 supprimé de la base de données et retiré de toutes les offres et lieux 
 auxquels il est associé. Veuillez confirmer ce choix.
 """
