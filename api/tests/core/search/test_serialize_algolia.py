@@ -275,6 +275,7 @@ def test_serialize_collective_offer():
     collective_offer = educational_factories.CollectiveOfferFactory(
         dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
         name="Titre formidable",
+        description="description formidable",
         students=[StudentLevels.CAP1, StudentLevels.CAP2],
         subcategoryId=subcategories.LIVRE_PAPIER.id,
         venue__postalCode="86140",
@@ -306,6 +307,7 @@ def test_serialize_collective_offer():
             "schoolInterventionArea": None,
             "eventAddressType": OfferAddressType.OTHER.value,
             "beginningDatetime": 1641034800.0,
+            "description": collective_offer.description,
         },
         "offerer": {
             "name": "Les Librairies Associées",
@@ -337,6 +339,7 @@ def test_serialize_collective_offer_template():
     collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
         dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
         name="Titre formidable",
+        description="description formidable",
         students=[StudentLevels.CAP1, StudentLevels.CAP2],
         subcategoryId=subcategories.LIVRE_PAPIER.id,
         venue__postalCode="86140",
@@ -363,6 +366,7 @@ def test_serialize_collective_offer_template():
             "schoolInterventionArea": ["1", "90", "94"],
             "eventAddressType": OfferAddressType.SCHOOL.value,
             "beginningDatetime": 1641031200.0,
+            "description": collective_offer_template.description,
         },
         "offerer": {
             "name": "Les Librairies Associées",
