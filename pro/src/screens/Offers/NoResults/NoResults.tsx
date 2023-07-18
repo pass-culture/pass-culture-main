@@ -20,7 +20,7 @@ const NoResults = ({ resetFilters, audience }: NoResultsProps): JSX.Element => (
       className={styles['search-no-results-icon']}
       width="124"
     />
-    <p className={styles['search-no-results-text']}>
+    <p className={styles['search-no-results-title4']}>
       Aucune offre trouvée pour votre recherche
     </p>
     <p className={styles['search-no-results-text']}>
