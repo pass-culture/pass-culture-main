@@ -55,16 +55,24 @@ jobs:
       - name: Load sandbox
         run: ../pc sandbox -n industrial
       # Doc : https://github.com/cypress-io/github-action
-      - name: Cypress run
-        uses: cypress-io/github-action@v5
-        with:
-          build: yarn build:testing
-          start: yarn serve
-          config: baseUrl=http://localhost:3001
-          browser: chrome
-          wait-on: "http://localhost:3001,http://localhost/health/api,http://localhost/health/database"
-          wait-on-timeout: 2000
-          working-directory: pro
+      - name: Load front
+        run: ../pc start-pro &
+
+      - name: Install dependancies
+        run: yarn
+
+      - name: Run cypress test
+        run: yarn cypress run --browser chrome
+      #- name: Cypress run
+      #  uses: cypress-io/github-action@v5
+      #  with:
+      #    build: yarn build:development
+      #    start: yarn serve
+      #    config: baseUrl=http://localhost:3001
+      #    browser: chrome
+      #    wait-on: "http://localhost:3001,http://localhost/health/api,http://localhost/health/database"
+      #    wait-on-timeout: 2000
+      #    working-directory: pro
       - name: Archive E2E results
         if: failure()
         uses: actions/upload-artifact@v3
