@@ -96,7 +96,7 @@
     "@mui/material": "^5.13.7",
     "@storybook/addon-a11y": "^7.0.27",
     "@storybook/preset-scss": "^1.0.3",
-    "@storybook/react": "^7.0.27",
+    "@storybook/react": "^7.1.0",
     "@storybook/react-webpack5": "^7.0.27",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
