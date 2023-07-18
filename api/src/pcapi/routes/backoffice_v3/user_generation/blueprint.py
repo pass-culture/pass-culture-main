@@ -1,12 +1,17 @@
+import datetime
+from urllib.parse import urlencode
+
 from flask import flash
 from flask import redirect
 from flask import render_template
 from flask import url_for
 from werkzeug.exceptions import NotFound
 
+from pcapi import settings
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
+from pcapi.core.users.api import generate_and_save_token
 import pcapi.core.users.generator as users_generator
 from pcapi.routes.backoffice_v3 import blueprint
 from pcapi.routes.backoffice_v3 import utils
@@ -19,9 +24,20 @@ from . import forms
 def get_generated_user() -> utils.BackofficeResponse:
     form = forms.UserGeneratorForm()
     user = _get_user_if_exists(utils.get_query_params().get("userId"))
+    token = utils.get_query_params().get("accessToken")
+    link_to_app = None
+    if token:
+        path = "signup-confirmation"
+        universal_link_url = f"{settings.WEBAPP_V2_URL}/{path}"
+        params = {"token": token}
+        link_to_app = universal_link_url + f"?{urlencode(params)}"
 
     return render_template(
-        "admin/users_generator.html", user=user, form=form, dst=url_for("backoffice_v3_web.generate_user")
+        "admin/users_generator.html",
+        link_to_app=link_to_app,
+        user=user,
+        form=form,
+        dst=url_for("backoffice_v3_web.generate_user"),
     )
 
 
@@ -61,7 +77,12 @@ def generate_user() -> utils.BackofficeResponse:
     except users_exceptions.UserGenerationForbiddenException:
         raise NotFound()
 
-    return redirect(url_for("backoffice_v3_web.get_generated_user", userId=user.id), code=303)
+    token = generate_and_save_token(
+        user,
+        users_models.TokenType.EMAIL_VALIDATION,
+        datetime.datetime.utcnow() + users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
+    )
+    return redirect(url_for("backoffice_v3_web.get_generated_user", userId=user.id, accessToken=token.value), code=303)
 
 
 def _get_user_if_exists(user_id: str | None) -> users_models.User | None:
