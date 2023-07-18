@@ -50,8 +50,12 @@ const buildInitialValues = (
   }
 }
 
+interface ImageUploaderProps {
+  isCreatingVenue: boolean
+}
+
 /* istanbul ignore next: DEBT, TO FIX */
-const ImageUploaderVenue = () => {
+const ImageUploaderVenue = ({ isCreatingVenue }: ImageUploaderProps) => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const {
@@ -105,6 +109,7 @@ const ImageUploaderVenue = () => {
     logEvent?.(Events.CLICKED_ADD_IMAGE, {
       venueId: venueId,
       imageType: UploaderModeEnum.VENUE,
+      isEdition: !isCreatingVenue,
     })
   }
 
