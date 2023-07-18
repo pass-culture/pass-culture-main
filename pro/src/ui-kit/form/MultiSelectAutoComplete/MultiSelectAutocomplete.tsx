@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 import { SelectOption } from 'custom_types/form'
 import Tag from 'ui-kit/Tag'
+import { getLabelString } from 'utils/getLabelString'
 
 import { BaseInput } from '../shared'
 import AutocompleteList from '../shared/AutocompleteList'
@@ -128,7 +129,9 @@ const MultiSelectAutocomplete = ({
           }}
           placeholder={
             placeholder ??
-            (field.value.length > 1 && pluralLabel ? pluralLabel : label)
+            (field.value.length > 1 && pluralLabel
+              ? pluralLabel
+              : getLabelString(label))
           }
           style={{ paddingLeft: field.value.length > 0 ? '2.2rem' : '1rem' }}
           className={cx({

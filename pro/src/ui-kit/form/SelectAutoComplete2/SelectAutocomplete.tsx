@@ -3,6 +3,7 @@ import { useField, useFormikContext } from 'formik'
 import React, { KeyboardEventHandler, useEffect, useRef, useState } from 'react'
 
 import { SelectOption } from 'custom_types/form'
+import { getLabelString } from 'utils/getLabelString'
 
 import { BaseInput } from '../shared'
 import FieldLayout from '../shared/FieldLayout'
@@ -222,7 +223,7 @@ const SelectAutocomplete = ({
             'aria-activedescendant': `option-display-${filteredOptions[hoveredOptionIndex]?.value}`,
           })}
           onFocus={openField}
-          placeholder={placeholderDisplay}
+          placeholder={getLabelString(placeholderDisplay)}
           style={{
             paddingLeft: multi && field.value.length > 0 ? '2.2rem' : '1rem',
           }}
