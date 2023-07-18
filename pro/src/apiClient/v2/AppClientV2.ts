@@ -7,14 +7,14 @@ import type { OpenAPIConfig } from './core/OpenAPI';
 import { FetchHttpRequest } from './core/FetchHttpRequest';
 
 import { ApiContremarqueService } from './services/ApiContremarqueService';
-import { ApiOffresCollectivesBetaService } from './services/ApiOffresCollectivesBetaService';
+import { ApiOffresCollectivesService } from './services/ApiOffresCollectivesService';
 
 type HttpRequestConstructor = new (config: OpenAPIConfig) => BaseHttpRequest;
 
 export class AppClientV2 {
 
   public readonly apiContremarque: ApiContremarqueService;
-  public readonly apiOffresCollectivesBeta: ApiOffresCollectivesBetaService;
+  public readonly apiOffresCollectives: ApiOffresCollectivesService;
 
   public readonly request: BaseHttpRequest;
 
@@ -32,7 +32,7 @@ export class AppClientV2 {
     });
 
     this.apiContremarque = new ApiContremarqueService(this.request);
-    this.apiOffresCollectivesBeta = new ApiOffresCollectivesBetaService(this.request);
+    this.apiOffresCollectives = new ApiOffresCollectivesService(this.request);
   }
 }
 
