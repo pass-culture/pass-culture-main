@@ -3,9 +3,10 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { AdageHeaderLink } from './AdageHeaderLink'
+import type { AdageHeaderLink } from './AdageHeaderLink';
 
 export type AdageHeaderLogBody = {
-  header_link_name: AdageHeaderLink
-  iframeFrom: string
-}
+  header_link_name: AdageHeaderLink;
+  iframeFrom: string;
+};
+
