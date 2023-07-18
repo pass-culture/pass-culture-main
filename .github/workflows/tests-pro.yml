@@ -10,27 +10,18 @@ defaults:
     working-directory: pro
 
 jobs:
-  read-node-version:
-    name: "Read node version from .nvmrc"
-    runs-on: [self-hosted, linux, x64]
-    outputs:
-      node_version: ${{ steps.read-node-version.outputs.node_version }}
-    steps:
-      - uses: actions/checkout@v3
-      - id: read-node-version
-        run: echo "node_version=$(cat .nvmrc | sed -r -e 's/v?(.+)/\1/')" >> $GITHUB_OUTPUT
-
   tests-pro-e2e-tests:
     name: "E2E tests"
     runs-on: [self-hosted, linux, x64]
     permissions:
       id-token: write
       contents: read
-    needs: read-node-version
     steps:
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.ref }}
+      - run: |
+          echo "node_version=$(cat .nvmrc | sed -r -e 's/v?(.+)/\1/')" >> $GITHUB_ENV
       - id: openid-auth
         name: "OpenID Connect Authentication"
         uses: 'google-github-actions/auth@v1'
@@ -49,14 +40,14 @@ jobs:
       - if: ${{ env.use_cache == false }}
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
+          node-version: ${{ env.node_version }}
       - name: Install yq
         run: |
           sudo wget https://github.com/mikefarah/yq/releases/download/v4.34.1/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
       - name: Run API server
         run: |
           cd .. 
-          cat docker-compose-app.yml | yq 'del(.services.flask.build)' | yq '.services.flask += {"image": "europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-tests:${{ github.sha }}"}' | docker-compose -f - up -d
+          cat docker-compose-app.yml | yq 'del(.services.flask.build)' | yq '.services.flask += {"image": "europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-tests:${{ github.sha }}"}' | yq 'del(.services.flask.command)' | yq '.services.flask += {"entrypoint": "./start-api-when-database-is-ready.sh" }' | docker-compose -f - up -d
       - name: Wait for migrations to be run
         uses: iFaxity/wait-on-action@v1
         with:
