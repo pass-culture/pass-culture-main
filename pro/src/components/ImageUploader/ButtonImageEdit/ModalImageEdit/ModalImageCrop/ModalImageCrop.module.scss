@@ -9,6 +9,7 @@
   flex-direction: column;
   justify-content: center;
   gap: rem.torem(8px);
+
   // UI width minus dialog padding to reach 656px
   min-width: calc(rem.torem(656px) - size.$dialog-box-padding * 2);
 
