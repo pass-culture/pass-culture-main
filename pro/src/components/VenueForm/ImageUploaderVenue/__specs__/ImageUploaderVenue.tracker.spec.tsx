@@ -30,7 +30,7 @@ const renderImageUploaderVenue = () =>
       onSubmit={jest.fn()}
     >
       <Form>
-        <ImageUploaderVenue />
+        <ImageUploaderVenue isCreatingVenue={false} />
       </Form>
     </Formik>
   )
@@ -46,11 +46,14 @@ describe('ImageUploaderVenue::tracker', () => {
   it('should log add image event on click', async () => {
     renderImageUploaderVenue()
 
-    await userEvent.click(screen.getByTestId('add-image-button'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Ajouter une image' })
+    )
 
     expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_ADD_IMAGE, {
       venueId: 1,
       imageType: UploaderModeEnum.VENUE,
+      isEdition: true,
     })
   })
 })

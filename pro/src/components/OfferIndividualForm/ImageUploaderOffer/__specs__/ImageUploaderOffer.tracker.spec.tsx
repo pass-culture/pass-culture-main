@@ -5,8 +5,8 @@ import React from 'react'
 
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import {
-  IOfferIndividualContext,
   OfferIndividualContext,
+  OfferIndividualContextValues,
 } from 'context/OfferIndividualContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
@@ -14,18 +14,18 @@ import { individualOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ImageUploaderOffer, {
-  IImageUploaderOfferProps,
+  ImageUploaderOfferProps,
 } from '../ImageUploaderOffer'
 
 const mockLogEvent = jest.fn()
 
-const renderImageUploaderVenue = (
-  props: IImageUploaderOfferProps,
-  contextOverride?: Partial<IOfferIndividualContext>
+const renderImageUploaderOffer = (
+  props: ImageUploaderOfferProps,
+  contextOverride?: Partial<OfferIndividualContextValues>
 ) => {
-  const contextValue: IOfferIndividualContext = {
-    offerId: 'OFFER_ID',
-    offer: individualOfferFactory({ id: 'OFFER_ID' }),
+  const contextValue: OfferIndividualContextValues = {
+    offerId: 12,
+    offer: individualOfferFactory({ id: 12 }),
     venueList: [],
     offererNames: [],
     categories: [],
@@ -62,7 +62,7 @@ const renderImageUploaderVenue = (
 }
 
 describe('ImageUploaderOffer::tracker', () => {
-  let props: IImageUploaderOfferProps
+  let props: ImageUploaderOfferProps
 
   beforeEach(() => {
     props = {
@@ -77,13 +77,16 @@ describe('ImageUploaderOffer::tracker', () => {
   })
 
   it('should log add image event on click', async () => {
-    renderImageUploaderVenue(props)
+    renderImageUploaderOffer(props)
 
-    await userEvent.click(screen.getByTestId('add-image-button'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Ajouter une image' })
+    )
 
     expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_ADD_IMAGE, {
-      offerId: 'OFFER_ID',
+      offerId: 12,
       imageType: UploaderModeEnum.OFFER,
+      isEdition: true,
     })
   })
 })
