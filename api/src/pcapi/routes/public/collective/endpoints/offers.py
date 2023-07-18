@@ -33,7 +33,7 @@ BASE_CODE_DESCRIPTIONS = {
 @blueprints.v2_prefixed_public_api.route("/collective/offers/", methods=["GET"])
 @spectree_serialize(
     api=blueprints.v2_prefixed_public_api_schema,
-    tags=["API offres collectives BETA"],
+    tags=["API offres collectives"],
     resp=SpectreeResponse(
         **(
             BASE_CODE_DESCRIPTIONS
@@ -74,7 +74,7 @@ def get_collective_offers_public(
 @blueprints.v2_prefixed_public_api.route("/collective/offers/<int:offer_id>", methods=["GET"])
 @spectree_serialize(
     api=blueprints.v2_prefixed_public_api_schema,
-    tags=["API offres collectives BETA"],
+    tags=["API offres collectives"],
     resp=SpectreeResponse(
         **(
             BASE_CODE_DESCRIPTIONS
@@ -135,7 +135,7 @@ def get_collective_offer_public(
 @blueprints.v2_prefixed_public_api.route("/collective/offers/", methods=["POST"])
 @spectree_serialize(
     api=blueprints.v2_prefixed_public_api_schema,
-    tags=["API offres collectives BETA"],
+    tags=["API offres collectives"],
     resp=SpectreeResponse(
         **(
             {
@@ -287,7 +287,7 @@ def post_collective_offer_public(
 @blueprints.v2_prefixed_public_api.route("/collective/offers/<int:offer_id>", methods=["PATCH"])
 @spectree_serialize(
     api=blueprints.v2_prefixed_public_api_schema,
-    tags=["API offres collectives BETA"],
+    tags=["API offres collectives"],
     resp=SpectreeResponse(
         **(
             {

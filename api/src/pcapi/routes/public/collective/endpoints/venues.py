@@ -16,7 +16,7 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 @blueprints.v2_prefixed_public_api.route("/collective/venues", methods=["GET"])
 @spectree_serialize(
     api=blueprints.v2_prefixed_public_api_schema,
-    tags=["API offres collectives BETA"],
+    tags=["API offres collectives"],
     resp=SpectreeResponse(
         **(
             {
