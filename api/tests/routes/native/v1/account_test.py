@@ -9,12 +9,14 @@ from urllib.parse import parse_qs
 from urllib.parse import urlparse
 
 from dateutil.relativedelta import relativedelta
+import fakeredis
 from freezegun.api import freeze_time
 import jwt
 import pytest
 
 from pcapi import settings
 from pcapi.core import testing
+from pcapi.core import token as token_utils
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.factories import CancelledBookingFactory
@@ -646,7 +648,7 @@ class UserProfileUpdateTest:
 
 
 class ConfirmUpdateUserEmailTest:
-    def _initialize_token(self, user, app, new_email):
+    def _initialize_token_old(self, user, app, new_email):
         expiration_date = datetime.utcnow() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
         token = encode_jwt_payload({"current_email": user.email, "new_email": new_email}, expiration_date)
         app.redis_client.set(
@@ -656,10 +658,22 @@ class ConfirmUpdateUserEmailTest:
         )
         return token
 
-    def test_can_confirm_email_update(self, client, app):
+    def _initialize_token(self, user, app, new_email):
+        return token_utils.Token.create(
+            type_=token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION,
+            ttl=users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
+            user_id=user.id,
+            data={"new_email": new_email},
+        ).encoded_token
+
+    @pytest.mark.parametrize(
+        "token_init",
+        [(_initialize_token), (_initialize_token_old)],
+    )
+    def test_can_confirm_email_update(self, client, app, token_init):
         user = users_factories.BeneficiaryGrant18Factory()
         email_update_request = users_factories.EmailUpdateEntryFactory(user=user)
-        token = self._initialize_token(user, app, email_update_request.newEmail)
+        token = token_init(self, user, app, email_update_request.newEmail)
 
         client.with_token(user.email)
         response = client.post("/native/v1/profile/email_update/confirm", json={"token": token})
@@ -681,19 +695,23 @@ class ConfirmUpdateUserEmailTest:
         assert {"new_email", "token", "expiration_timestamp"} <= base_url_params.keys()
         assert base_url_params["new_email"] == [email_update_request.newEmail]
 
-    def test_cannot_confirm_after_expiration(self, client, app):
+    mock_redis_client = fakeredis.FakeStrictRedis()
+
+    @pytest.mark.parametrize(
+        "token_init",
+        [(_initialize_token), (_initialize_token_old)],
+    )
+    def test_cannot_confirm_after_expiration(self, client, app, token_init):
         user = users_factories.BeneficiaryGrant18Factory()
         email_update_request = users_factories.EmailUpdateEntryFactory(user=user)
-        token = self._initialize_token(user, app, email_update_request.newEmail)
-
-        app.redis_client.expireat(
-            email_update.get_token_key(user, email_update.TokenType.CONFIRMATION),
-            datetime.utcnow() - timedelta(minutes=1),
-        )
-        client.with_token(user.email)
-        response = client.post("/native/v1/profile/email_update/confirm", json={"token": token})
-        assert response.status_code == 401
-        assert response.json["message"] == "aucune demande de changement d'email en cours"
+        with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
+            with freeze_time("2021-01-01"):
+                token = token_init(self, user, app, email_update_request.newEmail)
+            with freeze_time("2021-01-02"):
+                client.with_token(user.email)
+                response = client.post("/native/v1/profile/email_update/confirm", json={"token": token})
+                assert response.status_code == 401
+                assert response.json["message"] == "aucune demande de changement d'email en cours"
 
     def test_cannot_confirm_if_no_pending_email_update(self, client, app):
         user = users_factories.BeneficiaryGrant18Factory()
@@ -1053,11 +1071,13 @@ class GetEMailUpdateStatusTest:
         assert response.json["expired"] is True
         assert response.json["status"] == users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value
 
-    def test_assume_expired_if_no_token_expiration(self, app, client):
+    def test_assume_expired_if_no_token_expiration(
+        self, app, client
+    ):  # FIXME this is a unit test should be moved to test_update.py inside core
         user = users_factories.UserFactory(email=self.old_email)
         request_email_update(user, self.new_email, settings.TEST_DEFAULT_PASSWORD)
 
-        redis_key = email_update.get_token_key(user, email_update.TokenType.CONFIRMATION)
+        redis_key = token_utils.Token._get_redis_key(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id)  # type: ignore [attr-defined]
         redis_value = app.redis_client.get(redis_key)
         redis_expiration = app.redis_client.ttl(redis_key)
         app.redis_client.delete(redis_key)
@@ -1070,10 +1090,14 @@ class GetEMailUpdateStatusTest:
         assert response.json["expired"] is True
         assert response.json["status"] == users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value
 
-    def test_get_active_token_expiration_no_token(self):
+    def test_get_active_token_expiration_no_token(
+        self,
+    ):  # this is unit test should be moved to test_update.py inside core
         assert email_update.get_active_token_expiration(users_factories.UserFactory()) is None
 
-    def test_get_active_token_expiration_confirmation_token(self):
+    def test_get_active_token_expiration_confirmation_token(
+        self,
+    ):  # this is unit test should be moved to test_update.py inside core
         user = users_factories.UserFactory()
         expiration_date = datetime.utcnow() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
         email_update.generate_email_change_token(
@@ -1081,7 +1105,9 @@ class GetEMailUpdateStatusTest:
         )
         assert email_update.get_active_token_expiration(user) is not None
 
-    def test_get_active_token_expiration_validation_token(self):
+    def test_get_active_token_expiration_validation_token(
+        self,
+    ):  # this is unit test should be moved to test_update.py inside core
         user = users_factories.UserFactory()
         expiration_date = datetime.utcnow() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
         email_update.generate_email_change_token(
@@ -1142,28 +1168,51 @@ class ValidateEmailTest:
 
 
 class CancelEmailChangeTest:
-    def test_cancel_email_change(self, app, client):
-        user = users_factories.UserFactory()
-        expiration_date = datetime.utcnow() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
-        token = email_update.generate_email_change_token(
-            user, "example@example.com", expiration_date, email_update.TokenType.CONFIRMATION
+    def _initialize_token_old(self, user):
+        return email_update.generate_email_change_token(
+            user,
+            "example@example.com",
+            datetime.utcnow() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
+            email_update.TokenType.CONFIRMATION,
         )
+
+    def _initialize_token(self, user):
+        return token_utils.Token.create(
+            type_=token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION,
+            ttl=users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
+            user_id=user.id,
+            data={"new_email": "example@example.com"},
+        ).encoded_token
+
+    @pytest.mark.parametrize(
+        "token_init",
+        [(_initialize_token), (_initialize_token_old)],
+    )
+    def test_cancel_email_change(self, app, client, token_init):
+        user = users_factories.UserFactory()
+        token = token_init(self, user)
+
         response = client.post("/native/v1/profile/email_update/cancel", json={"token": token})
         assert response.status_code == 204
-        assert app.redis_client.get(email_update.get_token_key(user, email_update.TokenType.CONFIRMATION)) is None  # type: ignore [attr-defined]
+        assert app.redis_client.get(email_update.get_token_key(user, email_update.TokenType.CONFIRMATION)) is None  # type: ignore [attr-defined] #TODO change
         assert mails_testing.outbox[0].sent_data["params"]["FIRSTNAME"] == user.firstName
         assert get_email_update_latest_event(user).eventType == users_models.EmailHistoryEventTypeEnum.CANCELLATION
         assert user.account_state == users_models.AccountState.SUSPENDED
 
-    def test_cancel_email_change_expired_token(self, app, client):
-        user = users_factories.UserFactory()
-        expiration_date = datetime.utcnow() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
-        token = email_update.generate_email_change_token(
-            user, "example@example.com", expiration_date, email_update.TokenType.CONFIRMATION
-        )
-        app.redis_client.expireat(email_update.get_token_key(user, email_update.TokenType.CONFIRMATION), datetime.utcnow() - timedelta(days=1))  # type: ignore [attr-defined]
-        response = client.post("/native/v1/profile/email_update/cancel", json={"token": token})
-        assert response.status_code == 401
+    mock_redis_client = fakeredis.FakeStrictRedis()
+
+    @pytest.mark.parametrize(
+        "token_init",
+        [(_initialize_token), (_initialize_token_old)],
+    )
+    def test_cancel_email_change_expired_token(self, app, client, token_init):
+        with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
+            with freeze_time("2021-01-01"):
+                user = users_factories.UserFactory()
+                token = token_init(self, user)
+            with freeze_time("2021-01-02"):
+                response = client.post("/native/v1/profile/email_update/cancel", json={"token": token})
+                assert response.status_code == 401
 
 
 class GetTokenExpirationTest:
