@@ -135,7 +135,9 @@ const VenueForm = ({
         />
         {
           /* istanbul ignore next: DEBT, TO FIX */
-          !!shouldDisplayImageVenueUploaderSection && <ImageUploaderVenue />
+          !!shouldDisplayImageVenueUploaderSection && (
+            <ImageUploaderVenue isCreatingVenue={isCreatingVenue} />
+          )
         }
         {!initialIsVirtual && (
           <FormLayout.Section

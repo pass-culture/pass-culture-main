@@ -6,7 +6,9 @@ import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/Moda
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { Events } from 'core/FirebaseEvents/constants'
+import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { OfferIndividualImage } from 'core/Offers/types'
+import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import { InfoBox } from 'ui-kit'
 
@@ -24,6 +26,7 @@ const ImageUploaderOffer = ({
   imageOffer,
 }: ImageUploaderOfferProps) => {
   const { offer } = useOfferIndividualContext()
+  const mode = useOfferWizardMode()
 
   const { logEvent } = useAnalytics()
 
@@ -31,6 +34,7 @@ const ImageUploaderOffer = ({
     logEvent?.(Events.CLICKED_ADD_IMAGE, {
       offerId: offer?.id,
       imageType: UploaderModeEnum.OFFER,
+      isEdition: mode === OFFER_WIZARD_MODE.EDITION,
     })
   }
 
