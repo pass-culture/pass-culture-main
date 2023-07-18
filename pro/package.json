@@ -117,7 +117,7 @@
     "@types/react-select": "^5.0.1",
     "@types/react-table": "^7.7.14",
     "@typescript-eslint/eslint-plugin": "^6.1.0",
-    "@typescript-eslint/parser": "^6.0.0",
+    "@typescript-eslint/parser": "^6.1.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^29.6.1",
     "babel-loader": "^9.1.3",
