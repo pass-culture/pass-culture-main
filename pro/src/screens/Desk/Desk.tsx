@@ -98,6 +98,7 @@ const Desk = ({
   const handleSubmitValidate =
     (token: string) => (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault()
+      setDisableSubmitValidate(true)
       setMessage({
         message: 'Validation en cours...',
         variant: MESSAGE_VARIANT.DEFAULT,
