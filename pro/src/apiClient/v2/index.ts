@@ -41,4 +41,4 @@ export type { ValidationError } from './models/ValidationError';
 export type { ValidationErrorElement } from './models/ValidationErrorElement';
 
 export { ApiContremarqueService } from './services/ApiContremarqueService';
-export { ApiOffresCollectivesBetaService } from './services/ApiOffresCollectivesBetaService';
+export { ApiOffresCollectivesService } from './services/ApiOffresCollectivesService';
