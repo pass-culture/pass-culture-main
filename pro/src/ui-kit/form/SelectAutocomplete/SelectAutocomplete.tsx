@@ -3,6 +3,7 @@ import { useField, useFormikContext } from 'formik'
 import React, { useEffect, useRef, useState } from 'react'
 
 import { SelectOption } from 'custom_types/form'
+import { getLabelString } from 'utils/getLabelString'
 
 import { BaseCheckbox, BaseInput, FieldLayout } from '../shared'
 import AutocompleteList from '../shared/AutocompleteList/AutocompleteList'
@@ -110,7 +111,7 @@ const SelectAutocomplete = ({
             }
             setFieldTouched(name, true)
           }}
-          placeholder={placeholder ?? label}
+          placeholder={placeholder ?? getLabelString(label)}
           hasError={meta.touched && !!meta.error}
           type="text"
           disabled={disabled}
