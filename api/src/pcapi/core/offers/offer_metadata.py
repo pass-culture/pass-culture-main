@@ -2,7 +2,7 @@ import datetime
 import typing
 
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers.models import Offer
+import pcapi.core.offers.models as offers_models
 
 
 Metadata = dict[str, typing.Any]
@@ -26,8 +26,8 @@ def _get_metadata_from_venue(venue: Venue) -> Metadata:
     }
 
 
-def _get_common_metadata_from_offer(offer: Offer) -> Metadata:
-    metadata = {
+def _get_common_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
+    metadata: Metadata = {
         "@type": "Product",
         "name": offer.name,
     }
@@ -35,10 +35,17 @@ def _get_common_metadata_from_offer(offer: Offer) -> Metadata:
     if offer.image:
         metadata["image"] = offer.image.url
 
+    if offer.stocks:
+        metadata["offers"] = {
+            "@type": "AggregateOffer",
+            "priceCurrency": "EUR",
+            "lowPrice": str(offer.min_price),
+        }
+
     return metadata
 
 
-def _get_event_metadata_from_offer(offer: Offer) -> Metadata:
+def _get_event_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
     common_metadata = _get_common_metadata_from_offer(offer)
 
     event_metadata = {
@@ -53,7 +60,7 @@ def _get_event_metadata_from_offer(offer: Offer) -> Metadata:
     return common_metadata | event_metadata
 
 
-def get_metadata_from_offer(offer: Offer) -> Metadata:
+def get_metadata_from_offer(offer: offers_models.Offer) -> Metadata:
     context = {
         "@context": "https://schema.org",
     }
