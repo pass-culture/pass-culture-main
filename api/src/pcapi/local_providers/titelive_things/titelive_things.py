@@ -238,9 +238,9 @@ class TiteLiveThings(LocalProvider):
                 try:
                     offers_api.delete_unwanted_existing_product(book_unique_identifier)
                 except offers_exceptions.CannotDeleteProductWithBookings:
-                    self.log_provider_event(
-                        providers_models.LocalProviderEventType.SyncError,
-                        f"Error deleting product with EAN: {self.product_infos[INFO_KEYS['EAN13']]}",
+                    logger.info(
+                        "Skipping product deletion due to active booking(s) for EAN: %s",
+                        self.product_infos[INFO_KEYS["EAN13"]],
                     )
                 return []
 
