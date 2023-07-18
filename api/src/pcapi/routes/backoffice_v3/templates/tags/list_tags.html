@@ -34,6 +34,7 @@
             <th scope="col">ID</th>
             <th scope="col">Nom</th>
             <th scope="col" class="col-5">Description</th>
+            <th scope="col">Catégories</th>
             <th scope="col">Date de début</th>
             <th scope="col">Date de fin</th>
           </tr>
@@ -72,6 +73,7 @@
               <td>{{ tag.id }}</td>
               <td>{{ tag.name }}</td>
               <td>{{ tag.description | empty_string_if_null }}</td>
+              <td>{{ tag.categories | format_tag_object_list }}</td>
               <td>{{ tag.startDateTime | format_date }}</td>
               <td>{{ tag.endDateTime | format_date }}</td>
             </tr>
