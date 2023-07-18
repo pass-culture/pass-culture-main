@@ -8,7 +8,6 @@ from pcapi.connectors.ftp_titelive import get_files_to_process_from_titelive_ftp
 from pcapi.core.categories import subcategories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.offers.api as offers_api
-from pcapi.core.offers.api import deactivate_permanently_unavailable_products
 import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
@@ -245,20 +244,10 @@ class TiteLiveThings(LocalProvider):
                 return []
 
         if is_unreleased_book(self.product_infos):
-            products = offers_models.Product.query.filter(
-                offers_models.Product.extraData["ean"].astext == book_unique_identifier
-            ).all()
-            if len(products) > 0:
-                deactivate_permanently_unavailable_products(book_unique_identifier)
-                logger.info(
-                    "deactivating products and offers with ean=%s because it has 'xxx' in 'titre' and 'auteurs' fields, which means it is not yet released",
-                    book_unique_identifier,
-                )
-            else:
-                logger.info(
-                    "Ignoring ean=%s because it has 'xxx' in 'titre' and 'auteurs' fields, which means it is not yet released",
-                    book_unique_identifier,
-                )
+            logger.info(
+                "Ignoring ean=%s because it has 'xxx' in 'titre' and 'auteurs' fields, which means it is not yet released",
+                book_unique_identifier,
+            )
             return []
 
         book_information_last_update = read_things_date(self.product_infos[INFO_KEYS["DATE_UPDATED"]])
