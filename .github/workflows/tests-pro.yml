@@ -57,10 +57,8 @@ jobs:
       # Doc : https://github.com/cypress-io/github-action
       - name: Cypress run
         uses: cypress-io/github-action@v5
-        env:
-          DEBUG: "cypress:*"
         with:
-          build: yarn build:development
+          build: yarn build:testing
           start: yarn serve
           config: baseUrl=http://localhost:3001
           browser: chrome
