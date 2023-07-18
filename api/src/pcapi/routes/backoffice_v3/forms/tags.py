@@ -22,6 +22,7 @@ class EditTagForm(FlaskForm):
 
     start_date = fields.PCDateField("Date de début", validators=(wtforms.validators.Optional(),))
     end_date = fields.PCDateField("Date de fin", validators=(wtforms.validators.Optional(),))
+    categories = fields.PCSelectMultipleField("Catégories", coerce=int)
 
     def validate_start_date(self, start_date: fields.PCDateField) -> fields.PCDateField:
         end_date = self._fields["end_date"]

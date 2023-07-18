@@ -11,6 +11,10 @@ class Criterion(PcObject, Base, Model):
     startDateTime = sqla.Column(sqla.DateTime, nullable=True)
     endDateTime = sqla.Column(sqla.DateTime, nullable=True)
 
+    categories: list["CriterionCategory"] = sqla.orm.relationship(
+        "CriterionCategory", secondary="criterion_category_mapping"
+    )
+
     def __str__(self) -> str:
         return self.name
 
@@ -46,3 +50,29 @@ class OfferCriterion(PcObject, Base, Model):
             name="unique_offer_criterion",
         ),
     )
+
+
+class CriterionCategory(PcObject, Base, Model):
+    """
+    Criterion categories used for partners counting, reporting, etc.
+    """
+
+    __tablename__ = "criterion_category"
+
+    label: str = sqla.Column(sqla.String(140), nullable=False, unique=True)
+
+    def __str__(self) -> str:
+        return self.label
+
+
+class CriterionCategoryMapping(PcObject, Base, Model):
+    __tablename__ = "criterion_category_mapping"
+
+    criterionId: int = sqla.Column(
+        sqla.BigInteger, sqla.ForeignKey("criterion.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    categoryId: int = sqla.Column(
+        sqla.BigInteger, sqla.ForeignKey("criterion_category.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+
+    __table_args__ = (sqla.UniqueConstraint("criterionId", "categoryId", name="unique_criterion_category"),)
