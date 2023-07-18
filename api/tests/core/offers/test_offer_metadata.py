@@ -42,6 +42,32 @@ class OfferMetadataTest:
 
         assert "image" not in metadata
 
+    class OfferTest:
+        def should_have_an_offer(self):
+            offer = offers_factories.OfferFactory()
+            offers_factories.StockFactory(offer=offer, price=5.10)
+
+            metadata = get_metadata_from_offer(offer)
+
+            assert "AggregateOffer" == metadata["offers"]["@type"]
+
+        def should_have_a_low_price(self):
+            offer = offers_factories.OfferFactory()
+            offers_factories.StockFactory(offer=offer, price=5.10)
+            offers_factories.StockFactory(offer=offer, price=2)
+
+            metadata = get_metadata_from_offer(offer)
+
+            assert "2.00" == metadata["offers"]["lowPrice"]
+
+        def should_have_a_price_currency(self):
+            offer = offers_factories.OfferFactory()
+            offers_factories.StockFactory(offer=offer, price=5.10)
+
+            metadata = get_metadata_from_offer(offer)
+
+            assert "EUR" == metadata["offers"]["priceCurrency"]
+
     class GivenAnEventTest:
         def should_describe_an_event(self):
             offer = offers_factories.EventOfferFactory()

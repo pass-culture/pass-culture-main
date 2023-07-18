@@ -639,6 +639,14 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return image.url if image else None  # type: ignore [return-value]
 
     @property
+    def min_price(self) -> float:
+        available_stocks = [stock.price for stock in self.stocks if not stock.isSoftDeleted]
+        if len(available_stocks) > 0:
+            return min(available_stocks)
+
+        return 0
+
+    @property
     def max_price(self) -> float:  # used in validation rule, do not remove
         try:
             return max(stock.price for stock in self.stocks if not stock.isSoftDeleted)
