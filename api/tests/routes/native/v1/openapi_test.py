@@ -2856,7 +2856,6 @@ def test_public_api(client):
                             "description": "Unprocessable Entity",
                         },
                     },
-                    "security": [{"JWTAuth": []}],
                     "summary": "confirm_email_update <POST>",
                     "tags": [],
                 }
