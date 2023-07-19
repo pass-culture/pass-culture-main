@@ -115,22 +115,23 @@ export const ALL_FRANCE_OPTION_LABEL = 'France métropolitaine et d’outre-mer'
 export const MAINLAND_OPTION_LABEL = 'France métropolitaine'
 export const CULTURAL_PARTNER_OPTION_LABEL = 'Dans mon lieu'
 
-export const otherInterventionOptions: SelectOption[] = [
-  { value: MAINLAND_OPTION_VALUE, label: MAINLAND_OPTION_LABEL },
-]
+export const mainlandInterventionOption = {
+  value: MAINLAND_OPTION_VALUE,
+  label: MAINLAND_OPTION_LABEL,
+}
 
 export const venueInterventionOptions: SelectOption[] = [
   {
     value: CULTURAL_PARTNER_OPTION_VALUE,
     label: CULTURAL_PARTNER_OPTION_LABEL,
   },
-  ...otherInterventionOptions,
+  mainlandInterventionOption,
   ...mainlandOptions,
   ...domtomOptions,
 ]
 
 export const offerInterventionOptions: SelectOption[] = [
-  ...otherInterventionOptions,
+  mainlandInterventionOption,
   ...mainlandOptions,
   ...domtomOptions,
 ]
