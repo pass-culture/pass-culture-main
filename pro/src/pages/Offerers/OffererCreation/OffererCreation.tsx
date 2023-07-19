@@ -111,10 +111,7 @@ const OffererCreation = (): JSX.Element => {
                 </ButtonLink>
               </div>
               <div>
-                <SubmitButton
-                  variant={ButtonVariant.PRIMARY}
-                  disabled={!!formik.errors.siren}
-                >
+                <SubmitButton variant={ButtonVariant.PRIMARY}>
                   Créer
                 </SubmitButton>
               </div>
