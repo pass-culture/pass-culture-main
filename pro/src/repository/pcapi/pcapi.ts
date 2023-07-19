@@ -4,7 +4,7 @@ import {
   AttachImageResponseModel,
   CreateThumbnailResponseModel,
 } from 'apiClient/v1'
-import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
+import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { client } from 'repository/pcapi/pcapiClient'
 import {
   FORMAT_ISO_DATE_ONLY,

@@ -1,4 +1,4 @@
-import { GetBookingsCSVFileAdapter } from 'core/Bookings'
+import { GetBookingsCSVFileAdapter } from 'core/Bookings/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 const FAILING_RESPONSE: AdapterFailure<null> = {

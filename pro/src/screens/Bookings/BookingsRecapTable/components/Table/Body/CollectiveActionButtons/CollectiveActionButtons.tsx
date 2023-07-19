@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import CancelCollectiveBookingModal from 'components/CancelCollectiveBookingModal'
-import { BOOKING_STATUS } from 'core/Bookings'
+import { BOOKING_STATUS } from 'core/Bookings/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from 'core/Notification/constants'
 import { cancelCollectiveBookingAdapter } from 'core/OfferEducational'
 import useNotification from 'hooks/useNotification'

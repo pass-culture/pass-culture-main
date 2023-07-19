@@ -1,7 +1,8 @@
 import { addDays, subDays } from 'date-fns'
 import React from 'react'
 
-import { DEFAULT_BOOKING_PERIOD, PreFiltersParams } from 'core/Bookings'
+import { DEFAULT_BOOKING_PERIOD } from 'core/Bookings/constants'
+import { PreFiltersParams } from 'core/Bookings/types'
 import PeriodSelector from 'ui-kit/form_raw/PeriodSelector/PeriodSelector'
 import { getToday } from 'utils/date'
 

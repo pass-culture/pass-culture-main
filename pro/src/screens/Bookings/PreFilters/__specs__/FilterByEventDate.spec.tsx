@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
-import { EMPTY_FILTER_VALUE } from 'core/Bookings'
+import { EMPTY_FILTER_VALUE } from 'core/Bookings/constants'
 
 import FilterByEventDate, { FilterByEventDateProps } from '../FilterByEventDate'
 

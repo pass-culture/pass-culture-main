@@ -1,4 +1,4 @@
-import { GetBookingsXLSFileAdapter } from 'core/Bookings'
+import { GetBookingsXLSFileAdapter } from 'core/Bookings/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 const FAILING_RESPONSE: AdapterFailure<null> = {

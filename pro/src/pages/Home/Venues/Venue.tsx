@@ -4,7 +4,7 @@ import React, { Fragment, useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
-import { BOOKING_STATUS } from 'core/Bookings'
+import { BOOKING_STATUS } from 'core/Bookings/constants'
 import {
   Events,
   OFFER_FORM_HOMEPAGE,

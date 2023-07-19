@@ -1,5 +1,5 @@
 import { api } from 'apiClient/api'
-import { GetVenuesAdapter, VenuesPayload } from 'core/Bookings'
+import { GetVenuesAdapter, VenuesPayload } from 'core/Bookings/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { formatAndOrderVenues } from 'repository/venuesService'
 
