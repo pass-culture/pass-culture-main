@@ -3,10 +3,7 @@ import { OfferIndividual } from 'core/Offers/types'
 import { FIRST_INITIAL_PRICE_CATEGORY } from './constants'
 import { PriceCategoriesFormValues, PriceCategoryForm } from './types'
 
-export const sortPriceCategories = (
-  a: PriceCategoryForm,
-  b: PriceCategoryForm
-) => {
+const sortPriceCategories = (a: PriceCategoryForm, b: PriceCategoryForm) => {
   if (a.price === '' || b.price === '') {
     return 1
   }

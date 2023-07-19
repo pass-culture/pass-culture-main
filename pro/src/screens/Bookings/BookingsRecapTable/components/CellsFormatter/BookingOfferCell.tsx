@@ -30,7 +30,7 @@ import { pluralize } from 'utils/pluralize'
 
 import styles from './BookingOfferCell.module.scss'
 
-export interface BookingOfferCellProps {
+interface BookingOfferCellProps {
   offer:
     | BookingRecapResponseStockModel
     | CollectiveBookingCollectiveStockResponseModel
