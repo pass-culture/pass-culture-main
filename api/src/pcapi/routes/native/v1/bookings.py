@@ -108,7 +108,7 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
 def get_bookings(user: User) -> BookingsResponse:
     individual_bookings = (
         Booking.query.filter_by(userId=user.id)
-        .options(joinedload(Booking.stock).load_only(Stock.id, Stock.beginningDatetime, Stock.price))
+        .options(joinedload(Booking.stock).load_only(Stock.id, Stock.beginningDatetime, Stock.price, Stock.features))
         .options(
             joinedload(Booking.stock)
             .joinedload(Stock.offer)
