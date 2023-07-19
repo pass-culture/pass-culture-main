@@ -1,0 +1,5 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.search-no-results-title4 {
+  @include fonts.title4;
+}
