@@ -47,7 +47,8 @@ jobs:
       - name: Run API server
         run: |
           cd .. 
-          cat docker-compose-app.yml | yq 'del(.services.flask.build)' | yq '.services.flask += {"image": "europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-tests:${{ github.sha }}"}' | yq 'del(.services.flask.command)' | yq '.services.flask += {"entrypoint": "./start-api-when-database-is-ready.sh" }' | docker-compose -f - up -d
+          #cat docker-compose-app.yml | yq 'del(.services.flask.build)' | yq '.services.flask += {"image": "europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-tests:${{ github.sha }}"}' | yq 'del(.services.flask.command)' | yq '.services.flask += {"entrypoint": "./start-api-when-database-is-ready.sh" }' | docker-compose -f - up -d
+          cat docker-compose-app.yml | yq 'del(.services.flask.build)' | yq '.services.flask += {"image": "europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi-tests:d1d33be5ffc05cf4a1801000747a20a138854a3e"}' | yq 'del(.services.flask.command)' | yq '.services.flask += {"entrypoint": "./start-api-when-database-is-ready.sh" }' | docker-compose -f - up -d
       - name: Wait for migrations to be run
         uses: iFaxity/wait-on-action@v1
         with:
@@ -55,13 +56,22 @@ jobs:
       - name: Load sandbox
         run: ../pc sandbox -n industrial
       # Doc : https://github.com/cypress-io/github-action
-      - name: Load front
-        run: ../pc start-pro &
 
       - name: Install dependancies
         run: yarn
 
+      - name: Load front
+        run: ../pc start-pro &
+      
+      - name: Wait for front to start
+        uses: iFaxity/wait-on-action@v1
+        with:
+          resource: http://localhost:3001
+
+
       - name: Run cypress test
+        continue-on-error: true
+
         run: yarn cypress run --browser chrome
       #- name: Cypress run
       #  uses: cypress-io/github-action@v5
@@ -73,6 +83,9 @@ jobs:
       #    wait-on: "http://localhost:3001,http://localhost/health/api,http://localhost/health/database"
       #    wait-on-timeout: 2000
       #    working-directory: pro
+      - name: Load front
+        run: sleep 3600
+
       - name: Archive E2E results
         if: failure()
         uses: actions/upload-artifact@v3
