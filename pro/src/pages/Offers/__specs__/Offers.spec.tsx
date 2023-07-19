@@ -7,10 +7,10 @@ import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
 import {
   ALL_CATEGORIES_OPTION,
+  ALL_CREATION_MODES,
   ALL_VENUES,
   ALL_VENUES_OPTION,
-  CREATION_MODES_FILTERS,
-  DEFAULT_CREATION_MODE,
+  CREATION_MODES_OPTIONS,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { Offer, SearchFiltersParams } from 'core/Offers/types'
@@ -471,10 +471,8 @@ describe('route Offers', () => {
         it('should load offers with selected creation mode filter', async () => {
           // Given
           await renderOffers(store)
-          const creationModeSelect = screen.getByDisplayValue(
-            DEFAULT_CREATION_MODE.label
-          )
-          const importedCreationMode = CREATION_MODES_FILTERS[1].value
+          const creationModeSelect = screen.getByDisplayValue('Tous')
+          const importedCreationMode = CREATION_MODES_OPTIONS[2].value
           await userEvent.selectOptions(
             creationModeSelect,
             String(importedCreationMode)
@@ -792,7 +790,7 @@ describe('route Offers', () => {
       // When
       await userEvent.selectOptions(
         screen.getByDisplayValue('Manuel'),
-        String(DEFAULT_CREATION_MODE.value)
+        ALL_CREATION_MODES
       )
       await userEvent.click(searchButton)
 

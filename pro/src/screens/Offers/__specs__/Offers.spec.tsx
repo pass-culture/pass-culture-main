@@ -8,14 +8,14 @@ import { api } from 'apiClient/api'
 import { UserRole } from 'apiClient/v1'
 import {
   ALL_CATEGORIES,
+  ALL_COLLECTIVE_OFFER_TYPE,
+  ALL_CREATION_MODES,
   ALL_EVENT_PERIODS,
   ALL_OFFERERS,
   ALL_OFFERS,
   ALL_STATUS,
   ALL_VENUES,
   ALL_VENUES_OPTION,
-  DEFAULT_COLLECTIVE_OFFER_TYPE,
-  DEFAULT_CREATION_MODE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { Offer } from 'core/Offers/types'
@@ -143,10 +143,10 @@ describe('screen Offers', () => {
         categoryId: ALL_CATEGORIES,
         offererId: ALL_OFFERERS,
         status: ALL_STATUS,
-        creationMode: DEFAULT_CREATION_MODE.value,
+        creationMode: ALL_CREATION_MODES,
         periodBeginningDate: ALL_EVENT_PERIODS,
         periodEndingDate: ALL_EVENT_PERIODS,
-        collectiveOfferType: DEFAULT_COLLECTIVE_OFFER_TYPE.value,
+        collectiveOfferType: ALL_COLLECTIVE_OFFER_TYPE,
       })
     })
 
@@ -652,7 +652,7 @@ describe('screen Offers', () => {
         creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
         periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
         periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
-        collectiveOfferType: DEFAULT_COLLECTIVE_OFFER_TYPE.value,
+        collectiveOfferType: ALL_COLLECTIVE_OFFER_TYPE,
       })
     })
   })
