@@ -1,6 +1,6 @@
 import {
+  ALL_CREATION_MODES,
   ALL_STATUS,
-  DEFAULT_CREATION_MODE,
   DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
@@ -26,7 +26,7 @@ const computeOffersUrlForGivenAudience = (
   if (status && status !== ALL_STATUS) {
     searchFiltersParams.status = mapApiToBrowser[status]
   }
-  if (creationMode && creationMode !== DEFAULT_CREATION_MODE.value) {
+  if (creationMode && creationMode !== ALL_CREATION_MODES) {
     searchFiltersParams.creationMode = mapApiToBrowser[creationMode]
   }
 

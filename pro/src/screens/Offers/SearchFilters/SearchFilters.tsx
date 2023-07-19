@@ -6,10 +6,8 @@ import FormLayout from 'components/FormLayout/FormLayout'
 import {
   ALL_CATEGORIES_OPTION,
   ALL_VENUES_OPTION,
-  COLLECTIVE_OFFER_TYPES_FILTERS,
-  CREATION_MODES_FILTERS,
-  DEFAULT_COLLECTIVE_OFFER_TYPE,
-  DEFAULT_CREATION_MODE,
+  COLLECTIVE_OFFER_TYPES_OPTIONS,
+  CREATION_MODES_OPTIONS,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { Offerer, SearchFiltersParams } from 'core/Offers/types'
@@ -174,11 +172,10 @@ const SearchFilters = ({
           {audience === Audience.INDIVIDUAL && (
             <FieldLayout label="Mode de création" name="creationMode">
               <SelectInput
-                defaultOption={DEFAULT_CREATION_MODE}
                 onChange={storeCreationMode}
                 disabled={disableAllFilters}
                 name="creationMode"
-                options={CREATION_MODES_FILTERS}
+                options={CREATION_MODES_OPTIONS}
                 value={selectedFilters.creationMode}
               />
             </FieldLayout>
@@ -187,11 +184,10 @@ const SearchFilters = ({
           {audience === Audience.COLLECTIVE && (
             <FieldLayout label="Type de l’offre" name="collectiveOfferType">
               <SelectInput
-                defaultOption={DEFAULT_COLLECTIVE_OFFER_TYPE}
                 onChange={storeCollectiveOfferType}
                 disabled={disableAllFilters}
                 name="collectiveOfferType"
-                options={COLLECTIVE_OFFER_TYPES_FILTERS}
+                options={COLLECTIVE_OFFER_TYPES_OPTIONS}
                 value={selectedFilters.collectiveOfferType}
               />
             </FieldLayout>

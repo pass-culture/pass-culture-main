@@ -31,7 +31,7 @@ export enum CATEGORY_STATUS {
   ONLINE_OR_OFFLINE = 'ONLINE_OR_OFFLINE',
 }
 
-export enum OFFER_WITHDRAWAL_TYPE_OPTIONS {
+enum OFFER_WITHDRAWAL_TYPE_OPTIONS {
   ON_SITE = 'on_site',
   NO_TICKET = 'no_ticket',
   BY_EMAIL = 'by_email',
@@ -80,7 +80,6 @@ export const DEFAULT_PAGE = 1
 export const NUMBER_OF_OFFERS_PER_PAGE = 10
 export const MAX_TOTAL_PAGES = 50
 export const MAX_OFFERS_TO_DISPLAY = MAX_TOTAL_PAGES * NUMBER_OF_OFFERS_PER_PAGE
-export const DEFAULT_AUDIENCE = 'individual'
 export const DEFAULT_SEARCH_FILTERS: SearchFiltersParams = {
   nameOrIsbn: ALL_OFFERS,
   offererId: 'all',
@@ -103,24 +102,18 @@ export const ALL_CATEGORIES_OPTION: SelectOption = {
   value: ALL_CATEGORIES,
 }
 
-const CREATION_MODES_OPTIONS: SelectOption[] = [
+export const CREATION_MODES_OPTIONS: SelectOption[] = [
   { label: 'Tous', value: ALL_CREATION_MODES },
   { label: 'Manuel', value: 'manual' },
   { label: 'Synchronisé', value: 'imported' },
 ]
-const COLLECTIVE_OFFER_TYPES_OPTIONS: SelectOption[] = [
+
+export const COLLECTIVE_OFFER_TYPES_OPTIONS: SelectOption[] = [
   { label: 'Tout', value: ALL_COLLECTIVE_OFFER_TYPE },
   { label: 'Offre vitrine', value: 'template' },
   { label: 'Offre réservable', value: 'offer' },
 ]
 
-export const [DEFAULT_CREATION_MODE, ...CREATION_MODES_FILTERS] =
-  CREATION_MODES_OPTIONS
-
-export const [
-  DEFAULT_COLLECTIVE_OFFER_TYPE,
-  ...COLLECTIVE_OFFER_TYPES_FILTERS
-] = COLLECTIVE_OFFER_TYPES_OPTIONS
 export const ADMINS_DISABLED_FILTERS_MESSAGE =
   'Sélectionnez une structure et/ou un lieu pour activer les filtres'
 
@@ -137,10 +130,3 @@ export const SYNCHRONIZED_OFFER_EDITABLE_FIELDS = {
   ],
   ALLOCINE: ['isDuo'],
 }
-
-export const EDITED_OFFER_READ_ONLY_FIELDS = [
-  'categoryId',
-  'subcategoryId',
-  'offererId',
-  'venueId',
-]
