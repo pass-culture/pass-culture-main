@@ -2,6 +2,7 @@ import pytest
 
 from pcapi.utils.csr import get_closest_csr
 from pcapi.utils.csr import get_csr
+from pcapi.utils.csr import get_csr_from_csr_id
 
 
 class GetCsrTest:
@@ -49,3 +50,16 @@ class GetClosestCsrTest:
         closest_csr = get_closest_csr(gtl_id)
         assert exact_csr == expected_exact_csr
         assert closest_csr == expected_closest_csr
+
+
+class GetCsrFromCsrIdTest:
+    @pytest.mark.parametrize(
+        "csr_id, expected_csr_label",
+        (
+            ("9840", "Spiritualité, Esotérisme, Religion"),
+            ("5700", "Sciences appliquées"),
+        ),
+    )
+    def test_get_csr_from_csr_id(self, csr_id, expected_csr_label):
+        csr = get_csr_from_csr_id(csr_id)
+        assert csr["label"] == expected_csr_label
