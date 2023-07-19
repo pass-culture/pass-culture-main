@@ -29,6 +29,14 @@ def get_csr(gtl_id: str) -> Csr | None:
     return CSRS[gtl_id_8_char]
 
 
+def get_csr_from_csr_id(csr_id: str) -> Csr | None:
+    for csr in CSRS.values():
+        if csr["csr_id"] == csr_id:
+            return csr
+
+    return None
+
+
 CSRS: dict[str, Csr] = {
     "07000000": {"label": "Spiritualité, Esotérisme, Religion", "csr_id": "9840"},
     "10010000": {"label": "Sciences appliquées", "csr_id": "5700"},
