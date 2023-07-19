@@ -7,7 +7,11 @@ import { ApiError, GetVenueResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { domtomOptions, mainlandOptions } from 'core/shared/interventionOptions'
+import {
+  domtomOptions,
+  mainlandInterventionOption,
+  mainlandOptions,
+} from 'core/shared/interventionOptions'
 import * as useNotification from 'hooks/useNotification'
 import {
   collectiveCategoryFactory,
@@ -46,7 +50,7 @@ jest.mock('core/shared/interventionOptions', () => {
         value: originalModule.CULTURAL_PARTNER_OPTION_VALUE,
         label: originalModule.CULTURAL_PARTNER_OPTION_LABEL,
       },
-      ...originalModule.otherInterventionOptions,
+      originalModule.mainlandInterventionOption,
       ...mockedMainlandOptions,
       ...originalModule.domtomOptions,
     ],
@@ -321,9 +325,13 @@ describe('CollectiveDataEdition', () => {
       const interventionAreaField = screen.getByLabelText(/Zone de mobilité/)
       await userEvent.click(interventionAreaField)
       await waitFor(() =>
-        expect(screen.queryByText('France métropolitaine')).toBeInTheDocument()
+        expect(
+          screen.queryByText(mainlandInterventionOption.label)
+        ).toBeInTheDocument()
       )
-      const mainlandOption = screen.getByLabelText('France métropolitaine')
+      const mainlandOption = screen.getByLabelText(
+        mainlandInterventionOption.label
+      )
       await userEvent.click(mainlandOption)
       ;[...mainlandOptions].forEach(option => {
         expect(screen.getByLabelText(option.label)).toBeChecked()
