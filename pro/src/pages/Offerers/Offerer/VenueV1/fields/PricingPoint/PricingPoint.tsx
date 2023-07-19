@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { useField } from 'formik'
 import React, { useEffect, useState } from 'react'
 
@@ -162,8 +163,9 @@ const PricingPoint = ({
           <>
             <SvgIcon
               src={strokeValidIcon}
-              className={styles['space-left']}
+              className={cn(styles['space-left'], styles['siret-valid-icon'])}
               alt=""
+              width="24"
             />
             <p
               className={styles['space-text-left']}
