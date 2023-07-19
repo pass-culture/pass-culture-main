@@ -14,7 +14,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-export const getOfferRequestInformationsAdapter: OfferRequestAdapter = async (
+const getOfferRequestInformationsAdapter: OfferRequestAdapter = async (
   requestId: number
 ) => {
   try {
