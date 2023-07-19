@@ -4,10 +4,12 @@ import type { SearchBoxProvided } from 'react-instantsearch-core'
 
 import AdageButtonFilter from 'components/AdageButtonFilter/AdageButtonFilter'
 import FormLayout from 'components/FormLayout'
+import fullClear from 'icons/full-clear.svg'
 import { getEducationalDomainsOptionsAdapter } from 'pages/AdageIframe/app/adapters/getEducationalDomainsOptionsAdapter'
 import { FacetFiltersContext } from 'pages/AdageIframe/app/providers/FacetFiltersContextProvider'
 import { Option } from 'pages/AdageIframe/app/types'
 import { Button, TextInput } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import AdageMultiselect from 'ui-kit/form/AdageMultiselect/AdageMultiselect'
 
 import { adageFiltersToFacetFilters } from '../../utils'
@@ -68,6 +70,7 @@ export const OfferFilters = ({
       ...formValues,
       uai,
     })
+
     setFacetFilters(updatedFilters.queryFilters)
 
     refine(formValues.query)
@@ -79,13 +82,21 @@ export const OfferFilters = ({
       domains: [],
       students: [],
     },
-
+    enableReinitialize: true,
     onSubmit: handleSubmit,
   })
 
   const clearFormikFieldValue = (fieldName: string) => {
     formik.setFieldValue(fieldName, [])
     handleSubmit({ ...formik.values, [fieldName]: [] })
+  }
+
+  const clearAllFilters = () => {
+    formik.resetForm()
+
+    setFacetFilters([])
+
+    refine('')
   }
 
   return (
@@ -155,6 +166,13 @@ export const OfferFilters = ({
               />
             </ModalFilterLayout>
           </AdageButtonFilter>
+          <Button
+            icon={fullClear}
+            onClick={() => clearAllFilters()}
+            variant={ButtonVariant.TERNARY}
+          >
+            Effacer les filtres
+          </Button>
         </FormLayout.Row>
       </Form>
     </FormikProvider>
