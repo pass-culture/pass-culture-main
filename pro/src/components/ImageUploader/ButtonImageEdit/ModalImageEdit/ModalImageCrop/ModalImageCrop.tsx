@@ -1,3 +1,4 @@
+import { FormikProvider, useFormik } from 'formik'
 import React, { useCallback, useRef } from 'react'
 import AvatarEditor, { CroppedRect, Position } from 'react-avatar-editor'
 
@@ -11,7 +12,7 @@ import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { useGetImageBitmap } from 'hooks/useGetBitmap'
 import useNotification from 'hooks/useNotification'
 import fullDownloadIcon from 'icons/full-download.svg'
-import { Button, Divider } from 'ui-kit'
+import { Button, Divider, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import style from './ModalImageCrop.module.scss'
@@ -94,13 +95,6 @@ const ModalImageCrop = ({
   }[mode]
 
   /* istanbul ignore next: DEBT, TO FIX */
-  const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      handleNext()
-    }
-  }
-
-  /* istanbul ignore next: DEBT, TO FIX */
   const handleNext = useCallback(() => {
     try {
       if (editorRef.current) {
@@ -120,45 +114,57 @@ const ModalImageCrop = ({
     }
   }, [onEditedImageSave, saveInitialPosition, notification])
 
+  const initialValues = {
+    credit: '',
+  }
+
+  const formik = useFormik({
+    initialValues,
+    onSubmit: handleNext,
+  })
+
   return (
     <section className={style['modal-image-crop']}>
-      <form action="#" className={style['modal-image-crop-form']}>
-        <header>
-          <h1 className={style['modal-image-crop-header']}>
-            Ajouter une image
-          </h1>
-        </header>
-        <p className={style['modal-image-crop-right']}>
-          En utilisant ce contenu, je certifie que je suis propriétaire ou que
-          je dispose des autorisations nécessaires pour l’utilisation de
-          celui-ci.
-        </p>
-        <ImageEditor
-          {...imageEditorConfig}
-          image={image}
-          initialPosition={initialPosition}
-          initialScale={initialScale}
-          ref={editorRef}
-          saveInitialScale={saveInitialScale}
-        />
-        <CreditInput
-          credit={credit}
-          extraClassName={style['modal-image-crop-credit']}
-          onKeyDown={onKeyDown}
-          updateCredit={onSetCredit}
-        />
-      </form>
-      <Divider />
-      <footer className={style['modal-image-crop-footer']}>
-        <Button
-          icon={fullDownloadIcon}
-          onClick={onReplaceImage}
-          variant={ButtonVariant.TERNARY}
-        >
-          Remplacer l’image
-        </Button>
-        <Button onClick={handleNext}>{submitButtonText}</Button>
-      </footer>
+      <FormikProvider value={formik}>
+        <form action="#" onSubmit={formik.handleSubmit}>
+          <div className={style['modal-image-crop-form']}>
+            <header>
+              <h1 className={style['modal-image-crop-header']}>
+                Ajouter une image
+              </h1>
+            </header>
+            <p className={style['modal-image-crop-right']}>
+              En utilisant ce contenu, je certifie que je suis propriétaire ou
+              que je dispose des autorisations nécessaires pour l’utilisation de
+              celui-ci.
+            </p>
+            <ImageEditor
+              {...imageEditorConfig}
+              image={image}
+              initialPosition={initialPosition}
+              initialScale={initialScale}
+              ref={editorRef}
+              saveInitialScale={saveInitialScale}
+            />
+            <CreditInput
+              credit={credit}
+              extraClassName={style['modal-image-crop-credit']}
+              updateCredit={onSetCredit}
+            />
+          </div>
+          <Divider />
+          <footer className={style['modal-image-crop-footer']}>
+            <Button
+              icon={fullDownloadIcon}
+              onClick={onReplaceImage}
+              variant={ButtonVariant.TERNARY}
+            >
+              Remplacer l’image
+            </Button>
+            <SubmitButton onClick={handleNext}>{submitButtonText}</SubmitButton>
+          </footer>
+        </form>
+      </FormikProvider>
     </section>
   )
 }

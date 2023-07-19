@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useCallback } from 'react'
 
-import TextInput from 'ui-kit/form_raw/TextInput/TextInput'
+import TextInput from 'ui-kit/form/TextInput/TextInput'
 
 interface CreditInputProps {
   credit: string
@@ -26,15 +26,14 @@ export const CreditInput: FunctionComponent<CreditInputProps> = ({
   return (
     <TextInput
       countCharacters
-      extraClassName={extraClassName}
+      className={extraClassName}
       label="Crédit image"
       maxLength={255}
-      name="image-credit-input"
+      name="credit"
       onChange={onCreditChange}
       onKeyDown={onKeyDown}
       placeholder="Photographe..."
       required={false}
-      subLabel="Optionnel"
       type="text"
       value={credit}
     />
