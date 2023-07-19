@@ -1,10 +1,7 @@
 import React from 'react'
 
 import { BookingStatusFilter } from 'apiClient/v1'
-import {
-  BOOKING_STATUS_FILTER,
-  DEFAULT_BOOKING_FILTER,
-} from 'core/Bookings/constants'
+import { BOOKING_STATUS_FILTER_OPTIONS } from 'core/Bookings/constants'
 import { PreFiltersParams } from 'core/Bookings/types'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 
@@ -22,7 +19,6 @@ const FilterByStatus = ({
   selectedStatusId,
 }: FilterByStatusProps): JSX.Element => (
   <SelectInput
-    defaultOption={DEFAULT_BOOKING_FILTER}
     onChange={event =>
       updateFilters({
         bookingStatusFilter: event.target.value as BookingStatusFilter,
@@ -31,7 +27,7 @@ const FilterByStatus = ({
     disabled={isDisabled}
     name="statusFilter"
     className={styles['status-filter']}
-    options={BOOKING_STATUS_FILTER}
+    options={BOOKING_STATUS_FILTER_OPTIONS}
     value={selectedStatusId}
   />
 )
