@@ -68,6 +68,7 @@ export enum VenueEvents {
   CLICKED_VENUE_VALIDATED_RESERVATIONS_LINK = 'hasClickedVenueValidatedReservationsLink',
   CLICKED_VENUE_EMPTY_STOCK_LINK = 'hasClickedVenueEmptyStockLink',
   CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP = 'HasClickedBankDetailsRecordFollowUp',
+  UPLOAD_IMAGE = 'HasUploadedImage',
 }
 
 export enum CollectiveBookingsEvents {
