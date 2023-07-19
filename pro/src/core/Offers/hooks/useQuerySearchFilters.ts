@@ -79,5 +79,3 @@ export const useQuerySearchFilters = (): [
 
   return [urlSearchFilters, urlPageNumber, urlOfferType]
 }
-
-export default useQuerySearchFilters
