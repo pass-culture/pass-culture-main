@@ -1,7 +1,7 @@
 import { generatePath } from 'react-router-dom'
 
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
-import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 
 interface GetOfferIndividualPathArgs {
   isCreation?: boolean

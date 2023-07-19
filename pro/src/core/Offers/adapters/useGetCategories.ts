@@ -3,7 +3,7 @@ import { CategoryResponseModel, SubcategoryResponseModel } from 'apiClient/v1'
 import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
-import { CATEGORY_STATUS } from '..'
+import { CATEGORY_STATUS } from '../constants'
 
 interface Payload {
   categories: OfferCategory[]

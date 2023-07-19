@@ -11,7 +11,7 @@ import {
   OfferIndividualContextValues,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
-import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import {
   OfferIndividual,
   OfferIndividualStock,

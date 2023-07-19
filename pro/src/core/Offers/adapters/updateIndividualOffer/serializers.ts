@@ -1,6 +1,6 @@
 import { PatchOfferBodyModel, WithdrawalTypeEnum } from 'apiClient/v1'
 import { OfferIndividualFormValues } from 'components/OfferIndividualForm'
-import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'core/Offers'
+import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'core/Offers/constants'
 import { OfferExtraData, OfferIndividual } from 'core/Offers/types'
 import { isAllocineOffer } from 'core/Providers/utils/localProvider'
 import { AccessiblityEnum } from 'core/shared'

@@ -5,7 +5,7 @@ import React from 'react'
 
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { OffererName } from 'core/Offerers/types'
-import { CATEGORY_STATUS } from 'core/Offers'
+import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
 import { OfferIndividualVenue } from 'core/Venue/types'
 import { renderWithProviders } from 'utils/renderWithProviders'

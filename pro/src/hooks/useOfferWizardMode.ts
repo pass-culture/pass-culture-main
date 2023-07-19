@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom'
 
-import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 
 interface WizardModeDetailsList {
   pathPart: string

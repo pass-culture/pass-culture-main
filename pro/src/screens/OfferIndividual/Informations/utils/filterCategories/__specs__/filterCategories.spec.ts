@@ -1,5 +1,8 @@
 import { REIMBURSEMENT_RULES } from 'core/Finances'
-import { CATEGORY_STATUS, INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
+import {
+  CATEGORY_STATUS,
+  INDIVIDUAL_OFFER_SUBTYPE,
+} from 'core/Offers/constants'
 import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
 

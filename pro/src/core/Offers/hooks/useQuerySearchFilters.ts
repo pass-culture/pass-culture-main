@@ -29,7 +29,11 @@ const isAudienceIndividualOrCollective = (
 ): audience is Audience =>
   audience === Audience.INDIVIDUAL || audience === Audience.COLLECTIVE
 
-const useQuerySearchFilters = (): [SearchFiltersParams, number, Audience] => {
+export const useQuerySearchFilters = (): [
+  SearchFiltersParams,
+  number,
+  Audience,
+] => {
   const { search } = useLocation()
 
   const queryParams: UrlSearchFilters = useMemo(() => parse(search), [search])

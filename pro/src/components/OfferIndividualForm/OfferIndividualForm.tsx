@@ -5,7 +5,10 @@ import FormLayout from 'components/FormLayout'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { OfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { OffererName } from 'core/Offerers/types'
-import { CATEGORY_STATUS, INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
+import {
+  CATEGORY_STATUS,
+  INDIVIDUAL_OFFER_SUBTYPE,
+} from 'core/Offers/constants'
 import {
   OfferCategory,
   OfferIndividualImage,

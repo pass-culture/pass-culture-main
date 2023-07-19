@@ -2,7 +2,7 @@ import { api } from 'apiClient/api'
 import { ApiError, StockResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 
 import { STOCK_THING_FORM_DEFAULT_VALUES } from '../../'
 import upsertStocksThingAdapter from '../upsertStocksThingAdapter'

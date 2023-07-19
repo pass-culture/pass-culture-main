@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import Banner from 'ui-kit/Banners/Banner'
 
 interface BannerSummaryProps {

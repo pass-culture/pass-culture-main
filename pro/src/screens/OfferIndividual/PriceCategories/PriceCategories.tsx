@@ -11,12 +11,9 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
-import {
-  isOfferAllocineSynchronized,
-  isOfferDisabled,
-  OFFER_WIZARD_MODE,
-} from 'core/Offers'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { OfferIndividual, OfferIndividualStock } from 'core/Offers/types'
+import { isOfferAllocineSynchronized, isOfferDisabled } from 'core/Offers/utils'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'

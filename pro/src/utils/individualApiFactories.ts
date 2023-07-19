@@ -10,7 +10,7 @@ import {
 import { OfferStatus } from 'apiClient/v2'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
-import { CATEGORY_STATUS } from 'core/Offers'
+import { CATEGORY_STATUS } from 'core/Offers/constants'
 import {
   OfferCategory,
   OfferIndividual,

@@ -7,9 +7,9 @@ import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { createThumbnailAdapter } from 'core/Offers/adapters/createThumbnailAdapter'
 import { deleteThumbnailAdapter } from 'core/Offers/adapters/deleteThumbnailAdapter'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { OfferIndividualImage } from 'core/Offers/types'
 import { SENT_DATA_ERROR_MESSAGE } from 'core/shared'
 import { useOfferWizardMode } from 'hooks'
