@@ -47,19 +47,17 @@ Cypress.on('uncaught:exception', () => {
 Cypress.Commands.add('login', (email: string, password: string) => {
   cy.intercept({ method: 'POST', url: '/users/signin' }).as('signinUser')
 
-  return cy
-    .visit('http://localhost:3001/connexion')
-    .get('#email')
-    .type(email)
-    .get('#password')
-    .type(password)
-    .get('button[type=submit]')
-    .click()
-    .wait('@signinUser')
+  cy.visit('http://localhost:3001/connexion')
+  cy.get('#email').type(email)
+  cy.get('#password').type(password)
+  cy.get('button[type=submit]').click()
+  cy.wait('@signinUser')
+
+  cy.url().should('be.equal', 'http://localhost:3001/accueil')
 })
 
 Cypress.Commands.add('setFeatureFlags', (features: Feature[]) => {
-  return cy.request({
+  cy.request({
     method: 'PATCH',
     url: 'http://localhost:5001/testing/features',
     headers: {
