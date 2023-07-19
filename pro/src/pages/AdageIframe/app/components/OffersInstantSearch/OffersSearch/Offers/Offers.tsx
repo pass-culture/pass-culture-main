@@ -31,6 +31,7 @@ import { ResultType } from 'utils/types'
 import { SurveySatisfaction } from '../../../SurveySatisfaction/SurveySatisfaction'
 
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
+import { OldNoResultsPage } from './NoResultsPage/OldNoResultsPage'
 import Offer from './Offer'
 import styles from './Offers.module.scss'
 import { extractOfferIdFromObjectId, offerIsBookable } from './utils'
@@ -74,6 +75,7 @@ export const OffersComponent = ({
     'WIP_ENABLE_SATISFACTION_SURVEY'
   )
   const [isCookieEnabled, setIsCookieEnabled] = useState(true)
+  const newAdageFilters = useActiveFeature('WIP_ENABLE_NEW_ADAGE_FILTERS')
 
   useEffect(() => {
     try {
@@ -151,8 +153,11 @@ export const OffersComponent = ({
   }
 
   if (hits?.length === 0 || offers.length === 0) {
+    if (newAdageFilters) {
+      return <NoResultsPage />
+    }
     return (
-      <NoResultsPage
+      <OldNoResultsPage
         handleResetFiltersAndLaunchSearch={handleResetFiltersAndLaunchSearch}
       />
     )

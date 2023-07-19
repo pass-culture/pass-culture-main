@@ -1,6 +1,7 @@
 import './OldOffersSearch.scss'
 
-import { useContext, useState, useCallback } from 'react'
+import { FormikContext, useFormik } from 'formik'
+import { useContext, useState } from 'react'
 import * as React from 'react'
 import type { SearchBoxProvided } from 'react-instantsearch-core'
 import { connectSearchBox } from 'react-instantsearch-dom'
@@ -12,14 +13,13 @@ import strokeVenueIcon from 'icons/stroke-venue.svg'
 import { INITIAL_QUERY } from 'pages/AdageIframe/app/constants'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import {
-  AlgoliaQueryContext,
   FacetFiltersContext,
   FiltersContext,
 } from 'pages/AdageIframe/app/providers'
+import { Option } from 'pages/AdageIframe/app/types'
 import Tabs from 'ui-kit/Tabs'
-import { getDefaultFacetFilterUAICodeValue } from 'utils/facetFilters'
 
-import { populateFacetFilters } from '../utils'
+import { adageFiltersToFacetFilters, populateFacetFilters } from '../utils'
 
 import { OfferFilters } from './OfferFilters/OfferFilters'
 import { Offers } from './Offers/Offers'
@@ -29,13 +29,18 @@ export interface SearchProps extends SearchBoxProvided {
   venueFilter: VenueResponse | null
 }
 
+export interface SearchFormValues {
+  query: string
+  domains: Option[]
+  students: Option[]
+}
+
 enum OfferTab {
   ALL = 'all',
   ASSOCIATED_TO_INSTITUTION = 'associatedToInstitution',
 }
 
 export const OffersSearchComponent = ({
-  removeVenueFilter,
   venueFilter,
   refine,
 }: SearchProps): JSX.Element => {
@@ -44,7 +49,6 @@ export const OffersSearchComponent = ({
 
   const { dispatchCurrentFilters, currentFilters } = useContext(FiltersContext)
   const { setFacetFilters } = useContext(FacetFiltersContext)
-  const { removeQuery } = useContext(AlgoliaQueryContext)
   const adageUser = useAdageUser()
   const userUAICode = adageUser.uai
   const uaiCodeAllInstitutionsTab = userUAICode ? ['all', userUAICode] : ['all']
@@ -82,44 +86,61 @@ export const OffersSearchComponent = ({
     },
   ]
 
-  const handleResetFiltersAndLaunchSearch = useCallback(() => {
-    setIsLoading(true)
-    removeQuery()
-    removeVenueFilter()
-    dispatchCurrentFilters({ type: 'RESET_CURRENT_FILTERS' })
-    setFacetFilters(
-      activeTab === OfferTab.ASSOCIATED_TO_INSTITUTION
-        ? [`offer.educationalInstitutionUAICode:${adageUser.uai}`]
-        : [...getDefaultFacetFilterUAICodeValue(adageUser.uai)]
-    )
-    refine(INITIAL_QUERY)
-  }, [activeTab])
-
   const isNewHeaderActive = useActiveFeature('WIP_ENABLE_NEW_ADAGE_HEADER')
+
+  const handleSubmit = () => {
+    const updatedFilters = adageFiltersToFacetFilters({
+      ...formik.values,
+      uai:
+        activeTab === OfferTab.ASSOCIATED_TO_INSTITUTION
+          ? uaiCodeShareWithMyInstitutionTab
+          : uaiCodeAllInstitutionsTab,
+    })
+
+    setFacetFilters(updatedFilters.queryFilters)
+
+    refine(formik.values.query)
+  }
+
+  const handleReset = () => {
+    const updatedFilters = adageFiltersToFacetFilters({
+      ...formik.initialValues,
+      uai:
+        activeTab === OfferTab.ASSOCIATED_TO_INSTITUTION
+          ? uaiCodeShareWithMyInstitutionTab
+          : uaiCodeAllInstitutionsTab,
+    })
+
+    setFacetFilters(updatedFilters.queryFilters)
+    refine(INITIAL_QUERY)
+  }
+
+  const formik = useFormik({
+    initialValues: {
+      query: '',
+      domains: [],
+      students: [],
+    },
+    enableReinitialize: true,
+    onSubmit: handleSubmit,
+    onReset: handleReset,
+  })
 
   return (
     <>
-      {!!adageUser.uai && !isNewHeaderActive && (
-        <Tabs selectedKey={activeTab} tabs={tabs} />
-      )}
-      <OfferFilters
-        className="search-filters"
-        isLoading={isLoading}
-        refine={refine}
-        uai={
-          activeTab === OfferTab.ASSOCIATED_TO_INSTITUTION
-            ? uaiCodeShareWithMyInstitutionTab
-            : uaiCodeAllInstitutionsTab
-        }
-      />
-      <div className="search-results">
-        <Offers
-          handleResetFiltersAndLaunchSearch={handleResetFiltersAndLaunchSearch}
-          setIsLoading={setIsLoading}
-          userRole={adageUser.role}
-          userEmail={adageUser.email}
-        />
-      </div>
+      <FormikContext.Provider value={formik}>
+        {!!adageUser.uai && !isNewHeaderActive && (
+          <Tabs selectedKey={activeTab} tabs={tabs} />
+        )}
+        <OfferFilters className="search-filters" isLoading={isLoading} />
+        <div className="search-results">
+          <Offers
+            setIsLoading={setIsLoading}
+            userRole={adageUser.role}
+            userEmail={adageUser.email}
+          />
+        </div>
+      </FormikContext.Provider>
     </>
   )
 }

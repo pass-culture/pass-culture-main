@@ -1,24 +1,19 @@
 import './NoResultsPage.scss'
-
+import { useFormikContext } from 'formik'
 import React, { useContext } from 'react'
 
-import fullRefreshIcon from 'icons/full-refresh.svg'
+import fullClear from 'icons/full-clear.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
-import {
-  AlgoliaQueryContext,
-  FacetFiltersContext,
-} from 'pages/AdageIframe/app/providers'
+import { FacetFiltersContext } from 'pages/AdageIframe/app/providers'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-export const NoResultsPage = ({
-  handleResetFiltersAndLaunchSearch,
-}: {
-  handleResetFiltersAndLaunchSearch?: () => void
-}): JSX.Element => {
+import { SearchFormValues } from '../../OffersSearch'
+
+export const NoResultsPage = (): JSX.Element => {
   const { facetFilters } = useContext(FacetFiltersContext)
-  const { query } = useContext(AlgoliaQueryContext)
+  const formik = useFormikContext<SearchFormValues>()
 
   return (
     <div className="no-results">
@@ -31,17 +26,16 @@ export const NoResultsPage = ({
       <p className="no-results-text">
         Aucun résultat trouvé pour cette recherche.
       </p>
-      {(query || facetFilters.length > 1) &&
-        handleResetFiltersAndLaunchSearch && ( // la longueur de facetFilters doit être > 1 car il y aura toujours [offer.isEducational:true] dans les facetFilters
-          <Button
-            icon={fullRefreshIcon}
-            className="no-results-button"
-            onClick={handleResetFiltersAndLaunchSearch}
-            variant={ButtonVariant.SECONDARY}
-          >
-            Réinitialiser tous les filtres
-          </Button>
-        )}
+      {(formik.values.query || facetFilters.length > 1) && ( // la longueur de facetFilters doit être > 1 car il y aura toujours [offer.isEducational:true] dans les facetFilters
+        <Button
+          icon={fullClear}
+          className="no-results-button"
+          onClick={formik.handleReset}
+          variant={ButtonVariant.SECONDARY}
+        >
+          Effacer les filtres
+        </Button>
+      )}
     </div>
   )
 }
