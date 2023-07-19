@@ -56,7 +56,7 @@ describe('src | components | OffererCreation', () => {
     ).toBeInTheDocument()
   })
 
-  it('should render a OffererCreation component and creation button should not be clickable', async () => {
+  it('should render a OffererCreation component', async () => {
     renderOffererCreation({})
 
     await waitFor(() => {
@@ -71,7 +71,10 @@ describe('src | components | OffererCreation', () => {
     await userEvent.type(await screen.getByLabelText('SIREN'), '123456')
     await userEvent.tab()
 
-    expect(screen.getByText('Créer')).toBeDisabled()
+    await userEvent.click(screen.getByText('Créer'))
+    expect(
+      screen.getByText('Le SIREN doit comporter 9 caractères.')
+    ).toBeInTheDocument()
   })
 
   it('should be clickable when values have been changed and are valid and submit form', async () => {
