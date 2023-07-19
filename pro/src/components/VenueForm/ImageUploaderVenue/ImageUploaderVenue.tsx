@@ -4,10 +4,10 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import FormLayout from 'components/FormLayout'
 import { ImageUploader } from 'components/ImageUploader'
-import { IUploadImageValues } from 'components/ImageUploader/ButtonImageEdit'
+import { UploadImageValues } from 'components/ImageUploader/ButtonImageEdit'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
-import { Events } from 'core/FirebaseEvents/constants'
+import { Events, VenueEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
@@ -31,7 +31,7 @@ export interface VenueBannerMetaProps {
 const buildInitialValues = (
   bannerUrl?: string,
   bannerMeta?: VenueBannerMetaProps
-): IUploadImageValues => {
+): UploadImageValues => {
   let cropParams
   if (bannerMeta !== undefined) {
     cropParams = {
@@ -56,12 +56,12 @@ interface ImageUploaderProps {
 
 /* istanbul ignore next: DEBT, TO FIX */
 const ImageUploaderVenue = ({ isCreatingVenue }: ImageUploaderProps) => {
-  const { logEvent } = useAnalytics()
   const notify = useNotification()
   const {
     setFieldValue,
     values: { id: venueId, bannerUrl, bannerMeta },
   } = useFormikContext<VenueFormValues>()
+  const { logEvent } = useAnalytics()
 
   const handleOnImageUpload = async ({
     imageFile,
@@ -81,6 +81,10 @@ const ImageUploaderVenue = ({ isCreatingVenue }: ImageUploaderProps) => {
 
       setFieldValue('bannerUrl', editedVenue.bannerUrl)
       setFieldValue('bannerMeta', editedVenue.bannerMeta)
+      logEvent?.(VenueEvents.UPLOAD_IMAGE, {
+        from: location.pathname,
+        venueId: venueId,
+      })
       notify.success('Vos modifications ont bien été prises en compte')
       return Promise.resolve()
     } catch {
