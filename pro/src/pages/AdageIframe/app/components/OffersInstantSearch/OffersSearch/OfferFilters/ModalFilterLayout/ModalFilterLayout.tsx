@@ -35,6 +35,7 @@ const ModalFilterLayout = ({
           variant={ButtonVariant.PRIMARY}
           className={styles['search-button']}
           onClick={onSearch}
+          testId="search-button-modal"
         >
           Rechercher
         </Button>

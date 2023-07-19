@@ -1,18 +1,16 @@
-import { Form, FormikProvider, useFormik } from 'formik'
-import React, { useContext, useEffect, useState } from 'react'
-import type { SearchBoxProvided } from 'react-instantsearch-core'
+import { Form, FormikProvider, useFormikContext } from 'formik'
+import React, { useEffect, useState } from 'react'
 
 import AdageButtonFilter from 'components/AdageButtonFilter/AdageButtonFilter'
 import FormLayout from 'components/FormLayout'
 import fullClear from 'icons/full-clear.svg'
 import { getEducationalDomainsOptionsAdapter } from 'pages/AdageIframe/app/adapters/getEducationalDomainsOptionsAdapter'
-import { FacetFiltersContext } from 'pages/AdageIframe/app/providers/FacetFiltersContextProvider'
 import { Option } from 'pages/AdageIframe/app/types'
 import { Button, TextInput } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import AdageMultiselect from 'ui-kit/form/AdageMultiselect/AdageMultiselect'
 
-import { adageFiltersToFacetFilters } from '../../utils'
+import { SearchFormValues } from '../OffersSearch'
 
 import ModalFilterLayout from './ModalFilterLayout/ModalFilterLayout'
 import styles from './OfferFilters.module.scss'
@@ -21,27 +19,18 @@ import { studentsOptions } from './studentsOptions'
 export interface OfferFiltersProps {
   className?: string
   isLoading: boolean
-  refine: SearchBoxProvided['refine']
-  uai: string[] | null
-}
-
-export interface SearchFormValues {
-  query: string
-  domains: Option[]
-  students: Option[]
 }
 
 export const OfferFilters = ({
   className,
   isLoading,
-  refine,
-  uai,
 }: OfferFiltersProps): JSX.Element => {
   const [modalOpenStatus, setModalOpenStatus] = useState<{
     [key: string]: boolean
   }>({})
   const [domainsOptions, setDomainsOptions] = useState<Option<number>[]>([])
-  const { setFacetFilters } = useContext(FacetFiltersContext)
+
+  const formik = useFormikContext<SearchFormValues>()
 
   const onClean = (modalName: string) => {
     clearFormikFieldValue(modalName)
@@ -49,7 +38,7 @@ export const OfferFilters = ({
   }
 
   const onSearch = (modalName: string) => {
-    handleSubmit(formik.values)
+    formik.handleSubmit()
     setModalOpenStatus(prevState => ({ ...prevState, [modalName]: false }))
   }
 
@@ -65,38 +54,9 @@ export const OfferFilters = ({
     loadFiltersOptions()
   }, [])
 
-  const handleSubmit = (formValues: SearchFormValues): void => {
-    const updatedFilters = adageFiltersToFacetFilters({
-      ...formValues,
-      uai,
-    })
-
-    setFacetFilters(updatedFilters.queryFilters)
-
-    refine(formValues.query)
-  }
-
-  const formik = useFormik({
-    initialValues: {
-      query: '',
-      domains: [],
-      students: [],
-    },
-    enableReinitialize: true,
-    onSubmit: handleSubmit,
-  })
-
   const clearFormikFieldValue = (fieldName: string) => {
     formik.setFieldValue(fieldName, [])
-    handleSubmit({ ...formik.values, [fieldName]: [] })
-  }
-
-  const clearAllFilters = () => {
-    formik.resetForm()
-
-    setFacetFilters([])
-
-    refine('')
+    formik.handleSubmit()
   }
 
   return (
@@ -127,8 +87,7 @@ export const OfferFilters = ({
             isOpen={modalOpenStatus['domains']}
             setIsOpen={setModalOpenStatus}
             filterName="domains"
-            handleSubmit={formValue => handleSubmit(formValue)}
-            formikValues={formik.values}
+            handleSubmit={formik.handleSubmit}
           >
             <ModalFilterLayout
               onClean={() => onClean('domains')}
@@ -150,8 +109,7 @@ export const OfferFilters = ({
             isOpen={modalOpenStatus['students']}
             setIsOpen={setModalOpenStatus}
             filterName="students"
-            handleSubmit={formValue => handleSubmit(formValue)}
-            formikValues={formik.values}
+            handleSubmit={formik.handleSubmit}
           >
             <ModalFilterLayout
               onClean={() => onClean('students')}
@@ -167,9 +125,10 @@ export const OfferFilters = ({
             </ModalFilterLayout>
           </AdageButtonFilter>
           <Button
+            onClick={formik.handleReset}
             icon={fullClear}
-            onClick={() => clearAllFilters()}
             variant={ButtonVariant.TERNARY}
+            disabled={formik.values === formik.initialValues}
           >
             Effacer les filtres
           </Button>

@@ -65,7 +65,7 @@ describe('offersSearch component', () => {
     }
   })
 
-  it('should call algolia with requested query', async () => {
+  it('should call algolia with requested query and uai all', async () => {
     // Given
     renderOffersSearchComponent(props, user)
     const launchSearchButton = screen.getByRole('button', {
@@ -81,5 +81,65 @@ describe('offersSearch component', () => {
 
     // Then
     expect(props.refine).toHaveBeenCalledWith('Paris')
+  })
+
+  it('should call algolia after clear all filters', async () => {
+    // Given
+    renderOffersSearchComponent(props, user)
+    const clearFilterButton = screen.getByRole('button', {
+      name: 'Effacer les filtres',
+    })
+
+    // When
+    const textInput = screen.getByPlaceholderText(
+      'Rechercher : nom de l’offre, partenaire culturel'
+    )
+    await userEvent.type(textInput, 'Paris')
+    await userEvent.click(clearFilterButton)
+
+    // Then
+    expect(props.refine).toHaveBeenCalledWith('')
+  })
+
+  it('should call algolia with requested query and uai associatedToInstitution', async () => {
+    // Given
+    renderOffersSearchComponent(props, {
+      ...user,
+      uai: 'associatedToInstitution',
+    })
+    const launchSearchButton = screen.getByRole('button', {
+      name: 'Rechercher',
+    })
+
+    // When
+    const textInput = screen.getByPlaceholderText(
+      'Rechercher : nom de l’offre, partenaire culturel'
+    )
+    await userEvent.type(textInput, 'Paris')
+    await userEvent.click(launchSearchButton)
+
+    // Then
+    expect(props.refine).toHaveBeenCalledWith('Paris')
+  })
+
+  it('should call algolia after clear all filters', async () => {
+    // Given
+    renderOffersSearchComponent(props, {
+      ...user,
+      uai: 'assicatedToInstitution',
+    })
+    const clearFilterButton = screen.getByRole('button', {
+      name: 'Effacer les filtres',
+    })
+
+    // When
+    const textInput = screen.getByPlaceholderText(
+      'Rechercher : nom de l’offre, partenaire culturel'
+    )
+    await userEvent.type(textInput, 'Paris')
+    await userEvent.click(clearFilterButton)
+
+    // Then
+    expect(props.refine).toHaveBeenCalledWith('')
   })
 })

@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useRef } from 'react'
 
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
-import { SearchFormValues } from 'pages/AdageIframe/app/components/OffersInstantSearch/OffersSearch/OfferFilters/OfferFilters'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './AdageButtonFilter.module.scss'
@@ -16,8 +15,7 @@ export interface AdageButtonFilterProps
   isOpen: boolean
   setIsOpen: (value: { [key: string]: boolean }) => void
   filterName: string
-  handleSubmit: (value: SearchFormValues) => void
-  formikValues: SearchFormValues
+  handleSubmit: () => void
 }
 
 const AdageButtonFilter = ({
@@ -30,7 +28,6 @@ const AdageButtonFilter = ({
   setIsOpen,
   filterName,
   handleSubmit,
-  formikValues,
 }: AdageButtonFilterProps): JSX.Element => {
   const containerRef = useRef<HTMLDivElement | null>(null)
 
@@ -39,7 +36,7 @@ const AdageButtonFilter = ({
       if (!containerRef.current?.contains(e.target as Node)) {
         if (isOpen) {
           setIsOpen({ [filterName]: false })
-          handleSubmit(formikValues)
+          handleSubmit()
         }
       }
     },
