@@ -5,7 +5,7 @@ import {
   CollectiveOffersBookingResponseModel,
   PriceCategoryResponseModel,
 } from 'apiClient/v1'
-import { ICropParams } from 'components/ImageUploader'
+import { CropParams } from 'components/ImageUploader'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
 import { AccessibiltyFormValues } from 'core/shared'
 
@@ -154,7 +154,7 @@ export interface OfferIndividualImage {
   originalUrl: string
   url: string
   credit: string | null
-  cropParams?: ICropParams
+  cropParams?: CropParams
 }
 
 export interface OfferIndividual {
