@@ -6,7 +6,7 @@ import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/Moda
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { Events } from 'core/FirebaseEvents/constants'
-import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { OfferIndividualImage } from 'core/Offers/types'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'

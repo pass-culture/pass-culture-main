@@ -1,9 +1,9 @@
-import { IUploadImageValues } from 'components/ImageUploader/ButtonImageEdit'
+import { UploadImageValues } from 'components/ImageUploader/ButtonImageEdit'
 import { OfferIndividualImage } from 'core/Offers/types'
 
 export const buildInitialValues = (
   imageOffer?: OfferIndividualImage
-): IUploadImageValues => {
+): UploadImageValues => {
   return {
     imageUrl: imageOffer?.url || '',
     originalImageUrl: imageOffer?.originalUrl || '',
