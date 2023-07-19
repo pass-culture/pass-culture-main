@@ -4,8 +4,8 @@ import { BookingStatusFilter } from 'apiClient/v1'
 import {
   BOOKING_STATUS_FILTER,
   DEFAULT_BOOKING_FILTER,
-  PreFiltersParams,
-} from 'core/Bookings'
+} from 'core/Bookings/constants'
+import { PreFiltersParams } from 'core/Bookings/types'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 
 import styles from './FilterByBookingStatusPeriod.module.scss'

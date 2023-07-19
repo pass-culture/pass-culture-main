@@ -4,12 +4,12 @@ import React, { useCallback, useEffect, useState } from 'react'
 
 import FormLayout from 'components/FormLayout/FormLayout'
 import MultiDownloadButtonsModal from 'components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
+import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import {
-  DEFAULT_PRE_FILTERS,
   GetBookingsCSVFileAdapter,
   GetBookingsXLSFileAdapter,
   PreFiltersParams,
-} from 'core/Bookings'
+} from 'core/Bookings/types'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullRefreshIcon from 'icons/full-refresh.svg'

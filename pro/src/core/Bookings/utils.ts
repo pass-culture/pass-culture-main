@@ -1,8 +1,5 @@
-import {
-  DEFAULT_PRE_FILTERS,
-  APIFilters,
-  PreFiltersParams,
-} from 'core/Bookings'
+import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
+import { APIFilters, PreFiltersParams } from 'core/Bookings/types'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,

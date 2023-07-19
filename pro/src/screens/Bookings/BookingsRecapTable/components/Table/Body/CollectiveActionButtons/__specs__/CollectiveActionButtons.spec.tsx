@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import { addDays } from 'date-fns'
 import React from 'react'
 
-import { BOOKING_STATUS } from 'core/Bookings'
+import { BOOKING_STATUS } from 'core/Bookings/constants'
 import {
   collectiveBookingRecapFactory,
   defaultCollectiveBookingStock,
