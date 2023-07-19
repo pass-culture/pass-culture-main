@@ -37,14 +37,8 @@ export const ALL_VENUES_OPTION: SelectOption = {
   value: ALL_VENUES,
 }
 
-export const DEFAULT_BOOKING_FILTER = {
-  label: 'Période de réservation',
-  value: BookingStatusFilter.BOOKED,
-}
-export const BOOKING_STATUS_FILTER: SelectOption[] = [
+export const BOOKING_STATUS_FILTER_OPTIONS: SelectOption[] = [
+  { label: 'Période de réservation', value: BookingStatusFilter.BOOKED },
   { label: 'Période de validation', value: BookingStatusFilter.VALIDATED },
-  {
-    label: 'Période de remboursement',
-    value: BookingStatusFilter.REIMBURSED,
-  },
+  { label: 'Période de remboursement', value: BookingStatusFilter.REIMBURSED },
 ]
