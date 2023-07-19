@@ -24,7 +24,7 @@ interface FormProps {
   handleSubmit: () => void
 }
 
-export interface FormValuesProps {
+interface FormValuesProps {
   isDuo: boolean
   price?: number
   quantity: string | number | null

@@ -33,7 +33,7 @@ export interface SearchProps extends SearchBoxProvided {
   venueFilter: VenueResponse | null
 }
 
-export enum OfferTab {
+enum OfferTab {
   ALL = 'all',
   ASSOCIATED_TO_INSTITUTION = 'associatedToInstitution',
 }
