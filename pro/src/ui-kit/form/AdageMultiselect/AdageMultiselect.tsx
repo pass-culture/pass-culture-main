@@ -112,10 +112,10 @@ const AdageMultiselect = ({
                   key={`${name}-${item.label}`}
                   label={item.label}
                   name={name}
-                  aria-selected={field.value.includes(item)}
                   checked={field.value.includes(item)}
                   onChange={() => handleNewSelection(item)}
                   {...itemProps}
+                  aria-selected={field.value.includes(item)}
                 />
               </li>
             )
