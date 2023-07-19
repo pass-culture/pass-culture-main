@@ -1,93 +1,164 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { Formik } from 'formik'
 import React from 'react'
 
 import * as pcapi from 'pages/AdageIframe/repository/pcapi/pcapi'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { OfferFilters, OfferFiltersProps } from '../OfferFilters'
+import { SearchFormValues } from '../../OffersSearch'
+import { OfferFilters } from '../OfferFilters'
 
-const renderOfferFilters = (props: OfferFiltersProps) =>
-  renderWithProviders(<OfferFilters {...props} />)
+const handleSubmit = jest.fn()
+const handleReset = jest.fn()
+
+const renderOfferFilters = ({
+  isLoading,
+  initialValues,
+}: {
+  isLoading: boolean
+  initialValues: SearchFormValues
+}) =>
+  renderWithProviders(
+    <Formik
+      initialValues={initialValues}
+      onSubmit={handleSubmit}
+      onReset={handleReset}
+    >
+      <OfferFilters isLoading={isLoading} />
+    </Formik>
+  )
+
+const initialValues = {
+  query: '',
+  domains: [],
+  students: [],
+}
 
 describe('OfferFilters', () => {
-  const mockRefine = jest.fn()
-  it('should call refine function when form is submitted', async () => {
-    renderOfferFilters({ isLoading: false, refine: mockRefine, uai: ['all'] })
+  it('renders correctly', () => {
+    renderOfferFilters({ isLoading: false, initialValues })
 
-    const queryInput = screen.getByPlaceholderText(
-      'Rechercher : nom de l’offre, partenaire culturel'
-    )
-    const searchButton = screen.getByRole('button', { name: 'Rechercher' })
-
-    await userEvent.type(queryInput, 'example query')
-    await userEvent.click(searchButton)
-
-    expect(mockRefine).toHaveBeenCalledWith('example query')
+    expect(
+      screen.getByPlaceholderText(
+        'Rechercher : nom de l’offre, partenaire culturel'
+      )
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Rechercher' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Domaine artistique' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Niveau scolaire' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Effacer les filtres' })
+    ).toBeInTheDocument()
   })
 
-  it('should clean filter value onclick', async () => {
+  it('should submit onclick search button', async () => {
+    renderOfferFilters({ isLoading: false, initialValues })
+
+    await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
+    expect(handleSubmit).toHaveBeenCalled()
+  })
+
+  it('should submit onclick modal search button domain artistic', async () => {
+    renderOfferFilters({
+      isLoading: false,
+      initialValues: {
+        ...initialValues,
+        domains: [{ value: 'test', label: 'test' }],
+      },
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Domaine artistique (1)' })
+    )
+
+    await userEvent.click(screen.getAllByTestId('search-button-modal')[0])
+
+    expect(handleSubmit).toHaveBeenCalled()
+  })
+
+  it('should submit onclick modal search button school level', async () => {
+    renderOfferFilters({
+      isLoading: false,
+      initialValues: {
+        ...initialValues,
+        students: [{ value: 'test', label: 'test' }],
+      },
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Niveau scolaire (1)' })
+    )
+
+    await userEvent.click(screen.getAllByTestId('search-button-modal')[1])
+
+    expect(handleSubmit).toHaveBeenCalled()
+  })
+
+  it('should reset filter onclick modal clear artistic domain', async () => {
+    renderOfferFilters({
+      isLoading: false,
+      initialValues: {
+        ...initialValues,
+        domains: [{ value: 'test', label: 'test' }],
+      },
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Domaine artistique (1)' })
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: 'Effacer' }))
+
+    expect(
+      screen.getByRole('button', { name: 'Domaine artistique' })
+    ).toBeInTheDocument()
+  })
+
+  it('should reset filter onclick modal clear students', async () => {
+    renderOfferFilters({
+      isLoading: false,
+      initialValues: {
+        ...initialValues,
+        students: [{ value: 'test', label: 'test' }],
+      },
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Niveau scolaire (1)' })
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: 'Effacer' }))
+
+    expect(
+      screen.getByRole('button', { name: 'Niveau scolaire' })
+    ).toBeInTheDocument()
+  })
+
+  it('should return domains options when the api call was successful', async () => {
     jest.spyOn(pcapi, 'getEducationalDomains').mockResolvedValueOnce([
       { id: 1, name: 'Danse' },
       { id: 2, name: 'Architecture' },
       { id: 3, name: 'Arts' },
     ])
 
-    renderOfferFilters({ isLoading: false, refine: mockRefine, uai: ['all'] })
-
-    const artisticDomainButton = screen.getByRole('button', {
-      name: 'Domaine artistique',
-    })
-    await userEvent.click(artisticDomainButton)
-
-    const checkboxValue = screen.getByLabelText('Architecture', {
-      exact: false,
-    })
-
-    await userEvent.click(checkboxValue)
-
-    expect(checkboxValue).toBeChecked()
-
-    const cleanButton = screen.getByRole('button', {
-      name: 'Effacer',
-    })
-
-    await userEvent.click(cleanButton)
-
-    expect(checkboxValue).not.toBeChecked()
-  })
-
-  it('should call submit onclick search button with uai value all', async () => {
-    renderOfferFilters({ isLoading: false, refine: mockRefine, uai: ['all'] })
-
-    const artisticDomainButton = screen.getByRole('button', {
-      name: 'Domaine artistique',
-    })
-    await userEvent.click(artisticDomainButton)
-
-    const submitButton = screen.getAllByRole('button', {
-      name: 'Rechercher',
-    })
-
-    await userEvent.click(submitButton[1])
-  })
-
-  it('should call submit onclick search button with uai value ', async () => {
     renderOfferFilters({
       isLoading: false,
-      refine: mockRefine,
-      uai: ['all', 'uai'],
+      initialValues: initialValues,
     })
 
-    const artisticDomainButton = screen.getByRole('button', {
-      name: 'Domaine artistique',
-    })
-    await userEvent.click(artisticDomainButton)
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Domaine artistique' })
+    )
 
-    const submitButton = screen.getAllByRole('button', {
-      name: 'Rechercher',
-    })
-
-    await userEvent.click(submitButton[1])
+    expect(screen.getByText('Danse')).toBeInTheDocument()
+    expect(screen.getByText('Architecture')).toBeInTheDocument()
+    expect(screen.getByText('Arts')).toBeInTheDocument()
   })
 })

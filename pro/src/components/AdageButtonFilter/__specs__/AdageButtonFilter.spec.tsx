@@ -15,7 +15,6 @@ const renderAdageButtonFilter = ({
   isOpen,
   setIsOpen,
   handleSubmit,
-  formikValues,
   filterName,
 }: AdageButtonFilterProps) =>
   renderWithProviders(
@@ -30,7 +29,6 @@ const renderAdageButtonFilter = ({
         setIsOpen={setIsOpen}
         filterName={filterName}
         handleSubmit={handleSubmit}
-        formikValues={formikValues}
       />
       <div>Click outside</div>
     </>
@@ -44,7 +42,6 @@ describe('AdageButtonFilter', () => {
     setIsOpen: jest.fn(),
     filterName: 'domains',
     handleSubmit: jest.fn(),
-    formikValues: { query: '', domains: [], students: [] },
   }
 
   it('should render adageButtonFilter', () => {
