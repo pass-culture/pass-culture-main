@@ -12,6 +12,7 @@
 
 # production
 /build
+/docs-build
 target.zip
 
 # misc
