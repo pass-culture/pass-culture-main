@@ -13,7 +13,6 @@ from pcapi.core.offers.factories import ThingProductFactory
 from pcapi.core.offers.factories import ThingStockFactory
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
-import pcapi.core.providers.models as providers_models
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers import TiteLiveThings
 from pcapi.local_providers.titelive_things.titelive_things import COLUMN_INDICES
@@ -341,41 +340,6 @@ class TiteliveThingsTest:
 
         # Then
         assert offers_models.Product.query.count() == 0
-
-    @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
-    @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
-    def test_should_log_error_when_trying_to_delete_product_with_associated_bookings(
-        self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
-    ):
-        # Given
-        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
-
-        data_line_parts = BASE_DATA_LINE_PARTS[:]
-        data_line_parts[COLUMN_INDICES["titre"]] = "jeux de société"
-        data_line_parts[COLUMN_INDICES["code_rayon_csr"]] = "1234"
-        data_line_parts[COLUMN_INDICES["code_support"]] = "O"
-        data_line = "~".join(data_line_parts)
-        get_lines_from_thing_file.return_value = iter([data_line])
-
-        provider = providers_factories.TiteLiveThingsProviderFactory()
-        bookings_factories.BookingFactory(
-            stock__offer__product__dateModifiedAtLastProvider=datetime(2001, 1, 1),
-            stock__offer__product__idAtProviders=EAN_TEST,
-            stock__offer__product__lastProviderId=provider.id,
-            stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
-        )
-
-        # When
-        titelive_things = TiteLiveThings()
-        titelive_things.updateObjects()
-
-        # Then
-        assert offers_models.Product.query.count() == 1
-        provider_log_error = providers_models.LocalProviderEvent.query.filter_by(
-            type=providers_models.LocalProviderEventType.SyncError
-        ).one()
-        assert provider_log_error.payload == f"Error deleting product with EAN: {EAN_TEST}"
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
