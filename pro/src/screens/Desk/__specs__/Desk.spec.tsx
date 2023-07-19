@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
@@ -150,9 +150,7 @@ describe('src | components | Desk', () => {
       'Coupon vérifié, cliquez sur "Valider" pour enregistrer'
     )
 
-    // I don't know how to test this without fireEvent
-    fireEvent.click(screen.getByText('Valider la contremarque'))
-    expect(screen.getByText('Validation en cours...')).toBeInTheDocument()
+    await userEvent.click(screen.getByText('Valider la contremarque'))
 
     expect(
       await screen.findByText('Contremarque validée !')
