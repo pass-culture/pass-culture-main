@@ -1,6 +1,6 @@
 import { api } from 'apiClient/api'
 import { VenueListItemResponseModel } from 'apiClient/v1'
-import { ALL_OFFERERS } from 'core/Offers'
+import { ALL_OFFERERS } from 'core/Offers/constants'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
 type GetVenuesForOffererAdapter = Adapter<

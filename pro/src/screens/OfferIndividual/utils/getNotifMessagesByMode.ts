@@ -1,4 +1,4 @@
-import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 
 export const getSuccessMessage = (mode: OFFER_WIZARD_MODE) =>
   ({

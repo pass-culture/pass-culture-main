@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { OFFER_STATUS_DRAFT } from 'core/Offers'
+import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
 import { Offer } from 'core/Offers/types'
 
 import styles from '../../OfferItem.module.scss'

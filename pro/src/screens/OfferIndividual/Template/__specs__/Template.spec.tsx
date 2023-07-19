@@ -8,7 +8,7 @@ import {
   OfferIndividualContext,
   OfferIndividualContextValues,
 } from 'context/OfferIndividualContext'
-import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { OfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { renderWithProviders } from 'utils/renderWithProviders'

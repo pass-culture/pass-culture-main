@@ -8,7 +8,7 @@ import {
   SubcategoryIdEnum,
 } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
-import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
+import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import {
   GetIndividualOfferFactory,

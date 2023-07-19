@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom'
 
 import { BannerCreateOfferAdmin } from 'components/Banner'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
-import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { useOfferWizardMode } from 'hooks'
 import useCurrentUser from 'hooks/useCurrentUser'
 import {

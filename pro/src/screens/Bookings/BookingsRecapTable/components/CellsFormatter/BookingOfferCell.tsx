@@ -15,7 +15,7 @@ import {
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import { OFFER_STATUS_PENDING } from 'core/Offers'
+import { OFFER_STATUS_PENDING } from 'core/Offers/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import { useOfferEditionURL } from 'hooks/useOfferEditionURL'
 import fullErrorIcon from 'icons/full-error.svg'

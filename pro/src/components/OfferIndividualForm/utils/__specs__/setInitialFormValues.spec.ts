@@ -1,5 +1,5 @@
 import { OfferStatus, WithdrawalTypeEnum } from 'apiClient/v1'
-import { CATEGORY_STATUS } from 'core/Offers'
+import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { OfferIndividual, OfferSubCategory } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 

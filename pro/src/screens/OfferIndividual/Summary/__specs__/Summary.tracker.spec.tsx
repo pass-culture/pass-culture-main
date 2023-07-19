@@ -4,7 +4,7 @@ import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
 import { Events, VenueEvents } from 'core/FirebaseEvents/constants'
-import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as useOfferWizardMode from 'hooks/useOfferWizardMode'
 import { individualOfferFactory } from 'utils/individualApiFactories'

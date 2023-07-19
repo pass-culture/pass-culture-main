@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
+import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
 import strokeDateIcon from 'icons/stroke-date.svg'
 import thingStrokeIcon from 'icons/stroke-thing.svg'
 import strokeVirtualEventIcon from 'icons/stroke-virtual-event.svg'

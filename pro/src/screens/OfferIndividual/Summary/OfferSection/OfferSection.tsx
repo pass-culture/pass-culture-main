@@ -8,7 +8,10 @@ import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import { OFFER_WITHDRAWAL_TYPE_LABELS, OFFER_WIZARD_MODE } from 'core/Offers'
+import {
+  OFFER_WITHDRAWAL_TYPE_LABELS,
+  OFFER_WIZARD_MODE,
+} from 'core/Offers/constants'
 import { OfferIndividual } from 'core/Offers/types'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { AccessiblityEnum } from 'core/shared'

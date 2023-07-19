@@ -1,7 +1,7 @@
 /* istanbul ignore file: DEBT, TO FIX */
 import React from 'react'
 
-import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { useOfferWizardMode } from 'hooks'
 import {
   Summary as SummaryScreen,

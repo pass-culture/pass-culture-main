@@ -13,9 +13,9 @@ import {
   OFFER_FORM_NAVIGATION_OUT,
   VenueEvents,
 } from 'core/FirebaseEvents/constants'
-import { OFFER_WIZARD_MODE } from 'core/Offers'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import { publishIndividualOffer } from 'core/Offers/adapters/publishIndividualOffer'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'

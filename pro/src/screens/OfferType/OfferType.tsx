@@ -17,8 +17,6 @@ import {
   COLLECTIVE_OFFER_SUBTYPE,
   OFFER_TYPES,
   OFFER_WIZARD_MODE,
-} from 'core/Offers'
-import {
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'

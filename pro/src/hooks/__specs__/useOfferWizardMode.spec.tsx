@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react'
 import React from 'react'
 import { MemoryRouter } from 'react-router-dom'
 
-import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 
 import useOfferWizardMode from '../useOfferWizardMode'
 

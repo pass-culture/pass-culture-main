@@ -1,4 +1,4 @@
-import { CATEGORY_STATUS } from 'core/Offers'
+import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { OfferSubCategory } from 'core/Offers/types'
 import { OfferIndividualVenue } from 'core/Venue/types'
 

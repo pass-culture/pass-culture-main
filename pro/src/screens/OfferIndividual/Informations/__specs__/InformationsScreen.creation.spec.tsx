@@ -15,7 +15,7 @@ import {
 } from 'context/OfferIndividualContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { Events } from 'core/FirebaseEvents/constants'
-import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
+import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { OfferSubCategory } from 'core/Offers/types'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { OfferIndividualVenue } from 'core/Venue/types'

@@ -17,7 +17,10 @@ import {
   OfferIndividualContextValues,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
-import { LIVRE_PAPIER_SUBCATEGORY_ID, OFFER_WIZARD_MODE } from 'core/Offers'
+import {
+  LIVRE_PAPIER_SUBCATEGORY_ID,
+  OFFER_WIZARD_MODE,
+} from 'core/Offers/constants'
 import {
   OfferIndividual,
   OfferIndividualStock,

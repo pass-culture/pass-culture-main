@@ -9,7 +9,7 @@ import { ICropParams } from 'components/ImageUploader'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
 import { AccessibiltyFormValues } from 'core/shared'
 
-import { CATEGORY_STATUS } from '.'
+import { CATEGORY_STATUS } from './constants'
 
 export type SearchFiltersParams = {
   nameOrIsbn: string

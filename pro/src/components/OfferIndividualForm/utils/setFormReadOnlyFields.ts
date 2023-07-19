@@ -1,9 +1,9 @@
-import { isOfferSynchronized } from 'core/Offers'
 import {
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
 } from 'core/Offers/constants'
 import { OfferIndividual } from 'core/Offers/types'
+import { isOfferSynchronized } from 'core/Offers/utils'
 import { isAllocineProvider } from 'core/Providers'
 
 import { FORM_DEFAULT_VALUES } from '../constants'
