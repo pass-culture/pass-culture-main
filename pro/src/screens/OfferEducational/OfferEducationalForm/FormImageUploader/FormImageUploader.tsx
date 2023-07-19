@@ -1,7 +1,7 @@
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { ImageUploader, IUploadImageValues } from 'components/ImageUploader'
+import { ImageUploader, UploadImageValues } from 'components/ImageUploader'
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
 import { OfferCollectiveImage } from 'core/Offers/types'
@@ -14,7 +14,7 @@ export interface ImageUploaderOfferProps {
 
 const buildInitialValues = (
   imageOffer: OfferCollectiveImage | null
-): IUploadImageValues => ({
+): UploadImageValues => ({
   imageUrl: imageOffer?.url || '',
   originalImageUrl: imageOffer?.url || '',
   credit: imageOffer?.credit || '',
