@@ -2,6 +2,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_colors.scss" as colors;
+@use "styles/variables/_size.scss" as size;
 
 .base-checkbox {
   display: flex;
@@ -54,32 +55,79 @@
     border: rem.torem(2px) solid forms.$input-border-color;
     border-radius: rem.torem(3px);
     transition: border 150ms ease, background 150ms ease;
+    flex: 0 0 auto;
+    font-size: inherit;
+    margin-right: rem.torem(6px);
+    outline: none;
+    padding: 0;
+    position: relative;
+    vertical-align: middle;
+    height: size.$checkbox-size;
+    width: size.$checkbox-size;
 
-    &:hover,
-    &:focus {
-      border-color: forms.$input-border-color-focus;
+    &.partial-check {
+      &:checked {
+        &::after {
+          background-image: url("./checkbox-partial.svg");
+        }
+      }
     }
 
-    &:hover:checked,
-    &:focus:checked {
-      background-color: forms.$input-border-color-focus;
+    &:checked {
+      background-color: colors.$grey-dark;
+      border-color: colors.$grey-dark;
+
+      &::after {
+        background-image: url("./checkbox-check.svg");
+        background-position: center;
+        background-repeat: no-repeat;
+        content: "";
+        height: 100%;
+        position: absolute;
+        width: 100%;
+      }
+
+      &:hover {
+        background-color: forms.$input-border-color-focus;
+        border-color: forms.$input-border-color-focus;
+      }
+
+      &:focus {
+        background-color: forms.$input-border-color-focus;
+        border-color: forms.$input-border-color-focus;
+      }
+
+      &:disabled {
+        background-color: forms.$input-border-color-disabled;
+        border-color: forms.$input-border-color-disabled;
+        cursor: default;
+        opacity: 1;
+      }
+
+      &.has-error {
+        border-color: forms.$input-border-color-error;
+      }
     }
 
-    &.has-error {
-      border-color: forms.$input-border-color-error;
-    }
+    &:not(:checked) {
+      background-color: colors.$white;
 
-    &:checked.has-error {
-      background-color: forms.$input-border-color-error;
-    }
+      &:hover {
+        border-color: forms.$input-border-color-focus;
+      }
 
-    &:disabled {
-      cursor: default;
-      border-color: forms.$input-border-color-disabled;
-    }
+      &:focus {
+        border-color: forms.$input-border-color-focus;
+      }
 
-    &:checked:disabled {
-      background-color: forms.$input-border-color-disabled;
+      &:disabled {
+        border-color: forms.$input-border-color-disabled;
+        opacity: 1;
+      }
+
+      &.has-error {
+        border-color: forms.$input-border-color-error;
+      }
     }
   }
 }
