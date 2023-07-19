@@ -1,7 +1,16 @@
 describe('Account creation', () => {
-  it('should create account', () => {
-    cy.intercept({ method: 'POST', url: '/users/signup/pro' }).as('signupUser')
+  it('should create an account', () => {
+    cy.visit('http://localhost:3001/inscription')
 
+    // Fill in form
+    cy.get('#lastName').type('LEMOINE')
+    cy.get('#firstName').type('Jean')
+    cy.get('#email').type(`jean${Math.random()}@example.com`)
+    cy.get('#password').type('ValidPassword12!')
+    cy.get('#countryCode').select('FR')
+    cy.get('#phoneNumber').type('612345678')
+
+    // Fill in SIREN
     cy.intercept(
       { method: 'GET', url: '/sirene/siren/*' },
       {
@@ -15,36 +24,17 @@ describe('Account creation', () => {
         siren: '306138900',
       }
     ).as('sirenApiCall')
-
-    cy.visit('http://localhost:3001/inscription')
-      .get('#lastName')
-      .type('LEMOINE')
-      .get('#firstName')
-      .type('Jean')
-      .get('#email')
-      .type(`jean${Math.random()}@example.com`)
-      .get('#password')
-      .type('ValidPassword12!')
-      .get('#countryCode')
-      .select('FR')
-      .get('#phoneNumber')
-      .type('612345678')
-      .get('#siren')
-      .type('306138900')
-      .get('input[name=contactOk]')
-      .click()
-      .get('button[type=submit]')
-      .click()
-
+    cy.get('#siren').type('306138900')
+    cy.get('input[name=contactOk]').click() // We must tab out of the SIREN field for async validation to happen
     cy.wait('@sirenApiCall')
-      .wait('@signupUser')
-      .then(() => {
-        cy.url().should(
-          'be.equal',
-          'http://localhost:3001/inscription/confirmation'
-        )
-      })
+
+    // Submit form
+    cy.intercept({ method: 'POST', url: '/users/signup/pro' }).as('signupUser')
+    cy.get('button[type=submit]').click()
+    cy.wait('@signupUser')
+    cy.url().should(
+      'be.equal',
+      'http://localhost:3001/inscription/confirmation'
+    )
   })
 })
-
-export {}
