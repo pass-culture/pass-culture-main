@@ -71,8 +71,11 @@ jobs:
 
       - name: Run cypress test
         continue-on-error: true
-
-        run: yarn cypress run --browser chrome
+        run: |
+          export CYPRESS_VERIFY_TIMEOUT=100000
+          npm cache clean --force
+          yarn cypress verify
+          yarn cypress run --browser chrome
       #- name: Cypress run
       #  uses: cypress-io/github-action@v5
       #  with:
