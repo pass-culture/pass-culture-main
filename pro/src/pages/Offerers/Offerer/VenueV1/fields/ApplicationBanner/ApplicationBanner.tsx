@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 
 import { Banner } from 'ui-kit'
@@ -22,9 +21,5 @@ const ApplicationBanner = ({ applicationId }: ApplicationBannerProps) => (
     fois vos coordonnées bancaires ajoutées.
   </Banner>
 )
-
-ApplicationBanner.propTypes = {
-  applicationId: PropTypes.string.isRequired,
-}
 
 export default ApplicationBanner
