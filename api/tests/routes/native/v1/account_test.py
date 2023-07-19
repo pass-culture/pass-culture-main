@@ -692,7 +692,7 @@ class ConfirmUpdateUserEmailTest:
         )
         client.with_token(user.email)
         response = client.post("/native/v1/profile/email_update/confirm", json={"token": token})
-        assert response.status_code == 404
+        assert response.status_code == 401
         assert response.json["message"] == "aucune demande de changement d'email en cours"
 
     def test_cannot_confirm_if_no_pending_email_update(self, client, app):
@@ -702,7 +702,7 @@ class ConfirmUpdateUserEmailTest:
         client.with_token(user.email)
         response = client.post("/native/v1/profile/email_update/confirm", json={"token": token})
 
-        assert response.status_code == 404
+        assert response.status_code == 401
         assert response.json["message"] == "aucune demande de changement d'email en cours"
 
 
@@ -1163,7 +1163,7 @@ class CancelEmailChangeTest:
         )
         app.redis_client.expireat(email_update.get_token_key(user, email_update.TokenType.CONFIRMATION), datetime.utcnow() - timedelta(days=1))  # type: ignore [attr-defined]
         response = client.post("/native/v1/profile/email_update/cancel", json={"token": token})
-        assert response.status_code == 404
+        assert response.status_code == 401
 
 
 class GetTokenExpirationTest:
