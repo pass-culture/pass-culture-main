@@ -3,7 +3,7 @@ import { BookingRecapResponseModel } from 'apiClient/v1'
 import {
   GetFilteredBookingsRecapAdapter,
   GetFilteredBookingsRecapAdapterPayload,
-} from 'core/Bookings'
+} from 'core/Bookings/types'
 import { buildBookingsRecapQuery } from 'core/Bookings/utils'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 

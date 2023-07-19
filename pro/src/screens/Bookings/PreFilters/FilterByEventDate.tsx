@@ -1,6 +1,7 @@
 import React from 'react'
 
-import { DEFAULT_PRE_FILTERS, PreFiltersParams } from 'core/Bookings'
+import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
+import { PreFiltersParams } from 'core/Bookings/types'
 import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
 import { FieldLayout } from 'ui-kit/form/shared'
 

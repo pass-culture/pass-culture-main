@@ -13,11 +13,11 @@ export const BOOKING_STATUS = {
   PENDING: 'pending',
 }
 
-export const ALL_VENUES = 'all'
+const ALL_VENUES = 'all'
 
-export const ALL_OFFER_TYPE = 'all'
+const ALL_OFFER_TYPE = 'all'
 
-export const ALL_DATES = 'all'
+const ALL_DATES = 'all'
 
 export const EMPTY_FILTER_VALUE = ''
 
@@ -37,14 +37,14 @@ export const ALL_VENUES_OPTION: SelectOption = {
   value: ALL_VENUES,
 }
 
-const BOOKING_STATUS_OPTIONS: SelectOption[] = [
-  { label: 'Période de réservation', value: BookingStatusFilter.BOOKED },
+export const DEFAULT_BOOKING_FILTER = {
+  label: 'Période de réservation',
+  value: BookingStatusFilter.BOOKED,
+}
+export const BOOKING_STATUS_FILTER: SelectOption[] = [
   { label: 'Période de validation', value: BookingStatusFilter.VALIDATED },
   {
     label: 'Période de remboursement',
     value: BookingStatusFilter.REIMBURSED,
   },
 ]
-
-export const [DEFAULT_BOOKING_FILTER, ...BOOKING_STATUS_FILTER] =
-  BOOKING_STATUS_OPTIONS

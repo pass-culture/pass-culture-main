@@ -7,7 +7,7 @@ import {
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 import { CollectiveBookingCancellationReasons } from 'apiClient/v1/models/CollectiveBookingCancellationReasons'
-import { BOOKING_STATUS } from 'core/Bookings'
+import { BOOKING_STATUS } from 'core/Bookings/constants'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'

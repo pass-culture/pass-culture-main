@@ -1,4 +1,4 @@
-import { BOOKING_STATUS } from 'core/Bookings'
+import { BOOKING_STATUS } from 'core/Bookings/constants'
 import strokeCheckIcon from 'icons/stroke-check.svg'
 import strokeClockIcon from 'icons/stroke-clock.svg'
 import strokeDoubleCheckIcon from 'icons/stroke-double-check.svg'

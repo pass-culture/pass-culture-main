@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
-import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
+import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { getOfferVenueFactory } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 

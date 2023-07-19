@@ -7,8 +7,8 @@ import {
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 import NoData from 'components/NoData'
+import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import {
-  DEFAULT_PRE_FILTERS,
   GetBookingsCSVFileAdapter,
   GetBookingsXLSFileAdapter,
   GetFilteredBookingsRecapAdapter,
@@ -16,7 +16,7 @@ import {
   GetUserHasBookingsAdapter,
   GetVenuesAdapter,
   PreFiltersParams,
-} from 'core/Bookings'
+} from 'core/Bookings/types'
 import { Events } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared/types'
 import { SelectOption } from 'custom_types/form'

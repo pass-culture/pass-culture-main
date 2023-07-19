@@ -21,7 +21,7 @@ import {
   SubcategoryResponseModel,
   VenueTypeCode,
 } from 'apiClient/v1'
-import { BOOKING_STATUS } from 'core/Bookings'
+import { BOOKING_STATUS } from 'core/Bookings/constants'
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
 import { Venue } from 'core/Venue'
 
