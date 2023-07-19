@@ -1,15 +1,16 @@
-import PropTypes from 'prop-types'
 import React from 'react'
 
 import './NoBookingsForPreFiltersMessage.scss'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
+interface NoBookingsForPreFiltersMessageProps {
+  resetPreFilters: () => void
+}
+
 const NoBookingsForPreFiltersMessage = ({
   resetPreFilters,
-}: {
-  resetPreFilters: () => void
-}) => (
+}: NoBookingsForPreFiltersMessageProps) => (
   <div className="br-warning no-bookings-for-pre-filters">
     <SvgIcon
       src={strokeSearchIcon}
@@ -30,9 +31,5 @@ const NoBookingsForPreFiltersMessage = ({
     </p>
   </div>
 )
-
-NoBookingsForPreFiltersMessage.propTypes = {
-  resetPreFilters: PropTypes.func.isRequired,
-}
 
 export default NoBookingsForPreFiltersMessage
