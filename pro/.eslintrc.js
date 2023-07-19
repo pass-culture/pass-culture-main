@@ -47,13 +47,6 @@ module.exports = {
     ],
   },
   overrides: [
-    // Rules specific to testcafe files
-    {
-      files: ['testcafe/**/*'],
-      rules: {
-        'no-undef': 'off',
-      },
-    },
     // Rules specific to TS files
     {
       files: ['*.ts', '*.tsx'],
