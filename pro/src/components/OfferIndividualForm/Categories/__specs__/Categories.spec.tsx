@@ -6,7 +6,10 @@ import * as yup from 'yup'
 
 import { OfferIndividualFormValues } from 'components/OfferIndividualForm'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
-import { CATEGORY_STATUS, INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
+import {
+  CATEGORY_STATUS,
+  INDIVIDUAL_OFFER_SUBTYPE,
+} from 'core/Offers/constants'
 import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
 import { SubmitButton } from 'ui-kit'
 import { renderWithProviders } from 'utils/renderWithProviders'

@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
-import { isOfferDisabled } from 'core/Offers'
+import { isOfferDisabled } from 'core/Offers/utils'
 
 interface CheckboxCellProps {
   isSelected: boolean

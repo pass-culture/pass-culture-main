@@ -6,7 +6,7 @@ import {
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import { OFFER_STATUS_DRAFT } from 'core/Offers'
+import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
 import { Offer } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
 import penIcon from 'icons/full-edit.svg'

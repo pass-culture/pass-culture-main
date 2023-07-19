@@ -16,7 +16,7 @@ import {
   Mode,
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { computeCollectiveOffersUrl } from 'core/Offers'
+import { computeCollectiveOffersUrl } from 'core/Offers/utils'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { Button, ButtonLink } from 'ui-kit'

@@ -22,13 +22,14 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
-import { isOfferDisabled, OFFER_WIZARD_MODE } from 'core/Offers'
 import {
   createIndividualOffer,
   getOfferIndividualAdapter,
   updateIndividualOffer,
 } from 'core/Offers/adapters'
 import { serializePatchOffer } from 'core/Offers/adapters/updateIndividualOffer/serializers'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
+import { isOfferDisabled } from 'core/Offers/utils'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { FORM_ERROR_MESSAGE } from 'core/shared'
 import { useOfferWizardMode } from 'hooks'

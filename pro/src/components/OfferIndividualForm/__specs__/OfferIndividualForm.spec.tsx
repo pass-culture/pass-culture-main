@@ -9,7 +9,10 @@ import {
 } from 'context/OfferIndividualContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { OffererName } from 'core/Offerers/types'
-import { CATEGORY_STATUS, INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
+import {
+  CATEGORY_STATUS,
+  INDIVIDUAL_OFFER_SUBTYPE,
+} from 'core/Offers/constants'
 import {
   OfferCategory,
   OfferIndividual,

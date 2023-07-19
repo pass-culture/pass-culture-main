@@ -18,7 +18,7 @@ import {
   OfferIndividualContextValues,
   OfferIndividualContext,
 } from 'context/OfferIndividualContext'
-import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
 import {

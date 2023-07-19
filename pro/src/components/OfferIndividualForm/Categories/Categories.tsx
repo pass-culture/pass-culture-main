@@ -8,7 +8,7 @@ import {
   FORM_DEFAULT_VALUES,
   OfferIndividualFormValues,
 } from 'components/OfferIndividualForm'
-import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
+import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
 import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
 import { OfferIndividualVenue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'

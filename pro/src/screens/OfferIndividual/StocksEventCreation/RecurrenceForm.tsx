@@ -8,7 +8,7 @@ import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { OfferIndividual } from 'core/Offers/types'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'

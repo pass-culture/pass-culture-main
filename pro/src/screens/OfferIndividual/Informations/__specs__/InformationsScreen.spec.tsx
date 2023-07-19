@@ -7,7 +7,7 @@ import {
   OfferIndividualContextValues,
 } from 'context/OfferIndividualContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
-import { CATEGORY_STATUS } from 'core/Offers'
+import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { OfferSubCategory } from 'core/Offers/types'
 import { OfferIndividualVenue } from 'core/Venue/types'
 import * as utils from 'screens/OfferIndividual/Informations/utils'

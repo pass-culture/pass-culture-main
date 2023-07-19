@@ -1,4 +1,7 @@
-import { CATEGORY_STATUS, INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers'
+import {
+  CATEGORY_STATUS,
+  INDIVIDUAL_OFFER_SUBTYPE,
+} from 'core/Offers/constants'
 import {
   OfferCategory,
   OfferIndividual,

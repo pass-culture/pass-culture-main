@@ -12,7 +12,7 @@ import {
 } from 'components/OfferIndividualForm'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { OffererName } from 'core/Offerers/types'
-import { CATEGORY_STATUS } from 'core/Offers'
+import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { OfferSubCategory } from 'core/Offers/types'
 import { OfferIndividualVenue } from 'core/Venue/types'
 import { SubmitButton } from 'ui-kit'

@@ -16,9 +16,9 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
-import { isOfferDisabled } from 'core/Offers'
 import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import { OfferIndividual } from 'core/Offers/types'
+import { isOfferDisabled } from 'core/Offers/utils'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { SelectOption } from 'custom_types/form'
 import { useOfferWizardMode } from 'hooks'

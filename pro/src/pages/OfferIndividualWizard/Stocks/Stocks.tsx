@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
-import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { useOfferWizardMode } from 'hooks'
 import {
   StocksEventEdition,

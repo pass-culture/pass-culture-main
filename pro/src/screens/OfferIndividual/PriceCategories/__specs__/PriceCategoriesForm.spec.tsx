@@ -5,7 +5,7 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
-import { OFFER_WIZARD_MODE } from 'core/Offers'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { GetIndividualOfferFactory } from 'utils/apiFactories'
 import { individualStockFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'

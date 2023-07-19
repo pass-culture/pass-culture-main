@@ -11,7 +11,7 @@ import {
   OFFER_STATUS_DRAFT,
   OFFER_STATUS_PENDING,
   OFFER_STATUS_SOLD_OUT,
-} from 'core/Offers'
+} from 'core/Offers/constants'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import useAnalytics from 'hooks/useAnalytics'

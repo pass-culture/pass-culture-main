@@ -9,15 +9,17 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import {
-  computeCollectiveOffersUrl,
-  computeOffersUrl,
   DEFAULT_SEARCH_FILTERS,
-  hasSearchFilters,
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
   OFFER_STATUS_DRAFT,
-} from 'core/Offers'
+} from 'core/Offers/constants'
 import { Offer, Offerer, SearchFiltersParams } from 'core/Offers/types'
+import {
+  computeCollectiveOffersUrl,
+  computeOffersUrl,
+  hasSearchFilters,
+} from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import getUserValidatedOfferersNamesAdapter from 'core/shared/adapters/getUserValidatedOfferersNamesAdapter'
 import { SelectOption } from 'custom_types/form'

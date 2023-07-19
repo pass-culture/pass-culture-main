@@ -1,8 +1,9 @@
 import cn from 'classnames'
 import React from 'react'
 
-import { isOfferDisabled, OFFER_STATUS_DRAFT } from 'core/Offers'
+import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
 import { Offer } from 'core/Offers/types'
+import { isOfferDisabled } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import {
   useOfferEditionURL,

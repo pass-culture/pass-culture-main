@@ -16,7 +16,7 @@ import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { ApiError } from 'apiClient/v2'
 import Notification from 'components/Notification/Notification'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
-import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers'
+import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getOfferIndividualPath } from 'core/Offers/utils/getOfferIndividualUrl'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import {

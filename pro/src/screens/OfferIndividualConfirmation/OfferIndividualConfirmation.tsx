@@ -7,7 +7,7 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
-import { OFFER_STATUS_PENDING } from 'core/Offers'
+import { OFFER_STATUS_PENDING } from 'core/Offers/constants'
 import { OfferIndividual } from 'core/Offers/types'
 import useAnalytics from 'hooks/useAnalytics'
 import fullLinkIcon from 'icons/full-link.svg'
