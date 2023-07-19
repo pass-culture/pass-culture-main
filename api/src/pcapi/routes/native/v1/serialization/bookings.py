@@ -76,6 +76,7 @@ class BookingOfferResponse(BaseModel):
 class BookingStockResponse(BaseModel):
     id: int
     beginningDatetime: datetime | None
+    features: list[str]
     offer: BookingOfferResponse
     price: int
     priceCategoryLabel: str | None

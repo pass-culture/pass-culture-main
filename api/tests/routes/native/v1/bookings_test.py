@@ -209,6 +209,7 @@ class GetBookingsTest:
             displayAsEnded=True,
             dateUsed=datetime(2023, 3, 2),
             stock__offer__url=OFFER_URL,
+            stock__features=["VO"],
             cancellation_limit_date=datetime(2023, 3, 2),
         )
 
@@ -253,6 +254,7 @@ class GetBookingsTest:
             "id": used2.id,
             "stock": {
                 "beginningDatetime": None,
+                "features": ["VO"],
                 "id": used2.stock.id,
                 "price": used2.stock.price * 100,
                 "priceCategoryLabel": None,
