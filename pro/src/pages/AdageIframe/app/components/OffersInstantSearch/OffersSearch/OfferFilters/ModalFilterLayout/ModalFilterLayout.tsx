@@ -7,8 +7,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './ModalFilterLayout.module.scss'
 
-export interface ModalFilterLayoutProps
-  extends React.HTMLProps<HTMLButtonElement> {
+interface ModalFilterLayoutProps extends React.HTMLProps<HTMLButtonElement> {
   title: string
   onClean?: () => void
   onSearch: () => void

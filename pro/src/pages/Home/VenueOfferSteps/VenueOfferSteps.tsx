@@ -20,7 +20,7 @@ import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 
 import styles from './VenueOfferSteps.module.scss'
 
-export interface VenueOfferStepsProps {
+interface VenueOfferStepsProps {
   hasVenue: boolean
   hasMissingReimbursementPoint?: boolean
   offererId: number
