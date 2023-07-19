@@ -114,12 +114,8 @@ def get_email_update_status(user: users_models.User) -> serializers.EmailUpdateS
 
 
 @blueprint.native_v1.route("/profile/email_update/confirm", methods=["POST"])
-@spectree_serialize(
-    on_success_status=204,
-    api=blueprint.api,
-)
-@authenticated_and_active_user_required
-def confirm_email_update(user: users_models.User, body: serializers.ChangeBeneficiaryEmailBody) -> None:
+@spectree_serialize(on_success_status=204, api=blueprint.api)
+def confirm_email_update(body: serializers.ChangeBeneficiaryEmailBody) -> None:
     try:
         email_api.update.confirm_email_update_request(body.token)
     except pydantic.ValidationError:
