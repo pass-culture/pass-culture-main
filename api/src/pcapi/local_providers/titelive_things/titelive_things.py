@@ -9,7 +9,6 @@ from pcapi.core.categories import subcategories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.api import deactivate_permanently_unavailable_products
-import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
@@ -266,14 +265,10 @@ class TiteLiveThings(LocalProvider):
                     ineligibility_reason,
                 )
             else:
-                logger.info("Ignoring ean=%s because reason=%s", book_unique_identifier, ineligibility_reason)
-                try:
-                    offers_api.delete_unwanted_existing_product(book_unique_identifier)
-                except offers_exceptions.CannotDeleteProductWithBookings:
-                    logger.info(
-                        "Skipping product deletion due to active booking(s) for EAN: %s",
-                        self.product_infos[INFO_KEYS["EAN13"]],
-                    )
+                offers_api.reject_inappropriate_products(book_unique_identifier)
+                logger.info(
+                    "Rejecting ineligible ean=%s because reason=%s", book_unique_identifier, ineligibility_reason
+                )
                 return []
 
         if is_unreleased_book(self.product_infos):

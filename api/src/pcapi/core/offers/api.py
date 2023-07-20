@@ -21,6 +21,7 @@ from pcapi.connectors.titelive import get_new_product_from_ean13
 from pcapi.core import search
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.models as bookings_models
+from pcapi.core.bookings.models import BookingCancellationReasons
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.categories import subcategories
 import pcapi.core.criteria.models as criteria_models
@@ -32,6 +33,7 @@ from pcapi.core.external.attributes.api import update_external_pro
 import pcapi.core.external_bookings.api as external_bookings_api
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.mails.transactional as transactional_mails
+from pcapi.core.mails.transactional import send_booking_cancellation_emails_to_user_and_offerer
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.models as offerers_models
@@ -894,8 +896,9 @@ def add_criteria_to_offers(
     return True
 
 
-def reject_inappropriate_products(ean: str) -> bool:
+def reject_inappropriate_products(ean: str, send_booking_cancellation_emails: bool = True) -> bool:
     products = models.Product.query.filter(models.Product.extraData["ean"].astext == ean).all()
+
     if not products:
         return False
 
@@ -903,12 +906,14 @@ def reject_inappropriate_products(ean: str) -> bool:
         product.isGcuCompatible = False
         db.session.add(product)
 
-    offers = models.Offer.query.filter(
+    offers_query = models.Offer.query.filter(
         models.Offer.productId.in_(p.id for p in products),
         models.Offer.validation != models.OfferValidationStatus.REJECTED,
-    )
-    offer_ids = [offer_id for offer_id, in offers.with_entities(models.Offer.id).all()]
-    offers.update(
+    ).options(sa.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings))
+
+    offers = offers_query.all()
+
+    offers_query.update(
         values={
             "validation": models.OfferValidationStatus.REJECTED,
             "lastValidationDate": datetime.datetime.utcnow(),
@@ -916,6 +921,15 @@ def reject_inappropriate_products(ean: str) -> bool:
         },
         synchronize_session="fetch",
     )
+
+    offer_ids = []
+    for offer in offers:
+        offer_ids.append(offer.id)
+        bookings = bookings_api.cancel_bookings_from_rejected_offer(offer)
+
+        if send_booking_cancellation_emails:
+            for booking in bookings:
+                send_booking_cancellation_emails_to_user_and_offerer(booking, reason=BookingCancellationReasons.FRAUD)
 
     try:
         db.session.commit()
@@ -930,7 +944,10 @@ def reject_inappropriate_products(ean: str) -> bool:
         extra={"ean": ean, "products": [p.id for p in products], "offers": offer_ids},
     )
 
-    search.async_index_offer_ids(offer_ids)
+    if offer_ids:
+        favorites = users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).all()
+        repository.delete(*favorites)
+        search.async_index_offer_ids(offer_ids)
 
     return True
 
@@ -1244,51 +1261,6 @@ def whitelist_product(idAtProviders: str) -> None:
     if product:
         db.session.add(product)
         db.session.commit()
-
-
-def delete_unwanted_existing_product(idAtProviders: str) -> None:
-    product_has_at_least_one_booking = (
-        models.Product.query.filter_by(idAtProviders=idAtProviders)
-        .join(models.Offer)
-        .join(models.Stock)
-        .join(bookings_models.Booking)
-        .count()
-        > 0
-    )
-    product = (
-        models.Product.query.filter(models.Product.can_be_synchronized)
-        .filter_by(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        .filter_by(idAtProviders=idAtProviders)
-        .one_or_none()
-    )
-
-    if not product:
-        return
-
-    if product_has_at_least_one_booking:
-        offers = models.Offer.query.filter_by(productId=product.id)
-        offers.update({"isActive": False}, synchronize_session=False)
-        db.session.commit()
-        product.isGcuCompatible = False
-        product.isSynchronizationCompatible = False
-        repository.save(product)
-        offer_ids = [id_ for id_, in offers.with_entities(models.Offer.id)]
-        search.async_index_offer_ids(offer_ids)
-        raise exceptions.CannotDeleteProductWithBookings()
-
-    objects_to_delete = []
-    objects_to_delete.append(product)
-    offers = models.Offer.query.filter_by(productId=product.id).all()
-    offer_ids = [offer.id for offer in offers]
-    objects_to_delete = objects_to_delete + offers
-    stocks = offers_repository.get_stocks_for_offers(offer_ids)
-    objects_to_delete = objects_to_delete + stocks
-    mediations = models.Mediation.query.filter(models.Mediation.offerId.in_(offer_ids)).all()
-    objects_to_delete = objects_to_delete + mediations
-    favorites = users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).all()
-    objects_to_delete = objects_to_delete + favorites
-    repository.delete(*objects_to_delete)
-    search.async_index_offer_ids(offer_ids)
 
 
 def batch_delete_draft_offers(query: BaseQuery) -> None:
