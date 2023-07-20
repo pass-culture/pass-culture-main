@@ -2,6 +2,8 @@ import pytest
 
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
+import pcapi.core.subscription.api as subscription_api
+import pcapi.core.subscription.repository as subscription_repository
 from pcapi.core.users import constants as users_constants
 import pcapi.core.users.generator as users_generator
 import pcapi.core.users.models as users_models
@@ -177,7 +179,7 @@ class UserGeneratorTest:
             step=users_generator.GeneratedSubscriptionStep.PROFILE_COMPLETION,
         )
         user = users_generator.generate_user(user_data)
-        profile_completion = user.beneficiaryFraudChecks[-1]
+        profile_completion = subscription_repository.get_completed_profile_check(user, user.eligibility)
         assert profile_completion.resultContent["address"] == user.address
         assert profile_completion.resultContent["city"] == user.city
         assert profile_completion.resultContent["firstName"] == user.firstName
@@ -190,7 +192,7 @@ class UserGeneratorTest:
             step=users_generator.GeneratedSubscriptionStep.IDENTITY_CHECK,
         )
         user = users_generator.generate_user(user_data)
-        identity_check = user.beneficiaryFraudChecks[-1]
+        identity_check = subscription_api.get_relevant_identity_fraud_check(user, user.eligibility)
         assert identity_check.resultContent["first_name"] == user.firstName
         assert identity_check.resultContent["last_name"] == user.lastName
         assert identity_check.resultContent["birth_date"] == str(user.birth_date)
