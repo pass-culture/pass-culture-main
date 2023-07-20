@@ -162,7 +162,7 @@ def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> None:
             {"code": "INVALID_EMAIL", "message": "Adresse email invalide"},
             status_code=400,
         )
-    except jwt.InvalidTokenError:
+    except exceptions.InvalidToken:
         raise api_errors.ApiErrors(
             {"code": "INVALID_TOKEN", "message": "Token invalide"},
             status_code=400,
