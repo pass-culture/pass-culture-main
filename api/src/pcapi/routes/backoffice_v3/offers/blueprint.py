@@ -20,6 +20,7 @@ from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.users import models as users_models
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
 from pcapi.routes.backoffice_v3 import utils
@@ -601,12 +602,17 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
             offer.lastValidationDate = datetime.datetime.utcnow()
             offer.lastValidationType = OfferValidationType.MANUAL
             offer.isActive = False
+
             # cancel_bookings_from_rejected_offer can raise handled exceptions that drop the
             # modifications of the offer; we save them here first
             repository.save(offer)
 
             cancelled_bookings = bookings_api.cancel_bookings_from_rejected_offer(offer)
+
             if cancelled_bookings:
+                # FIXME: La notification indique que l'offreur a annulé alors que c'est la fraude
+                # TODO(PC-23550): SPIKE avec marketing https://passculture.atlassian.net/browse/PC-23550
+                # Il faudrait utiliser send_booking_cancellation_emails_to_user_and_offerer et retirer cette notification soit la déplacer dedans, mais un mail est mieux (TBD)
                 push_notification_job.send_cancel_booking_notification.delay(
                     [booking.id for booking in cancelled_bookings]
                 )
@@ -620,4 +626,7 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
             )
             transactional_mails.send_offer_validation_status_update_email(offer, new_validation, recipients)
 
-    search.async_index_offer_ids(offer_ids)
+    if len(offer_ids) > 0:
+        favorites = users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).all()
+        repository.delete(*favorites)
+        search.async_index_offer_ids(offer_ids)

@@ -31,6 +31,7 @@ def send_booking_cancellation_emails_to_user_and_offerer(
         send_booking_cancellation_by_pro_to_beneficiary_email(booking)
         return send_booking_cancellation_confirmation_by_pro_to_pro_email(booking)
     if reason == BookingCancellationReasons.FRAUD:
+        # TODO(PC-23550): SPIKE en cours avec marketing pour communication jeune via https://passculture.atlassian.net/browse/PC-23550
         return send_booking_cancellation_by_beneficiary_to_pro_email(booking)
     return True
 
