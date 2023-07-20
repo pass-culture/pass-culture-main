@@ -614,10 +614,14 @@ class BeneficiaryFraudReview(PcObject, Base, Model):
 class FraudItem:
     detail: str
     status: FraudStatus
+    extra_data: dict = dataclasses.field(default_factory=dict)
     reason_codes: list[FraudReasonCode] = dataclasses.field(default_factory=list)
 
     def __bool__(self) -> bool:
         return self.status == FraudStatus.OK
+
+    def get_duplicate_beneficiary_id(self) -> int | None:
+        return self.extra_data.get("duplicate_id")
 
 
 class BlacklistedDomainName(PcObject, Base, Model):

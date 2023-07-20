@@ -636,7 +636,6 @@ def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
         fraud_api.invalidate_fraud_check_for_duplicate_user(
             subscription_state.identity_fraud_check, duplicate_beneficiary.id
         )
-        fraud_api.handle_fraud_suspicion(user, duplicate_beneficiary)
         return False
 
     source_data = typing.cast(
