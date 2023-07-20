@@ -108,6 +108,52 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {offers[2].id}
 
+    def test_list_offers_without_sort_should_not_have_created_date_sort_link(self, authenticated_client):
+        # given
+        query_args = {}
+
+        # when
+        response = authenticated_client.get(url_for(self.endpoint, **query_args))
+
+        # then
+        expected_url = "/pro/offer?sort=dateCreated&amp;order=desc"
+
+        assert expected_url not in str(response.data)
+
+    def test_list_offers_with_sort_should_have_created_date_sort_link(self, authenticated_client, offers):
+        # given
+        query_args = {"sort": "dateCreated", "order": "asc", "q": "e"}
+
+        # when
+        response = authenticated_client.get(url_for(self.endpoint, **query_args))
+
+        # then
+        expected_url = "/pro/offer?q=e&amp;sort=dateCreated&amp;order=desc"
+
+        assert expected_url in str(response.data)
+
+    def test_list_offers_with_advanced_search_and_sort_should_have_created_date_sort_link(
+        self, authenticated_client, offers
+    ):
+        # given
+        query_args = {
+            "sort": "dateCreated",
+            "order": "asc",
+            "search-0-search_field": "NAME",
+            "search-0-operator": "STR_EQUALS",
+            "search-0-string": "A Very Specific Name",
+        }
+        # when
+        response = authenticated_client.get(url_for(self.endpoint, **query_args))
+
+        # then
+        expected_url = (
+            "/pro/offer?sort=dateCreated&amp;order=desc&amp;search-0-search_field=NAME&amp;"
+            "search-0-operator=STR_EQUALS&amp;search-0-string=A+Very+Specific+Name"
+        )
+
+        assert expected_url in str(response.data)
+
     def test_list_offers_by_event_date(self, authenticated_client, offers):
         offers_factories.EventStockFactory(beginningDatetime=datetime.date.today() + datetime.timedelta(days=1))
         stock = offers_factories.EventStockFactory(beginningDatetime=datetime.date.today())
@@ -160,7 +206,6 @@ class ListOffersTest(GetEndpointHelper):
 
     def test_list_offers_by_category_advanced(self, authenticated_client, offers):
         # when
-
         query_args = {
             "search-3-search_field": "CATEGORY",
             "search-3-operator": "IN",
