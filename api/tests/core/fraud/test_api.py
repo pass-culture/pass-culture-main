@@ -12,6 +12,7 @@ import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.ubble.models as ubble_fraud_models
 import pcapi.core.history.factories as history_factories
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.subscription.api as subscription_api
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_settings
 import pcapi.core.users.constants as users_constants
@@ -295,52 +296,74 @@ class FindDuplicateUserTest:
 
         assert fraud_api.find_duplicate_id_piece_number_user(new_id_piece_number, new_user.id) == existing_user
 
-    def test_handle_duplicated_beneficiary_fraud_suspicion(self):
-        id_number = "123456789012"
+    def test_send_email_to_fraud_if_duplicated_beneficiary(self):
         # 2 years ago
-        with freeze_time(datetime.datetime.utcnow() - relativedelta(years=2)):
+        with freeze_time(datetime.datetime.utcnow() - relativedelta(years=2, days=2)):
             user1 = users_factories.BeneficiaryFactory(
                 age=17,
-                idPieceNumber=None,
-                beneficiaryFraudChecks__type=fraud_models.FraudCheckType.EDUCONNECT,
-            )
-            user2 = users_factories.BeneficiaryFactory(
-                age=16,
-                idPieceNumber=None,
                 beneficiaryFraudChecks__type=fraud_models.FraudCheckType.EDUCONNECT,
             )
 
         # A year ago
-        with freeze_time(datetime.datetime.utcnow() - relativedelta(years=1)):
+        # user 1 is now 18 yo
+        with freeze_time(datetime.datetime.utcnow() - relativedelta(years=1, days=1)):
+            # Make user 1 beneficiary
+            user1.phoneValidationStatus = users_models.PhoneValidationStatusType.SKIPPED_BY_SUPPORT
             fraud_factories.BeneficiaryFraudCheckFactory(
-                user=user1,
-                status=fraud_models.FraudCheckStatus.OK,
-                type=fraud_models.FraudCheckType.UBBLE,
+                user=user1, status=fraud_models.FraudCheckStatus.OK, type=fraud_models.FraudCheckType.PROFILE_COMPLETION
             )
-            user1.idPieceNumber = id_number
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user1, status=fraud_models.FraudCheckStatus.OK, type=fraud_models.FraudCheckType.UBBLE
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user1, status=fraud_models.FraudCheckStatus.OK, type=fraud_models.FraudCheckType.HONOR_STATEMENT
+            )
+            subscription_api.activate_beneficiary_if_no_missing_step(user1)
 
-        # Today
-        fraud_factories.BeneficiaryFraudCheckFactory(
+            # Create 2 underage users
+            user2 = users_factories.BeneficiaryFactory(
+                age=17, beneficiaryFraudChecks__type=fraud_models.FraudCheckType.EDUCONNECT
+            )
+            user3 = users_factories.BeneficiaryFactory(
+                age=17, beneficiaryFraudChecks__type=fraud_models.FraudCheckType.EDUCONNECT
+            )
+
+        # users 2 and 3 are now 18 yo
+        ubble_fraud_check2 = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user2,
             status=fraud_models.FraudCheckStatus.OK,
             type=fraud_models.FraudCheckType.UBBLE,
+            resultContent={
+                "first_name": user1.firstName,
+                "last_name": user1.lastName,
+                "birth_date": user1.birth_date.isoformat(),
+            },
+        )
+        ubble_fraud_check3 = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user3,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.UBBLE,
+            resultContent={"id_document_number": user1.idPieceNumber},
         )
 
-        fraud_api.handle_fraud_suspicion(user2, user1)
-        assert mails_testing.outbox
+        fraud_api.on_identity_fraud_check_result(user2, ubble_fraud_check2)
+        fraud_api.on_identity_fraud_check_result(user3, ubble_fraud_check3)
 
-        sent_mail = mails_testing.outbox[-1]
         assert not user1.isActive
         assert not user2.isActive
-        assert sent_mail.sent_data["To"] == settings.FRAUD_EMAIL_ADDRESS
-        assert (
-            f'<a href="{settings.BACKOFFICE_URL}/public-accounts/{user1.id}">{user1.id}</a>'
-            in sent_mail.sent_data["html_content"]
-        )
-        assert (
-            f'<a href="{settings.BACKOFFICE_URL}/public-accounts/{user2.id}">{user2.id}</a>'
-            in sent_mail.sent_data["html_content"]
-        )
+        assert not user3.isActive
+
+        # First mail is for user1 activation
+        assert len(mails_testing.outbox) == 3
+        sent_mail2 = mails_testing.outbox[1]
+        sent_mail3 = mails_testing.outbox[2]
+        assert sent_mail2.sent_data["To"] == sent_mail3.sent_data["To"] == settings.FRAUD_EMAIL_ADDRESS
+
+        link = '<a href="{url}/public-accounts/{id}">{id}</a>'
+        assert link.format(id=user1.id, url=settings.BACKOFFICE_URL) in sent_mail2.sent_data["html_content"]
+        assert link.format(id=user2.id, url=settings.BACKOFFICE_URL) in sent_mail2.sent_data["html_content"]
+        assert link.format(id=user1.id, url=settings.BACKOFFICE_URL) in sent_mail3.sent_data["html_content"]
+        assert link.format(id=user3.id, url=settings.BACKOFFICE_URL) in sent_mail3.sent_data["html_content"]
 
 
 @pytest.mark.usefixtures("db_session")
