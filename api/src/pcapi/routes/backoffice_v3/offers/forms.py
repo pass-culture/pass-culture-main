@@ -2,6 +2,7 @@ import enum
 from functools import partial
 import json
 import typing
+from urllib.parse import urlencode
 
 from flask import url_for
 from flask_wtf import FlaskForm
@@ -255,6 +256,20 @@ class GetOfferAdvancedSearchForm(GetOffersBaseFields):
                 if field_data:
                     return False
         return empty
+
+    def get_sort_link_with_search_data(self, endpoint: str) -> str:
+        search_data = {}
+        for i, sub_form in enumerate(self.search):
+            prefix = f"search-{i}-"
+            for field_name, field_value in sub_form.data.items():
+                if field_value:
+                    search_data[f"{prefix}{field_name}"] = field_value
+
+        encoded_search_data = urlencode(search_data, doseq=True)
+
+        base_url = self.get_sort_link(endpoint)
+
+        return f"{base_url}&{encoded_search_data}" if encoded_search_data else f"{base_url}"
 
 
 class GetOffersSearchForm(GetOffersBaseFields):
