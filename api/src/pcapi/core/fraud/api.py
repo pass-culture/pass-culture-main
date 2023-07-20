@@ -194,6 +194,7 @@ def _duplicate_user_fraud_item(
             status=models.FraudStatus.SUSPICIOUS,
             detail=f"Duplicat de l'utilisateur {duplicate_user.id}",
             reason_codes=[models.FraudReasonCode.DUPLICATE_USER],
+            extra_data={"duplicate_id": duplicate_user.id},
         )
 
     return models.FraudItem(status=models.FraudStatus.OK, detail="Utilisateur non dupliqué")
@@ -245,6 +246,7 @@ def duplicate_id_piece_number_fraud_item(user: users_models.User, id_piece_numbe
             status=models.FraudStatus.SUSPICIOUS,
             detail=f"La pièce d'identité n°{id_piece_number} est déjà prise par l'utilisateur {duplicate_user.id}",
             reason_codes=[models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER],
+            extra_data={"duplicate_id": duplicate_user.id},
         )
 
     return models.FraudItem(status=models.FraudStatus.OK, detail="La pièce d'identité n'est pas déjà utilisée")
@@ -427,6 +429,58 @@ def handle_phone_validation_attempts_limit_reached(user: users_models.User, atte
     _create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
 
+def _send_duplicate_fraud_detection_mail(user: users_models.User, duplicate: users_models.User) -> None:
+    user_backoffice_link = f'<a href="{settings.BACKOFFICE_URL}/public-accounts/{user.id}">{user.id}</a>'
+    duplicate_backoffice_link = f'<a href="{settings.BACKOFFICE_URL}/public-accounts/{duplicate.id}">{duplicate.id}</a>'
+    mails.send(
+        recipients=[settings.FRAUD_EMAIL_ADDRESS],
+        data=mails_models.TransactionalWithoutTemplateEmailData(
+            sender=mails_models.TransactionalSender.DEV,
+            subject="Doublon détecté",
+            html_content=f"""<h2>Un doublon a été détecté</h2>
+<body>
+    <p>L'utilisateur {user_backoffice_link} essaie d'obtenir son crédit 18 ans. 
+    Or il semble être un doublon de l'utilisateur {duplicate_backoffice_link}.</p>
+    <p>Les deux ont déjà été crédités de leur crédit 15-17 ans et
+    {duplicate_backoffice_link} a aussi reçu le crédit 18 ans.</p>
+    <p>Ces deux comptes ont donc été suspendus pour suspicion de fraude.</p>
+</body>""",
+        ),
+    )
+
+
+def _handle_duplicate(fraud_items: list[models.FraudItem], fraud_check: models.BeneficiaryFraudCheck) -> None:
+    duplicate_beneficiary_id = next(
+        (
+            fraud_item.get_duplicate_beneficiary_id()
+            for fraud_item in fraud_items
+            if models.FraudReasonCode.DUPLICATE_USER in fraud_item.reason_codes
+            or models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in fraud_item.reason_codes
+        ),
+        None,
+    )
+    if not duplicate_beneficiary_id:
+        return
+
+    user = fraud_check.user
+    if not user.deposit or user.deposit.type != finance_models.DepositType.GRANT_15_17:
+        return
+
+    duplicate_beneficiary = users_models.User.query.get(duplicate_beneficiary_id)
+    if not duplicate_beneficiary:
+        return
+
+    duplicate_had_underage_credit = any(
+        deposit for deposit in duplicate_beneficiary.deposits if deposit.type == finance_models.DepositType.GRANT_15_17
+    )
+    if not duplicate_had_underage_credit:
+        return
+
+    users_api.suspend_account(user, constants.SuspensionReason.FRAUD_SUSPICION, actor=None)
+    users_api.suspend_account(duplicate_beneficiary, constants.SuspensionReason.FRAUD_SUSPICION, actor=None)
+    _send_duplicate_fraud_detection_mail(user, duplicate_beneficiary)
+
+
 def validate_frauds(
     fraud_items: list[models.FraudItem],
     fraud_check: models.BeneficiaryFraudCheck,
@@ -446,6 +500,8 @@ def validate_frauds(
             fraud_item.reason_codes for fraud_item in fraud_items if fraud_item.status != models.FraudStatus.OK
         )
     )
+
+    _handle_duplicate(fraud_items, fraud_check)
 
     fraud_check.status = fraud_check_status
     fraud_check.reason = reason
@@ -774,33 +830,6 @@ def invalidate_fraud_check_for_duplicate_user(
     fraud_check.reason = f"Fraud check invalidé: duplicat de l'utilisateur {duplicate_user_id}"
 
     repository.save(fraud_check)
-
-
-def handle_fraud_suspicion(user: users_models.User, duplicate: users_models.User) -> None:
-    if user.deposit_type == finance_models.DepositType.GRANT_15_17 and finance_models.DepositType.GRANT_15_17 in [
-        deposit.type for deposit in duplicate.deposits
-    ]:
-        users_api.suspend_account(user, constants.SuspensionReason.FRAUD_SUSPICION, actor=None)
-        users_api.suspend_account(duplicate, constants.SuspensionReason.FRAUD_SUSPICION, actor=None)
-        user_backoffice_link = f'<a href="{settings.BACKOFFICE_URL}/public-accounts/{user.id}">{user.id}</a>'
-        duplicate_backoffice_link = (
-            f'<a href="{settings.BACKOFFICE_URL}/public-accounts/{duplicate.id}">{duplicate.id}</a>'
-        )
-        mails.send(
-            recipients=[settings.FRAUD_EMAIL_ADDRESS],
-            data=mails_models.TransactionalWithoutTemplateEmailData(
-                sender=mails_models.TransactionalSender.DEV,
-                subject="Doublon détecté",
-                html_content=f"""<h2>Un doublon a été détecté</h2>
-<body>
-    <p>L'utilisateur {user_backoffice_link} essaie d'obtenir son crédit 18 ans. 
-    Or il semble être un doublon de l'utilisateur {duplicate_backoffice_link}.</p>
-    <p>Les deux ont déjà été crédités de leur crédit 15-17 ans et
-    {duplicate_backoffice_link} a aussi reçu le crédit 18 ans.</p>
-    <p>Ces deux comptes ont donc été suspendus pour suspicion de fraude.</p>
-</body>""",
-            ),
-        )
 
 
 def _anonymize_email(email: str) -> str:
