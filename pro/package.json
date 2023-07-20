@@ -42,7 +42,7 @@
     "@reduxjs/toolkit": "^1.9.5",
     "@sentry/browser": "^7.57.0",
     "@sentry/react": "^7.59.3",
-    "@sentry/tracing": "^7.59.2",
+    "@sentry/tracing": "^7.59.3",
     "@zootools/email-spell-checker": "^1.12.0",
     "classnames": "^2.2.6",
     "date-fns": "^2.30.0",
