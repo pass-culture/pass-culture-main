@@ -270,7 +270,7 @@ def list_offers() -> utils.BackofficeResponse:
         "offer/list.html",
         rows=offers,
         form=display_form,
-        date_created_sort_url=display_form.get_sort_link(".list_offers") if form.sort.data else None,
+        date_created_sort_url=form.get_sort_link_with_search_data(".list_offers") if form.sort.data else None,
         get_initial_stock=_get_initial_stock,
         get_remaining_stock=_get_remaining_stock,
         advanced_query=advanced_query,
