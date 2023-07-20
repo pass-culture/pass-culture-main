@@ -1283,9 +1283,12 @@ class AddCriterionToOffersTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class DeactivateInappropriateProductTest:
+class RejectInappropriateProductTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_should_deactivate_product_with_inappropriate_content(self, mocked_async_index_offer_ids):
+    @mock.patch("pcapi.core.offers.api.send_booking_cancellation_emails_to_user_and_offerer")
+    def test_should_reject_product_with_inappropriate_content(
+        self, mocked_send_booking_cancellation_emails_to_user_and_offerer, mocked_async_index_offer_ids
+    ):
         # Given
         product1 = factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}
@@ -1293,21 +1296,61 @@ class DeactivateInappropriateProductTest:
         product2 = factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}
         )
-        factories.OfferFactory(product=product1)
-        factories.OfferFactory(product=product1)
-        factories.OfferFactory(product=product2)
+        offers = {
+            factories.OfferFactory(product=product1),
+            factories.OfferFactory(product=product1),
+            factories.OfferFactory(product=product2),
+        }
+
+        for offer in offers:
+            users_factories.FavoriteFactory(offer=offer)
+            bookings_factories.BookingFactory(stock__offer=offer)
 
         # When
-        api.reject_inappropriate_products("ean-de-test")
+        api.reject_inappropriate_products("ean-de-test", send_booking_cancellation_emails=False)
 
         # Then
         products = models.Product.query.all()
         offers = models.Offer.query.all()
+        bookings = bookings_models.Booking.query.all()
 
         assert not any(product.isGcuCompatible for product in products)
         assert all(offer.validation == OfferValidationStatus.REJECTED for offer in offers)
-        mocked_async_index_offer_ids.assert_called_once()
+        mocked_async_index_offer_ids.assert_called()
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == {o.id for o in offers}
+        assert users_models.Favorite.query.count() == 0
+        assert all(booking.isCancelled is True for booking in bookings)
+        mocked_send_booking_cancellation_emails_to_user_and_offerer.assert_not_called()
+
+    @mock.patch("pcapi.core.offers.api.send_booking_cancellation_emails_to_user_and_offerer")
+    def test_should_reject_product_with_inappropriate_content_and_send_email(
+        self, mocked_send_booking_cancellation_emails_to_user_and_offerer
+    ):
+        # Given
+        product1 = factories.ThingProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}
+        )
+        product2 = factories.ThingProductFactory(
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}
+        )
+        offers = {
+            factories.OfferFactory(product=product1),
+            factories.OfferFactory(product=product1),
+            factories.OfferFactory(product=product2),
+        }
+
+        for offer in offers:
+            users_factories.FavoriteFactory(offer=offer)
+            bookings_factories.BookingFactory(stock__offer=offer)
+
+        assert users_models.Favorite.query.count() == len(offers)
+        assert bookings_models.Booking.query.count() == len(offers)
+
+        # When
+        api.reject_inappropriate_products("ean-de-test", send_booking_cancellation_emails=True)
+
+        # Then
+        mocked_send_booking_cancellation_emails_to_user_and_offerer.assert_called()
 
 
 @pytest.mark.usefixtures("db_session")
@@ -2229,56 +2272,6 @@ class UnindexExpiredOffersTest:
         assert mock_unindex_offer_ids.mock_calls == [
             mock.call([stock1.offerId]),
         ]
-
-
-@pytest.mark.usefixtures("db_session")
-class DeleteUnwantedExistingProductTest:
-    @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_delete_product_when_ean_found(self, mocked_async_index_offer_ids):
-        ean = "1111111111111"
-        product_to_delete = factories.ProductFactory(
-            idAtProviders=ean,
-            isSynchronizationCompatible=True,
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
-        )
-        offer_to_delete = factories.OfferFactory(product=product_to_delete)
-        factories.MediationFactory(offer=offer_to_delete)
-        users_factories.FavoriteFactory(offer=offer_to_delete)
-        product_to_keep_other_ean = factories.ProductFactory(
-            idAtProviders="something-else",
-            isSynchronizationCompatible=True,
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
-        )
-
-        api.delete_unwanted_existing_product("1111111111111")
-
-        assert models.Product.query.all() == [product_to_keep_other_ean]
-        assert models.Mediation.query.count() == 0
-        assert models.Offer.query.count() == 0
-        assert users_models.Favorite.query.count() == 0
-
-        mocked_async_index_offer_ids.assert_called_once_with([offer_to_delete.id])
-
-    @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_keep_but_modify_product_if_booked(self, mocked_async_index_offer_ids):
-        ean = "1111111111111"
-        product = factories.ProductFactory(
-            idAtProviders=ean,
-            isGcuCompatible=True,
-            isSynchronizationCompatible=True,
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
-        )
-        bookings_factories.BookingFactory(stock__offer__product=product)
-
-        with pytest.raises(exceptions.CannotDeleteProductWithBookings):
-            api.delete_unwanted_existing_product("1111111111111")
-
-        offer = models.Offer.query.one()
-        assert offer.isActive is False
-        assert models.Product.query.one() == product
-        assert not product.isGcuCompatible
-        assert not product.isSynchronizationCompatible
-        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
 
 @pytest.mark.usefixtures("db_session")

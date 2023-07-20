@@ -15,6 +15,8 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import override_features
+import pcapi.core.users.factories as users_factories
+import pcapi.core.users.models as users_models
 from pcapi.local_providers import TiteLiveThings
 from pcapi.local_providers.titelive_things.titelive_things import ADULT_ADVISOR_TEXT
 from pcapi.local_providers.titelive_things.titelive_things import BASE_VAT
@@ -30,6 +32,7 @@ from pcapi.local_providers.titelive_things.titelive_things import LECTORAT_EIGHT
 from pcapi.local_providers.titelive_things.titelive_things import OBJECT_SUPPORT_CODE
 from pcapi.local_providers.titelive_things.titelive_things import PAPER_CONSUMABLE_SUPPORT_CODE
 from pcapi.local_providers.titelive_things.titelive_things import POSTER_SUPPORT_CODE
+from pcapi.models import offer_mixin
 from pcapi.utils.csr import get_closest_csr
 
 
@@ -471,7 +474,7 @@ class TiteliveThingsTest:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
-    def test_should_delete_product_when_gtl_changes_to_school_related_product(
+    def test_should_reject_product_when_gtl_changes_to_school_related_product(
         self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
     ):
         # Given
@@ -484,12 +487,21 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         titelive_provider = providers_factories.TiteLiveThingsProviderFactory()
-        offers_factories.ProductFactory(
+        product = offers_factories.ProductFactory(
             idAtProviders=EAN_TEST,
             dateModifiedAtLastProvider=datetime(2001, 1, 1),
             lastProviderId=titelive_provider.id,
             subcategoryId=subcategories.LIVRE_PAPIER.id,
+            extraData={
+                "ean": EAN_TEST,
+            },
         )
+        offer = offers_factories.OfferFactory(product=product)
+        users_factories.FavoriteFactory(offer=offer)
+
+        assert product.isGcuCompatible is True
+        assert users_models.Favorite.query.count() == 1
+        assert offer.validation != offers_models.OfferValidationStatus.REJECTED
 
         titelive_things = TiteLiveThings()
 
@@ -497,12 +509,17 @@ class TiteliveThingsTest:
         titelive_things.updateObjects()
 
         # Then
-        assert offers_models.Product.query.count() == 0
+        product = offers_models.Product.query.one()
+        offer = offers_models.Offer.query.one()
+        assert product.isGcuCompatible is False
+        assert users_models.Favorite.query.count() == 0
+        assert offer.validation == offers_models.OfferValidationStatus.REJECTED
+        assert offer.lastValidationType == offer_mixin.OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
-    def test_should_delete_product_when_non_valid_product_type(
+    def test_should_reject_product_when_non_valid_product_type(
         self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
     ):
         # Given
@@ -516,19 +533,25 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         titelive_provider = providers_factories.TiteLiveThingsProviderFactory()
-        offers_factories.ProductFactory(
+        product = offers_factories.ProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             idAtProviders=EAN_TEST,
             dateModifiedAtLastProvider=datetime(2001, 1, 1),
             lastProviderId=titelive_provider.id,
+            extraData={
+                "ean": EAN_TEST,
+            },
         )
+
+        assert product.isGcuCompatible is True
         titelive_things = TiteLiveThings()
 
         # When
         titelive_things.updateObjects()
 
         # Then
-        assert offers_models.Product.query.count() == 0
+        product = offers_models.Product.query.one()
+        assert product.isGcuCompatible is False
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
@@ -564,7 +587,7 @@ class TiteliveThingsTest:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
-    def test_should_delete_product_when_it_changes_to_paper_press_product(
+    def test_should_reject_product_when_it_changes_to_paper_press_product(
         self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
     ):
         # Given
@@ -577,12 +600,17 @@ class TiteliveThingsTest:
         get_lines_from_thing_file.return_value = iter([data_line])
 
         titelive_provider = providers_factories.TiteLiveThingsProviderFactory()
-        offers_factories.ProductFactory(
+        product = offers_factories.ProductFactory(
             idAtProviders=EAN_TEST,
             dateModifiedAtLastProvider=datetime(2001, 1, 1),
             lastProviderId=titelive_provider.id,
             subcategoryId=subcategories.LIVRE_PAPIER.id,
+            extraData={
+                "ean": EAN_TEST,
+            },
         )
+
+        assert product.isGcuCompatible is True
 
         titelive_things = TiteLiveThings()
 
@@ -590,12 +618,13 @@ class TiteliveThingsTest:
         titelive_things.updateObjects()
 
         # Then
-        assert offers_models.Product.query.count() == 0
+        product = offers_models.Product.query.one()
+        assert product.isGcuCompatible is False
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
-    def test_should_not_delete_product_and_deactivate_associated_offer_when_it_changes_to_paper_press_product(
+    def test_should_not_reject_product_and_deactivate_associated_offer_when_it_changes_to_paper_press_product(
         self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
     ):
         # Given
@@ -617,11 +646,12 @@ class TiteliveThingsTest:
             subcategoryId=subcategories.LIVRE_PAPIER.id,
             dateModifiedAtLastProvider=datetime(2001, 1, 1),
             lastProviderId=titelive_provider.id,
+            extraData={"ean": EAN_TEST},
         )
-        offer = ThingOfferFactory(product=product, venue=venue, isActive=True)
+        offer = ThingOfferFactory(product=product, venue=venue)
         stock = ThingStockFactory(offer=offer, price=0)
         bookings_factories.BookingFactory(stock=stock)
-
+        assert offer.validation != offers_models.OfferValidationStatus.REJECTED
         titelive_things = TiteLiveThings()
 
         # When
@@ -629,7 +659,7 @@ class TiteliveThingsTest:
 
         # Then
         offer = offers_models.Offer.query.one()
-        assert offer.isActive is False
+        assert offer.validation == offers_models.OfferValidationStatus.REJECTED
         assert offers_models.Product.query.count() == 1
 
     @pytest.mark.usefixtures("db_session")
