@@ -1119,17 +1119,30 @@ class GetEMailUpdateStatusTest:
 class ValidateEmailTest:
     old_email = "old@email.com"
     new_email = "new@email.com"
+    mock_redis_client = fakeredis.FakeStrictRedis()
 
-    def _initialize_token(self, user, app, new_email):
+    def _initialize_token_old(self, user, app, new_email):
         expiration_date = datetime.utcnow() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
         token = encode_jwt_payload({"current_email": user.email, "new_email": new_email}, expiration_date)
         app.redis_client.set(email_update.get_token_key(user, email_update.TokenType.VALIDATION), token)  # type: ignore [attr-defined]
         app.redis_client.expireat(email_update.get_token_key(user, email_update.TokenType.VALIDATION), expiration_date)  # type: ignore [attr-defined]
         return token
 
-    def test_validate_email(self, app, client):
+    def _initialize_token(self, user, app, new_email):
+        return token_utils.Token.create(
+            type_=token_utils.TokenType.EMAIL_CHANGE_VALIDATION,
+            ttl=users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
+            user_id=user.id,
+            data={"new_email": new_email},
+        ).encoded_token
+
+    @pytest.mark.parametrize(
+        "token_init",
+        [(_initialize_token), (_initialize_token_old)],
+    )
+    def test_validate_email(self, app, client, token_init):
         user = users_factories.UserFactory(email=self.old_email)
-        token = self._initialize_token(user, app, self.new_email)
+        token = token_init(self, user, app, self.new_email)
         response = client.put("/native/v1/profile/email_update/validate", json={"token": token})
 
         assert response.status_code == 204
@@ -1137,14 +1150,18 @@ class ValidateEmailTest:
         user = users_models.User.query.get(user.id)
         assert user.email == self.new_email
 
-    def test_email_exists(self, app, client):
+    @pytest.mark.parametrize(
+        "token_init",
+        [(_initialize_token), (_initialize_token_old)],
+    )
+    def test_email_exists(self, app, client, token_init):
         """
         Test that if the email already exists, an OK response is sent
         but nothing is changed (avoid user enumeration).
         """
         user = users_factories.UserFactory(email=self.old_email)
         users_factories.UserFactory(email=self.new_email, isEmailValidated=True)
-        token = self._initialize_token(user, app, self.new_email)
+        token = token_init(self, user, app, self.new_email)
         response = client.put("/native/v1/profile/email_update/validate", json={"token": token})
 
         assert response.status_code == 204
@@ -1152,19 +1169,23 @@ class ValidateEmailTest:
         user = users_models.User.query.get(user.id)
         assert user.email == self.old_email
 
-    def test_expired_token(self, app, client):
+    @pytest.mark.parametrize(
+        "token_init",
+        [(_initialize_token), (_initialize_token_old)],
+    )
+    def test_expired_token(self, app, client, token_init):
         user = users_factories.UserFactory(email=self.old_email)
         users_factories.UserFactory(email=self.new_email, isEmailValidated=True)
-        expiration_date = datetime.utcnow() - timedelta(days=1)
-        token = encode_jwt_payload({"current_email": user.email, "new_email": self.new_email}, expiration_date)
+        with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
+            with freeze_time("2021-01-01 00:00:00"):
+                token = token_init(self, user, app, self.new_email)
+            with freeze_time("2021-01-03 00:00:00"):
+                response = client.put("/native/v1/profile/email_update/validate", json={"token": token})
+                assert response.status_code == 400
+                assert response.json["code"] == "INVALID_TOKEN"
 
-        response = client.put("/native/v1/profile/email_update/validate", json={"token": token})
-
-        assert response.status_code == 400
-        assert response.json["code"] == "INVALID_TOKEN"
-
-        user = users_models.User.query.get(user.id)
-        assert user.email == self.old_email
+                user = users_models.User.query.get(user.id)
+                assert user.email == self.old_email
 
 
 class CancelEmailChangeTest:
