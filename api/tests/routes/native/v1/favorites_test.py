@@ -180,6 +180,30 @@ class GetTest:
             assert favorites[0]["offer"]["subcategoryId"] == "SEANCE_CINE"
             assert favorites[0]["offer"]["venueName"] == "Le Petit Rintintin"
 
+        def test_offer_venue_name_is_common_name_for_non_digital_offer(self, app):
+            user, test_client = utils.create_user_and_test_client(app)
+            offerer = offerers_factories.OffererFactory(name="Pathé Gaumont")
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer, publicName="Ciné Pathé")
+            offer = offers_factories.EventOfferFactory(venue=venue)
+            users_factories.FavoriteFactory(offer=offer, user=user)
+
+            response = test_client.get(FAVORITES_URL)
+            favorites = response.json["favorites"]
+
+            assert favorites[0]["offer"]["venueName"] == "Ciné Pathé"
+
+        def test_offer_venue_name_is_offerer_name_for_digital_offer(self, app):
+            user, test_client = utils.create_user_and_test_client(app)
+            offerer = offerers_factories.OffererFactory(name="Pathé Gaumont")
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer, publicName="Ciné Pathé")
+            offer = offers_factories.DigitalOfferFactory(venue=venue)
+            users_factories.FavoriteFactory(offer=offer, user=user)
+
+            response = test_client.get(FAVORITES_URL)
+            favorites = response.json["favorites"]
+
+            assert favorites[0]["offer"]["venueName"] == "Pathé Gaumont"
+
         def test_expired_offer(self, app):
             # Given
             today = datetime.utcnow() + timedelta(hours=3)  # offset a bit to make sure it's > now()
