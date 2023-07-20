@@ -1,23 +1,23 @@
 import logging
-from typing import TypedDict
+import typing
 
 
 logger = logging.getLogger(__name__)
 
 
-class Csr(TypedDict):
+class Csr(typing.TypedDict):
     label: str
     csr_id: str
 
 
-def get_closest_csr(gtl_id: str) -> Csr | None:
+def get_closest_csr(gtl_id: str, **kwargs: typing.Any) -> Csr | None:
     gtl_id = gtl_id.zfill(8)
     csr_level_1 = get_csr(f"{gtl_id[:2]}000000")
     csr_level_2 = get_csr(f"{gtl_id[:4]}0000")
     csr_level_3 = get_csr(f"{gtl_id[:6]}00")
     csr_level_4 = get_csr(gtl_id)
     csr = csr_level_4 or csr_level_3 or csr_level_2 or csr_level_1
-    if csr is None:
+    if csr is None and kwargs.get("logging"):
         logger.warning("GTL %s has no matching csr", gtl_id)
     return csr
 
