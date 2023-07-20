@@ -1,14 +1,17 @@
 import datetime
 from decimal import Decimal
 import logging
+from unittest import mock
 
 from dateutil.relativedelta import relativedelta
+import fakeredis
 from flask_jwt_extended.utils import decode_token
 from freezegun import freeze_time
 import jwt
 import pytest
 
 from pcapi import settings
+from pcapi.core import token as token_utils
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
@@ -407,42 +410,69 @@ class UnsuspendAccountTest:
 
 @pytest.mark.usefixtures("db_session")
 class ChangeUserEmailTest:
-    def test_change_user_email(self):
-        # Given
-        old_email = "oldemail@mail.com"
-        user = users_factories.UserFactory(email=old_email, firstName="UniqueNameForEmailChangeTest")
-        users_factories.UserSessionFactory(user=user)
-        new_email = "newemail@mail.com"
+    old_email = "oldemail@mail.com"
+    new_email = "newemail@mail.com"
+    mock_redis_client = fakeredis.FakeStrictRedis()
+
+    def _init_token_old(self, user):
         expiration_date = email_update.generate_email_change_token_expiration_date()
-        token = email_update.generate_email_change_token(
-            user, new_email, expiration_date, email_update.TokenType.VALIDATION
+        return email_update.generate_email_change_token(
+            user, self.new_email, expiration_date, email_update.TokenType.VALIDATION
+        )
+
+    def _init_token(self, user):
+        return token_utils.Token.create(
+            token_utils.TokenType.EMAIL_CHANGE_VALIDATION,
+            users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
+            user.id,
+            {"new_email": self.new_email},
+        ).encoded_token
+
+    @pytest.mark.parametrize(
+        "token_init",
+        [
+            (_init_token_old),
+            (_init_token),
+        ],
+    )
+    def test_change_user_email(self, token_init):
+        # Given
+        user = users_factories.UserFactory(email=self.old_email, firstName="UniqueNameForEmailChangeTest")
+        users_factories.UserSessionFactory(user=user)
+
+        token = token_init(
+            self,
+            user,
         )
         # When
         email_update.validate_email_update_request(token)
 
         # Then
         reloaded_user = users_models.User.query.get(user.id)
-        assert reloaded_user.email == new_email
-        assert users_models.User.query.filter_by(email=old_email).first() is None
+        assert reloaded_user.email == self.new_email
+        assert users_models.User.query.filter_by(email=self.old_email).first() is None
         assert users_models.UserSession.query.filter_by(userId=reloaded_user.id).first() is None
 
         assert len(reloaded_user.email_history) == 1
 
         history = reloaded_user.email_history[0]
-        assert history.oldEmail == old_email
-        assert history.newEmail == new_email
+        assert history.oldEmail == self.old_email
+        assert history.newEmail == self.new_email
         assert history.eventType == users_models.EmailHistoryEventTypeEnum.VALIDATION
         assert history.id is not None
 
-    def test_change_user_email_new_email_already_existing(self):
+    @pytest.mark.parametrize(
+        "token_init",
+        [
+            (_init_token_old),
+            (_init_token),
+        ],
+    )
+    def test_change_user_email_new_email_already_existing(self, token_init):
         # Given
-        new_email = "newemail@mail.com"
-        user = users_factories.UserFactory(email="oldemail@mail.com", firstName="UniqueNameForEmailChangeTest")
-        other_user = users_factories.UserFactory(email=new_email)
-        expiration_date = email_update.generate_email_change_token_expiration_date()
-        token = email_update.generate_email_change_token(
-            user, new_email, expiration_date, email_update.TokenType.VALIDATION
-        )
+        user = users_factories.UserFactory(email=self.old_email, firstName="UniqueNameForEmailChangeTest")
+        other_user = users_factories.UserFactory(email=self.new_email)
+        token = token_init(self, user)
 
         # When
         with pytest.raises(users_exceptions.EmailExistsError):
@@ -453,32 +483,40 @@ class ChangeUserEmailTest:
         assert user.email == "oldemail@mail.com"
 
         other_user = users_models.User.query.get(other_user.id)
-        assert other_user.email == new_email
+        assert other_user.email == self.new_email
 
-    def test_change_user_email_expired_token(self, app):
+    @pytest.mark.parametrize(
+        "token_init",
+        [
+            (_init_token_old),
+            (_init_token),
+        ],
+    )
+    def test_change_user_email_expired_token(self, app, token_init):
         # Given
-        old_email = "oldemail@mail.com"
-        user = users_factories.UserFactory(email=old_email, firstName="UniqueNameForEmailChangeTest")
+        user = users_factories.UserFactory(email=self.old_email, firstName="UniqueNameForEmailChangeTest")
         users_factories.UserSessionFactory(user=user)
-        new_email = "newemail@mail.com"
-        expiration_date = email_update.generate_email_change_token_expiration_date()
-        token = email_update.generate_email_change_token(
-            user, new_email, expiration_date, email_update.TokenType.VALIDATION
-        )
-        app.redis_client.expire(
-            email_update.get_token_key(user, email_update.TokenType.VALIDATION),
-            -1,
-        )
+        with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
+            with freeze_time("2021-01-01"):
+                token = token_init(self, user)
 
-        # When
-        with pytest.raises(users_exceptions.InvalidToken):
-            email_update.validate_email_update_request(token)
+            # When
+            with freeze_time("2021-01-03"):
+                with pytest.raises(users_exceptions.InvalidToken):
+                    email_update.validate_email_update_request(token)
 
-        # Then
-        user = users_models.User.query.get(user.id)
-        assert user.email == old_email
+                # Then
+                user = users_models.User.query.get(user.id)
+                assert user.email == self.old_email
 
-    def test_change_user_email_twice(self):
+    @pytest.mark.parametrize(
+        "token_init",
+        [
+            (_init_token_old),
+            (_init_token),
+        ],
+    )
+    def test_change_user_email_twice(self, token_init):
         """
         Test that when the function is called twice:
             1. no error is raised
@@ -486,26 +524,21 @@ class ChangeUserEmailTest:
                same)
         Update has been done, no need to panic.
         """
-        old_email = "oldemail@mail.com"
-        new_email = "newemail@mail.com"
 
-        user = users_factories.UserFactory(email=old_email)
+        user = users_factories.UserFactory(email=self.old_email)
         users_factories.UserSessionFactory(user=user)
-        expiration_date = email_update.generate_email_change_token_expiration_date()
-        token = email_update.generate_email_change_token(
-            user, new_email, expiration_date, email_update.TokenType.VALIDATION
-        )
+        token = token_init(self, user)
 
         # first call, email is updated as expected
         email_update.validate_email_update_request(token)
 
         reloaded_user = users_models.User.query.get(user.id)
-        assert reloaded_user.email == new_email
+        assert reloaded_user.email == self.new_email
 
         # second call, no error, no update
         email_update.validate_email_update_request(token)
         reloaded_user = users_models.User.query.get(user.id)
-        assert reloaded_user.email == new_email
+        assert reloaded_user.email == self.new_email
 
 
 class CreateBeneficiaryTest:

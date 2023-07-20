@@ -91,13 +91,18 @@ def generate_and_send_beneficiary_confirmation_email_for_email_change(user: mode
 
 def generate_and_send_beneficiary_validation_email_for_email_change(user: models.User, new_email: str) -> bool:
     expiration_date = generate_email_change_token_expiration_date()
-    token = generate_email_change_token(user, new_email, expiration_date, TokenType.VALIDATION)
+    encoded_token = Token.create(
+        token_utils.TokenType.EMAIL_CHANGE_VALIDATION,
+        constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
+        user_id=user.id,
+        data={"new_email": new_email},
+    ).encoded_token
 
     link_for_email_change_validation = _build_link_for_email_change_action(
         EmailChangeAction.VALIDATION,
         new_email,
         expiration_date,
-        token=token,
+        token=encoded_token,
     )
 
     return transactional_mails.send_validation_email_change_email(
@@ -202,7 +207,7 @@ def cancel_email_update_request(encoded_token: str) -> None:
 
 
 def validate_email_update_request(
-    token: str,
+    encoded_token: str,
 ) -> None:
     """
     Change a user's email and add a new (validation) entry to its email
@@ -215,19 +220,39 @@ def validate_email_update_request(
     Therefore this function can be called multiple times with the same
     inputs safely.
     """
-    payload = ChangeEmailTokenContent.from_token(token)
-    current_email = payload.current_email
-    new_email = payload.new_email
-    user = users_repository.find_user_by_email(current_email)
+    try:
+        jwt_payload = utils.decode_jwt_token(encoded_token)
+    except Exception:
+        raise exceptions.InvalidToken()
+    new_token_type = (
+        "token_type" in jwt_payload
+    )  # FIXME suprimer la gestion de l'ancien type de token quand les anciens tokens auront disparus https://passculture.atlassian.net/browse/PC-23343
+    if new_token_type:
+        token = token_utils.Token.load_without_checking(encoded_token)
+        user = models.User.query.get(token.user_id)
+        new_email = token.data["new_email"]
+        if user.email == new_email:
+            return
+    else:
+        payload = ChangeEmailTokenContent.from_token(encoded_token)
+        current_email = payload.current_email
+        new_email = payload.new_email
+        user = users_repository.find_user_by_email(current_email)
     if not user:
         if not validated_update_request_exists(current_email, new_email):
             raise exceptions.UserDoesNotExist()
         return
-    _check_token(user, token, TokenType.VALIDATION)
+    if new_token_type:
+        token.check(token_utils.TokenType.EMAIL_CHANGE_VALIDATION)
+    else:
+        _check_token(user, encoded_token, TokenType.VALIDATION)
     check_email_address_does_not_exist(new_email)
     api.change_email(user, new_email)
     transactional_mails.send_email_change_information_email(user)
-    _expire_token(user, TokenType.VALIDATION)
+    if new_token_type:
+        token.expire()
+    else:
+        _expire_token(user, TokenType.VALIDATION)
 
 
 def request_email_update_from_pro(user: models.User, email: str, password: str) -> None:
