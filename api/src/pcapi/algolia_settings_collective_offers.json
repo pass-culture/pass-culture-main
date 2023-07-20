@@ -25,7 +25,9 @@
         "filterOnly(offer.students)",
         "filterOnly(offer.subcategoryId)",
         "filterOnly(venue.departmentCode)",
-        "filterOnly(venue.id)"
+        "filterOnly(venue.id)",
+        "filterOnly(offer.educationalInstitutionUAICode)",
+        "filterOnly(offer.domains)"
     ],
     "attributesToSnippet": null,
     "attributesToHighlight": null,
