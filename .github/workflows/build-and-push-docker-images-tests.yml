@@ -13,7 +13,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    runs-on: [docker-cache]
+    runs-on: docker-cache
     steps:
     - uses: actions/checkout@v3
       with:
