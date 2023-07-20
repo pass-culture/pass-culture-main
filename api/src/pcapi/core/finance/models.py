@@ -136,6 +136,13 @@ class FinanceEventStatus(enum.Enum):
     NOT_TO_BE_PRICED = "not to be priced"  # will not be priced
 
 
+CANCELLABLE_FINANCE_EVENT_STATUSES = {
+    FinanceEventStatus.PENDING,
+    FinanceEventStatus.READY,
+    FinanceEventStatus.PRICED,
+}
+
+
 class FinanceEventMotive(enum.Enum):
     BOOKING_USED = "booking-used"
     BOOKING_USED_AFTER_CANCELLATION = "booking-used-after-cancellation"

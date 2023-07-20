@@ -192,7 +192,7 @@ def cancel_latest_event(
         if isinstance(booking, bookings_models.Booking)
         else (models.FinanceEvent.collectiveBooking == booking),
         models.FinanceEvent.motive == motive,
-        models.FinanceEvent.status != models.FinanceEventStatus.CANCELLED,
+        models.FinanceEvent.status.in_(models.CANCELLABLE_FINANCE_EVENT_STATUSES),
     ).one_or_none()
     if not event:
         logger.info(
