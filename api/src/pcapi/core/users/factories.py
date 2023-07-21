@@ -126,13 +126,6 @@ class PhoneValidatedUserFactory(EmailValidatedUserFactory):
     - phone number validation (if user is at least 18yo)
     """
 
-    phoneNumber = factory.LazyAttribute(
-        lambda o: "+33612345678" if o.age == users_constants.ELIGIBILITY_AGE_18 else None
-    )
-    phoneValidationStatus = factory.LazyAttribute(
-        lambda o: models.PhoneValidationStatusType.VALIDATED if o.age == users_constants.ELIGIBILITY_AGE_18 else None
-    )
-
     @classmethod
     def beneficiary_fraud_checks(
         cls, obj: models.User, **kwargs: typing.Any
@@ -141,6 +134,8 @@ class PhoneValidatedUserFactory(EmailValidatedUserFactory):
 
         fraud_checks = super().beneficiary_fraud_checks(obj, **kwargs)
         if obj.age == users_constants.ELIGIBILITY_AGE_18:
+            obj.phoneNumber = f"+336{obj.id:08}"  # type: ignore [assignment]
+            obj.phoneValidationStatus = models.PhoneValidationStatusType.VALIDATED
             fraud_checks.append(fraud_factories.PhoneValidationFraudCheckFactory(user=obj))
         return fraud_checks
 
