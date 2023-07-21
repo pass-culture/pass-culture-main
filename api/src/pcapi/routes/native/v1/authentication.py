@@ -64,7 +64,7 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
             login_history = users_api.update_login_device_history(body.device_info, user)
 
         if (
-            users_api.is_suspicious_login(body.device_info, user)
+            not users_api.is_login_device_a_trusted_device(body.device_info, user)
             and FeatureToggle.WIP_ENABLE_SUSPICIOUS_EMAIL_SEND.is_active()
         ):
             token = users_api.create_suspicious_login_email_token(login_history, user.id)
