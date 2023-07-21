@@ -3,6 +3,7 @@ from decimal import Decimal
 import logging
 
 from dateutil.relativedelta import relativedelta
+from flask_jwt_extended.utils import decode_token
 from freezegun import freeze_time
 import jwt
 import pytest
@@ -1513,3 +1514,82 @@ class DeleteOldTrustedDevicesTest:
         users_api.delete_old_trusted_devices()
 
         assert users_models.TrustedDevice.query.count() == 1
+
+
+class RefreshAccessTokenTest:
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True, WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True)
+    def should_create_access_token_with_default_lifetime_when_no_device_info(self):
+        user = users_factories.UserFactory()
+
+        refresh_token = users_api.create_user_refresh_token(user=user, device_info=None)
+        decoded_refresh_token = decode_token(refresh_token)
+
+        token_issue_date = decoded_refresh_token["iat"]
+        token_expiration_date = decoded_refresh_token["exp"]
+        refresh_token_lifetime = token_expiration_date - token_issue_date
+
+        assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXPIRES
+
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True, WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True)
+    def should_create_access_token_with_default_lifetime_when_device_is_not_a_trusted_device(self):
+        user = users_factories.UserFactory()
+        users_factories.TrustedDeviceFactory(user=user)
+        other_device = account_serialization.TrustedDevice(deviceId="other-device-id", os="iOS", source="iPhone 13")
+
+        refresh_token = users_api.create_user_refresh_token(user=user, device_info=other_device)
+        decoded_refresh_token = decode_token(refresh_token)
+
+        token_issue_date = decoded_refresh_token["iat"]
+        token_expiration_date = decoded_refresh_token["exp"]
+        refresh_token_lifetime = token_expiration_date - token_issue_date
+
+        assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXPIRES
+
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True, WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True)
+    def should_create_access_token_with_extended_lifetime_when_device_is_a_trusted_device(self):
+        user = users_factories.UserFactory()
+        trusted_device = users_factories.TrustedDeviceFactory(user=user)
+        device_info = account_serialization.TrustedDevice(
+            deviceId=trusted_device.deviceId, os="iOS", source="iPhone 13"
+        )
+
+        refresh_token = users_api.create_user_refresh_token(user=user, device_info=device_info)
+        decoded_refresh_token = decode_token(refresh_token)
+
+        token_issue_date = decoded_refresh_token["iat"]
+        token_expiration_date = decoded_refresh_token["exp"]
+        refresh_token_lifetime = token_expiration_date - token_issue_date
+
+        assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXTENDED_EXPIRES
+
+    @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
+    def should_create_access_token_with_default_lifetime_when_device_is_a_trusted_device_and_suspicious_email_feature_flag_is_disabled(
+        self,
+    ):
+        user = users_factories.UserFactory()
+        trusted_device = users_factories.TrustedDeviceFactory(user=user)
+
+        refresh_token = users_api.create_user_refresh_token(user=user, device_info=trusted_device)
+        decoded_refresh_token = decode_token(refresh_token)
+
+        token_issue_date = decoded_refresh_token["iat"]
+        token_expiration_date = decoded_refresh_token["exp"]
+        refresh_token_lifetime = token_expiration_date - token_issue_date
+
+        assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXPIRES
+
+    @override_features(WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True)
+    def should_create_access_token_with_default_lifetime_when_device_is_a_trusted_device_and_trusted_device_feature_flag_is_disabled(
+        self,
+    ):
+        user = users_factories.UserFactory()
+        trusted_device = users_factories.TrustedDeviceFactory(user=user)
+
+        refresh_token = users_api.create_user_refresh_token(user=user, device_info=trusted_device)
+        decoded_refresh_token = decode_token(refresh_token)
+
+        token_issue_date = decoded_refresh_token["iat"]
+        token_expiration_date = decoded_refresh_token["exp"]
+        refresh_token_lifetime = token_expiration_date - token_issue_date
+
+        assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXPIRES

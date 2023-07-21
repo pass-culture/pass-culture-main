@@ -73,7 +73,7 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     users_api.update_last_connection_date(user)
     return authentication.SigninResponse(
         access_token=users_api.create_user_access_token(user),
-        refresh_token=create_refresh_token(identity=user.email),
+        refresh_token=users_api.create_user_refresh_token(user, body.device_info),
         account_state=user.account_state,
     )
 
