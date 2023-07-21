@@ -44,6 +44,9 @@ LOG_LEVEL = int(os.environ.get("LOG_LEVEL", LOG_LEVEL_INFO))
 # API config
 API_URL = os.environ.get("API_URL", "")
 
+# Pros allowed on app
+IS_PROS_ALLOWED_ON_APP = bool(int(os.environ.get("IS_PROS_ALLOWED_ON_APP", True)))
+
 
 # Applications urls
 WEBAPP_V2_URL = os.environ.get("WEBAPP_V2_URL")

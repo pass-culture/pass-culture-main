@@ -18,6 +18,7 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.testing import override_features
+from pcapi.core.testing import override_settings
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
@@ -160,6 +161,58 @@ def test_user_logs_in_with_missing_fields(client):
         "identifier": ["Ce champ est obligatoire"],
         "password": ["Ce champ est obligatoire"],
     }
+
+
+class ProsAccessTest:
+    @override_settings(IS_PROS_ALLOWED_ON_APP=True)
+    def test_allow_access_to_pro(self, client):
+        data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+        users_factories.ProFactory(email=data["identifier"], password=data["password"])
+
+        response = client.post("/native/v1/signin", json=data)
+        assert response.status_code == 200
+
+    @override_settings(IS_PROS_ALLOWED_ON_APP=True)
+    def test_allow_access_to_non_attached_pro(self, client):
+        data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+        users_factories.NonAttachedProFactory(email=data["identifier"], password=data["password"])
+
+        response = client.post("/native/v1/signin", json=data)
+        assert response.status_code == 200
+
+    @override_settings(IS_PROS_ALLOWED_ON_APP=True)
+    def test_allow_access_to_admin_when_pros_allowed(self, client):
+        data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+        user = users_factories.AdminFactory(email=data["identifier"], password=data["password"])
+        user.add_pro_role()
+
+        response = client.post("/native/v1/signin", json=data)
+        assert response.status_code == 200
+
+    @override_settings(IS_PROS_ALLOWED_ON_APP=False)
+    def test_forbid_access_to_pro(self, client):
+        data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+        users_factories.ProFactory(email=data["identifier"], password=data["password"])
+
+        response = client.post("/native/v1/signin", json=data)
+        assert response.status_code == 403
+
+    @override_settings(IS_PROS_ALLOWED_ON_APP=False)
+    def test_forbid_access_to_non_attached_pro(self, client):
+        data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+        users_factories.NonAttachedProFactory(email=data["identifier"], password=data["password"])
+
+        response = client.post("/native/v1/signin", json=data)
+        assert response.status_code == 403
+
+    @override_settings(IS_PROS_ALLOWED_ON_APP=False)
+    def test_allow_access_to_admin_when_pros_not_allowed(self, client):
+        data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+        user = users_factories.AdminFactory(email=data["identifier"], password=data["password"])
+        user.add_pro_role()
+
+        response = client.post("/native/v1/signin", json=data)
+        assert response.status_code == 200
 
 
 class TrustedDeviceFeatureTest:

@@ -4,6 +4,7 @@ from flask_jwt_extended import create_refresh_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 
+from pcapi import settings
 from pcapi.connectors import api_recaptcha
 from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.mails.transactional as transactional_mails
@@ -40,6 +41,7 @@ logger = logging.getLogger(__name__)
 @spectree_serialize(
     response_model=authentication.SigninResponse,
     on_success_status=200,
+    on_error_statuses=[403],
     api=blueprint.api,
 )
 @email_rate_limiter()
@@ -54,6 +56,10 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
 
     if user.account_state.is_deleted:
         raise ApiErrors({"code": "ACCOUNT_DELETED", "general": ["Le compte a été supprimé"]})
+
+    if not settings.IS_PROS_ALLOWED_ON_APP:
+        if (user.has_pro_role or user.has_non_attached_pro_role) and not user.has_admin_role:
+            raise ApiErrors({"code": "IS_PRO", "general": ["Le compte est celui d'un pro."]}, status_code=403)
 
     if FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE.is_active():
         login_history = None
