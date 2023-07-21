@@ -264,6 +264,39 @@ class TrustedDeviceFeatureTest:
         assert mails_testing.outbox[0].sent_data["params"]["LOGIN_TIME"]
         assert mails_testing.outbox[0].sent_data["params"]["ACCOUNT_SECURING_LINK"]
 
+    @override_features(
+        WIP_ENABLE_TRUSTED_DEVICE=True,
+        WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
+    )
+    def should_extend_refresh_token_lifetime_when_logging_in_with_a_trusted_device(self, client):
+        user = users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
+        users_factories.TrustedDeviceFactory(user=user)
+
+        response = client.post("/native/v1/signin", json=self.data)
+
+        decoded_refresh_token = decode_token(response.json["refreshToken"])
+        token_issue_date = decoded_refresh_token["iat"]
+        token_expiration_date = decoded_refresh_token["exp"]
+        refresh_token_lifetime = token_expiration_date - token_issue_date
+
+        assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXTENDED_EXPIRES
+
+    @override_features(
+        WIP_ENABLE_TRUSTED_DEVICE=True,
+        WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
+    )
+    def should_not_extend_refresh_token_lifetime_when_logging_in_from_unknown_device(self, client):
+        users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
+
+        response = client.post("/native/v1/signin", json=self.data)
+
+        decoded_refresh_token = decode_token(response.json["refreshToken"])
+        token_issue_date = decoded_refresh_token["iat"]
+        token_expiration_date = decoded_refresh_token["exp"]
+        refresh_token_lifetime = token_expiration_date - token_issue_date
+
+        assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXPIRES
+
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
     def should_not_send_email_when_logging_in_from_a_trusted_device(self, client):
         user = users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)

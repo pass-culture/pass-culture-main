@@ -9,6 +9,7 @@ import typing
 from dateutil.relativedelta import relativedelta
 from flask import request
 from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_refresh_token
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 
@@ -886,6 +887,21 @@ def update_last_connection_date(user):  # type: ignore [no-untyped-def]
 
 def create_user_access_token(user: models.User) -> str:
     return create_access_token(identity=user.email, additional_claims={"user_claims": {"user_id": user.id}})
+
+
+def create_user_refresh_token(user: models.User, device_info: "account_serialization.TrustedDevice | None") -> str:
+    should_extend_lifetime = (
+        feature.FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE.is_active()
+        and feature.FeatureToggle.WIP_ENABLE_SUSPICIOUS_EMAIL_SEND.is_active()
+        and is_login_device_a_trusted_device(device_info, user)
+    )
+
+    if should_extend_lifetime:
+        duration = datetime.timedelta(seconds=settings.JWT_REFRESH_TOKEN_EXTENDED_EXPIRES)
+    else:
+        duration = datetime.timedelta(seconds=settings.JWT_REFRESH_TOKEN_EXPIRES)
+
+    return create_refresh_token(identity=user.email, expires_delta=duration)
 
 
 def update_notification_subscription(
