@@ -237,7 +237,7 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
                 provider,
             )
             offers_to_index.append(offer_to_update_by_ean[ean].id)
-        except offers_exceptions.OfferCreationBaseException:
+        except offers_exceptions.OfferCreationBaseException as exc:
             logger.exception("Error while creating offer by ean", extra={"exc": exc})
             continue
     db.session.commit()
