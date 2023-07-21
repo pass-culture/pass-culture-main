@@ -1810,7 +1810,14 @@ def test_public_api(client):
                     "type": "object",
                 },
                 "ValidateEmailRequest": {
-                    "properties": {"emailValidationToken": {"title": "Emailvalidationtoken", "type": "string"}},
+                    "properties": {
+                        "deviceInfo": {
+                            "anyOf": [{"$ref": "#/components/schemas/TrustedDevice"}],
+                            "nullable": True,
+                            "title": "TrustedDevice",
+                        },
+                        "emailValidationToken": {"title": "Emailvalidationtoken", "type": "string"},
+                    },
                     "required": ["emailValidationToken"],
                     "title": "ValidateEmailRequest",
                     "type": "object",

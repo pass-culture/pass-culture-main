@@ -1,6 +1,5 @@
 import logging
 
-from flask_jwt_extended import create_refresh_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 
@@ -177,7 +176,7 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
 
     response = ValidateEmailResponse(
         access_token=users_api.create_user_access_token(user),
-        refresh_token=create_refresh_token(identity=user.email),
+        refresh_token=users_api.create_user_refresh_token(user, body.device_info),
     )
 
     return response
