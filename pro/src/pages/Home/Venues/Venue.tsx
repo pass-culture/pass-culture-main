@@ -20,7 +20,6 @@ import fullDisclosureOpen from 'icons/full-disclosure-open.svg'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullErrorIcon from 'icons/full-error.svg'
 import fullMoreIcon from 'icons/full-more.svg'
-import fullPlusIcon from 'icons/full-plus.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
@@ -345,7 +344,7 @@ const Venue = ({
                           ),
                           isExternal: false,
                         }}
-                        icon={fullPlusIcon}
+                        icon={fullMoreIcon}
                         onClick={() =>
                           logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                             from: OFFER_FORM_NAVIGATION_IN.HOME,
