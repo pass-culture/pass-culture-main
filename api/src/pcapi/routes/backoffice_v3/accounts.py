@@ -260,7 +260,7 @@ def render_public_account_details(
         reverse=True,
     )
 
-    kwargs.update(user_forms.get_toggle_suspension_args(user))
+    kwargs.update(user_forms.get_toggle_suspension_args(user, user_forms.SuspensionUserType.PUBLIC))
 
     return render_template(
         "accounts/get.html",
