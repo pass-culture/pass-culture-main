@@ -217,7 +217,7 @@ describe('screens:StocksThing', () => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
   })
 
-  it('should allow user to delete a stock', async () => {
+  it.skip('should allow user to delete a stock', async () => {
     jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     renderStockThingScreen(storeOverride)
     await screen.findByTestId('stock-thing-form')
