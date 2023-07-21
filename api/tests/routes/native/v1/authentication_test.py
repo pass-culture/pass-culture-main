@@ -173,6 +173,8 @@ class TrustedDeviceFeatureTest:
         },
     }
     headers = {"X-City": "Paris", "X-Country": "France"}
+    one_month_in_seconds = 31 * 24 * 60 * 60
+    one_year_in_seconds = 366 * 24 * 60 * 60
 
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
     def test_save_login_device_history_on_signin(self, client):
@@ -289,6 +291,44 @@ class TrustedDeviceFeatureTest:
         users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
 
         response = client.post("/native/v1/signin", json=self.data)
+
+        decoded_refresh_token = decode_token(response.json["refreshToken"])
+        token_issue_date = decoded_refresh_token["iat"]
+        token_expiration_date = decoded_refresh_token["exp"]
+        refresh_token_lifetime = token_expiration_date - token_issue_date
+
+        assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXPIRES
+
+    @override_features(
+        WIP_ENABLE_TRUSTED_DEVICE=True,
+        WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
+    )
+    def should_extend_refresh_token_lifetime_on_email_validation_when_device_is_trusted(self, client):
+        user = users_factories.UserFactory(isEmailValidated=False)
+        users_factories.TrustedDeviceFactory(user=user)
+        token = users_factories.TokenFactory(user=user, type=TokenType.EMAIL_VALIDATION)
+
+        response = client.post(
+            "/native/v1/validate_email",
+            json={"email_validation_token": token.value, "deviceInfo": self.data["deviceInfo"]},
+        )
+
+        decoded_refresh_token = decode_token(response.json["refreshToken"])
+        token_issue_date = decoded_refresh_token["iat"]
+        token_expiration_date = decoded_refresh_token["exp"]
+        refresh_token_lifetime = token_expiration_date - token_issue_date
+
+        assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXTENDED_EXPIRES
+
+    @override_features(
+        WIP_ENABLE_TRUSTED_DEVICE=True,
+        WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
+    )
+    def should_not_extend_refresh_token_lifetime_on_email_validation_when_device_is_unknown(self, client):
+        user = users_factories.UserFactory(isEmailValidated=False)
+        token = users_factories.TokenFactory(user=user, type=TokenType.EMAIL_VALIDATION)
+
+        response = client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
 
         decoded_refresh_token = decode_token(response.json["refreshToken"])
         token_issue_date = decoded_refresh_token["iat"]

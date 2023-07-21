@@ -55,6 +55,7 @@ class ChangePasswordRequest(BaseModel):
 
 class ValidateEmailRequest(BaseModel):
     email_validation_token: str
+    device_info: TrustedDevice | None = None
 
     class Config:
         alias_generator = to_camel
