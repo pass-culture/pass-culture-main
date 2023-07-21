@@ -191,6 +191,10 @@ JWT_SECRET_KEY = secrets_utils.get("JWT_SECRET_KEY")
 # default is 15 minutes
 # https://flask-jwt-extended.readthedocs.io/en/stable/options/#JWT_ACCESS_TOKEN_EXPIRES
 JWT_ACCESS_TOKEN_EXPIRES = int(os.environ.get("JWT_ACCESS_TOKEN_EXPIRES", 60 * 15))
+# default is 1 month
+JWT_REFRESH_TOKEN_EXPIRES = int(os.environ.get("JWT_REFRESH_TOKEN_EXPIRES", 31 * 24 * 60 * 60))
+# default is 1 year
+JWT_REFRESH_TOKEN_EXTENDED_EXPIRES = int(os.environ.get("JWT_REFRESH_TOKEN_EXTENDED_EXPIRES", 366 * 24 * 60 * 60))
 
 
 # TITELIVE
