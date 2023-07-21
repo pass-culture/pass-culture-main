@@ -214,6 +214,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         server_default="""{"marketing_push": true, "marketing_email": true}""",
     )
     password: bytes = sa.Column(sa.LargeBinary(60), nullable=False)
+    password_date_updated: datetime = sa.Column(sa.DateTime, nullable=True)
     _phoneNumber = sa.Column(sa.String(20), nullable=True, index=True, name="phoneNumber")
     phoneValidationStatus = sa.Column(sa.Enum(PhoneValidationStatusType, create_constraint=False), nullable=True)
     postalCode = sa.Column(sa.String(5), nullable=True)
