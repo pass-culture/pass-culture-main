@@ -51,7 +51,9 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
         return cls(
             id=booking.id,
             creation_date=date_utils.format_into_utc_date(booking.dateCreated),
-            confirmation_date=date_utils.format_into_utc_date(booking.cancellationLimitDate),  # type: ignore [arg-type]
+            confirmation_date=date_utils.format_into_utc_date(booking.cancellationLimitDate)
+            if booking.cancellationLimitDate
+            else None,
             quantity=booking.quantity,
             price=finance_utils.to_eurocents(booking.amount),
             price_category_id=booking.stock.priceCategory.id if booking.stock.priceCategory else None,
