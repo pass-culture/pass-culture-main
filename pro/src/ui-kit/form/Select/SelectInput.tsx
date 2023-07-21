@@ -45,6 +45,7 @@ const SelectInput = ({
       })}
       disabled={disabled}
       id={name}
+      name={name}
       {...field}
     >
       {defaultOption && (
