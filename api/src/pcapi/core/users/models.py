@@ -350,9 +350,12 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         if self.has_non_attached_pro_role:
             self.roles.remove(UserRole.NON_ATTACHED_PRO)
 
-    def setPassword(self, newpass: str) -> None:
+    def setPassword(self, newpass: str, update_date: bool = True) -> None:
         self.clearTextPassword = newpass
         self.password = crypto.hash_password(newpass)
+
+        if update_date:
+            self.password_date_updated = datetime.utcnow()
 
     @property
     def age(self) -> int | None:

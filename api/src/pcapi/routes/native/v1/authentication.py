@@ -147,7 +147,7 @@ def change_password(user: User, body: ChangePasswordRequest) -> None:
     except ApiErrors:
         raise ApiErrors({"code": "WEAK_PASSWORD", "newPassword": ["Le nouveau mot de passe est trop faible"]})
 
-    user.setPassword(body.new_password)
+    user.setPassword(body.new_password, update_date=False)
     repository.save(user)
 
 

@@ -484,8 +484,10 @@ def test_reset_password_with_not_valid_token(client):
 
     assert response.status_code == 400
     assert user.password == old_password
+    assert user.password_date_updated is None
 
 
+@freeze_time("2023-07-28 10:00:00")
 def test_reset_password_success(client):
     new_password = "New_password1998!"
 
@@ -498,6 +500,7 @@ def test_reset_password_success(client):
     assert response.status_code == 204
     db.session.refresh(user)
     assert user.password == crypto.hash_password(new_password)
+    assert user.password_date_updated == datetime(2023, 7, 28, 10, 00)
 
     token = Token.query.get(token.id)
     assert token.isUsed
@@ -537,6 +540,7 @@ def test_reset_password_fail_for_password_strength(client):
     assert Token.query.get(token.id)
 
 
+@freeze_time("2023-07-28 10:00:00")
 def test_change_password_success(client):
     new_password = "New_password1998!"
     user = users_factories.UserFactory()
@@ -552,6 +556,7 @@ def test_change_password_success(client):
     assert response.status_code == 204
     db.session.refresh(user)
     assert user.password == crypto.hash_password(new_password)
+    assert user.password_date_updated is None
 
 
 def test_change_password_failures(client):
@@ -578,6 +583,7 @@ def test_change_password_failures(client):
     assert response.json["code"] == "WEAK_PASSWORD"
     db.session.refresh(user)
     assert user.password == crypto.hash_password(settings.TEST_DEFAULT_PASSWORD)
+    assert user.password_date_updated is None
 
 
 @patch("pcapi.core.users.repository.get_user_with_valid_token", side_effect=users_exceptions.InvalidToken)
