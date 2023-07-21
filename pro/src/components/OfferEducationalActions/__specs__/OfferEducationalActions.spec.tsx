@@ -228,4 +228,19 @@ describe('OfferEducationalActions', () => {
       isActive: true,
     })
   })
+
+  it('should not display adage publish button when offer is pending', () => {
+    renderOfferEducationalActions({
+      ...defaultValues,
+      offer: collectiveOfferFactory({
+        status: OfferStatus.PENDING,
+      }),
+    })
+
+    expect(
+      screen.queryByRole('button', {
+        name: 'Publier sur Adage',
+      })
+    ).not.toBeInTheDocument()
+  })
 })
