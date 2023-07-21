@@ -103,11 +103,23 @@ const OfferEducationalActions = ({
   const shouldShowOfferActions =
     mode === Mode.EDITION || mode === Mode.READ_ONLY
 
+  const shouldDisplayAdagePublicationButton =
+    !isBooked &&
+    ![OfferStatus.EXPIRED, OfferStatus.PENDING].includes(offer.status)
+
+  const shouldDisplayBookingLink =
+    lastBookingId &&
+    (lastBookingStatus != CollectiveBookingStatus.CANCELLED ||
+      offer.status == OfferStatus.EXPIRED)
+
+  const shouldDisplayStatusSeparator =
+    shouldDisplayAdagePublicationButton || shouldDisplayBookingLink
+
   return (
     <>
       {shouldShowOfferActions && (
         <div className={cn(style['actions'], className)}>
-          {!isBooked && offer.status != OfferStatus.EXPIRED && (
+          {shouldDisplayAdagePublicationButton && (
             <Button
               icon={offer.isActive ? fullHideIcon : strokeCheckIcon}
               onClick={activateOffer}
@@ -121,33 +133,31 @@ const OfferEducationalActions = ({
             </Button>
           )}
 
-          {lastBookingId &&
-            (lastBookingStatus != CollectiveBookingStatus.CANCELLED ||
-              offer.status == OfferStatus.EXPIRED) && (
-              <ButtonLink
-                variant={ButtonVariant.TERNARY}
-                className={style['button-link']}
-                link={{ isExternal: false, to: getBookingLink() }}
-                icon={fullNextIcon}
-                iconPosition={IconPositionEnum.LEFT}
-                onClick={() =>
-                  logEvent?.(
-                    CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
-                    {
-                      from: '/offre/collectif/recapitulatif',
-                    }
-                  )
-                }
-              >
-                Voir la{' '}
-                {lastBookingStatus == 'PENDING'
-                  ? 'préréservation'
-                  : 'réservation'}
-              </ButtonLink>
-            )}
+          {shouldDisplayBookingLink && (
+            <ButtonLink
+              variant={ButtonVariant.TERNARY}
+              className={style['button-link']}
+              link={{ isExternal: false, to: getBookingLink() }}
+              icon={fullNextIcon}
+              iconPosition={IconPositionEnum.LEFT}
+              onClick={() =>
+                logEvent?.(
+                  CollectiveBookingsEvents.CLICKED_SEE_COLLECTIVE_BOOKING,
+                  {
+                    from: '/offre/collectif/recapitulatif',
+                  }
+                )
+              }
+            >
+              Voir la{' '}
+              {lastBookingStatus == 'PENDING'
+                ? 'préréservation'
+                : 'réservation'}
+            </ButtonLink>
+          )}
           {offer.status && (
             <>
-              {offer.status != OfferStatus.EXPIRED && (
+              {shouldDisplayStatusSeparator && (
                 <>
                   <div className={style.separator} />{' '}
                 </>
