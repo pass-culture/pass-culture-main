@@ -88,7 +88,7 @@ def _render_batch_suspend_users_form(form: user_forms.BatchSuspendUsersForm) -> 
 @users_blueprint.route("/batch-suspend-form", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.SUSPEND_USER)
 def get_batch_suspend_users_form() -> utils.BackofficeResponse:
-    form = user_forms.BatchSuspendUsersForm()
+    form = user_forms.BatchSuspendUsersForm(suspension_type=user_forms.SuspensionUserType.PUBLIC)
     return _render_batch_suspend_users_form(form)
 
 

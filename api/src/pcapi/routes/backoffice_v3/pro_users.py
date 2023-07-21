@@ -59,7 +59,7 @@ def get(user_id: int) -> utils.BackofficeResponse:
         form=form,
         dst=dst,
         empty_form=empty_forms.EmptyForm(),
-        **user_forms.get_toggle_suspension_args(user),
+        **user_forms.get_toggle_suspension_args(user, user_forms.SuspensionUserType.PRO),
     )
 
 
