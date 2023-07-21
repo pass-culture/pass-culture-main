@@ -1258,17 +1258,16 @@ def should_save_login_device_as_trusted_device(
     ).scalar()
 
 
-def is_suspicious_login(device_info: "account_serialization.TrustedDevice | None", user: models.User) -> bool:
+def is_login_device_a_trusted_device(
+    device_info: "account_serialization.TrustedDevice | None", user: models.User
+) -> bool:
     if device_info is None or not device_info.device_id:
-        return True
-
-    if not user.trusted_devices:
-        return True
-
-    if any(device.deviceId == device_info.device_id for device in user.trusted_devices):
         return False
 
-    return True
+    if any(device.deviceId == device_info.device_id for device in user.trusted_devices):
+        return True
+
+    return False
 
 
 def create_suspicious_login_email_token(login_info: users_models.LoginDeviceHistory | None, user_id: int) -> str:
