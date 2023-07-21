@@ -11,10 +11,5 @@
 
   &-cancel-button {
     color: colors.$primary;
-
-    svg,
-    svg > path {
-      fill: colors.$primary;
-    }
   }
 }
