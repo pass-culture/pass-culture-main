@@ -29,7 +29,7 @@ env:
 
 jobs:
   build-and-tag-version:
-    runs-on: [self-hosted, linux, x64]
+    runs-on: docker-cache
     permissions:
       id-token: write
       contents: write
