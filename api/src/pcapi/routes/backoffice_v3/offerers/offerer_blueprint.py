@@ -277,7 +277,6 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
             )
         )
         .distinct()
-        .subquery()
     )
 
     rows = (
