@@ -9,6 +9,7 @@ from google.auth import iam
 from google.auth.transport import requests as auth_requests
 from google.oauth2 import service_account
 import googleapiclient.discovery
+from sqlalchemy.orm import joinedload
 
 from pcapi import settings
 from pcapi.core.permissions import models as perm_models
@@ -16,6 +17,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import encode_jwt_payload
+from pcapi.models import db
 from pcapi.utils import requests
 
 
@@ -101,12 +103,27 @@ def extract_roles_from_google_workspace_groups(api_response: dict) -> set[str]:
     return roles
 
 
-def get_permissions_from_roles(roles: typing.Iterable[str]) -> list[perm_models.Permission]:
-    permissions = perm_models.Permission.query.join(perm_models.Permission.roles).filter(
-        perm_models.Role.name.in_(roles)
+def get_permissions_from_roles(roles: set[str]) -> list[perm_models.Permission]:
+    # single db request to check roles and get permissions
+    db_roles = (
+        perm_models.Role.query.filter(perm_models.Role.name.in_(roles))
+        .options(joinedload(perm_models.Role.permissions))
+        .all()
     )
 
-    return permissions.all()
+    # Create missing roles, without permission linked,
+    # so that new groups extracted from Google Workspace are automatically created
+    if len(db_roles) < len(roles):
+        missing_roles = set(roles) - {db_role.name for db_role in db_roles}
+        if missing_roles:
+            for name in missing_roles:
+                db.session.add(perm_models.Role(name=name))
+            db.session.commit()
+
+    permissions = set()
+    for db_role in db_roles:
+        permissions.update(db_role.permissions)
+    return list(permissions)
 
 
 def generate_token(
