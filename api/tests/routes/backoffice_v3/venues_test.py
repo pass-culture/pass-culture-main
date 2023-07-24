@@ -1372,3 +1372,21 @@ class BatchEditVenuesTest(PostEndpointHelper):
         assert venues[1].isPermanent is set_permanent
 
         mock_async_index_venue_ids.assert_called_once()
+
+    def test_batch_edit_venues_only_criteria(self, legit_user, authenticated_client, criteria):
+        new_criterion = criteria_factories.CriterionFactory()
+        venues = [
+            offerers_factories.VenueFactory(criteria=[criteria[0]]),
+        ]
+
+        form_data = {
+            "object_ids": ",".join(str(venue.id) for venue in venues),
+            "criteria": [criteria[0].id, new_criterion.id],
+            "all_permanent": "",
+            "all_not_permanent": "",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, form=form_data)
+        assert response.status_code == 303
+
+        assert set(venues[0].criteria) == {criteria[0], new_criterion}
