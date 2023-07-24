@@ -1,7 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
-import { Formik } from 'formik'
+import { Form, Formik } from 'formik'
 import React from 'react'
-import { Form } from 'react-final-form'
 
 import { api } from 'apiClient/api'
 import {
@@ -23,7 +22,7 @@ const renderReimbursementFields = async (
     <Formik onSubmit={() => {}} initialValues={{}}>
       {({ handleSubmit }) => (
         <Form onSubmit={handleSubmit}>
-          {() => <ReimbursementFields {...props} />}
+          <ReimbursementFields {...props} />
         </Form>
       )}
     </Formik>,

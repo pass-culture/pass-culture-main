@@ -110,6 +110,7 @@ const AllocineProviderForm = ({
                 placeholder="Illimité"
                 step={1}
                 isOptional
+                hasDecimal={false}
               />
             </FormLayout.Row>
             <FormLayout.Row
