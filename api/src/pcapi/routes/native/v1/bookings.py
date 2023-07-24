@@ -1,26 +1,14 @@
-from datetime import datetime
 import logging
 
-from sqlalchemy.orm import joinedload
-
 import pcapi.core.bookings.api as bookings_api
-from pcapi.core.bookings.constants import FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE
 import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.external_bookings.boost.client import get_boost_external_booking_barcode
 from pcapi.core.external_bookings.exceptions import ExternalBookingException
 import pcapi.core.finance.models as finance_models
-from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.exceptions import StockDoesNotExist
 from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import PriceCategory
-from pcapi.core.offers.models import PriceCategoryLabel
-from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.exceptions import InactiveProvider
-from pcapi.core.providers.models import Provider
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
@@ -106,122 +94,17 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
 @spectree_serialize(api=blueprint.api, response_model=BookingsResponse)
 @authenticated_and_active_user_required
 def get_bookings(user: User) -> BookingsResponse:
-    individual_bookings = (
-        Booking.query.filter_by(userId=user.id)
-        .options(joinedload(Booking.stock).load_only(Stock.id, Stock.beginningDatetime, Stock.price, Stock.features))
-        .options(
-            joinedload(Booking.stock)
-            .joinedload(Stock.offer)
-            .load_only(
-                Offer.bookingContact,
-                Offer.name,
-                Offer.url,
-                Offer.subcategoryId,
-                Offer.withdrawalDetails,
-                Offer.withdrawalType,
-                Offer.withdrawalDelay,
-                Offer.extraData,
-            )
-            .joinedload(Offer.product)
-            .load_only(
-                Product.id,
-                Product.thumbCount,
-            )
-        )
-        .options(
-            joinedload(Booking.stock)
-            .joinedload(Stock.priceCategory)
-            .joinedload(PriceCategory.priceCategoryLabel)
-            .load_only(PriceCategoryLabel.label)
-        )
-        .options(
-            joinedload(Booking.stock)
-            .joinedload(Stock.offer)
-            .joinedload(Offer.venue)
-            .load_only(
-                Venue.name,
-                Venue.address,
-                Venue.postalCode,
-                Venue.city,
-                Venue.latitude,
-                Venue.longitude,
-                Venue.publicName,
-            )
-        )
-        .options(
-            joinedload(Booking.stock)
-            .joinedload(Stock.lastProvider)
-            .load_only(
-                Provider.localClass
-            )  # TODO(yacine) to be removed with WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING
-        )
-        .options(joinedload(Booking.stock).joinedload(Stock.offer).joinedload(Offer.mediations))
-        .options(joinedload(Booking.activationCode))
-        .options(joinedload(Booking.externalBookings))
-        .options(joinedload(Booking.deposit).load_only(finance_models.Deposit.type))
-    ).all()
-
-    has_bookings_after_18 = any(
-        booking
-        for booking in individual_bookings
-        if not booking.deposit or booking.deposit.type == finance_models.DepositType.GRANT_18
-    )
-    ended_bookings = []
-    ongoing_bookings = []
-
-    for booking in individual_bookings:
-        if (
-            booking.externalBookings and booking.stock.lastProvider.localClass == "BoostStocks"
-        ):  # TODO(yacine) to be removed with WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING
-            for external_booking in booking.externalBookings:
-                external_booking.barcode = get_boost_external_booking_barcode(external_booking.barcode)
-
-        if is_ended_booking(booking):
-            ended_bookings.append(booking)
-        else:
-            ongoing_bookings.append(booking)
-            booking.qrCodeData = bookings_api.get_qr_code_data(booking.token)
+    individual_bookings = bookings_api.get_individual_bookings(user)
+    ended_bookings, ongoing_bookings = bookings_api.classify_and_sort_bookings(individual_bookings)
 
     return BookingsResponse(
-        ended_bookings=[
-            BookingReponse.from_orm(booking)
-            for booking in sorted(
-                ended_bookings,
-                key=lambda b: b.stock.beginningDatetime or b.dateUsed or b.cancellationDate or datetime.min,
-                reverse=True,
-            )
-        ],
-        # put permanent bookings at the end with datetime.max
-        ongoing_bookings=[
-            BookingReponse.from_orm(booking)
-            for booking in sorted(
-                ongoing_bookings, key=lambda b: (b.expirationDate or b.stock.beginningDatetime or datetime.max, -b.id)
-            )
-        ],
-        hasBookingsAfter18=has_bookings_after_18,
-    )
-
-
-def is_ended_booking(booking: Booking) -> bool:
-    if (
-        booking.stock.beginningDatetime
-        and booking.status != BookingStatus.CANCELLED
-        and booking.stock.beginningDatetime >= datetime.utcnow()
-    ):
-        # consider future events as "ongoing" even if they are used
-        return False
-
-    if (booking.stock.canHaveActivationCodes and booking.activationCode) or (
-        booking.stock.offer.subcategoryId in FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE and booking.stock.price == 0
-    ):
-        # consider digital bookings and free offer from defined subcategories as special: is_used should be true anyway so
-        # let's use displayAsEnded
-        return booking.displayAsEnded  # type: ignore [return-value]
-
-    return (
-        not booking.stock.offer.isPermanent
-        if booking.is_used_or_reimbursed
-        else booking.status == BookingStatus.CANCELLED
+        ended_bookings=[BookingReponse.from_orm(booking) for booking in ended_bookings],
+        ongoing_bookings=[BookingReponse.from_orm(booking) for booking in ongoing_bookings],
+        hasBookingsAfter18=any(
+            booking
+            for booking in individual_bookings
+            if not booking.deposit or booking.deposit.type == finance_models.DepositType.GRANT_18
+        ),
     )
 
 
