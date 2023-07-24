@@ -9,8 +9,6 @@ import { validationSchema } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/Ve
 import { Banner, Button, Checkbox, InfoBox, TextInput } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import './AllocineProviderForm.scss'
-
 interface FormValuesProps {
   isDuo: boolean
   price: number | string
