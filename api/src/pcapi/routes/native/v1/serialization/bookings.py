@@ -57,6 +57,7 @@ class BookingOfferExtraData(BaseModel):
 
 class BookingOfferResponse(BaseModel):
     id: int
+    bookingContact: str | None
     name: str
     extraData: BookingOfferExtraData | None
     image: OfferImageResponse | None

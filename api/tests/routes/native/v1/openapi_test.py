@@ -167,6 +167,7 @@ def test_public_api(client):
                 },
                 "BookingOfferResponse": {
                     "properties": {
+                        "bookingContact": {"nullable": True, "title": "Bookingcontact", "type": "string"},
                         "extraData": {
                             "anyOf": [{"$ref": "#/components/schemas/BookingOfferExtraData"}],
                             "nullable": True,
