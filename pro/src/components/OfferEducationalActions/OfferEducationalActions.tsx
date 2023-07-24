@@ -109,8 +109,8 @@ const OfferEducationalActions = ({
 
   const shouldDisplayBookingLink =
     lastBookingId &&
-    (lastBookingStatus != CollectiveBookingStatus.CANCELLED ||
-      offer.status == OfferStatus.EXPIRED)
+    (lastBookingStatus !== CollectiveBookingStatus.CANCELLED ||
+      offer.status === OfferStatus.EXPIRED)
 
   const shouldDisplayStatusSeparator =
     shouldDisplayAdagePublicationButton || shouldDisplayBookingLink
@@ -150,7 +150,7 @@ const OfferEducationalActions = ({
               }
             >
               Voir la{' '}
-              {lastBookingStatus == 'PENDING'
+              {lastBookingStatus === 'PENDING'
                 ? 'préréservation'
                 : 'réservation'}
             </ButtonLink>
