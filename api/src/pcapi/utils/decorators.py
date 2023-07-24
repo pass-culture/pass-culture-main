@@ -34,8 +34,8 @@ def retry(
                         exception_handler(*args, **kwargs)
                     if logger:
                         logger.info(
-                            "Caught exception, retriyng",
-                            extra={"exception": exception.__class__.__name__, "remaining_attempts": inner_max_attempts},
+                            "Caught exception, retrying",
+                            extra={"exception": exception.__name__, "remaining_attempts": inner_max_attempts},
                         )
             return func(*args, **kwargs)
 

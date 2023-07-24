@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 from freezegun import freeze_time
 import pytest
@@ -104,7 +105,7 @@ class BoostGetResourceTest:
         assert get_adapter.last_request.headers["Authorization"] == "Bearer new-token"
         assert json_data == response_data
 
-    def test_with_non_expired_invalid_token(self, requests_mock):
+    def test_with_non_expired_invalid_token(self, requests_mock, caplog):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(
             cinemaUrl="https://cinema.example.com/",
             token="invalid-token",
@@ -127,7 +128,10 @@ class BoostGetResourceTest:
         login_response_json = {"code": 200, "message": "Login successful", "token": "new-token"}
         login_adapter = requests_mock.post("https://cinema.example.com/api/vendors/login", json=login_response_json)
 
-        json_data = boost.get_resource(cinema_str_id, resource)
+        with caplog.at_level(logging.INFO):
+            json_data = boost.get_resource(cinema_str_id, resource)
+            assert caplog.records[1].message == "Caught exception, retrying"
+            assert caplog.records[1].extra["exception"] == "BoostInvalidTokenException"
 
         assert login_adapter.call_count == 1
         assert get_adapter.call_count == 2
@@ -281,7 +285,7 @@ class BoostPostResourceTest:
             == str(exc.value)
         )
 
-    def test_with_non_expired_invalid_token(self, requests_mock):
+    def test_with_non_expired_invalid_token(self, requests_mock, caplog):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(
             cinemaUrl="https://cinema.example.com/",
             token="invalid-token",
@@ -309,7 +313,10 @@ class BoostPostResourceTest:
         login_adapter = requests_mock.post("https://cinema.example.com/api/vendors/login", json=login_response_json)
 
         body = BaseModel(key=1)
-        json_data = boost.post_resource(cinema_str_id, resource, body)
+        with caplog.at_level(logging.INFO):
+            json_data = boost.post_resource(cinema_str_id, resource, body)
+            assert caplog.records[1].message == "Caught exception, retrying"
+            assert caplog.records[1].extra["exception"] == "BoostInvalidTokenException"
 
         assert login_adapter.call_count == 1
         assert get_adapter.call_count == 2
@@ -417,7 +424,7 @@ class BoostPutResourceTest:
             == str(exc.value)
         )
 
-    def test_with_non_expired_invalid_token(self, requests_mock):
+    def test_with_non_expired_invalid_token(self, requests_mock, caplog):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(
             cinemaUrl="https://cinema.example.com/",
             token="invalid-token",
@@ -445,7 +452,11 @@ class BoostPutResourceTest:
         login_adapter = requests_mock.post("https://cinema.example.com/api/vendors/login", json=login_response_json)
 
         body = BaseModel(key=1)
-        json_data = boost.put_resource(cinema_str_id, resource, body)
+
+        with caplog.at_level(logging.INFO):
+            json_data = boost.put_resource(cinema_str_id, resource, body)
+            assert caplog.records[1].message == "Caught exception, retrying"
+            assert caplog.records[1].extra["exception"] == "BoostInvalidTokenException"
 
         assert login_adapter.call_count == 1
         assert get_adapter.call_count == 2
