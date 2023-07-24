@@ -10,6 +10,7 @@ from pcapi.core.categories import subcategories_v2
 import pcapi.core.offers.models as offers_models
 from pcapi.domain.show_types import SHOW_SUB_TYPES_LABEL_BY_CODE
 from pcapi.routes.backoffice_v3 import autocomplete
+from pcapi.utils.clean_accents import clean_accents
 
 from .. import filters
 from ..forms import fields
@@ -183,8 +184,10 @@ class OfferValidationSubRuleForm(FlaskForm):
                 raise wtforms.validators.ValidationError(
                     "Seuls des groupes de mots séparés par des virgules sont autorisés"
                 )
-            list_field.data = [keyword.strip() for keyword in re.split(r",+", list_field.data) if keyword.strip()]
-            list_field.data.sort()
+            list_field.data = sorted(
+                [keyword.strip() for keyword in re.split(r",+", list_field.data) if keyword.strip()],
+                key=lambda keyword: clean_accents(keyword).lower(),
+            )
         else:
             list_field.data = []
         return list_field
