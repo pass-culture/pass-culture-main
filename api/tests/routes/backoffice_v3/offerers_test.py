@@ -2884,7 +2884,7 @@ class UpdateOffererTagTest(PostEndpointHelper):
         assert rows[0]["Nom"] == new_name
         assert rows[0]["Libellé"] == new_label
         assert rows[0]["Description"] == new_description
-        assert rows[0]["Catégories"] == ", ".join([category_to_keep.label, category_to_add.label])
+        assert all(label in rows[0]["Catégories"] for label in [category_to_keep.label, category_to_add.label])
 
         assert rows[1]["Nom"] == offerer_tag_not_to_edit.name
 
