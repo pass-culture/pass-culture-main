@@ -629,6 +629,7 @@ def batch_edit_venues() -> utils.BackofficeResponse:
     venues = offerers_models.Venue.query.filter(offerers_models.Venue.id.in_(form.object_ids_list)).all()
 
     updated_criteria_venues = _update_venues_criteria(venues=venues, criteria_ids=form.criteria.data)
+    updated_permanent_venues = []
     if form.all_permanent.data:
         updated_permanent_venues = _update_permanent_venues(venues=venues, is_permanent=True)
     elif form.all_not_permanent.data:
