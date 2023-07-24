@@ -164,6 +164,15 @@ $action-gap: rem.torem(10px);
       }
     }
 
+    &-input:focus + .orejime-AppItem-label .orejime-AppItem-slider {
+      border-color: colors.$primary-dark;
+      outline-offset: 0;
+    }
+
+    &-slider {
+      box-shadow: none;
+    }
+
     &-switch, &-slider {
       width: rem.torem(56px);
     }
