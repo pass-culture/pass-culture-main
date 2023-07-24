@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { Form, Formik } from 'formik'
 import React from 'react'
 
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
@@ -8,13 +9,18 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import AllocineProviderForm, {
   AllocineProviderFormProps,
-  InitialValuesProps,
 } from '../AllocineProviderForm'
 
 const mockLogEvent = jest.fn()
 
 const renderAllocineProviderForm = async (props: AllocineProviderFormProps) => {
-  renderWithProviders(<AllocineProviderForm {...props} />)
+  renderWithProviders(
+    <Formik initialValues={{}} onSubmit={jest.fn()}>
+      <Form>
+        <AllocineProviderForm {...props} />
+      </Form>
+    </Formik>
+  )
   await waitFor(() => {
     screen.getByText('Prix de vente/place')
   })
@@ -34,7 +40,12 @@ describe('AllocineProviderForm', () => {
       providerId: providerId,
       offererId: offererId,
       onCancel: jest.fn(),
-      initialValues: { isDuo: true } as InitialValuesProps,
+      initialValues: {
+        isDuo: true,
+        quantity: '',
+        price: '',
+        isActive: false,
+      },
       isCreatedEntity: true,
     }
 
@@ -58,9 +69,9 @@ describe('AllocineProviderForm', () => {
   it('should display the quantity field with default value set to Illimité', async () => {
     await renderAllocineProviderForm(props)
 
-    const quantityField = screen.getByLabelText(`Nombre de places/séance`)
+    const quantityField = screen.getByLabelText(/Nombre de places\/séance/)
     expect(quantityField).toBeInTheDocument()
-    expect(quantityField).toHaveAttribute('min', '0')
+    expect(quantityField).toHaveAttribute('placeholder', 'Illimité')
     expect(quantityField).toHaveAttribute('step', '1')
   })
 
@@ -91,7 +102,7 @@ describe('AllocineProviderForm', () => {
     const priceField = screen.getByLabelText('Prix de vente/place', {
       exact: false,
     })
-    const quantityField = screen.getByLabelText('Nombre de places/séance')
+    const quantityField = screen.getByLabelText(/Nombre de places\/séance/)
     const isDuoCheckbox = screen.getByLabelText(`Accepter les réservations DUO`)
 
     await userEvent.type(priceField, '10')
@@ -105,6 +116,7 @@ describe('AllocineProviderForm', () => {
       isDuo: false,
       providerId: provider.id,
       venueId: venueId,
+      isActive: false,
     })
   })
 
@@ -126,7 +138,7 @@ describe('AllocineProviderForm', () => {
       isDuo: true,
       providerId: provider.id,
       venueId: venueId,
-      isActive: undefined,
+      isActive: false,
     })
   })
 
@@ -148,7 +160,7 @@ describe('AllocineProviderForm', () => {
       isDuo: true,
       providerId: provider.id,
       venueId: venueId,
-      isActive: undefined,
+      isActive: false,
     })
   })
 
@@ -182,7 +194,7 @@ describe('AllocineProviderForm', () => {
       price: 15,
       quantity: 50,
       isDuo: false,
-    } as InitialValuesProps
+    }
     await renderAllocineProviderForm(props)
 
     const saveEditionProviderButton = screen.getByRole('button', {
@@ -201,7 +213,7 @@ describe('AllocineProviderForm', () => {
       price: 15,
       quantity: 50,
       isDuo: false,
-    } as InitialValuesProps
+    }
     await renderAllocineProviderForm(props)
 
     const priceField = screen.getByLabelText('Prix de vente/place', {
@@ -209,7 +221,7 @@ describe('AllocineProviderForm', () => {
     })
     expect(priceField).toHaveValue(15)
 
-    const quantityField = screen.getByLabelText('Nombre de places/séance', {
+    const quantityField = screen.getByLabelText(/Nombre de places\/séance/, {
       exact: false,
     })
     expect(quantityField).toHaveValue(50)
@@ -226,7 +238,7 @@ describe('AllocineProviderForm', () => {
       price: 15,
       quantity: 50,
       isDuo: false,
-    } as InitialValuesProps
+    }
     await renderAllocineProviderForm(props)
 
     const saveEditionProviderButton = screen.getByRole('button', {
@@ -247,7 +259,7 @@ describe('AllocineProviderForm', () => {
       price: 15,
       quantity: 50,
       isDuo: false,
-    } as InitialValuesProps
+    }
     await renderAllocineProviderForm(props)
 
     const priceField = screen.getByLabelText('Prix de vente/place', {
@@ -265,10 +277,10 @@ describe('AllocineProviderForm', () => {
       price: 15,
       quantity: 50,
       isDuo: false,
-    } as InitialValuesProps
+    }
     await renderAllocineProviderForm(props)
 
-    const quantityField = screen.getByLabelText('Nombre de places/séance')
+    const quantityField = screen.getByLabelText(/Nombre de places\/séance/)
 
     await userEvent.clear(quantityField)
     await userEvent.type(quantityField, '-1')
@@ -281,7 +293,7 @@ describe('AllocineProviderForm', () => {
       price: 15,
       quantity: 50,
       isDuo: false,
-    } as InitialValuesProps
+    }
     await renderAllocineProviderForm(props)
 
     const saveEditionProviderButton = screen.getByRole('button', {
@@ -290,7 +302,7 @@ describe('AllocineProviderForm', () => {
     const priceField = screen.getByLabelText('Prix de vente/place', {
       exact: false,
     })
-    const quantityField = screen.getByLabelText('Nombre de places/séance')
+    const quantityField = screen.getByLabelText(/Nombre de places\/séance/)
     const isDuoCheckbox = screen.getByLabelText(`Accepter les réservations DUO`)
 
     await userEvent.clear(priceField)

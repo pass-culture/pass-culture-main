@@ -7,7 +7,7 @@ import useNotification from 'hooks/useNotification'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Button } from 'ui-kit/index'
 
-import { InitialValuesProps } from '../AllocineProviderForm/AllocineProviderForm'
+import { FormValuesProps } from '../AllocineProviderForm/AllocineProviderForm'
 import AllocineProviderFormDialog from '../AllocineProviderFormDialog/AllocineProviderFormDialog'
 import { getRequestErrorStringFromErrors } from '../utils/getRequestErrorStringFromErrors'
 
@@ -67,12 +67,11 @@ const AllocineProviderParameters = ({
     [closeFormDialog, editVenueProvider]
   )
 
-  // FIX ME: we should not use as but type of initialValues is strange
-  const initialValues = {
-    price: venueProvider.price,
-    quantity: venueProvider.quantity,
-    isDuo: venueProvider.isDuo ?? true,
-  } as InitialValuesProps
+  const initialValues: FormValuesProps = {
+    price: venueProvider.price ? venueProvider.price : '',
+    quantity: venueProvider.quantity ? Number(venueProvider.quantity) : '',
+    isDuo: venueProvider.isDuo ?? false,
+  }
 
   return (
     <div className={style['allocine-provider-parameters-container']}>
