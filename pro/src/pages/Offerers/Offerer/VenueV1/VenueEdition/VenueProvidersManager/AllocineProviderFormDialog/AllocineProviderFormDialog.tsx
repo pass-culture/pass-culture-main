@@ -6,11 +6,11 @@ import { PostVenueProviderBody } from 'apiClient/v1'
 import DialogBox from 'components/DialogBox/DialogBox'
 
 import AllocineProviderForm, {
-  InitialValuesProps,
+  FormValuesProps,
 } from '../AllocineProviderForm/AllocineProviderForm'
 
 interface AllocineProviderFormDialogProps {
-  initialValues: InitialValuesProps
+  initialValues: FormValuesProps
   onCancel: () => void
   onConfirm: (payload: PostVenueProviderBody) => void
   providerId: number
