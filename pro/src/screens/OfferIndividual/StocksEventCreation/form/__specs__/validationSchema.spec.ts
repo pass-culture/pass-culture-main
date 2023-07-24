@@ -35,7 +35,7 @@ describe('validationSchema', () => {
       formValues: {
         ...baseValidForm,
         recurrenceType: RecurrenceType.DAILY,
-        endingDate: '2020-03-07',
+        endingDate: '2050-03-07',
       },
       expectedErrors: [],
     },
@@ -90,7 +90,8 @@ describe('validationSchema', () => {
       formValues: {
         ...baseValidForm,
         recurrenceType: RecurrenceType.DAILY,
-        endingDate: '2020-01-01',
+        startingDate: '2050-01-01',
+        endingDate: '2050-02-01',
         beginningTimes: ['10:00', '10:00'],
       },
       expectedErrors: [
@@ -105,6 +106,18 @@ describe('validationSchema', () => {
         startingDate: '2000-01-01',
       },
       expectedErrors: ['L’évènement doit être à venir'],
+    },
+    {
+      description: 'ending date is before starting date',
+      formValues: {
+        ...baseValidForm,
+        recurrenceType: RecurrenceType.DAILY,
+        startingDate: '2050-01-01',
+        endingDate: '1999-01-01',
+      },
+      expectedErrors: [
+        'Veuillez indiquer une date postérieure à la date de début',
+      ],
     },
   ]
 
