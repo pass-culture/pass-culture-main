@@ -34,7 +34,22 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
       .when('recurrenceType', {
         is: (recurrenceType: RecurrenceType) =>
           recurrenceType !== RecurrenceType.UNIQUE,
-        then: schema => schema.required('Veuillez renseigner une date de fin'),
+        then: schema =>
+          schema
+            .required('Veuillez renseigner une date de fin')
+            .test(
+              'is-after-starting-date',
+              'Veuillez indiquer une date postérieure à la date de début',
+              function (value) {
+                const startingDate = this.parent.startingDate
+
+                return (
+                  isDateValid(startingDate) &&
+                  isDateValid(value) &&
+                  new Date(value) > new Date(startingDate)
+                )
+              }
+            ),
       }),
     days: yup
       .array()
