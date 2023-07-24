@@ -16,6 +16,7 @@ a.logo {
 
 .logo-unlogged {
   color: colors.$white;
-  width: rem.torem(282px);
+  max-width: rem.torem(282px);
+  width: 25vw;
   max-height: rem.torem(120px);
 }

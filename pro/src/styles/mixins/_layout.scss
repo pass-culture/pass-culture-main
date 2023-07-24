@@ -6,11 +6,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  position: fixed;
   top: 0;
   min-height: 100vh;
   background-image: url("./linear-gradient.svg");
   box-shadow: inset rem.torem(-10px) 0 rem.torem(20px) 0 colors.$black-shadow;
-  min-width: size.$logo-side-width;
+  width: size.$logo-side-width;
   background-size: cover;
+
+  @media (width <= 1290px) {
+    width: 30%;
+    
+  }
 }
