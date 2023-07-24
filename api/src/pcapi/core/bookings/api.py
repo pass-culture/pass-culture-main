@@ -4,9 +4,11 @@ import typing
 
 import sentry_sdk
 import sqlalchemy as sa
+from sqlalchemy.orm import joinedload
 
 from pcapi.analytics.amplitude import events as amplitude_events
 from pcapi.core import search
+from pcapi.core.bookings.constants import FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
@@ -19,18 +21,25 @@ from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.external.attributes.api import update_external_pro
 from pcapi.core.external.attributes.api import update_external_user
 import pcapi.core.external_bookings.api as external_bookings_api
+from pcapi.core.external_bookings.boost.client import get_boost_external_booking_barcode
 import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
 import pcapi.core.mails.transactional as transactional_mails
+from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import repository as offers_repository
 import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import PriceCategory
+from pcapi.core.offers.models import PriceCategoryLabel
+from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 import pcapi.core.offers.validation as offers_validation
 import pcapi.core.providers.exceptions as providers_exceptions
+from pcapi.core.providers.models import Provider
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import get_and_lock_user
@@ -55,6 +64,121 @@ from .exceptions import BookingIsAlreadyUsed
 logger = logging.getLogger(__name__)
 
 QR_CODE_PASS_CULTURE_VERSION = "v3"
+
+
+def _is_ended_booking(booking: Booking) -> bool:
+    if (
+        booking.stock.beginningDatetime
+        and booking.status != BookingStatus.CANCELLED
+        and booking.stock.beginningDatetime >= datetime.datetime.utcnow()
+    ):
+        # consider future events as "ongoing" even if they are used
+        return False
+
+    if (booking.stock.canHaveActivationCodes and booking.activationCode) or (
+        booking.stock.offer.subcategoryId in FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE and booking.stock.price == 0
+    ):
+        # consider digital bookings and free offer from defined subcategories as special: is_used should be true anyway so
+        # let's use displayAsEnded
+        return booking.displayAsEnded  # type: ignore [return-value]
+
+    return (
+        not booking.stock.offer.isPermanent
+        if booking.is_used_or_reimbursed
+        else booking.status == BookingStatus.CANCELLED
+    )
+
+
+def get_individual_bookings(user: User) -> list[Booking]:
+    """
+    Get all bookings for a user, with all the data needed for the bookings page
+    including the offer and venue data.
+    """
+    return (
+        Booking.query.filter_by(userId=user.id)
+        .options(joinedload(Booking.stock).load_only(Stock.id, Stock.beginningDatetime, Stock.price, Stock.features))
+        .options(
+            joinedload(Booking.stock)
+            .joinedload(Stock.offer)
+            .load_only(
+                Offer.bookingContact,
+                Offer.name,
+                Offer.url,
+                Offer.subcategoryId,
+                Offer.withdrawalDetails,
+                Offer.withdrawalType,
+                Offer.withdrawalDelay,
+                Offer.extraData,
+            )
+            .joinedload(Offer.product)
+            .load_only(
+                Product.id,
+                Product.thumbCount,
+            )
+        )
+        .options(
+            joinedload(Booking.stock)
+            .joinedload(Stock.priceCategory)
+            .joinedload(PriceCategory.priceCategoryLabel)
+            .load_only(PriceCategoryLabel.label)
+        )
+        .options(
+            joinedload(Booking.stock)
+            .joinedload(Stock.offer)
+            .joinedload(Offer.venue)
+            .load_only(
+                Venue.name,
+                Venue.address,
+                Venue.postalCode,
+                Venue.city,
+                Venue.latitude,
+                Venue.longitude,
+                Venue.publicName,
+            )
+        )
+        .options(
+            joinedload(Booking.stock)
+            .joinedload(Stock.lastProvider)
+            .load_only(
+                Provider.localClass
+            )  # TODO(yacine) to be removed with WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING
+        )
+        .options(joinedload(Booking.stock).joinedload(Stock.offer).joinedload(Offer.mediations))
+        .options(joinedload(Booking.activationCode))
+        .options(joinedload(Booking.externalBookings))
+        .options(joinedload(Booking.deposit).load_only(finance_models.Deposit.type))
+    ).all()
+
+
+def classify_and_sort_bookings(individual_bookings: list[Booking]) -> tuple[list[Booking], list[Booking]]:
+    """
+    Classify bookings between ended and ongoing bookings
+    """
+    ended_bookings = []
+    ongoing_bookings = []
+    for booking in individual_bookings:
+        if (
+            booking.externalBookings and booking.stock.lastProvider.localClass == "BoostStocks"
+        ):  # TODO(yacine) to be removed with WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING
+            for external_booking in booking.externalBookings:
+                external_booking.barcode = get_boost_external_booking_barcode(external_booking.barcode)
+
+        if _is_ended_booking(booking):
+            ended_bookings.append(booking)
+        else:
+            ongoing_bookings.append(booking)
+            booking.qrCodeData = get_qr_code_data(booking.token)
+
+    sorted_ended_bookings = sorted(
+        ended_bookings,
+        key=lambda b: b.stock.beginningDatetime or b.dateUsed or b.cancellationDate or datetime.datetime.min,
+        reverse=True,
+    )
+    # put permanent bookings at the end with datetime.max
+    sorted_ongoing_bookings = sorted(
+        ongoing_bookings, key=lambda b: (b.expirationDate or b.stock.beginningDatetime or datetime.datetime.max, -b.id)
+    )
+    return (sorted_ended_bookings, sorted_ongoing_bookings)
 
 
 def book_offer(
