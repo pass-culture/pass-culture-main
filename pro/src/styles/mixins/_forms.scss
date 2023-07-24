@@ -18,7 +18,9 @@
   padding: 0 rem.torem(16px);
   color: colors.$input-text-color;
   box-shadow: 0 0 0 0 rgb(0 0 0 / 0%);
-  transition: background 150ms ease, box-shadow 150ms ease;
+  transition:
+    background 150ms ease,
+    box-shadow 150ms ease;
 
   &:focus {
     outline: solid size.$input-border-width forms.$input-border-color-focus;

@@ -1,9 +1,10 @@
+import cn from 'classnames'
 import React, { useId } from 'react'
-
-import '../DatePicker/BaseDatePicker.module.scss'
 
 import { BaseInput } from '../shared'
 import { BaseInputProps } from '../shared/BaseInput/BaseInput'
+
+import styles from './BaseTimePicker.module.scss'
 
 type Props = Omit<BaseInputProps, 'value'> & {
   value: string
@@ -17,7 +18,7 @@ const TIME_OPTIONS = Array.from({ length: 24 * 4 }, (_, i) => {
     .padStart(2, '0')}`
 })
 
-export const BaseTimePicker = (props: Props): JSX.Element => {
+export const BaseTimePicker = ({ className, ...props }: Props): JSX.Element => {
   const optionsListId = useId()
 
   return (
@@ -28,6 +29,7 @@ export const BaseTimePicker = (props: Props): JSX.Element => {
         placeholder="HH:MM"
         autoComplete="off"
         {...props}
+        className={cn(className, styles['timepicker'])}
       />
 
       <datalist id={optionsListId}>
