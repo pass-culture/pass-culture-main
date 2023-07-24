@@ -1,6 +1,6 @@
 # pass-culture-pro
 
-C'est la version (browser) de l'application PRO frontend du pass Culture. Ce repo contient également [un storybook](https://pass-culture.github.io/pass-culture-main/?path=/story/ui-kit-checkboxfield--default) des éléments graphiques
+C'est la version (browser) de l'application PRO frontend du pass Culture. Ce repo contient également [un storybook](https://pass-culture.github.io/pass-culture-main/) des éléments graphiques
 
 Il faut aller voir le README dans https://github.com/betagouv/pass-culture-main pour être informé des différentes lignes de commande associées à ce repo.
 
