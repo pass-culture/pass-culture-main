@@ -1,4 +1,11 @@
+@use "styles/variables/_size.scss" as size;
+
 .date-picker {
   text-transform: uppercase;
   letter-spacing: -0.5px;
+
+  &::-webkit-calendar-picker-indicator {
+    margin-left: 0;
+    margin-right: calc(-1 * size.$input-filter-variant-horizontal-padding);
+  }
 }

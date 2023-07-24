@@ -1,13 +1,28 @@
 @use "styles/mixins/_forms.scss" as forms;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_size.scss" as size;
 
 .base-input {
   @include forms.input-theme;
 
   &.filter-variant {
     border-radius: rem.torem(4px);
-    padding: 0 rem.torem(4px);
+    padding: 0 size.$input-filter-variant-horizontal-padding;
     min-height: rem.torem(24px);
+  }
+
+  &::-webkit-inner-spin-button {
+    display: none;
+  }
+
+  // we don't want little arrow for input number
+
+  /* Chrome, Safari, Edge, Opera */
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    appearance: none;
+    appearance: textfield;
+    margin: 0;
   }
 
   /* Firefox */
