@@ -1,36 +1,22 @@
-import React, { useCallback, useState } from 'react'
-import { Form } from 'react-final-form'
-import type { FormRenderProps } from 'react-final-form'
-import { Tooltip } from 'react-tooltip'
+import { FormikProvider, useFormik } from 'formik'
+import React, { useState } from 'react'
 
 import { PostVenueProviderBody } from 'apiClient/v1'
+import FormLayout from 'components/FormLayout'
 import { SynchronizationEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import strokeInfoIcon from 'icons/stroke-info.svg'
-import { Banner, Button, SubmitButton, CheckboxField } from 'ui-kit'
-import 'react-tooltip/dist/react-tooltip.css'
+import { validationSchema } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManager/AllocineProviderForm/validationSchema'
+import { Banner, Button, Checkbox, InfoBox, TextInput } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import NumberField from 'ui-kit/form_rff/fields/NumberField'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { getCanSubmit } from 'utils/react-final-form'
-import './AllocineProviderForm.scss'
 
-interface FormProps {
-  isLoading: boolean
-  dirtySinceLastSubmit: boolean
-  hasSubmitErrors: boolean
-  hasValidationErrors: boolean
-  pristine: boolean
-  handleSubmit: () => void
-}
+import './AllocineProviderForm.scss'
 
 interface FormValuesProps {
   isDuo: boolean
-  price?: number
-  quantity: string | number | null
+  price: number | string
+  quantity: number | string
   isActive?: boolean
 }
-export type InitialValuesProps = FormProps & FormValuesProps
 
 export interface AllocineProviderFormProps {
   saveVenueProvider: (payload: PostVenueProviderBody) => void
@@ -39,7 +25,7 @@ export interface AllocineProviderFormProps {
   venueId: number
   isCreatedEntity?: boolean
   onCancel?: () => void
-  initialValues?: InitialValuesProps
+  initialValues?: FormValuesProps
 }
 
 const AllocineProviderForm = ({
@@ -48,7 +34,12 @@ const AllocineProviderForm = ({
   offererId,
   venueId,
   onCancel,
-  initialValues,
+  initialValues = {
+    isDuo: false,
+    quantity: '',
+    price: '',
+    isActive: false,
+  },
   isCreatedEntity = false,
 }: AllocineProviderFormProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false)
@@ -80,104 +71,64 @@ const AllocineProviderForm = ({
     })
   }
 
-  const renderForm = useCallback(
-    (
-      formProps: FormRenderProps<FormValuesProps, FormProps>
-    ): React.ReactNode => {
-      const canSubmit = getCanSubmit({
-        isLoading: isLoading,
-        dirtySinceLastSubmit: formProps.dirtySinceLastSubmit,
-        hasSubmitErrors: formProps.hasSubmitErrors,
-        hasValidationErrors: formProps.hasValidationErrors,
-        pristine: formProps.pristine,
-      })
+  const formik = useFormik({
+    initialValues,
+    onSubmit: handleSubmit,
+    validationSchema,
+  })
 
-      const required = (value: number | undefined) => {
-        return typeof value === 'number'
-          ? undefined
-          : 'Ce champ est obligatoire'
-      }
-
-      return (
-        <form className="allocine-provider-form">
-          {!isLoading && (
-            <div className="allocine-provider-content">
-              <div className="apf-price-section">
-                <div className="price-section-label">
-                  <label htmlFor="price">
-                    Prix de vente/place{' '}
-                    <span className="field-asterisk">*</span>
-                    <span
-                      className="apf-tooltip"
-                      data-tooltip-place="bottom"
-                      data-tooltip-html="<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue.</p>"
-                      data-tooltip-id="tooltip-price"
-                      data-type="info"
-                    >
-                      <SvgIcon
-                        src={strokeInfoIcon}
-                        alt=""
-                        className="info-icon"
-                      />
-                    </span>
-                    <Tooltip
-                      className="type-info flex-center items-center"
-                      delayHide={500}
-                      id="tooltip-price"
-                    />
-                  </label>
-                </div>
-                <NumberField
-                  onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) =>
-                    !/[0-9.,]|Backspace|Enter/.test(e.key) && e.preventDefault()
-                  }
-                  className="field-text price-field"
-                  min="0"
-                  name="price"
-                  placeholder="Ex : 12€"
-                  step={0.01}
-                  required
-                  validate={required}
-                />
-              </div>
-              <div className="apf-quantity-section">
-                <label className="label-quantity" htmlFor="quantity">
-                  Nombre de places/séance
-                </label>
-                <NumberField
-                  isDecimal={false}
-                  min="0"
-                  name="quantity"
-                  className="quantity-field"
-                  placeholder="Illimité"
-                  onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) =>
-                    !/[0-9]|Backspace|Enter/.test(e.key) && e.preventDefault()
-                  }
-                  step={1}
-                />
-              </div>
-              <div className="apf-is-duo-section">
-                <CheckboxField
-                  id="apf-is-duo"
-                  label="Accepter les réservations DUO"
-                  name="isDuo"
-                />
-                <span
-                  className="apf-tooltip"
-                  data-tooltip-place="bottom"
-                  data-tooltip-html="<p>En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l’accompagnateur.</p>"
-                  data-tooltip-type="info"
-                  data-tooltip-id="tooltip-duo"
-                >
-                  <SvgIcon src={strokeInfoIcon} alt="" className="info-icon" />
-                </span>
-                <Tooltip
-                  className="type-info flex-center items-center"
-                  delayHide={500}
-                  id="tooltip-duo"
-                />
-              </div>
-
+  return (
+    <FormikProvider value={formik}>
+      <FormLayout>
+        {!isLoading && (
+          <>
+            <FormLayout.Row
+              sideComponent={
+                isCreatedEntity ? (
+                  <InfoBox>Prix auquel la place de cinéma sera vendue.</InfoBox>
+                ) : (
+                  <></>
+                )
+              }
+            >
+              <TextInput
+                name="price"
+                type="number"
+                label="Prix de vente/place"
+                min="0"
+                placeholder="Ex : 12€"
+                step={0.01}
+                required
+              />
+            </FormLayout.Row>
+            <FormLayout.Row>
+              <TextInput
+                type="number"
+                label="Nombre de places/séance"
+                min="0"
+                name="quantity"
+                placeholder="Illimité"
+                step={1}
+                isOptional
+              />
+            </FormLayout.Row>
+            <FormLayout.Row
+              sideComponent={
+                isCreatedEntity ? (
+                  <InfoBox>
+                    En activant cette option, vous permettez au bénéficiaire du
+                    pass Culture de venir accompagné. La seconde place sera
+                    délivrée au même tarif que la première, quel que soit
+                    l’accompagnateur.
+                  </InfoBox>
+                ) : (
+                  <></>
+                )
+              }
+            >
+              <Checkbox name="isDuo" label="Accepter les réservations DUO" />
+            </FormLayout.Row>
+            <FormLayout.Row>
               <Banner type="notification-info">
                 <p>
                   Pour le moment, seules les séances "classiques" peuvent être
@@ -192,48 +143,35 @@ const AllocineProviderForm = ({
                   spécifiques.
                 </p>
               </Banner>
-              {isCreatedEntity ? (
-                <div className="apf-provider-import-button-section">
-                  <SubmitButton
-                    variant={ButtonVariant.PRIMARY}
-                    disabled={!canSubmit}
-                    onClick={formProps.handleSubmit}
-                  >
-                    Importer les offres
-                  </SubmitButton>
-                </div>
+            </FormLayout.Row>
+            <FormLayout.Actions>
+              {!isCreatedEntity ? (
+                <Button
+                  variant={ButtonVariant.SECONDARY}
+                  onClick={onCancel}
+                  type="button"
+                >
+                  Annuler
+                </Button>
               ) : (
-                <div className="actions">
-                  <Button
-                    variant={ButtonVariant.SECONDARY}
-                    onClick={onCancel}
-                    type="button"
-                  >
-                    Annuler
-                  </Button>
-                  <SubmitButton
-                    variant={ButtonVariant.PRIMARY}
-                    disabled={!canSubmit}
-                    onClick={formProps.handleSubmit}
-                  >
-                    Modifier
-                  </SubmitButton>
-                </div>
+                <></>
               )}
-            </div>
-          )}
-        </form>
-      )
-    },
-    [isCreatedEntity, isLoading, onCancel]
-  )
 
-  return (
-    <Form
-      initialValues={initialValues}
-      onSubmit={handleSubmit}
-      render={renderForm}
-    />
+              <Button
+                onClick={() => handleSubmit(formik.values)}
+                type="button"
+                isLoading={isLoading}
+                disabled={
+                  !formik.isValid || typeof formik.values.price !== 'number'
+                }
+              >
+                {isCreatedEntity ? 'Importer les offres' : 'Modifier'}
+              </Button>
+            </FormLayout.Actions>
+          </>
+        )}
+      </FormLayout>
+    </FormikProvider>
   )
 }
 
