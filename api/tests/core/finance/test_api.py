@@ -1146,7 +1146,10 @@ class PriceBookingsTest:
         assert len(unused_booking.pricings) == 0
         assert len(used_booking.pricings) == 1
         assert len(unused_then_used_booking.pricings) == 2
-        assert unused_then_used_booking.pricings[-1].status == models.PricingStatus.VALIDATED
+        assert {p.status for p in unused_then_used_booking.pricings} == {
+            models.PricingStatus.CANCELLED,
+            models.PricingStatus.VALIDATED,
+        }
         assert len(used_collective_booking.pricings) == 1
 
     def test_loop(self):
