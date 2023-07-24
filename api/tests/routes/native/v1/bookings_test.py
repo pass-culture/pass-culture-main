@@ -171,7 +171,10 @@ class GetBookingsTest:
 
         event_booking = booking_factories.BookingFactory(
             user=user,
-            stock=EventStockFactory(beginningDatetime=datetime.utcnow() + timedelta(days=2)),
+            stock=EventStockFactory(
+                beginningDatetime=datetime.utcnow() + timedelta(days=2),
+                offer__bookingContact="contact@example.net",
+            ),
         )
 
         digital_stock = StockWithActivationCodesFactory()
@@ -228,7 +231,15 @@ class GetBookingsTest:
             permanent_booking.id,
         ]
 
-        assert response.json["ongoing_bookings"][3]["activationCode"]
+        event_booking_json = next(
+            booking for booking in response.json["ongoing_bookings"] if booking["id"] == event_booking.id
+        )
+        assert event_booking_json["stock"]["offer"]["bookingContact"] == "contact@example.net"
+
+        digital_booking_json = next(
+            booking for booking in response.json["ongoing_bookings"] if booking["id"] == digital_booking.id
+        )
+        assert digital_booking_json["activationCode"]
 
         assert [b["id"] for b in response.json["ended_bookings"]] == [
             ended_digital_booking.id,
@@ -240,7 +251,8 @@ class GetBookingsTest:
 
         assert response.json["hasBookingsAfter18"] is True
 
-        assert response.json["ended_bookings"][3] == {
+        used2_json = next(booking for booking in response.json["ended_bookings"] if booking["id"] == used2.id)
+        assert used2_json == {
             "activationCode": None,
             "cancellationDate": None,
             "cancellationReason": None,
@@ -259,6 +271,7 @@ class GetBookingsTest:
                 "price": used2.stock.price * 100,
                 "priceCategoryLabel": None,
                 "offer": {
+                    "bookingContact": None,
                     "subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id,
                     "extraData": None,
                     "id": used2.stock.offer.id,

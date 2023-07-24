@@ -113,6 +113,7 @@ def get_bookings(user: User) -> BookingsResponse:
             joinedload(Booking.stock)
             .joinedload(Stock.offer)
             .load_only(
+                Offer.bookingContact,
                 Offer.name,
                 Offer.url,
                 Offer.subcategoryId,
