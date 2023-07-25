@@ -28,6 +28,7 @@ import {
   SubmitButton,
   TextInput,
   TimePicker,
+  Title,
 } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { FieldError } from 'ui-kit/form/shared'
@@ -154,8 +155,12 @@ export const RecurrenceForm = ({
 
   return (
     <FormikProvider value={formik}>
-      <form onSubmit={formik.handleSubmit} className={styles['form']}>
-        <FormLayout.Section title="Ajouter une ou plusieurs dates">
+      <form onSubmit={formik.handleSubmit}>
+        <Title as="h2" level={3} className={styles['title']}>
+          Ajouter une ou plusieurs dates
+        </Title>
+
+        <fieldset>
           <div className={styles['section']}>
             <div className={styles['legend']}>
               <SvgIcon
@@ -311,7 +316,9 @@ export const RecurrenceForm = ({
               </FormLayout.Row>
             )}
           </div>
+        </fieldset>
 
+        <fieldset>
           <div className={styles['section']}>
             <div className={styles['legend']}>
               <SvgIcon
@@ -345,25 +352,29 @@ export const RecurrenceForm = ({
                       ))}
                     </div>
 
-                    <ButtonLink
+                    <Button
                       variant={ButtonVariant.TERNARY}
                       icon={fullMoreIcon}
-                      onClick={() => arrayHelpers.push('')}
-                      link={{
-                        to: `#beginningTimes[${
-                          values.beginningTimes.length - 1
-                        }]`,
-                        isExternal: true,
+                      onClick={() => {
+                        arrayHelpers.push('')
+                        const inputToFocus = `beginningTimes[${values.beginningTimes.length}]`
+
+                        // The input we want to focus has not been rendered yet
+                        setTimeout(() => {
+                          document.getElementById(inputToFocus)?.focus()
+                        }, 0)
                       }}
                     >
                       Ajouter un créneau
-                    </ButtonLink>
+                    </Button>
                   </>
                 )}
               />
             </FormLayout.Row>
           </div>
+        </fieldset>
 
+        <fieldset>
           <div className={styles['section']}>
             <div className={styles['legend']}>
               <SvgIcon
@@ -442,7 +453,9 @@ export const RecurrenceForm = ({
               )}
             />
           </div>
+        </fieldset>
 
+        <fieldset>
           <div className={styles['section']}>
             <div className={styles['legend']}>
               <SvgIcon
@@ -468,7 +481,7 @@ export const RecurrenceForm = ({
               </div>
             </div>
           </div>
-        </FormLayout.Section>
+        </fieldset>
 
         <div className={styles['action-buttons']}>
           <Button variant={ButtonVariant.SECONDARY} onClick={onCancel}>

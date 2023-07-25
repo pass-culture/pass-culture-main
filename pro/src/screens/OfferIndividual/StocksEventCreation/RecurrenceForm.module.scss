@@ -5,6 +5,10 @@
 @use "styles/mixins/_forms.scss" as formsM;
 @use "styles/mixins/_fonts.scss" as fonts;
 
+.title {
+  margin-bottom: rem.torem(24px);
+}
+
 .section {
   padding: rem.torem(16px);
   border: 1px solid colors.$grey-medium-shadow;
