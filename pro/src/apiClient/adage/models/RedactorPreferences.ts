@@ -4,6 +4,6 @@
 /* eslint-disable */
 
 export type RedactorPreferences = {
-  feedback_form_closed: boolean;
+  feedback_form_closed?: boolean | null;
 };
 
