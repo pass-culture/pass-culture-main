@@ -1,3 +1,5 @@
+import typing
+
 from flask import flash
 from flask import redirect
 from flask import render_template
@@ -94,36 +96,48 @@ def get(offerer_id: int) -> utils.BackofficeResponse:
     return render_offerer_details(offerer)
 
 
-def get_stats_data(offerer_id: int) -> serialization.OfferersStats:
-    offers_stats = offerers_api.get_offerer_offers_stats(offerer_id)
-    stats = serialization.OffersStats(
-        active=serialization.BaseOffersStats(
-            individual=offers_stats.individual_offers.get("active", 0) if offers_stats.individual_offers else 0,
-            collective=sum(
-                [
-                    offers_stats.collective_offers.get("active", 0) if offers_stats.collective_offers else 0,
-                    offers_stats.collective_offer_templates.get("active", 0)
-                    if offers_stats.collective_offer_templates
-                    else 0,
-                ]
-            ),
-        ),
-        inactive=serialization.BaseOffersStats(
-            individual=offers_stats.individual_offers.get("inactive", 0) if offers_stats.individual_offers else 0,
-            collective=sum(
-                [
-                    offers_stats.collective_offers.get("inactive", 0) if offers_stats.collective_offers else 0,
-                    offers_stats.collective_offer_templates.get("inactive", 0)
-                    if offers_stats.collective_offer_templates
-                    else 0,
-                ]
-            ),
-        ),
-    )
+@typing.no_type_check
+def get_stats_data(offerer_id: int) -> dict:
+    PLACEHOLDER = -1
+    offers_stats = offerers_api.get_offerer_offers_stats(offerer_id, max_offer_count=1000)
+    is_collective_too_big = offers_stats["collective_offer"]["active"] == -1
+    is_collective_too_big = is_collective_too_big or offers_stats["collective_offer_template"]["active"] == -1
+    is_individual_too_big = offers_stats["offer"]["active"] == -1
 
-    total_revenue = offerers_api.get_offerer_total_revenue(offerer_id)
+    stats = {
+        "active": {},
+        "inactive": {},
+        "total_revenue": PLACEHOLDER,
+        "placeholder": PLACEHOLDER,
+    }
 
-    return serialization.OfferersStats(stats=stats, total_revenue=total_revenue)
+    if is_collective_too_big:
+        stats["active"]["collective"] = PLACEHOLDER
+        stats["inactive"]["collective"] = PLACEHOLDER
+        stats["active"]["total"] = PLACEHOLDER
+        stats["inactive"]["total"] = PLACEHOLDER
+    else:
+        stats["active"]["collective"] = (
+            offers_stats["collective_offer"]["active"] + offers_stats["collective_offer_template"]["active"]
+        )
+        stats["inactive"]["collective"] = (
+            offers_stats["collective_offer"]["inactive"] + offers_stats["collective_offer_template"]["inactive"]
+        )
+    if is_individual_too_big:
+        stats["active"]["individual"] = PLACEHOLDER
+        stats["inactive"]["individual"] = PLACEHOLDER
+        stats["active"]["total"] = PLACEHOLDER
+        stats["inactive"]["total"] = PLACEHOLDER
+    else:
+        stats["active"]["individual"] = offers_stats["offer"]["active"]
+        stats["inactive"]["individual"] = offers_stats["offer"]["inactive"]
+
+    if not (is_collective_too_big or is_individual_too_big):
+        stats["active"]["total"] = stats["active"]["collective"] + stats["active"]["individual"]
+        stats["inactive"]["total"] = stats["inactive"]["collective"] + stats["inactive"]["individual"]
+        stats["total_revenue"] = offerers_api.get_offerer_total_revenue(offerer_id)
+
+    return stats
 
 
 @offerer_blueprint.route("/stats", methods=["GET"])
@@ -132,8 +146,7 @@ def get_stats(offerer_id: int) -> utils.BackofficeResponse:
     data = get_stats_data(offerer.id)
     return render_template(
         "offerer/get/stats.html",
-        stats=data.stats,
-        total_revenue=data.total_revenue,
+        stats=data,
     )
 
 

@@ -1417,8 +1417,8 @@ def get_offerer_total_revenue(offerer_id: int) -> float:
     return db.session.execute(total_revenue_query).scalar() or 0.0
 
 
-def get_offerer_offers_stats(offerer_id: int) -> sa.engine.Row:
-    def _get_subquery(offer_class: typing.Type[offers_api.AnyOffer]) -> BaseQuery:
+def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
+    def _get_query(offer_class: typing.Type[offers_api.AnyOffer]) -> BaseQuery:
         return sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
             sa.select(
                 sa.case(
@@ -1455,17 +1455,32 @@ def get_offerer_offers_stats(offerer_id: int) -> sa.engine.Row:
             .subquery()
         )
 
-    individual_offers_query = _get_subquery(offers_models.Offer)
-    collective_offers_query = _get_subquery(educational_models.CollectiveOffer)
-    collective_offer_templates_query = _get_subquery(educational_models.CollectiveOfferTemplate)
+    def _max_count_query(offer_class: typing.Type[offers_api.AnyOffer]) -> BaseQuery:
+        return sa.select(sa.func.count(sa.text("offer_id"))).select_from(
+            sa.select(offer_class.id.label("offer_id"))  # type: ignore [attr-defined]
+            .join(offerers_models.Venue, offer_class.venue)
+            .filter(offerers_models.Venue.managingOffererId == offerer_id)
+            .limit(max_offer_count)
+            .subquery()
+        )
 
-    offers_stats_query = sa.select(
-        individual_offers_query.scalar_subquery().label("individual_offers"),
-        collective_offers_query.scalar_subquery().label("collective_offers"),
-        collective_offer_templates_query.scalar_subquery().label("collective_offer_templates"),
-    )
+    def _get_stats_for_offer_type(offer_class: typing.Type[offers_api.AnyOffer]) -> dict:
+        if max_offer_count and db.session.execute(_max_count_query(offer_class)).scalar() >= max_offer_count:
+            return {
+                "active": -1,
+                "inactive": -1,
+            }
+        (data,) = db.session.execute(_get_query(offer_class)).one()
+        return {
+            "active": data.get("active", 0) if data else 0,
+            "inactive": data.get("inactive", 0) if data else 0,
+        }
 
-    return db.session.execute(offers_stats_query).one()
+    return {
+        "offer": _get_stats_for_offer_type(offers_models.Offer),
+        "collective_offer": _get_stats_for_offer_type(educational_models.CollectiveOffer),
+        "collective_offer_template": _get_stats_for_offer_type(educational_models.CollectiveOfferTemplate),
+    }
 
 
 def get_venue_basic_info(venue_id: int) -> sa.engine.Row:
@@ -1537,8 +1552,8 @@ def get_venue_total_revenue(venue_id: int) -> float:
     return db.session.execute(total_revenue_query).scalar() or 0.0
 
 
-def get_venue_offers_stats(venue_id: int) -> sa.engine.Row:
-    def _get_subquery(offer_class: typing.Type[offers_api.AnyOffer]) -> BaseQuery:
+def get_venue_offers_stats(venue_id: int, max_offer_count: int = 0) -> dict:
+    def _get_query(offer_class: typing.Type[offers_api.AnyOffer]) -> BaseQuery:
         return sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
             sa.select(
                 sa.case(
@@ -1576,35 +1591,31 @@ def get_venue_offers_stats(venue_id: int) -> sa.engine.Row:
             .subquery()
         )
 
-    individual_offers_query = _get_subquery(offers_models.Offer)
-    collective_offers_query = _get_subquery(educational_models.CollectiveOffer)
-    collective_offer_templates_query = _get_subquery(educational_models.CollectiveOfferTemplate)
+    def _max_count_query(offer_class: typing.Type[offers_api.AnyOffer]) -> BaseQuery:
+        return sa.select(sa.func.count(sa.text("offer_id"))).select_from(
+            sa.select(offer_class.id.label("offer_id"))  # type: ignore [attr-defined]
+            .filter(offer_class.venueId == venue_id)
+            .limit(max_offer_count)
+            .subquery()
+        )
 
-    offers_stats_query = (
-        sa.select(
-            providers_models.Provider.name,
-            providers_models.VenueProvider.lastSyncDate,
-            individual_offers_query.scalar_subquery().label("individual_offers"),
-            collective_offers_query.scalar_subquery().label("collective_offers"),
-            collective_offer_templates_query.scalar_subquery().label("collective_offer_templates"),
-        )
-        .select_from(
-            offerers_models.Venue,
-        )
-        .outerjoin(
-            providers_models.VenueProvider,
-            providers_models.VenueProvider.venueId == offerers_models.Venue.id,
-        )
-        .outerjoin(
-            providers_models.Provider,
-            providers_models.VenueProvider.providerId == providers_models.Provider.id,
-        )
-        .filter(
-            providers_models.Venue.id == venue_id,
-        )
-    )
+    def _get_stats_for_offer_type(offer_class: typing.Type[offers_api.AnyOffer]) -> dict:
+        if max_offer_count and db.session.execute(_max_count_query(offer_class)).scalar() >= max_offer_count:
+            return {
+                "active": -1,
+                "inactive": -1,
+            }
+        (data,) = db.session.execute(_get_query(offer_class)).one()
+        return {
+            "active": data.get("active", 0) if data else 0,
+            "inactive": data.get("inactive", 0) if data else 0,
+        }
 
-    return db.session.execute(offers_stats_query).one_or_none()
+    return {
+        "offer": _get_stats_for_offer_type(offers_models.Offer),
+        "collective_offer": _get_stats_for_offer_type(educational_models.CollectiveOffer),
+        "collective_offer_template": _get_stats_for_offer_type(educational_models.CollectiveOfferTemplate),
+    }
 
 
 def count_offerers_by_validation_status() -> dict[str, int]:

@@ -1,6 +1,7 @@
 from datetime import datetime
 from functools import partial
 from functools import reduce
+import typing
 
 from flask import flash
 from flask import redirect
@@ -252,44 +253,50 @@ def get(venue_id: int) -> utils.BackofficeResponse:
     return render_venue_details(venue)
 
 
-def get_stats_data(venue_id: int) -> serialization.VenueStats:
-    offers_stats = offerers_api.get_venue_offers_stats(venue_id)
+# mypy doesn't like nested dict
+@typing.no_type_check
+def get_stats_data(venue_id: int) -> dict:
+    PLACEHOLDER = -1
+    offers_stats = offerers_api.get_venue_offers_stats(venue_id, max_offer_count=1000)
 
-    if not offers_stats:
-        raise NotFound()
+    is_collective_too_big = offers_stats["collective_offer"]["active"] == -1
+    is_collective_too_big = is_collective_too_big or offers_stats["collective_offer_template"]["active"] == -1
+    is_individual_too_big = offers_stats["offer"]["active"] == -1
 
-    stats = serialization.VenueOffersStats(
-        active=serialization.BaseOffersStats(
-            individual=offers_stats.individual_offers.get("active", 0) if offers_stats.individual_offers else 0,
-            collective=sum(
-                [
-                    offers_stats.collective_offers.get("active", 0) if offers_stats.collective_offers else 0,
-                    offers_stats.collective_offer_templates.get("active", 0)
-                    if offers_stats.collective_offer_templates
-                    else 0,
-                ]
-            ),
-        ),
-        inactive=serialization.BaseOffersStats(
-            individual=offers_stats.individual_offers.get("inactive", 0) if offers_stats.individual_offers else 0,
-            collective=sum(
-                [
-                    offers_stats.collective_offers.get("inactive", 0) if offers_stats.collective_offers else 0,
-                    offers_stats.collective_offer_templates.get("inactive", 0)
-                    if offers_stats.collective_offer_templates
-                    else 0,
-                ]
-            ),
-        ),
-        lastSync=serialization.LastOfferSyncStats(
-            date=offers_stats.lastSyncDate,
-            provider=offers_stats.name,
-        ),
-    )
+    stats = {
+        "active": {},
+        "inactive": {},
+        "total_revenue": PLACEHOLDER,
+        "placeholder": PLACEHOLDER,
+    }
 
-    total_revenue = offerers_api.get_venue_total_revenue(venue_id)
+    if is_collective_too_big:
+        stats["active"]["collective"] = PLACEHOLDER
+        stats["inactive"]["collective"] = PLACEHOLDER
+        stats["active"]["total"] = PLACEHOLDER
+        stats["inactive"]["total"] = PLACEHOLDER
+    else:
+        stats["active"]["collective"] = (
+            offers_stats["collective_offer"]["active"] + offers_stats["collective_offer_template"]["active"]
+        )
+        stats["inactive"]["collective"] = (
+            offers_stats["collective_offer"]["inactive"] + offers_stats["collective_offer_template"]["inactive"]
+        )
+    if is_individual_too_big:
+        stats["active"]["individual"] = PLACEHOLDER
+        stats["inactive"]["individual"] = PLACEHOLDER
+        stats["active"]["total"] = PLACEHOLDER
+        stats["inactive"]["total"] = PLACEHOLDER
+    else:
+        stats["active"]["individual"] = offers_stats["offer"]["active"]
+        stats["inactive"]["individual"] = offers_stats["offer"]["inactive"]
 
-    return serialization.VenueStats(stats=stats, total_revenue=total_revenue)
+    if not (is_collective_too_big or is_individual_too_big):
+        stats["active"]["total"] = stats["active"]["collective"] + stats["active"]["individual"]
+        stats["inactive"]["total"] = stats["inactive"]["collective"] + stats["inactive"]["individual"]
+        stats["total_revenue"] = offerers_api.get_venue_total_revenue(venue_id)
+
+    return stats
 
 
 def get_venue_bank_information(venue: offerers_models.Venue) -> serialization.VenueBankInformation:
@@ -364,8 +371,7 @@ def get_stats(venue_id: int) -> utils.BackofficeResponse:
     return render_template(
         "venue/get/stats.html",
         venue=venue,
-        stats=data.stats,
-        total_revenue=data.total_revenue,
+        stats=data,
         bank_information=bank_information,
     )
 
