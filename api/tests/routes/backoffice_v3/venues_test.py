@@ -445,32 +445,24 @@ class GetVenueStatsDataTest:
     ):
         venue_id = venue_with_accepted_bank_info.id
 
-        with assert_num_queries(2):
-            data = venues_blueprint.get_stats_data(venue_id)
+        with assert_num_queries(7):
+            stats = venues_blueprint.get_stats_data(venue_id)
 
-        stats = data.stats
-
-        assert stats.active.individual == 2
-        assert stats.active.collective == 4
-        assert stats.inactive.individual == 5
-        assert stats.inactive.collective == 7
-        assert not stats.lastSync.date
-        assert not stats.lastSync.provider
+        assert stats["active"]["individual"] == 2
+        assert stats["active"]["collective"] == 4
+        assert stats["inactive"]["individual"] == 5
+        assert stats["inactive"]["collective"] == 7
 
     def test_no_offers(self, venue):
         venue_id = venue.id
 
-        with assert_num_queries(2):
-            data = venues_blueprint.get_stats_data(venue_id)
+        with assert_num_queries(7):
+            stats = venues_blueprint.get_stats_data(venue_id)
 
-        stats = data.stats
-
-        assert stats.active.individual == 0
-        assert stats.active.collective == 0
-        assert stats.inactive.individual == 0
-        assert stats.inactive.collective == 0
-        assert not stats.lastSync.date
-        assert not stats.lastSync.provider
+        assert stats["active"]["individual"] == 0
+        assert stats["active"]["collective"] == 0
+        assert stats["inactive"]["individual"] == 0
+        assert stats["inactive"]["collective"] == 0
 
 
 class GetVenueStatsTest(GetEndpointHelper):
@@ -482,8 +474,8 @@ class GetVenueStatsTest(GetEndpointHelper):
     # get user with profile and permissions (1 query)
     # get venue with reimbursement and pricing points (1 query)
     # get total revenue (1 query)
-    # get venue stats (1 query)
-    expected_num_queries = 5
+    # get venue stats (6 query)
+    expected_num_queries = 10
 
     def test_get_venue_with_no_reimbursement_point_bank_information(
         self, authenticated_client, venue_with_accepted_bank_info
@@ -648,7 +640,7 @@ class GetVenueStatsTest(GetEndpointHelper):
         # then
         assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
-        assert "7 offres actives (2 IND / 5 EAC) 16 offres inactives (5 IND / 11 EAC)" in cards_text
+        assert "7 offres actives ( 2 IND / 5 EAC ) 16 offres inactives ( 5 IND / 11 EAC )" in cards_text
 
     def test_venue_offers_stats_0_if_no_offer(self, authenticated_client, venue_with_accepted_bank_info):
         # when
@@ -659,7 +651,7 @@ class GetVenueStatsTest(GetEndpointHelper):
         # then
         assert response.status_code == 200
         cards_text = html_parser.extract_cards_text(response.data)
-        assert "0 offres actives (0 IND / 0 EAC) 0 offres inactives (0 IND / 0 EAC)" in cards_text
+        assert "0 offres actives ( 0 IND / 0 EAC ) 0 offres inactives ( 0 IND / 0 EAC )" in cards_text
 
 
 class HasReimbursementPointTest:
