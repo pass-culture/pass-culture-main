@@ -20,6 +20,7 @@ import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import { useOfferWizardMode } from 'hooks'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
+import fullWaitIcon from 'icons/full-wait.svg'
 import strokePartyIcon from 'icons/stroke-party.svg'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import { DisplayOfferInAppLink } from 'screens/OfferIndividual/Summary/DisplayOfferInAppLink'
@@ -222,6 +223,7 @@ const Summary = () => {
             })
           }
           cancelText="Plus tard"
+          cancelIcon={fullWaitIcon}
           withRedirectLinkIcon={false}
         >
           <p>Vous pouvez dès à présent renseigner des coordonnées bancaires.</p>
