@@ -59,6 +59,7 @@ jobs:
         with:
           node-version: ${{ needs.read-node-version.outputs.node_version }}
       - run: yarn install
+      - run: yarn lint:dead-code
       - run: yarn lint:js --max-warnings 0
 
   style-quality-check:

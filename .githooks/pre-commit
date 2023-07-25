@@ -21,6 +21,9 @@ STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep '^pro/src
 if [[ ! -z "$STAGED_FILES" ]]; then
   # run linter on staged files
   if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",lint," ]]; then
+    echo "Looking for dead code..."
+    yarn lint:dead-code
+
     echo "Running Linter..."
     yarn lint:js:fix $STAGED_FILES
     LINTER_EXIT_CODE=$?
