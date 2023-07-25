@@ -1,13 +1,13 @@
 import React from 'react'
 
-import fullClear from 'icons/full-clear.svg'
+import fullRefreshIcon from 'icons/full-refresh.svg'
 import Button from 'ui-kit/Button/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './ModalFilterLayout.module.scss'
 
 interface ModalFilterLayoutProps extends React.HTMLProps<HTMLButtonElement> {
-  title: string
+  title?: string
   onClean?: () => void
   onSearch: () => void
 }
@@ -20,16 +20,16 @@ const ModalFilterLayout = ({
 }: ModalFilterLayoutProps) => {
   return (
     <div className={styles['modal-content']}>
-      <div className={styles['modal-content-title']}>{title}</div>
+      {title && <div className={styles['modal-content-title']}>{title}</div>}
       <div className={styles['modal-content-children']}>{children}</div>
       <div className={styles['modal-content-separator']}></div>
       <div className={styles['modal-content-footer']}>
         <Button
-          icon={fullClear}
+          icon={fullRefreshIcon}
           variant={ButtonVariant.TERNARY}
           onClick={onClean}
         >
-          Effacer
+          Réinitialiser
         </Button>
         <Button
           variant={ButtonVariant.PRIMARY}

@@ -55,10 +55,7 @@ export const OffersInstantSearch = ({
         {
           /* istanbul ignore next: DEBT to fix: delete condition with ff */
           newAdageFilters ? (
-            <OffersSearch
-              removeVenueFilter={removeVenueFilter}
-              venueFilter={venueFilter}
-            />
+            <OffersSearch venueFilter={venueFilter} />
           ) : (
             <OldOffersSearch
               removeVenueFilter={removeVenueFilter}

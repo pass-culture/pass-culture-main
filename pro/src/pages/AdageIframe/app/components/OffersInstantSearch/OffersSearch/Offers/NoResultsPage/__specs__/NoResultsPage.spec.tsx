@@ -31,6 +31,7 @@ const initialValues = {
   query: '',
   domains: [],
   students: [],
+  eventAddressType: '',
 }
 
 describe('ContactButton', () => {
@@ -46,7 +47,7 @@ describe('ContactButton', () => {
     expect(screen.getByText('Aucun résultat trouvé pour cette recherche.'))
 
     const clearFilterButton = screen.getByRole('button', {
-      name: 'Effacer les filtres',
+      name: 'Réinitialiser les filtres',
     })
     await userEvent.click(clearFilterButton)
 
@@ -64,7 +65,7 @@ describe('ContactButton', () => {
     expect(screen.getByText('Aucun résultat trouvé pour cette recherche.'))
 
     const clearFilterButton = screen.queryByRole('button', {
-      name: 'Effacer les filtres',
+      name: 'Réinitiliaser les filtres',
     })
 
     expect(clearFilterButton).not.toBeInTheDocument()
