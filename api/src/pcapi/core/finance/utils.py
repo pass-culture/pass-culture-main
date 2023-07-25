@@ -42,7 +42,7 @@ def format_raw_iban_and_bic(raw_data: str | None) -> str | None:
         return None
 
     formatted_data = raw_data.upper()
-    formatted_data = formatted_data.replace(" ", "")
+    formatted_data = formatted_data.replace(" ", "").replace("\xa0", "")
     return formatted_data
 
 
