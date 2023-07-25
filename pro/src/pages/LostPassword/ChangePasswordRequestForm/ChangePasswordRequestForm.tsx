@@ -14,8 +14,8 @@ const ChangePasswordRequestForm = (): JSX.Element => {
   return (
     <section className={styles['change-password-request-form']}>
       <div className={styles['hero-body']}>
-        <h1>Mot de passe oublié ?</h1>
-        <p>
+        <h1 className={styles['title']}>Mot de passe oublié ?</h1>
+        <p className={styles['subtitle']}>
           Indiquez ci-dessous l’adresse email avec laquelle vous avez créé votre
           compte.
         </p>
@@ -30,6 +30,7 @@ const ChangePasswordRequestForm = (): JSX.Element => {
             </FormLayout.Row>
             <FormLayout.Row>
               <SubmitButton
+                className={styles['validation-button']}
                 disabled={field.value === ''}
                 variant={ButtonVariant.PRIMARY}
               >

@@ -1,4 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .hero {
   h1 {
@@ -6,6 +7,8 @@
   }
 
   h2 {
+    @include fonts.title4;
+
     margin-bottom: rem.torem(24px);
   }
 
