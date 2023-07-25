@@ -2,7 +2,7 @@ import { startOfDay, subDays, format } from 'date-fns'
 
 import { FORMAT_ISO_DATE_ONLY, getToday } from '../../utils/date'
 
-export const DEFAULT_INVOICES_PERIOD = 30
+const DEFAULT_INVOICES_PERIOD = 30
 export const DEFAULT_INVOICES_FILTERS = {
   reimbursementPointId: 'all',
   periodBeginningDate: format(

@@ -18,7 +18,7 @@ import {
 } from './types'
 import { validateToken } from './validation'
 
-export interface FormValues {
+interface FormValues {
   token: string
 }
 
