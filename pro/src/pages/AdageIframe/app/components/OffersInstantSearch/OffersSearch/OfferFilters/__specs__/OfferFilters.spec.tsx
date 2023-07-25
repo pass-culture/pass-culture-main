@@ -33,6 +33,7 @@ const initialValues = {
   query: '',
   domains: [],
   students: [],
+  eventAddressType: '',
 }
 
 describe('OfferFilters', () => {
@@ -54,7 +55,7 @@ describe('OfferFilters', () => {
       screen.getByRole('button', { name: 'Niveau scolaire' })
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: 'Effacer les filtres' })
+      screen.getByRole('button', { name: 'Type d’intervention' })
     ).toBeInTheDocument()
   })
 
@@ -114,7 +115,7 @@ describe('OfferFilters', () => {
       screen.getByRole('button', { name: 'Domaine artistique (1)' })
     )
 
-    await userEvent.click(screen.getByRole('button', { name: 'Effacer' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Réinitialiser' }))
 
     expect(
       screen.getByRole('button', { name: 'Domaine artistique' })
@@ -134,7 +135,7 @@ describe('OfferFilters', () => {
       screen.getByRole('button', { name: 'Niveau scolaire (1)' })
     )
 
-    await userEvent.click(screen.getByRole('button', { name: 'Effacer' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Réinitialiser' }))
 
     expect(
       screen.getByRole('button', { name: 'Niveau scolaire' })

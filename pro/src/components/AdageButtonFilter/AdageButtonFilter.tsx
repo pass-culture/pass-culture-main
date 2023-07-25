@@ -11,7 +11,7 @@ export interface AdageButtonFilterProps
   extends React.HTMLProps<HTMLButtonElement> {
   title: string
   isActive: boolean
-  itemsLength?: number
+  itemsLength?: number | null
   isOpen: boolean
   setIsOpen: (value: { [key: string]: boolean }) => void
   filterName: string
@@ -40,7 +40,7 @@ const AdageButtonFilter = ({
         }
       }
     },
-    [setIsOpen, handleSubmit]
+    [setIsOpen, handleSubmit, isOpen, filterName]
   )
 
   useEffect(() => {

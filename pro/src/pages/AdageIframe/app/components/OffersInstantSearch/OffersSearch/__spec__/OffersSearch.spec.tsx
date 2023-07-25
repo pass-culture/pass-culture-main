@@ -24,10 +24,13 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-vi.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
-  getEducationalDomains: vi
-    .fn()
-    .mockResolvedValue([{ id: 1, name: 'Architecture' }]),
+jest.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
+  getEducationalDomains: jest.fn(),
+}))
+
+jest.mock('hooks/useActiveFeature', () => ({
+  __esModule: true,
+  default: jest.fn().mockReturnValue(true),
 }))
 
 const renderOffersSearchComponent = (
@@ -53,11 +56,11 @@ describe('offersSearch component', () => {
     departmentCode: '30',
     institutionName: 'COLLEGE BELLEVUE',
     institutionCity: 'ALES',
+    email: 'test@example.com',
   }
 
   beforeEach(() => {
     props = {
-      removeVenueFilter: vi.fn(),
       venueFilter: null,
       refine: vi.fn(),
       currentRefinement: '',
@@ -86,15 +89,16 @@ describe('offersSearch component', () => {
   it('should call algolia after clear all filters', async () => {
     // Given
     renderOffersSearchComponent(props, user)
-    const clearFilterButton = screen.getByRole('button', {
-      name: 'Effacer les filtres',
-    })
 
     // When
     const textInput = screen.getByPlaceholderText(
       'Rechercher : nom de l’offre, partenaire culturel'
     )
     await userEvent.type(textInput, 'Paris')
+
+    const clearFilterButton = screen.getByRole('button', {
+      name: 'Réinitialiser les filtres',
+    })
     await userEvent.click(clearFilterButton)
 
     // Then
@@ -120,26 +124,5 @@ describe('offersSearch component', () => {
 
     // Then
     expect(props.refine).toHaveBeenCalledWith('Paris')
-  })
-
-  it('should call algolia after clear all filters', async () => {
-    // Given
-    renderOffersSearchComponent(props, {
-      ...user,
-      uai: 'assicatedToInstitution',
-    })
-    const clearFilterButton = screen.getByRole('button', {
-      name: 'Effacer les filtres',
-    })
-
-    // When
-    const textInput = screen.getByPlaceholderText(
-      'Rechercher : nom de l’offre, partenaire culturel'
-    )
-    await userEvent.type(textInput, 'Paris')
-    await userEvent.click(clearFilterButton)
-
-    // Then
-    expect(props.refine).toHaveBeenCalledWith('')
   })
 })

@@ -1,12 +1,14 @@
 import { Form, FormikProvider, useFormikContext } from 'formik'
+import isEqual from 'lodash.isequal'
 import React, { useEffect, useState } from 'react'
 
+import { OfferAddressType } from 'apiClient/adage'
 import AdageButtonFilter from 'components/AdageButtonFilter/AdageButtonFilter'
 import FormLayout from 'components/FormLayout'
-import fullClear from 'icons/full-clear.svg'
+import fullRefreshIcon from 'icons/full-refresh.svg'
 import { getEducationalDomainsOptionsAdapter } from 'pages/AdageIframe/app/adapters/getEducationalDomainsOptionsAdapter'
 import { Option } from 'pages/AdageIframe/app/types'
-import { Button, TextInput } from 'ui-kit'
+import { Button, RadioGroup, TextInput } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import AdageMultiselect from 'ui-kit/form/AdageMultiselect/AdageMultiselect'
 
@@ -32,8 +34,8 @@ export const OfferFilters = ({
 
   const formik = useFormikContext<SearchFormValues>()
 
-  const onClean = (modalName: string) => {
-    clearFormikFieldValue(modalName)
+  const onClean = (modalName: string, value: string | string[]) => {
+    clearFormikFieldValue(modalName, value)
     setModalOpenStatus(prevState => ({ ...prevState, [modalName]: false }))
   }
 
@@ -54,10 +56,28 @@ export const OfferFilters = ({
     loadFiltersOptions()
   }, [])
 
-  const clearFormikFieldValue = (fieldName: string) => {
-    formik.setFieldValue(fieldName, [])
+  const clearFormikFieldValue = (
+    fieldName: string,
+    value: string | string[]
+  ) => {
+    formik.setFieldValue(fieldName, value)
     formik.handleSubmit()
   }
+
+  const adressTypeRadios = [
+    {
+      label: 'Je n’ai pas de préférence (Voir tout)',
+      value: OfferAddressType.OTHER,
+    },
+    {
+      label: 'Sortie chez un partenaire culturel',
+      value: OfferAddressType.OFFERER_VENUE,
+    },
+    {
+      label: 'Intervention d’un partenaire culturel dans mon établissement',
+      value: OfferAddressType.SCHOOL,
+    },
+  ]
 
   return (
     <FormikProvider value={formik}>
@@ -81,6 +101,36 @@ export const OfferFilters = ({
         </FormLayout.Row>
         <FormLayout.Row className={styles['filter-container-filter']}>
           <AdageButtonFilter
+            isActive={
+              formik.values.eventAddressType.length > 0 &&
+              formik.values.eventAddressType !== OfferAddressType.OTHER
+            }
+            title="Type d’intervention"
+            itemsLength={
+              formik.values.eventAddressType &&
+              formik.values.eventAddressType !== OfferAddressType.OTHER
+                ? 1
+                : null
+            }
+            isOpen={modalOpenStatus['eventAddressType']}
+            setIsOpen={setModalOpenStatus}
+            filterName="eventAddressType"
+            handleSubmit={formik.handleSubmit}
+          >
+            <ModalFilterLayout
+              onClean={() =>
+                onClean('eventAddressType', OfferAddressType.OTHER)
+              }
+              onSearch={() => onSearch('eventAddressType')}
+            >
+              <RadioGroup
+                group={adressTypeRadios}
+                className={styles['filter-container-evenement']}
+                name="eventAddressType"
+              />
+            </ModalFilterLayout>
+          </AdageButtonFilter>
+          <AdageButtonFilter
             isActive={formik.values.domains.length > 0}
             title="Domaine artistique"
             itemsLength={formik.values.domains.length}
@@ -90,7 +140,7 @@ export const OfferFilters = ({
             handleSubmit={formik.handleSubmit}
           >
             <ModalFilterLayout
-              onClean={() => onClean('domains')}
+              onClean={() => onClean('domains', [])}
               onSearch={() => onSearch('domains')}
               title="Choisir un domaine artistique"
             >
@@ -113,7 +163,7 @@ export const OfferFilters = ({
             handleSubmit={formik.handleSubmit}
           >
             <ModalFilterLayout
-              onClean={() => onClean('students')}
+              onClean={() => onClean('students', [])}
               onSearch={() => onSearch('students')}
               title="Pour quel niveau scolaire ?"
             >
@@ -126,15 +176,17 @@ export const OfferFilters = ({
               />
             </ModalFilterLayout>
           </AdageButtonFilter>
-          <Button
-            onClick={formik.handleReset}
-            icon={fullClear}
-            variant={ButtonVariant.TERNARY}
-            disabled={formik.values === formik.initialValues}
-          >
-            Effacer les filtres
-          </Button>
         </FormLayout.Row>
+        {!isEqual(formik.values, formik.initialValues) && (
+          <Button
+            className={styles['filter-container-button-clear']}
+            onClick={formik.handleReset}
+            icon={fullRefreshIcon}
+            variant={ButtonVariant.TERNARY}
+          >
+            Réinitialiser les filtres
+          </Button>
+        )}
       </Form>
     </FormikProvider>
   )

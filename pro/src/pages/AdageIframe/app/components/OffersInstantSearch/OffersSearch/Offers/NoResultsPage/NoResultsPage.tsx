@@ -2,7 +2,7 @@ import './NoResultsPage.scss'
 import { useFormikContext } from 'formik'
 import React, { useContext } from 'react'
 
-import fullClear from 'icons/full-clear.svg'
+import fullRefreshIcon from 'icons/full-refresh.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import { FacetFiltersContext } from 'pages/AdageIframe/app/providers'
 import { Button } from 'ui-kit'
@@ -28,12 +28,12 @@ export const NoResultsPage = (): JSX.Element => {
       </p>
       {(formik.values.query || facetFilters.length > 1) && ( // la longueur de facetFilters doit être > 1 car il y aura toujours [offer.isEducational:true] dans les facetFilters
         <Button
-          icon={fullClear}
+          icon={fullRefreshIcon}
           className="no-results-button"
           onClick={formik.handleReset}
           variant={ButtonVariant.SECONDARY}
         >
-          Effacer les filtres
+          Réinitialiser les filtres
         </Button>
       )}
     </div>
