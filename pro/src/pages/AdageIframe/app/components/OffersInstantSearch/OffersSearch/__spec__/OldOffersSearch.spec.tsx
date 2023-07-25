@@ -49,6 +49,7 @@ describe('offersSearch component', () => {
     departmentCode: '30',
     institutionName: 'COLLEGE BELLEVUE',
     institutionCity: 'ALES',
+    email: 'test@example.com',
   }
 
   beforeEach(() => {

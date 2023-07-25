@@ -17,10 +17,12 @@ export const adageFiltersToFacetFilters = ({
   domains,
   uai,
   students,
+  eventAddressType,
 }: {
   domains: Option[]
   uai?: string[] | null
   students: Option[]
+  eventAddressType: string
 }) => {
   const updatedFilters: Facets = []
   const filtersKeys: string[] = []
@@ -32,6 +34,22 @@ export const adageFiltersToFacetFilters = ({
   const filteredStudents: string[] = students.map(
     student => `offer.students:${student.label}`
   )
+
+  switch (eventAddressType) {
+    case 'school':
+      filtersKeys.push('eventAddressType')
+      updatedFilters.push([`offer.eventAddressType:school`])
+      break
+    case 'offererVenue':
+      filtersKeys.push('eventAddressType')
+      updatedFilters.push([
+        `offer.eventAddressType:offererVenue`,
+        `offer.eventAddressType:other`,
+      ])
+      break
+    default:
+      break
+  }
 
   if (filteredStudents.length > 0) {
     filtersKeys.push('students')

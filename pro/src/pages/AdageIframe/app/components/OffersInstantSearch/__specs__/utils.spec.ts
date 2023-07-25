@@ -16,34 +16,73 @@ describe('adageFiltersToFacetFilters', () => {
 
   it('should return facet filter from form values', () => {
     expect(
-      adageFiltersToFacetFilters({ domains, uai: ['all'], students })
+      adageFiltersToFacetFilters({
+        domains,
+        uai: ['all'],
+        students,
+        eventAddressType: 'school',
+      })
     ).toStrictEqual({
       queryFilters: [
+        ['offer.eventAddressType:school'],
         ['offer.students:Collège - 4e'],
         ['offer.domains:1'],
         ['offer.educationalInstitutionUAICode:all'],
       ],
-      filtersKeys: ['students', 'domains'],
+      filtersKeys: ['eventAddressType', 'students', 'domains'],
     })
   })
 
   it('should return other uai facet filter', () => {
     expect(
-      adageFiltersToFacetFilters({ domains, uai: ['123456'], students })
+      adageFiltersToFacetFilters({
+        domains,
+        uai: ['123456'],
+        students,
+        eventAddressType: 'school',
+      })
     ).toStrictEqual({
       queryFilters: [
+        ['offer.eventAddressType:school'],
         ['offer.students:Collège - 4e'],
         ['offer.domains:1'],
         ['offer.educationalInstitutionUAICode:123456'],
       ],
-      filtersKeys: ['students', 'domains', 'uaiCode'],
+      filtersKeys: ['eventAddressType', 'students', 'domains', 'uaiCode'],
     })
   })
 
   it('should not return uai facet filter', () => {
-    expect(adageFiltersToFacetFilters({ domains, students })).toStrictEqual({
-      queryFilters: [['offer.students:Collège - 4e'], ['offer.domains:1']],
-      filtersKeys: ['students', 'domains'],
+    expect(
+      adageFiltersToFacetFilters({
+        domains,
+        students,
+        eventAddressType: 'school',
+      })
+    ).toStrictEqual({
+      queryFilters: [
+        ['offer.eventAddressType:school'],
+        ['offer.students:Collège - 4e'],
+        ['offer.domains:1'],
+      ],
+      filtersKeys: ['eventAddressType', 'students', 'domains'],
+    })
+  })
+
+  it('should return offererVenue event type facet filter', () => {
+    expect(
+      adageFiltersToFacetFilters({
+        domains,
+        students,
+        eventAddressType: 'offererVenue',
+      })
+    ).toStrictEqual({
+      queryFilters: [
+        ['offer.eventAddressType:offererVenue', 'offer.eventAddressType:other'],
+        ['offer.students:Collège - 4e'],
+        ['offer.domains:1'],
+      ],
+      filtersKeys: ['eventAddressType', 'students', 'domains'],
     })
   })
 })

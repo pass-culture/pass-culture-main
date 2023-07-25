@@ -6,7 +6,7 @@ import * as React from 'react'
 import type { SearchBoxProvided } from 'react-instantsearch-core'
 import { connectSearchBox } from 'react-instantsearch-dom'
 
-import { VenueResponse } from 'apiClient/adage'
+import { OfferAddressType, VenueResponse } from 'apiClient/adage'
 import useActiveFeature from 'hooks/useActiveFeature'
 import strokeOffersIcon from 'icons/stroke-offers.svg'
 import strokeVenueIcon from 'icons/stroke-venue.svg'
@@ -25,7 +25,6 @@ import { OfferFilters } from './OfferFilters/OfferFilters'
 import { Offers } from './Offers/Offers'
 
 export interface SearchProps extends SearchBoxProvided {
-  removeVenueFilter: () => void
   venueFilter: VenueResponse | null
 }
 
@@ -33,6 +32,7 @@ export interface SearchFormValues {
   query: string
   domains: Option[]
   students: Option[]
+  eventAddressType: string
 }
 
 enum OfferTab {
@@ -120,6 +120,7 @@ export const OffersSearchComponent = ({
       query: '',
       domains: [],
       students: [],
+      eventAddressType: OfferAddressType.OTHER,
     },
     enableReinitialize: true,
     onSubmit: handleSubmit,

@@ -9,6 +9,7 @@ import './OldOfferFilters.scss'
 import { getEducationalCategoriesOptionsAdapter } from 'pages/AdageIframe/app/adapters/getEducationalCategoriesOptionsAdapter'
 import { getEducationalDomainsOptionsAdapter } from 'pages/AdageIframe/app/adapters/getEducationalDomainsOptionsAdapter'
 import { departmentOptions } from 'pages/AdageIframe/app/constants/departmentOptions'
+import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import {
   AlgoliaQueryContext,
   FiltersContext,
@@ -27,7 +28,6 @@ interface OfferFiltersProps {
   venueFilter: VenueResponse | null
   removeVenueFilter: () => void
   isLoading: boolean
-  user: AuthenticatedResponse
 }
 
 const getOnlyInMyDptLabel = (user: AuthenticatedResponse) => {
@@ -72,7 +72,6 @@ export const OfferFilters = ({
   venueFilter,
   removeVenueFilter,
   isLoading,
-  user,
 }: OfferFiltersProps): JSX.Element => {
   const [categoriesOptions, setCategoriesOptions] = useState<
     Option<string[]>[]
@@ -86,6 +85,7 @@ export const OfferFilters = ({
     currentFilters.onlyInMySchool
   )
   const [onlyInMyDpt, setOnlyInMyDpt] = useState(currentFilters.onlyInMyDpt)
+  const user = useAdageUser()
 
   const userDepartmentOption = departmentOptions.find(
     departmentOption => departmentOption.value === user.departmentCode

@@ -42,6 +42,12 @@ describe('AdageButtonFilter', () => {
     setIsOpen: vi.fn(),
     filterName: 'domains',
     handleSubmit: vi.fn(),
+    formikValues: {
+      query: '',
+      domains: [],
+      students: [],
+      eventAddressType: '',
+    },
   }
 
   it('should render adageButtonFilter', () => {

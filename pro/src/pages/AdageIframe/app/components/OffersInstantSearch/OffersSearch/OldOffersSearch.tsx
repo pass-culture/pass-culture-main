@@ -137,7 +137,6 @@ export const OldOffersSearchComponent = ({
         handleLaunchSearchButton={handleLaunchSearchButton}
         isLoading={isLoading}
         removeVenueFilter={removeVenueFilter}
-        user={adageUser}
         venueFilter={venueFilter}
       />
       <div className="search-results">
