@@ -46,9 +46,21 @@ const RadioButtonWithImage = ({
     )}
   >
     {isChecked ? (
-      <img alt="" src={radioOnIcon} className={styles['button-radio-on']} />
+      <SvgIcon
+        alt=""
+        src={radioOnIcon}
+        className={styles['button-radio-on']}
+        viewBox="0 0 16 16"
+        width="16"
+      />
     ) : (
-      <img alt="" src={radioOffIcon} className={styles['button-radio-off']} />
+      <SvgIcon
+        alt=""
+        src={radioOffIcon}
+        className={styles['button-radio-off']}
+        viewBox="0 0 16 16"
+        width="16"
+      />
     )}
     <SvgIcon src={icon} className={styles['button-icon']} alt="" />
     <input
