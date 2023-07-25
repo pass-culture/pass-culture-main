@@ -1,12 +1,13 @@
+import type { Story } from '@storybook/react'
 import React from 'react'
 
-import DialogBox from './DialogBox'
+import DialogBox, { DialogProps } from './DialogBox'
 
 export default {
   title: 'components/DialogBox',
   component: DialogBox,
 }
-const Template = args => (
+const Template: Story<DialogProps> = args => (
   <DialogBox {...args}>
     <p>lorem ipsum dolor sit amet</p>
   </DialogBox>
@@ -19,5 +20,4 @@ Default.args = {
   hasCloseButton: false,
   labelledBy: 'labelledBy',
   onDismiss: undefined,
-  initialFocusRef: null,
 }
