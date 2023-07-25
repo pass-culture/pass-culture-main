@@ -7,12 +7,11 @@ import React, { FunctionComponent } from 'react'
 import CloseButton from './CloseButton'
 import styles from './DialogBox.module.scss'
 
-interface DialogProps {
+export interface DialogProps {
   extraClassNames?: string
   hasCloseButton?: boolean
   labelledBy: string
   onDismiss?: () => void
-  initialFocusRef?: React.RefObject<HTMLButtonElement>
   children?: React.ReactNode
   fullContentWidth?: boolean
 }
@@ -23,14 +22,9 @@ const DialogBox: FunctionComponent<DialogProps> = ({
   hasCloseButton = false,
   labelledBy,
   onDismiss,
-  initialFocusRef,
   fullContentWidth,
 }) => (
-  <DialogOverlay
-    className={styles['dialog-box-overlay']}
-    initialFocusRef={initialFocusRef}
-    onDismiss={onDismiss}
-  >
+  <DialogOverlay className={styles['dialog-box-overlay']} onDismiss={onDismiss}>
     <DialogContent
       aria-labelledby={labelledBy}
       className={cn(styles['dialog-box-content'], {
