@@ -29,7 +29,7 @@ $border-size-selected: rem.torem(2px);
   }
 
   &-radio-on {
-    fill: colors.$tertiary;
+    color: colors.$tertiary;
     top: calc(rem.torem(16px) - $border-size-selected);
     right: calc(rem.torem(16px) - $border-size-selected);
   }
