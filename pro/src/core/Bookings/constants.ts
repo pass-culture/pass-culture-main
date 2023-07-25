@@ -21,7 +21,7 @@ const ALL_DATES = 'all'
 
 export const EMPTY_FILTER_VALUE = ''
 
-export const DEFAULT_BOOKING_PERIOD = 30
+const DEFAULT_BOOKING_PERIOD = 30
 
 export const DEFAULT_PRE_FILTERS = {
   bookingBeginningDate: format(

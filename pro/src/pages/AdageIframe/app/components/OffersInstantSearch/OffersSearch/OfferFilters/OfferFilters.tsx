@@ -16,7 +16,7 @@ import ModalFilterLayout from './ModalFilterLayout/ModalFilterLayout'
 import styles from './OfferFilters.module.scss'
 import { studentsOptions } from './studentsOptions'
 
-export interface OfferFiltersProps {
+interface OfferFiltersProps {
   className?: string
   isLoading: boolean
 }
