@@ -223,13 +223,11 @@ class IdentityValidatedUserFactory(ProfileCompletedUserFactory):
     """
 
     validatedBirthDate = LazyAttribute(lambda o: datetime.utcnow().date() - relativedelta(years=o.age))
-    idPieceNumber = factory.Faker("ssn", locale="fr_FR")
 
     @classmethod
     def set_custom_attributes(cls, obj: models.User, **kwargs: typing.Any) -> None:
         super().set_custom_attributes(obj)
-        if obj.idPieceNumber:
-            obj.idPieceNumber = obj.idPieceNumber[:12]
+        obj.idPieceNumber = f"{obj.id:012}"
 
     @classmethod
     def beneficiary_fraud_checks(
