@@ -3,7 +3,15 @@
   <div class="col-md-4">
     <div class="card h-100 shadow">
       <div class="card-body">
-        <h6 class="display-6 card-title">{{ total_revenue | format_amount | safe }}</h6>
+        <h6 class="display-6 card-title">
+          {% if stats.total_revenue == stats.placeholder %}
+            <span data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  data-bs-title="Il y a trop d'offre pour en afficher la valeur">N/A</span>
+          {% else %}
+            {{ stats.total_revenue | format_amount | safe }}
+          {% endif %}
+        </h6>
         <p class="card-text fw-light small">de CA</p>
       </div>
     </div>
@@ -12,19 +20,69 @@
     <div class="card h-100 shadow">
       <div class="card-body row">
         <div class="col-6">
-          <h6 class="fs-2 card-title">{{ stats.active.individual + stats.active.collective }}</h6>
+          <h6 class="fs-2 card-title">
+            {% if stats.active.total == stats.placeholder %}
+              <span data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    data-bs-title="Il y a trop d'offre pour en afficher le nombre">N/A</span>
+            {% else %}
+              {{ stats.active.total }}
+            {% endif %}
+          </h6>
           <p class="card-text fw-light small mb-0">offres actives</p>
           <p class="card-text fw-light small">
-            ({{ stats.active.individual }} IND
-            / {{ stats.active.collective }} EAC)
+            (
+            {% if stats.active.individual == stats.placeholder %}
+              <span data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    data-bs-title="Il y a trop d'offre pour en afficher le nombre">N/A</span>
+              IND
+            {% else %}
+              {{ stats.active.individual }} IND
+            {% endif %}
+            /
+            {% if stats.active.collective == stats.placeholder %}
+              <span data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    data-bs-title="Il y a trop d'offre pour en afficher le nombre">N/A</span>
+              EAC
+            {% else %}
+              {{ stats.active.collective }} EAC
+            {% endif %}
+            )
           </p>
         </div>
         <div class="col-6">
-          <h6 class="fs-2 card-title">{{ stats.inactive.individual + stats.inactive.collective }}</h6>
+          <h6 class="fs-2 card-title">
+            {% if stats.inactive.total == stats.placeholder %}
+              <span data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    data-bs-title="Il y a trop d'offre pour en afficher le nombre">N/A</span>
+            {% else %}
+              {{ stats.inactive.total }}
+            {% endif %}
+          </h6>
           <p class="card-text fw-light small mb-0">offres inactives</p>
           <p class="card-text fw-light small">
-            ({{ stats.inactive.individual }} IND
-            / {{ stats.inactive.collective }} EAC)
+            (
+            {% if stats.inactive.individual == stats.placeholder %}
+              <span data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    data-bs-title="Il y a trop d'offre pour en afficher le nombre">N/A</span>
+              IND
+            {% else %}
+              {{ stats.inactive.individual }} IND
+            {% endif %}
+            /
+            {% if stats.inactive.collective == stats.placeholder %}
+              <span data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    data-bs-title="Il y a trop d'offre pour en afficher le nombre">N/A</span>
+              EAC
+            {% else %}
+              {{ stats.inactive.collective }} EAC
+            {% endif %}
+            )
           </p>
         </div>
       </div>

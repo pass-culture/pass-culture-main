@@ -22,18 +22,3 @@ class OffererBasicInfo(BaseModel):
     siren: str | None
     region: str
     bank_information_status: OffererBankInformationStatus
-
-
-class BaseOffersStats(BaseModel):
-    individual: int
-    collective: int
-
-
-class OffersStats(BaseModel):
-    active: BaseOffersStats
-    inactive: BaseOffersStats
-
-
-class OfferersStats(BaseModel):
-    stats: OffersStats
-    total_revenue: float

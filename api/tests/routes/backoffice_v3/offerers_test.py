@@ -404,14 +404,14 @@ class GetOffererStatsTest(GetEndpointHelper):
         # get session (1 query)
         # get user with profile and permissions (1 query)
         # get total revenue (1 query)
-        # get offerers offers stats (1 query)
-        with assert_num_queries(4):
+        # get offerers offers stats (6 query: 3 to check the quantity and 3 to get the data)
+        with assert_num_queries(9):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
         cards_text = html_parser.extract_cards_text(response.data)
         assert f"{str(booking.amount).replace('.', ',')} € de CA" in cards_text
-        assert "3 offres actives (1 IND / 2 EAC) 0 offres inactives (0 IND / 0 EAC)" in cards_text
+        assert "3 offres actives ( 1 IND / 2 EAC ) 0 offres inactives ( 0 IND / 0 EAC )" in cards_text
 
 
 class GetOffererStatsDataTest:
@@ -429,19 +429,16 @@ class GetOffererStatsDataTest:
     ):
         offerer_id = offerer.id
 
-        # get active/inactive stats (1 query)
+        # get active/inactive stats (6 query)
         # get total revenue (1 query)
-        with assert_num_queries(2):
-            data = offerer_blueprint.get_stats_data(offerer_id)
+        with assert_num_queries(7):
+            stats = offerer_blueprint.get_stats_data(offerer_id)
+        assert stats["active"]["individual"] == 2
+        assert stats["active"]["collective"] == 5
+        assert stats["inactive"]["individual"] == 5
+        assert stats["inactive"]["collective"] == 11
 
-        stats = data.stats
-
-        assert stats.active.individual == 2
-        assert stats.active.collective == 5
-        assert stats.inactive.individual == 5
-        assert stats.inactive.collective == 11
-
-        total_revenue = data.total_revenue
+        total_revenue = stats["total_revenue"]
 
         assert total_revenue == 1694.0
 
@@ -454,19 +451,17 @@ class GetOffererStatsDataTest:
     ):
         offerer_id = offerer.id
 
-        # get active/inactive stats (1 query)
+        # get active/inactive stats (6 query)
         # get total revenue (1 query)
-        with assert_num_queries(2):
-            data = offerer_blueprint.get_stats_data(offerer_id)
+        with assert_num_queries(7):
+            stats = offerer_blueprint.get_stats_data(offerer_id)
 
-        stats = data.stats
+        assert stats["active"]["individual"] == 2
+        assert stats["active"]["collective"] == 0
+        assert stats["inactive"]["individual"] == 5
+        assert stats["inactive"]["collective"] == 0
 
-        assert stats.active.individual == 2
-        assert stats.active.collective == 0
-        assert stats.inactive.individual == 5
-        assert stats.inactive.collective == 0
-
-        total_revenue = data.total_revenue
+        total_revenue = stats["total_revenue"]
 
         assert total_revenue == 30.0
 
@@ -479,19 +474,17 @@ class GetOffererStatsDataTest:
     ):
         offerer_id = offerer.id
 
-        # get active/inactive stats (1 query)
+        # get active/inactive stats (6 query)
         # get total revenue (1 query)
-        with assert_num_queries(2):
-            data = offerer_blueprint.get_stats_data(offerer_id)
+        with assert_num_queries(7):
+            stats = offerer_blueprint.get_stats_data(offerer_id)
 
-        stats = data.stats
+        assert stats["active"]["individual"] == 0
+        assert stats["active"]["collective"] == 4
+        assert stats["inactive"]["individual"] == 0
+        assert stats["inactive"]["collective"] == 7
 
-        assert stats.active.individual == 0
-        assert stats.active.collective == 4
-        assert stats.inactive.individual == 0
-        assert stats.inactive.collective == 7
-
-        total_revenue = data.total_revenue
+        total_revenue = stats["total_revenue"]
 
         assert total_revenue == 1664.0
 
@@ -503,19 +496,17 @@ class GetOffererStatsDataTest:
     ):
         offerer_id = offerer.id
 
-        # get active/inactive stats (1 query)
+        # get active/inactive stats (6 query)
         # get total revenue (1 query)
-        with assert_num_queries(2):
-            data = offerer_blueprint.get_stats_data(offerer_id)
+        with assert_num_queries(7):
+            stats = offerer_blueprint.get_stats_data(offerer_id)
 
-        stats = data.stats
+        assert stats["active"]["individual"] == 2
+        assert stats["active"]["collective"] == 4
+        assert stats["inactive"]["individual"] == 0
+        assert stats["inactive"]["collective"] == 0
 
-        assert stats.active.individual == 2
-        assert stats.active.collective == 4
-        assert stats.inactive.individual == 0
-        assert stats.inactive.collective == 0
-
-        total_revenue = data.total_revenue
+        total_revenue = stats["total_revenue"]
 
         assert total_revenue == 0.0
 
@@ -527,38 +518,34 @@ class GetOffererStatsDataTest:
     ):
         offerer_id = offerer.id
 
-        # get active/inactive stats (1 query)
+        # get active/inactive stats (6 query)
         # get total revenue (1 query)
-        with assert_num_queries(2):
-            data = offerer_blueprint.get_stats_data(offerer_id)
+        with assert_num_queries(7):
+            stats = offerer_blueprint.get_stats_data(offerer_id)
 
-        stats = data.stats
+        assert stats["active"]["individual"] == 0
+        assert stats["active"]["collective"] == 0
+        assert stats["inactive"]["individual"] == 5
+        assert stats["inactive"]["collective"] == 7
 
-        assert stats.active.individual == 0
-        assert stats.active.collective == 0
-        assert stats.inactive.individual == 5
-        assert stats.inactive.collective == 7
-
-        total_revenue = data.total_revenue
+        total_revenue = stats["total_revenue"]
 
         assert total_revenue == 0.0
 
     def test_no_bookings(self, offerer):
         offerer_id = offerer.id
 
-        # get active/inactive stats (1 query)
+        # get active/inactive stats (6 query)
         # get total revenue (1 query)
-        with assert_num_queries(2):
-            data = offerer_blueprint.get_stats_data(offerer_id)
+        with assert_num_queries(7):
+            stats = offerer_blueprint.get_stats_data(offerer_id)
 
-        stats = data.stats
+        assert stats["active"]["individual"] == 0
+        assert stats["active"]["collective"] == 0
+        assert stats["inactive"]["individual"] == 0
+        assert stats["inactive"]["collective"] == 0
 
-        assert stats.active.individual == 0
-        assert stats.active.collective == 0
-        assert stats.inactive.individual == 0
-        assert stats.inactive.collective == 0
-
-        total_revenue = data.total_revenue
+        total_revenue = stats["total_revenue"]
 
         assert total_revenue == 0.0
 
