@@ -109,6 +109,12 @@ JOIN_DICT: dict[str, list[tuple[str, tuple]]] = {
     "venue": [("venue", (offerers_models.Venue, offers_models.Offer.venue))],
 }
 
+OPERATOR_DICT = {
+    **utils.OPERATOR_DICT,
+    "NAME_EQUALS": lambda x, y: x.ilike(y),
+    "NAME_NOT_EQUALS": lambda x, y: ~x.ilike(y),
+}
+
 
 def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
     query = offers_models.Offer.query.options(
@@ -152,6 +158,7 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
             search_parameters=form.search.data,
             fields_definition=SEARCH_FIELD_TO_PYTHON,
             joins_definition=JOIN_DICT,
+            operators_definition=OPERATOR_DICT,
         )
         for warning in warnings:
             flash(warning, "warning")
