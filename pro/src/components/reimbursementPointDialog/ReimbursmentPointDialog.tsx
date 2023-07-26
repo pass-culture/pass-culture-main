@@ -3,7 +3,7 @@ import React from 'react'
 import fullLinkIcon from 'icons/full-link.svg'
 import { Button } from 'ui-kit/Button'
 import CopyLink from 'ui-kit/CopyLink'
-import { REACT_APP_DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID_V4 } from 'utils/config'
+import { DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID_V4 } from 'utils/config'
 
 import DialogBox from '../DialogBox'
 
@@ -19,10 +19,7 @@ const ReimbursmentPointDialog = ({
   dmsToken,
 }: ReimbursmentPointDialog) => {
   const openDmsProcedure = () => {
-    window.open(
-      REACT_APP_DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID_V4,
-      '_blank'
-    )
+    window.open(DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID_V4, '_blank')
   }
   return (
     <DialogBox
