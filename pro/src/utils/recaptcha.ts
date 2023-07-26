@@ -9,7 +9,7 @@ export const initReCaptchaScript = () => {
   return document.body.appendChild(script)
 }
 
-export const getReCaptchaToken = action =>
+export const getReCaptchaToken = (action: string): Promise<string> =>
   new Promise(resolve =>
     window.grecaptcha.ready(function () {
       window.grecaptcha
