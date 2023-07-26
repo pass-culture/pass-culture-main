@@ -34,6 +34,7 @@ const initialValuesNotEmpty = {
   bookingLimitDatetime: '2023-03-30',
   numberOfPlaces: 10,
   totalPrice: 100,
+  priceDetail: 'Détail du prix',
 }
 
 const mockedUsedNavigate = jest.fn()
