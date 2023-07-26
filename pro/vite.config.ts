@@ -7,8 +7,9 @@ export default defineConfig(() => {
   return {
     root: './src',
     build: {
-      outDir: 'build',
+      outDir: '../build',
       sourcemap: true,
+      emptyOutDir: true,
     },
     resolve: {
       alias: {
