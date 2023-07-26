@@ -5,12 +5,12 @@
   "homepage": "/",
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js' --html build/stats.html",
-    "build": "react-scripts build",
-    "build:development": "env-cmd -f .env.development yarn build",
-    "build:staging": "env-cmd -f .env.staging yarn build",
-    "build:testing": "env-cmd -f .env.testing yarn build",
-    "build:integration": "env-cmd -f .env.integration yarn build",
-    "build:production": "env-cmd -f .env.production yarn build",
+    "build": "vite build",
+    "build:development": "vite build --mode development",
+    "build:staging": "vite build --mode staging",
+    "build:testing": "vite build --mode testing",
+    "build:integration": "vite build --mode integration",
+    "build:production": "vite build --mode production",
     "generate:api:client": "./scripts/generate_api_client.sh",
     "generate:api:client:local": "./scripts/generate_api_client_local.sh",
     "lint:js": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
@@ -21,8 +21,8 @@
     "lint:scss:hook:fix": "yarn lint:scss:hook --fix",
     "lint:dead-code": "ts-unused-exports tsconfig.json --excludePathsFromReport='stories;apiClient'",
     "prettier:js:changed:fix": "./scripts/lint_diff.sh",
-    "serve": "serve -s build -l 3001",
-    "start": "PORT=3001 react-scripts start",
+    "serve": "vite preview",
+    "start": "vite",
     "test:e2e": "cypress open --e2e --browser chrome --config baseUrl=http://localhost:3001",
     "test:stylelint": "jest stylelint-pass-culture/tests",
     "test:unit": "TZ=UTC jest --coverage",
@@ -31,10 +31,7 @@
     "test:unit:watch": "TZ=UTC jest --watch",
     "test:unit:no-coverage": "TZ=UTC jest",
     "storybook": "NODE_PATH=src storybook dev -p 6006",
-    "build-storybook": "NODE_PATH=src storybook build -o docs-build",
-    "vite:build": "vite build",
-    "vite:serve": "vite preview",
-    "vite:start": "vite"
+    "build-storybook": "NODE_PATH=src storybook build -o docs-build"
   },
   "dependencies": {
     "@firebase/analytics": "^0.10.0",
@@ -140,7 +137,8 @@
     "typescript": "^5.1.6",
     "url-loader": "^4.1.1",
     "vite": "^4.4.7",
-    "vite-tsconfig-paths": "^4.2.0"
+    "vite-tsconfig-paths": "^4.2.0",
+    "vite-plugin-environment": "^1.1.3"
   },
   "resolutions": {
     "autoprefixer": "10.4.5"
