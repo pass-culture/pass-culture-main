@@ -8,6 +8,7 @@ import { ADMINS_DISABLED_FILTERS_MESSAGE } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import { searchFiltersSelector } from 'store/offers/selectors'
+import { mapBrowserStatusToApi } from 'utils/translate'
 
 import StatusFiltersButton from './StatusFiltersButton'
 
@@ -79,7 +80,7 @@ const OffersTableHead = ({
           <StatusFiltersButton
             applyFilters={applyFilters}
             disabled={isAdminForbidden(filters)}
-            status={filters.status}
+            status={mapBrowserStatusToApi[filters.status] ?? 'all'}
             updateStatusFilter={updateStatusFilter}
             audience={audience}
           />
