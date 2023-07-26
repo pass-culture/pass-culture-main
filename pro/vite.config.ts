@@ -1,10 +1,11 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 import environment from 'vite-plugin-environment'
+import { createHtmlPlugin } from 'vite-plugin-html'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 // ts-unused-exports:disable-next-line
-export default defineConfig(() => {
+export default defineConfig(({ mode }) => {
   return {
     root: './src',
     build: {
@@ -24,6 +25,10 @@ export default defineConfig(() => {
       // Once we move to Vitest we should remove this plugin and use the
       // `import.meta.env` object instead
       environment('all', { prefix: 'VITE_' }),
+      createHtmlPlugin({
+        minify: true,
+        inject: { data: { mode } },
+      }),
     ],
     server: { port: 3001 },
     preview: { port: 3001 },
