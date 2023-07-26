@@ -13,9 +13,7 @@ export default defineConfig(({ mode }) => {
       emptyOutDir: true,
     },
     resolve: {
-      alias: {
-        styles: 'src/styles',
-      },
+      alias: { styles: 'src/styles' },
     },
     plugins: [
       react(),
@@ -26,11 +24,7 @@ export default defineConfig(({ mode }) => {
         inject: { data: { mode } },
       }),
     ],
-    server: {
-      port: 3001,
-    },
-    preview: {
-      port: 3001,
-    },
+    server: { port: 3001 },
+    preview: { port: 3001 },
   }
 })

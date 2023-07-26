@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
-    "typeRoots": ["./node_modules/@types", "./src/custom_types", "./node_modules"],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/custom_types",
+      "./node_modules"
+    ],
     "plugins": [{ "name": "typescript-plugin-css-modules" }],
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
@@ -18,19 +22,11 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "outDir": "./built",
-    "paths": {
-      "*": ["*"],
-      "@ui-kit/*": ["ui-kit/*"]
-    },
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
     "target": "es6",
-    "types": [
-      "node",
-      "cypress",
-      "vite/client",
-    ]
+    "types": ["node", "cypress", "vite/client"]
   },
   "include": [
     "./src/**/*.ts",
