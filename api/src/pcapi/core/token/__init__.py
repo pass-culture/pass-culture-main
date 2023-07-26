@@ -64,7 +64,7 @@ class Token:
         app.redis_client.delete(Token._get_redis_key(self.type_, self.user_id))  # type: ignore [attr-defined]
 
     @classmethod
-    def load_and_check(cls, encoded_token: str, type_: TokenType, user_id: int) -> "Token":
+    def load_and_check(cls, encoded_token: str, type_: TokenType, user_id: int | None = None) -> "Token":
         token = Token.load_without_checking(encoded_token)
         token.check(type_, user_id)
         return token

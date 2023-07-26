@@ -123,16 +123,9 @@ def confirm_email_update(body: serializers.ChangeBeneficiaryEmailBody) -> None:
             {"code": "INVALID_EMAIL", "message": "Adresse email invalide"},
             status_code=400,
         )
-    except exceptions.InvalidToken:
+    except (exceptions.InvalidToken, exceptions.EmailExistsError):
         raise api_errors.ApiErrors(
             {"code": "INVALID_TOKEN", "message": "aucune demande de changement d'email en cours"},
-            status_code=401,
-        )
-    except exceptions.EmailExistsError:
-        # Returning an error message might help the end client find
-        # existing email addresses.
-        raise api_errors.ApiErrors(
-            {"message": "Token invalide"},
             status_code=401,
         )
 

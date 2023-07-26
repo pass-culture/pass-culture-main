@@ -414,12 +414,6 @@ class ChangeUserEmailTest:
     new_email = "newemail@mail.com"
     mock_redis_client = fakeredis.FakeStrictRedis()
 
-    def _init_token_old(self, user):
-        expiration_date = email_update.generate_email_change_token_expiration_date()
-        return email_update.generate_email_change_token(
-            user, self.new_email, expiration_date, email_update.TokenType.VALIDATION
-        )
-
     def _init_token(self, user):
         return token_utils.Token.create(
             token_utils.TokenType.EMAIL_CHANGE_VALIDATION,
@@ -428,22 +422,12 @@ class ChangeUserEmailTest:
             {"new_email": self.new_email},
         ).encoded_token
 
-    @pytest.mark.parametrize(
-        "token_init",
-        [
-            (_init_token_old),
-            (_init_token),
-        ],
-    )
-    def test_change_user_email(self, token_init):
+    def test_change_user_email(self):
         # Given
         user = users_factories.UserFactory(email=self.old_email, firstName="UniqueNameForEmailChangeTest")
         users_factories.UserSessionFactory(user=user)
 
-        token = token_init(
-            self,
-            user,
-        )
+        token = self._init_token(user)
         # When
         email_update.validate_email_update_request(token)
 
@@ -461,18 +445,11 @@ class ChangeUserEmailTest:
         assert history.eventType == users_models.EmailHistoryEventTypeEnum.VALIDATION
         assert history.id is not None
 
-    @pytest.mark.parametrize(
-        "token_init",
-        [
-            (_init_token_old),
-            (_init_token),
-        ],
-    )
-    def test_change_user_email_new_email_already_existing(self, token_init):
+    def test_change_user_email_new_email_already_existing(self):
         # Given
         user = users_factories.UserFactory(email=self.old_email, firstName="UniqueNameForEmailChangeTest")
         other_user = users_factories.UserFactory(email=self.new_email)
-        token = token_init(self, user)
+        token = self._init_token(user)
 
         # When
         with pytest.raises(users_exceptions.EmailExistsError):
@@ -485,20 +462,13 @@ class ChangeUserEmailTest:
         other_user = users_models.User.query.get(other_user.id)
         assert other_user.email == self.new_email
 
-    @pytest.mark.parametrize(
-        "token_init",
-        [
-            (_init_token_old),
-            (_init_token),
-        ],
-    )
-    def test_change_user_email_expired_token(self, app, token_init):
+    def test_change_user_email_expired_token(self, app):
         # Given
         user = users_factories.UserFactory(email=self.old_email, firstName="UniqueNameForEmailChangeTest")
         users_factories.UserSessionFactory(user=user)
         with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
             with freeze_time("2021-01-01"):
-                token = token_init(self, user)
+                token = self._init_token(user)
 
             # When
             with freeze_time("2021-01-03"):
@@ -509,14 +479,7 @@ class ChangeUserEmailTest:
                 user = users_models.User.query.get(user.id)
                 assert user.email == self.old_email
 
-    @pytest.mark.parametrize(
-        "token_init",
-        [
-            (_init_token_old),
-            (_init_token),
-        ],
-    )
-    def test_change_user_email_twice(self, token_init):
+    def test_change_user_email_twice(self):
         """
         Test that when the function is called twice:
             1. no error is raised
@@ -527,7 +490,7 @@ class ChangeUserEmailTest:
 
         user = users_factories.UserFactory(email=self.old_email)
         users_factories.UserSessionFactory(user=user)
-        token = token_init(self, user)
+        token = self._init_token(user)
 
         # first call, email is updated as expected
         email_update.validate_email_update_request(token)
