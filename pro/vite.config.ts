@@ -10,6 +10,11 @@ export default defineConfig(() => {
       outDir: 'build',
       sourcemap: true,
     },
+    resolve: {
+      alias: {
+        styles: 'src/styles',
+      },
+    },
     plugins: [react(), tsconfigPaths()],
   }
 })
