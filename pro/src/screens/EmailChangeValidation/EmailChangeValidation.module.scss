@@ -3,43 +3,33 @@
 @use "styles/variables/_forms.scss" as forms;
 @use "styles/mixins/_layout.scss" as layout;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_size.scss" as size;
 
 .email-validation {
   display: flex;
+  flex-direction: column;
+
+  @media (min-width: size.$tablet) {
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+  }
 
   .logo-side {
     @include layout.logo-side;
   }
 }
 
-.scrollable-content-side {
-  overflow: auto;
-  min-height: 100vh;
-  background: colors.$white;
-  position: relative;
-  width: 100%;
-  left: forms.$sign-form-space-left;
-  display: flex;
-  align-items: center;
-
-  .content {
-    width: rem.torem(486px);
-
-    .has-text-grey {
-      @include fonts.caption;
-
-      color: colors.$grey-dark;
-    }
-  }
+.content {
+  @include layout.full-content-side;
 }
 
-.search-no-results-title4 {
+.subtitle {
   @include fonts.title4;
 
-  max-width: rem.torem(530px);
   margin-bottom: rem.torem(16px);
 }
 
-.search-no-results-title4:last-of-type {
+.subtitle:last-of-type {
   margin-bottom: rem.torem(32px);
 }

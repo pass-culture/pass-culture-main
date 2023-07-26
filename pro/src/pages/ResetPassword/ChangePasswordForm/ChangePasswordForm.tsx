@@ -20,25 +20,26 @@ const ChangePasswordForm = ({
   })
   return (
     <section className={styles['change-password-form']}>
-      <div className={styles['hero-body']}>
-        <h1>Définir un nouveau mot de passe</h1>
-        <FormikProvider value={formik}>
-          <Form onSubmit={formik.handleSubmit}>
-            <FormLayout>
-              <FormLayout.Row>
-                <PasswordInput
-                  label="Nouveau mot de passe"
-                  name="newPasswordValue"
-                  withErrorPreview
-                />
-              </FormLayout.Row>
-              <SubmitButton isLoading={formik.isSubmitting}>
-                Valider
-              </SubmitButton>
-            </FormLayout>
-          </Form>
-        </FormikProvider>
-      </div>
+      <h1>Définir un nouveau mot de passe</h1>
+      <FormikProvider value={formik}>
+        <Form onSubmit={formik.handleSubmit}>
+          <FormLayout>
+            <FormLayout.Row>
+              <PasswordInput
+                label="Nouveau mot de passe"
+                name="newPasswordValue"
+                withErrorPreview
+              />
+            </FormLayout.Row>
+            <SubmitButton
+              className={styles['validation-button']}
+              isLoading={formik.isSubmitting}
+            >
+              Valider
+            </SubmitButton>
+          </FormLayout>
+        </Form>
+      </FormikProvider>
     </section>
   )
 }

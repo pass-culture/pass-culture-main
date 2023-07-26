@@ -7,58 +7,51 @@
 
 .sign-in {
   display: flex;
+  flex-direction: column;
+
+  @media (min-width: size.$tablet) {
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+  }
 
   .logo-side {
     @include layout.logo-side;
   }
 }
 
-.scrollable-content-side {
-  overflow: auto;
-  min-height: 100vh;
-  background: colors.$white;
-  position: relative;
-  width: 100%;
-  left: forms.$sign-form-space-left;
-  display: flex;
-  align-items: center;
+.content {
+  @include layout.full-content-side;
+}
 
-  .content {
-    width: rem.torem(486px);
+.mandatory {
+  @include fonts.caption;
 
-    .has-text-grey {
-      @include fonts.caption;
-
-      color: colors.$grey-dark;
-    }
-  }
+  color: colors.$grey-dark;
+  margin-bottom: rem.torem(16px);
 }
 
 h1 {
   margin-bottom: rem.torem(16px);
 }
 
-.signin-form {
-  margin-top: rem.torem(16px);
-}
-
 .buttons-field {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column-reverse;
   gap: rem.torem(24px);
   margin-top: rem.torem(32px);
+  padding-bottom: rem.torem(32px);
 
-  a,
-  button {
-    text-align: center;
-    margin-bottom: rem.torem(5px);
-    width: rem.torem(231px);
+  @media (min-width: size.$desktop) {
+    flex-direction: row;
+  }
+
+  .buttons {
+    width: 100%;
   }
 }
 
 .cookies-footer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  margin-top: rem.torem(24px);
+  padding: 0 rem.torem(24px);
 }
