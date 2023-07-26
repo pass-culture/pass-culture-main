@@ -56,6 +56,7 @@ const ResetPassword = (): JSX.Element => {
             viewBox="0 0 282 120"
             alt="Pass Culture pro, l'espace des acteurs culturels"
             src={logoPassCultureProFullIcon}
+            width="135"
           />
         </header>
         <AppLayout
@@ -64,25 +65,23 @@ const ResetPassword = (): JSX.Element => {
             pageName: 'lost-password',
           }}
         >
-          <div className={styles['scrollable-content-side']}>
-            <div className={styles['content']}>
-              {mailSent ? (
-                <Hero
-                  linkLabel="Revenir à l’accueil"
-                  linkTo="/"
-                  text="Vous allez recevoir par email les instructions pour définir un nouveau mot de passe."
-                  title="Merci !"
-                />
-              ) : (
-                <Formik
-                  initialValues={{ email: '' }}
-                  onSubmit={submitChangePasswordRequest}
-                  validationSchema={validationSchema}
-                >
-                  <ChangePasswordRequestForm />
-                </Formik>
-              )}
-            </div>
+          <div className={styles['content']}>
+            {mailSent ? (
+              <Hero
+                linkLabel="Revenir à l’accueil"
+                linkTo="/"
+                text="Vous allez recevoir par email les instructions pour définir un nouveau mot de passe."
+                title="Merci !"
+              />
+            ) : (
+              <Formik
+                initialValues={{ email: '' }}
+                onSubmit={submitChangePasswordRequest}
+                validationSchema={validationSchema}
+              >
+                <ChangePasswordRequestForm />
+              </Formik>
+            )}
           </div>
         </AppLayout>
       </div>

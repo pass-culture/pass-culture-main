@@ -25,7 +25,7 @@ const Signup = () => {
             viewBox="0 0 282 120"
             alt="Pass Culture pro, l'espace des acteurs culturels"
             src={logoPassCultureProFullIcon}
-            width="282"
+            width="135"
           />
         </header>
         <AppLayout

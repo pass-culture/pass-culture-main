@@ -13,6 +13,7 @@ const SignupUnavailable: FunctionComponent = () => {
           alt=""
           src={strokeWipIcon}
           viewBox="0 0 200 156"
+          width="180"
         />
         <h1 className={styles['heading-1']}>Inscription indisponible</h1>
         <h2>

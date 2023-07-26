@@ -8,7 +8,7 @@ import styles from './Unavailable.module.scss'
 
 const Unavailable = () => {
   return (
-    <main className={`fullscreen ${styles['unavailable-page']}`} id="content">
+    <main className={styles['unavailable-page']} id="content">
       <SvgIcon
         className={styles['error-icon']}
         src={strokeWipIcon}

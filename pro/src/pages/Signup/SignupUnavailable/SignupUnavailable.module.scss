@@ -1,25 +1,21 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_forms.scss" as forms;
+@use "styles/variables/_size.scss" as size;
+@use "styles/mixins/_layout.scss" as layout;
 
 .sign-up-unavailable-section {
   height: 100%;
   width: 100%;
-  position: relative;
-  left: forms.$sign-form-space-left;
   display: flex;
   align-items: center;
   justify-content: center;
 
-  &-icon {
-    width: rem.torem(180px);
-    height: rem.torem(100px);
-  }
+}
 
-  .content {
-    max-width: 50%;
-  }
+.content {
+  @include layout.full-content-side;
+}
 
-  .heading-1 {
-    margin: rem.torem(24px) 0;
-  }
+.heading-1 {
+  margin: rem.torem(24px) 0;
 }

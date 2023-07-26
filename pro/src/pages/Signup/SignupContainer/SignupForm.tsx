@@ -67,77 +67,80 @@ const SignupForm = (): JSX.Element => {
         <MaybeAppUserDialog onCancel={() => setIsModalOpen(false)} />
       )}
 
-      <FormLayout className={styles['signup-page-form']}>
-        <div className={styles['sign-up-form']}>
-          <FormLayout.Row>
-            <TextInput label="Nom" name="lastName" autoComplete="family-name" />
-          </FormLayout.Row>
-          <FormLayout.Row>
-            <TextInput
-              label="Prénom"
-              name="firstName"
-              autoComplete="given-name"
-            />
-          </FormLayout.Row>
-          <FormLayout.Row>
-            <EmailSpellCheckInput
-              name="email"
-              placeholder="email@exemple.com"
-              label="Adresse email"
-            />
-          </FormLayout.Row>
-          <FormLayout.Row>
-            <PasswordInput
-              name="password"
-              label="Mot de passe"
-              withErrorPreview={true}
-              autoComplete="new-password"
-            />
-          </FormLayout.Row>
-          <FormLayout.Row>
-            <PhoneNumberInput
-              name="phoneNumber"
-              label={
-                'Téléphone (utilisé uniquement par l’équipe du pass Culture)'
-              }
-            />
-          </FormLayout.Row>
-          {!newOnboardingActive && (
-            <div className={styles['siren-field']}>
-              <FormLayout.Row>
-                <SirenInput
-                  label="SIREN de la structure que vous représentez"
-                  onValidSiren={getSirenAPIData}
-                />
-              </FormLayout.Row>
-              <span className={styles['field-siren-value']}>
-                {values.legalUnitValues.name}
-              </span>
-              {showAnonymousBanner && <BannerInvisibleSiren />}
-            </div>
-          )}
-          <FormLayout.Row>
-            <Checkbox
-              hideFooter
-              label="J’accepte d’être contacté par email pour recevoir les
+      <FormLayout>
+        <FormLayout.Row>
+          <TextInput label="Nom" name="lastName" autoComplete="family-name" />
+        </FormLayout.Row>
+        <FormLayout.Row>
+          <TextInput
+            label="Prénom"
+            name="firstName"
+            autoComplete="given-name"
+          />
+        </FormLayout.Row>
+        <FormLayout.Row>
+          <EmailSpellCheckInput
+            name="email"
+            placeholder="email@exemple.com"
+            label="Adresse email"
+          />
+        </FormLayout.Row>
+        <FormLayout.Row>
+          <PasswordInput
+            name="password"
+            label="Mot de passe"
+            withErrorPreview={true}
+            autoComplete="new-password"
+          />
+        </FormLayout.Row>
+        <FormLayout.Row>
+          <PhoneNumberInput
+            name="phoneNumber"
+            label={
+              'Téléphone (utilisé uniquement par l’équipe du pass Culture)'
+            }
+          />
+        </FormLayout.Row>
+        {!newOnboardingActive && (
+          <div className={styles['siren-field']}>
+            <FormLayout.Row>
+              <SirenInput
+                label="SIREN de la structure que vous représentez"
+                onValidSiren={getSirenAPIData}
+              />
+            </FormLayout.Row>
+            <span className={styles['field-siren-value']}>
+              {values.legalUnitValues.name}
+            </span>
+            {showAnonymousBanner && <BannerInvisibleSiren />}
+          </div>
+        )}
+        <FormLayout.Row>
+          <Checkbox
+            hideFooter
+            label="J’accepte d’être contacté par email pour recevoir les
                       nouveautés du pass Culture et contribuer à son
                       amélioration (facultatif)"
-              name="contactOk"
-            />
-          </FormLayout.Row>
-          <LegalInfos
-            className={styles['sign-up-infos-before-signup']}
-            title="Créer mon compte"
+            name="contactOk"
           />
-        </div>
+        </FormLayout.Row>
+        <LegalInfos
+          className={styles['sign-up-infos-before-signup']}
+          title="Créer mon compte"
+        />
         <div className={styles['buttons-field']}>
           <Button
+            className={styles['buttons']}
             onClick={() => navigate('/connexion')}
             variant={ButtonVariant.SECONDARY}
           >
             J’ai déjà un compte
           </Button>
-          <SubmitButton isLoading={isSubmitting} disabled={isSubmitting}>
+          <SubmitButton
+            className={styles['buttons']}
+            isLoading={isSubmitting}
+            disabled={isSubmitting}
+          >
             Créer mon compte
           </SubmitButton>
         </div>

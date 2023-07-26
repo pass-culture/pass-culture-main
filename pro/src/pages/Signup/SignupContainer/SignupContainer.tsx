@@ -112,20 +112,18 @@ const SignupContainer = (): JSX.Element => {
   }, [])
 
   return (
-    <section className={styles['sign-up-form-page']}>
-      <div className={styles['content']}>
-        <h1>Créer votre compte</h1>
-        <OperatingProcedures />
+    <section className={styles['content']}>
+      <h1>Créer votre compte</h1>
+      <OperatingProcedures />
 
-        <div className={styles['sign-up-tips']}>
-          Tous les champs sont obligatoires sauf mention contraire
-        </div>
-        <FormikProvider value={formik}>
-          <Form onSubmit={formik.handleSubmit}>
-            <SignupForm />
-          </Form>
-        </FormikProvider>
+      <div className={styles['mandatory']}>
+        Tous les champs sont obligatoires sauf mention contraire
       </div>
+      <FormikProvider value={formik}>
+        <Form onSubmit={formik.handleSubmit}>
+          <SignupForm />
+        </Form>
+      </FormikProvider>
     </section>
   )
 }
