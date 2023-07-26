@@ -1,3 +1,7 @@
+from pcapi.flask_app import app
+
+app.app_context().push()
+
 import csv
 import logging
 import math
@@ -208,7 +212,7 @@ def update_products(file_path: str, dry: bool) -> None:
 
 
 if __name__ == "__main__":
-    with app.app_context():
+    if 1:  # with app.app_context():
         start = time.time()
         dry_run = False
 
