@@ -1,6 +1,8 @@
 import dataclasses
 
+from pcapi import settings
 from pcapi.models.api_errors import ApiErrors
+import pcapi.utils.date as date_utils
 
 
 @dataclasses.dataclass
@@ -13,7 +15,8 @@ EMAIL_ALREADY_EXISTS = AccountApiError(
     code="EMAIL_ALREADY_EXISTS", message="Cet email est déjà utilisé par un autre compte."
 )
 EMAIL_UPDATE_LIMIT = AccountApiError(
-    code="EMAIL_UPDATE_LIMIT", message="Tu ne peux pas modifier ton email plus de 2 fois par 72h."
+    code="EMAIL_UPDATE_LIMIT",
+    message=f"Tu ne peux pas modifier ton email plus de {settings.MAX_EMAIL_UPDATE_ATTEMPTS} fois en {date_utils.format_time_in_second_to_human_readable(settings.EMAIL_UPDATE_ATTEMPTS_TTL)}.",
 )
 EMAIL_UPDATE_PENDING = AccountApiError(
     code="EMAIL_UPDATE_PENDING", message="Tu as déjà une demande de modification d'email en cours."
