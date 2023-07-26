@@ -23,6 +23,8 @@ from pcapi.routes.backoffice_v3.forms import utils
 class SearchOperators(enum.Enum):
     NOT_EQUALS = "est différent de"
     EQUALS = "est égal à"
+    NAME_NOT_EQUALS = "est différent de\0\0"
+    NAME_EQUALS = "est égal à\0\0"
     STR_NOT_EQUALS = "est différent de\0"  # the \0 is here to force wtforms to display NOT_EQUALS and STR_NOT_EQUALS
     STR_EQUALS = "est égal à\0"  # the \0 is here to force wtforms to display EQUALS and STR_EQUALS
     GREATER_THAN = "supérieur strict"
@@ -71,7 +73,7 @@ form_field_configuration = {
         ],
     },
     "ID": {"field": "integer", "operator": ["EQUALS", "NOT_EQUALS"]},
-    "NAME": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "STR_EQUALS", "STR_NOT_EQUALS"]},
+    "NAME": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "NAME_EQUALS", "NAME_NOT_EQUALS"]},
     "OFFERER": {"field": "offerer", "operator": ["IN", "NOT_IN"]},
     "STATUS": {"field": "status", "operator": ["IN", "NOT_IN"]},
     "SUBCATEGORY": {"field": "subcategory", "operator": ["IN", "NOT_IN"]},
