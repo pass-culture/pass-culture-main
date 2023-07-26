@@ -47,3 +47,21 @@ export const {
   REACT_APP_ALGOLIA_API_KEY: ALGOLIA_API_KEY,
   REACT_APP_ALGOLIA_COLLECTIVE_OFFERS_INDEX: ALGOLIA_COLLECTIVE_OFFERS_INDEX,
 } = process.env
+
+export const FIREBASE_API_KEY =
+  process.env.REACT_APP_FIREBASE_PUBLIC_API_KEY ||
+  'AIzaSyAhXSv-Wk5I3hHAga5KhCe_SUhdmY-2eyQ'
+export const FIREBASE_AUTH_DOMAIN =
+  process.env.REACT_APP_FIREBASE_AUTH_DOMAIN ||
+  'passculture-pro.firebaseapp.com'
+export const FIREBASE_PROJECT_ID =
+  process.env.REACT_APP_FIREBASE_PROJECT_ID || 'passculture-pro'
+export const FIREBASE_STORAGE_BUCKET =
+  process.env.REACT_APP_FIREBASE_STORAGE_BUCKET || 'passculture-pro.appspot.com'
+export const FIREBASE_MESSAGING_SENDER_ID =
+  process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID || '412444774135'
+export const FIREBASE_APP_ID =
+  process.env.REACT_APP_FIREBASE_APP_ID ||
+  '1:412444774135:web:0cd1b28CCCC6f9d6c54df2'
+export const FIREBASE_MEASUREMENT_ID =
+  process.env.REACT_APP_FIREBASE_MEASUREMENT_ID || 'G-FBPYNQPRF6'

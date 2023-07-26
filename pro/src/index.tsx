@@ -62,7 +62,7 @@ if (!window.location.href.includes('adage-iframe')) {
     r = o.createElement('script')
     r.async = 1
     // We do not change hotjar loading in production until it is tested
-    if (process.env.REACT_APP_ENVIRONMENT_NAME !== 'production') {
+    if (ENVIRONMENT_NAME !== 'production') {
       r.setAttribute(
         'data-src',
         t + h._hjSettings.hjid + j + h._hjSettings.hjsv
