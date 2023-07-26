@@ -49,7 +49,7 @@ Dans la plupart des cas, on évitera de créer des tests pour ces éléments, ca
 on importera les éléments de l'`ui-kit` ainsi : 
 
 ```js
-import { Heading1, Heading2, Grid, InputText } from '@ui-kit'
+import { Heading1, Heading2, Grid, InputText } from 'ui-kit'
 ```
 
 ## DO
