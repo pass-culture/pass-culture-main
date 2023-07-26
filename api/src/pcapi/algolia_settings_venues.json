@@ -52,8 +52,7 @@
     ],
     "searchableAttributes": [
         "unordered(name)",
-        "unordered(offerer_name)",
-        "unordered(description)"
+        "unordered(offerer_name)"
     ],
     "numericAttributesForFiltering": null
 }
