@@ -6,7 +6,6 @@ import {
   PriceCategoryResponseModel,
 } from 'apiClient/v1'
 import { CropParams } from 'components/ImageUploader'
-import { CollectiveOfferStatus } from 'core/OfferEducational'
 import { AccessibiltyFormValues } from 'core/shared'
 
 import { CATEGORY_STATUS } from './constants'
@@ -16,7 +15,7 @@ export type SearchFiltersParams = {
   offererId: string
   venueId: string
   categoryId: string
-  status: OfferStatus | CollectiveOfferStatus | 'all'
+  status: string
   creationMode: string
   collectiveOfferType: string
   periodBeginningDate: string
