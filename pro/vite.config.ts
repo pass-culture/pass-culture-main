@@ -14,9 +14,7 @@ export default defineConfig(({ mode }) => {
       emptyOutDir: true,
     },
     resolve: {
-      alias: {
-        styles: 'src/styles',
-      },
+      alias: { styles: 'src/styles' },
     },
     plugins: [
       react(),
