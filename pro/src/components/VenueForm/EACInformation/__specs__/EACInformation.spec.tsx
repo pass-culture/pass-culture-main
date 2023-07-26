@@ -3,7 +3,7 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { AdageCulturalPartnersResponseModel } from 'apiClient/v1'
-import { Venue } from 'core/Venue'
+import { Venue } from 'core/Venue/types'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import EACInformation from '../EACInformation'

@@ -23,7 +23,7 @@ import {
 } from 'apiClient/v1'
 import { BOOKING_STATUS } from 'core/Bookings/constants'
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
-import { Venue } from 'core/Venue'
+import { Venue } from 'core/Venue/types'
 
 let offerId = 1
 let stockId = 1

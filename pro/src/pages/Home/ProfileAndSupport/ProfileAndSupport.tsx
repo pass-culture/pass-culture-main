@@ -22,22 +22,20 @@ import Support from './Support'
  *
  * otherwise, return given argument phoneNumber unchanged
  */
-export const formatPhoneNumber = phoneNumber => {
+export const formatPhoneNumber = (phoneNumber: string | null | undefined) => {
   let formatedNumber = phoneNumber
   if (phoneNumber) {
     formatedNumber = phoneNumber.replace(/ /g, '')
     const r = /(\+?[0-9]+)([0-9])([0-9]{8})/g
     const parts = formatedNumber.split(r).slice(1, -1)
 
-    let isReginalNumber, isInternationalNumber
-
-    if (!parts.length === 3) {
+    if (parts.length !== 3) {
       return phoneNumber
     }
 
     const [internationalPrefix, areaPrefix, number] = parts
-    isReginalNumber = internationalPrefix === '0'
-    isInternationalNumber = /\+[0-9]+/.test(internationalPrefix)
+    const isReginalNumber = internationalPrefix === '0'
+    const isInternationalNumber = /\+[0-9]+/.test(internationalPrefix)
     if (!(isReginalNumber || isInternationalNumber)) {
       return phoneNumber
     }
@@ -73,7 +71,6 @@ const ProfileAndSupport = () => {
               <ButtonLink
                 variant={ButtonVariant.TERNARY}
                 link={{ to: '/profil', isExternal: false }}
-                type="button"
                 icon={fullEditIcon}
                 onClick={() => logEvent?.(Events.CLICKED_EDIT_PROFILE)}
               >

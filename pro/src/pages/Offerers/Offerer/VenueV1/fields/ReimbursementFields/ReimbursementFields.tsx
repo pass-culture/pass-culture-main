@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import ReimbursementPoint from 'components/VenueForm/ReimbursementPoint/ReimbursementPoint'
-import { Venue } from 'core/Venue'
+import { Venue } from 'core/Venue/types'
 import fullLinkIcon from 'icons/full-link.svg'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
 
