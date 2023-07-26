@@ -48,9 +48,7 @@ const AddActivationCodeForm = ({
         <ButtonLink
           link={{
             isExternal: true,
-            to:
-              process.env.PUBLIC_URL +
-              '/csvtemplates/CodesActivations-Gabarit.csv',
+            to: '/csvtemplates/CodesActivations-Gabarit.csv',
             target: '_blank',
             rel: 'noopener noreferrer',
             type: 'text/csv',
