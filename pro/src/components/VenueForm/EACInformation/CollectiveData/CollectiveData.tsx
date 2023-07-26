@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { Venue } from 'core/Venue'
+import { Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
 import { getInterventionAreaLabels } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/EACInformation/utils/getInterventionAreaLabels'

@@ -1,7 +1,7 @@
 import { BannerMetaModel, GetVenueResponseModel } from 'apiClient/v1'
 import { VenueBannerMetaProps } from 'components/VenueForm/ImageUploaderVenue/ImageUploaderVenue'
 import { AccessiblityEnum } from 'core/shared'
-import { Venue } from 'core/Venue'
+import { Venue } from 'core/Venue/types'
 import { getLastCollectiveDmsApplication } from 'utils/getLastCollectiveDmsApplication'
 
 export const serializeVenueApi = (venue: GetVenueResponseModel): Venue => {

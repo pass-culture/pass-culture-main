@@ -1,4 +1,5 @@
-import { humanizeSiret, Venue } from 'core/Venue'
+import { Venue } from 'core/Venue/types'
+import { humanizeSiret } from 'core/Venue/utils'
 
 import { VenueFormValues } from '../types'
 

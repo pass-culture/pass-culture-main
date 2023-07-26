@@ -1,4 +1,4 @@
-import { getSiretDataAdapter } from 'core/Venue'
+import getSiretDataAdapter from 'core/Venue/adapters/getSiretDataAdapter'
 
 const siretApiValidate = async (siret: string): Promise<string | undefined> => {
   if (!siret) {

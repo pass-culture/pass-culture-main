@@ -1,10 +1,11 @@
-import invert from 'lodash.invert'
+import invert from 'lodash/invert'
 
 import { OfferStatus } from 'apiClient/v1'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
+import { SearchFiltersParams } from 'core/Offers/types'
 
-function getObjectWithMappedKeys(obj, keysMap) {
-  const mappedObj = {}
+function getObjectWithMappedKeys(obj: any, keysMap: Record<string, string>) {
+  const mappedObj: Record<string, string> = {}
   Object.keys(obj).forEach(objKey => {
     let mappedKey = objKey
     if (keysMap[objKey]) {
@@ -49,10 +50,14 @@ export const mapBrowserToApi = {
 
 export const mapApiToBrowser = invert(mapBrowserToApi)
 
-export function translateQueryParamsToApiParams(queryParams) {
+export function translateQueryParamsToApiParams(
+  queryParams: Record<string, string>
+) {
   return getObjectWithMappedKeys(queryParams, mapBrowserToApi)
 }
 
-export function translateApiParamsToQueryParams(apiParams) {
+export function translateApiParamsToQueryParams(
+  apiParams: Partial<SearchFiltersParams>
+) {
   return getObjectWithMappedKeys(apiParams, mapApiToBrowser)
 }

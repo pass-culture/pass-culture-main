@@ -2,7 +2,7 @@ import React from 'react'
 
 import { SummaryLayout } from 'components/SummaryLayout'
 import { CollectiveOffer, CollectiveOfferTemplate } from 'core/OfferEducational'
-import { useGetVenue } from 'core/Venue'
+import { useGetVenue } from 'core/Venue/adapters/getVenueAdapter'
 import useNotification from 'hooks/useNotification'
 import Spinner from 'ui-kit/Spinner/Spinner'
 

@@ -7,7 +7,7 @@ import {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
 } from 'apiClient/v1'
-import { Venue } from 'core/Venue'
+import { Venue } from 'core/Venue/types'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ReimbursementFields, {

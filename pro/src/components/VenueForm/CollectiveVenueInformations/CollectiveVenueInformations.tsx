@@ -3,7 +3,7 @@ import React from 'react'
 
 import { DMSApplicationstatus } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
-import { Venue } from 'core/Venue'
+import { Venue } from 'core/Venue/types'
 
 import NewEACInformation from '../EACInformation/NewEACInformation'
 

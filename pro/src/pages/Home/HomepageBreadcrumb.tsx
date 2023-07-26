@@ -1,27 +1,33 @@
-import PropTypes from 'prop-types'
-import React from 'react'
+import React, { MutableRefObject } from 'react'
 
-import Breadcrumb, { BreadcrumbStyle } from 'components/Breadcrumb'
+import Breadcrumb, { BreadcrumbStyle, Step } from 'components/Breadcrumb'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 
 import { doesUserPreferReducedMotion } from '../../utils/windowMatchMedia'
 
 export const STEP_ID_OFFERERS = 'offerers'
-export const STEP_ID_PROFILE = 'profile'
-export const STEP_ID_STATS = 'offererStats'
+const STEP_ID_PROFILE = 'profile'
+const STEP_ID_STATS = 'offererStats'
 export const STEP_OFFERER_HASH = 'structures'
 export const STEP_PROFILE_HASH = 'profil'
 export const STEP_STATS_HASH = 'offererStats'
+
+interface HomepageBreadcrumbProps {
+  activeStep: string
+  profileRef: MutableRefObject<any>
+  statsRef: MutableRefObject<any>
+  isOffererStatsActive?: boolean
+}
 
 const HomepageBreadcrumb = ({
   activeStep,
   profileRef,
   statsRef,
-  isOffererStatsActive,
-}) => {
+  isOffererStatsActive = false,
+}: HomepageBreadcrumbProps) => {
   const { logEvent } = useAnalytics()
-  const jumpToProfileSection = e => {
+  const jumpToProfileSection = (e: React.MouseEvent) => {
     e.preventDefault()
     logEvent?.(Events.CLICKED_BREADCRUMBS_PROFILE_AND_HELP)
 
@@ -29,7 +35,7 @@ const HomepageBreadcrumb = ({
       behavior: doesUserPreferReducedMotion() ? 'auto' : 'smooth',
     })
   }
-  const jumpToStatsSection = e => {
+  const jumpToStatsSection = (e: React.MouseEvent) => {
     e.preventDefault()
     logEvent?.(Events.CLICKED_BREADCRUMBS_OFFERER_STATS)
 
@@ -38,27 +44,28 @@ const HomepageBreadcrumb = ({
     })
   }
 
-  const steps = {
-    [STEP_ID_OFFERERS]: {
+  const steps: Step[] = [
+    {
       id: STEP_ID_OFFERERS,
       label: 'Structures et lieux',
       hash: STEP_OFFERER_HASH,
       onClick: () => logEvent?.(Events.CLICKED_BREADCRUMBS_STRUCTURES),
     },
-    ...(isOffererStatsActive && {
-      [STEP_ID_STATS]: {
-        id: STEP_ID_STATS,
-        label: 'Statistiques',
-        hash: STEP_STATS_HASH,
-        onClick: jumpToStatsSection,
-      },
-    }),
-    [STEP_ID_PROFILE]: {
+    {
       id: STEP_ID_PROFILE,
       label: 'Profil et aide',
       hash: STEP_PROFILE_HASH,
       onClick: jumpToProfileSection,
     },
+  ]
+
+  if (isOffererStatsActive) {
+    steps.splice(1, 0, {
+      id: STEP_ID_STATS,
+      label: 'Statistiques',
+      hash: STEP_STATS_HASH,
+      onClick: jumpToStatsSection,
+    })
   }
 
   return (
@@ -69,19 +76,6 @@ const HomepageBreadcrumb = ({
       className="pc-breadcrumb"
     />
   )
-}
-
-HomepageBreadcrumb.defaultProps = {
-  profileRef: null,
-  statsRef: null,
-  isOffererStatsActive: false,
-}
-
-HomepageBreadcrumb.propTypes = {
-  activeStep: PropTypes.string.isRequired,
-  profileRef: PropTypes.shape(),
-  statsRef: PropTypes.shape(),
-  isOffererStatsActive: PropTypes.bool,
 }
 
 export default HomepageBreadcrumb

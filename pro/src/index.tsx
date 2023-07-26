@@ -47,10 +47,11 @@ if (SENTRY_SERVER_URL) {
 // included in the bundle instead of <script> tag in index.html
 // to avoid the need of 'insafe-inline' in Content Security Policy
 if (!window.location.href.includes('adage-iframe')) {
-  ;(function (h, o, t, j, a, r) {
+  ;(function (h: any, o, t, j, a?: any, r?: any) {
     h.hj =
       h.hj ||
       function () {
+        // eslint-disable-next-line prefer-rest-params
         ;(h.hj.q = h.hj.q || []).push(arguments)
       }
     h._hjSettings = {
@@ -77,6 +78,7 @@ if (!window.location.href.includes('adage-iframe')) {
 }
 
 // Start app
+// @ts-expect-error
 const root = createRoot(document.getElementById('root'))
 
 root.render(
