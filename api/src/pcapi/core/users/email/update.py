@@ -1,11 +1,8 @@
 from datetime import datetime
-from datetime import timedelta
 import enum
 import logging
 
 from flask import current_app as app
-import jwt
-import sqlalchemy as sqla
 
 from pcapi import settings
 from pcapi.core import token as token_utils
@@ -16,12 +13,9 @@ from pcapi.core.users import constants
 from pcapi.core.users import exceptions
 from pcapi.core.users import models
 from pcapi.core.users import repository as users_repository
-from pcapi.core.users import utils
-from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.repository import transaction
-from pcapi.routes.native.v1.serialization.account import ChangeEmailTokenContent
 from pcapi.utils.urls import generate_firebase_dynamic_link
 
 from .send import send_pro_user_emails_for_email_change
@@ -123,48 +117,19 @@ def request_email_update(user: models.User, new_email: str, password: str) -> No
     generate_and_send_beneficiary_confirmation_email_for_email_change(user, new_email)
 
 
-def _check_token(user: models.User, token_to_check: str, token_type: TokenType) -> None:
-    token_key = get_token_key(user, token_type)
-    if app.redis_client.get(token_key) != token_to_check:  # type: ignore [attr-defined]
-        raise exceptions.InvalidToken()
-
-
-def _expire_token(user: models.User, token_type: TokenType) -> None:
-    token_key = get_token_key(user, token_type)
-    app.redis_client.delete(token_key)  # type: ignore [attr-defined]
-
-
 def confirm_email_update_request(encoded_token: str) -> None:
     """Confirm the email update request for the given user"""
-    try:
-        jwt_payload = utils.decode_jwt_token(encoded_token)
-    except jwt.PyJWTError:
-        raise exceptions.InvalidToken()
-    new_token_type = "token_type" in jwt_payload
-    if new_token_type:  # nouveau type de tokens celui de pcapi.core.token
-        token = Token.load_without_checking(encoded_token)
-        user = models.User.query.get(token.user_id)
-        new_email = token.data["new_email"]
-    else:  # old token type. should be removed when old token type is removed
-        payload = ChangeEmailTokenContent.from_token(encoded_token)
-        current_email = payload.current_email
-        new_email = payload.new_email
-        user = users_repository.find_user_by_email(current_email)
+    token = Token.load_and_check(encoded_token, token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION)
+    user = models.User.query.get(token.user_id)
     if not user:
-        raise exceptions.InvalidEmailError()
-    if new_token_type:
-        token.check(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION)
-    else:  # should be removed when old token type is removed
-        _check_token(user, encoded_token, TokenType.CONFIRMATION)
+        raise exceptions.InvalidToken()
+    new_email = token.data["new_email"]
     check_email_address_does_not_exist(new_email)
     try:
         generate_and_send_beneficiary_validation_email_for_email_change(user, new_email)
         with transaction():
             models.UserEmailHistory.build_confirmation(user, new_email)
-        if new_token_type:
-            token.expire()
-        else:  # should be removed when old token type is removed
-            _expire_token(user, TokenType.CONFIRMATION)
+        token.expire()
 
     except Exception as error:
         raise ApiErrors(
@@ -175,35 +140,17 @@ def confirm_email_update_request(encoded_token: str) -> None:
 def cancel_email_update_request(encoded_token: str) -> None:
     """Cancel the email update request for the given user"""
 
-    try:
-        jwt_payload = utils.decode_jwt_token(encoded_token)
-    except jwt.PyJWTError:
-        raise exceptions.InvalidToken()
-    new_token_type = "token_type" in jwt_payload
-    if new_token_type:  # nouveau type de tokens celui de pcapi.core.token
-        token = Token.load_without_checking(encoded_token)
-        user = models.User.query.get(token.user_id)
-        new_email = token.data["new_email"]
-    else:  # old token type. should be removed when old token type is removed
-        payload = ChangeEmailTokenContent.from_token(encoded_token)
-        current_email = payload.current_email
-        new_email = payload.new_email
-        user = users_repository.find_user_by_email(current_email)
+    token = Token.load_and_check(encoded_token, token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION)
+    user = models.User.query.get(token.user_id)
     if not user:
-        raise exceptions.InvalidEmailError()
-    if new_token_type:
-        token.check(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION)
-    else:  # should be removed when old token type is removed
-        _check_token(user, encoded_token, TokenType.CONFIRMATION)
+        raise exceptions.InvalidToken()
+    new_email = token.data["new_email"]
     api.suspend_account(
         user, constants.SuspensionReason.FRAUD_SUSPICION, user, "Suspension suite à un changement d'email annulé"
     )
     transactional_mails.send_email_update_cancellation_email(user)
     models.UserEmailHistory.build_cancellation(user, new_email)
-    if new_token_type:
-        token.expire()
-    else:  # should be removed when old token type is removed
-        _expire_token(user, TokenType.CONFIRMATION)
+    token.expire()
 
 
 def validate_email_update_request(
@@ -220,39 +167,18 @@ def validate_email_update_request(
     Therefore this function can be called multiple times with the same
     inputs safely.
     """
-    try:
-        jwt_payload = utils.decode_jwt_token(encoded_token)
-    except Exception:
-        raise exceptions.InvalidToken()
-    new_token_type = (
-        "token_type" in jwt_payload
-    )  # FIXME suprimer la gestion de l'ancien type de token quand les anciens tokens auront disparus https://passculture.atlassian.net/browse/PC-23343
-    if new_token_type:
-        token = token_utils.Token.load_without_checking(encoded_token)
-        user = models.User.query.get(token.user_id)
-        new_email = token.data["new_email"]
-        if user.email == new_email:
-            return
-    else:
-        payload = ChangeEmailTokenContent.from_token(encoded_token)
-        current_email = payload.current_email
-        new_email = payload.new_email
-        user = users_repository.find_user_by_email(current_email)
+    token = token_utils.Token.load_without_checking(encoded_token)
+    user = models.User.query.get(token.user_id)
     if not user:
-        if not validated_update_request_exists(current_email, new_email):
-            raise exceptions.UserDoesNotExist()
+        raise exceptions.UserDoesNotExist()
+    new_email = token.data["new_email"]
+    if user.email == new_email:
         return
-    if new_token_type:
-        token.check(token_utils.TokenType.EMAIL_CHANGE_VALIDATION)
-    else:
-        _check_token(user, encoded_token, TokenType.VALIDATION)
+    token.check(token_utils.TokenType.EMAIL_CHANGE_VALIDATION)
     check_email_address_does_not_exist(new_email)
     api.change_email(user, new_email)
     transactional_mails.send_email_change_information_email(user)
-    if new_token_type:
-        token.expire()
-    else:
-        _expire_token(user, TokenType.VALIDATION)
+    token.expire()
 
 
 def request_email_update_from_pro(user: models.User, email: str, password: str) -> None:
@@ -333,33 +259,8 @@ def full_email_update_by_admin(user: models.User, email: str) -> None:
     repository.save(user, admin_update_event)
 
 
-def get_token_key(user: models.User, token_type: TokenType) -> str:
-    match token_type:
-        case TokenType.CONFIRMATION:
-            return f"update_email_confirmation_token_{user.id}"
-        case TokenType.VALIDATION:
-            return f"update_email_validation_token_{user.id}"
-        case _:
-            raise ValueError(f"Invalid token type: {token_type}")
-
-
-def generate_email_change_token(
-    user: models.User, new_email: str, expiration_date: datetime, token_type: TokenType
-) -> str:
-    token = utils.encode_jwt_payload({"current_email": user.email, "new_email": new_email}, expiration_date)
-    key = get_token_key(user, token_type)
-    app.redis_client.set(key, token, ex=constants.EMAIL_CHANGE_TOKEN_LIFE_TIME)  # type: ignore [attr-defined]
-    return token
-
-
 def get_active_token_expiration(user: models.User) -> datetime | None:
     """returns the expiration date of the active token (confirmation or validation) or none if no ttl or no token exists"""
-    ttl = app.redis_client.ttl(get_token_key(user, TokenType.CONFIRMATION))  # type: ignore [attr-defined]
-    if ttl > 0:
-        return datetime.utcnow() + timedelta(seconds=ttl)
-    ttl = app.redis_client.ttl(get_token_key(user, TokenType.VALIDATION))  # type: ignore [attr-defined]
-    if ttl > 0:
-        return datetime.utcnow() + timedelta(seconds=ttl)
     confirmation_token_expiration = Token.get_expiration_date(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id)
     validation_token_expiration = Token.get_expiration_date(token_utils.TokenType.EMAIL_CHANGE_VALIDATION, user.id)
     return confirmation_token_expiration or validation_token_expiration
@@ -390,29 +291,7 @@ def check_email_address_does_not_exist(email: str) -> None:
 
 def check_no_ongoing_email_update_request(user: models.User) -> None:
     """Raise error if user has an ongoing email update request"""
-    if (
-        Token.token_exists(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id)
-        or Token.token_exists(token_utils.TokenType.EMAIL_CHANGE_VALIDATION, user.id)
-        or app.redis_client.exists(f"update_email_confirmation_token_{user.id}")  # type: ignore [attr-defined]  #FIXME : remove this after the old tokens disappear https://passculture.atlassian.net/browse/PC-23343
-        or app.redis_client.exists(f"update_email_validation_token_{user.id}")  # type: ignore [attr-defined]  #FIXME : remove this after the old tokens disappear https://passculture.atlassian.net/browse/PC-23343
+    if Token.token_exists(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id) or Token.token_exists(
+        token_utils.TokenType.EMAIL_CHANGE_VALIDATION, user.id
     ):
         raise exceptions.EmailUpdateTokenExists()
-
-
-def validated_update_request_exists(old_email: str, new_email: str) -> bool:
-    """
-    Check if an email update exists and has been validated (by the user
-    or by an admin).
-    """
-    return db.session.query(
-        models.UserEmailHistory.query.filter(
-            models.UserEmailHistory.oldEmail == old_email, models.UserEmailHistory.newEmail == new_email
-        )
-        .filter(
-            sqla.or_(
-                models.UserEmailHistory.eventType == models.EmailHistoryEventTypeEnum.VALIDATION,
-                models.UserEmailHistory.eventType == models.EmailHistoryEventTypeEnum.ADMIN_VALIDATION,
-            )
-        )
-        .exists()
-    ).scalar()
