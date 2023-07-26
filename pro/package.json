@@ -136,6 +136,7 @@
     "typescript": "^5.1.6",
     "url-loader": "^4.1.1",
     "vite": "^4.4.7",
+    "vite-plugin-html": "^3.2.0",
     "vite-tsconfig-paths": "^4.2.0"
   },
   "resolutions": {
