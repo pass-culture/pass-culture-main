@@ -87,7 +87,7 @@ export const generateValidationSchema = (
         test: (value, context) => isBeforeEventDate(value, context),
       })
       .nullable(),
-    priceDetail: yup.string().nullable().max(MAX_DETAILS_LENGTH),
+    priceDetail: yup.string().required('Champ requis').max(MAX_DETAILS_LENGTH),
   })
 }
 
