@@ -1,14 +1,14 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
+import { withRouter } from 'storybook-addon-react-router-v6'
 
 import strokeLibraryIcon from 'icons/stroke-library.svg'
 import strokeUserIcon from 'icons/stroke-user.svg'
-import { withRouterDecorator } from 'stories/decorators/withRouter'
 
 import Tabs, { FilterTabsProps } from './Tabs'
 export default {
   title: 'ui-kit/Tabs',
-  decorators: [withRouterDecorator],
+  decorators: [withRouter],
   component: Tabs,
 }
 

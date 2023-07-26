@@ -1,13 +1,12 @@
 /* istanbul ignore file */
 import type { Story } from '@storybook/react'
 import React from 'react'
+import { withRouter } from 'storybook-addon-react-router-v6'
 
 import fullBackIcon from 'icons/full-back.svg'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullNextIcon from 'icons/full-next.svg'
-
-import { withRouterDecorator } from '../../stories/decorators/withRouter'
 
 import { ButtonProps } from './Button'
 import { ButtonLinkProps } from './ButtonLink'
@@ -17,7 +16,7 @@ import { Button, ButtonLink } from './index'
 
 export default {
   title: 'ui-kit/Button',
-  decorators: [withRouterDecorator],
+  decorators: [withRouter],
   argTypes: {
     variant: {
       options: ['primary', 'secondary', 'ternary', 'quaternary', 'box'],
