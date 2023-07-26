@@ -5,7 +5,11 @@ const config: StorybookConfig = {
     '../src/ui-kit/Icons/Icons.stories.tsx',
     '../src/**/*.stories.@(js|jsx|ts|tsx)',
   ],
-  addons: ['@storybook/addon-a11y', '@storybook/preset-scss'],
+  addons: [
+    '@storybook/addon-a11y',
+    '@storybook/preset-scss',
+    'storybook-addon-react-router-v6',
+  ],
   staticDirs: ['../public'],
   framework: {
     name: '@storybook/react-webpack5',

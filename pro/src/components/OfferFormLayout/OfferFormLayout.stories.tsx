@@ -1,14 +1,14 @@
 import React from 'react'
+import { withRouter } from 'storybook-addon-react-router-v6'
 
 import { OfferIndividualBreadcrumb } from 'components/OfferIndividualBreadcrumb'
-import { withRouterDecorator } from 'stories/decorators/withRouter'
 
 import { OfferFormLayout } from '.'
 
 export default {
   title: 'components/OfferFormLayout',
   component: OfferFormLayout,
-  decorators: [withRouterDecorator],
+  decorators: [withRouter],
 }
 
 const Actions = () => (

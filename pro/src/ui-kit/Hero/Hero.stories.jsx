@@ -1,13 +1,12 @@
 import React from 'react'
-
-import { withRouterDecorator } from 'stories/decorators/withRouter'
+import { withRouter } from 'storybook-addon-react-router-v6'
 
 import Hero from './Hero'
 
 export default {
   title: 'components/Hero',
   component: Hero,
-  decorators: [withRouterDecorator],
+  decorators: [withRouter],
 }
 const Template = args => <Hero {...args} />
 

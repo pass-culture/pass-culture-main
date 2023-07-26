@@ -1,15 +1,15 @@
 import type { ComponentStory } from '@storybook/react'
 import React from 'react'
+import { withRouter } from 'storybook-addon-react-router-v6'
 
 import type { Step } from 'components/Breadcrumb'
-import { withRouterDecorator } from 'stories/decorators/withRouter'
 
 import Stepper from '.'
 
 export default {
   title: 'components/Stepper',
   component: Stepper,
-  decorators: [withRouterDecorator],
+  decorators: [withRouter],
 }
 
 const stepList: Step[] = [
