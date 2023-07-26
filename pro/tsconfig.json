@@ -26,7 +26,11 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es6",
-    "types": ["node", "cypress", "vite/client"]
+    "types": [
+      "node",
+      "cypress",
+      "vite/client",
+    ]
   },
   "include": [
     "./src/**/*.ts",
