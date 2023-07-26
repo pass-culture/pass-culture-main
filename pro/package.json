@@ -132,6 +132,7 @@
     "serve": "^14.2.0",
     "source-map-explorer": "^2.5.0",
     "storybook": "^7.1.1",
+    "storybook-addon-react-router-v6": "^1.0.2",
     "stylelint": "^15.10.2",
     "stylelint-a11y": "^1.2.3",
     "stylelint-config-standard-scss": "^10.0.0",

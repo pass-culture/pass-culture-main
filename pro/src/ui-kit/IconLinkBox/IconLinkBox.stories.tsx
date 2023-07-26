@@ -1,15 +1,14 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
+import { withRouter } from 'storybook-addon-react-router-v6'
 
 import fullShowIcon from 'icons/full-show.svg'
 import shadowTrophyIcon from 'icons/shadow-trophy.svg'
 
-import { withRouterDecorator } from '../../stories/decorators/withRouter'
-
 import IconLinkBox, { IconLinkBoxProps } from './IconLinkBox'
 export default {
   title: 'ui-kit/StatBox',
-  decorators: [withRouterDecorator],
+  decorators: [withRouter],
   component: IconLinkBox,
 }
 

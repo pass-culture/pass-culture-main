@@ -13783,6 +13783,11 @@ react-focus-lock@2.5.2:
     use-callback-ref "^1.2.5"
     use-sidecar "^1.0.5"
 
+react-inspector@^6.0.1:
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/react-inspector/-/react-inspector-6.0.2.tgz#aa3028803550cb6dbd7344816d5c80bf39d07e9d"
+  integrity sha512-x+b7LxhmHXjHoU/VrFAzw5iutsILRoYyDq97EDYdFpPLcvqtEzk4ZSZSQjnFPbr5T57tLXnHcqFYoN1pI6u8uQ==
+
 react-instantsearch-core@6.40.4:
   version "6.40.4"
   resolved "https://registry.yarnpkg.com/react-instantsearch-core/-/react-instantsearch-core-6.40.4.tgz#74feaa94436a20df91febe64b7d8ef0f7b3e657a"
@@ -15009,6 +15014,13 @@ store2@^2.14.2:
   version "2.14.2"
   resolved "https://registry.yarnpkg.com/store2/-/store2-2.14.2.tgz#56138d200f9fe5f582ad63bc2704dbc0e4a45068"
   integrity sha512-siT1RiqlfQnGqgT/YzXVUNsom9S0H1OX+dpdGN1xkyYATo4I6sep5NmsRD/40s3IIOvlCq6akxkqG82urIZW1w==
+
+storybook-addon-react-router-v6@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/storybook-addon-react-router-v6/-/storybook-addon-react-router-v6-1.0.2.tgz#0f1239de31291821c93e8266079b8f6235a9c717"
+  integrity sha512-38W+9D2sIrYAi+oRSbsLhR/umNoLVw2DWF84Jp4f/ZoB8Cg0Qtbvwk043oHqzNOpZrfgj0FaV006oaJBVpE8Kw==
+  dependencies:
+    react-inspector "^6.0.1"
 
 storybook@^7.1.1:
   version "7.1.1"

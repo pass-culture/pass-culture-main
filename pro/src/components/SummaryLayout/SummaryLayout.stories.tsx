@@ -1,13 +1,12 @@
 import React from 'react'
-
-import { withRouterDecorator } from 'stories/decorators/withRouter'
+import { withRouter } from 'storybook-addon-react-router-v6'
 
 import { SummaryLayout } from '.'
 
 export default {
   title: 'components/SummaryLayout',
   component: SummaryLayout,
-  decorators: [withRouterDecorator],
+  decorators: [withRouter],
 }
 
 const Template = () => (
