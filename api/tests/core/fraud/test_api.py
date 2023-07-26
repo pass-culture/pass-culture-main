@@ -12,7 +12,6 @@ import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.ubble.models as ubble_fraud_models
 import pcapi.core.history.factories as history_factories
 import pcapi.core.mails.testing as mails_testing
-import pcapi.core.subscription.api as subscription_api
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_settings
 import pcapi.core.users.constants as users_constants
@@ -307,20 +306,6 @@ class FindDuplicateUserTest:
         # A year ago
         # user 1 is now 18 yo
         with freeze_time(datetime.datetime.utcnow() - relativedelta(years=1, days=1)):
-            # Make user 1 beneficiary
-            user1.phoneValidationStatus = users_models.PhoneValidationStatusType.SKIPPED_BY_SUPPORT
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                user=user1, status=fraud_models.FraudCheckStatus.OK, type=fraud_models.FraudCheckType.PROFILE_COMPLETION
-            )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                user=user1, status=fraud_models.FraudCheckStatus.OK, type=fraud_models.FraudCheckType.UBBLE
-            )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                user=user1, status=fraud_models.FraudCheckStatus.OK, type=fraud_models.FraudCheckType.HONOR_STATEMENT
-            )
-            subscription_api.activate_beneficiary_if_no_missing_step(user1)
-
-            # Create 2 underage users
             user2 = users_factories.BeneficiaryFactory(
                 age=17, beneficiaryFraudChecks__type=fraud_models.FraudCheckType.EDUCONNECT
             )
@@ -353,10 +338,9 @@ class FindDuplicateUserTest:
         assert not user2.isActive
         assert not user3.isActive
 
-        # First mail is for user1 activation
-        assert len(mails_testing.outbox) == 3
-        sent_mail2 = mails_testing.outbox[1]
-        sent_mail3 = mails_testing.outbox[2]
+        assert len(mails_testing.outbox) == 2
+        sent_mail2 = mails_testing.outbox[0]
+        sent_mail3 = mails_testing.outbox[1]
         assert sent_mail2.sent_data["To"] == sent_mail3.sent_data["To"] == settings.FRAUD_EMAIL_ADDRESS
 
         link = '<a href="{url}/public-accounts/{id}">{id}</a>'
