@@ -64,7 +64,7 @@ Pour récupérer les ids de certaines offres en local, on peut utiliser un index
 
 - Créer un nouvel index sur la sandbox algolia : `<votre_nom>-collective-offers`
 
-- Créer un fichier `.env.development.local` dans le dossier `pro` puis `src` et renseigner le nom de l'index dans la variable `VITE_ALGOLIA_COLLECTIVE_OFFERS_INDEX`
+- Créer un fichier `.env.development.local` dans le dossier `pro/src` et renseigner le nom de l'index dans la variable `VITE_ALGOLIA_COLLECTIVE_OFFERS_INDEX`
 
 - Créer un fichier `.env.local.secret`
 
