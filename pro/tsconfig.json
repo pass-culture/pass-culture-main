@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "typeRoots": ["./node_modules/@types", "./src/custom_types"],
+    "typeRoots": ["./node_modules/@types", "./src/custom_types", "./node_modules"],
     "plugins": [{ "name": "typescript-plugin-css-modules" }],
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
@@ -28,9 +28,8 @@
     "target": "es6",
     "types": [
       "node",
-      "cypress"
-      // TODO Albéric: can be re-added when this issue is solved: https://github.com/testing-library/cypress-testing-library/issues/252
-      // "@testing-library/cypress"
+      "cypress",
+      "vite/client",
     ]
   },
   "include": [
