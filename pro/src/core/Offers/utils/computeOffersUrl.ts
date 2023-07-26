@@ -24,6 +24,7 @@ const computeOffersUrlForGivenAudience = (
   const { creationMode, status } = offersSearchFilters
   const searchFiltersParams = { ...offersSearchFilters }
   if (status && status !== ALL_STATUS) {
+    // @ts-expect-error
     searchFiltersParams.status = mapApiToBrowser[status]
   }
   if (creationMode && creationMode !== ALL_CREATION_MODES) {
