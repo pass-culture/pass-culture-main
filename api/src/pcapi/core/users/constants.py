@@ -1,11 +1,13 @@
 import datetime
 import enum
 
+from pcapi import settings
+
 
 RESET_PASSWORD_TOKEN_LIFE_TIME = datetime.timedelta(hours=24)
 RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED = datetime.timedelta(days=30)
 EMAIL_VALIDATION_TOKEN_LIFE_TIME = datetime.timedelta(minutes=30)
-EMAIL_CHANGE_TOKEN_LIFE_TIME = datetime.timedelta(hours=24)
+EMAIL_CHANGE_TOKEN_LIFE_TIME = datetime.timedelta(seconds=settings.EMAIL_CHANGE_TOKEN_LIFE_TIME)
 PHONE_VALIDATION_TOKEN_LIFE_TIME = datetime.timedelta(hours=12)
 
 MAX_EMAIL_UPDATE_ATTEMPTS_FOR_PRO = 5
