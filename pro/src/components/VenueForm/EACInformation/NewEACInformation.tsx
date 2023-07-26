@@ -2,7 +2,7 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 
 import FormLayout from 'components/FormLayout'
-import { Venue } from 'core/Venue'
+import { Venue } from 'core/Venue/types'
 import fullEditIcon from 'icons/full-edit.svg'
 import { venueHasCollectiveInformation } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/EACInformation/utils/venueHasCollectiveInformation'
 import { ButtonVariant } from 'ui-kit/Button/types'

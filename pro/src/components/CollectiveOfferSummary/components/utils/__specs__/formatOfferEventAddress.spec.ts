@@ -1,5 +1,5 @@
 import { OfferAddressType } from 'apiClient/v1'
-import { Venue } from 'core/Venue'
+import { Venue } from 'core/Venue/types'
 import { EVENT_ADDRESS_SCHOOL_LABEL } from 'screens/OfferEducational/constants/labels'
 
 import { formatOfferEventAddress } from '../formatOfferEventAddress'

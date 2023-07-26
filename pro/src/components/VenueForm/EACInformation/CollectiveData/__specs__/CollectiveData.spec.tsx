@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { Venue } from 'core/Venue'
+import { Venue } from 'core/Venue/types'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveData from '../CollectiveData'
