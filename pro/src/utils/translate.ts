@@ -16,6 +16,22 @@ function getObjectWithMappedKeys(obj: any, keysMap: Record<string, string>) {
   return mappedObj
 }
 
+export const mapBrowserStatusToApi: Record<
+  string,
+  OfferStatus | CollectiveOfferStatus
+> = {
+  active: OfferStatus.ACTIVE || CollectiveOfferStatus.ACTIVE,
+  inactive: OfferStatus.INACTIVE || CollectiveOfferStatus.INACTIVE,
+  epuisee: OfferStatus.SOLD_OUT,
+  prereservee: CollectiveOfferStatus.PREBOOKED,
+  reservee: CollectiveOfferStatus.BOOKED,
+  expiree: OfferStatus.EXPIRED || CollectiveOfferStatus.EXPIRED,
+  terminee: CollectiveOfferStatus.ENDED,
+  'en-attente': OfferStatus.PENDING || CollectiveOfferStatus.PENDING,
+  refusee: OfferStatus.REJECTED || CollectiveOfferStatus.REJECTED,
+  draft: OfferStatus.DRAFT,
+}
+
 export const mapBrowserToApi = {
   categorie: 'categoryId',
   de: 'from',
@@ -27,16 +43,6 @@ export const mapBrowserToApi = {
   reservations: 'bookings',
   structure: 'offererId',
   stock: 'stockIdOrNew',
-  active: OfferStatus.ACTIVE || CollectiveOfferStatus.ACTIVE,
-  inactive: OfferStatus.INACTIVE || CollectiveOfferStatus.INACTIVE,
-  epuisee: OfferStatus.SOLD_OUT,
-  prereservee: CollectiveOfferStatus.PREBOOKED,
-  reservee: CollectiveOfferStatus.BOOKED,
-  expiree: OfferStatus.EXPIRED || CollectiveOfferStatus.EXPIRED,
-  terminee: CollectiveOfferStatus.ENDED,
-  'en-attente': OfferStatus.PENDING || CollectiveOfferStatus.PENDING,
-  refusee: OfferStatus.REJECTED || CollectiveOfferStatus.REJECTED,
-  draft: OfferStatus.DRAFT,
   statut: 'status',
   creation: 'creationMode',
   manuelle: 'manual',
@@ -46,6 +52,7 @@ export const mapBrowserToApi = {
   page: 'page',
   individuel: 'individual',
   collectif: 'collective',
+  ...mapBrowserStatusToApi,
 }
 
 export const mapApiToBrowser = invert(mapBrowserToApi)
