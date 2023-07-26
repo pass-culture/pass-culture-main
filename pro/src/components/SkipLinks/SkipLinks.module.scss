@@ -10,7 +10,11 @@
   background-color: colors.$secondary;
   top: rem.torem(-100px);
   display: grid;
-  grid-template-columns: size.$header-grid-template-columns;
+
+  @media (min-width: size.$desktop) {
+    grid-template-columns: size.$header-grid-template-columns;
+  }
+
 
   &:focus-within {
     min-height: rem.torem(32px);
@@ -25,7 +29,7 @@
     align-items: center;
     height: rem.torem(32px);
     justify-content: flex-end;
-    
+
     // Align skiplink to passculture logo, add logo margin and padding of a nav item creating more space
     margin-right: calc(
       size.$nav-brand-margin-right + size.$header-nav-item-padding + rem.torem(4px)

@@ -48,6 +48,7 @@ const ResetPassword = (): JSX.Element => {
           viewBox="0 0 282 120"
           alt="Pass Culture pro, l'espace des acteurs culturels"
           src={logoPassCultureProFullIcon}
+          width="135"
         />
       </header>
       <AppLayout
@@ -56,28 +57,26 @@ const ResetPassword = (): JSX.Element => {
           pageName: 'reset-password',
         }}
       >
-        <div className={styles['scrollable-content-side']}>
-          <div className={styles['content']}>
-            {passwordChanged && !isBadToken && (
-              <Hero
-                linkLabel="Se connecter"
-                linkTo="/connexion"
-                text="Vous pouvez dès à présent vous connecter avec votre nouveau mot de passe"
-                title="Mot de passe changé !"
-              />
-            )}
-            {(!token || isBadToken) && (
-              <Hero
-                linkLabel="Recevoir un nouveau lien"
-                linkTo="/demande-mot-de-passe"
-                text="Le lien pour réinitialiser votre mot de passe a expiré. Veuillez recommencer la procédure pour recevoir un nouveau lien par email."
-                title="Ce lien a expiré !"
-              />
-            )}
-            {token && !passwordChanged && !isBadToken && (
-              <ChangePasswordForm onSubmit={submitChangePassword} />
-            )}
-          </div>
+        <div className={styles['content']}>
+          {passwordChanged && !isBadToken && (
+            <Hero
+              linkLabel="Se connecter"
+              linkTo="/connexion"
+              text="Vous pouvez dès à présent vous connecter avec votre nouveau mot de passe"
+              title="Mot de passe changé !"
+            />
+          )}
+          {(!token || isBadToken) && (
+            <Hero
+              linkLabel="Recevoir un nouveau lien"
+              linkTo="/demande-mot-de-passe"
+              text="Le lien pour réinitialiser votre mot de passe a expiré. Veuillez recommencer la procédure pour recevoir un nouveau lien par email."
+              title="Ce lien a expiré !"
+            />
+          )}
+          {token && !passwordChanged && !isBadToken && (
+            <ChangePasswordForm onSubmit={submitChangePassword} />
+          )}
         </div>
       </AppLayout>
     </div>

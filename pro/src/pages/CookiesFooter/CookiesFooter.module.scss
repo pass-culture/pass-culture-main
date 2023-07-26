@@ -3,12 +3,14 @@
 @use "styles/variables/_size.scss" as size;
 
 .cookies-footer {
+  // add height here can create a blank space in sign in page
+
   display: flex;
-  height: size.$sign-footer-height;
   width: 100%;
   justify-content: center;
   align-items: center;
   gap: rem.torem(16px);
+  flex-direction: column;
 
   &-link {
     @include fonts.caption;
@@ -16,5 +18,9 @@
     &, &:focus {
       padding: 0;
     }
+  }
+
+  @media (min-width: size.$tablet) {
+    flex-direction: row;
   }
 }

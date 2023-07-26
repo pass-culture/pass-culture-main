@@ -92,19 +92,16 @@ const SigninForm = (): JSX.Element => {
         {({ dirty, isValid, isSubmitting }) => (
           <Form>
             <FormLayout>
-              <div className={styles['signin-form']}>
-                <FormLayout.Row>
-                  <TextInput
-                    label="Adresse email"
-                    name="email"
-                    placeholder="email@exemple.com"
-                  />
-                </FormLayout.Row>
-                <FormLayout.Row>
-                  <PasswordInput name="password" label="Mot de passe" />
-                </FormLayout.Row>
-              </div>
-
+              <FormLayout.Row>
+                <TextInput
+                  label="Adresse email"
+                  name="email"
+                  placeholder="email@exemple.com"
+                />
+              </FormLayout.Row>
+              <FormLayout.Row>
+                <PasswordInput name="password" label="Mot de passe" />
+              </FormLayout.Row>
               <ButtonLink
                 icon={fullKeyIcon}
                 variant={ButtonVariant.TERNARY}
@@ -122,6 +119,7 @@ const SigninForm = (): JSX.Element => {
               </ButtonLink>
               <div className={styles['buttons-field']}>
                 <ButtonLink
+                  className={styles['buttons']}
                   variant={ButtonVariant.SECONDARY}
                   link={{
                     to: accountCreationUrl,
@@ -136,7 +134,7 @@ const SigninForm = (): JSX.Element => {
                   Créer un compte
                 </ButtonLink>
                 <SubmitButton
-                  className="primary-button"
+                  className={styles['buttons']}
                   isLoading={isSubmitting}
                   disabled={!dirty || !isValid}
                 >

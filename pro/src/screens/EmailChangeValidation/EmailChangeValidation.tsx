@@ -27,6 +27,7 @@ const EmailChangeValidation = ({
             viewBox="0 0 282 120"
             alt="Pass Culture pro, l'espace des acteurs culturels"
             src={logoPassCultureProFullIcon}
+            width="135"
           />
         </header>
         <AppLayout
@@ -36,39 +37,35 @@ const EmailChangeValidation = ({
           }}
         >
           {isSuccess && (
-            <section className={styles['scrollable-content-side']}>
-              <div>
-                <h1>Et voilà !</h1>
-                <p className={styles['search-no-results-title4']}>
-                  Merci d’avoir confirmé votre changement d’adresse email.
-                </p>
-                <ButtonLink
-                  variant={ButtonVariant.PRIMARY}
-                  link={{ to: '/', isExternal: false }}
-                >
-                  Se connecter
-                </ButtonLink>
-              </div>
+            <section className={styles['content']}>
+              <h1>Et voilà !</h1>
+              <p className={styles['subtitle']}>
+                Merci d’avoir confirmé votre changement d’adresse email.
+              </p>
+              <ButtonLink
+                variant={ButtonVariant.PRIMARY}
+                link={{ to: '/', isExternal: false }}
+              >
+                Se connecter
+              </ButtonLink>
             </section>
           )}
           {!isSuccess && (
-            <section className={styles['scrollable-content-side']}>
-              <div>
-                <h1>Votre lien a expiré !</h1>
-                <p className={styles['search-no-results-title4']}>
-                  Votre adresse email n’a pas été modifiée car le lien reçu par
-                  mail expire 24 heures après sa réception.
-                </p>
-                <p className={styles['search-no-results-title4']}>
-                  Connectez-vous avec votre ancienne adresse email.
-                </p>
-                <ButtonLink
-                  variant={ButtonVariant.PRIMARY}
-                  link={{ to: '/', isExternal: false }}
-                >
-                  Se connecter
-                </ButtonLink>
-              </div>
+            <section className={styles['content']}>
+              <h1>Votre lien a expiré !</h1>
+              <p className={styles['subtitle']}>
+                Votre adresse email n’a pas été modifiée car le lien reçu par
+                mail expire 24 heures après sa réception.
+              </p>
+              <p className={styles['subtitle']}>
+                Connectez-vous avec votre ancienne adresse email.
+              </p>
+              <ButtonLink
+                variant={ButtonVariant.PRIMARY}
+                link={{ to: '/', isExternal: false }}
+              >
+                Se connecter
+              </ButtonLink>
             </section>
           )}
         </AppLayout>

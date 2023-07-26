@@ -1,5 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_colors.scss" as colors;
+@use "styles/variables/_size.scss" as size;
 
 a.logo {
   align-items: center;
@@ -16,6 +17,11 @@ a.logo {
 
 .logo-unlogged {
   color: colors.$white;
-  width: rem.torem(282px);
-  max-height: rem.torem(120px);
+  max-width: rem.torem(135px);
+
+  @media (min-width: size.$tablet) {
+    width: 80%;
+    min-width: rem.torem(135px);
+    max-width: rem.torem(282px);
+  }
 }

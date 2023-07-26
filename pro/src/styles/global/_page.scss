@@ -53,20 +53,7 @@ main {
   }
 
   &.fullscreen {
-    grid-column: col-start / end-line;
-    grid-row: row-nav / end-line;
-    height: 100vh;
-
-    .container {
-      display: flex;
-      max-width: rem.torem(1000px);
-      min-height: 100%;
-      width: rem.torem(1000px);
-
-      .columns {
-        min-height: 100%;
-      }
-    }
+    margin: 0 auto;
   }
 
   &.container {

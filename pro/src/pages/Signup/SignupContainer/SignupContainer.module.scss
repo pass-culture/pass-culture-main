@@ -1,69 +1,44 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_colors.scss" as colors;
-@use "styles/variables/_size.scss" as sizes;
+@use "styles/variables/_size.scss" as size;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_forms.scss" as forms;
+@use "styles/mixins/_layout.scss" as layout;
 
-.signup-page-form {
-  position: relative;
-}
+.content {
+  @include layout.full-content-side;
 
-.sign-up-form-page {
-  height: 100%;
-  width: 100%;
-  position: relative;
-  left: forms.$sign-form-space-left;
+  .siren-field {
+    margin-bottom: rem.torem(16px);
+  }
 
-  .content {
-    padding: rem.torem(60px) 0 0;
-    width: rem.torem(486px);
+  .sign-up-infos-before-signup {
+    margin-top: rem.torem(40px);
+  }
 
-    .sign-page-form {
-      width: 59%;
+  .buttons-field {
+    display: flex;
+    flex-direction: column;
+    gap: rem.torem(24px);
+    margin-top: rem.torem(16px);
+    margin-bottom: rem.torem(32px);
+
+    @media (min-width: size.$tablet) {
+      flex-direction: row;
     }
 
-    .siren-field {
-      margin-bottom: rem.torem(16px);
-    }
-
-    .sign-up-infos-before-signup {
-      margin-top: rem.torem(40px);
-    }
-
-    .sign-up-form {
-      margin: rem.torem(16px) 0 rem.torem(36px) 0;
-    }
-
-    .buttons-field {
-      display: flex;
-      flex-wrap: wrap;
-      gap: rem.torem(24px);
-      margin-top: rem.torem(16px);
-      margin-bottom: rem.torem(32px);
-
-      a,
-      button {
-        margin-bottom: rem.torem(5px);
-        width: rem.torem(231px);
-      }
-
-      .button {
-        padding: 0 rem.torem(45px);
-
-        &:focus {
-          border: none;
-          padding: 0 rem.torem(45px);
-        }
-      }
+    .buttons {
+      width: 100%;
     }
   }
 }
 
-.sign-up-tips {
+
+.mandatory {
   margin: rem.torem(24px) 0;
 }
 
 .cookie-footer {
-  bottom: -97px;
-  left: -145px;
+  margin-top: rem.torem(32px);
+  padding: 0 rem.torem(24px);
 }

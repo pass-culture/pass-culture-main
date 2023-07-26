@@ -23,7 +23,7 @@ const SignIn = (): JSX.Element => {
             viewBox="0 0 282 120"
             alt="Pass Culture pro, l'espace des acteurs culturels"
             src={logoPassCultureProFullIcon}
-            width="282"
+            width="135"
           />
         </header>
         <AppLayout
@@ -32,14 +32,12 @@ const SignIn = (): JSX.Element => {
             pageName: 'sign-in',
           }}
         >
-          <section className={styles['scrollable-content-side']}>
-            <div className={styles['content']}>
-              <h1>Bienvenue sur l’espace dédié aux acteurs culturels</h1>
-              <span className={styles['has-text-grey']}>
-                Tous les champs sont obligatoires
-              </span>
-              <SigninForm />
+          <section className={styles['content']}>
+            <h1>Bienvenue sur l’espace dédié aux acteurs culturels</h1>
+            <div className={styles['mandatory']}>
+              Tous les champs sont obligatoires
             </div>
+            <SigninForm />
             <CookiesFooter className={styles['cookies-footer']} />
           </section>
         </AppLayout>
