@@ -126,6 +126,7 @@ def delete_expired_tokens() -> None:
 
 def delete_all_users_tokens(user: models.User) -> None:
     models.Token.query.filter(models.Token.user == user).delete()
+    print("delete_all_users_tokens")
 
 
 def delete_all_users_phone_validation_tokens(user: models.User) -> None:
@@ -177,10 +178,13 @@ def create_account(
     delete_all_users_tokens(user)
 
     if remote_updates:
+        print("update_external_user")
         external_attributes_api.update_external_user(user)
+        print("remote_updates")
 
     if not user.isEmailValidated and send_activation_mail:
         request_email_confirmation(user)
+        print("request_email_confirmation")
 
     return user
 
@@ -272,6 +276,7 @@ def request_email_confirmation(user: models.User) -> None:
         user.id,
     )
     transactional_mails.send_email_confirmation_email(user, token=token)
+    print(f"send_email_confirmation_email {user.email}")
 
 
 def request_password_reset(user: models.User | None) -> None:

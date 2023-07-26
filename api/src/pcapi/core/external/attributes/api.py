@@ -40,15 +40,20 @@ def update_external_user(
 ) -> None:
     if user.has_pro_role:
         update_external_pro(user.email)
+        print("update_external_pro")
     else:
         user_attributes = get_user_attributes(user)
 
         update_batch = user.has_enabled_push_notifications()
         if not skip_batch and update_batch:
             update_batch_user(user.id, user_attributes, cultural_survey_answers=cultural_survey_answers)
+            print("update_batch_user")
 
+        print(f"skip_sendinblue {skip_sendinblue}")
         if not skip_sendinblue:
+            print(f"skip_sendinblue enter")
             update_sendinblue_user(user.email, user_attributes, cultural_survey_answers=cultural_survey_answers)
+            print("update_sendinblue_user")
 
 
 def update_external_pro(email: str | None) -> None:

@@ -27,7 +27,9 @@ def send(
 
 
 def create_contact(payload: sendinblue_tasks.UpdateSendinblueContactRequest) -> None:
+    print(f"create_contact start {settings.EMAIL_BACKEND}")
     backend = import_string(settings.EMAIL_BACKEND)
+    print(backend)
     backend().create_contact(payload)
 
 
@@ -43,6 +45,8 @@ def _get_backend(data: models.TransactionalEmailData | models.TransactionalWitho
         and isinstance(data, models.TransactionalEmailData)
         and not data.template.send_to_ehp
     ):
+        print("using backend LoggerBackend")
         return import_string("pcapi.core.mails.backends.logger.LoggerBackend")
 
+    print(f"using backend {settings.EMAIL_BACKEND}")
     return import_string(settings.EMAIL_BACKEND)

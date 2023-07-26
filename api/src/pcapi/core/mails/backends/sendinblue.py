@@ -74,7 +74,9 @@ class SendinblueBackend(BaseBackend):
         """
         Creates or updates a contact in Brevo (previously Sendinblue).
         """
+        print("create_contact_ici")
 
+        # TODO : Ajouter des logs ici
         contact = sib_api_v3_sdk.CreateContact(
             email=payload.email,
             attributes=payload.attributes,
@@ -84,12 +86,15 @@ class SendinblueBackend(BaseBackend):
         )
 
         try:
+            print("create_contact_try", contact, payload)
             self.contacts_api.create_contact(contact)
+            print("create_contact_success")
 
         except SendinblueApiException as exception:
             self._handle_sendinblue_exception(exception, payload)
 
         except Exception as exception:
+            print("exception", exception)
             raise ExternalAPIException(is_retryable=True) from exception
 
     def delete_contact(self, contact_email: str) -> None:
@@ -166,3 +171,7 @@ class ToDevSendinblueBackend(SendinblueBackend):
             ):
                 whitelisted_recipients.add(recipient)
         return list(whitelisted_recipients)
+
+    def create_contact(self, payload) -> None:
+        print("enfiiiin")
+        return super().create_contact(payload)

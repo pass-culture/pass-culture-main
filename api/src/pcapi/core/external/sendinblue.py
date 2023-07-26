@@ -128,9 +128,13 @@ def update_contact_attributes(
     asynchronous: bool = True,
 ) -> None:
     formatted_attributes = format_user_attributes(attributes)
+    print(f"format_user_attributes done")
 
+    print(f"cultural_survey_answers {cultural_survey_answers}")
     if cultural_survey_answers:
+        print(f"formatted_attributes start")
         formatted_attributes.update(format_cultural_survey_answers(cultural_survey_answers))
+        print(f"formatted_attributes end")
 
     contact_list_ids = (
         [settings.SENDINBLUE_PRO_CONTACT_LIST_ID] if attributes.is_pro else [settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID]
@@ -144,9 +148,13 @@ def update_contact_attributes(
     )
 
     if asynchronous:
-        update_contact_attributes_task.delay(contact_request)
+        print(f"update_contact_attributes_task start")
+        update_contact_attributes_task(contact_request)
+        print(f"update_contact_attributes_task end")
     else:
+        print(f"make_update_request start")
         make_update_request(contact_request)
+        print(f"make_update_request end")
 
 
 def format_list(raw_list: Iterable[str] | None) -> str:
@@ -255,6 +263,7 @@ def format_cultural_survey_answers(cultural_survey_answers: dict[str, list[str]]
 
 
 def make_update_request(payload: UpdateSendinblueContactRequest) -> None:
+    print("make_update_request")
     mails_api.create_contact(payload)
 
 

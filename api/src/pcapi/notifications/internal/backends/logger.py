@@ -6,6 +6,9 @@ logger = logging.getLogger(__name__)
 
 
 class LoggerBackend:
+    def create_contact():
+        print("test create contact")
+
     def send_internal_message(self, channel: str, blocks: list[dict], icon_emoji: str) -> None:
         logger.info(
             "An internal message would be sent to channel %s with icon %s. Full payload: %s",

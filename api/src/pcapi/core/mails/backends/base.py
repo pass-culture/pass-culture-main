@@ -15,6 +15,7 @@ class BaseBackend:
         raise NotImplementedError()
 
     def create_contact(self, payload: sendinblue_tasks.UpdateSendinblueContactRequest) -> None:
+        print("create_contact not implemented")
         raise NotImplementedError()
 
     def delete_contact(self, contact_email: str) -> None:

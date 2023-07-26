@@ -17,12 +17,15 @@ class LoggerBackend(BaseBackend):
     when performing load tests when we don't want to overload Sendinblue.
     """
 
+    print("LoggerBackend")
+
     def send_mail(
         self,
         recipients: typing.Iterable[str],
         data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
         bcc_recipients: typing.Iterable[str] = None,
     ) -> models.MailResult:
+        print("LoggerBackend create_email")
         recipients = ", ".join(recipients)
         if bcc_recipients:
             bcc_recipients = ", ".join(bcc_recipients)
@@ -33,6 +36,7 @@ class LoggerBackend(BaseBackend):
         return result
 
     def create_contact(self, payload: sendinblue_tasks.UpdateSendinblueContactRequest) -> None:
+        print("LoggerBackend create_contact")
         logger.info(
             "A request to Sendinblue Contact API would be sent for user %s with attributes %s emailBlacklisted: %s",
             payload.email,
