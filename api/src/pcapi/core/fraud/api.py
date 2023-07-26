@@ -432,6 +432,9 @@ def handle_phone_validation_attempts_limit_reached(user: users_models.User, atte
 def _send_duplicate_fraud_detection_mail(user: users_models.User, duplicate: users_models.User) -> None:
     user_backoffice_link = f'<a href="{settings.BACKOFFICE_URL}/public-accounts/{user.id}">{user.id}</a>'
     duplicate_backoffice_link = f'<a href="{settings.BACKOFFICE_URL}/public-accounts/{duplicate.id}">{duplicate.id}</a>'
+    duplicate_got_grant_18 = (
+        f" et {duplicate_backoffice_link} a aussi reçu le crédit 18 ans" if duplicate.has_beneficiary_role else ""
+    )
     mails.send(
         recipients=[settings.FRAUD_EMAIL_ADDRESS],
         data=mails_models.TransactionalWithoutTemplateEmailData(
@@ -441,8 +444,7 @@ def _send_duplicate_fraud_detection_mail(user: users_models.User, duplicate: use
 <body>
     <p>L'utilisateur {user_backoffice_link} essaie d'obtenir son crédit 18 ans. 
     Or il semble être un doublon de l'utilisateur {duplicate_backoffice_link}.</p>
-    <p>Les deux ont déjà été crédités de leur crédit 15-17 ans et
-    {duplicate_backoffice_link} a aussi reçu le crédit 18 ans.</p>
+    <p>Les deux ont déjà été crédités de leur crédit 15-17 ans{duplicate_got_grant_18}.</p>
     <p>Ces deux comptes ont donc été suspendus pour suspicion de fraude.</p>
 </body>""",
         ),
