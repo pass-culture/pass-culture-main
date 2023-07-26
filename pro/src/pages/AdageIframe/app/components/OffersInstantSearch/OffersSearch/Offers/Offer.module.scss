@@ -1,7 +1,6 @@
 @use "styles/variables/_colorsAdageIframe.scss" as colors;
 @use "styles/variables/_colors.scss" as defaultColors;
 @use "styles/mixins/_rem.scss" as rem;
-@import "styles";
 
 $offer-image-height: rem.torem(264px);
 $offer-image-width: rem.torem(176px);
