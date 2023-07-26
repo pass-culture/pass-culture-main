@@ -259,7 +259,7 @@ class BlacklistedDomainNameFactory(testing.BaseFactory):
     class Meta:
         model = models.BlacklistedDomainName
 
-    domain = factory.Faker("domain_name")
+    domain = factory.Sequence("my-domain-{}.com".format)
 
 
 class ProductWhitelistFactory(testing.BaseFactory):
