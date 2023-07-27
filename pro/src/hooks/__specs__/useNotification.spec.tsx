@@ -22,7 +22,7 @@ const TestComponent = (): JSX.Element | null => {
 
 describe('useNotification', () => {
   it('should call functions for notifications with parameter', () => {
-    jest.mock('store/reducers/notificationReducer', () => ({
+    vi.mock('store/reducers/notificationReducer', () => ({
       closeNotification: mockCloseNotification,
       showNotification: mockShowNotification,
     }))

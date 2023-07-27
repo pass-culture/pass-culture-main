@@ -28,7 +28,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferIndividualWizard from '../OfferIndividualWizard'
 
-jest.mock('core/Notification/constants', () => ({
+vi.mock('core/Notification/constants', () => ({
   NOTIFICATION_TRANSITION_DURATION: 10,
   NOTIFICATION_SHOW_DURATION: 10,
 }))

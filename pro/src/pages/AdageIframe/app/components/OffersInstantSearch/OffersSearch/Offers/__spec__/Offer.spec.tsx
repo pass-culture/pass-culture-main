@@ -21,9 +21,9 @@ vi.mock('apiClient/api', () => ({
     logContactModalButtonClick: vi.fn(),
   },
 }))
-jest.mock('pages/AdageIframe/libs/initAlgoliaAnalytics')
+vi.mock('pages/AdageIframe/libs/initAlgoliaAnalytics')
 
-jest.mock('react-instantsearch-dom', () => {
+vi.mock('react-instantsearch-dom', () => {
   return {
     ...vi.importActual('react-instantsearch-dom'),
     connectStats: jest.fn(Component => (props: any) => (

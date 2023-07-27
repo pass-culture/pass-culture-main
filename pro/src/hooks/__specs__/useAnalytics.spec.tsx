@@ -8,7 +8,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { useConfigureFirebase } from '../useAnalytics'
 
-jest.mock('@firebase/analytics', () => {
+vi.mock('@firebase/analytics', () => {
   return {
     getAnalytics: vi.fn().mockReturnValue('getAnalyticsReturn'),
     initializeAnalytics: vi.fn(),
@@ -18,11 +18,11 @@ jest.mock('@firebase/analytics', () => {
   }
 })
 
-jest.mock('@firebase/app', () => ({
+vi.mock('@firebase/app', () => ({
   initializeApp: vi.fn().mockReturnValue({ setup: true }),
 }))
 
-jest.mock('@firebase/remote-config', () => ({
+vi.mock('@firebase/remote-config', () => ({
   fetchAndActivate: vi.fn().mockResolvedValue({}),
   getRemoteConfig: vi.fn(),
   getAll: () => {

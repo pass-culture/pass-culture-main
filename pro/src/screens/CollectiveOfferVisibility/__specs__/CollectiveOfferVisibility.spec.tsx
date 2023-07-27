@@ -34,7 +34,7 @@ vi.mock('react-router-dom', () => ({
   useNavigate: vi.fn(),
 }))
 
-jest.mock('core/OfferEducational/utils/extractInitialVisibilityValues', () => ({
+vi.mock('core/OfferEducational/utils/extractInitialVisibilityValues', () => ({
   __esModule: true,
   extractInitialVisibilityValues: jest.fn(() => ({
     institution: '',

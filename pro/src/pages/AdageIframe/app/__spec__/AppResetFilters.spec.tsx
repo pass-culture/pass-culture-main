@@ -15,7 +15,7 @@ import {
 } from '../providers'
 import { FeaturesContextProvider } from '../providers/FeaturesContextProvider'
 
-jest.mock('react-instantsearch-dom', () => {
+vi.mock('react-instantsearch-dom', () => {
   return {
     ...vi.importActual('react-instantsearch-dom'),
     Configure: jest.fn(() => <div />),
@@ -31,7 +31,7 @@ jest.mock('react-instantsearch-dom', () => {
   }
 })
 
-jest.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
+vi.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
   getEducationalDomains: vi.fn().mockResolvedValue([
     { id: 1, name: 'Danse' },
     { id: 2, name: 'Architecture' },
@@ -78,7 +78,7 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-jest.mock('utils/config', () => ({
+vi.mock('utils/config', () => ({
   ALGOLIA_API_KEY: 'adage-api-key',
   ALGOLIA_APP_ID: '1',
   ALGOLIA_COLLECTIVE_OFFERS_INDEX: 'adage-collective-offers',

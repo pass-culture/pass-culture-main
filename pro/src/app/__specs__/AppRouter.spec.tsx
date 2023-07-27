@@ -8,7 +8,7 @@ import { configureTestStore } from 'store/testUtils'
 
 import { AppRouter } from '../AppRouter'
 
-jest.mock('hooks/useAnalytics', () => ({
+vi.mock('hooks/useAnalytics', () => ({
   __esModule: true,
   useConfigureFirebase: vi.fn(),
   default: () => ({ setLogEvent: vi.fn() }),

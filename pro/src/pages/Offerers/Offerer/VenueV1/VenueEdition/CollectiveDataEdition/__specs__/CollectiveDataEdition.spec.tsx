@@ -28,7 +28,7 @@ import CollectiveDataEdition from '../CollectiveDataEdition'
 // if we only mock mainlandOptions, the mock is not use to build venueInterventionOptions, allDepartmentValues and mainlandValues
 // and the test fail...
 // the workaround I found is to mock this way :
-jest.mock('core/shared/interventionOptions', () => {
+vi.mock('core/shared/interventionOptions', () => {
   const originalModule = jest.requireActual<
     typeof import('core/shared/interventionOptions')
   >('core/shared/interventionOptions')
@@ -83,7 +83,7 @@ vi.mock('react-router-dom', () => ({
   useNavigate: () => mockedUsedNavigate,
 }))
 
-jest.mock('hooks/useNotification')
+vi.mock('hooks/useNotification')
 
 const waitForLoader = () =>
   waitFor(() => {

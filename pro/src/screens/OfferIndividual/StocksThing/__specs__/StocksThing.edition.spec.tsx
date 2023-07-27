@@ -24,7 +24,7 @@ import Stocks from 'pages/OfferIndividualWizard/Stocks/Stocks'
 import { RootState } from 'store/reducers'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-jest.mock('screens/OfferIndividual/Informations/utils', () => {
+vi.mock('screens/OfferIndividual/Informations/utils', () => {
   return {
     filterCategories: vi.fn(),
   }

@@ -23,7 +23,7 @@ const renderOfferNameCell = (props: OfferNameCellProps) =>
     }
   )
 
-jest.mock('hooks/useActiveFeature', () => ({
+vi.mock('hooks/useActiveFeature', () => ({
   __esModule: true,
   default: vi.fn().mockReturnValue(true),
 }))

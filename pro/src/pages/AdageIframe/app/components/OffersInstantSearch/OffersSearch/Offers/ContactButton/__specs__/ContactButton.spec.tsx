@@ -24,7 +24,7 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-jest.mock('pages/AdageIframe/libs/initAlgoliaAnalytics')
+vi.mock('pages/AdageIframe/libs/initAlgoliaAnalytics')
 
 describe('ContactButton', () => {
   const defaultProps = {

@@ -13,7 +13,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OldOffersSearchComponent, SearchProps } from '../OldOffersSearch'
 
-jest.mock('../Offers/Offers', () => {
+vi.mock('../Offers/Offers', () => {
   return {
     Offers: jest.fn(() => <div />),
   }
@@ -25,7 +25,7 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-jest.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
+vi.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
   getEducationalDomains: jest
     .fn()
     .mockResolvedValue([{ id: 1, name: 'Architecture' }]),

@@ -8,7 +8,7 @@ import {
   RecurrenceType,
 } from '../types'
 
-jest.mock('uuid', () => ({ v4: () => 'uuid' }))
+vi.mock('uuid', () => ({ v4: () => 'uuid' }))
 
 describe('onSubmit', () => {
   const cases: {
