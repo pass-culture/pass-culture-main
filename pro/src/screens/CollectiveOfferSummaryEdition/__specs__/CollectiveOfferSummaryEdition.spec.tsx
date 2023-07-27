@@ -34,6 +34,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import CollectiveOfferSummaryEdition from '../CollectiveOfferSummaryEdition'
 
 const fetchMock = createFetchMock(vi)
+fetchMock.enableMocks()
 
 const renderCollectiveOfferSummaryEdition = (
   offer: CollectiveOfferTemplate | CollectiveOffer,

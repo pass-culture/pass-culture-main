@@ -27,6 +27,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { VenueFormScreen } from '../index'
 
 const fetchMock = createFetchMock(vi)
+fetchMock.enableMocks()
 
 const venueTypes: SelectOption[] = [
   { value: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },

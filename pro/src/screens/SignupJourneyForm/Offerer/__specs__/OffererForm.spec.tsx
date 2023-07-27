@@ -22,6 +22,7 @@ import OffererForm, { OffererFormValues } from '../OffererForm'
 import { validationSchema } from '../validationSchema'
 
 const fetchMock = createFetchMock(vi)
+fetchMock.enableMocks()
 
 vi.mock('apiClient/api', () => ({
   api: {

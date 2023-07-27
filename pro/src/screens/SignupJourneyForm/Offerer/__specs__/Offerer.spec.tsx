@@ -21,6 +21,7 @@ import { Offerer } from '..'
 import { DEFAULT_OFFERER_FORM_VALUES } from '../constants'
 
 const fetchMock = createFetchMock(vi)
+fetchMock.enableMocks()
 
 vi.mock('apiClient/api', () => ({
   api: {

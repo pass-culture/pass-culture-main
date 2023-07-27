@@ -17,6 +17,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { OffererAuthentication } from '..'
 
 const fetchMock = createFetchMock(vi)
+fetchMock.enableMocks()
 
 vi.mock('apiClient/adresse', () => {
   return {
