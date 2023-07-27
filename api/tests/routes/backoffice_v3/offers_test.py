@@ -50,6 +50,7 @@ def offers_fixture(criteria) -> tuple:
         venue__postalCode="97400",
         venue__departementCode="974",
         product__subcategoryId=subcategories.LIVRE_AUDIO_PHYSIQUE.id,
+        validation=offers_models.OfferValidationStatus.APPROVED,
         extraData={"visa": "2023123456"},
     )
     offer_with_two_criteria = offers_factories.OfferFactory(
@@ -433,6 +434,57 @@ class ListOffersTest(GetEndpointHelper):
         # then
         rows = html_parser.extract_table_rows(response.data)
         assert rows[0]["Règles de conformité"] == ", ".join([rule_1.name, rule_2.name])
+
+    def test_list_offers_by_no_tags(self, authenticated_client, offers):
+        # when
+
+        query_args = {
+            "search-0-search_field": "TAG",
+            "search-0-operator": "NOT_EXIST",
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(int(row["ID"]) for row in rows) == {offers[1].id}
+
+    def test_list_offers_by_no_tags_and_validation(self, authenticated_client, offers):
+        # when
+
+        query_args = {
+            "search-0-search_field": "TAG",
+            "search-0-operator": "NOT_EXIST",
+            "search-2-search_field": "VALIDATION",
+            "search-2-operator": "IN",
+            "search-2-validation": offers_models.OfferValidationStatus.APPROVED.value,
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert set(int(row["ID"]) for row in rows) == {offers[1].id}
+
+    def test_list_offers_by_no_tags_and_other_validation(self, authenticated_client, offers):
+        # when
+
+        query_args = {
+            "search-0-search_field": "TAG",
+            "search-0-operator": "NOT_EXIST",
+            "search-2-search_field": "VALIDATION",
+            "search-2-operator": "IN",
+            "search-2-validation": offers_models.OfferValidationStatus.PENDING.value,
+        }
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 0
 
 
 class EditOfferTest(PostEndpointHelper):

@@ -82,6 +82,8 @@ SEARCH_FIELD_TO_PYTHON = {
         "field": "criteria",
         "column": criteria_models.Criterion.id,
         "join": "criterion",
+        "not_exist_column": criteria_models.OfferCriterion.offerId,
+        "outer_join": "offer_criterion",
     },
     "STATUS": {
         "field": "status",
@@ -107,6 +109,10 @@ JOIN_DICT: dict[str, list[tuple[str, tuple]]] = {
     "criterion": [("criterion", (criteria_models.Criterion, offers_models.Offer.criteria))],
     "stock": [("stock", (offers_models.Stock, offers_models.Offer.stocks))],
     "venue": [("venue", (offerers_models.Venue, offers_models.Offer.venue))],
+}
+
+OUTER_JOIN_DICT: dict[str, list[tuple[str, tuple]]] = {
+    "offer_criterion": [("offer_criterion", (criteria_models.OfferCriterion,))],
 }
 
 
@@ -151,7 +157,7 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
             query=query,
             search_parameters=form.search.data,
             fields_definition=SEARCH_FIELD_TO_PYTHON,
-            joins_definition=JOIN_DICT,
+            joins_definition={**JOIN_DICT, **OUTER_JOIN_DICT},
         )
         for warning in warnings:
             flash(warning, "warning")
