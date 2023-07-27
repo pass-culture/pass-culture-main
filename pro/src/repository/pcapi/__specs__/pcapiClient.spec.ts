@@ -5,6 +5,7 @@ import { client } from 'repository/pcapi/pcapiClient'
 import { API_URL, URL_FOR_MAINTENANCE } from 'utils/config'
 
 const fetchMock = createFetchMock(vi)
+fetchMock.enableMocks()
 
 describe('pcapiClient', () => {
   beforeEach(() => {

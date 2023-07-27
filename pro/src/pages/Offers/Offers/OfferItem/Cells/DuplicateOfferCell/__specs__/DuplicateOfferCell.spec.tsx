@@ -28,6 +28,7 @@ import DuplicateOfferCell, {
 } from '../DuplicateOfferCell'
 
 const fetchMock = createFetchMock(vi)
+fetchMock.enableMocks()
 
 vi.mock('core/OfferEducational/utils/createOfferFromTemplate', () => ({
   createOfferFromTemplate: vi.fn(),
