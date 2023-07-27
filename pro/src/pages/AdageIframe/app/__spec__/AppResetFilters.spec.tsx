@@ -18,8 +18,8 @@ import { FeaturesContextProvider } from '../providers/FeaturesContextProvider'
 vi.mock('react-instantsearch-dom', () => {
   return {
     ...vi.importActual('react-instantsearch-dom'),
-    Configure: jest.fn(() => <div />),
-    connectStats: jest.fn(Component => (props: any) => (
+    Configure: vi.fn(() => <div />),
+    connectStats: vi.fn(Component => (props: any) => (
       <Component
         {...props}
         areHitsSorted={false}
@@ -169,8 +169,7 @@ describe('app', () => {
     // Then
     await waitFor(() => expect(Configure).toHaveBeenCalledTimes(3))
 
-    const searchConfigurationLastCall = (Configure as jest.Mock).mock
-      .calls[2][0]
+    const searchConfigurationLastCall = (Configure as vi.Mock).mock.calls[2][0]
     expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
       [
         'offer.educationalInstitutionUAICode:all',
@@ -225,8 +224,7 @@ describe('app', () => {
 
     // Then
     await waitFor(() => expect(Configure).toHaveBeenCalledTimes(3))
-    const searchConfigurationFirstCall = (Configure as jest.Mock).mock
-      .calls[1][0]
+    const searchConfigurationFirstCall = (Configure as vi.Mock).mock.calls[1][0]
     expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
       ['venue.departmentCode:01', 'offer.interventionArea:01'],
       [
@@ -234,8 +232,7 @@ describe('app', () => {
         'offer.educationalInstitutionUAICode:uai',
       ],
     ])
-    const searchConfigurationLastCall = (Configure as jest.Mock).mock
-      .calls[2][0]
+    const searchConfigurationLastCall = (Configure as vi.Mock).mock.calls[2][0]
     expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
       [
         'offer.educationalInstitutionUAICode:all',

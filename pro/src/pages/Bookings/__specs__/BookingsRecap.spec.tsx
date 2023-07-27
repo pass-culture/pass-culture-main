@@ -115,9 +115,7 @@ describe('components | BookingsRecap | Pro user', () => {
     vi.spyOn(api, 'getProfile').mockResolvedValue(user)
     venue = getVenueListItemFactory({})
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [venue] })
-    jest
-      .spyOn(api, 'getUserHasBookings')
-      .mockResolvedValue({ hasBookings: true })
+    vi.spyOn(api, 'getUserHasBookings').mockResolvedValue({ hasBookings: true })
   })
 
   it('should show a pre-filter section', async () => {
@@ -150,7 +148,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should request bookings of venue requested by user when user clicks on "Afficher"', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    const spyGetBookingsPro = jest
+    const spyGetBookingsPro = vi
       .spyOn(api, 'getBookingsPro')
       .mockResolvedValue({
         page: 1,
@@ -346,9 +344,9 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should display an error message on CSV download when API returns a status other than 200', async () => {
     // Given
-    jest
-      .spyOn(pcapi, 'getFilteredBookingsCSV')
-      .mockImplementation(() => Promise.reject(new Error('An error happened.')))
+    vi.spyOn(pcapi, 'getFilteredBookingsCSV').mockImplementation(() =>
+      Promise.reject(new Error('An error happened.'))
+    )
 
     const { submitDownloadFilters } = await renderBookingsRecap({
       ...store,
@@ -386,7 +384,7 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 2,
       bookingsRecap: [bookings2],
     }
-    const spyGetBookingsPro = jest
+    const spyGetBookingsPro = vi
       .spyOn(api, 'getBookingsPro')
 
       .mockResolvedValueOnce(paginatedBookingRecapReturned)
@@ -427,7 +425,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should request bookings of event date requested by user when user clicks on "Afficher"', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    const spyGetBookingsPro = jest
+    const spyGetBookingsPro = vi
       .spyOn(api, 'getBookingsPro')
       .mockResolvedValue({
         page: 1,
@@ -459,7 +457,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should set booking period to null when user select event date', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    const spyGetBookingsPro = jest
+    const spyGetBookingsPro = vi
       .spyOn(api, 'getBookingsPro')
       .mockResolvedValue({
         page: 1,
@@ -493,7 +491,7 @@ describe('components | BookingsRecap | Pro user', () => {
     // Given
     const bookingRecap = bookingRecapFactory()
 
-    const spyGetBookingsPro = jest
+    const spyGetBookingsPro = vi
       .spyOn(api, 'getBookingsPro')
       .mockResolvedValue({
         page: 1,
@@ -523,7 +521,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should request bookings of selected period when user clicks on "Afficher"', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    const spyGetBookingsPro = jest
+    const spyGetBookingsPro = vi
       .spyOn(api, 'getBookingsPro')
       .mockResolvedValue({
         page: 1,
@@ -562,9 +560,9 @@ describe('components | BookingsRecap | Pro user', () => {
     const booking = bookingRecapFactory()
     const otherVenueBooking = bookingRecapFactory()
     const otherVenue = getVenueListItemFactory()
-    jest
-      .spyOn(api, 'getVenues')
-      .mockResolvedValue({ venues: [venue, otherVenue] })
+    vi.spyOn(api, 'getVenues').mockResolvedValue({
+      venues: [venue, otherVenue],
+    })
     const paginatedBookingRecapReturned = {
       page: 1,
       pages: 1,
@@ -577,8 +575,7 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 1,
       bookingsRecap: [otherVenueBooking],
     }
-    jest
-      .spyOn(api, 'getBookingsPro')
+    vi.spyOn(api, 'getBookingsPro')
 
       .mockResolvedValueOnce(otherVenuePaginatedBookingRecapReturned)
 
@@ -612,8 +609,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should show notification with information message when there are more than 5 pages', async () => {
     // Given
     const bookingsRecap = { pages: 6, bookingsRecap: [] }
-    jest
-      .spyOn(api, 'getBookingsPro')
+    vi.spyOn(api, 'getBookingsPro')
       // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 1 })
       // @ts-expect-error FIX ME
@@ -646,8 +642,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should not show notification with information message when there are 5 pages or less', async () => {
     // Given
     const bookingsRecap = { pages: 5, bookingsRecap: [] }
-    jest
-      .spyOn(api, 'getBookingsPro')
+    vi.spyOn(api, 'getBookingsPro')
       // @ts-expect-error FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 1 })
       // @ts-expect-error FIX ME
@@ -733,9 +728,9 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should display no booking screen when user does not have any booking yet', async () => {
     //Given
-    jest
-      .spyOn(api, 'getUserHasBookings')
-      .mockResolvedValue({ hasBookings: false })
+    vi.spyOn(api, 'getUserHasBookings').mockResolvedValue({
+      hasBookings: false,
+    })
     await renderBookingsRecap(store)
 
     //Then

@@ -92,9 +92,7 @@ vi.mock('apiClient/api', () => ({
 
 vi.mock('utils/date', () => ({
   ...vi.importActual('utils/date'),
-  getToday: jest
-    .fn()
-    .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+  getToday: vi.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
 vi.mock('hooks/useActiveFeature', () => ({
@@ -127,8 +125,7 @@ describe('route CollectiveOffers', () => {
       },
     }
     offersRecap = [collectiveOfferFactory()]
-    jest
-      .spyOn(api, 'getCollectiveOffers')
+    vi.spyOn(api, 'getCollectiveOffers')
       // @ts-expect-error FIX ME
       .mockResolvedValue(offersRecap)
   })
@@ -180,8 +177,7 @@ describe('route CollectiveOffers', () => {
 
         it('should indicate that no offers match selected filters', async () => {
           // Given
-          jest
-            .spyOn(api, 'getCollectiveOffers')
+          vi.spyOn(api, 'getCollectiveOffers')
             // @ts-expect-error FIX ME
             .mockResolvedValueOnce(offersRecap)
             .mockResolvedValueOnce([])
@@ -555,8 +551,7 @@ describe('route CollectiveOffers', () => {
     it('should display next page when clicking on right arrow', async () => {
       // Given
       const offers = Array.from({ length: 11 }, () => collectiveOfferFactory())
-      jest
-        .spyOn(api, 'getCollectiveOffers')
+      vi.spyOn(api, 'getCollectiveOffers')
         // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offers)
       await renderOffers(store)
@@ -572,8 +567,7 @@ describe('route CollectiveOffers', () => {
     it('should display previous page when clicking on left arrow', async () => {
       // Given
       const offers = Array.from({ length: 11 }, () => collectiveOfferFactory())
-      jest
-        .spyOn(api, 'getCollectiveOffers')
+      vi.spyOn(api, 'getCollectiveOffers')
         // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offers)
       await renderOffers(store)
@@ -599,8 +593,7 @@ describe('route CollectiveOffers', () => {
 
       it('should have max number page of 50', async () => {
         // Given
-        jest
-          .spyOn(api, 'getCollectiveOffers')
+        vi.spyOn(api, 'getCollectiveOffers')
           // @ts-expect-error FIX ME
           .mockResolvedValueOnce(offersRecap)
         // When
@@ -611,8 +604,7 @@ describe('route CollectiveOffers', () => {
 
       it('should not display the 501st offer', async () => {
         // Given
-        jest
-          .spyOn(api, 'getCollectiveOffers')
+        vi.spyOn(api, 'getCollectiveOffers')
           // @ts-expect-error FIX ME
           .mockResolvedValueOnce(offersRecap)
         await renderOffers(store)
@@ -632,8 +624,7 @@ describe('route CollectiveOffers', () => {
 
   describe('should reset filters', () => {
     it('when clicking on "afficher toutes les offres" when no offers are displayed', async () => {
-      jest
-        .spyOn(api, 'getCollectiveOffers')
+      vi.spyOn(api, 'getCollectiveOffers')
         // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
@@ -697,8 +688,7 @@ describe('route CollectiveOffers', () => {
     })
 
     it('when clicking on "Réinitialiser les filtres"', async () => {
-      jest
-        .spyOn(api, 'getCollectiveOffers')
+      vi.spyOn(api, 'getCollectiveOffers')
         // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])

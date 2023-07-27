@@ -22,9 +22,10 @@ describe('getEducationalRedactorAdapter', () => {
   })
 
   it('should return an error when the institutions could not be retrieved', async () => {
-    jest
-      .spyOn(api, 'getAutocompleteEducationalRedactorsForUai')
-      .mockRejectedValueOnce(null)
+    vi.spyOn(
+      api,
+      'getAutocompleteEducationalRedactorsForUai'
+    ).mockRejectedValueOnce(null)
     const response = await getEducationalRedactorsAdapter({
       uai: '0470009E',
       candidate: 'mar',
@@ -35,9 +36,10 @@ describe('getEducationalRedactorAdapter', () => {
     )
   })
   it('should return a confirmation when all results are retrieved', async () => {
-    jest
-      .spyOn(api, 'getAutocompleteEducationalRedactorsForUai')
-      .mockResolvedValueOnce(allRedactors)
+    vi.spyOn(
+      api,
+      'getAutocompleteEducationalRedactorsForUai'
+    ).mockResolvedValueOnce(allRedactors)
     const response = await getEducationalRedactorsAdapter({
       uai: '0470009E',
       candidate: 'mar',

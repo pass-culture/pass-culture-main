@@ -48,8 +48,7 @@ describe('getEducationalInstitutionsAdapter', () => {
     )
   })
   it('should return an error if any page returns an error', async () => {
-    jest
-      .spyOn(api, 'getEducationalInstitutions')
+    vi.spyOn(api, 'getEducationalInstitutions')
       .mockResolvedValueOnce(institutionsPaginated)
       .mockResolvedValueOnce({ ...institutionsPaginated, page: 2 })
       .mockRejectedValueOnce(null)
@@ -60,8 +59,7 @@ describe('getEducationalInstitutionsAdapter', () => {
     )
   })
   it('should return a confirmation when all results are retrieved', async () => {
-    jest
-      .spyOn(api, 'getEducationalInstitutions')
+    vi.spyOn(api, 'getEducationalInstitutions')
       .mockResolvedValueOnce(institutionsPaginated)
       .mockResolvedValueOnce({ ...institutionsPaginated, page: 2 })
       .mockResolvedValueOnce({ ...institutionsPaginated, page: 3 })

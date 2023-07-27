@@ -97,9 +97,9 @@ describe('src | routes | Desk', () => {
       userName: 'USER',
       venueDepartmentCode: '75',
     }
-    jest
-      .spyOn(apiContremarque, 'getBookingByTokenV2')
-      .mockResolvedValue(apiBooking)
+    vi.spyOn(apiContremarque, 'getBookingByTokenV2').mockResolvedValue(
+      apiBooking
+    )
     const { buttonGetBooking, responseDataContainer } = await renderDeskRoute()
 
     await userEvent.click(buttonGetBooking)
@@ -126,15 +126,13 @@ describe('src | routes | Desk', () => {
 
   it('test getBooking failure, booking already validated', async () => {
     const globalErrorMessage = 'Cette réservation a déjà été validée'
-    jest
-      .spyOn(apiContremarque, 'getBookingByTokenV2')
-      .mockRejectedValue(
-        new ApiError(
-          {} as ApiRequestOptions,
-          { status: HTTP_STATUS.GONE, body: {} } as ApiResult,
-          globalErrorMessage
-        )
+    vi.spyOn(apiContremarque, 'getBookingByTokenV2').mockRejectedValue(
+      new ApiError(
+        {} as ApiRequestOptions,
+        { status: HTTP_STATUS.GONE, body: {} } as ApiResult,
+        globalErrorMessage
       )
+    )
 
     const { buttonGetBooking, responseDataContainer } = await renderDeskRoute()
 
@@ -253,15 +251,13 @@ describe('src | routes | Desk', () => {
 
   it('test getBooking failure, api error', async () => {
     const globalErrorMessage = 'Server error'
-    jest
-      .spyOn(apiContremarque, 'getBookingByTokenV2')
-      .mockRejectedValue(
-        new ApiError(
-          {} as ApiRequestOptions,
-          { status: HTTP_STATUS.NOT_FOUND } as ApiResult,
-          globalErrorMessage
-        )
+    vi.spyOn(apiContremarque, 'getBookingByTokenV2').mockRejectedValue(
+      new ApiError(
+        {} as ApiRequestOptions,
+        { status: HTTP_STATUS.NOT_FOUND } as ApiResult,
+        globalErrorMessage
       )
+    )
 
     const { buttonGetBooking, responseDataContainer } = await renderDeskRoute()
 

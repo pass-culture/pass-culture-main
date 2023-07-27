@@ -72,13 +72,12 @@ describe('test OfferIndividualWisard', () => {
         },
       },
     }
-    jest
-      .spyOn(api, 'listOfferersNames')
-      .mockResolvedValue({ offerersNames: [] })
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
-    jest
-      .spyOn(api, 'getCategories')
-      .mockResolvedValue({ categories: [], subcategories: [] })
+    vi.spyOn(api, 'getCategories').mockResolvedValue({
+      categories: [],
+      subcategories: [],
+    })
     vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     vi.spyOn(api, 'listOffers').mockResolvedValue([
       {

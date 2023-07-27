@@ -8,9 +8,10 @@ import { updateAllCollectiveOffersActiveStatusAdapter } from '../updateAllCollec
 describe('updateAllCollectiveOffersActiveStatusAdapter', () => {
   it('should deactivate all collective offers and confirm', async () => {
     // given
-    jest
-      .spyOn(api, 'patchAllCollectiveOffersActiveStatus')
-      .mockResolvedValueOnce()
+    vi.spyOn(
+      api,
+      'patchAllCollectiveOffersActiveStatus'
+    ).mockResolvedValueOnce()
 
     const response = await updateAllCollectiveOffersActiveStatusAdapter({
       searchFilters: { isActive: false },
@@ -26,9 +27,10 @@ describe('updateAllCollectiveOffersActiveStatusAdapter', () => {
 
   it('should activate all collective offers and confirm', async () => {
     // given
-    jest
-      .spyOn(api, 'patchAllCollectiveOffersActiveStatus')
-      .mockResolvedValueOnce()
+    vi.spyOn(
+      api,
+      'patchAllCollectiveOffersActiveStatus'
+    ).mockResolvedValueOnce()
 
     const response = await updateAllCollectiveOffersActiveStatusAdapter({
       searchFilters: { isActive: true },
@@ -44,15 +46,13 @@ describe('updateAllCollectiveOffersActiveStatusAdapter', () => {
 
   it('should return an error when the update has failed', async () => {
     // given
-    jest
-      .spyOn(api, 'patchAllCollectiveOffersActiveStatus')
-      .mockRejectedValueOnce(
-        new ApiError(
-          {} as ApiRequestOptions,
-          { body: { status: 422 } } as ApiResult,
-          ''
-        )
+    vi.spyOn(api, 'patchAllCollectiveOffersActiveStatus').mockRejectedValueOnce(
+      new ApiError(
+        {} as ApiRequestOptions,
+        { body: { status: 422 } } as ApiResult,
+        ''
       )
+    )
 
     // when
     const response = await updateAllCollectiveOffersActiveStatusAdapter({

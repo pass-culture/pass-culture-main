@@ -16,15 +16,15 @@ vi.mock('utils/config', () => ({
 
 vi.mock('../../OffersInstantSearch/OffersSearch/Offers/Offers', () => {
   return {
-    Offers: jest.fn(() => <div />),
+    Offers: vi.fn(() => <div />),
   }
 })
 
 vi.mock('react-instantsearch-dom', () => {
   return {
     ...vi.importActual('react-instantsearch-dom'),
-    Configure: jest.fn(() => <div />),
-    connectStats: jest.fn(Component => (props: any) => (
+    Configure: vi.fn(() => <div />),
+    connectStats: vi.fn(Component => (props: any) => (
       <Component
         {...props}
         areHitsSorted={false}

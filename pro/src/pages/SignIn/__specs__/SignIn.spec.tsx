@@ -75,12 +75,12 @@ const renderSignIn = (
 
 describe('src | components | pages | SignIn', () => {
   beforeEach(() => {
-    jest
-      .spyOn(api, 'getProfile')
-      .mockResolvedValue({} as SharedCurrentUserResponseModel)
-    jest
-      .spyOn(api, 'signin')
-      .mockResolvedValue({} as SharedLoginUserResponseModel)
+    vi.spyOn(api, 'getProfile').mockResolvedValue(
+      {} as SharedCurrentUserResponseModel
+    )
+    vi.spyOn(api, 'signin').mockResolvedValue(
+      {} as SharedLoginUserResponseModel
+    )
   })
 
   it('should display 2 inputs and one link to account creation and one button to login', () => {
@@ -306,7 +306,7 @@ describe('src | components | pages | SignIn', () => {
     }
 
     it('should not call listOfferersNames if user is admin', async () => {
-      const listOfferersNamesRequest = jest
+      const listOfferersNamesRequest = vi
         .spyOn(api, 'listOfferersNames')
         .mockResolvedValue({
           offerersNames: [
@@ -336,7 +336,7 @@ describe('src | components | pages | SignIn', () => {
     })
 
     it('should redirect to onboarding page if offerer list is empty', async () => {
-      const listOfferersNamesRequest = jest
+      const listOfferersNamesRequest = vi
         .spyOn(api, 'listOfferersNames')
         .mockResolvedValue({
           offerersNames: [],

@@ -108,9 +108,9 @@ describe('Confirmation', () => {
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
-    jest
-      .spyOn(api, 'getOffer')
-      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    vi.spyOn(api, 'getOffer').mockResolvedValue(
+      {} as GetIndividualOfferResponseModel
+    )
   })
 
   it('should display a pending message when offer is pending for validation', () => {

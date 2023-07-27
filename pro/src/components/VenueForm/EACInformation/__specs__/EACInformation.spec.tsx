@@ -21,9 +21,9 @@ const renderEACInformation = async ({
 
 describe('components | EACInformation', () => {
   beforeEach(() => {
-    jest
-      .spyOn(api, 'getEducationalPartners')
-      .mockResolvedValue({} as AdageCulturalPartnersResponseModel)
+    vi.spyOn(api, 'getEducationalPartners').mockResolvedValue(
+      {} as AdageCulturalPartnersResponseModel
+    )
   })
 
   it('should not be able to access information page when creating a venue', async () => {

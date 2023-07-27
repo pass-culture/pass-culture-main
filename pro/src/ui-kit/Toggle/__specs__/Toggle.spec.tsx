@@ -73,7 +73,7 @@ describe('Toggle button', () => {
   it('should use callback function onclick', async () => {
     // Given
     let counter = 0
-    const addToCounter = jest.fn(() => counter++)
+    const addToCounter = vi.fn(() => counter++)
     const props = {
       handleClick: addToCounter,
       label: 'Label',

@@ -22,15 +22,13 @@ describe('cancelCollectiveBookingAdapter', () => {
 
   it('should return an error when there are no bookings for this offer', async () => {
     // given
-    jest
-      .spyOn(api, 'cancelCollectiveOfferBooking')
-      .mockRejectedValueOnce(
-        new ApiError(
-          {} as ApiRequestOptions,
-          { body: { code: 'NO_BOOKING' }, status: 400 } as ApiResult,
-          ''
-        )
+    vi.spyOn(api, 'cancelCollectiveOfferBooking').mockRejectedValueOnce(
+      new ApiError(
+        {} as ApiRequestOptions,
+        { body: { code: 'NO_BOOKING' }, status: 400 } as ApiResult,
+        ''
       )
+    )
 
     // when
     const response = await cancelCollectiveBookingAdapter({ offerId: 12 })

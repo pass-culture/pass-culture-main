@@ -101,15 +101,13 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
 
     it('should return an error when the offer could not be updated', async () => {
       // given
-      jest
-        .spyOn(api, 'editCollectiveOfferTemplate')
-        .mockRejectedValueOnce(
-          new ApiError(
-            {} as ApiRequestOptions,
-            { body: {}, status: 422 } as ApiResult,
-            ''
-          )
+      vi.spyOn(api, 'editCollectiveOfferTemplate').mockRejectedValueOnce(
+        new ApiError(
+          {} as ApiRequestOptions,
+          { body: {}, status: 422 } as ApiResult,
+          ''
         )
+      )
 
       // when
       const response = await patchCollectiveOfferTemplateAdapter({
@@ -125,9 +123,9 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
     })
     it('should return a confirmation when the booking was cancelled', async () => {
       // given
-      jest
-        .spyOn(api, 'editCollectiveOfferTemplate')
-        .mockResolvedValueOnce({} as GetCollectiveOfferTemplateResponseModel)
+      vi.spyOn(api, 'editCollectiveOfferTemplate').mockResolvedValueOnce(
+        {} as GetCollectiveOfferTemplateResponseModel
+      )
 
       // when
       const response = await patchCollectiveOfferTemplateAdapter({

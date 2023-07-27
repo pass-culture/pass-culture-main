@@ -89,9 +89,9 @@ describe('updateIndividualOffer', () => {
       id: nonHumanizedofferId,
     } as OfferIndividual
 
-    jest
-      .spyOn(api, 'patchOffer')
-      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    vi.spyOn(api, 'patchOffer').mockResolvedValue(
+      {} as GetIndividualOfferResponseModel
+    )
 
     await updateIndividualOffer({
       serializedOffer: serializePatchOffer({ offer, formValues }),
@@ -169,9 +169,9 @@ describe('updateIndividualOffer', () => {
         name: 'provider',
       },
     } as OfferIndividual
-    jest
-      .spyOn(api, 'patchOffer')
-      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    vi.spyOn(api, 'patchOffer').mockResolvedValue(
+      {} as GetIndividualOfferResponseModel
+    )
 
     await updateIndividualOffer({
       serializedOffer: serializePatchOffer({ offer, formValues }),

@@ -266,8 +266,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
       venueId: physicalVenueId.toString(),
     }
 
-    jest
-      .spyOn(utils, 'filterCategories')
+    vi.spyOn(utils, 'filterCategories')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .mockImplementation((c, s, _v) => [c, s])
     vi.spyOn(api, 'patchOffer').mockResolvedValue({
@@ -276,9 +275,9 @@ describe('screens:OfferIndividual::Informations:draft', () => {
     vi.spyOn(api, 'postOffer').mockResolvedValue({
       id: offerId,
     } as GetIndividualOfferResponseModel)
-    jest
-      .spyOn(api, 'getOffer')
-      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    vi.spyOn(api, 'getOffer').mockResolvedValue(
+      {} as GetIndividualOfferResponseModel
+    )
     vi.spyOn(api, 'deleteThumbnail').mockResolvedValue()
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,

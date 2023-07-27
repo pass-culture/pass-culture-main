@@ -36,7 +36,7 @@ vi.mock('react-router-dom', () => ({
 
 vi.mock('core/OfferEducational/utils/extractInitialVisibilityValues', () => ({
   __esModule: true,
-  extractInitialVisibilityValues: jest.fn(() => ({
+  extractInitialVisibilityValues: vi.fn(() => ({
     institution: '',
     'search-institution': 'METIER ROBERT DOISNEAU - CORBEIL-ESSONNES',
     teacher: 'compte.test@education.gouv.fr',
@@ -185,7 +185,7 @@ describe('CollectiveOfferVisibility', () => {
   })
 
   it('should save selected institution and call onSuccess props', async () => {
-    const spyPatch = jest
+    const spyPatch = vi
       .fn()
       .mockResolvedValueOnce({ isOk: true, payload: { institutions: [] } })
     renderVisibilityStep({ ...props, patchInstitution: spyPatch })
@@ -212,7 +212,7 @@ describe('CollectiveOfferVisibility', () => {
   })
 
   it('should display an error when the institution could not be saved', async () => {
-    const spyPatch = jest
+    const spyPatch = vi
       .fn()
       .mockResolvedValue({ isOk: false, message: 'Ooops' })
     const notifyError = vi.fn()
@@ -333,16 +333,17 @@ describe('CollectiveOfferVisibility', () => {
       )
       await userEvent.click(teacherInput)
 
-      jest
-        .spyOn(api, 'getAutocompleteEducationalRedactorsForUai')
-        .mockResolvedValueOnce([
-          {
-            email: 'maria.sklodowska@example.com',
-            gender: 'Mme.',
-            name: 'SKLODOWSKA',
-            surname: 'MARIA',
-          },
-        ])
+      vi.spyOn(
+        api,
+        'getAutocompleteEducationalRedactorsForUai'
+      ).mockResolvedValueOnce([
+        {
+          email: 'maria.sklodowska@example.com',
+          gender: 'Mme.',
+          name: 'SKLODOWSKA',
+          surname: 'MARIA',
+        },
+      ])
       await userEvent.type(teacherInput, 'mar')
       await userEvent.click(await screen.findByLabelText(/MARIA SKLODOWSKA/))
       await userEvent.click(
@@ -372,16 +373,17 @@ describe('CollectiveOfferVisibility', () => {
         },
       })
 
-      jest
-        .spyOn(api, 'getAutocompleteEducationalRedactorsForUai')
-        .mockResolvedValueOnce([
-          {
-            email: 'compte.test@education.gouv.fr',
-            gender: 'Mr.',
-            name: 'REDA',
-            surname: 'KHTEUR',
-          },
-        ])
+      vi.spyOn(
+        api,
+        'getAutocompleteEducationalRedactorsForUai'
+      ).mockResolvedValueOnce([
+        {
+          email: 'compte.test@education.gouv.fr',
+          gender: 'Mr.',
+          name: 'REDA',
+          surname: 'KHTEUR',
+        },
+      ])
 
       renderVisibilityStep({
         ...props,

@@ -85,9 +85,7 @@ describe('AddressSelect', () => {
       latitude: 0,
       longitude: 0,
     }
-    jest
-      .spyOn(apiAdresse, 'getDataFromAddress')
-      .mockResolvedValue(mockAdressData)
+    vi.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue(mockAdressData)
   })
 
   it('should submit form without errors', async () => {
@@ -123,9 +121,9 @@ describe('AddressSelect', () => {
   })
 
   it('should not display suggestions when api return an error', async () => {
-    jest
-      .spyOn(apiAdresse, 'getDataFromAddress')
-      .mockRejectedValue('Erreur lors de la récupération des données')
+    vi.spyOn(apiAdresse, 'getDataFromAddress').mockRejectedValue(
+      'Erreur lors de la récupération des données'
+    )
     await renderAddress({
       initialValues,
       onSubmit,

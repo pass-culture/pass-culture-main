@@ -37,9 +37,7 @@ vi.mock('repository/pcapi/pcapi', () => ({
 
 vi.mock('utils/date', () => ({
   ...vi.importActual('utils/date'),
-  getToday: jest
-    .fn()
-    .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+  getToday: vi.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
 const renderStockThingScreen = (
@@ -120,9 +118,9 @@ describe('screens:StocksThing::draft', () => {
       shouldTrack: true,
       showVenuePopin: {},
     }
-    jest
-      .spyOn(api, 'getOffer')
-      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    vi.spyOn(api, 'getOffer').mockResolvedValue(
+      {} as GetIndividualOfferResponseModel
+    )
     vi.spyOn(api, 'upsertStocks')
   })
 
@@ -145,9 +143,9 @@ describe('screens:StocksThing::draft', () => {
 
   it('should show a success notification if nothing has been touched and click on next step', async () => {
     renderStockThingScreen(props, contextValue)
-    jest
-      .spyOn(api, 'patchOffer')
-      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    vi.spyOn(api, 'patchOffer').mockResolvedValue(
+      {} as GetIndividualOfferResponseModel
+    )
 
     await userEvent.click(
       screen.getByRole('button', {

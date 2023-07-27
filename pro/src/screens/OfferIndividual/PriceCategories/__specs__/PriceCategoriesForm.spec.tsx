@@ -48,9 +48,9 @@ const renderPriceCategoriesForm = (
 
 describe('PriceCategories', () => {
   beforeEach(() => {
-    jest
-      .spyOn(api, 'postPriceCategories')
-      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    vi.spyOn(api, 'postPriceCategories').mockResolvedValue(
+      {} as GetIndividualOfferResponseModel
+    )
     vi.spyOn(api, 'getOffer').mockResolvedValue(GetIndividualOfferFactory())
   })
 

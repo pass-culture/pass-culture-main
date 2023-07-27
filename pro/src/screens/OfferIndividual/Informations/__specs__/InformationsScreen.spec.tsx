@@ -116,8 +116,7 @@ describe('screens:OfferIndividual::Informations', () => {
       showVenuePopin: {},
     }
 
-    jest
-      .spyOn(utils, 'filterCategories')
+    vi.spyOn(utils, 'filterCategories')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .mockImplementation((c, s, _v) => [c, s])
   })
