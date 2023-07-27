@@ -14,8 +14,8 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import SignUpValidation from '../SignUpValidation'
 
 vi.mock('repository/pcapi/pcapi')
-jest.mock('hooks/useCurrentUser')
-jest.mock('hooks/useNotification')
+vi.mock('hooks/useCurrentUser')
+vi.mock('hooks/useNotification')
 
 const renderSignupValidation = (url: string) =>
   renderWithProviders(

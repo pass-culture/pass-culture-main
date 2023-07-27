@@ -14,9 +14,9 @@ import {
 
 import { useCollectiveOfferImageUpload } from '../useCollectiveOfferImageUpload'
 
-jest.mock('hooks/useNotification')
-jest.mock('core/OfferEducational/adapters/postCollectiveOfferImageAdapter')
-jest.mock(
+vi.mock('hooks/useNotification')
+vi.mock('core/OfferEducational/adapters/postCollectiveOfferImageAdapter')
+vi.mock(
   'core/OfferEducational/adapters/postCollectiveOfferTemplateImageAdapter'
 )
 

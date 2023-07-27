@@ -15,7 +15,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { InformationsProps, Informations as InformationsScreen } from '..'
 
-jest.mock('screens/OfferIndividual/Informations/utils', () => {
+vi.mock('screens/OfferIndividual/Informations/utils', () => {
   return {
     filterCategories: vi.fn(),
   }

@@ -35,7 +35,7 @@ import Summary from '../Summary'
 
 const mockLogEvent = vi.fn()
 
-jest.mock('core/Notification/constants', () => ({
+vi.mock('core/Notification/constants', () => ({
   NOTIFICATION_TRANSITION_DURATION: 10,
   NOTIFICATION_SHOW_DURATION: 10,
 }))

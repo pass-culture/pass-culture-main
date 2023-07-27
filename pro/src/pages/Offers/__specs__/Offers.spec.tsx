@@ -92,7 +92,7 @@ vi.mock('utils/date', () => ({
     .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
-jest.mock('hooks/useActiveFeature', () => ({
+vi.mock('hooks/useActiveFeature', () => ({
   __esModule: true,
   default: vi.fn().mockReturnValue(true),
 }))

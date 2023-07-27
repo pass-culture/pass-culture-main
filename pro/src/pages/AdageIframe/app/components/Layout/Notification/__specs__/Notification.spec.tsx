@@ -8,7 +8,7 @@ import {
   NotificationComponent,
 } from '../Notification'
 
-jest.mock('../_constants', () => ({
+vi.mock('../_constants', () => ({
   NOTIFICATION_SHOW_DURATION: 10,
   NOTIFICATION_TRANSITION_DURATION: 10,
 }))
