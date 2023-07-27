@@ -5,57 +5,66 @@
 
 $checkbox-size: rem.torem(40px);
 
-// This code block can be safely deleted once we remove the old checkbox global styles
-input[type="checkbox"].checkbox {
-  &:hover,
-  &:focus {
-    border-color: colors.$grey-dark;
-  }
 
+.checkbox input {
+  &:hover,
+  &:focus ,
   &:checked {
-    border: rem.torem(2px) solid colors.$tertiary;
-    background-color: colors.$light-pink;
+    &::after {
+      background-image: none;
+    }
   }
 
   &::after {
     content: none;
   }
-}
 
-.checkbox {
-  // We double up the selector to override the base input[type="checkbox"] styles
-  &.checkbox {
-    position: relative;
-    width: $checkbox-size;
-    height: $checkbox-size;
-    background-color: colors.$white;
-    border: rem.torem(1px) solid colors.$grey-dark;
-    border-radius: 50%;
-    transition: border 150ms ease, background 150ms ease;
+  position: relative;
+  width: $checkbox-size;
+  height: $checkbox-size;
+  background-color: colors.$white;
+  border: rem.torem(1px) solid colors.$grey-dark;
+  border-radius: 50%;
+  transition: border 150ms ease, background 150ms ease;
 
-    &:focus-within {
-      outline: rem.torem(1px) solid colors.$black;
-      outline-offset: rem.torem(2px);
+  &:focus-within {
+    outline: rem.torem(1px) solid colors.$black;
+    outline-offset: rem.torem(2px);
+  }
+
+  &:not(:checked) {
+    &:focus {
+      border-color: colors.$grey-dark;
     }
 
     &:hover {
-      box-shadow: forms.$input-hover-shadow;
-      background-color: colors.$white;
-      cursor: pointer;
-    }
-
-    &:checked {
-      border: rem.torem(2px) solid colors.$tertiary;
-      background-color: colors.$light-pink;
-      font-weight: 700;
-    }
-
-    &::before {
-      content: attr(data-letter);
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      border-color: colors.$grey-dark;
     }
   }
+
+  &:hover {
+    box-shadow: forms.$input-hover-shadow;
+    background-color: colors.$white;
+    cursor: pointer;
+  }
+
+  &:checked {
+    border: rem.torem(2px) solid colors.$tertiary;
+    background-color: colors.$light-pink;
+    font-weight: 700;
+    
+    &:focus {
+      border: rem.torem(2px) solid colors.$tertiary;
+      background-color: colors.$light-pink;
+    }
+  }
+
+  &::before {
+    content: attr(data-letter);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
 }

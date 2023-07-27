@@ -1,6 +1,8 @@
 import { useField } from 'formik'
 import React from 'react'
 
+import { BaseCheckbox } from 'ui-kit/form/shared'
+
 import styles from './DayCheckbox.module.scss'
 
 type DayCheckboxProps = React.InputHTMLAttributes<HTMLInputElement> & {
@@ -17,8 +19,8 @@ export const DayCheckbox = ({
   const [field] = useField(inputProps.name)
 
   return (
-    <input
-      type="checkbox"
+    <BaseCheckbox
+      label={undefined}
       {...field}
       {...inputProps}
       className={styles['checkbox']}
