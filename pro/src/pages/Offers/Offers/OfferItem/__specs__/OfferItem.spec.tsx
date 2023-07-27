@@ -544,7 +544,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       it('should not display confirm dialog when clicking on duplicate button when user did see the modal', async () => {
         props.audience = Audience.COLLECTIVE
         props.offer.isShowcase = true
-        Storage.prototype.getItem = jest.fn(() => 'true')
+        Storage.prototype.getItem = vi.fn(() => 'true')
         renderOfferItem(props)
 
         const duplicateButton = screen.getByRole('button', {

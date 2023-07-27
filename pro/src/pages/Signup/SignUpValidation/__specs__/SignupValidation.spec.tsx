@@ -47,7 +47,7 @@ describe('src | components | pages | Signup | validation', () => {
     } as UseCurrentUserReturn)
   })
 
-  afterEach(jest.resetAllMocks)
+  afterEach(vi.resetAllMocks)
 
   it('should redirect to home page if the user is logged in', async () => {
     const validateUser = vi.spyOn(api, 'validateUser')

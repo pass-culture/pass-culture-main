@@ -37,9 +37,7 @@ vi.mock('repository/pcapi/pcapi', () => ({
 
 vi.mock('utils/date', () => ({
   ...vi.importActual('utils/date'),
-  getToday: jest
-    .fn()
-    .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+  getToday: vi.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
 const offerId = 12
@@ -128,16 +126,16 @@ describe('screens:StocksThing', () => {
       shouldTrack: false,
       showVenuePopin: {},
     }
-    jest
-      .spyOn(api, 'getOffer')
-      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    vi.spyOn(api, 'getOffer').mockResolvedValue(
+      {} as GetIndividualOfferResponseModel
+    )
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
-    jest
-      .spyOn(api, 'patchOffer')
-      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    vi.spyOn(api, 'patchOffer').mockResolvedValue(
+      {} as GetIndividualOfferResponseModel
+    )
   })
 
   it('should not block when going outside and form is not touched', async () => {

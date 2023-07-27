@@ -94,19 +94,20 @@ describe('CollectiveOfferSummary', () => {
 
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(offer)
 
-    jest
-      .spyOn(api, 'getCategories')
-      .mockResolvedValue({ categories: [], subcategories: [] })
+    vi.spyOn(api, 'getCategories').mockResolvedValue({
+      categories: [],
+      subcategories: [],
+    })
 
-    jest
-      .spyOn(api, 'listEducationalOfferers')
-      .mockResolvedValue({ educationalOfferers: [] })
+    vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
+      educationalOfferers: [],
+    })
 
     vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
 
-    jest
-      .spyOn(api, 'createCollectiveOffer')
-      .mockResolvedValue({} as CollectiveOfferResponseIdModel)
+    vi.spyOn(api, 'createCollectiveOffer').mockResolvedValue(
+      {} as CollectiveOfferResponseIdModel
+    )
     fetchMock.mockIf(/image.jpg/, 'some response')
   })
 
@@ -177,11 +178,9 @@ describe('CollectiveOfferSummary', () => {
 
   it('should return an error when the duplication failed', async () => {
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce(offer)
-    jest
-      .spyOn(api, 'createCollectiveOffer')
-      .mockRejectedValueOnce(
-        new ApiError({} as ApiRequestOptions, { status: 400 } as ApiResult, '')
-      )
+    vi.spyOn(api, 'createCollectiveOffer').mockRejectedValueOnce(
+      new ApiError({} as ApiRequestOptions, { status: 400 } as ApiResult, '')
+    )
 
     renderCollectiveOfferSummaryEdition(offer, categories)
 
@@ -216,9 +215,9 @@ describe('CollectiveOfferSummary', () => {
 
   it('should return an error when trying to get offerer image blob', async () => {
     const mockResponse = new Response()
-    jest
-      .spyOn(mockResponse, 'blob')
-      .mockResolvedValue(Promise.resolve(undefined) as unknown as Blob)
+    vi.spyOn(mockResponse, 'blob').mockResolvedValue(
+      Promise.resolve(undefined) as unknown as Blob
+    )
 
     vi.spyOn(global, 'fetch').mockResolvedValue(mockResponse)
 

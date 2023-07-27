@@ -116,9 +116,9 @@ describe('route VenueEdition', () => {
 
     vi.spyOn(api, 'getVenue').mockResolvedValue(venue)
     vi.spyOn(pcapi, 'loadProviders').mockResolvedValue(providers)
-    jest
-      .spyOn(api, 'listVenueProviders')
-      .mockResolvedValue({ venue_providers: venueProviders })
+    vi.spyOn(api, 'listVenueProviders').mockResolvedValue({
+      venue_providers: venueProviders,
+    })
     vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
     vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
     vi.spyOn(api, 'fetchVenueLabels').mockResolvedValue([])

@@ -21,9 +21,7 @@ describe('CollectiveData', () => {
   } as unknown as Venue // we only test for used fields
 
   beforeEach(() => {
-    jest
-      .spyOn(api, 'getEducationalPartners')
-      .mockResolvedValue({ partners: [] })
+    vi.spyOn(api, 'getEducationalPartners').mockResolvedValue({ partners: [] })
   })
 
   it('should display title if the value is available', async () => {
@@ -39,9 +37,7 @@ describe('CollectiveData', () => {
       collectiveWebsite: 'www.google.fr',
     } as unknown as Venue // we only test for used fields
 
-    jest
-      .spyOn(api, 'getEducationalPartners')
-      .mockResolvedValue({ partners: [] })
+    vi.spyOn(api, 'getEducationalPartners').mockResolvedValue({ partners: [] })
 
     renderWithProviders(<CollectiveData venue={venue} />)
 
@@ -62,9 +58,7 @@ describe('CollectiveData', () => {
   })
 
   it('should not display title if value is empty', async () => {
-    jest
-      .spyOn(api, 'getEducationalPartners')
-      .mockResolvedValue({ partners: [] })
+    vi.spyOn(api, 'getEducationalPartners').mockResolvedValue({ partners: [] })
 
     renderWithProviders(<CollectiveData venue={venue} />)
 

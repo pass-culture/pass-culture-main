@@ -15,7 +15,7 @@ import { OldOffersSearchComponent, SearchProps } from '../OldOffersSearch'
 
 vi.mock('../Offers/Offers', () => {
   return {
-    Offers: jest.fn(() => <div />),
+    Offers: vi.fn(() => <div />),
   }
 })
 
@@ -26,7 +26,7 @@ vi.mock('apiClient/api', () => ({
 }))
 
 vi.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
-  getEducationalDomains: jest
+  getEducationalDomains: vi
     .fn()
     .mockResolvedValue([{ id: 1, name: 'Architecture' }]),
 }))
@@ -150,14 +150,12 @@ describe('offersSearch component', () => {
   })
 
   it('should close tag on click categorie tag', async () => {
-    jest
-      .spyOn(apiAdage, 'getEducationalOffersCategories')
-      .mockResolvedValueOnce({
-        categories: [{ id: 'CINEMA', proLabel: 'Cinéma' }],
-        subcategories: [
-          { id: 'ATELIER_PRATIQUE_ART', categoryId: 'PRATIQUE_ART' },
-        ],
-      })
+    vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockResolvedValueOnce({
+      categories: [{ id: 'CINEMA', proLabel: 'Cinéma' }],
+      subcategories: [
+        { id: 'ATELIER_PRATIQUE_ART', categoryId: 'PRATIQUE_ART' },
+      ],
+    })
     renderOffersSearchComponent(props, user)
 
     const categorieFilter = await screen.findByLabelText('Catégorie')

@@ -25,8 +25,8 @@ import {
 vi.mock('react-instantsearch-dom', () => {
   return {
     ...vi.importActual('react-instantsearch-dom'),
-    Configure: jest.fn(() => <div />),
-    connectStats: jest.fn(Component => (props: any) => (
+    Configure: vi.fn(() => <div />),
+    connectStats: vi.fn(Component => (props: any) => (
       <Component
         {...props}
         areHitsSorted={false}
@@ -91,7 +91,7 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const mockedApi = apiAdage as jest.Mocked<typeof apiAdage>
+const mockedApi = apiAdage as vi.Mocked<typeof apiAdage>
 const features: FeaturesContextType = []
 
 const renderApp = () => {
@@ -169,8 +169,7 @@ describe('app', () => {
 
     // Then
     await waitFor(() => expect(Configure).toHaveBeenCalledTimes(3))
-    const searchConfigurationFirstCall = (Configure as jest.Mock).mock
-      .calls[1][0]
+    const searchConfigurationFirstCall = (Configure as vi.Mock).mock.calls[1][0]
     expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
       ['venue.departmentCode:01', 'offer.interventionArea:01'],
       [
@@ -178,7 +177,7 @@ describe('app', () => {
         'offer.educationalInstitutionUAICode:uai',
       ],
     ])
-    const searchConfigurationSecondCall = (Configure as jest.Mock).mock
+    const searchConfigurationSecondCall = (Configure as vi.Mock).mock
       .calls[2][0]
     expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
       [
@@ -241,8 +240,7 @@ describe('app', () => {
 
     // Then
     await waitFor(() => expect(Configure).toHaveBeenCalledTimes(4))
-    const searchConfigurationFirstCall = (Configure as jest.Mock).mock
-      .calls[1][0]
+    const searchConfigurationFirstCall = (Configure as vi.Mock).mock.calls[1][0]
     expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
       [
         'venue.departmentCode:01',
@@ -256,7 +254,7 @@ describe('app', () => {
         'offer.educationalInstitutionUAICode:uai',
       ],
     ])
-    const searchConfigurationSecondCall = (Configure as jest.Mock).mock
+    const searchConfigurationSecondCall = (Configure as vi.Mock).mock
       .calls[2][0]
     expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
       ['venue.departmentCode:59', 'offer.interventionArea:59'],
@@ -266,8 +264,7 @@ describe('app', () => {
         'offer.educationalInstitutionUAICode:uai',
       ],
     ])
-    const searchConfigurationThirdCall = (Configure as jest.Mock).mock
-      .calls[3][0]
+    const searchConfigurationThirdCall = (Configure as vi.Mock).mock.calls[3][0]
     expect(searchConfigurationThirdCall.facetFilters).toStrictEqual([
       [
         'offer.educationalInstitutionUAICode:all',

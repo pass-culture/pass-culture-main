@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays, format } from 'date-fns'
-import { axe } from 'jest-axe'
+import { axe } from 'vi-axe'
 import React from 'react'
 
 import { Events } from 'core/FirebaseEvents/constants'

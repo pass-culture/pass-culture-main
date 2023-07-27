@@ -9,9 +9,9 @@ import upsertStocksThingAdapter from '../upsertStocksThingAdapter'
 
 describe('upsertStocksThingAdapter', () => {
   it('should send StockCreationBodyModel to api', async () => {
-    jest
-      .spyOn(api, 'upsertStocks')
-      .mockResolvedValue({ stocks: [{ id: 1 } as StockResponseModel] })
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stocks: [{ id: 1 } as StockResponseModel],
+    })
     upsertStocksThingAdapter({
       offerId: 1,
       formValues: {
@@ -39,9 +39,9 @@ describe('upsertStocksThingAdapter', () => {
     })
   })
   it('should send StockEditionBodyModel to api', async () => {
-    jest
-      .spyOn(api, 'upsertStocks')
-      .mockResolvedValue({ stocks: [{ id: 1 } as StockResponseModel] })
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stocks: [{ id: 1 } as StockResponseModel],
+    })
     upsertStocksThingAdapter({
       offerId: 1,
       formValues: {

@@ -36,9 +36,7 @@ vi.mock('repository/pcapi/pcapi', () => ({
 
 vi.mock('utils/date', () => ({
   ...vi.importActual('utils/date'),
-  getToday: jest
-    .fn()
-    .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+  getToday: vi.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
 const renderStockThingScreen = (storeOverrides: Partial<RootState> = {}) =>
@@ -182,13 +180,12 @@ describe('screens:StocksThing', () => {
     }
 
     vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    jest
-      .spyOn(api, 'getCategories')
-      .mockResolvedValue({ categories: [], subcategories: [] })
+    vi.spyOn(api, 'getCategories').mockResolvedValue({
+      categories: [],
+      subcategories: [],
+    })
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
-    jest
-      .spyOn(api, 'listOfferersNames')
-      .mockResolvedValue({ offerersNames: [] })
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
     vi.spyOn(api, 'listOffers').mockResolvedValue([
       {
         id: 1,
@@ -211,9 +208,9 @@ describe('screens:StocksThing', () => {
         subcategoryId: SubcategoryIdEnum.VOD,
       },
     ])
-    jest
-      .spyOn(api, 'patchOffer')
-      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    vi.spyOn(api, 'patchOffer').mockResolvedValue(
+      {} as GetIndividualOfferResponseModel
+    )
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
   })
 

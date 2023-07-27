@@ -1,5 +1,3 @@
-import '@testing-library/jest-dom'
-
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
@@ -62,15 +60,15 @@ describe('trackers for PriceCategories', () => {
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
-    jest
-      .spyOn(api, 'getOffer')
-      .mockResolvedValue({} as GetIndividualOfferResponseModel)
-    jest
-      .spyOn(api, 'patchOffer')
-      .mockResolvedValue({} as GetIndividualOfferResponseModel)
-    jest
-      .spyOn(api, 'postPriceCategories')
-      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    vi.spyOn(api, 'getOffer').mockResolvedValue(
+      {} as GetIndividualOfferResponseModel
+    )
+    vi.spyOn(api, 'patchOffer').mockResolvedValue(
+      {} as GetIndividualOfferResponseModel
+    )
+    vi.spyOn(api, 'postPriceCategories').mockResolvedValue(
+      {} as GetIndividualOfferResponseModel
+    )
   })
 
   it('should track when clicking on Etape suivante in creation', async () => {

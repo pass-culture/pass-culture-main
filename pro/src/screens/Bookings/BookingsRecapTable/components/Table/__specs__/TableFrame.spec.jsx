@@ -15,8 +15,8 @@ describe('components | TableWrapper', () => {
     const mockedValues = {
       canPreviousPage: true,
       canNextPage: true,
-      getTableProps: jest.fn(() => ({})),
-      getTableBodyProps: jest.fn(() => ({})),
+      getTableProps: vi.fn(() => ({})),
+      getTableBodyProps: vi.fn(() => ({})),
       headerGroups: [
         {
           id: 1,
@@ -24,14 +24,14 @@ describe('components | TableWrapper', () => {
             {
               id: 1,
               headerTitle: 'Offres',
-              render: jest.fn(() => <span>Offres</span>),
+              render: vi.fn(() => <span>Offres</span>),
               getHeaderProps: vi.fn(),
               getSortByToggleProps: vi.fn(),
             },
             {
               id: 2,
               headerTitle: 'Beneficiaires',
-              render: jest.fn(() => <span>Beneficiaires</span>),
+              render: vi.fn(() => <span>Beneficiaires</span>),
               getHeaderProps: vi.fn(),
               getSortByToggleProps: vi.fn(),
             },
@@ -47,7 +47,7 @@ describe('components | TableWrapper', () => {
         pageIndex: 0,
       },
     }
-    const useTableSpy = jest
+    const useTableSpy = vi
       .spyOn(reactTable, 'useTable')
       .mockImplementationOnce(() => mockedValues)
     const props = {

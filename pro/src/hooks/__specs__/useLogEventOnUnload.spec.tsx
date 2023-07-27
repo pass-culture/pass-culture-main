@@ -9,9 +9,7 @@ describe('useBeforeUnload', () => {
       const spyRemoveEvent = vi.fn()
       const mockLogEvent = vi.fn()
       vi.spyOn(window, 'addEventListener').mockImplementation(spyAddEvent)
-      jest
-        .spyOn(window, 'removeEventListener')
-        .mockImplementation(spyRemoveEvent)
+      vi.spyOn(window, 'removeEventListener').mockImplementation(spyRemoveEvent)
       expect(
         spyAddEvent.mock.calls
           .map(args => args[0] === 'beforeunload')

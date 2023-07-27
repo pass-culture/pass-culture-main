@@ -290,8 +290,7 @@ describe('screens:OfferIndividual::OfferType', () => {
     })
     vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
     const offersRecap = [collectiveOfferFactory()]
-    jest
-      .spyOn(api, 'getCollectiveOffers')
+    vi.spyOn(api, 'getCollectiveOffers')
       // @ts-expect-error FIX ME
       .mockResolvedValue(offersRecap)
 
@@ -414,13 +413,11 @@ describe('screens:OfferIndividual::OfferType', () => {
   })
 
   it('should render loader while fetching data', async () => {
-    jest
-      .spyOn(api, 'getOfferer')
-      .mockResolvedValueOnce(
-        new CancelablePromise(resolve =>
-          setTimeout(() => resolve({} as GetOffererResponseModel), 500)
-        )
+    vi.spyOn(api, 'getOfferer').mockResolvedValueOnce(
+      new CancelablePromise(resolve =>
+        setTimeout(() => resolve({} as GetOffererResponseModel), 500)
       )
+    )
 
     renderOfferTypes(store, '123')
 

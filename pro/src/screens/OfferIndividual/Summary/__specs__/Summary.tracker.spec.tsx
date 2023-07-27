@@ -77,9 +77,9 @@ describe('Summary trackers', () => {
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
-    jest
-      .spyOn(useOfferWizardMode, 'default')
-      .mockImplementation(() => OFFER_WIZARD_MODE.EDITION)
+    vi.spyOn(useOfferWizardMode, 'default').mockImplementation(
+      () => OFFER_WIZARD_MODE.EDITION
+    )
   })
 
   describe('On edition', () => {
@@ -184,9 +184,9 @@ describe('Summary trackers', () => {
         id: offerId,
         status: OfferStatus.DRAFT,
       })
-      jest
-        .spyOn(useOfferWizardMode, 'default')
-        .mockImplementation(() => OFFER_WIZARD_MODE.CREATION)
+      vi.spyOn(useOfferWizardMode, 'default').mockImplementation(
+        () => OFFER_WIZARD_MODE.CREATION
+      )
     })
 
     it('should track when clicking on "Modifier" on offer section', async () => {
@@ -336,9 +336,9 @@ describe('Summary trackers', () => {
         id: offerId,
         status: OfferStatus.DRAFT,
       })
-      jest
-        .spyOn(useOfferWizardMode, 'default')
-        .mockImplementation(() => OFFER_WIZARD_MODE.DRAFT)
+      vi.spyOn(useOfferWizardMode, 'default').mockImplementation(
+        () => OFFER_WIZARD_MODE.DRAFT
+      )
     })
 
     it('should track when clicking on "Modifier" on offer section', async () => {
@@ -462,9 +462,9 @@ describe('Summary trackers', () => {
   describe('First offer Pop in', () => {
     const venueId = 1
     beforeEach(async () => {
-      jest
-        .spyOn(useOfferWizardMode, 'default')
-        .mockImplementation(() => OFFER_WIZARD_MODE.CREATION)
+      vi.spyOn(useOfferWizardMode, 'default').mockImplementation(
+        () => OFFER_WIZARD_MODE.CREATION
+      )
 
       vi.spyOn(api, 'patchPublishOffer').mockResolvedValue()
 

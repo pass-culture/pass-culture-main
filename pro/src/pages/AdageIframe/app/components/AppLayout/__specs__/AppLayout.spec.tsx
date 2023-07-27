@@ -53,8 +53,8 @@ vi.mock('apiClient/api', () => ({
 vi.mock('react-instantsearch-dom', () => {
   return {
     ...vi.importActual('react-instantsearch-dom'),
-    Configure: jest.fn(() => <div />),
-    connectStats: jest.fn(Component => (props: any) => (
+    Configure: vi.fn(() => <div />),
+    connectStats: vi.fn(Component => (props: any) => (
       <Component
         {...props}
         areHitsSorted={false}

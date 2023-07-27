@@ -5,12 +5,10 @@ import { updateCollectiveOffersActiveStatusAdapter } from '../updateCollectiveOf
 describe('updateCollectiveOffersActiveStatusAdapter', () => {
   it('should deactivate all offers and confirm', async () => {
     // given
-    jest
-      .spyOn(api, 'patchCollectiveOffersActiveStatus')
+    vi.spyOn(api, 'patchCollectiveOffersActiveStatus')
       // @ts-expect-error
       .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
-    jest
-      .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
+    vi.spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
       // @ts-expect-error
       .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
 
@@ -34,12 +32,10 @@ describe('updateCollectiveOffersActiveStatusAdapter', () => {
 
   it('should activate all offers and confirm', async () => {
     // given
-    jest
-      .spyOn(api, 'patchCollectiveOffersActiveStatus')
+    vi.spyOn(api, 'patchCollectiveOffersActiveStatus')
       // @ts-expect-error
       .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
-    jest
-      .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
+    vi.spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
       // @ts-expect-error
       .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
 
@@ -66,8 +62,7 @@ describe('updateCollectiveOffersActiveStatusAdapter', () => {
     vi.spyOn(api, 'patchCollectiveOffersActiveStatus').mockRejectedValueOnce({
       status: 422,
     })
-    jest
-      .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
+    vi.spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
       // @ts-expect-error
       .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
 

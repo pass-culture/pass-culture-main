@@ -62,9 +62,7 @@ describe('CollectiveOfferStockCreation', () => {
     const offerTemplate = collectiveOfferTemplateFactory({
       educationalPriceDetail: 'Details from template',
     })
-    jest
-      .spyOn(api, 'getCollectiveOfferTemplate')
-      .mockResolvedValue(offerTemplate)
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(offerTemplate)
     renderCollectiveStockCreation('/offre/A1/collectif/stocks', props)
     await waitFor(() => {
       expect(api.getCollectiveOfferTemplate).toHaveBeenCalledTimes(1)
@@ -106,9 +104,7 @@ describe('CollectiveOfferStockCreation', () => {
     const offerTemplate = collectiveOfferTemplateFactory({
       educationalPriceDetail: 'Details from template',
     })
-    jest
-      .spyOn(api, 'getCollectiveOfferTemplate')
-      .mockResolvedValue(offerTemplate)
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(offerTemplate)
     renderCollectiveStockCreation(
       '/offre/A1/collectif/stocks?requete=1',
       defaultProps

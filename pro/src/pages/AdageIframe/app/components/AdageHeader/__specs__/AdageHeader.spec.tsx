@@ -56,9 +56,9 @@ describe('AdageHeader', () => {
       ...vi.importActual('hooks/useNotification'),
       error: notifyError,
     }))
-    jest
-      .spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
-      .mockResolvedValue(defaultEducationalInstitution)
+    vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget').mockResolvedValue(
+      defaultEducationalInstitution
+    )
   })
 
   it('should render adage header', async () => {
@@ -94,9 +94,10 @@ describe('AdageHeader', () => {
   })
 
   it('should return an error when the institution budget could not be retrieved', async () => {
-    jest
-      .spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
-      .mockRejectedValueOnce({})
+    vi.spyOn(
+      apiAdage,
+      'getEducationalInstitutionWithBudget'
+    ).mockRejectedValueOnce({})
 
     renderAdageHeader([], user)
     await waitFor(() =>
