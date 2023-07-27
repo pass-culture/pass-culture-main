@@ -22,7 +22,7 @@ import { validationSchema } from '../validationSchema'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getSiretInfo: jest.fn(),
+    getSiretInfo: vi.fn(),
   },
 }))
 
@@ -50,7 +50,7 @@ fetch.mockResponse(
 
 const renderOffererForm = ({
   initialValues,
-  onSubmit = jest.fn(),
+  onSubmit = vi.fn(),
   contextValue,
 }: {
   initialValues: Partial<OffererFormValues>
@@ -72,7 +72,7 @@ const renderOffererForm = ({
       <Formik
         initialValues={initialValues}
         onSubmit={onSubmit}
-        validationSchema={validationSchema(jest.fn())}
+        validationSchema={validationSchema(vi.fn())}
       >
         <Form>
           <OffererForm />

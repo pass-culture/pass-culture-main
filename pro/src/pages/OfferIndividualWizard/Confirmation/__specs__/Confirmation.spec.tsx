@@ -19,8 +19,8 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Confirmation from '../Confirmation'
 
-const mockLogEvent = jest.fn()
-window.open = jest.fn()
+const mockLogEvent = vi.fn()
+window.open = vi.fn()
 
 jest.mock('utils/config', () => {
   return {

@@ -32,9 +32,9 @@ describe('src | components | Desk', () => {
     venueDepartmentCode: '75',
   }
   const defaultProps: DeskProps = {
-    getBooking: jest.fn().mockResolvedValue({ booking: deskBooking }),
-    submitValidate: jest.fn().mockResolvedValue({}),
-    submitInvalidate: jest.fn().mockResolvedValue({}),
+    getBooking: vi.fn().mockResolvedValue({ booking: deskBooking }),
+    submitValidate: vi.fn().mockResolvedValue({}),
+    submitInvalidate: vi.fn().mockResolvedValue({}),
   }
   let props: DeskProps = { ...defaultProps }
 
@@ -66,7 +66,7 @@ describe('src | components | Desk', () => {
       tooShort: 'Caractères restants :',
       tooLong: 'La contremarque ne peut pas faire plus de 6 caractères',
     }
-    const getBooking = jest.fn()
+    const getBooking = vi.fn()
     const { messageContainer, inputToken } = renderDeskScreen({
       ...props,
       getBooking,
@@ -115,7 +115,7 @@ describe('src | components | Desk', () => {
     }
     props = {
       ...props,
-      getBooking: jest.fn().mockResolvedValue({
+      getBooking: vi.fn().mockResolvedValue({
         error: alreadyValidatedErrorMessage,
       }),
     }
@@ -167,7 +167,7 @@ describe('src | components | Desk', () => {
     }
     props = {
       ...props,
-      getBooking: jest.fn().mockResolvedValue({
+      getBooking: vi.fn().mockResolvedValue({
         error: alreadyValidatedErrorMessage,
       }),
     }
@@ -201,10 +201,10 @@ describe('src | components | Desk', () => {
     }
     props = {
       ...props,
-      getBooking: jest.fn().mockResolvedValue({
+      getBooking: vi.fn().mockResolvedValue({
         error: alreadyValidatedErrorMessage,
       }),
-      submitInvalidate: jest.fn().mockImplementation(() => Promise.resolve({})),
+      submitInvalidate: vi.fn().mockImplementation(() => Promise.resolve({})),
     }
     const { inputToken, buttonSubmitValidated } = renderDeskScreen(props)
     await userEvent.clear(inputToken)

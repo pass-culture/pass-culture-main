@@ -13,7 +13,7 @@ const renderStockFormActions = (props: StockFormActionsProps) => {
 
 describe('StockFormActions', () => {
   let actions: StockFormRowAction[]
-  const mockActionCallback = jest.fn()
+  const mockActionCallback = vi.fn()
   beforeEach(() => {
     actions = [
       {

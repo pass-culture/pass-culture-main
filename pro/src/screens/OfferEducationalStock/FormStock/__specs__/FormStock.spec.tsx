@@ -20,7 +20,7 @@ import FormStock, { FormStockProps } from '../FormStock'
 
 const renderFormStock = ({
   initialValues,
-  onSubmit = jest.fn(),
+  onSubmit = vi.fn(),
   props,
 }: {
   initialValues: OfferEducationalStockFormValues
@@ -46,7 +46,7 @@ const renderFormStock = ({
 
 describe('TimePicker', () => {
   let initialValues: OfferEducationalStockFormValues
-  const onSubmit = jest.fn()
+  const onSubmit = vi.fn()
   let props: FormStockProps
 
   beforeEach(() => {

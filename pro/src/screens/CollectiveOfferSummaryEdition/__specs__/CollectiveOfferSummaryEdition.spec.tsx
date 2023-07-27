@@ -55,7 +55,7 @@ const renderCollectiveOfferSummaryEdition = (
     <CollectiveOfferSummaryEdition
       offer={offer}
       categories={categories}
-      reloadCollectiveOffer={jest.fn()}
+      reloadCollectiveOffer={vi.fn()}
       mode={Mode.EDITION}
     />,
     { storeOverrides }
@@ -65,8 +65,8 @@ const renderCollectiveOfferSummaryEdition = (
 describe('CollectiveOfferSummary', () => {
   let offer: CollectiveOfferTemplate | CollectiveOffer
   let categories: EducationalCategories
-  const mockLogEvent = jest.fn()
-  const notifyError = jest.fn()
+  const mockLogEvent = vi.fn()
+  const notifyError = vi.fn()
 
   beforeEach(() => {
     offer = collectiveOfferTemplateFactory({ isTemplate: true })

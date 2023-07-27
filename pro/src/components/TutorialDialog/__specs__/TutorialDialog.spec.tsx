@@ -10,7 +10,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import TutorialDialog from '../TutorialDialog'
 
 jest.mock('apiClient/api', () => ({
-  api: { patchUserTutoSeen: jest.fn().mockResolvedValue({}) },
+  api: { patchUserTutoSeen: vi.fn().mockResolvedValue({}) },
 }))
 
 const stepTitles = [
@@ -23,7 +23,7 @@ const stepTitles = [
 const renderTutorialDialog = (storeOverrides: any) =>
   renderWithProviders(<TutorialDialog />, { storeOverrides })
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 describe('tutorial modal', () => {
   let storeOverrides: any

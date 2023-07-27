@@ -34,28 +34,28 @@ const renderCollectiveOfferSelectionDuplication = ({
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getCollectiveOffers: jest.fn(),
+    getCollectiveOffers: vi.fn(),
   },
 }))
 
 jest.mock('core/OfferEducational/utils/createOfferFromTemplate', () => ({
-  createOfferFromTemplate: jest.fn(),
+  createOfferFromTemplate: vi.fn(),
 }))
 
 describe('CollectiveOfferConfirmation', () => {
   let initialValues: { searchFilter: string; templateOfferId: string }
-  const onSubmit = jest.fn()
-  const notifyError = jest.fn()
+  const onSubmit = vi.fn()
+  const notifyError = vi.fn()
 
   beforeEach(() => {
     const offers: Offer[] = [collectiveOfferFactory(), collectiveOfferFactory()]
 
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
-      success: jest.fn(),
+      success: vi.fn(),
       error: notifyError,
-      information: jest.fn(),
-      pending: jest.fn(),
-      close: jest.fn(),
+      information: vi.fn(),
+      pending: vi.fn(),
+      close: vi.fn(),
     }))
     jest
       .spyOn(api, 'getCollectiveOffers')

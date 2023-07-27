@@ -14,7 +14,7 @@ import {
 import * as useAnalytics from '../../../../hooks/useAnalytics'
 import { VenueOfferSteps } from '../index'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 const renderVenueOfferSteps = (
   venueId: number | null = null,

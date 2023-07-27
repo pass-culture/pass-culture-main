@@ -43,7 +43,7 @@ const renderCategories = ({
 
 describe('OfferIndividual section: Categories', () => {
   let initialValues: Partial<OfferIndividualFormValues>
-  const onSubmit = jest.fn()
+  const onSubmit = vi.fn()
   let props: CategoriesProps
   let categories: OfferCategory[] = []
   let subCategories: OfferSubCategory[] = []

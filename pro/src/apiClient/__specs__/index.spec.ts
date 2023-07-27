@@ -7,7 +7,7 @@ describe('Maintenance', () => {
   it('should redirect to maintenance page api v1 responds with status 503', async () => {
     fetch.mockResponse('Service Unavailable', { status: 503 })
 
-    const mockLocationAssign = jest.fn()
+    const mockLocationAssign = vi.fn()
     Object.defineProperty(window, 'location', {
       value: {
         assign: mockLocationAssign,
@@ -24,7 +24,7 @@ describe('Maintenance', () => {
   it('should redirect to maintenance page api v2 responds with status 503', async () => {
     fetch.mockResponse('Service Unavailable', { status: 503 })
 
-    const mockLocationAssign = jest.fn()
+    const mockLocationAssign = vi.fn()
     Object.defineProperty(window, 'location', {
       value: {
         assign: mockLocationAssign,

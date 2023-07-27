@@ -71,7 +71,7 @@ describe('components | FilterByBookingStatus', () => {
       ],
       audience: Audience.INDIVIDUAL,
       bookingStatuses: [],
-      updateGlobalFilters: jest.fn(),
+      updateGlobalFilters: vi.fn(),
     }
   })
 

@@ -108,8 +108,8 @@ const renderForm = (isCreation: boolean) => {
 
 jest.mock('apiClient/api', () => ({
   api: {
-    postCreateVenue: jest.fn(),
-    getSiretInfo: jest.fn(),
+    postCreateVenue: vi.fn(),
+    getSiretInfo: vi.fn(),
   },
 }))
 
@@ -148,7 +148,7 @@ fetch.mockResponse(
   { status: 200 }
 )
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 describe('venue form trackers', () => {
   beforeEach(() => {

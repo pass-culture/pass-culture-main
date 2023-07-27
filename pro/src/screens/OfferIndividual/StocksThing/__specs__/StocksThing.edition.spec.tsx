@@ -26,12 +26,12 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 jest.mock('screens/OfferIndividual/Informations/utils', () => {
   return {
-    filterCategories: jest.fn(),
+    filterCategories: vi.fn(),
   }
 })
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  postThumbnail: jest.fn(),
+  postThumbnail: vi.fn(),
 }))
 
 jest.mock('utils/date', () => ({

@@ -15,10 +15,10 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { Offerers } from '..'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 jest.mock('apiClient/api', () => ({
   api: {
-    getVenuesOfOffererFromSiret: jest.fn(),
+    getVenuesOfOffererFromSiret: vi.fn(),
   },
 }))
 

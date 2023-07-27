@@ -12,15 +12,15 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import SignupContainer from '../SignupContainer'
 
-const mockLogEvent = jest.fn()
-window.matchMedia = jest.fn().mockReturnValue({ matches: true })
+const mockLogEvent = vi.fn()
+window.matchMedia = vi.fn().mockReturnValue({ matches: true })
 
 jest.mock('core/Offerers/adapters/getSirenDataAdapter')
 jest.mock('apiClient/api', () => ({
   api: {
-    getProfile: jest.fn().mockResolvedValue({}),
-    signupPro: jest.fn(),
-    signupProV2: jest.fn(),
+    getProfile: vi.fn().mockResolvedValue({}),
+    signupPro: vi.fn(),
+    signupProV2: vi.fn(),
   },
 }))
 
@@ -56,7 +56,7 @@ describe('Signup', () => {
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
-    Element.prototype.scrollIntoView = jest.fn()
+    Element.prototype.scrollIntoView = vi.fn()
   })
 
   it('should redirect to accueil page if the user is logged in', async () => {
@@ -210,8 +210,8 @@ describe('Signup', () => {
         })
       })
       it('should have an beforeunload event listener attached to the window', async () => {
-        const spyAddEvent = jest.fn()
-        const spyRemoveEvent = jest.fn()
+        const spyAddEvent = vi.fn()
+        const spyRemoveEvent = vi.fn()
         window.addEventListener = spyAddEvent
         window.removeEventListener = spyRemoveEvent
 

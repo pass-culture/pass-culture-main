@@ -25,10 +25,10 @@ jest.mock(
   })
 )
 
-const scrollIntoViewMock = jest.fn()
+const scrollIntoViewMock = vi.fn()
 
 jest.mock('utils/windowMatchMedia', () => ({
-  doesUserPreferReducedMotion: jest.fn().mockReturnValue(true),
+  doesUserPreferReducedMotion: vi.fn().mockReturnValue(true),
 }))
 
 const renderCollectiveTableRow = (props: TableBodyProps) =>
@@ -42,7 +42,7 @@ const renderCollectiveTableRow = (props: TableBodyProps) =>
 
 describe('CollectiveTableRow', () => {
   beforeAll(() => {
-    window.matchMedia = jest.fn().mockReturnValueOnce({ matches: true })
+    window.matchMedia = vi.fn().mockReturnValueOnce({ matches: true })
 
     jest
       .spyOn(api, 'getCollectiveBookingById')
@@ -61,7 +61,7 @@ describe('CollectiveTableRow', () => {
       isExpanded: false,
     } as Row<CollectiveBookingResponseModel>
 
-    renderCollectiveTableRow({ row, reloadBookings: jest.fn(), bookingId: '' })
+    renderCollectiveTableRow({ row, reloadBookings: vi.fn(), bookingId: '' })
 
     expect(
       screen.queryByText('Métier Alexandre Bérard')
@@ -91,7 +91,7 @@ describe('CollectiveTableRow', () => {
         )
       )
 
-    renderCollectiveTableRow({ row, reloadBookings: jest.fn(), bookingId: '' })
+    renderCollectiveTableRow({ row, reloadBookings: vi.fn(), bookingId: '' })
 
     expect(await screen.findByText('Chargement en cours')).toBeInTheDocument()
   })
@@ -102,13 +102,13 @@ describe('CollectiveTableRow', () => {
       original: { ...collectiveBookingRecapFactory({ bookingId: '123' }) },
       isExpanded: true,
       toggleRowExpanded: () => {
-        jest.fn()
+        vi.fn()
       },
     } as Row<CollectiveBookingResponseModel>
 
     renderCollectiveTableRow({
       row,
-      reloadBookings: jest.fn(),
+      reloadBookings: vi.fn(),
       bookingId: '123',
     })
     expect(api.getCollectiveBookingById).toHaveBeenCalledTimes(1)

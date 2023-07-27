@@ -38,7 +38,7 @@ describe('MultiSelectAutocomplete', () => {
 
   it('should display field', () => {
     render(
-      <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+      <Formik initialValues={initialValues} onSubmit={vi.fn()}>
         <MultiSelectAutocomplete {...props} />
       </Formik>
     )
@@ -47,7 +47,7 @@ describe('MultiSelectAutocomplete', () => {
 
   it('should display the number of selected options', async () => {
     render(
-      <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+      <Formik initialValues={initialValues} onSubmit={vi.fn()}>
         <MultiSelectAutocomplete {...props} />
       </Formik>
     )
@@ -57,7 +57,7 @@ describe('MultiSelectAutocomplete', () => {
   describe('Options', () => {
     it('should not display options at first display', () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+        <Formik initialValues={initialValues} onSubmit={vi.fn()}>
           <MultiSelectAutocomplete {...props} />
         </Formik>
       )
@@ -67,7 +67,7 @@ describe('MultiSelectAutocomplete', () => {
 
     it('should open and display all options when the user focuses on the field', async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+        <Formik initialValues={initialValues} onSubmit={vi.fn()}>
           <MultiSelectAutocomplete {...props} />
         </Formik>
       )
@@ -79,7 +79,7 @@ describe('MultiSelectAutocomplete', () => {
 
     it('should close and hide all options when the user triggers the close arrow button', async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+        <Formik initialValues={initialValues} onSubmit={vi.fn()}>
           <MultiSelectAutocomplete {...props} />
         </Formik>
       )
@@ -92,7 +92,7 @@ describe('MultiSelectAutocomplete', () => {
 
     it('should close and hide options when the user focuses outside of the field', async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+        <Formik initialValues={initialValues} onSubmit={vi.fn()}>
           <>
             <button>Outside</button>
             <MultiSelectAutocomplete {...props} />
@@ -106,7 +106,7 @@ describe('MultiSelectAutocomplete', () => {
 
     it('should display options as selected when the user selects them', async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+        <Formik initialValues={initialValues} onSubmit={vi.fn()}>
           <MultiSelectAutocomplete {...props} />
         </Formik>
       )
@@ -120,7 +120,7 @@ describe('MultiSelectAutocomplete', () => {
 
     it('should not display options as selected when the user unselects them', async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+        <Formik initialValues={initialValues} onSubmit={vi.fn()}>
           <MultiSelectAutocomplete {...props} />
         </Formik>
       )
@@ -135,7 +135,7 @@ describe('MultiSelectAutocomplete', () => {
   describe('filter', () => {
     it('should filter options when the user types in the field', async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+        <Formik initialValues={initialValues} onSubmit={vi.fn()}>
           <MultiSelectAutocomplete {...props} />
         </Formik>
       )
@@ -154,7 +154,7 @@ describe('MultiSelectAutocomplete', () => {
 
     it('should reset filter when the user closes and reopens the field', async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+        <Formik initialValues={initialValues} onSubmit={vi.fn()}>
           <MultiSelectAutocomplete {...props} />
         </Formik>
       )
@@ -172,7 +172,7 @@ describe('MultiSelectAutocomplete', () => {
   describe('tags', () => {
     it('should display tags when the user selects options', async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+        <Formik initialValues={initialValues} onSubmit={vi.fn()}>
           <MultiSelectAutocomplete {...props} />
         </Formik>
       )
@@ -189,7 +189,7 @@ describe('MultiSelectAutocomplete', () => {
 
     it('should not display associated tags when tags are hidden and the user selects options', async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+        <Formik initialValues={initialValues} onSubmit={vi.fn()}>
           <MultiSelectAutocomplete {...props} hideTags />
         </Formik>
       )
@@ -206,7 +206,7 @@ describe('MultiSelectAutocomplete', () => {
 
     it('should remove a tag when the user closes the tag', async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+        <Formik initialValues={initialValues} onSubmit={vi.fn()}>
           <MultiSelectAutocomplete {...props} />
         </Formik>
       )
@@ -218,7 +218,7 @@ describe('MultiSelectAutocomplete', () => {
     })
     it('should unselect option when the user removes a tag', async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+        <Formik initialValues={initialValues} onSubmit={vi.fn()}>
           <MultiSelectAutocomplete {...props} />
         </Formik>
       )

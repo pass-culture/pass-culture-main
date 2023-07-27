@@ -1,7 +1,7 @@
 import { createImageFile } from 'utils/testFileHelpers'
 
 import { getValidatorErrors, imageConstraints } from '../imageConstraints'
-const mockCreateImageBitmap = jest.fn()
+const mockCreateImageBitmap = vi.fn()
 
 Object.defineProperty(global, 'createImageBitmap', {
   writable: true,

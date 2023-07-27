@@ -7,7 +7,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { UserPasswordForm } from '..'
 import { UserPasswordFormProps } from '../UserPasswordForm'
 
-const postPasswordAdapterMock = jest.fn()
+const postPasswordAdapterMock = vi.fn()
 
 const renderUserPasswordForm = (props: UserPasswordFormProps) => {
   const storeOverrides = {
@@ -33,7 +33,7 @@ describe('components:UserPasswordForm', () => {
   beforeEach(() => {
     postPasswordAdapterMock.mockResolvedValue({})
     props = {
-      closeForm: jest.fn(),
+      closeForm: vi.fn(),
       postPasswordAdapter: postPasswordAdapterMock,
     }
   })

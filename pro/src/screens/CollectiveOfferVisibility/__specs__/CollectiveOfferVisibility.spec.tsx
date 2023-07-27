@@ -20,18 +20,18 @@ import CollectiveOfferVisibility, {
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getAutocompleteEducationalRedactorsForUai: jest.fn(),
-    getCollectiveOfferRequest: jest.fn(),
+    getAutocompleteEducationalRedactorsForUai: vi.fn(),
+    getCollectiveOfferRequest: vi.fn(),
   },
 }))
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: () => ({
-    offerId: jest.fn(),
-    requestId: jest.fn(),
+    offerId: vi.fn(),
+    requestId: vi.fn(),
   }),
-  useNavigate: jest.fn(),
+  useNavigate: vi.fn(),
 }))
 
 jest.mock('core/OfferEducational/utils/extractInitialVisibilityValues', () => ({
@@ -90,9 +90,9 @@ describe('CollectiveOfferVisibility', () => {
   beforeEach(() => {
     props = {
       mode: Mode.CREATION,
-      patchInstitution: jest.fn(),
+      patchInstitution: vi.fn(),
       initialValues: DEFAULT_VISIBILITY_FORM_VALUES,
-      onSuccess: jest.fn(),
+      onSuccess: vi.fn(),
       institutions,
       isLoadingInstitutions: false,
       offer: collectiveOfferFactory({ id: offerId }),
@@ -161,7 +161,7 @@ describe('CollectiveOfferVisibility', () => {
   })
 
   it('should display details on selected institution', async () => {
-    const spyPatch = jest.fn().mockResolvedValueOnce({ isOk: true })
+    const spyPatch = vi.fn().mockResolvedValueOnce({ isOk: true })
     renderVisibilityStep({ ...props, patchInstitution: spyPatch })
     await userEvent.click(
       screen.getByLabelText(/Un établissement en particulier/)
@@ -215,7 +215,7 @@ describe('CollectiveOfferVisibility', () => {
     const spyPatch = jest
       .fn()
       .mockResolvedValue({ isOk: false, message: 'Ooops' })
-    const notifyError = jest.fn()
+    const notifyError = vi.fn()
     // @ts-expect-error
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       error: notifyError,
@@ -311,7 +311,7 @@ describe('CollectiveOfferVisibility', () => {
     })
 
     it('should hide banner when clicking on trash icon', async () => {
-      const spyPatch = jest.fn().mockResolvedValueOnce({
+      const spyPatch = vi.fn().mockResolvedValueOnce({
         isOk: true,
         payload: { teacherEmail: 'maria.sklodowska@example.com' },
       })
@@ -404,7 +404,7 @@ describe('CollectiveOfferVisibility', () => {
     })
 
     it('should display error message on api error getting requested info', async () => {
-      const notifyError = jest.fn()
+      const notifyError = vi.fn()
 
       jest.spyOn(useNotification, 'default').mockImplementation(() => ({
         ...jest.requireActual('hooks/useNotification'),

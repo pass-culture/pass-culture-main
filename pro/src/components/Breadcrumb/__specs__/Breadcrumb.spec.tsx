@@ -11,7 +11,7 @@ const renderBreadcrumb = (props: BreadcrumbProps) => {
   renderWithProviders(<Breadcrumb {...props} />)
 }
 
-const onClick = jest.fn()
+const onClick = vi.fn()
 
 describe('Breadcrumb', () => {
   let props: BreadcrumbProps

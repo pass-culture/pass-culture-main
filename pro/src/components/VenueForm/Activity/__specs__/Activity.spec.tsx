@@ -13,7 +13,7 @@ import informationsValidationSchema from '../validationSchema'
 
 const renderInformations = ({
   initialValues,
-  onSubmit = jest.fn(),
+  onSubmit = vi.fn(),
   props,
 }: {
   initialValues: Partial<VenueFormValues>
@@ -41,7 +41,7 @@ const renderInformations = ({
 describe('Activity', () => {
   let props: ActivityProps
   let initialValues: Partial<VenueFormValues>
-  const onSubmit = jest.fn()
+  const onSubmit = vi.fn()
 
   beforeEach(() => {
     initialValues = { ...DEFAULT_ACTIVITY_FORM_VALUES }

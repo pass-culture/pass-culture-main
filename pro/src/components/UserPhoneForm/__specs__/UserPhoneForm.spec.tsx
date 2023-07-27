@@ -7,7 +7,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { UserPhoneForm } from '../'
 import { UserPhoneFormProps } from '../UserPhoneForm'
 
-const patchPhoneAdapterMock = jest.fn()
+const patchPhoneAdapterMock = vi.fn()
 
 const renderUserPhoneForm = (props: UserPhoneFormProps) => {
   const storeOverrides = {
@@ -31,7 +31,7 @@ describe('components:UserPhoneForm', () => {
   beforeEach(() => {
     patchPhoneAdapterMock.mockResolvedValue({})
     props = {
-      closeForm: jest.fn(),
+      closeForm: vi.fn(),
       initialValues: {
         phoneNumber: '0615142345',
       },

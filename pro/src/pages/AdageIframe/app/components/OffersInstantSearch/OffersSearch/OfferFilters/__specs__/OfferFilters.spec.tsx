@@ -9,8 +9,8 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { SearchFormValues } from '../../OffersSearch'
 import { OfferFilters } from '../OfferFilters'
 
-const handleSubmit = jest.fn()
-const handleReset = jest.fn()
+const handleSubmit = vi.fn()
+const handleReset = vi.fn()
 
 const renderOfferFilters = ({
   isLoading,

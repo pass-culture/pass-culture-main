@@ -9,7 +9,7 @@ describe('handleAllFranceDepartmentOptions', () => {
   it('should do nothing', () => {
     const currentValues = ['01', '02', '03']
     const previousValues = ['01', '02']
-    const mockedSetValue = jest.fn()
+    const mockedSetValue = vi.fn()
 
     handleAllFranceDepartmentOptions(
       currentValues,
@@ -26,7 +26,7 @@ describe('handleAllFranceDepartmentOptions', () => {
       ...allDepartmentValues.filter(value => value === '01'),
       'culturalPartner',
     ]
-    const mockedSetValue = jest.fn()
+    const mockedSetValue = vi.fn()
 
     handleAllFranceDepartmentOptions(
       currentValues,
@@ -52,7 +52,7 @@ describe('handleAllFranceDepartmentOptions', () => {
       ALL_FRANCE_OPTION_VALUE,
       'culturalPartner',
     ]
-    const mockedSetValue = jest.fn()
+    const mockedSetValue = vi.fn()
 
     handleAllFranceDepartmentOptions(
       currentValues,
@@ -68,7 +68,7 @@ describe('handleAllFranceDepartmentOptions', () => {
   it('should select all departments', () => {
     const currentValues = [ALL_FRANCE_OPTION_VALUE, 'culturalPartner', '01']
     const previousValues = ['culturalPartner', '01']
-    const mockedSetValue = jest.fn()
+    const mockedSetValue = vi.fn()
 
     handleAllFranceDepartmentOptions(
       currentValues,
@@ -91,7 +91,7 @@ describe('handleAllFranceDepartmentOptions', () => {
       'culturalPartner',
       ...allDepartmentValues,
     ]
-    const mockedSetValue = jest.fn()
+    const mockedSetValue = vi.fn()
 
     handleAllFranceDepartmentOptions(
       currentValues,

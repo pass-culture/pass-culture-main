@@ -18,14 +18,14 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getVenueTypes: jest.fn(),
-    saveNewOnboardingData: jest.fn(),
+    getVenueTypes: vi.fn(),
+    saveNewOnboardingData: vi.fn(),
   },
 }))
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useNavigate: jest.fn(),
+  useNavigate: vi.fn(),
 }))
 
 const addressInformations: Address = {
@@ -92,7 +92,7 @@ describe('screens:SignupJourney::Validation', () => {
 
   describe('Data incomplete', () => {
     it('Should redirect to authentication if no offerer is selected', async () => {
-      const mockNavigate = jest.fn()
+      const mockNavigate = vi.fn()
       jest.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
 
       renderValidationScreen(contextValue)
@@ -104,7 +104,7 @@ describe('screens:SignupJourney::Validation', () => {
     })
 
     it('Should see activity screen if no activity data is set but an offerer is set', async () => {
-      const mockNavigate = jest.fn()
+      const mockNavigate = vi.fn()
       jest.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
       renderValidationScreen({
         ...contextValue,
@@ -170,7 +170,7 @@ describe('screens:SignupJourney::Validation', () => {
     })
 
     it('Should navigate to activity page with the previous step button', async () => {
-      const mockNavigate = jest.fn()
+      const mockNavigate = vi.fn()
       jest.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
 
       renderValidationScreen(contextValue)
@@ -202,7 +202,7 @@ describe('screens:SignupJourney::Validation', () => {
       jest
         .spyOn(api, 'saveNewOnboardingData')
         .mockResolvedValue({} as GetOffererResponseModel)
-      const mockNavigate = jest.fn()
+      const mockNavigate = vi.fn()
       jest.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))

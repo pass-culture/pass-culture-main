@@ -19,7 +19,7 @@ jest.mock('apiClient/adresse', () => {
   return {
     ...jest.requireActual('apiClient/adresse'),
     default: {
-      getDataFromAddress: jest.fn(),
+      getDataFromAddress: vi.fn(),
     },
   }
 })

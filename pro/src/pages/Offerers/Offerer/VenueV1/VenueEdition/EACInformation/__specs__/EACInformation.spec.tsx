@@ -9,7 +9,7 @@ import EACInformation from '../EACInformation'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getEducationalPartners: jest.fn(),
+    getEducationalPartners: vi.fn(),
   },
 }))
 

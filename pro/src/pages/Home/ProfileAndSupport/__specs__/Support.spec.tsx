@@ -8,7 +8,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Support from '../Support'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 const renderSupport = (storeOverrides: any = {}) => {
   return renderWithProviders(<Support />, {

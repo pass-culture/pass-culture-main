@@ -8,14 +8,14 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import ResetPassword from '../ResetPassword'
 
 jest.mock('utils/recaptcha', () => ({
-  initReCaptchaScript: jest.fn().mockReturnValue({ remove: jest.fn() }),
-  getReCaptchaToken: jest.fn().mockResolvedValue({}),
+  initReCaptchaScript: vi.fn().mockReturnValue({ remove: vi.fn() }),
+  getReCaptchaToken: vi.fn().mockResolvedValue({}),
 }))
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getProfile: jest.fn().mockResolvedValue({}),
-    postNewPassword: jest.fn().mockResolvedValue({}),
+    getProfile: vi.fn().mockResolvedValue({}),
+    postNewPassword: vi.fn().mockResolvedValue({}),
   },
 }))
 

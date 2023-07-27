@@ -8,7 +8,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import BookingOfferCell from '../BookingOfferCell'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 const renderOfferCell = props => {
   const storeOverrides = { app: { logEvent: mockLogEvent } }

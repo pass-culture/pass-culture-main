@@ -25,22 +25,22 @@ describe('components | TableWrapper', () => {
               id: 1,
               headerTitle: 'Offres',
               render: jest.fn(() => <span>Offres</span>),
-              getHeaderProps: jest.fn(),
-              getSortByToggleProps: jest.fn(),
+              getHeaderProps: vi.fn(),
+              getSortByToggleProps: vi.fn(),
             },
             {
               id: 2,
               headerTitle: 'Beneficiaires',
               render: jest.fn(() => <span>Beneficiaires</span>),
-              getHeaderProps: jest.fn(),
-              getSortByToggleProps: jest.fn(),
+              getHeaderProps: vi.fn(),
+              getSortByToggleProps: vi.fn(),
             },
           ],
         },
       ],
-      nextPage: jest.fn(),
-      previousPage: jest.fn(),
-      prepareRow: jest.fn(),
+      nextPage: vi.fn(),
+      previousPage: vi.fn(),
+      prepareRow: vi.fn(),
       page: [],
       pageCount: 1,
       state: {
@@ -56,22 +56,22 @@ describe('components | TableWrapper', () => {
           id: 1,
           headerTitle: 'Stock',
           accessor: 'stock',
-          getHeaderProps: jest.fn(),
-          getSortByToggleProps: jest.fn(),
+          getHeaderProps: vi.fn(),
+          getSortByToggleProps: vi.fn(),
         },
         {
           id: 2,
           headerTitle: 'Beneficiaire',
           accessor: 'beneficiary',
-          getHeaderProps: jest.fn(),
-          getSortByToggleProps: jest.fn(),
+          getHeaderProps: vi.fn(),
+          getSortByToggleProps: vi.fn(),
         },
       ],
       currentPage: 0,
       data: [{}],
       nbBookings: 1,
       nbBookingsPerPage: 1,
-      updateCurrentPage: jest.fn(),
+      updateCurrentPage: vi.fn(),
     }
 
     useTableSpy.mockReturnValue(mockedValues)
@@ -97,8 +97,8 @@ describe('components | TableWrapper', () => {
           Cell: function ({ value }) {
             return <CellMock offer={value} />
           },
-          getHeaderProps: jest.fn(),
-          getSortByToggleProps: jest.fn(),
+          getHeaderProps: vi.fn(),
+          getSortByToggleProps: vi.fn(),
         },
         {
           id: 2,
@@ -107,8 +107,8 @@ describe('components | TableWrapper', () => {
           Cell: function ({ value }) {
             return <CellMock offer={value} />
           },
-          getHeaderProps: jest.fn(),
-          getSortByToggleProps: jest.fn(),
+          getHeaderProps: vi.fn(),
+          getSortByToggleProps: vi.fn(),
         },
       ],
       data: [
@@ -140,7 +140,7 @@ describe('components | TableWrapper', () => {
       nbBookings: 2,
       nbBookingsPerPage: 2,
       currentPage: 0,
-      updateCurrentPage: jest.fn(),
+      updateCurrentPage: vi.fn(),
     }
 
     // When
@@ -163,8 +163,8 @@ describe('components | TableWrapper', () => {
             Cell: function ({ value }) {
               return <CellMock offer={value} />
             },
-            getHeaderProps: jest.fn(),
-            getSortByToggleProps: jest.fn(),
+            getHeaderProps: vi.fn(),
+            getSortByToggleProps: vi.fn(),
           },
         ],
         data: [
@@ -178,7 +178,7 @@ describe('components | TableWrapper', () => {
         nbBookings: 6,
         nbBookingsPerPage: 5,
         currentPage: 0,
-        updateCurrentPage: jest.fn(),
+        updateCurrentPage: vi.fn(),
       }
 
       // When
@@ -199,8 +199,8 @@ describe('components | TableWrapper', () => {
             Cell: function ({ value }) {
               return <CellMock offer={value} />
             },
-            getHeaderProps: jest.fn(),
-            getSortByToggleProps: jest.fn(),
+            getHeaderProps: vi.fn(),
+            getSortByToggleProps: vi.fn(),
           },
         ],
         data: [
@@ -214,7 +214,7 @@ describe('components | TableWrapper', () => {
         nbBookings: 6,
         nbBookingsPerPage: 5,
         currentPage: 0,
-        updateCurrentPage: jest.fn(),
+        updateCurrentPage: vi.fn(),
       }
 
       // When
@@ -242,8 +242,8 @@ describe('components | TableWrapper', () => {
             Cell: function ({ value }) {
               return <CellMock offer={value} />
             },
-            getHeaderProps: jest.fn(),
-            getSortByToggleProps: jest.fn(),
+            getHeaderProps: vi.fn(),
+            getSortByToggleProps: vi.fn(),
           },
         ],
         data: [
@@ -257,7 +257,7 @@ describe('components | TableWrapper', () => {
         nbBookings: 6,
         nbBookingsPerPage: 5,
         currentPage: 0,
-        updateCurrentPage: jest.fn(),
+        updateCurrentPage: vi.fn(),
       }
       render(<TableWrapper {...props} />)
       const nextButton = screen.getAllByRole('button')[2]
@@ -284,8 +284,8 @@ describe('components | TableWrapper', () => {
             Cell: function ({ value }) {
               return <CellMock offer={value} />
             },
-            getHeaderProps: jest.fn(),
-            getSortByToggleProps: jest.fn(),
+            getHeaderProps: vi.fn(),
+            getSortByToggleProps: vi.fn(),
           },
         ],
         data: [
@@ -299,7 +299,7 @@ describe('components | TableWrapper', () => {
         nbBookings: 6,
         nbBookingsPerPage: 5,
         currentPage: 1,
-        updateCurrentPage: jest.fn(),
+        updateCurrentPage: vi.fn(),
       }
       render(<TableWrapper {...props} />)
 

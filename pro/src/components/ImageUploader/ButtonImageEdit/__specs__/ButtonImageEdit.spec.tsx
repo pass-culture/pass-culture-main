@@ -16,7 +16,7 @@ describe('test ButtonImageEdit', () => {
   beforeEach(() => {
     props = {
       mode: UploaderModeEnum.OFFER,
-      onImageUpload: jest.fn(),
+      onImageUpload: vi.fn(),
     }
   })
 

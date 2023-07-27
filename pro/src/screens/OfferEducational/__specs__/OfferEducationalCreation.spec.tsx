@@ -15,28 +15,28 @@ import { OfferEducationalProps } from '../OfferEducational'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    editCollectiveOffer: jest.fn(),
+    editCollectiveOffer: vi.fn(),
   },
 }))
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  postCollectiveOfferImage: jest.fn(),
+  postCollectiveOfferImage: vi.fn(),
 }))
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useNavigate: jest.fn(),
+  useNavigate: vi.fn(),
 }))
 
-Element.prototype.scrollIntoView = jest.fn()
+Element.prototype.scrollIntoView = vi.fn()
 
-window.matchMedia = jest.fn().mockReturnValue({ matches: true })
+window.matchMedia = vi.fn().mockReturnValue({ matches: true })
 
 describe('screens | OfferEducational : event address step', () => {
   let props: OfferEducationalProps
   let store: Partial<RootState>
   let offer: CollectiveOffer
-  const mockNavigate = jest.fn()
+  const mockNavigate = vi.fn()
 
   beforeEach(() => {
     offer = collectiveOfferFactory()

@@ -12,7 +12,7 @@ const renderDurationInput = () => {
     name: 'durationMinutes',
   }
   return render(
-    <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+    <Formik initialValues={initialValues} onSubmit={vi.fn()}>
       <DurationInput {...props} />
     </Formik>
   )

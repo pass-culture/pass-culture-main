@@ -3,19 +3,19 @@ import { client } from 'repository/pcapi/pcapiClient'
 
 jest.mock('repository/pcapi/pcapiClient', () => ({
   client: {
-    delete: jest.fn(),
-    get: jest.fn().mockResolvedValue({}),
-    getPlainText: jest.fn().mockResolvedValue(''),
-    patch: jest.fn(),
-    post: jest.fn().mockResolvedValue({}),
-    postWithFormData: jest.fn(),
+    delete: vi.fn(),
+    get: vi.fn().mockResolvedValue({}),
+    getPlainText: vi.fn().mockResolvedValue(''),
+    patch: vi.fn(),
+    post: vi.fn().mockResolvedValue({}),
+    postWithFormData: vi.fn(),
   },
 }))
 
 jest.mock('utils/date', () => {
   return {
     ...jest.requireActual('utils/date'),
-    getToday: jest.fn().mockReturnValue(new Date(2020, 8, 12)),
+    getToday: vi.fn().mockReturnValue(new Date(2020, 8, 12)),
   }
 })
 

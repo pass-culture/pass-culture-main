@@ -22,7 +22,7 @@ import OfferIndividualForm, {
 
 const renderOfferIndividualForm = ({
   initialValues,
-  onSubmit = jest.fn(),
+  onSubmit = vi.fn(),
   props,
 }: {
   initialValues: OfferIndividualFormValues
@@ -46,7 +46,7 @@ const renderOfferIndividualForm = ({
 
 describe('OfferIndividualForm', () => {
   let initialValues: OfferIndividualFormValues
-  const onSubmit = jest.fn()
+  const onSubmit = vi.fn()
   let props: OfferIndividualFormProps
   let categories: OfferCategory[] = []
   let subCategories: OfferSubCategory[] = []
@@ -145,8 +145,8 @@ describe('OfferIndividualForm', () => {
       offererNames,
       venueList,
       readOnlyFields: [],
-      onImageUpload: jest.fn(),
-      onImageDelete: jest.fn(),
+      onImageUpload: vi.fn(),
+      onImageDelete: vi.fn(),
       offerSubtype: null,
     }
     initialValues = setDefaultInitialFormValues(

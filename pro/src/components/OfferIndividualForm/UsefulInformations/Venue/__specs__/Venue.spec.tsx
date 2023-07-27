@@ -17,7 +17,7 @@ import { VenueProps } from '../Venue'
 
 const renderVenue = ({
   initialValues,
-  onSubmit = jest.fn(),
+  onSubmit = vi.fn(),
   props,
 }: {
   initialValues: Partial<OfferIndividualFormValues>
@@ -38,7 +38,7 @@ const renderVenue = ({
 describe('OfferIndividual section: venue', () => {
   let initialValues: Partial<OfferIndividualFormValues>
   let props: VenueProps
-  const onSubmit = jest.fn()
+  const onSubmit = vi.fn()
   let venueList: OfferIndividualVenue[]
   const firstOfferer = {
     id: 1,

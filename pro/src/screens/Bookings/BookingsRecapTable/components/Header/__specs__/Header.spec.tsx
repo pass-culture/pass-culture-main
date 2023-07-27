@@ -8,7 +8,7 @@ const renderHeader = (props: HeaderProps) => render(<Header {...props} />)
 const defaultProps: HeaderProps = {
   bookingsRecapFilteredLength: 1,
   isLoading: false,
-  resetBookings: jest.fn(),
+  resetBookings: vi.fn(),
 }
 
 describe("bookings recap table's header", () => {

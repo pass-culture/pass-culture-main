@@ -42,7 +42,7 @@ const renderFormNotifications = (
 
 describe('FormNotifications', () => {
   let initialValues: Partial<OfferEducationalFormValues>
-  const onSubmit = jest.fn()
+  const onSubmit = vi.fn()
   beforeEach(() => {
     initialValues = {
       notificationEmails: [''],

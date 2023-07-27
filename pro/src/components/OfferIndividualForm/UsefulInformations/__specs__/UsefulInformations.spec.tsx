@@ -25,7 +25,7 @@ import validationSchema from '../validationSchema'
 
 const renderUsefulInformations = async ({
   initialValues,
-  onSubmit = jest.fn(),
+  onSubmit = vi.fn(),
   props,
 }: {
   initialValues: Partial<OfferIndividualFormValues>
@@ -65,7 +65,7 @@ const renderUsefulInformations = async ({
 describe('OfferIndividual section: UsefulInformations', () => {
   let initialValues: Partial<OfferIndividualFormValues>
   let props: UsefulInformationsProps
-  const onSubmit = jest.fn()
+  const onSubmit = vi.fn()
   const offererId = 1
   let venueList: OfferIndividualVenue[]
 

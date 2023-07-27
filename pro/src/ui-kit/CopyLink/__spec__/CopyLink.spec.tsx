@@ -32,7 +32,7 @@ describe('Copy link button', () => {
       textToCopy: 'mYc0dE',
     }
     renderCopyLink(props)
-    const copyCommand = (document.execCommand = jest.fn())
+    const copyCommand = (document.execCommand = vi.fn())
 
     // When
     const button = screen.getByText('Copier')

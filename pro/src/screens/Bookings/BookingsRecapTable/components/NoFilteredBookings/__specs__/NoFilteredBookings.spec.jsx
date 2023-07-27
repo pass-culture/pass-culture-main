@@ -8,7 +8,7 @@ describe('components | NoFilteredBookings', () => {
   it('should reset filters when clicking on reset button', async () => {
     // given
     const props = {
-      resetFilters: jest.fn(),
+      resetFilters: vi.fn(),
     }
     render(<NoFilteredBookings {...props} />)
     const resetButton = screen.getByText('afficher toutes les réservations')

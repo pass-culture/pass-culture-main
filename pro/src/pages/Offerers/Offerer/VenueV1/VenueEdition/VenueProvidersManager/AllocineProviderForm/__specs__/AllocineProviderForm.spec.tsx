@@ -11,11 +11,11 @@ import AllocineProviderForm, {
   AllocineProviderFormProps,
 } from '../AllocineProviderForm'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 const renderAllocineProviderForm = async (props: AllocineProviderFormProps) => {
   renderWithProviders(
-    <Formik initialValues={{}} onSubmit={jest.fn()}>
+    <Formik initialValues={{}} onSubmit={vi.fn()}>
       <Form>
         <AllocineProviderForm {...props} />
       </Form>
@@ -36,10 +36,10 @@ describe('AllocineProviderForm', () => {
   beforeEach(async () => {
     props = {
       venueId: venueId,
-      saveVenueProvider: jest.fn(),
+      saveVenueProvider: vi.fn(),
       providerId: providerId,
       offererId: offererId,
-      onCancel: jest.fn(),
+      onCancel: vi.fn(),
       initialValues: {
         isDuo: true,
         quantity: '',

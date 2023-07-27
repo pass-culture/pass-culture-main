@@ -136,7 +136,7 @@ describe('pcapiClient', () => {
 
     it('should redirect to maintenance page when status is 503', async () => {
       fetch.mockResponse('Service Unavailable', { status: 503 })
-      const mockLocationAssign = jest.fn()
+      const mockLocationAssign = vi.fn()
       Object.defineProperty(window, 'location', {
         value: {
           assign: mockLocationAssign,

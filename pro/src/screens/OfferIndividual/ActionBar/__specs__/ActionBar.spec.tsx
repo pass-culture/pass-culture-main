@@ -33,9 +33,9 @@ const renderActionBar = ({
 
 describe('OfferIndividual::ActionBar', () => {
   let props: ActionBarProps
-  const onClickPreviousMock = jest.fn()
-  const onClickNextMock = jest.fn()
-  const onClickSaveDraftMock = jest.fn()
+  const onClickPreviousMock = vi.fn()
+  const onClickNextMock = vi.fn()
+  const onClickSaveDraftMock = vi.fn()
 
   beforeEach(() => {
     props = {

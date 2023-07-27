@@ -16,7 +16,7 @@ import Venue, { VenueProps } from '../Venue'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getVenueStats: jest.fn().mockResolvedValue({}),
+    getVenueStats: vi.fn().mockResolvedValue({}),
   },
 }))
 const renderVenue = (

@@ -20,8 +20,8 @@ jest.mock('utils/date', () => ({
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getReimbursementPoints: jest.fn(),
-    getInvoices: jest.fn(),
+    getReimbursementPoints: vi.fn(),
+    getInvoices: vi.fn(),
   },
 }))
 

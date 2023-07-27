@@ -39,9 +39,9 @@ describe('AdageButtonFilter', () => {
     title: 'Lieu de l’intervention',
     isActive: false,
     isOpen: true,
-    setIsOpen: jest.fn(),
+    setIsOpen: vi.fn(),
     filterName: 'domains',
-    handleSubmit: jest.fn(),
+    handleSubmit: vi.fn(),
   }
 
   it('should render adageButtonFilter', () => {

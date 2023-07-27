@@ -10,21 +10,21 @@ import { useConfigureFirebase } from '../useAnalytics'
 
 jest.mock('@firebase/analytics', () => {
   return {
-    getAnalytics: jest.fn().mockReturnValue('getAnalyticsReturn'),
-    initializeAnalytics: jest.fn(),
-    setUserId: jest.fn(),
-    isSupported: jest.fn().mockResolvedValue(true),
-    logEvent: jest.fn(),
+    getAnalytics: vi.fn().mockReturnValue('getAnalyticsReturn'),
+    initializeAnalytics: vi.fn(),
+    setUserId: vi.fn(),
+    isSupported: vi.fn().mockResolvedValue(true),
+    logEvent: vi.fn(),
   }
 })
 
 jest.mock('@firebase/app', () => ({
-  initializeApp: jest.fn().mockReturnValue({ setup: true }),
+  initializeApp: vi.fn().mockReturnValue({ setup: true }),
 }))
 
 jest.mock('@firebase/remote-config', () => ({
-  fetchAndActivate: jest.fn().mockResolvedValue({}),
-  getRemoteConfig: jest.fn(),
+  fetchAndActivate: vi.fn().mockResolvedValue({}),
+  getRemoteConfig: vi.fn(),
   getAll: () => {
     return { A: { asString: () => 'true' } }
   },
