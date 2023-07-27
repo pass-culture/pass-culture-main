@@ -1,8 +1,11 @@
 from dataclasses import dataclass
 import datetime
+from typing import Iterable
+from typing import Sequence
 from typing import cast
 
 from flask_sqlalchemy import BaseQuery
+from sqlalchemy import func
 import sqlalchemy.orm as sqla_orm
 
 from pcapi.core.categories import subcategories
@@ -134,11 +137,36 @@ def get_ems_cinema_details(cinema_id: str) -> models.EMSCinemaDetails:
     return cinema_details
 
 
-def set_ems_cinema_sync_version(venue_provider: models.VenueProvider, version: int) -> None:
-    ems_cinema_pivot = get_cinema_provider_pivot_for_venue(venue_provider.venue)
-    if ems_cinema_pivot:
-        ems_cinema_details = get_ems_cinema_details(ems_cinema_pivot.idAtProvider)
-        ems_cinema_details.lastVersion = version
+def bump_ems_sync_version(version: int, venues_provider_to_sync: Iterable[int]) -> None:
+    """
+    Storing the version point (timestamp) from which we are up to update
+    """
+    ids: list[Sequence[int]] = (
+        models.EMSCinemaDetails.query.join(models.CinemaProviderPivot)
+        .join(models.VenueProvider, models.CinemaProviderPivot.providerId == models.VenueProvider.providerId)
+        .filter(models.VenueProvider.id.in_(venues_provider_to_sync))
+        .with_entities(models.EMSCinemaDetails.id)
+        .all()
+    )
+    db.session.bulk_update_mappings(models.EMSCinemaDetails, [{"id": id, "lastVersion": version} for id, in ids])
+
+
+def get_ems_oldest_sync_version() -> int:
+    """
+    Get the oldest sync version among all EMSCinemaDetails, for active VenueProviders.
+
+    EMS use a versioned synchronization.
+    It means we can pass a version number (actually a timestamp) in our call to their API and within the response
+    we get all ressources that have been added since that point.
+    """
+    version = (
+        db.session.query(func.min(models.EMSCinemaDetails.lastVersion))
+        .join(models.CinemaProviderPivot)
+        .join(models.VenueProvider, models.CinemaProviderPivot.providerId == models.VenueProvider.providerId)
+        .filter(models.VenueProvider.isActive)
+        .scalar()
+    )
+    return version
 
 
 # Each venue is known to allocine by its siret (AllocineTheater) or by its id (AllocinePivot).

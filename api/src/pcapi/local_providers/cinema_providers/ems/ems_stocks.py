@@ -10,7 +10,6 @@ from pcapi.core.categories import subcategories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import models as providers_models
-from pcapi.core.providers.repository import set_ems_cinema_sync_version
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.models import db
 from pcapi.validation.models import entity_validator
@@ -26,8 +25,7 @@ ACCEPTED_FEATURES_MAPPING = {
 
 
 class EMSStocks:
-    def __init__(self, venue_provider: providers_models.VenueProvider, site: ems_serializers.Site, version: int):
-        self.version = version
+    def __init__(self, venue_provider: providers_models.VenueProvider, site: ems_serializers.Site):
         self.site = site
         self.created_objects = 0
         self.updated_objects = 0
@@ -78,8 +76,6 @@ class EMSStocks:
 
             self.created_products.add(product)
             self.created_offers.add(offer)
-
-        set_ems_cinema_sync_version(venue_provider=self.venue_provider, version=self.version)
 
         db.session.commit()
 
