@@ -15,7 +15,7 @@ jest.mock('apiClient/api', () => ({
 
 describe('getVenuesForOffererAdapter', () => {
   beforeAll(() => {
-    jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
+    vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
   })
 
   it('should call getVenues with good query params', async () => {

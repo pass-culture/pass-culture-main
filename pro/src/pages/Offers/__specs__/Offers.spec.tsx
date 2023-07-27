@@ -123,7 +123,7 @@ describe('route Offers', () => {
     }
     offersRecap = [individualOfferFactory()]
     // @ts-expect-error FIX ME
-    jest.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
+    vi.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
   })
 
   describe('render', () => {
@@ -217,7 +217,7 @@ describe('route Offers', () => {
 
         it('should not display column titles when no offers are returned', async () => {
           // Given
-          jest.spyOn(api, 'listOffers').mockResolvedValueOnce([])
+          vi.spyOn(api, 'listOffers').mockResolvedValueOnce([])
           // When
           await renderOffers(store)
 
@@ -309,7 +309,7 @@ describe('route Offers', () => {
             // Given
             const offerer = { name: 'La structure', id: 'EF' }
             // @ts-expect-error FIX ME
-            jest.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
+            vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
             const filters = {
               offererId: offerer.id,
               status: OfferStatus.INACTIVE,
@@ -340,7 +340,7 @@ describe('route Offers', () => {
             const { id: venueId } = proVenues[0]
             const offerer = { name: 'La structure', id: 'EF' }
             // @ts-expect-error FIX ME
-            jest.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
+            vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
             const filters = {
               venueId: venueId.toString(),
               status: OfferStatus.INACTIVE,
@@ -545,7 +545,7 @@ describe('route Offers', () => {
         individualOfferFactory()
       )
       // @ts-expect-error FIX ME
-      jest.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
+      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
       await renderOffers(store)
       const nextPageIcon = screen.getByRole('button', { name: 'Page suivante' })
       // When
@@ -625,7 +625,7 @@ describe('route Offers', () => {
 
     it('should have venue value be removed when user asks for all venues', async () => {
       // Given
-      jest.spyOn(api, 'getCategories').mockResolvedValue({
+      vi.spyOn(api, 'getCategories').mockResolvedValue({
         categories: [
           { id: 'test_id_1', proLabel: 'My test value', isSelectable: true },
           {
@@ -661,7 +661,7 @@ describe('route Offers', () => {
     it('should have status value when user filters by status', async () => {
       // Given
 
-      jest.spyOn(api, 'listOffers').mockResolvedValueOnce([
+      vi.spyOn(api, 'listOffers').mockResolvedValueOnce([
         // @ts-expect-error FIX ME
         GetIndividualOfferFactory(
           {
@@ -698,7 +698,7 @@ describe('route Offers', () => {
 
     it('should have status value be removed when user ask for all status', async () => {
       // Given
-      jest.spyOn(api, 'listOffers').mockResolvedValueOnce([
+      vi.spyOn(api, 'listOffers').mockResolvedValueOnce([
         // @ts-expect-error FIX ME
         GetIndividualOfferFactory(
           {
@@ -737,7 +737,7 @@ describe('route Offers', () => {
       // Given
       const filters = { offererId: 'A4' }
       // @ts-expect-error FIX ME
-      jest.spyOn(api, 'getOfferer').mockResolvedValueOnce({
+      vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
         name: 'La structure',
       })
       // When
@@ -751,7 +751,7 @@ describe('route Offers', () => {
       // Given
       const filters = { offererId: 'A4' }
       // @ts-expect-error FIX ME
-      jest.spyOn(api, 'getOfferer').mockResolvedValueOnce({
+      vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
         name: 'La structure',
       })
       await renderOffers(store, filters)
@@ -812,7 +812,7 @@ describe('route Offers', () => {
     it('should redirect to collective offers when user click on collective offer link', async () => {
       // Given
       // @ts-expect-error FIX ME
-      jest.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
+      vi.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
       await renderOffers(store)
       screen.getByText('Lancer la recherche')
       const collectiveAudienceLink = screen.getByText('Offres collectives', {
@@ -832,7 +832,7 @@ describe('route Offers', () => {
         GetIndividualOfferFactory()
       )
       // @ts-expect-error FIX ME
-      jest.spyOn(api, 'listOffers').mockResolvedValueOnce(offers)
+      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offers)
       await renderOffers(store)
       const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
 
@@ -850,7 +850,7 @@ describe('route Offers', () => {
         GetIndividualOfferFactory()
       )
       // @ts-expect-error FIX ME
-      jest.spyOn(api, 'listOffers').mockResolvedValueOnce(offers)
+      vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offers)
       await renderOffers(store)
       const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
       const previousIcon = screen.getByRole('button', {

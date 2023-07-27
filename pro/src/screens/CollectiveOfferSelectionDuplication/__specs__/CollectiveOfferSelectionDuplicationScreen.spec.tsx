@@ -50,7 +50,7 @@ describe('CollectiveOfferConfirmation', () => {
   beforeEach(() => {
     const offers: Offer[] = [collectiveOfferFactory(), collectiveOfferFactory()]
 
-    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       success: vi.fn(),
       error: notifyError,
       information: vi.fn(),
@@ -133,7 +133,7 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should redirect on submit button and offer selected', async () => {
-    await jest.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
+    await vi.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
     renderCollectiveOfferSelectionDuplication({ initialValues, onSubmit })
 
     await waitFor(() =>
@@ -180,7 +180,7 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should display an error message when there is an api error', async () => {
-    jest.spyOn(api, 'getCollectiveOffers').mockRejectedValueOnce('')
+    vi.spyOn(api, 'getCollectiveOffers').mockRejectedValueOnce('')
     renderCollectiveOfferSelectionDuplication({ initialValues, onSubmit })
 
     await waitFor(() =>

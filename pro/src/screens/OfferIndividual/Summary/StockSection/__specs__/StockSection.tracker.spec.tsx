@@ -50,7 +50,7 @@ describe('Summary stock section trackers', () => {
         })
       ),
     }
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))

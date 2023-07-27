@@ -227,7 +227,7 @@ describe('OfferEducationalStock', () => {
     })
     it('should log event when wrong students modal is displayed with only wrong students', async () => {
       const mockLogEvent = vi.fn()
-      jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
         ...jest.requireActual('hooks/useAnalytics'),
         logEvent: mockLogEvent,
       }))
@@ -256,7 +256,7 @@ describe('OfferEducationalStock', () => {
 
     it('should log event when wrong students modal is displayed with not only wrong students', async () => {
       const mockLogEvent = vi.fn()
-      jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
         ...jest.requireActual('hooks/useAnalytics'),
         logEvent: mockLogEvent,
       }))

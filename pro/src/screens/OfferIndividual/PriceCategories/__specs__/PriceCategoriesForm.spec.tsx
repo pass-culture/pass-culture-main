@@ -51,7 +51,7 @@ describe('PriceCategories', () => {
     jest
       .spyOn(api, 'postPriceCategories')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
-    jest.spyOn(api, 'getOffer').mockResolvedValue(GetIndividualOfferFactory())
+    vi.spyOn(api, 'getOffer').mockResolvedValue(GetIndividualOfferFactory())
   })
 
   it('should render without error', () => {
@@ -123,7 +123,7 @@ describe('PriceCategories', () => {
   })
 
   it('should remove price categories on trash button click', async () => {
-    jest.spyOn(api, 'deletePriceCategory').mockResolvedValue()
+    vi.spyOn(api, 'deletePriceCategory').mockResolvedValue()
 
     renderPriceCategoriesForm()
 
@@ -142,7 +142,7 @@ describe('PriceCategories', () => {
   })
 
   it('should remove price categories on trash button click and rename last one', async () => {
-    jest.spyOn(api, 'deletePriceCategory').mockResolvedValue()
+    vi.spyOn(api, 'deletePriceCategory').mockResolvedValue()
     const values: PriceCategoriesFormValues = {
       priceCategories: [
         priceCategoryFormFactory({ id: 66 }),
@@ -172,7 +172,7 @@ describe('PriceCategories', () => {
   })
 
   it('should display delete banner when stock is linked and delete right line', async () => {
-    jest.spyOn(api, 'deletePriceCategory').mockResolvedValue()
+    vi.spyOn(api, 'deletePriceCategory').mockResolvedValue()
     const values: PriceCategoriesFormValues = {
       priceCategories: [
         priceCategoryFormFactory({ id: 2 }),

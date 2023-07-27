@@ -145,14 +145,14 @@ describe('screens:StocksEventEdition', () => {
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
 
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
   })
 
   it('should not block when going outside and form is not touched', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 1 } as StockResponseModel],
     })
 
@@ -164,7 +164,7 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should be able to quit without submitting from RouteLeavingGuard', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 1 } as StockResponseModel],
     })
 
@@ -187,7 +187,7 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should track when quitting without submit from RouteLeavingGuard', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 1 } as StockResponseModel],
     })
 

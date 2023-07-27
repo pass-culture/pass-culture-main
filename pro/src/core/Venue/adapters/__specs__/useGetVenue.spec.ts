@@ -71,7 +71,7 @@ describe('useGetVenue', () => {
       motorDisabilityCompliant: false,
     }
 
-    jest.spyOn(api, 'getVenue').mockResolvedValue(apiVenue)
+    vi.spyOn(api, 'getVenue').mockResolvedValue(apiVenue)
 
     const { result } = renderHook(() => useGetVenue(12))
     const loadingState = result.current

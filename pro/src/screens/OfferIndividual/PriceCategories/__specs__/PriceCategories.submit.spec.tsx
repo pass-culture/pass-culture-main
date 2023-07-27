@@ -52,7 +52,7 @@ const renderPriceCategories = (
 
 describe('PriceCategories', () => {
   beforeEach(() => {
-    jest.spyOn(api, 'getOffer').mockResolvedValue(GetIndividualOfferFactory())
+    vi.spyOn(api, 'getOffer').mockResolvedValue(GetIndividualOfferFactory())
     jest
       .spyOn(api, 'patchOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
@@ -269,7 +269,7 @@ describe('PriceCategories', () => {
   })
 
   it('should notify an error when submit fail', async () => {
-    jest.spyOn(api, 'postPriceCategories').mockRejectedValue({})
+    vi.spyOn(api, 'postPriceCategories').mockRejectedValue({})
 
     renderPriceCategories(
       { offer: individualOfferFactory() },

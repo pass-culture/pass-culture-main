@@ -15,7 +15,7 @@ jest.mock('hooks/useAnalytics', () => ({
 }))
 window.scrollTo = vi.fn()
 
-jest.spyOn(window, 'scrollTo').mockImplementation()
+vi.spyOn(window, 'scrollTo').mockImplementation()
 
 describe('src | AppRouter', () => {
   it('should redirect to not found page when url is not matching a route', () => {

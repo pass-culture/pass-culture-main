@@ -91,7 +91,7 @@ describe('DuplicateOfferCell', () => {
     const modalCancelButton = screen.getByRole('button', {
       name: 'Annuler',
     })
-    jest.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
+    vi.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
 
     await userEvent.click(modalCancelButton)
 
@@ -118,7 +118,7 @@ describe('DuplicateOfferCell', () => {
     const modalConfirmButton = screen.getByRole('button', {
       name: 'Créer une offre réservable',
     })
-    jest.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
+    vi.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
 
     await userEvent.click(modalConfirmButton)
 
@@ -140,7 +140,7 @@ describe('DuplicateOfferCell', () => {
     const modalConfirmButton = screen.getByRole('button', {
       name: 'Créer une offre réservable',
     })
-    jest.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
+    vi.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
 
     await userEvent.click(modalConfirmButton)
 
@@ -157,7 +157,7 @@ describe('DuplicateOfferCell', () => {
       name: 'Créer une offre réservable',
     })
 
-    jest.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
+    vi.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
 
     await userEvent.click(button)
 
@@ -174,14 +174,14 @@ describe('DuplicateOfferCell', () => {
       offer = collectiveOfferFactory()
       offerDuplicate = collectiveOfferFactory()
 
-      jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+      vi.spyOn(useNotification, 'default').mockImplementation(() => ({
         ...jest.requireActual('hooks/useNotification'),
         error: notifyError,
       }))
 
-      jest.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
+      vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
 
-      jest.spyOn(api, 'getVenue').mockResolvedValue({} as GetVenueResponseModel)
+      vi.spyOn(api, 'getVenue').mockResolvedValue({} as GetVenueResponseModel)
 
       jest
         .spyOn(api, 'getCategories')
@@ -191,7 +191,7 @@ describe('DuplicateOfferCell', () => {
         .spyOn(api, 'listEducationalOfferers')
         .mockResolvedValue({ educationalOfferers: [] })
 
-      jest.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
+      vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
 
       jest
         .spyOn(api, 'duplicateCollectiveOffer')
@@ -205,7 +205,7 @@ describe('DuplicateOfferCell', () => {
     })
 
     it('should duplicate bookable offer', async () => {
-      jest.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(offer)
+      vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(offer)
 
       renderDuplicateOfferCell()
 
@@ -223,7 +223,7 @@ describe('DuplicateOfferCell', () => {
     })
 
     it('should return an error when the collective offer could not be retrieved', async () => {
-      jest.spyOn(api, 'getCollectiveOffer').mockRejectedValueOnce('')
+      vi.spyOn(api, 'getCollectiveOffer').mockRejectedValueOnce('')
 
       renderDuplicateOfferCell()
 
@@ -244,7 +244,7 @@ describe('DuplicateOfferCell', () => {
     })
 
     it('should return an error when the duplicate collective offer could not be posted', async () => {
-      jest.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(offer)
+      vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(offer)
       jest
         .spyOn(api, 'duplicateCollectiveOffer')
         .mockRejectedValueOnce({ status: 500 })
@@ -263,7 +263,7 @@ describe('DuplicateOfferCell', () => {
     })
 
     it('should return an error 400 when the duplicate collective offer could not be posted', async () => {
-      jest.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(offer)
+      vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(offer)
       jest
         .spyOn(api, 'duplicateCollectiveOffer')
         .mockRejectedValueOnce(
@@ -288,9 +288,9 @@ describe('DuplicateOfferCell', () => {
     })
 
     it('should return an error when the categorie call failed', async () => {
-      jest.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(offer)
+      vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(offer)
 
-      jest.spyOn(api, 'getCategories').mockRejectedValueOnce('')
+      vi.spyOn(api, 'getCategories').mockRejectedValueOnce('')
 
       renderDuplicateOfferCell()
 

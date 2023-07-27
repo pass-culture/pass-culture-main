@@ -181,15 +181,15 @@ describe('screens:StocksThing', () => {
       },
     }
 
-    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
+    vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     jest
       .spyOn(api, 'getCategories')
       .mockResolvedValue({ categories: [], subcategories: [] })
-    jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
+    vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
     jest
       .spyOn(api, 'listOfferersNames')
       .mockResolvedValue({ offerersNames: [] })
-    jest.spyOn(api, 'listOffers').mockResolvedValue([
+    vi.spyOn(api, 'listOffers').mockResolvedValue([
       {
         id: 1,
         status: 'ACTIVE',
@@ -214,11 +214,11 @@ describe('screens:StocksThing', () => {
     jest
       .spyOn(api, 'patchOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
   })
 
   it.skip('should allow user to delete a stock', async () => {
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
+    vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     renderStockThingScreen(storeOverride)
     await screen.findByTestId('stock-thing-form')
 
@@ -229,7 +229,7 @@ describe('screens:StocksThing', () => {
     ).toBeInTheDocument()
 
     apiOffer.stocks = []
-    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
+    vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     await userEvent.click(screen.getByText('Supprimer', { selector: 'button' }))
     expect(
       await screen.findByText('Le stock a été supprimé.')
@@ -251,8 +251,8 @@ describe('screens:StocksThing', () => {
     apiOffer.lastProvider = {
       name: 'Provider',
     }
-    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
+    vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
+    vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     renderStockThingScreen(storeOverride)
     await screen.findByTestId('stock-thing-form')
 
@@ -275,7 +275,7 @@ describe('screens:StocksThing', () => {
   })
 
   it('should display an error message when there is an api error', async () => {
-    jest.spyOn(api, 'deleteStock').mockRejectedValue(
+    vi.spyOn(api, 'deleteStock').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -318,10 +318,10 @@ describe('screens:StocksThing', () => {
   })
 
   it('should not display any message when user delete empty stock', async () => {
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
+    vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     renderStockThingScreen(storeOverride)
     apiOffer.stocks = []
-    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
+    vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     await screen.findByTestId('stock-thing-form')
     await userEvent.click(
       (await screen.findAllByTitle('Supprimer le stock'))[1]
@@ -339,7 +339,7 @@ describe('screens:StocksThing', () => {
   it('should display draft success message on save button when stock form is empty and redirect to next page', async () => {
     renderStockThingScreen(storeOverride)
     apiOffer.stocks = []
-    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
+    vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
     await screen.findByTestId('stock-thing-form')
 
     await userEvent.click(

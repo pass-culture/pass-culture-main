@@ -183,12 +183,12 @@ describe('Summary', () => {
       categories,
     }
 
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
-    jest.spyOn(api, 'patchPublishOffer').mockResolvedValue()
-    jest.spyOn(api, 'getOffer').mockResolvedValue({
+    vi.spyOn(api, 'patchPublishOffer').mockResolvedValue()
+    vi.spyOn(api, 'getOffer').mockResolvedValue({
       status: OfferStatus.ACTIVE,
     } as GetIndividualOfferResponseModel)
   })
@@ -345,7 +345,7 @@ describe('Summary', () => {
           resolve(undefined)
         }, 200)
       )
-      jest.spyOn(api, 'patchPublishOffer').mockResolvedValue(mockResponse)
+      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(mockResponse)
       await userEvent.click(buttonPublish)
       expect(api.patchPublishOffer).toHaveBeenCalled()
       expect(buttonPublish).toBeDisabled()
@@ -369,7 +369,7 @@ describe('Summary', () => {
         )
       )
 
-      jest.spyOn(api, 'patchPublishOffer').mockRejectedValue(
+      vi.spyOn(api, 'patchPublishOffer').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
           {

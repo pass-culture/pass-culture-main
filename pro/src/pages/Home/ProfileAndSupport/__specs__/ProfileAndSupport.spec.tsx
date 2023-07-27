@@ -34,7 +34,7 @@ const renderProfileAndSupport = () => {
 describe('ProfileAndSupport', () => {
   it('should redirect to /profil page when the user click on Modifier', async () => {
     // When
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))

@@ -5,7 +5,7 @@ import { getEducationalDomainsAdapter } from '../getEducationalDomainsAdapter'
 
 describe('getEducationalDomainsAdapter', () => {
   it('should return an error when API returns an error', async () => {
-    jest.spyOn(api, 'listEducationalDomains').mockRejectedValueOnce(null)
+    vi.spyOn(api, 'listEducationalDomains').mockRejectedValueOnce(null)
     const response = await getEducationalDomainsAdapter()
 
     expect(response.isOk).toBeFalsy()
@@ -13,7 +13,7 @@ describe('getEducationalDomainsAdapter', () => {
   })
 
   it('should return a list of domains', async () => {
-    jest.spyOn(api, 'listEducationalDomains').mockResolvedValueOnce([
+    vi.spyOn(api, 'listEducationalDomains').mockResolvedValueOnce([
       { id: 1, name: 'Cinéma' },
       { id: 2, name: 'Musique' },
     ])

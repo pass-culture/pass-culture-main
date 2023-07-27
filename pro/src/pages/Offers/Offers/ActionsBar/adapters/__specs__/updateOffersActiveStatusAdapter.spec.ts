@@ -8,7 +8,7 @@ import { updateOffersActiveStatusAdapter } from '../updateOffersActiveStatusAdap
 describe('updateOffersActiveStatusAdapter', () => {
   it('should deactivate all offers and confirm', async () => {
     // given
-    jest.spyOn(api, 'patchOffersActiveStatus').mockResolvedValueOnce()
+    vi.spyOn(api, 'patchOffersActiveStatus').mockResolvedValueOnce()
 
     const response = await updateOffersActiveStatusAdapter({
       ids: ['A1', 'A2', 'A3'],
@@ -22,7 +22,7 @@ describe('updateOffersActiveStatusAdapter', () => {
 
   it('should publish all offers and confirm', async () => {
     // given
-    jest.spyOn(api, 'patchOffersActiveStatus').mockResolvedValueOnce()
+    vi.spyOn(api, 'patchOffersActiveStatus').mockResolvedValueOnce()
 
     const response = await updateOffersActiveStatusAdapter({
       ids: ['A1', 'A2', 'A3'],

@@ -39,10 +39,10 @@ describe('src | components | pages | Signup | validation', () => {
   }
 
   beforeEach(() => {
-    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...mockUseNotification,
     }))
-    jest.spyOn(useCurrentUser, 'default').mockReturnValue({
+    vi.spyOn(useCurrentUser, 'default').mockReturnValue({
       currentUser: {},
     } as UseCurrentUserReturn)
   })
@@ -50,8 +50,8 @@ describe('src | components | pages | Signup | validation', () => {
   afterEach(jest.resetAllMocks)
 
   it('should redirect to home page if the user is logged in', async () => {
-    const validateUser = jest.spyOn(api, 'validateUser')
-    jest.spyOn(useCurrentUser, 'default').mockReturnValue({
+    const validateUser = vi.spyOn(api, 'validateUser')
+    vi.spyOn(useCurrentUser, 'default').mockReturnValue({
       currentUser: {
         id: 123,
       },
@@ -66,7 +66,7 @@ describe('src | components | pages | Signup | validation', () => {
   })
 
   it('should verify validity of user token and redirect to connexion', async () => {
-    const validateUser = jest.spyOn(api, 'validateUser').mockResolvedValue()
+    const validateUser = vi.spyOn(api, 'validateUser').mockResolvedValue()
     // when the user lands on signup validation page
     renderSignupValidation('/validation/AAA')
     // then the validity of his token should be verified
@@ -79,9 +79,9 @@ describe('src | components | pages | Signup | validation', () => {
   })
 
   it('should display a success message when token verification is successful', async () => {
-    jest.spyOn(api, 'validateUser').mockResolvedValue()
+    vi.spyOn(api, 'validateUser').mockResolvedValue()
     const notifySuccess = vi.fn()
-    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...mockUseNotification,
       success: notifySuccess,
     }))
@@ -101,11 +101,11 @@ describe('src | components | pages | Signup | validation', () => {
 
   it('should display an error message when token verification is not successful', async () => {
     const notifyError = vi.fn()
-    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...mockUseNotification,
       error: notifyError,
     }))
-    jest.spyOn(api, 'validateUser').mockRejectedValue(
+    vi.spyOn(api, 'validateUser').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {

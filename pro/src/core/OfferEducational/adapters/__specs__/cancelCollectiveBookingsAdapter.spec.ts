@@ -43,7 +43,7 @@ describe('cancelCollectiveBookingAdapter', () => {
   })
   it('should return a confirmation when the booking was cancelled', async () => {
     // given
-    jest.spyOn(api, 'cancelCollectiveOfferBooking').mockResolvedValue()
+    vi.spyOn(api, 'cancelCollectiveOfferBooking').mockResolvedValue()
 
     // when
     const response = await cancelCollectiveBookingAdapter({ offerId: 12 })
@@ -57,7 +57,7 @@ describe('cancelCollectiveBookingAdapter', () => {
 
   it('should return a confirmation when the booking was cancelled and status expired', async () => {
     // given
-    jest.spyOn(api, 'cancelCollectiveOfferBooking').mockResolvedValue()
+    vi.spyOn(api, 'cancelCollectiveOfferBooking').mockResolvedValue()
 
     // when
     const response = await cancelCollectiveBookingAdapter({

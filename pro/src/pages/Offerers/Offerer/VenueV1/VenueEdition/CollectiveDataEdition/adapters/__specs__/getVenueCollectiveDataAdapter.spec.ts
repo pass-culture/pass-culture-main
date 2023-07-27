@@ -7,7 +7,7 @@ describe('getVenueCollectiveDataAdapter', () => {
   const venueId = 1
   it('should return an error', async () => {
     // given
-    jest.spyOn(api, 'getVenueCollectiveData').mockRejectedValue({
+    vi.spyOn(api, 'getVenueCollectiveData').mockRejectedValue({
       status: 500,
     })
 
@@ -32,7 +32,7 @@ describe('getVenueCollectiveDataAdapter', () => {
       collectiveWebsite: '',
     }
     // given
-    jest.spyOn(api, 'getVenueCollectiveData').mockResolvedValueOnce(payload)
+    vi.spyOn(api, 'getVenueCollectiveData').mockResolvedValueOnce(payload)
 
     // when
     const response = await getVenueCollectiveDataAdapter(venueId)

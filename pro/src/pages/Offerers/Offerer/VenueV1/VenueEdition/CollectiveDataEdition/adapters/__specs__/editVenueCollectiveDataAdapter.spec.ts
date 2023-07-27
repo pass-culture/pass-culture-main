@@ -31,7 +31,7 @@ describe('editVenueCollectiveDataAdapter', () => {
 
   it('should return success message', async () => {
     const venueId = 1
-    jest.spyOn(api, 'editVenueCollectiveData').mockResolvedValueOnce({
+    vi.spyOn(api, 'editVenueCollectiveData').mockResolvedValueOnce({
       id: venueId,
     } as GetVenueResponseModel)
     const response = await editVenueCollectiveDataAdapter({

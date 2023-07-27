@@ -49,7 +49,7 @@ describe('patchIsOfferActiveCollectiveAdapter', () => {
   })
   it('should confirm when the offer was activated', async () => {
     // given
-    jest.spyOn(api, 'patchCollectiveOffersActiveStatus').mockResolvedValueOnce()
+    vi.spyOn(api, 'patchCollectiveOffersActiveStatus').mockResolvedValueOnce()
 
     // when
     const response = await patchIsCollectiveOfferActiveAdapter({
@@ -63,7 +63,7 @@ describe('patchIsOfferActiveCollectiveAdapter', () => {
   })
   it('should confirm when the offer was deactivated', async () => {
     // given
-    jest.spyOn(api, 'patchCollectiveOffersActiveStatus').mockResolvedValueOnce()
+    vi.spyOn(api, 'patchCollectiveOffersActiveStatus').mockResolvedValueOnce()
 
     // when
     const response = await patchIsCollectiveOfferActiveAdapter({

@@ -62,7 +62,7 @@ describe('screens:SignupJourney::Activity', () => {
       setActivity: () => {},
       setOfferer: () => {},
     }
-    jest.spyOn(api, 'getVenueTypes').mockResolvedValue([
+    vi.spyOn(api, 'getVenueTypes').mockResolvedValue([
       { id: 'MUSEUM', label: 'first venue label' },
       { id: 'venue2', label: 'second venue label' },
     ])
@@ -103,7 +103,7 @@ describe('screens:SignupJourney::Activity', () => {
   })
 
   it('should not render component on getVenueTypes error', async () => {
-    jest.spyOn(api, 'getVenueTypes').mockRejectedValue([])
+    vi.spyOn(api, 'getVenueTypes').mockRejectedValue([])
     renderActivityScreen(contextValue)
     await waitFor(() => {
       expect(screen.queryByText('Activité')).not.toBeInTheDocument()

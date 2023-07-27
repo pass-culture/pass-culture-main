@@ -26,8 +26,8 @@ jest.mock('apiClient/api', () => ({
 
 describe('src | App', () => {
   beforeEach(() => {
-    jest.spyOn(api, 'getProfile').mockRejectedValue(undefined)
-    jest.spyOn(api, 'listFeatures').mockResolvedValue([])
+    vi.spyOn(api, 'getProfile').mockRejectedValue(undefined)
+    vi.spyOn(api, 'listFeatures').mockResolvedValue([])
   })
   it('should load current user', async () => {
     renderStoreProvider()

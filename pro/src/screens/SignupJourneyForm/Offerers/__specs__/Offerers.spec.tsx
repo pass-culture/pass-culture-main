@@ -121,7 +121,7 @@ describe('screens:SignupJourney::Offerers', () => {
       },
     ]
 
-    jest.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
       offererName: 'Offerer Name',
       offererSiren: '123456789',
       venues,
@@ -293,7 +293,7 @@ describe('screens:SignupJourney::Offerers', () => {
   })
 
   it('should redirect user if there is no siret', async () => {
-    jest.spyOn(api, 'getVenuesOfOffererFromSiret').mockRejectedValueOnce(
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -341,8 +341,8 @@ describe('screens:SignupJourney::Offerers', () => {
 
     it('should link offerer to user when they confirm', async () => {
       renderOfferersScreen(contextValue)
-      jest.spyOn(api, 'createOfferer').mockResolvedValue(expect.anything())
-      jest.spyOn(getSirenDataAdapter, 'default').mockResolvedValue({
+      vi.spyOn(api, 'createOfferer').mockResolvedValue(expect.anything())
+      vi.spyOn(getSirenDataAdapter, 'default').mockResolvedValue({
         isOk: true,
         message: '',
         payload: {

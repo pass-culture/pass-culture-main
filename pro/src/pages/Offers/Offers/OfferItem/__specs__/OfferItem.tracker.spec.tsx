@@ -63,7 +63,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       audience: Audience.INDIVIDUAL,
     }
 
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))

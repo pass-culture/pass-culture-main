@@ -28,7 +28,7 @@ jest.mock('apiClient/adresse', () => {
   }
 })
 
-jest.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue([
+vi.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue([
   {
     address: '12 rue des lilas',
     city: 'Lyon',

@@ -17,7 +17,7 @@ describe('test createThumbnailAdapter', () => {
     cropParams = { x: 1, y: 1, width: 1, height: 1 }
   })
   it('should return success on api call success', async () => {
-    jest.spyOn(pcapi, 'postThumbnail').mockResolvedValue({
+    vi.spyOn(pcapi, 'postThumbnail').mockResolvedValue({
       id: 12,
       url: 'https://backend.image.url',
       credit: 'John Do',
@@ -31,7 +31,7 @@ describe('test createThumbnailAdapter', () => {
     expect(response.isOk).toBeTruthy()
   })
   it('should return error on api call error', async () => {
-    jest.spyOn(pcapi, 'postThumbnail').mockRejectedValue(undefined)
+    vi.spyOn(pcapi, 'postThumbnail').mockRejectedValue(undefined)
     const response = await createThumbnailAdapter({
       offerId,
       imageFile,

@@ -285,17 +285,17 @@ describe('screens:OfferIndividual::Informations:edition', () => {
       .spyOn(utils, 'filterCategories')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .mockImplementation((c, s, _v) => [c, s])
-    jest.spyOn(api, 'patchOffer').mockResolvedValue({
+    vi.spyOn(api, 'patchOffer').mockResolvedValue({
       id: offerId,
     } as GetIndividualOfferResponseModel)
-    jest.spyOn(api, 'postOffer').mockResolvedValue({
+    vi.spyOn(api, 'postOffer').mockResolvedValue({
       id: offerId,
     } as GetIndividualOfferResponseModel)
     jest
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
-    jest.spyOn(api, 'deleteThumbnail').mockResolvedValue()
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(api, 'deleteThumbnail').mockResolvedValue()
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
@@ -462,7 +462,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
     await userEvent.click(screen.getByRole('button', { name: /Supprimer/ }))
     await screen.findByText('Souhaitez-vous vraiment supprimer cette image ?')
 
-    jest.spyOn(api, 'deleteThumbnail').mockRejectedValue(undefined)
+    vi.spyOn(api, 'deleteThumbnail').mockRejectedValue(undefined)
 
     await userEvent.click(screen.getByTestId('confirm-dialog-button-confirm'))
     expect(

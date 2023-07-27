@@ -113,7 +113,7 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-jest.spyOn(api, 'getSiretInfo').mockResolvedValue({
+vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
   active: true,
   address: {
     city: 'paris',
@@ -152,7 +152,7 @@ const mockLogEvent = vi.fn()
 
 describe('venue form trackers', () => {
   beforeEach(() => {
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
@@ -160,7 +160,7 @@ describe('venue form trackers', () => {
 
   it('Tracking success form submit', async () => {
     renderForm(true)
-    jest.spyOn(api, 'postCreateVenue').mockResolvedValue({
+    vi.spyOn(api, 'postCreateVenue').mockResolvedValue({
       id: 1,
     })
 
@@ -175,7 +175,7 @@ describe('venue form trackers', () => {
 
   it('Tracking failing form submit', async () => {
     renderForm(true)
-    jest.spyOn(api, 'postCreateVenue').mockRejectedValue({})
+    vi.spyOn(api, 'postCreateVenue').mockRejectedValue({})
 
     await userEvent.click(screen.getByText(/Enregistrer/))
 

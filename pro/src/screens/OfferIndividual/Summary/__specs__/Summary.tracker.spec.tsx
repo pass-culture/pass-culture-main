@@ -73,7 +73,7 @@ describe('Summary trackers', () => {
       offer: individualOfferFactory({ id: offerId }),
     }
 
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
@@ -466,7 +466,7 @@ describe('Summary trackers', () => {
         .spyOn(useOfferWizardMode, 'default')
         .mockImplementation(() => OFFER_WIZARD_MODE.CREATION)
 
-      jest.spyOn(api, 'patchPublishOffer').mockResolvedValue()
+      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue()
 
       const context = {
         ...defaultContext,
