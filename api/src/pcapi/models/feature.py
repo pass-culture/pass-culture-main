@@ -124,6 +124,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_API_CONTREMARQUE_V1 = "Active l'API Contremarque v1"
     WIP_ENABLE_NEW_TITELIVE_ELIGIBILITY_FILTERS = "Activer les nouveaux filtres d'éligibilité Tite Live"
     WIP_ENABLE_NEW_USER_OFFERER_LINK = "Activer le nouvel ajout des collaborateurs"
+    WIP_ENABLE_NATIONAL_SYSTEM = "Activer le dispositif national dans les offres collectives"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -193,6 +194,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING,
     FeatureToggle.WIP_ENABLE_NEW_TITELIVE_ELIGIBILITY_FILTERS,
     FeatureToggle.WIP_ENABLE_NEW_USER_OFFERER_LINK,
+    FeatureToggle.WIP_ENABLE_NATIONAL_SYSTEM,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
