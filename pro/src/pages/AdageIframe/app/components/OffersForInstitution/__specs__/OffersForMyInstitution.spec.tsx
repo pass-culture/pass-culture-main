@@ -8,11 +8,15 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffersForMyInstitution from '../OffersForMyInstitution'
 
-vi.mock('utils/config', () => ({
-  ALGOLIA_API_KEY: 'adage-api-key',
-  ALGOLIA_APP_ID: '1',
-  ALGOLIA_COLLECTIVE_OFFERS_INDEX: 'adage-collective-offers',
-}))
+vi.mock('utils/config', async () => {
+  const actual = await vi.importActual('utils/config')
+  return {
+    ...(actual as object),
+    ALGOLIA_API_KEY: 'adage-api-key',
+    ALGOLIA_APP_ID: '1',
+    ALGOLIA_COLLECTIVE_OFFERS_INDEX: 'adage-collective-offers',
+  }
+})
 
 vi.mock('../../OffersInstantSearch/OffersSearch/Offers/Offers', () => {
   return {
@@ -20,9 +24,10 @@ vi.mock('../../OffersInstantSearch/OffersSearch/Offers/Offers', () => {
   }
 })
 
-vi.mock('react-instantsearch-dom', () => {
+vi.mock('react-instantsearch-dom', async () => {
+  const actual = await vi.importActual('react-instantsearch-dom')
   return {
-    ...vi.importActual('react-instantsearch-dom'),
+    ...(actual as object),
     Configure: vi.fn(() => <div />),
     connectStats: vi.fn(Component => (props: any) => (
       <Component
