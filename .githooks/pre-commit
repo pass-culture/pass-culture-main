@@ -43,7 +43,7 @@ if [[ ! -z "$STAGED_FILES" ]]; then
   # run tests related to staged files
   if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",test," ]]; then
     echo "Running Tests"
-    yarn test:unit:ci -- --coverage --findRelatedTests --coverageThreshold='{"global":{"statements":"100","branches":"100","functions":"100","lines":"100"}}' $STAGED_FILES
+    yarn test:unit:ci -- --findRelatedTests --coverageThreshold='{"global":{"statements":"100","branches":"100","functions":"100","lines":"100"}}' $STAGED_FILES
     JEST_EXIT_CODE=$?
 
     # check jest exit code

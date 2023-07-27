@@ -30,5 +30,10 @@ export default defineConfig(({ mode }) => {
     ],
     server: { port: 3001 },
     preview: { port: 3001 },
+    test: {
+      globals: true,
+      environment: 'jsdom',
+      setupFiles: './vitest.setup.ts',
+    },
   }
 })
