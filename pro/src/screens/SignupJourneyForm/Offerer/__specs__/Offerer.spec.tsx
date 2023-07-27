@@ -15,6 +15,7 @@ import {
   SignupJourneyContext,
   SignupJourneyContextValues,
 } from 'context/SignupJourneyContext'
+import * as sirenApiValidate from 'core/Venue/siretApiValidate'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { Offerer } from '..'
@@ -23,34 +24,27 @@ import { DEFAULT_OFFERER_FORM_VALUES } from '../constants'
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
-vi.mock('apiClient/api', () => ({
-  api: {
-    getSiretInfo: vi.fn(),
-    getVenuesOfOffererFromSiret: vi.fn(),
-  },
-}))
+vi.spyOn(sirenApiValidate, 'default').mockResolvedValue(undefined)
 
 // Mock l'appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
 // Appel fait dans apiAdresse.getDataFromAddress
-fetchMock.mockResponse(
-  JSON.stringify({
-    features: [
-      {
-        properties: {
-          name: 'name',
+vi.mock('apiClient/adresse', () => ({
+  apiAdresse: {
+    getDataFromAddress: () =>
+      Promise.resolve([
+        {
+          address: 'name',
           city: 'city',
           id: 'id',
+          latitude: 0,
+          longitude: 0,
           label: 'label',
-          postcode: 'postcode',
+          postalCode: 'postcode',
         },
-        geometry: {
-          coordinates: [0, 0],
-        },
-      },
-    ],
-  }),
-  { status: 200 }
-)
+      ]),
+  },
+}))
+
 const renderOffererScreen = (contextValue: SignupJourneyContextValues) => {
   const storeOverrides = {
     user: {
@@ -86,7 +80,7 @@ const renderOffererScreen = (contextValue: SignupJourneyContextValues) => {
   )
 }
 
-describe('screens:SignupJourney::Offerer', () => {
+describe('Offerer', () => {
   let contextValue: SignupJourneyContextValues
 
   beforeEach(() => {
@@ -275,19 +269,8 @@ describe('screens:SignupJourney::Offerer', () => {
   })
 
   it('should display BannerInvisibleSiren on error 400 with specific message', async () => {
-    vi.spyOn(api, 'getSiretInfo').mockRejectedValue(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          status: 400,
-          body: {
-            global: [
-              'Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles.',
-            ],
-          },
-        } as ApiResult,
-        ''
-      )
+    vi.spyOn(sirenApiValidate, 'default').mockResolvedValue(
+      'Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles.'
     )
     renderOffererScreen(contextValue)
 
@@ -307,7 +290,7 @@ describe('screens:SignupJourney::Offerer', () => {
     })
     await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
 
-    expect(api.getSiretInfo).toHaveBeenCalled()
+    expect(sirenApiValidate.default).toHaveBeenCalled()
     expect(
       screen.getByText('Modifier la visibilité de mon SIRET')
     ).toBeInTheDocument()

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -41,6 +41,16 @@ const Validation = (): JSX.Element => {
       'Au grand public et à des groupes scolaires',
   }[activity?.targetCustomer ?? Target.INDIVIDUAL]
 
+  useEffect(() => {
+    if (offerer === null || offerer == DEFAULT_OFFERER_FORM_VALUES) {
+      navigate('/parcours-inscription/identification')
+      return
+    }
+    if (activity === null || activity == DEFAULT_ACTIVITY_VALUES) {
+      navigate('/parcours-inscription/activite')
+    }
+  }, [activity, offerer])
+
   if (isLoadingVenueTypes) {
     return <Spinner />
   }
@@ -49,12 +59,7 @@ const Validation = (): JSX.Element => {
     return <></>
   }
 
-  if (offerer === null || offerer == DEFAULT_OFFERER_FORM_VALUES) {
-    navigate('/parcours-inscription/identification')
-    return <></>
-  }
-  if (activity === null || activity == DEFAULT_ACTIVITY_VALUES) {
-    navigate('/parcours-inscription/activite')
+  if (activity === null || offerer === null) {
     return <></>
   }
 
