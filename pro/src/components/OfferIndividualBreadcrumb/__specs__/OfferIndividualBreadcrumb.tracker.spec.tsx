@@ -100,7 +100,7 @@ describe('test tracker OfferIndividualBreadcrumb', () => {
     contextOverride = {
       offer: offer as OfferIndividual,
     }
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))

@@ -63,7 +63,7 @@ describe('getCollectiveBookingAdapter', () => {
       isCancellable: true,
     }
 
-    jest.spyOn(api, 'getCollectiveBookingById').mockResolvedValueOnce(booking)
+    vi.spyOn(api, 'getCollectiveBookingById').mockResolvedValueOnce(booking)
 
     expect(await getCollectiveBookingAdapter('bookingId')).toStrictEqual({
       isOk: true,

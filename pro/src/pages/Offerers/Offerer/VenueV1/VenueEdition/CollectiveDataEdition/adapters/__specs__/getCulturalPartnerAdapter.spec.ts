@@ -7,7 +7,7 @@ import getCulturalPartnerAdapter from '../getCulturalPartnerAdapter'
 describe('getCulturalPartnerAdapter', () => {
   it('should return an error', async () => {
     // given
-    jest.spyOn(api, 'getEducationalPartner').mockRejectedValue({
+    vi.spyOn(api, 'getEducationalPartner').mockRejectedValue({
       status: 500,
     })
 
@@ -26,7 +26,7 @@ describe('getCulturalPartnerAdapter', () => {
       domaineIds: [1, 2],
     }
     // given
-    jest.spyOn(api, 'getEducationalPartner').mockResolvedValueOnce(payload)
+    vi.spyOn(api, 'getEducationalPartner').mockResolvedValueOnce(payload)
 
     // when
     const response = await getCulturalPartnerAdapter('siret')

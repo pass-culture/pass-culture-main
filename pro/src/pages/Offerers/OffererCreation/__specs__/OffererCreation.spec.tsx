@@ -78,7 +78,7 @@ describe('src | components | OffererCreation', () => {
   })
 
   it('should be clickable when values have been changed and are valid and submit form', async () => {
-    jest.spyOn(api, 'getSirenInfo').mockResolvedValue({
+    vi.spyOn(api, 'getSirenInfo').mockResolvedValue({
       name: 'Ma Petite structure',
       siren: '881457238',
       address: {
@@ -91,7 +91,7 @@ describe('src | components | OffererCreation', () => {
     const offerer = {
       id: 1,
     } as GetOffererResponseModel
-    jest.spyOn(api, 'createOfferer').mockResolvedValue(offerer)
+    vi.spyOn(api, 'createOfferer').mockResolvedValue(offerer)
 
     renderOffererCreation({})
 
@@ -114,7 +114,7 @@ describe('src | components | OffererCreation', () => {
   })
 
   it('should display error on submit fail response', async () => {
-    jest.spyOn(api, 'getSirenInfo').mockResolvedValue({
+    vi.spyOn(api, 'getSirenInfo').mockResolvedValue({
       name: 'Ma Petite structure',
       siren: '881457238',
       address: {
@@ -125,7 +125,7 @@ describe('src | components | OffererCreation', () => {
       ape_code: '',
     })
 
-    jest.spyOn(api, 'createOfferer').mockRejectedValue(
+    vi.spyOn(api, 'createOfferer').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -149,7 +149,7 @@ describe('src | components | OffererCreation', () => {
   })
 
   it('should display error on submit if siren has no address', async () => {
-    jest.spyOn(api, 'getSirenInfo').mockRejectedValue(
+    vi.spyOn(api, 'getSirenInfo').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {

@@ -17,7 +17,7 @@ const NavigationLogger = (): null => {
 describe('useLogNavigation', () => {
   it('should log an event on location changes', async () => {
     // When
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))

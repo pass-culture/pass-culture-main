@@ -13,7 +13,7 @@ const mockLogEvent = vi.fn()
 
 describe('StockEventSection', () => {
   beforeEach(() => {
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))

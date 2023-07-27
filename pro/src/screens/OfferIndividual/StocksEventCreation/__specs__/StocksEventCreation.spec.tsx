@@ -83,8 +83,8 @@ const renderStockEventCreation = (props: StocksEventCreationProps) =>
 const tomorrow = format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
 describe('StocksEventCreation', () => {
   beforeEach(() => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
+    vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     jest
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
@@ -221,11 +221,11 @@ describe('StocksEventCreation', () => {
 const mockLogEvent = vi.fn()
 describe('navigation and submit', () => {
   beforeEach(() => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
     jest
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
@@ -324,7 +324,7 @@ describe('navigation and submit', () => {
   })
 
   it('should notify when an error occur', async () => {
-    jest.spyOn(api, 'upsertStocks').mockRejectedValue({})
+    vi.spyOn(api, 'upsertStocks').mockRejectedValue({})
 
     const offer = individualOfferFactory({
       stocks: [
@@ -352,7 +352,7 @@ describe('navigation and submit', () => {
   })
 
   it('should track when quitting without submit from RouteLeavingGuard', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
 
     const offer = individualOfferFactory({
       stocks: [
@@ -389,8 +389,8 @@ describe('navigation and submit', () => {
 
 describe('deletion', () => {
   beforeEach(() => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
+    vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     jest
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)

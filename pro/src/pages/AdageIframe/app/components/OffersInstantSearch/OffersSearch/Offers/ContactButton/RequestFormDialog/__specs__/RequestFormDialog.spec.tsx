@@ -40,7 +40,7 @@ describe('RequestFormDialog', () => {
   it('should submit valid form and close modal on submit', async () => {
     const notifySuccess = vi.fn()
     const mockCloseModal = vi.fn()
-    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       success: notifySuccess,
       error: vi.fn(),
       information: vi.fn(),
@@ -76,10 +76,10 @@ describe('RequestFormDialog', () => {
     expect(mockCloseModal).toHaveBeenCalled()
   })
   it('should display error message when api reject call', async () => {
-    jest.spyOn(apiAdage, 'createCollectiveRequest').mockRejectedValueOnce({})
+    vi.spyOn(apiAdage, 'createCollectiveRequest').mockRejectedValueOnce({})
     const notifyError = vi.fn()
     const mockCloseModal = vi.fn()
-    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       success: vi.fn(),
       error: notifyError,
       information: vi.fn(),

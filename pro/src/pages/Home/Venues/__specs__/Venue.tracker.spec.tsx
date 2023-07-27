@@ -62,7 +62,7 @@ describe('venue create offer link', () => {
       soldOutOffersCount: 3,
       validatedBookingsQuantity: 1,
     })
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))

@@ -20,7 +20,7 @@ describe('OffererStats', () => {
   describe('log events', () => {
     it('should log events when click on one box link', async () => {
       // When
-      jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
         logEvent: mockLogEvent,
         setLogEvent: null,
       }))
@@ -39,7 +39,7 @@ describe('OffererStats', () => {
     })
     it('should log events when click on view all stats', async () => {
       // When
-      jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
         logEvent: mockLogEvent,
         setLogEvent: null,
       }))

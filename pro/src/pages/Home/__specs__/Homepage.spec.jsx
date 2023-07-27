@@ -154,7 +154,7 @@ describe('homepage', () => {
       validatedBookingsQuantity: 3,
     })
     api.postProFlags.mockResolvedValue(null)
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))

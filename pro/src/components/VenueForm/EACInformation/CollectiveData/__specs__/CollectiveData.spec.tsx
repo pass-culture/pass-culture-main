@@ -76,7 +76,7 @@ describe('CollectiveData', () => {
   })
 
   it('should display the networks available when available', async () => {
-    jest.spyOn(api, 'getEducationalPartners').mockResolvedValue({
+    vi.spyOn(api, 'getEducationalPartners').mockResolvedValue({
       partners: [
         { id: 1, libelle: 'Libellé 1' },
         { id: 2, libelle: 'Libellé 2' },

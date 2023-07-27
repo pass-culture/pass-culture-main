@@ -19,7 +19,7 @@ const renderOfferCell = props => {
 describe('tracking bookings offer cell', () => {
   it('should call tracker with params', async () => {
     // Given
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))

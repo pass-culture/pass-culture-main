@@ -63,7 +63,7 @@ describe('updateCollectiveOffersActiveStatusAdapter', () => {
 
   it('should return an error when the update has failed', async () => {
     // given
-    jest.spyOn(api, 'patchCollectiveOffersActiveStatus').mockRejectedValueOnce({
+    vi.spyOn(api, 'patchCollectiveOffersActiveStatus').mockRejectedValueOnce({
       status: 422,
     })
     jest

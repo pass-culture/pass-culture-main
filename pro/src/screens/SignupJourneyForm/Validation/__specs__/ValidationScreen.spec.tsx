@@ -84,7 +84,7 @@ describe('screens:SignupJourney::Validation', () => {
       setActivity: () => {},
       setOfferer: () => {},
     }
-    jest.spyOn(api, 'getVenueTypes').mockResolvedValue([
+    vi.spyOn(api, 'getVenueTypes').mockResolvedValue([
       { id: 'MUSEUM', label: 'first venue label' },
       { id: 'venue2', label: 'second venue label' },
     ])
@@ -93,7 +93,7 @@ describe('screens:SignupJourney::Validation', () => {
   describe('Data incomplete', () => {
     it('Should redirect to authentication if no offerer is selected', async () => {
       const mockNavigate = vi.fn()
-      jest.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
+      vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
 
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -105,7 +105,7 @@ describe('screens:SignupJourney::Validation', () => {
 
     it('Should see activity screen if no activity data is set but an offerer is set', async () => {
       const mockNavigate = vi.fn()
-      jest.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
+      vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
       renderValidationScreen({
         ...contextValue,
         offerer: {
@@ -171,7 +171,7 @@ describe('screens:SignupJourney::Validation', () => {
 
     it('Should navigate to activity page with the previous step button', async () => {
       const mockNavigate = vi.fn()
-      jest.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
+      vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
 
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -203,7 +203,7 @@ describe('screens:SignupJourney::Validation', () => {
         .spyOn(api, 'saveNewOnboardingData')
         .mockResolvedValue({} as GetOffererResponseModel)
       const mockNavigate = vi.fn()
-      jest.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
+      vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
@@ -297,7 +297,7 @@ describe('screens:SignupJourney::Validation', () => {
     })
 
     it('Should display error message on api error', async () => {
-      jest.spyOn(api, 'saveNewOnboardingData').mockRejectedValue({})
+      vi.spyOn(api, 'saveNewOnboardingData').mockRejectedValue({})
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
@@ -307,7 +307,7 @@ describe('screens:SignupJourney::Validation', () => {
     })
 
     it('Should not render on venue types api error', async () => {
-      jest.spyOn(api, 'getVenueTypes').mockRejectedValue({})
+      vi.spyOn(api, 'getVenueTypes').mockRejectedValue({})
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       expect(

@@ -49,13 +49,13 @@ describe('OffererStatsScreen', () => {
   const firstVenueId = 1
   const secondVenueId = 2
   beforeEach(() => {
-    jest.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
       managedVenues: [
         { name: 'Salle 1', id: firstVenueId },
         { name: 'Stand popcorn', id: secondVenueId },
       ],
     } as GetOffererResponseModel)
-    jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
         {
           id: 1,
@@ -88,10 +88,10 @@ describe('OffererStatsScreen', () => {
   it('should display error message if api call fail', async () => {
     const notifyError = vi.fn()
     // @ts-expect-error
-    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       error: notifyError,
     }))
-    jest.spyOn(api, 'listOfferersNames').mockRejectedValueOnce('')
+    vi.spyOn(api, 'listOfferersNames').mockRejectedValueOnce('')
     renderOffererStats()
 
     await waitFor(() => {

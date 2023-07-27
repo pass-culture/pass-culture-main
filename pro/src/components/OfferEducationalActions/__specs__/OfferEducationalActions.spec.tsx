@@ -62,7 +62,7 @@ describe('OfferEducationalActions', () => {
   it('should failed active status value', async () => {
     const notifyError = vi.fn()
     // @ts-expect-error
-    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       success: vi.fn(),
       error: notifyError,
     }))
@@ -151,7 +151,7 @@ describe('OfferEducationalActions', () => {
 
   it('should log event when clicked on booking link', async () => {
     const mockLogEvent = vi.fn()
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       ...jest.requireActual('hooks/useAnalytics'),
       logEvent: mockLogEvent,
     }))
@@ -179,7 +179,7 @@ describe('OfferEducationalActions', () => {
 
   it('should display error message when trying to activate offer with booking limit date time in the past', async () => {
     const notifyError = vi.fn()
-    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...jest.requireActual('hooks/useNotification'),
       error: notifyError,
     }))
@@ -203,7 +203,7 @@ describe('OfferEducationalActions', () => {
   it('should activate offer with booking limit date time in the future', async () => {
     const notifyError = vi.fn()
     const offerId = 12
-    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...jest.requireActual('hooks/useNotification'),
       success: vi.fn(),
       error: notifyError,

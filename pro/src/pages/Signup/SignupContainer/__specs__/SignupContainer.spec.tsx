@@ -50,9 +50,9 @@ describe('Signup', () => {
         list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
       },
     }
-    jest.spyOn(api, 'signupPro').mockResolvedValue()
-    jest.spyOn(api, 'signupProV2').mockResolvedValue()
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(api, 'signupPro').mockResolvedValue()
+    vi.spyOn(api, 'signupProV2').mockResolvedValue()
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
@@ -237,7 +237,7 @@ describe('Signup', () => {
     })
     describe('formValidation', () => {
       beforeEach(() => {
-        jest.spyOn(getSirenDataAdapter, 'default').mockResolvedValue({
+        vi.spyOn(getSirenDataAdapter, 'default').mockResolvedValue({
           isOk: true,
           message: '',
           payload: {
@@ -330,7 +330,7 @@ describe('Signup', () => {
       })
 
       it('should show a notification on api call error', async () => {
-        jest.spyOn(api, 'signupPro').mockRejectedValue({
+        vi.spyOn(api, 'signupPro').mockRejectedValue({
           body: {
             phoneNumber: 'Le téléphone doit faire moins de 20 caractères',
           },
@@ -380,7 +380,7 @@ describe('Signup', () => {
       })
 
       it('should display a Banner when SIREN is invisible', async () => {
-        jest.spyOn(getSirenDataAdapter, 'default').mockResolvedValue({
+        vi.spyOn(getSirenDataAdapter, 'default').mockResolvedValue({
           isOk: false,
           message:
             'Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles.',

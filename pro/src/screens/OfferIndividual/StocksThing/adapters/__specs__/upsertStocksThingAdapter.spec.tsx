@@ -72,7 +72,7 @@ describe('upsertStocksThingAdapter', () => {
   })
 
   it('should return errors from api', async () => {
-    jest.spyOn(api, 'upsertStocks').mockRejectedValue(
+    vi.spyOn(api, 'upsertStocks').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {

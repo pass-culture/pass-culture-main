@@ -107,14 +107,14 @@ describe('screens:StocksEventEdition', () => {
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
 
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
   })
 
   it('should track when clicking on "Enregistrer les modifications" on edition', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 1 } as StockResponseModel],
     })
     renderStockEventScreen(props, contextValue, '/stocks')
@@ -145,7 +145,7 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should track when clicking on "Annuler et quitter" on edition', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 1 } as StockResponseModel],
     })
 

@@ -26,11 +26,11 @@ describe('useNotification', () => {
       closeNotification: mockCloseNotification,
       showNotification: mockShowNotification,
     }))
-    const mockCloseNotification = jest.spyOn(
+    const mockCloseNotification = vi.spyOn(
       notificationReducer,
       'closeNotification'
     )
-    const mockShowNotification = jest.spyOn(
+    const mockShowNotification = vi.spyOn(
       notificationReducer,
       'showNotification'
     )

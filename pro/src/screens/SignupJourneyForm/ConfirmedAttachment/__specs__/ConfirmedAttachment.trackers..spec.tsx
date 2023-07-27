@@ -53,7 +53,7 @@ describe('ConfirmedAttachment trackers', () => {
       setActivity: () => {},
       setOfferer: () => {},
     }
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))

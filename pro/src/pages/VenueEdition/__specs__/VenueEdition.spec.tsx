@@ -114,14 +114,14 @@ describe('route VenueEdition', () => {
       id: 13,
     } as GetOffererResponseModel
 
-    jest.spyOn(api, 'getVenue').mockResolvedValue(venue)
-    jest.spyOn(pcapi, 'loadProviders').mockResolvedValue(providers)
+    vi.spyOn(api, 'getVenue').mockResolvedValue(venue)
+    vi.spyOn(pcapi, 'loadProviders').mockResolvedValue(providers)
     jest
       .spyOn(api, 'listVenueProviders')
       .mockResolvedValue({ venue_providers: venueProviders })
-    jest.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
-    jest.spyOn(api, 'getVenueTypes').mockResolvedValue([])
-    jest.spyOn(api, 'fetchVenueLabels').mockResolvedValue([])
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
+    vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
+    vi.spyOn(api, 'fetchVenueLabels').mockResolvedValue([])
   })
   it('should call getVenue and display Venue Form screen on success', async () => {
     // When
@@ -136,7 +136,7 @@ describe('route VenueEdition', () => {
   })
 
   it('should check none accessibility', async () => {
-    jest.spyOn(api, 'getVenue').mockResolvedValueOnce({
+    vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
       ...venue,
       visualDisabilityCompliant: false,
       mentalDisabilityCompliant: false,
@@ -156,7 +156,7 @@ describe('route VenueEdition', () => {
   })
 
   it('should not check none accessibility if every accessibility parameters are null', async () => {
-    jest.spyOn(api, 'getVenue').mockResolvedValueOnce({
+    vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
       ...venue,
       visualDisabilityCompliant: null,
       mentalDisabilityCompliant: null,
@@ -176,7 +176,7 @@ describe('route VenueEdition', () => {
   })
 
   it('should return to home when not able to get venue informations', async () => {
-    jest.spyOn(api, 'getVenue').mockRejectedValue(
+    vi.spyOn(api, 'getVenue').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -189,7 +189,7 @@ describe('route VenueEdition', () => {
       )
     )
     const mockNavigate = vi.fn()
-    jest.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
+    vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
     // When
     renderVenueEdition(venue.id, offerer.id)
 

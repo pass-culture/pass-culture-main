@@ -98,7 +98,7 @@ describe('CollectiveDataEdition', () => {
   const notifySuccessMock = vi.fn()
 
   beforeAll(() => {
-    jest.spyOn(api, 'getVenuesEducationalStatuses').mockResolvedValue({
+    vi.spyOn(api, 'getVenuesEducationalStatuses').mockResolvedValue({
       statuses: [
         {
           id: 1,
@@ -110,7 +110,7 @@ describe('CollectiveDataEdition', () => {
         },
       ],
     })
-    jest.spyOn(api, 'listEducationalDomains').mockResolvedValue([
+    vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([
       { id: 1, name: 'domain 1' },
       { id: 2, name: 'domain 2' },
     ])
@@ -121,7 +121,7 @@ describe('CollectiveDataEdition', () => {
       .spyOn(api, 'editVenueCollectiveData')
       .mockResolvedValue({ id: 1 } as GetVenueResponseModel)
 
-    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       success: notifySuccessMock,
       error: notifyErrorMock,
       information: vi.fn(),
@@ -129,7 +129,7 @@ describe('CollectiveDataEdition', () => {
       close: vi.fn(),
     }))
 
-    jest.spyOn(api, 'getCategories').mockResolvedValue({
+    vi.spyOn(api, 'getCategories').mockResolvedValue({
       categories: [collectiveCategoryFactory(), collectiveCategoryFactory()],
       subcategories: [
         collectiveSubCategoryFactory({ categoryId: 'CATEGORY_1' }),
@@ -142,7 +142,7 @@ describe('CollectiveDataEdition', () => {
       .spyOn(api, 'getVenueCollectiveData')
       .mockResolvedValue(venueCollectiveDataFactory())
 
-    jest.spyOn(api, 'getEducationalPartner').mockRejectedValue({})
+    vi.spyOn(api, 'getEducationalPartner').mockRejectedValue({})
   })
 
   describe('render', () => {
@@ -390,7 +390,7 @@ describe('CollectiveDataEdition', () => {
 
   describe('categories', () => {
     it('should prefill field with selected category and subcategory', async () => {
-      jest.spyOn(api, 'getVenueCollectiveData').mockResolvedValueOnce(
+      vi.spyOn(api, 'getVenueCollectiveData').mockResolvedValueOnce(
         venueCollectiveDataFactory({
           collectiveEmail: 'test@example.com',
           collectiveSubCategoryId: 'SUB_CATEGORY_1',
@@ -407,7 +407,7 @@ describe('CollectiveDataEdition', () => {
     })
 
     it('should not display subcategory field if no category selected', async () => {
-      jest.spyOn(api, 'getCategories').mockResolvedValueOnce({
+      vi.spyOn(api, 'getCategories').mockResolvedValueOnce({
         categories: [],
         subcategories: [],
       })
@@ -481,7 +481,7 @@ describe('CollectiveDataEdition', () => {
 
   describe('prefill', () => {
     it('should prefill form with venue collective data', async () => {
-      jest.spyOn(api, 'getVenueCollectiveData').mockResolvedValue({
+      vi.spyOn(api, 'getVenueCollectiveData').mockResolvedValue({
         collectiveDomains: [{ id: 1, name: 'domain 1' }],
         collectiveDescription: '',
         collectiveEmail: 'toto@domain.com',
@@ -518,7 +518,7 @@ describe('CollectiveDataEdition', () => {
     })
 
     it('should prefill form with educational partner data when venue has no collectiva data', async () => {
-      jest.spyOn(api, 'getEducationalPartner').mockResolvedValueOnce({
+      vi.spyOn(api, 'getEducationalPartner').mockResolvedValueOnce({
         id: 1,
         siteWeb: 'https://monsite.com',
         statutId: 2,
@@ -555,7 +555,7 @@ describe('CollectiveDataEdition', () => {
     })
 
     it('should not call educational partner if venue has no siret and no collective data', async () => {
-      jest.spyOn(api, 'getVenueCollectiveData').mockResolvedValue(
+      vi.spyOn(api, 'getVenueCollectiveData').mockResolvedValue(
         venueCollectiveDataFactory({
           siret: undefined,
         })

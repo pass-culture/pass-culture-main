@@ -152,7 +152,7 @@ describe('route CollectiveOffers', () => {
       .spyOn(api, 'getCollectiveOffers')
       // @ts-expect-error FIX ME
       .mockResolvedValue(offersRecap)
-    jest.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
+    vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
   })
 
   describe('url query params', () => {
@@ -223,7 +223,7 @@ describe('route CollectiveOffers', () => {
         .spyOn(api, 'getCollectiveOffers')
         // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offersRecap)
-      jest.spyOn(api, 'getCategories').mockResolvedValue({
+      vi.spyOn(api, 'getCategories').mockResolvedValue({
         categories: [
           { id: 'test_id_1', proLabel: 'My test value', isSelectable: true },
           {
@@ -266,7 +266,7 @@ describe('route CollectiveOffers', () => {
 
     it('should have status value when user filters by status', async () => {
       // Given
-      jest.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([
+      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([
         // @ts-expect-error FIX ME
         collectiveOfferFactory(
           {
@@ -295,7 +295,7 @@ describe('route CollectiveOffers', () => {
 
     it('should have status value be removed when user ask for all status', async () => {
       // Given
-      jest.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([
+      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([
         // @ts-expect-error FIX ME
         collectiveOfferFactory(
           {
@@ -324,7 +324,7 @@ describe('route CollectiveOffers', () => {
       // Given
       const filters = { offererId: 'A4' }
       // @ts-expect-error FIX ME
-      jest.spyOn(api, 'getOfferer').mockResolvedValueOnce({
+      vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
         name: 'La structure',
       })
       // When
@@ -338,7 +338,7 @@ describe('route CollectiveOffers', () => {
       // Given
       const filters = { offererId: 'A4' }
       // @ts-expect-error FIX ME
-      jest.spyOn(api, 'getOfferer').mockResolvedValueOnce({
+      vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
         name: 'La structure',
       })
       await renderOffers(store, filters)
@@ -353,7 +353,7 @@ describe('route CollectiveOffers', () => {
     it('should redirect to individual offers when user clicks on individual offers link', async () => {
       // Given
 
-      jest.spyOn(api, 'getCollectiveOffers').mockResolvedValue(
+      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(
         // @ts-expect-error FIX ME
         offersRecap
       )

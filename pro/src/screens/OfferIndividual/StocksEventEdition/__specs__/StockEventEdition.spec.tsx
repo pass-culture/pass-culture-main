@@ -37,14 +37,14 @@ jest.mock('utils/date', () => ({
 const renderStockEventScreen = async (
   apiOffer: GetIndividualOfferResponseModel
 ) => {
-  jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
+  vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
   jest
     .spyOn(api, 'getCategories')
     .mockResolvedValue({ categories: [], subcategories: [] })
-  jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
-  jest.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
-  jest.spyOn(api, 'upsertStocks').mockResolvedValue({} as StocksResponseModel)
-  jest.spyOn(api, 'listOffers').mockResolvedValue([
+  vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
+  vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
+  vi.spyOn(api, 'upsertStocks').mockResolvedValue({} as StocksResponseModel)
+  vi.spyOn(api, 'listOffers').mockResolvedValue([
     {
       id: 1,
       status: 'ACTIVE',
@@ -251,7 +251,7 @@ describe('screens:StocksEventEdition', () => {
       },
     ]
     await renderStockEventScreen(apiOffer)
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
+    vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[0]
@@ -270,7 +270,7 @@ describe('screens:StocksEventEdition', () => {
     ).toBeInTheDocument()
     expect(api.deleteStock).toHaveBeenCalledWith(stockToDelete.id)
 
-    jest.spyOn(api, 'upsertStocks')
+    vi.spyOn(api, 'upsertStocks')
     await userEvent.click(
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
@@ -285,7 +285,7 @@ describe('screens:StocksEventEdition', () => {
       },
     ]
     await renderStockEventScreen(apiOffer)
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
+    vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[1]
@@ -303,7 +303,7 @@ describe('screens:StocksEventEdition', () => {
       name: 'Provider',
     }
     await renderStockEventScreen(apiOffer)
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
+    vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
     await userEvent.click(
       screen.getAllByTestId('stock-form-actions-button-open')[1]
@@ -353,7 +353,7 @@ describe('screens:StocksEventEdition', () => {
       name: 'Provider',
     }
     await renderStockEventScreen(apiOffer)
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
+    vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
 
     expect(screen.getByText('Ajouter une ou plusieurs dates')).toBeDisabled()
   })
@@ -379,7 +379,7 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should display an error message when there is an api error', async () => {
-    jest.spyOn(api, 'deleteStock').mockRejectedValue(
+    vi.spyOn(api, 'deleteStock').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -467,7 +467,7 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should not display any message when user delete empty stock', async () => {
-    jest.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
+    vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
     apiOffer.stocks = []
     await renderStockEventScreen(apiOffer)
 

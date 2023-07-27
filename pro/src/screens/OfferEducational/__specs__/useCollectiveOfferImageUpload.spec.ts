@@ -46,7 +46,7 @@ describe('useCollectiveOfferImageUpload', () => {
     const payload: AttachImageResponseModel = {
       imageUrl: 'https://example.com/image.jpg',
     }
-    jest.spyOn(postCollectiveOfferImageAdapter, 'default').mockResolvedValue({
+    vi.spyOn(postCollectiveOfferImageAdapter, 'default').mockResolvedValue({
       isOk: true,
       payload,
       message: 'ok',
@@ -94,7 +94,7 @@ describe('useCollectiveOfferImageUpload', () => {
 
   it('should delete image in case of normal offer', async () => {
     const offer = collectiveOfferTemplateFactory()
-    jest.spyOn(deleteCollectiveOfferImageAdapter, 'default').mockResolvedValue({
+    vi.spyOn(deleteCollectiveOfferImageAdapter, 'default').mockResolvedValue({
       isOk: true,
       payload: null,
       message: 'ok',
