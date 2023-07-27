@@ -8,6 +8,7 @@ describe('getLabelString', () => {
   it('should return label as string', async () => {
     expect(getLabelString('Input Label')).toBe('Input Label')
   })
+
   it('should return empty string if label is a component', async () => {
     expect(
       getLabelString(
