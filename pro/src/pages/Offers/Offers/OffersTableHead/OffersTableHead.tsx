@@ -8,6 +8,7 @@ import { ADMINS_DISABLED_FILTERS_MESSAGE } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import { searchFiltersSelector } from 'store/offers/selectors'
+import { BaseCheckbox } from 'ui-kit/form/shared'
 import { mapBrowserStatusToApi } from 'utils/translate'
 
 import StatusFiltersButton from './StatusFiltersButton'
@@ -43,7 +44,7 @@ const OffersTableHead = ({
     <thead>
       <tr>
         <th className="th-checkbox">
-          <input
+          <BaseCheckbox
             checked={areAllOffersSelected || isAtLeastOneOfferChecked}
             className={cn('select-offer-checkbox', {
               ['partial-check']:
@@ -52,7 +53,7 @@ const OffersTableHead = ({
             disabled={isAdminForbidden(savedSearchFilters) || !areOffersPresent}
             id="select-offer-checkbox"
             onChange={selectAllOffers}
-            type="checkbox"
+            label=""
           />
         </th>
         <th

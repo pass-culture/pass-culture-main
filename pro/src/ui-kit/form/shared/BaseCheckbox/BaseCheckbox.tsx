@@ -43,7 +43,6 @@ const BaseCheckbox = ({
           [styles['has-error']]: hasError,
           ['partial-check']: partialCheck,
         })}
-        data-testid={'checkbox'}
       />
       {Boolean(icon) && (
         <span className={styles['base-checkbox-icon']}>
