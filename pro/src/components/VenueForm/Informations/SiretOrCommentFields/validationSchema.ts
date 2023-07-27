@@ -27,7 +27,7 @@ const generateSiretValidationSchema = (
           .test(
             'correspondingToSiren',
             'Le code SIRET doit correspondre à un établissement de votre structure',
-            siret => siret && isSiretStartingWithSiren(siret, siren)
+            siret => Boolean(siret) && isSiretStartingWithSiren(siret, siren)
           )
           .test(
             'apiSiretValid',

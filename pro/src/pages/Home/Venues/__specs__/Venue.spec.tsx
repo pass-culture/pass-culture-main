@@ -9,7 +9,6 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import { DMSApplicationstatus } from 'apiClient/v1'
 import { defaultCollectiveDmsApplication } from 'utils/collectiveApiFactories'
-import { loadFakeApiVenueStats } from 'utils/fakeApi'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Venue, { VenueProps } from '../Venue'
@@ -44,7 +43,7 @@ describe('venues', () => {
       offererId: offererId,
       dmsInformations: null,
     }
-    loadFakeApiVenueStats({
+    vi.spyOn(api, 'getVenueStats').mockResolvedValue({
       activeBookingsQuantity: 0,
       activeOffersCount: 2,
       soldOutOffersCount: 3,
