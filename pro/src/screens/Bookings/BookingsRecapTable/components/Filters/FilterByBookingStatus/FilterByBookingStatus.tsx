@@ -10,6 +10,7 @@ import { Audience } from 'core/shared'
 import useAnalytics from 'hooks/useAnalytics'
 import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
 import fullSortIcon from 'icons/full-sort.svg'
+import { BaseCheckbox } from 'ui-kit/form/shared'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { BookingsFilters } from '../../../types'
@@ -135,16 +136,14 @@ const FilterByBookingStatus = <
           <div className="bs-filter-tooltip">
             <div className="bs-filter-label">Afficher les réservations</div>
             {filteredBookingStatuses.map(bookingStatus => (
-              <label key={bookingStatus.value}>
-                <input
-                  checked={!bookingStatusFilters.includes(bookingStatus.value)}
-                  id={`bs-${bookingStatus.value}`}
-                  name={bookingStatus.value}
-                  onChange={handleCheckboxChange}
-                  type="checkbox"
-                />
-                {bookingStatus.title}
-              </label>
+              <BaseCheckbox
+                key={bookingStatus.value}
+                checked={!bookingStatusFilters.includes(bookingStatus.value)}
+                id={`bs-${bookingStatus.value}`}
+                name={bookingStatus.value}
+                onChange={handleCheckboxChange}
+                label={bookingStatus.title}
+              />
             ))}
           </div>
         )}
