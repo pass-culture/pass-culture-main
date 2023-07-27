@@ -18,7 +18,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import PriceCategories, { PriceCategoriesProps } from '../PriceCategories'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 const offerId = 1
 
 const renderPriceCategories = (

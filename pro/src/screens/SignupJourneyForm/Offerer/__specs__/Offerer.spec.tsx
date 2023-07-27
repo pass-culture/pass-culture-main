@@ -21,8 +21,8 @@ import { DEFAULT_OFFERER_FORM_VALUES } from '../constants'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getSiretInfo: jest.fn(),
-    getVenuesOfOffererFromSiret: jest.fn(),
+    getSiretInfo: vi.fn(),
+    getVenuesOfOffererFromSiret: vi.fn(),
   },
 }))
 

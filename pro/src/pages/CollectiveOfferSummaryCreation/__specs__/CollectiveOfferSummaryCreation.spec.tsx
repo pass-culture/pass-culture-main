@@ -11,16 +11,16 @@ import { CollectiveOfferSummaryCreation } from '../CollectiveOfferSummaryCreatio
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getCategories: jest.fn(),
-    getCollectiveOffer: jest.fn(),
-    getCollectiveOfferTemplate: jest.fn(),
+    getCategories: vi.fn(),
+    getCollectiveOffer: vi.fn(),
+    getCollectiveOfferTemplate: vi.fn(),
   },
 }))
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: () => ({
-    requestId: jest.fn(),
+    requestId: vi.fn(),
   }),
 }))
 
@@ -36,8 +36,8 @@ const renderCollectiveOfferSummaryCreation = async (
 
 const defaultProps = {
   offer: collectiveOfferFactory(),
-  setOffer: jest.fn(),
-  reloadCollectiveOffer: jest.fn(),
+  setOffer: vi.fn(),
+  reloadCollectiveOffer: vi.fn(),
   isTemplate: false,
 }
 

@@ -19,7 +19,7 @@ const renderButtonImageDelete = ({ props }: RenderButtonImageDeleteProps) => {
   )
 }
 
-const mockOnDelete = jest.fn().mockResolvedValue({})
+const mockOnDelete = vi.fn().mockResolvedValue({})
 
 describe('ButtonImageDelete', () => {
   let props: ButtonImageDeleteProps

@@ -12,7 +12,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Homepage from '../../Homepage'
 
-const mockNavigate = jest.fn()
+const mockNavigate = vi.fn()
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockNavigate,
@@ -20,9 +20,9 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getOfferer: jest.fn(),
-    listOfferersNames: jest.fn(),
-    getVenueStats: jest.fn(),
+    getOfferer: vi.fn(),
+    listOfferersNames: vi.fn(),
+    getVenueStats: vi.fn(),
   },
 }))
 
@@ -61,7 +61,7 @@ const renderHomePage = async storeOverrides => {
     waitForElements,
   }
 }
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 describe('offererDetailsLegacy', () => {
   let store

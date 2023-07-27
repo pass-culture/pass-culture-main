@@ -17,7 +17,7 @@ import ImageUploaderOffer, {
   ImageUploaderOfferProps,
 } from '../ImageUploaderOffer'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 const renderImageUploaderOffer = (
   props: ImageUploaderOfferProps,
@@ -51,7 +51,7 @@ const renderImageUploaderOffer = (
             widthCropPercent: 1,
           },
         }}
-        onSubmit={jest.fn()}
+        onSubmit={vi.fn()}
       >
         <Form>
           <ImageUploaderOffer {...props} />
@@ -66,8 +66,8 @@ describe('ImageUploaderOffer::tracker', () => {
 
   beforeEach(() => {
     props = {
-      onImageUpload: jest.fn().mockResolvedValue(undefined),
-      onImageDelete: jest.fn().mockResolvedValue(undefined),
+      onImageUpload: vi.fn().mockResolvedValue(undefined),
+      onImageDelete: vi.fn().mockResolvedValue(undefined),
     }
 
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({

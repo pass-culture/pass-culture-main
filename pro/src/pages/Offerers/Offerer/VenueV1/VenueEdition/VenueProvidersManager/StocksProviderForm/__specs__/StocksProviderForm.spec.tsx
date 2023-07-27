@@ -10,7 +10,7 @@ import StocksProviderForm, {
   StocksProviderFormProps,
 } from '../StocksProviderForm'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 const renderStocksProviderForm = (props: StocksProviderFormProps) => {
   renderWithProviders(<StocksProviderForm {...props} />)
@@ -26,7 +26,7 @@ describe('StocksProviderForm', () => {
     props = {
       offererId: offererId,
       providerId: providerId,
-      saveVenueProvider: jest.fn(),
+      saveVenueProvider: vi.fn(),
       siret: '12345678901234',
       venueId: venueId,
       hasOffererProvider: true,

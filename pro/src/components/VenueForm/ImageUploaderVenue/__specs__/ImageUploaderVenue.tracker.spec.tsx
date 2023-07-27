@@ -10,7 +10,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ImageUploaderVenue from '../ImageUploaderVenue'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 const renderImageUploaderVenue = () =>
   renderWithProviders(
@@ -27,7 +27,7 @@ const renderImageUploaderVenue = () =>
           widthCropPercent: 1,
         },
       }}
-      onSubmit={jest.fn()}
+      onSubmit={vi.fn()}
     >
       <Form>
         <ImageUploaderVenue isCreatingVenue={false} />

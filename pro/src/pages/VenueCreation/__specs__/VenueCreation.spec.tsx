@@ -48,16 +48,16 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock('apiClient/api', () => ({
   api: {
-    fetchVenueLabels: jest.fn(),
-    getOfferer: jest.fn(),
-    getVenueTypes: jest.fn(),
-    canOffererCreateEducationalOffer: jest.fn(),
+    fetchVenueLabels: vi.fn(),
+    getOfferer: vi.fn(),
+    getVenueTypes: vi.fn(),
+    canOffererCreateEducationalOffer: vi.fn(),
   },
 }))
 
-Element.prototype.scrollIntoView = jest.fn()
+Element.prototype.scrollIntoView = vi.fn()
 
-window.matchMedia = jest.fn().mockReturnValue({ matches: true })
+window.matchMedia = vi.fn().mockReturnValue({ matches: true })
 
 describe('route VenueCreation', () => {
   let offerer: GetOffererResponseModel

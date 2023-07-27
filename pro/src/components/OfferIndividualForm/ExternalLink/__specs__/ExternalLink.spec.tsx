@@ -36,7 +36,7 @@ const renderExternalLink = ({
 
 describe('OfferIndividual section: ExternalLink', () => {
   let initialValues: Partial<OfferIndividualFormValues>
-  const onSubmit = jest.fn()
+  const onSubmit = vi.fn()
 
   beforeEach(() => {
     initialValues = { ...EXTERNAL_LINK_DEFAULT_VALUES }

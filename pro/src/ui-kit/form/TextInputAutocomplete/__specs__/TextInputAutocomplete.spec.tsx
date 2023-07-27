@@ -23,7 +23,7 @@ const renderTextInputAutocomplete = async (
 describe('src | ui-kit | form | TextInputAutocomplete', () => {
   let initialValues = {}
   let props: TextInputAutocompleteProps
-  const onSelectCustom = jest.fn()
+  const onSelectCustom = vi.fn()
   const getSuggestions = async (search: string) => {
     if (search == 'testNoSuggestions') {
       return []

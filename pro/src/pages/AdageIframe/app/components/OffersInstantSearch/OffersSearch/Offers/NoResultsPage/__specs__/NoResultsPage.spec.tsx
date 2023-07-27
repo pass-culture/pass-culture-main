@@ -8,8 +8,8 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { SearchFormValues } from '../../../OffersSearch'
 import { NoResultsPage } from '../NoResultsPage'
 
-const handleSubmit = jest.fn()
-const handleReset = jest.fn()
+const handleSubmit = vi.fn()
+const handleReset = vi.fn()
 
 const renderNoResultsPage = ({
   initialValues,

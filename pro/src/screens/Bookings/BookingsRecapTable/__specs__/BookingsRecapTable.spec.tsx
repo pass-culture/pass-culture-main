@@ -47,8 +47,8 @@ describe('components | BookingsRecapTable', () => {
   const defaultProps: Props = {
     isLoading: false,
     audience: Audience.INDIVIDUAL,
-    reloadBookings: jest.fn(),
-    resetBookings: jest.fn(),
+    reloadBookings: vi.fn(),
+    resetBookings: vi.fn(),
     bookingsRecap: [],
   }
 
@@ -281,7 +281,7 @@ describe('components | BookingsRecapTable', () => {
       payload: collectiveBookingDetailsFactory(),
     })
 
-    const mockLogEvent = jest.fn()
+    const mockLogEvent = vi.fn()
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       ...jest.requireActual('hooks/useAnalytics'),
       logEvent: mockLogEvent,

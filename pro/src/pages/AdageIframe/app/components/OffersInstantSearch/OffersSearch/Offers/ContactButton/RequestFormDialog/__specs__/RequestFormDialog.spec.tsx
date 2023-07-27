@@ -14,7 +14,7 @@ import RequestFormDialog, { RequestFormDialogProps } from '../RequestFormDialog'
 const renderRequestFormDialog = (props?: Partial<RequestFormDialogProps>) => {
   renderWithProviders(
     <RequestFormDialog
-      closeModal={jest.fn()}
+      closeModal={vi.fn()}
       offerId={1}
       userEmail={'contact@example.com'}
       userRole={AdageFrontRoles.REDACTOR}
@@ -25,8 +25,8 @@ const renderRequestFormDialog = (props?: Partial<RequestFormDialogProps>) => {
 
 jest.mock('apiClient/api', () => ({
   apiAdage: {
-    createCollectiveRequest: jest.fn(),
-    logRequestFormPopinDismiss: jest.fn(),
+    createCollectiveRequest: vi.fn(),
+    logRequestFormPopinDismiss: vi.fn(),
   },
 }))
 
@@ -38,14 +38,14 @@ describe('RequestFormDialog', () => {
   })
 
   it('should submit valid form and close modal on submit', async () => {
-    const notifySuccess = jest.fn()
-    const mockCloseModal = jest.fn()
+    const notifySuccess = vi.fn()
+    const mockCloseModal = vi.fn()
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       success: notifySuccess,
-      error: jest.fn(),
-      information: jest.fn(),
-      pending: jest.fn(),
-      close: jest.fn(),
+      error: vi.fn(),
+      information: vi.fn(),
+      pending: vi.fn(),
+      close: vi.fn(),
     }))
 
     renderRequestFormDialog({ closeModal: mockCloseModal })
@@ -77,14 +77,14 @@ describe('RequestFormDialog', () => {
   })
   it('should display error message when api reject call', async () => {
     jest.spyOn(apiAdage, 'createCollectiveRequest').mockRejectedValueOnce({})
-    const notifyError = jest.fn()
-    const mockCloseModal = jest.fn()
+    const notifyError = vi.fn()
+    const mockCloseModal = vi.fn()
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
-      success: jest.fn(),
+      success: vi.fn(),
       error: notifyError,
-      information: jest.fn(),
-      pending: jest.fn(),
-      close: jest.fn(),
+      information: vi.fn(),
+      pending: vi.fn(),
+      close: vi.fn(),
     }))
 
     renderRequestFormDialog({ closeModal: mockCloseModal })
@@ -143,7 +143,7 @@ describe('RequestFormDialog', () => {
     ).not.toBeInTheDocument()
   })
   it('should log event when user close modal', async () => {
-    const mockCloseModal = jest.fn()
+    const mockCloseModal = vi.fn()
     renderRequestFormDialog({ closeModal: mockCloseModal })
 
     const descriptionField = screen.getByLabelText(

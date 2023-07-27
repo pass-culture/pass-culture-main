@@ -9,7 +9,7 @@ import ImageUploaderOffer, {
 import * as imageUploaderOfferUtils from '../utils'
 
 jest.mock('../utils', () => ({
-  buildInitialValues: jest.fn(),
+  buildInitialValues: vi.fn(),
 }))
 
 const renderImageUploaderOffer = (props: ImageUploaderOfferProps) =>
@@ -19,8 +19,8 @@ describe('test ImageUploaderOffer', () => {
   let props: ImageUploaderOfferProps
   beforeEach(() => {
     props = {
-      onImageUpload: jest.fn().mockResolvedValue(undefined),
-      onImageDelete: jest.fn().mockResolvedValue(undefined),
+      onImageUpload: vi.fn().mockResolvedValue(undefined),
+      onImageDelete: vi.fn().mockResolvedValue(undefined),
     }
   })
 

@@ -11,13 +11,13 @@ import Homepage from '../../Homepage'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getOfferer: jest.fn().mockResolvedValue({}),
-    listOfferersNames: jest.fn(),
-    getVenueStats: jest.fn(),
+    getOfferer: vi.fn().mockResolvedValue({}),
+    listOfferersNames: vi.fn(),
+    getVenueStats: vi.fn(),
   },
 }))
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 const renderHomePage = () => {
   const storeOverrides = {
     user: {

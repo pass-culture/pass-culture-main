@@ -34,7 +34,7 @@ import OfferIndividualForm, {
 
 const renderOfferIndividualForm = ({
   initialValues,
-  onSubmit = jest.fn(),
+  onSubmit = vi.fn(),
   props,
   contextOverride = {},
 }: {
@@ -79,7 +79,7 @@ const renderOfferIndividualForm = ({
 
 describe('OfferIndividualForm', () => {
   let initialValues: OfferIndividualFormValues
-  const onSubmit = jest.fn()
+  const onSubmit = vi.fn()
   let props: OfferIndividualFormProps
   let categories: OfferCategory[] = []
   let subCategories: OfferSubCategory[] = []
@@ -180,8 +180,8 @@ describe('OfferIndividualForm', () => {
       subCategories,
       offererNames,
       venueList,
-      onImageUpload: jest.fn(),
-      onImageDelete: jest.fn(),
+      onImageUpload: vi.fn(),
+      onImageDelete: vi.fn(),
       offerSubtype: INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD,
     }
     initialValues = setDefaultInitialFormValues(

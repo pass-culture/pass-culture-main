@@ -19,7 +19,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import SignupBreadcrumb from '../SignupJourneyBreadcrumb'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 const renderSignupBreadcrumb = (
   contextValue: SignupJourneyContextValues,

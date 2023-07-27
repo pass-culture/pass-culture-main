@@ -18,11 +18,11 @@ import OfferItem, { OfferItemProps } from '../OfferItem'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    deleteDraftOffers: jest.fn(),
+    deleteDraftOffers: vi.fn(),
   },
 }))
 
-const mockRefreshOffer = jest.fn()
+const mockRefreshOffer = vi.fn()
 
 const renderOfferItem = (props: OfferItemProps) =>
   renderWithProviders(
@@ -64,7 +64,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     props = {
       refreshOffers: mockRefreshOffer,
       offer: eventOffer,
-      selectOffer: jest.fn(),
+      selectOffer: vi.fn(),
       audience: Audience.INDIVIDUAL,
     }
   })
@@ -597,7 +597,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       expect(bookingLink).toBeInTheDocument()
     })
     it('should log event when clicking booking link', async () => {
-      const mockLogEvent = jest.fn()
+      const mockLogEvent = vi.fn()
       jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
         ...jest.requireActual('hooks/useAnalytics'),
         logEvent: mockLogEvent,

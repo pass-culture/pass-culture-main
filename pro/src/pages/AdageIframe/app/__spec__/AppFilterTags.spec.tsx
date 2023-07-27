@@ -44,16 +44,16 @@ jest.mock('utils/config', () => ({
   ALGOLIA_COLLECTIVE_OFFERS_INDEX: 'adage-collective-offers',
 }))
 jest.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
-  getEducationalDomains: jest.fn().mockResolvedValue([
+  getEducationalDomains: vi.fn().mockResolvedValue([
     { id: 1, name: 'Danse' },
     { id: 2, name: 'Architecture' },
   ]),
-  getFeatures: jest.fn().mockResolvedValue([]),
+  getFeatures: vi.fn().mockResolvedValue([]),
 }))
 
 jest.mock('apiClient/api', () => ({
   apiAdage: {
-    getEducationalOffersCategories: jest.fn().mockResolvedValue({
+    getEducationalOffersCategories: vi.fn().mockResolvedValue({
       categories: [
         { id: 'CINEMA', proLabel: 'Cinéma' },
         { id: 'MUSEE', proLabel: 'Musée' },
@@ -81,13 +81,13 @@ jest.mock('apiClient/api', () => ({
         },
       ],
     }),
-    getVenueById: jest.fn(),
-    authenticate: jest.fn(),
-    getVenueBySiret: jest.fn(),
-    logCatalogView: jest.fn(),
-    logSearchButtonClick: jest.fn(),
-    getCollectiveOffer: jest.fn(),
-    getCollectiveOfferTemplate: jest.fn(),
+    getVenueById: vi.fn(),
+    authenticate: vi.fn(),
+    getVenueBySiret: vi.fn(),
+    logCatalogView: vi.fn(),
+    logSearchButtonClick: vi.fn(),
+    getCollectiveOffer: vi.fn(),
+    getCollectiveOfferTemplate: vi.fn(),
   },
 }))
 

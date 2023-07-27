@@ -18,14 +18,14 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferType from '../OfferType'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 jest.mock('apiClient/api', () => ({
   api: {
-    listOfferersNames: jest.fn(),
-    canOffererCreateEducationalOffer: jest.fn(),
-    getCollectiveOffers: jest.fn(),
-    getOfferer: jest.fn(),
+    listOfferersNames: vi.fn(),
+    canOffererCreateEducationalOffer: vi.fn(),
+    getCollectiveOffers: vi.fn(),
+    getOfferer: vi.fn(),
   },
 }))
 
@@ -344,7 +344,7 @@ describe('screens:OfferIndividual::OfferType', () => {
     })
     jest.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
     jest.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
-    const notifyError = jest.fn()
+    const notifyError = vi.fn()
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...jest.requireActual('hooks/useNotification'),
       error: notifyError,

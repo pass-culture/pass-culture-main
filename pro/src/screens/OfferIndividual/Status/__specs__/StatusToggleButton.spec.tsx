@@ -22,7 +22,7 @@ describe('StatusToggleButton', () => {
       offerId: offerId,
       isActive: true,
       status: OfferStatus.ACTIVE,
-      reloadOffer: jest.fn(),
+      reloadOffer: vi.fn(),
     }
   })
 
@@ -31,13 +31,13 @@ describe('StatusToggleButton', () => {
     const toggle = jest
       .spyOn(api, 'patchOffersActiveStatus')
       .mockResolvedValue()
-    const notifySuccess = jest.fn()
+    const notifySuccess = vi.fn()
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       success: notifySuccess,
-      error: jest.fn(),
-      information: jest.fn(),
-      pending: jest.fn(),
-      close: jest.fn(),
+      error: vi.fn(),
+      information: vi.fn(),
+      pending: vi.fn(),
+      close: vi.fn(),
     }))
 
     // when
@@ -63,13 +63,13 @@ describe('StatusToggleButton', () => {
     const toggleFunction = jest
       .spyOn(api, 'patchOffersActiveStatus')
       .mockResolvedValue()
-    const notifySuccess = jest.fn()
+    const notifySuccess = vi.fn()
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       success: notifySuccess,
-      error: jest.fn(),
-      information: jest.fn(),
-      pending: jest.fn(),
-      close: jest.fn(),
+      error: vi.fn(),
+      information: vi.fn(),
+      pending: vi.fn(),
+      close: vi.fn(),
     }))
 
     // when
@@ -97,13 +97,13 @@ describe('StatusToggleButton', () => {
     const toggleFunction = jest
       .spyOn(api, 'patchOffersActiveStatus')
       .mockRejectedValue({})
-    const notifyError = jest.fn()
+    const notifyError = vi.fn()
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       error: notifyError,
-      success: jest.fn(),
-      information: jest.fn(),
-      pending: jest.fn(),
-      close: jest.fn(),
+      success: vi.fn(),
+      information: vi.fn(),
+      pending: vi.fn(),
+      close: vi.fn(),
     }))
 
     // when

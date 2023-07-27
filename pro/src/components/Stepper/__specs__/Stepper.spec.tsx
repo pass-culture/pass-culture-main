@@ -11,7 +11,7 @@ const renderStepper = (props: StepperProps) => {
   return renderWithProviders(<Stepper {...props} />)
 }
 
-const onClick = jest.fn()
+const onClick = vi.fn()
 
 describe('Stepper', () => {
   let props: StepperProps

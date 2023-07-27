@@ -38,7 +38,7 @@ describe('SelectAutocomplete', () => {
 
   it('should display field', () => {
     render(
-      <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+      <Formik initialValues={initialValues} onSubmit={vi.fn()}>
         <SelectAutocomplete {...props} />
       </Formik>
     )
@@ -48,7 +48,7 @@ describe('SelectAutocomplete', () => {
   describe('Options', () => {
     it('should not display options at first display', () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+        <Formik initialValues={initialValues} onSubmit={vi.fn()}>
           <SelectAutocomplete {...props} />
         </Formik>
       )
@@ -58,7 +58,7 @@ describe('SelectAutocomplete', () => {
 
     it('should open and display all options when the user focuses on the field', async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+        <Formik initialValues={initialValues} onSubmit={vi.fn()}>
           <SelectAutocomplete {...props} />
         </Formik>
       )
@@ -68,7 +68,7 @@ describe('SelectAutocomplete', () => {
 
     it('should close and hide all options when the user triggers the close arrow button', async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+        <Formik initialValues={initialValues} onSubmit={vi.fn()}>
           <SelectAutocomplete {...props} />
         </Formik>
       )
@@ -81,7 +81,7 @@ describe('SelectAutocomplete', () => {
 
     it('should close and hide options when the user focuses outside of the field', async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+        <Formik initialValues={initialValues} onSubmit={vi.fn()}>
           <>
             <button>Outside</button>
             <SelectAutocomplete {...props} />
@@ -102,7 +102,7 @@ describe('SelectAutocomplete', () => {
               departement: ['01', '02'],
               'search-departement': '',
             }}
-            onSubmit={jest.fn()}
+            onSubmit={vi.fn()}
           >
             <SelectAutocomplete {...{ ...props, multi: true }} />
           </Formik>
@@ -116,7 +116,7 @@ describe('SelectAutocomplete', () => {
               departement: ['01', '02'],
               'search-departement': '',
             }}
-            onSubmit={jest.fn()}
+            onSubmit={vi.fn()}
           >
             <SelectAutocomplete {...{ ...props, multi: true }} />
           </Formik>
@@ -140,7 +140,7 @@ describe('SelectAutocomplete', () => {
               departement: ['01', '02'],
               'search-departement': '',
             }}
-            onSubmit={jest.fn()}
+            onSubmit={vi.fn()}
           >
             <SelectAutocomplete {...{ ...props, multi: true }} />
           </Formik>
@@ -157,7 +157,7 @@ describe('SelectAutocomplete', () => {
     describe('Simple', () => {
       it('should replace single option', async () => {
         render(
-          <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+          <Formik initialValues={initialValues} onSubmit={vi.fn()}>
             <SelectAutocomplete {...props} />
           </Formik>
         )
@@ -172,7 +172,7 @@ describe('SelectAutocomplete', () => {
   describe('filter', () => {
     it('should filter options when the user types in the field', async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+        <Formik initialValues={initialValues} onSubmit={vi.fn()}>
           <SelectAutocomplete {...props} />
         </Formik>
       )
@@ -191,7 +191,7 @@ describe('SelectAutocomplete', () => {
 
     it('should reset filter when the user closes and reopens the field', async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+        <Formik initialValues={initialValues} onSubmit={vi.fn()}>
           <SelectAutocomplete {...props} />
         </Formik>
       )
@@ -208,7 +208,7 @@ describe('SelectAutocomplete', () => {
 
     it('should warn that there are no results', async () => {
       render(
-        <Formik initialValues={initialValues} onSubmit={jest.fn()}>
+        <Formik initialValues={initialValues} onSubmit={vi.fn()}>
           <SelectAutocomplete {...props} />
         </Formik>
       )
@@ -228,7 +228,7 @@ describe('SelectAutocomplete', () => {
             departement: ['01', '02'],
             'search-departement': '',
           }}
-          onSubmit={jest.fn()}
+          onSubmit={vi.fn()}
         >
           <SelectAutocomplete {...{ ...props, multi: true }} />
         </Formik>
@@ -252,7 +252,7 @@ describe('SelectAutocomplete', () => {
             departement: ['01', '02'],
             'search-departement': '',
           }}
-          onSubmit={jest.fn()}
+          onSubmit={vi.fn()}
         >
           <SelectAutocomplete {...{ ...props, multi: true }} hideTags />
         </Formik>
@@ -276,7 +276,7 @@ describe('SelectAutocomplete', () => {
             departement: ['01', '02'],
             'search-departement': '',
           }}
-          onSubmit={jest.fn()}
+          onSubmit={vi.fn()}
         >
           <SelectAutocomplete {...{ ...props, multi: true }} />
         </Formik>
@@ -294,7 +294,7 @@ describe('SelectAutocomplete', () => {
             departement: ['01', '02'],
             'search-departement': '',
           }}
-          onSubmit={jest.fn()}
+          onSubmit={vi.fn()}
         >
           <SelectAutocomplete {...{ ...props, multi: true }} />
         </Formik>

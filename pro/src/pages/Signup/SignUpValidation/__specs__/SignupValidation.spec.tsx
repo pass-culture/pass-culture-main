@@ -31,11 +31,11 @@ const renderSignupValidation = (url: string) =>
 
 describe('src | components | pages | Signup | validation', () => {
   const mockUseNotification = {
-    close: jest.fn(),
-    error: jest.fn(),
-    pending: jest.fn(),
-    information: jest.fn(),
-    success: jest.fn(),
+    close: vi.fn(),
+    error: vi.fn(),
+    pending: vi.fn(),
+    information: vi.fn(),
+    success: vi.fn(),
   }
 
   beforeEach(() => {
@@ -80,7 +80,7 @@ describe('src | components | pages | Signup | validation', () => {
 
   it('should display a success message when token verification is successful', async () => {
     jest.spyOn(api, 'validateUser').mockResolvedValue()
-    const notifySuccess = jest.fn()
+    const notifySuccess = vi.fn()
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...mockUseNotification,
       success: notifySuccess,
@@ -100,7 +100,7 @@ describe('src | components | pages | Signup | validation', () => {
   })
 
   it('should display an error message when token verification is not successful', async () => {
-    const notifyError = jest.fn()
+    const notifyError = vi.fn()
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...mockUseNotification,
       error: notifyError,

@@ -15,13 +15,13 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { RecurrenceForm } from '../RecurrenceForm'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 const offer = individualOfferFactory({ id: 1, stocks: [] })
 
 const defaultProps = {
   offer: offer,
-  onCancel: jest.fn(),
-  onConfirm: jest.fn(),
+  onCancel: vi.fn(),
+  onConfirm: vi.fn(),
 }
 
 describe('RecurrenceForm', () => {
@@ -40,7 +40,7 @@ describe('RecurrenceForm', () => {
   })
 
   it('should submit', async () => {
-    const onConfirm = jest.fn()
+    const onConfirm = vi.fn()
     renderWithProviders(
       <RecurrenceForm {...defaultProps} onConfirm={onConfirm} />
     )

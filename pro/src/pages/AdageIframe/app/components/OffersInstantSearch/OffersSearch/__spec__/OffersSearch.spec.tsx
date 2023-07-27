@@ -20,7 +20,7 @@ jest.mock('../Offers/Offers', () => {
 
 jest.mock('apiClient/api', () => ({
   apiAdage: {
-    getEducationalOffersCategories: jest.fn(),
+    getEducationalOffersCategories: vi.fn(),
   },
 }))
 
@@ -57,9 +57,9 @@ describe('offersSearch component', () => {
 
   beforeEach(() => {
     props = {
-      removeVenueFilter: jest.fn(),
+      removeVenueFilter: vi.fn(),
       venueFilter: null,
-      refine: jest.fn(),
+      refine: vi.fn(),
       currentRefinement: '',
       isSearchStalled: false,
     }

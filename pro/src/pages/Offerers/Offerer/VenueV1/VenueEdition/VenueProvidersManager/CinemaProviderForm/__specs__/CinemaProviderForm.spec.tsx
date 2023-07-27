@@ -12,7 +12,7 @@ import {
 } from '../CinemaProviderForm'
 import { CinemaProviderFormValues } from '../types'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 const renderCinemaProviderForm = async (props: CinemaProviderFormProps) => {
   renderWithProviders(<CinemaProviderForm {...props} />)
@@ -28,12 +28,12 @@ describe('CinemaProviderForm', () => {
 
   beforeEach(async () => {
     props = {
-      saveVenueProvider: jest.fn(),
+      saveVenueProvider: vi.fn(),
       providerId: providerId,
       venueId: venueId,
       offererId: offererId,
       isCreatedEntity: true,
-      onCancel: jest.fn(),
+      onCancel: vi.fn(),
       initialValues: { isDuo: true } as CinemaProviderFormValues,
     }
 

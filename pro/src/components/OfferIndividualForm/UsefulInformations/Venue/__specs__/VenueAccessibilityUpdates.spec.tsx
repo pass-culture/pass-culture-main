@@ -20,7 +20,7 @@ interface InitialValues {
 
 const renderVenue = async ({
   initialValues,
-  onSubmit = jest.fn(),
+  onSubmit = vi.fn(),
   venueProps,
 }: {
   initialValues: InitialValues
@@ -67,7 +67,7 @@ describe('OfferIndividual section: venue', () => {
   let venueProps: VenueProps
   let venueAccessible: OfferIndividualVenue
   let venueNotAccessible: OfferIndividualVenue
-  const onSubmit = jest.fn()
+  const onSubmit = vi.fn()
 
   beforeEach(() => {
     const offererNames: OffererName[] = [

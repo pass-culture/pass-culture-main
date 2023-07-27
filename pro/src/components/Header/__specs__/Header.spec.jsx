@@ -9,9 +9,9 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Header from '../Header'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 jest.mock('apiClient/api', () => ({
-  api: { signout: jest.fn(), listOfferersNames: jest.fn() },
+  api: { signout: vi.fn(), listOfferersNames: vi.fn() },
 }))
 
 const defaultStore = {

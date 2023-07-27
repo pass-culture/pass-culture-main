@@ -33,12 +33,12 @@ const renderPriceCategoriesForm = (
 ) => {
   const values = { ...defaultValues, ...customValues }
   return renderWithProviders(
-    <Formik initialValues={values} onSubmit={jest.fn()}>
+    <Formik initialValues={values} onSubmit={vi.fn()}>
       <PriceCategoriesForm
         offerId={42}
         mode={OFFER_WIZARD_MODE.DRAFT}
         stocks={[individualStockFactory({ priceCategoryId: 144 })]}
-        setOffer={jest.fn()}
+        setOffer={vi.fn()}
         isDisabled={false}
         canBeDuo={canBeDuo}
       />

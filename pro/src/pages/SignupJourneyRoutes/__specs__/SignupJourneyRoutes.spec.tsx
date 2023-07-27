@@ -10,7 +10,7 @@ import SignupJourneyRoutes from '../SignupJourneyRoutes'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getVenueTypes: jest.fn(),
+    getVenueTypes: vi.fn(),
   },
 }))
 

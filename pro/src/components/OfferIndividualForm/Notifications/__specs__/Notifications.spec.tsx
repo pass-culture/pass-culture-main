@@ -14,7 +14,7 @@ import validationSchema from '../validationSchema'
 const renderNotifications = ({
   props,
   initialValues,
-  onSubmit = jest.fn(),
+  onSubmit = vi.fn(),
   venueBookingEmail,
 }: {
   props?: NotificationsProps
@@ -50,7 +50,7 @@ const renderNotifications = ({
 
 describe('OfferIndividual section: Notifications', () => {
   let initialValues: Partial<OfferIndividualFormValues>
-  const onSubmit = jest.fn()
+  const onSubmit = vi.fn()
 
   beforeEach(() => {
     initialValues = {

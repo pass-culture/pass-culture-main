@@ -43,7 +43,7 @@ export const defaultCreationProps: OfferEducationalProps = {
     educationalCategories: mockEducationalCategories,
     educationalSubCategories: mockEducationalSubcategories,
   },
-  getIsOffererEligible: jest.fn().mockResolvedValue({
+  getIsOffererEligible: vi.fn().mockResolvedValue({
     isOk: true,
     message: null,
     payload: { isOffererEligibleToEducationalOffer: true },
@@ -51,7 +51,7 @@ export const defaultCreationProps: OfferEducationalProps = {
   mode: Mode.CREATION,
   domainsOptions: [{ value: 1, label: 'domain1' }],
   isTemplate: false,
-  setOffer: jest.fn(),
+  setOffer: vi.fn(),
 }
 
 export const defaultEditionProps: OfferEducationalProps = {
@@ -64,5 +64,5 @@ export const defaultEditionProps: OfferEducationalProps = {
   mode: Mode.EDITION,
   domainsOptions: [{ value: 1, label: 'domain1' }],
   isTemplate: false,
-  setOffer: jest.fn(),
+  setOffer: vi.fn(),
 }

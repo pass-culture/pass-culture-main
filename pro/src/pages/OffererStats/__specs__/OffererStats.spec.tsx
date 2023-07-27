@@ -10,10 +10,10 @@ import OffererStats from '../OffererStats'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getOfferer: jest.fn(),
-    getOffererStatsDashboardUrl: jest.fn(),
-    getVenueStatsDashboardUrl: jest.fn(),
-    listOfferersNames: jest.fn(),
+    getOfferer: vi.fn(),
+    getOffererStatsDashboardUrl: vi.fn(),
+    getVenueStatsDashboardUrl: vi.fn(),
+    listOfferersNames: vi.fn(),
   },
 }))
 
@@ -86,7 +86,7 @@ describe('OffererStatsScreen', () => {
   })
 
   it('should display error message if api call fail', async () => {
-    const notifyError = jest.fn()
+    const notifyError = vi.fn()
     // @ts-expect-error
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       error: notifyError,

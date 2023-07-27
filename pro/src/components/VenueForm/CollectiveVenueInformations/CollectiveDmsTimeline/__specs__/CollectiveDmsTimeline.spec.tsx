@@ -10,7 +10,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveDmsTimeline from '..'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 const renderCollectiveDmsTimeline = ({
   collectiveDmsApplication,

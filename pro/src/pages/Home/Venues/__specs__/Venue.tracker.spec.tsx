@@ -13,11 +13,11 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Venue, { VenueProps } from '../Venue'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getVenueStats: jest.fn().mockResolvedValue({}),
+    getVenueStats: vi.fn().mockResolvedValue({}),
   },
 }))
 

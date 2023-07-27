@@ -16,7 +16,7 @@ jest.mock('utils/date', () => ({
 }))
 
 jest.mock('apiClient/api', () => ({
-  api: { getVenues: jest.fn() },
+  api: { getVenues: vi.fn() },
 }))
 
 const renderPreFilters = (props: PreFiltersProps) => {
@@ -29,15 +29,15 @@ describe('filter bookings by bookings period', () => {
   beforeEach(() => {
     props = {
       appliedPreFilters: { ...DEFAULT_PRE_FILTERS },
-      applyPreFilters: jest.fn(),
+      applyPreFilters: vi.fn(),
       venues: [getOfferVenueFactory()].map(({ id, name }) => ({
         id: id.toString(),
         displayName: name,
       })),
-      getBookingsCSVFileAdapter: jest.fn(),
-      getBookingsXLSFileAdapter: jest.fn(),
+      getBookingsCSVFileAdapter: vi.fn(),
+      getBookingsXLSFileAdapter: vi.fn(),
       hasResult: true,
-      resetPreFilters: jest.fn(),
+      resetPreFilters: vi.fn(),
       isFiltersDisabled: false,
       isTableLoading: false,
       wereBookingsRequested: true,

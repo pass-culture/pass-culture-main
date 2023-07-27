@@ -5,9 +5,9 @@ import useLogEventOnUnload from 'hooks/useLogEventOnUnload'
 describe('useBeforeUnload', () => {
   describe('When the hook is initialised', () => {
     test('It should register the correct event listener and unregister on unmount', async () => {
-      const spyAddEvent = jest.fn()
-      const spyRemoveEvent = jest.fn()
-      const mockLogEvent = jest.fn()
+      const spyAddEvent = vi.fn()
+      const spyRemoveEvent = vi.fn()
+      const mockLogEvent = vi.fn()
       jest.spyOn(window, 'addEventListener').mockImplementation(spyAddEvent)
       jest
         .spyOn(window, 'removeEventListener')

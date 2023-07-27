@@ -16,9 +16,9 @@ import { CollectiveOfferStockCreation } from '../CollectiveOfferStockCreation'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getCollectiveOffer: jest.fn(),
-    getCollectiveOfferTemplate: jest.fn(),
-    getCollectiveOfferRequest: jest.fn(),
+    getCollectiveOffer: vi.fn(),
+    getCollectiveOfferTemplate: vi.fn(),
+    getCollectiveOfferRequest: vi.fn(),
   },
 }))
 
@@ -33,8 +33,8 @@ const renderCollectiveStockCreation = (
 
 const defaultProps = {
   offer: collectiveOfferFactory(),
-  setOffer: jest.fn(),
-  reloadCollectiveOffer: jest.fn(),
+  setOffer: vi.fn(),
+  reloadCollectiveOffer: vi.fn(),
   isTemplate: false,
 }
 
@@ -81,7 +81,7 @@ describe('CollectiveOfferStockCreation', () => {
       message: 'Une erreur est survenue lors de la récupération de votre offre',
       payload: null,
     })
-    const notifyError = jest.fn()
+    const notifyError = vi.fn()
     // @ts-expect-error
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       error: notifyError,
@@ -119,7 +119,7 @@ describe('CollectiveOfferStockCreation', () => {
   })
 
   it('should render collective offer stock form from requested offer failed', async () => {
-    const notifyError = jest.fn()
+    const notifyError = vi.fn()
     // @ts-expect-error
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       error: notifyError,

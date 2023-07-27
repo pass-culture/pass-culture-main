@@ -12,7 +12,7 @@ import { Accessibility, validationSchema } from '..'
 
 const renderAccessibility = ({
   initialValues,
-  onSubmit = jest.fn(),
+  onSubmit = vi.fn(),
 }: {
   initialValues: Partial<OfferIndividualFormValues>
   onSubmit: () => void
@@ -33,7 +33,7 @@ const renderAccessibility = ({
 
 describe('Accessibility', () => {
   let initialValues: Partial<OfferIndividualFormValues>
-  const onSubmit = jest.fn()
+  const onSubmit = vi.fn()
 
   beforeEach(() => {
     initialValues = {

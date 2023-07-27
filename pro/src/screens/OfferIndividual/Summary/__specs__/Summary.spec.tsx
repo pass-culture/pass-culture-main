@@ -33,7 +33,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Summary from '../Summary'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 jest.mock('core/Notification/constants', () => ({
   NOTIFICATION_TRANSITION_DURATION: 10,
