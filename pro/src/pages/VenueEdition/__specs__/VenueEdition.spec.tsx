@@ -60,7 +60,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 
 jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+  ...vi.importActual('react-router-dom'),
   useParams: () => ({
     offererId: '1234',
     venueId: '12',

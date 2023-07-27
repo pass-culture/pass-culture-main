@@ -33,7 +33,7 @@ describe('StocksProviderForm', () => {
     }
 
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-      ...jest.requireActual('hooks/useAnalytics'),
+      ...vi.importActual('hooks/useAnalytics'),
       logEvent: mockLogEvent,
     }))
   })

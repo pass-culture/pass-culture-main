@@ -24,7 +24,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 
 jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+  ...vi.importActual('react-router-dom'),
   useNavigate: vi.fn(),
 }))
 

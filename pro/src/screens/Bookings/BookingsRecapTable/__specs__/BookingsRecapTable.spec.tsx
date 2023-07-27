@@ -283,7 +283,7 @@ describe('components | BookingsRecapTable', () => {
 
     const mockLogEvent = vi.fn()
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-      ...jest.requireActual('hooks/useAnalytics'),
+      ...vi.importActual('hooks/useAnalytics'),
       logEvent: mockLogEvent,
     }))
 

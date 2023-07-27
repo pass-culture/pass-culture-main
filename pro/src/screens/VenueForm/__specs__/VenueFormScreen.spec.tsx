@@ -92,7 +92,7 @@ const renderForm = (
 
 const mockNavigate = vi.fn()
 jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+  ...vi.importActual('react-router-dom'),
   useNavigate: () => mockNavigate,
 }))
 
@@ -127,7 +127,7 @@ vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
 
 jest.mock('apiClient/adresse', () => {
   return {
-    ...jest.requireActual('apiClient/adresse'),
+    ...vi.importActual('apiClient/adresse'),
     default: {
       getDataFromAddress: vi.fn(),
     },

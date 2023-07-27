@@ -20,7 +20,7 @@ import { collectiveOfferFactory } from '../utils/collectiveOffersFactories'
 //FIX ME : extract inital values and constant to reduce code duplication with CollectiveOffers.spec.tsx
 
 jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+  ...vi.importActual('react-router-dom'),
   useNavigate: vi.fn(),
 }))
 
@@ -97,7 +97,7 @@ const proVenues = [
 ]
 
 jest.mock('repository/venuesService', () => ({
-  ...jest.requireActual('repository/venuesService'),
+  ...vi.importActual('repository/venuesService'),
 }))
 
 jest.mock('apiClient/api', () => ({
@@ -111,7 +111,7 @@ jest.mock('apiClient/api', () => ({
 }))
 
 jest.mock('utils/date', () => ({
-  ...jest.requireActual('utils/date'),
+  ...vi.importActual('utils/date'),
   getToday: jest
     .fn()
     .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),

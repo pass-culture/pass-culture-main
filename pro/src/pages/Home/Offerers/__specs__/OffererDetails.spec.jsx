@@ -14,7 +14,7 @@ import Homepage from '../../Homepage'
 
 const mockNavigate = vi.fn()
 jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+  ...vi.importActual('react-router-dom'),
   useNavigate: () => mockNavigate,
 }))
 

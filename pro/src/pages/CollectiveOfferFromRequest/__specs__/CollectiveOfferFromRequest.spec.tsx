@@ -25,7 +25,7 @@ jest.mock('apiClient/api', () => ({
 }))
 
 jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+  ...vi.importActual('react-router-dom'),
   useParams: () => ({
     offerId: vi.fn(),
     requestId: vi.fn(),
@@ -46,7 +46,7 @@ describe('CollectiveOfferFromRequest', () => {
 
   beforeEach(() => {
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
-      ...jest.requireActual('hooks/useNotification'),
+      ...vi.importActual('hooks/useNotification'),
       error: notifyError,
     }))
 
