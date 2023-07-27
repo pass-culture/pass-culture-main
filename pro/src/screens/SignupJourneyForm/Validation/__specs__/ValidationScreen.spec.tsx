@@ -1,7 +1,10 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import {
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import * as router from 'react-router-dom'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -21,11 +24,6 @@ vi.mock('apiClient/api', () => ({
     getVenueTypes: vi.fn(),
     saveNewOnboardingData: vi.fn(),
   },
-}))
-
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
-  useNavigate: vi.fn(),
 }))
 
 const addressInformations: Address = {
@@ -75,7 +73,7 @@ const renderValidationScreen = (contextValue: SignupJourneyContextValues) => {
   )
 }
 
-describe('screens:SignupJourney::Validation', () => {
+describe('ValidationScreen', () => {
   let contextValue: SignupJourneyContextValues
   beforeEach(() => {
     contextValue = {
@@ -90,37 +88,26 @@ describe('screens:SignupJourney::Validation', () => {
     ])
   })
 
-  describe('Data incomplete', () => {
-    it('Should redirect to authentication if no offerer is selected', async () => {
-      const mockNavigate = vi.fn()
-      vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
+  it('should redirect to authentication if no offerer is selected', async () => {
+    renderValidationScreen(contextValue)
 
-      renderValidationScreen(contextValue)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-
-      expect(mockNavigate).toHaveBeenCalledWith(
-        '/parcours-inscription/identification'
-      )
+    await waitFor(() => {
+      expect(screen.getByText('Authentication')).toBeInTheDocument()
     })
+  })
 
-    it('Should see activity screen if no activity data is set but an offerer is set', async () => {
-      const mockNavigate = vi.fn()
-      vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
-      renderValidationScreen({
-        ...contextValue,
-        offerer: {
-          name: 'toto',
-          publicName: 'tata',
-          siret: '123123123',
-          hasVenueWithSiret: false,
-          ...addressInformations,
-        },
-      })
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-      expect(mockNavigate).toHaveBeenCalledWith(
-        '/parcours-inscription/activite'
-      )
+  it('should see activity screen if no activity data is set but an offerer is set', async () => {
+    renderValidationScreen({
+      ...contextValue,
+      offerer: {
+        name: 'toto',
+        publicName: 'tata',
+        siret: '123123123',
+        hasVenueWithSiret: false,
+        ...addressInformations,
+      },
     })
+    expect(screen.getByText('Activite')).toBeInTheDocument()
   })
 
   it('Should see the data from the previous forms for validation', async () => {
@@ -170,16 +157,11 @@ describe('screens:SignupJourney::Validation', () => {
     })
 
     it('Should navigate to activity page with the previous step button', async () => {
-      const mockNavigate = vi.fn()
-      vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
-
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       await userEvent.click(screen.getByText('Étape précédente'))
-      expect(mockNavigate).toHaveBeenCalledWith(
-        '/parcours-inscription/activite'
-      )
+      expect(screen.getByText('Activite')).toBeInTheDocument()
     })
 
     it('Should navigate to authentication page when clicking the first update button', async () => {
@@ -202,8 +184,6 @@ describe('screens:SignupJourney::Validation', () => {
       vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
         {} as GetOffererResponseModel
       )
-      const mockNavigate = vi.fn()
-      vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
@@ -221,7 +201,7 @@ describe('screens:SignupJourney::Validation', () => {
         postalCode: '75001',
       })
 
-      expect(mockNavigate).toHaveBeenCalledWith('/accueil')
+      expect(await screen.findByText('accueil')).toBeInTheDocument()
     })
   })
 
