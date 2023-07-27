@@ -21,6 +21,7 @@ import OffererAuthenticationForm, {
 import { validationSchema } from '../validationSchema'
 
 const fetchMock = createFetchMock(vi)
+fetchMock.enableMocks()
 
 vi.mock('apiClient/adresse', () => {
   return {

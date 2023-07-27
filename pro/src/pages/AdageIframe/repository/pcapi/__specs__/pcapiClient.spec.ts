@@ -6,6 +6,7 @@ import { API_URL, URL_FOR_MAINTENANCE } from 'utils/config'
 import { client } from '../pcapiClient'
 
 const fetchMock = createFetchMock(vi)
+fetchMock.enableMocks()
 
 Reflect.deleteProperty(global.window, 'location')
 const token = 'JWT-token'

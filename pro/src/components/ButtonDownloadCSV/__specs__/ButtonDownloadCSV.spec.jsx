@@ -10,6 +10,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import ButtonDownloadCSV from '../ButtonDownloadCSV'
 
 const fetchMock = createFetchMock(vi)
+fetchMock.enableMocks()
 
 const renderButtonDownloadCSV = async ({ props, storeOverrides }) =>
   renderWithProviders(
