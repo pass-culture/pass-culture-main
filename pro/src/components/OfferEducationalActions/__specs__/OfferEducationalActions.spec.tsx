@@ -152,7 +152,7 @@ describe('OfferEducationalActions', () => {
   it('should log event when clicked on booking link', async () => {
     const mockLogEvent = vi.fn()
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-      ...jest.requireActual('hooks/useAnalytics'),
+      ...vi.importActual('hooks/useAnalytics'),
       logEvent: mockLogEvent,
     }))
     renderOfferEducationalActions({
@@ -180,7 +180,7 @@ describe('OfferEducationalActions', () => {
   it('should display error message when trying to activate offer with booking limit date time in the past', async () => {
     const notifyError = vi.fn()
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
-      ...jest.requireActual('hooks/useNotification'),
+      ...vi.importActual('hooks/useNotification'),
       error: notifyError,
     }))
     renderOfferEducationalActions({
@@ -204,7 +204,7 @@ describe('OfferEducationalActions', () => {
     const notifyError = vi.fn()
     const offerId = 12
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
-      ...jest.requireActual('hooks/useNotification'),
+      ...vi.importActual('hooks/useNotification'),
       success: vi.fn(),
       error: notifyError,
     }))

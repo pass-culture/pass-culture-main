@@ -36,7 +36,7 @@ jest.mock('apiClient/api', () => ({
 }))
 
 jest.mock('utils/date', () => ({
-  ...jest.requireActual('utils/date'),
+  ...vi.importActual('utils/date'),
   getToday: vi.fn().mockReturnValue(new Date('2020-06-15T12:00:00Z')),
 }))
 const NTH_ARGUMENT_GET_BOOKINGS = {

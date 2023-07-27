@@ -9,7 +9,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import PreFilters, { PreFiltersProps } from '../../PreFilters'
 
 jest.mock('utils/date', () => ({
-  ...jest.requireActual('utils/date'),
+  ...vi.importActual('utils/date'),
   getToday: jest
     .fn()
     .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),

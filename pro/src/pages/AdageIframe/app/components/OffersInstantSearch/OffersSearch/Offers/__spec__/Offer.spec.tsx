@@ -25,7 +25,7 @@ jest.mock('pages/AdageIframe/libs/initAlgoliaAnalytics')
 
 jest.mock('react-instantsearch-dom', () => {
   return {
-    ...jest.requireActual('react-instantsearch-dom'),
+    ...vi.importActual('react-instantsearch-dom'),
     connectStats: jest.fn(Component => (props: any) => (
       <Component
         {...props}

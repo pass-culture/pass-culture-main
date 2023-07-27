@@ -39,7 +39,7 @@ const initialValuesNotEmpty = {
 
 const mockedUsedNavigate = vi.fn()
 jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+  ...vi.importActual('react-router-dom'),
   useNavigate: () => mockedUsedNavigate,
 }))
 
@@ -228,7 +228,7 @@ describe('OfferEducationalStock', () => {
     it('should log event when wrong students modal is displayed with only wrong students', async () => {
       const mockLogEvent = vi.fn()
       vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-        ...jest.requireActual('hooks/useAnalytics'),
+        ...vi.importActual('hooks/useAnalytics'),
         logEvent: mockLogEvent,
       }))
 
@@ -257,7 +257,7 @@ describe('OfferEducationalStock', () => {
     it('should log event when wrong students modal is displayed with not only wrong students', async () => {
       const mockLogEvent = vi.fn()
       vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-        ...jest.requireActual('hooks/useAnalytics'),
+        ...vi.importActual('hooks/useAnalytics'),
         logEvent: mockLogEvent,
       }))
 
