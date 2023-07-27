@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Configure } from 'react-instantsearch-dom'
+import type { Mock } from 'vitest'
 
 import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
@@ -15,9 +16,10 @@ import {
 } from '../providers'
 import { FeaturesContextProvider } from '../providers/FeaturesContextProvider'
 
-vi.mock('react-instantsearch-dom', () => {
+vi.mock('react-instantsearch-dom', async () => {
+  const actual = await vi.importActual('react-instantsearch-dom')
   return {
-    ...vi.importActual('react-instantsearch-dom'),
+    ...(actual as object),
     Configure: vi.fn(() => <div />),
     connectStats: vi.fn(Component => (props: any) => (
       <Component
@@ -78,11 +80,15 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-vi.mock('utils/config', () => ({
-  ALGOLIA_API_KEY: 'adage-api-key',
-  ALGOLIA_APP_ID: '1',
-  ALGOLIA_COLLECTIVE_OFFERS_INDEX: 'adage-collective-offers',
-}))
+vi.mock('utils/config', async () => {
+  const actual = await vi.importActual('utils/config')
+  return {
+    ...(actual as object),
+    ALGOLIA_API_KEY: 'adage-api-key',
+    ALGOLIA_APP_ID: '1',
+    ALGOLIA_COLLECTIVE_OFFERS_INDEX: 'adage-collective-offers',
+  }
+})
 
 const renderApp = () => {
   renderWithProviders(
@@ -169,7 +175,7 @@ describe('app', () => {
     // Then
     await waitFor(() => expect(Configure).toHaveBeenCalledTimes(3))
 
-    const searchConfigurationLastCall = (Configure as vi.Mock).mock.calls[2][0]
+    const searchConfigurationLastCall = (Configure as Mock).mock.calls[2][0]
     expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
       [
         'offer.educationalInstitutionUAICode:all',
@@ -224,7 +230,7 @@ describe('app', () => {
 
     // Then
     await waitFor(() => expect(Configure).toHaveBeenCalledTimes(3))
-    const searchConfigurationFirstCall = (Configure as vi.Mock).mock.calls[1][0]
+    const searchConfigurationFirstCall = (Configure as Mock).mock.calls[1][0]
     expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
       ['venue.departmentCode:01', 'offer.interventionArea:01'],
       [
@@ -232,7 +238,7 @@ describe('app', () => {
         'offer.educationalInstitutionUAICode:uai',
       ],
     ])
-    const searchConfigurationLastCall = (Configure as vi.Mock).mock.calls[2][0]
+    const searchConfigurationLastCall = (Configure as Mock).mock.calls[2][0]
     expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
       [
         'offer.educationalInstitutionUAICode:all',

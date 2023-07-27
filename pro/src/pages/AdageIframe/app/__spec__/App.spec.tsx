@@ -18,9 +18,10 @@ import {
   FeaturesContextType,
 } from '../providers/FeaturesContextProvider'
 
-vi.mock('react-instantsearch-dom', () => {
+vi.mock('react-instantsearch-dom', async () => {
+  const actual = await vi.importActual('react-instantsearch-dom')
   return {
-    ...vi.importActual('react-instantsearch-dom'),
+    ...(actual as object),
     Configure: vi.fn(() => <div />),
     connectStats: vi.fn(Component => (props: any) => (
       <Component
@@ -39,11 +40,15 @@ vi.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
   getFeatures: vi.fn(),
 }))
 
-vi.mock('utils/config', () => ({
-  ALGOLIA_API_KEY: 'adage-api-key',
-  ALGOLIA_APP_ID: '1',
-  ALGOLIA_COLLECTIVE_OFFERS_INDEX: 'adage-collective-offers',
-}))
+vi.mock('utils/config', async () => {
+  const actual = await vi.importActual('utils/config')
+  return {
+    ...(actual as object),
+    ALGOLIA_API_KEY: 'adage-api-key',
+    ALGOLIA_APP_ID: '1',
+    ALGOLIA_COLLECTIVE_OFFERS_INDEX: 'adage-collective-offers',
+  }
+})
 
 vi.mock('apiClient/api', () => ({
   apiAdage: {
@@ -141,14 +146,19 @@ describe('app', () => {
         selector: 'h2',
       })
       expect(contentTitle).toBeInTheDocument()
-      const searchConfiguration = (Configure as vi.Mock).mock.calls[0][0]
-      expect(searchConfiguration.facetFilters).toStrictEqual([
-        ['venue.departmentCode:30'],
-        [
-          'offer.educationalInstitutionUAICode:all',
-          'offer.educationalInstitutionUAICode:uai',
-        ],
-      ])
+      expect(Configure).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          facetFilters: [
+            ['venue.departmentCode:30'],
+            [
+              'offer.educationalInstitutionUAICode:all',
+              'offer.educationalInstitutionUAICode:uai',
+            ],
+          ],
+        }),
+        {}
+      )
       expect(Configure).toHaveBeenCalledTimes(1)
 
       expect(
@@ -175,14 +185,19 @@ describe('app', () => {
       await waitFor(() => {
         expect(Configure).toHaveBeenCalledTimes(1)
       })
-      const searchConfiguration = (Configure as vi.Mock).mock.calls[0][0]
-      expect(searchConfiguration.facetFilters).toStrictEqual([
-        [`venue.id:${venue.id}`],
-        [
-          'offer.educationalInstitutionUAICode:all',
-          'offer.educationalInstitutionUAICode:uai',
-        ],
-      ])
+      expect(Configure).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          facetFilters: [
+            [`venue.id:${venue.id}`],
+            [
+              'offer.educationalInstitutionUAICode:all',
+              'offer.educationalInstitutionUAICode:uai',
+            ],
+          ],
+        }),
+        {}
+      )
 
       expect(apiAdage.getVenueBySiret).toHaveBeenCalledWith(siret, false)
     })
@@ -219,14 +234,19 @@ describe('app', () => {
       await waitFor(() => {
         expect(Configure).toHaveBeenCalledTimes(1)
       })
-      const searchConfiguration = (Configure as vi.Mock).mock.calls[0][0]
-      expect(searchConfiguration.facetFilters).toStrictEqual([
-        [`venue.id:${venue.id}`],
-        [
-          'offer.educationalInstitutionUAICode:all',
-          'offer.educationalInstitutionUAICode:uai',
-        ],
-      ])
+      expect(Configure).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          facetFilters: [
+            [`venue.id:${venue.id}`],
+            [
+              'offer.educationalInstitutionUAICode:all',
+              'offer.educationalInstitutionUAICode:uai',
+            ],
+          ],
+        }),
+        {}
+      )
 
       expect(apiAdage.getVenueById).toHaveBeenCalledWith(venueId, false)
     })
@@ -263,15 +283,20 @@ describe('app', () => {
       })
       expect(contentTitle).toBeInTheDocument()
       expect(apiAdage.getVenueBySiret).toHaveBeenCalledWith(siret, false)
-      const searchConfiguration = (Configure as vi.Mock).mock.calls[0][0]
-      expect(searchConfiguration.facetFilters).toStrictEqual([
-        ['venue.departmentCode:30'],
-        [
-          'offer.educationalInstitutionUAICode:all',
-          'offer.educationalInstitutionUAICode:uai',
-        ],
-      ])
       expect(Configure).toHaveBeenCalledTimes(1)
+      expect(Configure).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          facetFilters: [
+            ['venue.departmentCode:30'],
+            [
+              'offer.educationalInstitutionUAICode:all',
+              'offer.educationalInstitutionUAICode:uai',
+            ],
+          ],
+        }),
+        {}
+      )
       expect(
         screen.queryByRole('button', { name: `Lieu : ${venue?.publicName}` })
       ).not.toBeInTheDocument()
@@ -301,14 +326,19 @@ describe('app', () => {
       expect(apiAdage.getVenueBySiret).toHaveBeenCalledWith(siret, true)
 
       await waitFor(() => {
-        const searchConfiguration = (Configure as vi.Mock).mock.calls[0][0]
-        expect(searchConfiguration.facetFilters).toStrictEqual([
-          [`venue.id:${venue.id}`, 'venue.id:123', 'venue.id:456'],
-          [
-            'offer.educationalInstitutionUAICode:all',
-            'offer.educationalInstitutionUAICode:uai',
-          ],
-        ])
+        expect(Configure).toHaveBeenNthCalledWith(
+          1,
+          expect.objectContaining({
+            facetFilters: [
+              [`venue.id:${venue.id}`, 'venue.id:123', 'venue.id:456'],
+              [
+                'offer.educationalInstitutionUAICode:all',
+                'offer.educationalInstitutionUAICode:uai',
+              ],
+            ],
+          }),
+          {}
+        )
       })
     })
 
@@ -331,14 +361,19 @@ describe('app', () => {
       expect(apiAdage.getVenueById).toHaveBeenCalledWith(venue.id, true)
 
       await waitFor(() => {
-        const searchConfiguration = (Configure as vi.Mock).mock.calls[0][0]
-        expect(searchConfiguration.facetFilters).toStrictEqual([
-          [`venue.id:${venue.id}`, 'venue.id:123', 'venue.id:456'],
-          [
-            'offer.educationalInstitutionUAICode:all',
-            'offer.educationalInstitutionUAICode:uai',
-          ],
-        ])
+        expect(Configure).toHaveBeenNthCalledWith(
+          1,
+          expect.objectContaining({
+            facetFilters: [
+              [`venue.id:${venue.id}`, 'venue.id:123', 'venue.id:456'],
+              [
+                'offer.educationalInstitutionUAICode:all',
+                'offer.educationalInstitutionUAICode:uai',
+              ],
+            ],
+          }),
+          {}
+        )
       })
     })
 
@@ -359,14 +394,18 @@ describe('app', () => {
 
       // Then
       await waitFor(() => expect(Configure).toHaveBeenCalledTimes(3))
-      const searchConfigurationCall = (Configure as vi.Mock).mock.calls[2][0]
-
-      expect(searchConfigurationCall.facetFilters).toStrictEqual([
-        [
-          'offer.educationalInstitutionUAICode:all',
-          'offer.educationalInstitutionUAICode:uai',
-        ],
-      ])
+      expect(Configure).toHaveBeenNthCalledWith(
+        3,
+        expect.objectContaining({
+          facetFilters: [
+            [
+              'offer.educationalInstitutionUAICode:all',
+              'offer.educationalInstitutionUAICode:uai',
+            ],
+          ],
+        }),
+        {}
+      )
       expect(
         screen.queryByRole('button', { name: `Lieu : ${venue?.publicName}` })
       ).not.toBeInTheDocument()
@@ -388,15 +427,19 @@ describe('app', () => {
 
       // Then
       await waitFor(() => expect(Configure).toHaveBeenCalledTimes(2))
-      const searchConfigurationFirstCall = (Configure as vi.Mock).mock
-        .calls[1][0]
-      expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
-        ['venue.departmentCode:30', 'offer.interventionArea:30'],
-        [
-          'offer.educationalInstitutionUAICode:all',
-          'offer.educationalInstitutionUAICode:uai',
-        ],
-      ])
+      expect(Configure).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({
+          facetFilters: [
+            ['venue.departmentCode:30', 'offer.interventionArea:30'],
+            [
+              'offer.educationalInstitutionUAICode:all',
+              'offer.educationalInstitutionUAICode:uai',
+            ],
+          ],
+        }),
+        {}
+      )
     })
 
     describe('tabs', () => {
@@ -446,7 +489,6 @@ describe('app', () => {
 
         expect(Configure).toHaveBeenNthCalledWith(
           2,
-
           expect.objectContaining({
             facetFilters: [
               ['venue.id:1436'],
