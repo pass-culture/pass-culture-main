@@ -76,7 +76,6 @@
 
     &:checked {
       background-color: colors.$grey-dark;
-      border-color: colors.$grey-dark;
 
       &::after {
         background-image: url("./checkbox-check.svg");
@@ -89,19 +88,19 @@
       }
 
       &:hover {
-        background-color: forms.$input-border-color-focus;
-        border-color: forms.$input-border-color-focus;
+        background-color: colors.$primary;
+        border-color: colors.$primary;
       }
 
       &:focus {
-        background-color: forms.$input-border-color-focus;
-        border-color: forms.$input-border-color-focus;
+        background-color: colors.$primary-dark;
+        border-color: colors.$primary-dark;
       }
 
       &:disabled {
-        background-color: forms.$input-border-color-disabled;
-        border-color: forms.$input-border-color-disabled;
-        cursor: default;
+        background-color: colors.$grey-medium;
+        border-color: colors.$grey-medium;
+        cursor: not-allowed;
         opacity: 1;
       }
 
@@ -114,15 +113,15 @@
       background-color: colors.$white;
 
       &:hover {
-        border-color: forms.$input-border-color-focus;
+        border-color: colors.$primary;
       }
 
       &:focus {
-        border-color: forms.$input-border-color-focus;
+        border-color: colors.$primary-dark;
       }
 
       &:disabled {
-        border-color: forms.$input-border-color-disabled;
+        border-color: colors.$grey-medium;
         opacity: 1;
       }
 
