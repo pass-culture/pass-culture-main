@@ -9,7 +9,7 @@
 /cypress/downloads
 /cypress/screenshots
 /cypress/videos
-/src/node_modules
+.vitest_cache
 
 # production
 /build
