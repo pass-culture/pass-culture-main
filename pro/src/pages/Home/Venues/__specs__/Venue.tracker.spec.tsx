@@ -6,9 +6,9 @@ import {
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
+import { api } from 'apiClient/api'
 import { Events, VenueEvents } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { loadFakeApiVenueStats } from 'utils/fakeApi'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Venue, { VenueProps } from '../Venue'
@@ -56,7 +56,7 @@ describe('venue create offer link', () => {
       offererId: offererId,
       dmsInformations: null,
     }
-    loadFakeApiVenueStats({
+    vi.spyOn(api, 'getVenueStats').mockResolvedValue({
       activeBookingsQuantity: 0,
       activeOffersCount: 2,
       soldOutOffersCount: 3,
