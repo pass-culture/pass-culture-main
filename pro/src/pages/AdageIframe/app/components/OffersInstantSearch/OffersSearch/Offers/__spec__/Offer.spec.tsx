@@ -26,7 +26,7 @@ vi.mock('pages/AdageIframe/libs/initAlgoliaAnalytics')
 vi.mock('react-instantsearch-dom', () => {
   return {
     ...vi.importActual('react-instantsearch-dom'),
-    connectStats: jest.fn(Component => (props: any) => (
+    connectStats: vi.fn(Component => (props: any) => (
       <Component
         {...props}
         areHitsSorted={false}
@@ -35,7 +35,7 @@ vi.mock('react-instantsearch-dom', () => {
         processingTimeMS={0}
       />
     )),
-    Stats: jest.fn(() => <div>2 résultats</div>),
+    Stats: vi.fn(() => <div>2 résultats</div>),
   }
 })
 

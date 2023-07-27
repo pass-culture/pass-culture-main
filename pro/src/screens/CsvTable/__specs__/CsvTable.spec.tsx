@@ -8,7 +8,7 @@ import CsvTable, { CsvTableProps } from '../CsvTable'
 import { TableData } from '../types'
 
 interface CsvTableTestProps {
-  getCsvData: jest.SpyInstance<Promise<TableData | null>>
+  getCsvData: vi.SpyInstance<Promise<TableData | null>>
 }
 
 // FIXME: we don't have store type yet.

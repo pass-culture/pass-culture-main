@@ -26,9 +26,10 @@ describe('patchIsTemplateOfferActiveAdapter', () => {
 
   it('should return an error when the update has failed', async () => {
     // given
-    jest
-      .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
-      .mockRejectedValue({})
+    vi.spyOn(
+      api,
+      'patchCollectiveOffersTemplateActiveStatus'
+    ).mockRejectedValue({})
 
     // when
     const response = await patchIsTemplateOfferActiveAdapter({
@@ -44,9 +45,10 @@ describe('patchIsTemplateOfferActiveAdapter', () => {
   })
   it('should confirm when the offer was activated', async () => {
     // given
-    jest
-      .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
-      .mockResolvedValue()
+    vi.spyOn(
+      api,
+      'patchCollectiveOffersTemplateActiveStatus'
+    ).mockResolvedValue()
 
     // when
     const response = await patchIsTemplateOfferActiveAdapter({
@@ -60,9 +62,10 @@ describe('patchIsTemplateOfferActiveAdapter', () => {
   })
   it('should confirm when the offer was deactivated', async () => {
     // given
-    jest
-      .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
-      .mockResolvedValue()
+    vi.spyOn(
+      api,
+      'patchCollectiveOffersTemplateActiveStatus'
+    ).mockResolvedValue()
 
     // when
     const response = await patchIsTemplateOfferActiveAdapter({

@@ -29,11 +29,9 @@ describe('patchIsOfferActiveCollectiveAdapter', () => {
 
   it('should return an error when the update has failed', async () => {
     // given
-    jest
-      .spyOn(api, 'patchCollectiveOffersActiveStatus')
-      .mockRejectedValueOnce(
-        new ApiError({} as ApiRequestOptions, { status: 422 } as ApiResult, '')
-      )
+    vi.spyOn(api, 'patchCollectiveOffersActiveStatus').mockRejectedValueOnce(
+      new ApiError({} as ApiRequestOptions, { status: 422 } as ApiResult, '')
+    )
 
     // when
     const response = await patchIsCollectiveOfferActiveAdapter({

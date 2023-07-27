@@ -32,7 +32,7 @@ const renderHeader = (storeOverrides = defaultStore) =>
 
 describe('navigation menu', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   describe('when clicking on Home icon', () => {

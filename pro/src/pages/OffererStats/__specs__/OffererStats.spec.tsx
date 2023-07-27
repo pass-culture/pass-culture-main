@@ -67,12 +67,12 @@ describe('OffererStatsScreen', () => {
         },
       ],
     })
-    jest
-      .spyOn(api, 'getOffererStatsDashboardUrl')
-      .mockResolvedValue({ dashboardUrl: 'fakeUrl' })
-    jest
-      .spyOn(api, 'getVenueStatsDashboardUrl')
-      .mockResolvedValue({ dashboardUrl: 'fakeUrl' })
+    vi.spyOn(api, 'getOffererStatsDashboardUrl').mockResolvedValue({
+      dashboardUrl: 'fakeUrl',
+    })
+    vi.spyOn(api, 'getVenueStatsDashboardUrl').mockResolvedValue({
+      dashboardUrl: 'fakeUrl',
+    })
   })
 
   it('should display all offerer options on render', async () => {

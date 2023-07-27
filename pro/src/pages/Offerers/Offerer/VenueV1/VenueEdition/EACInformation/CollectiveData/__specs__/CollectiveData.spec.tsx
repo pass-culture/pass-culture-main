@@ -24,9 +24,7 @@ describe('CollectiveData', () => {
   } as unknown as GetVenueResponseModel // we only test for used fields
 
   beforeAll(() => {
-    jest
-      .spyOn(api, 'getEducationalPartners')
-      .mockResolvedValue({ partners: [] })
+    vi.spyOn(api, 'getEducationalPartners').mockResolvedValue({ partners: [] })
   })
 
   it('should not display title field if value is empty', async () => {

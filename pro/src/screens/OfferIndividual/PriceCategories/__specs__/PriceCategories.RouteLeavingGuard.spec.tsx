@@ -1,5 +1,3 @@
-import '@testing-library/jest-dom'
-
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
@@ -98,15 +96,15 @@ const renderPriceCategories = (
 
 describe('PriceCategories', () => {
   beforeEach(() => {
-    jest
-      .spyOn(api, 'getOffer')
-      .mockResolvedValue({} as GetIndividualOfferResponseModel)
-    jest
-      .spyOn(api, 'patchOffer')
-      .mockResolvedValue({} as GetIndividualOfferResponseModel)
-    jest
-      .spyOn(api, 'postPriceCategories')
-      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    vi.spyOn(api, 'getOffer').mockResolvedValue(
+      {} as GetIndividualOfferResponseModel
+    )
+    vi.spyOn(api, 'patchOffer').mockResolvedValue(
+      {} as GetIndividualOfferResponseModel
+    )
+    vi.spyOn(api, 'postPriceCategories').mockResolvedValue(
+      {} as GetIndividualOfferResponseModel
+    )
   })
 
   it('should let going to information when clicking on previous step in creation', async () => {

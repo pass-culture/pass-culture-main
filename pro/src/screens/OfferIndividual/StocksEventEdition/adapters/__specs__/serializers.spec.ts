@@ -9,9 +9,7 @@ import { serializeStockEventEdition } from '../serializers'
 
 vi.mock('utils/date', () => ({
   ...vi.importActual('utils/date'),
-  getToday: jest
-    .fn()
-    .mockImplementation(() => new Date('2022-09-26T13:00:00Z')),
+  getToday: vi.fn().mockImplementation(() => new Date('2022-09-26T13:00:00Z')),
 }))
 
 describe('serializeStockEventEdition', () => {

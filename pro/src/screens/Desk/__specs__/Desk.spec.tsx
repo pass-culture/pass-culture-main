@@ -136,9 +136,7 @@ describe('src | components | Desk', () => {
   })
 
   it('test validate token submit success', async () => {
-    const submitValidate = jest
-      .fn()
-      .mockImplementation(() => Promise.resolve({}))
+    const submitValidate = vi.fn().mockImplementation(() => Promise.resolve({}))
     const { inputToken, buttonSubmitValidated } = renderDeskScreen({
       ...props,
       submitValidate,

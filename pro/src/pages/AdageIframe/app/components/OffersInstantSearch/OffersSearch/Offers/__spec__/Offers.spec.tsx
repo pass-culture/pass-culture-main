@@ -231,12 +231,10 @@ describe('offers', () => {
 
   it('should display two offers with their respective stocks when two bookable offers', async () => {
     // Given
-    jest
-      .spyOn(apiAdage, 'getCollectiveOffer')
-      .mockResolvedValueOnce(offerInParis)
-    jest
-      .spyOn(apiAdage, 'getCollectiveOffer')
-      .mockResolvedValueOnce(offerInCayenne)
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(offerInParis)
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+      offerInCayenne
+    )
     // When
     renderOffers(offersProps)
 
@@ -283,16 +281,14 @@ describe('offers', () => {
 
   it('should show most recent results and cancel previous request', async () => {
     // Given
-    jest
-      .spyOn(apiAdage, 'getCollectiveOffer')
-      .mockResolvedValueOnce(
-        new CancelablePromise(resolve =>
-          setTimeout(() => resolve(offerInParis), 500)
-        )
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+      new CancelablePromise(resolve =>
+        setTimeout(() => resolve(offerInParis), 500)
       )
-    jest
-      .spyOn(apiAdage, 'getCollectiveOffer')
-      .mockResolvedValueOnce(offerInCayenne)
+    )
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+      offerInCayenne
+    )
     const { rerender } = renderOffers(offersProps)
     vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(otherOffer)
     const otherSearchResult: Hit<ResultType> = {
@@ -329,8 +325,7 @@ describe('offers', () => {
 
   it('should show a loader while waiting for response', async () => {
     // Given
-    jest
-      .spyOn(apiAdage, 'getCollectiveOffer')
+    vi.spyOn(apiAdage, 'getCollectiveOffer')
       .mockImplementationOnce(
         () =>
           new CancelablePromise(resolve =>
@@ -357,12 +352,10 @@ describe('offers', () => {
   it('should display only non sold-out offers', async () => {
     // Given
     offerInParis.isSoldOut = true
-    jest
-      .spyOn(apiAdage, 'getCollectiveOffer')
-      .mockResolvedValueOnce(offerInParis)
-    jest
-      .spyOn(apiAdage, 'getCollectiveOffer')
-      .mockResolvedValueOnce(offerInCayenne)
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(offerInParis)
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+      offerInCayenne
+    )
     // When
     renderOffers(offersProps)
 
@@ -375,12 +368,10 @@ describe('offers', () => {
   it('should not display expired offer', async () => {
     // Given
     offerInParis.isExpired = true
-    jest
-      .spyOn(apiAdage, 'getCollectiveOffer')
-      .mockResolvedValueOnce(offerInParis)
-    jest
-      .spyOn(apiAdage, 'getCollectiveOffer')
-      .mockResolvedValueOnce(offerInCayenne)
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(offerInParis)
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+      offerInCayenne
+    )
 
     // When
     renderOffers(offersProps)
@@ -411,12 +402,12 @@ describe('offers', () => {
 
       offerInParis.isExpired = true
       offerInCayenne.isSoldOut = true
-      jest
-        .spyOn(apiAdage, 'getCollectiveOffer')
-        .mockResolvedValueOnce(offerInParis)
-      jest
-        .spyOn(apiAdage, 'getCollectiveOffer')
-        .mockResolvedValueOnce(offerInCayenne)
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+        offerInParis
+      )
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+        offerInCayenne
+      )
       // When
       renderOffers(offersProps)
 
@@ -431,12 +422,12 @@ describe('offers', () => {
 
     it('when offers are not found', async () => {
       // Given
-      jest
-        .spyOn(apiAdage, 'getCollectiveOffer')
-        .mockRejectedValueOnce('Offre inconnue')
-      jest
-        .spyOn(apiAdage, 'getCollectiveOffer')
-        .mockRejectedValueOnce('Offre inconnue')
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockRejectedValueOnce(
+        'Offre inconnue'
+      )
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockRejectedValueOnce(
+        'Offre inconnue'
+      )
 
       // When
       renderOffers(offersProps)
@@ -453,12 +444,12 @@ describe('offers', () => {
 
   describe('load more button', () => {
     it('should refine next hits when clicking on load more button', async () => {
-      jest
-        .spyOn(apiAdage, 'getCollectiveOffer')
-        .mockResolvedValueOnce(offerInParis)
-      jest
-        .spyOn(apiAdage, 'getCollectiveOffer')
-        .mockResolvedValueOnce(offerInCayenne)
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+        offerInParis
+      )
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+        offerInCayenne
+      )
       renderOffers(offersProps)
       const loadMoreButton = await screen.findByRole('button', {
         name: 'Voir plus d’offres',
@@ -472,12 +463,12 @@ describe('offers', () => {
     })
 
     it('should not show button if there is no more result to refine', async () => {
-      jest
-        .spyOn(apiAdage, 'getCollectiveOffer')
-        .mockResolvedValueOnce(offerInParis)
-      jest
-        .spyOn(apiAdage, 'getCollectiveOffer')
-        .mockResolvedValueOnce(offerInCayenne)
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+        offerInParis
+      )
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+        offerInCayenne
+      )
       offersProps.hasMore = false
       renderOffers(offersProps)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))

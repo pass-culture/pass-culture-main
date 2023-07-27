@@ -29,7 +29,7 @@ import CollectiveDataEdition from '../CollectiveDataEdition'
 // and the test fail...
 // the workaround I found is to mock this way :
 vi.mock('core/shared/interventionOptions', () => {
-  const originalModule = jest.requireActual<
+  const originalModule = vi.requireActual<
     typeof import('core/shared/interventionOptions')
   >('core/shared/interventionOptions')
 
@@ -114,12 +114,10 @@ describe('CollectiveDataEdition', () => {
       { id: 1, name: 'domain 1' },
       { id: 2, name: 'domain 2' },
     ])
-    jest
-      .spyOn(api, 'getEducationalPartners')
-      .mockResolvedValue({ partners: [] })
-    jest
-      .spyOn(api, 'editVenueCollectiveData')
-      .mockResolvedValue({ id: 1 } as GetVenueResponseModel)
+    vi.spyOn(api, 'getEducationalPartners').mockResolvedValue({ partners: [] })
+    vi.spyOn(api, 'editVenueCollectiveData').mockResolvedValue({
+      id: 1,
+    } as GetVenueResponseModel)
 
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       success: notifySuccessMock,
@@ -138,9 +136,9 @@ describe('CollectiveDataEdition', () => {
       ],
     })
 
-    jest
-      .spyOn(api, 'getVenueCollectiveData')
-      .mockResolvedValue(venueCollectiveDataFactory())
+    vi.spyOn(api, 'getVenueCollectiveData').mockResolvedValue(
+      venueCollectiveDataFactory()
+    )
 
     vi.spyOn(api, 'getEducationalPartner').mockRejectedValue({})
   })
@@ -187,15 +185,9 @@ describe('CollectiveDataEdition', () => {
     })
 
     it('should display toaster when some data could not be loaded', async () => {
-      jest
-        .spyOn(api, 'getVenuesEducationalStatuses')
-        .mockRejectedValueOnce(
-          new ApiError(
-            {} as ApiRequestOptions,
-            { status: 500 } as ApiResult,
-            ''
-          )
-        )
+      vi.spyOn(api, 'getVenuesEducationalStatuses').mockRejectedValueOnce(
+        new ApiError({} as ApiRequestOptions, { status: 500 } as ApiResult, '')
+      )
 
       renderCollectiveDataEdition()
       await waitForLoader()
@@ -433,15 +425,9 @@ describe('CollectiveDataEdition', () => {
 
   describe('submit', () => {
     it('should display error toast when adapter call failed', async () => {
-      jest
-        .spyOn(api, 'editVenueCollectiveData')
-        .mockRejectedValueOnce(
-          new ApiError(
-            {} as ApiRequestOptions,
-            { status: 500 } as ApiResult,
-            ''
-          )
-        )
+      vi.spyOn(api, 'editVenueCollectiveData').mockRejectedValueOnce(
+        new ApiError({} as ApiRequestOptions, { status: 500 } as ApiResult, '')
+      )
       renderCollectiveDataEdition()
       await waitForLoader()
 
@@ -524,9 +510,9 @@ describe('CollectiveDataEdition', () => {
         statutId: 2,
         domaineIds: [1, 2],
       })
-      jest
-        .spyOn(api, 'getVenueCollectiveData')
-        .mockResolvedValue(venueCollectiveDataFactory())
+      vi.spyOn(api, 'getVenueCollectiveData').mockResolvedValue(
+        venueCollectiveDataFactory()
+      )
 
       renderCollectiveDataEdition()
 

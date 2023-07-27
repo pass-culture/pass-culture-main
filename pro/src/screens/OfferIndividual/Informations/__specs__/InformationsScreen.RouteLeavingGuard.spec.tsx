@@ -293,17 +293,16 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       offererId: offer.venue.offerer.id.toString(),
     }
 
-    jest
-      .spyOn(api, 'getOffer')
-      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    vi.spyOn(api, 'getOffer').mockResolvedValue(
+      {} as GetIndividualOfferResponseModel
+    )
     vi.spyOn(api, 'postOffer').mockResolvedValue({
       id: offerId,
     } as GetIndividualOfferResponseModel)
     vi.spyOn(api, 'patchOffer').mockResolvedValue({
       id: offerId,
     } as GetIndividualOfferResponseModel)
-    jest
-      .spyOn(utils, 'filterCategories')
+    vi.spyOn(utils, 'filterCategories')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .mockImplementation((c, s, _v) => [c, s])
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({

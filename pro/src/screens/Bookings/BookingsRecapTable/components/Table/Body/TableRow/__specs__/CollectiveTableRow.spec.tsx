@@ -21,7 +21,7 @@ vi.mock(
   'screens/Bookings/BookingsRecapTable/components/Table/Body/TableRow/TableRow',
   () => ({
     __esModule: true,
-    default: jest.fn(() => <tr />),
+    default: vi.fn(() => <tr />),
   })
 )
 
@@ -44,9 +44,9 @@ describe('CollectiveTableRow', () => {
   beforeAll(() => {
     window.matchMedia = vi.fn().mockReturnValueOnce({ matches: true })
 
-    jest
-      .spyOn(api, 'getCollectiveBookingById')
-      .mockResolvedValue(collectiveBookingDetailsFactory())
+    vi.spyOn(api, 'getCollectiveBookingById').mockResolvedValue(
+      collectiveBookingDetailsFactory()
+    )
   })
 
   it('should not render booking details if row is not expanded', async () => {
@@ -80,16 +80,11 @@ describe('CollectiveTableRow', () => {
       isExpanded: true,
     } as Row<CollectiveBookingResponseModel>
 
-    jest
-      .spyOn(api, 'getCollectiveBookingById')
-      .mockResolvedValueOnce(
-        new CancelablePromise(resolve =>
-          setTimeout(
-            () => resolve({} as CollectiveBookingByIdResponseModel),
-            500
-          )
-        )
+    vi.spyOn(api, 'getCollectiveBookingById').mockResolvedValueOnce(
+      new CancelablePromise(resolve =>
+        setTimeout(() => resolve({} as CollectiveBookingByIdResponseModel), 500)
       )
+    )
 
     renderCollectiveTableRow({ row, reloadBookings: vi.fn(), bookingId: '' })
 

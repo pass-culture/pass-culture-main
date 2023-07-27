@@ -66,9 +66,10 @@ describe('OfferEducationalActions', () => {
       success: vi.fn(),
       error: notifyError,
     }))
-    jest
-      .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
-      .mockRejectedValue({ isOk: false })
+    vi.spyOn(
+      api,
+      'patchCollectiveOffersTemplateActiveStatus'
+    ).mockRejectedValue({ isOk: false })
 
     renderOfferEducationalActions({
       ...defaultValues,

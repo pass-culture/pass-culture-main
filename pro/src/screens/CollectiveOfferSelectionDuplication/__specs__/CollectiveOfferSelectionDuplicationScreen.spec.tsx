@@ -1,5 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
-import '@testing-library/jest-dom'
+
 import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
@@ -57,8 +57,7 @@ describe('CollectiveOfferConfirmation', () => {
       pending: vi.fn(),
       close: vi.fn(),
     }))
-    jest
-      .spyOn(api, 'getCollectiveOffers')
+    vi.spyOn(api, 'getCollectiveOffers')
       // @ts-expect-error FIX ME : will be fix PC-19976
       .mockReturnValue(offers)
   })
@@ -152,7 +151,7 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should display message when no offer', async () => {
-    await jest
+    await vi
       .spyOn(api, 'getCollectiveOffers')
       // @ts-expect-error FIX ME : will be fix PC-19976
       .mockReturnValue([])

@@ -31,7 +31,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
         userOfferers: userOfferersFactory([{}]),
       }
 
-      getIsOffererEligible = jest
+      getIsOffererEligible = vi
         .fn()
         .mockResolvedValue(eligibilityResponse(true))
     })
@@ -58,7 +58,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
     })
 
     it('should test eligibility and display an error message with a link if the offerer is not eligible', async () => {
-      getIsOffererEligible = jest
+      getIsOffererEligible = vi
         .fn()
         .mockResolvedValue(eligibilityResponse(false))
 
@@ -93,7 +93,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
           },
         ]),
       }
-      getIsOffererEligible = jest
+      getIsOffererEligible = vi
         .fn()
         .mockResolvedValue(eligibilityResponse(false))
     })
@@ -128,7 +128,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
           },
         ]),
       }
-      getIsOffererEligible = jest
+      getIsOffererEligible = vi
         .fn()
         .mockResolvedValue(eligibilityResponse(true))
     })
@@ -173,7 +173,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
         ]),
       }
 
-      getIsOffererEligible = jest
+      getIsOffererEligible = vi
         .fn()
         .mockResolvedValue(eligibilityResponse(true))
     })
@@ -253,7 +253,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
           },
         ]),
       }
-      getIsOffererEligible = jest
+      getIsOffererEligible = vi
         .fn()
         .mockResolvedValue(eligibilityResponse(true))
     })

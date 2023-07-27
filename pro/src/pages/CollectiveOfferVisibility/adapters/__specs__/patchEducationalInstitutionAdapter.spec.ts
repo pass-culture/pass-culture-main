@@ -5,9 +5,10 @@ import { patchEducationalInstitutionAdapter } from '../patchEducationalInstituti
 
 describe('patchEducationalInstitutionAdapter', () => {
   it('should return an error when the institutions could not be saved', async () => {
-    jest
-      .spyOn(api, 'patchCollectiveOffersEducationalInstitution')
-      .mockRejectedValueOnce(null)
+    vi.spyOn(
+      api,
+      'patchCollectiveOffersEducationalInstitution'
+    ).mockRejectedValueOnce(null)
     const response = await patchEducationalInstitutionAdapter({
       offerId: 12,
       institutionId: '24',
@@ -20,9 +21,10 @@ describe('patchEducationalInstitutionAdapter', () => {
   })
 
   it('should return a confirmation when the institutions is saved', async () => {
-    jest
-      .spyOn(api, 'patchCollectiveOffersEducationalInstitution')
-      .mockResolvedValueOnce({} as CollectiveOffer) // we do not test the content
+    vi.spyOn(
+      api,
+      'patchCollectiveOffersEducationalInstitution'
+    ).mockResolvedValueOnce({} as CollectiveOffer) // we do not test the content
     const response = await patchEducationalInstitutionAdapter({
       offerId: 12,
       institutionId: '24',

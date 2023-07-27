@@ -15,9 +15,7 @@ vi.mock('apiClient/api', () => ({
 
 describe('EACInformation', () => {
   beforeAll(() => {
-    jest
-      .spyOn(api, 'getEducationalPartners')
-      .mockResolvedValue({ partners: [] })
+    vi.spyOn(api, 'getEducationalPartners').mockResolvedValue({ partners: [] })
   })
 
   describe('on venue creation', () => {
