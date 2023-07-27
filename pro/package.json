@@ -25,11 +25,9 @@
     "start": "vite",
     "test:e2e": "cypress open --e2e --browser chrome --config baseUrl=http://localhost:3001",
     "test:stylelint": "jest stylelint-pass-culture/tests",
-    "test:unit": "TZ=UTC jest --coverage",
-    "test:unit:ci": "TZ=UTC jest --max-workers=2",
-    "test:unit:one": "TZ=UTC jest --bail",
-    "test:unit:watch": "TZ=UTC jest --watch",
-    "test:unit:no-coverage": "TZ=UTC jest",
+    "test:unit": "TZ=UTC vitest",
+    "test:unit:watch": "TZ=UTC vitest --watch",
+    "test:unit:ci": "TZ=UTC vitest --coverage",
     "storybook": "NODE_PATH=src storybook dev -p 6006",
     "build-storybook": "NODE_PATH=src storybook build -o docs-build"
   },
@@ -141,7 +139,10 @@
     "vite": "^4.4.7",
     "vite-tsconfig-paths": "^4.2.0",
     "vite-plugin-environment": "^1.1.3",
-    "vite-plugin-html": "^3.2.0"
+    "vite-plugin-html": "^3.2.0",
+    "vitest": "^0.33.0",
+    "vitest-axe": "^0.1.0",
+    "vitest-fetch-mock": "^0.2.2"
   },
   "resolutions": {
     "autoprefixer": "10.4.5"
