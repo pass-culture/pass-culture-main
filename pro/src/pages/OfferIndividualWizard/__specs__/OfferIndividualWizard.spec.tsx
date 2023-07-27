@@ -75,12 +75,12 @@ describe('test OfferIndividualWisard', () => {
     jest
       .spyOn(api, 'listOfferersNames')
       .mockResolvedValue({ offerersNames: [] })
-    jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
+    vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
     jest
       .spyOn(api, 'getCategories')
       .mockResolvedValue({ categories: [], subcategories: [] })
-    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    jest.spyOn(api, 'listOffers').mockResolvedValue([
+    vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
+    vi.spyOn(api, 'listOffers').mockResolvedValue([
       {
         id: 1,
         status: 'ACTIVE',
@@ -105,7 +105,7 @@ describe('test OfferIndividualWisard', () => {
   })
 
   it('should display an error when unable to load offer', async () => {
-    jest.spyOn(api, 'getOffer').mockRejectedValue(
+    vi.spyOn(api, 'getOffer').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -140,7 +140,7 @@ describe('test OfferIndividualWisard', () => {
   })
 
   it('should display an error when unable to load categories', async () => {
-    jest.spyOn(api, 'getCategories').mockRejectedValue(
+    vi.spyOn(api, 'getCategories').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -226,7 +226,7 @@ describe('test OfferIndividualWisard', () => {
   })
 
   it('should initialize context with api when a offerId is given', async () => {
-    jest.spyOn(api, 'getCategories').mockResolvedValue({
+    vi.spyOn(api, 'getCategories').mockResolvedValue({
       categories: [
         {
           id: 'A',

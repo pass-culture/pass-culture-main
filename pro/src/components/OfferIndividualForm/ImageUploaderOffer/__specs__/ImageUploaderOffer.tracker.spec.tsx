@@ -70,7 +70,7 @@ describe('ImageUploaderOffer::tracker', () => {
       onImageDelete: vi.fn().mockResolvedValue(undefined),
     }
 
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))

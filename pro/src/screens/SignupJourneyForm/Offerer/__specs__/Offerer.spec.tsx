@@ -19,7 +19,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { Offerer } from '..'
 import { DEFAULT_OFFERER_FORM_VALUES } from '../constants'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getSiretInfo: vi.fn(),
     getVenuesOfOffererFromSiret: vi.fn(),
@@ -93,11 +93,11 @@ describe('screens:SignupJourney::Offerer', () => {
       setOfferer: () => {},
     }
 
-    jest.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
       venues: [],
     })
 
-    jest.spyOn(api, 'getSiretInfo').mockResolvedValue({
+    vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
       active: true,
       address: {
         city: 'Paris',
@@ -155,7 +155,7 @@ describe('screens:SignupJourney::Offerer', () => {
   })
 
   it('should not display authentication screen on submit with form error', async () => {
-    jest.spyOn(api, 'getSiretInfo').mockRejectedValue(
+    vi.spyOn(api, 'getSiretInfo').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -203,7 +203,7 @@ describe('screens:SignupJourney::Offerer', () => {
   })
 
   it('should submit the form when clicking the continue button', async () => {
-    jest.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
       venues: [
         { id: 1, name: 'First Venue', isPermanent: true },
         { id: 2, name: 'Second Venue', isPermanent: true },
@@ -248,7 +248,7 @@ describe('screens:SignupJourney::Offerer', () => {
   })
 
   it('should display errors on api failure', async () => {
-    jest.spyOn(api, 'getVenuesOfOffererFromSiret').mockRejectedValueOnce(
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -271,7 +271,7 @@ describe('screens:SignupJourney::Offerer', () => {
   })
 
   it('should display BannerInvisibleSiren on error 400 with specific message', async () => {
-    jest.spyOn(api, 'getSiretInfo').mockRejectedValue(
+    vi.spyOn(api, 'getSiretInfo').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -331,7 +331,7 @@ describe('screens:SignupJourney::Offerer', () => {
   })
 
   it('should not display MaybeAppUserDialog component if siret is incorrect', async () => {
-    jest.spyOn(api, 'getSiretInfo').mockRejectedValue(
+    vi.spyOn(api, 'getSiretInfo').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -362,7 +362,7 @@ describe('screens:SignupJourney::Offerer', () => {
   })
 
   it('should display MaybeAppUserDialog and hide on cancel button', async () => {
-    jest.spyOn(api, 'getSiretInfo').mockResolvedValue({
+    vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
       active: true,
       address: {
         city: 'Paris',

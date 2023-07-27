@@ -137,7 +137,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           props.offer.status = OfferStatus.DRAFT
 
           renderOfferItem(props)
-          jest.spyOn(api, 'deleteDraftOffers').mockRejectedValue(
+          vi.spyOn(api, 'deleteDraftOffers').mockRejectedValue(
             new ApiError(
               {} as ApiRequestOptions,
               {
@@ -598,7 +598,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     })
     it('should log event when clicking booking link', async () => {
       const mockLogEvent = vi.fn()
-      jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
         ...jest.requireActual('hooks/useAnalytics'),
         logEvent: mockLogEvent,
       }))

@@ -52,7 +52,7 @@ const renderVenueOfferSteps = (
 describe('VenueOfferSteps', () => {
   const venueId = 1
   beforeEach(() => {
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))

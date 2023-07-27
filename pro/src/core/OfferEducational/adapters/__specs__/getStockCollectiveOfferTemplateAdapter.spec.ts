@@ -14,7 +14,7 @@ describe('getStockCollectiveOfferTemplateAdapter', () => {
   describe('getStockCollectiveOfferTemplateAdapter', () => {
     it('should return an error when API returns an error', async () => {
       // given
-      jest.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValueOnce(
+      vi.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValueOnce(
         new ApiError(
           {} as ApiRequestOptions,
           {
@@ -39,7 +39,7 @@ describe('getStockCollectiveOfferTemplateAdapter', () => {
 
     it('should not return an error when offer has been found', async () => {
       // given
-      jest.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce({
+      vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce({
         isActive: true,
         offerId: 1,
         bookingEmails: [],

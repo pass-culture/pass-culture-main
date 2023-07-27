@@ -118,12 +118,12 @@ describe('app', () => {
       relative: [],
     }
 
-    jest.spyOn(apiAdage, 'authenticate').mockResolvedValue({
+    vi.spyOn(apiAdage, 'authenticate').mockResolvedValue({
       role: AdageFrontRoles.REDACTOR,
       uai: 'uai',
     })
-    jest.spyOn(apiAdage, 'getVenueBySiret').mockResolvedValue(venue)
-    jest.spyOn(apiAdage, 'getVenueById').mockResolvedValue(venue)
+    vi.spyOn(apiAdage, 'getVenueBySiret').mockResolvedValue(venue)
+    vi.spyOn(apiAdage, 'getVenueById').mockResolvedValue(venue)
   })
 
   it('should reset filters', async () => {
@@ -250,7 +250,7 @@ describe('app', () => {
 
   it('should display a "Réinitialiser les filtres" button when no result query is not empty', async () => {
     // Given
-    jest.spyOn(apiAdage, 'getCollectiveOffer').mockRejectedValueOnce('')
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockRejectedValueOnce('')
     renderApp()
     const searchBox = await screen.findByPlaceholderText(
       'Nom de l’offre ou du partenaire culturel'
@@ -271,7 +271,7 @@ describe('app', () => {
 
   it('should display a "Réinitialiser les filtres" button when no result and at least one filter is set', async () => {
     // Given
-    jest.spyOn(apiAdage, 'getCollectiveOffer').mockRejectedValueOnce('')
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockRejectedValueOnce('')
     renderApp()
 
     // When

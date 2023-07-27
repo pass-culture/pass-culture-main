@@ -37,7 +37,7 @@ const renderImageUploaderVenue = () =>
 
 describe('ImageUploaderVenue::tracker', () => {
   beforeEach(() => {
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))

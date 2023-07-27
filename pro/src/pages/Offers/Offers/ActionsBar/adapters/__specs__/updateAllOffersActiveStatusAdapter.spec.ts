@@ -5,7 +5,7 @@ import { updateAllOffersActiveStatusAdapter } from '../updateAllOffersActiveStat
 describe('updateAllOffersActiveStatusAdapter', () => {
   it('should deactivate all offers and confirm', async () => {
     // given
-    jest.spyOn(api, 'patchAllOffersActiveStatus').mockResolvedValue({})
+    vi.spyOn(api, 'patchAllOffersActiveStatus').mockResolvedValue({})
 
     const response = await updateAllOffersActiveStatusAdapter({
       searchFilters: { isActive: false },
@@ -21,7 +21,7 @@ describe('updateAllOffersActiveStatusAdapter', () => {
 
   it('should activate all offers and confirm', async () => {
     // given
-    jest.spyOn(api, 'patchAllOffersActiveStatus').mockResolvedValue({})
+    vi.spyOn(api, 'patchAllOffersActiveStatus').mockResolvedValue({})
 
     const response = await updateAllOffersActiveStatusAdapter({
       searchFilters: { isActive: true },
@@ -37,7 +37,7 @@ describe('updateAllOffersActiveStatusAdapter', () => {
 
   it('should return an error when the update has failed', async () => {
     // given
-    jest.spyOn(api, 'patchAllOffersActiveStatus').mockRejectedValue({})
+    vi.spyOn(api, 'patchAllOffersActiveStatus').mockRejectedValue({})
 
     // when
     const response = await updateAllOffersActiveStatusAdapter({

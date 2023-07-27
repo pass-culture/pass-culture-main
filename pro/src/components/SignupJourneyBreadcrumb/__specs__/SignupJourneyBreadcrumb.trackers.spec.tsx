@@ -70,7 +70,7 @@ const renderSignupBreadcrumb = (
 describe('test SignupBreadcrumb', () => {
   let contextValue: SignupJourneyContextValues
   beforeEach(() => {
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))

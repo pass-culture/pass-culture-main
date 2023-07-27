@@ -48,11 +48,11 @@ describe('screens | OfferEducational : event address step', () => {
       offer,
     }
 
-    jest.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
+    vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
   })
 
   it('should redirect to stock on submit', async () => {
-    jest.spyOn(patchCollectiveOfferAdapter, 'default').mockResolvedValueOnce({
+    vi.spyOn(patchCollectiveOfferAdapter, 'default').mockResolvedValueOnce({
       isOk: true,
       message: '',
       payload: offer,
@@ -72,7 +72,7 @@ describe('screens | OfferEducational : event address step', () => {
   })
 
   it('should redirect to right url if requete params exist on submit', async () => {
-    jest.spyOn(patchCollectiveOfferAdapter, 'default').mockResolvedValueOnce({
+    vi.spyOn(patchCollectiveOfferAdapter, 'default').mockResolvedValueOnce({
       isOk: true,
       message: '',
       payload: offer,

@@ -38,11 +38,11 @@ const renderActionBar = (props: ActionBarProps) => {
 describe('screens:SignupJourney::ActionBar', () => {
   let props: ActionBarProps
   beforeEach(() => {
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
-    jest.spyOn(api, 'getVenueTypes').mockResolvedValue([])
+    vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
   })
 
   it('Should log next action', async () => {

@@ -51,7 +51,7 @@ describe('ResetPassword', () => {
 
     it('should display bad token informations', async () => {
       // given
-      jest.spyOn(api, 'postNewPassword').mockRejectedValue({})
+      vi.spyOn(api, 'postNewPassword').mockRejectedValue({})
       const url = '/mot-de-passe-perdu?token=ABC'
 
       // when

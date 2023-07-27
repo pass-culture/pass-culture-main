@@ -203,7 +203,7 @@ describe('route CollectiveOffers', () => {
 
         it('should not display column titles when no offers are returned', async () => {
           // Given
-          jest.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([])
+          vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([])
           // When
           await renderOffers(store)
 
@@ -297,7 +297,7 @@ describe('route CollectiveOffers', () => {
             // Given
             const offerer = { name: 'La structure', id: 'EF' }
             // @ts-expect-error FIX ME
-            jest.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
+            vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
             const filters = {
               offererId: offerer.id,
               status: OfferStatus.INACTIVE,
@@ -329,7 +329,7 @@ describe('route CollectiveOffers', () => {
             const { id: venueId } = proVenues[0]
             const offerer = { name: 'La structure', id: 'EF' }
             // @ts-expect-error FIX ME
-            jest.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
+            vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
             const filters = {
               venueId: venueId.toString(),
               status: OfferStatus.INACTIVE,

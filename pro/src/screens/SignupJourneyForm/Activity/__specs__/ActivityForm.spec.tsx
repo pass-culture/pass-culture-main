@@ -87,7 +87,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
       setActivity: () => {},
       setOfferer: () => {},
     }
-    jest.spyOn(api, 'getVenueTypes').mockResolvedValue([])
+    vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
   })
 
   it('should render activity form', async () => {

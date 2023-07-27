@@ -250,7 +250,7 @@ describe('offers', () => {
 
   it('should remove previous rendered offers on results update', async () => {
     const { rerender } = renderOffers(offersProps)
-    jest.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(otherOffer)
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(otherOffer)
     const otherSearchResult: Hit<ResultType> = {
       objectID: '481',
       offer: {
@@ -294,7 +294,7 @@ describe('offers', () => {
       .spyOn(apiAdage, 'getCollectiveOffer')
       .mockResolvedValueOnce(offerInCayenne)
     const { rerender } = renderOffers(offersProps)
-    jest.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(otherOffer)
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(otherOffer)
     const otherSearchResult: Hit<ResultType> = {
       objectID: '481',
       offer: {

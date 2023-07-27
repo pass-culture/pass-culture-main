@@ -95,7 +95,7 @@ describe('components | Informations', () => {
   })
 
   it('should submit form without errors', async () => {
-    jest.spyOn(api, 'getSiretInfo').mockResolvedValueOnce({
+    vi.spyOn(api, 'getSiretInfo').mockResolvedValueOnce({
       name: 'MUSEE DE LA TAPISSERIE DE BAYEUX',
       siret: '12345178912345',
       active: true,

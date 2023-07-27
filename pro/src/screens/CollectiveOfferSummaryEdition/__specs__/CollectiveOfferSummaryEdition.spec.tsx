@@ -77,19 +77,19 @@ describe('CollectiveOfferSummary', () => {
       ]),
     }
 
-    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...jest.requireActual('hooks/useNotification'),
       error: notifyError,
     }))
 
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
 
-    jest.spyOn(api, 'getVenue').mockResolvedValue(defaultVenueResponseModel)
+    vi.spyOn(api, 'getVenue').mockResolvedValue(defaultVenueResponseModel)
 
-    jest.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(offer)
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(offer)
 
     jest
       .spyOn(api, 'getCategories')
@@ -99,7 +99,7 @@ describe('CollectiveOfferSummary', () => {
       .spyOn(api, 'listEducationalOfferers')
       .mockResolvedValue({ educationalOfferers: [] })
 
-    jest.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
+    vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
 
     jest
       .spyOn(api, 'createCollectiveOffer')
@@ -139,7 +139,7 @@ describe('CollectiveOfferSummary', () => {
   })
 
   it('should return an error when the collective offer could not be retrieved', async () => {
-    jest.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValueOnce('')
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValueOnce('')
 
     renderCollectiveOfferSummaryEdition(offer, categories)
 
@@ -156,9 +156,9 @@ describe('CollectiveOfferSummary', () => {
   })
 
   it('should return an error when the categorie call failed', async () => {
-    jest.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce(offer)
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce(offer)
 
-    jest.spyOn(api, 'getCategories').mockRejectedValueOnce('')
+    vi.spyOn(api, 'getCategories').mockRejectedValueOnce('')
 
     renderCollectiveOfferSummaryEdition(offer, categories)
 
@@ -173,7 +173,7 @@ describe('CollectiveOfferSummary', () => {
   })
 
   it('should return an error when the duplication failed', async () => {
-    jest.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce(offer)
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce(offer)
     jest
       .spyOn(api, 'createCollectiveOffer')
       .mockRejectedValueOnce(
@@ -217,7 +217,7 @@ describe('CollectiveOfferSummary', () => {
       .spyOn(mockResponse, 'blob')
       .mockResolvedValue(Promise.resolve(undefined) as unknown as Blob)
 
-    jest.spyOn(global, 'fetch').mockResolvedValue(mockResponse)
+    vi.spyOn(global, 'fetch').mockResolvedValue(mockResponse)
 
     renderCollectiveOfferSummaryEdition(offer, categories)
 

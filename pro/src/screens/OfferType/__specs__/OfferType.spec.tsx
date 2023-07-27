@@ -72,11 +72,11 @@ const renderOfferTypes = async (storeOverrides: any, structureId?: string) => {
 describe('screens:OfferIndividual::OfferType', () => {
   let store: any
   beforeAll(() => {
-    jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [{ id: 1, name: 'Ma super structure' }],
     })
-    jest.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
-    jest.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
+    vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
+    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
   })
   beforeEach(() => {
     store = {
@@ -89,7 +89,7 @@ describe('screens:OfferIndividual::OfferType', () => {
       },
     }
 
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
@@ -149,7 +149,7 @@ describe('screens:OfferIndividual::OfferType', () => {
   })
 
   it('should select template offer', async () => {
-    jest.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
       offerersNames: [
         { id: 1, name: 'Ma super structure' },
         { id: 2, name: 'Ma super structure #2' },
@@ -178,10 +178,10 @@ describe('screens:OfferIndividual::OfferType', () => {
   })
 
   it('should display non eligible banner if offerer can not create collective offer', async () => {
-    jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [{ id: 1, name: 'Ma super structure' }],
     })
-    jest.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValue({})
+    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValue({})
     renderOfferTypes(store)
 
     await userEvent.click(
@@ -197,7 +197,7 @@ describe('screens:OfferIndividual::OfferType', () => {
   })
 
   it('should display dms application banner if offerer can not create collective offer but as dms application', async () => {
-    jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [{ id: 1, name: 'Ma super structure' }],
     })
     const offerer: GetOffererResponseModel = {
@@ -215,8 +215,8 @@ describe('screens:OfferIndividual::OfferType', () => {
         },
       ],
     }
-    jest.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
-    jest.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValue({})
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
+    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValue({})
     renderOfferTypes(store, 'offererId')
 
     await userEvent.click(
@@ -285,10 +285,10 @@ describe('screens:OfferIndividual::OfferType', () => {
   )
 
   it('should select duplicate template offer', async () => {
-    jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [{ id: 1, name: 'Ma super structure' }],
     })
-    jest.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
+    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
     const offersRecap = [collectiveOfferFactory()]
     jest
       .spyOn(api, 'getCollectiveOffers')
@@ -339,13 +339,13 @@ describe('screens:OfferIndividual::OfferType', () => {
   })
 
   it('should display error message if trying to duplicate without template offer', async () => {
-    jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [{ id: 1, name: 'Ma super structure' }],
     })
-    jest.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
-    jest.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
+    vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
+    vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
     const notifyError = vi.fn()
-    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...jest.requireActual('hooks/useNotification'),
       error: notifyError,
     }))
@@ -391,7 +391,7 @@ describe('screens:OfferIndividual::OfferType', () => {
   })
 
   it('should display validation banner if structure not validated for collective offer ', async () => {
-    jest.spyOn(api, 'getOfferer').mockResolvedValue({
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
       isValidated: false,
     } as GetOffererResponseModel)
     renderOfferTypes(store, '123')

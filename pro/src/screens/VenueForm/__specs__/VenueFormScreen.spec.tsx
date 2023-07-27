@@ -106,11 +106,11 @@ jest.mock('apiClient/api', () => ({
     canOffererCreateEducationalOffer: vi.fn(),
   },
 }))
-jest.spyOn(api, 'getEducationalPartners').mockResolvedValue({ partners: [] })
+vi.spyOn(api, 'getEducationalPartners').mockResolvedValue({ partners: [] })
 
-jest.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([])
+vi.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([])
 
-jest.spyOn(api, 'getSiretInfo').mockResolvedValue({
+vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
   active: true,
   address: {
     city: 'paris',
@@ -123,7 +123,7 @@ jest.spyOn(api, 'getSiretInfo').mockResolvedValue({
   legal_category_code: '1000',
 })
 
-jest.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
+vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
 
 jest.mock('apiClient/adresse', () => {
   return {
@@ -134,7 +134,7 @@ jest.mock('apiClient/adresse', () => {
   }
 })
 
-jest.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue([
+vi.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue([
   {
     address: '12 rue des lilas',
     city: 'Lyon',
@@ -367,7 +367,7 @@ describe('screen | VenueForm', () => {
   })
   describe('Navigation', () => {
     it('User should be redirected with the new creation journey', async () => {
-      jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
+      vi.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
       renderForm(
         {
           id: 12,
@@ -396,7 +396,7 @@ describe('screen | VenueForm', () => {
         true,
         undefined
       )
-      jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
+      vi.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
 
       await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
 
@@ -417,7 +417,7 @@ describe('screen | VenueForm', () => {
         true,
         undefined
       )
-      jest.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
+      vi.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
 
       await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
 
@@ -441,7 +441,7 @@ describe('screen | VenueForm', () => {
         undefined
       )
 
-      jest.spyOn(api, 'postCreateVenue').mockRejectedValue(
+      vi.spyOn(api, 'postCreateVenue').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
           {
@@ -473,7 +473,7 @@ describe('screen | VenueForm', () => {
         venue
       )
 
-      jest.spyOn(api, 'editVenue').mockRejectedValue(
+      vi.spyOn(api, 'editVenue').mockRejectedValue(
         new ApiError(
           {} as ApiRequestOptions,
           {

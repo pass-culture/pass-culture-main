@@ -9,7 +9,7 @@ describe('getSirenDataAdapter', () => {
     it('should not call API when SIREN is empty', async () => {
       // given
       const siren = ''
-      jest.spyOn(api, 'getSirenInfo')
+      vi.spyOn(api, 'getSirenInfo')
 
       // when
       const response = await getSirenDataAdapter(siren)
@@ -33,7 +33,7 @@ describe('getSirenDataAdapter', () => {
     it('test invalid siret response', async () => {
       // given
       const siren = '245474278'
-      jest.spyOn(api, 'getSirenInfo').mockRejectedValue(
+      vi.spyOn(api, 'getSirenInfo').mockRejectedValue(
         new ApiError(
           {},
           {
@@ -63,7 +63,7 @@ describe('getSirenDataAdapter', () => {
     it('should return location values', async () => {
       // given
       const siren = '445474278'
-      jest.spyOn(api, 'getSirenInfo').mockResolvedValue({
+      vi.spyOn(api, 'getSirenInfo').mockResolvedValue({
         name: 'nom du lieu',
         siren: siren,
         ape_code: '90.03A',

@@ -57,7 +57,7 @@ describe('Offerers trackers', () => {
       setOfferer: () => {},
     }
 
-    jest.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
       offererName: 'Offerer Name',
       offererSiren: '123456789',
       venues: [
@@ -70,7 +70,7 @@ describe('Offerers trackers', () => {
       ],
     })
 
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))

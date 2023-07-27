@@ -32,7 +32,7 @@ describe('StatusToggleButton', () => {
       .spyOn(api, 'patchOffersActiveStatus')
       .mockResolvedValue()
     const notifySuccess = vi.fn()
-    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       success: notifySuccess,
       error: vi.fn(),
       information: vi.fn(),
@@ -64,7 +64,7 @@ describe('StatusToggleButton', () => {
       .spyOn(api, 'patchOffersActiveStatus')
       .mockResolvedValue()
     const notifySuccess = vi.fn()
-    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       success: notifySuccess,
       error: vi.fn(),
       information: vi.fn(),
@@ -98,7 +98,7 @@ describe('StatusToggleButton', () => {
       .spyOn(api, 'patchOffersActiveStatus')
       .mockRejectedValue({})
     const notifyError = vi.fn()
-    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       error: notifyError,
       success: vi.fn(),
       information: vi.fn(),

@@ -40,7 +40,7 @@ const mockLogEvent = vi.fn()
 
 describe('SignupJourneyRoutes::trackers', () => {
   beforeEach(() => {
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))

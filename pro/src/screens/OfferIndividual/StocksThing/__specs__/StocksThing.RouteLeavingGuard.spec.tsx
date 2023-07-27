@@ -131,7 +131,7 @@ describe('screens:StocksThing', () => {
     jest
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
@@ -141,7 +141,7 @@ describe('screens:StocksThing', () => {
   })
 
   it('should not block when going outside and form is not touched', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 1 } as StockResponseModel],
     })
 
@@ -153,7 +153,7 @@ describe('screens:StocksThing', () => {
   })
 
   it('should be able to stay on stock form after click on "Annuler"', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 1 } as StockResponseModel],
     })
 
@@ -168,7 +168,7 @@ describe('screens:StocksThing', () => {
   })
 
   it('should be able to quit without submitting from RouteLeavingGuard', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 1 } as StockResponseModel],
     })
 
@@ -189,7 +189,7 @@ describe('screens:StocksThing', () => {
   })
 
   it('should track when quitting without submit from RouteLeavingGuard', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 1 } as StockResponseModel],
     })
     renderStockThingScreen(props, contextValue)
@@ -215,7 +215,7 @@ describe('screens:StocksThing', () => {
   })
 
   it('should be able to submit from Action Bar without Guard after changing price in draft', async () => {
-    jest.spyOn(api, 'upsertStocks').mockResolvedValue({
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 1 } as StockResponseModel],
     })
     const stock = {

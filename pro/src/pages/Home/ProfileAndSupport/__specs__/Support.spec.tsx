@@ -46,7 +46,7 @@ describe('homepage: ProfileAndSupport: Support', () => {
     })
 
     it('should trigger events when clicking on link', async () => {
-      jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
         logEvent: mockLogEvent,
         setLogEvent: null,
       }))

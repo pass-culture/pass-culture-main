@@ -9,6 +9,7 @@
 /cypress/downloads
 /cypress/screenshots
 /cypress/videos
+/src/node_modules
 
 # production
 /build

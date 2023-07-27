@@ -63,7 +63,7 @@ describe('CollectiveOfferSummaryCreation', () => {
   })
 
   it('should have requete parameter in the link for previous step when requete is present in the URL', async () => {
-    jest.spyOn(router, 'useParams').mockReturnValue({ requete: '1' })
+    vi.spyOn(router, 'useParams').mockReturnValue({ requete: '1' })
     await renderCollectiveOfferSummaryCreation(
       '/offre/A1/collectif/creation/recapitulatif',
       defaultProps

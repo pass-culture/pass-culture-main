@@ -124,7 +124,7 @@ describe('screen Offers', () => {
         ({ id, proLabel }) => ({ value: id, label: proLabel })
       ),
     } as OffersProps
-    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...jest.requireActual('hooks/useNotification'),
       error: mockNotifyError,
       pending: mockNotifyPending,
@@ -671,7 +671,7 @@ describe('screen Offers', () => {
 
     it('should be displayed when user is not an admin', async () => {
       const individualOffererNames = individualOfferOffererFactory()
-      jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
         offerersNames: [individualOffererNames],
       })
 
@@ -687,7 +687,7 @@ describe('screen Offers', () => {
     })
 
     it('should not be displayed when user is not yet validated', async () => {
-      jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
         offerersNames: [],
       })
 

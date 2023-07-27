@@ -77,7 +77,7 @@ describe('OffererStatsScreen', () => {
       },
     ] as GetOffererResponseModel[]
 
-    jest.spyOn(api, 'getOfferer').mockImplementation(offererId => {
+    vi.spyOn(api, 'getOfferer').mockImplementation(offererId => {
       return new CancelablePromise(resolve =>
         resolve(offerers.filter(offerer => offerer.id == offererId)[0])
       )

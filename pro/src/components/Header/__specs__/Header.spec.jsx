@@ -50,7 +50,7 @@ describe('navigation menu', () => {
 
   describe('trackers should have been called 1 time with pathname', () => {
     beforeEach(() => {
-      jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
         logEvent: mockLogEvent,
       }))
     })

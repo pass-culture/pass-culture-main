@@ -23,7 +23,7 @@ jest.mock('react-router-dom', () => ({
 describe('src | components | pages | Offerer | OffererDetails', () => {
   const offererId = 1
 
-  jest.spyOn(api, 'getOfferer').mockResolvedValue({
+  vi.spyOn(api, 'getOfferer').mockResolvedValue({
     id: offererId,
     name: 'fake offerer name',
     city: 'Paris',

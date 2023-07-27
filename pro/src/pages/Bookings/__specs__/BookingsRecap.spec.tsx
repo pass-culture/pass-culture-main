@@ -101,7 +101,7 @@ describe('components | BookingsRecap | Pro user', () => {
       pages: 0,
       total: 0,
     }
-    jest.spyOn(api, 'getBookingsPro').mockResolvedValue(emptyBookingsRecapPage)
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValue(emptyBookingsRecapPage)
 
     user = {
       isAdmin: false,
@@ -112,9 +112,9 @@ describe('components | BookingsRecap | Pro user', () => {
         currentUser: user,
       },
     }
-    jest.spyOn(api, 'getProfile').mockResolvedValue(user)
+    vi.spyOn(api, 'getProfile').mockResolvedValue(user)
     venue = getVenueListItemFactory({})
-    jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: [venue] })
+    vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [venue] })
     jest
       .spyOn(api, 'getUserHasBookings')
       .mockResolvedValue({ hasBookings: true })
@@ -176,7 +176,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should warn user that his prefilters returned no booking when no bookings where returned by selected pre-filters', async () => {
     // Given
-    jest.spyOn(api, 'getBookingsPro').mockResolvedValue({
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 0,
       total: 0,
@@ -196,7 +196,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should allow user to reset its pre-filters in the no bookings warning', async () => {
     // Given
-    jest.spyOn(api, 'getBookingsPro').mockResolvedValue({
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 0,
       total: 0,
@@ -222,7 +222,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should not allow user to reset prefilters when none were applied', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    jest.spyOn(api, 'getBookingsPro').mockResolvedValue({
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
@@ -242,7 +242,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should allow user to reset prefilters when some where applied', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    jest.spyOn(api, 'getBookingsPro').mockResolvedValue({
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
@@ -280,7 +280,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should ask user to select a pre-filter when user reset them', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    jest.spyOn(api, 'getBookingsPro').mockResolvedValue({
+    vi.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,

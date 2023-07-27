@@ -104,7 +104,7 @@ describe('Confirmation', () => {
     contextOverride = {
       offer: offer,
     }
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))

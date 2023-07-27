@@ -83,7 +83,7 @@ const BASE_REIMBURSEMENT_POINTS = [
 
 describe('reimbursementsWithFilters', () => {
   beforeEach(() => {
-    jest.spyOn(api, 'getInvoices').mockResolvedValue(BASE_INVOICES)
+    vi.spyOn(api, 'getInvoices').mockResolvedValue(BASE_INVOICES)
     jest
       .spyOn(api, 'getReimbursementPoints')
       .mockResolvedValue(BASE_REIMBURSEMENT_POINTS)

@@ -67,7 +67,7 @@ describe('VenueItem', () => {
   })
 
   it('should track when clicking on offer creation page', async () => {
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))

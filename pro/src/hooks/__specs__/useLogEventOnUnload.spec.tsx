@@ -8,7 +8,7 @@ describe('useBeforeUnload', () => {
       const spyAddEvent = vi.fn()
       const spyRemoveEvent = vi.fn()
       const mockLogEvent = vi.fn()
-      jest.spyOn(window, 'addEventListener').mockImplementation(spyAddEvent)
+      vi.spyOn(window, 'addEventListener').mockImplementation(spyAddEvent)
       jest
         .spyOn(window, 'removeEventListener')
         .mockImplementation(spyRemoveEvent)

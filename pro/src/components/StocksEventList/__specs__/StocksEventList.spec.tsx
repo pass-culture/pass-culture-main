@@ -37,7 +37,7 @@ const renderStocksEventList = (props: Partial<StocksEventListProps>) => {
 
 describe('StocksEventList', () => {
   beforeEach(() => {
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))

@@ -134,7 +134,7 @@ describe('trackers creationLinks', () => {
       soldOutOffersCount: 3,
       validatedBookingsQuantity: 3,
     })
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
