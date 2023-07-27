@@ -105,5 +105,6 @@ def get_booking_confirmation_to_beneficiary_email_data(
             "BOOKING_LINK": booking_app_link(booking),
             "OFFER_WITHDRAWAL_DELAY": bookings_common.get_offer_withdrawal_delay(booking),
             "OFFER_WITHDRAWAL_TYPE": bookings_common.get_offer_withdrawal_type(booking),
+            "FEATURES": ", ".join(stock.features),
         },
     )
