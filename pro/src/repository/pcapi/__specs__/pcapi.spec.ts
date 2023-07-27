@@ -14,7 +14,7 @@ jest.mock('repository/pcapi/pcapiClient', () => ({
 
 jest.mock('utils/date', () => {
   return {
-    ...jest.requireActual('utils/date'),
+    ...vi.importActual('utils/date'),
     getToday: vi.fn().mockReturnValue(new Date(2020, 8, 12)),
   }
 })

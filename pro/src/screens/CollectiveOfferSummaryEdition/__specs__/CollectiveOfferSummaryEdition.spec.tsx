@@ -78,7 +78,7 @@ describe('CollectiveOfferSummary', () => {
     }
 
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
-      ...jest.requireActual('hooks/useNotification'),
+      ...vi.importActual('hooks/useNotification'),
       error: notifyError,
     }))
 

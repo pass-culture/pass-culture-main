@@ -18,7 +18,7 @@ jest.mock('apiClient/api', () => ({
 }))
 
 jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+  ...vi.importActual('react-router-dom'),
   useParams: () => ({
     requestId: vi.fn(),
   }),

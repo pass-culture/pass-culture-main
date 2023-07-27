@@ -61,7 +61,7 @@ const proVenuesOptions = [
 ]
 
 jest.mock('utils/date', () => ({
-  ...jest.requireActual('utils/date'),
+  ...vi.importActual('utils/date'),
   getToday: jest
     .fn()
     .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
@@ -125,7 +125,7 @@ describe('screen Offers', () => {
       ),
     } as OffersProps
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
-      ...jest.requireActual('hooks/useNotification'),
+      ...vi.importActual('hooks/useNotification'),
       error: mockNotifyError,
       pending: mockNotifyPending,
     }))

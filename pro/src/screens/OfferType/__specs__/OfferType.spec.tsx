@@ -346,7 +346,7 @@ describe('screens:OfferIndividual::OfferType', () => {
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
     const notifyError = vi.fn()
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
-      ...jest.requireActual('hooks/useNotification'),
+      ...vi.importActual('hooks/useNotification'),
       error: notifyError,
     }))
 

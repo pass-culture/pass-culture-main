@@ -75,7 +75,7 @@ jest.mock('apiClient/api', () => ({
 }))
 const mockedUsedNavigate = vi.fn()
 jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+  ...vi.importActual('react-router-dom'),
   useParams: () => ({
     offererId: 'O1',
     venueId: 'V1',
