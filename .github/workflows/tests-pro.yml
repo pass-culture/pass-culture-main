@@ -120,7 +120,7 @@ jobs:
           path: ./${{ env.folder }}/.jest_cache
           key: node-${{ needs.read-node-version.outputs.node_version }}-jest-cache
       - name: Run tests with coverage
-        run: yarn test:unit:ci --coverage
+        run: yarn test:unit:ci
       - name: SonarCloud scan
         uses: SonarSource/sonarcloud-github-action@master
         if: ${{ github.actor != 'dependabot[bot]' }}

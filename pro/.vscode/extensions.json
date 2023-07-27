@@ -2,6 +2,6 @@
   "recommendations": [
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
-    "Orta.vscode-jest"
+    "ZixuanChen.vitest-explorer"
   ]
 }

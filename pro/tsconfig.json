@@ -26,14 +26,13 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es6",
-    "types": ["node", "cypress", "vite/client"]
+    "types": ["node", "cypress", "vite/client", "vitest/globals"]
   },
   "include": [
     "./src/**/*.ts",
     "./src/**/*.tsx",
     "./cypress/**/*.ts",
     "cypress.config.ts",
-    "jest.setup.ts",
     "vite.config.ts"
   ],
   "exclude": [

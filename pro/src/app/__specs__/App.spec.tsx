@@ -8,14 +8,11 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { App } from '../App'
 
-jest.mock('hooks/useAnalytics', () => ({
-  useConfigureFirebase: jest.fn(),
-}))
-
-window.scrollTo = jest.fn()
-
-jest.mock('hooks/useLogNavigation', () => jest.fn())
-jest.mock('hooks/usePageTitle', () => jest.fn())
+vi.mock('hooks/useAnalytics', () => ({ useConfigureFirebase: vi.fn() }))
+vi.mock('hooks/useLogNavigation', () => ({ default: vi.fn() }))
+vi.mock('hooks/usePageTitle', () => ({ default: vi.fn() }))
+vi.mock('@sentry/browser', () => ({ setUser: vi.fn() }))
+vi.spyOn(window, 'scrollTo').mockResolvedValue()
 
 const renderApp = (storeOverrides: any, url = '/') =>
   renderWithProviders(
@@ -30,12 +27,6 @@ const renderApp = (storeOverrides: any, url = '/') =>
     </>,
     { storeOverrides, initialRouterEntries: [url] }
   )
-
-jest.mock('@sentry/browser', () => ({
-  setUser: jest.fn(),
-}))
-
-jest.spyOn(window, 'scrollTo').mockImplementation()
 
 global.window = Object.create(window)
 Object.defineProperty(window, 'location', {
