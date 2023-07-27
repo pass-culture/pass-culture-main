@@ -23,9 +23,10 @@ import { validationSchema } from '../validationSchema'
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
-vi.mock('apiClient/adresse', () => {
+vi.mock('apiClient/adresse', async () => {
+  const actual = await vi.importActual('apiClient/adresse')
   return {
-    ...vi.importActual('apiClient/adresse'),
+    ...(actual as object),
     default: {
       getDataFromAddress: vi.fn(),
     },
@@ -156,7 +157,7 @@ describe('OffererAuthenticationForm', () => {
     ).toBeInTheDocument()
   })
 
-  it.only('should not render error on submit when publicName is empty or filled', async () => {
+  it('should not render error on submit when publicName is empty or filled', async () => {
     renderOffererAuthenticationForm({
       initialValues: initialValues,
       contextValue: contextValue,
