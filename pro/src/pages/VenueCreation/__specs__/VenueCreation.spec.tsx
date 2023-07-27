@@ -57,7 +57,9 @@ vi.mock('apiClient/api', () => ({
 
 Element.prototype.scrollIntoView = vi.fn()
 
-window.matchMedia = vi.fn().mockReturnValue({ matches: true })
+vi.spyOn(window, 'matchMedia').mockReturnValue({
+  matches: true,
+} as MediaQueryList)
 
 describe('route VenueCreation', () => {
   let offerer: GetOffererResponseModel

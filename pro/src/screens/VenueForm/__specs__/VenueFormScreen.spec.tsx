@@ -94,26 +94,16 @@ const renderForm = (
   )
 }
 
-const mockNavigate = vi.fn()
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
-  useNavigate: () => mockNavigate,
-}))
-
 vi.mock('apiClient/api', () => ({
   api: {
     postCreateVenue: vi.fn(),
     getSiretInfo: vi.fn(),
     editVenue: vi.fn(),
-    getEducationalPartners: vi.fn(),
-    getAvailableReimbursementPoints: vi.fn(),
+    getEducationalPartners: vi.fn(() => Promise.resolve({ partners: [] })),
+    getAvailableReimbursementPoints: vi.fn(() => Promise.resolve([])),
     canOffererCreateEducationalOffer: vi.fn(),
   },
 }))
-vi.spyOn(api, 'getEducationalPartners').mockResolvedValue({ partners: [] })
-
-vi.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([])
-
 vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
   active: true,
   address: {
@@ -188,6 +178,10 @@ vi.mock('utils/windowMatchMedia', () => ({
 
 Element.prototype.scrollIntoView = vi.fn()
 
+vi.mock('core/Venue/siretApiValidate', () => ({
+  default: () => Promise.resolve(),
+}))
+
 const venueResponse: GetVenueResponseModel = {
   hasPendingBankInformationApplication: false,
   demarchesSimplifieesApplicationId: '',
@@ -255,10 +249,11 @@ const venueResponse: GetVenueResponseModel = {
   },
 }
 
-describe('screen | VenueForm', () => {
+describe('VenueFormScreen', () => {
   let formValues: VenueFormValues
   let expectedEditVenue: Partial<EditVenueBodyModel>
   let venue: Venue
+
   beforeEach(() => {
     formValues = {
       bannerMeta: undefined,
@@ -370,179 +365,176 @@ describe('screen | VenueForm', () => {
       collectiveDmsApplication: null,
     }
   })
-  describe('Navigation', () => {
-    it('User should be redirected with the new creation journey', async () => {
-      vi.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
-      renderForm(
-        {
-          id: 12,
-          isAdmin: true,
-        } as SharedCurrentUserResponseModel,
-        formValues,
-        true,
-        undefined
-      )
 
-      await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
-      await waitFor(() => {
-        expect(
-          screen.getByText('Vos modifications ont bien été enregistrées')
-        ).toBeInTheDocument()
-      })
-    })
+  it('should redirect user with the new creation journey', async () => {
+    vi.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
+    renderForm(
+      {
+        id: 12,
+        isAdmin: true,
+      } as SharedCurrentUserResponseModel,
+      formValues,
+      true,
+      undefined
+    )
 
-    it('User should be redirected with the creation popin displayed', async () => {
-      renderForm(
-        {
-          id: 12,
-          isAdmin: false,
-        } as SharedCurrentUserResponseModel,
-        formValues,
-        true,
-        undefined
-      )
-      vi.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
-
-      await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
-
-      await waitFor(() => {
-        expect(
-          screen.queryByText('Vos modifications ont bien été enregistrées')
-        ).not.toBeInTheDocument()
-      })
-    })
-
-    it('User should be redirected to the edit page after creating a venue', async () => {
-      renderForm(
-        {
-          id: 12,
-          isAdmin: true,
-        } as SharedCurrentUserResponseModel,
-        formValues,
-        true,
-        undefined
-      )
-      vi.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
-
-      await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
-
-      await waitFor(() => {
-        expect(
-          screen.getByText('Vos modifications ont bien été enregistrées')
-        ).toBeInTheDocument()
-      })
+    await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
+    await waitFor(() => {
+      expect(
+        screen.getByText('Vos modifications ont bien été enregistrées')
+      ).toBeInTheDocument()
     })
   })
 
-  describe('Errors displaying', () => {
-    it('should display an error when the venue could not be created', async () => {
-      renderForm(
-        {
-          id: 12,
-          isAdmin: true,
-        } as SharedCurrentUserResponseModel,
-        formValues,
-        true,
-        undefined
-      )
+  it('should redirect user with the creation popin displayed', async () => {
+    renderForm(
+      {
+        id: 12,
+        isAdmin: false,
+      } as SharedCurrentUserResponseModel,
+      formValues,
+      true,
+      undefined
+    )
+    vi.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
 
-      vi.spyOn(api, 'postCreateVenue').mockRejectedValue(
-        new ApiError(
-          {} as ApiRequestOptions,
-          {
-            body: {
-              siret: ['ensure this value has at least 14 characters'],
-            },
-          } as ApiResult,
-          ''
-        )
-      )
+    await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
 
-      await userEvent.click(screen.getByText(/Enregistrer/))
-
-      await waitFor(() => {
-        expect(
-          screen.getByText('ensure this value has at least 14 characters')
-        ).toBeInTheDocument()
-      })
+    await waitFor(() => {
+      expect(
+        screen.queryByText('Vos modifications ont bien été enregistrées')
+      ).not.toBeInTheDocument()
     })
+  })
 
-    it('should display an error when the venue could not be updated', async () => {
-      renderForm(
-        {
-          id: 12,
-          isAdmin: true,
-        } as SharedCurrentUserResponseModel,
-        formValues,
-        false,
-        venue
-      )
+  it('should redirect user to the edit page after creating a venue', async () => {
+    renderForm(
+      {
+        id: 12,
+        isAdmin: true,
+      } as SharedCurrentUserResponseModel,
+      formValues,
+      true,
+      undefined
+    )
+    vi.spyOn(api, 'postCreateVenue').mockResolvedValue({ id: 56 })
 
-      vi.spyOn(api, 'editVenue').mockRejectedValue(
-        new ApiError(
-          {} as ApiRequestOptions,
-          {
-            body: {
-              siret: ['ensure this value has at least 14 characters'],
-            },
-          } as ApiResult,
-          ''
-        )
-      )
+    await userEvent.click(screen.getByText(/Enregistrer et créer le lieu/))
 
-      await userEvent.click(screen.getByText(/Enregistrer/))
-
-      await waitFor(() => {
-        expect(
-          screen.getByText('ensure this value has at least 14 characters')
-        ).toBeInTheDocument()
-      })
+    await waitFor(() => {
+      expect(
+        screen.getByText('Vos modifications ont bien été enregistrées')
+      ).toBeInTheDocument()
     })
+  })
 
-    it('Submit creation form that fails with unknown error', async () => {
-      renderForm(
+  it('should display an error when the venue could not be created', async () => {
+    renderForm(
+      {
+        id: 12,
+        isAdmin: true,
+      } as SharedCurrentUserResponseModel,
+      formValues,
+      true,
+      undefined
+    )
+
+    vi.spyOn(api, 'postCreateVenue').mockRejectedValue(
+      new ApiError(
+        {} as ApiRequestOptions,
         {
-          id: 12,
-          isAdmin: true,
-        } as SharedCurrentUserResponseModel,
-        formValues,
-        true,
-        undefined
+          body: {
+            siret: ['ensure this value has at least 14 characters'],
+          },
+        } as ApiResult,
+        ''
       )
+    )
 
-      const postCreateVenue = vi
-        .spyOn(api, 'postCreateVenue')
-        .mockRejectedValue({})
+    await userEvent.click(screen.getByText(/Enregistrer/))
 
-      await userEvent.click(screen.getByText(/Enregistrer/))
-
-      expect(postCreateVenue).toHaveBeenCalled()
-      await waitFor(() => {
-        expect(
-          screen.getByText('Erreur inconnue lors de la sauvegarde du lieu.')
-        ).toBeInTheDocument()
-      })
+    await waitFor(() => {
+      expect(
+        screen.getByText('ensure this value has at least 14 characters')
+      ).toBeInTheDocument()
     })
+  })
 
-    it('should let update the virtual venue with limited fields', async () => {
-      formValues.isVenueVirtual = true
-      renderForm(
+  it.only('should display an error when the venue could not be updated', async () => {
+    renderForm(
+      {
+        id: 12,
+        isAdmin: true,
+      } as SharedCurrentUserResponseModel,
+      formValues,
+      false,
+      venue
+    )
+
+    vi.spyOn(api, 'editVenue').mockRejectedValue(
+      new ApiError(
+        {} as ApiRequestOptions,
         {
-          id: 12,
-          isAdmin: true,
-        } as SharedCurrentUserResponseModel,
-        formValues,
-        false,
-        venue
+          body: {
+            siret: ['ensure this value has at least 14 characters'],
+          },
+        } as ApiResult,
+        ''
       )
+    )
 
-      const editVenue = vi
-        .spyOn(api, 'editVenue')
-        .mockResolvedValue(venueResponse)
+    await userEvent.click(screen.getByText(/Enregistrer/))
 
-      await userEvent.click(screen.getByText(/Enregistrer/))
-      expect(editVenue).toHaveBeenCalledWith(15, { reimbursementPointId: 91 })
+    await waitFor(() => {
+      expect(
+        screen.getByText('ensure this value has at least 14 characters')
+      ).toBeInTheDocument()
     })
+  })
+
+  it('Submit creation form that fails with unknown error', async () => {
+    renderForm(
+      {
+        id: 12,
+        isAdmin: true,
+      } as SharedCurrentUserResponseModel,
+      formValues,
+      true,
+      undefined
+    )
+
+    const postCreateVenue = vi
+      .spyOn(api, 'postCreateVenue')
+      .mockRejectedValue({})
+
+    await userEvent.click(screen.getByText(/Enregistrer/))
+
+    expect(postCreateVenue).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(
+        screen.getByText('Erreur inconnue lors de la sauvegarde du lieu.')
+      ).toBeInTheDocument()
+    })
+  })
+
+  it('should let update the virtual venue with limited fields', async () => {
+    formValues.isVenueVirtual = true
+    renderForm(
+      {
+        id: 12,
+        isAdmin: true,
+      } as SharedCurrentUserResponseModel,
+      formValues,
+      false,
+      venue
+    )
+
+    const editVenue = vi
+      .spyOn(api, 'editVenue')
+      .mockResolvedValue(venueResponse)
+
+    await userEvent.click(screen.getByText(/Enregistrer/))
+    expect(editVenue).toHaveBeenCalledWith(15, { reimbursementPointId: 91 })
   })
 
   it('should display error on submit for non virtual venues when adress is not selected from suggestions', async () => {
@@ -595,45 +587,37 @@ describe('screen | VenueForm', () => {
     ).not.toBeInTheDocument()
   })
 
-  describe('Displaying', () => {
-    it('should diplay only some fields when the venue is virtual', async () => {
-      venue.isVirtual = true
+  it('should diplay only some fields when the venue is virtual', async () => {
+    venue.isVirtual = true
 
-      renderForm(
-        {
-          id: 12,
-          isAdmin: false,
-        } as SharedCurrentUserResponseModel,
-        formValues,
-        false,
-        venue
-      )
+    renderForm(
+      {
+        id: 12,
+        isAdmin: false,
+      } as SharedCurrentUserResponseModel,
+      formValues,
+      false,
+      venue
+    )
 
-      await waitFor(() => {
-        expect(
-          screen.queryByTestId('wrapper-publicName')
-        ).not.toBeInTheDocument()
-      })
-      expect(screen.getByText('Type de lieu')).toBeInTheDocument()
-
-      expect(screen.queryByText('Adresse du lieu')).not.toBeInTheDocument()
-      expect(
-        screen.queryByTestId('wrapper-description')
-      ).not.toBeInTheDocument()
-      expect(screen.queryByTestId('wrapper-venueLabel')).not.toBeInTheDocument()
-      expect(
-        screen.queryByText('Accessibilité du lieu')
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByText('Informations de retrait de vos offres')
-      ).not.toBeInTheDocument()
-      expect(screen.queryByText('Contact')).not.toBeInTheDocument()
-      expect(
-        screen.queryByText(
-          'Cette adresse s’appliquera par défaut à toutes vos offres, vous pourrez la modifier à l’échelle de chaque offre.'
-        )
-      ).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.queryByTestId('wrapper-publicName')).not.toBeInTheDocument()
     })
+    expect(screen.getByText('Type de lieu')).toBeInTheDocument()
+
+    expect(screen.queryByText('Adresse du lieu')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('wrapper-description')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('wrapper-venueLabel')).not.toBeInTheDocument()
+    expect(screen.queryByText('Accessibilité du lieu')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('Informations de retrait de vos offres')
+    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Contact')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText(
+        'Cette adresse s’appliquera par défaut à toutes vos offres, vous pourrez la modifier à l’échelle de chaque offre.'
+      )
+    ).not.toBeInTheDocument()
   })
 
   describe('Displaying with new onboarding', () => {

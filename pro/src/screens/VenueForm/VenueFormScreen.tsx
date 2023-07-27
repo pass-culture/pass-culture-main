@@ -115,14 +115,16 @@ const VenueFormScreen = ({
       return
     }
 
-    const request = isCreatingVenue
-      ? api.postCreateVenue(
+    try {
+      if (isCreatingVenue) {
+        await api.postCreateVenue(
           serializePostVenueBodyModel(value, {
             hideSiret: !isSiretValued,
             offererId: offerer.id,
           })
         )
-      : api.editVenue(
+      } else {
+        await api.editVenue(
           /* istanbul ignore next: there will always be a venue id on update screen */
           venue?.id || 0,
           serializeEditVenueBodyModel(
@@ -133,56 +135,54 @@ const VenueFormScreen = ({
             shouldSendMail
           )
         )
+      }
 
-    let savedSuccess: boolean
-    request
-      .then(() => {
-        savedSuccess = true
-        navigate(
-          venueSubmitRedirectUrl(isCreatingVenue, offerer.id, currentUser)
+      navigate(venueSubmitRedirectUrl(isCreatingVenue, offerer.id, currentUser))
+
+      if (currentUser.isAdmin) {
+        notify.success('Vos modifications ont bien été enregistrées')
+      }
+
+      logEvent?.(Events.CLICKED_SAVE_VENUE, {
+        from: location.pathname,
+        saved: true,
+        isEdition: !isCreatingVenue,
+      })
+    } catch (error) {
+      let formErrors
+      if (isErrorAPIError(error)) {
+        formErrors = error.body
+      }
+      const apiFieldsMap: Record<string, string> = {
+        venue: 'venueId',
+        venueTypeCode: 'venueType',
+        venueLabelId: 'venueLabel',
+        'contact.email': 'email',
+        'contact.phoneNumber': 'phoneNumber',
+        'contact.website': 'webSite',
+        address: 'search-addressAutocomplete',
+        visualDisabilityCompliant: 'accessibility.visual',
+        mentalDisabilityCompliant: 'accessibility.mental',
+        motorDisabilityCompliant: 'accessibility.motor',
+        audioDisabilityCompliant: 'accessibility.audio',
+      }
+
+      if (!formErrors || Object.keys(formErrors).length === 0) {
+        notify.error('Erreur inconnue lors de la sauvegarde du lieu.')
+      } else {
+        notify.error(
+          'Une ou plusieurs erreurs sont présentes dans le formulaire'
         )
+        formik.setErrors(serializeApiErrors(formErrors, apiFieldsMap))
+        formik.setStatus('apiError')
+      }
 
-        if (currentUser.isAdmin) {
-          notify.success('Vos modifications ont bien été enregistrées')
-        }
+      logEvent?.(Events.CLICKED_SAVE_VENUE, {
+        from: location.pathname,
+        saved: false,
+        isEdition: !isCreatingVenue,
       })
-      .catch(error => {
-        savedSuccess = false
-        let formErrors
-        if (isErrorAPIError(error)) {
-          formErrors = error.body
-        }
-        const apiFieldsMap: Record<string, string> = {
-          venue: 'venueId',
-          venueTypeCode: 'venueType',
-          venueLabelId: 'venueLabel',
-          'contact.email': 'email',
-          'contact.phoneNumber': 'phoneNumber',
-          'contact.website': 'webSite',
-          address: 'search-addressAutocomplete',
-          visualDisabilityCompliant: 'accessibility.visual',
-          mentalDisabilityCompliant: 'accessibility.mental',
-          motorDisabilityCompliant: 'accessibility.motor',
-          audioDisabilityCompliant: 'accessibility.audio',
-        }
-
-        if (!formErrors || Object.keys(formErrors).length === 0) {
-          notify.error('Erreur inconnue lors de la sauvegarde du lieu.')
-        } else {
-          notify.error(
-            'Une ou plusieurs erreurs sont présentes dans le formulaire'
-          )
-          formik.setErrors(serializeApiErrors(formErrors, apiFieldsMap))
-          formik.setStatus('apiError')
-        }
-      })
-      .finally(() => {
-        logEvent?.(Events.CLICKED_SAVE_VENUE, {
-          from: location.pathname,
-          saved: savedSuccess,
-          isEdition: !isCreatingVenue,
-        })
-      })
+    }
   }
 
   const generateSiretOrCommentValidationSchema: any = useMemo(

@@ -42,7 +42,9 @@ const renderCollectiveTableRow = (props: TableBodyProps) =>
 
 describe('CollectiveTableRow', () => {
   beforeAll(() => {
-    window.matchMedia = vi.fn().mockReturnValueOnce({ matches: true })
+    vi.spyOn(window, 'matchMedia').mockReturnValue({
+      matches: true,
+    } as MediaQueryList)
 
     vi.spyOn(api, 'getCollectiveBookingById').mockResolvedValue(
       collectiveBookingDetailsFactory()
