@@ -32,7 +32,7 @@ jest.mock('core/OfferEducational/utils/createOfferFromTemplate', () => ({
 
 const offerId = 1
 jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+  ...vi.importActual('react-router-dom'),
   useNavigate: vi.fn(),
 }))
 
@@ -175,7 +175,7 @@ describe('DuplicateOfferCell', () => {
       offerDuplicate = collectiveOfferFactory()
 
       vi.spyOn(useNotification, 'default').mockImplementation(() => ({
-        ...jest.requireActual('hooks/useNotification'),
+        ...vi.importActual('hooks/useNotification'),
         error: notifyError,
       }))
 

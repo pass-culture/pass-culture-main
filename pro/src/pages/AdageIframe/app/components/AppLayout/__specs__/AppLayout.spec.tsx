@@ -52,7 +52,7 @@ jest.mock('apiClient/api', () => ({
 
 jest.mock('react-instantsearch-dom', () => {
   return {
-    ...jest.requireActual('react-instantsearch-dom'),
+    ...vi.importActual('react-instantsearch-dom'),
     Configure: jest.fn(() => <div />),
     connectStats: jest.fn(Component => (props: any) => (
       <Component

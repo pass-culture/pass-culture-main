@@ -8,7 +8,7 @@ import { stockEventFactory } from 'screens/OfferIndividual/StocksEventEdition/St
 import { serializeStockEventEdition } from '../serializers'
 
 jest.mock('utils/date', () => ({
-  ...jest.requireActual('utils/date'),
+  ...vi.importActual('utils/date'),
   getToday: jest
     .fn()
     .mockImplementation(() => new Date('2022-09-26T13:00:00Z')),

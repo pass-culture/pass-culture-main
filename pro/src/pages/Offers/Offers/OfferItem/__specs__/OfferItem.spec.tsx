@@ -599,7 +599,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
     it('should log event when clicking booking link', async () => {
       const mockLogEvent = vi.fn()
       vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-        ...jest.requireActual('hooks/useAnalytics'),
+        ...vi.importActual('hooks/useAnalytics'),
         logEvent: mockLogEvent,
       }))
 

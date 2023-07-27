@@ -17,7 +17,7 @@ import { OffererAuthentication } from '..'
 
 jest.mock('apiClient/adresse', () => {
   return {
-    ...jest.requireActual('apiClient/adresse'),
+    ...vi.importActual('apiClient/adresse'),
     default: {
       getDataFromAddress: vi.fn(),
     },
