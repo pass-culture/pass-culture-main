@@ -1,8 +1,11 @@
-import fetch from 'jest-fetch-mock'
+import { vi } from 'vitest'
+import createFetchMock from 'vitest-fetch-mock'
 
 import { API_URL, URL_FOR_MAINTENANCE } from 'utils/config'
 
 import { client } from '../pcapiClient'
+
+const fetchMock = createFetchMock(vi)
 
 Reflect.deleteProperty(global.window, 'location')
 const token = 'JWT-token'
@@ -23,23 +26,20 @@ describe('pcapiClient', () => {
   })
 
   beforeEach(() => {
-    fetch.mockResponse(JSON.stringify({}), { status: 200 })
+    fetchMock.mockResponse(JSON.stringify({}), { status: 200 })
   })
 
   afterEach(() => {
-    fetch.resetMocks()
+    fetchMock.resetMocks()
   })
 
   describe('get', () => {
     it('should call API with given path and token in authorization header', async () => {
-      // Given
       const path = '/bookings/pro'
 
-      // When
       await client.get(path)
 
-      // Then
-      expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
+      expect(fetchMock).toHaveBeenCalledWith(`${API_URL}${path}`, {
         headers: new Headers({
           Authorization: `Bearer ${token}`,
         }),
@@ -67,10 +67,13 @@ describe('pcapiClient', () => {
         total: 1,
         bookings_recap: [oneBooking],
       }
-      fetch.mockResponseOnce(JSON.stringify(paginatedBookingRecapReturned), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      })
+      fetchMock.mockResponseOnce(
+        JSON.stringify(paginatedBookingRecapReturned),
+        {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      )
 
       // When
       const response = await client.get('/bookings/pro')
@@ -81,10 +84,8 @@ describe('pcapiClient', () => {
     })
 
     it('should reject if return status is not ok', async () => {
-      // Given
-      fetch.mockResponse('Forbidden', { status: 403 })
+      fetchMock.mockResponse('Forbidden', { status: 403 })
 
-      // When
       await expect(client.get('/bookings/pro')).rejects.toStrictEqual({
         errors: 'Forbidden',
         status: 403,
@@ -92,33 +93,27 @@ describe('pcapiClient', () => {
     })
 
     it('should redirect to maintenance page when status is 503', async () => {
-      // Given
-      fetch.mockResponse('Service Unavailable', { status: 503 })
+      fetchMock.mockResponse('Service Unavailable', { status: 503 })
 
-      // When
       await expect(client.get('/bookings/pro')).rejects.toStrictEqual({
         errors: 'Service Unavailable',
         status: 503,
       })
 
-      // Then
       expect(setHrefSpy).toHaveBeenCalledWith(URL_FOR_MAINTENANCE)
     })
   })
 
   describe('post', () => {
     it('should call API with given path and body and JSON Mime type and correct method', async () => {
-      // Given
       const path = '/bookings/pro'
       const body = {
         key: 'value',
       }
 
-      // When
       await client.post(path, body)
 
-      // Then
-      expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
+      expect(fetchMock).toHaveBeenCalledWith(`${API_URL}${path}`, {
         headers: new Headers({
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',

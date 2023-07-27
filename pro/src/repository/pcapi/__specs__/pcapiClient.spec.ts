@@ -1,15 +1,18 @@
-import fetch from 'jest-fetch-mock'
+import { vi } from 'vitest'
+import createFetchMock from 'vitest-fetch-mock'
 
 import { client } from 'repository/pcapi/pcapiClient'
 import { API_URL, URL_FOR_MAINTENANCE } from 'utils/config'
 
+const fetchMock = createFetchMock(vi)
+
 describe('pcapiClient', () => {
   beforeEach(() => {
-    fetch.mockResponse(JSON.stringify({}), { status: 200 })
+    fetchMock.mockResponse(JSON.stringify({}), { status: 200 })
   })
 
   afterEach(() => {
-    fetch.resetMocks()
+    fetchMock.resetMocks()
   })
 
   describe('getPlainText', () => {
@@ -21,7 +24,7 @@ describe('pcapiClient', () => {
       await client.getPlainText(path)
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
+      expect(fetchMock).toHaveBeenCalledWith(`${API_URL}${path}`, {
         credentials: 'include',
         method: 'GET',
         headers: { 'Content-Type': 'text/plain' },
@@ -31,7 +34,7 @@ describe('pcapiClient', () => {
     it('should return text if response status is 200', async () => {
       // Given
       const responseText = "i'm a response text"
-      fetch.mockResponseOnce(responseText, { status: 200 })
+      fetchMock.mockResponseOnce(responseText, { status: 200 })
 
       // When
       const response = await client.getPlainText('/bookings/csv')
@@ -42,7 +45,7 @@ describe('pcapiClient', () => {
 
     it('should reject if return response status is not 200', async () => {
       // Given
-      fetch.mockResponseOnce('API error message', { status: 403 })
+      fetchMock.mockResponseOnce('API error message', { status: 403 })
 
       // When
       await expect(client.getPlainText('/bookings/csv')).rejects.toStrictEqual(
@@ -51,7 +54,7 @@ describe('pcapiClient', () => {
     })
 
     it('should throw an error if return response status is not 200', async () => {
-      fetch.mockResponseOnce('API error message', { status: 403 })
+      fetchMock.mockResponseOnce('API error message', { status: 403 })
       let throwError
       try {
         await client.getPlainText('/bookings/csv')
@@ -72,7 +75,7 @@ describe('pcapiClient', () => {
       await client.get(path)
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
+      expect(fetchMock).toHaveBeenCalledWith(`${API_URL}${path}`, {
         credentials: 'include',
         method: 'GET',
       })
@@ -86,7 +89,7 @@ describe('pcapiClient', () => {
       await client.get(path, false)
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
+      expect(fetchMock).toHaveBeenCalledWith(`${API_URL}${path}`, {
         method: 'GET',
       })
     })
@@ -111,9 +114,12 @@ describe('pcapiClient', () => {
         total: 1,
         bookings_recap: [oneBooking],
       }
-      fetch.mockResponseOnce(JSON.stringify(paginatedBookingRecapReturned), {
-        status: 200,
-      })
+      fetchMock.mockResponseOnce(
+        JSON.stringify(paginatedBookingRecapReturned),
+        {
+          status: 200,
+        }
+      )
 
       // When
       const response = await client.get('/bookings/pro')
@@ -125,7 +131,7 @@ describe('pcapiClient', () => {
 
     it('should reject if return status is not ok', async () => {
       // Given
-      fetch.mockResponse(JSON.stringify('Forbidden'), { status: 403 })
+      fetchMock.mockResponse(JSON.stringify('Forbidden'), { status: 403 })
 
       // When
       await expect(client.get('/bookings/pro')).rejects.toStrictEqual({
@@ -135,7 +141,7 @@ describe('pcapiClient', () => {
     })
 
     it('should redirect to maintenance page when status is 503', async () => {
-      fetch.mockResponse('Service Unavailable', { status: 503 })
+      fetchMock.mockResponse('Service Unavailable', { status: 503 })
       const mockLocationAssign = vi.fn()
       Object.defineProperty(window, 'location', {
         value: {
@@ -164,7 +170,7 @@ describe('pcapiClient', () => {
       await client.post(path, body)
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
+      expect(fetchMock).toHaveBeenCalledWith(`${API_URL}${path}`, {
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
@@ -183,7 +189,7 @@ describe('pcapiClient', () => {
       await client.post(path, body, false)
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
+      expect(fetchMock).toHaveBeenCalledWith(`${API_URL}${path}`, {
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
         body: '{"key":"value"}',
@@ -209,7 +215,7 @@ describe('pcapiClient', () => {
       await client.postWithFormData(path, body)
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
+      expect(fetchMock).toHaveBeenCalledWith(`${API_URL}${path}`, {
         credentials: 'include',
         headers: { encode: 'multipart/form-data' },
         method: 'POST',
@@ -234,7 +240,7 @@ describe('pcapiClient', () => {
       await client.postWithFormData(path, body, false)
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
+      expect(fetchMock).toHaveBeenCalledWith(`${API_URL}${path}`, {
         headers: { encode: 'multipart/form-data' },
         method: 'POST',
         body: body,
@@ -254,7 +260,7 @@ describe('pcapiClient', () => {
       await client.patch(path, body)
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
+      expect(fetchMock).toHaveBeenCalledWith(`${API_URL}${path}`, {
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         method: 'PATCH',
@@ -273,7 +279,7 @@ describe('pcapiClient', () => {
       await client.patch(path, body, false)
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
+      expect(fetchMock).toHaveBeenCalledWith(`${API_URL}${path}`, {
         headers: { 'Content-Type': 'application/json' },
         method: 'PATCH',
         body: '{"key":"value"}',
@@ -288,7 +294,7 @@ describe('pcapiClient', () => {
       await client.patch(path, undefined, false)
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
+      expect(fetchMock).toHaveBeenCalledWith(`${API_URL}${path}`, {
         headers: { 'Content-Type': 'application/json' },
         method: 'PATCH',
         body: '{}',
@@ -305,7 +311,7 @@ describe('pcapiClient', () => {
       await client.delete(path)
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
+      expect(fetchMock).toHaveBeenCalledWith(`${API_URL}${path}`, {
         credentials: 'include',
         method: 'DELETE',
       })
@@ -319,14 +325,14 @@ describe('pcapiClient', () => {
       await client.delete(path, false)
 
       // Then
-      expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
+      expect(fetchMock).toHaveBeenCalledWith(`${API_URL}${path}`, {
         method: 'DELETE',
       })
     })
 
     it('should return json if return status is ok', async () => {
       // Given
-      fetch.mockResponseOnce(JSON.stringify({ id: '123' }), { status: 200 })
+      fetchMock.mockResponseOnce(JSON.stringify({ id: '123' }), { status: 200 })
 
       // When
       const response = await client.delete('/stocks/123')

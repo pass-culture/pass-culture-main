@@ -1,11 +1,13 @@
-import fetch from 'jest-fetch-mock'
+import { vi } from 'vitest'
+import createFetchMock from 'vitest-fetch-mock'
 
 import { api, apiContremarque } from 'apiClient/api'
 import { URL_FOR_MAINTENANCE } from 'utils/config'
 
+const fetchMock = createFetchMock(vi)
 describe('Maintenance', () => {
   it('should redirect to maintenance page api v1 responds with status 503', async () => {
-    fetch.mockResponse('Service Unavailable', { status: 503 })
+    fetchMock.mockResponse('Service Unavailable', { status: 503 })
 
     const mockLocationAssign = vi.fn()
     Object.defineProperty(window, 'location', {
@@ -22,7 +24,7 @@ describe('Maintenance', () => {
   })
 
   it('should redirect to maintenance page api v2 responds with status 503', async () => {
-    fetch.mockResponse('Service Unavailable', { status: 503 })
+    fetchMock.mockResponse('Service Unavailable', { status: 503 })
 
     const mockLocationAssign = vi.fn()
     Object.defineProperty(window, 'location', {

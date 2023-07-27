@@ -1,8 +1,9 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import fetch from 'jest-fetch-mock'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
+import { vi } from 'vitest'
+import createFetchMock from 'vitest-fetch-mock'
 
 import { apiAdresse } from 'apiClient/adresse'
 import Notification from 'components/Notification/Notification'
@@ -14,6 +15,8 @@ import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/c
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OffererAuthentication } from '..'
+
+const fetchMock = createFetchMock(vi)
 
 vi.mock('apiClient/adresse', () => {
   return {
@@ -46,7 +49,7 @@ vi.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue([
 ])
 
 // Mock https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address} called by apiAdresse.getDataFromAddress
-fetch.mockResponse(
+fetchMock.mockResponse(
   JSON.stringify({
     features: [
       {
