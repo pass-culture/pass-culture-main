@@ -7,8 +7,8 @@ import { createImageFile } from 'utils/testFileHelpers'
 
 import ImageUploadBrowserForm from '../ImageUploadBrowserForm'
 
-const onSubmit = jest.fn()
-const mockCreateImageBitmap = jest.fn()
+const onSubmit = vi.fn()
+const mockCreateImageBitmap = vi.fn()
 
 Object.defineProperty(global, 'createImageBitmap', {
   writable: true,

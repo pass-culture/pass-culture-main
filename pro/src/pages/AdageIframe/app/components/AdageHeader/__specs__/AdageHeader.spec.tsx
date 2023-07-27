@@ -36,13 +36,13 @@ const renderAdageHeader = (
 
 jest.mock('apiClient/api', () => ({
   apiAdage: {
-    logHeaderLinkClick: jest.fn(),
-    getEducationalInstitutionWithBudget: jest.fn(),
+    logHeaderLinkClick: vi.fn(),
+    getEducationalInstitutionWithBudget: vi.fn(),
   },
 }))
 
 describe('AdageHeader', () => {
-  const notifyError = jest.fn()
+  const notifyError = vi.fn()
   const user = {
     role: AdageFrontRoles.REDACTOR,
     uai: 'uai',

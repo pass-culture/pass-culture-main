@@ -10,7 +10,7 @@ describe('components | FilterByEventDate', () => {
   let props: FilterByEventDateProps
   beforeEach(() => {
     props = {
-      updateFilters: jest.fn(),
+      updateFilters: vi.fn(),
       selectedOfferDate: EMPTY_FILTER_VALUE,
     }
   })

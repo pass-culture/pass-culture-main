@@ -7,7 +7,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { UserEmailForm } from '..'
 import { UserEmailFormProps } from '../UserEmailForm'
 
-const postEmailAdapterMock = jest.fn()
+const postEmailAdapterMock = vi.fn()
 
 const renderUserEmailForm = (props: UserEmailFormProps) => {
   const storeOverrides = {
@@ -31,9 +31,9 @@ describe('components:UserEmailForm', () => {
   beforeEach(() => {
     postEmailAdapterMock.mockResolvedValue({})
     props = {
-      closeForm: jest.fn(),
+      closeForm: vi.fn(),
       postEmailAdapter: postEmailAdapterMock,
-      getPendingEmailRequest: jest.fn(),
+      getPendingEmailRequest: vi.fn(),
     }
   })
   it('renders component successfully', () => {

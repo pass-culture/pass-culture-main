@@ -90,7 +90,7 @@ const renderForm = (
   )
 }
 
-const mockNavigate = jest.fn()
+const mockNavigate = vi.fn()
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockNavigate,
@@ -98,12 +98,12 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock('apiClient/api', () => ({
   api: {
-    postCreateVenue: jest.fn(),
-    getSiretInfo: jest.fn(),
-    editVenue: jest.fn(),
-    getEducationalPartners: jest.fn(),
-    getAvailableReimbursementPoints: jest.fn(),
-    canOffererCreateEducationalOffer: jest.fn(),
+    postCreateVenue: vi.fn(),
+    getSiretInfo: vi.fn(),
+    editVenue: vi.fn(),
+    getEducationalPartners: vi.fn(),
+    getAvailableReimbursementPoints: vi.fn(),
+    canOffererCreateEducationalOffer: vi.fn(),
   },
 }))
 jest.spyOn(api, 'getEducationalPartners').mockResolvedValue({ partners: [] })
@@ -129,7 +129,7 @@ jest.mock('apiClient/adresse', () => {
   return {
     ...jest.requireActual('apiClient/adresse'),
     default: {
-      getDataFromAddress: jest.fn(),
+      getDataFromAddress: vi.fn(),
     },
   }
 })
@@ -178,10 +178,10 @@ fetch.mockResponse(
 )
 
 jest.mock('utils/windowMatchMedia', () => ({
-  doesUserPreferReducedMotion: jest.fn().mockReturnValue(false),
+  doesUserPreferReducedMotion: vi.fn().mockReturnValue(false),
 }))
 
-Element.prototype.scrollIntoView = jest.fn()
+Element.prototype.scrollIntoView = vi.fn()
 
 const venueResponse: GetVenueResponseModel = {
   hasPendingBankInformationApplication: false,

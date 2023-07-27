@@ -5,8 +5,8 @@ import React from 'react'
 import PeriodSelector from '../PeriodSelector'
 
 describe('PeriodSelector', () => {
-  const mockOnBeginningDateChange = jest.fn()
-  const mockOnEndingDateChange = jest.fn()
+  const mockOnBeginningDateChange = vi.fn()
+  const mockOnEndingDateChange = vi.fn()
   const renderPeriodSelector = () => {
     render(
       <PeriodSelector

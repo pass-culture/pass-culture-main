@@ -29,18 +29,18 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { InformationsProps, Informations as InformationsScreen } from '..'
 
-window.matchMedia = jest.fn().mockReturnValue({ matches: true })
-const mockLogEvent = jest.fn()
+window.matchMedia = vi.fn().mockReturnValue({ matches: true })
+const mockLogEvent = vi.fn()
 
 jest.mock('screens/OfferIndividual/Informations/utils', () => {
   return {
-    filterCategories: jest.fn(),
+    filterCategories: vi.fn(),
   }
 })
 jest.mock('repository/pcapi/pcapi', () => ({
-  postThumbnail: jest.fn(),
+  postThumbnail: vi.fn(),
 }))
-const scrollIntoViewMock = jest.fn()
+const scrollIntoViewMock = vi.fn()
 
 const renderInformationsScreen = (
   props: InformationsProps,

@@ -9,7 +9,7 @@ import { EmailSpellCheckInput } from 'ui-kit'
 jest.mock('libphonenumber-js', () => {
   return {
     ...jest.requireActual('libphonenumber-js'),
-    parsePhoneNumberFromString: jest.fn(),
+    parsePhoneNumberFromString: vi.fn(),
   }
 })
 

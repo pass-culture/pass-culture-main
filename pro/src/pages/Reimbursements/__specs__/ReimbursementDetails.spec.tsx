@@ -17,8 +17,8 @@ jest.mock('utils/date', () => ({
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getVenues: jest.fn(),
-    getInvoices: jest.fn(),
+    getVenues: vi.fn(),
+    getInvoices: vi.fn(),
   },
 }))
 const venueId = 12

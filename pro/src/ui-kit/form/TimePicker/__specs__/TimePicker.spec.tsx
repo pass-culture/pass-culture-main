@@ -6,7 +6,7 @@ import TimePicker from '../TimePicker'
 
 const renderTimePicker = (initialValue: string | Date | null | undefined) => {
   render(
-    <Formik initialValues={{ time: initialValue }} onSubmit={jest.fn()}>
+    <Formik initialValues={{ time: initialValue }} onSubmit={vi.fn()}>
       <TimePicker name="time" label="Horaire" />
     </Formik>
   )

@@ -27,13 +27,13 @@ import DuplicateOfferCell, {
 } from '../DuplicateOfferCell'
 
 jest.mock('core/OfferEducational/utils/createOfferFromTemplate', () => ({
-  createOfferFromTemplate: jest.fn(),
+  createOfferFromTemplate: vi.fn(),
 }))
 
 const offerId = 1
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useNavigate: jest.fn(),
+  useNavigate: vi.fn(),
 }))
 
 const renderDuplicateOfferCell = () => {
@@ -167,8 +167,8 @@ describe('DuplicateOfferCell', () => {
   describe('DuplicateOfferCell bookable offer', () => {
     let offer: CollectiveOffer
     let offerDuplicate: CollectiveOffer
-    const mockNavigate = jest.fn()
-    const notifyError = jest.fn()
+    const mockNavigate = vi.fn()
+    const notifyError = vi.fn()
 
     beforeEach(() => {
       offer = collectiveOfferFactory()

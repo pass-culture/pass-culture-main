@@ -6,7 +6,7 @@ import { client } from '../pcapiClient'
 
 Reflect.deleteProperty(global.window, 'location')
 const token = 'JWT-token'
-const setHrefSpy = jest.fn()
+const setHrefSpy = vi.fn()
 
 describe('pcapiClient', () => {
   beforeAll(() => {

@@ -11,31 +11,31 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOfferFromRequest from '../CollectiveOfferFromRequest'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getCollectiveOfferTemplate: jest.fn(),
-    getCollectiveOfferRequest: jest.fn(),
-    getCategories: jest.fn(),
-    listEducationalDomains: jest.fn(),
-    listEducationalOfferers: jest.fn(),
-    createCollectiveOffer: jest.fn(),
+    getCollectiveOfferTemplate: vi.fn(),
+    getCollectiveOfferRequest: vi.fn(),
+    getCategories: vi.fn(),
+    listEducationalDomains: vi.fn(),
+    listEducationalOfferers: vi.fn(),
+    createCollectiveOffer: vi.fn(),
   },
 }))
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: () => ({
-    offerId: jest.fn(),
-    requestId: jest.fn(),
+    offerId: vi.fn(),
+    requestId: vi.fn(),
   }),
-  useNavigate: jest.fn(),
+  useNavigate: vi.fn(),
 }))
 
 describe('CollectiveOfferFromRequest', () => {
-  const notifyError = jest.fn()
-  const mockNavigate = jest.fn()
+  const notifyError = vi.fn()
+  const mockNavigate = vi.fn()
   const institution = {
     city: 'Paris',
     institutionId: '123456',

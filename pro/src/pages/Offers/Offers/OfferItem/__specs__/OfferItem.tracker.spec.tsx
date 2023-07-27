@@ -11,10 +11,10 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferItem, { OfferItemProps } from '../OfferItem'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 jest.mock('apiClient/api', () => ({
   api: {
-    deleteDraftOffers: jest.fn().mockResolvedValue({
+    deleteDraftOffers: vi.fn().mockResolvedValue({
       isOk: true,
       message: 'youpi draft deleted !',
       payload: null,
@@ -57,9 +57,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
     }
 
     props = {
-      refreshOffers: jest.fn(),
+      refreshOffers: vi.fn(),
       offer: eventOffer,
-      selectOffer: jest.fn(),
+      selectOffer: vi.fn(),
       audience: Audience.INDIVIDUAL,
     }
 

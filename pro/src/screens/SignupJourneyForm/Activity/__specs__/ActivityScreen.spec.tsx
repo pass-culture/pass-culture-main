@@ -17,7 +17,7 @@ import Activity from '../Activity'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getVenueTypes: jest.fn(),
+    getVenueTypes: vi.fn(),
   },
 }))
 

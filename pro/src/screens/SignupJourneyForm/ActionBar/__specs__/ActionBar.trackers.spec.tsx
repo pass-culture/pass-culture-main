@@ -11,7 +11,7 @@ import { ActionBarProps } from 'screens/SignupJourneyForm/ActionBar/ActionBar'
 import { ActionBar } from 'screens/SignupJourneyForm/ActionBar/index'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 const renderActionBar = (props: ActionBarProps) => {
   const storeOverrides = {

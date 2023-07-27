@@ -13,7 +13,7 @@ import validationSchema from '../validationSchema'
 const renderTicketWithdrawal = ({
   props,
   initialValues,
-  onSubmit = jest.fn(),
+  onSubmit = vi.fn(),
 }: {
   props?: TicketWithdrawalProps
   initialValues: Partial<OfferIndividualFormValues>
@@ -37,7 +37,7 @@ const renderTicketWithdrawal = ({
 
 describe('OfferIndividual section: TicketWithdrawal', () => {
   let initialValues: Partial<OfferIndividualFormValues>
-  const onSubmit = jest.fn()
+  const onSubmit = vi.fn()
 
   beforeEach(() => {
     initialValues = {

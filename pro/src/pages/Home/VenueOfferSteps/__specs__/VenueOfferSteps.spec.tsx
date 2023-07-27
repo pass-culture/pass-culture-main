@@ -7,7 +7,7 @@ import { VenueOfferSteps } from '../index'
 
 jest.mock('hooks/useActiveFeature', () => ({
   __esModule: true,
-  default: jest.fn().mockReturnValue(true),
+  default: vi.fn().mockReturnValue(true),
 }))
 
 const renderVenueOfferSteps = ({

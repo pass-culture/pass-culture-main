@@ -19,8 +19,8 @@ import { Offerers } from '..'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getVenuesOfOffererFromSiret: jest.fn(),
-    createOfferer: jest.fn(),
+    getVenuesOfOffererFromSiret: vi.fn(),
+    createOfferer: vi.fn(),
   },
 }))
 

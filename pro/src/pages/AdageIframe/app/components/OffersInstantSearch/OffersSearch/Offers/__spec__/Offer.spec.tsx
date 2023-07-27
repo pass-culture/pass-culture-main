@@ -15,10 +15,10 @@ import Offer, { OfferProps } from '../Offer'
 
 jest.mock('apiClient/api', () => ({
   apiAdage: {
-    logOfferDetailsButtonClick: jest.fn(),
-    logOfferTemplateDetailsButtonClick: jest.fn(),
-    logFavOfferButtonClick: jest.fn(),
-    logContactModalButtonClick: jest.fn(),
+    logOfferDetailsButtonClick: vi.fn(),
+    logOfferTemplateDetailsButtonClick: vi.fn(),
+    logFavOfferButtonClick: vi.fn(),
+    logContactModalButtonClick: vi.fn(),
   },
 }))
 jest.mock('pages/AdageIframe/libs/initAlgoliaAnalytics')

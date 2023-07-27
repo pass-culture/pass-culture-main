@@ -8,7 +8,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffererStats from '../OffererStats'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 const renderOffererStats = () => {
   return renderWithProviders(<OffererStats />, {

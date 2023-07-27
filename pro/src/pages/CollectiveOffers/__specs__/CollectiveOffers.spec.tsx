@@ -82,11 +82,11 @@ jest.mock('repository/venuesService', () => ({
 
 jest.mock('apiClient/api', () => ({
   api: {
-    listOffers: jest.fn(),
-    getCategories: jest.fn().mockResolvedValue(categoriesAndSubcategories),
-    getCollectiveOffers: jest.fn(),
-    getOfferer: jest.fn(),
-    getVenues: jest.fn().mockResolvedValue({ venues: proVenues }),
+    listOffers: vi.fn(),
+    getCategories: vi.fn().mockResolvedValue(categoriesAndSubcategories),
+    getCollectiveOffers: vi.fn(),
+    getOfferer: vi.fn(),
+    getVenues: vi.fn().mockResolvedValue({ venues: proVenues }),
   },
 }))
 
@@ -99,7 +99,7 @@ jest.mock('utils/date', () => ({
 
 jest.mock('hooks/useActiveFeature', () => ({
   __esModule: true,
-  default: jest.fn().mockReturnValue(true),
+  default: vi.fn().mockReturnValue(true),
 }))
 
 describe('route CollectiveOffers', () => {

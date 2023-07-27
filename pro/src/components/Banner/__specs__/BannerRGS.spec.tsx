@@ -17,7 +17,7 @@ describe('src | components | BannerRGS', () => {
     )
   })
   it('should close the banner', async () => {
-    const spyClose = jest.fn()
+    const spyClose = vi.fn()
     render(<BannerRGS closable onClose={spyClose} />)
     await userEvent.click(
       screen.getByRole('button', {

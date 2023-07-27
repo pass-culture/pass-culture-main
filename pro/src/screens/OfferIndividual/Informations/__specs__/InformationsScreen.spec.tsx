@@ -17,19 +17,19 @@ import { InformationsProps, Informations as InformationsScreen } from '..'
 
 jest.mock('screens/OfferIndividual/Informations/utils', () => {
   return {
-    filterCategories: jest.fn(),
+    filterCategories: vi.fn(),
   }
 })
 
-window.matchMedia = jest.fn().mockReturnValue({ matches: true })
+window.matchMedia = vi.fn().mockReturnValue({ matches: true })
 
 jest.mock('apiClient/api', () => ({
   api: {
-    postOffer: jest.fn(),
+    postOffer: vi.fn(),
   },
 }))
 jest.mock('repository/pcapi/pcapi', () => ({
-  postThumbnail: jest.fn(),
+  postThumbnail: vi.fn(),
 }))
 
 const renderInformationsScreen = (
@@ -54,7 +54,7 @@ const renderInformationsScreen = (
   )
 }
 
-const scrollIntoViewMock = jest.fn()
+const scrollIntoViewMock = vi.fn()
 
 describe('screens:OfferIndividual::Informations', () => {
   let props: InformationsProps

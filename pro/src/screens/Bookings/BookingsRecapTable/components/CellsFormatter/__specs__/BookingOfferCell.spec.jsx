@@ -12,7 +12,7 @@ const renderOfferCell = props =>
 
 jest.mock('hooks/useActiveFeature', () => ({
   __esModule: true,
-  default: jest.fn().mockReturnValue(true),
+  default: vi.fn().mockReturnValue(true),
 }))
 
 describe('bookings offer cell', () => {

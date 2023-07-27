@@ -5,7 +5,7 @@ import React from 'react'
 
 import { useAccessibilityOptions } from 'hooks'
 import { CheckboxGroup } from 'ui-kit'
-const mockSetFieldValue = jest.fn()
+const mockSetFieldValue = vi.fn()
 const renderUseAccessibilityOptions = () => {
   return render(
     <Formik
@@ -16,7 +16,7 @@ const renderUseAccessibilityOptions = () => {
         motor: false,
         audio: false,
       }}
-      onSubmit={jest.fn()}
+      onSubmit={vi.fn()}
     >
       <CheckboxGroup
         group={useAccessibilityOptions(mockSetFieldValue)}

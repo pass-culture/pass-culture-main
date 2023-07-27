@@ -8,9 +8,9 @@ import Homepage from '../../Homepage'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getOfferer: jest.fn(),
-    listOfferersNames: jest.fn(),
-    getVenueStats: jest.fn(),
+    getOfferer: vi.fn(),
+    listOfferersNames: vi.fn(),
+    getVenueStats: vi.fn(),
   },
 }))
 

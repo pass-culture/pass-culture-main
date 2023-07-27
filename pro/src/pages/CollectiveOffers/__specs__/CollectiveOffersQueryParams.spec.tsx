@@ -21,7 +21,7 @@ import { collectiveOfferFactory } from '../utils/collectiveOffersFactories'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useNavigate: jest.fn(),
+  useNavigate: vi.fn(),
 }))
 
 const renderOffers = async (
@@ -102,11 +102,11 @@ jest.mock('repository/venuesService', () => ({
 
 jest.mock('apiClient/api', () => ({
   api: {
-    listOffers: jest.fn(),
-    getCategories: jest.fn().mockResolvedValue(categoriesAndSubcategories),
-    getCollectiveOffers: jest.fn(),
-    getOfferer: jest.fn(),
-    getVenues: jest.fn().mockResolvedValue({ venues: proVenues }),
+    listOffers: vi.fn(),
+    getCategories: vi.fn().mockResolvedValue(categoriesAndSubcategories),
+    getCollectiveOffers: vi.fn(),
+    getOfferer: vi.fn(),
+    getVenues: vi.fn().mockResolvedValue({ venues: proVenues }),
   },
 }))
 
@@ -119,7 +119,7 @@ jest.mock('utils/date', () => ({
 
 jest.mock('hooks/useActiveFeature', () => ({
   __esModule: true,
-  default: jest.fn().mockReturnValue(true),
+  default: vi.fn().mockReturnValue(true),
 }))
 
 describe('route CollectiveOffers', () => {
@@ -130,7 +130,7 @@ describe('route CollectiveOffers', () => {
   }
   let store: any
   let offersRecap: Offer[]
-  const mockNavigate = jest.fn()
+  const mockNavigate = vi.fn()
 
   beforeEach(() => {
     currentUser = {

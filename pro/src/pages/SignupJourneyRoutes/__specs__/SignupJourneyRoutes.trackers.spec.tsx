@@ -11,7 +11,7 @@ import SignupJourneyRoutes from '../SignupJourneyRoutes'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getVenueTypes: jest.fn(),
+    getVenueTypes: vi.fn(),
   },
 }))
 
@@ -36,7 +36,7 @@ const renderSignupJourneyRoutes = () => {
     }
   )
 }
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 describe('SignupJourneyRoutes::trackers', () => {
   beforeEach(() => {

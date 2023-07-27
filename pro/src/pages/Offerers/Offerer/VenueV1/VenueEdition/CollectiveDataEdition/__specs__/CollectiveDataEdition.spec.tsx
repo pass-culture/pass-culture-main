@@ -64,16 +64,16 @@ jest.mock('core/shared/interventionOptions', () => {
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getVenuesEducationalStatuses: jest.fn(),
-    getEducationalPartners: jest.fn(),
-    editVenueCollectiveData: jest.fn(),
-    getVenueCollectiveData: jest.fn(),
-    getEducationalPartner: jest.fn(),
-    listEducationalDomains: jest.fn(),
-    getCategories: jest.fn(),
+    getVenuesEducationalStatuses: vi.fn(),
+    getEducationalPartners: vi.fn(),
+    editVenueCollectiveData: vi.fn(),
+    getVenueCollectiveData: vi.fn(),
+    getEducationalPartner: vi.fn(),
+    listEducationalDomains: vi.fn(),
+    getCategories: vi.fn(),
   },
 }))
-const mockedUsedNavigate = jest.fn()
+const mockedUsedNavigate = vi.fn()
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useParams: () => ({
@@ -94,8 +94,8 @@ const renderCollectiveDataEdition = () =>
   renderWithProviders(<CollectiveDataEdition />)
 
 describe('CollectiveDataEdition', () => {
-  const notifyErrorMock = jest.fn()
-  const notifySuccessMock = jest.fn()
+  const notifyErrorMock = vi.fn()
+  const notifySuccessMock = vi.fn()
 
   beforeAll(() => {
     jest.spyOn(api, 'getVenuesEducationalStatuses').mockResolvedValue({
@@ -124,9 +124,9 @@ describe('CollectiveDataEdition', () => {
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       success: notifySuccessMock,
       error: notifyErrorMock,
-      information: jest.fn(),
-      pending: jest.fn(),
-      close: jest.fn(),
+      information: vi.fn(),
+      pending: vi.fn(),
+      close: vi.fn(),
     }))
 
     jest.spyOn(api, 'getCategories').mockResolvedValue({

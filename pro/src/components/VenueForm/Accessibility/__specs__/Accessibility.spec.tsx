@@ -13,7 +13,7 @@ import { Accessibility, validationSchema } from '..'
 const renderAccessibility = ({
   initialValues,
   isCreatingVenue,
-  onSubmit = jest.fn(),
+  onSubmit = vi.fn(),
 }: {
   initialValues: Partial<VenueFormValues>
   isCreatingVenue: boolean
@@ -36,7 +36,7 @@ const renderAccessibility = ({
 describe('Accessibility', () => {
   let initialValues: Partial<VenueFormValues>
   let isCreatingVenue: boolean
-  const onSubmit = jest.fn()
+  const onSubmit = vi.fn()
 
   beforeEach(() => {
     initialValues = {

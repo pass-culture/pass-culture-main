@@ -9,12 +9,12 @@ import { CollectiveOfferCreation } from '../CollectiveOfferCreation'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getCategories: jest.fn(),
-    listEducationalDomains: jest.fn(),
-    listEducationalOfferers: jest.fn(),
-    canOffererCreateEducationalOffer: jest.fn(),
-    getCollectiveOffer: jest.fn(),
-    getCollectiveOfferTemplate: jest.fn(),
+    getCategories: vi.fn(),
+    listEducationalDomains: vi.fn(),
+    listEducationalOfferers: vi.fn(),
+    canOffererCreateEducationalOffer: vi.fn(),
+    getCollectiveOffer: vi.fn(),
+    getCollectiveOfferTemplate: vi.fn(),
   },
 }))
 
@@ -29,8 +29,8 @@ const renderCollectiveOfferCreation = (
 
 const defaultProps = {
   offer: collectiveOfferFactory(),
-  setOffer: jest.fn(),
-  reloadCollectiveOffer: jest.fn(),
+  setOffer: vi.fn(),
+  reloadCollectiveOffer: vi.fn(),
   isTemplate: false,
 }
 

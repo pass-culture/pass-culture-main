@@ -11,9 +11,9 @@ import OffererStatsScreen from '../OffererStatsScreen'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getOfferer: jest.fn(),
-    getOffererStatsDashboardUrl: jest.fn(),
-    getVenueStatsDashboardUrl: jest.fn(),
+    getOfferer: vi.fn(),
+    getOffererStatsDashboardUrl: vi.fn(),
+    getVenueStatsDashboardUrl: vi.fn(),
   },
 }))
 

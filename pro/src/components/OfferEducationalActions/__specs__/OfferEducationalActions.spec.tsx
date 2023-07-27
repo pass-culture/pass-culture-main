@@ -21,8 +21,8 @@ import OfferEducationalActions, {
 
 jest.mock('apiClient/api', () => ({
   api: {
-    patchCollectiveOffersActiveStatus: jest.fn(),
-    patchCollectiveOffersTemplateActiveStatus: jest.fn(),
+    patchCollectiveOffersActiveStatus: vi.fn(),
+    patchCollectiveOffersTemplateActiveStatus: vi.fn(),
   },
 }))
 
@@ -35,7 +35,7 @@ describe('OfferEducationalActions', () => {
     className: 'string',
     isBooked: false,
     offer: collectiveOfferFactory(),
-    reloadCollectiveOffer: jest.fn(),
+    reloadCollectiveOffer: vi.fn(),
     mode: Mode.EDITION,
   }
 
@@ -60,10 +60,10 @@ describe('OfferEducationalActions', () => {
   })
 
   it('should failed active status value', async () => {
-    const notifyError = jest.fn()
+    const notifyError = vi.fn()
     // @ts-expect-error
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
-      success: jest.fn(),
+      success: vi.fn(),
       error: notifyError,
     }))
     jest
@@ -150,7 +150,7 @@ describe('OfferEducationalActions', () => {
   })
 
   it('should log event when clicked on booking link', async () => {
-    const mockLogEvent = jest.fn()
+    const mockLogEvent = vi.fn()
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       ...jest.requireActual('hooks/useAnalytics'),
       logEvent: mockLogEvent,
@@ -178,7 +178,7 @@ describe('OfferEducationalActions', () => {
   })
 
   it('should display error message when trying to activate offer with booking limit date time in the past', async () => {
-    const notifyError = jest.fn()
+    const notifyError = vi.fn()
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...jest.requireActual('hooks/useNotification'),
       error: notifyError,
@@ -201,11 +201,11 @@ describe('OfferEducationalActions', () => {
   })
 
   it('should activate offer with booking limit date time in the future', async () => {
-    const notifyError = jest.fn()
+    const notifyError = vi.fn()
     const offerId = 12
     jest.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...jest.requireActual('hooks/useNotification'),
-      success: jest.fn(),
+      success: vi.fn(),
       error: notifyError,
     }))
     const bookingLimitDateTomorrow = new Date()

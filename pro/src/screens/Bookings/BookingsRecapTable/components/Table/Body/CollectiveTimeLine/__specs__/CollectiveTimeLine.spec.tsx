@@ -127,7 +127,7 @@ describe('collective timeline', () => {
   })
 
   it('should log event when clicking modify booking limit date', async () => {
-    const mockLogEvent = jest.fn()
+    const mockLogEvent = vi.fn()
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       ...jest.requireActual('hooks/useAnalytics'),
       logEvent: mockLogEvent,

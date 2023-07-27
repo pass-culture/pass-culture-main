@@ -21,11 +21,11 @@ jest.mock(
 )
 
 const mockUseNotification = {
-  close: jest.fn(),
-  error: jest.fn(),
-  pending: jest.fn(),
-  information: jest.fn(),
-  success: jest.fn(),
+  close: vi.fn(),
+  error: vi.fn(),
+  pending: vi.fn(),
+  information: vi.fn(),
+  success: vi.fn(),
 }
 
 jest

@@ -23,7 +23,7 @@ describe('CollectiveActionButtons', () => {
     })
     renderCollectiveActionButtons({
       bookingRecap,
-      reloadBookings: jest.fn(),
+      reloadBookings: vi.fn(),
       isCancellable: false,
     })
     const modifyLink = screen.getByRole('link', { name: 'Modifier l’offre' })
@@ -43,7 +43,7 @@ describe('CollectiveActionButtons', () => {
     })
     renderCollectiveActionButtons({
       bookingRecap,
-      reloadBookings: jest.fn(),
+      reloadBookings: vi.fn(),
       isCancellable: false,
     })
     expect(

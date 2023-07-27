@@ -23,7 +23,7 @@ import { validationSchema } from '../validationSchema'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getVenueTypes: jest.fn(),
+    getVenueTypes: vi.fn(),
   },
 }))
 
@@ -34,7 +34,7 @@ const venueTypes: SelectOption[] = [
 
 const renderActivityForm = ({
   initialValues,
-  onSubmit = jest.fn(),
+  onSubmit = vi.fn(),
   props = { venueTypes: venueTypes },
   contextValue,
 }: {

@@ -37,7 +37,7 @@ const renderReimbursementFields = async (
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getAvailableReimbursementPoints: jest.fn(),
+    getAvailableReimbursementPoints: vi.fn(),
   },
 }))
 
@@ -57,7 +57,7 @@ describe('src | Venue | ReimbursementFields', () => {
     hasAvailablePricingPoints: true,
   } as GetOffererResponseModel
 
-  const mockLogEvent = jest.fn()
+  const mockLogEvent = vi.fn()
   let props: ReimbursementFieldsProps
   let store: any
   beforeEach(() => {

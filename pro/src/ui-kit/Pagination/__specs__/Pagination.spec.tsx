@@ -7,14 +7,14 @@ import { Pagination, PaginationProps } from '../Pagination'
 const defaultProps: PaginationProps = {
   pageCount: 10,
   currentPage: 3,
-  onPreviousPageClick: jest.fn(),
-  onNextPageClick: jest.fn(),
+  onPreviousPageClick: vi.fn(),
+  onNextPageClick: vi.fn(),
 }
 
 describe('Pagination', () => {
   it('should move from page to page', async () => {
-    const previousPage = jest.fn()
-    const nextPage = jest.fn()
+    const previousPage = vi.fn()
+    const nextPage = vi.fn()
 
     render(
       <Pagination

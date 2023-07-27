@@ -22,7 +22,7 @@ import OfferEducationalStock, {
 const defaultProps: OfferEducationalStockProps = {
   initialValues: DEFAULT_EAC_STOCK_FORM_VALUES,
   offer: collectiveOfferFactory({}),
-  onSubmit: jest.fn(),
+  onSubmit: vi.fn(),
   mode: Mode.CREATION,
 }
 
@@ -37,7 +37,7 @@ const initialValuesNotEmpty = {
   priceDetail: 'Détail du prix',
 }
 
-const mockedUsedNavigate = jest.fn()
+const mockedUsedNavigate = vi.fn()
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => mockedUsedNavigate,
@@ -226,7 +226,7 @@ describe('OfferEducationalStock', () => {
       ).not.toBeInTheDocument()
     })
     it('should log event when wrong students modal is displayed with only wrong students', async () => {
-      const mockLogEvent = jest.fn()
+      const mockLogEvent = vi.fn()
       jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
         ...jest.requireActual('hooks/useAnalytics'),
         logEvent: mockLogEvent,
@@ -255,7 +255,7 @@ describe('OfferEducationalStock', () => {
     })
 
     it('should log event when wrong students modal is displayed with not only wrong students', async () => {
-      const mockLogEvent = jest.fn()
+      const mockLogEvent = vi.fn()
       jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
         ...jest.requireActual('hooks/useAnalytics'),
         logEvent: mockLogEvent,

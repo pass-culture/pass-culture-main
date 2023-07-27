@@ -9,9 +9,9 @@ import { CollectiveOfferVisibility } from '../CollectiveOfferCreationVisibility'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getEducationalInstitutions: jest.fn(),
-    getCollectiveOffer: jest.fn(),
-    getCollectiveOfferTemplate: jest.fn(),
+    getEducationalInstitutions: vi.fn(),
+    getCollectiveOffer: vi.fn(),
+    getCollectiveOfferTemplate: vi.fn(),
   },
 }))
 
@@ -26,8 +26,8 @@ const renderCollectiveOfferCreationVisibility = (
 
 const defaultProps = {
   offer: collectiveOfferFactory(),
-  setOffer: jest.fn(),
-  reloadCollectiveOffer: jest.fn(),
+  setOffer: vi.fn(),
+  reloadCollectiveOffer: vi.fn(),
   isTemplate: false,
 }
 
