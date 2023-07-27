@@ -100,9 +100,9 @@ def synchronize_cgr_stocks() -> None:
 @blueprint.cli.command("synchronize_ems_stocks")
 @log_cron_with_transaction
 @cron_require_feature(FeatureToggle.ENABLE_EMS_INTEGRATION)
-def synchronize_ems_stocks() -> None:
-    """Launch EMS synchronization"""
-    synchronize_ems_venue_providers()
+def synchronize_ems_stocks_on_schedule() -> None:
+    """Launch EMS synchronization"""
+    synchronize_ems_venue_providers(from_last_version=True)
 
 
 @blueprint.cli.command("cancel_unstored_external_bookings")
