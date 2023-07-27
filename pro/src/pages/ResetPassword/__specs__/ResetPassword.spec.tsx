@@ -7,7 +7,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ResetPassword from '../ResetPassword'
 
-jest.mock('utils/recaptcha', () => ({
+vi.mock('utils/recaptcha', () => ({
   initReCaptchaScript: vi.fn().mockReturnValue({ remove: vi.fn() }),
   getReCaptchaToken: vi.fn().mockResolvedValue({}),
 }))

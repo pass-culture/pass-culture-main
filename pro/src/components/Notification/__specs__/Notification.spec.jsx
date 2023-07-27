@@ -4,7 +4,7 @@ import React from 'react'
 import Notification from 'components/Notification/Notification'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-jest.mock('core/Notification/constants', () => ({
+vi.mock('core/Notification/constants', () => ({
   NOTIFICATION_TRANSITION_DURATION: 10,
   NOTIFICATION_SHOW_DURATION: 10,
 }))

@@ -11,7 +11,7 @@ import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
 import getCollectiveBookingAdapter from '../getCollectiveBookingAdapter'
 
-jest.mock('apiClient/api')
+vi.mock('apiClient/api')
 
 describe('getCollectiveBookingAdapter', () => {
   it('should return an error', async () => {

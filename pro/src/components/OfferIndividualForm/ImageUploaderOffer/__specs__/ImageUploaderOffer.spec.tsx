@@ -8,7 +8,7 @@ import ImageUploaderOffer, {
 } from '../ImageUploaderOffer'
 import * as imageUploaderOfferUtils from '../utils'
 
-jest.mock('../utils', () => ({
+vi.mock('../utils', () => ({
   buildInitialValues: vi.fn(),
 }))
 

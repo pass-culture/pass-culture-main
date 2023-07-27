@@ -16,8 +16,8 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveTableRow, { TableBodyProps } from '../CollectiveTableRow'
 
-jest.mock('apiClient/api')
-jest.mock(
+vi.mock('apiClient/api')
+vi.mock(
   'screens/Bookings/BookingsRecapTable/components/Table/Body/TableRow/TableRow',
   () => ({
     __esModule: true,
@@ -27,7 +27,7 @@ jest.mock(
 
 const scrollIntoViewMock = vi.fn()
 
-jest.mock('utils/windowMatchMedia', () => ({
+vi.mock('utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn().mockReturnValue(true),
 }))
 

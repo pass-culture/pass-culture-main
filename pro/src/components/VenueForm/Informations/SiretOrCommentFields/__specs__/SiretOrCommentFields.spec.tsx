@@ -12,7 +12,7 @@ import SiretOrCommentFields, {
 } from '../SiretOrCommentFields'
 import generateSiretValidationSchema from '../validationSchema'
 
-jest.mock('core/Venue/siretApiValidate')
+vi.mock('core/Venue/siretApiValidate')
 
 vi.mock('apiClient/api', () => ({
   api: {

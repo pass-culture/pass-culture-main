@@ -10,7 +10,7 @@ import BookingOfferCell from '../BookingOfferCell'
 const renderOfferCell = props =>
   renderWithProviders(<BookingOfferCell {...props} />)
 
-jest.mock('hooks/useActiveFeature', () => ({
+vi.mock('hooks/useActiveFeature', () => ({
   __esModule: true,
   default: vi.fn().mockReturnValue(true),
 }))
