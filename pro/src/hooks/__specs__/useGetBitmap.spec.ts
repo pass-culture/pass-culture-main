@@ -1,9 +1,17 @@
 import { renderHook, waitFor } from '@testing-library/react'
 
 import { useGetImageBitmap } from 'hooks/useGetBitmap'
+import * as imageUtils from 'utils/image'
 
-describe('image', () => {
-  it('GetImageBitmap', async () => {
+describe('useGetImageBitmap', () => {
+  it('should return width and height', async () => {
+    const mockedWidth = 600
+    const mockedHeight = 800
+
+    vi.spyOn(imageUtils, 'getImageBitmap').mockResolvedValue({
+      width: mockedWidth,
+      height: mockedHeight,
+    } as ImageBitmap)
     const imageFile = new File([''], 'hello.png', {
       type: 'image/png',
     })
@@ -12,11 +20,11 @@ describe('image', () => {
       configurable: true,
     })
     Object.defineProperty(imageFile, 'width', {
-      value: 600,
+      value: mockedWidth,
       configurable: true,
     })
     Object.defineProperty(imageFile, 'height', {
-      value: 800,
+      value: mockedHeight,
       configurable: true,
     })
     const { result } = renderHook(() => useGetImageBitmap(imageFile))
@@ -26,8 +34,8 @@ describe('image', () => {
     expect(image.height).toEqual(0)
 
     await waitFor(() => {
-      expect(result.current.width).toEqual(600)
-      expect(result.current.height).toEqual(800)
+      expect(result.current.width).toEqual(mockedWidth)
+      expect(result.current.height).toEqual(mockedHeight)
     })
   })
 })
