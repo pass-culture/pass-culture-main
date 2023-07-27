@@ -1,7 +1,8 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import fetchMock from 'jest-fetch-mock'
 import React from 'react'
+import { vi } from 'vitest'
+import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from 'apiClient/api'
 import { ApiError, CollectiveOfferResponseIdModel } from 'apiClient/v1'
@@ -31,6 +32,8 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOfferSummaryEdition from '../CollectiveOfferSummaryEdition'
+
+const fetchMock = createFetchMock(vi)
 
 const renderCollectiveOfferSummaryEdition = (
   offer: CollectiveOfferTemplate | CollectiveOffer,

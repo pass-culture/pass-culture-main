@@ -1,9 +1,10 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import fetchMock from 'jest-fetch-mock'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 import * as router from 'react-router-dom'
+import { vi } from 'vitest'
+import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from 'apiClient/api'
 import {
@@ -25,6 +26,8 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import DuplicateOfferCell, {
   LOCAL_STORAGE_HAS_SEEN_MODAL_KEY,
 } from '../DuplicateOfferCell'
+
+const fetchMock = createFetchMock(vi)
 
 jest.mock('core/OfferEducational/utils/createOfferFromTemplate', () => ({
   createOfferFromTemplate: vi.fn(),

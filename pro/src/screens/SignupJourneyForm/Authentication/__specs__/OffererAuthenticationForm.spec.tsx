@@ -1,8 +1,9 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Form, Formik } from 'formik'
-import fetch from 'jest-fetch-mock'
 import React from 'react'
+import { vi } from 'vitest'
+import createFetchMock from 'vitest-fetch-mock'
 
 import { apiAdresse } from 'apiClient/adresse'
 import {
@@ -18,6 +19,8 @@ import OffererAuthenticationForm, {
   OffererAuthenticationFormValues,
 } from '../OffererAuthenticationForm'
 import { validationSchema } from '../validationSchema'
+
+const fetchMock = createFetchMock(vi)
 
 vi.mock('apiClient/adresse', () => {
   return {
@@ -49,7 +52,7 @@ vi.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue([
   },
 ])
 
-fetch.mockResponse(
+fetchMock.mockResponse(
   JSON.stringify({
     features: [
       {
@@ -108,7 +111,7 @@ const renderOffererAuthenticationForm = ({
   )
 }
 
-describe('screens:SignupJourney::OffererAuthenticationForm', () => {
+describe('OffererAuthenticationForm', () => {
   let offererAuthenticationFormValues: Offerer
   let contextValue: SignupJourneyContextValues
   let initialValues: Partial<OffererAuthenticationFormValues>
