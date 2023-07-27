@@ -34,7 +34,7 @@ const renderAdageHeader = (
   )
 }
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   apiAdage: {
     logHeaderLinkClick: vi.fn(),
     getEducationalInstitutionWithBudget: vi.fn(),

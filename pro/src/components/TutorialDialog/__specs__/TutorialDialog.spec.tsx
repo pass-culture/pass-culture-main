@@ -9,7 +9,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import TutorialDialog from '../TutorialDialog'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: { patchUserTutoSeen: vi.fn().mockResolvedValue({}) },
 }))
 

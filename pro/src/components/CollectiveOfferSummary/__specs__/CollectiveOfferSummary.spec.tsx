@@ -13,7 +13,7 @@ import CollectiveOfferSummary, {
   CollectiveOfferSummaryProps,
 } from '../CollectiveOfferSummary'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getCollectiveOffer: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),

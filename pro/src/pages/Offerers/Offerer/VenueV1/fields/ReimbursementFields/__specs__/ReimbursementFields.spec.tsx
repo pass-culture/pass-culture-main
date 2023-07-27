@@ -35,7 +35,7 @@ const renderReimbursementFields = async (
   return rtlReturn
 }
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getAvailableReimbursementPoints: vi.fn(),
   },

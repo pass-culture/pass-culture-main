@@ -91,12 +91,12 @@ const renderForm = (
 }
 
 const mockNavigate = vi.fn()
-jest.mock('react-router-dom', () => ({
+vi.mock('react-router-dom', () => ({
   ...vi.importActual('react-router-dom'),
   useNavigate: () => mockNavigate,
 }))
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     postCreateVenue: vi.fn(),
     getSiretInfo: vi.fn(),
@@ -125,7 +125,7 @@ vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
 
 vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
 
-jest.mock('apiClient/adresse', () => {
+vi.mock('apiClient/adresse', () => {
   return {
     ...vi.importActual('apiClient/adresse'),
     default: {

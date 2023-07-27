@@ -19,7 +19,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import SignIn from '../SignIn'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getProfile: vi.fn(),
     signin: vi.fn(),

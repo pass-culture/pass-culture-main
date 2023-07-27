@@ -18,14 +18,14 @@ import CollectiveOfferVisibility, {
   CollectiveOfferVisibilityProps,
 } from '../CollectiveOfferVisibility'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getAutocompleteEducationalRedactorsForUai: vi.fn(),
     getCollectiveOfferRequest: vi.fn(),
   },
 }))
 
-jest.mock('react-router-dom', () => ({
+vi.mock('react-router-dom', () => ({
   ...vi.importActual('react-router-dom'),
   useParams: () => ({
     offerId: vi.fn(),

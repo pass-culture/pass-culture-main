@@ -27,7 +27,7 @@ import { Stocks } from 'pages/OfferIndividualWizard/Stocks'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-jest.mock('utils/date', () => ({
+vi.mock('utils/date', () => ({
   ...vi.importActual('utils/date'),
   getToday: jest
     .fn()

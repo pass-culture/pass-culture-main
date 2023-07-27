@@ -62,7 +62,7 @@ jest.mock('core/shared/interventionOptions', () => {
   }
 })
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getVenuesEducationalStatuses: vi.fn(),
     getEducationalPartners: vi.fn(),
@@ -74,7 +74,7 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 const mockedUsedNavigate = vi.fn()
-jest.mock('react-router-dom', () => ({
+vi.mock('react-router-dom', () => ({
   ...vi.importActual('react-router-dom'),
   useParams: () => ({
     offererId: 'O1',

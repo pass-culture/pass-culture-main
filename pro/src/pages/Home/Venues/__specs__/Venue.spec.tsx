@@ -14,7 +14,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Venue, { VenueProps } from '../Venue'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getVenueStats: vi.fn().mockResolvedValue({}),
   },

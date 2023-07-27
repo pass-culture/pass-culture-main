@@ -11,14 +11,14 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { ReimbursementsInvoices } from '../ReimbursementsInvoices'
 
-jest.mock('utils/date', () => ({
+vi.mock('utils/date', () => ({
   ...vi.importActual('utils/date'),
   getToday: jest
     .fn()
     .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getReimbursementPoints: vi.fn(),
     getInvoices: vi.fn(),

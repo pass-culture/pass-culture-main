@@ -13,7 +13,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import SignUpValidation from '../SignUpValidation'
 
-jest.mock('repository/pcapi/pcapi')
+vi.mock('repository/pcapi/pcapi')
 jest.mock('hooks/useCurrentUser')
 jest.mock('hooks/useNotification')
 

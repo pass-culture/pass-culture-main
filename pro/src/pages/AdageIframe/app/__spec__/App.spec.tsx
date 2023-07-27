@@ -45,7 +45,7 @@ jest.mock('utils/config', () => ({
   ALGOLIA_COLLECTIVE_OFFERS_INDEX: 'adage-collective-offers',
 }))
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   apiAdage: {
     getEducationalOffersCategories: vi.fn().mockResolvedValue({
       categories: [

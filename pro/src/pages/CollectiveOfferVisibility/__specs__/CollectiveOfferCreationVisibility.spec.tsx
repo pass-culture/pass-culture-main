@@ -7,7 +7,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { CollectiveOfferVisibility } from '../CollectiveOfferCreationVisibility'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getEducationalInstitutions: vi.fn(),
     getCollectiveOffer: vi.fn(),

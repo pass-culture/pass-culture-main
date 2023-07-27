@@ -22,11 +22,11 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import BookingsRecapContainer from '../Bookings'
 
-jest.mock('repository/pcapi/pcapi', () => ({
+vi.mock('repository/pcapi/pcapi', () => ({
   getFilteredBookingsCSV: vi.fn(),
 }))
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getProfile: vi.fn(),
     getBookingsPro: vi.fn(),
@@ -35,7 +35,7 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-jest.mock('utils/date', () => ({
+vi.mock('utils/date', () => ({
   ...vi.importActual('utils/date'),
   getToday: vi.fn().mockReturnValue(new Date('2020-06-15T12:00:00Z')),
 }))

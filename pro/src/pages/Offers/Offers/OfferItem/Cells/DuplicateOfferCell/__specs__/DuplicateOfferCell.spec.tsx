@@ -31,7 +31,7 @@ jest.mock('core/OfferEducational/utils/createOfferFromTemplate', () => ({
 }))
 
 const offerId = 1
-jest.mock('react-router-dom', () => ({
+vi.mock('react-router-dom', () => ({
   ...vi.importActual('react-router-dom'),
   useNavigate: vi.fn(),
 }))

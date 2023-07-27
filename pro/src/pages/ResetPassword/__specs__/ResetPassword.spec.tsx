@@ -12,7 +12,7 @@ jest.mock('utils/recaptcha', () => ({
   getReCaptchaToken: vi.fn().mockResolvedValue({}),
 }))
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getProfile: vi.fn().mockResolvedValue({}),
     postNewPassword: vi.fn().mockResolvedValue({}),

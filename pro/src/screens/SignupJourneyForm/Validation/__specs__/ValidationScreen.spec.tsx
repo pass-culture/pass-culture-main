@@ -16,14 +16,14 @@ import {
 import { Validation } from 'screens/SignupJourneyForm/Validation/index'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getVenueTypes: vi.fn(),
     saveNewOnboardingData: vi.fn(),
   },
 }))
 
-jest.mock('react-router-dom', () => ({
+vi.mock('react-router-dom', () => ({
   ...vi.importActual('react-router-dom'),
   useNavigate: vi.fn(),
 }))

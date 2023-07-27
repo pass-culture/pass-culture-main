@@ -1,7 +1,7 @@
 import { getFilteredBookingsCSV, postThumbnail } from 'repository/pcapi/pcapi'
 import { client } from 'repository/pcapi/pcapiClient'
 
-jest.mock('repository/pcapi/pcapiClient', () => ({
+vi.mock('repository/pcapi/pcapiClient', () => ({
   client: {
     delete: vi.fn(),
     get: vi.fn().mockResolvedValue({}),
@@ -12,7 +12,7 @@ jest.mock('repository/pcapi/pcapiClient', () => ({
   },
 }))
 
-jest.mock('utils/date', () => {
+vi.mock('utils/date', () => {
   return {
     ...vi.importActual('utils/date'),
     getToday: vi.fn().mockReturnValue(new Date(2020, 8, 12)),

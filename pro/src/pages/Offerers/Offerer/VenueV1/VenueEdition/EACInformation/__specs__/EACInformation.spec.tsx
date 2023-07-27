@@ -7,7 +7,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import EACInformation from '../EACInformation'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getEducationalPartners: vi.fn(),
   },

@@ -23,7 +23,7 @@ const renderRequestFormDialog = (props?: Partial<RequestFormDialogProps>) => {
   )
 }
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   apiAdage: {
     createCollectiveRequest: vi.fn(),
     logRequestFormPopinDismiss: vi.fn(),

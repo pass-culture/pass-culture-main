@@ -12,7 +12,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import OfferItem, { OfferItemProps } from '../OfferItem'
 
 const mockLogEvent = vi.fn()
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     deleteDraftOffers: vi.fn().mockResolvedValue({
       isOk: true,
