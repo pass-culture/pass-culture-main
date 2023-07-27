@@ -1,8 +1,9 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import fetch from 'jest-fetch-mock'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
+import { vi } from 'vitest'
+import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from 'apiClient/api'
 import { VenueFormValues } from 'components/VenueForm'
@@ -18,6 +19,8 @@ import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { VenueFormScreen } from '../index'
+
+const fetchMock = createFetchMock(vi)
 
 const venueTypes: SelectOption[] = [
   { value: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },
@@ -128,7 +131,7 @@ vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
 
 // Mock l'appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
 // Appel fait dans apiAdresse.getDataFromAddress
-fetch.mockResponse(
+fetchMock.mockResponse(
   JSON.stringify({
     features: [
       {
