@@ -39,14 +39,14 @@ const renderVenueCreation = async (offererId: string) => {
   })
 }
 
-jest.mock('react-router-dom', () => ({
+vi.mock('react-router-dom', () => ({
   ...vi.importActual('react-router-dom'),
   useParams: () => ({
     offererId: 'ABCD',
   }),
 }))
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     fetchVenueLabels: vi.fn(),
     getOfferer: vi.fn(),

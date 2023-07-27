@@ -15,7 +15,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Activity from '../Activity'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getVenueTypes: vi.fn(),
   },

@@ -9,7 +9,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { CollectiveOfferSummaryCreation } from '../CollectiveOfferSummaryCreation'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getCategories: vi.fn(),
     getCollectiveOffer: vi.fn(),
@@ -17,7 +17,7 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-jest.mock('react-router-dom', () => ({
+vi.mock('react-router-dom', () => ({
   ...vi.importActual('react-router-dom'),
   useParams: () => ({
     requestId: vi.fn(),

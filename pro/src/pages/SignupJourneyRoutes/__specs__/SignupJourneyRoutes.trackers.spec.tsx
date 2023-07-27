@@ -9,7 +9,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import SignupJourneyRoutes from '../SignupJourneyRoutes'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getVenueTypes: vi.fn(),
   },

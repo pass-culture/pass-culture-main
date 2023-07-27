@@ -13,7 +13,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Offer, { OfferProps } from '../Offer'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   apiAdage: {
     logOfferDetailsButtonClick: vi.fn(),
     logOfferTemplateDetailsButtonClick: vi.fn(),

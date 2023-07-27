@@ -13,17 +13,17 @@ import OfferEducational from '../'
 import { defaultCreationProps } from '../__tests-utils__'
 import { OfferEducationalProps } from '../OfferEducational'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     editCollectiveOffer: vi.fn(),
   },
 }))
 
-jest.mock('repository/pcapi/pcapi', () => ({
+vi.mock('repository/pcapi/pcapi', () => ({
   postCollectiveOfferImage: vi.fn(),
 }))
 
-jest.mock('react-router-dom', () => ({
+vi.mock('react-router-dom', () => ({
   ...vi.importActual('react-router-dom'),
   useNavigate: vi.fn(),
 }))

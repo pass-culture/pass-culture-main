@@ -14,7 +14,7 @@ import generateSiretValidationSchema from '../validationSchema'
 
 jest.mock('core/Venue/siretApiValidate')
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getSiretInfo: vi.fn(),
     getDataFromAddress: vi.fn(),

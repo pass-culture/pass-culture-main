@@ -18,7 +18,7 @@ const renderContactButton = (
     storeOverrides: storeOverrides,
   })
 }
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   apiAdage: {
     logContactModalButtonClick: vi.fn(),
   },

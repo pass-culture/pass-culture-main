@@ -2,7 +2,7 @@ import '@testing-library/jest-dom'
 import { screen } from '@testing-library/react'
 import React from 'react'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getCollectiveOffer: vi.fn(),
     getCollectiveOfferTemplate: vi.fn(),

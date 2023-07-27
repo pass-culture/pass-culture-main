@@ -106,7 +106,7 @@ const renderForm = (isCreation: boolean) => {
   )
 }
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     postCreateVenue: vi.fn(),
     getSiretInfo: vi.fn(),

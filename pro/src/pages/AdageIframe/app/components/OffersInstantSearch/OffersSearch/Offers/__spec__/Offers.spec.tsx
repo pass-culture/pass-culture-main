@@ -24,7 +24,7 @@ import { ResultType } from 'utils/types'
 
 import { OffersComponent, OffersComponentProps } from '../Offers'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   apiAdage: { getCollectiveOffer: vi.fn(), logSearchButtonClick: vi.fn() },
 }))
 

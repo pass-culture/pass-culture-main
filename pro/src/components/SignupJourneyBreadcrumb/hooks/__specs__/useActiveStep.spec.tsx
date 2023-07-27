@@ -1,6 +1,6 @@
 import useActiveStep from '../useActiveStep'
 
-jest.mock('react-router-dom', () => ({
+vi.mock('react-router-dom', () => ({
   ...vi.importActual('react-router-dom'),
   useLocation: () => ({
     pathname: '',

@@ -19,7 +19,7 @@ import OfferEducationalActions, {
   OfferEducationalActionsProps,
 } from '../OfferEducationalActions'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     patchCollectiveOffersActiveStatus: vi.fn(),
     patchCollectiveOffersTemplateActiveStatus: vi.fn(),

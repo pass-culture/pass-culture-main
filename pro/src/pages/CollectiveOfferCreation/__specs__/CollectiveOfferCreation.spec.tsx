@@ -7,7 +7,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { CollectiveOfferCreation } from '../CollectiveOfferCreation'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getCategories: vi.fn(),
     listEducationalDomains: vi.fn(),

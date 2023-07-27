@@ -37,7 +37,7 @@ jest.mock('screens/OfferIndividual/Informations/utils', () => {
   }
 })
 
-jest.mock('repository/pcapi/pcapi', () => ({
+vi.mock('repository/pcapi/pcapi', () => ({
   postThumbnail: vi.fn(),
 }))
 

@@ -31,7 +31,7 @@ const mockAdressData = [
   },
 ]
 
-jest.mock('apiClient/adresse', () => {
+vi.mock('apiClient/adresse', () => {
   return {
     ...vi.importActual('apiClient/adresse'),
     default: {
