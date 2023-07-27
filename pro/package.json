@@ -27,7 +27,7 @@
     "test:stylelint": "jest stylelint-pass-culture/tests",
     "test:unit": "TZ=UTC vitest",
     "test:unit:watch": "TZ=UTC vitest --watch",
-    "test:unit:ci": "TZ=UTC vitest --coverage",
+    "test:unit:ci": "TZ=UTC vitest run --coverage",
     "storybook": "NODE_PATH=src storybook dev -p 6006",
     "build-storybook": "NODE_PATH=src storybook build -o docs-build"
   },

@@ -34,6 +34,9 @@ export default defineConfig(({ mode }) => {
       globals: true,
       environment: 'jsdom',
       setupFiles: './vitest.setup.ts',
+      clearMocks: true,
+      restoreMocks: true,
+      cache: { dir: '.vitest_cache' },
     },
   }
 })
