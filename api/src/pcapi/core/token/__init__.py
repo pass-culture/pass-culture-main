@@ -78,10 +78,3 @@ class Token:
     @classmethod
     def token_exists(cls, type_: TokenType, user_id: int) -> bool:
         return app.redis_client.exists(cls._get_redis_key(type_, user_id))  # type: ignore [attr-defined]
-
-    @classmethod
-    def get_token(cls, type_: TokenType, user_id: int) -> "Token | None":
-        encoded_token = app.redis_client.get(cls._get_redis_key(type_, user_id))  # type: ignore [attr-defined]
-        if encoded_token is None:
-            return None
-        return cls.load_without_checking(encoded_token)
