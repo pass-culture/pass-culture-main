@@ -5,6 +5,8 @@ import { api, apiContremarque } from 'apiClient/api'
 import { URL_FOR_MAINTENANCE } from 'utils/config'
 
 const fetchMock = createFetchMock(vi)
+fetchMock.enableMocks()
+
 describe('Maintenance', () => {
   it('should redirect to maintenance page api v1 responds with status 503', async () => {
     fetchMock.mockResponse('Service Unavailable', { status: 503 })
