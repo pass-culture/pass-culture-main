@@ -30,7 +30,9 @@ vi.mock('react-router-dom', () => ({
 
 Element.prototype.scrollIntoView = vi.fn()
 
-window.matchMedia = vi.fn().mockReturnValue({ matches: true })
+vi.spyOn(window, 'matchMedia').mockReturnValue({
+  matches: true,
+} as MediaQueryList)
 
 describe('screens | OfferEducational : event address step', () => {
   let props: OfferEducationalProps

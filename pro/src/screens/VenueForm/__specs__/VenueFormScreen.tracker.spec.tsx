@@ -130,6 +130,10 @@ vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
   legal_category_code: '1000',
 })
 
+vi.mock('core/Venue/siretApiValidate', () => ({
+  default: () => Promise.resolve(),
+}))
+
 // Mock l'appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
 // Appel fait dans apiAdresse.getDataFromAddress
 fetchMock.mockResponse(
@@ -162,7 +166,7 @@ describe('venue form trackers', () => {
     }))
   })
 
-  it('Tracking success form submit', async () => {
+  it('should track success of form submit', async () => {
     renderForm(true)
     vi.spyOn(api, 'postCreateVenue').mockResolvedValue({
       id: 1,
@@ -177,7 +181,7 @@ describe('venue form trackers', () => {
     })
   })
 
-  it('Tracking failing form submit', async () => {
+  it('should track failing of form submit', async () => {
     renderForm(true)
     vi.spyOn(api, 'postCreateVenue').mockRejectedValue({})
 
@@ -190,7 +194,7 @@ describe('venue form trackers', () => {
     })
   })
 
-  it('Tracking offer creation submit', async () => {
+  it('should track offer creation submit', async () => {
     renderForm(false)
 
     await userEvent.click(screen.getByText(/Créer une offre/))
