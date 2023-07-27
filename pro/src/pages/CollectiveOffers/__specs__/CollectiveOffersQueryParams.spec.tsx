@@ -112,9 +112,7 @@ vi.mock('apiClient/api', () => ({
 
 vi.mock('utils/date', () => ({
   ...vi.importActual('utils/date'),
-  getToday: jest
-    .fn()
-    .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+  getToday: vi.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
 vi.mock('hooks/useActiveFeature', () => ({
@@ -148,8 +146,7 @@ describe('route CollectiveOffers', () => {
       },
     }
     offersRecap = [collectiveOfferFactory()]
-    jest
-      .spyOn(api, 'getCollectiveOffers')
+    vi.spyOn(api, 'getCollectiveOffers')
       // @ts-expect-error FIX ME
       .mockResolvedValue(offersRecap)
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
@@ -161,8 +158,7 @@ describe('route CollectiveOffers', () => {
       const offersRecap = Array.from({ length: 11 }, () =>
         collectiveOfferFactory()
       )
-      jest
-        .spyOn(api, 'getCollectiveOffers')
+      vi.spyOn(api, 'getCollectiveOffers')
         // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offersRecap)
       await renderOffers(store)
@@ -219,8 +215,7 @@ describe('route CollectiveOffers', () => {
 
     it('should have venue value be removed when user asks for all venues', async () => {
       // Given
-      jest
-        .spyOn(api, 'getCollectiveOffers')
+      vi.spyOn(api, 'getCollectiveOffers')
         // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offersRecap)
       vi.spyOn(api, 'getCategories').mockResolvedValue({

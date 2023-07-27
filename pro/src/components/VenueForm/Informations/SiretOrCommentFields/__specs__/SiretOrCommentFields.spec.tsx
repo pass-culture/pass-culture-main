@@ -262,9 +262,9 @@ describe('components | SiretOrCommentFields', () => {
       expect(errorMessage).toBeInTheDocument()
     })
     it('should call api validation and display error message if siret is not valid if venue is non virtual', async () => {
-      jest
-        .spyOn(siretApiValidate, 'default')
-        .mockResolvedValue('Le code siret est invalide')
+      vi.spyOn(siretApiValidate, 'default').mockResolvedValue(
+        'Le code siret est invalide'
+      )
       const { buttonSubmit } = await renderSiretOrComment({
         initialValues,
         onSubmit,

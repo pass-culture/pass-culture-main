@@ -27,14 +27,14 @@ describe('TableHead', () => {
             {
               id: 1,
               headerTitle: 'Offres',
-              render: jest.fn(() => <span>Offres</span>),
+              render: vi.fn(() => <span>Offres</span>),
               getHeaderProps: vi.fn(),
               getSortByToggleProps: vi.fn(),
             },
             {
               id: 2,
               headerTitle: 'Beneficiaires',
-              render: jest.fn(() => <span>Beneficiaires</span>),
+              render: vi.fn(() => <span>Beneficiaires</span>),
               getHeaderProps: vi.fn(),
               getSortByToggleProps: vi.fn(),
             },
@@ -73,7 +73,7 @@ describe('TableHead', () => {
             {
               id: 1,
               headerTitle: 'Offres',
-              render: jest.fn(() => <span>Offres</span>),
+              render: vi.fn(() => <span>Offres</span>),
               getHeaderProps: vi.fn(),
               getSortByToggleProps: vi.fn(),
               canSort: true,

@@ -28,9 +28,7 @@ describe('StatusToggleButton', () => {
 
   it('should deactivate an offer and confirm', async () => {
     // given
-    const toggle = jest
-      .spyOn(api, 'patchOffersActiveStatus')
-      .mockResolvedValue()
+    const toggle = vi.spyOn(api, 'patchOffersActiveStatus').mockResolvedValue()
     const notifySuccess = vi.fn()
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       success: notifySuccess,
@@ -60,7 +58,7 @@ describe('StatusToggleButton', () => {
 
   it('should activate an offer and confirm', async () => {
     // given
-    const toggleFunction = jest
+    const toggleFunction = vi
       .spyOn(api, 'patchOffersActiveStatus')
       .mockResolvedValue()
     const notifySuccess = vi.fn()
@@ -94,7 +92,7 @@ describe('StatusToggleButton', () => {
 
   it('should display error', async () => {
     // given
-    const toggleFunction = jest
+    const toggleFunction = vi
       .spyOn(api, 'patchOffersActiveStatus')
       .mockRejectedValue({})
     const notifyError = vi.fn()

@@ -28,9 +28,9 @@ const mockUseNotification = {
   success: vi.fn(),
 }
 
-jest
-  .spyOn(useNotification, 'default')
-  .mockImplementation(() => mockUseNotification)
+vi.spyOn(useNotification, 'default').mockImplementation(
+  () => mockUseNotification
+)
 
 describe('useCollectiveOfferImageUpload', () => {
   it('should initialize with current image', async () => {
@@ -70,13 +70,14 @@ describe('useCollectiveOfferImageUpload', () => {
     const payload: AttachImageResponseModel = {
       imageUrl: 'https://example.com/image.jpg',
     }
-    jest
-      .spyOn(postCollectiveOfferTemplateImageAdapter, 'default')
-      .mockResolvedValue({
-        isOk: true,
-        payload,
-        message: 'ok',
-      })
+    vi.spyOn(
+      postCollectiveOfferTemplateImageAdapter,
+      'default'
+    ).mockResolvedValue({
+      isOk: true,
+      payload,
+      message: 'ok',
+    })
 
     const { result } = renderHook(() =>
       useCollectiveOfferImageUpload(offer, true)
@@ -114,13 +115,14 @@ describe('useCollectiveOfferImageUpload', () => {
 
   it('should delete image in case of template offer', async () => {
     const offer = collectiveOfferTemplateFactory()
-    jest
-      .spyOn(deleteCollectiveOfferTemplateImageAdapter, 'default')
-      .mockResolvedValue({
-        isOk: true,
-        payload: null,
-        message: 'ok',
-      })
+    vi.spyOn(
+      deleteCollectiveOfferTemplateImageAdapter,
+      'default'
+    ).mockResolvedValue({
+      isOk: true,
+      payload: null,
+      message: 'ok',
+    })
 
     const { result } = renderHook(() =>
       useCollectiveOfferImageUpload(offer, true)
@@ -138,13 +140,14 @@ describe('useCollectiveOfferImageUpload', () => {
 
   it('should not delete image if offer initially had one and onImageDelete was not called', async () => {
     const offer = collectiveOfferTemplateFactory()
-    jest
-      .spyOn(deleteCollectiveOfferTemplateImageAdapter, 'default')
-      .mockResolvedValue({
-        isOk: true,
-        payload: null,
-        message: 'ok',
-      })
+    vi.spyOn(
+      deleteCollectiveOfferTemplateImageAdapter,
+      'default'
+    ).mockResolvedValue({
+      isOk: true,
+      payload: null,
+      message: 'ok',
+    })
 
     const { result } = renderHook(() =>
       useCollectiveOfferImageUpload(offer, true)

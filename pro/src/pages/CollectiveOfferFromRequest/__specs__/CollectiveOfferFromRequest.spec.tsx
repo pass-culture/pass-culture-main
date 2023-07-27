@@ -50,19 +50,21 @@ describe('CollectiveOfferFromRequest', () => {
       error: notifyError,
     }))
 
-    jest
-      .spyOn(api, 'getCollectiveOfferTemplate')
-      .mockResolvedValue(defaultCollectifOfferResponseModel)
-    jest
-      .spyOn(router, 'useParams')
-      .mockReturnValue({ offerId: '1', requestId: '2' })
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(
+      defaultCollectifOfferResponseModel
+    )
+    vi.spyOn(router, 'useParams').mockReturnValue({
+      offerId: '1',
+      requestId: '2',
+    })
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
-    jest
-      .spyOn(api, 'getCategories')
-      .mockResolvedValue({ categories: [], subcategories: [] })
-    jest
-      .spyOn(api, 'listEducationalOfferers')
-      .mockResolvedValue({ educationalOfferers: [] })
+    vi.spyOn(api, 'getCategories').mockResolvedValue({
+      categories: [],
+      subcategories: [],
+    })
+    vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
+      educationalOfferers: [],
+    })
     vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
     vi.spyOn(api, 'createCollectiveOffer').mockResolvedValue({ id: 1 })
   })

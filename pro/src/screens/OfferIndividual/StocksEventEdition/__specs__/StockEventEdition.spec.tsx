@@ -29,18 +29,17 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 vi.mock('utils/date', () => ({
   ...vi.importActual('utils/date'),
-  getToday: jest
-    .fn()
-    .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+  getToday: vi.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
 const renderStockEventScreen = async (
   apiOffer: GetIndividualOfferResponseModel
 ) => {
   vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-  jest
-    .spyOn(api, 'getCategories')
-    .mockResolvedValue({ categories: [], subcategories: [] })
+  vi.spyOn(api, 'getCategories').mockResolvedValue({
+    categories: [],
+    subcategories: [],
+  })
   vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
   vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
   vi.spyOn(api, 'upsertStocks').mockResolvedValue({} as StocksResponseModel)
@@ -364,9 +363,9 @@ describe('screens:StocksEventEdition', () => {
       name: 'ciné office',
     }
     await renderStockEventScreen(apiOffer)
-    jest
-      .spyOn(api, 'upsertStocks')
-      .mockResolvedValue({ stocks: [{ id: 1 } as StockResponseModel] })
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stocks: [{ id: 1 } as StockResponseModel],
+    })
 
     await userEvent.type(screen.getByLabelText('Quantité restante'), '30')
     await userEvent.click(
@@ -416,9 +415,9 @@ describe('screens:StocksEventEdition', () => {
       },
     ]
     await renderStockEventScreen(apiOffer)
-    jest
-      .spyOn(api, 'upsertStocks')
-      .mockResolvedValue({ stocks: [{ id: 1 } as StockResponseModel] })
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stocks: [{ id: 1 } as StockResponseModel],
+    })
 
     await userEvent.selectOptions(
       screen.getByLabelText('Tarif'),
@@ -432,9 +431,9 @@ describe('screens:StocksEventEdition', () => {
   })
 
   it('should show a warning on "Enregistrer les modifications" button click then save the offer', async () => {
-    jest
-      .spyOn(api, 'upsertStocks')
-      .mockResolvedValue({ stocks: [{ id: 1 } as StockResponseModel] })
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stocks: [{ id: 1 } as StockResponseModel],
+    })
     await renderStockEventScreen(apiOffer)
 
     await userEvent.selectOptions(

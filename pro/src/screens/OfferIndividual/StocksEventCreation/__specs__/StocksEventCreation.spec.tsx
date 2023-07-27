@@ -85,9 +85,9 @@ describe('StocksEventCreation', () => {
   beforeEach(() => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
-    jest
-      .spyOn(api, 'getOffer')
-      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    vi.spyOn(api, 'getOffer').mockResolvedValue(
+      {} as GetIndividualOfferResponseModel
+    )
   })
 
   it('should show help section if there are not stocks', () => {
@@ -222,9 +222,9 @@ const mockLogEvent = vi.fn()
 describe('navigation and submit', () => {
   beforeEach(() => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
-    jest
-      .spyOn(api, 'getOffer')
-      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    vi.spyOn(api, 'getOffer').mockResolvedValue(
+      {} as GetIndividualOfferResponseModel
+    )
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
@@ -391,9 +391,9 @@ describe('deletion', () => {
   beforeEach(() => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })
     vi.spyOn(api, 'deleteStock').mockResolvedValue({ id: 1 })
-    jest
-      .spyOn(api, 'getOffer')
-      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    vi.spyOn(api, 'getOffer').mockResolvedValue(
+      {} as GetIndividualOfferResponseModel
+    )
   })
 
   it('should delete new stocks', async () => {

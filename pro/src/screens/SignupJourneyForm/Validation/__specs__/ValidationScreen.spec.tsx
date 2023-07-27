@@ -199,9 +199,9 @@ describe('screens:SignupJourney::Validation', () => {
     })
 
     it('Should send the data on submit and redirect to home', async () => {
-      jest
-        .spyOn(api, 'saveNewOnboardingData')
-        .mockResolvedValue({} as GetOffererResponseModel)
+      vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
+        {} as GetOffererResponseModel
+      )
       const mockNavigate = vi.fn()
       vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
       renderValidationScreen(contextValue)
@@ -247,9 +247,9 @@ describe('screens:SignupJourney::Validation', () => {
     })
 
     it('Should send data with empty public name', async () => {
-      jest
-        .spyOn(api, 'saveNewOnboardingData')
-        .mockResolvedValue({} as GetOffererResponseModel)
+      vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
+        {} as GetOffererResponseModel
+      )
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getByText('Valider et créer ma structure'))

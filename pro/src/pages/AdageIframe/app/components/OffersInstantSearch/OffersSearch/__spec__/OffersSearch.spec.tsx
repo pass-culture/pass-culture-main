@@ -14,7 +14,7 @@ import { OffersSearchComponent, SearchProps } from '../OffersSearch'
 
 vi.mock('../Offers/Offers', () => {
   return {
-    Offers: jest.fn(() => <div />),
+    Offers: vi.fn(() => <div />),
   }
 })
 
@@ -25,7 +25,7 @@ vi.mock('apiClient/api', () => ({
 }))
 
 vi.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
-  getEducationalDomains: jest
+  getEducationalDomains: vi
     .fn()
     .mockResolvedValue([{ id: 1, name: 'Architecture' }]),
 }))

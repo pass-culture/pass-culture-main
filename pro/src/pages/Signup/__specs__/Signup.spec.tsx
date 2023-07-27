@@ -26,7 +26,7 @@ describe('src | components | pages | Signup', () => {
       },
     }
   })
-  afterEach(jest.resetAllMocks)
+  afterEach(vi.resetAllMocks)
 
   it('should render logo and sign-up form', async () => {
     // when

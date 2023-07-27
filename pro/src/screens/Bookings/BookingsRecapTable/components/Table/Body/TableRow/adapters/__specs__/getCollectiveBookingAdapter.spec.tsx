@@ -15,11 +15,9 @@ vi.mock('apiClient/api')
 
 describe('getCollectiveBookingAdapter', () => {
   it('should return an error', async () => {
-    jest
-      .spyOn(api, 'getCollectiveBookingById')
-      .mockRejectedValueOnce(
-        new ApiError({} as ApiRequestOptions, {} as ApiResult, '')
-      )
+    vi.spyOn(api, 'getCollectiveBookingById').mockRejectedValueOnce(
+      new ApiError({} as ApiRequestOptions, {} as ApiResult, '')
+    )
 
     expect(await getCollectiveBookingAdapter('bookingId')).toStrictEqual({
       isOk: false,

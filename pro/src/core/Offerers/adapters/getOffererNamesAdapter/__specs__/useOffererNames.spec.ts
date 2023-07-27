@@ -15,9 +15,9 @@ describe('useOffererNames', () => {
       },
     ]
 
-    jest
-      .spyOn(api, 'listOfferersNames')
-      .mockResolvedValue({ offerersNames: offererNames })
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: offererNames,
+    })
 
     const { result } = renderHook(() => useGetOffererNames({}))
     const loadingState = result.current
@@ -35,9 +35,7 @@ describe('useOffererNames', () => {
   })
 
   it('should return loading payload then error payload', async () => {
-    jest
-      .spyOn(api, 'listOfferersNames')
-      .mockRejectedValue(new Error('Api error'))
+    vi.spyOn(api, 'listOfferersNames').mockRejectedValue(new Error('Api error'))
 
     const { result } = renderHook(() => useGetOffererNames({}))
     const loadingState = result.current

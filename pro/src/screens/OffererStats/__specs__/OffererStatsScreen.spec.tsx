@@ -82,12 +82,12 @@ describe('OffererStatsScreen', () => {
         resolve(offerers.filter(offerer => offerer.id == offererId)[0])
       )
     })
-    jest
-      .spyOn(api, 'getOffererStatsDashboardUrl')
-      .mockResolvedValue({ dashboardUrl: 'offererIframeUrl' })
-    jest
-      .spyOn(api, 'getVenueStatsDashboardUrl')
-      .mockResolvedValue({ dashboardUrl: 'venueIframeUrl' })
+    vi.spyOn(api, 'getOffererStatsDashboardUrl').mockResolvedValue({
+      dashboardUrl: 'offererIframeUrl',
+    })
+    vi.spyOn(api, 'getVenueStatsDashboardUrl').mockResolvedValue({
+      dashboardUrl: 'venueIframeUrl',
+    })
   })
 
   it('should get first offerer venues on render', async () => {
@@ -132,9 +132,9 @@ describe('OffererStatsScreen', () => {
   })
 
   it('should display not display venue select if offerer has no venue', async () => {
-    jest
-      .spyOn(api, 'getOfferer')
-      .mockResolvedValue({ id: 1 } as GetOffererResponseModel)
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      id: 1,
+    } as GetOffererResponseModel)
     renderOffererStatsScreen(offererOptions)
     await waitFor(() => {
       expect(api.getOfferer).toHaveBeenCalledTimes(1)

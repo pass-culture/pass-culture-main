@@ -68,9 +68,9 @@ describe('test ButtonImageEdit', () => {
         credit: 'John Do',
       },
     }
-    jest
-      .spyOn(apiHelpers, 'getFileFromURL')
-      .mockResolvedValue(new File([''], 'myThumb.png'))
+    vi.spyOn(apiHelpers, 'getFileFromURL').mockResolvedValue(
+      new File([''], 'myThumb.png')
+    )
     renderButtonImageEdit(props)
     await userEvent.click(
       await screen.findByRole('button', {

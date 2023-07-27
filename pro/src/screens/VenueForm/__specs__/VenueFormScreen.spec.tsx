@@ -508,7 +508,7 @@ describe('screen | VenueForm', () => {
         undefined
       )
 
-      const postCreateVenue = jest
+      const postCreateVenue = vi
         .spyOn(api, 'postCreateVenue')
         .mockRejectedValue({})
 
@@ -534,7 +534,7 @@ describe('screen | VenueForm', () => {
         venue
       )
 
-      const editVenue = jest
+      const editVenue = vi
         .spyOn(api, 'editVenue')
         .mockResolvedValue(venueResponse)
 
@@ -752,7 +752,7 @@ describe('screen | VenueForm', () => {
         true
       )
 
-      const editVenue = jest
+      const editVenue = vi
         .spyOn(api, 'editVenue')
         .mockResolvedValue({ id: 1 } as GetVenueResponseModel)
 
@@ -822,7 +822,7 @@ describe('screen | VenueForm', () => {
         true
       )
 
-      const editVenue = jest
+      const editVenue = vi
         .spyOn(api, 'editVenue')
         .mockResolvedValue({ id: 1 } as GetVenueResponseModel)
 
@@ -890,7 +890,7 @@ describe('screen | VenueForm', () => {
         false
       )
 
-      const editVenue = jest
+      const editVenue = vi
         .spyOn(api, 'editVenue')
         .mockResolvedValue({ id: 1 } as GetVenueResponseModel)
 
@@ -932,7 +932,7 @@ describe('screen | VenueForm', () => {
         true
       )
 
-      const editVenue = jest
+      const editVenue = vi
         .spyOn(api, 'editVenue')
         .mockResolvedValue({ id: 1 } as GetVenueResponseModel)
 
@@ -1060,9 +1060,9 @@ describe('screen | VenueForm', () => {
       ).toBeInTheDocument()
     })
     it('should display dms timeline if venue has dms application and ff active', async () => {
-      jest
-        .spyOn(api, 'canOffererCreateEducationalOffer')
-        .mockRejectedValueOnce('error')
+      vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValueOnce(
+        'error'
+      )
       renderForm(
         {
           id: 12,
@@ -1088,9 +1088,9 @@ describe('screen | VenueForm', () => {
     })
 
     it('should not display eac section if offerer is not eligble and has not dms application', async () => {
-      jest
-        .spyOn(api, 'canOffererCreateEducationalOffer')
-        .mockRejectedValueOnce('error')
+      vi.spyOn(api, 'canOffererCreateEducationalOffer').mockRejectedValueOnce(
+        'error'
+      )
       renderForm(
         {
           id: 12,

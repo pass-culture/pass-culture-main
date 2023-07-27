@@ -8,11 +8,9 @@ import editVenueCollectiveDataAdapter from '../editVenueCollectiveDataAdapter'
 
 describe('editVenueCollectiveDataAdapter', () => {
   it('should return error message', async () => {
-    jest
-      .spyOn(api, 'editVenueCollectiveData')
-      .mockRejectedValueOnce(
-        new ApiError({} as ApiRequestOptions, { status: 500 } as ApiResult, '')
-      )
+    vi.spyOn(api, 'editVenueCollectiveData').mockRejectedValueOnce(
+      new ApiError({} as ApiRequestOptions, { status: 500 } as ApiResult, '')
+    )
 
     expect(
       await editVenueCollectiveDataAdapter({

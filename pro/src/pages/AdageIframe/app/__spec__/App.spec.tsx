@@ -21,8 +21,8 @@ import {
 vi.mock('react-instantsearch-dom', () => {
   return {
     ...vi.importActual('react-instantsearch-dom'),
-    Configure: jest.fn(() => <div />),
-    connectStats: jest.fn(Component => (props: any) => (
+    Configure: vi.fn(() => <div />),
+    connectStats: vi.fn(Component => (props: any) => (
       <Component
         {...props}
         areHitsSorted={false}
@@ -141,7 +141,7 @@ describe('app', () => {
         selector: 'h2',
       })
       expect(contentTitle).toBeInTheDocument()
-      const searchConfiguration = (Configure as jest.Mock).mock.calls[0][0]
+      const searchConfiguration = (Configure as vi.Mock).mock.calls[0][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
         ['venue.departmentCode:30'],
         [
@@ -175,7 +175,7 @@ describe('app', () => {
       await waitFor(() => {
         expect(Configure).toHaveBeenCalledTimes(1)
       })
-      const searchConfiguration = (Configure as jest.Mock).mock.calls[0][0]
+      const searchConfiguration = (Configure as vi.Mock).mock.calls[0][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
         [`venue.id:${venue.id}`],
         [
@@ -219,7 +219,7 @@ describe('app', () => {
       await waitFor(() => {
         expect(Configure).toHaveBeenCalledTimes(1)
       })
-      const searchConfiguration = (Configure as jest.Mock).mock.calls[0][0]
+      const searchConfiguration = (Configure as vi.Mock).mock.calls[0][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
         [`venue.id:${venue.id}`],
         [
@@ -250,9 +250,9 @@ describe('app', () => {
       // Given
       const siret = '123456789'
       window.location.search = `?siret=${siret}`
-      jest
-        .spyOn(apiAdage, 'getVenueBySiret')
-        .mockRejectedValue('Unrecognized SIRET')
+      vi.spyOn(apiAdage, 'getVenueBySiret').mockRejectedValue(
+        'Unrecognized SIRET'
+      )
 
       // When
       renderApp(venue)
@@ -263,7 +263,7 @@ describe('app', () => {
       })
       expect(contentTitle).toBeInTheDocument()
       expect(apiAdage.getVenueBySiret).toHaveBeenCalledWith(siret, false)
-      const searchConfiguration = (Configure as jest.Mock).mock.calls[0][0]
+      const searchConfiguration = (Configure as vi.Mock).mock.calls[0][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
         ['venue.departmentCode:30'],
         [
@@ -301,7 +301,7 @@ describe('app', () => {
       expect(apiAdage.getVenueBySiret).toHaveBeenCalledWith(siret, true)
 
       await waitFor(() => {
-        const searchConfiguration = (Configure as jest.Mock).mock.calls[0][0]
+        const searchConfiguration = (Configure as vi.Mock).mock.calls[0][0]
         expect(searchConfiguration.facetFilters).toStrictEqual([
           [`venue.id:${venue.id}`, 'venue.id:123', 'venue.id:456'],
           [
@@ -331,7 +331,7 @@ describe('app', () => {
       expect(apiAdage.getVenueById).toHaveBeenCalledWith(venue.id, true)
 
       await waitFor(() => {
-        const searchConfiguration = (Configure as jest.Mock).mock.calls[0][0]
+        const searchConfiguration = (Configure as vi.Mock).mock.calls[0][0]
         expect(searchConfiguration.facetFilters).toStrictEqual([
           [`venue.id:${venue.id}`, 'venue.id:123', 'venue.id:456'],
           [
@@ -359,7 +359,7 @@ describe('app', () => {
 
       // Then
       await waitFor(() => expect(Configure).toHaveBeenCalledTimes(3))
-      const searchConfigurationCall = (Configure as jest.Mock).mock.calls[2][0]
+      const searchConfigurationCall = (Configure as vi.Mock).mock.calls[2][0]
 
       expect(searchConfigurationCall.facetFilters).toStrictEqual([
         [
@@ -388,7 +388,7 @@ describe('app', () => {
 
       // Then
       await waitFor(() => expect(Configure).toHaveBeenCalledTimes(2))
-      const searchConfigurationFirstCall = (Configure as jest.Mock).mock
+      const searchConfigurationFirstCall = (Configure as vi.Mock).mock
         .calls[1][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
         ['venue.departmentCode:30', 'offer.interventionArea:30'],
@@ -461,9 +461,9 @@ describe('app', () => {
 
   describe('when is not authenticated', () => {
     beforeEach(() => {
-      jest
-        .spyOn(apiAdage, 'authenticate')
-        .mockRejectedValue('Authentication failed')
+      vi.spyOn(apiAdage, 'authenticate').mockRejectedValue(
+        'Authentication failed'
+      )
     })
 
     it('should show error page', async () => {

@@ -43,9 +43,10 @@ const defaultProps = {
 
 describe('CollectiveOfferSummaryCreation', () => {
   it('should render collective offer summary ', async () => {
-    jest
-      .spyOn(api, 'getCategories')
-      .mockResolvedValue({ categories: [], subcategories: [] })
+    vi.spyOn(api, 'getCategories').mockResolvedValue({
+      categories: [],
+      subcategories: [],
+    })
     await renderCollectiveOfferSummaryCreation(
       '/offre/A1/collectif/creation/recapitulatif',
       defaultProps

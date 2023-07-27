@@ -37,7 +37,7 @@ const getTestingAdapter = (apiCall: any): TestingAdapter => {
 
 describe('useAdapter', () => {
   it('should return loading payload then success payload', async () => {
-    const successCall = jest
+    const successCall = vi
       .fn()
       .mockResolvedValue(new Promise(r => setTimeout(r, 200)))
     const { result } = renderHook(() =>

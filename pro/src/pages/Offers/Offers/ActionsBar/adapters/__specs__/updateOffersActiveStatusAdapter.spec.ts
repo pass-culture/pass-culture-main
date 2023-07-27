@@ -36,11 +36,9 @@ describe('updateOffersActiveStatusAdapter', () => {
 
   it('should return an error when the update has failed', async () => {
     // given
-    jest
-      .spyOn(api, 'patchOffersActiveStatus')
-      .mockRejectedValueOnce(
-        new ApiError({} as ApiRequestOptions, { status: 422 } as ApiResult, '')
-      )
+    vi.spyOn(api, 'patchOffersActiveStatus').mockRejectedValueOnce(
+      new ApiError({} as ApiRequestOptions, { status: 422 } as ApiResult, '')
+    )
 
     // when
     const response = await updateOffersActiveStatusAdapter({

@@ -33,9 +33,7 @@ vi.mock('repository/pcapi/pcapi', () => ({
 
 vi.mock('utils/date', () => ({
   ...vi.importActual('utils/date'),
-  getToday: jest
-    .fn()
-    .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+  getToday: vi.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
 const renderStockThingScreen = (
@@ -89,16 +87,16 @@ describe('screens:StocksThing', () => {
       shouldTrack: true,
       showVenuePopin: {},
     }
-    jest
-      .spyOn(api, 'getOffer')
-      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    vi.spyOn(api, 'getOffer').mockResolvedValue(
+      {} as GetIndividualOfferResponseModel
+    )
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
-    jest
-      .spyOn(api, 'patchOffer')
-      .mockResolvedValue({} as GetIndividualOfferResponseModel)
+    vi.spyOn(api, 'patchOffer').mockResolvedValue(
+      {} as GetIndividualOfferResponseModel
+    )
   })
 
   it('should track when clicking on "Sauvegarder le brouillon" on creation', async () => {

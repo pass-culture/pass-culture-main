@@ -13,9 +13,7 @@ import { ReimbursementsInvoices } from '../ReimbursementsInvoices'
 
 vi.mock('utils/date', () => ({
   ...vi.importActual('utils/date'),
-  getToday: jest
-    .fn()
-    .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+  getToday: vi.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
 vi.mock('apiClient/api', () => ({
@@ -84,9 +82,9 @@ const BASE_REIMBURSEMENT_POINTS = [
 describe('reimbursementsWithFilters', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getInvoices').mockResolvedValue(BASE_INVOICES)
-    jest
-      .spyOn(api, 'getReimbursementPoints')
-      .mockResolvedValue(BASE_REIMBURSEMENT_POINTS)
+    vi.spyOn(api, 'getReimbursementPoints').mockResolvedValue(
+      BASE_REIMBURSEMENT_POINTS
+    )
   })
 
   it('shoud render a table with invoices', async () => {

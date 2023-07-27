@@ -4,13 +4,5 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
-  "stylelint.validate": ["css", "scss"],
-  "jest.autoRun": {
-    "watch": false,
-    "onSave": "test-file"
-  },
-  "jest.nodeEnv": {
-    "NODE_ICU_DATA": "node_modules/full-icu",
-    "TZ": "UTC"
-  }
+  "stylelint.validate": ["css", "scss"]
 }

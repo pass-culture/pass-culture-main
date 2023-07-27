@@ -36,11 +36,9 @@ describe('getVenuesForOffererAdapter', () => {
   })
 
   it('should return error payload when api call fails', async () => {
-    jest
-      .spyOn(api, 'getVenues')
-      .mockRejectedValueOnce(
-        new ApiError({} as ApiRequestOptions, { status: 500 } as ApiResult, '')
-      )
+    vi.spyOn(api, 'getVenues').mockRejectedValueOnce(
+      new ApiError({} as ApiRequestOptions, { status: 500 } as ApiResult, '')
+    )
 
     const response = await getVenuesForOffererAdapter({
       activeOfferersOnly: true,

@@ -186,23 +186,24 @@ describe('DuplicateOfferCell', () => {
 
       vi.spyOn(api, 'getVenue').mockResolvedValue({} as GetVenueResponseModel)
 
-      jest
-        .spyOn(api, 'getCategories')
-        .mockResolvedValue({ categories: [], subcategories: [] })
+      vi.spyOn(api, 'getCategories').mockResolvedValue({
+        categories: [],
+        subcategories: [],
+      })
 
-      jest
-        .spyOn(api, 'listEducationalOfferers')
-        .mockResolvedValue({ educationalOfferers: [] })
+      vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
+        educationalOfferers: [],
+      })
 
       vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
 
-      jest
-        .spyOn(api, 'duplicateCollectiveOffer')
-        .mockResolvedValue(offerDuplicate)
+      vi.spyOn(api, 'duplicateCollectiveOffer').mockResolvedValue(
+        offerDuplicate
+      )
 
-      jest
-        .spyOn(pcapi, 'postCollectiveOfferImage')
-        .mockResolvedValue({} as AttachImageResponseModel)
+      vi.spyOn(pcapi, 'postCollectiveOfferImage').mockResolvedValue(
+        {} as AttachImageResponseModel
+      )
 
       fetchMock.mockIf(/image.jpg/, 'some response')
     })
@@ -248,9 +249,9 @@ describe('DuplicateOfferCell', () => {
 
     it('should return an error when the duplicate collective offer could not be posted', async () => {
       vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(offer)
-      jest
-        .spyOn(api, 'duplicateCollectiveOffer')
-        .mockRejectedValueOnce({ status: 500 })
+      vi.spyOn(api, 'duplicateCollectiveOffer').mockRejectedValueOnce({
+        status: 500,
+      })
 
       renderDuplicateOfferCell()
 
@@ -267,15 +268,9 @@ describe('DuplicateOfferCell', () => {
 
     it('should return an error 400 when the duplicate collective offer could not be posted', async () => {
       vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(offer)
-      jest
-        .spyOn(api, 'duplicateCollectiveOffer')
-        .mockRejectedValueOnce(
-          new ApiError(
-            {} as ApiRequestOptions,
-            { status: 400 } as ApiResult,
-            ''
-          )
-        )
+      vi.spyOn(api, 'duplicateCollectiveOffer').mockRejectedValueOnce(
+        new ApiError({} as ApiRequestOptions, { status: 400 } as ApiResult, '')
+      )
 
       renderDuplicateOfferCell()
 

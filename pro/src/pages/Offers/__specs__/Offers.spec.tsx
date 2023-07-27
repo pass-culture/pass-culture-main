@@ -45,7 +45,7 @@ const renderOffers = async (
   )
 
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-  jest.clearAllMocks()
+  vi.clearAllMocks()
 }
 
 const categoriesAndSubcategories = {
@@ -87,9 +87,7 @@ vi.mock('apiClient/api', () => ({
 
 vi.mock('utils/date', () => ({
   ...vi.importActual('utils/date'),
-  getToday: jest
-    .fn()
-    .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+  getToday: vi.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
 vi.mock('hooks/useActiveFeature', () => ({
@@ -194,8 +192,7 @@ describe('route Offers', () => {
 
         it('should indicate that no offers match selected filters', async () => {
           // Given
-          jest
-            .spyOn(api, 'listOffers')
+          vi.spyOn(api, 'listOffers')
             // @ts-expect-error FIX ME
             .mockResolvedValueOnce(offersRecap)
             .mockResolvedValueOnce([])
@@ -875,8 +872,7 @@ describe('route Offers', () => {
 
       it('should have max number page of 50', async () => {
         // Given
-        jest
-          .spyOn(api, 'listOffers')
+        vi.spyOn(api, 'listOffers')
           // @ts-expect-error FIX ME
           .mockResolvedValueOnce(offersRecap)
 
@@ -889,8 +885,7 @@ describe('route Offers', () => {
 
       it('should not display the 501st offer', async () => {
         // Given
-        jest
-          .spyOn(api, 'listOffers')
+        vi.spyOn(api, 'listOffers')
           // @ts-expect-error FIX ME
           .mockResolvedValueOnce(offersRecap)
         await renderOffers(store)
@@ -912,8 +907,7 @@ describe('route Offers', () => {
 
   describe('should reset filters', () => {
     it('when clicking on "afficher toutes les offres" when no offers are displayed', async () => {
-      jest
-        .spyOn(api, 'listOffers')
+      vi.spyOn(api, 'listOffers')
         // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
@@ -960,8 +954,7 @@ describe('route Offers', () => {
     })
 
     it('when clicking on "Réinitialiser les filtres"', async () => {
-      jest
-        .spyOn(api, 'listOffers')
+      vi.spyOn(api, 'listOffers')
         // @ts-expect-error FIX ME
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
