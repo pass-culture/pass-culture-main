@@ -6,23 +6,32 @@ import * as React from 'react'
 import type { SearchBoxProvided } from 'react-instantsearch-core'
 import { connectSearchBox } from 'react-instantsearch-dom'
 
-import { OfferAddressType, VenueResponse } from 'apiClient/adage'
+import { VenueResponse } from 'apiClient/adage'
 import useActiveFeature from 'hooks/useActiveFeature'
 import strokeOffersIcon from 'icons/stroke-offers.svg'
 import strokeVenueIcon from 'icons/stroke-venue.svg'
-import { INITIAL_QUERY } from 'pages/AdageIframe/app/constants'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import {
   FacetFiltersContext,
   FiltersContext,
 } from 'pages/AdageIframe/app/providers'
-import { Option } from 'pages/AdageIframe/app/types'
 import Tabs from 'ui-kit/Tabs'
 
-import { adageFiltersToFacetFilters, populateFacetFilters } from '../utils'
+import {
+  ADAGE_FILTERS_DEFAULT_VALUES,
+  adageFiltersToFacetFilters,
+  computeFiltersInitialValues,
+  populateFacetFilters,
+} from '../utils'
 
 import { OfferFilters } from './OfferFilters/OfferFilters'
 import { Offers } from './Offers/Offers'
+
+export enum LocalisationFilterStates {
+  DEPARTMENTS = 'departments',
+  ACADEMIES = 'academies',
+  NONE = 'none',
+}
 
 export interface SearchProps extends SearchBoxProvided {
   venueFilter: VenueResponse | null
@@ -30,8 +39,10 @@ export interface SearchProps extends SearchBoxProvided {
 
 export interface SearchFormValues {
   query: string
-  domains: Option[]
-  students: Option[]
+  domains: string[]
+  students: string[]
+  departments: string[]
+  academies: string[]
   eventAddressType: string
 }
 
@@ -102,30 +113,28 @@ export const OffersSearchComponent = ({
     refine(formik.values.query)
   }
 
-  const handleReset = () => {
-    const updatedFilters = adageFiltersToFacetFilters({
-      ...formik.initialValues,
-      uai:
-        activeTab === OfferTab.ASSOCIATED_TO_INSTITUTION
-          ? uaiCodeShareWithMyInstitutionTab
-          : uaiCodeAllInstitutionsTab,
-    })
-
-    setFacetFilters(updatedFilters.queryFilters)
-    refine(INITIAL_QUERY)
+  const resetForm = () => {
+    setlocalisationFilterState(LocalisationFilterStates.NONE)
+    formik.setValues(ADAGE_FILTERS_DEFAULT_VALUES)
+    formik.handleSubmit()
   }
 
-  const formik = useFormik({
-    initialValues: {
-      query: '',
-      domains: [],
-      students: [],
-      eventAddressType: OfferAddressType.OTHER,
-    },
+  const formik = useFormik<SearchFormValues>({
+    initialValues: computeFiltersInitialValues(adageUser.departmentCode),
     enableReinitialize: true,
     onSubmit: handleSubmit,
-    onReset: handleReset,
   })
+  const getActiveLocalisationFilter = () => {
+    if (formik.values.departments.length > 0) {
+      return LocalisationFilterStates.DEPARTMENTS
+    }
+    if (formik.values.academies.length > 0) {
+      return LocalisationFilterStates.ACADEMIES
+    }
+    return LocalisationFilterStates.NONE
+  }
+  const [localisationFilterState, setlocalisationFilterState] =
+    useState<LocalisationFilterStates>(getActiveLocalisationFilter())
 
   return (
     <>
@@ -133,12 +142,19 @@ export const OffersSearchComponent = ({
         {!!adageUser.uai && !isNewHeaderActive && (
           <Tabs selectedKey={activeTab} tabs={tabs} />
         )}
-        <OfferFilters className="search-filters" isLoading={isLoading} />
+        <OfferFilters
+          className="search-filters"
+          isLoading={isLoading}
+          localisationFilterState={localisationFilterState}
+          setLocalisationFilterState={setlocalisationFilterState}
+          resetForm={resetForm}
+        />
         <div className="search-results">
           <Offers
             setIsLoading={setIsLoading}
             userRole={adageUser.role}
             userEmail={adageUser.email}
+            resetForm={resetForm}
           />
         </div>
       </FormikContext.Provider>

@@ -6,26 +6,39 @@ import React from 'react'
 import * as pcapi from 'pages/AdageIframe/repository/pcapi/pcapi'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { SearchFormValues } from '../../OffersSearch'
+import { LocalisationFilterStates, SearchFormValues } from '../../OffersSearch'
 import { OfferFilters } from '../OfferFilters'
 
 const handleSubmit = vi.fn()
-const handleReset = vi.fn()
+const resetFormMock = vi.fn()
+const mockSetLocalisationFilterState = vi.fn()
+
+jest.mock('apiClient/api', () => ({
+  apiAdage: {
+    getAcademies: jest.fn(),
+  },
+}))
+jest.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
+  getEducationalDomains: jest.fn(),
+}))
 
 const renderOfferFilters = ({
   isLoading,
   initialValues,
+  localisationFilterState = LocalisationFilterStates.NONE,
 }: {
   isLoading: boolean
   initialValues: SearchFormValues
+  localisationFilterState?: LocalisationFilterStates
 }) =>
   renderWithProviders(
-    <Formik
-      initialValues={initialValues}
-      onSubmit={handleSubmit}
-      onReset={handleReset}
-    >
-      <OfferFilters isLoading={isLoading} />
+    <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+      <OfferFilters
+        isLoading={isLoading}
+        localisationFilterState={localisationFilterState}
+        setLocalisationFilterState={mockSetLocalisationFilterState}
+        resetForm={resetFormMock}
+      />
     </Formik>
   )
 
@@ -34,6 +47,8 @@ const initialValues = {
   domains: [],
   students: [],
   eventAddressType: '',
+  departments: [],
+  academies: [],
 }
 
 describe('OfferFilters', () => {
@@ -71,7 +86,7 @@ describe('OfferFilters', () => {
       isLoading: false,
       initialValues: {
         ...initialValues,
-        domains: [{ value: 'test', label: 'test' }],
+        domains: ['test'],
       },
     })
 
@@ -89,7 +104,7 @@ describe('OfferFilters', () => {
       isLoading: false,
       initialValues: {
         ...initialValues,
-        students: [{ value: 'test', label: 'test' }],
+        students: ['test'],
       },
     })
 
@@ -107,7 +122,7 @@ describe('OfferFilters', () => {
       isLoading: false,
       initialValues: {
         ...initialValues,
-        domains: [{ value: 'test', label: 'test' }],
+        domains: ['test'],
       },
     })
 
@@ -127,7 +142,7 @@ describe('OfferFilters', () => {
       isLoading: false,
       initialValues: {
         ...initialValues,
-        students: [{ value: 'test', label: 'test' }],
+        students: ['test'],
       },
     })
 
@@ -161,5 +176,82 @@ describe('OfferFilters', () => {
     expect(screen.getByText('Danse')).toBeInTheDocument()
     expect(screen.getByText('Architecture')).toBeInTheDocument()
     expect(screen.getByText('Arts')).toBeInTheDocument()
+  })
+
+  it('should display departments and academies button in localisation filter modal', async () => {
+    renderOfferFilters({
+      isLoading: false,
+      initialValues: initialValues,
+      localisationFilterState: LocalisationFilterStates.NONE,
+    })
+
+    expect(screen.getByText('Choisir un département')).toBeInTheDocument()
+    expect(screen.getByText('Choisir une académie')).toBeInTheDocument()
+  })
+
+  it('should display departments options in localisation filter modal', async () => {
+    renderOfferFilters({
+      isLoading: false,
+      initialValues: initialValues,
+      localisationFilterState: LocalisationFilterStates.DEPARTMENTS,
+    })
+
+    expect(
+      screen.getByPlaceholderText('Ex: 59 ou Hauts-de-France')
+    ).toBeInTheDocument()
+  })
+  it('should display academies options in localisation filter modal', async () => {
+    renderOfferFilters({
+      isLoading: false,
+      initialValues: initialValues,
+      localisationFilterState: LocalisationFilterStates.ACADEMIES,
+    })
+
+    expect(screen.getByPlaceholderText('Ex: Nantes')).toBeInTheDocument()
+  })
+
+  it('should reset modal state when closing departments filter modal', async () => {
+    renderOfferFilters({
+      isLoading: false,
+      initialValues: initialValues,
+      localisationFilterState: LocalisationFilterStates.DEPARTMENTS,
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Localisation des partenaires',
+      })
+    )
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Réinitialiser',
+      })
+    )
+
+    expect(mockSetLocalisationFilterState).toHaveBeenCalledWith(
+      LocalisationFilterStates.NONE
+    )
+  })
+  it('should reset modal state when closing academies filter modal', async () => {
+    renderOfferFilters({
+      isLoading: false,
+      initialValues: initialValues,
+      localisationFilterState: LocalisationFilterStates.ACADEMIES,
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Localisation des partenaires',
+      })
+    )
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Réinitialiser',
+      })
+    )
+
+    expect(mockSetLocalisationFilterState).toHaveBeenCalledWith(
+      LocalisationFilterStates.NONE
+    )
   })
 })
