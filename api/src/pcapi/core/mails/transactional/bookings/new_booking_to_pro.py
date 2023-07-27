@@ -93,6 +93,7 @@ def get_new_booking_to_pro_email_data(
             "WITHDRAWAL_PERIOD": booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
             if offer.subcategoryId == subcategories.LIVRE_PAPIER.id
             else booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days,
+            "FEATURES": ", ".join(booking.stock.features),
         },
     )
 

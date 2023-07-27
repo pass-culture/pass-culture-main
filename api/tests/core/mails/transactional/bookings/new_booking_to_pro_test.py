@@ -64,6 +64,7 @@ def get_expected_base_email_data(booking, **overrides):
         "USER_PHONENUMBER": "",
         "VENUE_NAME": "Lieu de l'offreur",
         "WITHDRAWAL_PERIOD": 30,
+        "FEATURES": "",
     }
     email_data_params.update(overrides)
     return email_data_params
@@ -359,6 +360,15 @@ class OffererBookingRecapTest:
             email_data = get_new_booking_to_pro_email_data(booking)
 
         assert not email_data.params["NEEDS_BANK_INFORMATION_REMINDER"]
+
+    @pytest.mark.usefixtures("db_session")
+    def test_booking_with_features(self):
+        stock = offers_factories.StockFactory(features=["VO", "IMAX"])
+        booking = make_booking(stock=stock)
+
+        email_data = get_new_booking_to_pro_email_data(booking)
+
+        assert email_data.params["FEATURES"] == "VO, IMAX"
 
 
 class SendNewBookingEmailToProTest:
