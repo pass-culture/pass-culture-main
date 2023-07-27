@@ -13,9 +13,8 @@ vi.mock('hooks/useAnalytics', () => ({
   useConfigureFirebase: vi.fn(),
   default: () => ({ setLogEvent: vi.fn() }),
 }))
-window.scrollTo = vi.fn()
 
-vi.spyOn(window, 'scrollTo').mockImplementation()
+vi.spyOn(window, 'scrollTo').mockResolvedValue()
 
 describe('src | AppRouter', () => {
   it('should redirect to not found page when url is not matching a route', () => {

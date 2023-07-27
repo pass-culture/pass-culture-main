@@ -37,8 +37,9 @@ export const createImageFile = ({
     value: height,
     configurable: true,
   })
-  jest
-    .spyOn(global, 'createImageBitmap')
-    .mockResolvedValue({ width, height } as ImageBitmap)
+  vi.spyOn(global, 'createImageBitmap').mockResolvedValue({
+    width,
+    height,
+  } as ImageBitmap)
   return file
 }

@@ -19,9 +19,10 @@ import { OffererAuthentication } from '..'
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
-vi.mock('apiClient/adresse', () => {
+vi.mock('apiClient/adresse', async () => {
+  const actual = await vi.importActual('apiClient/adresse')
   return {
-    ...vi.importActual('apiClient/adresse'),
+    ...(actual as object),
     default: {
       getDataFromAddress: vi.fn(),
     },
