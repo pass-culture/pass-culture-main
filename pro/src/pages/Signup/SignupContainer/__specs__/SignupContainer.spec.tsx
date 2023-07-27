@@ -13,8 +13,10 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import SignupContainer from '../SignupContainer'
 
 const mockLogEvent = vi.fn()
-window.matchMedia = vi.fn().mockReturnValue({ matches: true })
 
+vi.spyOn(window, 'matchMedia').mockReturnValue({
+  matches: true,
+} as MediaQueryList)
 vi.mock('core/Offerers/adapters/getSirenDataAdapter')
 vi.mock('apiClient/api', () => ({
   api: {

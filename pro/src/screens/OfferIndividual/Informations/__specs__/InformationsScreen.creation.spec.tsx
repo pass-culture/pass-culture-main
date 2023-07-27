@@ -34,7 +34,9 @@ vi.mock('screens/OfferIndividual/Informations/utils', () => {
   }
 })
 
-window.matchMedia = vi.fn().mockReturnValue({ matches: true })
+vi.spyOn(window, 'matchMedia').mockReturnValue({
+  matches: true,
+} as MediaQueryList)
 
 vi.mock('repository/pcapi/pcapi', () => ({
   postThumbnail: vi.fn(),

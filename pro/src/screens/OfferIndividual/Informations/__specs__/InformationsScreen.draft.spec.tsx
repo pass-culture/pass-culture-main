@@ -29,7 +29,9 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { InformationsProps, Informations as InformationsScreen } from '..'
 
-window.matchMedia = vi.fn().mockReturnValue({ matches: true })
+vi.spyOn(window, 'matchMedia').mockReturnValue({
+  matches: true,
+} as MediaQueryList)
 const mockLogEvent = vi.fn()
 
 vi.mock('screens/OfferIndividual/Informations/utils', () => {
