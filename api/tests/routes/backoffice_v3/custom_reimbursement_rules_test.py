@@ -424,8 +424,9 @@ class EditCustomReimbursementRuleTest(PostEndpointHelper):
     endpoint_kwargs = {"reimbursement_rule_id": 1}
     needed_permission = perm_models.Permissions.CREATE_REIMBURSEMENT_RULES
 
-    def test_update_custom_reimbursement_rule(self, authenticated_client):
-        original_timespan = (datetime.datetime.today() + datetime.timedelta(days=1), None)
+    @pytest.mark.parametrize("start_day_gap", (1, -1))
+    def test_update_custom_reimbursement_rule(self, authenticated_client, start_day_gap):
+        original_timespan = (datetime.datetime.today() + datetime.timedelta(days=start_day_gap), None)
         rule = finance_factories.CustomReimbursementRuleFactory(timespan=original_timespan)
         new_end_date = datetime.date.today() + datetime.timedelta(days=5)
 
@@ -444,6 +445,27 @@ class EditCustomReimbursementRuleTest(PostEndpointHelper):
         assert rule.timespan.upper == date_utils.get_day_start(
             new_end_date + datetime.timedelta(days=1), finance_utils.ACCOUNTING_TIMEZONE
         ).astimezone(tz=None).replace(tzinfo=None)
+
+    def test_update_with_anterior_end_date(self, authenticated_client):
+        original_timespan = (
+            datetime.datetime.today() - datetime.timedelta(days=5),
+            None,
+        )
+        rule = finance_factories.CustomReimbursementRuleFactory(timespan=original_timespan)
+        new_end_date = datetime.date.today() - datetime.timedelta(days=1)
+
+        response = self.post_to_endpoint(
+            authenticated_client, reimbursement_rule_id=rule.id, form={"end_date": new_end_date}
+        )
+
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "La date de fin doit être postérieure à la date du jour."
+        )
+
+        db.session.refresh(rule)
+        assert rule.timespan.lower, rule.timespan.upper == original_timespan
 
     def test_update_when_end_date_already_defined(self, authenticated_client):
         original_timespan = (
