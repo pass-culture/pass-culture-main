@@ -1,73 +1,60 @@
 {
-    "minWordSizefor1Typo": 4,
-    "minWordSizefor2Typos": 8,
-    "hitsPerPage": 20,
-    "maxValuesPerFacet": 100,
-    "version": 2,
-    "attributesToRetrieve": null,
-    "ignorePlurals": [
-        "fr"
-    ],
-    "removeStopWords": [
-        "fr"
-    ],
-    "distinct": true,
-    "unretrievableAttributes": null,
-    "optionalWords": null,
-    "queryLanguages": [
-        "fr"
-    ],
-    "attributesForFaceting": [
-        "filterOnly(offer.domains)",
-        "filterOnly(offer.educationalInstitutionUAICode)",
-        "filterOnly(offer.eventAddressType)",
-        "filterOnly(offer.interventionArea)",
-        "filterOnly(offer.students)",
-        "filterOnly(offer.subcategoryId)",
-        "filterOnly(venue.departmentCode)",
-        "filterOnly(venue.id)"
-    ],
-    "attributesToSnippet": null,
-    "attributesToHighlight": null,
-    "paginationLimitedTo": 50000,
-    "attributeForDistinct": "distinct",
-    "exactOnSingleWordQuery": "attribute",
-    "disableTypoToleranceOnAttributes": [
-        "distinct"
-    ],
-    "ranking": [
-        "typo",
-        "geo",
-        "words",
-        "filters",
-        "proximity",
-        "attribute",
-        "exact",
-        "custom"
-    ],
-    "customRanking": [
-        "desc(offer.dateCreated)"
-    ],
-    "separatorsToIndex": "+",
-    "removeWordsIfNoResults": "none",
-    "queryType": "prefixLast",
-    "highlightPreTag": "<em>",
-    "highlightPostTag": "</em>",
-    "snippetEllipsisText": "",
-    "alternativesAsExact": [
-        "ignorePlurals",
-        "singleWordSynonym"
-    ],
-    "indexLanguages": [
-        "fr"
-    ],
-    "searchableAttributes": [
-        "unordered(offer.name)",
-        "unordered(offerer.name)",
-        "unordered(offer.artist)",
-        "unordered(distinct)",
-        "unordered(venue.name)",
-        "unordered(venue.publicName)"
-    ],
-    "numericAttributesForFiltering": null
+  "minWordSizefor1Typo": 4,
+  "minWordSizefor2Typos": 8,
+  "hitsPerPage": 20,
+  "maxValuesPerFacet": 100,
+  "version": 2,
+  "attributesToRetrieve": null,
+  "ignorePlurals": ["fr"],
+  "removeStopWords": ["fr"],
+  "distinct": true,
+  "unretrievableAttributes": null,
+  "optionalWords": null,
+  "queryLanguages": ["fr"],
+  "attributesForFaceting": [
+    "filterOnly(offer.domains)",
+    "filterOnly(offer.educationalInstitutionUAICode)",
+    "filterOnly(offer.eventAddressType)",
+    "filterOnly(offer.interventionArea)",
+    "filterOnly(offer.schoolInterventionArea)",
+    "filterOnly(offer.students)",
+    "filterOnly(offer.subcategoryId)",
+    "filterOnly(venue.departmentCode)",
+    "filterOnly(venue.id)"
+  ],
+  "attributesToSnippet": null,
+  "attributesToHighlight": null,
+  "paginationLimitedTo": 50000,
+  "attributeForDistinct": "distinct",
+  "exactOnSingleWordQuery": "attribute",
+  "disableTypoToleranceOnAttributes": ["distinct"],
+  "ranking": [
+    "typo",
+    "geo",
+    "words",
+    "filters",
+    "proximity",
+    "attribute",
+    "exact",
+    "custom"
+  ],
+  "customRanking": ["desc(offer.dateCreated)"],
+  "separatorsToIndex": "+",
+  "removeWordsIfNoResults": "none",
+  "queryType": "prefixLast",
+  "highlightPreTag": "<em>",
+  "highlightPostTag": "</em>",
+  "snippetEllipsisText": "",
+  "alternativesAsExact": ["ignorePlurals", "singleWordSynonym"],
+  "indexLanguages": ["fr"],
+  "searchableAttributes": [
+    "unordered(offer.name)",
+    "unordered(offer.description)",
+    "unordered(offerer.name)",
+    "unordered(offer.artist)",
+    "unordered(distinct)",
+    "unordered(venue.name)",
+    "unordered(venue.publicName)"
+  ],
+  "numericAttributesForFiltering": null
 }

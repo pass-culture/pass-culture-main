@@ -25,7 +25,6 @@
     div:not(:last-of-type) {
       margin-bottom: rem.torem(16px);
     }
-
   }
 
   &-button-clear {
@@ -34,4 +33,6 @@
   }
 }
 
-
+.localisation-list-button:not(:last-child) {
+  margin-bottom: rem.torem(16px);
+}
