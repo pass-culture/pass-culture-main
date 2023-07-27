@@ -77,6 +77,7 @@ def get_expected_base_sendinblue_email_data(booking, mediation, **overrides):
             "BOOKING_LINK": f"https://webapp-v2.example.com/reservation/{booking.id}/details",
             "OFFER_WITHDRAWAL_TYPE": None,
             "OFFER_WITHDRAWAL_DELAY": None,
+            "FEATURES": "",
         },
     )
     email_data.params.update(overrides)
@@ -95,7 +96,7 @@ def test_should_return_event_specific_data_for_email_when_offer_is_an_event_send
 
 @freeze_time("2021-10-15 12:48:00")
 def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event_sendinblue():
-    booking = booking = BookingFactory(
+    booking = BookingFactory(
         stock=offers_factories.EventStockFactory(price=23.99), dateCreated=datetime.utcnow(), quantity=2
     )
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
@@ -197,6 +198,36 @@ def test_should_return_offer_tags():
         mediation,
         OFFER_TAGS="Tagged_offer",
         **{key: value for key, value in email_data.params.items() if key != "OFFER_TAGS"},
+    )
+    assert email_data == expected
+
+
+@freeze_time("2021-10-15 12:48:00")
+def test_should_return_offer_features():
+    stock = offers_factories.ThingStockFactory(
+        features=["VO", "IMAX"],
+        price=23.99,
+    )
+    booking = BookingFactory(
+        dateCreated=datetime.utcnow(),
+        stock=stock,
+    )
+    mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
+
+    email_data = get_booking_confirmation_to_beneficiary_email_data(booking)
+
+    expected = get_expected_base_sendinblue_email_data(
+        booking,
+        mediation,
+        FEATURES="VO, IMAX",
+        ALL_THINGS_NOT_VIRTUAL_THING=True,
+        EVENT_DATE=None,
+        EVENT_HOUR=None,
+        IS_EVENT=False,
+        IS_SINGLE_EVENT=False,
+        CAN_EXPIRE=True,
+        EXPIRATION_DELAY=30,
+        BOOKING_LINK=f"https://webapp-v2.example.com/reservation/{booking.id}/details",
     )
     assert email_data == expected
 
