@@ -1,13 +1,13 @@
 import { removeWhitespaces } from 'utils/string'
 
-export function formatSirenOrSiret(string) {
-  const value = removeWhitespaces(string)
+export const formatSirenOrSiret = (sirenOrSiret: string) => {
+  const value = removeWhitespaces(sirenOrSiret)
   if (!value) {
     return ''
   }
 
-  if (isNaN(value)) {
-    return string.slice(0, -1)
+  if (isNaN(parseInt(value))) {
+    return sirenOrSiret.slice(0, -1)
   }
 
   const siren = value.substring(0, 9)
