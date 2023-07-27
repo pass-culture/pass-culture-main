@@ -1,11 +1,12 @@
 import 'regenerator-runtime/runtime'
-import { toHaveNoViolations } from 'jest-axe'
-import fetchMock from 'jest-fetch-mock'
-
+import { expect, vi } from 'vitest'
+import * as matchers from 'vitest-axe/matchers'
 import '@testing-library/jest-dom'
+import createFetchMock from 'vitest-fetch-mock'
 
-expect.extend(toHaveNoViolations)
+expect.extend(matchers)
 
+const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 fetchMock.mockResponse(req => {
   // eslint-disable-next-line
