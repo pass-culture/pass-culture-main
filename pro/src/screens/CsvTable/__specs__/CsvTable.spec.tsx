@@ -16,7 +16,7 @@ interface CsvTableTestProps {
 const renderCsvTable = (props: CsvTableTestProps) =>
   renderWithProviders(<CsvTable {...(props as unknown as CsvTableProps)} />)
 
-const getCsvDataMock = jest.spyOn(csvService, 'getCsvData')
+const getCsvDataMock = vi.spyOn(csvService, 'getCsvData')
 
 describe('src | components | layout | CsvTable', () => {
   let dataFromCsv: TableData

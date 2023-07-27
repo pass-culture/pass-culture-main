@@ -20,7 +20,7 @@ jest.mock('apiClient/api', () => ({
 
 describe('CollectiveOfferPracticalInformation', () => {
   it('when offer is template', async () => {
-    jest.spyOn(api, 'getVenue').mockResolvedValue({
+    vi.spyOn(api, 'getVenue').mockResolvedValue({
       id: 1,
     } as GetVenueResponseModel)
     renderWithProviders(

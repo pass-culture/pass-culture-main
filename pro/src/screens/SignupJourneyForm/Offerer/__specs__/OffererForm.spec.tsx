@@ -97,7 +97,7 @@ describe('screens:SignupJourney::OffererForm', () => {
       setActivity: () => {},
       setOfferer: () => {},
     }
-    jest.spyOn(api, 'getSiretInfo').mockResolvedValue({
+    vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
       active: true,
       address: {
         city: 'Paris',
@@ -190,7 +190,7 @@ describe('screens:SignupJourney::OffererForm', () => {
   })
 
   it("should render error message when siret doesn't exist", async () => {
-    jest.spyOn(api, 'getSiretInfo').mockRejectedValueOnce(
+    vi.spyOn(api, 'getSiretInfo').mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
         {

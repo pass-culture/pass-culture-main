@@ -65,7 +65,7 @@ describe('src | Venue | ReimbursementFields', () => {
     store = {
       app: { logEvent: mockLogEvent },
     }
-    jest.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([])
+    vi.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([])
   })
 
   it('should display banner if offerer has no pricing point and venue has no siret', async () => {

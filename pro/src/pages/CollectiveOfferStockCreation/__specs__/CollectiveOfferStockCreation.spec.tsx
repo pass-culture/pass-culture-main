@@ -76,14 +76,14 @@ describe('CollectiveOfferStockCreation', () => {
       ...defaultProps,
       offer: { ...defaultProps.offer, templateId: 12 },
     }
-    jest.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValue({
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValue({
       isOk: false,
       message: 'Une erreur est survenue lors de la récupération de votre offre',
       payload: null,
     })
     const notifyError = vi.fn()
     // @ts-expect-error
-    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       error: notifyError,
     }))
     renderCollectiveStockCreation('/offre/A1/collectif/stocks', props)
@@ -121,11 +121,11 @@ describe('CollectiveOfferStockCreation', () => {
   it('should render collective offer stock form from requested offer failed', async () => {
     const notifyError = vi.fn()
     // @ts-expect-error
-    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       error: notifyError,
     }))
 
-    jest.spyOn(api, 'getCollectiveOfferRequest').mockRejectedValue({
+    vi.spyOn(api, 'getCollectiveOfferRequest').mockRejectedValue({
       isOk: false,
       message: 'Une erreur est survenue lors de la récupération de votre offre',
       payload: null,

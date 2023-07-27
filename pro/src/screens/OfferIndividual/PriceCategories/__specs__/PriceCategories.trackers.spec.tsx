@@ -58,7 +58,7 @@ const renderPriceCategories = (
 
 describe('trackers for PriceCategories', () => {
   beforeEach(() => {
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))

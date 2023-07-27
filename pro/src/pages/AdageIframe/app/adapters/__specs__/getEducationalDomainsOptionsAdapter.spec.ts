@@ -5,7 +5,7 @@ import { getEducationalDomainsOptionsAdapter } from '../getEducationalDomainsOpt
 describe('getEducationalDomainsOptionsAdapter', () => {
   it('should return an error when server responds with an error', async () => {
     // given
-    jest.spyOn(pcapi, 'getEducationalDomains').mockRejectedValueOnce({
+    vi.spyOn(pcapi, 'getEducationalDomains').mockRejectedValueOnce({
       status: 500,
     })
 
@@ -21,7 +21,7 @@ describe('getEducationalDomainsOptionsAdapter', () => {
 
   it('should return domains options when the api call was successful', async () => {
     // given
-    jest.spyOn(pcapi, 'getEducationalDomains').mockResolvedValueOnce([
+    vi.spyOn(pcapi, 'getEducationalDomains').mockResolvedValueOnce([
       { id: 1, name: 'Danse' },
       { id: 2, name: 'Architecture' },
       { id: 3, name: 'Arts' },

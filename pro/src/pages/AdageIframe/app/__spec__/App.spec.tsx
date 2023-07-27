@@ -121,15 +121,15 @@ describe('app', () => {
         relative: [],
       }
 
-      jest.spyOn(apiAdage, 'authenticate').mockResolvedValue({
+      vi.spyOn(apiAdage, 'authenticate').mockResolvedValue({
         role: AdageFrontRoles.REDACTOR,
         uai: 'uai',
         departmentCode: '30',
         institutionName: 'COLLEGE BELLEVUE',
         institutionCity: 'ALES',
       })
-      jest.spyOn(apiAdage, 'getVenueBySiret').mockResolvedValue(venue)
-      jest.spyOn(apiAdage, 'getVenueById').mockResolvedValue(venue)
+      vi.spyOn(apiAdage, 'getVenueBySiret').mockResolvedValue(venue)
+      vi.spyOn(apiAdage, 'getVenueById').mockResolvedValue(venue)
     })
 
     it('should show search offers input with no filter on venue when no siret or venueId is provided', async () => {
@@ -286,7 +286,7 @@ describe('app', () => {
       // Given
       const siret = '123456789'
       window.location.search = `?siret=${siret}&all=true`
-      jest.spyOn(apiAdage, 'getVenueBySiret').mockResolvedValueOnce({
+      vi.spyOn(apiAdage, 'getVenueBySiret').mockResolvedValueOnce({
         ...venue,
         relative: [123, 456],
       })
@@ -315,7 +315,7 @@ describe('app', () => {
     it('should add all related venues in facet filters when venue is provided and "all" query param is true', async () => {
       // Given
       window.location.search = `?venue=${venue.id}&all=true`
-      jest.spyOn(apiAdage, 'getVenueById').mockResolvedValueOnce({
+      vi.spyOn(apiAdage, 'getVenueById').mockResolvedValueOnce({
         ...venue,
         relative: [123, 456],
       })
@@ -417,7 +417,7 @@ describe('app', () => {
 
       it('should not display tabs if user does not have UAI code', async () => {
         // Given
-        jest.spyOn(apiAdage, 'authenticate').mockResolvedValueOnce({
+        vi.spyOn(apiAdage, 'authenticate').mockResolvedValueOnce({
           role: AdageFrontRoles.REDACTOR,
           uai: null,
         })

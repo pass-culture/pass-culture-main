@@ -32,7 +32,7 @@ describe('tutorial modal', () => {
     storeOverrides = {}
   })
   it('should trigger an event when the user arrive on /accueil for the first time', async () => {
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))

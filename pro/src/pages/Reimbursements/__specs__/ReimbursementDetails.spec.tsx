@@ -78,8 +78,8 @@ describe('reimbursementsWithFilters', () => {
   }
 
   beforeEach(() => {
-    jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: BASE_VENUES })
-    jest.spyOn(api, 'getInvoices').mockResolvedValue(BASE_INVOICES)
+    vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: BASE_VENUES })
+    vi.spyOn(api, 'getInvoices').mockResolvedValue(BASE_INVOICES)
   })
 
   it('should not disable buttons when the period dates are filled', async () => {
@@ -224,7 +224,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should display no refunds message when user has no associated venues', async () => {
-    jest.spyOn(api, 'getVenues').mockResolvedValueOnce({ venues: [] })
+    vi.spyOn(api, 'getVenues').mockResolvedValueOnce({ venues: [] })
     renderWithProviders(<ReimbursementsDetails />, {
       storeOverrides,
     })

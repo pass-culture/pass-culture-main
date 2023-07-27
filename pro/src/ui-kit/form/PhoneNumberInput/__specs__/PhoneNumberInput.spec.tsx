@@ -7,12 +7,10 @@ import React from 'react'
 import { PHONE_CODE_COUNTRY_CODE_OPTIONS, PLACEHOLDER_MAP } from '../constants'
 import PhoneNumberInput from '../PhoneNumberInput'
 
-jest.mock('libphonenumber-js', () => {
-  return {
-    ...jest.requireActual('libphonenumber-js'),
-    parsePhoneNumberFromString: vi.fn(),
-  }
-})
+vi.mock('libphonenumber-js', () => ({
+  ...vi.importActual('libphonenumber-js'),
+  parsePhoneNumberFromString: vi.fn(),
+}))
 
 const renderPhoneNumberInput = (label = 'Téléphone') => {
   render(

@@ -198,14 +198,14 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     jest
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
-    jest.spyOn(api, 'postOffer').mockResolvedValue({
+    vi.spyOn(api, 'postOffer').mockResolvedValue({
       id: offerId,
     } as GetIndividualOfferResponseModel)
     jest
       .spyOn(utils, 'filterCategories')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .mockImplementation((c, s, _v) => [c, s])
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
@@ -265,7 +265,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     const nameField = screen.getByLabelText('Titre de l’offre')
     await userEvent.type(nameField, 'Le nom de mon offre')
 
-    jest.spyOn(api, 'postOffer').mockRejectedValue(
+    vi.spyOn(api, 'postOffer').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {

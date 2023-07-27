@@ -156,7 +156,7 @@ describe('src | routes | Desk', () => {
 
   it('test getBooking failure, booking cancelled', async () => {
     const cancelledErrorMessage = 'Cette réservation a été annulée'
-    jest.spyOn(apiContremarque, 'getBookingByTokenV2').mockRejectedValue(
+    vi.spyOn(apiContremarque, 'getBookingByTokenV2').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -187,7 +187,7 @@ describe('src | routes | Desk', () => {
 
   it('test getBooking failure, booking reimbursed', async () => {
     const cancelledErrorMessage = 'Cette réservation a été remboursée'
-    jest.spyOn(apiContremarque, 'getBookingByTokenV2').mockRejectedValue(
+    vi.spyOn(apiContremarque, 'getBookingByTokenV2').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -219,7 +219,7 @@ describe('src | routes | Desk', () => {
   it('test getBooking failure, booking cant be validated yet', async () => {
     const notConfirmedErrorMessage =
       'Cette réservation a été effectuée le 05/09/2022.\nVeuillez attendre jusqu’au 07/09/2022 pour valider la contremarque.'
-    jest.spyOn(apiContremarque, 'getBookingByTokenV2').mockRejectedValue(
+    vi.spyOn(apiContremarque, 'getBookingByTokenV2').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -282,7 +282,7 @@ describe('src | routes | Desk', () => {
   })
 
   it('test submitInvalidate success', async () => {
-    jest.spyOn(apiContremarque, 'patchBookingKeepByToken').mockResolvedValue()
+    vi.spyOn(apiContremarque, 'patchBookingKeepByToken').mockResolvedValue()
 
     const { buttonSubmitInvalidate, responseDataContainer } =
       await renderDeskRoute()
@@ -300,7 +300,7 @@ describe('src | routes | Desk', () => {
 
   it('test submitInvalidate error', async () => {
     const submitInvalidateErrorMessage = 'An Error Happen on submitInvalidate !'
-    jest.spyOn(apiContremarque, 'patchBookingKeepByToken').mockRejectedValue(
+    vi.spyOn(apiContremarque, 'patchBookingKeepByToken').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -333,7 +333,7 @@ describe('src | routes | Desk', () => {
   })
 
   it('test submitValidate success', async () => {
-    jest.spyOn(apiContremarque, 'patchBookingUseByToken').mockResolvedValue()
+    vi.spyOn(apiContremarque, 'patchBookingUseByToken').mockResolvedValue()
 
     const { buttonSubmitValidate, responseDataContainer } =
       await renderDeskRoute()
@@ -351,7 +351,7 @@ describe('src | routes | Desk', () => {
 
   it('test submitValidate error', async () => {
     const submitInvalidateErrorMessage = 'An Error Happen on submitValidate!'
-    jest.spyOn(apiContremarque, 'patchBookingUseByToken').mockRejectedValue(
+    vi.spyOn(apiContremarque, 'patchBookingUseByToken').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
         {

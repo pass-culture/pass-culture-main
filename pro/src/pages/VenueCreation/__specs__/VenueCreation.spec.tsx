@@ -67,9 +67,9 @@ describe('route VenueCreation', () => {
       id: 1,
     } as GetOffererResponseModel
 
-    jest.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
-    jest.spyOn(api, 'getVenueTypes').mockResolvedValue([])
-    jest.spyOn(api, 'fetchVenueLabels').mockResolvedValue([])
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
+    vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
+    vi.spyOn(api, 'fetchVenueLabels').mockResolvedValue([])
   })
 
   it('should display venue form screen with creation title', async () => {

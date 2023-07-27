@@ -96,7 +96,7 @@ describe('offer', () => {
         screen.getByText('Êtes-vous sûr de vouloir préréserver ?')
       ).toBeInTheDocument()
 
-      jest.spyOn(apiAdage, 'bookCollectiveOffer').mockRejectedValueOnce({
+      vi.spyOn(apiAdage, 'bookCollectiveOffer').mockRejectedValueOnce({
         statusCode: 400,
         body: { code: 'WRONG_UAI_CODE' },
       })

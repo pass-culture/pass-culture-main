@@ -52,7 +52,7 @@ describe('AdageHeader', () => {
   }
 
   beforeEach(() => {
-    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...jest.requireActual('hooks/useNotification'),
       error: notifyError,
     }))
@@ -136,7 +136,7 @@ describe('AdageHeader', () => {
     }
   )
   it('should not display budget when user is readonly ', async () => {
-    jest.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
+    vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
 
     renderAdageHeader([], { ...user, role: AdageFrontRoles.READONLY })
 
@@ -144,7 +144,7 @@ describe('AdageHeader', () => {
   })
 
   it('should not display adage link when user is readonly ', async () => {
-    jest.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
+    vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
 
     renderAdageHeader([], { ...user, role: AdageFrontRoles.READONLY })
 
@@ -154,7 +154,7 @@ describe('AdageHeader', () => {
   })
 
   it('should not display help download link when user is readonly ', async () => {
-    jest.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
+    vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
 
     renderAdageHeader([], { ...user, role: AdageFrontRoles.READONLY })
 

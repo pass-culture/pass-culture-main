@@ -116,7 +116,7 @@ describe('CollectiveDmsTimeline', () => {
     DMSApplicationstatus.SANS_SUITE,
   ]
   beforeEach(() => {
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       ...jest.requireActual('hooks/useAnalytics'),
       logEvent: mockLogEvent,
     }))

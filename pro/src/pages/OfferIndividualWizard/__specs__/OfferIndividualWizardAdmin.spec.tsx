@@ -60,12 +60,12 @@ describe('OfferIndividualWizard', () => {
     jest
       .spyOn(api, 'listOfferersNames')
       .mockResolvedValue({ offerersNames: [] })
-    jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
+    vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
     jest
       .spyOn(api, 'getCategories')
       .mockResolvedValue({ categories: [], subcategories: [] })
-    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
-    jest.spyOn(api, 'listOffers').mockResolvedValue([
+    vi.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
+    vi.spyOn(api, 'listOffers').mockResolvedValue([
       {
         id: 1,
         status: 'ACTIVE',
@@ -148,7 +148,7 @@ describe('OfferIndividualWizard', () => {
   })
 
   it('should initialize context with api when a offerId is given', async () => {
-    jest.spyOn(api, 'getCategories').mockResolvedValue({
+    vi.spyOn(api, 'getCategories').mockResolvedValue({
       categories: [
         {
           id: 'A',

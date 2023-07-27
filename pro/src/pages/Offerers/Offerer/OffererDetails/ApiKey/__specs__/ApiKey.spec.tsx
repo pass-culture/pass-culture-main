@@ -82,7 +82,7 @@ describe('ApiKey', () => {
   it('should copy key in clipboar', async () => {
     // given
     renderApiKey()
-    jest.spyOn(navigator.clipboard, 'writeText')
+    vi.spyOn(navigator.clipboard, 'writeText')
     generateFakeOffererApiKey('new-key')
     await userEvent.click(
       screen.getByText('Générer une clé API', { selector: 'button' })
@@ -100,7 +100,7 @@ describe('ApiKey', () => {
     // given
     renderApiKey()
 
-    const showNotificationSpy = jest.spyOn(
+    const showNotificationSpy = vi.spyOn(
       notificationReducer,
       'showNotification'
     )
@@ -121,7 +121,7 @@ describe('ApiKey', () => {
 
   it('should not delete key on modal dismiss', async () => {
     renderApiKey()
-    const deleteSpy = jest.spyOn(api, 'deleteApiKey').mockResolvedValue()
+    const deleteSpy = vi.spyOn(api, 'deleteApiKey').mockResolvedValue()
     await userEvent.click(screen.getByText('supprimer'))
 
     // when
@@ -135,7 +135,7 @@ describe('ApiKey', () => {
 
   it('should delete a key on modal confirm', async () => {
     renderApiKey()
-    const deleteSpy = jest.spyOn(api, 'deleteApiKey').mockResolvedValue()
+    const deleteSpy = vi.spyOn(api, 'deleteApiKey').mockResolvedValue()
     await userEvent.click(screen.getByText('supprimer'))
 
     // when

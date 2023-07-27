@@ -50,13 +50,13 @@ describe('tracker screen Offers', () => {
       venues: [],
       categories: [],
     }
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
 
     const individualOffererNames = individualOfferOffererFactory()
-    jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [individualOffererNames],
     })
 

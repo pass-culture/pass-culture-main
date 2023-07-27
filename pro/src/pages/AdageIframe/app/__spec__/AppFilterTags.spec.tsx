@@ -128,7 +128,7 @@ describe('app', () => {
       relative: [],
     }
 
-    jest.spyOn(apiAdage, 'authenticate').mockResolvedValue({
+    vi.spyOn(apiAdage, 'authenticate').mockResolvedValue({
       role: AdageFrontRoles.REDACTOR,
       uai: 'uai',
     })

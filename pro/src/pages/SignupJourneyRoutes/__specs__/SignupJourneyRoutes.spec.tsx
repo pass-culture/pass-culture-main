@@ -42,7 +42,7 @@ describe('SignupJourneyRoutes', () => {
       },
     }
 
-    jest.spyOn(api, 'getVenueTypes').mockResolvedValue([])
+    vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
   })
 
   it('should render component', async () => {

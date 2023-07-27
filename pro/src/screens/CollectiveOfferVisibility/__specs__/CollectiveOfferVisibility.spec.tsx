@@ -217,7 +217,7 @@ describe('CollectiveOfferVisibility', () => {
       .mockResolvedValue({ isOk: false, message: 'Ooops' })
     const notifyError = vi.fn()
     // @ts-expect-error
-    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       error: notifyError,
     }))
     renderVisibilityStep({ ...props, patchInstitution: spyPatch })
@@ -356,7 +356,7 @@ describe('CollectiveOfferVisibility', () => {
     })
 
     it('should prefill form with requested information', async () => {
-      jest.spyOn(api, 'getCollectiveOfferRequest').mockResolvedValueOnce({
+      vi.spyOn(api, 'getCollectiveOfferRequest').mockResolvedValueOnce({
         comment: 'Test unit',
         redactor: {
           email: 'compte.test@education.gouv.fr',
@@ -406,12 +406,12 @@ describe('CollectiveOfferVisibility', () => {
     it('should display error message on api error getting requested info', async () => {
       const notifyError = vi.fn()
 
-      jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+      vi.spyOn(useNotification, 'default').mockImplementation(() => ({
         ...jest.requireActual('hooks/useNotification'),
         error: notifyError,
       }))
 
-      jest.spyOn(api, 'getCollectiveOfferRequest').mockRejectedValue({
+      vi.spyOn(api, 'getCollectiveOfferRequest').mockRejectedValue({
         isOk: false,
         message:
           'Une erreur est survenue lors de la récupération de votre offre',

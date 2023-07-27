@@ -142,7 +142,7 @@ describe('OfferFilters', () => {
   })
 
   it('should return domains options when the api call was successful', async () => {
-    jest.spyOn(pcapi, 'getEducationalDomains').mockResolvedValueOnce([
+    vi.spyOn(pcapi, 'getEducationalDomains').mockResolvedValueOnce([
       { id: 1, name: 'Danse' },
       { id: 2, name: 'Architecture' },
       { id: 3, name: 'Arts' },

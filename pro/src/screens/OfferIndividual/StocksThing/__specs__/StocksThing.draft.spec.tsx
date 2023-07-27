@@ -123,7 +123,7 @@ describe('screens:StocksThing::draft', () => {
     jest
       .spyOn(api, 'getOffer')
       .mockResolvedValue({} as GetIndividualOfferResponseModel)
-    jest.spyOn(api, 'upsertStocks')
+    vi.spyOn(api, 'upsertStocks')
   })
 
   it('should show a success notification if nothing has been touched', async () => {

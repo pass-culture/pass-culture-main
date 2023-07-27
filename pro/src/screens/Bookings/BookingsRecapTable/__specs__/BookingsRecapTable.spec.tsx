@@ -107,7 +107,7 @@ describe('components | BookingsRecapTable', () => {
         statuses: ['booked', 'cancelled'],
       },
     }
-    jest.spyOn(filterBookingsRecap, 'default').mockReturnValue([])
+    vi.spyOn(filterBookingsRecap, 'default').mockReturnValue([])
 
     // When
     renderBookingRecap(props)
@@ -127,7 +127,7 @@ describe('components | BookingsRecapTable', () => {
   })
 
   it('should filter bookings collective on render', async () => {
-    jest.spyOn(bookingDetailsAdapter, 'default').mockResolvedValue({
+    vi.spyOn(bookingDetailsAdapter, 'default').mockResolvedValue({
       isOk: true,
       message: '',
       payload: collectiveBookingDetailsFactory(),
@@ -141,7 +141,7 @@ describe('components | BookingsRecapTable', () => {
         statuses: ['booked', 'cancelled'],
       },
     }
-    jest.spyOn(filterBookingsRecap, 'default').mockReturnValue([])
+    vi.spyOn(filterBookingsRecap, 'default').mockReturnValue([])
 
     // When
     renderBookingRecap(props, '123')
@@ -166,7 +166,7 @@ describe('components | BookingsRecapTable', () => {
     // eslint-disable-next-line
     constants.NB_BOOKINGS_PER_PAGE = 1
     const bookingsRecap = [bookingRecapFactory(), bookingRecapFactory()]
-    jest.spyOn(filterBookingsRecap, 'default').mockReturnValue(bookingsRecap)
+    vi.spyOn(filterBookingsRecap, 'default').mockReturnValue(bookingsRecap)
     const props: Props = {
       ...defaultProps,
       bookingsRecap: bookingsRecap,
@@ -193,7 +193,7 @@ describe('components | BookingsRecapTable', () => {
     // eslint-disable-next-line
     constants.NB_BOOKINGS_PER_PAGE = 1
     const bookingRecap = bookingRecapFactory(bookingInstitutionCustom)
-    jest.spyOn(filterBookingsRecap, 'default').mockReturnValue([bookingRecap])
+    vi.spyOn(filterBookingsRecap, 'default').mockReturnValue([bookingRecap])
     const props: Props = {
       ...defaultProps,
       audience: Audience.COLLECTIVE,
@@ -274,15 +274,15 @@ describe('components | BookingsRecapTable', () => {
     const bookingsRecap = [
       collectiveBookingRecapFactory({ bookingId: 'mon booking id' }),
     ]
-    jest.spyOn(filterBookingsRecap, 'default').mockReturnValue(bookingsRecap)
-    jest.spyOn(bookingDetailsAdapter, 'default').mockResolvedValue({
+    vi.spyOn(filterBookingsRecap, 'default').mockReturnValue(bookingsRecap)
+    vi.spyOn(bookingDetailsAdapter, 'default').mockResolvedValue({
       isOk: true,
       message: '',
       payload: collectiveBookingDetailsFactory(),
     })
 
     const mockLogEvent = vi.fn()
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       ...jest.requireActual('hooks/useAnalytics'),
       logEvent: mockLogEvent,
     }))
@@ -312,7 +312,7 @@ describe('components | BookingsRecapTable', () => {
   it('should not re-open reservation when there is bookingId in the url but bookingId filter changed', async () => {
     const bookingsRecap = [collectiveBookingRecapFactory({ bookingId: '123' })]
 
-    jest.spyOn(filterBookingsRecap, 'default').mockReturnValue([])
+    vi.spyOn(filterBookingsRecap, 'default').mockReturnValue([])
 
     const props: Props = {
       ...defaultProps,

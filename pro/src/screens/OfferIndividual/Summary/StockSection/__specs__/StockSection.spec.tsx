@@ -78,7 +78,7 @@ describe('Summary stock section', () => {
   let props: StockSectionProps
 
   beforeEach(() => {
-    jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))

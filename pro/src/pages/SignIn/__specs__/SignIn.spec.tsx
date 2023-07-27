@@ -169,7 +169,7 @@ describe('src | components | pages | SignIn', () => {
     })
 
     it('should trigger a tracking event', async () => {
-      jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
         logEvent: mockLogEvent,
         setLogEvent: null,
       }))
@@ -232,7 +232,7 @@ describe('src | components | pages | SignIn', () => {
     const password = screen.getByLabelText('Mot de passe')
     await userEvent.type(password, 'MCSolar85')
 
-    jest.spyOn(api, 'signin').mockRejectedValueOnce(
+    vi.spyOn(api, 'signin').mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -263,7 +263,7 @@ describe('src | components | pages | SignIn', () => {
     const password = screen.getByLabelText('Mot de passe')
     await userEvent.type(password, 'MCSolar85')
 
-    jest.spyOn(api, 'signin').mockRejectedValueOnce(
+    vi.spyOn(api, 'signin').mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -361,7 +361,7 @@ describe('src | components | pages | SignIn', () => {
     })
 
     it('should not redirect user to onboarding page if use has an offerer', async () => {
-      jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
         offerersNames: [
           {
             id: 1,
@@ -394,7 +394,7 @@ describe('src | components | pages | SignIn', () => {
     })
 
     it('should redirect user to offer page on signin with url parameter', async () => {
-      jest.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
         offerersNames: [
           {
             id: 1,
