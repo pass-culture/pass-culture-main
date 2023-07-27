@@ -1,8 +1,9 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import fetch from 'jest-fetch-mock'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
+import { vi } from 'vitest'
+import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
@@ -19,6 +20,8 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { Offerer } from '..'
 import { DEFAULT_OFFERER_FORM_VALUES } from '../constants'
 
+const fetchMock = createFetchMock(vi)
+
 vi.mock('apiClient/api', () => ({
   api: {
     getSiretInfo: vi.fn(),
@@ -28,7 +31,7 @@ vi.mock('apiClient/api', () => ({
 
 // Mock l'appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
 // Appel fait dans apiAdresse.getDataFromAddress
-fetch.mockResponse(
+fetchMock.mockResponse(
   JSON.stringify({
     features: [
       {
