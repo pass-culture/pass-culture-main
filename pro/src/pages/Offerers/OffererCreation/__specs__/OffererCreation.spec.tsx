@@ -23,7 +23,7 @@ const renderOffererCreation = async (storeOverrides: any) =>
     { storeOverrides, initialRouterEntries: ['/'] }
   )
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getSirenInfo: vi.fn(),
     createOfferer: vi.fn(),

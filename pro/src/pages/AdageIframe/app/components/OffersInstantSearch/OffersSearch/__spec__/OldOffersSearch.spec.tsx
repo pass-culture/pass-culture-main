@@ -19,7 +19,7 @@ jest.mock('../Offers/Offers', () => {
   }
 })
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   apiAdage: {
     getEducationalOffersCategories: vi.fn(),
   },

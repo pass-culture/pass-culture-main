@@ -6,7 +6,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Homepage from '../../Homepage'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getOfferer: vi.fn(),
     listOfferersNames: vi.fn(),

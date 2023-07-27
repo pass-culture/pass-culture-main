@@ -5,7 +5,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Signup from '../Signup'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getProfile: vi.fn().mockResolvedValue({}),
     listFeatures: vi.fn(),

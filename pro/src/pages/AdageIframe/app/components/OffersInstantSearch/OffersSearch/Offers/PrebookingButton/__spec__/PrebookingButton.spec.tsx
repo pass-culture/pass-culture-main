@@ -7,11 +7,11 @@ import { apiAdage } from 'apiClient/api'
 
 import PrebookingButton from '../PrebookingButton'
 
-jest.mock('repository/pcapi/pcapi', () => ({
+vi.mock('repository/pcapi/pcapi', () => ({
   preBookStock: vi.fn(),
 }))
 jest.mock('pages/AdageIframe/libs/initAlgoliaAnalytics')
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   apiAdage: { bookCollectiveOffer: vi.fn() },
 }))
 

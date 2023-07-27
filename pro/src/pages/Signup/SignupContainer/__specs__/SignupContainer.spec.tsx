@@ -16,7 +16,7 @@ const mockLogEvent = vi.fn()
 window.matchMedia = vi.fn().mockReturnValue({ matches: true })
 
 jest.mock('core/Offerers/adapters/getSirenDataAdapter')
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getProfile: vi.fn().mockResolvedValue({}),
     signupPro: vi.fn(),

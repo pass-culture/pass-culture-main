@@ -7,13 +7,13 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffererDetails from '../OffererDetails'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getOfferer: vi.fn(),
   },
 }))
 
-jest.mock('react-router-dom', () => ({
+vi.mock('react-router-dom', () => ({
   ...vi.importActual('react-router-dom'),
   useParams: () => ({
     offererId: 'AA',

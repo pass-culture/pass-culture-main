@@ -21,7 +21,7 @@ import ActivityForm, {
 import { DEFAULT_ACTIVITY_FORM_VALUES } from '../constants'
 import { validationSchema } from '../validationSchema'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getVenueTypes: vi.fn(),
   },

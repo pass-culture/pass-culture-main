@@ -16,7 +16,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferItem, { OfferItemProps } from '../OfferItem'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     deleteDraftOffers: vi.fn(),
   },

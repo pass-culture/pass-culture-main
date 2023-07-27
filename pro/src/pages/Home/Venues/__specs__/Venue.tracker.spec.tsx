@@ -15,7 +15,7 @@ import Venue, { VenueProps } from '../Venue'
 
 const mockLogEvent = vi.fn()
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getVenueStats: vi.fn().mockResolvedValue({}),
   },

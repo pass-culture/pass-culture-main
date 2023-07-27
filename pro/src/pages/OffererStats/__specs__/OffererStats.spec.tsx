@@ -8,7 +8,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffererStats from '../OffererStats'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getOfferer: vi.fn(),
     getOffererStatsDashboardUrl: vi.fn(),

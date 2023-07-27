@@ -20,7 +20,7 @@ import { DEFAULT_OFFERER_FORM_VALUES } from '../constants'
 import OffererForm, { OffererFormValues } from '../OffererForm'
 import { validationSchema } from '../validationSchema'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getSiretInfo: vi.fn(),
   },

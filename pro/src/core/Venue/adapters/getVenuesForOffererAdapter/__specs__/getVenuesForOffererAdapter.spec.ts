@@ -7,7 +7,7 @@ import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
 import getVenuesForOffererAdapter from '../getVenuesForOffererAdapter'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getVenues: vi.fn(),
   },

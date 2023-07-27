@@ -10,7 +10,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import Header from '../Header'
 
 const mockLogEvent = vi.fn()
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: { signout: vi.fn(), listOfferersNames: vi.fn() },
 }))
 

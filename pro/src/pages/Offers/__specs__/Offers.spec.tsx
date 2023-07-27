@@ -72,11 +72,11 @@ const proVenues = [
   },
 ]
 
-jest.mock('repository/venuesService', () => ({
+vi.mock('repository/venuesService', () => ({
   ...vi.importActual('repository/venuesService'),
 }))
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getCategories: vi.fn().mockResolvedValue(categoriesAndSubcategories),
     listOffers: vi.fn(),
@@ -85,7 +85,7 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-jest.mock('utils/date', () => ({
+vi.mock('utils/date', () => ({
   ...vi.importActual('utils/date'),
   getToday: jest
     .fn()

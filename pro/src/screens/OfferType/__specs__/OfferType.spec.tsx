@@ -20,7 +20,7 @@ import OfferType from '../OfferType'
 
 const mockLogEvent = vi.fn()
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     listOfferersNames: vi.fn(),
     canOffererCreateEducationalOffer: vi.fn(),

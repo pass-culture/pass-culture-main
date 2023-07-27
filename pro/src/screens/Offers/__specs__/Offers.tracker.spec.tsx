@@ -21,7 +21,7 @@ const mockLogEvent = vi.fn()
 const renderOffers = (props: OffersProps) =>
   renderWithProviders(<Offers {...props} />)
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     listOfferersNames: vi.fn().mockReturnValue({}),
   },

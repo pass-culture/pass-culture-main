@@ -15,7 +15,7 @@ import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
 import Homepage from '../Homepage'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getProfile: vi.fn(),
     listOfferersNames: vi.fn(),

@@ -12,7 +12,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CollectiveOfferPracticalInformation from '..'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getVenue: vi.fn(),
   },

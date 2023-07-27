@@ -39,7 +39,7 @@ jest.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
   getFeatures: vi.fn().mockResolvedValue([]),
 }))
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   apiAdage: {
     authenticate: vi.fn(),
     getCollectiveOffer: vi.fn(),
