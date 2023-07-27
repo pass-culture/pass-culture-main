@@ -16,14 +16,14 @@ jest.mock('core/Venue/siretApiValidate')
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getSiretInfo: jest.fn(),
-    getDataFromAddress: jest.fn(),
+    getSiretInfo: vi.fn(),
+    getDataFromAddress: vi.fn(),
   },
 }))
 
 const renderSiretOrComment = async ({
   initialValues,
-  onSubmit = jest.fn(),
+  onSubmit = vi.fn(),
   props,
   validationSchema,
 }: {
@@ -61,12 +61,12 @@ describe('components | SiretOrCommentFields', () => {
   let props: SiretOrCommentInterface
   let initialValues: Partial<VenueFormValues>
   let validationSchema: any
-  const onSubmit = jest.fn()
+  const onSubmit = vi.fn()
 
   beforeEach(() => {
-    const setIsFieldNameFrozen = jest.fn()
-    const updateIsSiretValued = jest.fn()
-    const setIsSiretValued = jest.fn()
+    const setIsFieldNameFrozen = vi.fn()
+    const updateIsSiretValued = vi.fn()
+    const setIsSiretValued = vi.fn()
     validationSchema = generateSiretValidationSchema('012345678', true)
     initialValues = { comment: '', siret: '', isVenueVirtual: false }
     props = {

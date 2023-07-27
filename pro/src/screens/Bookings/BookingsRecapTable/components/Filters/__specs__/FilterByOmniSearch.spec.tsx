@@ -14,7 +14,7 @@ describe('components | FilterByOmniSearch', () => {
       audience: Audience.INDIVIDUAL,
       keywords: '',
       selectedOmniSearchCriteria: 'offre',
-      updateFilters: jest.fn(),
+      updateFilters: vi.fn(),
       isDisabled: false,
     }
   })

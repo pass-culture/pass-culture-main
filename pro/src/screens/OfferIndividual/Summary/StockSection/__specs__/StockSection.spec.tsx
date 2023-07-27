@@ -17,7 +17,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StockSection, { StockSectionProps } from '../StockSection'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 const renderStockSection = (
   props: StockSectionProps,

@@ -4,8 +4,8 @@ import React from 'react'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getCollectiveOffer: jest.fn(),
-    getCollectiveOfferTemplate: jest.fn(),
+    getCollectiveOffer: vi.fn(),
+    getCollectiveOfferTemplate: vi.fn(),
   },
 }))
 

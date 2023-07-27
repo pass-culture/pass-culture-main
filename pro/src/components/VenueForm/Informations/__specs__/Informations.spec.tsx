@@ -30,14 +30,14 @@ jest.mock('apiClient/adresse', () => {
   return {
     ...jest.requireActual('apiClient/adresse'),
     default: {
-      getDataFromAddress: jest.fn(),
+      getDataFromAddress: vi.fn(),
     },
   }
 })
 
 const renderInformations = ({
   initialValues,
-  onSubmit = jest.fn(),
+  onSubmit = vi.fn(),
   props,
 }: {
   initialValues: Partial<VenueFormValues>
@@ -77,11 +77,11 @@ const renderInformations = ({
 describe('components | Informations', () => {
   let props: InformationsProps
   let initialValues: Partial<VenueFormValues>
-  const onSubmit = jest.fn()
+  const onSubmit = vi.fn()
 
   beforeEach(() => {
-    const updateIsSiretValued = jest.fn()
-    const setIsSiretValued = jest.fn()
+    const updateIsSiretValued = vi.fn()
+    const setIsSiretValued = vi.fn()
     initialValues = { ...DEFAULT_INFORMATIONS_FORM_VALUES }
     props = {
       isCreatedEntity: true,

@@ -9,7 +9,7 @@ import OffererDetails from '../OffererDetails'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getOfferer: jest.fn(),
+    getOfferer: vi.fn(),
   },
 }))
 

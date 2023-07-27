@@ -6,8 +6,8 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { ButtonLinkNewWindow, ButtonLinkNewWindowProps } from '..'
 
-window.open = jest.fn()
-const mockLogEvent = jest.fn()
+window.open = vi.fn()
+const mockLogEvent = vi.fn()
 
 const renderButtonLinkNewWindow = (props: ButtonLinkNewWindowProps) =>
   renderWithProviders(

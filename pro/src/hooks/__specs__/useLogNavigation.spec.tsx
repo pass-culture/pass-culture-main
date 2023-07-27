@@ -7,7 +7,7 @@ import * as useAnalytics from 'hooks/useAnalytics'
 import useLogNavigation from 'hooks/useLogNavigation'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 const NavigationLogger = (): null => {
   useLogNavigation()

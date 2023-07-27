@@ -15,9 +15,9 @@ import StocksEventList, {
   StocksEventListProps,
 } from '../StocksEventList'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
-const mockSetSotcks = jest.fn()
+const mockSetSotcks = vi.fn()
 
 const renderStocksEventList = (props: Partial<StocksEventListProps>) => {
   renderWithProviders(

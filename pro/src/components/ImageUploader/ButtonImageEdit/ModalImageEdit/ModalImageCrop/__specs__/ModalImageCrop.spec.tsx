@@ -6,18 +6,18 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ModalImageCrop from '../ModalImageCrop'
 
-const mockReplaceImage = jest.fn()
+const mockReplaceImage = vi.fn()
 const defaultProps = {
   image: new File([], 'toto.png', {
     type: 'image/png',
   }),
-  onSetImage: jest.fn(),
+  onSetImage: vi.fn(),
   onReplaceImage: mockReplaceImage,
   credit: '',
-  onEditedImageSave: jest.fn(),
-  saveInitialPosition: jest.fn(),
-  saveInitialScale: jest.fn(),
-  onSetCredit: jest.fn(),
+  onEditedImageSave: vi.fn(),
+  saveInitialPosition: vi.fn(),
+  saveInitialScale: vi.fn(),
+  onSetCredit: vi.fn(),
   mode: UploaderModeEnum.OFFER,
   submitButtonText: 'Suivant',
 }

@@ -9,7 +9,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { PriceCategoriesSection } from '../PriceCategoriesSection'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 describe('StockEventSection', () => {
   beforeEach(() => {

@@ -7,7 +7,7 @@ import { GetVenueResponseModel } from 'apiClient/v1'
 import CollectiveData from '../CollectiveData'
 
 jest.mock('apiClient/api', () => ({
-  api: { getEducationalPartners: jest.fn() },
+  api: { getEducationalPartners: vi.fn() },
 }))
 
 describe('CollectiveData', () => {

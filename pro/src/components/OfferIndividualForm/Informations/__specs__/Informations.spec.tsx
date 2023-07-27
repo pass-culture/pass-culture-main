@@ -11,7 +11,7 @@ import { validationSchema } from '../validationSchema'
 const renderInformations = ({
   props,
   initialValues,
-  onSubmit = jest.fn(),
+  onSubmit = vi.fn(),
 }: {
   props: InformationsProps
   initialValues: Partial<OfferIndividualFormValues>
@@ -30,7 +30,7 @@ const renderInformations = ({
 
 describe('OfferIndividual section: UsefulInformations', () => {
   let initialValues: Partial<OfferIndividualFormValues>
-  const onSubmit = jest.fn()
+  const onSubmit = vi.fn()
   let props: InformationsProps
 
   beforeEach(() => {

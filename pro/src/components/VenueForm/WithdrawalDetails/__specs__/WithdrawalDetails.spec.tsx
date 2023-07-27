@@ -13,7 +13,7 @@ import {
 const renderWithdrawalDetails = async ({
   isCreatedEntity,
   initialValues,
-  onSubmit = jest.fn(),
+  onSubmit = vi.fn(),
 }: {
   isCreatedEntity: boolean
   initialValues: Partial<VenueFormValues>
@@ -37,7 +37,7 @@ const renderWithdrawalDetails = async ({
 
 describe('components | WithdrawalDetails', () => {
   let initialValues: Partial<VenueFormValues>
-  const onSubmit = jest.fn()
+  const onSubmit = vi.fn()
 
   it('should not display checkbox', async () => {
     await renderWithdrawalDetails({

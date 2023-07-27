@@ -10,10 +10,10 @@ import { AppRouter } from '../AppRouter'
 
 jest.mock('hooks/useAnalytics', () => ({
   __esModule: true,
-  useConfigureFirebase: jest.fn(),
-  default: () => ({ setLogEvent: jest.fn() }),
+  useConfigureFirebase: vi.fn(),
+  default: () => ({ setLogEvent: vi.fn() }),
 }))
-window.scrollTo = jest.fn()
+window.scrollTo = vi.fn()
 
 jest.spyOn(window, 'scrollTo').mockImplementation()
 

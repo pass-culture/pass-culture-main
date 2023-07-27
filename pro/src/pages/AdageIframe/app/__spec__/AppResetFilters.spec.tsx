@@ -32,18 +32,18 @@ jest.mock('react-instantsearch-dom', () => {
 })
 
 jest.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
-  getEducationalDomains: jest.fn().mockResolvedValue([
+  getEducationalDomains: vi.fn().mockResolvedValue([
     { id: 1, name: 'Danse' },
     { id: 2, name: 'Architecture' },
   ]),
-  getFeatures: jest.fn().mockResolvedValue([]),
+  getFeatures: vi.fn().mockResolvedValue([]),
 }))
 
 jest.mock('apiClient/api', () => ({
   apiAdage: {
-    authenticate: jest.fn(),
-    getCollectiveOffer: jest.fn(),
-    getEducationalOffersCategories: jest.fn().mockResolvedValue({
+    authenticate: vi.fn(),
+    getCollectiveOffer: vi.fn(),
+    getEducationalOffersCategories: vi.fn().mockResolvedValue({
       categories: [
         { id: 'CINEMA', proLabel: 'Cinéma' },
         { id: 'MUSEE', proLabel: 'Musée' },
@@ -71,10 +71,10 @@ jest.mock('apiClient/api', () => ({
         },
       ],
     }),
-    getVenueById: jest.fn(),
-    getVenueBySiret: jest.fn(),
-    logCatalogView: jest.fn(),
-    logSearchButtonClick: jest.fn(),
+    getVenueById: vi.fn(),
+    getVenueBySiret: vi.fn(),
+    logCatalogView: vi.fn(),
+    logSearchButtonClick: vi.fn(),
   },
 }))
 

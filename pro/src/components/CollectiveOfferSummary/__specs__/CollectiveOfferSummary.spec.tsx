@@ -15,9 +15,9 @@ import CollectiveOfferSummary, {
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getCollectiveOffer: jest.fn(),
-    getCollectiveOfferTemplate: jest.fn(),
-    getVenue: jest.fn(),
+    getCollectiveOffer: vi.fn(),
+    getCollectiveOfferTemplate: vi.fn(),
+    getVenue: vi.fn(),
   },
 }))
 

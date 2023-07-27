@@ -23,21 +23,21 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import BookingsRecapContainer from '../Bookings'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getFilteredBookingsCSV: jest.fn(),
+  getFilteredBookingsCSV: vi.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getProfile: jest.fn(),
-    getBookingsPro: jest.fn(),
-    getVenues: jest.fn(),
-    getUserHasBookings: jest.fn(),
+    getProfile: vi.fn(),
+    getBookingsPro: vi.fn(),
+    getVenues: vi.fn(),
+    getUserHasBookings: vi.fn(),
   },
 }))
 
 jest.mock('utils/date', () => ({
   ...jest.requireActual('utils/date'),
-  getToday: jest.fn().mockReturnValue(new Date('2020-06-15T12:00:00Z')),
+  getToday: vi.fn().mockReturnValue(new Date('2020-06-15T12:00:00Z')),
 }))
 const NTH_ARGUMENT_GET_BOOKINGS = {
   page: 1,

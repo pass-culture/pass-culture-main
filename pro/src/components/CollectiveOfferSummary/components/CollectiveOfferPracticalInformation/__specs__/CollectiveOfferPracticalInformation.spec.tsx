@@ -14,7 +14,7 @@ import CollectiveOfferPracticalInformation from '..'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getVenue: jest.fn(),
+    getVenue: vi.fn(),
   },
 }))
 

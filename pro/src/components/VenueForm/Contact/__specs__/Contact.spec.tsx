@@ -12,7 +12,7 @@ import { VenueFormValues } from '../../types'
 
 const renderContact = ({
   initialValues,
-  onSubmit = jest.fn(),
+  onSubmit = vi.fn(),
   props,
 }: {
   initialValues: Partial<VenueFormValues>
@@ -39,7 +39,7 @@ const renderContact = ({
 describe('Contacts', () => {
   let props: ContactProps
   let initialValues: Partial<VenueFormValues>
-  const onSubmit = jest.fn()
+  const onSubmit = vi.fn()
 
   beforeEach(() => {
     initialValues = { ...DEFAULT_ACTIVITY_FORM_VALUES }

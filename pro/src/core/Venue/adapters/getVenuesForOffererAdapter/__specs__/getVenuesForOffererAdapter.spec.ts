@@ -9,7 +9,7 @@ import getVenuesForOffererAdapter from '../getVenuesForOffererAdapter'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getVenues: jest.fn(),
+    getVenues: vi.fn(),
   },
 }))
 

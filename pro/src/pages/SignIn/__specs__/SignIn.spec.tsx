@@ -21,13 +21,13 @@ import SignIn from '../SignIn'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getProfile: jest.fn(),
-    signin: jest.fn(),
-    listOfferersNames: jest.fn(),
+    getProfile: vi.fn(),
+    signin: vi.fn(),
+    listOfferersNames: vi.fn(),
   },
 }))
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 const renderSignIn = (
   storeOverrides?: any,

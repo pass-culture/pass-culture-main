@@ -61,7 +61,7 @@ describe('useAdapter', () => {
   })
 
   it('should return loading payload then failure payload', async () => {
-    const failureCall = jest.fn().mockRejectedValue('Api error')
+    const failureCall = vi.fn().mockRejectedValue('Api error')
     const { result } = renderHook(() =>
       useAdapter<SuccessPayload, FailurePayload>(getTestingAdapter(failureCall))
     )

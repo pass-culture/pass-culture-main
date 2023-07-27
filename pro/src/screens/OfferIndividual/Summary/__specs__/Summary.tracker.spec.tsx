@@ -17,11 +17,11 @@ import {
 } from '../../../../context/OfferIndividualContext'
 import Summary from '../Summary'
 
-const mockLogEvent = jest.fn()
-window.open = jest.fn()
+const mockLogEvent = vi.fn()
+window.open = vi.fn()
 
 jest.mock('apiClient/api', () => ({
-  api: { patchPublishOffer: jest.fn().mockResolvedValue({}) },
+  api: { patchPublishOffer: vi.fn().mockResolvedValue({}) },
 }))
 
 const defaultContext: OfferIndividualContextValues = {

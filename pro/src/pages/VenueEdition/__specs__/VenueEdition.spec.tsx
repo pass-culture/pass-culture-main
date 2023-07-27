@@ -46,17 +46,17 @@ const renderVenueEdition = (venueId: number, offererId: number) => {
 
 jest.mock('apiClient/api', () => ({
   api: {
-    fetchVenueLabels: jest.fn(),
-    getVenue: jest.fn(),
-    getOfferer: jest.fn(),
-    getVenueTypes: jest.fn(),
-    listVenueProviders: jest.fn(),
-    listOffers: jest.fn(),
+    fetchVenueLabels: vi.fn(),
+    getVenue: vi.fn(),
+    getOfferer: vi.fn(),
+    getVenueTypes: vi.fn(),
+    listVenueProviders: vi.fn(),
+    listOffers: vi.fn(),
   },
 }))
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  loadProviders: jest.fn(),
+  loadProviders: vi.fn(),
 }))
 
 jest.mock('react-router-dom', () => ({
@@ -65,7 +65,7 @@ jest.mock('react-router-dom', () => ({
     offererId: '1234',
     venueId: '12',
   }),
-  useNavigate: jest.fn(),
+  useNavigate: vi.fn(),
 }))
 
 describe('route VenueEdition', () => {
@@ -188,7 +188,7 @@ describe('route VenueEdition', () => {
         ''
       )
     )
-    const mockNavigate = jest.fn()
+    const mockNavigate = vi.fn()
     jest.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
     // When
     renderVenueEdition(venue.id, offerer.id)

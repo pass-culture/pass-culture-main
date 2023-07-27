@@ -35,14 +35,14 @@ jest.mock('apiClient/adresse', () => {
   return {
     ...jest.requireActual('apiClient/adresse'),
     default: {
-      getDataFromAddress: jest.fn(),
+      getDataFromAddress: vi.fn(),
     },
   }
 })
 
 const renderAddress = async ({
   initialValues,
-  onSubmit = jest.fn(),
+  onSubmit = vi.fn(),
 }: {
   initialValues: Partial<VenueFormValues>
   onSubmit: () => void
@@ -73,7 +73,7 @@ const renderAddress = async ({
 
 describe('AddressSelect', () => {
   let initialValues: Partial<VenueFormValues>
-  const onSubmit = jest.fn()
+  const onSubmit = vi.fn()
 
   beforeEach(() => {
     initialValues = {

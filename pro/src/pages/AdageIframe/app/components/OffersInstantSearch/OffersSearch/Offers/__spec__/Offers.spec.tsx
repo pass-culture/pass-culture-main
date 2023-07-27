@@ -25,7 +25,7 @@ import { ResultType } from 'utils/types'
 import { OffersComponent, OffersComponentProps } from '../Offers'
 
 jest.mock('apiClient/api', () => ({
-  apiAdage: { getCollectiveOffer: jest.fn(), logSearchButtonClick: jest.fn() },
+  apiAdage: { getCollectiveOffer: vi.fn(), logSearchButtonClick: vi.fn() },
 }))
 
 const searchFakeResults: Hit<ResultType>[] = [
@@ -214,14 +214,14 @@ describe('offers', () => {
     }
 
     offersProps = {
-      handleResetFiltersAndLaunchSearch: jest.fn(),
+      handleResetFiltersAndLaunchSearch: vi.fn(),
       hits: searchFakeResults,
-      setIsLoading: jest.fn(),
+      setIsLoading: vi.fn(),
       userRole: AdageFrontRoles.REDACTOR,
-      refineNext: jest.fn(),
+      refineNext: vi.fn(),
       hasMore: true,
       hasPrevious: false,
-      refinePrevious: jest.fn(),
+      refinePrevious: vi.fn(),
       nbHits: 2,
       nbSortedHits: 0,
       areHitsSorted: true,

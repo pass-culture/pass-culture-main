@@ -16,8 +16,8 @@ const renderDeactivationConfirmDialog = ({
 }
 
 describe('DeactivationConfirmDialog', () => {
-  const onCancelDialogMock = jest.fn()
-  const onConfirmDialogMock = jest.fn()
+  const onCancelDialogMock = vi.fn()
+  const onConfirmDialogMock = vi.fn()
   const props = {
     areAllOffersSelected: false,
     onCancel: onCancelDialogMock,

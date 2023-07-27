@@ -7,7 +7,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { UserIdentityForm } from '../'
 import { UserIdentityFormProps } from '../UserIdentityForm'
 
-const patchIdentityAdapterMock = jest.fn()
+const patchIdentityAdapterMock = vi.fn()
 
 const renderUserIdentityForm = (props: UserIdentityFormProps) => {
   const storeOverrides = {
@@ -33,7 +33,7 @@ describe('components:UserIdentityForm', () => {
   beforeEach(() => {
     patchIdentityAdapterMock.mockResolvedValue({})
     props = {
-      closeForm: jest.fn(),
+      closeForm: vi.fn(),
       initialValues: {
         firstName: 'FirstName',
         lastName: 'lastName',

@@ -218,7 +218,7 @@ describe('StocksEventCreation', () => {
   })
 })
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 describe('navigation and submit', () => {
   beforeEach(() => {
     jest.spyOn(api, 'upsertStocks').mockResolvedValue({ stocks: [] })

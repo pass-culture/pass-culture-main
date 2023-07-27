@@ -15,7 +15,7 @@ import ApiKey from '../ApiKey'
 const defaultProps = {
   maxAllowedApiKeys: 5,
   savedApiKeys: ['key-prefix1'],
-  reloadOfferer: jest.fn(),
+  reloadOfferer: vi.fn(),
 }
 const offererId = 1
 

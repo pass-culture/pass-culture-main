@@ -11,7 +11,7 @@ describe('ButtonLink', () => {
   const props = { to: '#', isExternal: true }
 
   it('should call callback action when clicking the button', async () => {
-    const onClick = jest.fn()
+    const onClick = vi.fn()
     render(
       <ButtonLink link={props} onClick={onClick}>
         test
@@ -59,7 +59,7 @@ describe('ButtonLink', () => {
   })
 
   it('should not call callback action when button disabled', async () => {
-    const onClick = jest.fn()
+    const onClick = vi.fn()
     render(
       <ButtonLink link={props} onClick={onClick} isDisabled>
         test

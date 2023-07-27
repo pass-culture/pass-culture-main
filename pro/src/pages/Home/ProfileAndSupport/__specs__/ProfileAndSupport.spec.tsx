@@ -9,7 +9,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ProfileAndSupport from '../ProfileAndSupport'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 const renderProfileAndSupport = () => {
   const currentUser = {

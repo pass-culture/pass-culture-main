@@ -16,14 +16,14 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Offers, { OffersProps } from '../Offers'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 const renderOffers = (props: OffersProps) =>
   renderWithProviders(<Offers {...props} />)
 
 jest.mock('apiClient/api', () => ({
   api: {
-    listOfferersNames: jest.fn().mockReturnValue({}),
+    listOfferersNames: vi.fn().mockReturnValue({}),
   },
 }))
 
@@ -37,16 +37,16 @@ describe('tracker screen Offers', () => {
         isAdmin: false,
         roles: [UserRole.PRO],
       },
-      loadAndUpdateOffers: jest.fn(),
+      loadAndUpdateOffers: vi.fn(),
       offerer: offererFactory(),
       offers: [],
-      setIsLoading: jest.fn(),
-      setOfferer: jest.fn(),
+      setIsLoading: vi.fn(),
+      setOfferer: vi.fn(),
       urlSearchFilters: DEFAULT_SEARCH_FILTERS,
       separateIndividualAndCollectiveOffers: false,
       initialSearchFilters: DEFAULT_SEARCH_FILTERS,
       audience: Audience.INDIVIDUAL,
-      redirectWithUrlFilters: jest.fn(),
+      redirectWithUrlFilters: vi.fn(),
       venues: [],
       categories: [],
     }

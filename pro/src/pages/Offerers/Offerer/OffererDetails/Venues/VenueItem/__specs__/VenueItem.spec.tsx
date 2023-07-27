@@ -9,7 +9,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import VenueItem, { VenueItemProps } from '../VenueItem'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 describe('VenueItem', () => {
   let props: VenueItemProps

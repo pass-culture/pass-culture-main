@@ -18,7 +18,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { OFFER_WIZARD_STEP_IDS } from '../constants'
 import OfferIndividualBreadcrumb from '../OfferIndividualBreadcrumb'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 const renderOfferIndividualBreadcrumb = (
   contextOverride: Partial<OfferIndividualContextValues> = {},

@@ -17,7 +17,7 @@ describe('src | components | layout | Banner', () => {
     })
 
     it('should close', async () => {
-      const spyClose = jest.fn()
+      const spyClose = vi.fn()
       const closeable = {
         closeLabel: 'Supprimer l’option',
         onClose: spyClose,

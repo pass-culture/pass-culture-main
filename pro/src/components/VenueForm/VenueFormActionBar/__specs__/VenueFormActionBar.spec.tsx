@@ -31,7 +31,7 @@ const renderVanueFormActionBar = ({
   }
 
   renderWithProviders(
-    <Formik initialValues={{}} onSubmit={jest.fn()}>
+    <Formik initialValues={{}} onSubmit={vi.fn()}>
       <VenueFormActionBar isCreatingVenue={isCreatingVenue} offererId={59} />
     </Formik>,
     { storeOverrides }

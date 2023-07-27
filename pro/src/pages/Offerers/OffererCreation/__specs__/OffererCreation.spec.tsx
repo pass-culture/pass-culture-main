@@ -25,8 +25,8 @@ const renderOffererCreation = async (storeOverrides: any) =>
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getSirenInfo: jest.fn(),
-    createOfferer: jest.fn(),
+    getSirenInfo: vi.fn(),
+    createOfferer: vi.fn(),
   },
 }))
 

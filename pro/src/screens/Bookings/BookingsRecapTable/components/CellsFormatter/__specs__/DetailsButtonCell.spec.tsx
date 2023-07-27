@@ -17,7 +17,7 @@ const renderDetailsButtonCell = (row: Row<CollectiveBookingResponseModel>) => {
 
 describe('DetailsButtonCell', () => {
   it('should log event when clicking on the button', async () => {
-    const mockLogEvent = jest.fn()
+    const mockLogEvent = vi.fn()
     jest.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       ...jest.requireActual('hooks/useAnalytics'),
       logEvent: mockLogEvent,

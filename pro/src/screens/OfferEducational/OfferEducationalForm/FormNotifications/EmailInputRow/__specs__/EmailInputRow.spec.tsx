@@ -7,7 +7,7 @@ import EmailInputRow from '../EmailInputRow'
 describe('EmailInputRow', () => {
   it('should render trash icon by default', () => {
     render(
-      <Formik initialValues={{}} onSubmit={jest.fn()}>
+      <Formik initialValues={{}} onSubmit={vi.fn()}>
         <EmailInputRow disableForm={false} name={`email`} key={`email`} />
       </Formik>
     )

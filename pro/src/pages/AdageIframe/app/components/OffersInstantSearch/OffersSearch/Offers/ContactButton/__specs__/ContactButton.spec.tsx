@@ -20,7 +20,7 @@ const renderContactButton = (
 }
 jest.mock('apiClient/api', () => ({
   apiAdage: {
-    logContactModalButtonClick: jest.fn(),
+    logContactModalButtonClick: vi.fn(),
   },
 }))
 

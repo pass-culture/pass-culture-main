@@ -33,15 +33,15 @@ const renderActionsBar = (props: ActionBarProps) => {
 
 jest.mock('apiClient/api', () => ({
   api: {
-    patchOffersActiveStatus: jest.fn().mockResolvedValue({}),
-    deleteDraftOffers: jest.fn().mockResolvedValue({}),
-    patchAllOffersActiveStatus: jest.fn().mockResolvedValue({}),
+    patchOffersActiveStatus: vi.fn().mockResolvedValue({}),
+    deleteDraftOffers: vi.fn().mockResolvedValue({}),
+    patchAllOffersActiveStatus: vi.fn().mockResolvedValue({}),
   },
 }))
 
-const mockLogEvent = jest.fn()
-const mockGetUpdateOffersStatusMessage = jest.fn().mockReturnValue('')
-const mockCanDeleteOffers = jest.fn().mockReturnValue(true)
+const mockLogEvent = vi.fn()
+const mockGetUpdateOffersStatusMessage = vi.fn().mockReturnValue('')
+const mockCanDeleteOffers = vi.fn().mockReturnValue(true)
 
 describe('src | components | pages | Offers | ActionsBar', () => {
   let props: ActionBarProps
@@ -51,10 +51,10 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     props = {
       getUpdateOffersStatusMessage: mockGetUpdateOffersStatusMessage,
       canDeleteOffers: mockCanDeleteOffers,
-      refreshOffers: jest.fn(),
+      refreshOffers: vi.fn(),
       selectedOfferIds: offerIds,
-      clearSelectedOfferIds: jest.fn(),
-      toggleSelectAllCheckboxes: jest.fn(),
+      clearSelectedOfferIds: vi.fn(),
+      toggleSelectAllCheckboxes: vi.fn(),
       nbSelectedOffers: 2,
       areAllOffersSelected: false,
       audience: Audience.INDIVIDUAL,

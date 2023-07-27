@@ -15,7 +15,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { ConfirmedAttachment } from '..'
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 const renderConfirmedAttachmentScreen = (
   contextValue: SignupJourneyContextValues

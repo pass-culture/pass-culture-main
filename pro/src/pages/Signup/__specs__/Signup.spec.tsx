@@ -7,10 +7,10 @@ import Signup from '../Signup'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getProfile: jest.fn().mockResolvedValue({}),
-    listFeatures: jest.fn(),
-    listOfferersNames: jest.fn(),
-    getSirenInfo: jest.fn(),
+    getProfile: vi.fn().mockResolvedValue({}),
+    listFeatures: vi.fn(),
+    listOfferersNames: vi.fn(),
+    getSirenInfo: vi.fn(),
   },
 }))
 

@@ -69,8 +69,8 @@ jest.mock('utils/date', () => ({
 
 jest.mock('apiClient/api', () => ({
   api: {
-    listOfferersNames: jest.fn().mockReturnValue({}),
-    patchAllCollectiveOffersActiveStatus: jest.fn(),
+    listOfferersNames: vi.fn().mockReturnValue({}),
+    patchAllCollectiveOffersActiveStatus: vi.fn(),
   },
 }))
 
@@ -85,8 +85,8 @@ describe('screen Offers', () => {
   let store: any
   let offersRecap: Offer[]
 
-  const mockNotifyError = jest.fn()
-  const mockNotifyPending = jest.fn()
+  const mockNotifyError = vi.fn()
+  const mockNotifyPending = vi.fn()
   beforeEach(() => {
     currentUser = {
       id: 'EY',
@@ -109,16 +109,16 @@ describe('screen Offers', () => {
       currentPageNumber: 1,
       currentUser,
       isLoading: false,
-      loadAndUpdateOffers: jest.fn().mockResolvedValue(offersRecap),
+      loadAndUpdateOffers: vi.fn().mockResolvedValue(offersRecap),
       offerer: offererFactory(),
       offers: offersRecap,
-      setIsLoading: jest.fn(),
-      setOfferer: jest.fn(),
+      setIsLoading: vi.fn(),
+      setOfferer: vi.fn(),
       urlSearchFilters: DEFAULT_SEARCH_FILTERS,
       separateIndividualAndCollectiveOffers: false,
       initialSearchFilters: DEFAULT_SEARCH_FILTERS,
       audience: Audience.INDIVIDUAL,
-      redirectWithUrlFilters: jest.fn(),
+      redirectWithUrlFilters: vi.fn(),
       venues: proVenuesOptions,
       categories: categoriesAndSubcategories.categories.map(
         ({ id, proLabel }) => ({ value: id, label: proLabel })

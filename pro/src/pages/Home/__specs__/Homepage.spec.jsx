@@ -17,16 +17,16 @@ import Homepage from '../Homepage'
 
 jest.mock('apiClient/api', () => ({
   api: {
-    getProfile: jest.fn(),
-    listOfferersNames: jest.fn(),
-    getOfferer: jest.fn(),
-    getVenueStats: jest.fn(),
-    postProFlags: jest.fn(),
+    getProfile: vi.fn(),
+    listOfferersNames: vi.fn(),
+    getOfferer: vi.fn(),
+    getVenueStats: vi.fn(),
+    postProFlags: vi.fn(),
   },
 }))
 
 jest.mock('utils/windowMatchMedia', () => ({
-  doesUserPreferReducedMotion: jest.fn(),
+  doesUserPreferReducedMotion: vi.fn(),
 }))
 
 jest.mock('@firebase/remote-config', () => ({
@@ -47,7 +47,7 @@ const renderHomePage = storeOverrides => {
   )
 }
 
-const mockLogEvent = jest.fn()
+const mockLogEvent = vi.fn()
 
 describe('homepage', () => {
   let baseOfferers
@@ -193,7 +193,7 @@ describe('homepage', () => {
     describe('when clicking on anchor link to profile', () => {
       let scrollIntoViewMock
       beforeEach(async () => {
-        scrollIntoViewMock = jest.fn()
+        scrollIntoViewMock = vi.fn()
         Element.prototype.scrollIntoView = scrollIntoViewMock
         renderHomePage(store)
         await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
@@ -301,7 +301,7 @@ describe('homepage', () => {
       describe('when clicking on anchor link to stats', () => {
         let scrollIntoViewMock
         beforeEach(async () => {
-          scrollIntoViewMock = jest.fn()
+          scrollIntoViewMock = vi.fn()
           Element.prototype.scrollIntoView = scrollIntoViewMock
           renderHomePage(store)
           await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
