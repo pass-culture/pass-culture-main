@@ -5,7 +5,7 @@ import { api } from 'apiClient/api'
 
 import StoreProvider from '../StoreProvider'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: { getProfile: vi.fn() },
 }))
 
@@ -17,7 +17,7 @@ const renderStoreProvider = () => {
   )
 }
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getProfile: vi.fn(),
     listFeatures: vi.fn(),

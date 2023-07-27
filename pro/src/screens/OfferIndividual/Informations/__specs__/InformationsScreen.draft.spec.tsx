@@ -37,7 +37,7 @@ jest.mock('screens/OfferIndividual/Informations/utils', () => {
     filterCategories: vi.fn(),
   }
 })
-jest.mock('repository/pcapi/pcapi', () => ({
+vi.mock('repository/pcapi/pcapi', () => ({
   postThumbnail: vi.fn(),
 }))
 const scrollIntoViewMock = vi.fn()

@@ -11,7 +11,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { AppLayout } from '../AppLayout'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   apiAdage: {
     getEducationalOffersCategories: vi.fn().mockResolvedValue({
       categories: [

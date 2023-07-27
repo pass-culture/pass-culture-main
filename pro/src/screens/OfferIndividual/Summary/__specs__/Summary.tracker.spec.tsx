@@ -20,7 +20,7 @@ import Summary from '../Summary'
 const mockLogEvent = vi.fn()
 window.open = vi.fn()
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: { patchPublishOffer: vi.fn().mockResolvedValue({}) },
 }))
 

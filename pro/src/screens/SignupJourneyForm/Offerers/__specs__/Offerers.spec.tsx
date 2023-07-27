@@ -17,7 +17,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { Offerers } from '..'
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getVenuesOfOffererFromSiret: vi.fn(),
     createOfferer: vi.fn(),

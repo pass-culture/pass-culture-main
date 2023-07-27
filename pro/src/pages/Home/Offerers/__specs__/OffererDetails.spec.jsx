@@ -13,12 +13,12 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import Homepage from '../../Homepage'
 
 const mockNavigate = vi.fn()
-jest.mock('react-router-dom', () => ({
+vi.mock('react-router-dom', () => ({
   ...vi.importActual('react-router-dom'),
   useNavigate: () => mockNavigate,
 }))
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getOfferer: vi.fn(),
     listOfferersNames: vi.fn(),

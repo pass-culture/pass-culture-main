@@ -19,7 +19,7 @@ import OffererAuthenticationForm, {
 } from '../OffererAuthenticationForm'
 import { validationSchema } from '../validationSchema'
 
-jest.mock('apiClient/adresse', () => {
+vi.mock('apiClient/adresse', () => {
   return {
     ...vi.importActual('apiClient/adresse'),
     default: {

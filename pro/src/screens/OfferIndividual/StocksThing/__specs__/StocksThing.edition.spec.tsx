@@ -30,11 +30,11 @@ jest.mock('screens/OfferIndividual/Informations/utils', () => {
   }
 })
 
-jest.mock('repository/pcapi/pcapi', () => ({
+vi.mock('repository/pcapi/pcapi', () => ({
   postThumbnail: vi.fn(),
 }))
 
-jest.mock('utils/date', () => ({
+vi.mock('utils/date', () => ({
   ...vi.importActual('utils/date'),
   getToday: jest
     .fn()

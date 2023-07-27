@@ -16,7 +16,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { Offerers } from '..'
 
 const mockLogEvent = vi.fn()
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getVenuesOfOffererFromSiret: vi.fn(),
   },

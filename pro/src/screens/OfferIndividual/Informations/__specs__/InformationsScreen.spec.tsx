@@ -23,12 +23,12 @@ jest.mock('screens/OfferIndividual/Informations/utils', () => {
 
 window.matchMedia = vi.fn().mockReturnValue({ matches: true })
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     postOffer: vi.fn(),
   },
 }))
-jest.mock('repository/pcapi/pcapi', () => ({
+vi.mock('repository/pcapi/pcapi', () => ({
   postThumbnail: vi.fn(),
 }))
 

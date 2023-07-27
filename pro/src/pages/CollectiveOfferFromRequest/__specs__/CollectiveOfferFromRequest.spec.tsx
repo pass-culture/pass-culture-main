@@ -13,7 +13,7 @@ import CollectiveOfferFromRequest from '../CollectiveOfferFromRequest'
 
 const mockLogEvent = vi.fn()
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getCollectiveOfferTemplate: vi.fn(),
     getCollectiveOfferRequest: vi.fn(),
@@ -24,7 +24,7 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-jest.mock('react-router-dom', () => ({
+vi.mock('react-router-dom', () => ({
   ...vi.importActual('react-router-dom'),
   useParams: () => ({
     offerId: vi.fn(),

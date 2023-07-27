@@ -32,7 +32,7 @@ const renderCollectiveOfferSelectionDuplication = ({
   )
 }
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     getCollectiveOffers: vi.fn(),
   },

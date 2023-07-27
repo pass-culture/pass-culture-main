@@ -44,7 +44,7 @@ const renderVenueEdition = (venueId: number, offererId: number) => {
   )
 }
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     fetchVenueLabels: vi.fn(),
     getVenue: vi.fn(),
@@ -55,11 +55,11 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
-jest.mock('repository/pcapi/pcapi', () => ({
+vi.mock('repository/pcapi/pcapi', () => ({
   loadProviders: vi.fn(),
 }))
 
-jest.mock('react-router-dom', () => ({
+vi.mock('react-router-dom', () => ({
   ...vi.importActual('react-router-dom'),
   useParams: () => ({
     offererId: '1234',

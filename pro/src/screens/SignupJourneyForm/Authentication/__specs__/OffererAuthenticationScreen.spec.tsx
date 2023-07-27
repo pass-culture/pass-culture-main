@@ -15,7 +15,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OffererAuthentication } from '..'
 
-jest.mock('apiClient/adresse', () => {
+vi.mock('apiClient/adresse', () => {
   return {
     ...vi.importActual('apiClient/adresse'),
     default: {

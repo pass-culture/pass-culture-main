@@ -31,7 +31,7 @@ const renderActionsBar = (props: ActionBarProps) => {
   )
 }
 
-jest.mock('apiClient/api', () => ({
+vi.mock('apiClient/api', () => ({
   api: {
     patchOffersActiveStatus: vi.fn().mockResolvedValue({}),
     deleteDraftOffers: vi.fn().mockResolvedValue({}),
