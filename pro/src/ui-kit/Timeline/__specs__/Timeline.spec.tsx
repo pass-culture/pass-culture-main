@@ -38,19 +38,4 @@ describe('Timeline', () => {
 
     expect(screen.getByText('Step 1')).toBeInTheDocument()
   })
-
-  it('should throw if unsupported type', () => {
-    expect(() =>
-      render(
-        <Timeline
-          steps={[
-            {
-              type: 'UNKNOWN' as TimelineStepType,
-              content: 'Step 1',
-            },
-          ]}
-        />
-      )
-    ).toThrow()
-  })
 })

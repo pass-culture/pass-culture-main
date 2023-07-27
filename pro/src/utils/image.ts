@@ -2,7 +2,7 @@ export const getImageBitmap = async (
   file: File
 ): Promise<ImageBitmap | null> => {
   // Polyfill for Safari and IE not supporting createImageBitmap
-  /* istanbul ignore next: DEBT, TO FIX */
+  // https://gist.github.com/nektro/84654b5183ddd1ccb7489607239c982d
   if (!window.createImageBitmap) {
     window.createImageBitmap = async (
       blob: ImageBitmapSource
