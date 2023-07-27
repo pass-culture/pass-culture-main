@@ -6,7 +6,7 @@ import { BaseCheckbox, BaseInput } from '../shared'
 
 import styles from './AdageMultiselect.module.scss'
 
-export interface ItemProps {
+interface ItemProps {
   label: string
   value: number | string
 }
@@ -24,12 +24,12 @@ const filterItems = (items: ItemProps[], inputValue: string) => {
   return items.filter(item => item.label.match(regExp))
 }
 
-const sortItems = (items: ItemProps[], selectedItems: ItemProps[]) => {
+const sortItems = (items: ItemProps[], selectedItems: Set<string | number>) => {
   return items.sort((a, b) => {
-    if (selectedItems.includes(b) && !selectedItems.includes(a)) {
+    if (selectedItems.has(b.value) && !selectedItems.has(a.value)) {
       return 1
     }
-    if (!selectedItems.includes(b) && selectedItems.includes(a)) {
+    if (!selectedItems.has(b.value) && selectedItems.has(a.value)) {
       return -1
     }
     return a.label.localeCompare(b.label)
@@ -44,11 +44,11 @@ const AdageMultiselect = ({
   isOpen,
 }: AdageMultiselectProps) => {
   const [inputValue, setInputValue] = useState('')
-  const [field] = useField<ItemProps[]>(name)
+  const [field] = useField<(string | number)[]>(name)
   const { setFieldValue } = useFormikContext<any>()
   const [sortedOptions, setSortedOptions] = useState<ItemProps[]>([])
   useEffect(() => {
-    setSortedOptions(sortItems(options, field.value))
+    setSortedOptions(sortItems(options, new Set(field.value)))
   }, [isOpen])
 
   const { getLabelProps, getMenuProps, getInputProps, getItemProps } =
@@ -76,13 +76,13 @@ const AdageMultiselect = ({
     })
 
   const handleNewSelection = (selection: ItemProps) => {
-    if (field.value.includes(selection)) {
+    if (field.value.includes(selection.value)) {
       setFieldValue(
         name,
-        field.value.filter(item => item !== selection)
+        field.value.filter(item => item !== selection.value)
       )
     } else {
-      setFieldValue(name, [...field.value, selection])
+      setFieldValue(name, [...field.value, selection.value])
     }
   }
 
@@ -119,10 +119,10 @@ const AdageMultiselect = ({
                 key={`${name}-${item.label}`}
                 label={item.label}
                 name={name}
-                checked={field.value.includes(item)}
+                checked={field.value.includes(item.value)}
                 onChange={() => handleNewSelection(item)}
                 {...itemProps}
-                aria-selected={field.value.includes(item)}
+                aria-selected={field.value.includes(item.value)}
               />
             </li>
           )

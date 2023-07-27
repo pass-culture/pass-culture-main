@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
@@ -8,6 +8,7 @@ import {
   FiltersContextProvider,
 } from 'pages/AdageIframe/app/providers'
 import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import * as pcapi from 'pages/AdageIframe/repository/pcapi/pcapi'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OffersSearchComponent, SearchProps } from '../OffersSearch'
@@ -21,16 +22,17 @@ vi.mock('../Offers/Offers', () => {
 vi.mock('apiClient/api', () => ({
   apiAdage: {
     getEducationalOffersCategories: vi.fn(),
+    getAcademies: vi.fn(() => ['Amiens', 'Paris']),
   },
 }))
 
 jest.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
-  getEducationalDomains: jest.fn(),
+  getEducationalDomains: vi.fn(),
 }))
 
 jest.mock('hooks/useActiveFeature', () => ({
   __esModule: true,
-  default: jest.fn().mockReturnValue(true),
+  default: vi.fn().mockReturnValue(true),
 }))
 
 const renderOffersSearchComponent = (
@@ -66,6 +68,7 @@ describe('offersSearch component', () => {
       currentRefinement: '',
       isSearchStalled: false,
     }
+    vi.spyOn(pcapi, 'getEducationalDomains').mockResolvedValue([])
   })
 
   it('should call algolia with requested query and uai all', async () => {
@@ -124,5 +127,112 @@ describe('offersSearch component', () => {
 
     // Then
     expect(props.refine).toHaveBeenCalledWith('Paris')
+  })
+
+  it('should call algolia after clear all filters', async () => {
+    // Given
+    renderOffersSearchComponent(props, {
+      ...user,
+      uai: 'assicatedToInstitution',
+    })
+    const clearFilterButton = screen.getByRole('button', {
+      name: 'Réinitialiser les filtres',
+    })
+
+    // When
+    const textInput = screen.getByPlaceholderText(
+      'Rechercher : nom de l’offre, partenaire culturel'
+    )
+    await userEvent.type(textInput, 'Paris')
+    await userEvent.click(clearFilterButton)
+
+    // Then
+    expect(props.refine).toHaveBeenCalledWith('')
+  })
+
+  it('should display localisation filter with default state by default', async () => {
+    // Given
+    renderOffersSearchComponent(props, { ...user, departmentCode: null })
+    await waitFor(() => {
+      expect(pcapi.getEducationalDomains).toHaveBeenCalled()
+    })
+
+    // When
+    const localisationFilter = screen.getByRole('button', {
+      name: 'Localisation des partenaires',
+    })
+    await userEvent.click(localisationFilter)
+
+    // Then
+    expect(
+      screen.getByText('Dans quelle zone géographique')
+    ).toBeInTheDocument()
+  })
+  it('should display localisation filter with departments options if user has selected departement filter', async () => {
+    // Given
+    renderOffersSearchComponent(props, { ...user, departmentCode: null })
+    await waitFor(() => {
+      expect(pcapi.getEducationalDomains).toHaveBeenCalled()
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Localisation des partenaires',
+      })
+    )
+    await userEvent.click(screen.getByText('Choisir un département'))
+    await userEvent.click(
+      screen.getByRole('option', {
+        name: '01 - Ain',
+      })
+    )
+    await userEvent.click(
+      screen.getAllByRole('button', {
+        name: 'Rechercher',
+      })[1]
+    )
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Localisation des partenaires (1)',
+      })
+    )
+
+    // Then
+    expect(
+      screen.getByPlaceholderText('Ex: 59 ou Hauts-de-France')
+    ).toBeInTheDocument()
+  })
+
+  it('should display academies filter with departments options if user has selected academy filter', async () => {
+    // Given
+    renderOffersSearchComponent(props, { ...user, departmentCode: null })
+    await waitFor(() => {
+      expect(pcapi.getEducationalDomains).toHaveBeenCalled()
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Localisation des partenaires',
+      })
+    )
+    await userEvent.click(screen.getByText('Choisir une académie'))
+    await userEvent.click(
+      screen.getByRole('option', {
+        name: 'Amiens',
+      })
+    )
+    await userEvent.click(
+      screen.getAllByRole('button', {
+        name: 'Rechercher',
+      })[1]
+    )
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Localisation des partenaires (1)',
+      })
+    )
+
+    // Then
+    expect(screen.getByPlaceholderText('Ex: Nantes')).toBeInTheDocument()
   })
 })

@@ -47,6 +47,7 @@ interface OffersComponentPropsWithHits
   setIsLoading: (isLoading: boolean) => void
   handleResetFiltersAndLaunchSearch?: () => void
   displayStats?: boolean
+  resetForm?: () => void
 }
 
 type OfferMap = Map<
@@ -64,6 +65,7 @@ export const OffersComponent = ({
   refineNext,
   nbHits,
   displayStats = true,
+  resetForm,
 }: OffersComponentProps): JSX.Element => {
   const [queriesAreLoading, setQueriesAreLoading] = useState(false)
   const [offers, setOffers] = useState<
@@ -151,11 +153,11 @@ export const OffersComponent = ({
       </div>
     )
   }
-
   if (hits?.length === 0 || offers.length === 0) {
     if (newAdageFilters) {
-      return <NoResultsPage />
+      return <NoResultsPage resetForm={resetForm} />
     }
+
     return (
       <OldNoResultsPage
         handleResetFiltersAndLaunchSearch={handleResetFiltersAndLaunchSearch}

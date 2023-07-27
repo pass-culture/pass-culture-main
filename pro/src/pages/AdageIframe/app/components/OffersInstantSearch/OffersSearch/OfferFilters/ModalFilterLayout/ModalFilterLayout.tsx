@@ -8,12 +8,14 @@ import styles from './ModalFilterLayout.module.scss'
 
 interface ModalFilterLayoutProps extends React.HTMLProps<HTMLButtonElement> {
   title?: string
+  hideFooter?: boolean
   onClean?: () => void
-  onSearch: () => void
+  onSearch?: () => void
 }
 
 const ModalFilterLayout = ({
   title,
+  hideFooter = false,
   children,
   onClean,
   onSearch,
@@ -22,24 +24,28 @@ const ModalFilterLayout = ({
     <div className={styles['modal-content']}>
       {title && <div className={styles['modal-content-title']}>{title}</div>}
       <div className={styles['modal-content-children']}>{children}</div>
-      <div className={styles['modal-content-separator']}></div>
-      <div className={styles['modal-content-footer']}>
-        <Button
-          icon={fullRefreshIcon}
-          variant={ButtonVariant.TERNARY}
-          onClick={onClean}
-        >
-          Réinitialiser
-        </Button>
-        <Button
-          variant={ButtonVariant.PRIMARY}
-          className={styles['search-button']}
-          onClick={onSearch}
-          testId="search-button-modal"
-        >
-          Rechercher
-        </Button>
-      </div>
+      {!hideFooter && (
+        <>
+          <div className={styles['modal-content-separator']}></div>
+          <div className={styles['modal-content-footer']}>
+            <Button
+              icon={fullRefreshIcon}
+              variant={ButtonVariant.TERNARY}
+              onClick={onClean}
+            >
+              Réinitialiser
+            </Button>
+            <Button
+              variant={ButtonVariant.PRIMARY}
+              className={styles['search-button']}
+              onClick={onSearch}
+              testId="search-button-modal"
+            >
+              Rechercher
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   )
 }

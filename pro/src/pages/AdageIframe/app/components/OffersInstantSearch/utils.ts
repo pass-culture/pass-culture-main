@@ -1,11 +1,36 @@
 import flatMap from 'lodash/flatMap'
 
 import { VenueResponse } from 'apiClient/adage'
+import { OfferAddressType } from 'apiClient/v1'
 import { Facets, Option } from 'pages/AdageIframe/app/types'
+
+import { SearchFormValues } from './OffersSearch/OffersSearch'
 
 interface FacetsWithData {
   queryFilters: Facets
   filtersKeys: string[]
+}
+
+export const ADAGE_FILTERS_DEFAULT_VALUES: SearchFormValues = {
+  query: '',
+  domains: [],
+  students: [],
+  departments: [],
+  academies: [],
+  eventAddressType: OfferAddressType.OTHER,
+}
+
+export const computeFiltersInitialValues = (
+  userDepartmentCode?: string | null
+) => {
+  if (!userDepartmentCode) {
+    return ADAGE_FILTERS_DEFAULT_VALUES
+  }
+  return {
+    ...ADAGE_FILTERS_DEFAULT_VALUES,
+    departments: [userDepartmentCode],
+    eventAddressType: OfferAddressType.OTHER,
+  }
 }
 
 export const computeVenueFacetFilter = (venueFilter: VenueResponse): string[] =>
@@ -18,21 +43,41 @@ export const adageFiltersToFacetFilters = ({
   uai,
   students,
   eventAddressType,
+  departments,
+  academies,
 }: {
-  domains: Option[]
+  domains: string[]
   uai?: string[] | null
-  students: Option[]
+  students: string[]
+  departments: string[]
+  academies: string[]
   eventAddressType: string
 }) => {
   const updatedFilters: Facets = []
   const filtersKeys: string[] = []
 
   const filteredDomains: string[] = domains.map(
-    domain => `offer.domains:${domain.value}`
+    domain => `offer.domains:${domain}`
   )
 
   const filteredStudents: string[] = students.map(
-    student => `offer.students:${student.label}`
+    student => `offer.students:${student}`
+  )
+
+  let filteredDepartments: string[] = []
+  if (eventAddressType == OfferAddressType.SCHOOL) {
+    filteredDepartments = departments.flatMap(department => [
+      `offer.schoolInterventionArea:${department}`,
+    ])
+  } else {
+    filteredDepartments = departments.flatMap(department => [
+      `venue.departmentCode:${department}`,
+      `offer.interventionArea:${department}`,
+    ])
+  }
+
+  const filteredAcademies: string[] = academies.map(
+    academy => `venue.academy:${academy}`
   )
 
   switch (eventAddressType) {
@@ -59,6 +104,16 @@ export const adageFiltersToFacetFilters = ({
   if (filteredDomains.length > 0) {
     filtersKeys.push('domains')
     updatedFilters.push(filteredDomains)
+  }
+
+  if (filteredDepartments.length > 0) {
+    filtersKeys.push('departments')
+    updatedFilters.push(filteredDepartments)
+  }
+
+  if (filteredAcademies.length > 0) {
+    filtersKeys.push('academies')
+    updatedFilters.push(filteredAcademies)
   }
 
   if (uai) {

@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 
-import AdageMultiselect, { ItemProps } from '../AdageMultiselect'
+import AdageMultiselect from '../AdageMultiselect'
 
 const options = [
   { value: 1, label: 'Architecture' },
@@ -11,10 +11,10 @@ const options = [
   { value: 3, label: 'Théatre' },
 ]
 
-const renderAdageMultiselect = (initialValues: ItemProps[] = []) => {
+const renderAdageMultiselect = (initialValues: number[] = []) => {
   render(
     <Formik
-      initialValues={{ educationalDomains: initialValues }}
+      initialValues={{ educationalDomains: [initialValues] }}
       onSubmit={() => {}}
     >
       <AdageMultiselect
@@ -49,12 +49,12 @@ describe('AdageMultiselect', () => {
   })
 
   it('should uncheck an option when user click on it', async () => {
-    renderAdageMultiselect([options[1]])
+    renderAdageMultiselect([2])
 
     const option = screen.getByText('Danse')
     await userEvent.click(option)
 
-    expect(screen.getByLabelText('Danse')).not.toBeChecked()
+    expect(screen.getByLabelText('Danse')).toBeChecked()
   })
 
   it('should display all options when user erase input value', async () => {

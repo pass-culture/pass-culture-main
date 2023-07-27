@@ -9,20 +9,18 @@ import { SearchFormValues } from '../../../OffersSearch'
 import { NoResultsPage } from '../NoResultsPage'
 
 const handleSubmit = vi.fn()
-const handleReset = vi.fn()
+const resetFormMock = vi.fn()
 
 const renderNoResultsPage = ({
   initialValues,
+  resetForm,
 }: {
   initialValues: SearchFormValues
+  resetForm?: () => void
 }) => {
   return renderWithProviders(
-    <Formik
-      initialValues={initialValues}
-      onSubmit={handleSubmit}
-      onReset={handleReset}
-    >
-      <NoResultsPage />
+    <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+      <NoResultsPage resetForm={resetForm} />
     </Formik>
   )
 }
@@ -32,6 +30,8 @@ const initialValues = {
   domains: [],
   students: [],
   eventAddressType: '',
+  departments: [],
+  academies: [],
 }
 
 describe('ContactButton', () => {
@@ -40,8 +40,9 @@ describe('ContactButton', () => {
       initialValues: {
         ...initialValues,
         query: 'test',
-        domains: [{ value: 'test', label: 'test' }],
+        domains: ['test'],
       },
+      resetForm: resetFormMock,
     })
 
     expect(screen.getByText('Aucun résultat trouvé pour cette recherche.'))
@@ -51,7 +52,7 @@ describe('ContactButton', () => {
     })
     await userEvent.click(clearFilterButton)
 
-    expect(handleReset).toHaveBeenCalled()
+    expect(resetFormMock).toHaveBeenCalled()
   })
 
   it('should not display clear all filters button ', async () => {

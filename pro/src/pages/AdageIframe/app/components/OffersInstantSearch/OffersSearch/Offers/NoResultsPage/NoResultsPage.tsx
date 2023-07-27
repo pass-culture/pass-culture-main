@@ -11,7 +11,13 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { SearchFormValues } from '../../OffersSearch'
 
-export const NoResultsPage = (): JSX.Element => {
+interface NoResultsPageProps {
+  resetForm?: () => void
+}
+
+export const NoResultsPage = ({
+  resetForm,
+}: NoResultsPageProps): JSX.Element => {
   const { facetFilters } = useContext(FacetFiltersContext)
   const formik = useFormikContext<SearchFormValues>()
 
@@ -26,16 +32,17 @@ export const NoResultsPage = (): JSX.Element => {
       <p className="no-results-text">
         Aucun résultat trouvé pour cette recherche.
       </p>
-      {(formik.values.query || facetFilters.length > 1) && ( // la longueur de facetFilters doit être > 1 car il y aura toujours [offer.isEducational:true] dans les facetFilters
-        <Button
-          icon={fullRefreshIcon}
-          className="no-results-button"
-          onClick={formik.handleReset}
-          variant={ButtonVariant.SECONDARY}
-        >
-          Réinitialiser les filtres
-        </Button>
-      )}
+      {resetForm &&
+        (formik.values.query || facetFilters.length > 1) && ( // la longueur de facetFilters doit être > 1 car il y aura toujours [offer.isEducational:true] dans les facetFilters
+          <Button
+            icon={fullRefreshIcon}
+            className="no-results-button"
+            onClick={resetForm}
+            variant={ButtonVariant.SECONDARY}
+          >
+            Réinitialiser les filtres
+          </Button>
+        )}
     </div>
   )
 }
