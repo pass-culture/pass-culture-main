@@ -22,10 +22,6 @@ const TestComponent = (): JSX.Element | null => {
 
 describe('useNotification', () => {
   it('should call functions for notifications with parameter', () => {
-    vi.mock('store/reducers/notificationReducer', () => ({
-      closeNotification: mockCloseNotification,
-      showNotification: mockShowNotification,
-    }))
     const mockCloseNotification = vi.spyOn(
       notificationReducer,
       'closeNotification'
