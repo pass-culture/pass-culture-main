@@ -51,7 +51,7 @@
             {% for reimbursement_rule in rows %}
               <tr>
                 <td>
-                  {% if reimbursement_rule.timespan.lower > now and not reimbursement_rule.timespan.upper %}
+                  {% if not reimbursement_rule.timespan.upper %}
                     <div class="dropdown">
                       <button type="button"
                               data-bs-toggle="dropdown"
@@ -90,7 +90,7 @@
           </tbody>
         </table>
         {% for reimbursement_rule in rows %}
-          {% if reimbursement_rule.timespan.lower > now and not reimbursement_rule.timespan.upper %}
+          {% if not reimbursement_rule.timespan.upper %}
             {{ build_lazy_modal(
             url_for("backoffice_v3_web.reimbursement_rules.get_edit_custom_reimbursement_rule_form", reimbursement_rule_id=reimbursement_rule.id),
             "edit-custom-reimbursement-rule-" + reimbursement_rule.id|string) }}

@@ -2344,8 +2344,8 @@ def edit_reimbursement_rule(
     rule: models.CustomReimbursementRule,
     end_date: datetime.datetime,
 ) -> models.CustomReimbursementRule:
-    if rule.timespan.lower <= datetime.datetime.utcnow():
-        error = "Il n'est pas possible de modifier la date de fin lorsque la date de début est dépassée."
+    if end_date.date() <= datetime.datetime.utcnow().date():
+        error = "La date de fin doit être postérieure à la date du jour."
         raise exceptions.WrongDateForReimbursementRule(error)
     # To avoid complexity, we do not allow to edit the end date of a
     # rule that already has one.
