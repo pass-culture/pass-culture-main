@@ -5,7 +5,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { VenueOfferSteps } from '../index'
 
-jest.mock('hooks/useActiveFeature', () => ({
+vi.mock('hooks/useActiveFeature', () => ({
   __esModule: true,
   default: vi.fn().mockReturnValue(true),
 }))

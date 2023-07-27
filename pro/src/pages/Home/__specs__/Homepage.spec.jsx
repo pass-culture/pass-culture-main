@@ -25,15 +25,15 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-jest.mock('utils/windowMatchMedia', () => ({
+vi.mock('utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(),
 }))
 
-jest.mock('@firebase/remote-config', () => ({
+vi.mock('@firebase/remote-config', () => ({
   getValue: () => ({ asString: () => 'GE' }),
 }))
 
-jest.mock('hooks/useRemoteConfig', () => ({
+vi.mock('hooks/useRemoteConfig', () => ({
   __esModule: true,
   default: () => ({ remoteConfig: {}, remoteConfigData: { toto: 'tata' } }),
 }))

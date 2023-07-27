@@ -45,7 +45,7 @@ const TestScreen = ({
   )
 }
 
-jest.mock('screens/Desk/Desk', () => ({
+vi.mock('screens/Desk/Desk', () => ({
   __esModule: true,
   ...vi.importActual('screens/Desk/Desk'),
   default: TestScreen,

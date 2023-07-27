@@ -15,7 +15,7 @@ import SignupContainer from '../SignupContainer'
 const mockLogEvent = vi.fn()
 window.matchMedia = vi.fn().mockReturnValue({ matches: true })
 
-jest.mock('core/Offerers/adapters/getSirenDataAdapter')
+vi.mock('core/Offerers/adapters/getSirenDataAdapter')
 vi.mock('apiClient/api', () => ({
   api: {
     getProfile: vi.fn().mockResolvedValue({}),

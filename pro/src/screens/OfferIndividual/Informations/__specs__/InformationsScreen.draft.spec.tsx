@@ -32,7 +32,7 @@ import { InformationsProps, Informations as InformationsScreen } from '..'
 window.matchMedia = vi.fn().mockReturnValue({ matches: true })
 const mockLogEvent = vi.fn()
 
-jest.mock('screens/OfferIndividual/Informations/utils', () => {
+vi.mock('screens/OfferIndividual/Informations/utils', () => {
   return {
     filterCategories: vi.fn(),
   }

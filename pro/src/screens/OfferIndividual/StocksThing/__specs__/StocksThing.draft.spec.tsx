@@ -25,7 +25,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StocksThing, { StocksThingProps } from '../StocksThing'
 
-jest.mock('screens/OfferIndividual/Informations/utils', () => {
+vi.mock('screens/OfferIndividual/Informations/utils', () => {
   return {
     filterCategories: vi.fn(),
   }

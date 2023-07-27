@@ -180,7 +180,7 @@ fetchMock.mockResponse(
   { status: 200 }
 )
 
-jest.mock('utils/windowMatchMedia', () => ({
+vi.mock('utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn().mockReturnValue(false),
 }))
 

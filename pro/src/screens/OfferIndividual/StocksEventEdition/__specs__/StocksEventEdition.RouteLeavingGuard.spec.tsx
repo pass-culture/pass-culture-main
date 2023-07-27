@@ -30,7 +30,7 @@ import StocksEventEdition, {
 
 const mockLogEvent = vi.fn()
 
-jest.mock('screens/OfferIndividual/Informations/utils', () => {
+vi.mock('screens/OfferIndividual/Informations/utils', () => {
   return {
     filterCategories: vi.fn(),
   }

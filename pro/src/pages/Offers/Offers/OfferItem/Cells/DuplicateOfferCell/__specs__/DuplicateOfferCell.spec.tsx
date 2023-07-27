@@ -29,7 +29,7 @@ import DuplicateOfferCell, {
 
 const fetchMock = createFetchMock(vi)
 
-jest.mock('core/OfferEducational/utils/createOfferFromTemplate', () => ({
+vi.mock('core/OfferEducational/utils/createOfferFromTemplate', () => ({
   createOfferFromTemplate: vi.fn(),
 }))
 

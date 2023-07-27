@@ -17,11 +17,11 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-jest.mock('@firebase/remote-config', () => ({
+vi.mock('@firebase/remote-config', () => ({
   getValue: () => ({ asString: () => 'A1' }),
 }))
 
-jest.mock('hooks/useRemoteConfig', () => ({
+vi.mock('hooks/useRemoteConfig', () => ({
   __esModule: true,
   default: () => ({ remoteConfig: {} }),
 }))

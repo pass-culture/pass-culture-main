@@ -10,7 +10,7 @@ import PrebookingButton from '../PrebookingButton'
 vi.mock('repository/pcapi/pcapi', () => ({
   preBookStock: vi.fn(),
 }))
-jest.mock('pages/AdageIframe/libs/initAlgoliaAnalytics')
+vi.mock('pages/AdageIframe/libs/initAlgoliaAnalytics')
 vi.mock('apiClient/api', () => ({
   apiAdage: { bookCollectiveOffer: vi.fn() },
 }))

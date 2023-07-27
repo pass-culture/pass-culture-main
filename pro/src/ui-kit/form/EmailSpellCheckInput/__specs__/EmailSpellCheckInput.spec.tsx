@@ -6,7 +6,7 @@ import * as yup from 'yup'
 
 import { EmailSpellCheckInput } from 'ui-kit'
 
-jest.mock('libphonenumber-js', () => {
+vi.mock('libphonenumber-js', () => {
   return {
     ...vi.importActual('libphonenumber-js'),
     parsePhoneNumberFromString: vi.fn(),

@@ -22,7 +22,7 @@ import Confirmation from '../Confirmation'
 const mockLogEvent = vi.fn()
 window.open = vi.fn()
 
-jest.mock('utils/config', () => {
+vi.mock('utils/config', () => {
   return {
     WEBAPP_URL: 'https://localhost',
   }
