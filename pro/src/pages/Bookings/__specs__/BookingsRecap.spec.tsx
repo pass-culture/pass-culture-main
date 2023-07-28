@@ -35,10 +35,14 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-vi.mock('utils/date', () => ({
-  ...vi.importActual('utils/date'),
-  getToday: vi.fn().mockReturnValue(new Date('2020-06-15T12:00:00Z')),
-}))
+vi.mock('utils/date', async () => {
+  const actual = await vi.importActual('utils/date')
+  return {
+    ...(actual as object),
+    getToday: vi.fn().mockReturnValue(new Date('2020-06-15T12:00:00Z')),
+  }
+})
+
 const NTH_ARGUMENT_GET_BOOKINGS = {
   page: 1,
   venueId: 2,

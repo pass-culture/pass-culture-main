@@ -18,25 +18,6 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import CollectiveOffers from '../CollectiveOffers'
 import { collectiveOfferFactory } from '../utils/collectiveOffersFactories'
 
-const renderOffers = async (
-  storeOverrides: Store,
-  filters: Partial<SearchFiltersParams> & {
-    page?: number
-  } = DEFAULT_SEARCH_FILTERS
-) => {
-  const route = computeCollectiveOffersUrl(filters)
-  renderWithProviders(<CollectiveOffers />, {
-    storeOverrides,
-    initialRouterEntries: [route],
-  })
-
-  await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-  return {
-    history,
-  }
-}
-
 const categoriesAndSubcategories = {
   categories: [
     { id: 'CINEMA', proLabel: 'Cinéma', isSelectable: true },
@@ -76,22 +57,31 @@ const proVenues = [
   },
 ]
 
-vi.mock('repository/venuesService', () => ({
-  ...vi.importActual('repository/venuesService'),
+const renderOffers = async (
+  storeOverrides: Store,
+  filters: Partial<SearchFiltersParams> & {
+    page?: number
+  } = DEFAULT_SEARCH_FILTERS
+) => {
+  const route = computeCollectiveOffersUrl(filters)
+  renderWithProviders(<CollectiveOffers />, {
+    storeOverrides,
+    initialRouterEntries: [route],
+  })
+
+  await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+  return {
+    history,
+  }
+}
+
+vi.mock('repository/venuesService', async () => ({
+  ...((await vi.importActual('repository/venuesService')) as object),
 }))
 
-vi.mock('apiClient/api', () => ({
-  api: {
-    listOffers: vi.fn(),
-    getCategories: vi.fn().mockResolvedValue(categoriesAndSubcategories),
-    getCollectiveOffers: vi.fn(),
-    getOfferer: vi.fn(),
-    getVenues: vi.fn().mockResolvedValue({ venues: proVenues }),
-  },
-}))
-
-vi.mock('utils/date', () => ({
-  ...vi.importActual('utils/date'),
+vi.mock('utils/date', async () => ({
+  ...((await vi.importActual('utils/date')) as object),
   getToday: vi.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
@@ -128,6 +118,14 @@ describe('route CollectiveOffers', () => {
     vi.spyOn(api, 'getCollectiveOffers')
       // @ts-expect-error FIX ME
       .mockResolvedValue(offersRecap)
+    vi.spyOn(api, 'getCategories').mockResolvedValue(
+      // @ts-expect-error FIX ME
+      categoriesAndSubcategories
+    )
+    vi.spyOn(api, 'getVenues').mockResolvedValue(
+      // @ts-expect-error FIX ME
+      { venues: proVenues }
+    )
   })
 
   describe('render', () => {

@@ -44,23 +44,12 @@ const renderVenueEdition = (venueId: number, offererId: number) => {
   )
 }
 
-vi.mock('apiClient/api', () => ({
-  api: {
-    fetchVenueLabels: vi.fn(),
-    getVenue: vi.fn(),
-    getOfferer: vi.fn(),
-    getVenueTypes: vi.fn(),
-    listVenueProviders: vi.fn(),
-    listOffers: vi.fn(),
-  },
-}))
-
 vi.mock('repository/pcapi/pcapi', () => ({
   loadProviders: vi.fn(),
 }))
 
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+  ...((await vi.importActual('react-router-dom')) as object),
   useParams: () => ({
     offererId: '1234',
     venueId: '12',
@@ -123,6 +112,7 @@ describe('route VenueEdition', () => {
     vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
     vi.spyOn(api, 'fetchVenueLabels').mockResolvedValue([])
   })
+
   it('should call getVenue and display Venue Form screen on success', async () => {
     // When
     renderVenueEdition(venue.id, offerer.id)

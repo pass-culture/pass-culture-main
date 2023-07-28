@@ -28,8 +28,8 @@ import CollectiveDataEdition from '../CollectiveDataEdition'
 // if we only mock mainlandOptions, the mock is not use to build venueInterventionOptions, allDepartmentValues and mainlandValues
 // and the test fail...
 // the workaround I found is to mock this way :
-vi.mock('core/shared/interventionOptions', () => {
-  const originalModule = vi.requireActual<
+vi.mock('core/shared/interventionOptions', async () => {
+  const originalModule = await vi.importActual<
     typeof import('core/shared/interventionOptions')
   >('core/shared/interventionOptions')
 
@@ -62,28 +62,26 @@ vi.mock('core/shared/interventionOptions', () => {
   }
 })
 
-vi.mock('apiClient/api', () => ({
-  api: {
-    getVenuesEducationalStatuses: vi.fn(),
-    getEducationalPartners: vi.fn(),
-    editVenueCollectiveData: vi.fn(),
-    getVenueCollectiveData: vi.fn(),
-    getEducationalPartner: vi.fn(),
-    listEducationalDomains: vi.fn(),
-    getCategories: vi.fn(),
-  },
-}))
+// vi.mock('apiClient/api', () => ({
+//   api: {
+//     getVenuesEducationalStatuses: vi.fn(),
+//     getEducationalPartners: vi.fn(),
+//     editVenueCollectiveData: vi.fn(),
+//     getVenueCollectiveData: vi.fn(),
+//     getEducationalPartner: vi.fn(),
+//     listEducationalDomains: vi.fn(),
+//     getCategories: vi.fn(),
+//   },
+// }))
 const mockedUsedNavigate = vi.fn()
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+  ...((await vi.importActual('react-router-dom')) as object),
   useParams: () => ({
     offererId: 'O1',
     venueId: 'V1',
   }),
   useNavigate: () => mockedUsedNavigate,
 }))
-
-vi.mock('hooks/useNotification')
 
 const waitForLoader = () =>
   waitFor(() => {
@@ -97,7 +95,7 @@ describe('CollectiveDataEdition', () => {
   const notifyErrorMock = vi.fn()
   const notifySuccessMock = vi.fn()
 
-  beforeAll(() => {
+  beforeEach(() => {
     vi.spyOn(api, 'getVenuesEducationalStatuses').mockResolvedValue({
       statuses: [
         {

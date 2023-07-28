@@ -22,6 +22,30 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffersRoute from '../../../pages/Offers/OffersRoute'
 
+const categoriesAndSubcategories = {
+  categories: [
+    { id: 'CINEMA', proLabel: 'Cinéma', isSelectable: true },
+    { id: 'JEU', proLabel: 'Jeux', isSelectable: true },
+    { id: 'TECHNIQUE', proLabel: 'Technique', isSelectable: false },
+  ],
+  subcategories: [],
+}
+
+const proVenues = [
+  {
+    id: 1,
+    name: 'Ma venue',
+    offererName: 'Mon offerer',
+    isVirtual: false,
+  },
+  {
+    id: 2,
+    name: 'Ma venue virtuelle',
+    offererName: 'Mon offerer',
+    isVirtual: true,
+  },
+]
+
 const renderOffers = async (
   storeOverrides: any,
   filters: Partial<SearchFiltersParams> & {
@@ -48,45 +72,12 @@ const renderOffers = async (
   vi.clearAllMocks()
 }
 
-const categoriesAndSubcategories = {
-  categories: [
-    { id: 'CINEMA', proLabel: 'Cinéma', isSelectable: true },
-    { id: 'JEU', proLabel: 'Jeux', isSelectable: true },
-    { id: 'TECHNIQUE', proLabel: 'Technique', isSelectable: false },
-  ],
-  subcategories: [],
-}
-
-const proVenues = [
-  {
-    id: 1,
-    name: 'Ma venue',
-    offererName: 'Mon offerer',
-    isVirtual: false,
-  },
-  {
-    id: 2,
-    name: 'Ma venue virtuelle',
-    offererName: 'Mon offerer',
-    isVirtual: true,
-  },
-]
-
-vi.mock('repository/venuesService', () => ({
-  ...vi.importActual('repository/venuesService'),
+vi.mock('repository/venuesService', async () => ({
+  ...((await vi.importActual('repository/venuesService')) as object),
 }))
 
-vi.mock('apiClient/api', () => ({
-  api: {
-    getCategories: vi.fn().mockResolvedValue(categoriesAndSubcategories),
-    listOffers: vi.fn(),
-    getOfferer: vi.fn(),
-    getVenues: vi.fn().mockResolvedValue({ venues: proVenues }),
-  },
-}))
-
-vi.mock('utils/date', () => ({
-  ...vi.importActual('utils/date'),
+vi.mock('utils/date', async () => ({
+  ...((await vi.importActual('utils/date')) as object),
   getToday: vi.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
@@ -122,6 +113,10 @@ describe('route Offers', () => {
     offersRecap = [individualOfferFactory()]
     // @ts-expect-error FIX ME
     vi.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
+    vi.spyOn(api, 'getCategories').mockResolvedValue(categoriesAndSubcategories)
+    vi.spyOn(api, 'getOfferer')
+    // @ts-expect-error FIX ME
+    vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
   })
 
   describe('render', () => {
@@ -622,7 +617,7 @@ describe('route Offers', () => {
 
     it('should have venue value be removed when user asks for all venues', async () => {
       // Given
-      vi.spyOn(api, 'getCategories').mockResolvedValue({
+      vi.spyOn(api, 'getCategories').mockResolvedValueOnce({
         categories: [
           { id: 'test_id_1', proLabel: 'My test value', isSelectable: true },
           {
