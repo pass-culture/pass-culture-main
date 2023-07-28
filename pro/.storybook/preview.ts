@@ -1,4 +1,4 @@
-import '!style-loader!css-loader!resolve-url-loader!sass-loader!../src/styles/index.scss'
+import '../src/styles/index.scss'
 
 export const parameters = {
   backgrounds: {
