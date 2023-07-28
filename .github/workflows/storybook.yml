@@ -24,8 +24,6 @@ jobs:
           cd pro
           yarn install
           yarn build-storybook
-        env:
-          STORYBOOK_ROOT_PATH: "https://pass-culture.github.io/pass-culture-main/"
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4.4.1
         with:

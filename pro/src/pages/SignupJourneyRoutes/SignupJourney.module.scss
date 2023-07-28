@@ -10,14 +10,15 @@
   box-shadow: 0 3px 4px rgb(103 104 107 / 10%);
   padding: rem.torem(15px) 0;
 
-  .header-content {
+  &-content {
     display: flex;
     max-width: rem.torem(size.$main-content-width);
     margin: 0 auto;
     justify-content: space-between;
   }
 
-  img {
+  &-logo {
     height: rem.torem(42px);
+    color: colors.$logo-purple;
   }
 }
