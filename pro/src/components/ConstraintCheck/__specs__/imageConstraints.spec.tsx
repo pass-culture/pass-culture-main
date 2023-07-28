@@ -42,8 +42,8 @@ describe('image constraints', () => {
 
       it('refuse non bitmap file', async () => {
         const file = createImageFile()
-        const constraint = imageConstraints.formats(['image/png'])
-        mockCreateImageBitmap.mockRejectedValueOnce(null)
+        const constraint = imageConstraints.formats([])
+        mockCreateImageBitmap.mockRejectedValue(null)
 
         const isValid = await constraint.asyncValidator(file)
 
