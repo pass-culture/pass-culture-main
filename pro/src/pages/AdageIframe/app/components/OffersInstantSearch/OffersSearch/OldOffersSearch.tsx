@@ -143,8 +143,6 @@ export const OldOffersSearchComponent = ({
         <Offers
           handleResetFiltersAndLaunchSearch={handleResetFiltersAndLaunchSearch}
           setIsLoading={setIsLoading}
-          userRole={adageUser.role}
-          userEmail={adageUser.email}
         />
       </div>
     </>
