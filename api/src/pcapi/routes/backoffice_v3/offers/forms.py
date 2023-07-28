@@ -35,6 +35,7 @@ class SearchOperators(enum.Enum):
     NOT_IN = "n'est pas parmi"
     CONTAINS = "contient"
     NO_CONTAINS = "ne contient pas"
+    NOT_EXIST = "n'a aucun"
 
 
 class SearchAttributes(enum.Enum):
@@ -53,6 +54,8 @@ class SearchAttributes(enum.Enum):
     TAG = "Tag"
     VISA = "Visa d'exploitation"
 
+
+operator_no_require_value = ["NOT_EXIST"]
 
 form_field_configuration = {
     "CATEGORY": {"field": "category", "operator": ["IN", "NOT_IN"]},
@@ -77,7 +80,7 @@ form_field_configuration = {
     "OFFERER": {"field": "offerer", "operator": ["IN", "NOT_IN"]},
     "STATUS": {"field": "status", "operator": ["IN", "NOT_IN"]},
     "SUBCATEGORY": {"field": "subcategory", "operator": ["IN", "NOT_IN"]},
-    "TAG": {"field": "criteria", "operator": ["IN", "NOT_IN"]},
+    "TAG": {"field": "criteria", "operator": ["IN", "NOT_IN", "NOT_EXIST"]},
     "VENUE": {"field": "venue", "operator": ["IN", "NOT_IN"]},
     "VALIDATION": {"field": "validation", "operator": ["IN", "NOT_IN"]},
     "VISA": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "STR_EQUALS", "STR_NOT_EQUALS"]},
@@ -252,10 +255,13 @@ class GetOfferAdvancedSearchForm(GetOffersBaseFields):
         empty = True
         for sub_search in search_data:
             field_name = sub_search.get("search_field")
+            operator = sub_search.get("operator")
             if field_name:
                 field_attribute_name = form_field_configuration.get(field_name, {}).get("field", "")
                 field_data = sub_search.get(field_attribute_name)  # type: ignore [call-overload]
                 if field_data:
+                    return False
+                if operator in operator_no_require_value:
                     return False
         return empty
 
