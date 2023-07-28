@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from freezegun import freeze_time
 import pytest
 
 import pcapi.core.users.factories as users_factories
@@ -65,3 +68,39 @@ def test_inactive_user_when_may_be_inactive(client):
     client.with_token(user.email)
     response = client.get(path)
     assert response.status_code == 204
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "/test-blueprint/authenticated_and_active_user_required",
+        "/test-blueprint/authenticated_maybe_inactive_user_required",
+    ],
+)
+@freeze_time("2023-07-28")
+def test_success_when_token_is_issued_after_password_update_date(client, path):
+    user = users_factories.UserFactory(password_date_updated=datetime.fromisoformat("2023-01-01"))
+    client.with_token(user.email)
+    response = client.get(path)
+
+    assert response.status_code == 204
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "/test-blueprint/authenticated_and_active_user_required",
+        "/test-blueprint/authenticated_maybe_inactive_user_required",
+    ],
+)
+@freeze_time("2023-07-27")
+def test_error_when_when_token_is_issued_before_password_update_date(client, path):
+    user = users_factories.UserFactory(password_date_updated=datetime.fromisoformat("2023-07-28"))
+    client.with_token(user.email)
+    response = client.get(path)
+
+    assert response.status_code == 401
+    assert response.json == {
+        "code": "INVALID_TOKEN_AFTER_PASSWORD_CHANGE",
+        "message": "Token invalide suite à une modification de mot de passe",
+    }

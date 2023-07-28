@@ -19,6 +19,7 @@ from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.routes.native.security import authenticated_and_active_user_required
+from pcapi.routes.native.security import is_token_generated_after_password_change
 from pcapi.routes.native.v1.serialization.authentication import ChangePasswordRequest
 from pcapi.routes.native.v1.serialization.authentication import RequestPasswordResetRequest
 from pcapi.routes.native.v1.serialization.authentication import ResetPasswordRequest
@@ -85,6 +86,16 @@ def refresh() -> authentication.RefreshResponse:
     user = find_user_by_email(email)
     if not user:
         raise ApiErrors({"email": "unknown"}, status_code=401)
+
+    if not is_token_generated_after_password_change(user):
+        raise ApiErrors(
+            {
+                "code": "INVALID_TOKEN_AFTER_PASSWORD_CHANGE",
+                "message": "Token invalide suite à une modification de mot de passe",
+            },
+            status_code=401,
+        )
+
     users_api.update_last_connection_date(user)
     return authentication.RefreshResponse(access_token=users_api.create_user_access_token(user))
 

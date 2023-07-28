@@ -4,13 +4,14 @@ import typing
 
 from flask import _request_ctx_stack
 from flask import request
+from flask_jwt_extended.utils import get_jwt
 from flask_jwt_extended.utils import get_jwt_identity
 from flask_jwt_extended.view_decorators import jwt_required
 import sentry_sdk
 
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import find_user_by_email
-from pcapi.models.api_errors import ForbiddenError
+from pcapi.models import api_errors
 from pcapi.routes.native.v1.blueprint import JWT_AUTH
 from pcapi.serialization.spec_tree import add_security_scheme
 
@@ -57,7 +58,16 @@ def setup_context(must_be_active: bool = True) -> User:
 
     if invalid_user:
         logger.info("Authenticated user with email %s not found or inactive", email)
-        raise ForbiddenError({"email": ["Utilisateur introuvable"]})
+        raise api_errors.ForbiddenError({"email": ["Utilisateur introuvable"]})
+
+    if user and not is_token_generated_after_password_change(user):
+        raise api_errors.ApiErrors(
+            {
+                "code": "INVALID_TOKEN_AFTER_PASSWORD_CHANGE",
+                "message": "Token invalide suite à une modification de mot de passe",
+            },
+            status_code=401,
+        )
 
     user = typing.cast(User, user)
 
@@ -71,3 +81,11 @@ def setup_context(must_be_active: bool = True) -> User:
     sentry_sdk.set_tag("device.id", request.headers.get("device-id", None))
 
     return user
+
+
+def is_token_generated_after_password_change(user: User) -> bool:
+    token_issue_date = get_jwt()["iat"]
+    if user.password_date_updated and user.password_date_updated.timestamp() > token_issue_date:
+        return False
+
+    return True
