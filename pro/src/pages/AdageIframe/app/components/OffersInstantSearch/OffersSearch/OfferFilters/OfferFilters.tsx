@@ -99,6 +99,7 @@ export const OfferFilters = ({
                 name="domains"
                 label="Domaine artistique"
                 options={domainsOptions}
+                isOpen={modalOpenStatus['domains']}
               />
             </ModalFilterLayout>
           </AdageButtonFilter>
@@ -121,6 +122,7 @@ export const OfferFilters = ({
                 name="students"
                 label="Niveau scolaire"
                 options={studentsOptions}
+                isOpen={modalOpenStatus['students']}
               />
             </ModalFilterLayout>
           </AdageButtonFilter>

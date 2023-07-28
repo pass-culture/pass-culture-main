@@ -1,6 +1,6 @@
 import { useCombobox } from 'downshift'
 import { useField, useFormikContext } from 'formik'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { BaseCheckbox, BaseInput } from '../shared'
 
@@ -8,7 +8,7 @@ import styles from './AdageMultiselect.module.scss'
 
 export interface ItemProps {
   label: string
-  value: number
+  value: number | string
 }
 
 interface AdageMultiselectProps {
@@ -16,25 +16,24 @@ interface AdageMultiselectProps {
   placeholder: string
   name: string
   label: string
+  isOpen: boolean
 }
 
-const filterAndSortItems = (
-  items: ItemProps[],
-  selectedItems: ItemProps[],
-  inputValue: string
-) => {
+const filterItems = (items: ItemProps[], inputValue: string) => {
   const regExp = new RegExp(inputValue, 'i')
-  return items
-    .filter(item => item.label.match(regExp))
-    .sort((a, b) => {
-      if (selectedItems.includes(b) && !selectedItems.includes(a)) {
-        return 1
-      }
-      if (!selectedItems.includes(b) && selectedItems.includes(a)) {
-        return -1
-      }
-      return a.label.localeCompare(b.label)
-    })
+  return items.filter(item => item.label.match(regExp))
+}
+
+const sortItems = (items: ItemProps[], selectedItems: ItemProps[]) => {
+  return items.sort((a, b) => {
+    if (selectedItems.includes(b) && !selectedItems.includes(a)) {
+      return 1
+    }
+    if (!selectedItems.includes(b) && selectedItems.includes(a)) {
+      return -1
+    }
+    return a.label.localeCompare(b.label)
+  })
 }
 
 const AdageMultiselect = ({
@@ -42,15 +41,19 @@ const AdageMultiselect = ({
   placeholder,
   name,
   label,
+  isOpen,
 }: AdageMultiselectProps) => {
   const [inputValue, setInputValue] = useState('')
   const [field] = useField<ItemProps[]>(name)
   const { setFieldValue } = useFormikContext<any>()
+  const [sortedOptions, setSortedOptions] = useState<ItemProps[]>([])
+  useEffect(() => {
+    setSortedOptions(sortItems(options, field.value))
+  }, [isOpen])
 
   const { getLabelProps, getMenuProps, getInputProps, getItemProps } =
     useCombobox({
-      items: filterAndSortItems(options, field.value, inputValue),
-      defaultHighlightedIndex: 0, // after selection, highlight the first item.
+      items: sortedOptions,
       selectedItem: null,
       stateReducer(_state, actionAndChanges) {
         const { changes, type } = actionAndChanges
@@ -61,7 +64,6 @@ const AdageMultiselect = ({
             return {
               ...changes,
               isOpen: true,
-              highlightedIndex: 0,
             }
           default:
             return changes
@@ -101,27 +103,30 @@ const AdageMultiselect = ({
         value={inputValue}
         {...getInputProps()}
       />
-      <ul className={styles['search-list']} {...getMenuProps()}>
-        {filterAndSortItems(options, field.value, inputValue).map(
-          (item, index) => {
-            // we cannot pass down the ref to basecheckbox as it is a function component
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { ref, ...itemProps } = getItemProps({ item, index })
-            return (
-              <li key={`${item.value}${index}`}>
-                <BaseCheckbox
-                  key={`${name}-${item.label}`}
-                  label={item.label}
-                  name={name}
-                  checked={field.value.includes(item)}
-                  onChange={() => handleNewSelection(item)}
-                  {...itemProps}
-                  aria-selected={field.value.includes(item)}
-                />
-              </li>
-            )
-          }
-        )}
+      <ul
+        className={styles['search-list']}
+        {...getMenuProps({
+          'aria-activedescendant': getInputProps()['aria-activedescendant'],
+        })}
+      >
+        {filterItems(options, inputValue).map((item, index) => {
+          // we cannot pass down the ref to basecheckbox as it is a function component
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { ref, ...itemProps } = getItemProps({ item, index })
+          return (
+            <li key={`${item.value}${index}`}>
+              <BaseCheckbox
+                key={`${name}-${item.label}`}
+                label={item.label}
+                name={name}
+                checked={field.value.includes(item)}
+                onChange={() => handleNewSelection(item)}
+                {...itemProps}
+                aria-selected={field.value.includes(item)}
+              />
+            </li>
+          )
+        })}
       </ul>
     </div>
   )
