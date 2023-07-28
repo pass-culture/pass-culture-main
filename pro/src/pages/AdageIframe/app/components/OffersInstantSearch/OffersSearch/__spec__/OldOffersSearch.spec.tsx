@@ -9,6 +9,7 @@ import {
   FiltersContextProvider,
 } from 'pages/AdageIframe/app/providers'
 import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import * as adagePcapi from 'pages/AdageIframe/repository/pcapi/pcapi'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OldOffersSearchComponent, SearchProps } from '../OldOffersSearch'
@@ -23,12 +24,6 @@ vi.mock('apiClient/api', () => ({
   apiAdage: {
     getEducationalOffersCategories: vi.fn(),
   },
-}))
-
-vi.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
-  getEducationalDomains: vi
-    .fn()
-    .mockResolvedValue([{ id: 1, name: 'Architecture' }]),
 }))
 
 const renderOffersSearchComponent = (
@@ -64,6 +59,10 @@ describe('offersSearch component', () => {
       currentRefinement: '',
       isSearchStalled: false,
     }
+
+    vi.spyOn(adagePcapi, 'getEducationalDomains').mockResolvedValue([
+      { id: 1, name: 'Architecture' },
+    ])
   })
 
   it('should call algolia with requested query', async () => {
