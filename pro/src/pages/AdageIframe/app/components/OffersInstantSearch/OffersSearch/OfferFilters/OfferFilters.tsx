@@ -8,6 +8,7 @@ import FormLayout from 'components/FormLayout'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeFranceIcon from 'icons/stroke-france.svg'
+import strokeSearch from 'icons/stroke-search.svg'
 import { getAcademiesOptionsAdapter } from 'pages/AdageIframe/app/adapters/getAcademiesOptionsAdapter'
 import { getEducationalCategoriesOptionsAdapter } from 'pages/AdageIframe/app/adapters/getEducationalCategoriesOptionsAdapter'
 import { getEducationalDomainsOptionsAdapter } from 'pages/AdageIframe/app/adapters/getEducationalDomainsOptionsAdapter'
@@ -130,17 +131,20 @@ export const OfferFilters = ({
     <FormikProvider value={formik}>
       <Form onSubmit={formik.handleSubmit} className={className}>
         <FormLayout.Row>
-          <div className={styles['filter-container']}>
+          <div className={styles['filter-container-search']}>
             <TextInput
               label=""
+              className={styles['filter-container-search-input']}
               name="query"
-              type="text"
+              type="search"
               placeholder="Rechercher : nom de l’offre, partenaire culturel"
+              hideFooter
+              leftIcon={strokeSearch}
             />
             <Button
               disabled={isLoading}
               type="submit"
-              className={styles['filter-container-search']}
+              className={styles['filter-container-search-button']}
             >
               Rechercher
             </Button>

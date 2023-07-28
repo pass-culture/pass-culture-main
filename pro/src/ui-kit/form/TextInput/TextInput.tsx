@@ -9,7 +9,7 @@ import styles from './TextInput.module.scss'
 export type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> &
   FieldLayoutBaseProps & {
     readOnly?: boolean
-    type?: 'text' | 'number' | 'email' | 'url' | 'password' | 'tel'
+    type?: 'text' | 'number' | 'email' | 'url' | 'password' | 'tel' | 'search'
     countCharacters?: boolean
     leftIcon?: string
     rightButton?: () => JSX.Element
