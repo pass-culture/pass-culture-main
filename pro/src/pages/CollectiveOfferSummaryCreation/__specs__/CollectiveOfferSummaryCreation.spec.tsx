@@ -1,6 +1,5 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
-import router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { MandatoryCollectiveOfferFromParamsProps } from 'screens/OfferEducational/useCollectiveOfferFromParams'
@@ -9,19 +8,14 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { CollectiveOfferSummaryCreation } from '../CollectiveOfferSummaryCreation'
 
-vi.mock('apiClient/api', () => ({
-  api: {
-    getCategories: vi.fn(),
-    getCollectiveOffer: vi.fn(),
-    getCollectiveOfferTemplate: vi.fn(),
-  },
-}))
-
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+  ...((await vi.importActual('react-router-dom')) as object),
   useParams: () => ({
     requestId: vi.fn(),
+    requete: '1',
   }),
+  useNavigate: vi.fn(),
+  default: vi.fn(),
 }))
 
 const renderCollectiveOfferSummaryCreation = async (
@@ -42,11 +36,16 @@ const defaultProps = {
 }
 
 describe('CollectiveOfferSummaryCreation', () => {
-  it('should render collective offer summary ', async () => {
+  beforeEach(() => {
     vi.spyOn(api, 'getCategories').mockResolvedValue({
       categories: [],
       subcategories: [],
     })
+    vi.spyOn(api, 'getCollectiveOffer')
+    vi.spyOn(api, 'getCollectiveOfferTemplate')
+  })
+
+  it('should render collective offer summary ', async () => {
     await renderCollectiveOfferSummaryCreation(
       '/offre/A1/collectif/creation/recapitulatif',
       defaultProps
@@ -64,7 +63,6 @@ describe('CollectiveOfferSummaryCreation', () => {
   })
 
   it('should have requete parameter in the link for previous step when requete is present in the URL', async () => {
-    vi.spyOn(router, 'useParams').mockReturnValue({ requete: '1' })
     await renderCollectiveOfferSummaryCreation(
       '/offre/A1/collectif/creation/recapitulatif',
       defaultProps

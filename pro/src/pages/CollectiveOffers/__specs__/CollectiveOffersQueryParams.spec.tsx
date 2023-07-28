@@ -19,8 +19,8 @@ import { collectiveOfferFactory } from '../utils/collectiveOffersFactories'
 
 //FIX ME : extract inital values and constant to reduce code duplication with CollectiveOffers.spec.tsx
 
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+  ...((await vi.importActual('react-router-dom')) as object),
   useNavigate: vi.fn(),
 }))
 
@@ -96,22 +96,12 @@ const proVenues = [
   },
 ]
 
-vi.mock('repository/venuesService', () => ({
-  ...vi.importActual('repository/venuesService'),
+vi.mock('repository/venuesService', async () => ({
+  ...((await vi.importActual('repository/venuesService')) as object),
 }))
 
-vi.mock('apiClient/api', () => ({
-  api: {
-    listOffers: vi.fn(),
-    getCategories: vi.fn().mockResolvedValue(categoriesAndSubcategories),
-    getCollectiveOffers: vi.fn(),
-    getOfferer: vi.fn(),
-    getVenues: vi.fn().mockResolvedValue({ venues: proVenues }),
-  },
-}))
-
-vi.mock('utils/date', () => ({
-  ...vi.importActual('utils/date'),
+vi.mock('utils/date', async () => ({
+  ...((await vi.importActual('utils/date')) as object),
   getToday: vi.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
@@ -150,6 +140,14 @@ describe('route CollectiveOffers', () => {
       // @ts-expect-error FIX ME
       .mockResolvedValue(offersRecap)
     vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
+    vi.spyOn(api, 'getCategories').mockResolvedValue(
+      // @ts-expect-error FIX ME
+      categoriesAndSubcategories
+    )
+    vi.spyOn(api, 'getVenues').mockResolvedValue(
+      // @ts-expect-error FIX ME
+      { venues: proVenues }
+    )
   })
 
   describe('url query params', () => {

@@ -7,53 +7,49 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffererDetails from '../OffererDetails'
 
-vi.mock('apiClient/api', () => ({
-  api: {
-    getOfferer: vi.fn(),
-  },
-}))
-
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+  ...((await vi.importActual('react-router-dom')) as object),
   useParams: () => ({
     offererId: 'AA',
   }),
 }))
 
 describe('src | components | pages | Offerer | OffererDetails', () => {
-  const offererId = 1
+  beforeEach(() => {
+    const offererId = 1
 
-  vi.spyOn(api, 'getOfferer').mockResolvedValue({
-    id: offererId,
-    name: 'fake offerer name',
-    city: 'Paris',
-    postalCode: '75000',
-    address: 'fake address',
-    dateCreated: '2020-01-01T00:00:00.000Z',
-    apiKey: {
-      maxAllowed: 100,
-      prefixes: [],
-    },
-    hasAvailablePricingPoints: true,
-    hasDigitalVenueAtLeastOneOffer: true,
-    isValidated: true,
-    isActive: true,
-    managedVenues: [
-      {
-        address: '1 fake address',
-        name: 'fake venue',
-        publicName: 'fake venue',
-        postalCode: '75000',
-        city: 'Paris',
-        id: 1,
-        collectiveDmsApplications: [],
-        isVirtual: false,
-        hasAdageId: false,
-        hasCreatedOffer: false,
-        hasMissingReimbursementPoint: false,
-        venueTypeCode: VenueTypeCode.AUTRE,
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      id: offererId,
+      name: 'fake offerer name',
+      city: 'Paris',
+      postalCode: '75000',
+      address: 'fake address',
+      dateCreated: '2020-01-01T00:00:00.000Z',
+      apiKey: {
+        maxAllowed: 100,
+        prefixes: [],
       },
-    ],
+      hasAvailablePricingPoints: true,
+      hasDigitalVenueAtLeastOneOffer: true,
+      isValidated: true,
+      isActive: true,
+      managedVenues: [
+        {
+          address: '1 fake address',
+          name: 'fake venue',
+          publicName: 'fake venue',
+          postalCode: '75000',
+          city: 'Paris',
+          id: 1,
+          collectiveDmsApplications: [],
+          isVirtual: false,
+          hasAdageId: false,
+          hasCreatedOffer: false,
+          hasMissingReimbursementPoint: false,
+          venueTypeCode: VenueTypeCode.AUTRE,
+        },
+      ],
+    })
   })
 
   describe('render', () => {
