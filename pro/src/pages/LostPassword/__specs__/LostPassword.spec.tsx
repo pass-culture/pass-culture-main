@@ -2,14 +2,10 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
+import * as utils from 'utils/recaptcha'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ResetPassword from '../LostPassword'
-
-vi.mock('utils/recaptcha', () => ({
-  initReCaptchaScript: vi.fn().mockReturnValue({ remove: vi.fn() }),
-  getReCaptchaToken: vi.fn().mockResolvedValue({}),
-}))
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -28,6 +24,10 @@ describe('LostPassword', () => {
   describe('when user arrive on reset password page', () => {
     it('should be able to sent his email', async () => {
       // given
+      vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
+        remove: vi.fn(),
+      } as unknown as HTMLScriptElement)
+      vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
       const url = '/demande-mot-de-passe'
 
       // when
