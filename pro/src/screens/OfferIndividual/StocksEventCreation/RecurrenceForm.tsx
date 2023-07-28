@@ -86,7 +86,7 @@ const getMonthlyOptions = (values: RecurrenceFormValues) => {
 
   const lastDayofMonth = isLastWeekOfMonth(startingDate)
 
-  const dayName = values.startingDate
+  const dayName = isDateValid(values.startingDate)
     ? formatLocalTimeDateString(
         values.startingDate,
         undefined,
