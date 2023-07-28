@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => {
       tsconfigPaths(),
       createHtmlPlugin({
         minify: true,
-        entry: 'index.tsx',
+        entry: '/index.tsx',
         inject: { data: { mode } },
       }),
       // Temporary plugin to expose env variables in the `process.env` object
