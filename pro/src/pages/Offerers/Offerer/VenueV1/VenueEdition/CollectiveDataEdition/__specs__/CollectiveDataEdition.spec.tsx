@@ -62,17 +62,6 @@ vi.mock('core/shared/interventionOptions', async () => {
   }
 })
 
-// vi.mock('apiClient/api', () => ({
-//   api: {
-//     getVenuesEducationalStatuses: vi.fn(),
-//     getEducationalPartners: vi.fn(),
-//     editVenueCollectiveData: vi.fn(),
-//     getVenueCollectiveData: vi.fn(),
-//     getEducationalPartner: vi.fn(),
-//     listEducationalDomains: vi.fn(),
-//     getCategories: vi.fn(),
-//   },
-// }))
 const mockedUsedNavigate = vi.fn()
 vi.mock('react-router-dom', async () => ({
   ...((await vi.importActual('react-router-dom')) as object),
@@ -129,8 +118,8 @@ describe('CollectiveDataEdition', () => {
       categories: [collectiveCategoryFactory(), collectiveCategoryFactory()],
       subcategories: [
         collectiveSubCategoryFactory({ categoryId: 'CATEGORY_1' }),
-        collectiveSubCategoryFactory({ categoryId: 'CATEGORY_1' }),
         collectiveSubCategoryFactory({ categoryId: 'CATEGORY_2' }),
+        collectiveSubCategoryFactory({ categoryId: 'CATEGORY_3' }),
       ],
     })
 
@@ -390,6 +379,7 @@ describe('CollectiveDataEdition', () => {
       await waitForLoader()
 
       const categoryField = screen.getByLabelText(/Catégorie/)
+      screen.debug(undefined, 20000)
       const subCategoryField = screen.getByLabelText(/Sous-catégorie/)
 
       expect(categoryField).toHaveValue('CATEGORY_1')
@@ -412,7 +402,6 @@ describe('CollectiveDataEdition', () => {
     it('should display subcategory field when category is selected', async () => {
       renderCollectiveDataEdition()
       await waitForLoader()
-
       const categoryField = screen.getByLabelText(/Catégorie/)
       await userEvent.selectOptions(categoryField, 'CATEGORY_2')
 

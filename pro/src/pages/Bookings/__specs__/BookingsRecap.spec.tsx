@@ -216,9 +216,9 @@ describe('components | BookingsRecap | Pro user', () => {
     await userEvent.click(resetButton)
 
     // Then
-    /*expect(screen.getByLabelText('Lieu')).toHaveValue(
+    expect(screen.getByLabelText('Lieu')).toHaveValue(
       DEFAULT_PRE_FILTERS.offerVenueId
-    )*/
+    )
   })
 
   it('should not allow user to reset prefilters when none were applied', async () => {
