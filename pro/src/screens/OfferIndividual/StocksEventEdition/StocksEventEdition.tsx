@@ -1,3 +1,4 @@
+import { format } from 'date-fns'
 import { FormikProvider, useFormik } from 'formik'
 import isEqual from 'lodash/isEqual'
 import React, { useEffect, useRef, useState } from 'react'
@@ -27,7 +28,7 @@ import useNotification from 'hooks/useNotification'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { getToday } from 'utils/date'
+import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY, getToday } from 'utils/date'
 import { formatPrice } from 'utils/formatPrice'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
@@ -178,9 +179,15 @@ const StocksEventEdition = ({
         bookingsQuantity: 0,
         remainingQuantity: stock.quantity ?? '',
         isDeletable: true,
-        beginningDate: stock.beginningDatetime,
-        beginningTime: stock.beginningDatetime,
-        bookingLimitDatetime: stock.bookingLimitDatetime,
+        beginningDate: format(
+          new Date(stock.beginningDatetime),
+          FORMAT_ISO_DATE_ONLY
+        ),
+        beginningTime: format(new Date(stock.beginningDatetime), FORMAT_HH_mm),
+        bookingLimitDatetime: format(
+          new Date(stock.bookingLimitDatetime),
+          FORMAT_ISO_DATE_ONLY
+        ),
         readOnlyFields: [],
       })
     )
