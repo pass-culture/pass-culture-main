@@ -8,14 +8,14 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import ResetPassword from '../ResetPassword'
 
 vi.mock('utils/recaptcha', () => ({
-  initReCaptchaScript: vi.fn().mockReturnValue({ remove: vi.fn() }),
-  getReCaptchaToken: vi.fn().mockResolvedValue({}),
+  initReCaptchaScript: vi.fn(() => ({ remove: vi.fn() })),
+  getReCaptchaToken: vi.fn(),
 }))
 
 vi.mock('apiClient/api', () => ({
   api: {
-    getProfile: vi.fn().mockResolvedValue({}),
-    postNewPassword: vi.fn().mockResolvedValue({}),
+    getProfile: vi.fn(),
+    postNewPassword: vi.fn(),
   },
 }))
 
@@ -26,47 +26,33 @@ const renderLostPassword = (url: string) => {
 }
 
 describe('ResetPassword', () => {
-  describe('when user arrive from his reset password link', () => {
-    it('should be able to sent his password', async () => {
-      // given
-      const url = '/mot-de-passe-perdu?token=ABC'
+  it('should be able to reset the password when token is ok', async () => {
+    const url = '/mot-de-passe-perdu?token=ABC'
 
-      // when
-      renderLostPassword(url)
+    renderLostPassword(url)
 
-      // then
-      // user can fill and submit new password
-      await userEvent.type(
-        screen.getByLabelText(/Nouveau mot de passe/),
-        'MyN3wP4$$w0rd'
-      )
-      await userEvent.click(screen.getByText(/Valider/))
+    await userEvent.type(
+      screen.getByLabelText(/Nouveau mot de passe/),
+      'MyN3wP4$$w0rd'
+    )
+    await userEvent.click(screen.getByText(/Valider/))
 
-      // he has been redirected to final step
-      expect(
-        await screen.findByText(/Mot de passe changé !/)
-      ).toBeInTheDocument()
-      expect(screen.getByText(/Se connecter/)).toBeInTheDocument()
-    })
+    expect(await screen.findByText(/Mot de passe changé !/)).toBeInTheDocument()
+    expect(screen.getByText(/Se connecter/)).toBeInTheDocument()
+  })
 
-    it('should display bad token informations', async () => {
-      // given
-      vi.spyOn(api, 'postNewPassword').mockRejectedValue({})
-      const url = '/mot-de-passe-perdu?token=ABC'
+  it('should display bad token informations', async () => {
+    vi.spyOn(api, 'postNewPassword').mockRejectedValue({})
+    const url = '/mot-de-passe-perdu?token=ABC'
 
-      // when
-      renderLostPassword(url)
+    renderLostPassword(url)
 
-      // then
-      // user can fill and submit new password
-      await userEvent.type(
-        screen.getByLabelText(/Nouveau mot de passe/),
-        'MyN3wP4$$w0rd'
-      )
-      await userEvent.click(screen.getByText(/Valider/))
+    await userEvent.type(
+      screen.getByLabelText(/Nouveau mot de passe/),
+      'MyN3wP4$$w0rd'
+    )
+    await userEvent.click(screen.getByText(/Valider/))
 
-      // he has been redirected to final step
-      expect(screen.getByText('Ce lien a expiré !')).toBeInTheDocument()
-    })
+    expect(screen.getByText('Ce lien a expiré !')).toBeInTheDocument()
   })
 })
