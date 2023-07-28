@@ -21,15 +21,8 @@ export const DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID_V4 =
 export const RECAPTCHA_SITE_KEY = process.env.VITE_RECAPTCHA_SITE_KEY ?? ''
 export const WEBAPP_URL = process.env.VITE_WEBAPP_URL
 export const URL_FOR_MAINTENANCE = process.env.VITE_URL_FOR_MAINTENANCE || ''
-
-let CALC_ROOT_PATH = ''
-if (typeof window !== 'undefined') {
-  CALC_ROOT_PATH = window.location.protocol + '//' + document.location.host
-}
-export const ROOT_PATH =
-  process.env.STORYBOOK_ROOT_PATH || CALC_ROOT_PATH || 'http://localhost:3001/'
-
 export const LOGS_DATA = process.env.VITE_LOGS_DATA === 'true'
+
 export const ALGOLIA_APP_ID = process.env.VITE_ALGOLIA_APP_ID ?? ''
 export const ALGOLIA_API_KEY = process.env.VITE_ALGOLIA_API_KEY ?? ''
 export const ALGOLIA_COLLECTIVE_OFFERS_INDEX =

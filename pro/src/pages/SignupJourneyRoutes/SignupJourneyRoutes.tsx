@@ -9,9 +9,10 @@ import { SignupJourneyContextProvider } from 'context/SignupJourneyContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import fullLogoutIcon from 'icons/full-logout.svg'
+import logoPassCultureProIcon from 'icons/logo-pass-culture-pro.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { ROOT_PATH } from 'utils/config'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SignupJourney.module.scss'
 
@@ -41,9 +42,11 @@ const SignupJourneyRoutes = () => {
       <SkipLinks displayMenu={false} />
       <header className={styles['header']}>
         <div className={styles['header-content']}>
-          <img
+          <SvgIcon
+            className={styles['header-logo']}
             alt="Pass Culture pro, l'espace des acteurs culturels"
-            src={`${ROOT_PATH}/icons/brand-logo-pc-purple.png`}
+            src={logoPassCultureProIcon}
+            viewBox="0 0 119 40"
           />
           <Button
             onClick={onSignoutClick}
