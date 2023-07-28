@@ -6,10 +6,10 @@ import { apiAdage } from 'apiClient/api'
 import DialogBox from 'components/DialogBox/DialogBox'
 import useActiveFeature from 'hooks/useActiveFeature'
 import fullLikeIcon from 'icons/full-like.svg'
+import fullUpIcon from 'icons/full-up.svg'
 import strokeLikeIcon from 'icons/stroke-like.svg'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import strokePassIcon from 'icons/stroke-pass.svg'
-import strokeUpIcon from 'icons/stroke-up.svg'
 import {
   HydratedCollectiveOffer,
   HydratedCollectiveOfferTemplate,
@@ -163,7 +163,7 @@ const Offer = ({
             >
               <SvgIcon
                 alt=""
-                src={strokeUpIcon}
+                src={fullUpIcon}
                 className={cn(style['offer-see-more-icon'], {
                   [style['offer-see-more-icon-closed']]: !displayDetails,
                 })}
