@@ -1,6 +1,8 @@
 import cn from 'classnames'
 import React, { useState } from 'react'
 
+import { apiAdage } from 'apiClient/api'
+import useNotification from 'hooks/useNotification'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -8,17 +10,21 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SurveySatisfaction.module.scss'
 
-const LOCAL_STORAGE_HAS_SEEN_SATISFACTION_KEY = 'SURVEY_SATISFACTION_ADAGE_SEEN'
-
 export const SurveySatisfaction = (): JSX.Element => {
   const [shouldHideSurveySatisfaction, setShouldHideSurveySatisfaction] =
-    useState(
-      Boolean(localStorage.getItem(LOCAL_STORAGE_HAS_SEEN_SATISFACTION_KEY))
-    )
+    useState(false)
 
-  const onCloseSurvey = () => {
-    localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_SATISFACTION_KEY, 'true')
-    setShouldHideSurveySatisfaction(true)
+  const notify = useNotification()
+
+  const onCloseSurvey = async () => {
+    try {
+      await apiAdage.saveRedactorPreferences({
+        feedback_form_closed: true,
+      })
+      setShouldHideSurveySatisfaction(true)
+    } catch {
+      notify.error('Une erreur est survenue. Merci de réessayer plus tard')
+    }
   }
 
   return !shouldHideSurveySatisfaction ? (

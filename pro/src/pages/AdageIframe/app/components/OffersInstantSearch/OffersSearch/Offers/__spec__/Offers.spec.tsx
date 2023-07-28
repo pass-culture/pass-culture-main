@@ -10,6 +10,7 @@ import type { Hit } from 'react-instantsearch-core'
 
 import {
   AdageFrontRoles,
+  AuthenticatedResponse,
   CancelablePromise,
   CollectiveOfferResponseModel,
   OfferAddressType,
@@ -20,6 +21,7 @@ import {
   AlgoliaQueryContextProvider,
   FacetFiltersContextProvider,
 } from 'pages/AdageIframe/app/providers'
+import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { ResultType } from 'utils/types'
 
@@ -66,16 +68,28 @@ const searchFakeResults: Hit<ResultType>[] = [
   },
 ]
 
-const renderOffers = (props: OffersComponentProps, storeOverrides = {}) => {
+const renderOffers = (
+  props: OffersComponentProps,
+  adageUser: AuthenticatedResponse,
+  storeOverrides = {}
+) => {
   return renderWithProviders(
-    <AlgoliaQueryContextProvider>
-      <FacetFiltersContextProvider>
-        <Formik onSubmit={() => {}} initialValues={{}}>
-          <OffersComponent {...props} />
-        </Formik>
-      </FacetFiltersContextProvider>
-    </AlgoliaQueryContextProvider>,
-    { storeOverrides }
+    <AdageUserContext.Provider
+      value={{
+        adageUser: adageUser,
+      }}
+    >
+      <AlgoliaQueryContextProvider>
+        <FacetFiltersContextProvider>
+          <Formik onSubmit={() => {}} initialValues={{}}>
+            <OffersComponent {...props} />
+          </Formik>
+        </FacetFiltersContextProvider>
+      </AlgoliaQueryContextProvider>
+    </AdageUserContext.Provider>,
+    {
+      storeOverrides,
+    }
   )
 }
 
@@ -84,8 +98,14 @@ describe('offers', () => {
   let offerInCayenne: CollectiveOfferResponseModel
   let otherOffer: CollectiveOfferResponseModel
   let offersProps: OffersComponentProps
+  let adageUser: AuthenticatedResponse
 
   beforeEach(() => {
+    adageUser = {
+      role: AdageFrontRoles.REDACTOR,
+      preferences: { feedback_form_closed: null },
+    }
+
     offerInParis = {
       id: 479,
       name: 'Une chouette à la mer',
@@ -225,7 +245,6 @@ describe('offers', () => {
       handleResetFiltersAndLaunchSearch: vi.fn(),
       hits: searchFakeResults,
       setIsLoading: vi.fn(),
-      userRole: AdageFrontRoles.REDACTOR,
       refineNext: vi.fn(),
       hasMore: true,
       hasPrevious: false,
@@ -245,7 +264,7 @@ describe('offers', () => {
       offerInCayenne
     )
     // When
-    renderOffers(offersProps)
+    renderOffers(offersProps, adageUser)
 
     // Then
     const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
@@ -256,7 +275,7 @@ describe('offers', () => {
   })
 
   it('should remove previous rendered offers on results update', async () => {
-    const { rerender } = renderOffers(offersProps)
+    const { rerender } = renderOffers(offersProps, adageUser)
     vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(otherOffer)
     const otherSearchResult: Hit<ResultType> = {
       objectID: '481',
@@ -275,8 +294,16 @@ describe('offers', () => {
     }
 
     // When
-    offersProps.hits = [otherSearchResult]
-    rerender(<OffersComponent {...offersProps} />)
+    offersProps = { ...offersProps, hits: [otherSearchResult] }
+    rerender(
+      <AdageUserContext.Provider
+        value={{
+          adageUser,
+        }}
+      >
+        <OffersComponent {...offersProps} />
+      </AdageUserContext.Provider>
+    )
 
     // Then
     const otherOfferName = await screen.findByText(otherOffer.name)
@@ -299,7 +326,7 @@ describe('offers', () => {
     vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
       offerInCayenne
     )
-    const { rerender } = renderOffers(offersProps)
+    const { rerender } = renderOffers(offersProps, adageUser)
     vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(otherOffer)
     const otherSearchResult: Hit<ResultType> = {
       objectID: '481',
@@ -318,8 +345,16 @@ describe('offers', () => {
     }
 
     // When
-    offersProps.hits = [otherSearchResult]
-    rerender(<OffersComponent {...offersProps} />)
+    offersProps = { ...offersProps, hits: [otherSearchResult] }
+    rerender(
+      <AdageUserContext.Provider
+        value={{
+          adageUser,
+        }}
+      >
+        <OffersComponent {...offersProps} />
+      </AdageUserContext.Provider>
+    )
 
     // Then
     const otherOfferName = await screen.findByText(otherOffer.name)
@@ -350,7 +385,7 @@ describe('offers', () => {
       )
 
     // When
-    renderOffers(offersProps)
+    renderOffers(offersProps, adageUser)
 
     // Then
     const loader = await screen.findByText('Recherche en cours')
@@ -361,13 +396,15 @@ describe('offers', () => {
 
   it('should display only non sold-out offers', async () => {
     // Given
-    offerInParis.isSoldOut = true
-    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(offerInParis)
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce({
+      ...offerInParis,
+      isSoldOut: true,
+    })
     vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
       offerInCayenne
     )
     // When
-    renderOffers(offersProps)
+    renderOffers(offersProps, adageUser)
 
     // Then
     const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
@@ -377,14 +414,16 @@ describe('offers', () => {
 
   it('should not display expired offer', async () => {
     // Given
-    offerInParis.isExpired = true
-    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(offerInParis)
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce({
+      ...offerInParis,
+      isExpired: true,
+    })
     vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
       offerInCayenne
     )
 
     // When
-    renderOffers(offersProps)
+    renderOffers(offersProps, adageUser)
 
     // Then
     const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
@@ -392,11 +431,106 @@ describe('offers', () => {
     expect(screen.getByText(offerInCayenne.name)).toBeInTheDocument()
   })
 
+  it('should not display survey satisfaction ff not active', async () => {
+    // Given
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(offerInParis)
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+      offerInCayenne
+    )
+
+    // When
+    renderOffers(offersProps, adageUser, {
+      features: {
+        list: [{ isActive: false, nameKey: 'WIP_ENABLE_SATISFACTION_SURVEY' }],
+      },
+    })
+
+    const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
+    expect(listItemsInOffer).toHaveLength(2)
+
+    // Then
+    const surveySatisfaction = screen.queryByText('Enquête de satisfaction')
+    expect(surveySatisfaction).not.toBeInTheDocument()
+  })
+
+  it('should display survey satisfaction', async () => {
+    // Given
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(offerInParis)
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+      offerInCayenne
+    )
+
+    // When
+    renderOffers(offersProps, adageUser, {
+      features: {
+        list: [{ isActive: true, nameKey: 'WIP_ENABLE_SATISFACTION_SURVEY' }],
+      },
+    })
+
+    const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
+    expect(listItemsInOffer).toHaveLength(2)
+
+    // Then
+    const surveySatisfaction = screen.getByText('Enquête de satisfaction')
+    expect(surveySatisfaction).toBeInTheDocument()
+  })
+
+  it('should not display survey satisfaction if only 1 offer', async () => {
+    // Given
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce({
+      ...offerInParis,
+      isExpired: true,
+    })
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+      offerInCayenne
+    )
+    // When
+    renderOffers(offersProps, adageUser, {
+      features: {
+        list: [{ isActive: true, nameKey: 'WIP_ENABLE_SATISFACTION_SURVEY' }],
+      },
+    })
+
+    const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
+    expect(listItemsInOffer).toHaveLength(1)
+
+    // Then
+    const surveySatisfaction = screen.queryByText('Enquête de satisfaction')
+    expect(surveySatisfaction).not.toBeInTheDocument()
+  })
+
+  it('should not display survey satisfaction', async () => {
+    // Given
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(offerInParis)
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+      offerInCayenne
+    )
+
+    // When
+    renderOffers(
+      offersProps,
+      {
+        ...adageUser,
+        preferences: { feedback_form_closed: true },
+      },
+      {
+        features: {
+          list: [{ isActive: true, nameKey: 'WIP_ENABLE_SATISFACTION_SURVEY' }],
+        },
+      }
+    )
+
+    // Then
+    const surveySatisfaction = await screen.queryByText(
+      'Enquête de satisfaction'
+    )
+    expect(surveySatisfaction).not.toBeInTheDocument()
+  })
+
   describe('should display no results page', () => {
     it('when there are no results', async () => {
       // When
-      offersProps.hits = []
-      renderOffers(offersProps)
+      renderOffers({ ...offersProps, hits: [] }, adageUser)
 
       // Then
       const errorMessage = await screen.findByText(
@@ -409,17 +543,16 @@ describe('offers', () => {
 
     it('when all offers are not bookable', async () => {
       // Given
-
-      offerInParis.isExpired = true
-      offerInCayenne.isSoldOut = true
-      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
-        offerInParis
-      )
-      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
-        offerInCayenne
-      )
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce({
+        ...offerInParis,
+        isExpired: true,
+      })
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce({
+        ...offerInCayenne,
+        isSoldOut: true,
+      })
       // When
-      renderOffers(offersProps)
+      renderOffers(offersProps, adageUser)
 
       // Then
       const errorMessage = await screen.findByText(
@@ -440,7 +573,7 @@ describe('offers', () => {
       )
 
       // When
-      renderOffers(offersProps)
+      renderOffers(offersProps, adageUser)
 
       // Then
       const errorMessage = await screen.findByText(
@@ -458,6 +591,7 @@ describe('offers', () => {
       )
       renderOffers(
         { ...offersProps, logFiltersOnSearch: mockLogTrackingFilter },
+        adageUser,
         {
           features: {
             list: [{ isActive: true, nameKey: 'WIP_ENABLE_NEW_ADAGE_FILTERS' }],
@@ -476,7 +610,7 @@ describe('offers', () => {
       vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
         offerInCayenne
       )
-      renderOffers(offersProps)
+      renderOffers(offersProps, adageUser)
       const loadMoreButton = await screen.findByRole('button', {
         name: 'Voir plus d’offres',
       })
@@ -495,8 +629,7 @@ describe('offers', () => {
       vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
         offerInCayenne
       )
-      offersProps.hasMore = false
-      renderOffers(offersProps)
+      renderOffers({ ...offersProps, hasMore: false }, adageUser)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       const loadMoreButton = screen.queryByRole('button', {
         name: 'Voir plus d’offres',
@@ -517,7 +650,7 @@ describe('offers', () => {
         offerInCayenne
       )
 
-      renderOffers(offersProps)
+      renderOffers(offersProps, adageUser)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       const diffuseHelp = screen.queryByText('Le saviez-vous ?')
@@ -533,14 +666,11 @@ describe('offers', () => {
         offerInCayenne
       )
 
-      renderOffers(
-        { ...offersProps, submitCount: 0 },
-        {
-          features: {
-            list: [{ isActive: true, nameKey: 'WIP_ENABLE_DIFFUSE_HELP' }],
-          },
-        }
-      )
+      renderOffers({ ...offersProps, submitCount: 0 }, adageUser, {
+        features: {
+          list: [{ isActive: true, nameKey: 'WIP_ENABLE_DIFFUSE_HELP' }],
+        },
+      })
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       const diffuseHelp = screen.queryByText('Le saviez-vous ?')
@@ -556,14 +686,11 @@ describe('offers', () => {
         offerInCayenne
       )
 
-      renderOffers(
-        { ...offersProps, submitCount: 1 },
-        {
-          features: {
-            list: [{ isActive: true, nameKey: 'WIP_ENABLE_DIFFUSE_HELP' }],
-          },
-        }
-      )
+      renderOffers({ ...offersProps, submitCount: 1 }, adageUser, {
+        features: {
+          list: [{ isActive: true, nameKey: 'WIP_ENABLE_DIFFUSE_HELP' }],
+        },
+      })
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       const diffuseHelp = screen.getByText('Le saviez-vous ?')

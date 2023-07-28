@@ -15,13 +15,6 @@ const OffersInstitutionList = ({
   venueFilter,
 }: OffersInstitutionListProps): JSX.Element => {
   const adageUser = useAdageUser()
-  return (
-    <Offers
-      setIsLoading={() => {}}
-      userRole={adageUser.role}
-      userEmail={adageUser.email}
-      displayStats={false}
-    />
-  )
+  return <Offers setIsLoading={() => {}} displayStats={false} />
 }
 export default OffersInstitutionList

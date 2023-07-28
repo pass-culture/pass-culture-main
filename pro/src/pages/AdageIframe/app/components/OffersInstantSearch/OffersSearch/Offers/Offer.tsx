@@ -10,6 +10,7 @@ import fullUpIcon from 'icons/full-up.svg'
 import strokeLikeIcon from 'icons/stroke-like.svg'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import strokePassIcon from 'icons/stroke-pass.svg'
+import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import {
   HydratedCollectiveOffer,
   HydratedCollectiveOfferTemplate,
@@ -33,20 +34,13 @@ export interface OfferProps {
   offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
   queryId: string
   position: number
-  userEmail?: string | null
-  userRole: AdageFrontRoles
 }
 
-const Offer = ({
-  offer,
-  queryId,
-  position,
-  userEmail,
-  userRole,
-}: OfferProps): JSX.Element => {
+const Offer = ({ offer, queryId, position }: OfferProps): JSX.Element => {
   const [displayDetails, setDisplayDetails] = useState(false)
   const [isModalLikeOpen, setIsModalLikeOpen] = useState(false)
   const isLikeActive = useActiveFeature('WIP_ENABLE_LIKE_IN_ADAGE')
+  const adageUser = useAdageUser()
 
   const openOfferDetails = (
     offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
@@ -111,12 +105,12 @@ const Offer = ({
               offerId={offer.id}
               position={position}
               queryId={queryId}
-              userEmail={userEmail}
-              userRole={userRole}
+              userEmail={adageUser.email}
+              userRole={adageUser.role}
             />
           ) : (
             <PrebookingButton
-              canPrebookOffers={userRole == AdageFrontRoles.REDACTOR}
+              canPrebookOffers={adageUser.role == AdageFrontRoles.REDACTOR}
               className={style['offer-prebooking-button']}
               offerId={offer.id}
               queryId={queryId}

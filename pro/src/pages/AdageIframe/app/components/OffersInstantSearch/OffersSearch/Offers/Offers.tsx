@@ -10,12 +10,12 @@ import { connectInfiniteHits, connectStats } from 'react-instantsearch-dom'
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
-  AdageFrontRoles,
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { getCollectiveOfferAdapter } from 'pages/AdageIframe/app/adapters/getCollectiveOfferAdapter'
 import { getCollectiveOfferTemplateAdapter } from 'pages/AdageIframe/app/adapters/getCollectiveOfferTemplateAdapter'
+import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { AnalyticsContext } from 'pages/AdageIframe/app/providers/AnalyticsContextProvider'
 import {
   HydratedCollectiveOffer,
@@ -43,8 +43,6 @@ export interface OffersComponentProps
 
 interface OffersComponentPropsWithHits
   extends InfiniteHitsProvided<ResultType> {
-  userRole: AdageFrontRoles
-  userEmail?: string | null
   setIsLoading: (isLoading: boolean) => void
   handleResetFiltersAndLaunchSearch?: () => void
   displayStats?: boolean
@@ -59,8 +57,6 @@ type OfferMap = Map<
 >
 
 export const OffersComponent = ({
-  userRole,
-  userEmail,
   setIsLoading,
   handleResetFiltersAndLaunchSearch,
   hits,
@@ -95,6 +91,11 @@ export const OffersComponent = ({
       setIsCookieEnabled(false)
     }
   }, [])
+
+  const adageUser = useAdageUser()
+
+  const showSurveySatisfaction =
+    isSatisfactionSurveyActive && !adageUser.preferences?.feedback_form_closed
 
   const { filtersKeys, hasClickedSearch, setHasClickedSearch } =
     useContext(AnalyticsContext)
@@ -187,13 +188,7 @@ export const OffersComponent = ({
       <ul className={styles['offers-list']}>
         {offers.map((offer, index) => (
           <div key={`${offer.isTemplate ? 'T' : ''}${offer.id}`}>
-            <Offer
-              offer={offer}
-              position={index}
-              queryId={queryId}
-              userEmail={userEmail}
-              userRole={userRole}
-            />
+            <Offer offer={offer} position={index} queryId={queryId} />
             {index === 0 && showDiffuseHelp && (
               <DiffuseHelp
                 description={
@@ -201,9 +196,7 @@ export const OffersComponent = ({
                 }
               />
             )}
-            {index === 1 && isSatisfactionSurveyActive && isCookieEnabled && (
-              <SurveySatisfaction />
-            )}
+            {index === 1 && showSurveySatisfaction && <SurveySatisfaction />}
           </div>
         ))}
         <div className={styles['offers-load-more']}>
