@@ -26,7 +26,9 @@ class IncidentCreationForm(FlaskForm):
 
     origin = fields.PCStringField("Origine de la demande")
 
-    total_amount = fields.PCDecimalField("Montant total de l'incident", validators=[Optional()])
+    total_amount = fields.PCDecimalField(
+        "Montant total de l'incident (à récupérer à la structure)", validators=[Optional()]
+    )
 
 
 class BookingIncidentForm(empty_forms.BatchForm, IncidentCreationForm):

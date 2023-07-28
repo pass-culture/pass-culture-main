@@ -118,7 +118,8 @@ class CreateIncidentTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
     def test_create_incident_from_one_booking(self, authenticated_client):
-        booking = bookings_factories.ReimbursedBookingFactory()
+        pricing = finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED)
+        booking = bookings_factories.ReimbursedBookingFactory(pricings=[pricing])
 
         object_ids = str(booking.id)
 
@@ -163,9 +164,12 @@ class CreateIncidentTest(PostEndpointHelper):
         offer = offers_factories.OfferFactory(venue=venue)
         stock = offers_factories.StockFactory(offer=offer)
         selected_bookings = [
-            bookings_factories.ReimbursedBookingFactory(stock=stock),
-            bookings_factories.ReimbursedBookingFactory(stock=stock),
-            bookings_factories.ReimbursedBookingFactory(stock=stock),
+            bookings_factories.ReimbursedBookingFactory(
+                stock=stock, pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED)]
+            ),
+            bookings_factories.ReimbursedBookingFactory(
+                stock=stock, pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED)]
+            ),
         ]
         object_ids = ",".join([str(booking.id) for booking in selected_bookings])
         total_booking_amount = sum(booking.amount for booking in selected_bookings)
@@ -184,4 +188,4 @@ class CreateIncidentTest(PostEndpointHelper):
         assert finance_models.FinanceIncident.query.count() == 1
         finance_incident = finance_models.FinanceIncident.query.first()
         assert finance_incident.details["origin"] == "Origine de la demande"
-        assert finance_models.BookingFinanceIncident.query.count() == 3
+        assert finance_models.BookingFinanceIncident.query.count() == 2
