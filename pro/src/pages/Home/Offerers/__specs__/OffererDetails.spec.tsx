@@ -7,26 +7,23 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import {
+  GetOffererNameResponseModel,
+  GetOffererResponseModel,
+  GetOffererVenueResponseModel,
+} from 'apiClient/v1'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Homepage from '../../Homepage'
 
 const mockNavigate = vi.fn()
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+  ...((await vi.importActual('react-router-dom')) as object),
   useNavigate: () => mockNavigate,
 }))
 
-vi.mock('apiClient/api', () => ({
-  api: {
-    getOfferer: vi.fn(),
-    listOfferersNames: vi.fn(),
-    getVenueStats: vi.fn(),
-  },
-}))
-
-const renderHomePage = async storeOverrides => {
+const renderHomePage = async (storeOverrides: any) => {
   const utils = renderWithProviders(<Homepage />, {
     storeOverrides,
   })
@@ -35,10 +32,10 @@ const renderHomePage = async storeOverrides => {
 
   const waitForElements = async () => {
     await screen.findByTestId('offerrer-wrapper')
-    const offerer = screen.queryByTestId('offerrer-wrapper')
+    const offerer = screen.getByTestId('offerrer-wrapper')
     const venues = screen.queryAllByTestId('venue-wrapper')
 
-    const selectOfferer = async offererName => {
+    const selectOfferer = async (offererName: string) => {
       await userEvent.selectOptions(
         within(offerer).getByRole('combobox'),
         offererName
@@ -64,13 +61,13 @@ const renderHomePage = async storeOverrides => {
 const mockLogEvent = vi.fn()
 
 describe('offererDetailsLegacy', () => {
-  let store
-  let baseOfferers
-  let firstOffererByAlphabeticalOrder
-  let baseOfferersNames
-  let virtualVenue
-  let physicalVenue
-  let physicalVenueWithPublicName
+  let store: any
+  let baseOfferers: GetOffererResponseModel[]
+  let firstOffererByAlphabeticalOrder: GetOffererResponseModel
+  let baseOfferersNames: GetOffererNameResponseModel[]
+  let virtualVenue: GetOffererVenueResponseModel
+  let physicalVenue: GetOffererVenueResponseModel
+  let physicalVenueWithPublicName: GetOffererVenueResponseModel
 
   beforeEach(() => {
     store = {
@@ -91,26 +88,20 @@ describe('offererDetailsLegacy', () => {
       id: 1,
       isVirtual: true,
       name: 'Le Sous-sol (Offre numérique)',
-      offererName: 'Bar des amis',
       publicName: null,
-      nOffers: 2,
-    }
+    } as GetOffererVenueResponseModel
     physicalVenue = {
       id: 2,
       isVirtual: false,
       name: 'Le Sous-sol (Offre physique)',
-      offererName: 'Bar des amis',
       publicName: null,
-      nOffers: 2,
-    }
+    } as GetOffererVenueResponseModel
     physicalVenueWithPublicName = {
       id: 3,
       isVirtual: false,
       name: 'Le deuxième Sous-sol (Offre physique)',
-      offererName: 'Bar des amis',
       publicName: 'Le deuxième Sous-sol',
-      nOffers: 2,
-    }
+    } as GetOffererVenueResponseModel
     baseOfferers = [
       {
         address: 'RUE DE NIEUPORT',
@@ -120,14 +111,11 @@ describe('offererDetailsLegacy', () => {
         },
         city: 'Drancy',
         dateCreated: '2021-11-03T16:31:17.240807Z',
-        dateModifiedAtLastProvider: '2021-11-03T16:31:18.294494Z',
         demarchesSimplifieesApplicationId: null,
-        fieldsUpdated: [],
         hasDigitalVenueAtLeastOneOffer: true,
         id: 6,
         isValidated: true,
         isActive: true,
-        lastProviderId: null,
         name: 'Club Dorothy',
         postalCode: '93700',
         siren: '222222222',
@@ -137,6 +125,7 @@ describe('offererDetailsLegacy', () => {
             id: 4,
           },
         ],
+        hasAvailablePricingPoints: true,
       },
       {
         address: 'LA COULÉE D’OR',
@@ -146,14 +135,11 @@ describe('offererDetailsLegacy', () => {
         },
         city: 'Cayenne',
         dateCreated: '2021-11-03T16:31:17.240807Z',
-        dateModifiedAtLastProvider: '2021-11-03T16:31:18.294494Z',
         demarchesSimplifieesApplicationId: null,
-        fieldsUpdated: [],
         hasDigitalVenueAtLeastOneOffer: true,
         id: 12,
         isValidated: true,
         isActive: true,
-        lastProviderId: null,
         name: 'Bar des amis',
         postalCode: '97300',
         siren: '111111111',
@@ -162,6 +148,7 @@ describe('offererDetailsLegacy', () => {
           physicalVenue,
           physicalVenueWithPublicName,
         ],
+        hasAvailablePricingPoints: true,
       },
     ]
     firstOffererByAlphabeticalOrder = baseOfferers[1]
@@ -170,11 +157,14 @@ describe('offererDetailsLegacy', () => {
       name: offerer.name,
     }))
 
-    api.listOfferersNames.mockResolvedValue({
+    vi.spyOn(api, 'getProfile')
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: baseOfferersNames,
     })
-    api.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
-    api.getVenueStats.mockResolvedValue({
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(
+      firstOffererByAlphabeticalOrder
+    )
+    vi.spyOn(api, 'getVenueStats').mockResolvedValue({
       activeBookingsQuantity: 4,
       activeOffersCount: 2,
       soldOutOffersCount: 3,
@@ -190,7 +180,7 @@ describe('offererDetailsLegacy', () => {
     await renderHomePage(store)
 
     expect(
-      screen.getByDisplayValue(firstOffererByAlphabeticalOrder.name)
+      screen.getByText(firstOffererByAlphabeticalOrder.name)
     ).toBeInTheDocument()
   })
 
@@ -209,24 +199,19 @@ describe('offererDetailsLegacy', () => {
   it('should display offerer venues informations', async () => {
     await renderHomePage(store)
 
-    const selectedOfferer = firstOffererByAlphabeticalOrder
     const virtualVenueTitle = screen.getByText('Offres numériques')
     expect(virtualVenueTitle).toBeInTheDocument()
-
-    const physicalVenueTitle = screen.getByText(
-      selectedOfferer.managedVenues[1].name
-    )
+    const physicalVenueTitle = screen.getByText(physicalVenue.name)
     expect(physicalVenueTitle).toBeInTheDocument()
     const physicalVenueContainer = physicalVenueTitle.closest('div')
     expect(
-      within(physicalVenueContainer).getByText('Éditer le lieu', {
-        exact: false,
-      })
+      physicalVenueContainer &&
+        within(physicalVenueContainer).getByText('Éditer le lieu', {
+          exact: false,
+        })
     ).toBeInTheDocument()
 
-    const secondOfflineVenueTitle = screen.getByText(
-      selectedOfferer.managedVenues[2].publicName
-    )
+    const secondOfflineVenueTitle = screen.getByText('Le deuxième Sous-sol')
     expect(secondOfflineVenueTitle).toBeInTheDocument()
   })
 
@@ -242,7 +227,9 @@ describe('offererDetailsLegacy', () => {
         physicalVenue,
       ],
     }
-    api.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
+    vi.spyOn(api, 'getOfferer').mockResolvedValueOnce(
+      firstOffererByAlphabeticalOrder
+    )
 
     // When
     const { waitForElements } = await renderHomePage(store)
@@ -271,7 +258,7 @@ describe('offererDetailsLegacy', () => {
   })
 
   describe('when selected offerer change', () => {
-    let newSelectedOfferer
+    let newSelectedOfferer: GetOffererResponseModel
     beforeEach(async () => {
       newSelectedOfferer = {
         ...baseOfferers[0],
@@ -279,33 +266,24 @@ describe('offererDetailsLegacy', () => {
           {
             id: 1,
             isVirtual: true,
-            managingOffererId: baseOfferers[0].id,
             name: 'New venue (Offre numérique)',
-            offererName: baseOfferers[0].name,
             publicName: null,
-            nOffers: 2,
-          },
+          } as GetOffererVenueResponseModel,
           {
             id: 2,
             isVirtual: false,
-            managingOffererId: baseOfferers[0].id,
             name: 'New venue (Offre physique)',
-            offererName: baseOfferers[0].name,
             publicName: null,
-            nOffers: 2,
-          },
+          } as GetOffererVenueResponseModel,
           {
             id: 3,
             isVirtual: false,
-            managingOffererId: baseOfferers[0].id,
             name: 'Second new venue (Offre physique)',
-            offererName: baseOfferers[0].name,
             publicName: 'Second new venue public name',
-            nOffers: 2,
-          },
+          } as GetOffererVenueResponseModel,
         ],
       }
-      api.getOfferer.mockResolvedValue(newSelectedOfferer)
+      vi.spyOn(api, 'getOfferer').mockResolvedValueOnce(newSelectedOfferer)
       const { waitForElements } = await renderHomePage(store)
       const { selectOfferer } = await waitForElements()
 
@@ -316,19 +294,21 @@ describe('offererDetailsLegacy', () => {
       const virtualVenueTitle = screen.getByText('Offres numériques')
       expect(virtualVenueTitle).toBeInTheDocument()
 
-      const physicalVenueTitle = await screen.findByText(
-        newSelectedOfferer.managedVenues[1].name
-      )
+      const physicalVenueTitle =
+        newSelectedOfferer.managedVenues &&
+        (await screen.findByText(newSelectedOfferer.managedVenues[1].name))
       expect(physicalVenueTitle).toBeInTheDocument()
-      const physicalVenueContainer = physicalVenueTitle.closest('div')
-      expect(
-        within(physicalVenueContainer).getByText('Éditer le lieu', {
-          exact: false,
-        })
-      ).toBeInTheDocument()
+      const physicalVenueContainer =
+        physicalVenueTitle && physicalVenueTitle.closest('div')
 
+      expect(
+        physicalVenueContainer &&
+          within(physicalVenueContainer).getByText('Éditer le lieu', {
+            exact: false,
+          })
+      ).toBeInTheDocument()
       const secondOfflineVenueTitle = screen.getByText(
-        newSelectedOfferer.managedVenues[2].publicName
+        'Second new venue public name'
       )
       expect(secondOfflineVenueTitle).toBeInTheDocument()
     })
@@ -349,33 +329,29 @@ describe('offererDetailsLegacy', () => {
   })
 
   describe('when offerer has physical venues', () => {
-    let offererWithPhysicalVenues
+    let offererWithPhysicalVenues: GetOffererResponseModel
 
     beforeEach(() => {
       const offererVenues = [
         {
-          id: 'test_venue_id_1',
+          id: 1,
           isVirtual: true,
-          managingOffererId: firstOffererByAlphabeticalOrder.id,
           name: 'Le Sous-sol (Offre numérique)',
-          offererName: 'Bar des amis',
           publicName: null,
-        },
+        } as GetOffererVenueResponseModel,
         {
-          id: 'test_venue_id_2',
+          id: 2,
           isVirtual: false,
-          managingOffererId: firstOffererByAlphabeticalOrder.id,
           name: 'Le Sous-sol (Offre physique)',
-          offererName: 'Bar des amis',
           publicName: null,
-        },
+        } as GetOffererVenueResponseModel,
       ]
       offererWithPhysicalVenues = {
         ...firstOffererByAlphabeticalOrder,
         managedVenues: offererVenues,
       }
 
-      api.listOfferersNames.mockResolvedValue({
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
         offerersNames: [
           {
             id: offererWithPhysicalVenues.id,
@@ -383,7 +359,7 @@ describe('offererDetailsLegacy', () => {
           },
         ],
       })
-      api.getOfferer.mockResolvedValue(offererWithPhysicalVenues)
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(offererWithPhysicalVenues)
     })
 
     it('should not display offerer informations', async () => {
@@ -393,9 +369,7 @@ describe('offererDetailsLegacy', () => {
 
       // Then
       const selectedOffererAddress = `${offererWithPhysicalVenues.address} ${offererWithPhysicalVenues.postalCode} ${offererWithPhysicalVenues.city}`
-      expect(
-        within(offerer).queryByText(offererWithPhysicalVenues.siren)
-      ).not.toBeInTheDocument()
+      expect(within(offerer).queryByText('111111111')).not.toBeInTheDocument()
       expect(
         within(offerer).queryByText(offererWithPhysicalVenues.name, {
           selector: 'span',
@@ -409,13 +383,13 @@ describe('offererDetailsLegacy', () => {
 
   describe('when offerer is not yet validated', () => {
     beforeEach(() => {
-      virtualVenue = { ...virtualVenue, nOffers: 0 }
+      virtualVenue = { ...virtualVenue }
       const nonValidatedOfferer = {
         ...firstOffererByAlphabeticalOrder,
         isValidated: false,
         managedVenues: [virtualVenue],
       }
-      api.listOfferersNames.mockResolvedValue({
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
         offerersNames: [
           {
             name: nonValidatedOfferer.name,
@@ -423,7 +397,7 @@ describe('offererDetailsLegacy', () => {
           },
         ],
       })
-      api.getOfferer.mockResolvedValue(nonValidatedOfferer)
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(nonValidatedOfferer)
     })
 
     it('should warn user that offerer is being validated', async () => {
@@ -453,7 +427,7 @@ describe('offererDetailsLegacy', () => {
 
   describe('when user attachment to offerer is not yet validated', () => {
     beforeEach(() => {
-      api.listOfferersNames.mockResolvedValue({
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
         offerersNames: [
           {
             name: firstOffererByAlphabeticalOrder.name,
@@ -465,7 +439,7 @@ describe('offererDetailsLegacy', () => {
           },
         ],
       })
-      api.getOfferer.mockRejectedValue({ status: 403 })
+      vi.spyOn(api, 'getOfferer').mockRejectedValue({ status: 403 })
     })
 
     it('should warn user offerer is being validated', async () => {
@@ -522,8 +496,8 @@ describe('offererDetailsLegacy', () => {
     })
 
     it('should not show venues of previously selected offerer', async () => {
-      // // Given
-      api.getOfferer.mockResolvedValueOnce({
+      // Given
+      vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
         ...firstOffererByAlphabeticalOrder,
         managedVenues: [virtualVenue, physicalVenue],
       })
