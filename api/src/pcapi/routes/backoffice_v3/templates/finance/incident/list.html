@@ -7,7 +7,7 @@
     <h2 class="fw-light">Incidents sur les réservations individuelles</h2>
     <div>
       {% if rows %}
-        <div class="d-flex justify-content-around">
+        <div class="d-flex flex-column">
           <p class="lead num-results">
             {{ rows | length }}{{ "+" if rows | length > 100 else "" }}
             résultat{{ "s" if rows | length > 1 else "" }}
@@ -49,7 +49,7 @@
                   <td>{{ links.build_offerer_name_to_details_link(incident.venue.managingOfferer) }}</td>
                   <td>{{ links.build_venue_name_to_details_link(venue) }}</td>
                   <td>
-                    {{ incident.details }}
+                    {{ incident.details['origin'] }}
                   </tr>
                 {% endfor %}
               </tbody>

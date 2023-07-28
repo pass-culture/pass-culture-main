@@ -175,7 +175,7 @@ def create_incident() -> utils.BackofficeResponse:
                 bookingId=booking.id,
                 incidentId=incident.id,
                 beneficiaryId=booking.userId,
-                newTotalAmount=_get_booking_reimbursement_amount(booking, float(booking.amount) * 100),
+                newTotalAmount=-booking.pricing.amount,
             )
         )
     db.session.add_all(booking_finance_incidents_to_create)
@@ -186,9 +186,7 @@ def create_incident() -> utils.BackofficeResponse:
 
 
 def _initialize_additional_data(bookings: list[bookings_models.Booking]) -> dict:
-    additional_data = {}
-
-    additional_data["Lieu"] = bookings[0].venue.name
+    additional_data = {"Lieu": bookings[0].venue.name}
 
     if len(bookings) == 1:
         booking = bookings[0]
@@ -198,19 +196,7 @@ def _initialize_additional_data(bookings: list[bookings_models.Booking]) -> dict
         additional_data["Contremarque"] = booking.token
         additional_data["Nom de l'offre"] = booking.stock.offer.name
         additional_data["Bénéficiaire"] = booking.user.full_name
-        # TODO (cmorel): make this field dynamic for other incident types
-        additional_data["Montant dû"] = f"{_get_booking_reimbursement_amount(booking, float(booking.amount))} €"
     else:
         additional_data["Nombre de réservations"] = len(bookings)
-        # TODO (cmorel): make this field dynamic for other incident types
-        total_reimbursement_amount = sum(
-            _get_booking_reimbursement_amount(booking, float(booking.amount)) for booking in bookings
-        )
-        additional_data["Montant dû"] = f"{total_reimbursement_amount} €"
 
     return additional_data
-
-
-def _get_booking_reimbursement_amount(booking: bookings_models.Booking, amount: float) -> int:
-    reimbursement_amount = (booking.reimbursement_rate / 100) * amount if booking.reimbursement_rate else amount
-    return int(reimbursement_amount)
