@@ -3,19 +3,16 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import {
+  GetOffererNameResponseModel,
+  GetOffererResponseModel,
+  GetOffererVenueResponseModel,
+} from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Homepage from '../../Homepage'
-
-vi.mock('apiClient/api', () => ({
-  api: {
-    getOfferer: vi.fn().mockResolvedValue({}),
-    listOfferersNames: vi.fn(),
-    getVenueStats: vi.fn(),
-  },
-}))
 
 const mockLogEvent = vi.fn()
 const renderHomePage = () => {
@@ -37,39 +34,33 @@ const renderHomePage = () => {
 }
 
 describe('trackers creationLinks', () => {
-  let baseOfferers
-  let baseOfferersNames
-  let virtualVenue
-  let physicalVenue
+  let baseOfferers: GetOffererResponseModel[]
+  let baseOfferersNames: GetOffererNameResponseModel[]
+  let virtualVenue: GetOffererVenueResponseModel
+  let physicalVenue: GetOffererVenueResponseModel
   let physicalVenueWithPublicName
 
   beforeEach(() => {
     virtualVenue = {
-      id: 'test_venue_id_1',
+      id: 1,
       isVirtual: true,
-      managingOffererId: 'GE',
       name: 'Le Sous-sol (Offre numérique)',
-      offererName: 'Bar des amis',
       publicName: null,
-    }
+    } as GetOffererVenueResponseModel
 
     physicalVenue = {
-      id: 'test_venue_id_2',
+      id: 2,
       isVirtual: false,
-      managingOffererId: 'GE',
       name: 'Le Sous-sol (Offre physique)',
-      offererName: 'Bar des amis',
       publicName: null,
-    }
+    } as GetOffererVenueResponseModel
 
     physicalVenueWithPublicName = {
-      id: 'test_venue_id_3',
+      id: 3,
       isVirtual: false,
-      managingOffererId: 'GE',
       name: 'Le deuxième Sous-sol (Offre physique)',
-      offererName: 'Bar des amis',
       publicName: 'Le deuxième Sous-sol',
-    }
+    } as GetOffererVenueResponseModel
 
     baseOfferers = [
       {
@@ -81,13 +72,10 @@ describe('trackers creationLinks', () => {
         id: 6,
         city: 'Cayenne',
         dateCreated: '2021-11-03T16:31:17.240807Z',
-        dateModifiedAtLastProvider: '2021-11-03T16:31:18.294494Z',
         demarchesSimplifieesApplicationId: null,
-        fieldsUpdated: [],
         hasDigitalVenueAtLeastOneOffer: true,
         isValidated: true,
         isActive: true,
-        lastProviderId: null,
         name: 'Bar des amis',
         postalCode: '97300',
         siren: '111111111',
@@ -96,6 +84,7 @@ describe('trackers creationLinks', () => {
           physicalVenue,
           physicalVenueWithPublicName,
         ],
+        hasAvailablePricingPoints: true,
       },
       {
         address: 'RUE DE NIEUPORT',
@@ -106,17 +95,15 @@ describe('trackers creationLinks', () => {
         id: 12,
         city: 'Drancy',
         dateCreated: '2021-11-03T16:31:17.240807Z',
-        dateModifiedAtLastProvider: '2021-11-03T16:31:18.294494Z',
         demarchesSimplifieesApplicationId: null,
-        fieldsUpdated: [],
         hasDigitalVenueAtLeastOneOffer: true,
         isValidated: true,
         isActive: true,
-        lastProviderId: null,
         name: 'Club Dorothy',
         postalCode: '93700',
         siren: '222222222',
         managedVenues: [],
+        hasAvailablePricingPoints: true,
       },
     ]
     baseOfferersNames = baseOfferers.map(offerer => ({
@@ -124,16 +111,18 @@ describe('trackers creationLinks', () => {
       name: offerer.name,
     }))
 
-    api.getOfferer.mockResolvedValue(baseOfferers[0])
-    api.listOfferersNames.mockResolvedValue({
+    vi.spyOn(api, 'getProfile')
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: baseOfferersNames,
     })
-    api.getVenueStats.mockResolvedValue({
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[0])
+    vi.spyOn(api, 'getVenueStats').mockResolvedValue({
       activeBookingsQuantity: 4,
       activeOffersCount: 2,
       soldOutOffersCount: 3,
       validatedBookingsQuantity: 3,
     })
+    vi.spyOn(api, 'postProFlags').mockResolvedValue()
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
@@ -148,11 +137,11 @@ describe('trackers creationLinks', () => {
         hasDigitalVenueAtLeastOneOffer: false,
       },
     ]
-    api.getOfferer.mockResolvedValue(baseOfferers[0])
+    vi.spyOn(api, 'getOfferer').mockResolvedValueOnce(baseOfferers[0])
     renderHomePage()
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-    const createVenueButton = screen.queryByText('Créer un lieu')
+    const createVenueButton = screen.getByText('Créer un lieu')
 
     await userEvent.click(createVenueButton)
 
