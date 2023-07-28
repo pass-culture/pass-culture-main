@@ -10,7 +10,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import TutorialDialog from '../TutorialDialog'
 
 vi.mock('apiClient/api', () => ({
-  api: { patchUserTutoSeen: vi.fn().mockResolvedValue({}) },
+  api: { patchUserTutoSeen: vi.fn() },
 }))
 
 const stepTitles = [
@@ -30,7 +30,9 @@ describe('tutorial modal', () => {
 
   beforeEach(() => {
     storeOverrides = {}
+    vi.spyOn(api, 'patchUserTutoSeen').mockResolvedValue()
   })
+
   it('should trigger an event when the user arrive on /accueil for the first time', async () => {
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
