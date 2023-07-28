@@ -740,3 +740,20 @@ class GetBookingsByOfferReturns400Test:
 
         assert response.status_code == 400
         assert response.json == {"offerId": ["Ce champ est obligatoire"]}
+
+
+class GetBookingsByOfferReturns404Test:
+    def test_offer_not_found(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue=venue,
+            description="Un livre de contrepèterie",
+            name="Vieux motard que jamais",
+            extraData={"ean": "1234567890123"},
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/bookings/v1/bookings?offer_id={product_offer.id+1}",
+        )
+        assert response.status_code == 404
+        assert response.json == {"offer": "we could not find this offer id"}

@@ -86,6 +86,18 @@ def get_bookings_by_offer(
     Get paginated bookings for a given offer.
     """
 
+    offer = (
+        offers_models.Offer.query.filter(offers_models.Offer.id == query.offer_id)
+        .join(offerers_models.Venue)
+        .join(providers_models.VenueProvider)
+        .filter(providers_models.VenueProvider.providerId == current_api_key.providerId)
+        .filter(providers_models.VenueProvider.isActive == True)
+        .one_or_none()
+    )
+
+    if offer is None:
+        raise api_errors.ApiErrors(errors={"offer": "we could not find this offer id"}, status_code=404)
+
     bookings = _get_paginated_and_filtered_bookings(
         query.offer_id,
         query.price_category_id,
