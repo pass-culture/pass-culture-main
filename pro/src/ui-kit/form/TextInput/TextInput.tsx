@@ -11,6 +11,7 @@ export type TextInputProps = React.InputHTMLAttributes<HTMLInputElement> &
     readOnly?: boolean
     type?: 'text' | 'number' | 'email' | 'url' | 'password' | 'tel'
     countCharacters?: boolean
+    leftIcon?: string
     rightButton?: () => JSX.Element
     rightIcon?: string
     step?: number | string
@@ -36,6 +37,7 @@ const TextInput = ({
   smallLabel,
   isOptional = false,
   refForInput,
+  leftIcon,
   rightButton,
   rightIcon,
   step,
@@ -96,6 +98,7 @@ const TextInput = ({
           rightButton={rightButton}
           ref={refForInput}
           rightIcon={rightIcon}
+          leftIcon={leftIcon}
           onKeyPress={event => {
             if (type === 'number') {
               const testInput = hasDecimal

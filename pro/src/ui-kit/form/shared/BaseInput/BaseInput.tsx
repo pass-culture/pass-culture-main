@@ -10,6 +10,7 @@ export interface BaseInputProps
   className?: string
   hasError?: boolean
   filterVariant?: boolean
+  leftIcon?: string
   rightIcon?: string
   rightButton?: () => JSX.Element
 }
@@ -21,14 +22,16 @@ const BaseInput = forwardRef(
       hasError,
       filterVariant,
       name,
+      leftIcon,
       rightIcon,
       rightButton,
       ...props
     }: BaseInputProps,
     ref: ForwardedRef<HTMLInputElement>
   ): JSX.Element => {
-    if (rightIcon || rightButton) {
-      const hasIcon = !!rightIcon
+    if (rightIcon || leftIcon || rightButton) {
+      const hasLeftIcon = !!leftIcon
+      const hasRightIcon = !hasLeftIcon && !!rightIcon
       const hasButton = !!rightButton
 
       return (
@@ -41,8 +44,9 @@ const BaseInput = forwardRef(
               : {})}
             className={cn(
               styles['base-input'],
-              styles['base-input-with-right-icon'],
               {
+                [styles['base-input-with-right-icon']]: hasRightIcon,
+                [styles['base-input-with-left-icon']]: hasLeftIcon,
                 [styles['has-error']]: hasError,
                 [styles['filter-variant']]: filterVariant,
               },
@@ -54,16 +58,15 @@ const BaseInput = forwardRef(
           />
           <span
             className={cn({
-              [styles['base-input-right-icon']]: hasIcon,
+              [styles['base-input-right-icon']]: hasRightIcon,
+              [styles['base-input-left-icon']]: hasLeftIcon,
               [styles['base-input-right-button']]: hasButton,
               [styles['filter-variant']]: filterVariant,
             })}
           >
-            {hasIcon ? (
-              <SvgIcon src={rightIcon} alt="" />
-            ) : (
-              hasButton && rightButton()
-            )}
+            {hasLeftIcon && <SvgIcon src={leftIcon || ''} alt="" />}
+            {hasRightIcon && <SvgIcon src={rightIcon || ''} alt="" />}
+            {hasButton && rightButton()}
           </span>
         </div>
       )
