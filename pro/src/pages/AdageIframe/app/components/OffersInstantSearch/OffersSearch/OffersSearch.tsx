@@ -170,8 +170,6 @@ export const OffersSearchComponent = ({
         <div className="search-results">
           <Offers
             setIsLoading={setIsLoading}
-            userRole={adageUser.role}
-            userEmail={adageUser.email}
             resetForm={resetForm}
             logFiltersOnSearch={logFiltersOnSearch}
             submitCount={formik.submitCount}

@@ -7,6 +7,7 @@ import {
   OfferAddressType,
   StudentLevels,
 } from 'apiClient/adage'
+import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { HydratedCollectiveOffer } from 'pages/AdageIframe/app/types/offers'
 import { defaultCollectiveTemplateOffer } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -39,18 +40,28 @@ vi.mock('react-instantsearch-dom', () => {
   }
 })
 
+const user = {
+  role: AdageFrontRoles.REDACTOR,
+  email: 'test@example.com',
+}
+
 const renderOffers = (
   props: OfferProps,
   featuresOverride?: { nameKey: string; isActive: boolean }[]
 ) => {
-  renderWithProviders(<Offer {...props} />, {
-    storeOverrides: {
-      features: {
-        list: featuresOverride,
-        initialized: true,
+  renderWithProviders(
+    <AdageUserContext.Provider value={{ adageUser: user }}>
+      <Offer {...props} />
+    </AdageUserContext.Provider>,
+    {
+      storeOverrides: {
+        features: {
+          list: featuresOverride,
+          initialized: true,
+        },
       },
-    },
-  })
+    }
+  )
 }
 
 describe('offer', () => {
@@ -159,7 +170,6 @@ describe('offer', () => {
       offer: offerInParis,
       queryId: '1',
       position: 1,
-      userRole: AdageFrontRoles.REDACTOR,
     }
   })
 
