@@ -2,6 +2,7 @@ import datetime
 from functools import partial
 from functools import reduce
 import re
+import typing
 
 from flask import flash
 from flask import redirect
@@ -52,7 +53,7 @@ SEARCH_FIELD_TO_PYTHON = {
     "DEPARTMENT": {
         "field": "department",
         "column": offerers_models.Venue.departementCode,
-        "join": "venue",
+        "inner_join": "venue",
     },
     "EAN": {
         "field": "string",
@@ -63,7 +64,7 @@ SEARCH_FIELD_TO_PYTHON = {
         "field": "date",
         "column": offers_models.Stock.beginningDatetime,
         "special": partial(date_utils.date_to_localized_datetime, time_=datetime.datetime.min.time()),
-        "join": "stock",
+        "inner_join": "stock",
     },
     "ID": {
         "field": "integer",
@@ -76,12 +77,14 @@ SEARCH_FIELD_TO_PYTHON = {
     "OFFERER": {
         "field": "offerer",
         "column": offerers_models.Venue.managingOffererId,
-        "join": "venue",
+        "inner_join": "venue",
     },
     "TAG": {
         "field": "criteria",
         "column": criteria_models.Criterion.id,
-        "join": "criterion",
+        "inner_join": "criterion",
+        "outer_join": "offer_criterion",
+        "outer_join_column": criteria_models.OfferCriterion.offerId,
     },
     "STATUS": {
         "field": "status",
@@ -105,14 +108,20 @@ SEARCH_FIELD_TO_PYTHON = {
 
 JOIN_DICT: dict[str, list[tuple[str, tuple]]] = {
     "criterion": [("criterion", (criteria_models.Criterion, offers_models.Offer.criteria))],
+    "offer_criterion": [
+        (
+            "offer_criterion",
+            (criteria_models.OfferCriterion, offers_models.Offer.id == criteria_models.OfferCriterion.offerId),
+        )
+    ],
     "stock": [("stock", (offers_models.Stock, offers_models.Offer.stocks))],
     "venue": [("venue", (offerers_models.Venue, offers_models.Offer.venue))],
 }
 
-OPERATOR_DICT = {
+OPERATOR_DICT: typing.Dict[str, typing.Dict[str, typing.Any]] = {
     **utils.OPERATOR_DICT,
-    "NAME_EQUALS": lambda x, y: x.ilike(y),
-    "NAME_NOT_EQUALS": lambda x, y: ~x.ilike(y),
+    "NAME_EQUALS": {"function": lambda x, y: x.ilike(y)},
+    "NAME_NOT_EQUALS": {"function": lambda x, y: ~x.ilike(y)},
 }
 
 
@@ -153,7 +162,7 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
         ),
     )
     if not forms.GetOfferAdvancedSearchForm.is_search_empty(form.search.data):
-        query, joins, warnings = utils.generate_search_query(
+        query, inner_joins, _, warnings = utils.generate_search_query(
             query=query,
             search_parameters=form.search.data,
             fields_definition=SEARCH_FIELD_TO_PYTHON,
@@ -164,9 +173,9 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
             flash(warning, "warning")
 
         if form.only_validated_offerers.data:
-            if "venue" not in joins:
+            if "venue" not in inner_joins:
                 query = query.join(offerers_models.Venue, offers_models.Offer.venue)
-            if "offerer" not in joins:
+            if "offerer" not in inner_joins:
                 query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
             query = query.filter(offerers_models.Offerer.isValidated)
     else:

@@ -29,23 +29,23 @@ from . import blueprint
 
 logger = logging.getLogger(__name__)
 
-
 # perhaps one day we will be able to define it as str | tuple[str, int]
 BackofficeResponse = typing.Union[str, typing.Tuple[str, int], WerkzeugResponse, Forbidden]
 
-OPERATOR_DICT = {
-    "EQUALS": op.eq,
-    "NOT_EQUALS": op.ne,
-    "STR_EQUALS": lambda x, y: func.lower(x) == y.lower(),
-    "STR_NOT_EQUALS": lambda x, y: func.lower(x) != y.lower(),
-    "GREATER_THAN": op.gt,
-    "GREATER_THAN_OR_EQUAL_TO": op.ge,
-    "LESS_THAN": op.lt,
-    "LESS_THAN_OR_EQUAL_TO": op.le,
-    "IN": lambda x, y: x.in_(y),
-    "NOT_IN": lambda x, y: x.not_in(y),
-    "CONTAINS": lambda x, y: x.ilike(f"%{y}%"),
-    "NO_CONTAINS": lambda x, y: ~x.ilike(f"%{y}%"),
+OPERATOR_DICT: typing.Dict[str, typing.Dict[str, typing.Any]] = {
+    "EQUALS": {"function": op.eq},
+    "NOT_EQUALS": {"function": op.ne},
+    "STR_EQUALS": {"function": lambda x, y: func.lower(x) == y.lower()},
+    "STR_NOT_EQUALS": {"function": lambda x, y: func.lower(x) != y.lower()},
+    "GREATER_THAN": {"function": op.gt},
+    "GREATER_THAN_OR_EQUAL_TO": {"function": op.ge},
+    "LESS_THAN": {"function": op.lt},
+    "LESS_THAN_OR_EQUAL_TO": {"function": op.le},
+    "IN": {"function": lambda x, y: x.in_(y)},
+    "NOT_IN": {"function": lambda x, y: x.not_in(y)},
+    "CONTAINS": {"function": lambda x, y: x.ilike(f"%{y}%")},
+    "NO_CONTAINS": {"function": lambda x, y: ~x.ilike(f"%{y}%")},
+    "NOT_EXIST": {"function": lambda x, y: x.is_(None), "outer_join": True},
 }
 
 
@@ -196,8 +196,8 @@ def generate_search_query(
     search_parameters: typing.Iterable[dict[str, typing.Any]],
     fields_definition: dict[str, dict[str, typing.Any]],
     joins_definition: dict[str, list[tuple[str, tuple]]],
-    operators_definition: dict | None = None,
-) -> tuple[BaseQuery, set[str], set[str]]:
+    operators_definition: typing.Dict[str, typing.Dict[str, typing.Any]] | None = None,
+) -> tuple[BaseQuery, set[str], set[str], set[str]]:
     """
     Generate a search query from a list of dict (from a ListField of FormFields).
 
@@ -205,12 +205,13 @@ def generate_search_query(
     search_parameters: list of dict representing the user's query. each dict must have at least the fields:
         - operator: a key for operators_definition
         - search_field: a key for fields_definition
-    fields_definition: a dict defining the fields, joins and special operations
+    fields_definition: a dict defining the fields, inner_joins and special operations
     joins_definition: a dict defining how to do each join
     operators_definition: a dict mapping str to actual operations
     """
     operators_definition = operators_definition or OPERATOR_DICT
-    joins: set[tuple] = set()
+    inner_joins: set[tuple] = set()
+    outer_joins: set[tuple] = set()
     filters: list = []
     warnings: set[str] = set()
     for search_data in search_parameters:
@@ -232,25 +233,42 @@ def generate_search_query(
             continue
         field_value = meta_field.get("special", lambda x: x)(search_data.get(meta_field["field"]))
         column = meta_field["column"]
-        if "join" in meta_field:
-            joins.add(meta_field["join"])
-        filters.append(operators_definition[operator](column, field_value))
+        if operators_definition[operator].get("outer_join", False):
+            if not meta_field.get("outer_join") or not meta_field.get("outer_join_column"):
+                warnings.add(
+                    f"La règle de recherche '{search_field}' n'est pas correctement configuré pour "
+                    f"l'opérateur '{operator}', merci de prévenir les devs"
+                )
+                continue
+            outer_joins.add(meta_field["outer_join"])
+            column = meta_field["outer_join_column"]
+        elif "inner_join" in meta_field:
+            inner_joins.add(meta_field["inner_join"])
+        filters.append(operators_definition[operator]["function"](column, field_value))
 
-    query, join_log = _manage_joins(query=query, joins=joins, joins_definition=joins_definition)
+    query, inner_join_log = _manage_joins(query=query, joins=inner_joins, joins_definition=joins_definition)
+    query, outer_join_log = _manage_joins(
+        query=query, joins=outer_joins, joins_definition=joins_definition, join_type="outer_join"
+    )
     if filters:
         query = query.filter(*filters)
-    return query, join_log, warnings
+    return query, inner_join_log, outer_join_log, warnings
 
 
 def _manage_joins(
-    query: BaseQuery, joins: set, joins_definition: dict[str, list[tuple[str, tuple]]]
+    query: BaseQuery, joins: set, joins_definition: dict[str, list[tuple[str, tuple]]], join_type: str = "inner_join"
 ) -> tuple[BaseQuery, set[str]]:
     join_log = set()
     join_containers = sorted((joins_definition[join] for join in joins), key=len, reverse=True)
-    for join_continer in join_containers:
-        for join_tuple in join_continer:
+    for join_container in join_containers:
+        for join_tuple in join_container:
             join_name, *join_args = join_tuple
             if not join_name in join_log:
-                query = query.join(*join_args)
+                if join_type == "inner_join":
+                    query = query.join(*join_args)
+                elif join_type == "outer_join":
+                    query = query.outerjoin(*join_args)
+                else:
+                    raise ValueError(f"Unsupported join_type {join_type}. Supported : 'inner_join' or 'outer_join'.")
                 join_log.add(join_name)
     return query, join_log
