@@ -18,37 +18,46 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Desk from '../Desk'
 
-const TestScreen = ({
-  getBooking,
-  submitInvalidate,
-  submitValidate,
-}: DeskProps) => {
-  const [response, setResponse] = useState({})
-  return (
-    <div>
-      <h1>Test Screen loaded</h1>
-      <Button onClick={async () => setResponse(await getBooking(testToken))}>
-        getBooking
-      </Button>
-      <Button
-        onClick={async () => setResponse(await submitInvalidate(testToken))}
-      >
-        submitInvalidate
-      </Button>
-      <Button
-        onClick={async () => setResponse(await submitValidate(testToken))}
-      >
-        submitValidate
-      </Button>
-      <div data-testid="response-data">{JSON.stringify(response, null, 2)}</div>
-    </div>
-  )
-}
+const mocks = vi.hoisted(() => {
+  return {
+    someVariable: '1',
+    TestScreen: ({
+      getBooking,
+      submitInvalidate,
+      submitValidate,
+    }: DeskProps) => {
+      const [response, setResponse] = useState({})
+      return (
+        <div>
+          <h1>Test Screen loaded</h1>
+          <Button
+            onClick={async () => setResponse(await getBooking(testToken))}
+          >
+            getBooking
+          </Button>
+          <Button
+            onClick={async () => setResponse(await submitInvalidate(testToken))}
+          >
+            submitInvalidate
+          </Button>
+          <Button
+            onClick={async () => setResponse(await submitValidate(testToken))}
+          >
+            submitValidate
+          </Button>
+          <div data-testid="response-data">
+            {JSON.stringify(response, null, 2)}
+          </div>
+        </div>
+      )
+    },
+  }
+})
 
 vi.mock('screens/Desk/Desk', () => ({
   __esModule: true,
   ...vi.importActual('screens/Desk/Desk'),
-  default: TestScreen,
+  default: mocks.TestScreen,
 }))
 
 const testToken = 'AAAAAA'
