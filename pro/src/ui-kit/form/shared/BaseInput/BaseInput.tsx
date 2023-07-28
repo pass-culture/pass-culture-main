@@ -64,8 +64,8 @@ const BaseInput = forwardRef(
               [styles['filter-variant']]: filterVariant,
             })}
           >
-            {hasLeftIcon && <SvgIcon src={leftIcon || ''} alt="" />}
-            {hasRightIcon && <SvgIcon src={rightIcon || ''} alt="" />}
+            {hasLeftIcon && <SvgIcon src={leftIcon} alt="" />}
+            {hasRightIcon && <SvgIcon src={rightIcon} alt="" />}
             {hasButton && rightButton()}
           </span>
         </div>

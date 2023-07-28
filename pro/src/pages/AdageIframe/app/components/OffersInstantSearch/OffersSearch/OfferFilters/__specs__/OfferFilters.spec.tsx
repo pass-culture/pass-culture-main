@@ -293,4 +293,17 @@ describe('OfferFilters', () => {
 
     expect(screen.getByText('Cinéma')).toBeInTheDocument()
   })
+
+  it('should clear text input', async () => {
+    renderOfferFilters({ isLoading: false, initialValues })
+
+    const textInput = screen.getByPlaceholderText(
+      'Rechercher : nom de l’offre, partenaire culturel'
+    )
+    await userEvent.type(textInput, 'Paris')
+
+    userEvent.clear(textInput)
+
+    expect(textInput).toHaveValue('')
+  })
 })
