@@ -97,7 +97,7 @@ jobs:
       ENV: staging
       CHANNEL: "${{ needs.find-hotfix-tag-number.outputs.version }}"
       EXPIRES: "30d"
-      PUSH_RELEASE_TO_SENTRY: true
+      PUSH_RELEASE_TO_SENTRY: false
       REF: v${{ needs.find-hotfix-tag-number.outputs.version }}
 
   create-pro-integration-release:
