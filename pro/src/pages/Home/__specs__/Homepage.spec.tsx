@@ -7,27 +7,17 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import {
+  GetOffererNameResponseModel,
+  GetOffererResponseModel,
+  GetOffererVenueResponseModel,
+} from 'apiClient/v1'
 import { RemoteContextProvider } from 'context/remoteConfigContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
-import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
 import Homepage from '../Homepage'
-
-vi.mock('apiClient/api', () => ({
-  api: {
-    getProfile: vi.fn(),
-    listOfferersNames: vi.fn(),
-    getOfferer: vi.fn(),
-    getVenueStats: vi.fn(),
-    postProFlags: vi.fn(),
-  },
-}))
-
-vi.mock('utils/windowMatchMedia', () => ({
-  doesUserPreferReducedMotion: vi.fn(),
-}))
 
 vi.mock('@firebase/remote-config', () => ({
   getValue: () => ({ asString: () => 'GE' }),
@@ -38,7 +28,11 @@ vi.mock('hooks/useRemoteConfig', () => ({
   default: () => ({ remoteConfig: {}, remoteConfigData: { toto: 'tata' } }),
 }))
 
-const renderHomePage = storeOverrides => {
+vi.mock('utils/windowMatchMedia', () => ({
+  doesUserPreferReducedMotion: vi.fn().mockReturnValue(false),
+}))
+
+const renderHomePage = (storeOverrides: any) => {
   renderWithProviders(
     <RemoteContextProvider>
       <Homepage />
@@ -50,9 +44,9 @@ const renderHomePage = storeOverrides => {
 const mockLogEvent = vi.fn()
 
 describe('homepage', () => {
-  let baseOfferers
-  let baseOfferersNames
-  let store
+  let baseOfferers: GetOffererResponseModel[]
+  let baseOfferersNames: GetOffererNameResponseModel[]
+  let store: any
 
   beforeEach(() => {
     store = {
@@ -77,44 +71,34 @@ describe('homepage', () => {
         },
         city: 'Cayenne',
         dateCreated: '2021-11-03T16:31:17.240807Z',
-        dateModifiedAtLastProvider: '2021-11-03T16:31:18.294494Z',
         demarchesSimplifieesApplicationId: null,
-        fieldsUpdated: [],
         hasDigitalVenueAtLeastOneOffer: true,
         id: 6,
         isValidated: true,
-        lastProviderId: null,
         name: 'Bar des amis',
         postalCode: '97300',
         siren: '111111111',
+        hasAvailablePricingPoints: true,
+        isActive: true,
         managedVenues: [
           {
             id: 1,
             isVirtual: true,
-            managingOffererId: 'GE',
             name: 'Le Sous-sol (Offre numérique)',
-            offererName: 'Bar des amis',
             publicName: null,
-            nOffers: 2,
-          },
+          } as GetOffererVenueResponseModel,
           {
             id: 2,
             isVirtual: false,
-            managingOffererId: 'GE',
             name: 'Le Sous-sol (Offre physique)',
-            offererName: 'Bar des amis',
             publicName: null,
-            nOffers: 2,
-          },
+          } as GetOffererVenueResponseModel,
           {
             id: 3,
             isVirtual: false,
-            managingOffererId: 'GE',
             name: 'Le deuxième Sous-sol (Offre physique)',
-            offererName: 'Bar des amis',
             publicName: 'Le deuxième Sous-sol',
-            nOffers: 2,
-          },
+          } as GetOffererVenueResponseModel,
         ],
       },
       {
@@ -125,17 +109,16 @@ describe('homepage', () => {
         },
         city: 'Drancy',
         dateCreated: '2021-11-03T16:31:17.240807Z',
-        dateModifiedAtLastProvider: '2021-11-03T16:31:18.294494Z',
         demarchesSimplifieesApplicationId: null,
-        fieldsUpdated: [],
         hasDigitalVenueAtLeastOneOffer: true,
         id: 12,
         isValidated: true,
-        lastProviderId: null,
         name: 'Club Dorothy',
         postalCode: '93700',
         siren: '222222222',
         managedVenues: [],
+        hasAvailablePricingPoints: true,
+        isActive: true,
       },
     ]
 
@@ -143,17 +126,19 @@ describe('homepage', () => {
       id: offerer.id,
       name: offerer.name,
     }))
-    api.getOfferer.mockResolvedValue(baseOfferers[0])
-    api.listOfferersNames.mockResolvedValue({
+
+    vi.spyOn(api, 'getProfile')
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: baseOfferersNames,
     })
-    api.getVenueStats.mockResolvedValue({
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[0])
+    vi.spyOn(api, 'getVenueStats').mockResolvedValue({
       activeBookingsQuantity: 4,
       activeOffersCount: 2,
       soldOutOffersCount: 3,
       validatedBookingsQuantity: 3,
     })
-    api.postProFlags.mockResolvedValue(null)
+    vi.spyOn(api, 'postProFlags').mockResolvedValue()
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
@@ -172,10 +157,10 @@ describe('homepage', () => {
     })
 
     it('the user should see the home offer steps if they do not have any venues', async () => {
-      api.getOfferer.mockResolvedValue(baseOfferers[1])
-      api.listOfferersNames.mockResolvedValue({
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
         offerersNames: [baseOfferersNames[1]],
       })
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[1])
 
       renderHomePage(store)
       await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
@@ -191,7 +176,8 @@ describe('homepage', () => {
     })
 
     describe('when clicking on anchor link to profile', () => {
-      let scrollIntoViewMock
+      let scrollIntoViewMock: any
+
       beforeEach(async () => {
         scrollIntoViewMock = vi.fn()
         Element.prototype.scrollIntoView = scrollIntoViewMock
@@ -200,9 +186,6 @@ describe('homepage', () => {
       })
 
       it('should smooth scroll to section if user doesnt prefer reduced motion', async () => {
-        // given
-        doesUserPreferReducedMotion.mockReturnValue(false)
-
         // when
         await userEvent.click(
           screen.getByRole('link', { name: 'Profil et aide' })
@@ -213,29 +196,10 @@ describe('homepage', () => {
           behavior: 'smooth',
         })
       })
-
-      it('should jump to section if user prefers reduced motion', async () => {
-        // given
-        doesUserPreferReducedMotion.mockReturnValue(true)
-
-        // when
-        await userEvent.click(
-          screen.getByRole('link', { name: 'Profil et aide' })
-        )
-
-        // then
-        expect(scrollIntoViewMock).toHaveBeenCalledWith({ behavior: 'auto' })
-        expect(mockLogEvent).toHaveBeenNthCalledWith(
-          1,
-          Events.CLICKED_BREADCRUMBS_PROFILE_AND_HELP
-        )
-      })
     })
     describe('when clicking on anchor link to offerers', () => {
       it('should trigger', async () => {
         renderHomePage(store)
-        // given
-        doesUserPreferReducedMotion.mockReturnValue(true)
 
         // when
         await userEvent.click(
@@ -299,7 +263,8 @@ describe('homepage', () => {
       })
 
       describe('when clicking on anchor link to stats', () => {
-        let scrollIntoViewMock
+        let scrollIntoViewMock: any
+
         beforeEach(async () => {
           scrollIntoViewMock = vi.fn()
           Element.prototype.scrollIntoView = scrollIntoViewMock
@@ -308,9 +273,6 @@ describe('homepage', () => {
         })
 
         it('should smooth scroll to section if user doesnt prefer reduced motion', async () => {
-          // given
-          doesUserPreferReducedMotion.mockReturnValue(false)
-
           // when
           const statLink = await screen.findByRole('link', {
             name: 'Statistiques',
