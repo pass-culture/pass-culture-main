@@ -22,6 +22,7 @@ const renderAdageMultiselect = (initialValues: ItemProps[] = []) => {
         placeholder="Ex: Théâtre"
         name="educationalDomains"
         label="Rechercher un domaine artistique"
+        isOpen={true}
       />
     </Formik>
   )
