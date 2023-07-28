@@ -39,20 +39,11 @@ const renderVenueCreation = async (offererId: string) => {
   })
 }
 
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+  ...((await vi.importActual('react-router-dom')) as object),
   useParams: () => ({
-    offererId: 'ABCD',
+    offererId: '1234',
   }),
-}))
-
-vi.mock('apiClient/api', () => ({
-  api: {
-    fetchVenueLabels: vi.fn(),
-    getOfferer: vi.fn(),
-    getVenueTypes: vi.fn(),
-    canOffererCreateEducationalOffer: vi.fn(),
-  },
 }))
 
 Element.prototype.scrollIntoView = vi.fn()
@@ -72,6 +63,7 @@ describe('route VenueCreation', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
     vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
     vi.spyOn(api, 'fetchVenueLabels').mockResolvedValue([])
+    vi.spyOn(api, 'canOffererCreateEducationalOffer')
   })
 
   it('should display venue form screen with creation title', async () => {

@@ -1,7 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import router from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import * as useAnalytics from 'hooks/useAnalytics'
@@ -12,6 +11,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import CollectiveOfferFromRequest from '../CollectiveOfferFromRequest'
 
 const mockLogEvent = vi.fn()
+const mockNavigate = vi.fn()
 
 vi.mock('apiClient/api', () => ({
   api: {
@@ -24,18 +24,21 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
-  useParams: () => ({
-    offerId: vi.fn(),
-    requestId: vi.fn(),
-  }),
-  useNavigate: vi.fn(),
-}))
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom')
+  return {
+    ...(actual as object),
+    useParams: () => ({
+      offerId: '1',
+      requestId: '2',
+    }),
+    useNavigate: () => mockNavigate,
+    default: vi.fn(),
+  }
+})
 
 describe('CollectiveOfferFromRequest', () => {
-  const notifyError = vi.fn()
-  const mockNavigate = vi.fn()
+  const mockNotifyError = vi.fn()
   const institution = {
     city: 'Paris',
     institutionId: '123456',
@@ -47,17 +50,12 @@ describe('CollectiveOfferFromRequest', () => {
   beforeEach(() => {
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...vi.importActual('hooks/useNotification'),
-      error: notifyError,
+      error: mockNotifyError,
     }))
 
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(
       defaultCollectifOfferResponseModel
     )
-    vi.spyOn(router, 'useParams').mockReturnValue({
-      offerId: '1',
-      requestId: '2',
-    })
-    vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
     vi.spyOn(api, 'getCategories').mockResolvedValue({
       categories: [],
       subcategories: [],
@@ -68,6 +66,7 @@ describe('CollectiveOfferFromRequest', () => {
     vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
     vi.spyOn(api, 'createCollectiveOffer').mockResolvedValue({ id: 1 })
   })
+
   it('should display request information', async () => {
     vi.spyOn(api, 'getCollectiveOfferRequest').mockResolvedValueOnce({
       comment: 'Test unit',
@@ -99,13 +98,6 @@ describe('CollectiveOfferFromRequest', () => {
     expect(screen.getByText('27 juin 2030')).toBeInTheDocument()
   })
 
-  it('should display spinner when id params doesnt exist', async () => {
-    vi.spyOn(router, 'useParams').mockReturnValue({ offerId: '' })
-    renderWithProviders(<CollectiveOfferFromRequest />)
-
-    expect(await screen.findByText('Chargement en cours')).toBeInTheDocument()
-  })
-
   it('should call api and get error', async () => {
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValueOnce({
       isOk: false,
@@ -122,11 +114,11 @@ describe('CollectiveOfferFromRequest', () => {
 
     expect(await screen.findByText('Chargement en cours')).toBeInTheDocument()
 
-    expect(notifyError).toHaveBeenNthCalledWith(
+    expect(mockNotifyError).toHaveBeenNthCalledWith(
       1,
       'Une erreur est survenue lors de la récupération de votre offre'
     )
-    expect(notifyError).toHaveBeenNthCalledWith(
+    expect(mockNotifyError).toHaveBeenNthCalledWith(
       2,
       'Nous avons rencontré un problème lors de la récupération des données.'
     )

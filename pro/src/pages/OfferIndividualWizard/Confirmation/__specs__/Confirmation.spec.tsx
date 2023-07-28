@@ -22,8 +22,11 @@ import Confirmation from '../Confirmation'
 const mockLogEvent = vi.fn()
 window.open = vi.fn()
 
-vi.mock('utils/config', () => {
+vi.mock('utils/config', async () => {
+  const actual = await vi.importActual('utils/config')
+
   return {
+    ...(actual as object),
     WEBAPP_URL: 'https://localhost',
   }
 })
