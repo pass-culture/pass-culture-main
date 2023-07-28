@@ -1,5 +1,4 @@
-import { stringify } from 'query-string'
-
+import { stringify } from 'utils/query-string'
 import { removeWhitespaces } from 'utils/string'
 
 export const venueCreateOfferLink = (
