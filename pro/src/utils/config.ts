@@ -14,11 +14,11 @@ export const API_URL = apiUrlBasedOnDomain || 'http://localhost'
 
 export const ENVIRONMENT_NAME = process.env.MODE
 export const ENV_WORDING = process.env.VITE_ENV_WORDING
-export const SENTRY_SAMPLE_RATE = process.env.VITE_SENTRY_SAMPLE_RATE
+export const SENTRY_SAMPLE_RATE = process.env.VITE_SENTRY_SAMPLE_RATE ?? '0'
 export const SENTRY_SERVER_URL = process.env.VITE_SENTRY_SERVER_URL
 export const DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID_V4 =
   process.env.VITE_DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID_V4
-export const RECAPTCHA_SITE_KEY = process.env.VITE_RECAPTCHA_SITE_KEY
+export const RECAPTCHA_SITE_KEY = process.env.VITE_RECAPTCHA_SITE_KEY ?? ''
 export const WEBAPP_URL = process.env.VITE_WEBAPP_URL
 export const URL_FOR_MAINTENANCE = process.env.VITE_URL_FOR_MAINTENANCE || ''
 
@@ -30,10 +30,10 @@ export const ROOT_PATH =
   process.env.STORYBOOK_ROOT_PATH || CALC_ROOT_PATH || 'http://localhost:3001/'
 
 export const LOGS_DATA = process.env.VITE_LOGS_DATA === 'true'
-export const ALGOLIA_APP_ID = process.env.VITE_ALGOLIA_APP_ID
-export const ALGOLIA_API_KEY = process.env.VITE_ALGOLIA_API_KEY
+export const ALGOLIA_APP_ID = process.env.VITE_ALGOLIA_APP_ID ?? ''
+export const ALGOLIA_API_KEY = process.env.VITE_ALGOLIA_API_KEY ?? ''
 export const ALGOLIA_COLLECTIVE_OFFERS_INDEX =
-  process.env.VITE_ALGOLIA_COLLECTIVE_OFFERS_INDEX
+  process.env.VITE_ALGOLIA_COLLECTIVE_OFFERS_INDEX ?? ''
 
 export const FIREBASE_API_KEY =
   process.env.VITE_FIREBASE_PUBLIC_API_KEY ||
