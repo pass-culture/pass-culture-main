@@ -63,37 +63,43 @@ const AdageMultiselect = ({
   label,
   isOpen,
 }: AdageMultiselectProps) => {
+  // We need to maintain the input value in state so that we can use it in itemToString
   const [inputValue, setInputValue] = useState('')
   const [field] = useField<ItemProps['value'][]>(name)
   const { setFieldValue } = useFormikContext<any>()
   const [sortedOptions, setSortedOptions] = useState<ItemProps[]>([])
-  useEffect(() => {
-    setSortedOptions(sortItems(options, new Set(field.value)))
-  }, [isOpen])
 
-  const { getLabelProps, getMenuProps, getInputProps, getItemProps } =
-    useCombobox({
-      items: sortedOptions,
-      selectedItem: null,
-      stateReducer(_state, actionAndChanges) {
-        const { changes, type } = actionAndChanges
-        /* istanbul ignore next: no need to test all case here, downshift behaviour */
-        switch (type) {
-          case useCombobox.stateChangeTypes.InputKeyDownEnter:
-          case useCombobox.stateChangeTypes.ItemClick:
-            return {
-              ...changes,
-              isOpen: true,
-            }
-          default:
-            return changes
-        }
-      },
-      onInputValueChange: ({ inputValue: newInputValue }) => {
-        setInputValue(newInputValue || '')
-      },
-      itemToString: () => inputValue,
-    })
+  const {
+    getLabelProps,
+    getMenuProps,
+    getInputProps,
+    getItemProps,
+    setInputValue: setDownshiftInputValue,
+  } = useCombobox({
+    items: sortedOptions,
+    defaultHighlightedIndex: 0, // after selection, highlight the first item.
+    selectedItem: null,
+    stateReducer(_state, actionAndChanges) {
+      const { changes, type } = actionAndChanges
+      /* istanbul ignore next: no need to test all case here, downshift behaviour */
+      switch (type) {
+        case useCombobox.stateChangeTypes.InputKeyDownEnter:
+        case useCombobox.stateChangeTypes.ItemClick:
+          return {
+            ...changes,
+            // We force isOpen to true because we always want to display the list of options
+            isOpen: true,
+          }
+        default:
+          return changes
+      }
+    },
+    onInputValueChange: ({ inputValue: newInputValue }) => {
+      setInputValue(newInputValue || '')
+    },
+    // By default downshift will use this callback to display the selected item, we just want to always display the input value
+    itemToString: () => inputValue,
+  })
 
   const handleNewSelection = (selection: ItemProps) => {
     if (isIncluded(field.value, selection.value)) {
@@ -105,6 +111,13 @@ const AdageMultiselect = ({
       setFieldValue(name, [...field.value, selection.value])
     }
   }
+
+  // The isOpen modal state is handle outside of the component, we want to clear the input and sort items on open/close
+  useEffect(() => {
+    setInputValue('')
+    setDownshiftInputValue('')
+    setSortedOptions(sortItems(options, new Set(field.value)))
+  }, [isOpen])
 
   return (
     <div className={styles['container']}>
