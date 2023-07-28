@@ -38,12 +38,21 @@
     padding-right: rem.torem(36px);
   }
 
-  &-right-icon {
+  &-with-left-icon {
+    padding-left: rem.torem(36px);
+  }
+
+  &-right-icon, &-left-icon {
     @include forms.input-icon-wrapper(rem.torem(16px));
 
     &.filter-variant {
       @include forms.input-icon-wrapper(rem.torem(16px), rem.torem(8px));
     }
+  }
+
+  &-left-icon {
+    left: 0;
+    right: unset;
   }
 
   &-wrapper {
