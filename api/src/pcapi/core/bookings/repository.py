@@ -336,13 +336,6 @@ def find_offers_booked_by_beneficiaries(users: list[User]) -> list[Offer]:
     )
 
 
-def find_cancellable_bookings_by_offerer(offerer_id: int) -> list[Booking]:
-    return Booking.query.filter(
-        Booking.offererId == offerer_id,
-        Booking.status == BookingStatus.CONFIRMED,
-    ).all()
-
-
 def get_bookings_from_deposit(deposit_id: int) -> list[Booking]:
     return (
         Booking.query.filter(
