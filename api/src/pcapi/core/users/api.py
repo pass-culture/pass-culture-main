@@ -12,6 +12,7 @@ from flask_jwt_extended import create_access_token
 from flask_jwt_extended import create_refresh_token
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
+from sqlalchemy.orm import Query
 
 from pcapi import settings
 from pcapi.connectors import sirene
@@ -1316,3 +1317,54 @@ def delete_old_trusted_devices() -> None:
 
     users_models.TrustedDevice.query.filter(users_models.TrustedDevice.dateCreated <= five_years_ago).delete()
     db.session.commit()
+
+
+def _get_users_with_suspended_account() -> Query:
+    # distinct keeps the first row if duplicates are found. Since rows
+    # are ordered by userId and eventDate, this query will fetch the
+    # latest event for each userId.
+    latest_user_suspension_history_query = (
+        users_models.User.query.distinct(history_models.ActionHistory.userId)
+        .join(users_models.User.action_history)
+        .filter(
+            sa.or_(
+                history_models.ActionHistory.actionType == history_models.ActionType.USER_SUSPENDED,
+                history_models.ActionHistory.actionType == history_models.ActionType.USER_UNSUSPENDED,
+            )
+        )
+        .order_by(history_models.ActionHistory.userId, history_models.ActionHistory.actionDate.desc())
+        .with_entities(
+            users_models.User,
+            history_models.ActionHistory.actionDate,
+            history_models.ActionHistory.actionType,
+            history_models.ActionHistory.extraData["reason"].astext,
+        )
+    )
+
+    return latest_user_suspension_history_query.filter(
+        history_models.ActionHistory.actionType == history_models.ActionType.USER_SUSPENDED
+    )
+
+
+def _get_users_with_suspended_account_to_notify(expiration_delta_in_days: int) -> Query:
+    start = datetime.date.today() - datetime.timedelta(days=expiration_delta_in_days)
+    user_ids_and_latest_action = _get_users_with_suspended_account()
+    return user_ids_and_latest_action.filter(
+        history_models.ActionHistory.actionDate - start >= datetime.timedelta(days=0),
+        history_models.ActionHistory.actionDate - start < datetime.timedelta(days=1),
+        history_models.ActionHistory.extraData["reason"].astext == constants.SuspensionReason.UPON_USER_REQUEST.value,
+    ).with_entities(users_models.User)
+
+
+    return query
+
+
+def notify_users_before_deletion_of_suspended_account() -> None:
+    expiration_delta_in_days = settings.DELETE_SUSPENDED_ACCOUNTS_SINCE - settings.NOTIFY_X_DAYS_BEFORE_DELETION
+    accounts_to_notify = _get_users_with_suspended_account_to_notify(expiration_delta_in_days)
+    for account in accounts_to_notify:
+        if not transactional_mails.send_email_before_deletion_of_suspended_account(account):
+            logger.warning(
+                "Could not send email before deletion of suspended account",
+                extra={"user": account.id},
+            )

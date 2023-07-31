@@ -88,6 +88,9 @@ class TransactionalEmail(Enum):
     USER_REQUEST_DELETE_ACCOUNT_RECEPTION = models.Template(
         id_prod=511, id_not_prod=54, tags=["reception_demande_suppression_compte_jeune"]
     )
+    NOTIFICATION_BEFORE_DELETING_SUSPENDED_ACCOUNT = models.Template(
+        id_prod=1004, id_not_prod=144, tags=["notification_avant_suppression_compte_suspendu"]
+    )
 
     # UBBLE KO REMINDER
     UBBLE_KO_REMINDER_ID_CHECK_DATA_MATCH = models.Template(id_prod=824, id_not_prod=116)
