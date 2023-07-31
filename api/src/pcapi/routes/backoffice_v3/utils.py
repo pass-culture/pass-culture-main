@@ -195,7 +195,7 @@ def generate_search_query(
     *,
     search_parameters: typing.Iterable[dict[str, typing.Any]],
     fields_definition: dict[str, dict[str, typing.Any]],
-    joins_definition: dict[str, list[tuple[str, tuple]]],
+    joins_definition: dict[str, list[dict[str, typing.Any]]],
     operators_definition: typing.Dict[str, typing.Dict[str, typing.Any]] | None = None,
 ) -> tuple[BaseQuery, set[str], set[str], set[str]]:
     """
@@ -256,19 +256,21 @@ def generate_search_query(
 
 
 def _manage_joins(
-    query: BaseQuery, joins: set, joins_definition: dict[str, list[tuple[str, tuple]]], join_type: str = "inner_join"
+    query: BaseQuery,
+    joins: set,
+    joins_definition: dict[str, list[dict[str, typing.Any]]],
+    join_type: str = "inner_join",
 ) -> tuple[BaseQuery, set[str]]:
     join_log = set()
     join_containers = sorted((joins_definition[join] for join in joins), key=len, reverse=True)
     for join_container in join_containers:
-        for join_tuple in join_container:
-            join_name, *join_args = join_tuple
-            if not join_name in join_log:
+        for join_dict in join_container:
+            if not join_dict["name"] in join_log:
                 if join_type == "inner_join":
-                    query = query.join(*join_args)
+                    query = query.join(*join_dict["args"])
                 elif join_type == "outer_join":
-                    query = query.outerjoin(*join_args)
+                    query = query.outerjoin(*join_dict["args"])
                 else:
                     raise ValueError(f"Unsupported join_type {join_type}. Supported : 'inner_join' or 'outer_join'.")
-                join_log.add(join_name)
+                join_log.add(join_dict["name"])
     return query, join_log

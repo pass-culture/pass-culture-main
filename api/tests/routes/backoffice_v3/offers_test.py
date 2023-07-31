@@ -155,6 +155,43 @@ class ListOffersTest(GetEndpointHelper):
 
         assert expected_url in str(response.data)
 
+    @pytest.mark.parametrize(
+        "operator,valid_date,not_valid_date",
+        [
+            (
+                "GREATER_THAN_OR_EQUAL_TO",
+                datetime.datetime.utcnow() + datetime.timedelta(days=1),
+                datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            ),
+            (
+                "LESS_THAN",
+                datetime.datetime.utcnow() - datetime.timedelta(days=1),
+                datetime.datetime.utcnow() + datetime.timedelta(days=1),
+            ),
+        ],
+    )
+    def test_list_offers_with_booking_limit_date_filter(
+        self, authenticated_client, offers, operator, valid_date, not_valid_date
+    ):
+        should_be_displayed_offer = offers_factories.OfferFactory(
+            stocks=[offers_factories.StockFactory(bookingLimitDatetime=valid_date)]
+        )
+        offers_factories.OfferFactory(stocks=[offers_factories.StockFactory()])
+        offers_factories.OfferFactory(stocks=[offers_factories.StockFactory(bookingLimitDatetime=not_valid_date)])
+
+        query_args = {
+            "order": "asc",
+            "search-0-search_field": "BOOKING_LIMIT_DATE",
+            "search-0-operator": operator,
+            "search-0-date": datetime.date.today(),
+        }
+
+        response = authenticated_client.get(url_for(self.endpoint, **query_args))
+        rows = html_parser.extract_table_rows(response.data)
+
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(should_be_displayed_offer.id)
+
     def test_list_offers_by_event_date(self, authenticated_client, offers):
         offers_factories.EventStockFactory(beginningDatetime=datetime.date.today() + datetime.timedelta(days=1))
         stock = offers_factories.EventStockFactory(beginningDatetime=datetime.date.today())
