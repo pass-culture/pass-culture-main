@@ -5,6 +5,7 @@ import logging
 
 from PIL import Image
 from PIL import UnidentifiedImageError
+import sqlalchemy as sqla
 
 from pcapi import settings
 from pcapi.core.categories import subcategories
@@ -533,5 +534,22 @@ def check_stock_has_price_or_price_category(
     if stock.price_category_id not in existing_price_categories:
         raise api_errors.ApiErrors(
             {"price_category_id": ["Le tarif avec l'id %s n'existe pas" % stock.price_category_id]},
+            status_code=400,
+        )
+
+
+def check_for_duplicated_price_categories(
+    new_labels_and_prices: set[tuple[str, decimal.Decimal]], offer_id: int
+) -> None:
+    existing_price_category = (
+        models.PriceCategory.query.filter_by(offerId=offer_id)
+        .join(models.PriceCategoryLabel)
+        .filter(sqla.func.ROW(models.PriceCategoryLabel.label, models.PriceCategory.price).in_(new_labels_and_prices))
+        .first()
+    )
+
+    if existing_price_category:
+        raise api_errors.ApiErrors(
+            {"priceCategories": [f"The price category {existing_price_category.label} already exists"]},
             status_code=400,
         )
