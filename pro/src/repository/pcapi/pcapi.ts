@@ -37,6 +37,7 @@ export const postImageToVenue = async (
     venueImage.image_credit = imageCredit
   }
 
+  // @ts-expect-error
   const queryParams = stringify(venueImage)
 
   return await client.postWithFormData(

@@ -22,7 +22,7 @@ const serializeCommunData = (
   formValues: VenueFormValues,
   { hideSiret }: HideSiretParam
 ): VenueBodyModel => {
-  const model = {
+  const model: VenueBodyModel = {
     address: formValues.address,
     audioDisabilityCompliant: formValues.accessibility.audio,
     bookingEmail: formValues.bookingEmail,
