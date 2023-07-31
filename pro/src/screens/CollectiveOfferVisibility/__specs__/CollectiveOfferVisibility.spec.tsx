@@ -25,15 +25,6 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
-  useParams: () => ({
-    offerId: vi.fn(),
-    requestId: vi.fn(),
-  }),
-  useNavigate: vi.fn(),
-}))
-
 vi.mock('core/OfferEducational/utils/extractInitialVisibilityValues', () => ({
   __esModule: true,
   extractInitialVisibilityValues: vi.fn(() => ({

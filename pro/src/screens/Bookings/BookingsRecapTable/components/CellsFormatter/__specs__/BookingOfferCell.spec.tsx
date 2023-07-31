@@ -1,19 +1,16 @@
 import { screen } from '@testing-library/react'
 import { add } from 'date-fns'
 import React from 'react'
+import { Row } from 'react-table'
 
+import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { collectiveBookingRecapFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import BookingOfferCell from '../BookingOfferCell'
+import BookingOfferCell, { BookingOfferCellProps } from '../BookingOfferCell'
 
-const renderOfferCell = props =>
+const renderOfferCell = (props: BookingOfferCellProps) =>
   renderWithProviders(<BookingOfferCell {...props} />)
-
-vi.mock('hooks/useActiveFeature', () => ({
-  __esModule: true,
-  default: vi.fn().mockReturnValue(true),
-}))
 
 describe('bookings offer cell', () => {
   const offerId = 1
@@ -29,7 +26,13 @@ describe('bookings offer cell', () => {
           type: 'book',
           venueDepartmentCode: '93',
           offerIsEducational: false,
+          eventBeginningDatetime: new Date().toISOString(),
+          numberOfTickets: 1,
         },
+        bookingRecapInfo: {
+          original: collectiveBookingRecapFactory(),
+        } as Row<CollectiveBookingResponseModel>,
+        isCollective: false,
       }
 
       // When
@@ -40,8 +43,8 @@ describe('bookings offer cell', () => {
       expect(ean).toBeInTheDocument()
       const title = screen.getByText('La Guitare pour les nuls')
       const title_link = title.closest('a')
-      expect(title_link.href).toContain(`offre/individuelle/${offerId}`)
-      expect(title_link.target).toContain('_blank')
+      expect(title_link?.href).toContain(`offre/individuelle/${offerId}`)
+      expect(title_link?.target).toContain('_blank')
     })
 
     it('offer name with a link to the offer when stock is a thing', () => {
@@ -54,7 +57,13 @@ describe('bookings offer cell', () => {
           type: 'thing',
           venueDepartmentCode: '93',
           offerIsEducational: false,
+          eventBeginningDatetime: new Date().toISOString(),
+          numberOfTickets: 1,
         },
+        bookingRecapInfo: {
+          original: collectiveBookingRecapFactory(),
+        } as Row<CollectiveBookingResponseModel>,
+        isCollective: false,
       }
 
       // When
@@ -63,8 +72,8 @@ describe('bookings offer cell', () => {
       // Then
       const offer_name = screen.getByText('Guitare acoustique')
       const offer_name_link = offer_name.closest('a')
-      expect(offer_name_link.href).toContain(`offre/individuelle/${offerId}`)
-      expect(offer_name_link.target).toContain('_blank')
+      expect(offer_name_link?.href).toContain(`offre/individuelle/${offerId}`)
+      expect(offer_name_link?.target).toContain('_blank')
     })
 
     it('offer name and event beginning datetime in venue timezone when stock is an event', () => {
@@ -78,7 +87,12 @@ describe('bookings offer cell', () => {
           type: 'event',
           venueDepartmentCode: '93',
           offerIsEducational: false,
+          numberOfTickets: 1,
         },
+        bookingRecapInfo: {
+          original: collectiveBookingRecapFactory(),
+        } as Row<CollectiveBookingResponseModel>,
+        isCollective: false,
       }
 
       // When
@@ -88,8 +102,8 @@ describe('bookings offer cell', () => {
       expect(screen.getByText('12/05/2020 11:03')).toBeInTheDocument()
       const offer_name = screen.getByText('La danse des poireaux')
       const offer_name_link = offer_name.closest('a')
-      expect(offer_name_link.href).toContain(`offre/individuelle/${offerId}`)
-      expect(offer_name_link.target).toContain('_blank')
+      expect(offer_name_link?.href).toContain(`offre/individuelle/${offerId}`)
+      expect(offer_name_link?.target).toContain('_blank')
     })
 
     it('should display warning when limit booking date is in less than 7 days', () => {
@@ -99,7 +113,7 @@ describe('bookings offer cell', () => {
 
       const eventOffer = collectiveBookingRecapFactory({
         stock: {
-          bookingLimitDatetime: tomorrowFns,
+          bookingLimitDatetime: tomorrowFns.toISOString(),
           eventBeginningDatetime: new Date().toISOString(),
           numberOfTickets: 1,
           offerId: offerId,
@@ -112,7 +126,10 @@ describe('bookings offer cell', () => {
 
       renderOfferCell({
         offer: eventOffer.stock,
-        bookingRecapInfo: { values: eventOffer },
+        bookingRecapInfo: {
+          original: eventOffer,
+          values: eventOffer,
+        } as unknown as Row<CollectiveBookingResponseModel>,
         isCollective: true,
       })
 
@@ -126,7 +143,7 @@ describe('bookings offer cell', () => {
 
       const eventOffer = collectiveBookingRecapFactory({
         stock: {
-          bookingLimitDatetime: eightDaysFns,
+          bookingLimitDatetime: eightDaysFns.toISOString(),
           eventBeginningDatetime: new Date().toISOString(),
           numberOfTickets: 1,
           offerId: offerId,
@@ -138,8 +155,10 @@ describe('bookings offer cell', () => {
       })
       renderOfferCell({
         offer: eventOffer.stock,
-        bookingRecapInfo: { values: eventOffer },
-        isCollective: true,
+        bookingRecapInfo: {
+          original: eventOffer,
+        } as Row<CollectiveBookingResponseModel>,
+        isCollective: false,
       })
 
       expect(
