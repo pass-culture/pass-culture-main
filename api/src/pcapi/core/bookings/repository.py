@@ -326,16 +326,6 @@ def get_validated_bookings_quantity_for_venue(venue_id: int) -> int:
     return n_validated_bookings_quantity + n_validated_collective_bookings_quantity
 
 
-def find_offers_booked_by_beneficiaries(users: list[User]) -> list[Offer]:
-    return (
-        Offer.query.distinct(Offer.id)
-        .join(Stock)
-        .join(Booking)
-        .filter(Booking.userId.in_(user.id for user in users))
-        .all()
-    )
-
-
 def find_cancellable_bookings_by_offerer(offerer_id: int) -> list[Booking]:
     return Booking.query.filter(
         Booking.offererId == offerer_id,

@@ -30,9 +30,6 @@ from . import templating
 # from pcapi.admin.custom_views.pro_user_view import ProUserView
 # from pcapi.admin.custom_views.provider_view import ProviderView
 # from pcapi.admin.custom_views.support_view import view
-# from pcapi.admin.custom_views.suspend_fraudulent_users_by_email_providers import (
-#     SuspendFraudulentUsersByEmailProvidersView,
-# )
 # from pcapi.admin.custom_views.user_email_history_view import UserEmailHistoryView
 # from pcapi.admin.custom_views.user_offerer_view import UserOffererView
 # from pcapi.admin.custom_views.venue_provider_view import VenueProviderView
@@ -53,7 +50,6 @@ from . import templating
 # from .custom_views.boost_pivot_view import BoostPivotView
 # from .custom_views.cgr_pivot_view import CGRPivotView
 # from .custom_views.cine_office_pivot_view import CineOfficePivotView
-# from .custom_views.suspend_fraudulent_users_by_ids import SuspendFraudulentUsersByUserIdsView
 
 
 class Category(Enum):
@@ -289,22 +285,6 @@ def install_views(admin: Admin, session: Session) -> None:
     #         session,
     #         name="Configuration des règles de fraude",
     #         endpoint="fraud_rules_configuration",
-    #         category=Category.CUSTOM_OPERATIONS,
-    #     )
-    # )
-
-    # admin.add_view(
-    #     SuspendFraudulentUsersByEmailProvidersView(
-    #         name="Suspension d'utilisateurs via noms de domaine",
-    #         endpoint="suspend_fraud_users_by_email_providers",
-    #         category=Category.CUSTOM_OPERATIONS,
-    #     )
-    # )
-
-    # admin.add_view(
-    #     SuspendFraudulentUsersByUserIdsView(
-    #         name="Suspension d'utilisateurs via identifiants",
-    #         endpoint="suspend_fraud_users_by_user_ids",
     #         category=Category.CUSTOM_OPERATIONS,
     #     )
     # )
