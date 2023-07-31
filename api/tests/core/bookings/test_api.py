@@ -423,6 +423,58 @@ class BookOfferTest:
 
     class WithExternalBookingApiTest:
         @patch("pcapi.core.bookings.api.external_bookings_api.book_ticket")
+        @override_features(ENABLE_EMS_INTEGRATION=True)
+        def test_ems_solo_external_booking(self, mocked_book_ticket):
+            mocked_book_ticket.return_value = [Ticket(barcode="111", seat_number="")]
+
+            beneficiary = users_factories.BeneficiaryGrant18Factory()
+            ems_provider = get_provider_by_local_class("EMSStocks")
+            venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider)
+            cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+            offer = offers_factories.EventOfferFactory(
+                name="Film",
+                venue=venue_provider.venue,
+                subcategoryId=subcategories.SEANCE_CINE.id,
+                lastProviderId=cinema_provider_pivot.provider.id,
+            )
+            stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="1111%2222%EMS#3333")
+
+            booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
+
+            assert len(booking.externalBookings) == 1
+            assert booking.externalBookings[0].barcode == "111"
+            assert booking.externalBookings[0].seat == ""
+
+        @patch("pcapi.core.bookings.api.external_bookings_api.book_ticket")
+        @override_features(ENABLE_EMS_INTEGRATION=True)
+        def test_ems_duo_external_booking(self, mocked_book_ticket):
+            mocked_book_ticket.return_value = [
+                Ticket(barcode="111", seat_number=""),
+                Ticket(barcode="222", seat_number=""),
+            ]
+
+            beneficiary = users_factories.BeneficiaryGrant18Factory()
+            ems_provider = get_provider_by_local_class("EMSStocks")
+            venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider)
+            cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+            offer = offers_factories.EventOfferFactory(
+                name="Film",
+                venue=venue_provider.venue,
+                subcategoryId=subcategories.SEANCE_CINE.id,
+                lastProviderId=cinema_provider_pivot.provider.id,
+                isDuo=True,
+            )
+            stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="1111%2222%EMS#3333")
+
+            booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=2)
+
+            assert len(booking.externalBookings) == 2
+            assert booking.externalBookings[0].barcode == "111"
+            assert booking.externalBookings[0].seat == ""
+            assert booking.externalBookings[1].barcode == "222"
+            assert booking.externalBookings[1].seat == ""
+
+        @patch("pcapi.core.bookings.api.external_bookings_api.book_ticket")
         @override_features(ENABLE_CDS_IMPLEMENTATION=True)
         def test_solo_external_booking(self, mocked_book_ticket):
             mocked_book_ticket.return_value = [Ticket(barcode="testbarcode", seat_number="A_1")]

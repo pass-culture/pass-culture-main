@@ -2,7 +2,7 @@ import datetime
 import decimal
 import logging
 
-from pcapi.connectors import ems
+from pcapi.connectors.ems import EMSScheduleConnector
 from pcapi.connectors.serialization import ems_serializers
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.core import search
@@ -25,7 +25,13 @@ ACCEPTED_FEATURES_MAPPING = {
 
 
 class EMSStocks:
-    def __init__(self, venue_provider: providers_models.VenueProvider, site: ems_serializers.Site):
+    def __init__(
+        self,
+        connector: EMSScheduleConnector,
+        venue_provider: providers_models.VenueProvider,
+        site: ems_serializers.Site,
+    ):
+        self.connector = connector
         self.site = site
         self.created_objects = 0
         self.updated_objects = 0
@@ -88,7 +94,7 @@ class EMSStocks:
             poster_url = self.poster_urls_map.get(allocine_movie_id)
             if not poster_url:
                 continue
-            thumb = ems.get_movie_poster_from_api(poster_url.replace("/120/", "/600/"))
+            thumb = self.connector.get_movie_poster_from_api(poster_url.replace("/120/", "/600/"))
             if not thumb:
                 continue
             create_thumb(model_with_thumb=product, image_as_bytes=thumb, storage_id_suffix_str="", keep_ratio=True)

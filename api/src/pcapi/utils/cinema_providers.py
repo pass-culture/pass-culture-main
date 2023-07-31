@@ -37,6 +37,18 @@ def get_cgr_showtime_id_from_uuid(stock_uuid: str | None) -> int | None:
     return None
 
 
+def get_ems_showtime_id_from_uuid(stock_uuid: str | None) -> int | None:
+    """
+    Parses the uuid with this pattern: <movie_id>%<venue.id>%EMS#<showtime.id>
+    Return the show_id as int or None
+    """
+    if stock_uuid:
+        match = re_search(r"#(?P<showtime_id>\d+)?", stock_uuid)
+        if match and (showtime_id := match["showtime_id"]):
+            return int(showtime_id)
+    return None
+
+
 def get_showtime_id_from_uuid(stock_uuid: str | None, provider_name: str) -> int | None:
     match provider_name:
         case "CDSStocks":
@@ -45,6 +57,8 @@ def get_showtime_id_from_uuid(stock_uuid: str | None, provider_name: str) -> int
             return get_boost_showtime_id_from_uuid(stock_uuid)
         case "CGRStocks":
             return get_cgr_showtime_id_from_uuid(stock_uuid)
+        case "EMSStocks":
+            return get_ems_showtime_id_from_uuid(stock_uuid)
         case _:
             return None
 
