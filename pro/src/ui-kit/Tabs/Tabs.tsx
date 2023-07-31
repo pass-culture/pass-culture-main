@@ -15,6 +15,7 @@ interface Tab {
   onClick?: () => void
   icon?: string
 }
+
 export interface FilterTabsProps {
   nav?: string
   tabs: Tab[]
