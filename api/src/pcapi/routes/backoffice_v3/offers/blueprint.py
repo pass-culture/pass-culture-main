@@ -66,6 +66,12 @@ SEARCH_FIELD_TO_PYTHON = {
         "special": partial(date_utils.date_to_localized_datetime, time_=datetime.datetime.min.time()),
         "inner_join": "stock",
     },
+    "BOOKING_LIMIT_DATE": {
+        "field": "date",
+        "column": offers_models.Stock.bookingLimitDatetime,
+        "special": partial(date_utils.date_to_localized_datetime, time_=datetime.datetime.min.time()),
+        "inner_join": "stock",
+    },
     "ID": {
         "field": "integer",
         "column": offers_models.Offer.id,
@@ -106,16 +112,37 @@ SEARCH_FIELD_TO_PYTHON = {
     },
 }
 
-JOIN_DICT: dict[str, list[tuple[str, tuple]]] = {
-    "criterion": [("criterion", (criteria_models.Criterion, offers_models.Offer.criteria))],
-    "offer_criterion": [
-        (
-            "offer_criterion",
-            (criteria_models.OfferCriterion, offers_models.Offer.id == criteria_models.OfferCriterion.offerId),
-        )
+JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
+    "criterion": [
+        {
+            "name": "criterion",
+            "args": (criteria_models.Criterion, offers_models.Offer.criteria),
+        }
     ],
-    "stock": [("stock", (offers_models.Stock, offers_models.Offer.stocks))],
-    "venue": [("venue", (offerers_models.Venue, offers_models.Offer.venue))],
+    "offer_criterion": [
+        {
+            "name": "offer_criterion",
+            "args": (criteria_models.OfferCriterion, offers_models.Offer.id == criteria_models.OfferCriterion.offerId),
+        }
+    ],
+    "stock": [
+        {
+            "name": "stock",
+            "args": (
+                offers_models.Stock,
+                sa.and_(
+                    offers_models.Stock.offerId == offers_models.Offer.id,
+                    offers_models.Stock.isSoftDeleted.is_(False),
+                ),
+            ),
+        }
+    ],
+    "venue": [
+        {
+            "name": "venue",
+            "args": (offerers_models.Venue, offers_models.Offer.venue),
+        }
+    ],
 }
 
 OPERATOR_DICT: typing.Dict[str, typing.Dict[str, typing.Any]] = {

@@ -43,6 +43,7 @@ class SearchAttributes(enum.Enum):
     SUBCATEGORY = "Sous-catégorie"
     CREATION_DATE = "Date de création"
     EVENT_DATE = "Date de l'évènement"
+    BOOKING_LIMIT_DATE = "Date limite de réservation"
     DEPARTMENT = "Département"
     EAN = "EAN-13"
     VALIDATION = "État"
@@ -69,6 +70,13 @@ form_field_configuration = {
     "DEPARTMENT": {"field": "department", "operator": ["IN", "NOT_IN"]},
     "EAN": {"field": "string", "operator": ["CONTAINS", "NO_CONTAINS", "STR_EQUALS", "STR_NOT_EQUALS"]},
     "EVENT_DATE": {
+        "field": "date",
+        "operator": [
+            "GREATER_THAN_OR_EQUAL_TO",
+            "LESS_THAN",
+        ],
+    },
+    "BOOKING_LIMIT_DATE": {
         "field": "date",
         "operator": [
             "GREATER_THAN_OR_EQUAL_TO",
