@@ -19,12 +19,14 @@ from pcapi.core.categories import subcategories_v2
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import api as users_api
@@ -1628,3 +1630,85 @@ class RefreshAccessTokenTest:
         refresh_token_lifetime = token_expiration_date - token_issue_date
 
         assert refresh_token_lifetime == settings.JWT_REFRESH_TOKEN_EXPIRES
+
+
+class NotifyUserBeforeDeletionUponSuspensionTest:
+    def test_get_users_with_suspended_account_to_notify(self):
+        delta_time = 5
+        exact_time = datetime.datetime.utcnow() - datetime.timedelta(days=delta_time)
+        suspension_to_be_detected = history_factories.SuspendedUserActionHistoryFactory(
+            actionDate=exact_time, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
+        )
+
+        # not suspended upon user request: should be ignored
+        history_factories.SuspendedUserActionHistoryFactory(
+            actionDate=exact_time, reason=users_constants.SuspensionReason.FRAUD_SUSPICION
+        )
+
+        # suspended one day after: should be ignored
+        history_factories.SuspendedUserActionHistoryFactory(
+            actionDate=exact_time + datetime.timedelta(days=1),
+            reason=users_constants.SuspensionReason.UPON_USER_REQUEST,
+        )
+
+        # suspended one day before: should be ignored
+        history_factories.SuspendedUserActionHistoryFactory(
+            actionDate=exact_time - datetime.timedelta(days=1),
+            reason=users_constants.SuspensionReason.UPON_USER_REQUEST,
+        )
+
+        # should not be notified because unsuspended
+        user = users_factories.UserFactory(isActive=False)
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, actionDate=exact_time, reason=users_constants.SuspensionReason.FRAUD_SUSPICION
+        )
+        history_factories.UnsuspendedUserActionHistoryFactory(user=user, actionDate=datetime.datetime.utcnow())
+
+        expected_user_ids = {suspension_to_be_detected.userId}
+
+        with assert_num_queries(1):
+            query = users_api._get_users_with_suspended_account_to_notify(delta_time)
+            user_ids = {user.id for user in query}
+            assert user_ids == expected_user_ids
+
+    def test_notify_user_before_deletion_upon_suspension(self, app):
+        # given
+        exact_time = datetime.datetime.utcnow() - datetime.timedelta(
+            days=settings.DELETE_SUSPENDED_ACCOUNTS_SINCE - settings.NOTIFY_X_DAYS_BEFORE_DELETION
+        )
+        suspension_to_be_detected = history_factories.SuspendedUserActionHistoryFactory(
+            actionDate=exact_time, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
+        )
+
+        # not suspended upon user request: should be ignored
+        history_factories.SuspendedUserActionHistoryFactory(
+            actionDate=exact_time, reason=users_constants.SuspensionReason.FRAUD_SUSPICION
+        )
+
+        # suspended one day after: should be ignored
+        history_factories.SuspendedUserActionHistoryFactory(
+            actionDate=exact_time + datetime.timedelta(days=1),
+            reason=users_constants.SuspensionReason.UPON_USER_REQUEST,
+        )
+
+        # suspended one day before: should be ignored
+        history_factories.SuspendedUserActionHistoryFactory(
+            actionDate=exact_time - datetime.timedelta(days=1),
+            reason=users_constants.SuspensionReason.UPON_USER_REQUEST,
+        )
+
+        # should not be notified because unsuspended
+        user = users_factories.UserFactory(isActive=False)
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, actionDate=exact_time, reason=users_constants.SuspensionReason.FRAUD_SUSPICION
+        )
+        history_factories.UnsuspendedUserActionHistoryFactory(user=user, actionDate=datetime.datetime.utcnow())
+
+        # when
+        users_api.notify_users_before_deletion_of_suspended_account()
+
+        # then
+        user = users_models.User.query.get(suspension_to_be_detected.userId)
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["params"]["FIRSTNAME"] == user.firstName
+        assert mails_testing.outbox[0].sent_data["To"] == user.email
