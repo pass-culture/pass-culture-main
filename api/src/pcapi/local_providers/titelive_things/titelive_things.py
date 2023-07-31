@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 DATE_REGEXP = re.compile(r"([a-zA-Z]+)(\d+).tit")
 THINGS_FOLDER_NAME_TITELIVE = "livre3_19"
 THINGS_FOLDER_ENCODING_TITELIVE = "iso-8859-1"
-NUMBER_OF_ELEMENTS_PER_LINE = 62  # (61 elements from line + \n)
+NUMBER_OF_ELEMENTS_PER_LINE = 63  # (62 elements from line + \n)
 
 PAPER_PRESS_VAT = "2,10"
 BASE_VAT = "20,00"
@@ -114,6 +114,7 @@ COLUMN_INDICES = {
     "code_clil": 58,
     "fournisseur_edi": 59,
     "statut_fiche": 60,
+    "code_media_base": 61,
 }
 
 INFO_KEYS = {
@@ -239,6 +240,11 @@ class TiteLiveThings(LocalProvider):
             elements = next(self.data_lines).split("~")  # type: ignore [arg-type]
 
         if len(elements) != NUMBER_OF_ELEMENTS_PER_LINE:
+            logger.error(
+                "SyncError: number of elements mismatch. (expected: %s, actual: %s)",
+                len(elements),
+                NUMBER_OF_ELEMENTS_PER_LINE,
+            )
             self.log_provider_event(providers_models.LocalProviderEventType.SyncError, "number of elements mismatch")
             return []
 
