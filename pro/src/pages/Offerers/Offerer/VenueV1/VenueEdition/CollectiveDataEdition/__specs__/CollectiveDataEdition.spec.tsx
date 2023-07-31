@@ -113,13 +113,23 @@ describe('CollectiveDataEdition', () => {
       pending: vi.fn(),
       close: vi.fn(),
     }))
-
+    collectiveSubCategoryFactory()
     vi.spyOn(api, 'getCategories').mockResolvedValue({
-      categories: [collectiveCategoryFactory(), collectiveCategoryFactory()],
+      categories: [
+        collectiveCategoryFactory({ id: 'CATEGORY_1' }),
+        collectiveCategoryFactory({ id: 'CATEGORY_2' }),
+      ],
       subcategories: [
-        collectiveSubCategoryFactory({ categoryId: 'CATEGORY_1' }),
-        collectiveSubCategoryFactory({ categoryId: 'CATEGORY_2' }),
-        collectiveSubCategoryFactory({ categoryId: 'CATEGORY_3' }),
+        collectiveSubCategoryFactory({
+          id: 'SUB_CATEGORY_1',
+          categoryId: 'CATEGORY_1',
+        }),
+        collectiveSubCategoryFactory({
+          categoryId: 'CATEGORY_2',
+        }),
+        collectiveSubCategoryFactory({
+          categoryId: 'CATEGORY_2',
+        }),
       ],
     })
 
@@ -379,7 +389,6 @@ describe('CollectiveDataEdition', () => {
       await waitForLoader()
 
       const categoryField = screen.getByLabelText(/Catégorie/)
-      screen.debug(undefined, 20000)
       const subCategoryField = screen.getByLabelText(/Sous-catégorie/)
 
       expect(categoryField).toHaveValue('CATEGORY_1')
