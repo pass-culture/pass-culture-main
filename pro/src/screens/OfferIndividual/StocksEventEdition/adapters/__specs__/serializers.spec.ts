@@ -7,10 +7,15 @@ import { stockEventFactory } from 'screens/OfferIndividual/StocksEventEdition/St
 
 import { serializeStockEventEdition } from '../serializers'
 
-vi.mock('utils/date', () => ({
-  ...vi.importActual('utils/date'),
-  getToday: vi.fn().mockImplementation(() => new Date('2022-09-26T13:00:00Z')),
-}))
+vi.mock('utils/date', async () => {
+  const actual = (await vi.importActual('utils/date')) || {}
+  return {
+    ...actual,
+    getToday: vi
+      .fn()
+      .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+  }
+})
 
 describe('serializeStockEventEdition', () => {
   let formValuesList: StockEventFormValues[]
