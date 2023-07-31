@@ -242,3 +242,39 @@ class LogsTest:
             "uai": "EAU123",
             "user_role": AdageFrontRoles.READONLY,
         }
+
+    def test_log_tracking_filter(self, client, caplog):
+        # given
+        test_client = client.with_adage_token(email="test@mail.com", uai="EAU123")
+
+        # when
+        with caplog.at_level(logging.INFO):
+            response = test_client.post(
+                "/adage-iframe/logs/tracking-filter",
+                json={
+                    "queryId": "1",
+                    "resultNumber": 36,
+                    "filterValues": {
+                        "key1": "value1",
+                        "key2": "value2",
+                    },
+                    "iframeFrom": "for_my_institution",
+                },
+            )
+
+        # then
+        assert response.status_code == 204
+        record = [record for record in caplog.records if record.message == "TrackingFilter"][0]
+        assert record.extra == {
+            "analyticsSource": "adage",
+            "from": "for_my_institution",
+            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+            "uai": "EAU123",
+            "user_role": AdageFrontRoles.READONLY,
+            "queryId": "1",
+            "resultNumber": 36,
+            "filterValues": {
+                "key1": "value1",
+                "key2": "value2",
+            },
+        }

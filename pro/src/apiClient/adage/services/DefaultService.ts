@@ -20,6 +20,7 @@ import type { PostCollectiveRequestBodyModel } from '../models/PostCollectiveReq
 import type { RedactorPreferences } from '../models/RedactorPreferences';
 import type { SearchBody } from '../models/SearchBody';
 import type { StockIdBody } from '../models/StockIdBody';
+import type { TrackingFilterBody } from '../models/TrackingFilterBody';
 import type { VenueResponse } from '../models/VenueResponse';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
@@ -377,6 +378,28 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/search-button',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * log_tracking_filter <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public logTrackingFilter(
+    requestBody?: TrackingFilterBody,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/logs/tracking-filter',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
