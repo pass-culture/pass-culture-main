@@ -111,3 +111,31 @@ class PostPriceCategoriesTest:
         assert response.json == {
             "priceCategories": ["Price categories must be unique"],
         }
+
+    def test_create_existing_price_categories(self, client):
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        event_offer = offers_factories.EventOfferFactory(
+            venue=venue,
+            lastProvider=api_key.provider,
+        )
+
+        offers_factories.PriceCategoryFactory(
+            offer=event_offer,
+            price=decimal.Decimal("25"),
+            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="carre or"),
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            f"/public/offers/v1/events/{event_offer.id}/price_categories",
+            json={
+                "priceCategories": [
+                    {"price": 1500, "label": "triangle argent"},
+                    {"price": 2500, "label": "carre or"},
+                ],
+            },
+        )
+        assert response.status_code == 400
+
+        assert response.json == {
+            "priceCategories": ["The price category carre or already exists"],
+        }

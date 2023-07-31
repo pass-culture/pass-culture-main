@@ -238,3 +238,27 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json == {"priceCategories": ["Price categories must be unique"]}
+
+    def test_create_multiple_price_categories_with_already_existing_price_category(self, client):
+        offer = offers_factories.EventOfferFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        offers_factories.PriceCategoryFactory(
+            offer=offer,
+            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="cat gold", venue=offer.venue),
+            price=25,
+        )
+        data = {
+            "priceCategories": [
+                {"price": 12.3, "label": "On your friend knees"},
+                {"price": 25, "label": "cat gold"},
+                {"price": 20, "label": "Behind a post"},
+            ],
+        }
+
+        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"priceCategories": ["The price category cat gold already exists"]}

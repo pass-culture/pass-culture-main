@@ -9,6 +9,7 @@ from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
+from pcapi.core.offers.validation import check_for_duplicated_price_categories
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models import feature
@@ -241,6 +242,10 @@ def post_event_price_categories(
     offer = utils.retrieve_offer_query(event_id).filter(offers_models.Offer.isEvent).one_or_none()
     if not offer:
         raise api_errors.ApiErrors({"event_id": ["The event could not be found"]}, status_code=404)
+
+    # We convert the price to euros beucause the price has different types in different apis
+    new_labels_and_prices = {(p.label, finance_utils.to_euros(p.price)) for p in body.price_categories}
+    check_for_duplicated_price_categories(new_labels_and_prices, offer.id)
 
     created_price_categories: list[offers_models.PriceCategory] = []
     with repository.transaction():
