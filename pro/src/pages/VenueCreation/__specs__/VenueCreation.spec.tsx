@@ -45,12 +45,11 @@ vi.mock('react-router-dom', async () => ({
     offererId: '1234',
   }),
 }))
+vi.mock('utils/windowMatchMedia', () => ({
+  doesUserPreferReducedMotion: vi.fn(() => true),
+}))
 
 Element.prototype.scrollIntoView = vi.fn()
-
-vi.spyOn(window, 'matchMedia').mockReturnValue({
-  matches: true,
-} as MediaQueryList)
 
 describe('route VenueCreation', () => {
   let offerer: GetOffererResponseModel
@@ -67,17 +66,15 @@ describe('route VenueCreation', () => {
   })
 
   it('should display venue form screen with creation title', async () => {
-    // When
     await renderVenueCreation(offerer.id.toString())
-    // Then
+
     const venueCreationTitle = await screen.findByText('Création d’un lieu')
     expect(venueCreationTitle).toBeInTheDocument()
   })
 
   it('should display modal when user try to quite venue creation', async () => {
-    // When
     await renderVenueCreation(offerer.id.toString())
-    // Then
+
     const homeNavBarButton = await screen.findByText('Accueil')
     await userEvent.click(homeNavBarButton)
     const modal = await screen.findByText(
@@ -91,9 +88,8 @@ describe('route VenueCreation', () => {
   })
 
   it('should display modal when user cancel venue creation', async () => {
-    // When
     await renderVenueCreation(offerer.id.toString())
-    // Then
+
     const cancelFormButton = await screen.findByText('Annuler et quitter')
     await userEvent.click(cancelFormButton)
     const modal = await screen.findByText(
@@ -107,9 +103,8 @@ describe('route VenueCreation', () => {
   })
 
   it('should not display modal when user submit venue creation', async () => {
-    // When
     await renderVenueCreation(offerer.id.toString())
-    // Then
+
     const homeNavBarButton = await screen.findByText(
       'Enregistrer et créer le lieu'
     )
