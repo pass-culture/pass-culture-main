@@ -2,6 +2,7 @@ CINEMA_PROVIDER_NAMES = [
     "CDSStocks",
     "BoostStocks",
     "CGRStocks",
+    "EMSStocks",
 ]
 
 PASS_CULTURE_STOCKS_FAKE_CLASS_NAME = "PCAPIStocks"

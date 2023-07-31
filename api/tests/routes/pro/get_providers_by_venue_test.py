@@ -20,7 +20,7 @@ def test_venue_has_known_allocine_id(client):
 
     # Then
     assert response.status_code == 200
-    assert len(response.json) == 6
+    assert len(response.json) == 5
     assert {
         "enabledForPro": True,
         "id": allocine_provider.id,
@@ -51,7 +51,7 @@ def test_venue_has_no_allocine_id(client):
 
     # Then
     assert response.status_code == 200
-    assert len(response.json) == 5
+    assert len(response.json) == 4
     assert {
         "enabledForPro": True,
         "id": other_provider.id,
@@ -84,7 +84,7 @@ def test_venue_has_offerer_provider(client):
 
     # Then
     assert response.status_code == 200
-    assert len(response.json) == 5
+    assert len(response.json) == 4
     mango_provider = list(filter(lambda x: x["name"] == name, response.json))
     assert mango_provider == [
         {
