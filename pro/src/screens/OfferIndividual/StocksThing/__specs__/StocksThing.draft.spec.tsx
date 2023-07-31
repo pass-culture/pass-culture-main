@@ -35,10 +35,15 @@ vi.mock('repository/pcapi/pcapi', () => ({
   postThumbnail: vi.fn(),
 }))
 
-vi.mock('utils/date', () => ({
-  ...vi.importActual('utils/date'),
-  getToday: vi.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
-}))
+vi.mock('utils/date', async () => {
+  const actual = (await vi.importActual('utils/date')) || {}
+  return {
+    ...actual,
+    getToday: vi
+      .fn()
+      .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+  }
+})
 
 const renderStockThingScreen = (
   props: StocksThingProps,
