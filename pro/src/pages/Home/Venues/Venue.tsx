@@ -12,7 +12,6 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
   VenueEvents,
 } from 'core/FirebaseEvents/constants'
-import { venueCreateOfferLink } from 'core/Venue/utils'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullDisclosureClose from 'icons/full-disclosure-close.svg'
@@ -58,6 +57,15 @@ const Venue = ({
   demarchesSimplifieesApplicationId,
   hasPendingBankInformationApplication = false,
 }: VenueProps) => {
+  const venueCreateOfferLink = [
+    '/offre/creation',
+    new URLSearchParams({
+      structure: offererId.toString(),
+      lieu: venueId.toString(),
+      numerique: isVirtual ? 'null' : 'undefined',
+    }),
+  ].join('?')
+
   const isCollectiveDmsTrackingActive = useActiveFeature(
     'WIP_ENABLE_COLLECTIVE_DMS_TRACKING'
   )
@@ -337,11 +345,7 @@ const Venue = ({
                       <ButtonLink
                         variant={ButtonVariant.TERNARY}
                         link={{
-                          to: venueCreateOfferLink(
-                            offererId,
-                            venueId,
-                            isVirtual
-                          ),
+                          to: venueCreateOfferLink,
                           isExternal: false,
                         }}
                         icon={fullMoreIcon}
