@@ -467,7 +467,7 @@ def _validate_stock_or_offer(model: offers_models.Offer | offers_models.Stock) -
     if model_api_errors.errors.keys():
         logger.exception(
             "[SYNC] errors while trying to add stock or offer with ref %s: %s",
-            model.idAtProviders,
+            getattr(model, "idAtProvider", None) or getattr(model, "idAtProviders", None),
             model_api_errors.errors,
         )
         return False
