@@ -311,6 +311,40 @@ class UbbleWorkflowTest:
         assert user.dateOfBirth == signup_birth_date
         assert user.validatedBirthDate == document_birth_date.date()
 
+    def test_ubble_workflow_updates_user_birth_date_when_already_beneficiary(self, ubble_mocker):
+        with freezegun.freeze_time(datetime.datetime.utcnow() - relativedelta(years=1)):
+            user = users_factories.BeneficiaryFactory(
+                age=17,
+                beneficiaryFraudChecks__type=fraud_models.FraudCheckType.EDUCONNECT,
+            )
+            assert user.validatedBirthDate
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE,
+            status=fraud_models.FraudCheckStatus.PENDING,
+            user=user,
+            eligibilityType=users_models.EligibilityType.AGE18,
+        )
+
+        document_birth_date = user.dateOfBirth - relativedelta(days=5)
+        ubble_response = UbbleIdentificationResponseFactory(
+            identification_state=IdentificationState.INVALID,
+            data__attributes__identification_id=str(fraud_check.thirdPartyId),
+            included=[
+                UbbleIdentificationIncludedDocumentsFactory(
+                    attributes__birth_date=document_birth_date.date().isoformat()
+                ),
+            ],
+        )
+
+        with ubble_mocker(
+            fraud_check.thirdPartyId,
+            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        ):
+            ubble_subscription_api.update_ubble_workflow(fraud_check)
+
+        db.session.refresh(user)
+        assert user.validatedBirthDate == document_birth_date.date()
+
     def test_ubble_workflow_does_not_erase_user_data(self, ubble_mocker):
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2002, month=5, day=6))
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
