@@ -1,16 +1,19 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
+import { Row } from 'react-table'
 
+import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
+import { collectiveBookingRecapFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import BookingOfferCell from '../BookingOfferCell'
+import BookingOfferCell, { BookingOfferCellProps } from '../BookingOfferCell'
 
 const mockLogEvent = vi.fn()
 
-const renderOfferCell = props => {
+const renderOfferCell = (props: BookingOfferCellProps) => {
   const storeOverrides = { app: { logEvent: mockLogEvent } }
 
   renderWithProviders(<BookingOfferCell {...props} />, { storeOverrides })
@@ -25,12 +28,19 @@ describe('tracking bookings offer cell', () => {
     }))
     const props = {
       offer: {
+        offerId: 1,
         offerIdentifier: 'A1',
         offerName: 'Guitare acoustique',
         type: 'thing',
         venueDepartmentCode: '93',
         offerIsEducational: false,
+        eventBeginningDatetime: new Date().toISOString(),
+        numberOfTickets: 1,
       },
+      bookingRecapInfo: {
+        original: collectiveBookingRecapFactory(),
+      } as Row<CollectiveBookingResponseModel>,
+      isCollective: false,
     }
 
     // When
