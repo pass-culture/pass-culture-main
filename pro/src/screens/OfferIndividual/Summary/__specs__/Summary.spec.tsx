@@ -345,7 +345,9 @@ describe('Summary', () => {
           resolve(undefined)
         }, 200)
       )
-      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(mockResponse)
+      vi.spyOn(api, 'patchPublishOffer').mockImplementationOnce(
+        () => mockResponse
+      )
       await userEvent.click(buttonPublish)
       expect(api.patchPublishOffer).toHaveBeenCalled()
       expect(buttonPublish).toBeDisabled()

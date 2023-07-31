@@ -1,45 +1,18 @@
 import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
-import * as csvService from 'pages/CsvTable/adapters/getCsvData'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import CsvTable, { CsvTableProps } from '../CsvTable'
-import { TableData } from '../types'
 
-interface CsvTableTestProps {
-  getCsvData: vi.SpyInstance<Promise<TableData | null>>
-}
-
-// FIXME: we don't have store type yet.
-// This will be irrelevant soon as we are removing it
-const renderCsvTable = (props: CsvTableTestProps) =>
-  renderWithProviders(<CsvTable {...(props as unknown as CsvTableProps)} />)
-
-const getCsvDataMock = vi.spyOn(csvService, 'getCsvData')
+const renderCsvTable = (props: CsvTableProps) =>
+  renderWithProviders(<CsvTable {...props} />)
 
 describe('src | components | layout | CsvTable', () => {
-  let dataFromCsv: TableData
-  let props: CsvTableTestProps
-
-  beforeEach(() => {
-    dataFromCsv = {
-      data: [
-        ['data1', 'data2'],
-        ['data3', 'data4'],
-      ],
-      headers: ['column1', 'column2'],
-    }
-
-    props = {
-      getCsvData: getCsvDataMock.mockResolvedValue(dataFromCsv),
-    }
-  })
-
   describe('render', () => {
     it('should render a CsvTable component with a spinner, then a message with no data when there is an error', async () => {
-      props.getCsvData.mockRejectedValue(null)
-      renderCsvTable(props)
+      const mockGetCsvData = vi.fn().mockResolvedValueOnce(null)
+      renderCsvTable({ getCsvData: mockGetCsvData })
 
       expect(screen.getByText('Chargement en cours')).toBeInTheDocument()
       await waitFor(() => {
@@ -50,8 +23,11 @@ describe('src | components | layout | CsvTable', () => {
     })
 
     it('should render a CsvTable component with a spinner, then a message with no data when there is no data', async () => {
-      props.getCsvData.mockResolvedValue({ ...dataFromCsv, data: [] })
-      renderCsvTable(props)
+      const getCsvDataMock = vi.fn().mockResolvedValueOnce({
+        data: [],
+        headers: ['column1', 'column2'],
+      })
+      renderCsvTable({ getCsvData: getCsvDataMock })
 
       expect(screen.getByText('Chargement en cours')).toBeInTheDocument()
       await waitFor(() => {
@@ -62,7 +38,14 @@ describe('src | components | layout | CsvTable', () => {
     })
 
     it('should render a CsvTable component with a spinner, then a table with the data', async () => {
-      renderCsvTable(props)
+      const getCsvDataMock = vi.fn().mockResolvedValueOnce({
+        data: [
+          ['data1', 'data2'],
+          ['data3', 'data4'],
+        ],
+        headers: ['column1', 'column2'],
+      })
+      renderCsvTable({ getCsvData: getCsvDataMock })
 
       expect(screen.getByText('Chargement en cours')).toBeInTheDocument()
       await waitFor(() => {
