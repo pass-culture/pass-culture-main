@@ -41,3 +41,9 @@ class CollectiveRequestBody(AdageBaseModel):
     totalStudents: int | None
     totalTeachers: int | None
     comment: str
+
+
+class TrackingFilterBody(AdageBaseModel):
+    queryId: str
+    resultNumber: int
+    filterValues: dict
