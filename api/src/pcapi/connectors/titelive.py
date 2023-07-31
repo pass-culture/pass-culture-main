@@ -27,6 +27,8 @@ def get_jwt_token() -> str:
     def _get_new_jwt_token() -> str:
         try:
             response = requests.post(url, json=payload)
+        except requests.exceptions.Timeout:
+            raise
         except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
             core_logging.log_for_supervision(
                 logger,
@@ -74,11 +76,12 @@ def get_jwt_token() -> str:
 
 
 def get_by_ean13(ean13: str) -> dict[str, typing.Any]:
-    url = f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{ean13}"
-    headers = {"Content-Type": "application/json", "Authorization": "Bearer {}".format(get_jwt_token())}
-
     try:
+        url = f"{settings.TITELIVE_EPAGINE_API_URL}/ean/{ean13}"
+        headers = {"Content-Type": "application/json", "Authorization": "Bearer {}".format(get_jwt_token())}
         response = requests.get(url, headers=headers)
+    except requests.exceptions.Timeout:
+        raise
     except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
         core_logging.log_for_supervision(
             logger,
