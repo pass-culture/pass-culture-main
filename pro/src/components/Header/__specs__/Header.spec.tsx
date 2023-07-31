@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
+import { expect, vi } from 'vitest'
 
 import { api } from 'apiClient/api'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -52,6 +53,7 @@ describe('navigation menu', () => {
     beforeEach(() => {
       vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
         logEvent: mockLogEvent,
+        setLogEvent: vi.fn(),
       }))
     })
 
@@ -153,8 +155,8 @@ describe('navigation menu', () => {
           list: [{ isActive: true, nameKey: 'ENABLE_OFFERER_STATS' }],
         },
       }
-      api.listOfferersNames.mockResolvedValue({
-        offerersNames: ['AE'],
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+        offerersNames: [{ id: 123, name: 'AE' }],
       })
 
       renderHeader(overrideStore)
@@ -172,7 +174,7 @@ describe('navigation menu', () => {
     it('when clicking on Logout', async () => {
       // given
       renderHeader()
-      api.signout.mockResolvedValue()
+      vi.spyOn(api, 'signout').mockResolvedValue()
 
       // When
       await userEvent.click(screen.getAllByRole('menuitem')[5])
