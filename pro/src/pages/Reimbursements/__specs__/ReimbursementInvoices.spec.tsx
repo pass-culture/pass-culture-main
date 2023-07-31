@@ -13,7 +13,7 @@ import { ReimbursementsInvoices } from '../ReimbursementsInvoices'
 
 vi.mock('utils/date', async () => ({
   ...((await vi.importActual('utils/date')) as object),
-  getToday: vi.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+  getToday: vi.fn(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
 const renderReimbursementsInvoices = () => {
