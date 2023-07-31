@@ -242,8 +242,8 @@ class TiteLiveThings(LocalProvider):
         if len(elements) != NUMBER_OF_ELEMENTS_PER_LINE:
             logger.error(
                 "SyncError: number of elements mismatch. (expected: %s, actual: %s)",
-                len(elements),
                 NUMBER_OF_ELEMENTS_PER_LINE,
+                len(elements),
             )
             self.log_provider_event(providers_models.LocalProviderEventType.SyncError, "number of elements mismatch")
             return []
