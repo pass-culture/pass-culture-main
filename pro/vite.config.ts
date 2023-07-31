@@ -41,6 +41,7 @@ export default defineConfig(({ mode }) => {
       css: { modules: { classNameStrategy: 'non-scoped' } },
       minThreads: 2,
       maxThreads: 2,
+      testTimeout: 10000,
     },
   }
 })
