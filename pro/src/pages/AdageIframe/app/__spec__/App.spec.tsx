@@ -480,6 +480,7 @@ describe('app', () => {
 
       it('should add a facet filter when user clicks on "Partagé avec mon établissement"', async () => {
         // Given
+        window.location.search = `?venue=${venue.id}`
         renderApp(venue)
 
         const secondTab = await screen.findByText(

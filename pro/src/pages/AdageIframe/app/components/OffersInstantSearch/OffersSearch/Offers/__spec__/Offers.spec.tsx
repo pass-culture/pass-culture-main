@@ -281,10 +281,11 @@ describe('offers', () => {
 
   it('should show most recent results and cancel previous request', async () => {
     // Given
-    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
-      new CancelablePromise(resolve =>
-        setTimeout(() => resolve(offerInParis), 500)
-      )
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockImplementationOnce(
+      () =>
+        new CancelablePromise<CollectiveOfferResponseModel>(resolve =>
+          setTimeout(() => resolve(offerInParis), 500)
+        )
     )
     vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
       offerInCayenne
@@ -328,13 +329,13 @@ describe('offers', () => {
     vi.spyOn(apiAdage, 'getCollectiveOffer')
       .mockImplementationOnce(
         () =>
-          new CancelablePromise(resolve =>
+          new CancelablePromise<CollectiveOfferResponseModel>(resolve =>
             setTimeout(() => resolve(offerInParis), 500)
           )
       )
       .mockImplementationOnce(
         () =>
-          new CancelablePromise(resolve =>
+          new CancelablePromise<CollectiveOfferResponseModel>(resolve =>
             setTimeout(() => resolve(offerInCayenne), 500)
           )
       )
