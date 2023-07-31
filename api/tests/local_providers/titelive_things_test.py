@@ -99,6 +99,7 @@ BASE_DATA_LINE_PARTS = [
     CODE_CLIL_TEST,
     "3012420280013",
     "0",
+    "110101",
     "",  #  \n
 ]
 
