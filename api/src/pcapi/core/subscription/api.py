@@ -708,6 +708,15 @@ def handle_eligibility_difference_between_declaration_and_identity_provider(
     if profile_completion_fraud_check:
         _update_fraud_check_eligibility_with_history(profile_completion_fraud_check, id_provider_detected_eligibility)
 
+    # Handle eligibility update for HONOR_STATEMENT fraud check, if it exists
+    honor_statement_fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter(
+        fraud_models.BeneficiaryFraudCheck.user == user,
+        fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.HONOR_STATEMENT,
+        fraud_models.BeneficiaryFraudCheck.eligibilityType == declared_eligibility,
+    ).first()
+    if honor_statement_fraud_check:
+        _update_fraud_check_eligibility_with_history(honor_statement_fraud_check, id_provider_detected_eligibility)
+
     return new_fraud_check
 
 
