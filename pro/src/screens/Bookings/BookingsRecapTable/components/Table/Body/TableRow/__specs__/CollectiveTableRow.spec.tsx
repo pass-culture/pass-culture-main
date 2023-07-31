@@ -41,7 +41,11 @@ const renderCollectiveTableRow = (props: TableBodyProps) =>
   )
 
 describe('CollectiveTableRow', () => {
-  beforeAll(() => {
+  beforeEach(() => {
+    vi.spyOn(window, 'matchMedia').mockReturnValue({
+      matches: true,
+    } as MediaQueryList)
+
     vi.spyOn(api, 'getCollectiveBookingById').mockResolvedValue(
       collectiveBookingDetailsFactory()
     )
@@ -78,11 +82,12 @@ describe('CollectiveTableRow', () => {
       isExpanded: true,
     } as Row<CollectiveBookingResponseModel>
 
-    vi.spyOn(api, 'getCollectiveBookingById').mockResolvedValueOnce(
-      new CancelablePromise(resolve =>
-        setTimeout(() => resolve({} as CollectiveBookingByIdResponseModel), 500)
+    vi.spyOn(api, 'getCollectiveBookingById').mockImplementationOnce(() => {
+      return new CancelablePromise<CollectiveBookingByIdResponseModel>(
+        resolve =>
+          setTimeout(() => resolve(collectiveBookingDetailsFactory()), 500)
       )
-    )
+    })
 
     renderCollectiveTableRow({ row, reloadBookings: vi.fn(), bookingId: '' })
 

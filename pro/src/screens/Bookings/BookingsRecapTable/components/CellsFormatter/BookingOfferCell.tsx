@@ -30,7 +30,7 @@ import { pluralize } from 'utils/pluralize'
 
 import styles from './BookingOfferCell.module.scss'
 
-interface BookingOfferCellProps {
+export interface BookingOfferCellProps {
   offer:
     | BookingRecapResponseStockModel
     | CollectiveBookingCollectiveStockResponseModel
@@ -60,7 +60,6 @@ const BookingOfferCell = ({
         FORMAT_DD_MM_YYYY_HH_mm
       )
     : null
-
   const shouldShowCollectiveWarning =
     isCollective &&
     bookingRecapInfo.values.bookingStatus.toUpperCase() ===

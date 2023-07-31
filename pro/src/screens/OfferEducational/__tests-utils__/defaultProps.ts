@@ -43,11 +43,13 @@ export const defaultCreationProps: OfferEducationalProps = {
     educationalCategories: mockEducationalCategories,
     educationalSubCategories: mockEducationalSubcategories,
   },
-  getIsOffererEligible: vi.fn().mockResolvedValue({
-    isOk: true,
-    message: null,
-    payload: { isOffererEligibleToEducationalOffer: true },
-  }),
+  getIsOffererEligible: vi.fn(() =>
+    Promise.resolve({
+      isOk: true,
+      message: null,
+      payload: { isOffererEligibleToEducationalOffer: true },
+    })
+  ),
   mode: Mode.CREATION,
   domainsOptions: [{ value: 1, label: 'domain1' }],
   isTemplate: false,
