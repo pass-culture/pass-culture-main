@@ -105,7 +105,7 @@ const SearchFilters = ({
   const searchByOfferNameLabel =
     audience === Audience.INDIVIDUAL ? (
       <span>
-        Nom de l’offre ou <abbr title="European Article Numbering">EAN</abbr>
+        Nom de l’offre ou <abbr title="European Article Numbering">EAN-13</abbr>
       </span>
     ) : (
       'Nom de l’offre'
