@@ -16,6 +16,7 @@ import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
+from pcapi.core.providers import titelive_gtl
 from pcapi.core.search.backends import base
 from pcapi.domain.music_types import MUSIC_TYPES_LABEL_BY_CODE
 from pcapi.domain.show_types import SHOW_TYPES_LABEL_BY_CODE
@@ -418,6 +419,12 @@ class AlgoliaBackend(base.SearchBackend):
             except AttributeError:
                 macro_section = None
 
+        #  The "gtl" code has been set in July 2023 on products only. Offers that were created before do not have "gtl" in their extraData.
+        #  This is why we must look at offer.product.extraData and not offer.extraData
+        product_extra_data = offer.product.extraData or {}
+        gtl_id = product_extra_data.get("gtl_id")
+        gtl = titelive_gtl.get_gtl(gtl_id) if gtl_id else None
+
         object_to_index = {
             "distinct": distinct,
             "objectID": offer.id,
@@ -428,6 +435,10 @@ class AlgoliaBackend(base.SearchBackend):
                 "dates": sorted(dates),
                 "description": remove_stopwords(offer.description or ""),
                 "ean": extra_data.get("ean"),
+                "gtl_level1": gtl.get("level_01_label") if gtl else None,
+                "gtl_level2": gtl.get("level_02_label") if gtl else None,
+                "gtl_level3": gtl.get("level_03_label") if gtl else None,
+                "gtl_level4": gtl.get("level_04_label") if gtl else None,
                 "isDigital": offer.isDigital,
                 "isDuo": offer.isDuo,
                 "isEducational": False,

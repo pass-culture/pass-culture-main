@@ -106,3 +106,4 @@ def update_providables_by_provider_id(provider_id: int, limit: int | None) -> No
 @click.option("-f", "--file", required=True, help="CSV extract of GTL_2023.xlsx with tab as separator", type=str)
 def update_gtl(file: str) -> None:
     generate_titelive_gtl_from_file(file)
+    # TODO we can later automatically reindex only the offers for which the gtl changed
