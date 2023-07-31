@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import decimal
 import enum
 import typing
@@ -168,8 +168,8 @@ class PatchAllOffersActiveStatusBodyModel(BaseModel):
     category_id: str | None
     creation_mode: str | None
     status: str | None
-    period_beginning_date: datetime | None
-    period_ending_date: datetime | None
+    period_beginning_date: datetime.date | None
+    period_ending_date: datetime.date | None
 
     class Config:
         alias_generator = to_camel
@@ -183,7 +183,7 @@ class ListOffersStockResponseModel(BaseModel):
     id: int
     hasBookingLimitDatetimePassed: bool
     remainingQuantity: int | str
-    beginningDatetime: datetime | None
+    beginningDatetime: datetime.datetime | None
     bookingQuantity: int | None
 
     @validator("remainingQuantity", pre=True)
@@ -228,8 +228,8 @@ class ListOffersQueryModel(BaseModel):
     venue_id: int | None
     categoryId: str | None
     creation_mode: str | None
-    period_beginning_date: str | None
-    period_ending_date: str | None
+    period_beginning_date: datetime.date | None
+    period_ending_date: datetime.date | None
     collective_offer_type: CollectiveOfferType | None
 
     class Config:
@@ -239,11 +239,11 @@ class ListOffersQueryModel(BaseModel):
 
 
 class GetOfferStockResponseModel(BaseModel):
-    activationCodesExpirationDatetime: datetime | None
-    beginningDatetime: datetime | None
-    bookingLimitDatetime: datetime | None
-    dateCreated: datetime
-    dateModified: datetime
+    activationCodesExpirationDatetime: datetime.datetime | None
+    beginningDatetime: datetime.datetime | None
+    bookingLimitDatetime: datetime.datetime | None
+    dateCreated: datetime.datetime
+    dateModified: datetime.datetime
     dnBookedQuantity: int = Field(alias="bookingsQuantity")
     hasActivationCode: bool
     isBookable: bool
@@ -274,7 +274,7 @@ class GetOfferStockResponseModel(BaseModel):
     class Config:
         allow_population_by_field_name = True
         orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
+        json_encoders = {datetime.datetime: format_into_utc_date}
 
 
 class GetOfferManagingOffererResponseModel(BaseModel):
@@ -299,7 +299,7 @@ class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
 
     class Config:
         orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
+        json_encoders = {datetime.datetime: format_into_utc_date}
 
 
 class GetOfferLastProviderResponseModel(BaseModel):
@@ -331,7 +331,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     activeMediation: GetOfferMediationResponseModel | None
     bookingContact: str | None
     bookingEmail: str | None
-    dateCreated: datetime
+    dateCreated: datetime.datetime
     description: str | None
     durationMinutes: int | None
     extraData: Any
@@ -360,7 +360,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
 
     class Config:
         orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
+        json_encoders = {datetime.datetime: format_into_utc_date}
         use_enum_values = True
 
 

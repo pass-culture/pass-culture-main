@@ -71,8 +71,8 @@ class Returns204Test:
             "offererId": user_offerer.offerer.id,
             "venueId": venue.id,
             "name": "OKAY",
-            "periodBeginningDate": "2020-10-09T00:00:00Z",
-            "periodEndingDate": "2020-10-11T23:59:59Z",
+            "periodBeginningDate": "2020-10-09",
+            "periodEndingDate": "2020-10-11",
         }
         client = TestClient(app.test_client()).with_session_auth(user_offerer.user.email)
 

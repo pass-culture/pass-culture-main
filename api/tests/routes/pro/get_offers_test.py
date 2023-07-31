@@ -1,3 +1,4 @@
+import datetime
 from unittest.mock import patch
 
 import pytest
@@ -200,7 +201,7 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         # when
-        response = client.with_session_auth(email=pro.email).get("/offers?periodBeginningDate=2020-10-11T00:00:00Z")
+        response = client.with_session_auth(email=pro.email).get("/offers?periodBeginningDate=2020-10-11")
 
         # then
         assert response.status_code == 200
@@ -211,7 +212,7 @@ class Returns200Test:
             venue_id=None,
             category_id=None,
             name_keywords_or_ean=None,
-            period_beginning_date="2020-10-11T00:00:00Z",
+            period_beginning_date=datetime.date(2020, 10, 11),
             period_ending_date=None,
             status=None,
             creation_mode=None,
@@ -225,7 +226,7 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         # when
-        response = client.with_session_auth(email=pro.email).get("/offers?periodEndingDate=2020-10-11T23:59:59Z")
+        response = client.with_session_auth(email=pro.email).get("/offers?periodEndingDate=2020-10-11")
 
         # then
         assert response.status_code == 200
@@ -237,7 +238,7 @@ class Returns200Test:
             category_id=None,
             name_keywords_or_ean=None,
             period_beginning_date=None,
-            period_ending_date="2020-10-11T23:59:59Z",
+            period_ending_date=datetime.date(2020, 10, 11),
             status=None,
             creation_mode=None,
         )
