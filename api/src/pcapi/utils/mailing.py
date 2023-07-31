@@ -1,13 +1,10 @@
 from datetime import datetime
 import logging
 
-from flask import render_template
-
 from pcapi import settings
 from pcapi.core.bookings.models import Booking
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveStock
-import pcapi.core.mails.models as mails_models
 from pcapi.core.offers.models import Stock
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
@@ -54,20 +51,3 @@ def get_event_datetime(stock: CollectiveStock | Stock) -> datetime:
         date_in_tz = stock.beginningDatetime  # type: ignore [assignment]
 
     return date_in_tz
-
-
-def make_suspended_fraudulent_beneficiary_by_ids_notification_email(
-    fraudulent_users: dict, nb_cancelled_bookings: int
-) -> mails_models.TransactionalWithoutTemplateEmailData:
-    html = render_template(
-        "mails/suspend_fraudulent_beneficiary_by_ids_notification_email.html",
-        fraudulent_users=fraudulent_users,
-        nb_cancelled_bookings=nb_cancelled_bookings,
-        nb_fraud_users=len(fraudulent_users),
-    )
-
-    return mails_models.TransactionalWithoutTemplateEmailData(
-        subject="Fraude : suspension des utilisateurs frauduleux par ids",
-        html_content=html,
-        sender=mails_models.TransactionalSender.SUPPORT_PRO,
-    )

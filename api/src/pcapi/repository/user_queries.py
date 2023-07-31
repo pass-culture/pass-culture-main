@@ -6,15 +6,6 @@ from sqlalchemy.sql.functions import Function
 from pcapi.core.users.models import User
 
 
-def find_beneficiary_users_by_email_provider(email_provider: str) -> list[User]:
-    formatted_email_provider = f"%@{email_provider}"
-    return (
-        User.query.filter_by(is_beneficiary=True, isActive=True)
-        .filter(func.lower(User.email).like(func.lower(formatted_email_provider)))
-        .all()
-    )
-
-
 def find_pro_users_by_email_provider(email_provider: str) -> list[User]:
     formatted_email_provider = f"%@{email_provider}"
     return (
