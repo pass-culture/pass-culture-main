@@ -88,6 +88,10 @@ def test_serialize_offer():
             "thumbUrl": None,
             "tags": [],
             "times": [],
+            "gtl_level1": None,
+            "gtl_level2": None,
+            "gtl_level3": None,
+            "gtl_level4": None,
         },
         "offerer": {
             "name": "Les Librairies Associées",
@@ -214,6 +218,19 @@ def test_serialize_offer_thumb_url():
     offer = offers_factories.OfferFactory(product__thumbCount=1)
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized["offer"]["thumbUrl"] == f"/storage/thumbs/products/{humanize(offer.productId)}"
+
+
+def test_serialize_offer_gtl():
+    product = offers_factories.ProductFactory(extraData={"gtl_id": "01030100"})
+    offer = offers_factories.OfferFactory(
+        product=product,
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
+    )
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
+    assert serialized["offer"]["gtl_level1"] == "Littérature"
+    assert serialized["offer"]["gtl_level2"] == "Œuvres classiques"
+    assert serialized["offer"]["gtl_level3"] == "Antiquité"
+    assert serialized["offer"]["gtl_level4"] is None
 
 
 def test_serialize_venue():
