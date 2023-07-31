@@ -1,0 +1,84 @@
+{% import "components/links.html" as links %}
+{% from "components/bookings/extra_row.html" import build_booking_toggle_extra_row_button with context %}
+{% if booking_finance_incidents %}
+  <table class="table mb-4 get-details-bookings-view">
+    <thead>
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">ID</th>
+        <th scope="col">Bénéficiaire</th>
+        <th scope="col">Contremarque</th>
+        <th scope="col">État</th>
+        <th scope="col">Nom de l'offre</th>
+        <th scope="col">Date de résa</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for booking_finance_incident in booking_finance_incidents %}
+        <tr>
+          <th scope="row">{{ build_booking_toggle_extra_row_button(booking_finance_incident.booking) }}</th>
+          <td>{{ booking_finance_incident.booking.id }}</td>
+          <td>{{ links.build_public_user_name_to_details_link(booking_finance_incident.booking.user) }}</td>
+          <td>
+            {% if booking_finance_incident.booking.token %}
+              {{ links.build_booking_token_to_booking_details_link(booking_finance_incident.booking.token) }}
+            {% endif %}
+          </td>
+          <td>{{ booking_finance_incident.booking.status | format_booking_status_long | safe }}</td>
+          <td>{{ links.build_offer_name_to_pc_pro_link(booking_finance_incident.booking.stock.offer) }}</td>
+          <td>{{ booking_finance_incident.booking.dateCreated | format_date("Le %d/%m/%Y à %Hh%M") }}</td>
+        </tr>
+        <tr class="collapse accordion-collapse pc-booking-{{ booking_finance_incident.booking.id }}"
+            data-bs-parent=".table">
+          <td colspan="7">
+            <div class="card shadow-sm p-3">
+              {% if booking_finance_incident.booking.stock.beginningDatetime %}
+                <p class="mb-1">
+                  <span class="fw-bold">Date de l'évènement :</span>
+                  {{ booking_finance_incident.booking.stock.beginningDatetime | format_date_time }}
+                </p>
+              {% endif %}
+              {% if booking_finance_incident.booking.is_used_or_reimbursed %}
+                <p class="mb-1">
+                  <span class="fw-bold">Utilisée le :</span>
+                  {{ booking_finance_incident.booking.dateUsed | format_date_time }}
+                </p>
+              {% elif booking_finance_incident.booking.isCancelled %}
+                <p class="mb-1">
+                  <span class="fw-bold">Annulée le :</span>
+                  {{ booking_finance_incident.booking.cancellationDate | format_date_time }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Motif d'annulation :</span>
+                  {{ booking_finance_incident.booking.cancellationReason | format_booking_cancellation_reason }}
+                </p>
+              {% endif %}
+              <p class="mb-1">
+                <span class="fw-bold">Type d'offre :</span>
+                {% if booking_finance_incident.booking.stock.offer.isDigital %}
+                  Numérique
+                {% else %}
+                  Physique
+                {% endif %}
+              </p>
+              <p class="mb-1">
+                <span class="fw-bold">Catégorie :</span>
+                {{ booking_finance_incident.booking.stock.offer.subcategoryId | format_offer_category }}
+              </p>
+              <p class="mb-1">
+                <span class="fw-bold">Crédit utilisé par le jeune :</span>
+                {{ booking_finance_incident.booking.deposit.type | format_deposit_type | safe }}
+              </p>
+              <p class="mb-1">
+                <span class="fw-bold">Email du pro :</span>
+                {{ booking_finance_incident.booking.venue.bookingEmail | empty_string_if_null }}
+              </p>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p class="m-5">Aucune réservation à ce jour</p>
+{% endif %}

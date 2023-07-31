@@ -644,3 +644,9 @@ def user_offerer_to_be_validated_fixture(offerer_tags):
     offerers_factories.UserOffererFactory(user__email="g@example.com")
 
     return (no_tag, top, collec, public, top_collec, top_public)
+
+
+@pytest.fixture(name="finance_incident")
+def finance_incident_fixture():
+    finance_incident = finance_factories.FinanceIncidentFactory()
+    return finance_incident

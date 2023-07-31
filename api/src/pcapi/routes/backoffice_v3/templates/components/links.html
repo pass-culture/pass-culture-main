@@ -23,6 +23,11 @@
      class="link-primary"
      target="_top">{{ offerer[text_attr] }}</a>
 {% endmacro %}
+{% macro build_finance_incident_to_details_link(finance_incident, text_attr="id", active_tab='bookings') %}
+  <a href="{{ url_for('backoffice_v3_web.finance_incident.get_incident', finance_incident_id=finance_incident.id, active_tab=active_tab) }}"
+     class="link-primary"
+     target="_top">{{ finance_incident[text_attr] }}</a>
+{% endmacro %}
 {% macro build_venue_name_to_details_link(venue, text_attr="name", active_tab=None) %}
   <a href="{{ url_for('backoffice_v3_web.venue.get', venue_id=venue.id, active_tab=active_tab) }}"
      class="link-primary"
