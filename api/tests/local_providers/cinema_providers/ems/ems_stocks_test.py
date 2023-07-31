@@ -175,3 +175,15 @@ class EMSStocksTest:
         created_product = offers_models.Product.query.one()
         assert created_product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(created_product.id)}"
         assert created_product.thumbCount == 1
+
+    def test_ems_is_a_provider_as_others(self):
+        venue = offerers_factories.VenueFactory(
+            bookingEmail="booking@example.com", withdrawalDetails="Modalité de retrait"
+        )
+        ems_provider = get_provider_by_local_class("EMSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(
+            venue=venue, provider=ems_provider, venueIdAtOfferProvider="9997"
+        )
+
+        assert ems_provider.isCinemaProvider is True
+        assert venue_provider.isFromCinemaProvider is True
