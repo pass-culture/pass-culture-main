@@ -92,6 +92,10 @@ def format_date_time(data: datetime.date | datetime.datetime) -> str:
     return format_date(data, strformat="%d/%m/%Y à %Hh%M")
 
 
+def format_string_to_date_time(data: str) -> str:
+    return format_date(datetime.datetime.fromisoformat(data), strformat="%d/%m/%Y à %Hh%M")
+
+
 def format_timespan(timespan: psycopg2.extras.DateTimeRange) -> str:
     if not timespan:
         return ""
@@ -695,6 +699,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_string_list"] = format_string_list
     app.jinja_env.filters["format_date"] = format_date
     app.jinja_env.filters["format_date_time"] = format_date_time
+    app.jinja_env.filters["format_string_to_date_time"] = format_string_to_date_time
     app.jinja_env.filters["format_timespan"] = format_timespan
     app.jinja_env.filters["format_deposit_type"] = format_deposit_type
     app.jinja_env.filters["format_offer_validation_status"] = format_offer_validation_status

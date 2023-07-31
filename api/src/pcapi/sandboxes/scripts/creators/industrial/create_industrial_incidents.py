@@ -13,5 +13,6 @@ def create_industrial_incidents() -> None:
         booking_incidents += finance_factories.IndividualBookingFinanceIncidentFactory.create_batch(
             3, incident=incident
         )
+
     logger.info("created %d incidents", len(incidents))
     logger.info("created %d booking_incidents", len(booking_incidents))

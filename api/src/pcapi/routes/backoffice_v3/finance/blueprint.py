@@ -8,16 +8,19 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 import sqlalchemy as sa
+from werkzeug.exceptions import NotFound
 
 from pcapi.core.bookings import models as bookings_models
 import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.models as offerer_models
 from pcapi.core.offers import models as offers_models
 import pcapi.core.permissions.models as perm_models
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.repository import repository
 from pcapi.routes.backoffice_v3 import utils
 from pcapi.routes.backoffice_v3.finance import forms
+from pcapi.utils.human_ids import humanize
 
 
 finance_incident_blueprint = utils.child_backoffice_blueprint(
@@ -41,9 +44,6 @@ def _get_incidents() -> list[finance_models.FinanceIncident]:
         .load_only(offerer_models.Venue.id, offerer_models.Venue.name)
         .joinedload(offerer_models.Venue.managingOfferer)
         .load_only(offerer_models.Offerer.id, offerer_models.Offerer.name),
-        sa.orm.joinedload(offerer_models.Venue, finance_models.FinanceIncident.venue).joinedload(
-            offerer_models.Venue.reimbursement_point_links
-        ),
     )
     return query.order_by(finance_models.FinanceIncident.id).all()
 
@@ -52,6 +52,109 @@ def _get_incidents() -> list[finance_models.FinanceIncident]:
 def list_incidents() -> utils.BackofficeResponse:
     incidents = _get_incidents()
     return render_template("finance/incident/list.html", rows=incidents)
+
+
+def render_finance_incident(incident: finance_models.FinanceIncident) -> utils.BackofficeResponse:
+    if incident.venue.current_reimbursement_point_id:
+        current_reimbursement_point = offerer_models.Venue.query.get(incident.venue.current_reimbursement_point_id)
+    else:
+        current_reimbursement_point = incident.venue
+
+    return render_template(
+        "finance/incident/get.html",
+        booking_finance_incidents=incident.booking_finance_incidents,
+        total_amount=sum(
+            bookingIncident.booking.pricing.amount for bookingIncident in incident.booking_finance_incidents
+        ),
+        incident=incident,
+        reimbursement_point=current_reimbursement_point,
+        reimbursement_point_humanized_id=humanize(current_reimbursement_point.id),
+        active_tab=request.args.get("active_tab", "bookings"),
+    )
+
+
+@finance_incident_blueprint.route("/incident/<int:finance_incident_id>", methods=["GET"])
+def get_incident(finance_incident_id: int) -> utils.BackofficeResponse:
+    incident = (
+        finance_models.FinanceIncident.query.filter_by(id=finance_incident_id)
+        .options(
+            # Venue infos
+            sa.orm.joinedload(offerer_models.Venue, finance_models.FinanceIncident.venue).load_only(
+                offerer_models.Venue.id, offerer_models.Venue.name
+            ),
+            # Booking incidents infos
+            sa.orm.joinedload(
+                finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
+            ).load_only(
+                finance_models.BookingFinanceIncident.id,
+                finance_models.BookingFinanceIncident.newTotalAmount,
+            )
+            # Bookings infos
+            .joinedload(finance_models.BookingFinanceIncident.booking).load_only(
+                bookings_models.Booking.id,
+                bookings_models.Booking.cancellationDate,
+                bookings_models.Booking.cancellationReason,
+                bookings_models.Booking.dateCreated,
+                bookings_models.Booking.dateUsed,
+                bookings_models.Booking.status,
+                bookings_models.Booking.token,
+            )
+            # Booking venue infos
+            .joinedload(bookings_models.Booking.venue).load_only(offerer_models.Venue.bookingEmail),
+            # booking user infos
+            sa.orm.joinedload(
+                finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
+            )
+            .joinedload(finance_models.BookingFinanceIncident.booking)
+            .joinedload(bookings_models.Booking.user)
+            .load_only(
+                users_models.User.id,
+                users_models.User.firstName,
+                users_models.User.lastName,
+                users_models.User.email,
+            ),
+            # booking deposit infos
+            sa.orm.joinedload(
+                finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
+            )
+            .joinedload(finance_models.BookingFinanceIncident.booking)
+            .joinedload(bookings_models.Booking.deposit)
+            .load_only(finance_models.Deposit.type),
+            # booking pricing infos
+            sa.orm.joinedload(
+                finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
+            )
+            .joinedload(finance_models.BookingFinanceIncident.booking)
+            .joinedload(bookings_models.Booking.pricings)
+            .load_only(
+                finance_models.Pricing.amount,
+                finance_models.Pricing.status,
+                finance_models.Pricing.creationDate,
+            ),
+            # booking stock infos
+            sa.orm.joinedload(
+                finance_models.BookingFinanceIncident, finance_models.FinanceIncident.booking_finance_incidents
+            )
+            .joinedload(finance_models.BookingFinanceIncident.booking)
+            .joinedload(bookings_models.Booking.stock)
+            .load_only(
+                offers_models.Stock.beginningDatetime,
+            )
+            .joinedload(offers_models.Stock.offer)
+            .load_only(
+                offers_models.Offer.id,
+                offers_models.Offer.name,
+                offers_models.Offer.url,
+                offers_models.Offer.subcategoryId,
+            ),
+        )
+        .one_or_none()
+    )
+
+    if not incident:
+        raise NotFound()
+
+    return render_finance_incident(incident)
 
 
 @finance_incident_blueprint.route("get-incident-creation-form", methods=["GET", "POST"])
@@ -161,7 +264,7 @@ def create_incident() -> utils.BackofficeResponse:
             "origin": form.origin.data,
             "author": current_user.full_name,
             "validator": "",
-            "createdAt": datetime.utcnow(),
+            "createdAt": datetime.utcnow().isoformat(),
             "validatedAt": "",
         },
     )
