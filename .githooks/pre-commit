@@ -43,11 +43,11 @@ if [[ ! -z "$STAGED_FILES" ]]; then
   # run tests related to staged files
   if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",test," ]]; then
     echo "Running Tests"
-    yarn test:unit:ci -- --findRelatedTests --coverageThreshold='{"global":{"statements":"100","branches":"100","functions":"100","lines":"100"}}' $STAGED_FILES
-    JEST_EXIT_CODE=$?
+    yarn run vite related $STAGED_FILES --run --coverage.enabled --coverage.100
+    VITEST_EXIT_CODE=$?
 
-    # check jest exit code
-    if [ $JEST_EXIT_CODE -ne 0 ]; then
+    # check vitest exit code
+    if [ $VITEST_EXIT_CODE -ne 0 ]; then
       echo "🙏 Please help us fix test coverage"
     else
       echo "✅ coverage 100 %"
