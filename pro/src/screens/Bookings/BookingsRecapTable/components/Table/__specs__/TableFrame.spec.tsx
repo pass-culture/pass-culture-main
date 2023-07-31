@@ -3,15 +3,22 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 import * as reactTable from 'react-table'
 
+import { BookingRecapResponseModel } from 'apiClient/v1'
+import { Audience } from 'core/shared/types'
+
 import TableWrapper from '../TableWrapper'
 
-const CellMock = ({ offer: { offer_name: offerName } }) => (
-  <span>{offerName}</span>
-)
+interface TestOffer {
+  offer_name: string
+}
+const CellMock = ({
+  offer: { offer_name: offerName },
+}: {
+  offer: TestOffer
+}) => <span>{offerName}</span>
 
-describe('components | TableWrapper', () => {
+describe('TableWrapper', () => {
   it('should render a Table component with the right text', () => {
-    // Given
     const mockedValues = {
       canPreviousPage: true,
       canNextPage: true,
@@ -49,37 +56,42 @@ describe('components | TableWrapper', () => {
     }
     const useTableSpy = vi
       .spyOn(reactTable, 'useTable')
-      .mockImplementationOnce(() => mockedValues)
+      .mockImplementationOnce(
+        () => mockedValues as unknown as reactTable.TableInstance<object>
+      )
     const props = {
       columns: [
         {
-          id: 1,
+          id: '1',
           headerTitle: 'Stock',
-          accessor: 'stock',
+          accessor: 'bookingToken' as const,
           getHeaderProps: vi.fn(),
           getSortByToggleProps: vi.fn(),
         },
         {
-          id: 2,
+          id: '2',
           headerTitle: 'Beneficiaire',
-          accessor: 'beneficiary',
+          accessor: 'bookingToken' as const,
           getHeaderProps: vi.fn(),
           getSortByToggleProps: vi.fn(),
         },
       ],
       currentPage: 0,
-      data: [{}],
+      data: [{} as BookingRecapResponseModel],
       nbBookings: 1,
       nbBookingsPerPage: 1,
       updateCurrentPage: vi.fn(),
+      audience: Audience.INDIVIDUAL,
+      bookingId: '1',
+      reloadBookings: vi.fn(),
     }
 
-    useTableSpy.mockReturnValue(mockedValues)
+    useTableSpy.mockReturnValue(
+      mockedValues as unknown as reactTable.TableInstance<object>
+    )
 
-    // When
     render(<TableWrapper {...props} />)
 
-    // Then
     const headerCells = screen.getAllByRole('columnheader')
     expect(headerCells).toHaveLength(2)
     expect(headerCells[0]).toHaveTextContent('Offres')
@@ -87,24 +99,23 @@ describe('components | TableWrapper', () => {
   })
 
   it('should display the correct numbers of rows', () => {
-    // Given
     const props = {
       columns: [
         {
-          id: 1,
+          id: '1',
           headerTitle: 'Stock',
-          accessor: 'stock',
-          Cell: function ({ value }) {
+          accessor: 'stock' as const,
+          Cell: function ({ value }: { value: TestOffer }) {
             return <CellMock offer={value} />
           },
           getHeaderProps: vi.fn(),
           getSortByToggleProps: vi.fn(),
         },
         {
-          id: 2,
+          id: '2',
           headerTitle: 'Beneficiaire',
-          accessor: 'beneficiary',
-          Cell: function ({ value }) {
+          accessor: 'beneficiary' as const,
+          Cell: function ({ value }: { value: TestOffer }) {
             return <CellMock offer={value} />
           },
           getHeaderProps: vi.fn(),
@@ -141,26 +152,27 @@ describe('components | TableWrapper', () => {
       nbBookingsPerPage: 2,
       currentPage: 0,
       updateCurrentPage: vi.fn(),
+      audience: Audience.INDIVIDUAL,
+      bookingId: '1',
+      reloadBookings: vi.fn(),
     }
 
-    // When
+    // @ts-expect-error we will remove react-table
     render(<TableWrapper {...props} />)
 
-    // Then
     const rows = screen.getAllByRole('row')
     expect(rows).toHaveLength(3)
   })
 
   describe('pagination', () => {
     it('should render a TablePagination component with the right props', () => {
-      // Given
       const props = {
         columns: [
           {
-            id: 1,
+            id: '1',
             headerTitle: 'Stock',
-            accessor: 'stock',
-            Cell: function ({ value }) {
+            accessor: 'stock' as const,
+            Cell: function ({ value }: { value: TestOffer }) {
               return <CellMock offer={value} />
             },
             getHeaderProps: vi.fn(),
@@ -179,24 +191,25 @@ describe('components | TableWrapper', () => {
         nbBookingsPerPage: 5,
         currentPage: 0,
         updateCurrentPage: vi.fn(),
+        audience: Audience.INDIVIDUAL,
+        bookingId: '1',
+        reloadBookings: vi.fn(),
       }
 
-      // When
+      // @ts-expect-error we will remove react-table
       render(<TableWrapper {...props} />)
 
-      // Then
       expect(screen.getByText('Page 1/2')).toBeInTheDocument()
     })
 
     it('should render five bookings on page 1', () => {
-      // Given
       const props = {
         columns: [
           {
-            id: 1,
+            id: '1',
             headerTitle: 'Stock',
             accessor: 'stock',
-            Cell: function ({ value }) {
+            Cell: function ({ value }: { value: TestOffer }) {
               return <CellMock offer={value} />
             },
             getHeaderProps: vi.fn(),
@@ -215,12 +228,14 @@ describe('components | TableWrapper', () => {
         nbBookingsPerPage: 5,
         currentPage: 0,
         updateCurrentPage: vi.fn(),
+        audience: Audience.INDIVIDUAL,
+        bookingId: '1',
+        reloadBookings: vi.fn(),
       }
 
-      // When
+      // @ts-expect-error we will remove react-table
       render(<TableWrapper {...props} />)
 
-      // Then
       const bookingsOnPageOne = screen.getAllByRole('row')
       expect(bookingsOnPageOne).toHaveLength(6)
       const cells = screen.getAllByRole('cell')
@@ -232,14 +247,13 @@ describe('components | TableWrapper', () => {
     })
 
     it('should render one booking on page 2 when clicking on next page', async () => {
-      // Given
       const props = {
         columns: [
           {
-            id: 1,
+            id: '1',
             headerTitle: 'Stock',
             accessor: 'stock',
-            Cell: function ({ value }) {
+            Cell: function ({ value }: { value: TestOffer }) {
               return <CellMock offer={value} />
             },
             getHeaderProps: vi.fn(),
@@ -258,14 +272,16 @@ describe('components | TableWrapper', () => {
         nbBookingsPerPage: 5,
         currentPage: 0,
         updateCurrentPage: vi.fn(),
+        audience: Audience.INDIVIDUAL,
+        bookingId: '1',
+        reloadBookings: vi.fn(),
       }
+      // @ts-expect-error we will remove react-table
       render(<TableWrapper {...props} />)
       const nextButton = screen.getAllByRole('button')[2]
 
-      // When
       await userEvent.click(nextButton)
 
-      // Then
       const bookingsOnPageTwo = screen.getAllByRole('row')
       expect(bookingsOnPageTwo).toHaveLength(2)
       const cells = screen.getAllByRole('cell')
@@ -274,14 +290,13 @@ describe('components | TableWrapper', () => {
     })
 
     it('should go to previous when clicking on previous page button', async () => {
-      // Given
       const props = {
         columns: [
           {
-            id: 1,
+            id: '1',
             headerTitle: 'Stock',
             accessor: 'stock',
-            Cell: function ({ value }) {
+            Cell: function ({ value }: { value: TestOffer }) {
               return <CellMock offer={value} />
             },
             getHeaderProps: vi.fn(),
@@ -300,14 +315,16 @@ describe('components | TableWrapper', () => {
         nbBookingsPerPage: 5,
         currentPage: 1,
         updateCurrentPage: vi.fn(),
+        audience: Audience.INDIVIDUAL,
+        bookingId: '1',
+        reloadBookings: vi.fn(),
       }
+      // @ts-expect-error we will remove react-table
       render(<TableWrapper {...props} />)
 
-      // When
       const previousPageButton = screen.getAllByRole('button')[1]
       await userEvent.click(previousPageButton)
 
-      // Then
       const bookingsOnPageTwo = screen.getAllByRole('row')
       expect(bookingsOnPageTwo).toHaveLength(6)
     })
