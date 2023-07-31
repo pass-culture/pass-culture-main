@@ -10,6 +10,7 @@
 /cypress/screenshots
 /cypress/videos
 .vitest_cache
+src/coverage
 
 # production
 /build
