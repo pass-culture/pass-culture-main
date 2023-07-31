@@ -30,6 +30,34 @@ class Site(BaseModel):
     events: list[Event]
 
 
-class CinemasProgramsResponse(BaseModel):
+class ScheduleResponse(BaseModel):
     sites: list[Site]
     version: int
+
+
+class Ticket(BaseModel):
+    num_caisse: str
+    code_barre: str
+    num_trans: int
+    num_ope: int
+    code_tarif: str
+    num_serie: int
+    montant: float
+    num_place: str
+
+
+class ReservationPassCultureRequest(BaseModel):
+    num_cine: str  # VenueProvider.venueIdAtOfferProvider
+    id_seance: str  # show_id
+    qte_place: int
+    pass_culture_price: float
+    total_price: float
+    email: str
+    num_pass_culture: str  # User.id
+
+
+class ReservationPassCultureResponse(ReservationPassCultureRequest):
+    """EMS simply return our payload with additionnal fields."""
+
+    statut: int
+    billets: list[Ticket]

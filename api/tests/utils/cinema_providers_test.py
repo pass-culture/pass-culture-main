@@ -43,16 +43,31 @@ def test_get_cgr_showtime_id_from_uuid(stock_uuid, result):
 
 
 @pytest.mark.parametrize(
+    "stock_uuid,result",
+    [
+        ("123%12354114%EMS#111", 111),
+        ("123445+43423", None),
+        (None, None),
+        ("movie_id%%venue_id#show_id", None),
+    ],
+)
+def test_get_ems_showtime_id_from_uuid(stock_uuid, result):
+    assert result == cinema_providers_utils.get_ems_showtime_id_from_uuid(stock_uuid)
+
+
+@pytest.mark.parametrize(
     "stock_uuid,provider_name,result",
     [
         ("123%12345678912345#111/2022-12-12 11:00:00", "CDSStocks", 111),
         ("123%12345678912345#111", "BoostStocks", 111),
         ("123%12354114%CGR#111", "CGRStocks", 111),
+        ("123%12354114%CGR#111", "EMSStocks", 111),
         ("123445+43423", None, None),
         (None, None, None),
         ("movie_id%%siret#show_id", "CDSStocks", None),
         ("movie_id%%siret#show_id", "BoostStocks", None),
         ("movie_id%%siret#show_id", "CGRStocks", None),
+        ("movie_id%%siret#show_id", "EMSStocks", None),
     ],
 )
 def test_get_showtime_id_from_uuid(stock_uuid, provider_name, result):

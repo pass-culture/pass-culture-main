@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 from pcapi import settings
-from pcapi.connectors import ems
+from pcapi.connectors.ems import EMSScheduleConnector
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers.models import Venue
@@ -58,10 +58,10 @@ class EMSStocksTest:
         self._assert_seyne_sur_mer_initial_sync(venue, venue_provider, cinema_provider_pivot, cinema_detail, 86400)
 
     def should_reuse_price_category(self, requests_mock):
+        connector = EMSScheduleConnector()
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
         requests_mock.get("https://example.com/FR/poster/5F988F1C/600/SHJRH.jpg", content=bytes())
         requests_mock.get("https://example.com/FR/poster/D7C57D16/600/FGMSE.jpg", content=bytes())
-
         venue = offerers_factories.VenueFactory(
             bookingEmail="booking@example.com", withdrawalDetails="Modalité de retrait"
         )
@@ -70,24 +70,36 @@ class EMSStocksTest:
             venue=venue, provider=ems_provider, venueIdAtOfferProvider="9997"
         )
 
-        EMSStocks(venue_provider=venue_provider, site=ems.get_cinemas_programs().sites[0]).synchronize()
-        EMSStocks(venue_provider=venue_provider, site=ems.get_cinemas_programs().sites[0]).synchronize()
+        EMSStocks(
+            connector=connector,
+            venue_provider=venue_provider,
+            site=connector.get_schedules().sites[0],
+        ).synchronize()
+        EMSStocks(
+            connector=connector,
+            venue_provider=venue_provider,
+            site=connector.get_schedules().sites[0],
+        ).synchronize()
 
         created_price_category = offers_models.PriceCategory.query.all()
         assert len(created_price_category) == 2
 
     def should_create_product_with_correct_thumb(self, requests_mock):
+        connector = EMSScheduleConnector()
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)
 
         ems_provider = get_provider_by_local_class("EMSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider, venueIdAtOfferProvider="0063")
-
         file_path = Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
         with open(file_path, "rb") as thumb_file:
             poster = thumb_file.read()
         requests_mock.get("https://example.com/FR/poster/982D31BE/600/CDFG5.jpg", content=poster)
 
-        ems_stocks = EMSStocks(venue_provider=venue_provider, site=ems.get_cinemas_programs().sites[1])
+        ems_stocks = EMSStocks(
+            connector=connector,
+            venue_provider=venue_provider,
+            site=connector.get_schedules().sites[1],
+        )
         ems_stocks.synchronize()
 
         created_product = offers_models.Product.query.one()
