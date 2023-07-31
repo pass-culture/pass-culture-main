@@ -39,8 +39,8 @@ export default defineConfig(({ mode }) => {
       restoreMocks: true,
       cache: { dir: '.vitest_cache' },
       css: { modules: { classNameStrategy: 'non-scoped' } },
-      minThreads: 4,
-      maxThreads: 4,
+      minThreads: 5,
+      maxThreads: 5,
       testTimeout: 10000,
     },
   }
