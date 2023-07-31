@@ -3,7 +3,7 @@ from typing import Callable
 
 from urllib3 import exceptions as urllib3_exceptions
 
-from pcapi.connectors import ems
+from pcapi.connectors.ems import EMSScheduleConnector
 import pcapi.connectors.notion as notion_connector
 from pcapi.core.providers import repository as providers_repository
 from pcapi.core.providers.constants import CINEMA_PROVIDER_NAMES
@@ -87,13 +87,16 @@ def synchronize_venue_provider(venue_provider: VenueProvider, limit: int | None 
 
 
 def synchronize_ems_venue_providers(from_last_version: bool = False) -> None:
+    connector = EMSScheduleConnector()
+    last_version = providers_repository.get_ems_oldest_sync_version() if from_last_version else 0
+    ems_provider_id = providers_repository.get_provider_by_local_class("EMSStocks").id
     venues_provider_to_sync: set[int] = set()
     venue_provider_by_site_id: dict[str, VenueProvider] = {}
-    last_version = providers_repository.get_ems_oldest_sync_version() if from_last_version else 0
+
     logger.info("Starting EMS synchronization", extra={"version": last_version})
-    cinemas_programs = ems.get_cinemas_programs(version=last_version)
+
+    cinemas_programs = connector.get_schedules(version=last_version)
     new_version = cinemas_programs.version
-    ems_provider_id = providers_repository.get_provider_by_local_class("EMSStocks").id
     active_venues_provider = providers_repository.get_active_venue_providers_by_provider(ems_provider_id)
 
     for active_venue_provider in active_venues_provider:
@@ -112,7 +115,7 @@ def synchronize_ems_venue_providers(from_last_version: bool = False) -> None:
         }
         try:
             with transaction():
-                ems_stocks = EMSStocks(venue_provider=venue_provider, site=site)
+                ems_stocks = EMSStocks(connector=connector, venue_provider=venue_provider, site=site)
                 ems_stocks.synchronize()
         except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as exception:
             logger.error("Connexion error while synchronizing venue_provider", extra=log_data | {"exc": exception})
@@ -135,14 +138,15 @@ def synchronize_ems_venue_providers(from_last_version: bool = False) -> None:
 
 
 def synchronize_ems_venue_provider(venue_provider: VenueProvider) -> None:
+    connector = EMSScheduleConnector()
     ems_cinema_details = providers_repository.get_ems_cinema_details(venue_provider.venueIdAtOfferProvider)
     last_version = ems_cinema_details.lastVersion
-    cinemas_programs = ems.get_cinemas_programs(last_version)
-    new_version = cinemas_programs.version
-    for site in cinemas_programs.sites:
+    schedules = connector.get_schedules(last_version)
+    new_version = schedules.version
+    for site in schedules.sites:
         if site.id != venue_provider.venueIdAtOfferProvider:
             continue
-        ems_stocks = EMSStocks(venue_provider=venue_provider, site=site)
+        ems_stocks = EMSStocks(connector=connector, venue_provider=venue_provider, site=site)
         ems_stocks.synchronize()
         providers_repository.bump_ems_sync_version(new_version, [venue_provider.id])
         db.session.commit()

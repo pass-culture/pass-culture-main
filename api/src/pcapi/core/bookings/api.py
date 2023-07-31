@@ -313,6 +313,11 @@ def _book_external_ticket(booking: Booking, stock: Stock, beneficiary: User) -> 
                 raise feature.DisabledFeatureError("ENABLE_CGR_INTEGRATION is inactive")
             if FeatureToggle.DISABLE_CGR_EXTERNAL_BOOKINGS.is_active():
                 raise feature.DisabledFeatureError("DISABLE_CGR_EXTERNAL_BOOKINGS is active")
+        case "EMSStocks":
+            if not FeatureToggle.ENABLE_EMS_INTEGRATION.is_active():
+                raise feature.DisabledFeatureError("ENABLE_EMS_INTEGRATION is inactive")
+            if FeatureToggle.DISABLE_EMS_EXTERNAL_BOOKINGS.is_active():
+                raise feature.DisabledFeatureError("DISABLE_EMS_EXTERNAL_BOOKINGS is active")
         case _:
             raise providers_exceptions.UnknownProvider(f"Unknown Provider: {venue_provider_name}")
     show_id = cinema_providers_utils.get_showtime_id_from_uuid(stock.idAtProviders, venue_provider_name)

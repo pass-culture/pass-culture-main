@@ -3,6 +3,7 @@ import pcapi.core.bookings.models as bookings_models
 from pcapi.core.external_bookings.boost.client import BoostClientAPI
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 from pcapi.core.external_bookings.cgr.client import CGRClientAPI
+from pcapi.core.external_bookings.ems.client import EMSClientAPI
 import pcapi.core.external_bookings.models as external_bookings_models
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
@@ -46,6 +47,8 @@ def _get_external_bookings_client_api(venue_id: int) -> external_bookings_models
             return BoostClientAPI(cinema_id)
         case "CGRStocks":
             return CGRClientAPI(cinema_id)
+        case "EMSStocks":
+            return EMSClientAPI(cinema_id)
         case _:
             raise ValueError(f"Unknown Provider: {cinema_venue_provider.provider.localClass}")
 
