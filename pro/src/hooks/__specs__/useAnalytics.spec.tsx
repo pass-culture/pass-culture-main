@@ -1,7 +1,9 @@
 import * as firebaseAnalytics from '@firebase/analytics'
 import * as firebase from '@firebase/app'
+import * as firebaseRemoteConfig from '@firebase/remote-config'
 import { waitFor } from '@testing-library/react'
 import React from 'react'
+import { expect, vi } from 'vitest'
 
 import { firebaseConfig } from 'config/firebase'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -9,21 +11,21 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { useConfigureFirebase } from '../useAnalytics'
 
 vi.mock('@firebase/analytics', () => ({
-  getAnalytics: vi.fn().mockReturnValue('getAnalyticsReturn'),
+  getAnalytics: vi.fn(),
   initializeAnalytics: vi.fn(),
   setUserId: vi.fn(),
-  isSupported: vi.fn().mockReturnValue(true),
+  isSupported: vi.fn(),
   logEvent: vi.fn(),
 }))
 
 vi.mock('@firebase/app', () => ({
-  initializeApp: vi.fn().mockReturnValue({ setup: true }),
+  initializeApp: vi.fn(),
 }))
 
 vi.mock('@firebase/remote-config', () => ({
-  fetchAndActivate: vi.fn().mockResolvedValue({}),
+  fetchAndActivate: vi.fn(),
   getRemoteConfig: vi.fn(),
-  getAll: () => ({ A: { asString: () => 'true' } }),
+  getAll: vi.fn(),
 }))
 
 const FakeApp = ({
@@ -45,7 +47,24 @@ const renderFakeApp = async ({
 }
 
 describe('useAnalytics', () => {
-  it.only('should set logEvent and userId if cookie is set', async () => {
+  it('should set logEvent and userId if cookie is set', async () => {
+    vi.spyOn(firebaseAnalytics, 'isSupported').mockResolvedValue(true)
+    vi.spyOn(firebase, 'initializeApp').mockReturnValue({
+      name: '',
+      options: {},
+      automaticDataCollectionEnabled: true,
+    })
+    vi.spyOn(firebaseAnalytics, 'setUserId')
+    vi.spyOn(firebaseAnalytics, 'initializeAnalytics')
+    vi.spyOn(firebaseAnalytics, 'getAnalytics').mockReturnValueOnce(
+      'getAnalyticsReturn'
+    )
+
+    vi.spyOn(firebaseRemoteConfig, 'fetchAndActivate').mockResolvedValue(true)
+    vi.spyOn(firebaseRemoteConfig, 'getAll').mockResolvedValue({
+      A: { asString: () => 'true' },
+    })
+
     await renderFakeApp({ isCookieEnabled: true })
 
     await waitFor(() => {
@@ -55,14 +74,21 @@ describe('useAnalytics', () => {
     await waitFor(() => {
       expect(firebaseAnalytics.initializeAnalytics).toHaveBeenCalledTimes(1)
     })
+
     expect(firebaseAnalytics.initializeAnalytics).toHaveBeenNthCalledWith(
       1,
-      { setup: true },
+      {
+        name: '',
+        options: {},
+        automaticDataCollectionEnabled: true,
+      },
       { config: { send_page_view: false } }
     )
     expect(firebaseAnalytics.getAnalytics).toHaveBeenCalledTimes(1)
     expect(firebaseAnalytics.getAnalytics).toHaveBeenNthCalledWith(1, {
-      setup: true,
+      name: '',
+      options: {},
+      automaticDataCollectionEnabled: true,
     })
     expect(firebase.initializeApp).toHaveBeenCalledTimes(1)
     expect(firebase.initializeApp).toHaveBeenNthCalledWith(1, firebaseConfig)
