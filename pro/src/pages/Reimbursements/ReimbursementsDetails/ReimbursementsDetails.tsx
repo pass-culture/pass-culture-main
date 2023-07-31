@@ -13,12 +13,11 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { API_URL } from 'utils/config'
 import { FORMAT_ISO_DATE_ONLY, getToday } from 'utils/date'
-import { stringify } from 'utils/query-string'
 import { sortByLabel } from 'utils/strings'
 
 import DetailsFilters from './DetailsFilters'
 
-interface CsvQueryParams {
+type CsvQueryParams = {
   venueId?: string
   reimbursementPeriodBeginningDate?: string
   reimbursementPeriodEndingDate?: string
@@ -84,7 +83,7 @@ const ReimbursementsDetails = (): JSX.Element => {
     if (venue && venue !== ALL_VENUES_OPTION_ID) {
       params.venueId = venue
     }
-    setCsvQueryParams(stringify(params))
+    setCsvQueryParams(new URLSearchParams(params).toString())
   }, [periodEnd, periodStart, venue])
   if (isLoading) {
     return (
