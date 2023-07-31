@@ -218,8 +218,24 @@ class TiteLiveThings(LocalProvider):
     def __init__(self):  # type: ignore [no-untyped-def]
         super().__init__()
 
-        ordered_thing_files = get_files_to_process_from_titelive_ftp(THINGS_FOLDER_NAME_TITELIVE, DATE_REGEXP)
+        # ordered_thing_files = get_files_to_process_from_titelive_ftp(THINGS_FOLDER_NAME_TITELIVE, DATE_REGEXP)
+        ordered_thing_files = [
+            "Quotidien19.tit",
+            "Quotidien20.tit",
+            "Quotidien21.tit",
+            "Quotidien22.tit",
+            "Quotidien23.tit",
+            "Quotidien24.tit",
+            "Quotidien25.tit",
+            "Quotidien26.tit",
+            "Quotidien27.tit",
+            "Quotidien28.tit",
+            "Quotidien29.tit",
+            "Quotidien30.tit",
+        ]
         self.thing_files = self.get_remaining_files_to_check(ordered_thing_files)
+        # print("self.thing_files: ", self.thing_files)
+        # exit()
 
         self.data_lines = None
         self.products_file = None
@@ -408,21 +424,23 @@ class TiteLiveThings(LocalProvider):
 
     def get_remaining_files_to_check(self, ordered_thing_files: list) -> iter:  # type: ignore [valid-type]
         latest_sync_part_end_event = providers_repository.find_latest_sync_part_end_event(self.provider)
-        if latest_sync_part_end_event is None:
-            logger.info(
-                "get_remaining_files_to_check: %s (ALL)",
-                ",".join(ordered_thing_files),
-            )
-            return iter(ordered_thing_files)
-        for index, filename in enumerate(ordered_thing_files):
-            if get_date_from_filename(filename, DATE_REGEXP) == int(latest_sync_part_end_event.payload):  # type: ignore [arg-type]
-                ordered_thing_files_from_date = ordered_thing_files[index + 1 :]
-                logger.info(
-                    "get_remaining_files_to_check: %s",
-                    ",".join(ordered_thing_files_from_date),
-                )
-                return iter(ordered_thing_files_from_date)
-        return iter([])
+        print("latest_sync_part_end_event", latest_sync_part_end_event)
+        print("ordered_thing_files", ordered_thing_files)
+        # if latest_sync_part_end_event is None:
+        logger.info(
+            "get_remaining_files_to_check: %s (ALL)",
+            ",".join(ordered_thing_files),
+        )
+        return iter(ordered_thing_files)
+        # for index, filename in enumerate(ordered_thing_files):
+        #     if get_date_from_filename(filename, DATE_REGEXP) == int(latest_sync_part_end_event.payload):  # type: ignore [arg-type]
+        #         ordered_thing_files_from_date = ordered_thing_files[index + 1 :]
+        #         logger.info(
+        #             "get_remaining_files_to_check: %s",
+        #             ",".join(ordered_thing_files_from_date),
+        #         )
+        #         return iter(ordered_thing_files_from_date)
+        # return iter([])
 
 
 def get_lines_from_thing_file(thing_file: str):  # type: ignore [no-untyped-def]
