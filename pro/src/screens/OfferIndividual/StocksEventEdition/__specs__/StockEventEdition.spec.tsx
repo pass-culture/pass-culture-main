@@ -27,10 +27,13 @@ import { Stocks } from 'pages/OfferIndividualWizard/Stocks'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-vi.mock('utils/date', () => ({
-  ...vi.importActual('utils/date'),
-  getToday: vi.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
-}))
+vi.mock('utils/date', async () => {
+  const actual = (await vi.importActual('utils/date')) || {}
+  return {
+    ...actual,
+    getToday: vi.fn(() => new Date('2020-12-15T12:00:00Z')),
+  }
+})
 
 const renderStockEventScreen = async (
   apiOffer: GetIndividualOfferResponseModel
