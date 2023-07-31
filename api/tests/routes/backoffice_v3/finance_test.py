@@ -46,6 +46,30 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Type d'incident"] == "Trop Perçu"
 
 
+class GetIncidentTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.finance_incident.get_incident"
+    endpoint_kwargs = {"finance_incident_id": 1}
+    needed_permission = perm_models.Permissions.READ_INCIDENTS
+    expected_num_queries = 0
+    expected_num_queries += 1  # Fetch Session
+    expected_num_queries += 1  # Fetch User
+    expected_num_queries += 1  # Fetch Incidents infos
+    expected_num_queries += 1  # Fetch Reimbursement point infos
+
+    def test_get_incident(self, authenticated_client, finance_incident):
+        url = url_for(self.endpoint, finance_incident_id=finance_incident.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+
+        assert f"ID : {finance_incident.id}" in content
+        assert f" Lieu porteur de l'offre : {finance_incident.venue.name}" in content
+        assert f"Incident créé par : {finance_incident.details['author']}" in content
+
+
 class GetIncidentCreationFormTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.finance_incident.get_incident_creation_form"
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS

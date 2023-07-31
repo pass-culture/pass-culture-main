@@ -1,0 +1,12 @@
+{% from "components/presentation/details/tabs.html" import build_details_tab %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
+{% from "components/presentation/details/tabs.html" import build_details_tab_content %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
+{% call build_details_tabs_wrapper() %}
+  {{ build_details_tab("bookings", "Réservations", active_tab == "bookings") }}
+{% endcall %}
+{% call build_details_tabs_content_wrapper() %}
+  {% call build_details_tab_content("bookings", active_tab == 'bookings') %}
+    {% include "finance/incident/get/details/bookings.html" %}
+  {% endcall %}
+{% endcall %}

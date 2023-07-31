@@ -264,13 +264,20 @@ class FinanceIncidentFactory(BaseFactory):
     venue = factory.SubFactory(offerers_factories.VenueFactory)
     kind = models.IncidentType.OVERPAYMENT
     status = models.IncidentStatus.CREATED
+    details = {
+        "origin": "Demande e-mail",
+        "createdAt": datetime.datetime.utcnow().isoformat(),
+        "author": "Sandy Box",
+        "validator": "",
+        "validatedAt": "",
+    }
 
 
 class IndividualBookingFinanceIncidentFactory(BaseFactory):
     class Meta:
         model = models.BookingFinanceIncident
 
-    booking = factory.SubFactory(bookings_factories.BookingFactory)
+    booking = factory.SubFactory(bookings_factories.ReimbursedBookingFactory)
     incident = factory.SubFactory(FinanceIncidentFactory)
     beneficiary = factory.SelfAttribute("booking.user")
     newTotalAmount = 1020

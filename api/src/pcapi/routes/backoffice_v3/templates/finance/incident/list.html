@@ -41,7 +41,7 @@
                            name="pc-table-multi-select-check-{{ incident.id }}"
                            data-id="{{ incident.id }}" />
                   </td>
-                  <td>{{ incident.id }}</td>
+                  <td>{{ links.build_finance_incident_to_details_link(incident) }}</td>
                   <td>{{ incident.status | format_finance_incident_status | safe }}</td>
                   <td>{{ incident.kind | format_finance_incident_type | safe }}</td>
                   <td>{{ incident.booking_finance_incidents | length }}</td>
@@ -49,7 +49,7 @@
                   <td>{{ links.build_offerer_name_to_details_link(incident.venue.managingOfferer) }}</td>
                   <td>{{ links.build_venue_name_to_details_link(venue) }}</td>
                   <td>
-                    {{ incident.details['origin'] }}
+                    {% if incident.details.origin %}{{ incident.details.origin }}{% endif %}
                   </tr>
                 {% endfor %}
               </tbody>
