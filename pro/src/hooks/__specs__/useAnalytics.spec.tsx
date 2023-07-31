@@ -56,13 +56,18 @@ describe('useAnalytics', () => {
     })
     vi.spyOn(firebaseAnalytics, 'setUserId')
     vi.spyOn(firebaseAnalytics, 'initializeAnalytics')
-    vi.spyOn(firebaseAnalytics, 'getAnalytics').mockReturnValueOnce(
-      'getAnalyticsReturn'
+    vi.spyOn(firebaseAnalytics, 'getAnalytics').mockReturnValue(
+      'getAnalyticsReturn' as unknown as firebaseAnalytics.Analytics
     )
 
     vi.spyOn(firebaseRemoteConfig, 'fetchAndActivate').mockResolvedValue(true)
     vi.spyOn(firebaseRemoteConfig, 'getAll').mockResolvedValue({
-      A: { asString: () => 'true' },
+      A: {
+        asString: () => 'true',
+        asBoolean: vi.fn(),
+        asNumber: vi.fn(),
+        getSource: vi.fn(),
+      },
     })
 
     await renderFakeApp({ isCookieEnabled: true })
