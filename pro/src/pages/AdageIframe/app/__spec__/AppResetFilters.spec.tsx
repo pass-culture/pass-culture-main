@@ -4,8 +4,13 @@ import React from 'react'
 import { Configure } from 'react-instantsearch-dom'
 import type { Mock } from 'vitest'
 
-import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
+import {
+  AdageFrontRoles,
+  SubcategoryResponseModel,
+  VenueResponse,
+} from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
+import * as adagePcapi from 'pages/AdageIframe/repository/pcapi/pcapi'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { App } from '../App'
@@ -32,53 +37,6 @@ vi.mock('react-instantsearch-dom', async () => {
     )),
   }
 })
-
-vi.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
-  getEducationalDomains: vi.fn().mockResolvedValue([
-    { id: 1, name: 'Danse' },
-    { id: 2, name: 'Architecture' },
-  ]),
-  getFeatures: vi.fn().mockResolvedValue([]),
-}))
-
-vi.mock('apiClient/api', () => ({
-  apiAdage: {
-    authenticate: vi.fn(),
-    getCollectiveOffer: vi.fn(),
-    getEducationalOffersCategories: vi.fn().mockResolvedValue({
-      categories: [
-        { id: 'CINEMA', proLabel: 'Cinéma' },
-        { id: 'MUSEE', proLabel: 'Musée' },
-      ],
-      subcategories: [
-        {
-          id: 'CINE_PLEIN_AIR',
-          proLabel: 'Cinéma plein air',
-          categoryId: 'CINEMA',
-        },
-        {
-          id: 'EVENEMENT_CINE',
-          proLabel: 'Évènement cinéma',
-          categoryId: 'CINEMA',
-        },
-        {
-          id: 'VISITE_GUIDEE',
-          proLabel: 'Visite guidée',
-          categoryId: 'MUSEE',
-        },
-        {
-          id: 'VISITE',
-          proLabel: 'Visite',
-          categoryId: 'MUSEE',
-        },
-      ],
-    }),
-    getVenueById: vi.fn(),
-    getVenueBySiret: vi.fn(),
-    logCatalogView: vi.fn(),
-    logSearchButtonClick: vi.fn(),
-  },
-}))
 
 vi.mock('utils/config', async () => {
   const actual = await vi.importActual('utils/config')
@@ -130,6 +88,43 @@ describe('app', () => {
     })
     vi.spyOn(apiAdage, 'getVenueBySiret').mockResolvedValue(venue)
     vi.spyOn(apiAdage, 'getVenueById').mockResolvedValue(venue)
+    vi.spyOn(apiAdage, 'getCollectiveOffer')
+    vi.spyOn(apiAdage, 'authenticate')
+    vi.spyOn(apiAdage, 'logCatalogView')
+    vi.spyOn(apiAdage, 'logSearchButtonClick')
+    vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockResolvedValue({
+      categories: [
+        { id: 'CINEMA', proLabel: 'Cinéma' },
+        { id: 'MUSEE', proLabel: 'Musée' },
+      ],
+      subcategories: [
+        {
+          id: 'CINE_PLEIN_AIR',
+          proLabel: 'Cinéma plein air',
+          categoryId: 'CINEMA',
+        } as SubcategoryResponseModel,
+        {
+          id: 'EVENEMENT_CINE',
+          proLabel: 'Évènement cinéma',
+          categoryId: 'CINEMA',
+        } as SubcategoryResponseModel,
+        {
+          id: 'VISITE_GUIDEE',
+          proLabel: 'Visite guidée',
+          categoryId: 'MUSEE',
+        } as SubcategoryResponseModel,
+        {
+          id: 'VISITE',
+          proLabel: 'Visite',
+          categoryId: 'MUSEE',
+        } as SubcategoryResponseModel,
+      ],
+    })
+    vi.spyOn(adagePcapi, 'getEducationalDomains').mockResolvedValue([
+      { id: 1, name: 'Danse' },
+      { id: 2, name: 'Architecture' },
+    ])
+    vi.spyOn(adagePcapi, 'getFeatures').mockResolvedValue([])
   })
 
   it('should reset filters', async () => {
