@@ -30,9 +30,9 @@ vi.mock('react-router-dom', () => ({
 
 Element.prototype.scrollIntoView = vi.fn()
 
-vi.spyOn(window, 'matchMedia').mockReturnValue({
-  matches: true,
-} as MediaQueryList)
+vi.mock('utils/windowMatchMedia', () => ({
+  doesUserPreferReducedMotion: vi.fn(() => true),
+}))
 
 describe('screens | OfferEducational : event address step', () => {
   let props: OfferEducationalProps

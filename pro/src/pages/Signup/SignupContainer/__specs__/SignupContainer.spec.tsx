@@ -14,9 +14,9 @@ import SignupContainer from '../SignupContainer'
 
 const mockLogEvent = vi.fn()
 
-vi.spyOn(window, 'matchMedia').mockReturnValue({
-  matches: true,
-} as MediaQueryList)
+vi.mock('utils/windowMatchMedia', () => ({
+  doesUserPreferReducedMotion: vi.fn(() => true),
+}))
 vi.mock('core/Offerers/adapters/getSirenDataAdapter')
 vi.mock('apiClient/api', () => ({
   api: {
