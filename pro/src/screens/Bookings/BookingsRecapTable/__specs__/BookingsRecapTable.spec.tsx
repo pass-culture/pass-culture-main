@@ -10,7 +10,6 @@ import {
   EMPTY_FILTER_VALUE,
 } from 'screens/Bookings/BookingsRecapTable/components/Filters/_constants'
 import * as bookingDetailsAdapter from 'screens/Bookings/BookingsRecapTable/components/Table/Body/TableRow/adapters/getCollectiveBookingAdapter'
-import * as constants from 'screens/Bookings/BookingsRecapTable/constants/NB_BOOKINGS_PER_PAGE'
 import * as filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 import { bookingRecapFactory } from 'utils/apiFactories'
 import {
@@ -162,9 +161,6 @@ describe('components | BookingsRecapTable', () => {
 
   it('should render the expected table with max given number of hits per page', () => {
     // Given
-    // @ts-expect-error
-    // eslint-disable-next-line
-    constants.NB_BOOKINGS_PER_PAGE = 1
     const bookingsRecap = [bookingRecapFactory(), bookingRecapFactory()]
     vi.spyOn(filterBookingsRecap, 'default').mockReturnValue(bookingsRecap)
     const props: Props = {
@@ -189,9 +185,6 @@ describe('components | BookingsRecapTable', () => {
 
   it('should render the expected table for collective audience', () => {
     // Given
-    // @ts-expect-error
-    // eslint-disable-next-line
-    constants.NB_BOOKINGS_PER_PAGE = 1
     const bookingRecap = bookingRecapFactory(bookingInstitutionCustom)
     vi.spyOn(filterBookingsRecap, 'default').mockReturnValue([bookingRecap])
     const props: Props = {
@@ -340,7 +333,7 @@ describe('components | BookingsRecapTable', () => {
 
   it('should update currentPage when clicking on next page button', async () => {
     const bookingsRecap = []
-    for (let i = 0; i < 11; i++) {
+    for (let i = 0; i < 40; i++) {
       bookingsRecap.push(collectiveBookingRecapFactory())
     }
 
@@ -355,10 +348,10 @@ describe('components | BookingsRecapTable', () => {
 
     const nextPageButton = screen.getByRole('button', { name: 'Page suivante' })
 
-    expect(screen.getByText('Page 1/11'))
+    expect(screen.getByText('Page 1/2'))
 
     await userEvent.click(nextPageButton)
 
-    expect(screen.getByText('Page 2/11'))
+    expect(screen.getByText('Page 2/2'))
   })
 })
