@@ -15,6 +15,7 @@ from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
+from pcapi.core.offers.validation import check_for_duplicated_price_categories
 from pcapi.models import api_errors
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
@@ -354,6 +355,9 @@ def post_price_categories(
         for price_category in body.price_categories
         if isinstance(price_category, offers_serialize.EditPriceCategoryModel)
     ]
+
+    new_labels_and_prices = {(p.label, p.price) for p in price_categories_to_create}
+    check_for_duplicated_price_categories(new_labels_and_prices, offer_id)
 
     offer = _get_offer_for_price_categories_upsert(offer_id, price_categories_to_edit)
     if not offer:
