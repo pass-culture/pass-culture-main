@@ -1,5 +1,4 @@
-from datetime import datetime
-from datetime import timedelta
+import datetime
 
 from freezegun import freeze_time
 import pytest
@@ -140,7 +139,7 @@ class GetCappedOffersForFiltersTest:
         pro = users_factories.ProFactory()
         offer_in_requested_time_period = factories.OfferFactory()
         factories.EventStockFactory(
-            offer=offer_in_requested_time_period, beginningDatetime=datetime(2020, 1, 2), isSoftDeleted=True
+            offer=offer_in_requested_time_period, beginningDatetime=datetime.datetime(2020, 1, 2), isSoftDeleted=True
         )
 
         # When
@@ -160,15 +159,15 @@ class GetCappedOffersForFiltersTest:
     def should_consider_venue_locale_datetime_when_filtering_by_date(self):
         # given
         admin = users_factories.AdminFactory()
-        period_beginning_date = "2020-04-21T00:00:00"
-        period_ending_date = "2020-04-21T23:59:59"
+        period_beginning_date = datetime.date(2020, 4, 21)
+        period_ending_date = datetime.date(2020, 4, 21)
 
         offer_in_cayenne = factories.OfferFactory(venue__postalCode="97300")
-        cayenne_event_datetime = datetime(2020, 4, 22, 2, 0)
+        cayenne_event_datetime = datetime.datetime(2020, 4, 22, 2, 0)
         factories.EventStockFactory(offer=offer_in_cayenne, beginningDatetime=cayenne_event_datetime)
 
         offer_in_mayotte = factories.OfferFactory(venue__postalCode="97600")
-        mayotte_event_datetime = datetime(2020, 4, 20, 22, 0)
+        mayotte_event_datetime = datetime.datetime(2020, 4, 20, 22, 0)
         factories.EventStockFactory(offer=offer_in_mayotte, beginningDatetime=mayotte_event_datetime)
 
         # When
@@ -566,8 +565,8 @@ class GetCappedOffersForFiltersTest:
                 description="expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity",
             )
 
-            five_days_ago = datetime.utcnow() - timedelta(days=5)
-            in_five_days = datetime.utcnow() + timedelta(days=5)
+            five_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=5)
+            in_five_days = datetime.datetime.utcnow() + datetime.timedelta(days=5)
             beneficiary = users_factories.BeneficiaryGrant18Factory(email="jane.doe@example.com")
             factories.ThingStockFactory(offer=self.sold_old_thing_offer_with_all_stocks_empty, quantity=0)
             factories.ThingStockFactory(
@@ -674,7 +673,7 @@ class GetCappedOffersForFiltersTest:
                 bookingLimitDatetime=five_days_ago,
                 quantity=0,
             )
-            in_six_days = datetime.utcnow() + timedelta(days=6)
+            in_six_days = datetime.datetime.utcnow() + datetime.timedelta(days=6)
             self.active_event_in_six_days_offer = factories.EventOfferFactory(venue=self.venue)
             factories.EventStockFactory(
                 offer=self.active_event_in_six_days_offer,
@@ -881,7 +880,7 @@ class GetCappedOffersForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_return_only_pending_offers_when_requesting_pending_status(self):
             # given
-            unexpired_booking_limit_date = datetime.utcnow() + timedelta(days=3)
+            unexpired_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=3)
 
             pending_offer = factories.ThingOfferFactory(
                 validation=offer_mixin.OfferStatus.PENDING.name, name="Offre en attente"
@@ -906,7 +905,7 @@ class GetCappedOffersForFiltersTest:
         @pytest.mark.usefixtures("db_session")
         def should_return_only_rejected_offers_when_requesting_rejected_status(self):
             # given
-            unexpired_booking_limit_date = datetime.utcnow() + timedelta(days=3)
+            unexpired_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=3)
 
             rejected_offer = factories.ThingOfferFactory(
                 validation=offer_mixin.OfferValidationStatus.REJECTED, name="Offre rejetée", isActive=False
@@ -961,7 +960,7 @@ class GetCappedOffersForFiltersTest:
             # given
             self.init_test_data()
 
-            in_six_days = datetime.utcnow() + timedelta(days=6)
+            in_six_days = datetime.datetime.utcnow() + datetime.timedelta(days=6)
             in_six_days_beginning = in_six_days.replace(hour=0, minute=0, second=0)
             in_six_days_ending = in_six_days.replace(hour=23, minute=59, second=59)
 
@@ -971,8 +970,8 @@ class GetCappedOffersForFiltersTest:
                 user_is_admin=self.pro.has_admin_role,
                 offers_limit=5,
                 status="ACTIVE",
-                period_beginning_date=utc_datetime_to_department_timezone(in_six_days_beginning, "75").isoformat(),
-                period_ending_date=utc_datetime_to_department_timezone(in_six_days_ending, "75").isoformat(),
+                period_beginning_date=utc_datetime_to_department_timezone(in_six_days_beginning, "75").date(),
+                period_ending_date=utc_datetime_to_department_timezone(in_six_days_ending, "75").date(),
             )
 
             # then
@@ -1026,7 +1025,7 @@ class GetActiveOffersCountForVenueTest:
         bookings_factories.BookingFactory(stock=sold_out_stock)
 
         expired_offer = factories.EventOfferFactory(venue=venue)
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         factories.EventStockFactory(offer=expired_offer, bookingLimitDatetime=yesterday)
 
         inactive_offer = factories.ThingOfferFactory(venue=venue, isActive=False)
@@ -1060,7 +1059,7 @@ class GetSoldOutOffersCountForVenueTest:
         factories.EventStockFactory(quantity=0, offer=other_sold_out_offer)
 
         expired_offer = factories.EventOfferFactory(venue=venue)
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         factories.EventStockFactory(offer=expired_offer, bookingLimitDatetime=yesterday)
 
         inactive_offer = factories.ThingOfferFactory(venue=venue, isActive=False)
@@ -1111,9 +1110,9 @@ class CheckStockConsistenceTest:
 @pytest.mark.usefixtures("db_session")
 class IncomingEventStocksTest:
     def setup_stocks(self):
-        today = datetime.utcnow() + timedelta(hours=1)
-        tomorrow = datetime.utcnow() + timedelta(days=1)
-        next_week = datetime.utcnow() + timedelta(days=7)
+        today = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+        tomorrow = datetime.datetime.utcnow() + datetime.timedelta(days=1)
+        next_week = datetime.datetime.utcnow() + datetime.timedelta(days=7)
 
         self.stock_today = factories.EventStockFactory(beginningDatetime=today)
         bookings_factories.BookingFactory.create_batch(2, stock=self.stock_today)
@@ -1150,8 +1149,8 @@ class IncomingEventStocksTest:
     def test_find_today_event_stock_ids_metropolitan_france(self):
         self.setup_stocks()
 
-        today_min = datetime(2022, 10, 15, 12, 00)
-        today_max = datetime(2022, 10, 15, 23, 00)
+        today_min = datetime.datetime(2022, 10, 15, 12, 00)
+        today_max = datetime.datetime(2022, 10, 15, 23, 00)
 
         stock_ids = repository.find_today_event_stock_ids_metropolitan_france(today_min, today_max)
 
@@ -1161,8 +1160,8 @@ class IncomingEventStocksTest:
     def test_find_today_event_stock_ids_by_departments(self):
         self.setup_stocks()
 
-        today_min = datetime(2022, 10, 15, 8, 00)
-        today_max = datetime(2022, 10, 15, 19, 00)
+        today_min = datetime.datetime(2022, 10, 15, 8, 00)
+        today_max = datetime.datetime(2022, 10, 15, 19, 00)
 
         departments_prefixes = ["971"]
 
@@ -1173,10 +1172,10 @@ class IncomingEventStocksTest:
 
 @pytest.mark.usefixtures("db_session")
 class GetExpiredOffersTest:
-    interval = [datetime(2021, 1, 1, 0, 0), datetime(2021, 1, 2, 0, 0)]
-    dt_before = datetime(2020, 12, 31)
-    dt_within = datetime(2021, 1, 1)
-    dt_after = datetime(2021, 1, 3)
+    interval = [datetime.datetime(2021, 1, 1, 0, 0), datetime.datetime(2021, 1, 2, 0, 0)]
+    dt_before = datetime.datetime(2020, 12, 31)
+    dt_within = datetime.datetime(2021, 1, 1)
+    dt_after = datetime.datetime(2021, 1, 3)
 
     def test_basics(self):
         offer1 = factories.OfferFactory()
@@ -1211,7 +1210,7 @@ class GetExpiredOffersTest:
 class DeletePastDraftOfferTest:
     @freeze_time("2020-10-15 09:00:00")
     def test_delete_past_draft_collective_offers(self):
-        two_days_ago = datetime.utcnow() - timedelta(days=2)
+        two_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=2)
         educational_factories.CollectiveOfferFactory(
             dateCreated=two_days_ago, validation=offer_mixin.OfferValidationStatus.DRAFT
         )
@@ -1219,7 +1218,7 @@ class DeletePastDraftOfferTest:
             dateCreated=two_days_ago, validation=offer_mixin.OfferValidationStatus.PENDING
         )
         today_offer = educational_factories.CollectiveOfferFactory(
-            dateCreated=datetime.utcnow(), validation=offer_mixin.OfferValidationStatus.DRAFT
+            dateCreated=datetime.datetime.utcnow(), validation=offer_mixin.OfferValidationStatus.DRAFT
         )
         # past offer with collective stock but user did not finalize offer creation
         # with institution association
@@ -1255,7 +1254,7 @@ class AvailableActivationCodeTest:
         stock = booking.stock
         factories.ActivationCodeFactory(booking=booking, stock=stock)  # booked_code
         factories.ActivationCodeFactory(
-            stock=stock, expirationDate=datetime.utcnow() - timedelta(days=1)
+            stock=stock, expirationDate=datetime.datetime.utcnow() - datetime.timedelta(days=1)
         )  # expired code
 
         # WHEN THEN
@@ -1394,7 +1393,7 @@ class GetFilteredCollectiveOffersTest:
             venue__managingOfferer=user_offerer.offerer
         )
         collective_stock_ended = educational_factories.CollectiveStockFactory(
-            collectiveOffer=collective_offer_ended, beginningDatetime=datetime(year=2000, month=1, day=1)
+            collectiveOffer=collective_offer_ended, beginningDatetime=datetime.datetime(year=2000, month=1, day=1)
         )
         educational_factories.CollectiveBookingFactory(
             collectiveStock=collective_stock_ended, status=educational_models.CollectiveBookingStatus.USED.value

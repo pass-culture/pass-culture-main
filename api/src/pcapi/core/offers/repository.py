@@ -41,8 +41,8 @@ def get_capped_offers_for_filters(
     category_id: str | None = None,
     name_keywords_or_ean: str | None = None,
     creation_mode: str | None = None,
-    period_beginning_date: str | None = None,
-    period_ending_date: str | None = None,
+    period_beginning_date: datetime.date | None = None,
+    period_ending_date: datetime.date | None = None,
 ) -> offers_recap.OffersRecap:
     query = get_offers_by_filters(
         user_id=user_id,
@@ -53,8 +53,8 @@ def get_capped_offers_for_filters(
         category_id=category_id,
         name_keywords_or_ean=name_keywords_or_ean,
         creation_mode=creation_mode,
-        period_beginning_date=period_beginning_date,  # type: ignore [arg-type]
-        period_ending_date=period_ending_date,  # type: ignore [arg-type]
+        period_beginning_date=period_beginning_date,
+        period_ending_date=period_ending_date,
     )
 
     offers = (
@@ -97,8 +97,8 @@ def get_offers_by_filters(
     category_id: str | None = None,
     name_keywords_or_ean: str | None = None,
     creation_mode: str | None = None,
-    period_beginning_date: datetime.datetime | None = None,
-    period_ending_date: datetime.datetime | None = None,
+    period_beginning_date: datetime.date | None = None,
+    period_ending_date: datetime.date | None = None,
 ) -> flask_sqlalchemy.BaseQuery:
     query = models.Offer.query
 
@@ -156,7 +156,7 @@ def get_offers_by_filters(
                     offerers_models.Venue.timezone,
                     sa.func.timezone("UTC", models.Stock.beginningDatetime),
                 )
-                <= period_ending_date
+                <= datetime.datetime.combine(period_ending_date, datetime.time.max),
             )
         if venue_id is not None:
             subquery = subquery.filter(models.Offer.venueId == venue_id)
