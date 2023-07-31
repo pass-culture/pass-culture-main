@@ -8,9 +8,7 @@ vi.mock('utils/date', async () => {
   const actual = (await vi.importActual('utils/date')) || {}
   return {
     ...actual,
-    getToday: vi
-      .fn()
-      .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+    getToday: vi.fn(() => new Date('2020-12-15T12:00:00Z')),
   }
 })
 

@@ -460,7 +460,7 @@ describe('VenueFormScreen', () => {
     })
   })
 
-  it.only('should display an error when the venue could not be updated', async () => {
+  it('should display an error when the venue could not be updated', async () => {
     renderForm(
       {
         id: 12,
