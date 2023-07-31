@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays, addMinutes, format } from 'date-fns'
 import React from 'react'
+import * as router from 'react-router-dom'
 
 import { StudentLevels } from 'apiClient/adage'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -37,13 +38,16 @@ const initialValuesNotEmpty = {
   priceDetail: 'Détail du prix',
 }
 
-const mockedUsedNavigate = vi.fn()
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
-  useNavigate: () => mockedUsedNavigate,
+vi.mock('react-router-dom', async () => ({
+  ...((await vi.importActual('react-router-dom')) as object),
+  useNavigate: vi.fn(),
 }))
 
 describe('OfferEducationalStock', () => {
+  const mockNavigate = vi.fn()
+  beforeEach(() => {
+    vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
+  })
   it('should render for offer with a stock', () => {
     const offer = collectiveOfferFactory()
     const testProps: OfferEducationalStockProps = {
@@ -121,6 +125,7 @@ describe('OfferEducationalStock', () => {
         offer,
         initialValues: initialValuesNotEmpty,
       }
+
       renderWithProviders(<OfferEducationalStock {...testProps} />)
 
       const submitButton = screen.getByRole('button', {
@@ -133,9 +138,7 @@ describe('OfferEducationalStock', () => {
       })
       await userEvent.click(modifyStudentsButton)
 
-      expect(mockedUsedNavigate).toHaveBeenCalledWith(
-        '/offre/collectif/1/creation'
-      )
+      expect(mockNavigate).toHaveBeenCalledWith('/offre/collectif/1/creation')
     })
 
     it('should navigate to offer creation if user click modify participants', async () => {
@@ -161,9 +164,7 @@ describe('OfferEducationalStock', () => {
       })
       await userEvent.click(modifyStudentsButton)
 
-      expect(mockedUsedNavigate).toHaveBeenCalledWith(
-        '/offre/collectif/1/edition'
-      )
+      expect(mockNavigate).toHaveBeenCalledWith('/offre/collectif/1/edition')
     })
 
     it('should call onSubmit  if user click create offer', async () => {

@@ -23,8 +23,8 @@ vi.mock('repository/pcapi/pcapi', () => ({
   postCollectiveOfferImage: vi.fn(),
 }))
 
-vi.mock('react-router-dom', () => ({
-  ...vi.importActual('react-router-dom'),
+vi.mock('react-router-dom', async () => ({
+  ...((await vi.importActual('react-router-dom')) as object),
   useNavigate: vi.fn(),
 }))
 

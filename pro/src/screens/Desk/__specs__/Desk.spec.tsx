@@ -32,20 +32,15 @@ describe('src | components | Desk', () => {
     venueDepartmentCode: '75',
   }
   const defaultProps: DeskProps = {
-    getBooking: vi.fn().mockResolvedValue({ booking: deskBooking }),
+    getBooking: vi.fn(() => Promise.resolve({ booking: deskBooking })),
     submitValidate: vi.fn().mockResolvedValue({}),
     submitInvalidate: vi.fn().mockResolvedValue({}),
   }
-  let props: DeskProps = { ...defaultProps }
-
-  beforeEach(() => {
-    props = { ...defaultProps }
-  })
 
   it('test form render', async () => {
     // when
     const { pageTitle, inputToken, buttonSubmitValidated } =
-      renderDeskScreen(props)
+      renderDeskScreen(defaultProps)
 
     expect(pageTitle).toBeInTheDocument()
     expect(inputToken).toBeInTheDocument()
@@ -54,7 +49,7 @@ describe('src | components | Desk', () => {
       'Saisissez les contremarques présentées par les bénéficiaires afin de les valider ou de les invalider.'
     )
     expect(description).toBeInTheDocument()
-    expect(props.getBooking).not.toHaveBeenCalled()
+    expect(defaultProps.getBooking).not.toHaveBeenCalled()
     expect(buttonSubmitValidated).toBeInTheDocument()
     expect(buttonSubmitValidated).toBeDisabled()
   })
@@ -68,7 +63,7 @@ describe('src | components | Desk', () => {
     }
     const getBooking = vi.fn()
     const { messageContainer, inputToken } = renderDeskScreen({
-      ...props,
+      ...defaultProps,
       getBooking,
     })
     expect(messageContainer.textContent).toBe(expectedMessage.default)
@@ -90,7 +85,7 @@ describe('src | components | Desk', () => {
   })
 
   it('test valid token and booking details display', async () => {
-    const { inputToken, buttonSubmitValidated } = renderDeskScreen(props)
+    const { inputToken, buttonSubmitValidated } = renderDeskScreen(defaultProps)
 
     await userEvent.type(inputToken, 'AAAAAA')
 
@@ -98,7 +93,7 @@ describe('src | components | Desk', () => {
       'Coupon vérifié, cliquez sur "Valider" pour enregistrer'
     )
 
-    expect(props.getBooking).toHaveBeenCalledWith('AAAAAA')
+    expect(defaultProps.getBooking).toHaveBeenCalledWith('AAAAAA')
     expect(buttonSubmitValidated).toBeEnabled()
 
     expect(screen.getByText(deskBooking.userName)).toBeInTheDocument()
@@ -110,16 +105,17 @@ describe('src | components | Desk', () => {
 
   it('test token server error', async () => {
     const alreadyValidatedErrorMessage = {
-      message: 'server error',
+      message: 'server erro',
       isTokenValidated: false,
     }
-    props = {
-      ...props,
-      getBooking: vi.fn().mockResolvedValue({
-        error: alreadyValidatedErrorMessage,
-      }),
-    }
-    const { inputToken, buttonSubmitValidated } = renderDeskScreen(props)
+    const getBookingMock = vi.fn().mockResolvedValue({
+      error: alreadyValidatedErrorMessage,
+    })
+
+    const { inputToken, buttonSubmitValidated } = renderDeskScreen({
+      ...defaultProps,
+      getBooking: getBookingMock,
+    })
 
     await userEvent.type(inputToken, 'AAAAAA')
 
@@ -127,7 +123,7 @@ describe('src | components | Desk', () => {
       alreadyValidatedErrorMessage.message
     )
 
-    expect(props.getBooking).toHaveBeenCalledWith('AAAAAA')
+    expect(getBookingMock).toHaveBeenCalledWith('AAAAAA')
     expect(buttonSubmitValidated).toBeDisabled()
     const buttonSubmitInvalidated = screen.queryByText(
       'Invalider la contremarque'
@@ -138,7 +134,7 @@ describe('src | components | Desk', () => {
   it('test validate token submit success', async () => {
     const submitValidate = vi.fn().mockImplementation(() => Promise.resolve({}))
     const { inputToken, buttonSubmitValidated } = renderDeskScreen({
-      ...props,
+      ...defaultProps,
       submitValidate,
     })
 
@@ -163,20 +159,20 @@ describe('src | components | Desk', () => {
       message: 'Token already validated',
       isTokenValidated: true,
     }
-    props = {
-      ...props,
-      getBooking: vi.fn().mockResolvedValue({
-        error: alreadyValidatedErrorMessage,
-      }),
-    }
+    const getBookingMock = vi.fn().mockResolvedValue({
+      error: alreadyValidatedErrorMessage,
+    })
     const { messageContainer, inputToken, buttonSubmitValidated } =
-      renderDeskScreen(props)
+      renderDeskScreen({
+        ...defaultProps,
+        getBooking: getBookingMock,
+      })
 
     await userEvent.type(inputToken, 'AAAAAA')
     expect(messageContainer.textContent).toBe(
       alreadyValidatedErrorMessage.message
     )
-    expect(props.getBooking).toHaveBeenCalledWith('AAAAAA')
+    expect(getBookingMock).toHaveBeenCalledWith('AAAAAA')
 
     expect(buttonSubmitValidated).not.toBeInTheDocument()
     const buttonSubmitInvalidated = screen.queryByText(
@@ -197,14 +193,17 @@ describe('src | components | Desk', () => {
       message: 'Token already validated',
       isTokenValidated: true,
     }
-    props = {
-      ...props,
+    const submitInvalidateMock = vi
+      .fn()
+      .mockImplementation(() => Promise.resolve({}))
+
+    const { inputToken, buttonSubmitValidated } = renderDeskScreen({
+      ...defaultProps,
       getBooking: vi.fn().mockResolvedValue({
         error: alreadyValidatedErrorMessage,
       }),
-      submitInvalidate: vi.fn().mockImplementation(() => Promise.resolve({})),
-    }
-    const { inputToken, buttonSubmitValidated } = renderDeskScreen(props)
+      submitInvalidate: submitInvalidateMock,
+    })
     await userEvent.clear(inputToken)
     await userEvent.type(inputToken, 'AAAAAA')
     expect(screen.getByTestId('desk-message')).toHaveTextContent(
@@ -225,7 +224,7 @@ describe('src | components | Desk', () => {
       await screen.findByText('Contremarque invalidée !')
     ).toBeInTheDocument()
 
-    expect(props.submitInvalidate).toHaveBeenCalledWith('AAAAAA')
+    expect(submitInvalidateMock).toHaveBeenCalledWith('AAAAAA')
     expect(inputToken).toHaveValue('')
     expect(buttonSubmitInvalidated).not.toBeInTheDocument()
     expect(buttonSubmitValidated).toBeDisabled()
