@@ -3,6 +3,7 @@ import { expect, vi } from 'vitest'
 import * as matchers from 'vitest-axe/matchers'
 import '@testing-library/jest-dom'
 import createFetchMock from 'vitest-fetch-mock'
+import 'vitest-canvas-mock'
 
 expect.extend(matchers)
 

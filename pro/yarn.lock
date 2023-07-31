@@ -11032,6 +11032,14 @@ jest-canvas-mock@^2.5.2:
     cssfontparser "^1.2.1"
     moo-color "^1.0.2"
 
+jest-canvas-mock@~2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/jest-canvas-mock/-/jest-canvas-mock-2.4.0.tgz#947b71442d7719f8e055decaecdb334809465341"
+  integrity sha512-mmMpZzpmLzn5vepIaHk5HoH3Ka4WykbSoLuG/EKoJd0x0ID/t+INo1l8ByfcUJuDM+RIsL4QDg/gDnBbrj2/IQ==
+  dependencies:
+    cssfontparser "^1.2.1"
+    moo-color "^1.0.2"
+
 jest-changed-files@^27.5.1:
   version "27.5.1"
   resolved "https://registry.yarnpkg.com/jest-changed-files/-/jest-changed-files-27.5.1.tgz#a348aed00ec9bf671cc58a66fcbe7c3dfd6a68f5"
@@ -16896,6 +16904,13 @@ vitest-axe@^0.1.0:
     dom-accessibility-api "^0.5.14"
     lodash-es "^4.17.21"
     redent "^3.0.0"
+
+vitest-canvas-mock@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/vitest-canvas-mock/-/vitest-canvas-mock-0.3.2.tgz#d52031c423519e0c7bf2687ca6d7ad2e926ea182"
+  integrity sha512-lds7MKxvFFPDCGLXsQI2ym1fxvC93DaS0Bb6sdjvylFyL6NYrAAcPb6xZGF2sMOt5fSLHddqAQaujqpbc3p0Zg==
+  dependencies:
+    jest-canvas-mock "~2.4.0"
 
 vitest-fetch-mock@^0.2.2:
   version "0.2.2"
