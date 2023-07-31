@@ -71,14 +71,13 @@ const renderOfferTypes = async (storeOverrides: any, structureId?: string) => {
 
 describe('screens:OfferIndividual::OfferType', () => {
   let store: any
-  beforeAll(() => {
+  beforeEach(() => {
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [{ id: 1, name: 'Ma super structure' }],
     })
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue([])
     vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
-  })
-  beforeEach(() => {
+
     store = {
       user: {
         initialized: true,
@@ -413,11 +412,11 @@ describe('screens:OfferIndividual::OfferType', () => {
   })
 
   it('should render loader while fetching data', async () => {
-    vi.spyOn(api, 'getOfferer').mockResolvedValueOnce(
-      new CancelablePromise(resolve =>
+    vi.spyOn(api, 'getOfferer').mockImplementationOnce(() => {
+      return new CancelablePromise<GetOffererResponseModel>(resolve =>
         setTimeout(() => resolve({} as GetOffererResponseModel), 500)
       )
-    )
+    })
 
     renderOfferTypes(store, '123')
 

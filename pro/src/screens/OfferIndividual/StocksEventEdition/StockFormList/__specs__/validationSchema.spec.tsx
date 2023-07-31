@@ -4,10 +4,15 @@ import { stockEventFactory } from '../stockEventFactory'
 import { StockEventFormValues } from '../types'
 import { getValidationSchema } from '../validationSchema'
 
-vi.mock('utils/date', () => ({
-  ...vi.importActual('utils/date'),
-  getToday: vi.fn().mockReturnValue(new Date('2020-06-15T12:00:00Z')),
-}))
+vi.mock('utils/date', async () => {
+  const actual = (await vi.importActual('utils/date')) || {}
+  return {
+    ...actual,
+    getToday: vi
+      .fn()
+      .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+  }
+})
 
 describe('validationSchema', () => {
   const cases: {
