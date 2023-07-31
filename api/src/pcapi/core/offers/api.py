@@ -89,8 +89,8 @@ def list_offers_for_pro_user(
     name_keywords_or_ean: str | None = None,
     status: str | None = None,
     creation_mode: str | None = None,
-    period_beginning_date: str | None = None,
-    period_ending_date: str | None = None,
+    period_beginning_date: datetime.date | None = None,
+    period_ending_date: datetime.date | None = None,
 ) -> OffersRecap:
     return offers_repository.get_capped_offers_for_filters(
         user_id=user_id,
