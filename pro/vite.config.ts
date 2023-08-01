@@ -36,7 +36,10 @@ export default defineConfig(({ mode }) => {
       restoreMocks: true,
       cache: { dir: '../.vitest_cache' },
       css: { modules: { classNameStrategy: 'non-scoped' } },
-      coverage: { reportsDirectory: '../coverage' },
+      coverage: {
+        reportsDirectory: '../coverage',
+        reporter: ['text', 'html', 'lcov'],
+      },
       minThreads: 4,
       maxThreads: 6,
       testTimeout: 10000,
