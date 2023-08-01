@@ -10,7 +10,6 @@
       <th scope="col">Lieu</th>
       <th scope="col">Identifiant cinéma (CDS)</th>
       <th scope="col">Nom de l'utilisateur (CDS)</th>
-      <th scope="col">Clé API (CDS)</th>
     </tr>
   </thead>
   <tbody>
@@ -21,7 +20,6 @@
         <td>{{ links.build_venue_name_to_details_link(pivot.cinemaProviderPivot.venue, text_attr="name") }}</td>
         <td>{{ pivot.cinemaProviderPivot.idAtProvider }}</td>
         <td>{{ pivot.accountId }}</td>
-        <td>{{ pivot.cinemaApiToken }}</td>
       </tr>
     {% endfor %}
   </tbody>

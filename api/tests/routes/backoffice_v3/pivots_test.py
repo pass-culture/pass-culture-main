@@ -107,7 +107,6 @@ class ListPivotsTest(GetEndpointHelper):
         assert boost_rows[0]["Lieu"] == boost_pivot.cinemaProviderPivot.venue.name
         assert boost_rows[0]["Identifiant cinéma (Boost)"] == boost_pivot.cinemaProviderPivot.idAtProvider
         assert boost_rows[0]["Nom de l'utilisateur (Boost)"] == boost_pivot.username
-        assert boost_rows[0]["Mot de passe (Boost)"] == boost_pivot.password
         assert boost_rows[0]["URL du cinéma (Boost)"] == boost_pivot.cinemaUrl
 
     @pytest.mark.parametrize(
@@ -233,7 +232,6 @@ class ListPivotsTest(GetEndpointHelper):
         assert cineoffice_rows[0]["Lieu"] == cineoffice_pivot.cinemaProviderPivot.venue.name
         assert cineoffice_rows[0]["Identifiant cinéma (CDS)"] == cineoffice_pivot.cinemaProviderPivot.idAtProvider
         assert cineoffice_rows[0]["Nom de l'utilisateur (CDS)"] == cineoffice_pivot.accountId
-        assert cineoffice_rows[0]["Clé API (CDS)"] == cineoffice_pivot.cinemaApiToken
 
     @pytest.mark.parametrize(
         "query_string,expected_venues",

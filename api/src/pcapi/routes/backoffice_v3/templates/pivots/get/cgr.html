@@ -10,7 +10,6 @@
       <th scope="col">Lieu</th>
       <th scope="col">Identifiant cinéma (CGR)</th>
       <th scope="col">URL du cinéma (CGR)</th>
-      <th scope="col">Mot de passe (CGR)</th>
     </tr>
   </thead>
   <tbody>
@@ -21,7 +20,6 @@
         <td>{{ links.build_venue_name_to_details_link(pivot.cinemaProviderPivot.venue, text_attr="name") }}</td>
         <td>{{ pivot.cinemaProviderPivot.idAtProvider }}</td>
         <td>{{ pivot.cinemaUrl }}</td>
-        <td>{{ pivot.password }}</td>
       </tr>
     {% endfor %}
   </tbody>

@@ -10,7 +10,6 @@
       <th scope="col">Lieu</th>
       <th scope="col">Identifiant cinéma (Boost)</th>
       <th scope="col">Nom de l'utilisateur (Boost)</th>
-      <th scope="col">Mot de passe (Boost)</th>
       <th scope="col">URL du cinéma (Boost)</th>
     </tr>
   </thead>
@@ -22,7 +21,6 @@
         <td>{{ links.build_venue_name_to_details_link(pivot.cinemaProviderPivot.venue, text_attr="name") }}</td>
         <td>{{ pivot.cinemaProviderPivot.idAtProvider }}</td>
         <td>{{ pivot.username }}</td>
-        <td>{{ pivot.password }}</td>
         <td>{{ pivot.cinemaUrl }}</td>
       </tr>
     {% endfor %}
