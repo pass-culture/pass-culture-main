@@ -1,4 +1,5 @@
 import react from '@vitejs/plugin-react'
+import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig } from 'vite'
 import environment from 'vite-plugin-environment'
 import { createHtmlPlugin } from 'vite-plugin-html'
@@ -27,6 +28,7 @@ export default defineConfig(({ mode }) => {
         minify: true,
         inject: { data: { mode } },
       }),
+      visualizer({ filename: 'bundleStats.html' }),
     ],
     server: { port: 3001 },
     preview: { port: 3001 },
