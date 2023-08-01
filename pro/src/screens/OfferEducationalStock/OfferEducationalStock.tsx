@@ -154,7 +154,7 @@ const OfferEducationalStock = <
         mode={mode}
       />
       <FormikProvider value={{ ...formik, resetForm }}>
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit} noValidate>
           <FormLayout className={styles['offer-educational-stock-form-layout']}>
             {isCollectiveOffer(offer) && offer.isPublicApi && (
               <BannerPublicApi className={styles['banner-space']}>

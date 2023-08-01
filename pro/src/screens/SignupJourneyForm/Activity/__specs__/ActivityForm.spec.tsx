@@ -60,7 +60,7 @@ const renderActivityForm = ({
         onSubmit={onSubmit}
         validationSchema={validationSchema}
       >
-        <Form>
+        <Form noValidate>
           <ActivityForm {...props} />
           <SubmitButton isLoading={false}>Submit</SubmitButton>
         </Form>
