@@ -28,7 +28,6 @@ target.zip
 .env.production.local
 .tern-port
 .tern-project
-.jest_cache
 .*.swp
 \#*\#
 *~
