@@ -125,6 +125,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NEW_TITELIVE_ELIGIBILITY_FILTERS = "Activer les nouveaux filtres d'éligibilité Tite Live"
     WIP_ENABLE_NEW_USER_OFFERER_LINK = "Activer le nouvel ajout des collaborateurs"
     WIP_ENABLE_NATIONAL_SYSTEM = "Activer le dispositif national dans les offres collectives"
+    WIP_ENABLE_DIFFUSE_HELP = "Activer l'affichage de l'aide diffuse adage"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -195,6 +196,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_TITELIVE_ELIGIBILITY_FILTERS,
     FeatureToggle.WIP_ENABLE_NEW_USER_OFFERER_LINK,
     FeatureToggle.WIP_ENABLE_NATIONAL_SYSTEM,
+    FeatureToggle.WIP_ENABLE_DIFFUSE_HELP,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
