@@ -1,7 +1,6 @@
 import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig } from 'vite'
-import environment from 'vite-plugin-environment'
 import { createHtmlPlugin } from 'vite-plugin-html'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
@@ -20,10 +19,6 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       tsconfigPaths(),
-      // Temporary plugin to expose env variables in the `process.env` object
-      // Once we move to Vitest we should remove this plugin and use the
-      // `import.meta.env` object instead
-      environment('all', { prefix: 'VITE_' }),
       createHtmlPlugin({
         minify: true,
         inject: { data: { mode } },

@@ -19,13 +19,6 @@ const config: StorybookConfig = {
   docs: {
     autodocs: true,
   },
-  // Temporary plugin to expose env variables in the `process.env` object
-  // Once we move to Vitest we should remove this plugin and use the
-  // `import.meta.env` object instead
-  async viteFinal(config) {
-    config.define = { 'process.env': process.env }
-    return config
-  },
 }
 
 export default config
