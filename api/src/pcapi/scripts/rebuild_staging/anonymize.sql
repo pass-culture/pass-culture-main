@@ -98,6 +98,15 @@ SET "authToken" = 'anonymized, you may have to set it if you want to use this pr
 WHERE "authToken" IS NOT NULL
 ;
 
+UPDATE boost_cinema_details
+SET
+  password = '',
+  token = NULL,
+  "tokenExpirationDate" = NULL
+;
+
+UPDATE cgr_cinema_details SET password = '';
+
 UPDATE cds_cinema_details
 SET "cinemaApiToken" = 'anonymized, you may have to set it if you want to use this provider'
 ;
