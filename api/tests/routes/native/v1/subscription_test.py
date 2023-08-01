@@ -1153,7 +1153,7 @@ class ProfileOptionsTypeTest:
                 },
                 {
                     "id": "UNEMPLOYED",
-                    "label": "Chômeur",
+                    "label": "Demandeur d'emploi",
                     "description": "En recherche d'emploi",
                     "associatedSchoolTypesIds": [],
                 },

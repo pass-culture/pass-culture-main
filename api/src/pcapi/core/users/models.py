@@ -144,7 +144,7 @@ class ActivityEnum(enum.Enum):
     APPRENTICE_STUDENT = "Alternant"
     VOLUNTEER = "Volontaire"
     INACTIVE = "Inactif"
-    UNEMPLOYED = "Chômeur"
+    UNEMPLOYED = "Demandeur d'emploi"
 
 
 class SchoolTypeEnum(enum.Enum):
