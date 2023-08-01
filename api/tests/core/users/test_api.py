@@ -1198,27 +1198,66 @@ class SearchPublicAccountTest:
         assert len(users) == 1
         assert users[0].id == user.id
 
+    def test_current_domain(self):
+        user = users_factories.BeneficiaryGrant18Factory(email="current@domain.com")
+        users_factories.EmailValidationEntryFactory(user=user)
+
+        query = users_api.search_public_account("@domain.com")
+        users = query.all()
+
+        assert len(users) == 1
+        assert users[0].id == user.id
+
+    def test_email_not_in_known_users(self):
+        users_factories.BeneficiaryGrant18Factory(email="current@domain.com")
+
+        query = users_api.search_public_account("another@email.com")
+
+        assert not query.all()
+
+    def test_domain_not_in_known_users(self):
+        users_factories.BeneficiaryGrant18Factory(email="current@domain.com")
+
+        query = users_api.search_public_account("@email.com")
+
+        assert not query.all()
+
     def test_old_email(self):
         event = users_factories.EmailValidationEntryFactory()
         event.user.email = event.newEmail
 
-        query = users_api.search_public_account(event.oldEmail)
+        query = users_api.search_public_account_in_history_email(event.oldEmail)
         users = query.all()
 
         assert len(users) == 1
         assert users[0].id == event.user.id
 
+    def test_old_domain(self):
+        user = users_factories.BeneficiaryGrant18Factory(email="current@domain.com")
+        event = users_factories.EmailValidationEntryFactory(user=user)
+
+        query = users_api.search_public_account_in_history_email(f"@{event.oldDomainEmail}")
+        users = query.all()
+
+        assert len(users) == 1
+        assert users[0].id == user.id
+
     def test_old_email_but_not_validated(self):
-        event = users_factories.EmailUpdateEntryFactory()
+        user = users_factories.BeneficiaryGrant18Factory(email="current@domain.com")
+        event = users_factories.EmailUpdateEntryFactory(user=user)
         # ensure that the current email is different from the event's
         # old one
         event.user.email = event.newEmail
 
-        query = users_api.search_public_account(event.oldEmail)
+        query = users_api.search_public_account_in_history_email(event.oldEmail)
         assert not query.all()
 
     def test_unknown_email(self):
         query = users_api.search_public_account("no@user.com")
+        assert not query.all()
+
+    def test_unknown_email_in_history_email(self):
+        query = users_api.search_public_account_in_history_email("no@user.com")
         assert not query.all()
 
 

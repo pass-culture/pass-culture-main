@@ -940,7 +940,12 @@ def comment_public_account(user_id: int) -> utils.BackofficeResponse:
 
 
 def fetch_rows(search_model: search.SearchUserModel) -> Pagination:
-    return search_utils.fetch_paginated_rows(users_api.search_public_account, search_model)
+    rows = search_utils.fetch_paginated_rows(users_api.search_public_account, search_model)
+
+    if rows.total == 0 and email_utils.is_valid_email_or_email_domain(email_utils.sanitize_email(search_model.terms)):
+        return search_utils.fetch_paginated_rows(users_api.search_public_account_in_history_email, search_model)
+
+    return rows
 
 
 def get_public_account_link(user_id: int, **kwargs: typing.Any) -> str:
