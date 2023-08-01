@@ -53,3 +53,5 @@ tyrion_report.html
 result.html
 
 public/icons/*.svg
+
+.vitest_cache
