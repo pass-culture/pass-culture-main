@@ -5,9 +5,8 @@ import { StockEventFormValues } from '../types'
 import { getValidationSchema } from '../validationSchema'
 
 vi.mock('utils/date', async () => {
-  const actual = (await vi.importActual('utils/date')) || {}
   return {
-    ...actual,
+    ...((await vi.importActual('utils/date')) ?? {}),
     getToday: vi.fn(() => new Date('2020-12-15T12:00:00Z')),
   }
 })

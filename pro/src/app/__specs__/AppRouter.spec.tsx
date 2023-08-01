@@ -14,7 +14,7 @@ vi.mock('hooks/useAnalytics', () => ({
   default: () => ({ setLogEvent: vi.fn() }),
 }))
 
-vi.spyOn(window, 'scrollTo').mockResolvedValue()
+vi.spyOn(window, 'scrollTo')
 
 describe('src | AppRouter', () => {
   it('should redirect to not found page when url is not matching a route', () => {

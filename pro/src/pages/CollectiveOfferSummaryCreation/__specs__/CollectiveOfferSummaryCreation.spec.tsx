@@ -9,7 +9,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import { CollectiveOfferSummaryCreation } from '../CollectiveOfferSummaryCreation'
 
 vi.mock('react-router-dom', async () => ({
-  ...((await vi.importActual('react-router-dom')) as object),
+  ...((await vi.importActual('react-router-dom')) ?? {}),
   useParams: () => ({
     requestId: vi.fn(),
     requete: '1',

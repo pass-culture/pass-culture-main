@@ -23,11 +23,6 @@ const renderOfferNameCell = (props: OfferNameCellProps) =>
     }
   )
 
-vi.mock('hooks/useActiveFeature', () => ({
-  __esModule: true,
-  default: vi.fn().mockReturnValue(true),
-}))
-
 describe('OfferNameCell', () => {
   let defaultOffer: Offer
   beforeEach(() => {

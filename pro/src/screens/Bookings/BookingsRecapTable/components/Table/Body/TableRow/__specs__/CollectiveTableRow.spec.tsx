@@ -28,7 +28,7 @@ vi.mock(
 const scrollIntoViewMock = vi.fn()
 
 vi.mock('utils/windowMatchMedia', () => ({
-  doesUserPreferReducedMotion: vi.fn().mockReturnValue(true),
+  doesUserPreferReducedMotion: vi.fn(),
 }))
 
 const renderCollectiveTableRow = (props: TableBodyProps) =>

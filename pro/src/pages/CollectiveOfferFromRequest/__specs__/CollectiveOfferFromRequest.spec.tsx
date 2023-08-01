@@ -25,9 +25,8 @@ vi.mock('apiClient/api', () => ({
 }))
 
 vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom')
   return {
-    ...(actual as object),
+    ...((await vi.importActual('react-router-dom')) ?? {}),
     useParams: () => ({
       offerId: '1',
       requestId: '2',

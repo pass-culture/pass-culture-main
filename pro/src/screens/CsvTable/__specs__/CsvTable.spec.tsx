@@ -1,6 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
 import React from 'react'
-import { vi, expect } from 'vitest'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 

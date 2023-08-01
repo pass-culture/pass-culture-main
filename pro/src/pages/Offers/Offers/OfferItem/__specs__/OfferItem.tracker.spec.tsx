@@ -14,11 +14,7 @@ import OfferItem, { OfferItemProps } from '../OfferItem'
 const mockLogEvent = vi.fn()
 vi.mock('apiClient/api', () => ({
   api: {
-    deleteDraftOffers: vi.fn().mockResolvedValue({
-      isOk: true,
-      message: 'youpi draft deleted !',
-      payload: null,
-    }),
+    deleteDraftOffers: vi.fn(),
   },
 }))
 

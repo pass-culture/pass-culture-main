@@ -9,7 +9,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import ReimbursementsDetails from '../ReimbursementsDetails/ReimbursementsDetails'
 
 vi.mock('utils/date', async () => ({
-  ...((await vi.importActual('utils/date')) as object),
+  ...((await vi.importActual('utils/date')) ?? {}),
   getToday: vi.fn(() => new Date('2020-12-15T12:00:00Z')),
 }))
 

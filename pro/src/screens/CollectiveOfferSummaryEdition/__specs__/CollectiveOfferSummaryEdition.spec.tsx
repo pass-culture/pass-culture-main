@@ -1,7 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { vi } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from 'apiClient/api'

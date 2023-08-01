@@ -1,4 +1,3 @@
-import { vi } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { API_URL, URL_FOR_MAINTENANCE } from 'utils/config'
@@ -28,10 +27,6 @@ describe('pcapiClient', () => {
 
   beforeEach(() => {
     fetchMock.mockResponse(JSON.stringify({}), { status: 200 })
-  })
-
-  afterEach(() => {
-    fetchMock.resetMocks()
   })
 
   describe('get', () => {

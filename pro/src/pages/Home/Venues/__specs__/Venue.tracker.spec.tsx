@@ -17,7 +17,7 @@ const mockLogEvent = vi.fn()
 
 vi.mock('apiClient/api', () => ({
   api: {
-    getVenueStats: vi.fn().mockResolvedValue({}),
+    getVenueStats: vi.fn(),
   },
 }))
 

@@ -20,7 +20,7 @@ import { collectiveOfferFactory } from '../utils/collectiveOffersFactories'
 //FIX ME : extract inital values and constant to reduce code duplication with CollectiveOffers.spec.tsx
 
 vi.mock('react-router-dom', async () => ({
-  ...((await vi.importActual('react-router-dom')) as object),
+  ...((await vi.importActual('react-router-dom')) ?? {}),
   useNavigate: vi.fn(),
 }))
 
@@ -97,17 +97,7 @@ const proVenues = [
 ]
 
 vi.mock('repository/venuesService', async () => ({
-  ...((await vi.importActual('repository/venuesService')) as object),
-}))
-
-vi.mock('utils/date', async () => ({
-  ...((await vi.importActual('utils/date')) as object),
-  getToday: vi.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
-}))
-
-vi.mock('hooks/useActiveFeature', () => ({
-  __esModule: true,
-  default: vi.fn().mockReturnValue(true),
+  ...((await vi.importActual('repository/venuesService')) ?? {}),
 }))
 
 describe('route CollectiveOffers', () => {

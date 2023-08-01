@@ -21,7 +21,7 @@ const renderOffers = (props: OffersProps) =>
 
 vi.mock('apiClient/api', () => ({
   api: {
-    listOfferersNames: vi.fn().mockReturnValue({}),
+    listOfferersNames: vi.fn(),
   },
 }))
 

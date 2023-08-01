@@ -13,34 +13,7 @@ import { AppLayout } from '../AppLayout'
 
 vi.mock('apiClient/api', () => ({
   apiAdage: {
-    getEducationalOffersCategories: vi.fn().mockResolvedValue({
-      categories: [
-        { id: 'CINEMA', proLabel: 'Cinéma' },
-        { id: 'MUSEE', proLabel: 'Musée' },
-      ],
-      subcategories: [
-        {
-          id: 'CINE_PLEIN_AIR',
-          proLabel: 'Cinéma plein air',
-          categoryId: 'CINEMA',
-        },
-        {
-          id: 'EVENEMENT_CINE',
-          proLabel: 'Évènement cinéma',
-          categoryId: 'CINEMA',
-        },
-        {
-          id: 'VISITE_GUIDEE',
-          proLabel: 'Visite guidée',
-          categoryId: 'MUSEE',
-        },
-        {
-          id: 'VISITE',
-          proLabel: 'Visite',
-          categoryId: 'MUSEE',
-        },
-      ],
-    }),
+    getEducationalOffersCategories: vi.fn(),
     getVenueById: vi.fn(),
     authenticate: vi.fn(),
     getVenueBySiret: vi.fn(),
@@ -51,9 +24,8 @@ vi.mock('apiClient/api', () => ({
 }))
 
 vi.mock('react-instantsearch-dom', async () => {
-  const actual = await vi.importActual('react-instantsearch-dom')
   return {
-    ...(actual as object),
+    ...((await vi.importActual('react-instantsearch-dom')) ?? {}),
     Configure: vi.fn(() => <div />),
     connectStats: vi.fn(Component => (props: any) => (
       <Component
@@ -68,9 +40,8 @@ vi.mock('react-instantsearch-dom', async () => {
 })
 
 vi.mock('utils/config', async () => {
-  const actual = await vi.importActual('utils/config')
   return {
-    ...(actual as object),
+    ...((await vi.importActual('utils/config')) ?? {}),
     ALGOLIA_API_KEY: 'adage-api-key',
     ALGOLIA_APP_ID: '1',
     ALGOLIA_COLLECTIVE_OFFERS_INDEX: 'adage-collective-offers',
