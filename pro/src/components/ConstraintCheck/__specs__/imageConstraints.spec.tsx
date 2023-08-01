@@ -41,9 +41,13 @@ describe('image constraints', () => {
       })
 
       it('refuse non bitmap file', async () => {
+        // TODO: replace Object.defineProperty with something that doesn't impact other tests/suites
         const file = createImageFile()
-        const constraint = imageConstraints.formats([])
-        mockCreateImageBitmap.mockRejectedValue(null)
+        const constraint = imageConstraints.formats(['image/png'])
+        Object.defineProperty(global, 'createImageBitmap', {
+          writable: true,
+          value: vi.fn().mockRejectedValueOnce(null),
+        })
 
         const isValid = await constraint.asyncValidator(file)
 

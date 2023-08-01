@@ -23,10 +23,8 @@ const mockLogEvent = vi.fn()
 window.open = vi.fn()
 
 vi.mock('utils/config', async () => {
-  const actual = await vi.importActual('utils/config')
-
   return {
-    ...(actual as object),
+    ...((await vi.importActual('utils/config')) ?? {}),
     WEBAPP_URL: 'https://localhost',
   }
 })

@@ -51,7 +51,7 @@ const renderValidationScreen = (contextValue: SignupJourneyContextValues) => {
         <Routes>
           <Route
             path="/parcours-inscription/identification"
-            element={<div>Authentication</div>}
+            element={<div>Authentification</div>}
           />
           <Route
             path="/parcours-inscription/activite"
@@ -88,11 +88,11 @@ describe('ValidationScreen', () => {
     ])
   })
 
-  it('should redirect to authentication if no offerer is selected', async () => {
+  it('should redirect to authentification if no offerer is selected', async () => {
     renderValidationScreen(contextValue)
 
     await waitFor(() => {
-      expect(screen.getByText('Authentication')).toBeInTheDocument()
+      expect(screen.getByText('Authentification')).toBeInTheDocument()
     })
   })
 
@@ -164,12 +164,12 @@ describe('ValidationScreen', () => {
       expect(screen.getByText('Activite')).toBeInTheDocument()
     })
 
-    it('Should navigate to authentication page when clicking the first update button', async () => {
+    it('Should navigate to authentification page when clicking the first update button', async () => {
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getAllByText('Modifier')[0])
 
-      expect(screen.getByText('Authentication')).toBeInTheDocument()
+      expect(screen.getByText('Authentification')).toBeInTheDocument()
     })
 
     it('Should navigate to activite page when clicking the second update button', async () => {

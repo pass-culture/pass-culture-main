@@ -73,17 +73,12 @@ const renderOffers = async (
 }
 
 vi.mock('repository/venuesService', async () => ({
-  ...((await vi.importActual('repository/venuesService')) as object),
+  ...((await vi.importActual('repository/venuesService')) ?? {}),
 }))
 
 vi.mock('utils/date', async () => ({
-  ...((await vi.importActual('utils/date')) as object),
-  getToday: vi.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
-}))
-
-vi.mock('hooks/useActiveFeature', () => ({
-  __esModule: true,
-  default: vi.fn().mockReturnValue(true),
+  ...((await vi.importActual('utils/date')) ?? {}),
+  getToday: vi.fn(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
 describe('route Offers', () => {

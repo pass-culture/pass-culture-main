@@ -8,7 +8,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import OffererDetails from '../OffererDetails'
 
 vi.mock('react-router-dom', async () => ({
-  ...((await vi.importActual('react-router-dom')) as object),
+  ...((await vi.importActual('react-router-dom')) ?? {}),
   useParams: () => ({
     offererId: 'AA',
   }),

@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { expect, vi } from 'vitest'
 
 import { api } from 'apiClient/api'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -32,10 +31,6 @@ const renderHeader = (storeOverrides = defaultStore) =>
   })
 
 describe('navigation menu', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
   describe('when clicking on Home icon', () => {
     it('should redirect to /accueil when user is not admin', () => {
       // When

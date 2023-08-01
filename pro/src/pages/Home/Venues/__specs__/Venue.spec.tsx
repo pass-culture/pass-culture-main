@@ -15,7 +15,7 @@ import Venue, { VenueProps } from '../Venue'
 
 vi.mock('apiClient/api', () => ({
   api: {
-    getVenueStats: vi.fn().mockResolvedValue({}),
+    getVenueStats: vi.fn(),
   },
 }))
 const renderVenue = (

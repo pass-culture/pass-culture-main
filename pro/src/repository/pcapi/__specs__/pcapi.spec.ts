@@ -13,9 +13,8 @@ vi.mock('repository/pcapi/pcapiClient', () => ({
 }))
 
 vi.mock('utils/date', async () => {
-  const actual = (await vi.importActual('utils/date')) || {}
   return {
-    ...actual,
+    ...((await vi.importActual('utils/date')) ?? {}),
     getToday: vi.fn(() => new Date(2020, 8, 12)),
   }
 })

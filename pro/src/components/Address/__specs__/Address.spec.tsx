@@ -32,9 +32,8 @@ const mockAdressData = [
 ]
 
 vi.mock('apiClient/adresse', async () => {
-  const actual = await vi.importActual('apiClient/adresse')
   return {
-    ...(actual as object),
+    ...((await vi.importActual('apiClient/adresse')) ?? {}),
     default: {
       getDataFromAddress: vi.fn(),
     },

@@ -129,7 +129,7 @@ describe('creationLinks', () => {
         managedVenues: [],
       },
     ]
-    vi.spyOn(api, 'getOfferer').mockResolvedValueOnce(baseOfferers[1])
+    vi.spyOn(api, 'getOfferer').mockResolvedValueOnce(baseOfferers[0])
     await renderHomePage()
     expect(screen.queryByText('Ajouter un lieu')).not.toBeInTheDocument()
   })

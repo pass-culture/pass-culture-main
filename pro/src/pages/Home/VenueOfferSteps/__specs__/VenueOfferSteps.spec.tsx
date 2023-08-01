@@ -5,11 +5,6 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { VenueOfferSteps } from '../index'
 
-vi.mock('hooks/useActiveFeature', () => ({
-  __esModule: true,
-  default: vi.fn().mockReturnValue(true),
-}))
-
 const renderVenueOfferSteps = ({
   hasVenue = false,
   hasCreatedOffer = false,

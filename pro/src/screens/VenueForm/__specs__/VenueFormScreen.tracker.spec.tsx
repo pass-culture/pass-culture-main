@@ -2,7 +2,6 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
-import { vi } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from 'apiClient/api'

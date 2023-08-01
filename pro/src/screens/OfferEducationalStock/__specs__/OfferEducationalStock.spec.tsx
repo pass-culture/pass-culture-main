@@ -39,7 +39,7 @@ const initialValuesNotEmpty = {
 }
 
 vi.mock('react-router-dom', async () => ({
-  ...((await vi.importActual('react-router-dom')) as object),
+  ...((await vi.importActual('react-router-dom')) ?? {}),
   useNavigate: vi.fn(),
 }))
 

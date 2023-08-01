@@ -2,7 +2,6 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
-import { vi } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { apiAdresse } from 'apiClient/adresse'
@@ -120,9 +119,8 @@ vi.spyOn(api, 'getSiretInfo').mockResolvedValue({
 vi.spyOn(api, 'canOffererCreateEducationalOffer').mockResolvedValue()
 
 vi.mock('apiClient/adresse', async () => {
-  const actual = await vi.importActual('apiClient/adresse')
   return {
-    ...(actual as object),
+    ...((await vi.importActual('apiClient/adresse')) ?? {}),
     default: {
       getDataFromAddress: vi.fn(),
     },
@@ -173,7 +171,7 @@ fetchMock.mockResponse(
 )
 
 vi.mock('utils/windowMatchMedia', () => ({
-  doesUserPreferReducedMotion: vi.fn().mockReturnValue(false),
+  doesUserPreferReducedMotion: vi.fn(),
 }))
 
 Element.prototype.scrollIntoView = vi.fn()
