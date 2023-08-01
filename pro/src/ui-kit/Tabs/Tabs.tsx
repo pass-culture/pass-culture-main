@@ -24,7 +24,6 @@ export interface FilterTabsProps {
 
 const Tabs = ({ nav, selectedKey, tabs }: FilterTabsProps): JSX.Element => {
   const location = useLocation()
-
   const content = (
     <ul className={styles['tabs']}>
       {tabs.map(({ key, label, url, icon, onClick }) => {
