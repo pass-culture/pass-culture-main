@@ -1,3 +1,5 @@
+import { createSelector } from '@reduxjs/toolkit'
+
 export const isFeatureActive = (state, featureName) => {
   if (featureName === null) {
     return true
@@ -17,7 +19,8 @@ export const isFeatureActive = (state, featureName) => {
 
 export const selectFeaturesInitialized = state => state.features.initialized
 
-export const selectActiveFeatures = state =>
-  state.features.list
-    .filter(feature => feature.isActive)
-    .map(({ name }) => name)
+const selectFeatures = state => state.features.list
+
+export const selectActiveFeatures = createSelector(selectFeatures, features =>
+  features.filter(feature => feature.isActive).map(({ name }) => name)
+)
