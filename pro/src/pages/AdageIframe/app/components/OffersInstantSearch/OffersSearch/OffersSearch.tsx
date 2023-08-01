@@ -44,6 +44,7 @@ export interface SearchFormValues {
   departments: string[]
   academies: string[]
   eventAddressType: string
+  categories: string[][]
 }
 
 enum OfferTab {

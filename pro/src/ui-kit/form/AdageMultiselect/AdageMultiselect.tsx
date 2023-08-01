@@ -8,7 +8,7 @@ import styles from './AdageMultiselect.module.scss'
 
 interface ItemProps {
   label: string
-  value: number | string
+  value: number | string | string[]
 }
 
 interface AdageMultiselectProps {
@@ -113,8 +113,11 @@ const AdageMultiselect = ({
           // we cannot pass down the ref to basecheckbox as it is a function component
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { ref, ...itemProps } = getItemProps({ item, index })
+          const liValueKey = Array.isArray(item.value)
+            ? item.value.join('_')
+            : item.value
           return (
-            <li key={`${item.value}${index}`}>
+            <li key={`${liValueKey}${index}`}>
               <BaseCheckbox
                 key={`${name}-${item.label}`}
                 label={item.label}
