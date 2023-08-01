@@ -6,6 +6,7 @@ import pytest
 from pcapi import settings
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.testing import override_features
 from pcapi.models import offer_mixin
 from pcapi.utils import human_ids
 
@@ -48,6 +49,7 @@ class PostEventTest:
         assert created_offer.withdrawalType is None
         assert created_offer.withdrawalDelay is None
 
+    @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_event_creation_with_full_body(self, client, clear_tests_assets_bucket):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
@@ -200,6 +202,7 @@ class PostEventTest:
         created_offer = offers_models.Offer.query.one()
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.NO_TICKET
 
+    @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
     def test_event_with_on_site_ticket(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
@@ -220,6 +223,7 @@ class PostEventTest:
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.ON_SITE
         assert created_offer.withdrawalDelay == 30 * 60
 
+    @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
     def test_event_with_email_ticket(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
@@ -240,6 +244,7 @@ class PostEventTest:
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.BY_EMAIL
         assert created_offer.withdrawalDelay == 3 * 24 * 3600
 
+    @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
     def test_error_when_ticket_specified_but_not_applicable(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
@@ -260,6 +265,7 @@ class PostEventTest:
             "offer": ["Une offre qui n'a pas de ticket retirable ne peut pas avoir un type de retrait renseigné"]
         }
 
+    @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
     def test_error_when_withdrawable_event_but_no_booking_contact(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
@@ -310,3 +316,24 @@ class PostEventTest:
 
         assert response.status_code == 400
         assert response.json == {"priceCategories": ["Price categories must be unique"]}
+
+    def test_cannot_create_event_with_ticket_if_FF_not_active(self, client):
+        # This test can be deleted with FF WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/events",
+            json={
+                "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+                "ticketCollection": {"way": "by_email", "daysBeforeEvent": 3},
+            },
+        )
+
+        assert response.status_code == 400
+        assert offers_models.Offer.query.count() == 0
+        assert response.json == {
+            "global": "During this API Beta, it is only possible to create events without tickets."
+        }
