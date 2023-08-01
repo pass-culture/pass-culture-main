@@ -9,6 +9,7 @@ import fullRefreshIcon from 'icons/full-refresh.svg'
 import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeFranceIcon from 'icons/stroke-france.svg'
 import { getAcademiesOptionsAdapter } from 'pages/AdageIframe/app/adapters/getAcademiesOptionsAdapter'
+import { getEducationalCategoriesOptionsAdapter } from 'pages/AdageIframe/app/adapters/getEducationalCategoriesOptionsAdapter'
 import { getEducationalDomainsOptionsAdapter } from 'pages/AdageIframe/app/adapters/getEducationalDomainsOptionsAdapter'
 import { departmentOptions } from 'pages/AdageIframe/app/constants/departmentOptions'
 import { Option } from 'pages/AdageIframe/app/types'
@@ -41,6 +42,7 @@ export const OfferFilters = ({
   const [modalOpenStatus, setModalOpenStatus] = useState<{
     [key: string]: boolean
   }>({})
+
   const formik = useFormikContext<SearchFormValues>()
 
   const getActiveLocalisationFilterCount = () => {
@@ -57,6 +59,9 @@ export const OfferFilters = ({
 
   const [domainsOptions, setDomainsOptions] = useState<Option<number>[]>([])
   const [academiesOptions, setAcademieOptions] = useState<Option<string>[]>([])
+  const [categoriesOptions, setCategoriesOptions] = useState<
+    Option<string[]>[]
+  >([])
 
   const onReset = (
     modalName: string,
@@ -79,6 +84,13 @@ export const OfferFilters = ({
     const loadFiltersOptions = async () => {
       const domainsResponse = await getEducationalDomainsOptionsAdapter()
       const academiesResponse = await getAcademiesOptionsAdapter()
+      const categoriesResponse = await getEducationalCategoriesOptionsAdapter(
+        null
+      )
+
+      if (categoriesResponse.isOk) {
+        setCategoriesOptions(categoriesResponse.payload.educationalCategories)
+      }
 
       if (domainsResponse.isOk) {
         setDomainsOptions(domainsResponse.payload)
@@ -266,6 +278,29 @@ export const OfferFilters = ({
                 label="Domaine artistique"
                 options={domainsOptions}
                 isOpen={modalOpenStatus['domains']}
+              />
+            </ModalFilterLayout>
+          </AdageButtonFilter>
+          <AdageButtonFilter
+            isActive={formik.values.categories.length > 0}
+            title="Catégorie"
+            itemsLength={formik.values.categories.length}
+            isOpen={modalOpenStatus['categories']}
+            setIsOpen={setModalOpenStatus}
+            filterName="categories"
+            handleSubmit={formik.handleSubmit}
+          >
+            <ModalFilterLayout
+              onClean={() => onReset('categories', [])}
+              onSearch={() => onSearch('categories')}
+              title="Choisir une catégorie"
+            >
+              <AdageMultiselect
+                placeholder="Ex: Cinéma"
+                name="categories"
+                label="Catégorie"
+                options={categoriesOptions}
+                isOpen={modalOpenStatus['categories']}
               />
             </ModalFilterLayout>
           </AdageButtonFilter>
