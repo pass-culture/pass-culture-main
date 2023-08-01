@@ -11,6 +11,7 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.models import feature
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import rate_limiting
 from pcapi.validation.routes.users_authentifications import api_key_required
@@ -30,6 +31,11 @@ def _deserialize_ticket_collection(
         if subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id].can_be_withdrawable:
             return offers_models.WithdrawalTypeEnum.NO_TICKET, None
         return None, None
+
+    if not feature.FeatureToggle.WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API.is_active():
+        raise api_errors.ApiErrors(
+            {"global": "During this API Beta, it is only possible to create events without tickets."}, status_code=400
+        )
     if isinstance(ticket_collection, serialization.SentByEmailDetails):
         return offers_models.WithdrawalTypeEnum.BY_EMAIL, ticket_collection.daysBeforeEvent * 24 * 3600
     return offers_models.WithdrawalTypeEnum.ON_SITE, ticket_collection.minutesBeforeEvent * 60
