@@ -104,21 +104,16 @@ jobs:
           cache: yarn
           cache-dependency-path: pro/yarn.lock
           node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - name: "Fetch master branch so that Jest can assert changes since master"
-        run: |
-          git fetch --no-tags origin +refs/heads/master:refs/remotes/origin/master
-          git update-ref refs/heads/master refs/remotes/origin/master
       - if: ${{ env.use_cache == false }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ needs.read-node-version.outputs.node_version }}
       - run: yarn install
-      - name: Use Jest Cache
-        id: jest-cache
+      - name: Use Vitest Cache
         uses: actions/cache@v3
         with:
-          path: ./${{ env.folder }}/.jest_cache
-          key: node-${{ needs.read-node-version.outputs.node_version }}-jest-cache
+          path: ./${{ env.folder }}/.vitest_cache
+          key: vitest-cache
       - name: Run tests with coverage
         run: yarn test:unit:ci
       - name: SonarCloud scan
