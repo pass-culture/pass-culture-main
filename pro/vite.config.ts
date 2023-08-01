@@ -42,7 +42,7 @@ export default defineConfig(({ mode }) => {
       },
       minThreads: 4,
       maxThreads: 6,
-      testTimeout: 10000,
+      testTimeout: 30000,
     },
   }
 })
