@@ -40,7 +40,7 @@ export default defineConfig(({ mode }) => {
       cache: { dir: '../.vitest_cache' },
       css: { modules: { classNameStrategy: 'non-scoped' } },
       coverage: { reportsDirectory: '../coverage' },
-      minThreads: 6,
+      minThreads: 4,
       maxThreads: 6,
       testTimeout: 10000,
     },
