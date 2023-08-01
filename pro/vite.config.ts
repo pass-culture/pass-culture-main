@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
     root: './src',
     build: {
       outDir: '../build',
-      sourcemap: false,
+      sourcemap: true,
       emptyOutDir: true,
     },
     resolve: {
