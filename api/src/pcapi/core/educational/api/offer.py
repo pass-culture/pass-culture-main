@@ -112,8 +112,8 @@ def list_collective_offers_for_pro_user(
     venue_id: int | None = None,
     name_keywords: str | None = None,
     status: str | None = None,
-    period_beginning_date: str | None = None,
-    period_ending_date: str | None = None,
+    period_beginning_date: datetime.date | None = None,
+    period_ending_date: datetime.date | None = None,
     offer_type: collective_offers_serialize.CollectiveOfferType | None = None,
 ) -> list[educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate]:
     if offer_type != collective_offers_serialize.CollectiveOfferType.template:

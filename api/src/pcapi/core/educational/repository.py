@@ -437,8 +437,8 @@ def get_collective_offers_for_filters(
     venue_id: int | None = None,
     category_id: str | None = None,
     name_keywords: str | None = None,
-    period_beginning_date: str | None = None,
-    period_ending_date: str | None = None,
+    period_beginning_date: date | None = None,
+    period_ending_date: date | None = None,
 ) -> list[educational_models.CollectiveOffer]:
     query = offers_repository.get_collective_offers_by_filters(
         user_id=user_id,
@@ -480,8 +480,8 @@ def get_collective_offers_template_for_filters(
     venue_id: int | None = None,
     category_id: str | None = None,
     name_keywords: str | None = None,
-    period_beginning_date: str | None = None,
-    period_ending_date: str | None = None,
+    period_beginning_date: date | None = None,
+    period_ending_date: date | None = None,
 ) -> list[educational_models.CollectiveOfferTemplate]:
     query = offers_repository.get_collective_offers_template_by_filters(
         user_id=user_id,
