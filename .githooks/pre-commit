@@ -43,7 +43,9 @@ if [[ ! -z "$STAGED_FILES" ]]; then
   # run tests related to staged files
   if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",test," ]]; then
     echo "Running Tests"
-    yarn run vite related $STAGED_FILES --run --coverage.enabled --coverage.100
+    # The following command will run tests related to the vite root (`src`)
+    # In bash ${string//substring/replacement} replace all occurrences of a string
+    yarn test:unit:hook ${STAGED_FILES//src\//}
     VITEST_EXIT_CODE=$?
 
     # check vitest exit code
