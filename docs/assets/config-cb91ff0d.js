@@ -1,0 +1,2 @@
+let e;typeof window<"u"&&(e=window.location.hostname.includes("beta.gouv")?{BASE_URL:"./",MODE:"production",DEV:!1,PROD:!0,SSR:!1,STORYBOOK:"true"}.VITE_API_URL_OLD:{BASE_URL:"./",MODE:"production",DEV:!1,PROD:!0,SSR:!1,STORYBOOK:"true"}.VITE_API_URL_NEW);const t=e||"http://localhost",o={BASE_URL:"./",MODE:"production",DEV:!1,PROD:!0,SSR:!1,STORYBOOK:"true"}.VITE_URL_FOR_MAINTENANCE||"";export{t as A,o as U};
+//# sourceMappingURL=config-cb91ff0d.js.map
