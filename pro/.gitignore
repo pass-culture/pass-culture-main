@@ -11,6 +11,7 @@
 /cypress/videos
 .vitest_cache
 coverage
+bundleStats.html
 
 # production
 /build
