@@ -131,7 +131,7 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should redirect on submit button and offer selected', async () => {
-    await vi.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
+    vi.spyOn(createFromTemplateUtils, 'createOfferFromTemplate')
     renderCollectiveOfferSelectionDuplication({ initialValues, onSubmit })
 
     await waitFor(() =>
@@ -150,8 +150,7 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should display message when no offer', async () => {
-    await vi
-      .spyOn(api, 'getCollectiveOffers')
+    vi.spyOn(api, 'getCollectiveOffers')
       // @ts-expect-error FIX ME : will be fix PC-19976
       .mockReturnValue([])
     renderCollectiveOfferSelectionDuplication({ initialValues, onSubmit })

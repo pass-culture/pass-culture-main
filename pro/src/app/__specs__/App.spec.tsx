@@ -12,7 +12,6 @@ vi.mock('hooks/useAnalytics', () => ({ useConfigureFirebase: vi.fn() }))
 vi.mock('hooks/useLogNavigation', () => ({ default: vi.fn() }))
 vi.mock('hooks/usePageTitle', () => ({ default: vi.fn() }))
 vi.mock('@sentry/browser', () => ({ setUser: vi.fn() }))
-vi.spyOn(window, 'scrollTo').mockResolvedValue()
 
 const renderApp = (storeOverrides: any, url = '/') =>
   renderWithProviders(
@@ -49,6 +48,7 @@ describe('src | App', () => {
         },
       },
     }
+    vi.spyOn(window, 'scrollTo')
   })
 
   it('should render App and children components when isMaintenanceActivated is false', async () => {

@@ -21,7 +21,7 @@ const mockLogEvent = vi.fn()
 window.open = vi.fn()
 
 vi.mock('apiClient/api', () => ({
-  api: { patchPublishOffer: vi.fn().mockResolvedValue({}) },
+  api: { patchPublishOffer: vi.fn() },
 }))
 
 const defaultContext: OfferIndividualContextValues = {

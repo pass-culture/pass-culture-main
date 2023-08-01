@@ -49,7 +49,7 @@ vi.mock('repository/pcapi/pcapi', () => ({
 }))
 
 vi.mock('react-router-dom', async () => ({
-  ...((await vi.importActual('react-router-dom')) as object),
+  ...((await vi.importActual('react-router-dom')) ?? {}),
   useParams: () => ({
     offererId: '1234',
     venueId: '12',

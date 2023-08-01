@@ -2,7 +2,6 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
-import { vi } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { apiAdresse } from 'apiClient/adresse'
@@ -20,9 +19,8 @@ const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
 vi.mock('apiClient/adresse', async () => {
-  const actual = await vi.importActual('apiClient/adresse')
   return {
-    ...(actual as object),
+    ...((await vi.importActual('apiClient/adresse')) ?? {}),
     default: {
       getDataFromAddress: vi.fn(),
     },

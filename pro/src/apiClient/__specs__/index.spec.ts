@@ -1,4 +1,3 @@
-import { vi } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { api, apiContremarque } from 'apiClient/api'

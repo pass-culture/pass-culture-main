@@ -7,7 +7,7 @@ import Signup from '../Signup'
 
 vi.mock('apiClient/api', () => ({
   api: {
-    getProfile: vi.fn().mockResolvedValue({}),
+    getProfile: vi.fn(),
     listFeatures: vi.fn(),
     listOfferersNames: vi.fn(),
     getSirenInfo: vi.fn(),
@@ -26,7 +26,6 @@ describe('src | components | pages | Signup', () => {
       },
     }
   })
-  afterEach(vi.resetAllMocks)
 
   it('should render logo and sign-up form', async () => {
     // when
