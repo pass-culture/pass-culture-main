@@ -44,8 +44,8 @@ class ListCollectiveOffersQueryModel(BaseModel):
     venue_id: int | None
     categoryId: str | None
     creation_mode: str | None
-    period_beginning_date: str | None
-    period_ending_date: str | None
+    period_beginning_date: date | None
+    period_ending_date: date | None
     collective_offer_type: CollectiveOfferType | None
 
     class Config:

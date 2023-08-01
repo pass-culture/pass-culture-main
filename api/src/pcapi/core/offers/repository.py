@@ -181,8 +181,8 @@ def get_collective_offers_by_filters(
     venue_id: int | None = None,
     category_id: str | None = None,
     name_keywords: str | None = None,
-    period_beginning_date: str | None = None,
-    period_ending_date: str | None = None,
+    period_beginning_date: datetime.date | None = None,
+    period_ending_date: datetime.date | None = None,
 ) -> flask_sqlalchemy.BaseQuery:
     query = educational_models.CollectiveOffer.query.filter(
         educational_models.CollectiveOffer.validation != models.OfferValidationStatus.DRAFT
@@ -322,7 +322,7 @@ def get_collective_offers_by_filters(
                     offerers_models.Venue.timezone,
                     sa.func.timezone("UTC", educational_models.CollectiveStock.beginningDatetime),
                 )
-                <= period_ending_date
+                <= datetime.datetime.combine(period_ending_date, datetime.time.max),
             )
         if venue_id is not None:
             subquery = subquery.filter(educational_models.CollectiveOffer.venueId == venue_id)
@@ -347,8 +347,8 @@ def get_collective_offers_template_by_filters(
     venue_id: int | None = None,
     category_id: str | None = None,
     name_keywords: str | None = None,
-    period_beginning_date: str | None = None,
-    period_ending_date: str | None = None,
+    period_beginning_date: datetime.date | None = None,
+    period_ending_date: datetime.date | None = None,
 ) -> flask_sqlalchemy.BaseQuery:
     query = educational_models.CollectiveOfferTemplate.query.filter(
         educational_models.CollectiveOfferTemplate.validation != models.OfferValidationStatus.DRAFT
