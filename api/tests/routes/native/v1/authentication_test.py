@@ -484,8 +484,10 @@ def test_reset_password_with_not_valid_token(client):
 
     assert response.status_code == 400
     assert user.password == old_password
+    assert user.password_date_updated is None
 
 
+@freeze_time("2023-07-28 10:00:00")
 def test_reset_password_success(client):
     new_password = "New_password1998!"
 
@@ -498,6 +500,7 @@ def test_reset_password_success(client):
     assert response.status_code == 204
     db.session.refresh(user)
     assert user.password == crypto.hash_password(new_password)
+    assert user.password_date_updated == datetime(2023, 7, 28, 10, 00)
 
     token = Token.query.get(token.id)
     assert token.isUsed
@@ -537,6 +540,7 @@ def test_reset_password_fail_for_password_strength(client):
     assert Token.query.get(token.id)
 
 
+@freeze_time("2023-07-28 10:00:00")
 def test_change_password_success(client):
     new_password = "New_password1998!"
     user = users_factories.UserFactory()
@@ -552,6 +556,7 @@ def test_change_password_success(client):
     assert response.status_code == 204
     db.session.refresh(user)
     assert user.password == crypto.hash_password(new_password)
+    assert user.password_date_updated is None
 
 
 def test_change_password_failures(client):
@@ -578,6 +583,7 @@ def test_change_password_failures(client):
     assert response.json["code"] == "WEAK_PASSWORD"
     db.session.refresh(user)
     assert user.password == crypto.hash_password(settings.TEST_DEFAULT_PASSWORD)
+    assert user.password_date_updated is None
 
 
 @patch("pcapi.core.users.repository.get_user_with_valid_token", side_effect=users_exceptions.InvalidToken)
@@ -731,3 +737,31 @@ def test_refresh_token_route_updates_user_last_connection_date(client):
 
     assert user.lastConnectionDate == datetime(2020, 3, 15)
     assert len(sendinblue_testing.sendinblue_requests) == 1
+
+
+@freeze_time("2023-07-28")
+def test_success_when_refreshing_access_token_with_token_issued_after_password_update_date(client):
+    user = users_factories.UserFactory(password_date_updated=datetime.fromisoformat("2023-01-01"))
+
+    refresh_token = create_refresh_token(identity=user.email)
+
+    client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
+    response = client.post("/native/v1/refresh_access_token")
+
+    assert response.status_code == 200
+
+
+@freeze_time("2023-07-27")
+def test_error_when_refreshing_access_token_with_token_issued_before_password_update_date(client):
+    user = users_factories.UserFactory(password_date_updated=datetime.fromisoformat("2023-07-28"))
+
+    refresh_token = create_refresh_token(identity=user.email)
+
+    client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
+    response = client.post("/native/v1/refresh_access_token")
+
+    assert response.status_code == 401
+    assert response.json == {
+        "code": "INVALID_TOKEN_AFTER_PASSWORD_CHANGE",
+        "message": "Token invalide suite à une modification de mot de passe",
+    }

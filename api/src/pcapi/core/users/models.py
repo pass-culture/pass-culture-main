@@ -214,6 +214,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         server_default="""{"marketing_push": true, "marketing_email": true}""",
     )
     password: bytes = sa.Column(sa.LargeBinary(60), nullable=False)
+    password_date_updated: datetime = sa.Column(sa.DateTime, nullable=True)
     _phoneNumber = sa.Column(sa.String(20), nullable=True, index=True, name="phoneNumber")
     phoneValidationStatus = sa.Column(sa.Enum(PhoneValidationStatusType, create_constraint=False), nullable=True)
     postalCode = sa.Column(sa.String(5), nullable=True)
@@ -349,9 +350,12 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         if self.has_non_attached_pro_role:
             self.roles.remove(UserRole.NON_ATTACHED_PRO)
 
-    def setPassword(self, newpass: str) -> None:
+    def setPassword(self, newpass: str, update_date: bool = True) -> None:
         self.clearTextPassword = newpass
         self.password = crypto.hash_password(newpass)
+
+        if update_date:
+            self.password_date_updated = datetime.utcnow()
 
     @property
     def age(self) -> int | None:
