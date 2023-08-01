@@ -17,7 +17,7 @@ fetchMock.mockResponse(req => {
   ----------------------------------------------------------------------------
   `)
 
-  // We do not await this Promise so that Jest considers it as
+  // We do not await this Promise so that Vitest considers it as
   // an unhandled rejection and thus fails the test
   // (otherwise the console.error will appear but not fail the test)
   void Promise.reject('Unmocked fetch call')
@@ -35,7 +35,7 @@ const acceptableErrors = [
   // src/pages/OfferIndividualWizard/Confirmation/__specs__/Confirmation.spec.tsx
   // It exists because we click on an anchor tag (<a>) and assert that the tracking
   // is called.
-  // However Jest doesn't support navigation changes and we shouldn't click on links in tests
+  // However Jest DOM doesn't support navigation changes and we shouldn't click on links in tests
   // Furthermore, we shouldn't have to manually track page changes as Google Analytics
   // should do this out of the box. So the real good solution here is:
   // - check why we manually track page changes with the data team

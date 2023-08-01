@@ -1,5 +1,3 @@
 {
-    "python.formatting.provider": "black",
-    "jest.disabledWorkspaceFolders": ["api"],
-    "jest.rootPath": "pro"
-  }
+  "python.formatting.provider": "black"
+}
