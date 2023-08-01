@@ -125,11 +125,8 @@ describe('test OfferIndividualWisard', () => {
         { offerId: 'OFFER_ID' }
       )
     )
-    await waitForElementToBeRemoved(() =>
-      screen.getByText(/Chargement en cours/)
-    )
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(
         screen.getByText(
           /Une erreur est survenue lors de la récupération de votre offre/
