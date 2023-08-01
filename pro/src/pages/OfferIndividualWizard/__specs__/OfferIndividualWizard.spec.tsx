@@ -104,7 +104,7 @@ describe('test OfferIndividualWisard', () => {
   })
 
   it('should display an error when unable to load offer', async () => {
-    vi.spyOn(api, 'getOffer').mockRejectedValue(
+    vi.spyOn(api, 'getOffer').mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -139,7 +139,7 @@ describe('test OfferIndividualWisard', () => {
   })
 
   it('should display an error when unable to load categories', async () => {
-    vi.spyOn(api, 'getCategories').mockRejectedValue(
+    vi.spyOn(api, 'getCategories').mockRejectedValueOnce(
       new ApiError(
         {} as ApiRequestOptions,
         {
@@ -225,7 +225,7 @@ describe('test OfferIndividualWisard', () => {
   })
 
   it('should initialize context with api when a offerId is given', async () => {
-    vi.spyOn(api, 'getCategories').mockResolvedValue({
+    vi.spyOn(api, 'getCategories').mockResolvedValueOnce({
       categories: [
         {
           id: 'A',
