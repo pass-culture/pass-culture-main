@@ -213,7 +213,7 @@ SET "resultContent" = CASE
     THEN "resultContent" || (
         '{"email": "user' || "userId" || '@anonymized.email", "address": "42 rue de la ville", "lastName": "' || pg_temp.fake_last_name("userId") || '", "firstName": "' || pg_temp.fake_first_name("userId") || '", "phoneNumber": "' || pg_temp.fake_phone_number_from_id("userId") || '", "bodyPieceNumber": "000000000000"}'
       )::text::jsonb
-  WHEN "type" = 'EDUCONNECT' 
+  WHEN "type" = 'EDUCONNECT'
     THEN "resultContent" || (
         '{"last_name": "' || pg_temp.fake_last_name("userId") || '", "first_name": "' || pg_temp.fake_first_name("userId") || '"}'
       )::text::jsonb
@@ -223,15 +223,15 @@ SET "resultContent" = CASE
       )::text::jsonb
   WHEN ("type" = 'UBBLE' AND "status" = 'OK')
     THEN "resultContent" || (
-        '{"identification_id": "11111111-1111-1111-1111-111111111111"}'
+        '{"identification_id": "11111111-1111-4111-9111-111111111111"}'
       )::text::jsonb
   WHEN ("type" = 'UBBLE' AND "status" = 'KO')
     THEN "resultContent" || (
-        '{"identification_id": "00000000-0000-0000-0000-000000000000"}'
+        '{"identification_id": "00000000-0000-4000-8000-000000000000"}'
       )::text::jsonb
   WHEN "type" = 'UBBLE'
     THEN "resultContent" || (
-      '{"last_name": "' || pg_temp.fake_last_name("userId") || '", "first_name": "' || pg_temp.fake_first_name("userId") || '", "married_name": "marriedName", "id_document_number": null, "identification_id": "22222222-2222-2222-2222-222222222222", "identification_url": null}'
+      '{"last_name": "' || pg_temp.fake_last_name("userId") || '", "first_name": "' || pg_temp.fake_first_name("userId") || '", "married_name": "marriedName", "id_document_number": null, "identification_id": "22222222-2222-4222-a222-222222222222", "identification_url": null}'
     )::text::jsonb
   WHEN "type" = 'INTERNAL_REVIEW'
     THEN "resultContent" || (
