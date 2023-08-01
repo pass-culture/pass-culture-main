@@ -17,6 +17,7 @@ export const ADAGE_FILTERS_DEFAULT_VALUES: SearchFormValues = {
   students: [],
   departments: [],
   academies: [],
+  categories: [],
   eventAddressType: OfferAddressType.OTHER,
 }
 
@@ -45,6 +46,7 @@ export const adageFiltersToFacetFilters = ({
   eventAddressType,
   departments,
   academies,
+  categories,
 }: {
   domains: string[]
   uai?: string[] | null
@@ -52,6 +54,7 @@ export const adageFiltersToFacetFilters = ({
   departments: string[]
   academies: string[]
   eventAddressType: string
+  categories: string[][]
 }) => {
   const updatedFilters: Facets = []
   const filtersKeys: string[] = []
@@ -96,6 +99,10 @@ export const adageFiltersToFacetFilters = ({
       break
   }
 
+  const filteredCategories: string[] = categories.flatMap(categoryValue =>
+    categoryValue.map(subcategoryId => `offer.subcategoryId:${subcategoryId}`)
+  )
+
   if (filteredStudents.length > 0) {
     filtersKeys.push('students')
     updatedFilters.push(filteredStudents)
@@ -114,6 +121,11 @@ export const adageFiltersToFacetFilters = ({
   if (filteredAcademies.length > 0) {
     filtersKeys.push('academies')
     updatedFilters.push(filteredAcademies)
+  }
+
+  if (filteredCategories.length > 0) {
+    filtersKeys.push('categories')
+    updatedFilters.push(filteredCategories)
   }
 
   if (uai) {
