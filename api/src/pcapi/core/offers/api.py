@@ -54,7 +54,6 @@ from pcapi.workers import push_notification_job
 
 from . import exceptions
 from . import models
-from . import offer_validation
 from . import repository as offers_repository
 from . import validation
 
@@ -664,10 +663,8 @@ def publish_offer(offer: models.Offer, user: users_models.User | None) -> models
 def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | None) -> None:
     venue_already_has_validated_offer = offers_repository.venue_already_has_validated_offer(offer)
 
-    if feature.FeatureToggle.WIP_ENABLE_NEW_FRAUD_RULES.is_active():
-        offer.validation = set_offer_status_based_on_fraud_criteria_v2(offer)
-    else:
-        offer.validation = set_offer_status_based_on_fraud_criteria(offer)
+    offer.validation = set_offer_status_based_on_fraud_criteria(offer)
+
     if user is not None:
         offer.author = user
     offer.lastValidationDate = datetime.datetime.utcnow()
@@ -985,23 +982,6 @@ def deactivate_permanently_unavailable_products(ean: str) -> bool:
     return True
 
 
-def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferValidationStatus:
-    current_config = offers_repository.get_current_offer_validation_config()
-    if not current_config:
-        return models.OfferValidationStatus.APPROVED
-
-    minimum_score, validation_rules = offer_validation.parse_offer_validation_config(offer, current_config)
-
-    score = offer_validation.compute_offer_validation_score(validation_rules)
-    if score < minimum_score:
-        status = models.OfferValidationStatus.PENDING
-    else:
-        status = models.OfferValidationStatus.APPROVED
-
-    logger.info("Computed offer validation", extra={"offer": offer.id, "score": score, "status": status.value})
-    return status
-
-
 def resolve_offer_validation_sub_rule(sub_rule: models.OfferValidationSubRule, offer: AnyOffer) -> bool:
     if sub_rule.model:
         if sub_rule.model.value in OFFER_LIKE_MODELS and type(offer).__name__ == sub_rule.model.value:
@@ -1034,7 +1014,7 @@ def rule_flags_offer(rule: models.OfferValidationRule, offer: AnyOffer) -> bool:
     return is_offer_flagged
 
 
-def set_offer_status_based_on_fraud_criteria_v2(offer: AnyOffer) -> models.OfferValidationStatus:
+def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferValidationStatus:
     offer_validation_rules = models.OfferValidationRule.query.options(
         sa.orm.joinedload(models.OfferValidationSubRule, models.OfferValidationRule.subRules)
     ).all()
