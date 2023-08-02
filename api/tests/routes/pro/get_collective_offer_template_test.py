@@ -11,7 +11,8 @@ from pcapi.utils.human_ids import humanize
 class Returns200Test:
     def test_access_by_beneficiary(self, client):
         # Given
-        offer = educational_factories.CollectiveOfferTemplateFactory()
+        national_program = educational_factories.NationalProgramFactory()
+        offer = educational_factories.CollectiveOfferTemplateFactory(nationalProgramId=national_program.id)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         # When
@@ -33,6 +34,7 @@ class Returns200Test:
         assert response_json["imageUrl"] is None
         assert response_json["name"] == offer.name
         assert response_json["id"] == offer.id
+        assert response_json["nationalProgramId"] == national_program.id
 
     def test_performance(self, client):
         # Given

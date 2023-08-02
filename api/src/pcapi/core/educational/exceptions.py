@@ -183,3 +183,7 @@ class OffererNotAllowedToDuplicate(Exception):
 
 class CantGetImageFromUrl(Exception):
     pass
+
+
+class NationalProgramNotFound(Exception):
+    pass

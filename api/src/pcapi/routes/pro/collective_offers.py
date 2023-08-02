@@ -219,6 +219,15 @@ def create_collective_offer(
             {"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"},
             status_code=404,
         )
+    except educational_exceptions.NationalProgramNotFound:
+        logger.info(
+            "Could not create offer: national program not found",
+            extra={"offer_name": body.name, "nationalProgramId": body.nationalProgramId},
+        )
+        raise ApiErrors(
+            {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_NOT_FOUND"},
+            status_code=400,
+        )
 
     return collective_offers_serialize.CollectiveOfferResponseIdModel.from_orm(offer)
 
@@ -259,6 +268,8 @@ def edit_collective_offer(
         raise ApiErrors({"venueId": "The venue does not exist."}, 404)
     except educational_exceptions.CollectiveOfferIsPublicApi:
         raise ApiErrors({"global": ["Collective offer created by public API is not editable."]}, 403)
+    except educational_exceptions.NationalProgramNotFound:
+        raise ApiErrors({"global": ["National program not found"]}, 400)
     except educational_exceptions.EducationalDomainsNotFound:
         logger.info(
             "Could not update offer: educational domains not found.",
@@ -342,6 +353,8 @@ def edit_collective_offer_template(
         raise ApiErrors({"venueId": "New venue needs to have the same offerer"}, 403)
     except offers_exceptions.SubcategoryNotEligibleForEducationalOffer:
         raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
+    except educational_exceptions.NationalProgramNotFound:
+        raise ApiErrors({"global": ["National program not found"]}, 400)
     except educational_exceptions.EducationalDomainsNotFound:
         logger.info(
             "Could not update offer: educational domains not found.",
@@ -591,6 +604,15 @@ def create_collective_offer_template(
         raise ApiErrors(
             {"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"},
             status_code=404,
+        )
+    except educational_exceptions.NationalProgramNotFound:
+        logger.info(
+            "Could not create offer: national program not found",
+            extra={"offer_name": body.name, "nationalProgramId": body.nationalProgramId},
+        )
+        raise ApiErrors(
+            {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_NOT_FOUND"},
+            status_code=400,
         )
 
     return collective_offers_serialize.CollectiveOfferResponseIdModel.from_orm(offer)

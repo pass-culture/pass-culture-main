@@ -116,6 +116,7 @@ export type { ListCollectiveBookingsResponseModel } from './models/ListCollectiv
 export type { ListCollectiveOffersQueryModel } from './models/ListCollectiveOffersQueryModel';
 export type { ListCollectiveOffersResponseModel } from './models/ListCollectiveOffersResponseModel';
 export type { ListFeatureResponseModel } from './models/ListFeatureResponseModel';
+export type { ListNationalProgramsResponseModel } from './models/ListNationalProgramsResponseModel';
 export type { ListOffersOfferResponseModel } from './models/ListOffersOfferResponseModel';
 export type { ListOffersQueryModel } from './models/ListOffersQueryModel';
 export type { ListOffersResponseModel } from './models/ListOffersResponseModel';
@@ -125,6 +126,7 @@ export type { ListProviderResponse } from './models/ListProviderResponse';
 export type { ListVenueProviderQuery } from './models/ListVenueProviderQuery';
 export type { ListVenueProviderResponse } from './models/ListVenueProviderResponse';
 export type { LoginUserBodyModel } from './models/LoginUserBodyModel';
+export type { NationalProgramModel } from './models/NationalProgramModel';
 export type { NewPasswordBodyModel } from './models/NewPasswordBodyModel';
 export { OfferAddressType } from './models/OfferAddressType';
 export type { OfferDomain } from './models/OfferDomain';

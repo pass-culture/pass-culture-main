@@ -29,6 +29,7 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.api import offer as educational_api_offer
+import pcapi.core.educational.api.national_program as national_program_api
 from pcapi.core.external.attributes.api import update_external_pro
 import pcapi.core.external_bookings.api as external_bookings_api
 import pcapi.core.finance.conf as finance_conf
@@ -351,6 +352,9 @@ def update_collective_offer(
             raise educational_exceptions.VenueIdDontExist()
         if new_venue.managingOffererId != offerer.id:
             raise educational_exceptions.OffererOfVenueDontMatchOfferer()
+
+    if nationalProgramId := new_values.pop("nationalProgramId", None):
+        national_program_api.link_offer_to_program(nationalProgramId, offer_to_update)
     updated_fields = _update_collective_offer(offer=offer_to_update, new_values=new_values)
 
     search.async_index_collective_offer_ids([offer_to_update.id])
@@ -373,6 +377,10 @@ def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
         offerer = offerers_repository.get_by_collective_offer_template_id(offer_to_update.id)
         if new_venue.managingOffererId != offerer.id:
             raise educational_exceptions.OffererOfVenueDontMatchOfferer()
+
+    if nationalProgramId := new_values.pop("nationalProgramId", None):
+        national_program_api.link_offer_to_program(nationalProgramId, offer_to_update)
+
     _update_collective_offer(offer=offer_to_update, new_values=new_values)
     search.async_index_collective_offer_template_ids([offer_to_update.id])
 

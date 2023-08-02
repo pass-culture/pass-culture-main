@@ -23,6 +23,7 @@ export type CollectiveOfferResponseModel = {
   isPublicApi: boolean;
   isShowcase: boolean;
   name: string;
+  nationalProgramId?: number | null;
   status: string;
   stocks: Array<CollectiveOffersStockResponseModel>;
   subcategoryId: SubcategoryIdEnum;

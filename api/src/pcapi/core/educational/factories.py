@@ -295,3 +295,10 @@ class CollectiveOfferRequestFactory(BaseFactory):
     educationalRedactor = factory.SubFactory(EducationalRedactorFactory)
     educationalInstitution = factory.SubFactory(EducationalInstitutionFactory)
     collectiveOfferTemplate = factory.SubFactory(CollectiveOfferTemplateFactory)
+
+
+class NationalProgramFactory(BaseFactory):
+    class Meta:
+        model = models.NationalProgram
+
+    name = factory.Sequence("Dispositif national {}".format)
