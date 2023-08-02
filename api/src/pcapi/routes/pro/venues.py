@@ -2,7 +2,7 @@ import flask
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
-import pydantic
+import pydantic.v1 as pydantic_v1
 import sqlalchemy.orm as sqla_orm
 
 from pcapi.core.offerers import api as offerers_api
@@ -188,7 +188,7 @@ def upsert_venue_banner(venue_id: int) -> venues_serialize.GetVenueResponseModel
     except exceptions.VenueBannerTooBig as err:
         content = {"code": "BANNER_TOO_BIG", "message": str(err)}
         raise ApiErrors(content, status_code=400)
-    except pydantic.ValidationError as err:
+    except pydantic_v1.ValidationError as err:
         locations = ", ".join([loc for e in err.errors() for loc in e["loc"]])  # type: ignore [misc]
         content = {"code": "INVALID_BANNER_PARAMS", "message": locations}
         raise ApiErrors(content, status_code=400)

@@ -1,14 +1,6 @@
 from math import isfinite
 
-
-# fmt: off
-# isort: off
-from pydantic.v1 import BaseModel as PydanticBaseModel
-# isort: on
-# fmt: on
-
-from pydantic import errors
-from pydantic import validator
+import pydantic.v1 as pydantic_v1
 
 from pcapi.routes.serialization.dictifier import as_dict
 from pcapi.routes.serialization.serializer import serialize
@@ -18,14 +10,14 @@ from pcapi.serialization import utils as serialization_utils
 __all__ = ("as_dict", "serialize")
 
 
-class BaseModel(PydanticBaseModel):
-    @validator("*")
+class BaseModel(pydantic_v1.BaseModel):
+    @pydantic_v1.validator("*")
     def do_not_allow_nan(cls, v, field):  # type: ignore [no-untyped-def]
         if field.allow_none and v is None:
             return v
 
         if field.outer_type_ is float and not isfinite(v):
-            raise errors.DecimalIsNotFiniteError()
+            raise pydantic_v1.errors.DecimalIsNotFiniteError()
         return v
 
     class Config:
@@ -36,7 +28,7 @@ class BaseModel(PydanticBaseModel):
                 field = [x for x in model.__fields__.values() if x.alias == prop][0]
                 if field.allow_none:
                     if "$ref" in value:
-                        if issubclass(field.type_, PydanticBaseModel):
+                        if issubclass(field.type_, pydantic_v1.BaseModel):
                             # add 'title' in schema to have the exact same behaviour as the rest
                             value["title"] = field.type_.__config__.title or field.type_.__name__
                         value["anyOf"] = [{"$ref": value.pop("$ref")}]

@@ -4,9 +4,9 @@ import logging
 from typing import Any
 from typing import Dict
 
-from pydantic import Field
-from pydantic import validator
-from pydantic.fields import ModelField
+from pydantic.v1 import Field
+from pydantic.v1 import validator
+from pydantic.v1.fields import ModelField
 
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel

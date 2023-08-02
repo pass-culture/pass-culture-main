@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import Iterable
 
-from pydantic import PositiveInt
-from pydantic.fields import Field
+from pydantic.v1 import PositiveInt
+from pydantic.v1.fields import Field
 
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.models import CollectiveBooking

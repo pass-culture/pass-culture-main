@@ -4,13 +4,13 @@ import enum
 import typing
 from typing import Any
 
-from pydantic import EmailStr
-from pydantic import Field
-from pydantic import HttpUrl
-from pydantic import constr
-from pydantic import root_validator
-from pydantic import validator
-from pydantic.utils import GetterDict
+from pydantic.v1 import EmailStr
+from pydantic.v1 import Field
+from pydantic.v1 import HttpUrl
+from pydantic.v1 import constr
+from pydantic.v1 import root_validator
+from pydantic.v1 import validator
+from pydantic.v1.utils import GetterDict
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offers import api as offers_api

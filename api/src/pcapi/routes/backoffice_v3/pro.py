@@ -6,7 +6,7 @@ from flask import render_template
 from flask import request
 from flask import url_for
 from flask_sqlalchemy import BaseQuery
-import pydantic
+import pydantic.v1 as pydantic_v1
 
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.permissions import models as perm_models
@@ -89,7 +89,7 @@ def search_pro() -> utils.BackofficeResponse:
         # let pydantic run the more detailed validation and format the
         # form's data in a more user-friendly way
         search_model = search.SearchProModel(**form.data)
-    except pydantic.ValidationError as err:
+    except pydantic_v1.ValidationError as err:
         for error in err.errors():
             form.add_error_to(typing.cast(str, error["loc"][0]))
         return render_search_template(form), 400

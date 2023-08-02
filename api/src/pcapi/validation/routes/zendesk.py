@@ -1,7 +1,7 @@
-import pydantic
+import pydantic.v1 as pydantic_v1
 
 
-class WebhookRequest(pydantic.BaseModel):
+class WebhookRequest(pydantic_v1.BaseModel):
     """
     JSON body in Zendesk configuration for the new ticket trigger:
     {
@@ -19,10 +19,10 @@ class WebhookRequest(pydantic.BaseModel):
     is_new_ticket: bool
     ticket_id: str
     requester_id: str
-    requester_email: pydantic.EmailStr | None
+    requester_email: pydantic_v1.EmailStr | None
     requester_phone: str | None
 
-    @pydantic.validator("requester_phone")
+    @pydantic_v1.validator("requester_phone")
     def check_email_or_phone(cls, requester_phone: str | None, values: dict) -> str | None:
         if not values.get("requester_email") and not requester_phone:
             raise ValueError("L'email ou le numéro de téléphone est obligatoire")

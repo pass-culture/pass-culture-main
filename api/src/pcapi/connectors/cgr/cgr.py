@@ -1,7 +1,7 @@
 import json
 import logging
 
-from pydantic import parse_obj_as
+from pydantic.v1 import parse_obj_as
 from zeep import Client
 from zeep.cache import InMemoryCache
 from zeep.proxy import ServiceProxy

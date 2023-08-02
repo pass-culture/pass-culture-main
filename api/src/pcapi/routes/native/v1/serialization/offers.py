@@ -2,8 +2,8 @@ from datetime import datetime
 import logging
 from typing import Callable
 
-from pydantic.class_validators import validator
-from pydantic.fields import Field
+from pydantic.v1.class_validators import validator
+from pydantic.v1.fields import Field
 
 from pcapi.core.bookings.api import compute_booking_cancellation_limit_date
 from pcapi.core.categories import categories

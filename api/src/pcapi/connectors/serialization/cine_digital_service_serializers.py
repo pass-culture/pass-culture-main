@@ -2,11 +2,11 @@ import datetime
 import json
 from typing import Dict
 
-from pydantic import Field
+from pydantic.v1 import Field
+from pydantic.v1 import validator
 
 import pcapi.core.external_bookings.models as external_bookings_models
 from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import validator
 
 
 class IdObjectCDS(BaseModel):

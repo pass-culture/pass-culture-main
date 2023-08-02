@@ -1,6 +1,6 @@
 from typing import Optional
 
-import pydantic
+import pydantic.v1 as pydantic_v1
 
 
 dossier_default_passage_en_construction = "2020-03-24T12:35:51+01:00"
@@ -8,7 +8,7 @@ dossier_default_date_depot = "2020-03-25T12:35:51+01:00"
 demarche_default_date_creation = "2020-03-25T12:35:51+01:00"
 
 
-class Address(pydantic.BaseModel):
+class Address(pydantic_v1.BaseModel):
     cityCode: str = "75001"
     cityName: str = "Paris"
     departmentCode: Optional[str] = None
@@ -24,12 +24,12 @@ class Address(pydantic.BaseModel):
     type: str = "housenumber"
 
 
-class File(pydantic.BaseModel):
+class File(pydantic_v1.BaseModel):
     filename: str = "file.pdf"
     url: str = "https://example.com/file.pdf"
 
 
-class Champ(pydantic.BaseModel):
+class Champ(pydantic_v1.BaseModel):
     id: int
     label: str
     stringValue: Optional[str]
@@ -60,7 +60,7 @@ class PieceJustificativeChamp(Champ):
     file: str
 
 
-class Demandeur(pydantic.BaseModel):
+class Demandeur(pydantic_v1.BaseModel):
     id: str = "demandeur_id"
 
 
@@ -72,7 +72,7 @@ class PersonnePhysique(Demandeur):
     prenom: str
 
 
-class Revision(pydantic.BaseModel):
+class Revision(pydantic_v1.BaseModel):
     annotation_descriptors: list[Champ] = []
     champ_descriptors: list[Champ] = []
     date_creation: str = demarche_default_date_creation
@@ -80,24 +80,24 @@ class Revision(pydantic.BaseModel):
     id: str = "revision_id"
 
 
-class Service(pydantic.BaseModel):
+class Service(pydantic_v1.BaseModel):
     id: str
 
 
-class PageInfo(pydantic.BaseModel):
+class PageInfo(pydantic_v1.BaseModel):
     endCursor: Optional[str]
     hasNextPage: bool = False
     hasPreviousPage: bool = False
     startCursor: Optional[str]
 
 
-class DossierConnection(pydantic.BaseModel):
+class DossierConnection(pydantic_v1.BaseModel):
     pageInfo: PageInfo = PageInfo()
     edges: list[dict] = []
     nodes: list[dict] = []
 
 
-class Demarche(pydantic.BaseModel):
+class Demarche(pydantic_v1.BaseModel):
     annotationDescriptors: list = []
     champDescriptors: list = []
     dateCreation: str = demarche_default_date_creation
@@ -120,23 +120,23 @@ class Demarche(pydantic.BaseModel):
     title: str = "titre de la démarche"
 
 
-class GroupeInstructeur(pydantic.BaseModel):
+class GroupeInstructeur(pydantic_v1.BaseModel):
     id: str
     number: int
     label: str
 
 
-class Profile(pydantic.BaseModel):
+class Profile(pydantic_v1.BaseModel):
     id: str = "profile_id"
     email: str = "default_email@example.com"
 
 
-class Message(pydantic.BaseModel):
+class Message(pydantic_v1.BaseModel):
     createdAt: str = dossier_default_date_depot
     email: str = "message_email@example.com"
 
 
-class Dossier(pydantic.BaseModel):
+class Dossier(pydantic_v1.BaseModel):
     annotations: list = []
     archived: bool = False
     attestation: File = File()

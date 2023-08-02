@@ -1,7 +1,7 @@
 import logging
 import typing
 
-from pydantic import ValidationError
+from pydantic.v1 import ValidationError
 
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.fraud import api as fraud_api

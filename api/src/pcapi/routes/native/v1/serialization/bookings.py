@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic.class_validators import validator
+from pydantic.v1.class_validators import validator
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories.subcategories import SubcategoryIdEnum

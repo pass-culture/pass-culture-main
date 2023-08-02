@@ -6,8 +6,8 @@ from jwt import DecodeError
 from jwt import ExpiredSignatureError
 from jwt import InvalidSignatureError
 from jwt import InvalidTokenError
-import pydantic
-from pydantic.class_validators import validator
+import pydantic.v1 as pydantic_v1
+from pydantic.v1.class_validators import validator
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.bookings import models as bookings_models
@@ -101,8 +101,8 @@ class ChangeBeneficiaryEmailResponse(BaseModel):
 
 
 class ChangeEmailTokenContent(BaseModel):
-    current_email: pydantic.EmailStr
-    new_email: pydantic.EmailStr
+    current_email: pydantic_v1.EmailStr
+    new_email: pydantic_v1.EmailStr
 
     @validator("current_email", "new_email", pre=True)
     @classmethod
@@ -237,11 +237,11 @@ class UserProfileUpdateRequest(BaseModel):
 
 
 class UserProfileEmailUpdate(BaseModel):
-    email: pydantic.EmailStr  # the new email address
+    email: pydantic_v1.EmailStr  # the new email address
     if typing.TYPE_CHECKING:  # https://github.com/pydantic/pydantic/issues/156
         password: str
     else:
-        password: pydantic.constr(strip_whitespace=True, min_length=8, strict=True)
+        password: pydantic_v1.constr(strip_whitespace=True, min_length=8, strict=True)
 
 
 class ValidateEmailRequest(BaseModel):

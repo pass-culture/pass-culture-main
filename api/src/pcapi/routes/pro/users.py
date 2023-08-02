@@ -6,7 +6,7 @@ from flask_login import login_required
 from flask_login import login_user
 from flask_login import logout_user
 from jwt import InvalidTokenError
-import pydantic
+import pydantic.v1 as pydantic_v1
 
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.users import api as users_api
@@ -100,7 +100,7 @@ def patch_validate_email(body: users_serializers.ChangeProEmailBody) -> None:
         users_api.change_pro_user_email(
             current_email=payload.current_email, new_email=payload.new_email, user_id=payload.user_id
         )
-    except pydantic.ValidationError as exc:
+    except pydantic_v1.ValidationError as exc:
         errors.add_error("global", "Adresse email invalide")
         raise errors from exc
     except InvalidTokenError as exc:

@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 
-from pydantic import root_validator
+from pydantic.v1 import root_validator
 
 from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.bookings.models import BookingStatusFilter

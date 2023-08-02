@@ -1,4 +1,4 @@
-from pydantic import PositiveInt
+from pydantic.v1 import PositiveInt
 
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueContact

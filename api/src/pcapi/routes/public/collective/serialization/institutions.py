@@ -1,4 +1,4 @@
-from pydantic import validator
+from pydantic.v1 import validator
 
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.routes.serialization import BaseModel

@@ -1,7 +1,7 @@
 import datetime
 import typing
 
-import pydantic
+import pydantic.v1 as pydantic_v1
 
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes import serialization
@@ -21,29 +21,29 @@ class VenueDigitalLocation(serialization.ConfiguredBaseModel):
 
 
 class VenuePhysicalLocation(serialization.ConfiguredBaseModel):
-    address: str | None = pydantic.Field(example="55 rue du Faubourg-Saint-Honoré")
-    city: str | None = pydantic.Field(example="Paris")
-    postalCode: str | None = pydantic.Field(example="75008")
+    address: str | None = pydantic_v1.Field(example="55 rue du Faubourg-Saint-Honoré")
+    city: str | None = pydantic_v1.Field(example="Paris")
+    postalCode: str | None = pydantic_v1.Field(example="75008")
     type: typing.Literal["physical"] = "physical"
 
 
 class VenueResponse(serialization.ConfiguredBaseModel):
-    comment: str | None = pydantic.Field(
+    comment: str | None = pydantic_v1.Field(
         None, description="Applicable if siret is null and venue is physical.", alias="siretComment", example=None
     )
-    dateCreated: datetime.datetime = pydantic.Field(..., alias="createdDatetime")
+    dateCreated: datetime.datetime = pydantic_v1.Field(..., alias="createdDatetime")
     id: int
-    location: VenuePhysicalLocation | VenueDigitalLocation = pydantic.Field(
+    location: VenuePhysicalLocation | VenueDigitalLocation = pydantic_v1.Field(
         ...,
         description="Location where the offers will be available or will take place. There is exactly one digital venue per offerer, which is listed although its id is not required to create a digital offer (see DigitalLocation model).",
         discriminator="type",
     )
-    name: str = pydantic.Field(alias="legalName", example="Palais de l'Élysée")
-    publicName: str | None = pydantic.Field(..., description="If null, legalName is used.", example="Élysée")
-    siret: str | None = pydantic.Field(
+    name: str = pydantic_v1.Field(alias="legalName", example="Palais de l'Élysée")
+    publicName: str | None = pydantic_v1.Field(..., description="If null, legalName is used.", example="Élysée")
+    siret: str | None = pydantic_v1.Field(
         description="Null when venue is digital or when siretComment field is not null.", example="12345678901234"
     )
-    venueTypeCode: VenueTypeEnum = pydantic.Field(alias="activityDomain")  # type: ignore [valid-type]
+    venueTypeCode: VenueTypeEnum = pydantic_v1.Field(alias="activityDomain")  # type: ignore [valid-type]
     accessibility: PartialAccessibility
 
     @classmethod

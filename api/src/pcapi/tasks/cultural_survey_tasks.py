@@ -1,7 +1,7 @@
 import datetime
 import json
 
-import pydantic
+import pydantic.v1 as pydantic_v1
 
 from pcapi import settings
 from pcapi.core.cultural_survey import models as cultural_survey_models
@@ -12,7 +12,7 @@ from pcapi.tasks.decorator import task
 CULTURAL_SURVEY_ANSWERS_QUEUE_NAME = settings.GCP_CULTURAL_SURVEY_ANSWERS_QUEUE_NAME
 
 
-class CulturalSurveyTaskAnswer(pydantic.BaseModel):
+class CulturalSurveyTaskAnswer(pydantic_v1.BaseModel):
     question_id: cultural_survey_models.CulturalSurveyQuestionEnum
     answer_ids: list[cultural_survey_models.CulturalSurveyAnswerEnum]
 
@@ -20,7 +20,7 @@ class CulturalSurveyTaskAnswer(pydantic.BaseModel):
         use_enum_values = True
 
 
-class CulturalSurveyTaskAnswers(pydantic.BaseModel):
+class CulturalSurveyTaskAnswers(pydantic_v1.BaseModel):
     user_id: int
     submitted_at: datetime.datetime
     answers: list[CulturalSurveyTaskAnswer]

@@ -3,7 +3,7 @@ from functools import partial
 import json
 import typing
 
-from pydantic import parse_obj_as
+from pydantic.v1 import parse_obj_as
 
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import models as educational_models

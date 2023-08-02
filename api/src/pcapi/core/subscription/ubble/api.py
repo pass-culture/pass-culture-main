@@ -6,7 +6,7 @@ import shutil
 import tempfile
 
 import flask
-from pydantic.networks import HttpUrl
+from pydantic.v1.networks import HttpUrl
 
 from pcapi import settings
 from pcapi.analytics.amplitude import events as amplitude_events

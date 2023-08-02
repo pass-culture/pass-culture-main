@@ -4,10 +4,8 @@ import enum
 import typing
 from typing import TYPE_CHECKING
 
-import pydantic
-from pydantic.class_validators import validator
-import pydantic.datetime_parse
-import pydantic.errors
+import pydantic.v1 as pydantic_v1
+from pydantic.v1.class_validators import validator
 import pytz
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
@@ -128,8 +126,8 @@ def _parse_jouve_date(date: str | None) -> datetime.datetime | None:
     # 1. the "classical" format such as "year/month/day" which is expressed when calling .dict()
     # 2. jouve format, when parsing incoming data
     try:
-        return pydantic.datetime_parse.parse_datetime(date)
-    except pydantic.DateTimeError:
+        return pydantic_v1.datetime_parse.parse_datetime(date)  # type: ignore [attr-defined]
+    except pydantic_v1.DateTimeError:
         pass
 
     try:
@@ -147,8 +145,8 @@ def _parse_jouve_datetime(date: str | None) -> datetime.datetime | None:
     if not date:
         return None
     try:
-        return pydantic.datetime_parse.parse_datetime(date)
-    except pydantic.DateTimeError:
+        return pydantic_v1.datetime_parse.parse_datetime(date)  # type: ignore [attr-defined]
+    except pydantic_v1.DateTimeError:
         pass
     try:
         return datetime.datetime.strptime(date, "%m/%d/%Y %H:%M %p")  # production format
@@ -245,7 +243,7 @@ class JouveContent(common_models.IdentityCheckContent):
         return self.registrationDate
 
 
-class DmsAnnotation(pydantic.BaseModel):
+class DmsAnnotation(pydantic_v1.BaseModel):
     id: str
     label: str
     text: str | None
@@ -259,7 +257,7 @@ class DmsFieldErrorKeyEnum(enum.Enum):
     postal_code = "postal_code"
 
 
-class DmsFieldErrorDetails(pydantic.BaseModel):
+class DmsFieldErrorDetails(pydantic_v1.BaseModel):
     key: DmsFieldErrorKeyEnum
     value: str | None
 
@@ -268,7 +266,7 @@ class DMSContent(common_models.IdentityCheckContent):
     activity: str | None
     address: str | None
     annotation: DmsAnnotation | None
-    application_number: int = pydantic.Field(..., alias="application_id")  # keep alias for old data
+    application_number: int = pydantic_v1.Field(..., alias="application_id")  # keep alias for old data
     birth_date: datetime.date | None
     city: str | None
     civility: users_models.GenderEnum | None
@@ -282,7 +280,7 @@ class DMSContent(common_models.IdentityCheckContent):
     latest_modification_datetime: datetime.datetime | None
     phone: str | None
     postal_code: str | None
-    procedure_number: int = pydantic.Field(..., alias="procedure_id")  # keep alias for old data
+    procedure_number: int = pydantic_v1.Field(..., alias="procedure_id")  # keep alias for old data
     processed_datetime: datetime.datetime | None
     registration_datetime: datetime.datetime | None
     state: str | None
@@ -350,8 +348,8 @@ class UbbleContent(common_models.IdentityCheckContent):
     first_name: str | None
     gender: users_models.GenderEnum | None
     id_document_number: str | None
-    identification_id: pydantic.UUID4 | None
-    identification_url: pydantic.HttpUrl | None
+    identification_id: pydantic_v1.UUID4 | None
+    identification_url: pydantic_v1.HttpUrl | None
     last_name: str | None
     married_name: str | None
     ove_score: float | None
@@ -363,10 +361,10 @@ class UbbleContent(common_models.IdentityCheckContent):
     status: ubble_fraud_models.UbbleIdentificationStatus | None
     status_updated_at: datetime.datetime | None
     supported: float | None
-    signed_image_front_url: pydantic.HttpUrl | None
-    signed_image_back_url: pydantic.HttpUrl | None
+    signed_image_front_url: pydantic_v1.HttpUrl | None
+    signed_image_back_url: pydantic_v1.HttpUrl | None
 
-    _parse_birth_date = pydantic.validator("birth_date", pre=True, allow_reuse=True)(
+    _parse_birth_date = pydantic_v1.validator("birth_date", pre=True, allow_reuse=True)(
         lambda d: datetime.datetime.strptime(d, "%Y-%m-%d").date() if d is not None else None
     )
 
@@ -394,7 +392,7 @@ class UbbleContent(common_models.IdentityCheckContent):
         return self.id_document_number
 
 
-class HonorStatementContent(pydantic.BaseModel):
+class HonorStatementContent(pydantic_v1.BaseModel):
     pass
 
 
@@ -408,7 +406,7 @@ class UserProfilingRiskRating(enum.Enum):
     TRUSTED = "trusted"
 
 
-class UserProfilingFraudData(pydantic.BaseModel):
+class UserProfilingFraudData(pydantic_v1.BaseModel):
     account_email_first_seen: datetime.date | None
     account_email_result: str
     account_email_score: int | None
@@ -452,13 +450,13 @@ class InternalReviewSource(enum.Enum):
     SMS_SENDING_LIMIT_REACHED = "sms_sending_limit_reached"
 
 
-class PhoneValidationFraudData(pydantic.BaseModel):
+class PhoneValidationFraudData(pydantic_v1.BaseModel):
     message: str | None = None  # legacy field, still present in database
     phone_number: str | None = None
     source: InternalReviewSource | None = None  # legacy field, still present in database
 
 
-class ProfileCompletionContent(pydantic.BaseModel):
+class ProfileCompletionContent(pydantic_v1.BaseModel):
     activity: users_models.ActivityEnum | str  # str for backward compatibility. All new data should be ActivityEnum
     address: str | None  # Optional because it was not saved up until now
     city: str

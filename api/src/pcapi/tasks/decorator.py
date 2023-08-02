@@ -4,7 +4,7 @@ import logging
 
 from flask.blueprints import Blueprint
 from flask.globals import request
-import pydantic
+import pydantic.v1 as pydantic_v1
 
 from pcapi import settings
 from pcapi.models.api_errors import ApiErrors
@@ -30,7 +30,7 @@ def task(queue: str, path: str, deduplicate: bool = False, delayed_seconds: int 
 
         @wraps(f)
         def delay(payload: payload_in_kwargs):  # type: ignore [no-untyped-def]
-            if not isinstance(payload, pydantic.BaseModel):
+            if not isinstance(payload, pydantic_v1.BaseModel):
                 raise ValueError("Task payload must be a pydantic model")
 
             if settings.IS_RUNNING_TESTS:

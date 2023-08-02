@@ -1,11 +1,11 @@
 import datetime
 
-import pydantic.errors
+import pydantic.v1 as pydantic_v1
 
 from pcapi.core.users import models as users_models
 
 
-class IdentityCheckContent(pydantic.BaseModel):
+class IdentityCheckContent(pydantic_v1.BaseModel):
     def get_birth_date(self) -> datetime.date | None:
         raise NotImplementedError()
 

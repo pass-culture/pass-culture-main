@@ -4,20 +4,20 @@ from typing import Any
 from typing import Callable
 
 import flask
-import pydantic
+import pydantic.v1 as pydantic_v1
 
 from pcapi import settings
 from pcapi.connectors.dms import models as dms_models
 from pcapi.models.api_errors import ForbiddenError
 
 
-class DMSWebhookRequest(pydantic.BaseModel):
+class DMSWebhookRequest(pydantic_v1.BaseModel):
     procedure_id: int
     dossier_id: int
     state: dms_models.GraphQLApplicationStates
     updated_at: datetime.datetime
 
-    @pydantic.validator("updated_at", pre=True)
+    @pydantic_v1.validator("updated_at", pre=True)
     def validate_udpated_at(cls, value: str) -> datetime.datetime:
         return datetime.datetime.strptime(value, "%Y-%m-%d %H:%M:%S %z")
 
@@ -35,10 +35,10 @@ def require_dms_token(route_function: Callable[..., Any]) -> Callable:
     return validate_dms_token
 
 
-class BankInformationDmsFormModel(pydantic.BaseModel):
+class BankInformationDmsFormModel(pydantic_v1.BaseModel):
     dossier_id: str
     procedure_id: str
 
 
-class BankInformationDmsResponseModel(pydantic.BaseModel):
+class BankInformationDmsResponseModel(pydantic_v1.BaseModel):
     pass
