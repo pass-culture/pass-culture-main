@@ -174,6 +174,7 @@ export const OffersSearchComponent = ({
             userEmail={adageUser.email}
             resetForm={resetForm}
             logFiltersOnSearch={logFiltersOnSearch}
+            submitCount={formik.submitCount}
           />
         </div>
       </FormikContext.Provider>
