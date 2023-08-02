@@ -598,6 +598,68 @@ class CancelLatestEventTest:
 
         assert event is None
 
+    def test_delete_dependent_pricings(self):
+        event1 = factories.UsedBookingFinanceEventFactory(
+            booking__stock__offer__venue__pricing_point="self",
+            status=models.FinanceEventStatus.PRICED,
+        )
+        factories.PricingFactory(event=event1, booking=event1.booking)
+        event2 = factories.UsedBookingFinanceEventFactory(
+            booking__stock__offer__venue__pricing_point=event1.pricingPoint,
+            status=models.FinanceEventStatus.PRICED,
+        )
+        factories.PricingFactory(event=event2, booking=event2.booking)
+
+        api.cancel_latest_event(event1.booking, motive=event1.motive)
+
+        db.session.refresh(event1)
+        db.session.refresh(event2)
+        assert event1.status == models.FinanceEventStatus.CANCELLED
+        assert event1.pricings[0].status == models.PricingStatus.CANCELLED
+
+        assert event2.status == models.FinanceEventStatus.READY
+        assert not event2.pricings
+
+    def test_cannot_delete_dependent_pricings_that_are_not_deletable(self):
+        event1 = factories.UsedBookingFinanceEventFactory(
+            booking__stock__offer__venue__pricing_point="self",
+            status=models.FinanceEventStatus.PRICED,
+        )
+        ppoint = event1.pricingPoint
+        factories.PricingFactory(event=event1, booking=event1.booking)
+        event2 = factories.UsedBookingFinanceEventFactory(
+            booking__stock__offer__venue__pricing_point=ppoint,
+            status=models.FinanceEventStatus.PRICED,
+        )
+        factories.PricingFactory(
+            event=event2,
+            booking=event2.booking,
+            status=models.PricingStatus.PROCESSED,
+        )
+
+        with pytest.raises(exceptions.NonCancellablePricingError):
+            api.cancel_latest_event(event1.booking, motive=event1.motive)
+
+        # No changes!
+        db.session.refresh(event1)
+        db.session.refresh(event2)
+        assert event1.status == models.FinanceEventStatus.PRICED
+        assert event1.pricings[0].status == models.PricingStatus.VALIDATED
+        assert event2.status == models.FinanceEventStatus.PRICED
+        assert event2.pricings[0].status == models.PricingStatus.PROCESSED
+
+        with override_settings(FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS=[ppoint.id]):
+            api.cancel_latest_event(event1.booking, motive=event1.motive)
+
+        # This time, event1 and its pricing was cancelled. event2 and
+        # its pricing were left untouched.
+        db.session.refresh(event1)
+        db.session.refresh(event2)
+        assert event1.status == models.FinanceEventStatus.CANCELLED
+        assert event1.pricings[0].status == models.PricingStatus.CANCELLED
+        assert event2.status == models.FinanceEventStatus.PRICED  # unchanged
+        assert event2.pricings[0].status == models.PricingStatus.PROCESSED  # unchanged
+
 
 class GetPricingPointLinkTest:
     def test_used_before_start_of_only_active_link(self):
@@ -924,6 +986,12 @@ class DeleteDependentPricingsTest:
             booking__stock__offer__venue=booking.venue,
             booking__dateUsed=booking.dateUsed + datetime.timedelta(seconds=1),
         )
+        later_event = factories.UsedBookingFinanceEventFactory(
+            booking=later_pricing.booking,
+            status=models.FinanceEventStatus.PRICED,
+        )
+        later_pricing.eventId = later_event.id
+        db.session.commit()
         later_pricing_another_year = factories.PricingFactory(
             booking__stock__offer__venue=booking.venue,
             booking__dateUsed=used_date + datetime.timedelta(days=365),
@@ -935,8 +1003,11 @@ class DeleteDependentPricingsTest:
             valueDate=booking.dateUsed,
         )
         api._delete_dependent_pricings(booking, "some log message")
+
         expected_kept = {earlier_pricing_previous_year, earlier_pricing, later_pricing_another_year}
         assert set(models.Pricing.query.all()) == expected_kept
+        db.session.refresh(later_event)
+        assert later_event.status == models.FinanceEventStatus.READY
 
     def test_scenario1(self):
         # 0. V2 is linked to a BU, V1 is not.
