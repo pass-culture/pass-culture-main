@@ -72,7 +72,7 @@ def string_to_boolean(string: str) -> bool | None:
     try:
         return {"true": True, "false": False}[string]
     except KeyError:
-        raise pydantic.ValidationError("La valeur reçu doit être soit 'true' soit 'false'")  # type: ignore [call-arg]
+        raise ValueError("La valeur reçu doit être soit 'true' soit 'false'")
 
 
 def validate_not_empty_string_when_provided(field_name: str) -> classmethod:
