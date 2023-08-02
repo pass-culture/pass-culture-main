@@ -4,81 +4,80 @@
 @use "styles/variables/_z-index.scss" as zIndex;
 
 .adage-container {
-    width: max-content;
+  width: max-content;
 }
 
 .adage-button {
-    @include fonts.body;
+  @include fonts.body;
 
-    display: flex;
-    align-items: center;
-    background-color: colors.$white;
-    padding: rem.torem(8px) rem.torem(16px);
+  display: flex;
+  align-items: center;
+  background-color: colors.$white;
+  padding: rem.torem(8px) rem.torem(12px);
+  border-radius: rem.torem(10px);
+  border: rem.torem(1px) solid colors.$input-text-color;
+  height: rem.torem(40px);
+  white-space: nowrap;
+
+  &-is-active {
+    @include fonts.button;
+
+    line-height: rem.torem(20px);
+    border: rem.torem(2px) solid colors.$input-text-color;
+  }
+
+  &-selected {
+    @include fonts.button;
+
+    line-height: rem.torem(20px);
+    border: rem.torem(2px) solid colors.$primary;
+  }
+
+  &:hover,
+  &:disabled {
+    background-color: colors.$grey-light;
+  }
+
+  &:focus-visible {
+    outline: rem.torem(1px) solid colors.$black;
+    outline-offset: rem.torem(2px);
+    border: rem.torem(2px) solid colors.$input-text-color;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    border: none;
+    color: colors.$grey-dark;
+  }
+
+  &-active {
+    background: colors.$primary;
+    width: rem.torem(8px);
+    height: rem.torem(8px);
+    border-radius: rem.torem(8px);
+    margin-right: rem.torem(8px);
+
+    &-disabled {
+      background-color: colors.$grey-dark;
+    }
+  }
+
+  &-modal {
+    position: relative;
+  }
+
+  &-children {
     border-radius: rem.torem(10px);
-    border: rem.torem(1px) solid colors.$input-text-color;
-    height: rem.torem(40px);
+    box-shadow: 0 rem.torem(2px) rem.torem(16px) 0 rgb(37 2 108 / 15%);
+    border: none;
+    z-index: zIndex.$modal-z-index;
+  }
 
-    &-is-active {
-        @include fonts.button;
+  &-children::backdrop {
+    background-color: #448;
+  }
 
-        line-height: rem.torem(20px);
-        border: rem.torem(2px) solid colors.$input-text-color;
-    }
-
-    &-selected {
-        @include fonts.button;
-
-        line-height: rem.torem(20px);
-        border: rem.torem(2px) solid colors.$primary;
-    }
-
-    &:hover, &:disabled {
-        background-color: colors.$grey-light;
-    }
-
-    &:focus-visible {
-        outline: rem.torem(1px) solid colors.$black;
-        outline-offset: rem.torem(2px);
-        border: rem.torem(2px) solid colors.$input-text-color;
-    }
-
-    &:disabled {
-        cursor: not-allowed;
-        border: none;
-        color: colors.$grey-dark;
-    }
-
-    &-active {
-        background: colors.$primary;
-        width: rem.torem(8px);
-        height: rem.torem(8px);
-        border-radius: rem.torem(8px);
-        margin-right: rem.torem(8px);
-
-        &-disabled {
-            background-color: colors.$grey-dark;
-        }
-
-    }
-
-    &-modal {
-        position: relative;
-    }
-        
-    &-children {
-        border-radius: rem.torem(10px);
-        box-shadow: 0 rem.torem(2px) rem.torem(16px) 0 rgb(37 2 108 / 15%);
-        border: none;
-        z-index: zIndex.$modal-z-index;
-    }
-
-    &-children::backdrop {
-        background-color: #448;
-    }
-
-    &-dropdown {
-        margin-left: rem.torem(8px);
-    }
+  &-dropdown {
+    margin-left: rem.torem(8px);
+  }
 }
-
-
