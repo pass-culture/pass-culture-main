@@ -16,7 +16,9 @@ import { ProviderInfo } from '../types'
 export const getProviderInfo = (
   providerName: string
 ): ProviderInfo | undefined => {
-  if (!providerName) return
+  if (!providerName) {
+    return
+  }
   const providers: ProviderInfo[] = [
     {
       id: 'allociné',

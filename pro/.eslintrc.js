@@ -4,13 +4,6 @@ module.exports = {
     'plugin:prettier/recommended',
     'plugin:import/recommended',
   ],
-  // This parser setting can be removed when there are no more JS files
-  // here we use it to parse normal JS files
-  parser: '@typescript-eslint/parser',
-  parserOptions: {
-    sourceType: 'module',
-    ecmaVersion: 6,
-  },
   env: {
     browser: true,
     es6: true,
@@ -26,28 +19,7 @@ module.exports = {
     '**/*.jpg',
     '**/*.png',
   ],
-  // Rules for all files
-  rules: {
-    curly: ['error', 'all'],
-    'no-console': 1,
-    'import/order': [
-      'warn',
-      {
-        groups: [
-          'builtin',
-          'external',
-          'internal',
-          'parent',
-          'sibling',
-          'index',
-        ],
-        'newlines-between': 'always',
-        alphabetize: { order: 'asc', caseInsensitive: true },
-      },
-    ],
-  },
   overrides: [
-    // Rules specific to TS files
     {
       files: ['*.ts', '*.tsx'],
       parser: '@typescript-eslint/parser',
@@ -65,6 +37,25 @@ module.exports = {
         'plugin:@typescript-eslint/recommended',
       ],
       rules: {
+        'import/no-unresolved': 0,
+        'import/named': 0,
+        curly: ['error', 'all'],
+        'no-console': 1,
+        'import/order': [
+          'warn',
+          {
+            groups: [
+              'builtin',
+              'external',
+              'internal',
+              'parent',
+              'sibling',
+              'index',
+            ],
+            'newlines-between': 'always',
+            alphabetize: { order: 'asc', caseInsensitive: true },
+          },
+        ],
         '@typescript-eslint/ban-ts-comment': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/no-empty-function': 'off',
@@ -76,10 +67,9 @@ module.exports = {
     react: {
       version: 'detect',
     },
-    // This whole section can be removed when there are no more JS files
     'import/resolver': {
       node: {
-        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        extensions: ['.ts', '.tsx'],
         paths: ['.'],
         moduleDirectory: ['node_modules', 'src'],
       },

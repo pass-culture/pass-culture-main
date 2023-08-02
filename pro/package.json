@@ -12,7 +12,7 @@
     "build:production": "vite build --mode production",
     "generate:api:client": "./scripts/generate_api_client.sh",
     "generate:api:client:local": "./scripts/generate_api_client_local.sh",
-    "lint:js": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
+    "lint:js": "eslint 'src/**/*.{ts,tsx}'",
     "lint:js:fix": "yarn lint:js --fix",
     "lint:scss": "stylelint '**/*.scss'",
     "lint:scss:fix": "yarn lint:scss --fix",
