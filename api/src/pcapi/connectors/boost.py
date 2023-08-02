@@ -4,7 +4,7 @@ import json
 import logging
 from typing import Any
 
-from pydantic import parse_obj_as
+from pydantic.v1 import parse_obj_as
 
 from pcapi import settings
 from pcapi.connectors.serialization.boost_serializers import LoginBoost

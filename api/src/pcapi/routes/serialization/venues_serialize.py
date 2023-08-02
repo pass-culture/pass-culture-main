@@ -6,9 +6,9 @@ from io import BytesIO
 import typing
 
 from PIL import Image
-import pydantic
-from pydantic import root_validator
-from pydantic import validator
+import pydantic.v1 as pydantic_v1
+from pydantic.v1 import root_validator
+from pydantic.v1 import validator
 
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.educational import models as educational_models
@@ -411,7 +411,7 @@ class VenueBannerContentModel(BaseModel):
     if typing.TYPE_CHECKING:  # https://github.com/pydantic/pydantic/issues/156
         content: bytes
     else:
-        content: pydantic.conbytes(min_length=2, max_length=VENUE_BANNER_MAX_SIZE)
+        content: pydantic_v1.conbytes(min_length=2, max_length=VENUE_BANNER_MAX_SIZE)
     image_credit: base.VenueImageCredit | None
 
     # cropping parameters must be a % (between 0 and 1) of the original
@@ -422,7 +422,7 @@ class VenueBannerContentModel(BaseModel):
     width_crop_percent: CropParam
 
     class Config:
-        extra = pydantic.Extra.forbid
+        extra = pydantic_v1.Extra.forbid
         anystr_strip_whitespace = True
 
     @root_validator(pre=True)
@@ -502,7 +502,7 @@ class VenuesEducationalStatusResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
-        extra = pydantic.Extra.forbid
+        extra = pydantic_v1.Extra.forbid
 
 
 class VenuesEducationalStatusesResponseModel(BaseModel):

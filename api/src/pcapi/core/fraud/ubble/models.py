@@ -1,7 +1,7 @@
 import datetime
 import enum
 
-import pydantic
+import pydantic.v1 as pydantic_v1
 
 
 class UbbleIdentificationStatus(enum.Enum):
@@ -19,7 +19,7 @@ class UbbleScore(enum.Enum):
     UNDECIDABLE = -1.0
 
 
-class UbbleIdentificationObject(pydantic.BaseModel):
+class UbbleIdentificationObject(pydantic_v1.BaseModel):
     # Parent class for any object defined in https://ubbleai.github.io/developer-documentation/#objects-2
     pass
 
@@ -27,25 +27,25 @@ class UbbleIdentificationObject(pydantic.BaseModel):
 class UbbleIdentificationAttributes(UbbleIdentificationObject):
     # https://ubbleai.github.io/developer-documentation/#identifications
     comment: str | None
-    created_at: datetime.datetime = pydantic.Field(alias="created-at")
-    ended_at: datetime.datetime | None = pydantic.Field(None, alias="ended-at")
-    identification_id: str = pydantic.Field(alias="identification-id")
-    identification_url: str = pydantic.Field(alias="identification-url")
-    number_of_attempts: int = pydantic.Field(alias="number-of-attempts")
-    redirect_url: str = pydantic.Field(alias="redirect-url")
+    created_at: datetime.datetime = pydantic_v1.Field(alias="created-at")
+    ended_at: datetime.datetime | None = pydantic_v1.Field(None, alias="ended-at")
+    identification_id: str = pydantic_v1.Field(alias="identification-id")
+    identification_url: str = pydantic_v1.Field(alias="identification-url")
+    number_of_attempts: int = pydantic_v1.Field(alias="number-of-attempts")
+    redirect_url: str = pydantic_v1.Field(alias="redirect-url")
     score: float | None
-    started_at: datetime.datetime | None = pydantic.Field(None, alias="started-at")
+    started_at: datetime.datetime | None = pydantic_v1.Field(None, alias="started-at")
     status: UbbleIdentificationStatus
-    status_updated_at: datetime.datetime = pydantic.Field(alias="status-updated-at")
-    updated_at: datetime.datetime = pydantic.Field(alias="updated-at")
-    user_agent: str | None = pydantic.Field(None, alias="user-agent")
-    user_ip_address: str | None = pydantic.Field(None, alias="user-ip-address")
+    status_updated_at: datetime.datetime = pydantic_v1.Field(alias="status-updated-at")
+    updated_at: datetime.datetime = pydantic_v1.Field(alias="updated-at")
+    user_agent: str | None = pydantic_v1.Field(None, alias="user-agent")
+    user_ip_address: str | None = pydantic_v1.Field(None, alias="user-ip-address")
     webhook: str
 
 
 class UbbleReasonCode(UbbleIdentificationObject):
-    type: str = pydantic.Field(alias="type")
-    id: int = pydantic.Field(alias="id")
+    type: str = pydantic_v1.Field(alias="type")
+    id: int = pydantic_v1.Field(alias="id")
 
 
 class UbbleReasonCodes(UbbleIdentificationObject):
@@ -53,10 +53,10 @@ class UbbleReasonCodes(UbbleIdentificationObject):
 
 
 class UbbleIdentificationRelationships(UbbleIdentificationObject):
-    reason_codes: UbbleReasonCodes = pydantic.Field(alias="reason-codes")
+    reason_codes: UbbleReasonCodes = pydantic_v1.Field(alias="reason-codes")
 
 
-class UbbleIdentificationData(pydantic.BaseModel):
+class UbbleIdentificationData(pydantic_v1.BaseModel):
     type: str
     id: int
     attributes: UbbleIdentificationAttributes
@@ -65,40 +65,40 @@ class UbbleIdentificationData(pydantic.BaseModel):
 
 class UbbleIdentificationDocuments(UbbleIdentificationObject):
     # https://ubbleai.github.io/developer-documentation/#documents
-    birth_date: str | None = pydantic.Field(None, alias="birth-date")
-    document_number: str | None = pydantic.Field(None, alias="document-number")
-    document_type: str | None = pydantic.Field(None, alias="document-type")
-    first_name: str | None = pydantic.Field(None, alias="first-name")
-    gender: str | None = pydantic.Field(None)
-    last_name: str | None = pydantic.Field(None, alias="last-name")
-    married_name: str | None = pydantic.Field(None, alias="married-name")
-    signed_image_front_url: str | None = pydantic.Field(None, alias="signed-image-front-url")
-    signed_image_back_url: str | None = pydantic.Field(None, alias="signed-image-back-url")
+    birth_date: str | None = pydantic_v1.Field(None, alias="birth-date")
+    document_number: str | None = pydantic_v1.Field(None, alias="document-number")
+    document_type: str | None = pydantic_v1.Field(None, alias="document-type")
+    first_name: str | None = pydantic_v1.Field(None, alias="first-name")
+    gender: str | None = pydantic_v1.Field(None)
+    last_name: str | None = pydantic_v1.Field(None, alias="last-name")
+    married_name: str | None = pydantic_v1.Field(None, alias="married-name")
+    signed_image_front_url: str | None = pydantic_v1.Field(None, alias="signed-image-front-url")
+    signed_image_back_url: str | None = pydantic_v1.Field(None, alias="signed-image-back-url")
 
 
 class UbbleIdentificationDocumentChecks(UbbleIdentificationObject):
     # https://ubbleai.github.io/developer-documentation/#document-checks
-    data_extracted_score: float | None = pydantic.Field(None, alias="data-extracted-score")
-    expiry_date_score: float | None = pydantic.Field(None, alias="expiry-date-score")
-    issue_date_score: float | None = pydantic.Field(None, alias="issue-date-score")
-    live_video_capture_score: float | None = pydantic.Field(None, alias="live-video-capture-score")
-    mrz_validity_score: float | None = pydantic.Field(None, alias="mrz-validity-score")
-    mrz_viz_score: float | None = pydantic.Field(None, alias="mrz-viz-score")
-    ove_back_score: float | None = pydantic.Field(None, alias="ove-back-score")
-    ove_front_score: float | None = pydantic.Field(None, alias="ove-front-score")
-    ove_score: float | None = pydantic.Field(None, alias="ove-score")
-    quality_score: float | None = pydantic.Field(None, alias="quality-score")
-    score: float | None = pydantic.Field(None, alias="score")
+    data_extracted_score: float | None = pydantic_v1.Field(None, alias="data-extracted-score")
+    expiry_date_score: float | None = pydantic_v1.Field(None, alias="expiry-date-score")
+    issue_date_score: float | None = pydantic_v1.Field(None, alias="issue-date-score")
+    live_video_capture_score: float | None = pydantic_v1.Field(None, alias="live-video-capture-score")
+    mrz_validity_score: float | None = pydantic_v1.Field(None, alias="mrz-validity-score")
+    mrz_viz_score: float | None = pydantic_v1.Field(None, alias="mrz-viz-score")
+    ove_back_score: float | None = pydantic_v1.Field(None, alias="ove-back-score")
+    ove_front_score: float | None = pydantic_v1.Field(None, alias="ove-front-score")
+    ove_score: float | None = pydantic_v1.Field(None, alias="ove-score")
+    quality_score: float | None = pydantic_v1.Field(None, alias="quality-score")
+    score: float | None = pydantic_v1.Field(None, alias="score")
     supported: float | None = None
-    visual_back_score: float | None = pydantic.Field(None, alias="visual-back-score")
-    visual_front_score: float | None = pydantic.Field(None, alias="visual-front-score")
+    visual_back_score: float | None = pydantic_v1.Field(None, alias="visual-back-score")
+    visual_front_score: float | None = pydantic_v1.Field(None, alias="visual-front-score")
 
 
 class UbbleIdentificationFaceChecks(UbbleIdentificationObject):
     # https://ubbleai.github.io/developer-documentation/#face-checks
-    active_liveness_score: float | None = pydantic.Field(None, alias="active-liveness-score")
-    live_video_capture_score: float | None = pydantic.Field(None, alias="live-video-capture-score")
-    quality_score: float | None = pydantic.Field(None, alias="quality-score")
+    active_liveness_score: float | None = pydantic_v1.Field(None, alias="active-liveness-score")
+    live_video_capture_score: float | None = pydantic_v1.Field(None, alias="live-video-capture-score")
+    quality_score: float | None = pydantic_v1.Field(None, alias="quality-score")
     score: float | None = None
 
 
@@ -112,7 +112,7 @@ class UbbleIdentificationDocFaceMatches(UbbleIdentificationObject):
     score: float | None = None
 
 
-class UbbleIdentificationIncluded(pydantic.BaseModel):
+class UbbleIdentificationIncluded(pydantic_v1.BaseModel):
     type: str
     id: int
     attributes: UbbleIdentificationObject
@@ -139,6 +139,6 @@ class UbbleIdentificationIncludedDocFaceMatches(UbbleIdentificationIncluded):
     attributes: UbbleIdentificationDocFaceMatches
 
 
-class UbbleIdentificationResponse(pydantic.BaseModel):
+class UbbleIdentificationResponse(pydantic_v1.BaseModel):
     data: UbbleIdentificationData
     included: list[UbbleIdentificationIncluded]

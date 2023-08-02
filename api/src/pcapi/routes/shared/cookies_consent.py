@@ -1,16 +1,16 @@
 from datetime import datetime
 
-import pydantic
+import pydantic.v1 as pydantic_v1
 
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 
 
-class Cookie(pydantic.ConstrainedStr):
+class Cookie(pydantic_v1.ConstrainedStr):
     min_length = 1
 
 
-class CookiesList(pydantic.ConstrainedList):
+class CookiesList(pydantic_v1.ConstrainedList):
     item_type = Cookie
     __args__ = (Cookie,)  # required by pydantic
     unique_items = True
@@ -34,4 +34,4 @@ class CookieConsentRequest(BaseModel):
 
     class Config:
         alias_generator = to_camel
-        extra = pydantic.Extra.forbid
+        extra = pydantic_v1.Extra.forbid

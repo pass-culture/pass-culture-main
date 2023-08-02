@@ -9,7 +9,7 @@ import logging
 import re
 import typing
 
-import pydantic
+import pydantic.v1 as pydantic_v1
 
 from pcapi import settings
 from pcapi.models import feature
@@ -43,39 +43,39 @@ class NonPublicDataException(SireneException):
     pass
 
 
-class _Address(pydantic.BaseModel):
+class _Address(pydantic_v1.BaseModel):
     if typing.TYPE_CHECKING:  # https://github.com/pydantic/pydantic/issues/156
         street: str
         postal_code: str
         city: str
         insee_code: str
     else:
-        street: pydantic.constr(strip_whitespace=True)
-        postal_code: pydantic.constr(strip_whitespace=True)
-        city: pydantic.constr(strip_whitespace=True)
-        insee_code: pydantic.constr(strip_whitespace=True)
+        street: pydantic_v1.constr(strip_whitespace=True)
+        postal_code: pydantic_v1.constr(strip_whitespace=True)
+        city: pydantic_v1.constr(strip_whitespace=True)
+        insee_code: pydantic_v1.constr(strip_whitespace=True)
 
 
-class SirenInfo(pydantic.BaseModel):
+class SirenInfo(pydantic_v1.BaseModel):
     if typing.TYPE_CHECKING:  # https://github.com/pydantic/pydantic/issues/156
         siren: str
     else:
-        siren: pydantic.constr(strip_whitespace=True, min_length=9, max_length=9)
+        siren: pydantic_v1.constr(strip_whitespace=True, min_length=9, max_length=9)
     name: str
     if typing.TYPE_CHECKING:  # https://github.com/pydantic/pydantic/issues/156
         head_office_siret: str
     else:
-        head_office_siret: pydantic.constr(strip_whitespace=True, min_length=14, max_length=14)
+        head_office_siret: pydantic_v1.constr(strip_whitespace=True, min_length=14, max_length=14)
     ape_code: str
     legal_category_code: str
     address: _Address | None
 
 
-class SiretInfo(pydantic.BaseModel):
+class SiretInfo(pydantic_v1.BaseModel):
     if typing.TYPE_CHECKING:  # https://github.com/pydantic/pydantic/issues/156
         siret: str
     else:
-        siret: pydantic.constr(strip_whitespace=True, min_length=14, max_length=14)
+        siret: pydantic_v1.constr(strip_whitespace=True, min_length=14, max_length=14)
     active: bool
     name: str
     address: _Address

@@ -5,7 +5,7 @@ EMS connectors that handle schedule & booking APIs from this provider.
 import hmac
 import json
 
-from pydantic import parse_obj_as
+import pydantic.v1 as pydantic_v1
 from requests import Response
 from requests.auth import HTTPBasicAuth
 
@@ -33,7 +33,7 @@ class EMSScheduleConnector:
         )
 
         self._check_response_is_ok(response)
-        return parse_obj_as(ems_serializers.ScheduleResponse, response.json())
+        return pydantic_v1.parse_obj_as(ems_serializers.ScheduleResponse, response.json())
 
     def get_movie_poster_from_api(self, image_url: str) -> bytes:
         api_response = requests.get(image_url)

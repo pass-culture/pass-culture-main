@@ -2,8 +2,8 @@ import datetime
 import decimal
 import typing
 
-import pydantic
-from pydantic import generics
+import pydantic.v1 as pydantic_v1
+from pydantic.v1 import generics
 
 from pcapi.routes.serialization import BaseModel
 from pcapi.utils import date as date_utils
@@ -32,7 +32,7 @@ class TiteliveArticle(BaseModel):
     if typing.TYPE_CHECKING:
         gencod: str
     else:
-        gencod: pydantic.constr(min_length=13, max_length=13)
+        gencod: pydantic_v1.constr(min_length=13, max_length=13)
     gtl: TiteliveGtl | None
     image: str
     imagesUrl: TiteliveImage
@@ -40,12 +40,14 @@ class TiteliveArticle(BaseModel):
     prix: decimal.Decimal
     resume: str | None
 
-    _convert_datemodification = pydantic.validator("datemodification", pre=True, allow_reuse=True)(
+    _convert_datemodification = pydantic_v1.validator("datemodification", pre=True, allow_reuse=True)(
         date_utils.parse_french_date
     )
-    _convert_dateparution = pydantic.validator("dateparution", pre=True, allow_reuse=True)(date_utils.parse_french_date)
+    _convert_dateparution = pydantic_v1.validator("dateparution", pre=True, allow_reuse=True)(
+        date_utils.parse_french_date
+    )
 
-    @pydantic.validator("gtl", pre=True)
+    @pydantic_v1.validator("gtl", pre=True)
     def validate_gtl(cls, gtl: TiteliveGtl | list) -> TiteliveGtl | None:
         if isinstance(gtl, list):
             return None
@@ -66,7 +68,7 @@ TiteliveArticleType = typing.TypeVar("TiteliveArticleType", bound=TiteliveArticl
 class BaseTiteliveOeuvre(generics.GenericModel, typing.Generic[TiteliveArticleType]):
     article: list[TiteliveArticleType]
 
-    @pydantic.validator("article", pre=True)
+    @pydantic_v1.validator("article", pre=True)
     def validate_article_list(cls, article: list | dict) -> list:
         if isinstance(article, dict):
             return list(article.values())

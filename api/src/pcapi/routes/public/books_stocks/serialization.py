@@ -3,10 +3,10 @@ import decimal
 import logging
 import typing
 
-import pydantic
-from pydantic import Field
-from pydantic import condecimal
-from pydantic.types import NonNegativeInt
+import pydantic.v1 as pydantic_v1
+from pydantic.v1 import Field
+from pydantic.v1 import condecimal
+from pydantic.v1.types import NonNegativeInt
 
 from pcapi.core.offers import models
 from pcapi.core.offers.models import ActivationCode
@@ -96,7 +96,7 @@ class StockIdResponseModel(BaseModel):
 
 class StocksUpsertBodyModel(BaseModel):
     offer_id: int
-    stocks: pydantic.conlist(  # type: ignore
+    stocks: pydantic_v1.conlist(  # type: ignore
         StockCreationBodyModel | StockEditionBodyModel, min_items=1, max_items=models.Offer.MAX_STOCKS_PER_OFFER
     )
 

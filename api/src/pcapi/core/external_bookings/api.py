@@ -2,7 +2,7 @@ import datetime
 import logging
 import typing
 
-import pydantic
+import pydantic.v1 as pydantic_v1
 
 from pcapi import settings
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
@@ -96,8 +96,8 @@ def book_event_ticket(
     )
     _check_external_booking_response_is_ok(response)
     try:
-        parsed_response = pydantic.parse_obj_as(serialize.ExternalEventBookingResponse, response.json())
-    except pydantic.ValidationError as err:
+        parsed_response = pydantic_v1.parse_obj_as(serialize.ExternalEventBookingResponse, response.json())
+    except pydantic_v1.ValidationError as err:
         raise exceptions.ExternalBookingException(f"External booking failed. Could not parse response: {err}")
     for ticket in parsed_response.tickets:
         add_to_queue(
@@ -126,10 +126,10 @@ def cancel_event_ticket(
             f"External booking failed with status code {response.status_code} and message {response.text}"
         )
     try:
-        parsed_response = pydantic.parse_obj_as(serialize.ExternalEventCancelBookingResponse, response.json())
+        parsed_response = pydantic_v1.parse_obj_as(serialize.ExternalEventCancelBookingResponse, response.json())
         if parsed_response.remainingQuantity:
             stock.quantity = parsed_response.remainingQuantity + stock.dnBookedQuantity - len(barcodes)
-    except (ValueError, pydantic.ValidationError):
+    except (ValueError, pydantic_v1.ValidationError):
         logger.exception(
             "Could not parse external booking cancel response",
             extra={"status_code": response.status_code, "response": response.text},
@@ -139,8 +139,8 @@ def cancel_event_ticket(
 def _check_external_booking_response_is_ok(response: requests.Response) -> None:
     if response.status_code == 409:
         try:
-            error_response = pydantic.parse_obj_as(serialize.ExternalEventBookingErrorResponse, response.json())
-        except (ValueError, pydantic.ValidationError):
+            error_response = pydantic_v1.parse_obj_as(serialize.ExternalEventBookingErrorResponse, response.json())
+        except (ValueError, pydantic_v1.ValidationError):
             raise exceptions.ExternalBookingException(
                 f"External booking failed with status code {response.status_code} and message {response.text}"
             )

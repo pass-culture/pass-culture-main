@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-import pydantic
+import pydantic.v1 as pydantic_v1
 
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
@@ -11,8 +11,8 @@ class EducationalRedactorQueryModel(BaseModel):
         uai: str
         candidate: str
     else:
-        uai: pydantic.constr(strip_whitespace=True, min_length=3)
-        candidate: pydantic.constr(strip_whitespace=True, min_length=3)
+        uai: pydantic_v1.constr(strip_whitespace=True, min_length=3)
+        candidate: pydantic_v1.constr(strip_whitespace=True, min_length=3)
 
     class Config:
         alias_generator = to_camel

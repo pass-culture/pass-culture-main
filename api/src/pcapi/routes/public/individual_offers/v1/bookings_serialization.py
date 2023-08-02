@@ -2,7 +2,7 @@ from datetime import datetime
 import enum
 import typing
 
-import pydantic
+import pydantic.v1 as pydantic_v1
 
 from pcapi.core.bookings import models as booking_models
 from pcapi.core.finance import utils as finance_utils
@@ -21,10 +21,10 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
     id: int
     quantity: int
     creation_date: str
-    confirmation_date: str | None = pydantic.Field(
+    confirmation_date: str | None = pydantic_v1.Field(
         description="For event offers, deadline for cancellation by the beneficiary."
     )
-    price: pydantic.StrictInt
+    price: pydantic_v1.StrictInt
     status: booking_models.BookingStatus
 
     offer_id: int
@@ -79,13 +79,13 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
 
 
 class GetFilteredBookingsRequest(IndexPaginationQueryParams):
-    offer_id: int = pydantic.Field(description="Id of the bookings' offer.")
-    price_category_id: int | None = pydantic.Field(description="Price category of the bookings' stock.")
-    stock_id: int | None = pydantic.Field(description="Id of the bookings' stock.")
-    status: booking_models.BookingStatus | None = pydantic.Field(
+    offer_id: int = pydantic_v1.Field(description="Id of the bookings' offer.")
+    price_category_id: int | None = pydantic_v1.Field(description="Price category of the bookings' stock.")
+    stock_id: int | None = pydantic_v1.Field(description="Id of the bookings' stock.")
+    status: booking_models.BookingStatus | None = pydantic_v1.Field(
         description="Booking Status.\n\n* `CONFIRMED`: The bookings is confirmed.\n* `USED`: The bookings has been used.\n* `CANCELLED`: The bookings has been cancelled.\n* `REIMBURSED` The bookings has been reimbursed."
     )
-    begining_datetime: datetime | None = pydantic.Field(description="Timezone aware datetime of the event.")
+    begining_datetime: datetime | None = pydantic_v1.Field(description="Timezone aware datetime of the event.")
 
 
 class GetFilteredBookingsResponse(serialization.ConfiguredBaseModel):

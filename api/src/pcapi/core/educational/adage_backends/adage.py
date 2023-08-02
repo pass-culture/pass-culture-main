@@ -1,7 +1,7 @@
 import logging
 import traceback
 
-from pydantic import parse_obj_as
+from pydantic.v1 import parse_obj_as
 
 from pcapi import settings
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue

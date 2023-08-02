@@ -2,7 +2,7 @@ import datetime
 import logging
 import typing
 
-from pydantic import parse_obj_as
+from pydantic.v1 import parse_obj_as
 
 from pcapi.connectors import boost
 from pcapi.connectors.serialization import boost_serializers

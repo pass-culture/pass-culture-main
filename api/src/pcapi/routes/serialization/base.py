@@ -1,8 +1,8 @@
 import re
 import typing
 
-import pydantic
-from pydantic import validator
+import pydantic.v1 as pydantic_v1
+from pydantic.v1 import validator
 
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
@@ -10,7 +10,7 @@ from pcapi.utils import phone_number as phone_number_utils
 
 
 SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
-SocialMedias = dict[SocialMedia, pydantic.HttpUrl]
+SocialMedias = dict[SocialMedia, pydantic_v1.HttpUrl]
 
 
 class VenueContactModel(BaseModel):
@@ -19,9 +19,9 @@ class VenueContactModel(BaseModel):
         allow_population_by_field_name = True
         orm_mode = True
         anystr_strip_whitespace = True
-        extra = pydantic.Extra.forbid
+        extra = pydantic_v1.Extra.forbid
 
-    email: pydantic.EmailStr | None
+    email: pydantic_v1.EmailStr | None
     website: str | None
     phone_number: str | None
     social_medias: SocialMedias | None
@@ -44,7 +44,7 @@ class VenueContactModel(BaseModel):
         raise ValueError(f"url du site web invalide: {website}")
 
 
-class RequiredStrippedString(pydantic.ConstrainedStr):
+class RequiredStrippedString(pydantic_v1.ConstrainedStr):
     strip_whitespace = True
     min_length = 1
 
@@ -57,19 +57,19 @@ class VenueName(RequiredStrippedString):
     max_length = 140
 
 
-class VenuePublicName(pydantic.ConstrainedStr):
+class VenuePublicName(pydantic_v1.ConstrainedStr):
     strip_whitespace = True
     # optional, hence no `min_length`
     max_length = 255
 
 
-class VenueDescription(pydantic.ConstrainedStr):
+class VenueDescription(pydantic_v1.ConstrainedStr):
     strip_whitespace = True
     # optional, hence no `min_length`
     max_length = 1000
 
 
-class VenueBookingEmail(pydantic.ConstrainedStr):
+class VenueBookingEmail(pydantic_v1.ConstrainedStr):
     strip_whitespace = True
     # optional, hence no `min_length`
     max_length = 120
@@ -93,13 +93,13 @@ class VenueSiret(RequiredStrippedString):
     max_length = 14
 
 
-class VenueComment(pydantic.ConstrainedStr):
+class VenueComment(pydantic_v1.ConstrainedStr):
     strip_whitespace = True
     # optional, hence no `min_length`
     max_length = 500
 
 
-class VenueWithdrawalDetails(pydantic.ConstrainedStr):
+class VenueWithdrawalDetails(pydantic_v1.ConstrainedStr):
     strip_whitespace = True
     # optional, hence no `min_length`
     max_length = 500

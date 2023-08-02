@@ -3,7 +3,7 @@ import logging
 import typing
 import urllib.parse
 
-from pydantic import networks as pydantic_networks
+from pydantic.v1 import networks as pydantic_networks
 from urllib3 import exceptions as urllib3_exceptions
 
 from pcapi import settings

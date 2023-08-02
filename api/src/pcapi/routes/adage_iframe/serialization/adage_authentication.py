@@ -1,7 +1,7 @@
 import enum
 import logging
 
-from pydantic import ValidationError
+from pydantic.v1 import ValidationError
 
 from pcapi.core.educational.exceptions import MissingRequiredRedactorInformation
 from pcapi.routes.serialization import BaseModel

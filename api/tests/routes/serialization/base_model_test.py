@@ -1,6 +1,6 @@
 import decimal
 
-from pydantic import ValidationError
+from pydantic.v1 import ValidationError
 import pytest
 from pytest import fixture
 

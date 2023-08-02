@@ -1,7 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 
-from pydantic.class_validators import validator
+from pydantic.v1.class_validators import validator
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.offers.api import get_expense_domains

@@ -5,9 +5,9 @@ from jwt import DecodeError
 from jwt import ExpiredSignatureError
 from jwt import InvalidSignatureError
 from jwt import InvalidTokenError
-import pydantic
-from pydantic import EmailStr
-from pydantic.class_validators import validator
+import pydantic.v1 as pydantic_v1
+from pydantic.v1 import EmailStr
+from pydantic.v1.class_validators import validator
 
 from pcapi.core.users import models as users_models
 from pcapi.core.users.utils import decode_jwt_token
@@ -78,7 +78,7 @@ class UserEmailValidationResponseModel(BaseModel):
 class ProUserCreationBodyModel(BaseModel):
     address: str
     city: str
-    email: pydantic.EmailStr
+    email: pydantic_v1.EmailStr
     first_name: str
     last_name: str
     latitude: float | None
@@ -101,7 +101,7 @@ class ProUserCreationBodyModel(BaseModel):
 
 
 class ProUserCreationBodyV2Model(BaseModel):
-    email: pydantic.EmailStr
+    email: pydantic_v1.EmailStr
     first_name: str
     last_name: str
     password: str

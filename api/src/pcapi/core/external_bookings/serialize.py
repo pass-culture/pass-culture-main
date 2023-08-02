@@ -1,6 +1,6 @@
 import datetime
 
-import pydantic
+import pydantic.v1 as pydantic_v1
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.finance.utils as finance_utils
@@ -8,17 +8,17 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.users.models as users_models
 
 
-class ExternalEventBookingRequest(pydantic.BaseModel):
+class ExternalEventBookingRequest(pydantic_v1.BaseModel):
     booking_confirmation_date: datetime.datetime
     booking_creation_date: datetime.datetime
-    booking_quantity: pydantic.StrictInt
+    booking_quantity: pydantic_v1.StrictInt
     offer_ean: str | None
-    offer_id: pydantic.StrictInt
+    offer_id: pydantic_v1.StrictInt
     offer_name: str
-    offer_price: pydantic.StrictInt
-    price_category_id: pydantic.StrictInt
+    offer_price: pydantic_v1.StrictInt
+    price_category_id: pydantic_v1.StrictInt
     price_category_label: str
-    stock_id: pydantic.StrictInt
+    stock_id: pydantic_v1.StrictInt
     user_birth_date: datetime.date
     user_email: str
     user_first_name: str
@@ -26,7 +26,7 @@ class ExternalEventBookingRequest(pydantic.BaseModel):
     user_phone: str | None
     venue_address: str
     venue_department_code: str
-    venue_id: pydantic.StrictInt
+    venue_id: pydantic_v1.StrictInt
     venue_name: str
 
     @classmethod
@@ -59,22 +59,22 @@ class ExternalEventBookingRequest(pydantic.BaseModel):
         )
 
 
-class ExternalEventTicket(pydantic.BaseModel):
-    barcode: str = pydantic.Field(max_length=100)
-    seat: str | None = pydantic.Field(max_length=100)
+class ExternalEventTicket(pydantic_v1.BaseModel):
+    barcode: str = pydantic_v1.Field(max_length=100)
+    seat: str | None = pydantic_v1.Field(max_length=100)
 
 
-class ExternalEventBookingResponse(pydantic.BaseModel):
+class ExternalEventBookingResponse(pydantic_v1.BaseModel):
     tickets: list[ExternalEventTicket]
-    remainingQuantity: pydantic.StrictInt
+    remainingQuantity: pydantic_v1.StrictInt
 
 
-class ExternalEventBookingErrorResponse(pydantic.BaseModel):
+class ExternalEventBookingErrorResponse(pydantic_v1.BaseModel):
     error: str
-    remainingQuantity: pydantic.StrictInt | None
+    remainingQuantity: pydantic_v1.StrictInt | None
 
 
-class ExternalEventCancelBookingRequest(pydantic.BaseModel):
+class ExternalEventCancelBookingRequest(pydantic_v1.BaseModel):
     barcodes: list[str]
 
     @classmethod
@@ -82,6 +82,6 @@ class ExternalEventCancelBookingRequest(pydantic.BaseModel):
         return cls(barcodes=barcodes)
 
 
-class ExternalEventCancelBookingResponse(pydantic.BaseModel):
+class ExternalEventCancelBookingResponse(pydantic_v1.BaseModel):
     error: str | None
-    remainingQuantity: pydantic.StrictInt
+    remainingQuantity: pydantic_v1.StrictInt

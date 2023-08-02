@@ -74,7 +74,7 @@ class DMSGraphQLClient:
             procedure_id,
             page_token,
         )
-        for application in dms_demarche_response.dms_applications:
+        for application in dms_demarche_response.dms_applications:  # pylint: disable=not-an-iterable
             yield application
 
         if dms_demarche_response.page_info.has_next_page:
@@ -99,7 +99,7 @@ class DMSGraphQLClient:
             len(dms_response.dms_deleted_applications),
             procedure_id,
         )
-        for application in dms_response.dms_deleted_applications:
+        for application in dms_response.dms_deleted_applications:  # pylint: disable=not-an-iterable
             yield application
 
         if dms_response.page_info.has_next_page:
