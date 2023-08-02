@@ -9,11 +9,13 @@ import {
 
 import styles from './BookingDateCell.module.scss'
 
+export interface BookingDateCellProps {
+  bookingDateTimeIsoString: string
+}
+
 const BookingDateCell = ({
   bookingDateTimeIsoString,
-}: {
-  bookingDateTimeIsoString: string
-}) => {
+}: BookingDateCellProps) => {
   const bookingDate = toDateStrippedOfTimezone(bookingDateTimeIsoString)
   const bookingDateDay = format(bookingDate, FORMAT_DD_MM_YYYY)
   const bookingDateHour = format(bookingDate, FORMAT_HH_mm)

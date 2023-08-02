@@ -4,11 +4,11 @@ import { BookingRecapResponseBeneficiaryModel } from 'apiClient/v1'
 
 import styles from './BeneficiaryCell.module.scss'
 
-const BeneficiaryCell = ({
-  beneficiaryInfos,
-}: {
+export interface BeneficiaryCellProps {
   beneficiaryInfos: BookingRecapResponseBeneficiaryModel
-}) => {
+}
+
+const BeneficiaryCell = ({ beneficiaryInfos }: BeneficiaryCellProps) => {
   const beneficiaryName = [
     beneficiaryInfos.lastname,
     beneficiaryInfos.firstname,
