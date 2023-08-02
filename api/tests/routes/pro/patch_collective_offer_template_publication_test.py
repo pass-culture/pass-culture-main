@@ -3,24 +3,10 @@ import pytest
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offers import api as offers_api
+from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
-
-
-SIMPLE_OFFER_VALIDATION_CONFIG = """
-        minimum_score: 0.6
-        rules:
-            - name: "check offer name"
-              factor: 0
-              conditions:
-               - model: "CollectiveOfferTemplate"
-                 attribute: "name"
-                 condition:
-                    operator: "contains"
-                    comparated:
-                      - "suspicious"
-        """
 
 
 @pytest.mark.usefixtures("db_session")
@@ -43,7 +29,15 @@ class Returns204Test:
         user_offerer = offerers_factories.UserOffererFactory(offerer=offer.venue.managingOfferer)
 
         url = f"/collective/offers-template/{offer.id}/publish"
-        offers_api.import_offer_validation_config(SIMPLE_OFFER_VALIDATION_CONFIG, user_offerer.user)
+
+        offer_name_rule = offers_factories.OfferValidationRuleFactory(name="Règle sur les noms d'offres")
+        offers_factories.OfferValidationSubRuleFactory(
+            validationRule=offer_name_rule,
+            model=offers_models.OfferValidationModel.COLLECTIVE_OFFER_TEMPLATE,
+            attribute=offers_models.OfferValidationAttribute.NAME,
+            operator=offers_models.OfferValidationRuleOperator.CONTAINS,
+            comparated={"comparated": ["suspicious"]},
+        )
 
         response = client.with_session_auth(user_offerer.user.email).patch(url)
 
