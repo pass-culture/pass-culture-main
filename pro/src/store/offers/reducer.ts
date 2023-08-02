@@ -1,17 +1,21 @@
 import {
   SAVE_PAGE_NUMBER,
   SAVE_SEARCH_FILTERS,
-  SET_CATEGORIES,
+  SavePageNumberAction,
+  SaveSearchFiltersAction,
 } from './actions'
 
-export const initialState = {
+const initialState = {
   list: [],
   searchFilters: {},
   pageNumber: 1,
   categories: {},
 }
 
-export const offersReducer = (state = initialState, action) => {
+export const offersReducer = (
+  state = initialState,
+  action: SaveSearchFiltersAction | SavePageNumberAction
+) => {
   switch (action.type) {
     case SAVE_SEARCH_FILTERS:
       return {
@@ -21,12 +25,6 @@ export const offersReducer = (state = initialState, action) => {
 
     case SAVE_PAGE_NUMBER:
       return { ...state, pageNumber: action.pageNumber }
-
-    case SET_CATEGORIES:
-      return {
-        ...state,
-        categories: action.categories,
-      }
 
     default:
       return state
