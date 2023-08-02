@@ -234,6 +234,7 @@ describe('offers', () => {
       nbSortedHits: 0,
       areHitsSorted: true,
       processingTimeMS: 0,
+      submitCount: 0,
     }
   })
 
@@ -506,6 +507,68 @@ describe('offers', () => {
           'Vous avez vu toutes les offres qui correspondent à votre recherche.'
         )
       ).toBeInTheDocument()
+    })
+
+    it('should not show diffuse help', async () => {
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+        offerInParis
+      )
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+        offerInCayenne
+      )
+
+      renderOffers(offersProps)
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+      const diffuseHelp = screen.queryByText('Le saviez-vous ?')
+
+      expect(diffuseHelp).not.toBeInTheDocument()
+    })
+
+    it('should not show diffuse help', async () => {
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+        offerInParis
+      )
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+        offerInCayenne
+      )
+
+      renderOffers(
+        { ...offersProps, submitCount: 0 },
+        {
+          features: {
+            list: [{ isActive: true, nameKey: 'WIP_ENABLE_DIFFUSE_HELP' }],
+          },
+        }
+      )
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+      const diffuseHelp = screen.queryByText('Le saviez-vous ?')
+
+      expect(diffuseHelp).not.toBeInTheDocument()
+    })
+
+    it('should show diffuse help', async () => {
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+        offerInParis
+      )
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+        offerInCayenne
+      )
+
+      renderOffers(
+        { ...offersProps, submitCount: 1 },
+        {
+          features: {
+            list: [{ isActive: true, nameKey: 'WIP_ENABLE_DIFFUSE_HELP' }],
+          },
+        }
+      )
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+      const diffuseHelp = screen.getByText('Le saviez-vous ?')
+
+      expect(diffuseHelp).toBeInTheDocument()
     })
   })
 })
