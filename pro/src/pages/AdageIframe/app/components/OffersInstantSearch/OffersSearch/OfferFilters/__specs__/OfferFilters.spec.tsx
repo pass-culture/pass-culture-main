@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 
+import { apiAdage } from 'apiClient/api'
 import * as pcapi from 'pages/AdageIframe/repository/pcapi/pcapi'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -49,6 +50,7 @@ const initialValues = {
   eventAddressType: '',
   departments: [],
   academies: [],
+  categories: [],
 }
 
 describe('OfferFilters', () => {
@@ -72,6 +74,12 @@ describe('OfferFilters', () => {
     expect(
       screen.getByRole('button', { name: 'Type d’intervention' })
     ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Catégorie' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Réinitialiser les filtres' })
+    ).toBeInTheDocument()
   })
 
   it('should submit onclick search button', async () => {
@@ -93,6 +101,22 @@ describe('OfferFilters', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Domaine artistique (1)' })
     )
+
+    await userEvent.click(screen.getAllByTestId('search-button-modal')[0])
+
+    expect(handleSubmit).toHaveBeenCalled()
+  })
+
+  it('should submit onclick modal search button cateogires', async () => {
+    renderOfferFilters({
+      isLoading: false,
+      initialValues: {
+        ...initialValues,
+        categories: [['test']],
+      },
+    })
+
+    await userEvent.click(screen.getByRole('button', { name: 'Catégorie (1)' }))
 
     await userEvent.click(screen.getAllByTestId('search-button-modal')[0])
 
@@ -253,5 +277,20 @@ describe('OfferFilters', () => {
     expect(mockSetLocalisationFilterState).toHaveBeenCalledWith(
       LocalisationFilterStates.NONE
     )
+  })
+  it('should return categories options when the api call was successful', async () => {
+    vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockResolvedValueOnce({
+      categories: [{ id: 'CINEMA', proLabel: 'Cinéma' }],
+      subcategories: [{ id: 'CINE_PLEIN_AIR', categoryId: 'CINEMA' }],
+    })
+
+    renderOfferFilters({
+      isLoading: false,
+      initialValues: initialValues,
+    })
+
+    await userEvent.click(screen.getByRole('button', { name: 'Catégorie' }))
+
+    expect(screen.getByText('Cinéma')).toBeInTheDocument()
   })
 })

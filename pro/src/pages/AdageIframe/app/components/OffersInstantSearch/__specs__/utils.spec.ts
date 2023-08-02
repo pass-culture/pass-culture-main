@@ -6,6 +6,8 @@ describe('adageFiltersToFacetFilters', () => {
   const departments: string[] = ['01']
   const academies: string[] = ['Paris']
 
+  const categories: string[][] = [['categorie1', 'categorie2']]
+
   it('should return facet filter from form values', () => {
     expect(
       adageFiltersToFacetFilters({
@@ -15,6 +17,7 @@ describe('adageFiltersToFacetFilters', () => {
         eventAddressType: 'school',
         departments,
         academies,
+        categories,
       })
     ).toStrictEqual({
       queryFilters: [
@@ -23,6 +26,7 @@ describe('adageFiltersToFacetFilters', () => {
         ['offer.domains:1'],
         ['offer.schoolInterventionArea:01'],
         ['venue.academy:Paris'],
+        ['offer.subcategoryId:categorie1', 'offer.subcategoryId:categorie2'],
         ['offer.educationalInstitutionUAICode:all'],
       ],
       filtersKeys: [
@@ -31,6 +35,7 @@ describe('adageFiltersToFacetFilters', () => {
         'domains',
         'departments',
         'academies',
+        'categories',
       ],
     })
   })
@@ -47,6 +52,7 @@ describe('adageFiltersToFacetFilters', () => {
 
         departments,
         academies,
+        categories,
       })
     ).toStrictEqual({
       queryFilters: [
@@ -55,6 +61,7 @@ describe('adageFiltersToFacetFilters', () => {
         ['offer.domains:1'],
         ['offer.schoolInterventionArea:01'],
         ['venue.academy:Paris'],
+        ['offer.subcategoryId:categorie1', 'offer.subcategoryId:categorie2'],
         ['offer.educationalInstitutionUAICode:123456'],
       ],
       filtersKeys: [
@@ -63,6 +70,7 @@ describe('adageFiltersToFacetFilters', () => {
         'domains',
         'departments',
         'academies',
+        'categories',
         'uaiCode',
       ],
     })
@@ -76,6 +84,7 @@ describe('adageFiltersToFacetFilters', () => {
         eventAddressType: 'school',
         departments,
         academies,
+        categories,
       })
     ).toStrictEqual({
       queryFilters: [
@@ -84,6 +93,7 @@ describe('adageFiltersToFacetFilters', () => {
         ['offer.domains:1'],
         ['offer.schoolInterventionArea:01'],
         ['venue.academy:Paris'],
+        ['offer.subcategoryId:categorie1', 'offer.subcategoryId:categorie2'],
       ],
       filtersKeys: [
         'eventAddressType',
@@ -91,6 +101,7 @@ describe('adageFiltersToFacetFilters', () => {
         'domains',
         'departments',
         'academies',
+        'categories',
       ],
     })
   })
@@ -103,6 +114,7 @@ describe('adageFiltersToFacetFilters', () => {
         eventAddressType: 'offererVenue',
         departments,
         academies,
+        categories,
       })
     ).toStrictEqual({
       queryFilters: [
@@ -111,6 +123,7 @@ describe('adageFiltersToFacetFilters', () => {
         ['offer.domains:1'],
         ['venue.departmentCode:01', 'offer.interventionArea:01'],
         ['venue.academy:Paris'],
+        ['offer.subcategoryId:categorie1', 'offer.subcategoryId:categorie2'],
       ],
       filtersKeys: [
         'eventAddressType',
@@ -118,6 +131,7 @@ describe('adageFiltersToFacetFilters', () => {
         'domains',
         'departments',
         'academies',
+        'categories',
       ],
     })
   })
