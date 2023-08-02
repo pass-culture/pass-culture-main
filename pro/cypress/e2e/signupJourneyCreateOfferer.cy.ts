@@ -1,6 +1,11 @@
 describe('Signup journey', () => {
+  const siret = Math.random().toString().substring(2, 16)
+  before(() => {
+    cy.setFeatureFlags([{ name: 'WIP_ENABLE_NEW_ONBOARDING', isActive: true }])
+  })
+
   it('should create offerer', () => {
-    cy.login('pctest.admin93.0@example.com', 'user@AZERTY123')
+    cy.login('pctest.pro93.0@example.com', 'user@AZERTY123')
 
     // Welcome page
     cy.visit({ method: 'GET', url: '/parcours-inscription' })
@@ -9,10 +14,10 @@ describe('Signup journey', () => {
     // Offerer page
     cy.intercept({
       method: 'GET',
-      url: 'http://localhost:5001/sirene/siret/11111111111111',
+      url: `http://localhost:5001/sirene/siret/${siret}`,
     }).as('getSiret')
 
-    cy.get('#siret').type('11111111111111')
+    cy.get('#siret').type(siret)
     cy.wait('@getSiret')
     cy.contains('Continuer').click()
     cy.wait('@getSiret')
@@ -35,7 +40,7 @@ describe('Signup journey', () => {
   })
 
   it('should ask offerer attachment to a user and create new offerer', () => {
-    cy.login('pctest.pro93.0@example.com', 'user@AZERTY123')
+    cy.login('pctest.pro97.0@example.com', 'user@AZERTY123')
 
     // Welcome page
     cy.visit({ method: 'GET', url: '/parcours-inscription' })
@@ -44,10 +49,10 @@ describe('Signup journey', () => {
     // Offerer page
     cy.intercept({
       method: 'GET',
-      url: 'http://localhost:5001/sirene/siret/11111111111111',
+      url: `http://localhost:5001/sirene/siret/${siret}`,
     }).as('getSiret')
 
-    cy.get('#siret').type('11111111111111')
+    cy.get('#siret').type(siret)
     cy.wait('@getSiret')
     cy.contains('Continuer').click()
     cy.wait('@getSiret')
@@ -58,8 +63,7 @@ describe('Signup journey', () => {
     // Authentication page
     cy.get('#search-addressAutocomplete').clear()
     cy.get('#search-addressAutocomplete').type('89 Rue la Boétie 75008 Paris')
-    cy.get('#list-addressAutocomplete').first().click()
-    cy.contains('89 Rue la Boétie 75008 Paris')
+    cy.get('#list-addressAutocomplete li').first().click()
     cy.contains('Étape suivante').click()
 
     // Activity page
@@ -71,5 +75,9 @@ describe('Signup journey', () => {
     // Validation page
     cy.contains('Valider et créer ma structure').click()
     cy.url().should('be.equal', 'http://localhost:3001/accueil')
+  })
+
+  after(() => {
+    cy.setFeatureFlags([{ name: 'WIP_ENABLE_NEW_ONBOARDING', isActive: false }])
   })
 })
