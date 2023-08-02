@@ -6,6 +6,8 @@ from pcapi.core.users import models as users_models
 
 
 class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
+    EMS_FAKE_REMAINING_PLACES = 100
+
     def __init__(self, cinema_id: str):
         self.connector = EMSBookingConnector()
         self.cinema_id = cinema_id
@@ -38,4 +40,12 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         raise NotImplementedError()
 
     def get_film_showtimes_stocks(self, film_id: int) -> dict[int, int]:
-        raise NotImplementedError()
+        payload = ems_serializers.AvailableShowsRequest(num_cine=self.cinema_id, id_film=str(film_id))
+        response = self.connector.do_request(self.connector.shows_availability_endpoint, payload.dict())
+        self.connector.raise_for_status(response)
+
+        available_shows = ems_serializers.AvailableShowsResponse(**response.json())
+
+        # We use a fake value for remaining places because we don't have access to real remaining places for EMS shows
+        # This value will not impact quantity, seen that we update showtime quantity only if remaining places is 0 or 1.
+        return {int(show): self.EMS_FAKE_REMAINING_PLACES for show in available_shows.seances}

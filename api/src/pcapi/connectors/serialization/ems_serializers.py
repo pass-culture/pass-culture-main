@@ -61,3 +61,13 @@ class ReservationPassCultureResponse(ReservationPassCultureRequest):
 
     statut: int
     billets: list[Ticket]
+
+
+class AvailableShowsRequest(BaseModel):
+    num_cine: str
+    id_film: str
+
+
+class AvailableShowsResponse(BaseModel):
+    statut: int
+    seances: list[str]

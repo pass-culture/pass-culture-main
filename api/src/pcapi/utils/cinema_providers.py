@@ -63,9 +63,9 @@ def get_showtime_id_from_uuid(stock_uuid: str | None, provider_name: str) -> int
             return None
 
 
-def get_boost_or_cgr_film_id_from_uuid(offer_uuid: str | None) -> int | None:
+def get_boost_or_cgr_or_ems_film_id_from_uuid(offer_uuid: str | None) -> int | None:
     """
-    Parses the uuid with this pattern: uuid pattern: <film_id>%<venue.id>%<Boost|CGR>
+    Parses the uuid with this pattern: uuid pattern: <film_id>%<venue.id>%<Boost|CGR|EMS>
     and returns the film_id as int, or None if it cannot
     """
     if offer_uuid:
