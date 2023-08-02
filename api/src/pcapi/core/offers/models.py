@@ -194,11 +194,11 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
 
     @hybrid_property
     def _bookable(self) -> bool:
-        return not self.isExpired and not self.isSoldOut
+        return not self.isExpired and not self.isSoldOut and not self.isSoftDeleted
 
     @_bookable.expression  # type: ignore [no-redef]
     def _bookable(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
-        return sa.and_(sa.not_(cls.isExpired), sa.not_(cls.isSoldOut))
+        return sa.and_(sa.not_(cls.isExpired), sa.not_(cls.isSoldOut), sa.not_(cls.isSoftDeleted))
 
     @property
     def is_forbidden_to_underage(self) -> bool:

@@ -514,6 +514,10 @@ class StockQuantityTest:
 
 
 class StockIsBookableTest:
+    def test_not_bookable_if_stock_is_soft_deleted(self):
+        stock = factories.StockFactory(isSoftDeleted=True)
+        assert not stock.isBookable
+
     def test_not_bookable_if_booking_limit_datetime_has_passed(self):
         past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
         stock = factories.StockFactory(bookingLimitDatetime=past)
