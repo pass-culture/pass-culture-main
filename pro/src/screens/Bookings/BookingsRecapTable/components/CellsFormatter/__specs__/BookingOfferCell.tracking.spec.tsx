@@ -14,12 +14,10 @@ import BookingOfferCell, { BookingOfferCellProps } from '../BookingOfferCell'
 const mockLogEvent = vi.fn()
 
 const renderOfferCell = (props: BookingOfferCellProps) => {
-  const storeOverrides = { app: { logEvent: mockLogEvent } }
-
-  renderWithProviders(<BookingOfferCell {...props} />, { storeOverrides })
+  renderWithProviders(<BookingOfferCell {...props} />)
 }
 
-describe('tracking bookings offer cell', () => {
+describe('BookingOfferCell', () => {
   it('should call tracker with params', async () => {
     // Given
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
