@@ -12,13 +12,15 @@ import { getBookingStatusDisplayInformations } from '../../utils/bookingStatusCo
 
 import styles from './BookingStatusCellHistory.module.scss'
 
-const BookingStatusCellHistory = ({
-  bookingStatusHistory,
-}: {
+export interface BookingStatusCellHistoryProps {
   bookingStatusHistory:
     | BookingRecapResponseBookingStatusHistoryModel[]
     | BookingStatusHistoryResponseModel[]
-}) => {
+}
+
+const BookingStatusCellHistory = ({
+  bookingStatusHistory,
+}: BookingStatusCellHistoryProps) => {
   const bookingsStatusHistoryItems = bookingStatusHistory.map(item => {
     const displayInfoFromStatus = getBookingStatusDisplayInformations(
       item.status

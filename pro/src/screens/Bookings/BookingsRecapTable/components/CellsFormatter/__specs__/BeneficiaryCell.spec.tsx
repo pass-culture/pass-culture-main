@@ -1,13 +1,13 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import BeneficiaryCell from '../BeneficiaryCell'
+import BeneficiaryCell, { BeneficiaryCellProps } from '../BeneficiaryCell'
 
-const renderBeneficiaryCell = props => render(<BeneficiaryCell {...props} />)
+const renderBeneficiaryCell = (props: BeneficiaryCellProps) =>
+  render(<BeneficiaryCell {...props} />)
 
-describe('bookings beneficiary cell', () => {
+describe('BeneficiaryCell', () => {
   it('should display an user firstname, lastname and email address', () => {
-    // Given
     const props = {
       beneficiaryInfos: {
         firstname: 'Laurent',
@@ -16,10 +16,8 @@ describe('bookings beneficiary cell', () => {
       },
     }
 
-    // When
     renderBeneficiaryCell(props)
 
-    // Then
     expect(screen.getByText('Durond Laurent')).toBeInTheDocument()
     expect(screen.getByText('laurentdurond@example.com')).toBeInTheDocument()
   })
@@ -32,7 +30,6 @@ describe('bookings beneficiary cell', () => {
   `(
     'should display the right formatted user name',
     ({ firstName, lastName, expectedResult }) => {
-      // Given
       const props = {
         beneficiaryInfos: {
           firstname: firstName,
@@ -40,16 +37,13 @@ describe('bookings beneficiary cell', () => {
           email: 'laurentdurond@example.com',
         },
       }
-      // When
       renderBeneficiaryCell(props)
 
-      // Then
       expect(screen.getByText(expectedResult)).toBeInTheDocument()
     }
   )
 
   it('should not display beneficiary name part when no first nor last name is given', () => {
-    // Given
     const props = {
       beneficiaryInfos: {
         firstname: null,
@@ -58,10 +52,8 @@ describe('bookings beneficiary cell', () => {
       },
     }
 
-    // When
     renderBeneficiaryCell(props)
 
-    // Then
     expect(
       screen.queryByTestId('booking-cell-beneficiary-name')
     ).not.toBeInTheDocument()
