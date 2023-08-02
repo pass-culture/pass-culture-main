@@ -55,11 +55,6 @@ jobs:
     uses: ./.github/workflows/tests-api.yml
     secrets: inherit
 
-  test-backoffice:
-    name: Test backoffice
-    uses: ./.github/workflows/tests-backoffice.yml
-    secrets: inherit
-
   test-pro:
     needs: test-deploy-variable
     if: needs.test-deploy-variable.outputs.deploy == 'true'
@@ -94,13 +89,11 @@ jobs:
     needs:
       - test-deploy-variable
       - build-api
-      - test-backoffice
       - test-pro
     if: |
       always() &&
       github.ref == 'refs/heads/master' &&
       (needs.build-api.result == 'success' || needs.build-api.result == 'skipped') &&
-      (needs.test-backoffice.result == 'success' || needs.test-backoffice.result == 'skipped') &&
       (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped')
     uses: ./.github/workflows/deploy.yml
     with:
