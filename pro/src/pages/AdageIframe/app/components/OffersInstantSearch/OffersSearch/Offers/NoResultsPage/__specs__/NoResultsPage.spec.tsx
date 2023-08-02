@@ -32,6 +32,7 @@ const initialValues = {
   eventAddressType: '',
   departments: [],
   academies: [],
+  categories: [],
 }
 
 describe('ContactButton', () => {
