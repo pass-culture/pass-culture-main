@@ -14,6 +14,7 @@ from pcapi.core.educational import validation
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer_request
 from pcapi.core.educational.api import adage as educational_api_adage
+import pcapi.core.educational.api.national_program as national_program_api
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.exceptions import StudentsNotOpenedYet
 from pcapi.core.educational.models import HasImageMixin
@@ -239,9 +240,14 @@ def create_collective_offer_template(
         interventionArea=offer_data.intervention_area or [],
         priceDetail=offer_data.price_detail,
     )
+
     collective_offer_template.bookingEmails = offer_data.booking_emails
     db.session.add(collective_offer_template)
     db.session.commit()
+
+    if offer_data.nationalProgramId:
+        national_program_api.link_offer_to_program(offer_data.nationalProgramId, collective_offer_template)
+
     logger.info(
         "Collective offer template has been created",
         extra={
@@ -282,8 +288,13 @@ def create_collective_offer(
         templateId=offer_data.template_id,
     )
     collective_offer.bookingEmails = offer_data.booking_emails
+
     db.session.add(collective_offer)
     db.session.commit()
+
+    if offer_data.nationalProgramId:
+        national_program_api.link_offer_to_program(offer_data.nationalProgramId, collective_offer)
+
     logger.info(
         "Collective offer has been created",
         extra={"collectiveOffer": collective_offer.id, "offerId": offer_id},
@@ -741,6 +752,7 @@ def duplicate_offer_and_stock(
         imageCredit=original_offer.imageCredit,
         imageHasOriginal=original_offer.imageHasOriginal,
         institutionId=original_offer.institutionId,
+        nationalProgramId=original_offer.nationalProgramId,
     )
     educational_models.CollectiveStock(
         beginningDatetime=original_offer.collectiveStock.beginningDatetime,

@@ -4,6 +4,7 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.educational.exceptions import CulturalPartnerNotFoundException
+import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.educational.factories import EducationalDomainFactory
 from pcapi.core.educational.models import CollectiveOfferTemplate
@@ -32,6 +33,8 @@ class Returns200Test:
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
+        national_program = educational_factories.NationalProgramFactory()
+
         data = {
             "name": "New name",
             "mentalDisabilityCompliant": True,
@@ -39,6 +42,7 @@ class Returns200Test:
             "subcategoryId": "CONCERT",
             "priceDetail": "pouet",
             "domains": [domain.id],
+            "nationalProgramId": national_program.id,
         }
 
         # WHEN
@@ -56,6 +60,7 @@ class Returns200Test:
         assert response.json["contactEmail"] == "toto@example.com"
         assert response.json["subcategoryId"] == "CONCERT"
         assert response.json["educationalPriceDetail"] == "pouet"
+        assert response.json["nationalProgramId"] == national_program.id
 
         updated_offer = CollectiveOfferTemplate.query.get(offer.id)
         assert updated_offer.name == "New name"
@@ -163,6 +168,44 @@ class Returns400Test:
 
         # Then
         assert response.status_code == 400
+
+    @freeze_time("2019-01-01T12:00:00Z")
+    def test_update_collective_offer_template_with_unknown_national_program(self, client):
+        # Given
+        domain = EducationalDomainFactory(name="Danse")
+        offer = CollectiveOfferTemplateFactory(
+            mentalDisabilityCompliant=False,
+            contactEmail="johndoe@yopmail.com",
+            contactPhone="0600000000",
+            subcategoryId="CINE_PLEIN_AIR",
+            priceDetail="price detail",
+            domains=[],
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        data = {
+            "name": "New name",
+            "mentalDisabilityCompliant": True,
+            "contactEmail": "toto@example.com",
+            "subcategoryId": "CONCERT",
+            "priceDetail": "pouet",
+            "domains": [domain.id],
+            "nationalProgramId": -1,
+        }
+
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers-template/{offer.id}", json=data)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json == {"global": ["National program not found"]}
 
 
 class Returns403Test:

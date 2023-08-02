@@ -21,6 +21,7 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
         educational_domain1 = educational_factories.EducationalDomainFactory()
         educational_domain2 = educational_factories.EducationalDomainFactory()
+        national_program = educational_factories.NationalProgramFactory()
 
         # When
         data = {
@@ -45,6 +46,7 @@ class Returns200Test:
             "visualDisabilityCompliant": False,
             "interventionArea": ["75", "92", "93"],
             "templateId": template.id,
+            "nationalProgramId": national_program.id,
         }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
@@ -78,6 +80,7 @@ class Returns200Test:
         assert set(offer.domains) == {educational_domain1, educational_domain2}
         assert offer.description == "Ma super description"
         assert offer.templateId == template.id
+        assert offer.nationalProgramId == national_program.id
 
     @override_features(WIP_ADD_CLG_6_5_COLLECTIVE_OFFER=True)
     def test_create_collective_offer_college_6(self, client):
@@ -566,6 +569,48 @@ class Returns404Test:
         # Then
         assert response.status_code == 404
         assert response.json == {"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"}
+
+    def test_create_collective_offer_with_unknown_national_program(self, client):
+        # Given
+        venue = offerers_factories.VenueFactory()
+        template = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        educational_domain1 = educational_factories.EducationalDomainFactory()
+        educational_domain2 = educational_factories.EducationalDomainFactory()
+
+        # When
+        data = {
+            "venueId": venue.id,
+            "description": "Ma super description",
+            "bookingEmails": ["offer1@example.com", "offer2@example.com"],
+            "domains": [educational_domain1.id, educational_domain1.id, educational_domain2.id],
+            "durationMinutes": 60,
+            "name": "La pièce de théâtre",
+            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
+            "contactEmail": "pouet@example.com",
+            "contactPhone": "01 99 00 25 68",
+            "offerVenue": {
+                "addressType": "school",
+                "venueId": venue.id,
+                "otherAddress": "17 rue aléatoire",
+            },
+            "students": ["Lycée - Seconde", "Lycée - Première"],
+            "audioDisabilityCompliant": False,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "interventionArea": ["75", "92", "93"],
+            "templateId": template.id,
+            "nationalProgramId": -1,
+        }
+
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_NOT_FOUND"}
 
     def test_create_collective_offer_with_no_collective_offer_template(self, client):
         # Given

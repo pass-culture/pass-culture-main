@@ -41,6 +41,7 @@ export type GetCollectiveOfferResponseModel = {
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
+  nationalProgramId?: number | null;
   offerId?: number | null;
   offerVenue: CollectiveOfferOfferVenueResponseModel;
   status: OfferStatus;

@@ -29,6 +29,7 @@ export type CollectiveOfferResponseModel = {
   mentalDisabilityCompliant: boolean;
   motorDisabilityCompliant: boolean;
   name: string;
+  nationalProgramId?: number | null;
   offerId?: string | null;
   offerVenue: CollectiveOfferOfferVenue;
   stock: OfferStockResponse;

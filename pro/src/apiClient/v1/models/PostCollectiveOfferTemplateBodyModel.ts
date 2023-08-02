@@ -18,6 +18,7 @@ export type PostCollectiveOfferTemplateBodyModel = {
   mentalDisabilityCompliant?: boolean;
   motorDisabilityCompliant?: boolean;
   name: string;
+  nationalProgramId?: number | null;
   offerVenue: CollectiveOfferVenueBodyModel;
   offererId?: string | null;
   priceDetail?: string | null;

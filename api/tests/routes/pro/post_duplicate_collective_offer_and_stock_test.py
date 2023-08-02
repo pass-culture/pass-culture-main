@@ -65,6 +65,7 @@ class Returns200Test:
         offer = educational_factories.CollectiveOfferFactory(
             venue=venue,
             institution=institution,
+            nationalProgram=educational_factories.NationalProgramFactory(),
         )
         offer_id = offer.id
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
@@ -142,6 +143,7 @@ class Returns200Test:
             "lastBookingStatus": None,
             "lastBookingId": None,
             "teacher": None,
+            "nationalProgramId": offer.nationalProgramId,
         }
 
     def test_duplicate_collective_offer_draft_offer(self, client):
