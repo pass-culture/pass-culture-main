@@ -4,6 +4,7 @@ from datetime import timedelta
 import logging
 import os
 import pathlib
+import re
 from unittest import mock
 from unittest.mock import patch
 
@@ -2471,6 +2472,54 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
         )
 
         mocked_get_movie_shows_stock.return_value = api_return_value
+        api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
+
+        assert stock.remainingQuantity == expected_remaining_quantity
+        if expected_remaining_quantity == 0:
+            mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+        else:
+            mocked_async_index_offer_ids.assert_not_called()
+
+    @override_features(ENABLE_EMS_INTEGRATION=True)
+    @pytest.mark.parametrize(
+        "show_id, show_beginning_datetime, api_return_value, expected_remaining_quantity",
+        [
+            (888, DATETIME_10_DAYS_AFTER, [888], 10),
+            (888, DATETIME_10_DAYS_AFTER, [], 0),
+        ],
+    )
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def test_ems(
+        self,
+        mocked_async_index_offer_ids,
+        show_id,
+        show_beginning_datetime,
+        api_return_value,
+        expected_remaining_quantity,
+        requests_mock,
+    ):
+        ems_provider = providers_repository.get_provider_by_local_class("EMSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider)
+        providers_factories.CinemaProviderPivotFactory(
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+            idAtProvider=venue_provider.venueIdAtOfferProvider,
+        )
+        movie_id = 523
+        offer_id_at_provider = f"{movie_id}%{venue_provider.venueId}%EMS"
+        offer = factories.EventOfferFactory(
+            venue=venue_provider.venue, idAtProvider=offer_id_at_provider, lastProviderId=ems_provider.id
+        )
+        stock = factories.EventStockFactory(
+            offer=offer,
+            quantity=10,
+            idAtProviders=f"{offer_id_at_provider}#{show_id}",
+            beginningDatetime=show_beginning_datetime,
+        )
+        response_json = {"statut": 1, "seances": api_return_value}
+        url_matcher = re.compile("https://fake_url.com/SEANCE/*")
+        requests_mock.post(url=url_matcher, json=response_json)
+
         api.update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer)
 
         assert stock.remainingQuantity == expected_remaining_quantity

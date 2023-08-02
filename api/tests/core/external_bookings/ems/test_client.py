@@ -1,5 +1,6 @@
 import hmac
 import json
+import re
 from urllib.parse import urljoin
 
 import pytest
@@ -170,3 +171,28 @@ class EMSBookTicketTest:
 
         with pytest.raises(EMSAPIException):
             client.book_ticket(show_id="999700079979", booking=booking, beneficiary=beneficiary)
+
+
+@pytest.mark.usefixtures("db_session")
+class EMSGetFilmShowtimesStocksTest:
+    def test_get_film_showtimes_stocks(self, requests_mock):
+        cinema_pivot = providers_factories.EMSCinemaProviderPivotFactory(idAtProvider="0003")
+        cinema_details = providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=cinema_pivot)
+        cinema_id = cinema_details.cinemaProviderPivot.idAtProvider
+
+        response_json = {
+            "statut": 1,
+            "seances": [
+                "999000111",
+                "998880001",
+            ],
+        }
+
+        url_matcher = re.compile("https://fake_url.com/SEANCE/*")
+        requests_mock.post(url=url_matcher, json=response_json)
+
+        client = EMSClientAPI(cinema_id=cinema_id)
+        stocks = client.get_film_showtimes_stocks(film_id=12345)
+
+        assert len(stocks) == 2
+        assert stocks == {999000111: 100, 998880001: 100}

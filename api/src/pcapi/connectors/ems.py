@@ -73,6 +73,7 @@ class EMSScheduleConnector:
 class EMSBookingConnector:
     digest_mode = "sha512"
     booking_endpoint = "VENTE"
+    shows_availability_endpoint = "SEANCE"
 
     def do_request(self, endpoint: str, payload: dict) -> Response:
         """
