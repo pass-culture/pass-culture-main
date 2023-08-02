@@ -52,7 +52,6 @@
     "lodash.isequal": "^4.5.0",
     "orejime": "^2.2.1",
     "papaparse": "^5.4.1",
-    "prop-types": "^15.8.1",
     "re-reselect": "^4.0.1",
     "react": "^18.0.0",
     "react-autocomplete": "^1.8.1",
