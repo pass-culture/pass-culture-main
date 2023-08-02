@@ -4,6 +4,7 @@ import { Formik } from 'formik'
 import React from 'react'
 
 import {
+  FeatureResponseModel,
   GetCollectiveOfferCollectiveStockResponseModel,
   StudentLevels,
 } from 'apiClient/v1'
@@ -188,7 +189,7 @@ describe('FormParticipants', () => {
             {
               isActive: true,
               nameKey: 'WIP_ADD_CLG_6_5_COLLECTIVE_OFFER',
-            },
+            } as FeatureResponseModel,
           ],
         },
       }
@@ -214,7 +215,7 @@ describe('FormParticipants', () => {
             {
               isActive: true,
               nameKey: 'WIP_ADD_CLG_6_5_COLLECTIVE_OFFER',
-            },
+            } as FeatureResponseModel,
           ],
         },
       }
