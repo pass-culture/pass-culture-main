@@ -253,11 +253,7 @@ def test_public_api(client):
                             "title": "Beginningdatetime",
                             "type": "string",
                         },
-                        "features": {
-                            "items": {"type": "string"},
-                            "title": "Features",
-                            "type": "array",
-                        },
+                        "features": {"items": {"type": "string"}, "title": "Features", "type": "array"},
                         "id": {"title": "Id", "type": "integer"},
                         "offer": {"$ref": "#/components/schemas/BookingOfferResponse"},
                         "price": {"title": "Price", "type": "integer"},
@@ -2030,7 +2026,7 @@ def test_public_api(client):
             "/native/v1/account": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/account",
+                    "operationId": "post__native_v1_account",
                     "parameters": [],
                     "requestBody": {
                         "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AccountRequest"}}}
@@ -2053,7 +2049,7 @@ def test_public_api(client):
             "/native/v1/account/suspend": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/account/suspend",
+                    "operationId": "post__native_v1_account_suspend",
                     "parameters": [],
                     "responses": {
                         "204": {"description": "No Content"},
@@ -2073,7 +2069,7 @@ def test_public_api(client):
             "/native/v1/account/suspend/token_validation/{token}": {
                 "get": {
                     "description": "",
-                    "operationId": "get_/native/v1/account/suspend/token_validation/{token}",
+                    "operationId": "get__native_v1_account_suspend_token_validation_{token}",
                     "parameters": [
                         {
                             "description": "",
@@ -2102,7 +2098,7 @@ def test_public_api(client):
             "/native/v1/account/suspend_for_suspicious_login": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/account/suspend_for_suspicious_login",
+                    "operationId": "post__native_v1_account_suspend_for_suspicious_login",
                     "parameters": [],
                     "requestBody": {
                         "content": {
@@ -2131,7 +2127,7 @@ def test_public_api(client):
             "/native/v1/account/suspension_date": {
                 "get": {
                     "description": "",
-                    "operationId": "get_/native/v1/account/suspension_date",
+                    "operationId": "get__native_v1_account_suspension_date",
                     "parameters": [],
                     "responses": {
                         "200": {
@@ -2158,7 +2154,7 @@ def test_public_api(client):
             "/native/v1/account/suspension_status": {
                 "get": {
                     "description": "",
-                    "operationId": "get_/native/v1/account/suspension_status",
+                    "operationId": "get__native_v1_account_suspension_status",
                     "parameters": [],
                     "responses": {
                         "200": {
@@ -2185,7 +2181,7 @@ def test_public_api(client):
             "/native/v1/account/unsuspend": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/account/unsuspend",
+                    "operationId": "post__native_v1_account_unsuspend",
                     "parameters": [],
                     "responses": {
                         "204": {"description": "No Content"},
@@ -2205,7 +2201,7 @@ def test_public_api(client):
             "/native/v1/banner": {
                 "get": {
                     "description": "",
-                    "operationId": "get_/native/v1/banner",
+                    "operationId": "get__native_v1_banner",
                     "parameters": [
                         {
                             "description": "",
@@ -2238,7 +2234,7 @@ def test_public_api(client):
             "/native/v1/bookings": {
                 "get": {
                     "description": "",
-                    "operationId": "get_/native/v1/bookings",
+                    "operationId": "get__native_v1_bookings",
                     "parameters": [],
                     "responses": {
                         "200": {
@@ -2261,7 +2257,7 @@ def test_public_api(client):
                 },
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/bookings",
+                    "operationId": "post__native_v1_bookings",
                     "parameters": [],
                     "requestBody": {
                         "content": {"application/json": {"schema": {"$ref": "#/components/schemas/BookOfferRequest"}}}
@@ -2290,7 +2286,7 @@ def test_public_api(client):
             "/native/v1/bookings/{booking_id}/cancel": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/bookings/{booking_id}/cancel",
+                    "operationId": "post__native_v1_bookings_{booking_id}_cancel",
                     "parameters": [
                         {
                             "description": "",
@@ -2320,7 +2316,7 @@ def test_public_api(client):
             "/native/v1/bookings/{booking_id}/toggle_display": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/bookings/{booking_id}/toggle_display",
+                    "operationId": "post__native_v1_bookings_{booking_id}_toggle_display",
                     "parameters": [
                         {
                             "description": "",
@@ -2354,7 +2350,7 @@ def test_public_api(client):
             "/native/v1/change_password": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/change_password",
+                    "operationId": "post__native_v1_change_password",
                     "parameters": [],
                     "requestBody": {
                         "content": {
@@ -2380,7 +2376,7 @@ def test_public_api(client):
             "/native/v1/cookies_consent": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/cookies_consent",
+                    "operationId": "post__native_v1_cookies_consent",
                     "parameters": [],
                     "requestBody": {
                         "content": {
@@ -2405,7 +2401,7 @@ def test_public_api(client):
             "/native/v1/cultural_survey/answers": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/cultural_survey/answers",
+                    "operationId": "post__native_v1_cultural_survey_answers",
                     "parameters": [],
                     "requestBody": {
                         "content": {
@@ -2433,7 +2429,7 @@ def test_public_api(client):
             "/native/v1/cultural_survey/questions": {
                 "get": {
                     "description": "",
-                    "operationId": "get_/native/v1/cultural_survey/questions",
+                    "operationId": "get__native_v1_cultural_survey_questions",
                     "parameters": [],
                     "responses": {
                         "200": {
@@ -2460,7 +2456,7 @@ def test_public_api(client):
             "/native/v1/me": {
                 "get": {
                     "description": "",
-                    "operationId": "get_/native/v1/me",
+                    "operationId": "get__native_v1_me",
                     "parameters": [],
                     "responses": {
                         "200": {
@@ -2485,7 +2481,7 @@ def test_public_api(client):
             "/native/v1/me/favorites": {
                 "get": {
                     "description": "",
-                    "operationId": "get_/native/v1/me/favorites",
+                    "operationId": "get__native_v1_me_favorites",
                     "parameters": [],
                     "responses": {
                         "200": {
@@ -2510,7 +2506,7 @@ def test_public_api(client):
                 },
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/me/favorites",
+                    "operationId": "post__native_v1_me_favorites",
                     "parameters": [],
                     "requestBody": {
                         "content": {"application/json": {"schema": {"$ref": "#/components/schemas/FavoriteRequest"}}}
@@ -2539,7 +2535,7 @@ def test_public_api(client):
             "/native/v1/me/favorites/count": {
                 "get": {
                     "description": "",
-                    "operationId": "get_/native/v1/me/favorites/count",
+                    "operationId": "get__native_v1_me_favorites_count",
                     "parameters": [],
                     "responses": {
                         "200": {
@@ -2564,7 +2560,7 @@ def test_public_api(client):
             "/native/v1/me/favorites/{favorite_id}": {
                 "delete": {
                     "description": "",
-                    "operationId": "delete_/native/v1/me/favorites/{favorite_id}",
+                    "operationId": "delete__native_v1_me_favorites_{favorite_id}",
                     "parameters": [
                         {
                             "description": "",
@@ -2592,7 +2588,7 @@ def test_public_api(client):
             "/native/v1/offer/report/reasons": {
                 "get": {
                     "description": "",
-                    "operationId": "get_/native/v1/offer/report/reasons",
+                    "operationId": "get__native_v1_offer_report_reasons",
                     "parameters": [],
                     "responses": {
                         "200": {
@@ -2617,7 +2613,7 @@ def test_public_api(client):
             "/native/v1/offer/{offer_id}": {
                 "get": {
                     "description": "",
-                    "operationId": "get_/native/v1/offer/{offer_id}",
+                    "operationId": "get__native_v1_offer_{offer_id}",
                     "parameters": [
                         {
                             "description": "",
@@ -2648,7 +2644,7 @@ def test_public_api(client):
             "/native/v1/offer/{offer_id}/report": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/offer/{offer_id}/report",
+                    "operationId": "post__native_v1_offer_{offer_id}_report",
                     "parameters": [
                         {
                             "description": "",
@@ -2679,7 +2675,7 @@ def test_public_api(client):
             "/native/v1/offers/reports": {
                 "get": {
                     "description": "",
-                    "operationId": "get_/native/v1/offers/reports",
+                    "operationId": "get__native_v1_offers_reports",
                     "parameters": [],
                     "responses": {
                         "200": {
@@ -2706,7 +2702,7 @@ def test_public_api(client):
             "/native/v1/phone_validation/remaining_attempts": {
                 "get": {
                     "description": "",
-                    "operationId": "get_/native/v1/phone_validation/remaining_attempts",
+                    "operationId": "get__native_v1_phone_validation_remaining_attempts",
                     "parameters": [],
                     "responses": {
                         "200": {
@@ -2733,7 +2729,7 @@ def test_public_api(client):
             "/native/v1/profile": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/profile",
+                    "operationId": "post__native_v1_profile",
                     "parameters": [],
                     "requestBody": {
                         "content": {
@@ -2760,10 +2756,58 @@ def test_public_api(client):
                     "tags": [],
                 }
             },
+            "/native/v1/profile/email_update/cancel": {
+                "post": {
+                    "description": "",
+                    "operationId": "post__native_v1_profile_email_update_cancel",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {"schema": {"$ref": "#/components/schemas/ChangeBeneficiaryEmailBody"}}
+                        }
+                    },
+                    "responses": {
+                        "204": {"description": "No Content"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "cancel_email_update <POST>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/profile/email_update/confirm": {
+                "post": {
+                    "description": "",
+                    "operationId": "post__native_v1_profile_email_update_confirm",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {"schema": {"$ref": "#/components/schemas/ChangeBeneficiaryEmailBody"}}
+                        }
+                    },
+                    "responses": {
+                        "204": {"description": "No Content"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "confirm_email_update <POST>",
+                    "tags": [],
+                }
+            },
             "/native/v1/profile/email_update/status": {
                 "get": {
                     "description": "",
-                    "operationId": "get_/native/v1/profile/email_update/status",
+                    "operationId": "get__native_v1_profile_email_update_status",
                     "parameters": [],
                     "responses": {
                         "200": {
@@ -2775,9 +2819,7 @@ def test_public_api(client):
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
-                                "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/ValidationError"},
-                                },
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
                             },
                             "description": "Unprocessable Entity",
                         },
@@ -2785,12 +2827,36 @@ def test_public_api(client):
                     "security": [{"JWTAuth": []}],
                     "summary": "get_email_update_status <GET>",
                     "tags": [],
-                },
+                }
+            },
+            "/native/v1/profile/email_update/validate": {
+                "put": {
+                    "description": "",
+                    "operationId": "put__native_v1_profile_email_update_validate",
+                    "parameters": [],
+                    "requestBody": {
+                        "content": {
+                            "application/json": {"schema": {"$ref": "#/components/schemas/ChangeBeneficiaryEmailBody"}}
+                        }
+                    },
+                    "responses": {
+                        "204": {"description": "No Content"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "validate_user_email <PUT>",
+                    "tags": [],
+                }
             },
             "/native/v1/profile/token_expiration": {
                 "get": {
                     "description": "",
-                    "operationId": "get_/native/v1/profile/token_expiration",
+                    "operationId": "get__native_v1_profile_token_expiration",
                     "parameters": [],
                     "responses": {
                         "200": {
@@ -2817,7 +2883,7 @@ def test_public_api(client):
             "/native/v1/profile/update_email": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/profile/update_email",
+                    "operationId": "post__native_v1_profile_update_email",
                     "parameters": [],
                     "requestBody": {
                         "content": {
@@ -2839,82 +2905,10 @@ def test_public_api(client):
                     "tags": [],
                 }
             },
-            "/native/v1/profile/email_update/cancel": {
-                "post": {
-                    "description": "",
-                    "operationId": "post_/native/v1/profile/email_update/cancel",
-                    "parameters": [],
-                    "requestBody": {
-                        "content": {
-                            "application/json": {"schema": {"$ref": "#/components/schemas/ChangeBeneficiaryEmailBody"}}
-                        }
-                    },
-                    "responses": {
-                        "204": {"description": "No Content"},
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "summary": "cancel_email_update <POST>",
-                    "tags": [],
-                }
-            },
-            "/native/v1/profile/email_update/confirm": {
-                "post": {
-                    "description": "",
-                    "operationId": "post_/native/v1/profile/email_update/confirm",
-                    "parameters": [],
-                    "requestBody": {
-                        "content": {
-                            "application/json": {"schema": {"$ref": "#/components/schemas/ChangeBeneficiaryEmailBody"}}
-                        }
-                    },
-                    "responses": {
-                        "204": {"description": "No Content"},
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "summary": "confirm_email_update <POST>",
-                    "tags": [],
-                }
-            },
-            "/native/v1/profile/email_update/validate": {
-                "put": {
-                    "description": "",
-                    "operationId": "put_/native/v1/profile/email_update/validate",
-                    "parameters": [],
-                    "requestBody": {
-                        "content": {
-                            "application/json": {"schema": {"$ref": "#/components/schemas/ChangeBeneficiaryEmailBody"}}
-                        }
-                    },
-                    "responses": {
-                        "204": {"description": "No Content"},
-                        "403": {"description": "Forbidden"},
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "summary": "validate_user_email <PUT>",
-                    "tags": [],
-                }
-            },
             "/native/v1/refresh_access_token": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/refresh_access_token",
+                    "operationId": "post__native_v1_refresh_access_token",
                     "parameters": [],
                     "responses": {
                         "200": {
@@ -2939,7 +2933,7 @@ def test_public_api(client):
             "/native/v1/request_password_reset": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/request_password_reset",
+                    "operationId": "post__native_v1_request_password_reset",
                     "parameters": [],
                     "requestBody": {
                         "content": {
@@ -2964,7 +2958,7 @@ def test_public_api(client):
             "/native/v1/resend_email_validation": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/resend_email_validation",
+                    "operationId": "post__native_v1_resend_email_validation",
                     "parameters": [],
                     "requestBody": {
                         "content": {
@@ -2990,7 +2984,7 @@ def test_public_api(client):
             "/native/v1/reset_password": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/reset_password",
+                    "operationId": "post__native_v1_reset_password",
                     "parameters": [],
                     "requestBody": {
                         "content": {
@@ -3020,7 +3014,7 @@ def test_public_api(client):
             "/native/v1/reset_recredit_amount_to_show": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/reset_recredit_amount_to_show",
+                    "operationId": "post__native_v1_reset_recredit_amount_to_show",
                     "parameters": [],
                     "responses": {
                         "200": {
@@ -3045,7 +3039,7 @@ def test_public_api(client):
             "/native/v1/send_offer_link_by_push/{offer_id}": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/send_offer_link_by_push/{offer_id}",
+                    "operationId": "post__native_v1_send_offer_link_by_push_{offer_id}",
                     "parameters": [
                         {
                             "description": "",
@@ -3073,7 +3067,7 @@ def test_public_api(client):
             "/native/v1/send_offer_webapp_link_by_email/{offer_id}": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/send_offer_webapp_link_by_email/{offer_id}",
+                    "operationId": "post__native_v1_send_offer_webapp_link_by_email_{offer_id}",
                     "parameters": [
                         {
                             "description": "",
@@ -3101,7 +3095,7 @@ def test_public_api(client):
             "/native/v1/send_phone_validation_code": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/send_phone_validation_code",
+                    "operationId": "post__native_v1_send_phone_validation_code",
                     "parameters": [],
                     "requestBody": {
                         "content": {
@@ -3126,7 +3120,7 @@ def test_public_api(client):
             "/native/v1/settings": {
                 "get": {
                     "description": "",
-                    "operationId": "get_/native/v1/settings",
+                    "operationId": "get__native_v1_settings",
                     "parameters": [],
                     "responses": {
                         "200": {
@@ -3150,7 +3144,7 @@ def test_public_api(client):
             "/native/v1/signin": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/signin",
+                    "operationId": "post__native_v1_signin",
                     "parameters": [],
                     "requestBody": {
                         "content": {"application/json": {"schema": {"$ref": "#/components/schemas/SigninRequest"}}}
@@ -3177,7 +3171,7 @@ def test_public_api(client):
             "/native/v1/subcategories": {
                 "get": {
                     "description": "",
-                    "operationId": "get_/native/v1/subcategories",
+                    "operationId": "get__native_v1_subcategories",
                     "parameters": [],
                     "responses": {
                         "200": {
@@ -3203,7 +3197,7 @@ def test_public_api(client):
             "/native/v1/subcategories/v2": {
                 "get": {
                     "description": "",
-                    "operationId": "get_/native/v1/subcategories/v2",
+                    "operationId": "get__native_v1_subcategories_v2",
                     "parameters": [],
                     "responses": {
                         "200": {
@@ -3229,7 +3223,7 @@ def test_public_api(client):
             "/native/v1/subscription/honor_statement": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/subscription/honor_statement",
+                    "operationId": "post__native_v1_subscription_honor_statement",
                     "parameters": [],
                     "responses": {
                         "204": {"description": "No Content"},
@@ -3249,7 +3243,7 @@ def test_public_api(client):
             "/native/v1/subscription/next_step": {
                 "get": {
                     "description": "",
-                    "operationId": "get_/native/v1/subscription/next_step",
+                    "operationId": "get__native_v1_subscription_next_step",
                     "parameters": [],
                     "responses": {
                         "200": {
@@ -3276,7 +3270,7 @@ def test_public_api(client):
             "/native/v1/subscription/profile": {
                 "get": {
                     "description": "",
-                    "operationId": "get_/native/v1/subscription/profile",
+                    "operationId": "get__native_v1_subscription_profile",
                     "parameters": [],
                     "responses": {
                         "200": {"description": "OK"},
@@ -3295,7 +3289,7 @@ def test_public_api(client):
                 },
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/subscription/profile",
+                    "operationId": "post__native_v1_subscription_profile",
                     "parameters": [],
                     "requestBody": {
                         "content": {
@@ -3320,7 +3314,7 @@ def test_public_api(client):
             "/native/v1/subscription/profile_options": {
                 "get": {
                     "description": "",
-                    "operationId": "get_/native/v1/subscription/profile_options",
+                    "operationId": "get__native_v1_subscription_profile_options",
                     "parameters": [],
                     "responses": {
                         "200": {
@@ -3344,7 +3338,7 @@ def test_public_api(client):
             "/native/v1/subscription/stepper": {
                 "get": {
                     "description": "",
-                    "operationId": "get_/native/v1/subscription/stepper",
+                    "operationId": "get__native_v1_subscription_stepper",
                     "parameters": [],
                     "responses": {
                         "200": {
@@ -3371,7 +3365,7 @@ def test_public_api(client):
             "/native/v1/ubble_identification": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/ubble_identification",
+                    "operationId": "post__native_v1_ubble_identification",
                     "parameters": [],
                     "requestBody": {
                         "content": {
@@ -3405,7 +3399,7 @@ def test_public_api(client):
             "/native/v1/ubble_identification/e2e": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/ubble_identification/e2e",
+                    "operationId": "post__native_v1_ubble_identification_e2e",
                     "parameters": [],
                     "requestBody": {
                         "content": {"application/json": {"schema": {"$ref": "#/components/schemas/E2EUbbleIdCheck"}}}
@@ -3428,7 +3422,7 @@ def test_public_api(client):
             "/native/v1/validate_email": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/validate_email",
+                    "operationId": "post__native_v1_validate_email",
                     "parameters": [],
                     "requestBody": {
                         "content": {
@@ -3457,7 +3451,7 @@ def test_public_api(client):
             "/native/v1/validate_phone_number": {
                 "post": {
                     "description": "",
-                    "operationId": "post_/native/v1/validate_phone_number",
+                    "operationId": "post__native_v1_validate_phone_number",
                     "parameters": [],
                     "requestBody": {
                         "content": {
@@ -3482,7 +3476,7 @@ def test_public_api(client):
             "/native/v1/venue/{venue_id}": {
                 "get": {
                     "description": "",
-                    "operationId": "get_/native/v1/venue/{venue_id}",
+                    "operationId": "get__native_v1_venue_{venue_id}",
                     "parameters": [
                         {
                             "description": "",
