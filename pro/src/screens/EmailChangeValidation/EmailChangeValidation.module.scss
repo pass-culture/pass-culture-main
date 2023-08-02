@@ -1,5 +1,45 @@
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_forms.scss" as forms;
+@use "styles/mixins/_layout.scss" as layout;
 @use "styles/mixins/_fonts.scss" as fonts;
+
+.email-validation {
+  display: flex;
+
+  .logo-side {
+    @include layout.logo-side;
+  }
+}
+
+.scrollable-content-side {
+  overflow: auto;
+  min-height: 100vh;
+  background: colors.$white;
+  position: relative;
+  width: 100%;
+  left: forms.$sign-form-space-left;
+  display: flex;
+  align-items: center;
+
+  .content {
+    width: rem.torem(486px);
+
+    .has-text-grey {
+      @include fonts.caption;
+
+      color: colors.$grey-dark;
+    }
+  }
+}
 
 .search-no-results-title4 {
   @include fonts.title4;
+
+  max-width: rem.torem(530px);
+  margin-bottom: rem.torem(16px);
+}
+
+.search-no-results-title4:last-of-type {
+  margin-bottom: rem.torem(32px);
 }
