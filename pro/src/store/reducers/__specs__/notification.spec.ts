@@ -3,7 +3,7 @@ import {
   closeNotification,
   notificationReducer,
   showNotification,
-  notificationInitialState,
+  initialState as notificationInitialState,
   NotificationState,
 } from 'store/reducers/notificationReducer'
 

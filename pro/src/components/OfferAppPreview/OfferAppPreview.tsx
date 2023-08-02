@@ -6,7 +6,7 @@ import style from './OfferAppPreview.module.scss'
 import { OptionsIcons } from './OptionsIcons'
 import { VenueDetails } from './VenueDetails'
 
-interface OfferAppPreviewProps {
+export interface OfferAppPreviewProps {
   offer: OfferIndividual
 }
 

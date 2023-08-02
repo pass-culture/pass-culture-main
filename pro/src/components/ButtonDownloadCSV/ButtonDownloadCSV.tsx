@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import useNotification from 'hooks/useNotification'
 import { Button } from 'ui-kit'
 
-interface DownloadButtonProps {
+export interface DownloadButtonProps {
   filename: string
   href: string
   mimeType: string

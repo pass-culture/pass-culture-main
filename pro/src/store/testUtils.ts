@@ -5,7 +5,9 @@ import { initialState as maintenanceInitialState } from 'store/reducers/maintena
 import { initialState as notificationInitialState } from 'store/reducers/notificationReducer'
 import { initialState as userInitialState } from 'store/user/reducer'
 
-export const configureTestStore = overrideData => {
+import { RootState } from './reducers'
+
+export const configureTestStore = (overrideData?: Partial<RootState>) => {
   const initialData = {
     features: { ...featuresInitialState, initialized: true },
     maintenance: maintenanceInitialState,

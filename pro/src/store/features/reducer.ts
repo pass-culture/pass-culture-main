@@ -5,7 +5,7 @@ interface FeaturesState {
   list: FeatureResponseModel[]
 }
 
-const initialState: FeaturesState = {
+export const initialState: FeaturesState = {
   initialized: false,
   list: [],
 }
