@@ -38,11 +38,14 @@ export const OffersInstantSearch = ({
   const { facetFilters } = useContext(FacetFiltersContext)
 
   const newAdageFilters = useActiveFeature('WIP_ENABLE_NEW_ADAGE_FILTERS')
-
+  const initialQuery = newAdageFilters
+    ? venueFilter?.publicName || venueFilter?.name || ''
+    : ''
   return (
     <InstantSearch
       indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
       searchClient={searchClient}
+      searchState={{ query: initialQuery }}
     >
       <Configure
         attributesToHighlight={[]}

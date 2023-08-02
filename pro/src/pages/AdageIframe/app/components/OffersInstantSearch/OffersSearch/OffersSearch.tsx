@@ -110,7 +110,6 @@ export const OffersSearchComponent = ({
     })
 
     setFacetFilters(updatedFilters.queryFilters)
-
     refine(formik.values.query)
   }
 
@@ -121,7 +120,10 @@ export const OffersSearchComponent = ({
   }
 
   const formik = useFormik<SearchFormValues>({
-    initialValues: computeFiltersInitialValues(adageUser.departmentCode),
+    initialValues: computeFiltersInitialValues(
+      adageUser.departmentCode,
+      venueFilter
+    ),
     enableReinitialize: true,
     onSubmit: handleSubmit,
   })

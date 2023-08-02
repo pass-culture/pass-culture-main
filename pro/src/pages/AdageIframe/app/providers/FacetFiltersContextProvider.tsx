@@ -35,13 +35,6 @@ export const FacetFiltersContextProvider = ({
 }): JSX.Element => {
   const newAdageFilters = useActiveFeature('WIP_ENABLE_NEW_ADAGE_FILTERS')
 
-  const defaultFacetFilters = venueFilter
-    ? [
-        computeVenueFacetFilter(venueFilter),
-        ...getDefaultFacetFilterUAICodeValue(uai, departmentCode, venueFilter),
-      ]
-    : [...getDefaultFacetFilterUAICodeValue(uai, departmentCode, venueFilter)]
-
   const oldDefaultFacetFilters = venueFilter
     ? [
         computeVenueFacetFilter(venueFilter),
@@ -59,7 +52,9 @@ export const FacetFiltersContextProvider = ({
         ),
       ]
   const [facetFilters, setFacetFilters] = useState<Facets>(
-    newAdageFilters ? defaultFacetFilters : oldDefaultFacetFilters
+    newAdageFilters
+      ? [...getDefaultFacetFilterUAICodeValue(uai, departmentCode, venueFilter)]
+      : oldDefaultFacetFilters
   )
 
   const value = useMemo(
