@@ -85,4 +85,4 @@ def test_get_showtime_id_from_uuid(stock_uuid, provider_name, result):
     ],
 )
 def test_get_boost_film_id_from_uuid(offer_uuid, result):
-    assert result == cinema_providers_utils.get_boost_or_cgr_film_id_from_uuid(offer_uuid)
+    assert result == cinema_providers_utils.get_boost_or_cgr_or_ems_film_id_from_uuid(offer_uuid)
