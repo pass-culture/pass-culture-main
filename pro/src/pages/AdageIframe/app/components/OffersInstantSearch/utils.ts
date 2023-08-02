@@ -21,15 +21,15 @@ export const ADAGE_FILTERS_DEFAULT_VALUES: SearchFormValues = {
 }
 
 export const computeFiltersInitialValues = (
-  userDepartmentCode?: string | null
+  userDepartmentCode?: string | null,
+  venueFilter?: VenueResponse | null
 ) => {
-  if (!userDepartmentCode) {
-    return ADAGE_FILTERS_DEFAULT_VALUES
-  }
   return {
     ...ADAGE_FILTERS_DEFAULT_VALUES,
-    departments: [userDepartmentCode],
-    eventAddressType: OfferAddressType.OTHER,
+    departments: userDepartmentCode
+      ? [userDepartmentCode]
+      : ADAGE_FILTERS_DEFAULT_VALUES.departments,
+    query: venueFilter ? venueFilter.publicName || venueFilter.name : '',
   }
 }
 
