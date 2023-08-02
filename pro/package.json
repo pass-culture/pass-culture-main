@@ -76,7 +76,7 @@
   "devDependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@mui/material": "^5.14.2",
+    "@mui/material": "^5.14.3",
     "@storybook/addon-a11y": "^7.1.1",
     "@storybook/addon-controls": "^7.1.1",
     "@storybook/preset-scss": "^1.0.3",
