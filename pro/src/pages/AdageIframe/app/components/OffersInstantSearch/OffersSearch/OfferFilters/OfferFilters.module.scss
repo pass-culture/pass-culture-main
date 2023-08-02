@@ -15,8 +15,10 @@
 
   &-filter {
     display: flex;
-    flex-direction: row;
+    flex-flow: row wrap;
+    max-width: 80%;
     gap: rem.torem(16px);
+    align-items: center;
   }
 
   &-evenement {
@@ -25,11 +27,6 @@
     div:not(:last-of-type) {
       margin-bottom: rem.torem(16px);
     }
-  }
-
-  &-button-clear {
-    margin-top: rem.torem(24px);
-    margin-bottom: rem.torem(16px);
   }
 }
 

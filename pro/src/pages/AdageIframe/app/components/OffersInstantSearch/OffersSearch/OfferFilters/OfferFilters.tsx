@@ -327,20 +327,21 @@ export const OfferFilters = ({
               />
             </ModalFilterLayout>
           </AdageButtonFilter>
+
+          {
+            // TODO : We should use a custom isEqual instead of lodash one
+            !isEqual(formik.values, ADAGE_FILTERS_DEFAULT_VALUES) && (
+              <Button
+                className={styles['filter-container-button-clear']}
+                onClick={resetForm}
+                icon={fullRefreshIcon}
+                variant={ButtonVariant.TERNARY}
+              >
+                Réinitialiser les filtres
+              </Button>
+            )
+          }
         </FormLayout.Row>
-        {
-          // TODO : We should use a custom isEqual instead of lodash one
-          !isEqual(formik.values, ADAGE_FILTERS_DEFAULT_VALUES) && (
-            <Button
-              className={styles['filter-container-button-clear']}
-              onClick={resetForm}
-              icon={fullRefreshIcon}
-              variant={ButtonVariant.TERNARY}
-            >
-              Réinitialiser les filtres
-            </Button>
-          )
-        }
       </Form>
     </FormikProvider>
   )
