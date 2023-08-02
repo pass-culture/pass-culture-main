@@ -195,7 +195,14 @@ def cancel_latest_event(
         models.FinanceEvent.status.in_(models.CANCELLABLE_FINANCE_EVENT_STATUSES),
     ).one_or_none()
     if not event:
-        logger.info(
+        # Once the feature flag is on, there MUST be an event. If no
+        # event can be found, something is wrong somewhere (probably a
+        # bug).
+        if feature.FeatureToggle.PRICE_FINANCE_EVENTS.is_active():
+            log = logger.error
+        else:
+            log = logger.info
+        log(
             "No finance event to cancel",
             extra={"booking": booking.id},
         )
