@@ -3,7 +3,7 @@ from decimal import Decimal
 
 # fmt: off
 # isort: off
-from pydantic import BaseModel as PydanticBaseModel  # pylint: disable=wrong-pydantic-base-model-import
+from pydantic.v1 import BaseModel as PydanticBaseModel
 # isort: on
 # fmt: on
 
