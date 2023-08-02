@@ -598,6 +598,22 @@ class CancelLatestEventTest:
 
         assert event is None
 
+    def test_event_is_not_cancellable_because_of_processed_pricing(self):
+        event = factories.UsedBookingFinanceEventFactory(
+            booking__stock__offer__venue__pricing_point="self",
+        )
+        pricing = factories.PricingFactory(
+            event=event,
+            booking=event.booking,
+            status=models.PricingStatus.PROCESSED,
+        )
+
+        with pytest.raises(exceptions.NonCancellablePricingError):
+            api.cancel_latest_event(event.booking, motive=event.motive)
+
+        assert event.status == models.FinanceEventStatus.READY  # unchanged
+        assert pricing.status == models.PricingStatus.PROCESSED  # unchanged
+
     def test_delete_dependent_pricings(self):
         event1 = factories.UsedBookingFinanceEventFactory(
             booking__stock__offer__venue__pricing_point="self",
