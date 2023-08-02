@@ -28,6 +28,7 @@ import { LOGS_DATA } from 'utils/config'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 import { ResultType } from 'utils/types'
 
+import { DiffuseHelp } from '../../../DiffuseHelp/DiffuseHelp'
 import { SurveySatisfaction } from '../../../SurveySatisfaction/SurveySatisfaction'
 
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
@@ -49,6 +50,7 @@ interface OffersComponentPropsWithHits
   displayStats?: boolean
   resetForm?: () => void
   logFiltersOnSearch?: (nbHits: number, queryId: string) => void
+  submitCount?: number
 }
 
 type OfferMap = Map<
@@ -68,6 +70,7 @@ export const OffersComponent = ({
   displayStats = true,
   resetForm,
   logFiltersOnSearch,
+  submitCount,
 }: OffersComponentProps): JSX.Element => {
   const [queriesAreLoading, setQueriesAreLoading] = useState(false)
   const [offers, setOffers] = useState<
@@ -78,8 +81,12 @@ export const OffersComponent = ({
   const isSatisfactionSurveyActive = useActiveFeature(
     'WIP_ENABLE_SATISFACTION_SURVEY'
   )
+  const isDiffuseHelpActive = useActiveFeature('WIP_ENABLE_DIFFUSE_HELP')
   const [isCookieEnabled, setIsCookieEnabled] = useState(true)
   const newAdageFilters = useActiveFeature('WIP_ENABLE_NEW_ADAGE_FILTERS')
+
+  const showDiffuseHelp =
+    isDiffuseHelpActive && submitCount === 1 && isCookieEnabled
 
   useEffect(() => {
     try {
@@ -187,6 +194,13 @@ export const OffersComponent = ({
               userEmail={userEmail}
               userRole={userRole}
             />
+            {index === 0 && showDiffuseHelp && (
+              <DiffuseHelp
+                description={
+                  "Le pass Culture peut prendre en charge les coûts accessoires nécessaires à la réalisation d'activités d'éducation artistique et culturelle menées en classe ou hors les murs. Cela inclut par exemple les frais de transport d'un intervenant, les matériaux consommables d'un atelier artistique, les supports de visite d'un lieu de patrimoine..."
+                }
+              />
+            )}
             {index === 1 && isSatisfactionSurveyActive && isCookieEnabled && (
               <SurveySatisfaction />
             )}
