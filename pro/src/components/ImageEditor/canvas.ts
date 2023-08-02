@@ -1,21 +1,25 @@
+type Coordinates = [number, number, number, number]
+
 /* istanbul ignore next: DEBT, TO FIX */
-function getScaledCoordinates(coordinates) {
-  const scaledCoordinates = [...coordinates]
+function getScaledCoordinates(coordinates: Coordinates): Coordinates {
   const dpr = window.devicePixelRatio
-  scaledCoordinates[0] = dpr * coordinates[0]
-  scaledCoordinates[1] = dpr * coordinates[1]
-  scaledCoordinates[2] = dpr * coordinates[2]
-  scaledCoordinates[3] = dpr * coordinates[3]
-  return scaledCoordinates
+  return [
+    dpr * coordinates[0],
+    dpr * coordinates[1],
+    dpr * coordinates[2],
+    dpr * coordinates[3],
+  ]
 }
 
 /* istanbul ignore next: DEBT, TO FIX */
 class CanvasTools {
-  constructor(context) {
+  context: CanvasRenderingContext2D
+
+  constructor(context: CanvasRenderingContext2D) {
     this.context = context
   }
 
-  drawArea(params) {
+  drawArea(params: { width: number; color: string; coordinates: Coordinates }) {
     // scale
     const scaledCoordinates = getScaledCoordinates(params.coordinates)
     // border

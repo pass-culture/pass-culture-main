@@ -1,12 +1,12 @@
 import { RootState } from 'store/reducers'
-import { notificationInitialState } from 'store/reducers/notificationReducer'
+import { initialState } from 'store/reducers/notificationReducer'
 
 import { notificationSelector } from '../notificationSelector'
 
 describe('notificationSelector', () => {
   it('should return empty state when no notification is stored', () => {
     const state = {
-      notification: notificationInitialState,
+      notification: initialState,
     } as RootState
 
     const notification = notificationSelector(state)
@@ -17,7 +17,7 @@ describe('notificationSelector', () => {
   it('should return notification details when notification is stored', () => {
     const state = {
       notification: {
-        ...notificationInitialState,
+        ...initialState,
         notification: { type: 'success', text: 'My success message' },
       },
     } as RootState

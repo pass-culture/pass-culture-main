@@ -5,7 +5,7 @@ import {
   SaveSearchFiltersAction,
 } from './actions'
 
-const initialState = {
+export const initialState = {
   list: [],
   searchFilters: {},
   pageNumber: 1,

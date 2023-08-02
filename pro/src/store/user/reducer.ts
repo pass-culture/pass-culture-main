@@ -11,7 +11,7 @@ type UserState = {
   currentUser: null | SharedCurrentUserResponseModel
 }
 
-const initialState: UserState = {
+export const initialState: UserState = {
   initialized: false,
   currentUser: null,
 }
