@@ -165,6 +165,7 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
     imageCredit: str | None
     imageUrl: str | None
     teacher: EducationalRedactorResponseModel | None
+    nationalProgramId: int | None
 
     @classmethod
     def from_orm(
@@ -218,6 +219,7 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
     interventionArea: list[str]
     imageCredit: str | None
     imageUrl: str | None
+    nationalProgramId: int | None
 
     @classmethod
     def from_orm(

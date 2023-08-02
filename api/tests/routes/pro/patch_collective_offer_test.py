@@ -5,6 +5,7 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.educational.exceptions import CulturalPartnerNotFoundException
+import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
@@ -51,6 +52,7 @@ class Returns200Test:
             offerer=offer.venue.managingOfferer,
         )
         domain = EducationalDomainFactory(name="Architecture")
+        national_program = educational_factories.NationalProgramFactory()
 
         # When
         data = {
@@ -63,6 +65,7 @@ class Returns200Test:
             "domains": [domain.id],
             "students": ["Collège - 4e"],
             "interventionArea": ["01", "2A"],
+            "nationalProgramId": national_program.id,
         }
 
         # WHEN
@@ -83,6 +86,7 @@ class Returns200Test:
         assert response.json["students"] == ["Collège - 4e"]
         assert response.json["interventionArea"] == ["01", "2A"]
         assert response.json["description"] == "Ma super description"
+        assert response.json["nationalProgramId"] == national_program.id
 
         updated_offer = CollectiveOffer.query.get(offer.id)
         assert updated_offer.name == "New name"
@@ -459,6 +463,49 @@ class Returns400Test:
 
         # Then
         assert response.status_code == 400
+
+    @freeze_time("2019-01-01T12:00:00Z")
+    @override_settings(ADAGE_API_URL="https://adage_base_url")
+    def test_update_collective_offer_with_unknown_national_program(self, client):
+        offer = CollectiveOfferFactory(
+            mentalDisabilityCompliant=False,
+            contactEmail="johndoe@yopmail.com",
+            bookingEmails=["booking@youpi.com", "kingboo@piyou.com"],
+            contactPhone="0600000000",
+            subcategoryId="CINE_PLEIN_AIR",
+            educational_domains=None,
+            students=[StudentLevels.CAP1],
+            interventionArea=["01", "07", "08"],
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        domain = EducationalDomainFactory(name="Architecture")
+
+        data = {
+            "name": "New name",
+            "mentalDisabilityCompliant": True,
+            "description": "Ma super description",
+            "contactEmail": "toto@example.com",
+            "bookingEmails": ["pifpouf@testmail.com", "bimbam@testmail.com"],
+            "subcategoryId": "CONCERT",
+            "domains": [domain.id],
+            "students": ["Collège - 4e"],
+            "interventionArea": ["01", "2A"],
+            "nationalProgramId": -1,
+        }
+
+        # WHEN
+        client = client.with_session_auth("user@example.com")
+        with patch(
+            "pcapi.routes.pro.collective_offers.offerers_api.can_offerer_create_educational_offer",
+        ):
+            response = client.patch(f"/collective/offers/{offer.id}", json=data)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json == {"global": ["National program not found"]}
 
 
 @pytest.mark.usefixtures("db_session")

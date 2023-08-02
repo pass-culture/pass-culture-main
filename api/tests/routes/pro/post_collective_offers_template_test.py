@@ -37,10 +37,12 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
         educational_domain1 = educational_factories.EducationalDomainFactory()
         educational_domain2 = educational_factories.EducationalDomainFactory()
+        national_program = educational_factories.NationalProgramFactory()
 
         # When
         data = {
             **base_collective_offer_payload,
+            "nationalProgramId": national_program.id,
             "venueId": venue.id,
             "domains": [educational_domain1.id, educational_domain1.id, educational_domain2.id],
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
@@ -83,6 +85,7 @@ class Returns200Test:
         assert set(offer.domains) == {educational_domain1, educational_domain2}
         assert offer.description == "Ma super description"
         assert offer.priceDetail == "Le détail ici"
+        assert offer.nationalProgramId == national_program.id
 
     def test_create_collective_offer_template_empty_intervention_area(self, client):
         # Given
@@ -324,3 +327,30 @@ class Returns404Test:
         # Then
         assert response.status_code == 404
         assert response.json == {"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"}
+
+    def test_create_collective_offer_template_with_unknown_national_program(self, client):
+        # Given
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        educational_domain1 = educational_factories.EducationalDomainFactory()
+        educational_domain2 = educational_factories.EducationalDomainFactory()
+
+        # When
+        data = {
+            **base_collective_offer_payload,
+            "nationalProgramId": -1,
+            "venueId": venue.id,
+            "domains": [educational_domain1.id, educational_domain1.id, educational_domain2.id],
+            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
+            "offerVenue": {
+                "addressType": "school",
+                "venueId": venue.id,
+                "otherAddress": "17 rue aléatoire",
+            },
+        }
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_session_auth("user@example.com").post("/collective/offers-template", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_NOT_FOUND"}

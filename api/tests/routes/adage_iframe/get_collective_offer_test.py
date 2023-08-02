@@ -23,6 +23,7 @@ class CollectiveOfferTest:
     def test_get_collective_offer(self, client):
         # Given
         institution = educational_factories.EducationalInstitutionFactory(institutionId="12890AI")
+        national_program = educational_factories.NationalProgramFactory()
         stock = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime(2021, 5, 15),
             collectiveOffer__name="offer name",
@@ -32,6 +33,7 @@ class CollectiveOfferTest:
             collectiveOffer__educational_domains=[educational_factories.EducationalDomainFactory()],
             collectiveOffer__institution=institution,
             collectiveOffer__teacher=educational_factories.EducationalRedactorFactory(),
+            collectiveOffer__nationalProgramId=national_program.id,
         )
 
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
@@ -110,12 +112,14 @@ class CollectiveOfferTest:
                 "lastName": stock.collectiveOffer.teacher.lastName,
                 "civility": stock.collectiveOffer.teacher.civility,
             },
+            "nationalProgramId": national_program.id,
         }
 
     def test_get_collective_offer_with_offer_venue(self, client):
         # Given
         institution = educational_factories.EducationalInstitutionFactory(institutionId="pouet")
         venue = offerers_factories.VenueFactory()
+        national_program = educational_factories.NationalProgramFactory()
         stock = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime(2021, 5, 15),
             collectiveOffer__name="offer name",
@@ -129,6 +133,7 @@ class CollectiveOfferTest:
                 "addressType": "offererVenue",
                 "otherAddress": "",
             },
+            collectiveOffer__nationalProgramId=national_program.id,
         )
 
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
@@ -202,6 +207,7 @@ class CollectiveOfferTest:
             "imageCredit": None,
             "imageUrl": None,
             "teacher": None,
+            "nationalProgramId": national_program.id,
         }
 
     def test_should_return_404_when_no_collective_offer(self, client):

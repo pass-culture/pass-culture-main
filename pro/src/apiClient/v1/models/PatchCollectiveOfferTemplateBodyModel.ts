@@ -19,6 +19,7 @@ export type PatchCollectiveOfferTemplateBodyModel = {
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name?: string | null;
+  nationalProgramId?: number | null;
   offerVenue?: CollectiveOfferVenueBodyModel | null;
   priceDetail?: string | null;
   students?: Array<StudentLevels> | null;

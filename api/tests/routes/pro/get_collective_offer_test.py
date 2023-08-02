@@ -18,8 +18,12 @@ class Returns200Test:
         # Given
         template = educational_factories.CollectiveOfferTemplateFactory()
         stock = educational_factories.CollectiveStockFactory()
+        national_program = educational_factories.NationalProgramFactory()
         offer = educational_factories.CollectiveOfferFactory(
-            collectiveStock=stock, teacher=educational_factories.EducationalRedactorFactory(), templateId=template.id
+            collectiveStock=stock,
+            teacher=educational_factories.EducationalRedactorFactory(),
+            templateId=template.id,
+            nationalProgramId=national_program.id,
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
@@ -50,6 +54,7 @@ class Returns200Test:
             "civility": offer.teacher.civility,
         }
         assert response_json["templateId"] == template.id
+        assert response_json["nationalProgramId"] == national_program.id
 
     def test_sold_out(self, client):
         # Given

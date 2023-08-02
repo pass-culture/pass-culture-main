@@ -24,7 +24,10 @@ class Returns200Test:
         offerer_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerer_factories.VenueFactory(managingOfferer=offerer)
         institution = educational_factories.EducationalInstitutionFactory()
-        offer = educational_factories.CollectiveOfferFactory(venue=venue, offerId=1, institution=institution)
+        national_program = educational_factories.NationalProgramFactory()
+        offer = educational_factories.CollectiveOfferFactory(
+            venue=venue, offerId=1, institution=institution, nationalProgramId=national_program.id
+        )
         educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
 
         # When
@@ -43,6 +46,7 @@ class Returns200Test:
         assert response_json[0]["educationalInstitution"]["name"] == institution.name
         assert response_json[0]["imageCredit"] is None
         assert response_json[0]["imageUrl"] is None
+        assert response_json[0]["nationalProgramId"] == national_program.id
 
     def test_one_inactive_offer(self, client):
         # Given

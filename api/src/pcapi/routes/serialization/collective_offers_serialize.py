@@ -101,6 +101,10 @@ class CollectiveOfferResponseModel(BaseModel):
     imageCredit: str | None
     imageUrl: str | None
     isPublicApi: bool
+    nationalProgramId: int | None
+
+    class Config:
+        alias_generator = to_camel
 
 
 class ListCollectiveOffersResponseModel(BaseModel):
@@ -148,6 +152,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
         imageCredit=offer.imageCredit,
         imageUrl=offer.imageUrl,
         isPublicApi=offer.isPublicApi if not is_offer_template else False,
+        nationalProgramId=offer.nationalProgramId,
     )
 
 
@@ -272,6 +277,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     is_cancellable_from_offerer: bool = Field(alias="isCancellable")
     imageCredit: str | None
     imageUrl: str | None
+    nationalProgramId: int | None
 
     class Config:
         allow_population_by_field_name = True
@@ -391,6 +397,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     intervention_area: list[str] | None
     template_id: int | None
     offerer_id: str | None  # FIXME (MathildeDuboille - 24/10/22) prevent bug in production where offererId is sent in params
+    nationalProgramId: int | None
 
     @validator("name", pre=True)
     def validate_name(cls, name: str) -> str:
@@ -491,6 +498,7 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     domains: list[int] | None
     interventionArea: list[str] | None
     venueId: int | None
+    nationalProgramId: int | None
 
     @validator("name", allow_reuse=True)
     def validate_name(cls, name: str | None) -> str | None:

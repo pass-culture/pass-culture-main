@@ -357,6 +357,16 @@ class CollectiveOffer(
     def isPublicApi(self) -> bool:
         return self.providerId is not None
 
+    # does the collective offer belongs to a national program
+    nationalProgramId: int | None = sa.Column(
+        sa.BigInteger,
+        sa.ForeignKey("national_program.id"),
+        nullable=True,
+        index=True,
+    )
+
+    nationalProgram: sa_orm.Mapped["NationalProgram"] = relationship("NationalProgram", foreign_keys=nationalProgramId)
+
     @property
     def isEducational(self) -> bool:
         # FIXME (rpaoloni, 2022-03-7): Remove legacy support layer
@@ -575,6 +585,16 @@ class CollectiveOfferTemplate(
         back_populates="collectiveOfferTemplates",
     )
 
+    # does the collective offer belongs to a national program
+    nationalProgramId: int | None = sa.Column(
+        sa.BigInteger,
+        sa.ForeignKey("national_program.id"),
+        nullable=True,
+        index=True,
+    )
+
+    nationalProgram: sa_orm.Mapped["NationalProgram"] = relationship("NationalProgram", foreign_keys=nationalProgramId)
+
     @property
     def isEducational(self) -> bool:
         # FIXME (rpaoloni, 2022-05-09): Remove legacy support layer
@@ -677,6 +697,7 @@ class CollectiveOfferTemplate(
             "offerVenue",
             "students",
             "interventionArea",
+            "nationalProgramId",
         ]
         collective_offer_mapping = {x: getattr(collective_offer, x) for x in list_of_common_attributes}
         return cls(
@@ -1281,4 +1302,46 @@ class ValidationRuleCollectiveOfferTemplateLink(PcObject, Base, Model):
     )
     collectiveOfferTemplateId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("collective_offer_template.id", ondelete="CASCADE"), nullable=False
+    )
+
+
+class NationalProgram(PcObject, Base, Model):
+    """
+    Keep a track of existing national program that are used to highlight
+    collective offers (templates) within a coherent frame.
+    """
+
+    name: str = sa.Column(sa.Text, unique=True)
+    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+
+
+class NationalProgramOfferLinkHistory(PcObject, Base, Model):
+    """
+    Keep a track on national program and collective offer links.
+    It might be useful to find if an offer has been part of a given
+    program or not.
+    """
+
+    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    collectiveOfferId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("collective_offer.id", ondelete="CASCADE"), nullable=False
+    )
+    nationalProgramId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("national_program.id", ondelete="CASCADE"), nullable=False
+    )
+
+
+class NationalProgramOfferTemplateLinkHistory(PcObject, Base, Model):
+    """
+    Keep a track on national program and collective offer template links.
+    It might be useful to find if an offer has been part of a given
+    program or not.
+    """
+
+    dateCreated: datetime = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
+    collectiveOfferTemplateId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("collective_offer_template.id", ondelete="CASCADE"), nullable=False
+    )
+    nationalProgramId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("national_program.id", ondelete="CASCADE"), nullable=False
     )
