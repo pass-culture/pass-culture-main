@@ -62,7 +62,9 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
       .array()
       .of(yup.string().nullable().required('Veuillez renseigner un horaire'))
       .test('arebeginningTimesUnique', function (list) {
-        if (!list) return
+        if (!list) {
+          return
+        }
         const beginningTimesMap = [...list]
         const duplicateIndex = beginningTimesMap.reduce<yup.ValidationError[]>(
           (accumulator, currentValue, index) => {
@@ -103,7 +105,9 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
         })
       )
       .test('isPriceCategoryUnique', function (list) {
-        if (!list) return
+        if (!list) {
+          return
+        }
         const price_category_map = list.map(a => a.priceCategory)
         const duplicateIndex = price_category_map.reduce<yup.ValidationError[]>(
           (ac, a, i) => {

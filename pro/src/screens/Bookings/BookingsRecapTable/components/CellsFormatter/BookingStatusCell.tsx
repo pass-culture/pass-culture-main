@@ -34,7 +34,9 @@ const BookingStatusCell = ({
     const bookingDisplayInfo =
       getCollectiveBookingStatusDisplayInformations(lastBookingStatus)
     const tooltipId = `tooltip-${bookingRecapInfo.id}`
-    if (!bookingDisplayInfo) return null
+    if (!bookingDisplayInfo) {
+      return null
+    }
 
     return (
       <Tooltip content={bookingDisplayInfo.label} id={tooltipId}>

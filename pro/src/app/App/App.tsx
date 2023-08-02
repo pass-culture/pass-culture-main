@@ -103,7 +103,9 @@ const App = ({ children }: AppProps): JSX.Element | null => {
     }
   }, [isMaintenanceActivated])
 
-  if (isMaintenanceActivated) return null
+  if (isMaintenanceActivated) {
+    return null
+  }
   return (
     <>
       {children}
