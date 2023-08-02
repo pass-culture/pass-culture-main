@@ -4,6 +4,7 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { Formik } from 'formik'
 import React from 'react'
 import type { Hit } from 'react-instantsearch-core'
 
@@ -25,7 +26,11 @@ import { ResultType } from 'utils/types'
 import { OffersComponent, OffersComponentProps } from '../Offers'
 
 vi.mock('apiClient/api', () => ({
-  apiAdage: { getCollectiveOffer: vi.fn(), logSearchButtonClick: vi.fn() },
+  apiAdage: {
+    getCollectiveOffer: vi.fn(),
+    logSearchButtonClick: vi.fn(),
+    logTrackingFilter: vi.fn(),
+  },
 }))
 
 const searchFakeResults: Hit<ResultType>[] = [
@@ -61,13 +66,16 @@ const searchFakeResults: Hit<ResultType>[] = [
   },
 ]
 
-const renderOffers = (props: OffersComponentProps) => {
+const renderOffers = (props: OffersComponentProps, storeOverrides = {}) => {
   return renderWithProviders(
     <AlgoliaQueryContextProvider>
       <FacetFiltersContextProvider>
-        <OffersComponent {...props} />
+        <Formik onSubmit={() => {}} initialValues={{}}>
+          <OffersComponent {...props} />
+        </Formik>
       </FacetFiltersContextProvider>
-    </AlgoliaQueryContextProvider>
+    </AlgoliaQueryContextProvider>,
+    { storeOverrides }
   )
 }
 
@@ -440,6 +448,22 @@ describe('offers', () => {
       expect(errorMessage).toBeInTheDocument()
       const listItemsInOffer = screen.queryAllByTestId('offer-listitem')
       expect(listItemsInOffer).toHaveLength(0)
+    })
+
+    it('should log filters on new search', async () => {
+      const mockLogTrackingFilter = vi.fn()
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+        offerInParis
+      )
+      renderOffers(
+        { ...offersProps, logFiltersOnSearch: mockLogTrackingFilter },
+        {
+          features: {
+            list: [{ isActive: true, nameKey: 'WIP_ENABLE_NEW_ADAGE_FILTERS' }],
+          },
+        }
+      )
+      expect(mockLogTrackingFilter).toHaveBeenCalledWith(2, 'queryId')
     })
   })
 
