@@ -8,5 +8,6 @@ import type { AdageHeaderLink } from './AdageHeaderLink';
 export type AdageHeaderLogBody = {
   header_link_name: AdageHeaderLink;
   iframeFrom: string;
+  queryId?: string | null;
 };
 
