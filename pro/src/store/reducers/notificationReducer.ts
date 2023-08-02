@@ -47,7 +47,7 @@ type NotificationAction =
   | ActionShowNotification
   | ActionSetIsStickyBarOpen
 
-interface NotificationState {
+export interface NotificationState {
   isStickyBarOpen: boolean
   notification: Notification | null
 }
