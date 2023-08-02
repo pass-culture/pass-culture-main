@@ -47,7 +47,9 @@ export const OfferFilters = ({
   const formik = useFormikContext<SearchFormValues>()
 
   const getActiveLocalisationFilterCount = () => {
-    if (!formik.values) return 0
+    if (!formik.values) {
+      return 0
+    }
     if (localisationFilterState === LocalisationFilterStates.DEPARTMENTS) {
       return formik.values.departments.length
     }
