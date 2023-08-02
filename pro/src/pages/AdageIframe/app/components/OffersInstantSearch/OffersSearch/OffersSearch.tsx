@@ -7,6 +7,7 @@ import type { SearchBoxProvided } from 'react-instantsearch-core'
 import { connectSearchBox } from 'react-instantsearch-dom'
 
 import { VenueResponse } from 'apiClient/adage'
+import { apiAdage } from 'apiClient/api'
 import useActiveFeature from 'hooks/useActiveFeature'
 import strokeOffersIcon from 'icons/stroke-offers.svg'
 import strokeVenueIcon from 'icons/stroke-venue.svg'
@@ -16,6 +17,7 @@ import {
   FiltersContext,
 } from 'pages/AdageIframe/app/providers'
 import Tabs from 'ui-kit/Tabs'
+import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import {
   ADAGE_FILTERS_DEFAULT_VALUES,
@@ -119,6 +121,16 @@ export const OffersSearchComponent = ({
     formik.handleSubmit()
   }
 
+  const logFiltersOnSearch = (nbHits: number, queryId: string) => {
+    /* istanbul ignore next: TO FIX the current structure make it hard to test, we probably should not mock Offers in OfferSearch tests */
+    apiAdage.logTrackingFilter({
+      iframeFrom: removeParamsFromUrl(location.pathname),
+      resultNumber: nbHits,
+      queryId: queryId,
+      filterValues: formik ? formik.values : {},
+    })
+  }
+
   const formik = useFormik<SearchFormValues>({
     initialValues: computeFiltersInitialValues(
       adageUser.departmentCode,
@@ -158,6 +170,7 @@ export const OffersSearchComponent = ({
             userRole={adageUser.role}
             userEmail={adageUser.email}
             resetForm={resetForm}
+            logFiltersOnSearch={logFiltersOnSearch}
           />
         </div>
       </FormikContext.Provider>

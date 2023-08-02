@@ -48,6 +48,7 @@ interface OffersComponentPropsWithHits
   handleResetFiltersAndLaunchSearch?: () => void
   displayStats?: boolean
   resetForm?: () => void
+  logFiltersOnSearch?: (nbHits: number, queryId: string) => void
 }
 
 type OfferMap = Map<
@@ -66,6 +67,7 @@ export const OffersComponent = ({
   nbHits,
   displayStats = true,
   resetForm,
+  logFiltersOnSearch,
 }: OffersComponentProps): JSX.Element => {
   const [queriesAreLoading, setQueriesAreLoading] = useState(false)
   const [offers, setOffers] = useState<
@@ -106,6 +108,9 @@ export const OffersComponent = ({
     setQueriesAreLoading(true)
     if (hits.length != 0 && queryId != hits[0].__queryID) {
       setQueryId(hits[0].__queryID)
+      if (newAdageFilters && logFiltersOnSearch) {
+        logFiltersOnSearch(nbHits, hits[0].__queryID)
+      }
     }
     Promise.all(
       hits.map(async hit => {
