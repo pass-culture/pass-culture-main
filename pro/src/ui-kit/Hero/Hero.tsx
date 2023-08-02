@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 import styles from './Hero.module.scss'
 
-interface HeroProps {
+export interface HeroProps {
   title: string
   text: string
   linkLabel: string

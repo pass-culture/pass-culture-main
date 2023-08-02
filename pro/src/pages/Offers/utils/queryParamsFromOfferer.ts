@@ -1,4 +1,6 @@
-export const queryParamsFromOfferer = location => {
+import type { Location } from 'react-router-dom'
+
+export const queryParamsFromOfferer = (location: Location) => {
   const queryParams = new URLSearchParams(location.search)
   const hasOfferer = queryParams.has('structure')
   const hasVenue = queryParams.has('lieu')

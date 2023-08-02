@@ -70,6 +70,10 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
     const drawCropBorder = useCallback(() => {
       const canvas = document.querySelector('canvas')
       const ctx = canvas?.getContext('2d')
+
+      if (!ctx) {
+        return
+      }
       const canvasTools = new CanvasTools(ctx)
       canvasTools.drawArea({
         width: 0,

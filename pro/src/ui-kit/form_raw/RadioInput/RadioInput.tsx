@@ -1,6 +1,16 @@
 import cn from 'classnames'
-import PropTypes from 'prop-types'
 import React from 'react'
+
+interface RadioInputProps {
+  checked: boolean
+  disabled?: boolean
+  error?: string | null
+  label: string
+  name: string
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  subLabel?: string | null
+  value: string
+}
 
 export const RadioInput = ({
   onChange,
@@ -11,7 +21,7 @@ export const RadioInput = ({
   disabled,
   subLabel,
   error,
-}) => (
+}: RadioInputProps) => (
   <label className="input-radio">
     <input
       checked={checked}
@@ -32,20 +42,3 @@ export const RadioInput = ({
     </span>
   </label>
 )
-
-RadioInput.defaultProps = {
-  disabled: false,
-  error: null,
-  subLabel: null,
-}
-
-RadioInput.propTypes = {
-  checked: PropTypes.bool.isRequired,
-  disabled: PropTypes.bool,
-  error: PropTypes.string,
-  label: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  subLabel: PropTypes.string,
-  value: PropTypes.string.isRequired,
-}

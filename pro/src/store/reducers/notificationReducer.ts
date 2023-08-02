@@ -52,13 +52,13 @@ export interface NotificationState {
   notification: Notification | null
 }
 
-export const notificationInitialState: NotificationState = {
+export const initialState: NotificationState = {
   isStickyBarOpen: false,
   notification: null,
 }
 
 export const notificationReducer = (
-  state = notificationInitialState,
+  state = initialState,
   action: NotificationAction
 ): NotificationState => {
   switch (action.type) {

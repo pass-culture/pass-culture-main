@@ -14,7 +14,7 @@ interface MaintenanceState {
   isActivated: boolean
 }
 
-const initialState: MaintenanceState = {
+export const initialState: MaintenanceState = {
   isActivated: false,
 }
 
