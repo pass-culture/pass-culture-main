@@ -272,6 +272,7 @@ jobs:
             "tests/core --ignore=tests/core/bookings --ignore=tests/core/offers --ignore=tests/core/finance",
             "tests/routes -m 'not backoffice'",
             "tests --ignore=tests/core --ignore=tests/routes",
+            "tests/routes/backoffice -m 'backoffice'",
           ]
     needs: build-tests-docker-image
     permissions:
