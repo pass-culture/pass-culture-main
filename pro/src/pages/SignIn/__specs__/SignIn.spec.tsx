@@ -35,7 +35,6 @@ const renderSignIn = (
 ) => {
   const store = {
     user: {},
-    app: {},
     features: {
       list: [
         {
@@ -73,7 +72,7 @@ const renderSignIn = (
   )
 }
 
-describe('src | components | pages | SignIn', () => {
+describe('SignIn', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getProfile').mockResolvedValue(
       {} as SharedCurrentUserResponseModel

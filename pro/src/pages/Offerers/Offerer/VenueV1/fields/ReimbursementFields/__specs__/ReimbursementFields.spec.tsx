@@ -14,10 +14,7 @@ import ReimbursementFields, {
   ReimbursementFieldsProps,
 } from '../ReimbursementFields'
 
-const renderReimbursementFields = async (
-  props: ReimbursementFieldsProps,
-  storeOverrides: any
-) => {
+const renderReimbursementFields = async (props: ReimbursementFieldsProps) => {
   const rtlReturn = renderWithProviders(
     <Formik onSubmit={() => {}} initialValues={{}}>
       {({ handleSubmit }) => (
@@ -25,8 +22,7 @@ const renderReimbursementFields = async (
           <ReimbursementFields {...props} />
         </Form>
       )}
-    </Formik>,
-    { storeOverrides }
+    </Formik>
   )
 
   const loadingMessage = screen.queryByText('Chargement en cours ...')
@@ -41,7 +37,7 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-describe('src | Venue | ReimbursementFields', () => {
+describe('ReimbursementFields', () => {
   const venue = {
     id: 1,
     name: 'fake venue name',
@@ -57,61 +53,47 @@ describe('src | Venue | ReimbursementFields', () => {
     hasAvailablePricingPoints: true,
   } as GetOffererResponseModel
 
-  const mockLogEvent = vi.fn()
   let props: ReimbursementFieldsProps
-  let store: any
   beforeEach(() => {
     props = { venue, offerer, readOnly: false }
-    store = {
-      app: { logEvent: mockLogEvent },
-    }
     vi.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([])
   })
 
   it('should display banner if offerer has no pricing point and venue has no siret', async () => {
-    // Given
     const offererWithoutPricingPoint = {
       ...offerer,
       hasAvailablePricingPoints: false,
     }
     props.offerer = offererWithoutPricingPoint
 
-    // When
-    await renderReimbursementFields(props, store)
+    await renderReimbursementFields(props)
 
-    // Then
     expect(screen.queryByText('Créer un lieu avec SIRET')).toBeInTheDocument()
   })
 
   it('should not display pricing point section venue has siret', async () => {
-    // Given
     const venueWithSiret = {
       ...venue,
       siret: '00000000012345',
     }
     props.venue = venueWithSiret
 
-    // When
-    await renderReimbursementFields(props, store)
+    await renderReimbursementFields(props)
 
-    // Then
     expect(
       screen.queryByText('Barème de remboursement')
     ).not.toBeInTheDocument()
   })
 
   it('should display pricing point section when venue has no siret', async () => {
-    // Given
     const venueWithoutSiret = {
       ...venue,
       siret: '',
     }
     props.venue = venueWithoutSiret
 
-    // When
-    await renderReimbursementFields(props, store)
+    await renderReimbursementFields(props)
 
-    // Then
     expect(screen.queryByText('Barème de remboursement')).toBeInTheDocument()
   })
 })
