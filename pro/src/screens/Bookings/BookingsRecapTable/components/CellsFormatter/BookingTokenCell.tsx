@@ -1,9 +1,11 @@
 import React from 'react'
 
-const BookingTokenCell = ({
-  bookingToken,
-}: {
+export interface BookingTokenCellProps {
   bookingToken?: string | null
-}) => <span>{bookingToken || '-'}</span>
+}
+
+const BookingTokenCell = ({ bookingToken }: BookingTokenCellProps) => (
+  <span>{bookingToken || '-'}</span>
+)
 
 export default BookingTokenCell

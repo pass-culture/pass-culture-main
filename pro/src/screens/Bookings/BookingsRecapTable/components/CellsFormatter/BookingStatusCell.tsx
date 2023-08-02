@@ -17,15 +17,17 @@ import {
 import styles from './BookingStatusCell.module.scss'
 import BookingStatusCellHistory from './BookingStatusCellHistory'
 
-const BookingStatusCell = ({
-  bookingRecapInfo,
-  isCollectiveStatus,
-}: {
+export interface BookingStatusCellProps {
   bookingRecapInfo:
     | Row<BookingRecapResponseModel>
     | Row<CollectiveBookingResponseModel>
   isCollectiveStatus: boolean
-}) => {
+}
+
+const BookingStatusCell = ({
+  bookingRecapInfo,
+  isCollectiveStatus,
+}: BookingStatusCellProps) => {
   if (isCollectiveStatus) {
     const lastBookingStatus =
       bookingRecapInfo.original.bookingStatusHistory.slice(-1)[0].status
