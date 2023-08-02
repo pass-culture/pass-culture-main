@@ -4,7 +4,7 @@ from typing import Callable
 from typing import Dict
 from typing import Type
 
-from pydantic import BaseModel  # pylint: disable=wrong-pydantic-base-model-import
+from pydantic.v1 import BaseModel
 from spectree import Response
 from spectree import SpecTree
 
