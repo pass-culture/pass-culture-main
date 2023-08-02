@@ -2,7 +2,7 @@ from datetime import datetime
 import enum
 from typing import Iterable
 
-from pydantic import validator
+import pydantic.v1 as pydantic_v1
 import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
@@ -262,7 +262,7 @@ class OffererStatsResponseModel(BaseModel):
 class InviteMemberQueryModel(BaseModel):
     email: str
 
-    @validator("email")
+    @pydantic_v1.validator("email")
     @classmethod
     def validate_email(cls, email: str) -> str:
         try:

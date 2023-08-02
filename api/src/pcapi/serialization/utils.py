@@ -2,7 +2,7 @@ import datetime
 import typing
 
 import flask
-import pydantic
+import pydantic.v1 as pydantic_v1
 import pytz
 
 from pcapi.models.api_errors import ApiErrors
@@ -16,7 +16,7 @@ def to_camel(string: str) -> str:
 def before_handler(
     request: flask.Request,  # pylint: disable=unused-argument
     response: flask.Response,  # pylint: disable=unused-argument
-    pydantic_error: pydantic.ValidationError | None,
+    pydantic_error: pydantic_v1.ValidationError | None,
     _: typing.Any,
 ) -> None:
     """Raises an ``ApiErrors` exception if input validation fails.
@@ -53,7 +53,7 @@ def before_handler(
 
 def check_string_is_not_empty(string: str) -> str:
     if not string or string.isspace():
-        raise pydantic.MissingError()
+        raise pydantic_v1.MissingError()
 
     return string
 
@@ -76,15 +76,15 @@ def string_to_boolean(string: str) -> bool | None:
 
 
 def validate_not_empty_string_when_provided(field_name: str) -> classmethod:
-    return pydantic.validator(field_name, pre=True, allow_reuse=True)(check_string_is_not_empty)
+    return pydantic_v1.validator(field_name, pre=True, allow_reuse=True)(check_string_is_not_empty)
 
 
 def string_to_boolean_field(field_name: str) -> classmethod:
-    return pydantic.validator(field_name, pre=True, allow_reuse=True)(string_to_boolean)
+    return pydantic_v1.validator(field_name, pre=True, allow_reuse=True)(string_to_boolean)
 
 
 def string_length_validator(field_name: str, *, length: int) -> classmethod:
-    return pydantic.validator(field_name, pre=False, allow_reuse=True)(check_string_length_wrapper(length=length))
+    return pydantic_v1.validator(field_name, pre=False, allow_reuse=True)(check_string_length_wrapper(length=length))
 
 
 def as_utc_without_timezone(d: datetime.datetime) -> datetime.datetime:
@@ -110,4 +110,4 @@ def check_date_in_future_and_remove_timezone(value: datetime.datetime | None) ->
 
 
 def validate_datetime(field_name: str) -> classmethod:
-    return pydantic.validator(field_name, pre=False, allow_reuse=True)(check_date_in_future_and_remove_timezone)
+    return pydantic_v1.validator(field_name, pre=False, allow_reuse=True)(check_date_in_future_and_remove_timezone)

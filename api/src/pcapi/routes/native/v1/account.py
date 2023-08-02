@@ -3,7 +3,7 @@ import logging
 
 from flask import current_app as app
 import jwt
-import pydantic
+import pydantic.v1 as pydantic_v1
 import sqlalchemy as sa
 
 from pcapi.connectors import api_recaptcha
@@ -119,7 +119,7 @@ def get_email_update_status(user: users_models.User) -> serializers.EmailUpdateS
 def confirm_email_update(body: serializers.ChangeBeneficiaryEmailBody) -> None:
     try:
         email_api.update.confirm_email_update_request(body.token)
-    except pydantic.ValidationError:
+    except pydantic_v1.ValidationError:
         raise api_errors.ApiErrors(
             {"code": "INVALID_EMAIL", "message": "Adresse email invalide"},
             status_code=400,
@@ -151,7 +151,7 @@ def cancel_email_update(body: serializers.ChangeBeneficiaryEmailBody) -> None:
 def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> serializers.ChangeBeneficiaryEmailResponse:
     try:
         user = email_api.update.validate_email_update_request(body.token)
-    except pydantic.ValidationError:
+    except pydantic_v1.ValidationError:
         raise api_errors.ApiErrors(
             {"code": "INVALID_EMAIL", "message": "Adresse email invalide"},
             status_code=400,

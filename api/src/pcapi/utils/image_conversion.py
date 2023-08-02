@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING
 import PIL
 from PIL import Image
 from PIL import ImageOps
-from pydantic import confloat
+from pydantic.v1 import confloat
 
 
 if TYPE_CHECKING:

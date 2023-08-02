@@ -2,7 +2,7 @@ import datetime
 import decimal
 import logging
 
-from pydantic.error_wrappers import ValidationError
+from pydantic.v1.error_wrappers import ValidationError
 import sqlalchemy as sa
 
 from pcapi.core import search

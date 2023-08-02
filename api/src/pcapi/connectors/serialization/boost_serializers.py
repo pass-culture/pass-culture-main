@@ -1,7 +1,7 @@
 import datetime
 from decimal import Decimal
 
-import pydantic
+import pydantic.v1 as pydantic_v1
 
 import pcapi.core.external_bookings.models as external_bookings_models
 from pcapi.routes.serialization import BaseModel
@@ -83,7 +83,7 @@ class ShowTime(BaseModel):
     screen: dict
     showtimePricing: list[ShowtimePricing]
 
-    @pydantic.validator("showDate", "showEndDate")
+    @pydantic_v1.validator("showDate", "showEndDate")
     def normalize_datetime(cls, value: datetime.datetime) -> datetime.datetime:
         return _convert_to_utc_datetime(value)
 

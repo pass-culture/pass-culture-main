@@ -5,7 +5,7 @@ import html
 import logging
 import typing
 
-import pydantic
+import pydantic.v1 as pydantic_v1
 from urllib3 import exceptions as urllib3_exceptions
 
 from pcapi import repository
@@ -349,7 +349,7 @@ class TiteliveMusicSearch(TiteliveSearch[TiteliveMusicOeuvre]):
     def deserialize_titelive_search_json(
         self, titelive_json_response: dict[str, typing.Any]
     ) -> TiteliveProductSearchResponse[TiteliveMusicOeuvre]:
-        return pydantic.parse_obj_as(TiteliveProductSearchResponse[TiteliveMusicOeuvre], titelive_json_response)
+        return pydantic_v1.parse_obj_as(TiteliveProductSearchResponse[TiteliveMusicOeuvre], titelive_json_response)
 
     def upsert_titelive_result_in_dict(
         self, titelive_search_result: TiteliveMusicOeuvre, products_by_ean: dict[str, offers_models.Product]

@@ -123,7 +123,7 @@ class VenueTypeCode(enum.Enum):
     TRAVELING_CINEMA = "Cinéma itinérant"
     VISUAL_ARTS = "Arts visuels, arts plastiques et galeries"
 
-    # These methods are used by Pydantic in order to return the enum name and validate the value
+    # These methods are used by pydantic in order to return the enum name and validate the value
     # instead of returning the enum directly.
     @classmethod
     def __get_validators__(cls) -> typing.Iterator[typing.Callable]:

@@ -7,7 +7,7 @@ import typing
 from typing import Callable
 from typing import Iterable
 
-from pydantic.main import BaseModel
+from pydantic.v1.main import BaseModel
 import pytz
 
 import pcapi.core.finance.api as finance_api

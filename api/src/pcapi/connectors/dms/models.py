@@ -1,7 +1,7 @@
 import datetime
 import enum
 
-import pydantic
+import pydantic.v1 as pydantic_v1
 import pytz
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
@@ -40,7 +40,7 @@ class GraphQLApplicationStates(enum.Enum):
     without_continuation = "sans_suite"
 
 
-class Profile(pydantic.BaseModel):
+class Profile(pydantic_v1.BaseModel):
     """https://demarches-simplifiees-graphql.netlify.app/profile.doc.html"""
 
     email: str
@@ -54,22 +54,22 @@ class Civility(enum.Enum):
     MME = "Mme"
 
 
-class Applicant(pydantic.BaseModel):
+class Applicant(pydantic_v1.BaseModel):
     """https://demarches-simplifiees-graphql.netlify.app/personnephysique.doc.html"""
 
-    birth_date: datetime.date | None = pydantic.Field(None, alias="dateDeNaissance")
-    civility: Civility = pydantic.Field(alias="civilite")
-    first_name: str = pydantic.Field(alias="prenom")
+    birth_date: datetime.date | None = pydantic_v1.Field(None, alias="dateDeNaissance")
+    civility: Civility = pydantic_v1.Field(alias="civilite")
+    first_name: str = pydantic_v1.Field(alias="prenom")
     id: str
-    last_name: str = pydantic.Field(alias="nom")
+    last_name: str = pydantic_v1.Field(alias="nom")
 
 
-class DmsField(pydantic.BaseModel):
+class DmsField(pydantic_v1.BaseModel):
     """https://demarches-simplifiees-graphql.netlify.app/champ.doc.html"""
 
     id: str
     label: str
-    value: str | None = pydantic.Field(None, alias="stringValue")
+    value: str | None = pydantic_v1.Field(None, alias="stringValue")
 
 
 class FieldLabelKeyword(enum.Enum):
@@ -87,62 +87,62 @@ class FieldLabelKeyword(enum.Enum):
     TELEPHONE = "numéro de téléphone"
 
 
-class ApplicationPageInfo(pydantic.BaseModel):
+class ApplicationPageInfo(pydantic_v1.BaseModel):
     """https://demarches-simplifiees-graphql.netlify.app/dossierspageinfo.doc.html"""
 
-    end_cursor: str | None = pydantic.Field(None, alias="endCursor")
-    has_next_page: bool = pydantic.Field(alias="hasNextPage")
+    end_cursor: str | None = pydantic_v1.Field(None, alias="endCursor")
+    has_next_page: bool = pydantic_v1.Field(alias="hasNextPage")
 
 
-class DMSMessage(pydantic.BaseModel):
+class DMSMessage(pydantic_v1.BaseModel):
     """https://demarches-simplifiees-graphql.netlify.app/message.doc.html"""
 
-    created_at: datetime.datetime = pydantic.Field(alias="createdAt")
+    created_at: datetime.datetime = pydantic_v1.Field(alias="createdAt")
     email: str
 
     class Config:
         allow_population_by_field_name = True
 
-    _format_created_at = pydantic.validator("created_at", allow_reuse=True)(parse_dms_datetime)
+    _format_created_at = pydantic_v1.validator("created_at", allow_reuse=True)(parse_dms_datetime)
 
 
-class DemarcheDescriptor(pydantic.BaseModel):
+class DemarcheDescriptor(pydantic_v1.BaseModel):
     """https://demarches-simplifiees-graphql.netlify.app/demarchedescriptor.doc.html"""
 
     number: int
 
 
-class DmsApplicationResponse(pydantic.BaseModel):
+class DmsApplicationResponse(pydantic_v1.BaseModel):
     """Response from DMS API.
     https://demarches-simplifiees-graphql.netlify.app/dossier.doc.html
     """
 
-    applicant: Applicant = pydantic.Field(alias="demandeur")
+    applicant: Applicant = pydantic_v1.Field(alias="demandeur")
     annotations: list[DmsField]
-    processed_datetime: datetime.datetime | None = pydantic.Field(None, alias="dateTraitement")
-    draft_date: datetime.datetime = pydantic.Field(alias="datePassageEnConstruction")
-    fields: list[DmsField] = pydantic.Field(alias="champs")
-    filing_date: datetime.datetime = pydantic.Field(alias="dateDepot")
+    processed_datetime: datetime.datetime | None = pydantic_v1.Field(None, alias="dateTraitement")
+    draft_date: datetime.datetime = pydantic_v1.Field(alias="datePassageEnConstruction")
+    fields: list[DmsField] = pydantic_v1.Field(alias="champs")
+    filing_date: datetime.datetime = pydantic_v1.Field(alias="dateDepot")
     id: str
-    latest_modification_datetime: datetime.datetime = pydantic.Field(alias="dateDerniereModification")
+    latest_modification_datetime: datetime.datetime = pydantic_v1.Field(alias="dateDerniereModification")
     messages: list[DMSMessage]
     number: int
-    on_going_date: datetime.datetime | None = pydantic.Field(None, alias="datePassageEnInstruction")
-    procedure: DemarcheDescriptor = pydantic.Field(alias="demarche")
-    profile: Profile = pydantic.Field(alias="usager")
+    on_going_date: datetime.datetime | None = pydantic_v1.Field(None, alias="datePassageEnInstruction")
+    procedure: DemarcheDescriptor = pydantic_v1.Field(alias="demarche")
+    profile: Profile = pydantic_v1.Field(alias="usager")
     state: GraphQLApplicationStates
 
-    _format_draft_date = pydantic.validator("draft_date", allow_reuse=True)(parse_dms_datetime)
-    _format_processed_datetime = pydantic.validator("processed_datetime", allow_reuse=True)(parse_dms_datetime)
-    _format_filing_date = pydantic.validator("filing_date", allow_reuse=True)(parse_dms_datetime)
-    _format_latest_modification_datetime = pydantic.validator("latest_modification_datetime", allow_reuse=True)(
+    _format_draft_date = pydantic_v1.validator("draft_date", allow_reuse=True)(parse_dms_datetime)
+    _format_processed_datetime = pydantic_v1.validator("processed_datetime", allow_reuse=True)(parse_dms_datetime)
+    _format_filing_date = pydantic_v1.validator("filing_date", allow_reuse=True)(parse_dms_datetime)
+    _format_latest_modification_datetime = pydantic_v1.validator("latest_modification_datetime", allow_reuse=True)(
         parse_dms_datetime
     )
-    _format_on_going_date = pydantic.validator("on_going_date", allow_reuse=True)(parse_dms_datetime)
+    _format_on_going_date = pydantic_v1.validator("on_going_date", allow_reuse=True)(parse_dms_datetime)
 
 
-class DmsPaginatedResponse(pydantic.BaseModel):
-    page_info: ApplicationPageInfo = pydantic.Field(alias="pageInfo")
+class DmsPaginatedResponse(pydantic_v1.BaseModel):
+    page_info: ApplicationPageInfo = pydantic_v1.Field(alias="pageInfo")
 
 
 class DmsProcessApplicationsResponse(DmsPaginatedResponse):
@@ -150,22 +150,22 @@ class DmsProcessApplicationsResponse(DmsPaginatedResponse):
     https://demarches-simplifiees-graphql.netlify.app/demarche.doc.html
     """
 
-    dms_applications: list[DmsApplicationResponse] = pydantic.Field(alias="nodes")
+    dms_applications: list[DmsApplicationResponse] = pydantic_v1.Field(alias="nodes")
 
 
-class DmsDeletedApplication(pydantic.BaseModel):
+class DmsDeletedApplication(pydantic_v1.BaseModel):
     """Response from DMS API.
     https://demarches-simplifiees-graphql.netlify.app/deleteddossier.doc.html
     """
 
-    deletion_datetime: datetime.datetime = pydantic.Field(alias="dateSupression")
+    deletion_datetime: datetime.datetime = pydantic_v1.Field(alias="dateSupression")
     id: str
     number: int
     reason: str
     state: GraphQLApplicationStates
 
-    _format_deletion_datetime = pydantic.validator("deletion_datetime", allow_reuse=True)(parse_dms_datetime)
+    _format_deletion_datetime = pydantic_v1.validator("deletion_datetime", allow_reuse=True)(parse_dms_datetime)
 
 
 class DmsDeletedApplicationsResponse(DmsPaginatedResponse):
-    dms_deleted_applications: list[DmsDeletedApplication] = pydantic.Field(alias="nodes")
+    dms_deleted_applications: list[DmsDeletedApplication] = pydantic_v1.Field(alias="nodes")

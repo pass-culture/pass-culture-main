@@ -6,7 +6,7 @@ from io import StringIO
 import typing
 
 from flask_sqlalchemy import BaseQuery
-from pydantic import root_validator
+from pydantic.v1 import root_validator
 import xlsxwriter
 
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone

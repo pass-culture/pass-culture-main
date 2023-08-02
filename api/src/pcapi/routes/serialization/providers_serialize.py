@@ -1,4 +1,4 @@
-from pydantic.main import BaseModel
+from pydantic.v1.main import BaseModel
 
 
 class ProviderResponse(BaseModel):

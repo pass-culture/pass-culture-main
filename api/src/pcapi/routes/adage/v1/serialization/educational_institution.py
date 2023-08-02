@@ -1,4 +1,4 @@
-from pydantic.fields import Field
+from pydantic.v1.fields import Field
 
 from pcapi.routes.adage.v1.serialization.config import AdageBaseResponseModel
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingResponse

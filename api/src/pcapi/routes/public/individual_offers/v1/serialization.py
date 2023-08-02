@@ -6,8 +6,8 @@ import logging
 import typing
 
 from dateutil import relativedelta
-import pydantic
-from pydantic.utils import GetterDict
+import pydantic.v1 as pydantic_v1
+from pydantic.v1.utils import GetterDict
 import typing_extensions
 
 from pcapi import settings
@@ -60,93 +60,93 @@ class Accessibility(serialization.ConfiguredBaseModel):
 
 class PhysicalLocation(serialization.ConfiguredBaseModel):
     type: typing.Literal["physical"] = "physical"
-    venue_id: int = pydantic.Field(..., example=1, description="List of venues is available at GET /offerer_venues")
+    venue_id: int = pydantic_v1.Field(..., example=1, description="List of venues is available at GET /offerer_venues")
 
 
 class DigitalLocation(serialization.ConfiguredBaseModel):
     type: typing.Literal["digital"] = "digital"
-    venue_id: int = pydantic.Field(..., example=1, description="List of venues is available at GET /offerer_venues")
-    url: pydantic.HttpUrl = pydantic.Field(
+    venue_id: int = pydantic_v1.Field(..., example=1, description="List of venues is available at GET /offerer_venues")
+    url: pydantic_v1.HttpUrl = pydantic_v1.Field(
         ...,
         description="Link users will be redirected to after booking this offer. You may include '{token}', '{email}' and/or '{offerId}' in the URL, which will be replaced respectively by the booking token (use this token to confirm the offer - see API Contremarque), the email of the user who booked the offer and the created offer id",
         example="https://example.com?token={token}&email={email}&offerId={offerId}",
     )
 
 
-EAN_FIELD = pydantic.Field(example="1234567890123", description="European Article Number (EAN-13)")
+EAN_FIELD = pydantic_v1.Field(example="1234567890123", description="European Article Number (EAN-13)")
 
 
 class ExtraDataModel(serialization.ConfiguredBaseModel):
-    author: str | None = pydantic.Field(example="Jane Doe")
+    author: str | None = pydantic_v1.Field(example="Jane Doe")
     ean: str | None = EAN_FIELD
-    isbn: str | None = pydantic.Field(None, example="9783140464079")
+    isbn: str | None = pydantic_v1.Field(None, example="9783140464079")
     musicType: MusicTypeEnum | None  # type: ignore [valid-type]
-    performer: str | None = pydantic.Field(example="Jane Doe")
-    stageDirector: str | None = pydantic.Field(example="Jane Doe")
+    performer: str | None = pydantic_v1.Field(example="Jane Doe")
+    stageDirector: str | None = pydantic_v1.Field(example="Jane Doe")
     showType: ShowTypeEnum | None  # type: ignore [valid-type]
-    speaker: str | None = pydantic.Field(example="Jane Doe")
-    visa: str | None = pydantic.Field(example="140843")
+    speaker: str | None = pydantic_v1.Field(example="Jane Doe")
+    visa: str | None = pydantic_v1.Field(example="140843")
 
 
 class CategoryRelatedFields(ExtraDataModel):
-    subcategory_id: str = pydantic.Field(alias="category")
+    subcategory_id: str = pydantic_v1.Field(alias="category")
 
 
-IS_DUO_BOOKINGS_FIELD = pydantic.Field(
+IS_DUO_BOOKINGS_FIELD = pydantic_v1.Field(
     False,
     description="If set to true, users may book the offer for two persons. Second item will be delivered at the same price as the first one. Category must be compatible with this feature.",
     alias="enableDoubleBookings",
 )
-BOOKING_EMAIL_FIELD = pydantic.Field(
+BOOKING_EMAIL_FIELD = pydantic_v1.Field(
     None, description="Recipient email for notifications about bookings, cancellations, etc."
 )
 CATEGORY_RELATED_FIELD_DESCRIPTION = (
     "Cultural category the offer belongs to. According to the category, some fields may or must be specified."
 )
-CATEGORY_RELATED_FIELD = pydantic.Field(..., description=CATEGORY_RELATED_FIELD_DESCRIPTION)
-DESCRIPTION_FIELD = pydantic.Field(
+CATEGORY_RELATED_FIELD = pydantic_v1.Field(..., description=CATEGORY_RELATED_FIELD_DESCRIPTION)
+DESCRIPTION_FIELD = pydantic_v1.Field(
     None, description="Offer description", example="A great book for kids and old kids.", max_length=1000
 )
-EXTERNAL_TICKET_OFFICE_URL_FIELD = pydantic.Field(
+EXTERNAL_TICKET_OFFICE_URL_FIELD = pydantic_v1.Field(
     None,
     description="Link displayed to users wishing to book the offer but who do not have (anymore) credit.",
     example="https://example.com",
 )
-IMAGE_CREDIT_FIELD = pydantic.Field(None, description="Image owner or author.", example="Jane Doe")
-WITHDRAWAL_DETAILS_FIELD = pydantic.Field(
+IMAGE_CREDIT_FIELD = pydantic_v1.Field(None, description="Image owner or author.", example="Jane Doe")
+WITHDRAWAL_DETAILS_FIELD = pydantic_v1.Field(
     None,
     description="Further information that will be provided to attendees to ease the offer collection.",
     example="Opening hours, specific office, collection period, access code, email annoucement...",
     alias="itemCollectionDetails",
 )
-BOOKING_CONTACT_FIELD = pydantic.Field(
+BOOKING_CONTACT_FIELD = pydantic_v1.Field(
     None,
     description="Recipient email to contact if there is an issue with booking the offer. Mandatory if the offer has withdrawable tickets.",
 )
-LOCATION_FIELD = pydantic.Field(
+LOCATION_FIELD = pydantic_v1.Field(
     ...,
     discriminator="type",
     description="Location where the offer will be available or will take place. The location type must be compatible with the category",
 )
-NAME_FIELD = pydantic.Field(description="Offer title", example="Le Petit Prince", max_length=90)
-DURATION_MINUTES_FIELD = pydantic.Field(description="Event duration in minutes", example=60, alias="eventDuration")
-TICKET_COLLECTION_FIELD = pydantic.Field(
+NAME_FIELD = pydantic_v1.Field(description="Offer title", example="Le Petit Prince", max_length=90)
+DURATION_MINUTES_FIELD = pydantic_v1.Field(description="Event duration in minutes", example=60, alias="eventDuration")
+TICKET_COLLECTION_FIELD = pydantic_v1.Field(
     None,
     description="How the ticket will be collected. Leave empty if there is no ticket. To use 'in_app' you must have developed the pass culture ticketing interface. Only some categories are compatible with tickets.",
     discriminator="way",
     example=None,
 )
-PRICE_CATEGORY_LABEL_FIELD = pydantic.Field(description="Price category label", example="Carré or")
-PRICE_CATEGORIES_FIELD = pydantic.Field(description="Available price categories for dates of this offer")
-EVENT_DATES_FIELD = pydantic.Field(
+PRICE_CATEGORY_LABEL_FIELD = pydantic_v1.Field(description="Price category label", example="Carré or")
+PRICE_CATEGORIES_FIELD = pydantic_v1.Field(description="Available price categories for dates of this offer")
+EVENT_DATES_FIELD = pydantic_v1.Field(
     description="Dates of the event. If there are different prices for the same date, several date objects are needed",
 )
-ON_SITE_MINUTES_BEFORE_EVENT_FIELD = pydantic.Field(
+ON_SITE_MINUTES_BEFORE_EVENT_FIELD = pydantic_v1.Field(
     ...,
     description="Number of minutes before the event when the ticket may be collected. Only some values are accepted (between 0 minutes and 48 hours).",
     example=0,
 )
-BY_EMAIL_DAYS_BEFORE_EVENT_FIELD = pydantic.Field(
+BY_EMAIL_DAYS_BEFORE_EVENT_FIELD = pydantic_v1.Field(
     ...,
     description="Number of days before the event when the ticket will be sent. Only some values are accepted (1 to 7).",
     example=1,
@@ -157,7 +157,7 @@ class ImageBody(serialization.ConfiguredBaseModel):
     """Image illustrating the offer. Offers with images are more likely to be booked."""
 
     credit: str | None = IMAGE_CREDIT_FIELD
-    file: str = pydantic.Field(
+    file: str = pydantic_v1.Field(
         ...,
         description="Image file encoded in base64 string. Image format must be PNG or JPEG. Size must be between 400x600 and 800x1200 pixels. Aspect ratio must be 2:3 (portrait format).",
         example="iVBORw0KGgoAAAANSUhEUgAAAhUAAAMgCAAAAACxT88IAAABImlDQ1BJQ0MgcHJvZmlsZQAAKJGdkLFKw1AUhr+0oiKKg6IgDhlcO5pFB6tCKCjEWMHqlCYpFpMYkpTiG/gm+jAdBMFXcFdw9r/RwcEs3nD4Pw7n/P+9gZadhGk5dwBpVhWu3x1cDq7shTfa+lbZZC8Iy7zreSc0ns9XLKMvHePVPPfnmY/iMpTOVFmYFxVY+2JnWuWGVazf9v0j8YPYjtIsEj+Jd6I0Mmx2/TSZhD+e5jbLcXZxbvqqbVx6nOJhM2TCmISKjjRT5xiHXalLQcA9JaE0IVZvqpmKG1EpJ5dDUV+k2zTkbdV5nlKG8hjLyyTckcrT5GH+7/fax1m9aW3M8qAI6lZb1RqN4P0RVgaw9gxL1w1Zi7/f1jDj1DP/fOMXG7hQfuNVil0AAAAJcEhZcwAALiMAAC4jAXilP3YAAAAHdElNRQfnAwMPGDrdy1JyAAABtElEQVR42u3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8GaFGgABH6N7kwAAAABJRU5ErkJggg==",
@@ -168,18 +168,18 @@ class ImageResponse(serialization.ConfiguredBaseModel):
     """Image illustrating the offer. Offers with images are more likely to be booked."""
 
     credit: str | None = IMAGE_CREDIT_FIELD
-    url: str = pydantic.Field(
+    url: str = pydantic_v1.Field(
         ..., description="Url where the image is accessible", example="https://example.com/image.png"
     )
 
 
 class OfferCreationBase(serialization.ConfiguredBaseModel):
     accessibility: Accessibility
-    booking_contact: pydantic.EmailStr | None = BOOKING_CONTACT_FIELD
-    booking_email: pydantic.EmailStr | None = BOOKING_EMAIL_FIELD
+    booking_contact: pydantic_v1.EmailStr | None = BOOKING_CONTACT_FIELD
+    booking_email: pydantic_v1.EmailStr | None = BOOKING_EMAIL_FIELD
     category_related_fields: CategoryRelatedFields = CATEGORY_RELATED_FIELD
     description: str | None = DESCRIPTION_FIELD
-    external_ticket_office_url: pydantic.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
+    external_ticket_office_url: pydantic_v1.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
     image: ImageBody | None
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
     name: str = NAME_FIELD
@@ -196,7 +196,7 @@ def compute_category_fields_model(
     subcategory: subcategories.Subcategory, method: Method
 ) -> typing.Type[CategoryRelatedFields]:
     """
-    Create dynamic pydantic models to indicate which fields are available for the chosen subcategory,
+    Create dynamic pydantic_v1 models to indicate which fields are available for the chosen subcategory,
     without duplicating categories declaration.
     If musicType (resp showType) field is applicable, we expose only the musicSubType (resp showSubType) information
     because it also contains musicType (resp showType) information. And we use the simpler musicType (resp showType) alias.
@@ -211,10 +211,10 @@ def compute_category_fields_model(
 
     specific_fields["subcategory_id"] = (
         typing.Literal[subcategory.id],  # pyright: ignore (pylance error message)
-        pydantic.Field(alias="category"),
+        pydantic_v1.Field(alias="category"),
     )
 
-    model = pydantic.create_model(f"{subcategory.id}_{method.value}", **specific_fields)
+    model = pydantic_v1.create_model(f"{subcategory.id}_{method.value}", **specific_fields)
     model.__doc__ = subcategory.pro_label
     model.__config__.allow_population_by_field_name = True
     return model
@@ -300,42 +300,42 @@ if typing.TYPE_CHECKING:
 else:
     product_category_creation_fields = typing_extensions.Annotated[
         product_category_creation_models[subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id],
-        pydantic.Field(description=CATEGORY_RELATED_FIELD_DESCRIPTION),
+        pydantic_v1.Field(description=CATEGORY_RELATED_FIELD_DESCRIPTION),
     ]
     product_category_reading_fields = typing_extensions.Annotated[
         typing.Union[tuple(product_category_reading_models.values())],
-        pydantic.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
+        pydantic_v1.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
     ]
     product_category_edition_fields = typing_extensions.Annotated[
         typing.Union[tuple(product_category_edition_models.values())],
-        pydantic.Field(discriminator="subcategory_id"),
+        pydantic_v1.Field(discriminator="subcategory_id"),
     ]
     event_category_creation_fields = typing_extensions.Annotated[
         typing.Union[tuple(event_category_creation_models.values())],
-        pydantic.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
+        pydantic_v1.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
     ]
     event_category_edition_fields = typing_extensions.Annotated[
         typing.Union[tuple(event_category_edition_models.values())],
-        pydantic.Field(discriminator="subcategory_id"),
+        pydantic_v1.Field(discriminator="subcategory_id"),
     ]
     event_category_reading_fields = typing_extensions.Annotated[
         typing.Union[tuple(event_category_reading_models.values())],
-        pydantic.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
+        pydantic_v1.Field(discriminator="subcategory_id", description=CATEGORY_RELATED_FIELD_DESCRIPTION),
     ]
 
 next_month = datetime.datetime.utcnow().replace(hour=12, minute=0, second=0) + relativedelta.relativedelta(months=1)
 paris_tz_next_month = date_utils.utc_datetime_to_department_timezone(next_month, "75")
 
-BEGINNING_DATETIME_FIELD = pydantic.Field(
+BEGINNING_DATETIME_FIELD = pydantic_v1.Field(
     description="Timezone aware datetime of the event.",
     example=paris_tz_next_month.isoformat(timespec="seconds"),
 )
-BOOKING_LIMIT_DATETIME_FIELD = pydantic.Field(
+BOOKING_LIMIT_DATETIME_FIELD = pydantic_v1.Field(
     description="Timezone aware datetime after which the offer can no longer be booked.",
     example=paris_tz_next_month.isoformat(timespec="seconds"),
 )
-PRICE_FIELD = pydantic.Field(description="Offer price in euro cents.", example=1000)
-QUANTITY_FIELD = pydantic.Field(
+PRICE_FIELD = pydantic_v1.Field(description="Offer price in euro cents.", example=1000)
+QUANTITY_FIELD = pydantic_v1.Field(
     description="Quantity of items currently available to pass Culture. Value 'unlimited' is used for infinite quantity of items.",
     example=10,
 )
@@ -344,9 +344,9 @@ UNLIMITED_LITERAL = typing.Literal["unlimited"]
 
 
 class BaseStockCreation(serialization.ConfiguredBaseModel):
-    quantity: pydantic.StrictInt | UNLIMITED_LITERAL = QUANTITY_FIELD
+    quantity: pydantic_v1.StrictInt | UNLIMITED_LITERAL = QUANTITY_FIELD
 
-    @pydantic.validator("quantity")
+    @pydantic_v1.validator("quantity")
     def quantity_must_be_in_range(cls, quantity: int | str) -> int | str:
         if isinstance(quantity, int):
             if quantity < 0:
@@ -364,12 +364,12 @@ def deserialize_quantity(quantity: int | UNLIMITED_LITERAL | None) -> int | None
 
 
 class StockCreation(BaseStockCreation):
-    price: pydantic.StrictInt = PRICE_FIELD
+    price: pydantic_v1.StrictInt = PRICE_FIELD
     booking_limit_datetime: datetime.datetime | None = BOOKING_LIMIT_DATETIME_FIELD
 
     _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
 
-    @pydantic.validator("price")
+    @pydantic_v1.validator("price")
     def price_must_be_positive(cls, value: int) -> int:
         if value < 0:
             raise ValueError("Value must be positive")
@@ -378,9 +378,9 @@ class StockCreation(BaseStockCreation):
 
 class BaseStockEdition(serialization.ConfiguredBaseModel):
     booking_limit_datetime: datetime.datetime | None = BOOKING_LIMIT_DATETIME_FIELD
-    quantity: pydantic.StrictInt | UNLIMITED_LITERAL | None = QUANTITY_FIELD
+    quantity: pydantic_v1.StrictInt | UNLIMITED_LITERAL | None = QUANTITY_FIELD
 
-    @pydantic.validator("quantity")
+    @pydantic_v1.validator("quantity")
     def quantity_must_be_in_range(cls, quantity: int | str | None) -> int | str | None:
         if isinstance(quantity, int):
             if quantity < 0:
@@ -395,9 +395,9 @@ class BaseStockEdition(serialization.ConfiguredBaseModel):
 
 
 class StockEdition(BaseStockEdition):
-    price: pydantic.StrictInt | None = PRICE_FIELD
+    price: pydantic_v1.StrictInt | None = PRICE_FIELD
 
-    @pydantic.validator("price")
+    @pydantic_v1.validator("price")
     def price_must_be_positive(cls, value: int | None) -> int | None:
         if value and value < 0:
             raise ValueError("Value must be positive")
@@ -446,7 +446,7 @@ class BatchProductOfferCreation(serialization.ConfiguredBaseModel):
     product_offers: list[ProductOfferCreation]
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
 
-    @pydantic.validator("product_offers")
+    @pydantic_v1.validator("product_offers")
     def validate_product_offer_list(cls, product_offers: list[ProductOfferCreation]) -> list[ProductOfferCreation]:
         if len(product_offers) > 50:
             raise ValueError("Maximum number of product offers is 50")
@@ -457,7 +457,7 @@ class ProductOfferByEanCreation(serialization.ConfiguredBaseModel):
     if typing.TYPE_CHECKING:
         ean: str = EAN_FIELD
     else:
-        ean: pydantic.constr(min_length=13, max_length=13) = EAN_FIELD
+        ean: pydantic_v1.constr(min_length=13, max_length=13) = EAN_FIELD
     stock: StockCreation
 
     class Config:
@@ -465,7 +465,7 @@ class ProductOfferByEanCreation(serialization.ConfiguredBaseModel):
 
 
 class ProductsOfferByEanCreation(serialization.ConfiguredBaseModel):
-    products: list[ProductOfferByEanCreation] = pydantic.Field(
+    products: list[ProductOfferByEanCreation] = pydantic_v1.Field(
         description="List of product to create or update", max_items=500
     )
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
@@ -485,10 +485,10 @@ class PriceCategoryCreation(serialization.ConfiguredBaseModel):
     if typing.TYPE_CHECKING:
         label: str = PRICE_CATEGORY_LABEL_FIELD
     else:
-        label: pydantic.constr(min_length=1, max_length=50) = PRICE_CATEGORY_LABEL_FIELD
-    price: pydantic.StrictInt = PRICE_FIELD
+        label: pydantic_v1.constr(min_length=1, max_length=50) = PRICE_CATEGORY_LABEL_FIELD
+    price: pydantic_v1.StrictInt = PRICE_FIELD
 
-    @pydantic.validator("price")
+    @pydantic_v1.validator("price")
     def price_must_be_positive(cls, value: int) -> int:
         if value < 0:
             raise ValueError("Value must be positive")
@@ -501,7 +501,7 @@ class PriceCategoryCreation(serialization.ConfiguredBaseModel):
 class PriceCategoriesCreation(serialization.ConfiguredBaseModel):
     price_categories: typing.List[PriceCategoryCreation] = PRICE_CATEGORIES_FIELD
 
-    @pydantic.validator("price_categories")
+    @pydantic_v1.validator("price_categories")
     def get_unique_price_categories(
         cls,
         price_categories: list[PriceCategoryCreation],
@@ -524,7 +524,7 @@ class EventOfferCreation(OfferCreationBase):
     ticket_collection: SentByEmailDetails | OnSiteCollectionDetails | InAppDetails | None = TICKET_COLLECTION_FIELD
     price_categories: typing.List[PriceCategoryCreation] | None = PRICE_CATEGORIES_FIELD
 
-    @pydantic.validator("price_categories")
+    @pydantic_v1.validator("price_categories")
     def get_unique_price_categories(
         cls,
         price_categories: list[PriceCategoryCreation],
@@ -541,12 +541,12 @@ class EventOfferCreation(OfferCreationBase):
 
 
 class OfferEditionBase(serialization.ConfiguredBaseModel):
-    accessibility: accessibility_serialization.PartialAccessibility | None = pydantic.Field(
+    accessibility: accessibility_serialization.PartialAccessibility | None = pydantic_v1.Field(
         description="Accessibility to disabled people. Leave fields undefined to keep current value"
     )
-    booking_contact: pydantic.EmailStr | None = BOOKING_CONTACT_FIELD
-    booking_email: pydantic.EmailStr | None = BOOKING_EMAIL_FIELD
-    is_active: bool | None = pydantic.Field(
+    booking_contact: pydantic_v1.EmailStr | None = BOOKING_CONTACT_FIELD
+    booking_email: pydantic_v1.EmailStr | None = BOOKING_EMAIL_FIELD
+    is_active: bool | None = pydantic_v1.Field(
         description="Whether the offer is activated. An inactive offer cannot be booked."
     )
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
@@ -556,14 +556,14 @@ class OfferEditionBase(serialization.ConfiguredBaseModel):
         extra = "forbid"
 
 
-STOCK_EDITION_FIELD = pydantic.Field(
+STOCK_EDITION_FIELD = pydantic_v1.Field(
     description="If stock is set to null, all cancellable bookings (i.e not used) will be cancelled. To prevent from further bookings, you may alternatively set stock.quantity to the bookedQuantity (but not below).",
 )
 
 
 class ProductOfferEdition(OfferEditionBase):
     offer_id: int
-    category_related_fields: product_category_edition_fields | None = pydantic.Field(
+    category_related_fields: product_category_edition_fields | None = pydantic_v1.Field(
         None,
         description="To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
     )
@@ -576,7 +576,7 @@ class ProductOfferEdition(OfferEditionBase):
 class BatchProductOfferEdition(serialization.ConfiguredBaseModel):
     product_offers: list[ProductOfferEdition]
 
-    @pydantic.validator("product_offers")
+    @pydantic_v1.validator("product_offers")
     def validate_product_offer_list(cls, product_offers: list[ProductOfferEdition]) -> list[ProductOfferEdition]:
         if len(product_offers) > 50:
             raise ValueError("Maximum number of product offers is 50")
@@ -594,10 +594,10 @@ class PriceCategoryEdition(serialization.ConfiguredBaseModel):
     if typing.TYPE_CHECKING:
         label: str = PRICE_CATEGORY_LABEL_FIELD
     else:
-        label: pydantic.constr(min_length=1, max_length=50) | None = PRICE_CATEGORY_LABEL_FIELD
-    price: pydantic.StrictInt | None = PRICE_FIELD
+        label: pydantic_v1.constr(min_length=1, max_length=50) | None = PRICE_CATEGORY_LABEL_FIELD
+    price: pydantic_v1.StrictInt | None = PRICE_FIELD
 
-    @pydantic.validator("price")
+    @pydantic_v1.validator("price")
     def price_must_be_positive(cls, value: int | None) -> int | None:
         if value and value < 0:
             raise ValueError("Value must be positive")
@@ -613,7 +613,7 @@ class DateEdition(BaseStockEdition):
 
 
 class EventOfferEdition(OfferEditionBase):
-    category_related_fields: event_category_edition_fields | None = pydantic.Field(
+    category_related_fields: event_category_edition_fields | None = pydantic_v1.Field(
         None,
         description="To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
     )
@@ -631,7 +631,7 @@ class DateCreation(BaseStockCreation):
 
 
 class DatesCreation(serialization.ConfiguredBaseModel):
-    dates: typing.List[DateCreation] = pydantic.Field(
+    dates: typing.List[DateCreation] = pydantic_v1.Field(
         description="Dates to add to the event. If there are different prices and quantity for the same date, you must add several date objects",
     )
 
@@ -653,8 +653,8 @@ class PriceCategoriesResponse(serialization.ConfiguredBaseModel):
 
 class BaseStockResponse(serialization.ConfiguredBaseModel):
     booking_limit_datetime: datetime.datetime | None = BOOKING_LIMIT_DATETIME_FIELD
-    dnBookedQuantity: int = pydantic.Field(..., description="Number of bookings.", example=0, alias="bookedQuantity")
-    quantity: pydantic.StrictInt | UNLIMITED_LITERAL = QUANTITY_FIELD
+    dnBookedQuantity: int = pydantic_v1.Field(..., description="Number of bookings.", example=0, alias="bookedQuantity")
+    quantity: pydantic_v1.StrictInt | UNLIMITED_LITERAL = QUANTITY_FIELD
 
     class Config:
         json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
@@ -672,7 +672,7 @@ class BaseStockResponse(serialization.ConfiguredBaseModel):
 class PartialPriceCategoryResponse(serialization.ConfiguredBaseModel):
     id: None = None
     label: None = None
-    price: pydantic.StrictInt = PRICE_FIELD
+    price: pydantic_v1.StrictInt = PRICE_FIELD
 
     @classmethod
     def build_partial_price_category(cls, price: decimal.Decimal) -> "PartialPriceCategoryResponse":
@@ -699,21 +699,21 @@ class DateResponse(BaseStockResponse):
 
 
 class PostDatesResponse(serialization.ConfiguredBaseModel):
-    dates: typing.List[DateResponse] = pydantic.Field(description="Dates of the event.")
+    dates: typing.List[DateResponse] = pydantic_v1.Field(description="Dates of the event.")
 
 
 class OfferResponse(serialization.ConfiguredBaseModel):
     id: int
     accessibility: Accessibility
-    booking_contact: pydantic.EmailStr | None = BOOKING_CONTACT_FIELD
-    booking_email: pydantic.EmailStr | None = BOOKING_EMAIL_FIELD
+    booking_contact: pydantic_v1.EmailStr | None = BOOKING_CONTACT_FIELD
+    booking_email: pydantic_v1.EmailStr | None = BOOKING_EMAIL_FIELD
     description: str | None = DESCRIPTION_FIELD
-    external_ticket_office_url: pydantic.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
+    external_ticket_office_url: pydantic_v1.HttpUrl | None = EXTERNAL_TICKET_OFFICE_URL_FIELD
     image: ImageResponse | None
     is_duo: bool | None = IS_DUO_BOOKINGS_FIELD
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
     name: str = NAME_FIELD
-    status: offer_mixin.OfferStatus = pydantic.Field(
+    status: offer_mixin.OfferStatus = pydantic_v1.Field(
         ...,
         description="ACTIVE: offer is validated and active.\n\n"
         "DRAFT: offer is still draft and not yet submitted for validation - this status is not applicable to offers created via this API.\n\n"
@@ -748,7 +748,7 @@ class OfferResponse(serialization.ConfiguredBaseModel):
 
 
 class ProductStockResponse(BaseStockResponse):
-    price: pydantic.StrictInt = PRICE_FIELD
+    price: pydantic_v1.StrictInt = PRICE_FIELD
 
     @classmethod
     def build_product_stock(cls, stock: offers_models.Stock) -> "ProductStockResponse":
@@ -820,7 +820,7 @@ class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
 
 
 class GetOffersQueryParams(IndexPaginationQueryParams):
-    venue_id: int = pydantic.Field(..., description="Venue id to filter offers on. Optional.")
+    venue_id: int = pydantic_v1.Field(..., description="Venue id to filter offers on. Optional.")
 
 
 class GetDatesQueryParams(IndexPaginationQueryParams):
@@ -828,27 +828,27 @@ class GetDatesQueryParams(IndexPaginationQueryParams):
 
 
 class PaginationLinks(serialization.ConfiguredBaseModel):
-    current: str = pydantic.Field(
+    current: str = pydantic_v1.Field(
         ...,
         description="URL of the current page.",
         example=f"{settings.API_URL}/public/offers/v1/products?page=1&limit=50",
     )
-    first: str = pydantic.Field(
+    first: str = pydantic_v1.Field(
         ...,
         description="URL of the first page.",
         example=f"{settings.API_URL}/public/offers/v1/products?page=1&limit=50",
     )
-    last: str = pydantic.Field(
+    last: str = pydantic_v1.Field(
         ...,
         description="URL of the last page.",
         example=f"{settings.API_URL}/public/offers/v1/products?page=3&limit=50",
     )
-    next: str | None = pydantic.Field(
+    next: str | None = pydantic_v1.Field(
         None,
         description="URL of the next page.",
         example=f"{settings.API_URL}/public/offers/v1/products?page=2&limit=50",
     )
-    previous: str | None = pydantic.Field(None, description="URL of the previous page.", example=None)
+    previous: str | None = pydantic_v1.Field(None, description="URL of the previous page.", example=None)
 
     @classmethod
     def build_pagination_links(
@@ -870,11 +870,11 @@ class PaginationLinks(serialization.ConfiguredBaseModel):
 
 
 class Pagination(serialization.ConfiguredBaseModel):
-    current_page: int = pydantic.Field(..., description="Page number of the returned items.", example=1)
-    items_count: int = pydantic.Field(..., description="Number of items returned.", example=50)
-    items_total: int = pydantic.Field(..., description="Total number of items.", example=120)
-    last_page: int = pydantic.Field(..., description="Last page number.", example=3)
-    limit_per_page: int = pydantic.Field(..., description="Maximum number of items per page.", example=50)
+    current_page: int = pydantic_v1.Field(..., description="Page number of the returned items.", example=1)
+    items_count: int = pydantic_v1.Field(..., description="Number of items returned.", example=50)
+    items_total: int = pydantic_v1.Field(..., description="Total number of items.", example=120)
+    last_page: int = pydantic_v1.Field(..., description="Last page number.", example=3)
+    limit_per_page: int = pydantic_v1.Field(..., description="Maximum number of items per page.", example=50)
     pages_links: PaginationLinks
 
     @classmethod
@@ -924,13 +924,13 @@ class GetDatesResponse(serialization.ConfiguredBaseModel):
 
 class OffererResponse(serialization.ConfiguredBaseModel):
     id: int
-    dateCreated: datetime.datetime = pydantic.Field(..., alias="createdDatetime")
-    name: str = pydantic.Field(example="Structure A")
-    siren: str | None = pydantic.Field(example="123456789")
+    dateCreated: datetime.datetime = pydantic_v1.Field(..., alias="createdDatetime")
+    name: str = pydantic_v1.Field(example="Structure A")
+    siren: str | None = pydantic_v1.Field(example="123456789")
 
 
 class GetOffererVenuesResponse(serialization.ConfiguredBaseModel):
-    offerer: OffererResponse = pydantic.Field(
+    offerer: OffererResponse = pydantic_v1.Field(
         ..., description="Offerer to which the venues belong. Entity linked to the api key used."
     )
     venues: typing.List[venues_serialization.VenueResponse]
@@ -944,14 +944,14 @@ class GetOfferersVenuesResponse(serialization.BaseModel):
 
 
 class GetOfferersVenuesQuery(serialization.ConfiguredBaseModel):
-    siren: str | None = pydantic.Field(example="123456789", regex=r"^\d{9}$")
+    siren: str | None = pydantic_v1.Field(example="123456789", regex=r"^\d{9}$")
 
 
 class GetProductsListByEansQuery(serialization.ConfiguredBaseModel):
-    eans: str | None = pydantic.Field(example="0123456789123,0123456789124")
-    venueId: int = pydantic.Field(example=1)
+    eans: str | None = pydantic_v1.Field(example="0123456789123,0123456789124")
+    venueId: int = pydantic_v1.Field(example=1)
 
-    @pydantic.validator("eans")
+    @pydantic_v1.validator("eans")
     def validate_ean_list(cls, eans: str) -> list[str]:
         """The ean list must contain at least one element, at most 100
         An ean must be a 13 digit integer"""

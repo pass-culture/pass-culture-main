@@ -7,7 +7,7 @@ Further explanations at: https://guides.etalab.gouv.fr/apis-geo/1-api-adresse.ht
 import json
 import logging
 
-import pydantic
+import pydantic.v1 as pydantic_v1
 
 from pcapi import settings
 from pcapi.utils import module_loading
@@ -36,18 +36,18 @@ class InvalidFormatException(AdresseException):
     pass
 
 
-class _Properties(pydantic.BaseModel):
+class _Properties(pydantic_v1.BaseModel):
     id: str
     score: float
     label: str
 
 
-class _Geometry(pydantic.BaseModel):
+class _Geometry(pydantic_v1.BaseModel):
     latitude: float
     longitude: float
 
 
-class AddressInfo(pydantic.BaseModel):
+class AddressInfo(pydantic_v1.BaseModel):
     id: str
     label: str
     latitude: float

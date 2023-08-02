@@ -4,11 +4,11 @@ import enum
 import typing
 
 import flask
-from pydantic import EmailStr
-from pydantic import Field
-from pydantic import root_validator
-from pydantic import validator
-from pydantic.types import constr
+from pydantic.v1 import EmailStr
+from pydantic.v1 import Field
+from pydantic.v1 import root_validator
+from pydantic.v1 import validator
+from pydantic.v1.types import constr
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.educational.models import CollectiveBooking

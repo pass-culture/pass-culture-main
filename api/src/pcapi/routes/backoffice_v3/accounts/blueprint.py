@@ -13,7 +13,7 @@ from flask import request
 from flask import url_for
 from flask_login import current_user
 from flask_sqlalchemy import Pagination
-import pydantic
+import pydantic.v1 as pydantic_v1
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
@@ -81,7 +81,7 @@ def search_public_accounts() -> utils.BackofficeResponse:
         # let pydantic run the more detailed validation and format the
         # form's data in a more user-friendly way
         search_model = search.SearchUserModel(**form.data)
-    except pydantic.ValidationError as err:
+    except pydantic_v1.ValidationError as err:
         for error in err.errors():
             form.add_error_to(typing.cast(str, error["loc"][0]))
         return render_search_template(form), 400

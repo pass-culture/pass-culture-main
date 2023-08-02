@@ -3,7 +3,7 @@ from functools import lru_cache
 import math
 from operator import attrgetter
 
-from pydantic.tools import parse_obj_as
+from pydantic.v1.tools import parse_obj_as
 
 from pcapi.connectors.cine_digital_service import ResourceCDS
 from pcapi.connectors.cine_digital_service import get_movie_poster_from_api

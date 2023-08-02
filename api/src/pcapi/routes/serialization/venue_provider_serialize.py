@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any
 from typing import List
 
-from pydantic.main import BaseModel
+from pydantic.v1.main import BaseModel
 
 from pcapi.core.providers.models import VenueProvider
 from pcapi.serialization.utils import to_camel

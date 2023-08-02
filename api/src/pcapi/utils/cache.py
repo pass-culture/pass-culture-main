@@ -8,7 +8,7 @@ from typing import Iterable
 from typing import cast
 
 from flask import current_app
-import pydantic
+import pydantic.v1 as pydantic_v1
 
 
 class _CacheProxy:
@@ -26,13 +26,13 @@ class _CacheProxy:
 
 
 def get_from_cache(
-    retriever: Callable[..., pydantic.BaseModel | str],
+    retriever: Callable[..., pydantic_v1.BaseModel | str],
     key_template: str,
     key_args: tuple[str, ...] | dict[str, Any] | None = None,
     expire: int | None = 60 * 60 * 24,  # 24h
     return_type: type = str,
     force_update: bool = False,
-) -> pydantic.BaseModel | str:
+) -> pydantic_v1.BaseModel | str:
     """
     Retrieve data from cache if available else use the retriever callable to retrieve data and store it in cache.
 
@@ -40,7 +40,7 @@ def get_from_cache(
         see for documentation: https://docs.python.org/3/library/stdtypes.html#printf-style-string-formatting
     :param key_args: `list` or `dict` of `str` to fill the template.
     :param retriever: Function to call to retrieve the data if they are not in the cache. As it does not take args you
-        can use functools.partial to prefill its arguments. It must return a pydantic.BaseModel child or str.
+        can use functools.partial to prefill its arguments. It must return a pydantic_v1.BaseModel child or str.
     :param expire: The number of seconds before the cache expires. If None it will be set to never expire.
         It's default value is 86400 (24h).
     :param return_type: Type awaited for return value. This is meant to fool mypy and spectree_serialize and keep
@@ -58,7 +58,7 @@ def get_from_cache(
 
     if miss or force_update:
         data = retriever()
-        if isinstance(data, pydantic.BaseModel):
+        if isinstance(data, pydantic_v1.BaseModel):
             data = data.json(exclude_none=False, by_alias=True)
         if expire is not None:
             redis_client.set(key, data.encode("utf-8"), ex=expire)
@@ -68,7 +68,7 @@ def get_from_cache(
     if return_type is str:
         return data
 
-    return cast(pydantic.BaseModel, _CacheProxy(data=data))
+    return cast(pydantic_v1.BaseModel, _CacheProxy(data=data))
 
 
 def cached_view(
@@ -92,11 +92,11 @@ def cached_view(
         consider the args as the default ones. This argument is dangerous, you should not use it.
     """
 
-    def decorator(function: Callable[[Any], pydantic.BaseModel]) -> Callable:
+    def decorator(function: Callable[[Any], pydantic_v1.BaseModel]) -> Callable:
         template = f"api:cached_function:{prefix}:%(func_name)s:args:%(args_hash)s"
 
         @wraps(function)
-        def wrapper(*args: Iterable[Any], **kwargs: dict[str, Any]) -> pydantic.BaseModel:
+        def wrapper(*args: Iterable[Any], **kwargs: dict[str, Any]) -> pydantic_v1.BaseModel:
             if ignore_args:
                 args_hash = "args_ignored"
             elif cache_only_if_no_arguments and (args or kwargs):
@@ -109,19 +109,19 @@ def cached_view(
                 key_args={"func_name": function.__name__, "args_hash": args_hash},
                 retriever=partial(_view_retriever, view=function, args=args, kwargs=kwargs),
                 expire=expire,
-                return_type=pydantic.BaseModel,
+                return_type=pydantic_v1.BaseModel,
                 force_update=False,
             )
-            return cast(pydantic.BaseModel, result)
+            return cast(pydantic_v1.BaseModel, result)
 
         return wrapper
 
     return decorator
 
 
-def _view_retriever(view: Callable[[Any], pydantic.BaseModel], args: Iterable[Any], kwargs: dict[str, Any]) -> str:
+def _view_retriever(view: Callable[[Any], pydantic_v1.BaseModel], args: Iterable[Any], kwargs: dict[str, Any]) -> str:
     result = view(*args, **kwargs)
-    if isinstance(result, pydantic.BaseModel):
+    if isinstance(result, pydantic_v1.BaseModel):
         return result.json(exclude_none=False, by_alias=True)
     return result
 
@@ -129,12 +129,12 @@ def _view_retriever(view: Callable[[Any], pydantic.BaseModel], args: Iterable[An
 def _compute_arguments_hash(args: Iterable[Any], kwargs: dict[str, Any]) -> str:
     args_string = ""
     for i, arg in enumerate(args):
-        if isinstance(arg, pydantic.BaseModel):
+        if isinstance(arg, pydantic_v1.BaseModel):
             args_string += f"{i}:{arg.json()}+"
         else:
             args_string += f"{i}:{arg}+"
     for key, arg in kwargs.items():
-        if isinstance(arg, pydantic.BaseModel):
+        if isinstance(arg, pydantic_v1.BaseModel):
             args_string += f"{key}:{arg.json()}+"
         else:
             args_string += f"{key}:{arg}+"

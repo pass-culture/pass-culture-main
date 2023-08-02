@@ -3,7 +3,7 @@ import json
 import typing
 
 import flask_sqlalchemy
-import pydantic.json
+import pydantic.v1 as pydantic_v1
 from sqlalchemy.orm import declarative_base
 
 from pcapi import settings
@@ -32,7 +32,7 @@ def install_models() -> None:
 
 
 _engine_options = {
-    "json_serializer": functools.partial(json.dumps, default=pydantic.json.pydantic_encoder),
+    "json_serializer": functools.partial(json.dumps, default=pydantic_v1.json.pydantic_encoder),
     "pool_size": settings.DATABASE_POOL_SIZE,
 }
 

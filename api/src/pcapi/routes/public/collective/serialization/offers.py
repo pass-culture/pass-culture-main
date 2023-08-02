@@ -3,9 +3,9 @@ from datetime import timezone
 from typing import Any
 from typing import Sequence
 
-from pydantic import Field
-from pydantic import root_validator
-from pydantic import validator
+from pydantic.v1 import Field
+from pydantic.v1 import root_validator
+from pydantic.v1 import validator
 
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.educational.models import CollectiveBookingStatus

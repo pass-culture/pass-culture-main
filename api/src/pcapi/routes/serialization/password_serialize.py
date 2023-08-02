@@ -1,5 +1,5 @@
-from pydantic.class_validators import validator
-from pydantic.main import BaseModel
+from pydantic.v1.class_validators import validator
+from pydantic.v1.main import BaseModel
 
 from pcapi.models.api_errors import ApiErrors
 from pcapi.serialization.utils import validate_not_empty_string_when_provided
