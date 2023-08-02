@@ -6,6 +6,7 @@
 export type SearchBody = {
   filters: Array<string>;
   iframeFrom: string;
+  queryId?: string | null;
   resultsCount: number;
 };
 

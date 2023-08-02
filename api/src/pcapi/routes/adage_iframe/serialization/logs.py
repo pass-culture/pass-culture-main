@@ -5,6 +5,7 @@ from pcapi.routes.serialization import BaseModel
 
 class AdageBaseModel(BaseModel):
     iframeFrom: str
+    queryId: str | None
 
 
 class CatalogViewBody(AdageBaseModel):
@@ -44,6 +45,5 @@ class CollectiveRequestBody(AdageBaseModel):
 
 
 class TrackingFilterBody(AdageBaseModel):
-    queryId: str
     resultNumber: int
     filterValues: dict
