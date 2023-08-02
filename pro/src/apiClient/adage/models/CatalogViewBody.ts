@@ -5,6 +5,7 @@
 
 export type CatalogViewBody = {
   iframeFrom: string;
+  queryId?: string | null;
   source: string;
 };
 

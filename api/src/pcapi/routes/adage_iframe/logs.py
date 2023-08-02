@@ -21,6 +21,7 @@ def log_catalog_view(
         extra_data={
             "source": body.source,
             "from": body.iframeFrom,
+            "queryId": body.queryId,
         },
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
@@ -59,7 +60,7 @@ def log_offer_details_button_click(
     institution = find_educational_institution_by_uai_code(authenticated_information.uai)  # type: ignore [arg-type]
     educational_utils.log_information_for_data_purpose(
         event_name="OfferDetailButtonClick",
-        extra_data={"stockId": body.stockId, "from": body.iframeFrom},
+        extra_data={"stockId": body.stockId, "from": body.iframeFrom, "queryId": body.queryId},
         user_email=authenticated_information.email,
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
@@ -77,7 +78,7 @@ def log_offer_template_details_button_click(
     institution = find_educational_institution_by_uai_code(authenticated_information.uai)  # type: ignore [arg-type]
     educational_utils.log_information_for_data_purpose(
         event_name="TemplateOfferDetailButtonClick",
-        extra_data={"offerId": body.offerId, "from": body.iframeFrom},
+        extra_data={"offerId": body.offerId, "from": body.iframeFrom, "queryId": body.queryId},
         user_email=authenticated_information.email,
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
@@ -95,7 +96,7 @@ def log_booking_modal_button_click(
     institution = find_educational_institution_by_uai_code(authenticated_information.uai)  # type: ignore [arg-type]
     educational_utils.log_information_for_data_purpose(
         event_name="BookingModalButtonClick",
-        extra_data={"stockId": body.stockId, "from": body.iframeFrom},
+        extra_data={"stockId": body.stockId, "from": body.iframeFrom, "queryId": body.queryId},
         user_email=authenticated_information.email,
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
@@ -113,7 +114,11 @@ def log_contact_modal_button_click(
     institution = find_educational_institution_by_uai_code(authenticated_information.uai)  # type: ignore [arg-type]
     educational_utils.log_information_for_data_purpose(
         event_name="ContactModalButtonClick",
-        extra_data={"offerId": body.offerId, "from": body.iframeFrom},
+        extra_data={
+            "offerId": body.offerId,
+            "from": body.iframeFrom,
+            "queryId": body.queryId,
+        },
         user_email=authenticated_information.email,
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
@@ -131,7 +136,7 @@ def log_fav_offer_button_click(
     institution = find_educational_institution_by_uai_code(authenticated_information.uai)  # type: ignore [arg-type]
     educational_utils.log_information_for_data_purpose(
         event_name="FavOfferButtonClick",
-        extra_data={"offerId": body.offerId, "from": body.iframeFrom},
+        extra_data={"offerId": body.offerId, "from": body.iframeFrom, "queryId": body.queryId},
         user_email=authenticated_information.email,
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
@@ -149,7 +154,7 @@ def log_header_link_click(
     institution = find_educational_institution_by_uai_code(authenticated_information.uai)  # type: ignore [arg-type]
     educational_utils.log_information_for_data_purpose(
         event_name="HeaderLinkClick",
-        extra_data={"header_link_name": body.header_link_name.value, "from": body.iframeFrom},
+        extra_data={"header_link_name": body.header_link_name.value, "from": body.iframeFrom, "queryId": body.queryId},
         user_email=authenticated_information.email,
         uai=authenticated_information.uai,
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,

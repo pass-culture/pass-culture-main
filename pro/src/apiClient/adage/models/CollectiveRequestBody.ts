@@ -8,6 +8,7 @@ export type CollectiveRequestBody = {
   comment: string;
   iframeFrom: string;
   phoneNumber?: string | null;
+  queryId?: string | null;
   requestedDate?: string | null;
   totalStudents?: number | null;
   totalTeachers?: number | null;

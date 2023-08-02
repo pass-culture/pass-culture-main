@@ -6,5 +6,6 @@
 export type OfferIdBody = {
   iframeFrom: string;
   offerId: number;
+  queryId?: string | null;
 };
 
