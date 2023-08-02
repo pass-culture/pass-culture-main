@@ -2,13 +2,25 @@ const FAIL_DATA_PATTERN = 'FAIL_DATA_'
 const SUCCESS_DATA_PATTERN = 'SUCCESS_DATA_'
 const MAINTENANCE_STATUS_CODE = 503
 
-export const initialState = {
+interface RequestDataAction {
+  type: string
+  payload: {
+    status?: number
+    error_type?: string
+  }
+}
+
+interface MaintenanceState {
+  isActivated: boolean
+}
+
+const initialState: MaintenanceState = {
   isActivated: false,
 }
 
 const maintenanceReducer = (
   state = initialState,
-  action = { type: '', payload: { error_type: '' } }
+  action: RequestDataAction = { type: '', payload: { error_type: '' } }
 ) => {
   const { type: actionType, payload } = action
   if (actionType.startsWith(SUCCESS_DATA_PATTERN)) {
