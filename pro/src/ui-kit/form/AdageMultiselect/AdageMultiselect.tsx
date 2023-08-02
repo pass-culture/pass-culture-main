@@ -24,7 +24,14 @@ const filterItems = (items: ItemProps[], inputValue: string) => {
   return items.filter(item => item.label.match(regExp))
 }
 
+<<<<<<< Updated upstream
 const sortItems = (items: ItemProps[], selectedItems: Set<string | number>) => {
+=======
+const sortItems = (
+  items: ItemProps[],
+  selectedItems: Set<ItemProps['value']>
+) => {
+>>>>>>> Stashed changes
   return items.sort((a, b) => {
     if (selectedItems.has(b.value) && !selectedItems.has(a.value)) {
       return 1
@@ -36,6 +43,23 @@ const sortItems = (items: ItemProps[], selectedItems: Set<string | number>) => {
   })
 }
 
+const isIncluded = (
+  fieldValue: ItemProps['value'][],
+  value: ItemProps['value']
+): boolean => {
+  if (Array.isArray(value)) {
+    const valueSet = new Set(value)
+    return fieldValue.some(
+      fieldValueItem =>
+        Array.isArray(fieldValueItem) &&
+        fieldValueItem.length === value.length &&
+        fieldValueItem.every(val => valueSet.has(val))
+    )
+  }
+
+  return fieldValue.includes(value)
+}
+
 const AdageMultiselect = ({
   options,
   placeholder,
@@ -44,7 +68,11 @@ const AdageMultiselect = ({
   isOpen,
 }: AdageMultiselectProps) => {
   const [inputValue, setInputValue] = useState('')
+<<<<<<< Updated upstream
   const [field] = useField<(string | number)[]>(name)
+=======
+  const [field] = useField<ItemProps['value'][]>(name)
+>>>>>>> Stashed changes
   const { setFieldValue } = useFormikContext<any>()
   const [sortedOptions, setSortedOptions] = useState<ItemProps[]>([])
   useEffect(() => {
@@ -76,7 +104,7 @@ const AdageMultiselect = ({
     })
 
   const handleNewSelection = (selection: ItemProps) => {
-    if (field.value.includes(selection.value)) {
+    if (isIncluded(field.value, selection.value)) {
       setFieldValue(
         name,
         field.value.filter(item => item !== selection.value)
@@ -116,16 +144,19 @@ const AdageMultiselect = ({
           const liValueKey = Array.isArray(item.value)
             ? item.value.join('_')
             : item.value
+
+          const isChecked = isIncluded(field.value, item.value)
+
           return (
-            <li key={`${liValueKey}${index}`}>
+            <li key={`${liValueKey}`}>
               <BaseCheckbox
                 key={`${name}-${item.label}`}
                 label={item.label}
                 name={name}
-                checked={field.value.includes(item.value)}
+                checked={isChecked}
                 onChange={() => handleNewSelection(item)}
                 {...itemProps}
-                aria-selected={field.value.includes(item.value)}
+                aria-selected={isChecked}
               />
             </li>
           )

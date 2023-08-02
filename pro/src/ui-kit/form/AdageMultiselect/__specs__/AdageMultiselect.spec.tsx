@@ -11,14 +11,20 @@ const options = [
   { value: 3, label: 'Théatre' },
 ]
 
-const renderAdageMultiselect = (initialValues: number[] = []) => {
+const renderAdageMultiselect = (
+  initialValues: (number | string | string[])[] = [],
+  customOptions: {
+    value: number | string | string[]
+    label: string
+  }[] = options
+) => {
   render(
     <Formik
-      initialValues={{ educationalDomains: [initialValues] }}
+      initialValues={{ educationalDomains: initialValues }}
       onSubmit={() => {}}
     >
       <AdageMultiselect
-        options={options}
+        options={customOptions}
         placeholder="Ex: Théâtre"
         name="educationalDomains"
         label="Rechercher un domaine artistique"
@@ -54,6 +60,10 @@ describe('AdageMultiselect', () => {
     const option = screen.getByText('Danse')
     await userEvent.click(option)
 
+    expect(screen.getByLabelText('Danse')).not.toBeChecked()
+
+    await userEvent.click(option)
+
     expect(screen.getByLabelText('Danse')).toBeChecked()
   })
 
@@ -73,5 +83,23 @@ describe('AdageMultiselect', () => {
     expect(screen.getByText('Théatre')).toBeInTheDocument()
     expect(screen.getByText('Architecture')).toBeInTheDocument()
     expect(screen.getByText('Danse')).toBeInTheDocument()
+  })
+
+  it('should have the correct options checked when values are string[]', async () => {
+    const strArrayOptions = [
+      {
+        value: ['val1', 'val2'],
+        label: 'label1',
+      },
+      {
+        value: ['val3'],
+        label: 'label2',
+      },
+    ]
+
+    renderAdageMultiselect([['val3']], strArrayOptions)
+
+    expect(screen.getByLabelText('label2')).toBeChecked()
+    expect(screen.getByLabelText('label1')).not.toBeChecked()
   })
 })
