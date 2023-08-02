@@ -24,14 +24,10 @@ const filterItems = (items: ItemProps[], inputValue: string) => {
   return items.filter(item => item.label.match(regExp))
 }
 
-<<<<<<< Updated upstream
-const sortItems = (items: ItemProps[], selectedItems: Set<string | number>) => {
-=======
 const sortItems = (
   items: ItemProps[],
   selectedItems: Set<ItemProps['value']>
 ) => {
->>>>>>> Stashed changes
   return items.sort((a, b) => {
     if (selectedItems.has(b.value) && !selectedItems.has(a.value)) {
       return 1
@@ -68,11 +64,7 @@ const AdageMultiselect = ({
   isOpen,
 }: AdageMultiselectProps) => {
   const [inputValue, setInputValue] = useState('')
-<<<<<<< Updated upstream
-  const [field] = useField<(string | number)[]>(name)
-=======
   const [field] = useField<ItemProps['value'][]>(name)
->>>>>>> Stashed changes
   const { setFieldValue } = useFormikContext<any>()
   const [sortedOptions, setSortedOptions] = useState<ItemProps[]>([])
   useEffect(() => {
