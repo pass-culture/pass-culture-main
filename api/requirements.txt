@@ -64,7 +64,7 @@ schwifty==2022.9.0
 semver==2.13.0
 sentry-sdk==1.14.0
 sib-api-v3-sdk
-spectree==1.1.5
+spectree==1.2.*
 # FIXME (dbaty, 2023-01-04): do not use 1.4.46 that has a new
 # deprecation warning for which we're not ready
 # (https://docs.sqlalchemy.org/en/20/changelog/changelog_14.html#change-e67bfa1efbe52ae40aa842124bc40c51).
