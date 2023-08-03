@@ -1,14 +1,6 @@
-import {
-  ALL_CREATION_MODES,
-  ALL_STATUS,
-  DEFAULT_PAGE,
-  DEFAULT_SEARCH_FILTERS,
-} from 'core/Offers/constants'
+import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { stringify } from 'utils/query-string'
-import {
-  mapApiToBrowser,
-  translateApiParamsToQueryParams,
-} from 'utils/translate'
+import { translateApiParamsToQueryParams } from 'utils/translate'
 
 import { Audience } from '../../shared/types'
 import { SearchFiltersParams } from '../types'
@@ -18,30 +10,24 @@ const COLLECTIVE_OFFERS_URL = '/offres/collectives'
 
 const computeOffersUrlForGivenAudience = (
   audience: Audience,
-  offersSearchFilters: Partial<SearchFiltersParams> & { page?: number },
-  offersPageNumber: number
+  offersSearchFilters: Partial<SearchFiltersParams>
 ): string => {
-  const { creationMode, status } = offersSearchFilters
-  const searchFiltersParams = { ...offersSearchFilters }
-  if (status && status !== ALL_STATUS) {
-    searchFiltersParams.status = mapApiToBrowser[status]
-  }
-  if (creationMode && creationMode !== ALL_CREATION_MODES) {
-    searchFiltersParams.creationMode = mapApiToBrowser[creationMode]
-  }
-
-  if (offersPageNumber !== DEFAULT_PAGE) {
-    searchFiltersParams.page = offersPageNumber
-  }
-
-  const keys = Object.keys(searchFiltersParams) as (keyof SearchFiltersParams)[]
-
-  const newFilters: Partial<SearchFiltersParams> = {}
-  keys.forEach(key => {
-    if (searchFiltersParams[key] !== DEFAULT_SEARCH_FILTERS[key]) {
-      newFilters[key] = searchFiltersParams[key]
-    }
-  })
+  const emptyNewFilters: Partial<SearchFiltersParams> = {}
+  const newFilters = Object.entries(offersSearchFilters).reduce(
+    (accumulator, [filter, filterValue]) => {
+      if (
+        filterValue !==
+        DEFAULT_SEARCH_FILTERS[filter as keyof SearchFiltersParams]
+      ) {
+        return {
+          ...accumulator,
+          [filter]: filterValue,
+        }
+      }
+      return accumulator
+    },
+    emptyNewFilters
+  )
 
   const queryString = stringify(translateApiParamsToQueryParams(newFilters))
   const baseUrl =

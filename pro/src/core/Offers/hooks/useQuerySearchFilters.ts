@@ -3,10 +3,7 @@ import { useLocation } from 'react-router-dom'
 
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { parse } from 'utils/query-string'
-import {
-  mapBrowserToApi,
-  translateQueryParamsToApiParams,
-} from 'utils/translate'
+import { translateQueryParamsToApiParams } from 'utils/translate'
 
 import { Audience } from '../../shared/types'
 import { SearchFiltersParams } from '../types'
@@ -50,23 +47,9 @@ export const useQuerySearchFilters = (): [
   }, [queryParams])
 
   const urlSearchFilters: SearchFiltersParams = useMemo(() => {
-    const translatedFilters: Record<string, string> = {}
-
-    const fieldsWithTranslatedValues = ['statut', 'creation'] as const
-    fieldsWithTranslatedValues.forEach(field => {
-      if (queryParams[field]) {
-        type mapBrowserToApiKey = keyof typeof mapBrowserToApi
-        const queryParamsKey: mapBrowserToApiKey = queryParams[
-          field
-        ] as mapBrowserToApiKey
-        const translatedValue = mapBrowserToApi[queryParamsKey]
-        translatedFilters[field] = translatedValue
-      }
-    })
-
+    const queryParams = parse(search)
     const translatedQuery = translateQueryParamsToApiParams({
       ...queryParams,
-      ...translatedFilters,
     })
 
     const urlFilters = {
@@ -75,7 +58,7 @@ export const useQuerySearchFilters = (): [
     }
 
     return urlFilters
-  }, [queryParams])
+  }, [search])
 
   return [urlSearchFilters, urlPageNumber, urlOfferType]
 }

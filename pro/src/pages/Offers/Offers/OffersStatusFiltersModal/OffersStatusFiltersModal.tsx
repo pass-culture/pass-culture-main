@@ -3,17 +3,16 @@ import React, { useCallback, useEffect, useRef } from 'react'
 import { OfferStatus } from 'apiClient/v1'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
 import { ALL_STATUS } from 'core/Offers/constants'
+import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import { RadioInput } from 'ui-kit/form_raw/RadioInput/RadioInput'
 
 interface OfferStatusFiltersModalProps {
   isVisible: boolean
   applyFilters: () => void
-  status?: OfferStatus | CollectiveOfferStatus | 'all'
+  status?: SearchFiltersParams['status']
   setIsVisible: (isVisible: boolean) => void
-  updateStatusFilter: (
-    status: OfferStatus | CollectiveOfferStatus | 'all'
-  ) => void
+  updateStatusFilter: (status: SearchFiltersParams['status']) => void
   audience: string
 }
 
@@ -26,15 +25,6 @@ export const OffersStatusFiltersModal = ({
   audience,
 }: OfferStatusFiltersModalProps) => {
   const modalRef = useRef<HTMLDivElement | null>(null)
-
-  const handleStatusFilterChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      updateStatusFilter(
-        event.target.value as OfferStatus | CollectiveOfferStatus | 'all'
-      )
-    },
-    [updateStatusFilter]
-  )
 
   const onClickOutside = useCallback(
     (event: MouseEvent): void => {
@@ -109,7 +99,11 @@ export const OffersStatusFiltersModal = ({
             checked={status === value}
             label={label}
             name="status"
-            onChange={handleStatusFilterChange}
+            onChange={event =>
+              updateStatusFilter(
+                event.target.value as SearchFiltersParams['status']
+              )
+            }
             value={value}
             key={value}
           />

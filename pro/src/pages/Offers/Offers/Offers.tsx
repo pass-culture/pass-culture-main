@@ -1,7 +1,5 @@
 import React, { useCallback } from 'react'
 
-import { OfferStatus } from 'apiClient/v1'
-import { CollectiveOfferStatus } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { MAX_OFFERS_TO_DISPLAY } from 'core/Offers/constants'
 import { Offer, SearchFiltersParams } from 'core/Offers/types'
@@ -75,15 +73,14 @@ const Offers = ({
     [currentUser.isAdmin]
   )
 
-  const updateStatusFilter = useCallback(
-    (selectedStatus: OfferStatus | CollectiveOfferStatus | 'all') => {
-      setSearchFilters((currentSearchFilters: SearchFiltersParams) => ({
-        ...currentSearchFilters,
-        status: selectedStatus,
-      }))
-    },
-    [setSearchFilters]
-  )
+  const updateStatusFilter = (
+    selectedStatus: SearchFiltersParams['status']
+  ) => {
+    setSearchFilters(currentSearchFilters => ({
+      ...currentSearchFilters,
+      status: selectedStatus,
+    }))
+  }
 
   const onPreviousPageClick = useCallback(() => {
     const newPageNumber = currentPageNumber - 1
