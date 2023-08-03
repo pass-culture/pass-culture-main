@@ -1,10 +1,11 @@
-import React, { useCallback, useEffect, useRef } from 'react'
+import React, { useRef } from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
 import { ALL_STATUS } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared'
+import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
 import { RadioInput } from 'ui-kit/form_raw/RadioInput/RadioInput'
 
 interface OfferStatusFiltersModalProps {
@@ -26,27 +27,7 @@ export const OffersStatusFiltersModal = ({
 }: OfferStatusFiltersModalProps) => {
   const modalRef = useRef<HTMLDivElement | null>(null)
 
-  const onClickOutside = useCallback(
-    (event: MouseEvent): void => {
-      if (
-        modalRef.current &&
-        !modalRef.current.contains(event.target as Node)
-      ) {
-        setIsVisible(!isVisible)
-      }
-    },
-    [setIsVisible, isVisible]
-  )
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      document.addEventListener('click', onClickOutside, false)
-    }, 0)
-    return () => {
-      clearTimeout(timeoutId)
-      document.removeEventListener('click', onClickOutside, false)
-    }
-  }, [onClickOutside])
+  useOnClickOrFocusOutside(modalRef, () => setIsVisible(false))
 
   const handleClick = () => {
     setIsVisible(false)
