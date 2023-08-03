@@ -3,6 +3,7 @@ from flask_login.mixins import AnonymousUserMixin
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.users.models import User
 from pcapi.models import api_errors
 from pcapi.validation.routes import users_authentifications
@@ -58,6 +59,31 @@ class ApiKeyRequiredTest:
         client = TestClient(app.test_client())
 
         offerers_factories.ApiKeyFactory(offerer__isActive=offerer_is_active)
+        headers = {"Authorization": "Bearer development_prefix_clearSecret"}
+        response = client.get("/test", headers=headers)
+
+        assert response.status_code == expected_response_status
+
+    @pytest.mark.parametrize(
+        "provider_is_active,expected_response_status",
+        [(True, 200), (False, 403)],
+    )
+    def test_require_active_provider(self, provider_is_active, expected_response_status):
+        offerer = offerers_factories.OffererFactory(name="Technical provider")
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider", localClass=None, isActive=provider_is_active, enabledForPro=True
+        )
+        offerers_factories.ApiKeyFactory(
+            offerer=offerer,
+            provider=provider,
+        )
+        providers_factories.OffererProviderFactory(
+            offerer=offerer,
+            provider=provider,
+        )
+        app = self._make_app()
+        client = TestClient(app.test_client())
+
         headers = {"Authorization": "Bearer development_prefix_clearSecret"}
         response = client.get("/test", headers=headers)
 
