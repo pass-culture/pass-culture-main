@@ -5,7 +5,7 @@ import { DMSApplicationstatus } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { Venue } from 'core/Venue/types'
 
-import NewEACInformation from '../EACInformation/NewEACInformation'
+import { EACInformation } from '../EACInformation'
 
 import CollectiveDmsTimeline from './CollectiveDmsTimeline/CollectiveDmsTimeline'
 
@@ -61,7 +61,7 @@ const CollectiveVenueInformations = ({
         />
       )}
       {shouldEACInformationSection && (
-        <NewEACInformation venue={venue} isCreatingVenue={isCreatingVenue} />
+        <EACInformation venue={venue} isCreatingVenue={isCreatingVenue} />
       )}
     </FormLayout.Section>
   )
