@@ -53,7 +53,7 @@ const ManageBookings = ({ titleId }: StepComponentProps): JSX.Element => (
           <SvgIcon
             alt=""
             src={strokeCalendarIcon}
-            className="header-element-icon"
+            className={styles['header-element-icon']}
           />
           Réservations
         </span>
