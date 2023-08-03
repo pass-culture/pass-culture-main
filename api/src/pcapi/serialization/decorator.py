@@ -3,13 +3,12 @@ from functools import wraps
 import logging
 from typing import Any
 from typing import Callable
-from typing import Iterable
+from typing import Sequence
 from typing import Type
 
 from flask import Response
 from flask import make_response
 from flask import request
-import pydantic
 from werkzeug.exceptions import BadRequest
 
 from pcapi.models.api_errors import ApiErrors
@@ -64,7 +63,7 @@ def spectree_serialize(
     headers: Type[BaseModel] = None,
     cookies: Type[BaseModel] = None,
     response_model: Type[BaseModel] = None,
-    tags: Iterable = (),
+    tags: Sequence = (),
     before: Callable = None,
     after: Callable = None,
     response_by_alias: bool = True,
@@ -126,6 +125,7 @@ def spectree_serialize(
             after=after,
             before=before,
             cookies=cookies,
+            form=form_in_kwargs,
             headers=headers,
             json=body_in_kwargs,
             query=query_in_kwargs,
@@ -153,13 +153,7 @@ def spectree_serialize(
             if query_in_kwargs:
                 kwargs["query"] = query_in_kwargs(**query_params)
             if form_in_kwargs:
-                try:
-                    kwargs["form"] = form_in_kwargs(**form)
-                except pydantic.ValidationError as validation_errors:
-                    error_dict = {}
-                    for errors in validation_errors.errors():
-                        error_dict[errors["loc"][0]] = errors["msg"]
-                    raise ApiErrors(error_dict)
+                kwargs["form"] = form_in_kwargs(**form)
 
             result = route(*args, **kwargs)
             if json_format:

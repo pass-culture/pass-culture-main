@@ -81,7 +81,7 @@ class CookiesConsentTest:
     def test_invalid_data_structure(self, client):
         body = None
 
-        response = client.post("/native/v1/cookies_consent", json=body)
+        response = client.post("/native/v1/cookies_consent", json=body, headers={"Content-Type": "application/json"})
 
         assert response.status_code == 400
 
