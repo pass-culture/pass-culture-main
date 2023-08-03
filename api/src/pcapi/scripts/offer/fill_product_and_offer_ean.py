@@ -27,67 +27,10 @@ def _get_eta(end: int, current: int, elapsed_per_batch: list[int]) -> str:
     return str_eta
 
 
-@blueprint.cli.command("fill_product_ean")
+@blueprint.cli.command("delete_offer_isbn")
 @click.argument("start", type=int, required=True)
 @click.argument("end", type=int, required=True)
-def fill_product_ean(start: int, end: int) -> None:
-    if start > end:
-        raise ValueError('"start" must be less than "end"')
-
-    elapsed_per_batch = []
-    to_report = 0
-    for i in range(start, end, BATCH_SIZE):
-        start_time = time.perf_counter()
-        db.session.execute(
-            """
-            update product set "jsonData" = jsonb_set("jsonData", '{ean}', "jsonData"->'ean')
-            where "jsonData"->>'ean' != ''
-            and id between :start and :end
-            """,
-            params={"start": i, "end": i + BATCH_SIZE},
-        )
-        db.session.commit()
-        elapsed_per_batch.append(int(time.perf_counter() - start_time))
-        eta = _get_eta(end, start, elapsed_per_batch)
-        to_report += BATCH_SIZE
-        if to_report >= REPORT_EVERY:
-            to_report = 0
-            print(f"BATCH : id from {i} | eta = {eta}")
-
-
-@blueprint.cli.command("fill_offer_ean")
-@click.argument("start", type=int, required=True)
-@click.argument("end", type=int, required=True)
-def fill_offer_ean(start: int, end: int) -> None:
-    if start > end:
-        raise ValueError('"start" must be less than "end"')
-
-    elapsed_per_batch = []
-    to_report = 0
-    for i in range(start, end, BATCH_SIZE):
-        start_time = time.perf_counter()
-        db.session.execute(
-            """
-            update offer set "jsonData" = jsonb_set("jsonData", '{ean}', "jsonData"->'ean')
-            where "jsonData"->>'ean' != ''
-            and id between :start and :end
-            """,
-            params={"start": i, "end": i + BATCH_SIZE},
-        )
-        db.session.commit()
-        elapsed_per_batch.append(int(time.perf_counter() - start_time))
-        eta = _get_eta(end, start, elapsed_per_batch)
-
-        to_report += BATCH_SIZE
-        if to_report >= REPORT_EVERY:
-            to_report = 0
-            print(f"BATCH : id from {i} | eta = {eta}")
-
-
-@blueprint.cli.command("delete_offer_ean")
-@click.argument("start", type=int, required=True)
-@click.argument("end", type=int, required=True)
-def delete_offer_ean(start: int, end: int) -> None:
+def delete_offer_isbn(start: int, end: int) -> None:
     if start > end:
         raise ValueError('"start" must be less than "end"')
 
@@ -112,10 +55,10 @@ def delete_offer_ean(start: int, end: int) -> None:
             print(f"BATCH : id from {i} | eta = {eta}")
 
 
-@blueprint.cli.command("delete_product_ean")
+@blueprint.cli.command("delete_product_isbn")
 @click.argument("start", type=int, required=True)
 @click.argument("end", type=int, required=True)
-def delete_product_ean(start: int, end: int) -> None:
+def delete_product_isbn(start: int, end: int) -> None:
     if start > end:
         raise ValueError('"start" must be less than "end"')
 
@@ -125,7 +68,7 @@ def delete_product_ean(start: int, end: int) -> None:
         start_time = time.perf_counter()
         db.session.execute(
             """
-            update product set "jsonData" = "jsonData" - 'ean'::text
+            update product set "jsonData" = "jsonData" - 'isbn'::text
             where id between :start and :end
             """,
             params={"start": i, "end": i + BATCH_SIZE},
