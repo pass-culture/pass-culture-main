@@ -2,14 +2,11 @@ import cn from 'classnames'
 import React from 'react'
 import { useSelector } from 'react-redux'
 
-import { OfferStatus } from 'apiClient/v1'
-import { CollectiveOfferStatus } from 'core/OfferEducational'
 import { ADMINS_DISABLED_FILTERS_MESSAGE } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import { searchFiltersSelector } from 'store/offers/selectors'
 import { BaseCheckbox } from 'ui-kit/form/shared'
-import { mapBrowserStatusToApi } from 'utils/translate'
 
 import StatusFiltersButton from './StatusFiltersButton'
 
@@ -20,9 +17,7 @@ type OffersTableHeadProps = {
   filters: SearchFiltersParams
   isAdminForbidden: (searchFilters: SearchFiltersParams) => boolean
   selectAllOffers: () => void
-  updateStatusFilter: (
-    status: OfferStatus | CollectiveOfferStatus | 'all'
-  ) => void
+  updateStatusFilter: (status: SearchFiltersParams['status']) => void
   audience: Audience
   isAtLeastOneOfferChecked: boolean
 }
@@ -81,7 +76,7 @@ const OffersTableHead = ({
           <StatusFiltersButton
             applyFilters={applyFilters}
             disabled={isAdminForbidden(filters)}
-            status={mapBrowserStatusToApi[filters.status] ?? 'all'}
+            status={filters.status}
             updateStatusFilter={updateStatusFilter}
             audience={audience}
           />

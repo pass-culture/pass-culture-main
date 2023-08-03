@@ -1,12 +1,11 @@
 import cn from 'classnames'
 import React, { Fragment, useState } from 'react'
 
-import { OfferStatus } from 'apiClient/v1'
-import { CollectiveOfferStatus } from 'core/OfferEducational'
 import {
   ADMINS_DISABLED_FILTERS_MESSAGE,
   OFFER_STATUS_LIST,
 } from 'core/Offers/constants'
+import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import fullSortIcon from 'icons/full-sort.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -16,10 +15,8 @@ import { OffersStatusFiltersModal } from '../OffersStatusFiltersModal/OffersStat
 type StatusFiltersButtonProps = {
   applyFilters: () => void
   disabled?: boolean
-  status?: OfferStatus | CollectiveOfferStatus | 'all'
-  updateStatusFilter: (
-    status: OfferStatus | CollectiveOfferStatus | 'all'
-  ) => void
+  status?: SearchFiltersParams['status']
+  updateStatusFilter: (status: SearchFiltersParams['status']) => void
   audience: Audience
 }
 
