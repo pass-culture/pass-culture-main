@@ -127,6 +127,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NATIONAL_SYSTEM = "Activer le dispositif national dans les offres collectives"
     WIP_ENABLE_DIFFUSE_HELP = "Activer l'affichage de l'aide diffuse adage"
     WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API = "Activer la création événements avec tickets dans l'API publique"
+    WIP_OFFER_TO_INSTITUTION = "Activer le fléchage d'une offre à un établissement"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -199,6 +200,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NATIONAL_SYSTEM,
     FeatureToggle.WIP_ENABLE_DIFFUSE_HELP,
     FeatureToggle.WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API,
+    FeatureToggle.WIP_OFFER_TO_INSTITUTION,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
