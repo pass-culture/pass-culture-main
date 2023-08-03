@@ -10,11 +10,8 @@ import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.ubble.models as ubble_fraud_models
-import pcapi.core.history.factories as history_factories
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_settings
-import pcapi.core.users.constants as users_constants
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 
@@ -830,50 +827,6 @@ class DecideEligibilityTest:
                 fraud_api.decide_eligibility(user, datetime.datetime(year=2003, month=1, day=1), None)
                 == users_models.EligibilityType.AGE18
             )
-
-
-@pytest.mark.usefixtures("db_session")
-class GetSuspendedAccountsUponUserRequestSinceTest:
-    def test_get_suspended_upon_user_request_accounts_since(self) -> None:
-        one_week_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)
-        something = history_factories.SuspendedUserActionHistoryFactory(
-            actionDate=one_week_ago, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
-        )
-
-        # not suspended upon user request: should be ignored
-        history_factories.SuspendedUserActionHistoryFactory(
-            actionDate=one_week_ago, reason=users_constants.SuspensionReason.FRAUD_SUSPICION
-        )
-
-        # suspended less than 5 days ago (see below): should be ignored
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        history_factories.SuspendedUserActionHistoryFactory(
-            actionDate=yesterday, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
-        )
-
-        expected_user_ids = {something.userId}
-
-        with assert_num_queries(1):
-            query = fraud_api.get_suspended_upon_user_request_accounts_since(5)
-            user_ids = {user.id for user in query}
-            assert user_ids == expected_user_ids
-
-    def test_unsuspended_account(self) -> None:
-        """
-        Test that an unsuspended account is ignored, even if the
-        suspension event occurred more than N days ago.
-        """
-        one_week_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)
-        user = users_factories.UserFactory(isActive=False)
-        history_factories.SuspendedUserActionHistoryFactory(
-            user=user, actionDate=one_week_ago, reason=users_constants.SuspensionReason.FRAUD_SUSPICION
-        )
-
-        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
-        history_factories.UnsuspendedUserActionHistoryFactory(user=user, actionDate=yesterday)
-
-        with assert_num_queries(1):
-            assert not list(fraud_api.get_suspended_upon_user_request_accounts_since(5))
 
 
 @pytest.mark.usefixtures("db_session")
