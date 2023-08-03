@@ -123,15 +123,15 @@ def spectree_serialize(
 
         @wraps(route)
         @api.validate(
-            query=query_in_kwargs,
-            headers=headers,
-            cookies=cookies,
-            resp=spectree_response,
-            tags=tags,
-            before=before,
             after=after,
+            before=before,
+            cookies=cookies,
+            headers=headers,
             json=body_in_kwargs,
+            query=query_in_kwargs,
+            resp=spectree_response,
             security=security,
+            tags=tags,
         )
         def sync_validate(*args: Any, **kwargs: Any) -> Response:
             try:
@@ -142,8 +142,9 @@ def spectree_serialize(
                     # not throw error when some invalid json in provided for V2 bookings api.
                     body_params = None
                 else:
-                    # Since pydantic validator is applied before this method and use a silent json parser, # the only case we should end here is with an PATCH/POST with no validator for body params
-                    # or a GET request with a invalid body. raise
+                    # Since pydantic validator is applied before this method and use a silent json parser,
+                    # the only case we should end here is with an PATCH/POST with no validator for body params
+                    # or a GET request with a invalid body.
                     raise
             query_params = request.args
             form = request.form
