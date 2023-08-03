@@ -5,6 +5,7 @@ import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import RouteLeavingGuardCollectiveOfferCreation from 'components/RouteLeavingGuardCollectiveOfferCreation'
 import { Mode, isCollectiveOffer } from 'core/OfferEducational'
 import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { queryParamsFromOfferer } from 'pages/Offers/utils/queryParamsFromOfferer'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import {
@@ -22,8 +23,10 @@ export const CollectiveOfferCreation = ({
   const location = useLocation()
   const { structure: offererId, requete: requestId } =
     queryParamsFromOfferer(location)
+  const isNationalSystemActive = useActiveFeature('WIP_ENABLE_NATIONAL_SYSTEM')
   const { isReady, ...offerEducationalFormData } = useOfferEducationalFormData(
     Number(offererId),
+    isNationalSystemActive,
     offer
   )
 
@@ -42,6 +45,7 @@ export const CollectiveOfferCreation = ({
         categories={offerEducationalFormData.categories}
         userOfferers={offerEducationalFormData.offerers}
         domainsOptions={offerEducationalFormData.domains}
+        nationalPrograms={offerEducationalFormData.nationalPrograms}
         offer={offer}
         setOffer={setOffer}
         getIsOffererEligible={canOffererCreateCollectiveOfferAdapter}

@@ -183,5 +183,6 @@ export const computeInitialValuesFromOffer = (
     imageCredit: offer.imageCredit || DEFAULT_EAC_FORM_VALUES.imageCredit,
     'search-domains': '',
     'search-interventionArea': '',
+    nationalProgramId: offer.nationalProgram?.id?.toString() || '',
   }
 }

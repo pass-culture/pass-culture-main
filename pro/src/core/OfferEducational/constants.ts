@@ -42,6 +42,7 @@ export const DEFAULT_EAC_FORM_VALUES: OfferEducationalFormValues = {
   priceDetail: '',
   imageUrl: '',
   imageCredit: '',
+  nationalProgramId: '',
 }
 
 export const DEFAULT_EAC_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {

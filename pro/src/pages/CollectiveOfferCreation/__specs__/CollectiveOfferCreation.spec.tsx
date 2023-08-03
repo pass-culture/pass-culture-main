@@ -24,6 +24,11 @@ const renderCollectiveOfferCreation = (
 ) => {
   renderWithProviders(<CollectiveOfferCreation {...props} />, {
     initialRouterEntries: [path],
+    storeOverrides: {
+      features: {
+        list: [{ isActive: true, name: 'WIP_ENABLE_NATIONAL_SYSTEM' }],
+      },
+    },
   })
 }
 

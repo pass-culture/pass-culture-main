@@ -14,17 +14,23 @@ type OfferEducationalFormData = {
   categories: EducationalCategories
   domains: SelectOption[]
   offerers: GetEducationalOffererResponseModel[]
+  nationalPrograms: SelectOption[]
 }
 
 const useOfferEducationalFormData = (
   offererId: number | null,
+  isNationalSystemActive: boolean,
   offer?: CollectiveOffer | CollectiveOfferTemplate
-): OfferEducationalFormData & { isReady: boolean } => {
+): OfferEducationalFormData & {
+  isReady: boolean
+  isNationalSystemActive: boolean
+} => {
   const [isReady, setIsReady] = useState<boolean>(false)
   const defaultReturnValue: OfferEducationalFormData = {
     categories: { educationalCategories: [], educationalSubCategories: [] },
     domains: [],
     offerers: [],
+    nationalPrograms: [],
   }
   const [data, setData] = useState<OfferEducationalFormData>(defaultReturnValue)
   const notify = useNotification()
@@ -34,18 +40,20 @@ const useOfferEducationalFormData = (
       const result = await getCollectiveOfferFormDataApdater({
         offererId,
         offer: offerResponse,
+        isNationalSystemActive,
       })
 
       if (!result.isOk) {
         notify.error(result.message)
       }
 
-      const { categories, offerers, domains } = result.payload
+      const { categories, offerers, domains, nationalPrograms } = result.payload
 
       setData({
         categories,
         offerers,
         domains,
+        nationalPrograms,
       })
 
       setIsReady(true)
@@ -61,6 +69,7 @@ const useOfferEducationalFormData = (
 
   return {
     isReady,
+    isNationalSystemActive,
     ...data,
   }
 }

@@ -2,6 +2,7 @@ import React from 'react'
 
 import CollectiveOfferLayout from 'components/CollectiveOfferLayout'
 import { Mode } from 'core/OfferEducational'
+import useActiveFeature from 'hooks/useActiveFeature'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import {
   MandatoryCollectiveOfferFromParamsProps,
@@ -16,8 +17,10 @@ const CollectiveOfferEdition = ({
   reloadCollectiveOffer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps): JSX.Element => {
+  const isNationalSystemActive = useActiveFeature('WIP_ENABLE_NATIONAL_SYSTEM')
   const { isReady, ...offerEducationalFormData } = useOfferEducationalFormData(
     offer.venue.managingOfferer.id ?? null,
+    isNationalSystemActive,
     offer
   )
 
@@ -31,6 +34,7 @@ const CollectiveOfferEdition = ({
         categories={offerEducationalFormData.categories}
         userOfferers={offerEducationalFormData.offerers}
         domainsOptions={offerEducationalFormData.domains}
+        nationalPrograms={offerEducationalFormData.nationalPrograms}
         offer={offer}
         setOffer={setOffer}
         isOfferActive={offer?.isActive}

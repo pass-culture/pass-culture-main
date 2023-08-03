@@ -57,6 +57,7 @@ const OfferEducationalForm = ({
   getIsOffererEligible,
   mode,
   domainsOptions,
+  nationalPrograms,
   isTemplate,
   imageOffer,
   onImageUpload,
@@ -169,6 +170,7 @@ const OfferEducationalForm = ({
             categories={categories.educationalCategories}
             subCategories={categories.educationalSubCategories}
             domainsOptions={domainsOptions}
+            nationalPrograms={nationalPrograms}
             disableForm={mode === Mode.READ_ONLY}
           />
           <FormImageUploader

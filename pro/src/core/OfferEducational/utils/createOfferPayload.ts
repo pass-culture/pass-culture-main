@@ -49,4 +49,5 @@ export const createCollectiveOfferPayload = (
       : offer.interventionArea,
   templateId: offerTemplateId,
   priceDetail: isTemplate ? offer.priceDetail : undefined,
+  nationalProgramId: Number(offer.nationalProgramId),
 })

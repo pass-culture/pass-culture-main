@@ -11,17 +11,20 @@ import { getUserOfferersFromOffer } from '../utils'
 
 import { getEducationalCategoriesAdapter } from './getEducationalCategoriesAdapter'
 import { getEducationalDomainsAdapter } from './getEducationalDomainsAdapter'
+import { getNationalProgramsAdapter } from './getNationalProgramAdapter'
 import getOfferersAdapter from './getOfferersAdapter'
 
 type Payload = {
   categories: EducationalCategories
   domains: SelectOption[]
   offerers: GetEducationalOffererResponseModel[]
+  nationalPrograms: SelectOption[]
 }
 
 type Param = {
   offererId: number | null
   offer?: CollectiveOffer | CollectiveOfferTemplate
+  isNationalSystemActive: boolean
 }
 
 type GetCollectiveOfferFormDataApdater = Adapter<Param, Payload, Payload>
@@ -36,11 +39,12 @@ const ERROR_RESPONSE = {
     },
     domains: [],
     offerers: [],
+    nationalPrograms: [],
   },
 }
 
 const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdater =
-  async ({ offererId, offer }) => {
+  async ({ offererId, offer, isNationalSystemActive }) => {
     try {
       const targetOffererId = offer?.venue.managingOfferer.id || offererId
       const responses = await Promise.all([
@@ -48,8 +52,14 @@ const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdater =
         getEducationalDomainsAdapter(),
         getOfferersAdapter(targetOffererId),
       ])
-
-      if (responses.some(response => !response.isOk)) {
+      let nationalPrograms: SelectOption[] = []
+      if (isNationalSystemActive) {
+        const nationalProgramsResponse = await getNationalProgramsAdapter()
+        if (nationalProgramsResponse.isOk) {
+          nationalPrograms = nationalProgramsResponse.payload
+        }
+      }
+      if (responses.some(response => response && !response.isOk)) {
         return ERROR_RESPONSE
       }
       const [categories, domains, offerers] = responses
@@ -63,6 +73,7 @@ const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdater =
           categories: categories.payload,
           domains: domains.payload,
           offerers: offerersOptions,
+          nationalPrograms: nationalPrograms,
         },
       }
     } catch (e) {
