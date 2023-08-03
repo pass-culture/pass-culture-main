@@ -38,21 +38,17 @@ const computeOffersUrlForGivenAudience = (
 }
 
 export const computeOffersUrl = (
-  offersSearchFilters: Partial<SearchFiltersParams> & { page?: number },
-  offersPageNumber = 1
+  offersSearchFilters: Partial<SearchFiltersParams>
 ): string =>
-  computeOffersUrlForGivenAudience(
-    Audience.INDIVIDUAL,
-    offersSearchFilters,
-    offersPageNumber
-  )
+  computeOffersUrlForGivenAudience(Audience.INDIVIDUAL, {
+    page: 1,
+    ...offersSearchFilters,
+  })
 
 export const computeCollectiveOffersUrl = (
-  offersSearchFilters: Partial<SearchFiltersParams> & { page?: number },
-  offersPageNumber = 1
+  offersSearchFilters: Partial<SearchFiltersParams> & { page?: number }
 ): string =>
-  computeOffersUrlForGivenAudience(
-    Audience.COLLECTIVE,
-    offersSearchFilters,
-    offersPageNumber
-  )
+  computeOffersUrlForGivenAudience(Audience.COLLECTIVE, {
+    page: 1,
+    ...offersSearchFilters,
+  })

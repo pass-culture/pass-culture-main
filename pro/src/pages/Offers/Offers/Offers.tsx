@@ -82,21 +82,17 @@ const Offers = ({
     }))
   }
 
-  const onPreviousPageClick = useCallback(() => {
-    const newPageNumber = currentPageNumber - 1
+  const onPreviousPageClick = () =>
     applyUrlFiltersAndRedirect(
-      { ...urlSearchFilters, ...{ page: newPageNumber } },
+      { ...urlSearchFilters, page: currentPageNumber - 1 },
       false
     )
-  }, [currentPageNumber, applyUrlFiltersAndRedirect, urlSearchFilters])
 
-  const onNextPageClick = useCallback(() => {
-    const newPageNumber = currentPageNumber + 1
+  const onNextPageClick = () =>
     applyUrlFiltersAndRedirect(
-      { ...urlSearchFilters, ...{ page: newPageNumber } },
+      { ...urlSearchFilters, page: currentPageNumber + 1 },
       false
     )
-  }, [currentPageNumber, applyUrlFiltersAndRedirect, urlSearchFilters])
 
   const selectOffer = useCallback(
     (offerId: number, selected: boolean, isTemplate: boolean) => {

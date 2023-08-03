@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { filterEducationalCategories } from 'core/OfferEducational'
 import { getOffererAdapter } from 'core/Offers/adapters'
-import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
+import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { Offer, Offerer, SearchFiltersParams } from 'core/Offers/types'
 import { hasSearchFilters, computeCollectiveOffersUrl } from 'core/Offers/utils'
@@ -23,7 +23,8 @@ import { sortByLabel } from 'utils/strings'
 import { getFilteredCollectiveOffersAdapter } from './adapters'
 
 const CollectiveOffers = (): JSX.Element => {
-  const [urlSearchFilters, urlPageNumber] = useQuerySearchFilters()
+  const urlSearchFilters = useQuerySearchFilters()
+  const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
   const notify = useNotification()
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
@@ -108,13 +109,9 @@ const CollectiveOffers = (): JSX.Element => {
   )
 
   const redirectWithUrlFilters = (
-    filters: SearchFiltersParams & {
-      page?: number
-      audience?: Audience
-    }
+    filters: SearchFiltersParams & { audience?: Audience }
   ) => {
-    const newUrl = computeCollectiveOffersUrl(filters, filters.page)
-    navigate(newUrl)
+    navigate(computeCollectiveOffersUrl(filters))
   }
 
   useEffect(() => {
@@ -153,8 +150,8 @@ const CollectiveOffers = (): JSX.Element => {
           DEFAULT_SEARCH_FILTERS.periodEndingDate,
       })
     )
-    dispatch(savePageNumber(urlPageNumber))
-  }, [dispatch, urlPageNumber, urlSearchFilters])
+    dispatch(savePageNumber(currentPageNumber))
+  }, [dispatch, currentPageNumber, urlSearchFilters])
 
   if (!initialSearchFilters) {
     return <Spinner />
@@ -164,7 +161,7 @@ const CollectiveOffers = (): JSX.Element => {
     <OffersScreen
       audience={Audience.COLLECTIVE}
       categories={categories}
-      currentPageNumber={urlPageNumber}
+      currentPageNumber={currentPageNumber}
       currentUser={currentUser}
       initialSearchFilters={initialSearchFilters}
       isLoading={isLoading}

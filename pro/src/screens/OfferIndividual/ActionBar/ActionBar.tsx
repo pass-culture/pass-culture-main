@@ -47,7 +47,10 @@ const ActionBar = ({
     (state: RootState) => state.offers.pageNumber
   )
   const mode = useOfferWizardMode()
-  const backOfferUrl = computeOffersUrl(offersSearchFilters, offersPageNumber)
+  const backOfferUrl = computeOffersUrl({
+    ...offersSearchFilters,
+    page: offersPageNumber,
+  })
   const { logEvent } = useAnalytics()
   const notify = useNotification()
 

@@ -121,7 +121,7 @@ describe('OfferIndividual::ActionBar', () => {
       const buttonCancel = screen.getByText('Annuler et quitter')
       expect(buttonCancel).toHaveAttribute(
         'href',
-        '/offres?filter=my_filter&other_filter=my_other_filter&page=3'
+        '/offres?page=3&filter=my_filter&other_filter=my_other_filter'
       )
       const buttonSave = screen.getByText('Enregistrer les modifications')
       await userEvent.click(buttonSave)
@@ -136,7 +136,7 @@ describe('OfferIndividual::ActionBar', () => {
       const buttonCancel = screen.getByText('Annuler et quitter')
       expect(buttonCancel).toHaveAttribute(
         'href',
-        '/offres?filter=my_filter&other_filter=my_other_filter&page=3'
+        '/offres?page=3&filter=my_filter&other_filter=my_other_filter'
       )
       const buttonSave = screen.getByText('Enregistrer les modifications')
       await userEvent.click(buttonSave)
@@ -151,7 +151,7 @@ describe('OfferIndividual::ActionBar', () => {
       const buttonBack = screen.getByText('Retour à la liste des offres')
       expect(buttonBack).toHaveAttribute(
         'href',
-        '/offres?filter=my_filter&other_filter=my_other_filter&page=3'
+        '/offres?page=3&filter=my_filter&other_filter=my_other_filter'
       )
     })
   })

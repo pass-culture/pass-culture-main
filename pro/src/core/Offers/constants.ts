@@ -90,6 +90,7 @@ export const DEFAULT_SEARCH_FILTERS: SearchFiltersParams = {
   collectiveOfferType: ALL_COLLECTIVE_OFFER_TYPE,
   periodBeginningDate: ALL_EVENT_PERIODS,
   periodEndingDate: ALL_EVENT_PERIODS,
+  page: DEFAULT_PAGE,
 }
 
 export const ALL_VENUES_OPTION: SelectOption = {

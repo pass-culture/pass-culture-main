@@ -3,20 +3,30 @@ import { ListOffersQueryModel } from 'apiClient/v1'
 import { DEFAULT_SEARCH_FILTERS } from '../constants'
 import { SearchFiltersParams } from '../types'
 
-export const serializeApiFilters = <K extends keyof SearchFiltersParams>(
-  searchFilters: Partial<SearchFiltersParams> & { page?: number }
+export const serializeApiFilters = (
+  searchFilters: Partial<SearchFiltersParams>
 ): ListOffersQueryModel => {
-  const keys = Object.keys(DEFAULT_SEARCH_FILTERS) as K[]
+  const listOffersQueryKeys: (keyof ListOffersQueryModel)[] = [
+    'nameOrIsbn',
+    'offererId',
+    'status',
+    'venueId',
+    'categoryId',
+    'creationMode',
+    'periodBeginningDate',
+    'periodEndingDate',
+    'collectiveOfferType',
+  ]
 
-  const body = {} as ListOffersQueryModel
-
-  keys.forEach(field => {
-    if (
-      searchFilters[field] &&
-      searchFilters[field] !== DEFAULT_SEARCH_FILTERS[field]
-    ) {
-      body[field] = searchFilters[field] as ListOffersQueryModel[typeof field]
+  const body: ListOffersQueryModel = {}
+  return listOffersQueryKeys.reduce((accumulator, field) => {
+    const filterValue = searchFilters[field]
+    if (filterValue && filterValue !== DEFAULT_SEARCH_FILTERS[field]) {
+      return {
+        ...accumulator,
+        [field]: filterValue,
+      }
     }
-  })
-  return body
+    return accumulator
+  }, body)
 }
