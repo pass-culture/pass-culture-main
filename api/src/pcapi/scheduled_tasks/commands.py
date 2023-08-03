@@ -14,7 +14,6 @@ from pcapi.core.bookings.external.booking_notifications import send_today_events
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.external.automations import user as user_automations
 from pcapi.core.external.automations import venue as venue_automations
-import pcapi.core.fraud.api as fraud_api
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.offerers.repository import (
     find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_validated_x_days_ago,
@@ -28,7 +27,6 @@ from pcapi.core.offers.repository import find_event_stocks_happening_in_x_days
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.users import api as users_api
-import pcapi.core.users.constants as users_constants
 from pcapi.core.users.repository import get_newly_eligible_age_18_users
 from pcapi.local_providers.provider_manager import synchronize_venue_providers
 from pcapi.models import db
@@ -356,14 +354,6 @@ def notify_users_bookings_not_retrieved_command() -> None:
     send a notification to each user.
     """
     notify_users_bookings_not_retrieved()
-
-
-@blueprint.cli.command("delete_suspended_accounts_after_withdrawal_period")
-@log_cron_with_transaction
-def delete_suspended_accounts_after_withdrawal_period() -> None:
-    query = fraud_api.get_suspended_upon_user_request_accounts_since(settings.DELETE_SUSPENDED_ACCOUNTS_SINCE)
-    for user in query:
-        users_api.suspend_account(user, users_constants.SuspensionReason.DELETED, None)
 
 
 @blueprint.cli.command("handle_inactive_dms_applications_cron")
