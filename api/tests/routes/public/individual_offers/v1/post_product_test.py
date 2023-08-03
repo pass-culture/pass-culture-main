@@ -124,85 +124,88 @@ class PostProductTest:
         )
 
         assert response.status_code == 200
-        created_offers = offers_models.Offer.query.all()
-        assert created_offers[0].name == "Le champ des possibles"
-        assert created_offers[1].name == "Pump it"
-        assert created_offers[0].venue == venue
-        assert created_offers[1].venue == venue
-        assert created_offers[0].subcategoryId == "SUPPORT_PHYSIQUE_MUSIQUE"
-        assert created_offers[1].subcategoryId == "SUPPORT_PHYSIQUE_MUSIQUE"
-        assert created_offers[0].audioDisabilityCompliant is True
-        assert created_offers[1].audioDisabilityCompliant is True
-        assert created_offers[0].lastProvider.name == "Technical provider"
-        assert created_offers[1].lastProvider.name == "Technical provider"
-        assert created_offers[0].mentalDisabilityCompliant is True
-        assert created_offers[0].motorDisabilityCompliant is True
-        assert created_offers[0].visualDisabilityCompliant is True
-        assert not created_offers[0].isDuo
-        assert not created_offers[1].isDuo
-        assert created_offers[0].extraData == {"ean": "1234567891234", "musicType": "820", "musicSubType": "829"}
-        assert created_offers[1].extraData == {"ean": "1234567890987", "musicType": "900", "musicSubType": "910"}
-        assert created_offers[0].bookingEmail is None
-        assert created_offers[0].description is None
-        assert created_offers[0].status == offer_mixin.OfferStatus.SOLD_OUT
+        created_offers = offers_models.Offer.query.order_by(offers_models.Offer.extraData.name).all()
+        first_created_offer = next(offer for offer in created_offers if offer.name == "Le champ des possibles")
+        second_created_offer = next(offer for offer in created_offers if offer.name == "Pump it")
+        assert second_created_offer.name == "Pump it"
+        assert first_created_offer.name == "Le champ des possibles"
+        assert second_created_offer.venue == venue
+        assert first_created_offer.venue == venue
+        assert second_created_offer.subcategoryId == "SUPPORT_PHYSIQUE_MUSIQUE"
+        assert first_created_offer.subcategoryId == "SUPPORT_PHYSIQUE_MUSIQUE"
+        assert second_created_offer.audioDisabilityCompliant is True
+        assert first_created_offer.audioDisabilityCompliant is True
+        assert second_created_offer.lastProvider.name == "Technical provider"
+        assert first_created_offer.lastProvider.name == "Technical provider"
+        assert first_created_offer.mentalDisabilityCompliant is True
+        assert first_created_offer.motorDisabilityCompliant is True
+        assert first_created_offer.visualDisabilityCompliant is True
+        assert not second_created_offer.isDuo
+        assert not first_created_offer.isDuo
+        assert second_created_offer.extraData == {"ean": "1234567890987", "musicType": "900", "musicSubType": "910"}
+        assert first_created_offer.extraData == {"ean": "1234567891234", "musicType": "820", "musicSubType": "829"}
+        assert first_created_offer.bookingEmail is None
+        assert first_created_offer.description is None
+        assert first_created_offer.status == offer_mixin.OfferStatus.SOLD_OUT
 
-        assert response.json == {
-            "productOffers": [
-                {
-                    "bookingContact": None,
-                    "bookingEmail": None,
-                    "categoryRelatedFields": {
-                        "author": None,
-                        "category": "SUPPORT_PHYSIQUE_MUSIQUE",
-                        "ean": "1234567891234",
-                        "musicType": "ROCK-LO_FI",
-                        "performer": None,
-                    },
-                    "description": None,
-                    "accessibility": {
-                        "audioDisabilityCompliant": True,
-                        "mentalDisabilityCompliant": True,
-                        "motorDisabilityCompliant": True,
-                        "visualDisabilityCompliant": True,
-                    },
-                    "enableDoubleBookings": False,
-                    "externalTicketOfficeUrl": None,
-                    "id": created_offers[0].id,
-                    "image": None,
-                    "itemCollectionDetails": None,
-                    "location": {"type": "physical", "venueId": venue.id},
-                    "name": "Le champ des possibles",
-                    "status": "SOLD_OUT",
-                    "stock": None,
-                },
-                {
-                    "bookingContact": None,
-                    "bookingEmail": None,
-                    "categoryRelatedFields": {
-                        "author": None,
-                        "category": "SUPPORT_PHYSIQUE_MUSIQUE",
-                        "ean": "1234567890987",
-                        "musicType": "HIP_HOP_RAP-RAP_OLD_SCHOOL",
-                        "performer": None,
-                    },
-                    "description": None,
-                    "accessibility": {
-                        "audioDisabilityCompliant": True,
-                        "mentalDisabilityCompliant": True,
-                        "motorDisabilityCompliant": True,
-                        "visualDisabilityCompliant": True,
-                    },
-                    "enableDoubleBookings": False,
-                    "externalTicketOfficeUrl": None,
-                    "id": created_offers[1].id,
-                    "image": None,
-                    "itemCollectionDetails": None,
-                    "location": {"type": "physical", "venueId": venue.id},
-                    "name": "Pump it",
-                    "status": "SOLD_OUT",
-                    "stock": None,
-                },
-            ]
+        offer_1 = next(offer for offer in response.json["productOffers"] if offer["name"] == "Le champ des possibles")
+
+        assert offer_1 == {
+            "bookingContact": None,
+            "bookingEmail": None,
+            "categoryRelatedFields": {
+                "author": None,
+                "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                "ean": "1234567891234",
+                "musicType": "ROCK-LO_FI",
+                "performer": None,
+            },
+            "description": None,
+            "accessibility": {
+                "audioDisabilityCompliant": True,
+                "mentalDisabilityCompliant": True,
+                "motorDisabilityCompliant": True,
+                "visualDisabilityCompliant": True,
+            },
+            "enableDoubleBookings": False,
+            "externalTicketOfficeUrl": None,
+            "id": created_offers[1].id,
+            "image": None,
+            "itemCollectionDetails": None,
+            "location": {"type": "physical", "venueId": venue.id},
+            "name": "Le champ des possibles",
+            "status": "SOLD_OUT",
+            "stock": None,
+        }
+
+        offer_2 = next(offer for offer in response.json["productOffers"] if offer["name"] == "Pump it")
+
+        assert offer_2 == {
+            "bookingContact": None,
+            "bookingEmail": None,
+            "categoryRelatedFields": {
+                "author": None,
+                "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                "ean": "1234567890987",
+                "musicType": "HIP_HOP_RAP-RAP_OLD_SCHOOL",
+                "performer": None,
+            },
+            "description": None,
+            "accessibility": {
+                "audioDisabilityCompliant": True,
+                "mentalDisabilityCompliant": True,
+                "motorDisabilityCompliant": True,
+                "visualDisabilityCompliant": True,
+            },
+            "enableDoubleBookings": False,
+            "externalTicketOfficeUrl": None,
+            "id": created_offers[0].id,
+            "image": None,
+            "itemCollectionDetails": None,
+            "location": {"type": "physical", "venueId": venue.id},
+            "name": "Pump it",
+            "status": "SOLD_OUT",
+            "stock": None,
         }
 
     @pytest.mark.usefixtures("db_session")
