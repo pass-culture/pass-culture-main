@@ -7,7 +7,6 @@ from typing import Type
 from pydantic import BaseModel  # pylint: disable=wrong-pydantic-base-model-import
 from spectree import Response
 from spectree import SpecTree
-from spectree.utils import parse_code
 
 from pcapi import settings
 
@@ -71,14 +70,5 @@ class ExtendedSpecTree(SpecTree):
 
 
 class ExtendResponse(Response):
-    def generate_spec(self) -> Dict[str, Any]:
-        responses: Dict[str, Any] = {}
-        for code in self.codes:
-            responses[parse_code(code)] = {"description": self.get_code_description(code)}
-        for code, model in self.code_models.items():
-            model_name = get_model_key(model=model)
-            responses[parse_code(code)] = {
-                "description": self.get_code_description(code),
-                "content": {"application/json": {"schema": {"$ref": f"#/components/schemas/{model_name}"}}},
-            }
-        return responses
+    def generate_spec(self, _naming_strategy: Callable[[Type[BaseModel]], str] = None) -> Dict[str, Any]:
+        return super().generate_spec(naming_strategy=get_model_key)
