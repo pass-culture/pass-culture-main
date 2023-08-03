@@ -4,19 +4,22 @@ import { OfferStatus } from 'apiClient/v1'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
 import { SearchFiltersParams } from 'core/Offers/types'
 
-function getObjectWithMappedKeys(obj: any, keysMap: Record<string, string>) {
-  const mappedObj: Record<string, string> = {}
-  Object.keys(obj).forEach(objKey => {
-    let mappedKey = objKey
-    if (keysMap[objKey]) {
-      mappedKey = keysMap[objKey]
-    }
-    mappedObj[mappedKey] = obj[objKey]
+const translateObjectKeysAndValues = (
+  originalObject: Record<string, any>,
+  translationsMap: Record<string, string>
+) => {
+  const result: Record<string, string> = {}
+  Object.entries(originalObject).forEach(([originalKey, originalValue]) => {
+    const translatedKey = translationsMap[originalKey] ?? originalKey
+    const translatedValue = translationsMap[originalValue] ?? originalValue
+
+    result[translatedKey] = translatedValue
   })
-  return mappedObj
+
+  return result
 }
 
-export const mapBrowserStatusToApi: Record<
+const mapBrowserStatusToApi: Record<
   string,
   OfferStatus | CollectiveOfferStatus
 > = {
@@ -32,7 +35,7 @@ export const mapBrowserStatusToApi: Record<
   draft: OfferStatus.DRAFT,
 }
 
-export const mapBrowserToApi = {
+const mapBrowserToApi = {
   categorie: 'categoryId',
   de: 'from',
   lieu: 'venueId',
@@ -55,16 +58,12 @@ export const mapBrowserToApi = {
   ...mapBrowserStatusToApi,
 }
 
-export const mapApiToBrowser = invert(mapBrowserToApi)
+const mapApiToBrowser = invert(mapBrowserToApi)
 
-export function translateQueryParamsToApiParams(
+export const translateQueryParamsToApiParams = (
   queryParams: Record<string, string>
-) {
-  return getObjectWithMappedKeys(queryParams, mapBrowserToApi)
-}
+) => translateObjectKeysAndValues(queryParams, mapBrowserToApi)
 
-export function translateApiParamsToQueryParams(
+export const translateApiParamsToQueryParams = (
   apiParams: Partial<SearchFiltersParams>
-) {
-  return getObjectWithMappedKeys(apiParams, mapApiToBrowser)
-}
+) => translateObjectKeysAndValues(apiParams, mapApiToBrowser)
