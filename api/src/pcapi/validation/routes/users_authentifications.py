@@ -59,6 +59,9 @@ def api_key_required(route_function: typing.Callable) -> typing.Callable:
         if not g.current_api_key:
             raise api_errors.UnauthorizedError(errors={"auth": "API key required"})
         _check_active_offerer(g.current_api_key)
+
+        if g.current_api_key.provider:
+            _check_active_provider(g.current_api_key)
         return route_function(*args, **kwds)
 
     return wrapper
@@ -67,6 +70,11 @@ def api_key_required(route_function: typing.Callable) -> typing.Callable:
 def _check_active_offerer(api_key: ApiKey) -> None:
     if not api_key.offerer.isActive:
         raise api_errors.ForbiddenError(errors={"auth": ["Inactive offerer"]})
+
+
+def _check_active_provider(api_key: ApiKey) -> None:
+    if not api_key.provider.isActive:
+        raise api_errors.ForbiddenError(errors={"auth": ["Inactive provider"]})
 
 
 def _fill_current_api_key() -> None:
