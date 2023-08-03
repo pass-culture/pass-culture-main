@@ -9,6 +9,7 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import {
+  DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
@@ -189,34 +190,23 @@ const Offers = ({
     initialSearchFilters,
   ])
 
-  const applyUrlFiltersAndRedirect = useCallback(
-    (
-      filters: SearchFiltersParams & {
-        page?: number
-        audience?: Audience
-      },
-      isRefreshing = true
-    ) => {
-      setIsRefreshingOffers(isRefreshing)
-      redirectWithUrlFilters(filters)
-    },
-    [setIsRefreshingOffers, redirectWithUrlFilters]
-  )
+  const applyUrlFiltersAndRedirect = (
+    filters: SearchFiltersParams & { audience?: Audience },
+    isRefreshing = true
+  ) => {
+    setIsRefreshingOffers(isRefreshing)
+    redirectWithUrlFilters(filters)
+  }
 
-  const applyFilters = useCallback(() => {
+  const applyFilters = () => {
     // FIXME : this code's part seems to be useless
     if (!hasDifferentFiltersFromLastSearch(searchFilters)) {
       refreshOffers()
     }
-    applyUrlFiltersAndRedirect(searchFilters)
-  }, [
-    hasDifferentFiltersFromLastSearch,
-    refreshOffers,
-    searchFilters,
-    applyUrlFiltersAndRedirect,
-  ])
+    applyUrlFiltersAndRedirect({ ...searchFilters, page: DEFAULT_PAGE })
+  }
 
-  const removeOfferer = useCallback(() => {
+  const removeOfferer = () => {
     setOfferer(null)
     const updatedFilters = {
       ...searchFilters,
@@ -229,7 +219,7 @@ const Offers = ({
       updatedFilters.status = DEFAULT_SEARCH_FILTERS.status
     }
     applyUrlFiltersAndRedirect(updatedFilters)
-  }, [applyUrlFiltersAndRedirect, searchFilters, setOfferer])
+  }
 
   const getUpdateOffersStatusMessage = (tmpSelectedOfferIds: string[]) => {
     const selectedOffers = offers.filter(offer =>
@@ -263,25 +253,21 @@ const Offers = ({
         tabs={[
           {
             label: 'Offres individuelles',
-            url: computeOffersUrl(
-              {
-                ...searchFilters,
-                status: DEFAULT_SEARCH_FILTERS.status,
-              },
-              currentPageNumber
-            ),
+            url: computeOffersUrl({
+              ...searchFilters,
+              status: DEFAULT_SEARCH_FILTERS.status,
+              page: currentPageNumber,
+            }),
             key: 'individual',
             icon: strokeUserIcon,
           },
           {
             label: 'Offres collectives',
-            url: computeCollectiveOffersUrl(
-              {
-                ...searchFilters,
-                status: DEFAULT_SEARCH_FILTERS.status,
-              },
-              currentPageNumber
-            ),
+            url: computeCollectiveOffersUrl({
+              ...searchFilters,
+              status: DEFAULT_SEARCH_FILTERS.status,
+              page: currentPageNumber,
+            }),
             key: 'collective',
             icon: strokeLibraryIcon,
           },
