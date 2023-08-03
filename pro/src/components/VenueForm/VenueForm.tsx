@@ -13,7 +13,6 @@ import { Offerer } from 'core/Offerers/types'
 import { Providers, Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
-import useActiveFeature from 'hooks/useActiveFeature'
 import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import { venueSubmitRedirectUrl } from 'screens/VenueForm/utils/venueSubmitRedirectUrl'
 
@@ -24,7 +23,6 @@ import { Accessibility } from './Accessibility'
 import { Activity } from './Activity'
 import CollectiveVenueInformations from './CollectiveVenueInformations/CollectiveVenueInformations'
 import { Contact } from './Contact'
-import { EACInformation } from './EACInformation'
 import { ImageUploaderVenue } from './ImageUploaderVenue'
 import { Informations } from './Informations'
 import { OffersSynchronization } from './OffersSynchronization'
@@ -105,10 +103,6 @@ const VenueForm = ({
     )
   }, [])
 
-  const isCollectiveDmsTrackingActive = useActiveFeature(
-    'WIP_ENABLE_COLLECTIVE_DMS_TRACKING'
-  )
-
   return (
     <div>
       <FormLayout fullWidthActions>
@@ -168,16 +162,8 @@ const VenueForm = ({
           isVenueVirtual={initialIsVirtual}
           isCreatingVenue={isCreatingVenue}
         />
-        {
-          /* istanbul ignore next: DEBT, TO FIX */ canOffererCreateCollectiveOffer &&
-            !isCollectiveDmsTrackingActive &&
-            ((isCreatingVenue && isSiretValued) || !isCreatingVenue) && (
-              <EACInformation isCreatingVenue={isCreatingVenue} venue={venue} />
-            )
-        }
-        {isCollectiveDmsTrackingActive &&
-          (canOffererCreateCollectiveOffer ||
-            !!venue?.collectiveDmsApplication) &&
+        {(canOffererCreateCollectiveOffer ||
+          !!venue?.collectiveDmsApplication) &&
           ((isCreatingVenue && isSiretValued) || !isCreatingVenue) && (
             <CollectiveVenueInformations
               venue={venue}

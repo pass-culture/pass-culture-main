@@ -1027,11 +1027,6 @@ describe('VenueFormScreen', () => {
         {
           ...venue,
           hasAdageId: true,
-        },
-        {
-          list: [
-            { isActive: true, nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING' },
-          ],
         }
       )
       await waitFor(
@@ -1058,11 +1053,6 @@ describe('VenueFormScreen', () => {
           ...venue,
           hasAdageId: false,
           collectiveDmsApplication: { ...defaultCollectiveDmsApplication },
-        },
-        {
-          list: [
-            { isActive: true, nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING' },
-          ],
         }
       )
       await waitFor(
@@ -1085,11 +1075,6 @@ describe('VenueFormScreen', () => {
         {
           ...venue,
           hasAdageId: false,
-        },
-        {
-          list: [
-            { isActive: true, nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING' },
-          ],
         }
       )
       await waitFor(
@@ -1109,12 +1094,7 @@ describe('VenueFormScreen', () => {
         } as SharedCurrentUserResponseModel,
         formValues,
         true,
-        undefined,
-        {
-          list: [
-            { isActive: true, nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING' },
-          ],
-        }
+        undefined
       )
       await waitFor(
         () => expect(api.canOffererCreateEducationalOffer).toHaveBeenCalled
