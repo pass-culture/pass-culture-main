@@ -47,7 +47,10 @@ class DmsWebhookApplicationTest:
         assert response.status_code == 403
 
     def test_dms_request_no_params_with_token(self, client):
-        response = client.post(f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}")
+        response = client.post(
+            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
 
         assert response.status_code == 400
 
