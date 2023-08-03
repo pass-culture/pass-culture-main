@@ -9,6 +9,8 @@ import { validationSchema } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/Ve
 import { Banner, Button, Checkbox, InfoBox, TextInput } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
+import styles from './AllocineProviderForm.module.scss'
+
 export interface FormValuesProps {
   isDuo: boolean
   price: number | string
@@ -127,7 +129,7 @@ const AllocineProviderForm = ({
             >
               <Checkbox name="isDuo" label="Accepter les réservations DUO" />
             </FormLayout.Row>
-            <FormLayout.Row>
+            <FormLayout.Row className={styles['allocine-provider-form-banner']}>
               <Banner type="notification-info">
                 <p>
                   Pour le moment, seules les séances "classiques" peuvent être
@@ -143,7 +145,9 @@ const AllocineProviderForm = ({
                 </p>
               </Banner>
             </FormLayout.Row>
-            <FormLayout.Actions>
+            <FormLayout.Actions
+              className={styles['allocine-provider-form-actions']}
+            >
               {!isCreatedEntity ? (
                 <Button
                   variant={ButtonVariant.SECONDARY}
