@@ -6,7 +6,10 @@ import { ALL_STATUS } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
-import { RadioInput } from 'ui-kit/form_raw/RadioInput/RadioInput'
+import { Button } from 'ui-kit'
+import { BaseRadio } from 'ui-kit/form/shared'
+
+import styles from './OffersStatusFiltersModal.module.scss'
 
 interface OfferStatusFiltersModalProps {
   isVisible: boolean
@@ -72,32 +75,33 @@ export const OffersStatusFiltersModal = ({
           },
         ]
   return (
-    <div className="offers-status-filters" ref={modalRef}>
-      <div className="osf-title">Afficher les offres</div>
+    <div className={styles['offers-status-filters']} ref={modalRef}>
+      <div className={styles['osf-title']}>Afficher les offres</div>
       <>
         {filters.map(({ label, value }) => (
-          <RadioInput
-            checked={status === value}
+          <BaseRadio
+            key={value}
             label={label}
             name="status"
+            value={value}
+            checked={status === value}
+            className={styles['radio']}
             onChange={event =>
               updateStatusFilter(
                 event.target.value as SearchFiltersParams['status']
               )
             }
-            value={value}
-            key={value}
           />
         ))}
       </>
-      <button
-        className="primary-button"
+
+      <Button
+        className={styles['button']}
         onClick={handleClick}
-        type="button"
-        aria-label="appliquer les filtres"
+        aria-label="Appliquer les filtres"
       >
         Appliquer
-      </button>
+      </Button>
     </div>
   )
 }

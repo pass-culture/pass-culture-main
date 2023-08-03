@@ -22,15 +22,14 @@
     white-space: nowrap;
   }
 
-  label {
-    @include fonts.body;
-
-    display: flex;
+  .button {
+    align-self: center;
     margin-top: rem.torem(16px);
   }
 
-  button {
-    align-self: center;
+  .radio {
+    @include fonts.body;
+
     margin-top: rem.torem(16px);
   }
 }
