@@ -59,9 +59,7 @@ const proVenues = [
 
 const renderOffers = async (
   storeOverrides: Store,
-  filters: Partial<SearchFiltersParams> & {
-    page?: number
-  } = DEFAULT_SEARCH_FILTERS
+  filters: Partial<SearchFiltersParams> = DEFAULT_SEARCH_FILTERS
 ) => {
   const route = computeCollectiveOffersUrl(filters)
   renderWithProviders(<CollectiveOffers />, {

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { getOffererAdapter } from 'core/Offers/adapters'
-import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
+import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { useQuerySearchFilters } from 'core/Offers/hooks/useQuerySearchFilters'
 import { Offer, Offerer, SearchFiltersParams } from 'core/Offers/types'
 import { hasSearchFilters, computeOffersUrl } from 'core/Offers/utils'
@@ -22,7 +22,8 @@ import { sortByLabel } from 'utils/strings'
 import { getFilteredOffersAdapter } from './adapters/getFilteredOffersAdapter'
 
 const OffersRoute = (): JSX.Element => {
-  const [urlSearchFilters, urlPageNumber] = useQuerySearchFilters()
+  const urlSearchFilters = useQuerySearchFilters()
+  const currentPageNumber = urlSearchFilters.page ?? DEFAULT_PAGE
   const notify = useNotification()
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
@@ -95,14 +96,9 @@ const OffersRoute = (): JSX.Element => {
   }, [])
 
   const redirectWithUrlFilters = (
-    filters: SearchFiltersParams & {
-      page?: number
-      audience?: Audience
-    }
+    filters: SearchFiltersParams & { audience?: Audience }
   ) => {
-    const newUrl = computeOffersUrl(filters, filters.page)
-
-    navigate(newUrl)
+    navigate(computeOffersUrl(filters))
   }
 
   useEffect(() => {
@@ -144,8 +140,8 @@ const OffersRoute = (): JSX.Element => {
           DEFAULT_SEARCH_FILTERS.periodEndingDate,
       })
     )
-    dispatch(savePageNumber(urlPageNumber))
-  }, [dispatch, urlPageNumber, urlSearchFilters])
+    dispatch(savePageNumber(currentPageNumber))
+  }, [dispatch, currentPageNumber, urlSearchFilters])
 
   useEffect(() => {
     const loadAllVenuesByProUser = () =>
@@ -166,7 +162,7 @@ const OffersRoute = (): JSX.Element => {
     <OffersScreen
       audience={Audience.INDIVIDUAL}
       categories={categories}
-      currentPageNumber={urlPageNumber}
+      currentPageNumber={currentPageNumber}
       currentUser={currentUser}
       initialSearchFilters={initialSearchFilters}
       isLoading={isLoading}
