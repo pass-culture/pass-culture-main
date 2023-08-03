@@ -67,6 +67,7 @@ describe('createPatchOfferPayload', () => {
     email: 'test2@email.com',
     domains: ['123'],
     interventionArea: ['2B'],
+    nationalProgramId: '1',
   }
 
   const patchOfferPayload: PatchCollectiveOfferBodyModel = {
@@ -90,6 +91,7 @@ describe('createPatchOfferPayload', () => {
     contactEmail: 'test2@email.com',
     interventionArea: ['2B'],
     domains: [123],
+    nationalProgramId: 1,
   }
 
   it('should return the correct patch offer payload for a non-template offer', () => {

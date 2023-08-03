@@ -52,6 +52,7 @@ export const defaultCreationProps: OfferEducationalProps = {
   ),
   mode: Mode.CREATION,
   domainsOptions: [{ value: 1, label: 'domain1' }],
+  nationalPrograms: [{ value: 1, label: 'nationalProgram1' }],
   isTemplate: false,
   setOffer: vi.fn(),
 }
@@ -65,6 +66,7 @@ export const defaultEditionProps: OfferEducationalProps = {
   },
   mode: Mode.EDITION,
   domainsOptions: [{ value: 1, label: 'domain1' }],
+  nationalPrograms: [{ value: 1, label: 'nationalProgram1' }],
   isTemplate: false,
   setOffer: vi.fn(),
 }

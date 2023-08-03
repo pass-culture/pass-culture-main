@@ -51,6 +51,7 @@ export type OfferEducationalFormValues = {
   priceDetail?: string
   imageUrl?: string
   imageCredit?: string
+  nationalProgramId?: string
 }
 
 export type CanOffererCreateCollectiveOffer = Adapter<

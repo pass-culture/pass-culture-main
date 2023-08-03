@@ -175,6 +175,29 @@ describe('screens | OfferEducational : creation offer type step', () => {
     })
   })
 
+  describe('national systems', () => {
+    it('should allow user to select national systems', async () => {
+      const overridedProps = {
+        ...props,
+        nationalPrograms: [
+          { value: '1', label: 'Marseille en grand' },
+          { value: '2', label: 'Collège au ciné' },
+        ],
+      }
+      renderWithProviders(<OfferEducational {...overridedProps} />, {
+        storeOverrides: store,
+      })
+      const nationalProgramsSelect = await screen.findByLabelText(
+        /Dispositif national/
+      )
+      await userEvent.click(nationalProgramsSelect)
+      await userEvent.selectOptions(nationalProgramsSelect, '2')
+      await userEvent.tab()
+
+      expect(screen.getByText('Collège au ciné')).toBeInTheDocument()
+    })
+  })
+
   describe('title, description and duration inputs', () => {
     it('should require a title with less than 110 chars (and truncate longer strings)', async () => {
       renderWithProviders(<OfferEducational {...props} />)

@@ -8,6 +8,7 @@ import { createOfferFromTemplate } from 'core/OfferEducational'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { Offer } from 'core/Offers/types'
 import { computeOffersUrl } from 'core/Offers/utils'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapters'
@@ -35,6 +36,7 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const queryParams = new URLSearchParams(location.search)
   const queryOffererId = queryParams.get('structure')
   const queryVenueId = queryParams.get('lieu')
+  const isNationalSystemActive = useActiveFeature('WIP_ENABLE_NATIONAL_SYSTEM')
 
   const filterTemplateOfferByName = useCallback(
     async (offerName: string) => {
@@ -77,7 +79,12 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
         'Vous devez séléctionner une offre vitrine à dupliquer'
       )
     }
-    createOfferFromTemplate(navigate, notify, Number(templateOfferId))
+    createOfferFromTemplate(
+      navigate,
+      notify,
+      Number(templateOfferId),
+      isNationalSystemActive
+    )
   }
 
   return (
