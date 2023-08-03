@@ -31,6 +31,10 @@
     max-width: 80%;
     gap: rem.torem(16px);
     align-items: center;
+
+    &:last-child {
+      margin-top: rem.torem(16px);
+    }
   }
 
   &-evenement {

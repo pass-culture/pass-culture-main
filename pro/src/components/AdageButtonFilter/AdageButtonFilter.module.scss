@@ -8,7 +8,7 @@
 }
 
 .adage-button {
-  @include fonts.body;
+  @include fonts.preview-text;
 
   display: flex;
   align-items: center;
@@ -20,14 +20,14 @@
   white-space: nowrap;
 
   &-is-active {
-    @include fonts.button;
+    @include fonts.caption;
 
     line-height: rem.torem(20px);
     border: rem.torem(2px) solid colors.$input-text-color;
   }
 
   &-selected {
-    @include fonts.button;
+    @include fonts.caption;
 
     line-height: rem.torem(20px);
     border: rem.torem(2px) solid colors.$primary;
