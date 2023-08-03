@@ -17,6 +17,7 @@ import {
 } from 'core/OfferEducational'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { Button, ButtonLink } from 'ui-kit'
@@ -51,7 +52,7 @@ const CollectiveOfferSummaryEdition = ({
   )}/collectif/stocks/edition`
 
   const visibilityEditLink = `/offre/${offer.id}/collectif/visibilite/edition`
-
+  const isNationalSystemActive = useActiveFeature('WIP_ENABLE_NATIONAL_SYSTEM')
   const { logEvent } = useAnalytics()
 
   return (
@@ -83,7 +84,12 @@ const CollectiveOfferSummaryEdition = ({
               logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
                 from: OFFER_FROM_TEMPLATE_ENTRIES.OFFER_TEMPLATE_RECAP,
               })
-              createOfferFromTemplate(navigate, notify, offer.id)
+              createOfferFromTemplate(
+                navigate,
+                notify,
+                offer.id,
+                isNationalSystemActive
+              )
             }}
           >
             Créer une offre réservable pour un établissement scolaire

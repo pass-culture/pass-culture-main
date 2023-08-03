@@ -40,6 +40,7 @@ export interface OfferEducationalProps {
   isOfferBooked?: boolean
   isOfferActive?: boolean
   domainsOptions: SelectOption[]
+  nationalPrograms: SelectOption[]
   isTemplate: boolean
   isOfferCreated?: boolean
   reloadCollectiveOffer?: () => void
@@ -51,6 +52,7 @@ const OfferEducational = ({
   categories,
   userOfferers,
   domainsOptions,
+  nationalPrograms,
   getIsOffererEligible,
   mode,
   isOfferBooked = false,
@@ -168,6 +170,7 @@ const OfferEducational = ({
             mode={mode}
             userOfferers={userOfferers}
             domainsOptions={domainsOptions}
+            nationalPrograms={nationalPrograms}
             isTemplate={isTemplate}
             imageOffer={imageOffer}
             onImageDelete={onImageDelete}

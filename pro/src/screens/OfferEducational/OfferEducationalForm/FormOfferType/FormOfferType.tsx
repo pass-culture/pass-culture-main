@@ -10,7 +10,13 @@ import {
   MAX_DETAILS_LENGTH,
 } from 'core/OfferEducational'
 import { SelectOption } from 'custom_types/form'
-import { MultiSelectAutocomplete, Select, TextArea, TextInput } from 'ui-kit'
+import {
+  InfoBox,
+  MultiSelectAutocomplete,
+  Select,
+  TextArea,
+  TextInput,
+} from 'ui-kit'
 
 import {
   CATEGORY_LABEL,
@@ -24,6 +30,7 @@ interface FormTypeProps {
   categories: EducationalCategory[]
   subCategories: EducationalSubCategory[]
   domainsOptions: SelectOption[]
+  nationalPrograms: SelectOption[]
   disableForm: boolean
 }
 
@@ -31,6 +38,7 @@ const FormOfferType = ({
   categories,
   subCategories,
   domainsOptions,
+  nationalPrograms,
   disableForm,
 }: FormTypeProps): JSX.Element => {
   const { values, setFieldValue } =
@@ -80,7 +88,6 @@ const FormOfferType = ({
       ...subCategoriesOptions,
     ]
   }
-
   return (
     <FormLayout.Section
       description="Le type de l’offre permet de la caractériser et de la valoriser au mieux pour les enseignants et chefs d’établissement."
@@ -111,6 +118,32 @@ const FormOfferType = ({
             pluralLabel="Domaines artistiques et culturels"
             label="Domaine artistique et culturel"
             name="domains"
+            disabled={disableForm}
+          />
+        </FormLayout.Row>
+      )}
+      {nationalPrograms.length > 0 && (
+        <FormLayout.Row
+          sideComponent={
+            <InfoBox>
+              Un dispositif national est un type de programme d’éducation
+              artistique et culturelle auquel sont rattachées certaines offres.
+              Si c’est le cas de cette offre, merci de le renseigner.
+            </InfoBox>
+          }
+        >
+          <Select
+            options={[
+              {
+                label: 'Sélectionnez un dispositif national',
+                value: '',
+              },
+              ...nationalPrograms,
+            ]}
+            label="Dispositif national"
+            name="nationalProgramId"
+            placeholder="Séléctionner un dispositif national"
+            isOptional
             disabled={disableForm}
           />
         </FormLayout.Row>

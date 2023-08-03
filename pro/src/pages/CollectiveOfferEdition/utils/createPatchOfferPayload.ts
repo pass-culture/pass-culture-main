@@ -111,6 +111,15 @@ const serializer = {
     ...payload,
     interventionArea: offer.interventionArea,
   }),
+  nationalProgramId: (
+    payload: PatchCollectiveOfferBodyModel,
+    offer: OfferEducationalFormValues
+  ) => ({
+    ...payload,
+    nationalProgramId: offer.nationalProgramId
+      ? Number(offer.nationalProgramId)
+      : null,
+  }),
 }
 
 const templateSerializer = {
@@ -155,7 +164,9 @@ export const createPatchOfferPayload = (
       changedValues = offerSerializer[key](changedValues, offer)
     }
   })
-  // We use this to patch phone number when user want to make it empty
+  // We use this to patch field when user want to make it empty
   changedValues.contactPhone = offer.phone || null
+  changedValues.nationalProgramId = Number(offer.nationalProgramId) || null
+
   return changedValues
 }

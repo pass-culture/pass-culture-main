@@ -7,6 +7,7 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { createOfferFromTemplate } from 'core/OfferEducational'
 import { createOfferFromBookableOffer } from 'core/OfferEducational/utils/createOfferFromBookableOffer'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import copyIcon from 'icons/full-duplicate.svg'
@@ -32,6 +33,7 @@ const DuplicateOfferCell = ({
   const shouldDisplayModal =
     localStorage.getItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY) !== 'true'
 
+  const isNationalSystemActive = useActiveFeature('WIP_ENABLE_NATIONAL_SYSTEM')
   const onDialogConfirm = (shouldNotDisplayModalAgain: boolean) => {
     logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
       from: OFFER_FROM_TEMPLATE_ENTRIES.OFFERS_MODAL,
@@ -39,7 +41,7 @@ const DuplicateOfferCell = ({
     if (shouldNotDisplayModalAgain) {
       localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_MODAL_KEY, 'true')
     }
-    createOfferFromTemplate(navigate, notify, offerId)
+    createOfferFromTemplate(navigate, notify, offerId, isNationalSystemActive)
   }
 
   const handleCreateOfferClick = () => {
@@ -48,12 +50,22 @@ const DuplicateOfferCell = ({
         logEvent?.(Events.CLICKED_DUPLICATE_TEMPLATE_OFFER, {
           from: OFFER_FROM_TEMPLATE_ENTRIES.OFFERS,
         })
-        createOfferFromTemplate(navigate, notify, offerId)
+        createOfferFromTemplate(
+          navigate,
+          notify,
+          offerId,
+          isNationalSystemActive
+        )
       }
       buttonRef.current?.blur()
       setIsModalOpen(true)
     } else {
-      createOfferFromBookableOffer(navigate, notify, offerId)
+      createOfferFromBookableOffer(
+        navigate,
+        notify,
+        offerId,
+        isNationalSystemActive
+      )
     }
   }
 

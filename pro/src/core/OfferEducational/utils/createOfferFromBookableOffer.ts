@@ -12,7 +12,8 @@ import { postCollectiveOfferImage } from './postCollectiveOfferImage'
 export const createOfferFromBookableOffer = async (
   navigate: ReturnType<typeof useNavigate>,
   notify: ReturnType<typeof useNotification>,
-  offerId: number
+  offerId: number,
+  isNationalSystemActive: boolean
 ) => {
   const offerResponse = await getCollectiveOfferAdapter(offerId)
 
@@ -23,6 +24,7 @@ export const createOfferFromBookableOffer = async (
   const result = await getCollectiveOfferFormDataApdater({
     offererId: offererId,
     offer: offerResponse.payload,
+    isNationalSystemActive,
   })
 
   if (!result.isOk) {
