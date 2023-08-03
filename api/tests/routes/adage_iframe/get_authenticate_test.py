@@ -56,19 +56,24 @@ class AuthenticateTest:
             "institutionName": "COLLEGE BELLEVUE",
             "institutionCity": "Ales",
             "email": "sabine.laprof@example.com",
-            "preferences": {"feedback_form_closed": None},
+            "preferences": {
+                "feedback_form_closed": None,
+                "broadcast_help_closed": None,
+            },
         }
 
     def test_preferences_are_correctly_serialized(self, client) -> None:
         educational_institution = EducationalInstitutionFactory()
-        educational_redactor = EducationalRedactorFactory(preferences={"feedback_form_closed": True})
+        educational_redactor = EducationalRedactorFactory(
+            preferences={"feedback_form_closed": True, "broadcast_help_closed": True}
+        )
 
         client = client.with_adage_token(email=educational_redactor.email, uai=educational_institution.institutionId)
         response = client.get("/adage-iframe/authenticate")
 
         # Then
         assert response.status_code == 200
-        assert response.json["preferences"] == {"feedback_form_closed": True}
+        assert response.json["preferences"] == {"broadcast_help_closed": True, "feedback_form_closed": True}
 
     def test_should_return_readonly_role_when_token_has_no_uai_code(self, app) -> None:
         # Given
