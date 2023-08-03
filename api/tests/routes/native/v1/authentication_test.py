@@ -367,7 +367,10 @@ class TrustedDeviceFeatureTest:
 
 
 def test_send_reset_password_email_without_email(client):
-    response = client.post("/native/v1/request_password_reset")
+    response = client.post(
+        "/native/v1/request_password_reset",
+        headers={"Content-Type": "application/json"},
+    )
 
     assert response.status_code == 400
     assert response.json["email"] == ["Ce champ est obligatoire"]
