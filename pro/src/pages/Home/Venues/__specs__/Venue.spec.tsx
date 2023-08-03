@@ -137,21 +137,11 @@ describe('venues', () => {
   })
 
   it('should not display dms timeline link if venue has no dms application', async () => {
-    renderVenue(
-      {
-        ...props,
-        hasAdageId: false,
-        dmsInformations: null,
-      },
-      {
-        list: [
-          {
-            isActive: true,
-            nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING',
-          },
-        ],
-      }
-    )
+    renderVenue({
+      ...props,
+      hasAdageId: false,
+      dmsInformations: null,
+    })
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     // Then
@@ -162,25 +152,15 @@ describe('venues', () => {
     ).not.toBeInTheDocument()
   })
   it('should display dms timeline link when venue has dms applicaiton and adage id less than 30 days', async () => {
-    renderVenue(
-      {
-        ...props,
-        hasAdageId: true,
-        adageInscriptionDate: addDays(new Date(), -15).toISOString(),
-        dmsInformations: {
-          ...defaultCollectiveDmsApplication,
-          state: DMSApplicationstatus.ACCEPTE,
-        },
+    renderVenue({
+      ...props,
+      hasAdageId: true,
+      adageInscriptionDate: addDays(new Date(), -15).toISOString(),
+      dmsInformations: {
+        ...defaultCollectiveDmsApplication,
+        state: DMSApplicationstatus.ACCEPTE,
       },
-      {
-        list: [
-          {
-            isActive: true,
-            nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING',
-          },
-        ],
-      }
-    )
+    })
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     // Then
@@ -194,25 +174,15 @@ describe('venues', () => {
     )
   })
   it('should not display dms timeline link if venue has adageId for more than 30days', async () => {
-    renderVenue(
-      {
-        ...props,
-        hasAdageId: true,
-        adageInscriptionDate: addDays(new Date(), -32).toISOString(),
-        dmsInformations: {
-          ...defaultCollectiveDmsApplication,
-          state: DMSApplicationstatus.ACCEPTE,
-        },
+    renderVenue({
+      ...props,
+      hasAdageId: true,
+      adageInscriptionDate: addDays(new Date(), -32).toISOString(),
+      dmsInformations: {
+        ...defaultCollectiveDmsApplication,
+        state: DMSApplicationstatus.ACCEPTE,
       },
-      {
-        list: [
-          {
-            isActive: true,
-            nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING',
-          },
-        ],
-      }
-    )
+    })
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     // Then
@@ -223,24 +193,14 @@ describe('venues', () => {
     ).not.toBeInTheDocument()
   })
   it('should display dms timeline link if venue has refused application for less than 30days', async () => {
-    renderVenue(
-      {
-        ...props,
-        dmsInformations: {
-          ...defaultCollectiveDmsApplication,
-          state: DMSApplicationstatus.REFUSE,
-          processingDate: addDays(new Date(), -15).toISOString(),
-        },
+    renderVenue({
+      ...props,
+      dmsInformations: {
+        ...defaultCollectiveDmsApplication,
+        state: DMSApplicationstatus.REFUSE,
+        processingDate: addDays(new Date(), -15).toISOString(),
       },
-      {
-        list: [
-          {
-            isActive: true,
-            nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING',
-          },
-        ],
-      }
-    )
+    })
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     // Then
@@ -251,24 +211,14 @@ describe('venues', () => {
     ).toBeInTheDocument()
   })
   it('should not display dms timeline link if venue has refused application for more than 30days', async () => {
-    renderVenue(
-      {
-        ...props,
-        dmsInformations: {
-          ...defaultCollectiveDmsApplication,
-          state: DMSApplicationstatus.REFUSE,
-          processingDate: addDays(new Date(), -31).toISOString(),
-        },
+    renderVenue({
+      ...props,
+      dmsInformations: {
+        ...defaultCollectiveDmsApplication,
+        state: DMSApplicationstatus.REFUSE,
+        processingDate: addDays(new Date(), -31).toISOString(),
       },
-      {
-        list: [
-          {
-            isActive: true,
-            nameKey: 'WIP_ENABLE_COLLECTIVE_DMS_TRACKING',
-          },
-        ],
-      }
-    )
+    })
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     // Then

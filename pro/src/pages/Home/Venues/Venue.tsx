@@ -12,7 +12,6 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
   VenueEvents,
 } from 'core/FirebaseEvents/constants'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullDisclosureClose from 'icons/full-disclosure-close.svg'
 import fullDisclosureOpen from 'icons/full-disclosure-open.svg'
@@ -66,9 +65,6 @@ const Venue = ({
     }),
   ].join('?')
 
-  const isCollectiveDmsTrackingActive = useActiveFeature(
-    'WIP_ENABLE_COLLECTIVE_DMS_TRACKING'
-  )
   const hasAdageIdForMoreThan30Days =
     hasAdageId &&
     !!adageInscriptionDate &&
@@ -84,7 +80,6 @@ const Venue = ({
     )
 
   const shouldDisplayEACInformationSection =
-    isCollectiveDmsTrackingActive &&
     Boolean(dmsInformations) &&
     !hasAdageIdForMoreThan30Days &&
     !hasRefusedApplicationForMoreThan30Days
