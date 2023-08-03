@@ -310,6 +310,8 @@ export const OfferFilters = ({
               />
             </ModalFilterLayout>
           </AdageButtonFilter>
+        </FormLayout.Row>
+        <FormLayout.Row className={styles['filter-container-filter']}>
           <AdageButtonFilter
             isActive={formik.values.students.length > 0}
             title="Niveau scolaire"
