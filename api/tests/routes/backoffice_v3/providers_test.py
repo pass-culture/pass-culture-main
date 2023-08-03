@@ -66,6 +66,8 @@ class CreateProviderTest(PostEndpointHelper):
             "postal_code": "75008",
             "siren": "123456789",
             "logo_url": "https://example.org/image.png",
+            "booking_external_url": "https://example.org/booking",
+            "cancel_external_url": "https://example.org/cancel",
             "enabled_for_pro": False,
             "is_active": True,
         }
@@ -83,6 +85,8 @@ class CreateProviderTest(PostEndpointHelper):
         assert created_provider.logoUrl == form_data["logo_url"]
         assert created_provider.enabledForPro == form_data["enabled_for_pro"]
         assert created_provider.isActive == form_data["is_active"]
+        assert created_provider.bookingExternalUrl == form_data["booking_external_url"]
+        assert created_provider.cancelExternalUrl == form_data["cancel_external_url"]
 
         assert created_provider.offererProvider is not None
         created_offerer = created_provider.offererProvider.offerer
@@ -104,6 +108,8 @@ class CreateProviderTest(PostEndpointHelper):
             "postal_code": "38000",
             "siren": offerer.siren,
             "logo_url": "https://example.org/image.png",
+            "booking_external_url": "https://example.org/booking",
+            "cancel_external_url": "https://example.org/cancel",
             "enabled_for_pro": False,
             "is_active": True,
         }
@@ -121,6 +127,8 @@ class CreateProviderTest(PostEndpointHelper):
         assert created_provider.logoUrl == form_data["logo_url"]
         assert created_provider.enabledForPro == form_data["enabled_for_pro"]
         assert created_provider.isActive == form_data["is_active"]
+        assert created_provider.bookingExternalUrl == form_data["booking_external_url"]
+        assert created_provider.cancelExternalUrl == form_data["cancel_external_url"]
 
         assert offerers_models.Offerer.query.count() == 1
         assert created_provider.offererProvider.offerer == offerer
@@ -145,6 +153,8 @@ class UpdateProviderTest(PostEndpointHelper):
         form_data = {
             "name": "Individual Offer API consumer",
             "logo_url": "https://example.org/image.png",
+            "booking_external_url": "https://example.org/booking",
+            "cancel_external_url": "https://example.org/cancel",
             "enabled_for_pro": False,
             "is_active": True,
         }
@@ -160,6 +170,8 @@ class UpdateProviderTest(PostEndpointHelper):
         assert updated_provider.logoUrl == form_data["logo_url"]
         assert updated_provider.enabledForPro == form_data["enabled_for_pro"]
         assert updated_provider.isActive == form_data["is_active"]
+        assert updated_provider.bookingExternalUrl == form_data["booking_external_url"]
+        assert updated_provider.cancelExternalUrl == form_data["cancel_external_url"]
         assert not updated_provider.apiKeys
 
         assert offerer.name != form_data["name"]

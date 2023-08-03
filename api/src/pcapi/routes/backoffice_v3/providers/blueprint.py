@@ -51,8 +51,8 @@ def get_create_provider_form() -> utils.BackofficeResponse:
         form=form,
         dst=url_for("backoffice_v3_web.providers.create_provider"),
         div_id="create-provider",  # must be consistent with parameter passed to build_lazy_modal
-        title="Créer un prestataire qui se synchronisera avec le pass Culture",
-        button_text="Créer le prestataire",
+        title="Créer un partenaire technique qui se synchronisera avec le pass Culture",
+        button_text="Créer le partenaire",
     )
 
 
@@ -71,6 +71,8 @@ def create_provider() -> utils.BackofficeResponse:
             logoUrl=form.logo_url.data,
             enabledForPro=form.enabled_for_pro.data,
             isActive=form.is_active.data,
+            bookingExternalUrl=form.booking_external_url.data,
+            cancelExternalUrl=form.cancel_external_url.data,
         )
         offerer, is_offerer_new = _get_or_create_offerer(form)
         offerer_provider = offerers_models.OffererProvider(offerer=offerer, provider=provider)
@@ -121,6 +123,8 @@ def get_update_provider_form(provider_id: int) -> utils.BackofficeResponse:
         logo_url=provider.logoUrl,
         enabled_for_pro=provider.enabledForPro,
         is_active=provider.isActive,
+        booking_external_url=provider.bookingExternalUrl,
+        cancel_external_url=provider.cancelExternalUrl,
     )
 
     return render_template(
@@ -128,8 +132,8 @@ def get_update_provider_form(provider_id: int) -> utils.BackofficeResponse:
         form=form,
         dst=url_for("backoffice_v3_web.providers.update_provider", provider_id=provider_id),
         div_id=f"update-provider-{provider_id}",  # must be consistent with parameter passed to build_lazy_modal
-        title="Modifier un prestataire synchronisé avec le pass Culture",
-        button_text="Modifier le prestataire",
+        title="Modifier un partenaire technique synchronisé avec le pass Culture",
+        button_text="Modifier le partenaire",
     )
 
 
@@ -147,6 +151,8 @@ def update_provider(provider_id: int) -> utils.BackofficeResponse:
     provider.logoUrl = form.logo_url.data
     provider.enabledForPro = form.enabled_for_pro.data
     provider.isActive = form.is_active.data
+    provider.bookingExternalUrl = form.booking_external_url.data
+    provider.cancelExternalUrl = form.cancel_external_url.data
 
     try:
         db.session.add(provider)

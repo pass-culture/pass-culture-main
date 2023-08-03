@@ -34,6 +34,20 @@ class CreateProviderForm(FlaskForm):
             wtforms.validators.Length(max=1024, message="Doit contenir moins de %(max)d caractères"),
         ),
     )
+    booking_external_url = fields.PCOptStringField(
+        "URL de la route de validation de reservation",
+        validators=(
+            wtforms.validators.Optional(""),
+            wtforms.validators.Length(max=1024, message="Doit contenir moins de %(max)d caractères"),
+        ),
+    )
+    cancel_external_url = fields.PCOptStringField(
+        "URL de la route d'annulation de reservation",
+        validators=(
+            wtforms.validators.Optional(""),
+            wtforms.validators.Length(max=1024, message="Doit contenir moins de %(max)d caractères"),
+        ),
+    )
     enabled_for_pro = fields.PCSwitchBooleanField("Actif pour les pros", default="checked")
     is_active = fields.PCSwitchBooleanField("Actif", default="checked")
 
