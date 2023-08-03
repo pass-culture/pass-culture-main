@@ -1,5 +1,3 @@
-import './AllocineProviderFormDialog.scss'
-
 import React from 'react'
 
 import { PostVenueProviderBody } from 'apiClient/v1'
@@ -8,6 +6,8 @@ import DialogBox from 'components/DialogBox/DialogBox'
 import AllocineProviderForm, {
   FormValuesProps,
 } from '../AllocineProviderForm/AllocineProviderForm'
+
+import styles from './AllocineProviderFormDialog.module.scss'
 
 interface AllocineProviderFormDialogProps {
   initialValues: FormValuesProps
@@ -28,14 +28,15 @@ const AllocineProviderFormDialog = ({
 }: AllocineProviderFormDialogProps) => {
   return (
     <DialogBox
-      extraClassNames="allocine-provider-form-dialog"
+      hasCloseButton
+      extraClassNames={styles['allocine-provider-form-dialog']}
       labelledBy="allocine-provider-form-dialog"
       onDismiss={onCancel}
     >
-      <div className="title">
+      <div className={styles['title']}>
         <strong>Modifier les paramètres de mes offres</strong>
       </div>
-      <div className="explanation">
+      <div className={styles['explanation']}>
         Les modifications s’appliqueront uniquement aux nouvelles offres créées.
         La modification doit être faite manuellement pour les offres existantes.
       </div>
