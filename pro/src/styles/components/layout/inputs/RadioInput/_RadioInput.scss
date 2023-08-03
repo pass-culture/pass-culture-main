@@ -14,44 +14,40 @@ input[type="radio"] {
   width: rem.torem(20px);
 
   &:checked {
-    background:
-      radial-gradient(
-        colors.$grey-dark 0%,
-        colors.$grey-dark 40%,
+    background: radial-gradient(
+      colors.$grey-dark 0%,
+      colors.$grey-dark 40%,
+      transparent 50%,
+      transparent
+    );
+
+    &:hover {
+      background: radial-gradient(
+        colors.$primary 0%,
+        colors.$primary 40%,
         transparent 50%,
         transparent
       );
-
-    &:hover {
-      background:
-        radial-gradient(
-          colors.$primary 0%,
-          colors.$primary 40%,
-          transparent 50%,
-          transparent
-        );
       border-color: colors.$primary;
     }
 
     &:focus {
-      background:
-        radial-gradient(
-          colors.$primary-dark 0%,
-          colors.$primary-dark 40%,
-          transparent 50%,
-          transparent
-        );
+      background: radial-gradient(
+        colors.$primary-dark 0%,
+        colors.$primary-dark 40%,
+        transparent 50%,
+        transparent
+      );
       border-color: colors.$primary-dark;
     }
 
     &:disabled {
-      background:
-        radial-gradient(
-          colors.$grey-medium 0%,
-          colors.$grey-medium 40%,
-          transparent 50%,
-          transparent
-        );
+      background: radial-gradient(
+        colors.$grey-medium 0%,
+        colors.$grey-medium 40%,
+        transparent 50%,
+        transparent
+      );
       border-color: colors.$grey-medium;
       cursor: not-allowed;
       opacity: 1;
@@ -70,40 +66,6 @@ input[type="radio"] {
     &:disabled {
       border-color: colors.$grey-medium;
       opacity: 1;
-    }
-  }
-}
-
-.input-radio {
-  align-items: center;
-  display: flex;
-
-  .input-radio-label {
-    display: flex;
-    flex-direction: column;
-
-    &.disabled {
-      color: colors.$grey-medium;
-      fill: colors.$grey-medium;
-    }
-
-    .input-radio-sub-label {
-      @include fonts.caption;
-
-      color: colors.$grey-dark;
-      margin-top: rem.torem(8px);
-
-      &.disabled {
-        color: colors.$grey-medium;
-      }
-    }
-  }
-
-  .input-radio-input {
-    align-self: flex-start;
-
-    &.error:not(:focus-within) {
-      border: rem.torem(2px) solid colors.$red-error;
     }
   }
 }
