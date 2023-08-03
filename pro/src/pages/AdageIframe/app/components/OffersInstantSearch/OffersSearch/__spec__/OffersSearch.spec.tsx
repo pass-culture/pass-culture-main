@@ -67,6 +67,7 @@ describe('offersSearch component', () => {
       refine: vi.fn(),
       currentRefinement: '',
       isSearchStalled: false,
+      setQuery: vi.fn(),
     }
     vi.spyOn(pcapi, 'getEducationalDomains').mockResolvedValue([])
   })

@@ -37,6 +37,7 @@ export enum LocalisationFilterStates {
 
 export interface SearchProps extends SearchBoxProvided {
   venueFilter: VenueResponse | null
+  setQuery: (newQuery: string) => void
 }
 
 export interface SearchFormValues {
@@ -57,6 +58,7 @@ enum OfferTab {
 export const OffersSearchComponent = ({
   venueFilter,
   refine,
+  setQuery,
 }: SearchProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [activeTab, setActiveTab] = useState(OfferTab.ALL)
@@ -118,6 +120,7 @@ export const OffersSearchComponent = ({
   const resetForm = () => {
     setlocalisationFilterState(LocalisationFilterStates.NONE)
     formik.setValues(ADAGE_FILTERS_DEFAULT_VALUES)
+    setQuery('')
     formik.handleSubmit()
   }
 

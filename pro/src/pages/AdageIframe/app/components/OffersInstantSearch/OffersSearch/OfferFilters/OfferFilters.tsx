@@ -82,7 +82,6 @@ export const OfferFilters = ({
     formik.handleSubmit()
     setModalOpenStatus(prevState => ({ ...prevState, [modalName]: false }))
   }
-
   useEffect(() => {
     const loadFiltersOptions = async () => {
       const domainsResponse = await getEducationalDomainsOptionsAdapter()
