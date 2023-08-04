@@ -26,7 +26,7 @@ textarea {
 
 body {
   @include fonts.body;
-  
+
   background-color: colors.$white;
   height: 100%;
 }
@@ -63,13 +63,6 @@ ul {
 
 pre {
   background-color: colors.$grey-medium;
-}
-
-input[type="radio"],
-input[type="date"],
-select,
-button {
-  cursor: pointer;
 }
 
 .main-list {
