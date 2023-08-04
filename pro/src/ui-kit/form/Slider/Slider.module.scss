@@ -1,0 +1,25 @@
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_a11y.scss" as a11y;
+@use "styles/mixins/_fonts.scss" as fonts;
+
+.slider {
+  accent-color: colors.$primary;
+  width: 100%;
+}
+
+.slider-value {
+  @include fonts.button;
+}
+
+.min-max-container {
+  @include fonts.caption;
+
+  color: colors.$grey-dark;
+  display: flex;
+  justify-content: space-between;
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
+}
