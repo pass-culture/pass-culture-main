@@ -1228,7 +1228,7 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
         search.async_index_offer_ids([offer.id])
 
 
-def whitelist_product(idAtProviders: str) -> None:
+def whitelist_product(idAtProviders: str) -> models.Product | None:
     product = (
         models.Product.query.filter(models.Product.can_be_synchronized == False)
         .filter_by(idAtProviders=idAtProviders)
@@ -1238,12 +1238,15 @@ def whitelist_product(idAtProviders: str) -> None:
         product.isGcuCompatible = True
         product.isSynchronizationCompatible = True
         repository.save(product)
-        return
+        return product
 
     product = get_new_product_from_ean13(idAtProviders)
     if product:
         db.session.add(product)
         db.session.commit()
+        return product
+
+    return None
 
 
 def batch_delete_draft_offers(query: BaseQuery) -> None:
