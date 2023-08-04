@@ -1,5 +1,7 @@
 import * as yup from 'yup'
 
+export const MAX_STOCKS_QUANTITY = 1000000
+
 export const getValidationSchema = (
   /* istanbul ignore next: DEBT, TO FIX */
   minQuantity: number | null = null
@@ -16,7 +18,11 @@ export const getValidationSchema = (
       .number()
       .nullable()
       .typeError('Doit être un nombre')
-      .min(0, 'Doit être positif'),
+      .min(0, 'Doit être positif')
+      .max(
+        MAX_STOCKS_QUANTITY,
+        'Veuillez modifier la quantité. Celle-ci ne peut pas être supérieure à 1 million'
+      ),
     activationCodes: yup.array(),
     isDuo: yup.boolean(),
   }
