@@ -186,6 +186,7 @@ def add_event(
 def cancel_latest_event(
     booking: bookings_models.Booking | educational_models.CollectiveBooking,
     motive: models.FinanceEventMotive,
+    commit: bool = False,
 ) -> models.FinanceEvent | None:
     event = models.FinanceEvent.query.filter(
         (models.FinanceEvent.booking == booking)
@@ -207,7 +208,7 @@ def cancel_latest_event(
             extra={"booking": booking.id},
         )
         return None
-    pricing = _cancel_event_pricing(event, models.PricingLogReason.MARK_AS_UNUSED)
+    pricing = _cancel_event_pricing(event, models.PricingLogReason.MARK_AS_UNUSED, commit=commit)
     event.status = models.FinanceEventStatus.CANCELLED
     db.session.flush()
     logger.info(
