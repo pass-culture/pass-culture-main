@@ -72,6 +72,7 @@ describe('app', () => {
       name: 'Librairie de Paris',
       publicName: "Lib de Par's",
       relative: [],
+      departementCode: '75',
     }
     global.window = Object.create(window)
     const url = 'https://www.example.com'

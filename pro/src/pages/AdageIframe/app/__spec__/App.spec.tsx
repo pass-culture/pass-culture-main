@@ -122,6 +122,7 @@ describe('app', () => {
         name: 'Librairie de Paris',
         publicName: "Lib de Par's",
         relative: [],
+        departementCode: '75',
       }
 
       vi.spyOn(apiAdage, 'authenticate').mockResolvedValue({
