@@ -66,8 +66,11 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
             not users_api.is_login_device_a_trusted_device(body.device_info, user)
             and FeatureToggle.WIP_ENABLE_SUSPICIOUS_EMAIL_SEND.is_active()
         ):
-            token = users_api.create_suspicious_login_email_token(login_history, user.id)
-            transactional_mails.send_suspicious_login_email(user, login_history, token)
+            account_suspension_token = users_api.create_suspicious_login_email_token(login_history, user.id)
+            reset_password_token = users_api.create_reset_password_token(user)
+            transactional_mails.send_suspicious_login_email(
+                user, login_history, account_suspension_token, reset_password_token
+            )
 
     users_api.update_last_connection_date(user)
     return authentication.SigninResponse(

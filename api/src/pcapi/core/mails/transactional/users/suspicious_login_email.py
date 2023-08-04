@@ -10,11 +10,22 @@ from pcapi.utils.urls import generate_firebase_dynamic_link
 
 
 def get_suspicious_login_email_data(
-    user: users_models.User, login_info: users_models.LoginDeviceHistory | None, token: str
+    user: users_models.User,
+    login_info: users_models.LoginDeviceHistory | None,
+    account_suspension_token: str,
+    reset_password_token: users_models.Token,
 ) -> models.TransactionalEmailData:
+    # We called `create_reset_password_token()` without explicly
+    # passing an empty expiration date. The token hence has one.
+    assert reset_password_token.expirationDate  # helps mypy
     ACCOUNT_SECURING_LINK = generate_firebase_dynamic_link(
         path="securisation-compte",
-        params={"token": token},
+        params={
+            "token": account_suspension_token,
+            "reset_password_token": reset_password_token.value,
+            "reset_token_expiration_timestamp": int(reset_password_token.expirationDate.timestamp()),
+            "email": user.email,
+        },
     )
 
     localized_login_datetime = utc_datetime_to_department_timezone(
@@ -44,7 +55,10 @@ def get_suspicious_login_email_data(
 
 
 def send_suspicious_login_email(
-    user: users_models.User, login_info: users_models.LoginDeviceHistory | None, token: str
+    user: users_models.User,
+    login_info: users_models.LoginDeviceHistory | None,
+    account_suspension_token: str,
+    reset_password_token: users_models.Token,
 ) -> bool:
-    data = get_suspicious_login_email_data(user, login_info, token)
+    data = get_suspicious_login_email_data(user, login_info, account_suspension_token, reset_password_token)
     return mails.send(recipients=[user.email], data=data)
