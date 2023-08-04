@@ -330,7 +330,7 @@ class DMSContent(common_models.IdentityCheckContent):
 
 UBBLE_REASON_CODE_MAPPING = {
     1201: FraudReasonCode.NETWORK_CONNECTION_ISSUE,  # applicant did not have a sufficient connection
-    1310: FraudReasonCode.BLURRY_VIDEO,  # applicant’s video of their face is too blurry
+    1301: FraudReasonCode.BLURRY_VIDEO,  # applicant’s document video is too blurry
     1320: FraudReasonCode.LACK_OF_LUMINOSITY,  # applicant performed their id verification under poor lighting conditions
     2101: FraudReasonCode.ID_CHECK_EXPIRED,  # applicant presented an expired document
     2102: FraudReasonCode.ID_CHECK_NOT_SUPPORTED,  # applicant presented a document which is not accepted
@@ -338,6 +338,7 @@ UBBLE_REASON_CODE_MAPPING = {
     2201: FraudReasonCode.ID_CHECK_NOT_AUTHENTIC,  # applicant presented a photocopy of the document
     2202: FraudReasonCode.ID_CHECK_NOT_AUTHENTIC,  # applicant presented the document on a screen
     2301: FraudReasonCode.ID_CHECK_NOT_AUTHENTIC,  # applicant has submitted a counterfeit or falsification
+    2401: FraudReasonCode.ID_CHECK_DATA_MATCH,  # applicant’s identity does not match with the expected one
 }
 
 
