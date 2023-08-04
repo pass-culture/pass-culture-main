@@ -43,9 +43,13 @@ const BaseInput = ({
       <input
         type="radio"
         {...props}
-        className={cn(styles[`base-radio-${variant}-input`], {
-          [styles['has-error']]: hasError,
-        })}
+        className={cn(
+          styles[`base-radio-input`],
+          styles[`base-radio-${variant}-input`],
+          {
+            [styles['has-error']]: hasError,
+          }
+        )}
         aria-invalid={hasError}
         id={id}
       />

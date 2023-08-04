@@ -18,58 +18,59 @@
       cursor: default;
     }
   }
-
-  &-primary-input {
-    appearance: none;
-    border: rem.torem(2px) solid forms.$input-border-color;
-    border-radius: 50%;
-    box-shadow: inset 0 0 0 rem.torem(10px) colors.$white;
-    background-color: colors.$white;
-    transition: border 150ms ease, background 150ms ease, box-shadow 150ms ease;
-
-    &.has-error {
-      border-color: forms.$input-border-color-error;
-    }
-
-    &:checked.has-error {
-      box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
-      background-color: forms.$input-border-color-error;
-    }
-
-    &:disabled {
-      cursor: default;
-      border-color: forms.$input-border-color-disabled;
-    }
-
-    &:checked:disabled {
-      box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
-      background-color: forms.$input-border-color-disabled;
-    }
-  }
 }
 
-// Using input selector to override styles defines in _RadioInput.scss
-.base-radio-primary {
-  input[type="radio"] {
-    &:checked {
-      box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
-      border-color: colors.$primary;
-      background: radial-gradient(
-        colors.$primary 0%,
-        colors.$primary 40%,
-        transparent 50%,
-        transparent
-      );
-    }
+.base-radio-input {
+  height: rem.torem(20px);
+  width: rem.torem(20px);
+  border: rem.torem(2px) solid forms.$input-border-color;
+  border-radius: 50%;
+  background-color: colors.$white;
+  flex: 0 0 auto;
+  font-size: inherit;
+  margin-right: rem.torem(8px);
+  appearance: none;
+  outline: none;
+  box-shadow: inset 0 0 0 rem.torem(10px) colors.$white;
+  transition:
+    border 150ms ease,
+    background 150ms ease,
+    box-shadow 150ms ease;
+}
 
-    &:checked:disabled {
+.base-radio-primary-input {
+  &:hover,
+  &:focus {
+    border-color: forms.$input-border-color-focus;
+  }
+
+  &:disabled {
+    cursor: default;
+    border-color: forms.$input-border-color-disabled;
+  }
+
+  &.has-error {
+    border-color: forms.$input-border-color-error;
+  }
+
+  &:checked {
+    box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
+    border-color: colors.$primary;
+    background: radial-gradient(
+      colors.$primary 0%,
+      colors.$primary 40%,
+      transparent 50%,
+      transparent
+    );
+
+    &:disabled {
       box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
       background-color: forms.$input-border-color-disabled;
     }
 
-    &:hover,
-    &:focus {
-      border-color: forms.$input-border-color-focus;
+    &.has-error {
+      box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
+      background-color: forms.$input-border-color-error;
     }
   }
 }
@@ -89,36 +90,33 @@
   }
 }
 
-// Using input selector to override styles defines in _RadioInput.scss
-.base-radio-secondary {
-  input[type="radio"] {
-    border: rem.torem(2px) solid colors.$grey-dark;
-    width: rem.torem(16px);
-    height: rem.torem(16px);
+.base-radio-secondary-input {
+  border: rem.torem(2px) solid colors.$grey-dark;
+  width: rem.torem(16px);
+  height: rem.torem(16px);
 
-    &:checked,
-    &:hover:checked,
-    &:focus:checked {
-      border-color: colors.$tertiary;
-      background: radial-gradient(
-        colors.$tertiary 0%,
-        colors.$tertiary 40%,
-        transparent 50%,
-        transparent
-      );
-    }
+  &:checked,
+  &:hover:checked,
+  &:focus:checked {
+    border-color: colors.$tertiary;
+    background: radial-gradient(
+      colors.$tertiary 0%,
+      colors.$tertiary 40%,
+      transparent 50%,
+      transparent
+    );
+  }
 
-    &:hover:not(:checked, :disabled),
-    &:focus:not(:checked, :disabled),
-    &:hover,
-    &:focus {
-      border-color: colors.$grey-dark;
-    }
+  &:hover:not(:checked, :disabled),
+  &:focus:not(:checked, :disabled),
+  &:hover,
+  &:focus {
+    border-color: colors.$grey-dark;
+  }
 
-    &:checked:disabled {
-      box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
-      background-color: transparent;
-    }
+  &:checked:disabled {
+    box-shadow: inset 0 0 0 rem.torem(2px) colors.$white;
+    background-color: transparent;
   }
 }
 
