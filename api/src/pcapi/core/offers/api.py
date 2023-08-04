@@ -894,21 +894,18 @@ def add_criteria_to_offers(
 
 
 def reject_inappropriate_products(ean: str, send_booking_cancellation_emails: bool = True) -> bool:
-    products = models.Product.query.filter(models.Product.extraData["ean"].astext == ean).all()
+    product_query = models.Product.query.filter(models.Product.extraData["ean"].astext == ean)
+    product_ids = [p.id for p in product_query.with_entities(models.Product.id)]
 
-    if not products:
+    if not product_ids:
         return False
 
-    for product in products:
-        product.isGcuCompatible = False
-        db.session.add(product)
-
     offers_query = models.Offer.query.filter(
-        models.Offer.productId.in_(p.id for p in products),
+        models.Offer.productId.in_(product_query.with_entities(models.Product.id)),
         models.Offer.validation != models.OfferValidationStatus.REJECTED,
-    ).options(sa.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings))
+    )
 
-    offers = offers_query.all()
+    offers = offers_query.options(sa.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings)).all()
 
     offers_query.update(
         values={
@@ -928,23 +925,31 @@ def reject_inappropriate_products(ean: str, send_booking_cancellation_emails: bo
             for booking in bookings:
                 send_booking_cancellation_emails_to_user_and_offerer(booking, reason=BookingCancellationReasons.FRAUD)
 
-    try:
-        db.session.commit()
-    except Exception as exception:  # pylint: disable=broad-except
-        logger.exception(
-            "Could not mark product and offers as inappropriate: %s",
-            extra={"ean": ean, "products": [p.id for p in products], "exc": str(exception)},
-        )
-        return False
-    logger.info(
-        "Rejected inappropriate products",
-        extra={"ean": ean, "products": [p.id for p in products], "offers": offer_ids},
+    product_query.update(
+        values={"isGcuCompatible": False},
+        synchronize_session="fetch",
     )
 
     if offer_ids:
         favorites = users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).all()
         repository.delete(*favorites)
+        # users_models.Favorite.query.filter(
+        #     users_models.Favorite.offerId.in_(offers_query.with_entities(models.Offer.id))
+        # ).delete(synchronize_session=False)
         search.async_index_offer_ids(offer_ids)
+
+    try:
+        db.session.commit()
+    except Exception as exception:  # pylint: disable=broad-except
+        logger.exception(
+            "Could not mark product and offers as inappropriate: %s",
+            extra={"ean": ean, "products": product_ids, "exc": str(exception)},
+        )
+        return False
+    logger.info(
+        "Rejected inappropriate products",
+        extra={"ean": ean, "products": product_ids, "offers": offer_ids},
+    )
 
     return True
 
