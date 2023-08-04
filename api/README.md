@@ -323,6 +323,8 @@ et choisir le python précédemment installé en local (virtual env ou pyenv).
 
 ## Ecriture d'une tâche automatique (cron)
 
-Les commandes à lancer régulièrement (par example des synchro journalières) sont définies dans le fichier src/pcapi/scheduled_tasks/commands.py
+Les commandes à lancer régulièrement (par example des synchro journalières) sont définies dans les fichiers `src/pcapi/*/commands.py`
+Pour que les commandes soient enregistrées par Flask, il faut que le fichier `path/to/commands.py` soit référencé dans la fonction `install_commands` de `api/src/pcapi/scripts/install.py`
+
 Pour que les commandes soient exécutées, il faut ouvrir une PR sur le repo pass-culture/pass-culture-deployment
 Les infos sont dans le [README](https://github.com/pass-culture/pass-culture-deployment)
