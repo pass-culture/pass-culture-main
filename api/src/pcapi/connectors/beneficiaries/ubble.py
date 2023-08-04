@@ -67,7 +67,7 @@ def _parse_reason_codes(response: dict) -> list[fraud_models.FraudReasonCode]:
         ]
     }
     """
-    default = fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE
+    default = fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
     reason_codes_data = _get_data_relationships(response, "reason-codes")
     reason_codes_numbers = [int(item["id"]) for item in reason_codes_data["data"] if item["type"] == "reason-codes"]
     reason_codes = [fraud_models.UBBLE_REASON_CODE_MAPPING.get(number, default) for number in reason_codes_numbers]

@@ -79,8 +79,10 @@ def _ubble_result_fraud_item(user: users_models.User, content: fraud_models.Ubbl
             )
     elif content.score == ubble_fraud_models.UbbleScore.UNDECIDABLE.value:
         status = fraud_models.FraudStatus.SUSPICIOUS
-        reason_codes.add(fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE)
-        detail += " | " + _ubble_message_from_code(fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE)
+        # Add UNPROCESSABLE only if there are no other reason codes that would be more accurate
+        if not reason_codes:
+            reason_codes.add(fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE)
+            detail += " | " + _ubble_message_from_code(fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE)
 
     if not status:
         # This should never happen
