@@ -293,9 +293,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
 
     expect(api.patchOffer).toHaveBeenCalledTimes(1)
     expect(api.getOffer).toHaveBeenCalledTimes(1)
-    expect(
-      await screen.findByTestId('global-notification-success')
-    ).toBeInTheDocument()
+
     expect(
       await screen.findByText('There is the stock route content')
     ).toBeInTheDocument()
@@ -322,9 +320,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
 
     expect(api.patchOffer).toHaveBeenCalledTimes(1)
     expect(api.getOffer).toHaveBeenCalledTimes(1)
-    expect(
-      await screen.findByTestId('global-notification-success')
-    ).toBeInTheDocument()
+
     expect(
       await screen.findByText('There is the stock route content')
     ).toBeInTheDocument()

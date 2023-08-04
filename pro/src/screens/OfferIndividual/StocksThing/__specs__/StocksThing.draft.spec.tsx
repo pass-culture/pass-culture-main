@@ -144,24 +144,4 @@ describe('screens:StocksThing::draft', () => {
     expect(screen.getByTestId('stock-thing-form')).toBeInTheDocument()
     expect(screen.queryByText(/Next page/)).not.toBeInTheDocument()
   })
-
-  it('should show a success notification if nothing has been touched and click on next step', async () => {
-    renderStockThingScreen(props, contextValue)
-    vi.spyOn(api, 'patchOffer').mockResolvedValue(
-      {} as GetIndividualOfferResponseModel
-    )
-
-    await userEvent.click(
-      screen.getByRole('button', {
-        name: 'Étape suivante',
-      })
-    )
-
-    expect(api.upsertStocks).not.toHaveBeenCalled()
-    expect(
-      screen.getByText('Brouillon sauvegardé dans la liste des offres')
-    ).toBeInTheDocument()
-    expect(screen.queryByTestId('stock-thing-form')).not.toBeInTheDocument()
-    expect(screen.queryByText(/Next page/)).toBeInTheDocument()
-  })
 })

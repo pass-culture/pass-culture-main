@@ -250,9 +250,6 @@ describe('screens:OfferIndividual::Informations::creation', () => {
     expect(
       await screen.findByText('There is the stock route content')
     ).toBeInTheDocument()
-    expect(
-      await screen.findByTestId('global-notification-success')
-    ).toBeInTheDocument()
     expect(pcapi.postThumbnail).not.toHaveBeenCalled()
   })
 
@@ -338,9 +335,6 @@ describe('screens:OfferIndividual::Informations::creation', () => {
       withdrawalType: null,
     })
     expect(api.getOffer).toHaveBeenCalledTimes(1)
-    expect(
-      await screen.findByTestId('global-notification-success')
-    ).toBeInTheDocument()
     expect(
       await screen.findByText('There is the stock route content')
     ).toBeInTheDocument()

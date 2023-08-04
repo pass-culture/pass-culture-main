@@ -194,7 +194,10 @@ export const StocksEventCreation = ({
         offerId: offer.id,
       })
       setIsClickingFromActionBar(false)
-      notify.success(getSuccessMessage(mode))
+
+      if (saveDraft) {
+        notify.success(getSuccessMessage(mode))
+      }
     }
 
   const hasUnsavedStocks =

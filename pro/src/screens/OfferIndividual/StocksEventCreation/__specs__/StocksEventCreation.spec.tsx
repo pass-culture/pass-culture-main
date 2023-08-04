@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays } from 'date-fns'
 import format from 'date-fns/format'
@@ -268,10 +268,9 @@ describe('navigation and submit', () => {
 
     await userEvent.click(screen.getByText('Étape suivante'))
 
-    expect(
-      await screen.findByText('Brouillon sauvegardé dans la liste des offres')
-    ).toBeInTheDocument()
-    expect(screen.getByText('Next page')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('Next page')).toBeInTheDocument()
+    })
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(
