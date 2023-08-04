@@ -173,6 +173,7 @@ class ExtraDataFieldEnum(Enum):
     SPEAKER = "speaker"
     STAGE_DIRECTOR = "stageDirector"
     VISA = "visa"
+    GTL_ID = "gtl_id"
 
 
 @dataclass
@@ -725,6 +726,7 @@ LIVRE_PAPIER = Subcategory(
     conditional_fields={
         ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
         ExtraDataFieldEnum.EAN.value: ConditionalField(),
+        ExtraDataFieldEnum.GTL_ID.value: ConditionalField(),
     },
     can_expire=True,
     can_be_duo=False,
