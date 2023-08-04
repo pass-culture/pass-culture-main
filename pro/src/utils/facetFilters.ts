@@ -10,12 +10,20 @@ export const getDefaultFacetFilterUAICodeValue = (
   if (uai) {
     institutionIdFilters.push(`offer.educationalInstitutionUAICode:${uai}`)
   }
+  const venueDepartmentFilter =
+    venueFilter && venueFilter.departementCode !== departmentCode
+      ? [
+          `venue.departmentCode:${venueFilter?.departementCode}`,
+          `offer.interventionArea:${venueFilter?.departementCode}`,
+        ]
+      : []
 
-  return departmentCode && !venueFilter
+  return departmentCode
     ? [
         [
           `venue.departmentCode:${departmentCode}`,
           `offer.interventionArea:${departmentCode}`,
+          ...venueDepartmentFilter,
         ],
         institutionIdFilters,
       ]
