@@ -2386,16 +2386,6 @@
     estree-walker "^2.0.2"
     picomatch "^2.3.1"
 
-"@sentry-internal/tracing@7.61.0":
-  version "7.61.0"
-  resolved "https://registry.yarnpkg.com/@sentry-internal/tracing/-/tracing-7.61.0.tgz#5a0dd4a9a0b41f2e22904430f3fe0216f36ee086"
-  integrity sha512-zTr+MXEG4SxNxif42LIgm2RQn+JRXL2NuGhRaKSD2i4lXKFqHVGlVdoWqY5UfqnnJPokiTWIj9ejR8I5HV8Ogw==
-  dependencies:
-    "@sentry/core" "7.61.0"
-    "@sentry/types" "7.61.0"
-    "@sentry/utils" "7.61.0"
-    tslib "^2.4.1 || ^1.9.3"
-
 "@sentry-internal/tracing@7.61.1":
   version "7.61.1"
   resolved "https://registry.yarnpkg.com/@sentry-internal/tracing/-/tracing-7.61.1.tgz#8055b7dfbf89b7089a591b27e05484d5f6773948"
@@ -2416,15 +2406,6 @@
     "@sentry/replay" "7.61.1"
     "@sentry/types" "7.61.1"
     "@sentry/utils" "7.61.1"
-    tslib "^2.4.1 || ^1.9.3"
-
-"@sentry/core@7.61.0":
-  version "7.61.0"
-  resolved "https://registry.yarnpkg.com/@sentry/core/-/core-7.61.0.tgz#0de4f73055bd156c5c0cbac50bb814b272567188"
-  integrity sha512-zl0ZKRjIoYJQWYTd3K/U6zZfS4GDY9yGd2EH4vuYO4kfYtEp/nJ8A+tfAeDo0c9FGxZ0Q+5t5F4/SfwbgyyQzg==
-  dependencies:
-    "@sentry/types" "7.61.0"
-    "@sentry/utils" "7.61.0"
     tslib "^2.4.1 || ^1.9.3"
 
 "@sentry/core@7.61.1":
@@ -2456,30 +2437,17 @@
     "@sentry/types" "7.61.1"
     "@sentry/utils" "7.61.1"
 
-"@sentry/tracing@^7.61.0":
-  version "7.61.0"
-  resolved "https://registry.yarnpkg.com/@sentry/tracing/-/tracing-7.61.0.tgz#d4ca61eba9a5e21bd021b7f1904c6f503a7d28c4"
-  integrity sha512-asGbw3n04qkM5zUCPlGg9i52GEHq9Nmore38SJFN0L4N/YH6EPJLEUfNm2jFvXWCo96kq/dPKnyjOEuPccwhIA==
+"@sentry/tracing@^7.61.1":
+  version "7.61.1"
+  resolved "https://registry.yarnpkg.com/@sentry/tracing/-/tracing-7.61.1.tgz#141cf6a8f1eca344ac3e8d9e377a412c438b1227"
+  integrity sha512-iKyt7HU5LFHktEvDd7bpP4Ft7Kxj4SgoosP6WVcqBqH+84gzC+fzeTltaZTc86X0Xvb4+SEhdN6POwagS033HQ==
   dependencies:
-    "@sentry-internal/tracing" "7.61.0"
-
-"@sentry/types@7.61.0":
-  version "7.61.0"
-  resolved "https://registry.yarnpkg.com/@sentry/types/-/types-7.61.0.tgz#4243b5ef4658f6b0673bc4372c90e6ec920f78d8"
-  integrity sha512-/GLlIBNR35NKPE/SfWi9W10dK9hE8qTShzsuPVn5wAJxpT3Lb4+dkwmKCTLUYxdkmvRDEudkfOxgalsfQGTAWA==
+    "@sentry-internal/tracing" "7.61.1"
 
 "@sentry/types@7.61.1":
   version "7.61.1"
   resolved "https://registry.yarnpkg.com/@sentry/types/-/types-7.61.1.tgz#225912689459c92e62f0b6e3ff145f6dbf72ff0e"
   integrity sha512-CpPKL+OfwYOduRX9AT3p+Ie1fftgcCPd5WofTVVq7xeWRuerOOf2iJd0v+8yHQ25omgres1YOttDkCcvQRn4Jw==
-
-"@sentry/utils@7.61.0":
-  version "7.61.0"
-  resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-7.61.0.tgz#16944afb2b851af045fb528c0c35b7dea3e1cd3b"
-  integrity sha512-jfj14d0XBFiCU0G6dZZ12SizATiF5Mt4stBGzkM5iS9nXFj8rh1oTT7/p+aZoYzP2JTF+sDzkNjWxyKZkcTo0Q==
-  dependencies:
-    "@sentry/types" "7.61.0"
-    tslib "^2.4.1 || ^1.9.3"
 
 "@sentry/utils@7.61.1":
   version "7.61.1"
