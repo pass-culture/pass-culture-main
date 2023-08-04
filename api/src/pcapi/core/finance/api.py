@@ -1030,7 +1030,10 @@ def _delete_dependent_event_pricings(event: models.FinanceEvent, log_message: st
     logs.delete(synchronize_session=False)
     pricings = models.Pricing.query.filter(models.Pricing.id.in_(pricing_ids))
     pricings.delete(synchronize_session=False)
-    models.FinanceEvent.query.filter(models.FinanceEvent.id.in_(events_already_priced)).update(
+    models.FinanceEvent.query.filter(
+        models.FinanceEvent.id.in_(events_already_priced),
+        models.FinanceEvent.status == models.FinanceEventStatus.PRICED,
+    ).update(
         {"status": models.FinanceEventStatus.READY},
         synchronize_session=False,
     )
@@ -1165,7 +1168,8 @@ def _delete_dependent_pricings(
     models.FinanceEvent.query.filter(
         models.FinanceEvent.id.in_(
             models.Pricing.query.filter(models.Pricing.id.in_(pricing_ids)).with_entities(models.Pricing.eventId)
-        )
+        ),
+        models.FinanceEvent.status == models.FinanceEventStatus.PRICED,
     ).update(
         {"status": models.FinanceEventStatus.READY},
         synchronize_session=False,
