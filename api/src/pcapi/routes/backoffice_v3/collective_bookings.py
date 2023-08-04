@@ -1,12 +1,18 @@
 import datetime
+from io import BytesIO
+import typing
 
 from flask import flash
 from flask import redirect
 from flask import render_template
 from flask import request
+from flask import send_file
 from flask import url_for
+from flask_login import current_user
 import sqlalchemy as sa
 
+from pcapi import settings
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
@@ -157,6 +163,7 @@ def list_collective_bookings() -> utils.BackofficeResponse:
 
     bookings = _get_collective_bookings(form)
 
+    pro_visualisation_link = f"{settings.PRO_URL}collective/bookings{form.pro_view_args}" if form.pro_view_args else ""
     if len(bookings) > form.limit.data:
         flash(
             f"Il y a plus de {form.limit.data} résultats dans la base de données, la liste ci-dessous n'en donne donc "
@@ -175,6 +182,7 @@ def list_collective_bookings() -> utils.BackofficeResponse:
         form=form,
         mark_as_used_booking_form=empty_forms.EmptyForm(),
         cancel_booking_form=empty_forms.EmptyForm(),
+        pro_visualisation_link=pro_visualisation_link,
     )
 
 
@@ -183,6 +191,37 @@ def _redirect_after_collective_booking_action(code: int = 303) -> utils.Backoffi
         return redirect(request.referrer, code)
 
     return redirect(url_for("backoffice_v3_web.collective_bookings.list_collective_bookings"), code)
+
+
+@collective_bookings_blueprint.route("/download-csv", methods=["GET"])
+def get_collective_booking_csv_download() -> utils.BackofficeResponse:
+    form = collective_booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
+    export_data = educational_api_booking.get_collective_booking_report(
+        user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
+        booking_period=(form.from_date.data, form.to_date.data),
+        venue_id=form.venue.data,
+        export_type=bookings_models.BookingExportType.CSV,
+    )
+    buffer = BytesIO(typing.cast(str, export_data).encode("utf-8-sig"))
+    return send_file(buffer, as_attachment=True, download_name="reservations_pass_culture.csv", mimetype="text/csv")
+
+
+@collective_bookings_blueprint.route("/download-xlsx", methods=["GET"])
+def get_collective_booking_xlsx_download() -> utils.BackofficeResponse:
+    form = collective_booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
+    export_data = educational_api_booking.get_collective_booking_report(
+        user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
+        booking_period=(form.from_date.data, form.to_date.data),
+        venue_id=form.venue.data,
+        export_type=bookings_models.BookingExportType.EXCEL,
+    )
+    buffer = BytesIO(typing.cast(bytes, export_data))
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name="reservations_pass_culture.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
 
 
 @collective_bookings_blueprint.route("/<int:collective_booking_id>/mark-as-used", methods=["POST"])

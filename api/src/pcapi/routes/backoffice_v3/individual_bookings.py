@@ -1,22 +1,29 @@
 import datetime
+from io import BytesIO
 import re
+import typing
 
 from flask import flash
 from flask import redirect
 from flask import render_template
 from flask import request
+from flask import send_file
 from flask import url_for
+from flask_login import current_user
 import sqlalchemy as sa
 
+from pcapi import settings
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.bookings import models as bookings_models
+from pcapi.core.bookings import repository as booking_repository
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
+from pcapi.routes.serialization.bookings_recap_serialize import OfferType
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 
@@ -179,6 +186,8 @@ def list_individual_bookings() -> utils.BackofficeResponse:
 
     bookings = _get_individual_bookings(form)
 
+    pro_visualisation_link = f"{settings.PRO_URL}/reservations{form.pro_view_args}" if form.pro_view_args else ""
+
     if len(bookings) > form.limit.data:
         flash(
             f"Il y a plus de {form.limit.data} résultats dans la base de données, la liste ci-dessous n'en donne donc "
@@ -197,6 +206,7 @@ def list_individual_bookings() -> utils.BackofficeResponse:
         form=form,
         mark_as_used_booking_form=empty_forms.EmptyForm(),
         cancel_booking_form=empty_forms.EmptyForm(),
+        pro_visualisation_link=pro_visualisation_link,
     )
 
 
@@ -205,6 +215,39 @@ def _redirect_after_individual_booking_action() -> utils.BackofficeResponse:
         return redirect(request.referrer)
 
     return redirect(url_for("backoffice_v3_web.individual_bookings.list_individual_bookings"))
+
+
+@individual_bookings_blueprint.route("/download-csv", methods=["GET"])
+def get_individual_booking_csv_download() -> utils.BackofficeResponse:
+    form = individual_booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
+    export_data = booking_repository.get_export(
+        user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
+        booking_period=typing.cast(tuple[datetime.date, datetime.date], form.from_to_date.data),
+        venue_id=form.venue.data,
+        offer_type=OfferType.INDIVIDUAL_OR_DUO,
+        export_type=bookings_models.BookingExportType.CSV,
+    )
+    buffer = BytesIO(typing.cast(str, export_data).encode("utf-8-sig"))
+    return send_file(buffer, as_attachment=True, download_name="reservations_pass_culture.csv", mimetype="text/csv")
+
+
+@individual_bookings_blueprint.route("/download-xlsx", methods=["GET"])
+def get_individual_booking_xlsx_download() -> utils.BackofficeResponse:
+    form = individual_booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
+    export_data = booking_repository.get_export(
+        user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
+        booking_period=typing.cast(tuple[datetime.date, datetime.date], form.from_to_date.data),
+        venue_id=form.venue.data,
+        offer_type=OfferType.INDIVIDUAL_OR_DUO,
+        export_type=bookings_models.BookingExportType.EXCEL,
+    )
+    buffer = BytesIO(typing.cast(bytes, export_data))
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name="reservations_pass_culture.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
 
 
 @individual_bookings_blueprint.route("/<int:booking_id>/mark-as-used", methods=["POST"])
