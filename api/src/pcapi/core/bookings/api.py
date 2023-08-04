@@ -398,12 +398,13 @@ def _cancel_booking(
             stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
             db.session.refresh(booking)
             try:
-                finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
-                booking.cancel_booking(reason, cancel_even_if_used)
+                finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED, commit=False)
                 cancelled_event = finance_api.cancel_latest_event(
                     booking,
                     finance_models.FinanceEventMotive.BOOKING_USED,
+                    commit=False,
                 )
+                booking.cancel_booking(reason, cancel_even_if_used)
                 if cancelled_event:
                     finance_api.add_event(
                         booking,
@@ -418,6 +419,7 @@ def _cancel_booking(
             ) as e:
                 if raise_if_error:
                     raise
+                db.session.rollback()
                 logger.info(
                     "%s: %s",
                     type(e).__name__,
