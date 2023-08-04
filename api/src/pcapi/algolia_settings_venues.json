@@ -16,10 +16,6 @@
     "queryLanguages": [
         "fr"
     ],
-     "replicas": [
-        "virtual(venues playlist search)",
-        "virtual(venues playlist search newest)"
-    ],
     "attributesForFaceting": [
         "filterOnly(has_at_least_one_bookable_offer)",
         "filterOnly(tags)",
