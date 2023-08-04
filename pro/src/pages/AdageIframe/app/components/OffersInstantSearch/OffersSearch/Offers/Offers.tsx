@@ -82,7 +82,7 @@ export const OffersComponent = ({
   const newAdageFilters = useActiveFeature('WIP_ENABLE_NEW_ADAGE_FILTERS')
 
   const showDiffuseHelp =
-    isDiffuseHelpActive && submitCount === 1 && isCookieEnabled
+    isDiffuseHelpActive && (submitCount ?? 0) > 0 && isCookieEnabled
 
   useEffect(() => {
     try {
