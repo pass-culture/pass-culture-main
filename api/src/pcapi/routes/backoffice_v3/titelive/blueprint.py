@@ -1,3 +1,5 @@
+import datetime
+
 from flask import flash
 from flask import redirect
 from flask import render_template
@@ -9,12 +11,15 @@ from sqlalchemy import orm
 
 from pcapi.connectors.titelive import GtlIdError
 from pcapi.connectors.titelive import get_by_ean13
+from pcapi.core import search
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers.api import whitelist_product
+import pcapi.core.offers.models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.utils import requests
 
 from . import forms
@@ -97,7 +102,7 @@ def get_add_product_whitelist_confirmation_form(ean: str, title: str) -> utils.B
 def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
     form = forms.OptionalCommentForm()
     try:
-        whitelist_product(ean)
+        product = whitelist_product(ean)
     except offers_exceptions.TiteLiveAPINotExistingEAN:
         flash(f"L'EAN \"{ean}\" n'existe pas chez Titelive", "danger")
     else:
@@ -115,6 +120,25 @@ def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
             flash(f"L'EAN \"{ean}\" n'a pas été rajouté dans la whitelist : {gtl_error}", "danger")
         else:
             flash(f'L\'EAN "{ean}" a été ajouté dans la whitelist', "success")
+
+        if product:
+            offers_query = offers_models.Offer.query.filter(
+                offers_models.Offer.productId == product.id,
+                offers_models.Offer.validation == offers_models.OfferValidationStatus.REJECTED,
+                offers_models.Offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
+            )
+            offer_ids = [o.id for o in offers_query.with_entities(offers_models.Offer.id)]
+
+            if offer_ids:
+                offers_query.update(
+                    values={
+                        "validation": offers_models.OfferValidationStatus.APPROVED,
+                        "lastValidationDate": datetime.datetime.utcnow(),
+                        "lastValidationType": OfferValidationType.MANUAL,
+                    },
+                    synchronize_session="fetch",
+                )
+                search.async_index_offer_ids(offer_ids)
 
     return redirect(url_for(".search_titelive", ean=ean), code=303)
 
