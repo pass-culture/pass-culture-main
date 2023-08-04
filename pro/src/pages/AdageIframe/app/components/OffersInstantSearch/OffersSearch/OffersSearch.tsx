@@ -1,7 +1,7 @@
 import './OldOffersSearch.scss'
 
 import { FormikContext, useFormik } from 'formik'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import * as React from 'react'
 import type { SearchBoxProvided } from 'react-instantsearch-core'
 import { connectSearchBox } from 'react-instantsearch-dom'
@@ -37,7 +37,6 @@ export enum LocalisationFilterStates {
 
 export interface SearchProps extends SearchBoxProvided {
   venueFilter: VenueResponse | null
-  setQuery: (newQuery: string) => void
 }
 
 export interface SearchFormValues {
@@ -58,7 +57,6 @@ enum OfferTab {
 export const OffersSearchComponent = ({
   venueFilter,
   refine,
-  setQuery,
 }: SearchProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [activeTab, setActiveTab] = useState(OfferTab.ALL)
@@ -121,7 +119,6 @@ export const OffersSearchComponent = ({
   const resetForm = () => {
     setlocalisationFilterState(LocalisationFilterStates.NONE)
     formik.setValues(ADAGE_FILTERS_DEFAULT_VALUES)
-    setQuery('')
     formik.handleSubmit()
   }
 
@@ -134,6 +131,9 @@ export const OffersSearchComponent = ({
       filterValues: formik ? formik.values : {},
     })
   }
+  useEffect(() => {
+    refine(venueFilter?.publicName || venueFilter?.name || '')
+  }, [venueFilter])
 
   const formik = useFormik<SearchFormValues>({
     initialValues: computeFiltersInitialValues(
