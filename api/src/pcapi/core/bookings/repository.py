@@ -413,7 +413,6 @@ def _get_filtered_bookings_query(
 
     if event_date:
         bookings_query = bookings_query.filter(field_to_venue_timezone(Stock.beginningDatetime) == event_date)
-
     return bookings_query
 
 

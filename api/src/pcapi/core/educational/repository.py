@@ -543,9 +543,18 @@ def _get_filtered_collective_bookings_query(
             else BOOKING_DATE_STATUS_MAPPING[educational_models.CollectiveBookingStatusFilter.BOOKED]
         )
 
-        collective_bookings_query = collective_bookings_query.filter(
-            field_to_venue_timezone(period_attribute_filter).between(*period, symmetric=True)
-        )
+        if all(period):
+            collective_bookings_query = collective_bookings_query.filter(
+                field_to_venue_timezone(period_attribute_filter).between(*period, symmetric=True)
+            )
+        elif period[0]:
+            collective_bookings_query = collective_bookings_query.filter(
+                field_to_venue_timezone(period_attribute_filter) >= period[0]
+            )
+        elif period[1]:
+            collective_bookings_query = collective_bookings_query.filter(
+                field_to_venue_timezone(period_attribute_filter) <= period[1]
+            )
 
     if venue_id is not None:
         collective_bookings_query = collective_bookings_query.filter(
