@@ -907,36 +907,19 @@ def reject_inappropriate_products(ean: str, send_booking_cancellation_emails: bo
 
     offers = offers_query.options(sa.orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings)).all()
 
-    offers_query.update(
+    offer_updated_counts = offers_query.update(
         values={
             "validation": models.OfferValidationStatus.REJECTED,
             "lastValidationDate": datetime.datetime.utcnow(),
             "lastValidationType": OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
         },
-        synchronize_session="fetch",
+        synchronize_session=False,
     )
-
-    offer_ids = []
-    for offer in offers:
-        offer_ids.append(offer.id)
-        bookings = bookings_api.cancel_bookings_from_rejected_offer(offer)
-
-        if send_booking_cancellation_emails:
-            for booking in bookings:
-                send_booking_cancellation_emails_to_user_and_offerer(booking, reason=BookingCancellationReasons.FRAUD)
 
     product_query.update(
         values={"isGcuCompatible": False},
-        synchronize_session="fetch",
+        synchronize_session=False,
     )
-
-    if offer_ids:
-        favorites = users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).all()
-        repository.delete(*favorites)
-        # users_models.Favorite.query.filter(
-        #     users_models.Favorite.offerId.in_(offers_query.with_entities(models.Offer.id))
-        # ).delete(synchronize_session=False)
-        search.async_index_offer_ids(offer_ids)
 
     try:
         db.session.commit()
@@ -946,10 +929,25 @@ def reject_inappropriate_products(ean: str, send_booking_cancellation_emails: bo
             extra={"ean": ean, "products": product_ids, "exc": str(exception)},
         )
         return False
+
+    offer_ids = []
+    for offer in offers:
+        offer_ids.append(offer.id)
+        bookings = bookings_api.cancel_bookings_from_rejected_offer(offer)
+        if send_booking_cancellation_emails:
+            for booking in bookings:
+                send_booking_cancellation_emails_to_user_and_offerer(booking, reason=BookingCancellationReasons.FRAUD)
+        db.session.commit()
+
     logger.info(
         "Rejected inappropriate products",
-        extra={"ean": ean, "products": product_ids, "offers": offer_ids},
+        extra={"ean": ean, "products": product_ids, "offers": offer_ids, "offer_updated_counts": offer_updated_counts},
     )
+
+    if offer_ids:
+        favorites = users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).all()
+        repository.delete(*favorites)
+        search.async_index_offer_ids(offer_ids)
 
     return True
 
