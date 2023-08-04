@@ -47,9 +47,26 @@ services:
       - postgres
       - redis
       - postgres-test
+      - flask-external-api
     ports:
       - 5001:5001
       - 10002:10002 # debugger port
+    stdin_open: true
+    tty: true
+
+  flask-external-api:
+    build:
+      context: ./external-api-mock
+    working_dir: /tmp/src
+    container_name: pc-external-api-flask
+    volumes:
+      - ./external_api:/usr/src/external_api
+    networks:
+      - web_nw
+    env_file:
+      - env_file
+    ports:
+      - 5003:5003
     stdin_open: true
     tty: true
 
