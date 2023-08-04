@@ -7,8 +7,11 @@ import pytest
 
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.factories import ProductWhitelistFactory
+from pcapi.core.offers import factories as offers_factories
+import pcapi.core.offers.models as offers_models
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import override_settings
+from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice_v3.filters import format_titelive_id_lectorat
 
 from ...connectors.titelive import fixtures
@@ -108,6 +111,7 @@ class AddProductWhitelistTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
     form_data = {"comment": "OK!"}
 
+    @patch("pcapi.core.search.async_index_offer_ids")
     @patch("pcapi.routes.backoffice_v3.titelive.blueprint.get_by_ean13")
     @patch("pcapi.routes.backoffice_v3.titelive.blueprint.whitelist_product")
     @pytest.mark.parametrize(
@@ -117,8 +121,57 @@ class AddProductWhitelistTest(PostEndpointHelper):
             {"comment": ""},
         ],
     )
-    def test_add_product_whitelist(self, mock_whitelist_product, mock_get_by_ean13, authenticated_client, form_data):
+    def test_add_product_with_already_rejected_offers_to_whitelist(
+        self, mock_whitelist_product, mock_get_by_ean13, mocked_async_index_offer_ids, authenticated_client, form_data
+    ):
+        thing_product = offers_factories.ThingProductFactory(
+            extraData={"ean": EAN_SEARCH_FIXTURE["ean"]},
+            description="Tome 1",
+            idAtProviders=str(EAN_SEARCH_FIXTURE["ean"]),
+            name="Immortelle randonnée ; Compostelle malgré moi",
+            subcategoryId="LIVRE_PAPIER",
+        )
         mock_get_by_ean13.return_value = EAN_SEARCH_FIXTURE
+        mock_whitelist_product.return_value = thing_product
+        offers_to_restore = [
+            offers_factories.ThingOfferFactory(
+                idAtProvider=EAN_SEARCH_FIXTURE["ean"],
+                product=thing_product,
+                validation=offers_models.OfferValidationStatus.REJECTED,
+                lastValidationType=OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
+                lastValidationDate=datetime.date.today() - datetime.timedelta(days=2),
+            ),
+            offers_factories.ThingOfferFactory(
+                product=thing_product,
+                validation=offers_models.OfferValidationStatus.REJECTED,
+                lastValidationType=OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
+                lastValidationDate=datetime.date.today() - datetime.timedelta(days=2),
+            ),
+        ]
+        offers_not_to_restore = [
+            offers_factories.ThingOfferFactory(
+                idAtProvider=EAN_SEARCH_FIXTURE["ean"],
+                product=thing_product,
+                validation=offers_models.OfferValidationStatus.REJECTED,
+                lastValidationType=OfferValidationType.AUTO,
+                lastValidationDate=datetime.date.today() - datetime.timedelta(days=2),
+            ),
+            offers_factories.ThingOfferFactory(
+                idAtProvider=EAN_SEARCH_FIXTURE["ean"],
+                product=thing_product,
+                validation=offers_models.OfferValidationStatus.PENDING,
+                lastValidationType=OfferValidationType.AUTO,
+                lastValidationDate=datetime.date.today() - datetime.timedelta(days=2),
+            ),
+            offers_factories.ThingOfferFactory(
+                idAtProvider=EAN_SEARCH_FIXTURE["ean"],
+                product=thing_product,
+                validation=offers_models.OfferValidationStatus.DRAFT,
+                lastValidationType=OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
+                lastValidationDate=datetime.date.today() - datetime.timedelta(days=2),
+            ),
+        ]
+
         assert not fraud_models.ProductWhitelist.query.filter(
             fraud_models.ProductWhitelist.ean == self.endpoint_kwargs["ean"]
         ).one_or_none()
@@ -136,12 +189,36 @@ class AddProductWhitelistTest(PostEndpointHelper):
         assert product_whitelist.ean == self.endpoint_kwargs["ean"]
         mock_whitelist_product.assert_called_with(self.endpoint_kwargs["ean"])
 
+        for offer in offers_to_restore:
+            offer = offers_models.Offer.query.get_or_404(offer.id)
+            assert offer.validation == offers_models.OfferValidationStatus.APPROVED
+            assert offer.lastValidationDate.strftime("%d/%m/%Y") == datetime.date.today().strftime("%d/%m/%Y")
+            assert offer.lastValidationType == OfferValidationType.MANUAL
+
+        for offer in offers_not_to_restore:
+            offer = offers_models.Offer.query.get_or_404(offer.id)
+            assert not offer.validation == offers_models.OfferValidationStatus.APPROVED
+            assert offer.lastValidationDate.strftime("%d/%m/%Y") == (
+                datetime.date.today() - datetime.timedelta(days=2)
+            ).strftime("%d/%m/%Y")
+            assert not offer.lastValidationType == OfferValidationType.MANUAL
+
+        mocked_async_index_offer_ids.assert_called_once_with([o.id for o in offers_to_restore])
+
     @patch("pcapi.routes.backoffice_v3.titelive.blueprint.get_by_ean13")
     @patch("pcapi.routes.backoffice_v3.titelive.blueprint.whitelist_product")
     def test_create_whitelisted_product_if_not_existing(
         self, mock_whitelist_product, mock_get_by_ean13, authenticated_client, requests_mock
     ):
+        thing_product = offers_factories.ThingProductFactory(
+            extraData={"ean": EAN_SEARCH_FIXTURE["ean"]},
+            description="Tome 1",
+            idAtProviders=str(EAN_SEARCH_FIXTURE["ean"]),
+            name="Immortelle randonnée ; Compostelle malgré moi",
+            subcategoryId="LIVRE_PAPIER",
+        )
         mock_get_by_ean13.return_value = EAN_SEARCH_FIXTURE
+        mock_whitelist_product.return_value = thing_product
         requests_mock.post(
             "https://login.epagine.fr/v1/login/test@example.com/token",
             json={"token": "XYZ"},
