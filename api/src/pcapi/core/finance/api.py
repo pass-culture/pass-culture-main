@@ -635,9 +635,19 @@ def price_booking(
 
         _delete_dependent_pricings(booking, "Deleted pricings priced too early")
 
-        pricing = _price_booking(booking)
+        event, pricing = _price_booking(booking)
         db.session.add(pricing)
-
+        if event:
+            event.status = models.FinanceEventStatus.PRICED
+        else:
+            logger.info(
+                "Could not find finance event in `price_booking`",
+                extra={
+                    "booking": booking.id if not is_booking_collective else None,
+                    "collective_booking": booking.id if is_booking_collective else None,
+                    "dateUsed": booking.dateUsed,
+                },
+            )
         db.session.commit()
     return pricing
 
@@ -836,7 +846,7 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
 
 def _price_booking(
     booking: bookings_models.Booking | educational_models.CollectiveBooking,
-) -> models.Pricing:
+) -> tuple[models.FinanceEvent | None, models.Pricing]:
     pricing_point_id, current_revenue = _get_pricing_point_id_and_current_revenue(booking)
     new_revenue = current_revenue
     is_booking_collective = isinstance(booking, educational_models.CollectiveBooking)
@@ -864,31 +874,18 @@ def _price_booking(
 
     # We'll link the new pricing to the FinanceEvent (if there is
     # one). That will ease the switch to `price_events`.
-    event_id = (
-        models.FinanceEvent.query.filter(
-            models.FinanceEvent.booking == (booking if not is_booking_collective else None),
-            models.FinanceEvent.collectiveBooking == (booking if is_booking_collective else None),
-            models.FinanceEvent.status.in_(
-                (
-                    models.FinanceEventStatus.PENDING,
-                    models.FinanceEventStatus.READY,
-                )
-            ),
-        )
-        .with_entities(models.FinanceEvent.id)
-        .scalar()
-    )
-    if not event_id:
-        logger.info(
-            "Could not find finance event in `price_booking`",
-            extra={
-                "booking": booking.id if not is_booking_collective else None,
-                "collective_booking": booking.id if is_booking_collective else None,
-                "dateUsed": booking.dateUsed,
-            },
-        )
+    event = models.FinanceEvent.query.filter(
+        models.FinanceEvent.booking == (booking if not is_booking_collective else None),
+        models.FinanceEvent.collectiveBooking == (booking if is_booking_collective else None),
+        models.FinanceEvent.status.in_(
+            (
+                models.FinanceEventStatus.PENDING,
+                models.FinanceEventStatus.READY,
+            )
+        ),
+    ).one_or_none()
     assert booking.dateUsed  # helps mypy when setting Pricing.valueDate below
-    return models.Pricing(
+    return event, models.Pricing(
         status=_get_initial_pricing_status(booking),
         pricingPointId=pricing_point_id,
         valueDate=booking.dateUsed,
@@ -899,7 +896,7 @@ def _price_booking(
         lines=lines,
         bookingId=booking.id if not is_booking_collective else None,
         collectiveBookingId=booking.id if is_booking_collective else None,
-        eventId=event_id,
+        eventId=event.id if event else None,
         venueId=booking.venueId,  # denormalized for performance in `_generate_cashflows()`
     )
 
