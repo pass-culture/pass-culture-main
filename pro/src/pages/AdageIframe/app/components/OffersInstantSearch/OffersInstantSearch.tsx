@@ -1,5 +1,5 @@
 import algoliasearch from 'algoliasearch/lite'
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch-dom'
 
 import { VenueResponse } from 'apiClient/adage'
@@ -38,14 +38,11 @@ export const OffersInstantSearch = ({
   const { facetFilters } = useContext(FacetFiltersContext)
 
   const newAdageFilters = useActiveFeature('WIP_ENABLE_NEW_ADAGE_FILTERS')
-  const [query, setQuery] = useState<string>(
-    newAdageFilters ? venueFilter?.publicName || venueFilter?.name || '' : ''
-  )
+
   return (
     <InstantSearch
       indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
       searchClient={searchClient}
-      searchState={{ query: query }}
     >
       <Configure
         attributesToHighlight={[]}
@@ -58,7 +55,7 @@ export const OffersInstantSearch = ({
         {
           /* istanbul ignore next: DEBT to fix: delete condition with ff */
           newAdageFilters ? (
-            <OffersSearch venueFilter={venueFilter} setQuery={setQuery} />
+            <OffersSearch venueFilter={venueFilter} />
           ) : (
             <OldOffersSearch
               removeVenueFilter={removeVenueFilter}
