@@ -13,6 +13,7 @@ import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.factories import CinemaProviderPivotFactory
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
+import pcapi.core.providers.repository as providers_repository
 from pcapi.core.users import factories as user_factories
 from pcapi.models.api_errors import ApiErrors
 
@@ -308,6 +309,27 @@ class Returns201Test:
         assert response.json["provider"]["id"] == provider.id
         assert response.json["venueId"] == venue.id
         assert response.json["venueIdAtOfferProvider"] == cds_pivot.idAtProvider
+
+    @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.workers.venue_provider_job.synchronize_ems_venue_provider")
+    def test_create_venue_provider_for_ems_cinema(self, mocked_synchronize_ems_venue_provider, requests_mock, client):
+        admin = user_factories.AdminFactory()
+        ems_provider = providers_repository.get_provider_by_local_class("EMSStocks")
+        venue = offerers_factories.VenueFactory()
+        pivot = providers_factories.CinemaProviderPivotFactory(venue=venue, provider=ems_provider)
+        providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=pivot)
+
+        client = client.with_session_auth(email=admin.email)
+        venue_provider_data = {"providerId": ems_provider.id, "venueId": venue.id}
+
+        response = client.post("/venueProviders", json=venue_provider_data)
+
+        assert response.status_code == 201
+        assert response.json["provider"]["id"] == ems_provider.id
+        assert response.json["venueId"] == venue.id
+        assert response.json["venueIdAtOfferProvider"] == pivot.idAtProvider
+        venue_provider = VenueProvider.query.one()
+        mocked_synchronize_ems_venue_provider.assert_called_once_with(venue_provider)
 
 
 class Returns400Test:
