@@ -525,7 +525,7 @@ describe('offers', () => {
       expect(diffuseHelp).not.toBeInTheDocument()
     })
 
-    it('should not show diffuse help', async () => {
+    it('should not show diffuse help on first render', async () => {
       vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
         offerInParis
       )
