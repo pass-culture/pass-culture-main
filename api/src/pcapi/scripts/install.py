@@ -13,6 +13,7 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.core.search.commands.indexation",
         "pcapi.core.search.commands.settings",
         "pcapi.core.subscription.commands",
+        "pcapi.core.users.commands",
         "pcapi.scheduled_tasks.commands",
         "pcapi.scheduled_tasks.titelive_commands",
         "pcapi.scripts.beneficiary.import_test_users",
