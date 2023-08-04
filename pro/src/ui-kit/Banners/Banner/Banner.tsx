@@ -4,8 +4,7 @@ import fullLinkIcon from 'icons/full-link.svg'
 import styles from 'ui-kit/Banners/BannerLayout/BannerLayout.module.scss'
 import { ButtonLink } from 'ui-kit/Button'
 
-import BannerLayout from '../BannerLayout'
-import { BannerLayoutProps } from '../BannerLayout/BannerLayout'
+import BannerLayout, { BannerLayoutProps } from '../BannerLayout/BannerLayout'
 
 export type Link = {
   icon?: string

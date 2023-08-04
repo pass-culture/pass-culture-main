@@ -2,8 +2,7 @@ import React from 'react'
 
 import { ButtonLink } from 'ui-kit/Button'
 
-import BannerLayout from '../BannerLayout'
-import { BannerLayoutProps } from '../BannerLayout/BannerLayout'
+import BannerLayout, { BannerLayoutProps } from '../BannerLayout/BannerLayout'
 import styles from '../BannerLayout/BannerLayout.module.scss'
 
 interface InternalBannerProps extends BannerLayoutProps {
