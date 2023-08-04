@@ -244,11 +244,11 @@ const Informations = ({
         offerId: receivedOfferId,
       })
 
-      notify.success(
-        mode === OFFER_WIZARD_MODE.EDITION
-          ? 'Vos modifications ont bien été enregistrées'
-          : 'Brouillon sauvegardé dans la liste des offres'
-      )
+      if (isSubmittingDraft) {
+        notify.success('Brouillon sauvegardé dans la liste des offres')
+      } else if (mode === OFFER_WIZARD_MODE.EDITION) {
+        notify.success('Vos modifications ont bien été enregistrées')
+      }
     } else {
       formik.setErrors(payload.errors)
       // This is used from scroll to error

@@ -2,6 +2,7 @@ import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { StockResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
+import { getSuccessMessage } from 'screens/OfferIndividual/utils'
 
 import { StockThingFormValues } from '../'
 
@@ -20,12 +21,6 @@ type UpdateStocksAdapter = Adapter<
   FailurePayload
 >
 
-const successMessage = {
-  [OFFER_WIZARD_MODE.CREATION]: 'Brouillon sauvegardé dans la liste des offres',
-  [OFFER_WIZARD_MODE.DRAFT]: 'Brouillon sauvegardé dans la liste des offres',
-  [OFFER_WIZARD_MODE.EDITION]: 'Vos modifications ont bien été enregistrées',
-}
-
 const upsertStocksThingAdapter: UpdateStocksAdapter = async ({
   offerId,
   formValues,
@@ -39,7 +34,7 @@ const upsertStocksThingAdapter: UpdateStocksAdapter = async ({
     })
     return {
       isOk: true,
-      message: successMessage[mode],
+      message: getSuccessMessage(mode),
       payload: {
         stockIds: response.stocks.map((stock: StockResponseModel) => stock.id),
       },

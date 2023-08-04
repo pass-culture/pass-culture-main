@@ -195,7 +195,9 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
           return
         } else {
           navigate(nextStepUrl)
-          notify.success(getSuccessMessage(mode))
+          if (mode === OFFER_WIZARD_MODE.EDITION) {
+            notify.success(getSuccessMessage(mode))
+          }
         }
       }
       // tested but coverage don't see it.
@@ -206,8 +208,9 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       if (hasSavedStock && !formik.dirty) {
         if (!saveDraft) {
           navigate(nextStepUrl)
+        } else {
+          notify.success(getSuccessMessage(mode))
         }
-        notify.success(getSuccessMessage(mode))
         setIsClickingFromActionBar(false)
       } else {
         if (saveDraft) {

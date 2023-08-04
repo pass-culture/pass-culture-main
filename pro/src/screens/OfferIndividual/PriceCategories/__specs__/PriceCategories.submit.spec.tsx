@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { generatePath, Route, Routes } from 'react-router-dom'
@@ -69,10 +69,9 @@ describe('PriceCategories', () => {
 
     await userEvent.click(screen.getByText('Étape suivante'))
 
-    expect(
-      await screen.findByText('Brouillon sauvegardé dans la liste des offres')
-    ).toBeInTheDocument()
-    expect(api.patchOffer).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(api.patchOffer).toHaveBeenCalled()
+    })
     expect(api.postPriceCategories).toHaveBeenCalled()
   })
 
@@ -120,10 +119,9 @@ describe('PriceCategories', () => {
 
     await userEvent.click(screen.getByText('Étape suivante'))
 
-    expect(
-      await screen.findByText('Brouillon sauvegardé dans la liste des offres')
-    ).toBeInTheDocument()
-    expect(api.patchOffer).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(api.patchOffer).toHaveBeenCalled()
+    })
     expect(api.postPriceCategories).toHaveBeenCalled()
   })
 
