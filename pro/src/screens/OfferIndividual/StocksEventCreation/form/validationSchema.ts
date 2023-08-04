@@ -2,6 +2,7 @@ import * as yup from 'yup'
 
 import { oneOfSelectOption } from 'core/shared/utils/validation'
 import { SelectOption } from 'custom_types/form'
+import { MAX_STOCKS_QUANTITY } from 'screens/OfferIndividual/StocksThing/validationSchema'
 import { getToday, isDateValid, removeTime } from 'utils/date'
 
 import { RecurrenceType } from './types'
@@ -97,7 +98,11 @@ export const getValidationSchema = (priceCategoriesOptions: SelectOption[]) =>
           quantity: yup
             .number()
             .nullable()
-            .min(1, 'Veuillez indiquer un nombre supérieur à 0'),
+            .min(1, 'Veuillez indiquer un nombre supérieur à 0')
+            .max(
+              MAX_STOCKS_QUANTITY,
+              'Veuillez modifier la quantité. Celle-ci ne peut pas être supérieure à 1 million'
+            ),
           priceCategory: oneOfSelectOption(
             yup.string().required('Veuillez renseigner un tarif'),
             priceCategoriesOptions
