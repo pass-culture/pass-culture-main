@@ -1,8 +1,10 @@
 import logging
+import random
 
 from pcapi.core.categories import subcategories_v2
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
+from pcapi.core.providers.titelive_gtl import GTLS
 from pcapi.domain.music_types import music_types
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_AUTHOR_NAMES
@@ -77,6 +79,8 @@ def create_industrial_thing_products() -> dict[str, offers_models.Product]:
                 elif conditionalField_name == "ean":
                     extraData["ean"] = str(base_ean)
                     base_ean += 1
+                elif conditionalField_name == "gtl_id":
+                    extraData["gtl_id"] = random.choice(list(GTLS.keys()))
                 extra_data_index += 1
             thing_product.extraData = extraData
             thing_products_by_name[name] = thing_product
