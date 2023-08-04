@@ -1,6 +1,8 @@
 import datetime
+from io import BytesIO
 
 from flask import url_for
+import openpyxl
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
@@ -43,6 +45,7 @@ def bookings_fixture() -> tuple:
         stock__offer__product__subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4),
     )
+    offerers_factories.UserOffererFactory(offerer=used.offerer)
     cancelled = bookings_factories.CancelledBookingFactory(
         user=user2,
         quantity=1,
@@ -125,6 +128,21 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert "Date d'annulation" not in extra_data
 
         assert html_parser.extract_pagination_info(response.data) == (1, 1, 1)
+
+    @pytest.mark.parametrize(
+        "query_args",
+        [
+            {},
+            {"from_to_date": [datetime.datetime(1970, 1, 1), None]},
+            {"from_to_date": [None, datetime.datetime(2037, 12, 31)]},
+            {"from_to_date": [datetime.datetime(1970, 1, 1), datetime.datetime(2037, 12, 31)]},
+        ],
+    )
+    def test_display_download_link(self, authenticated_client, bookings, query_args):
+        venue_id = [bookings[0].venueId]
+        kwargs = {**query_args, "venue_id": venue_id}
+        response = authenticated_client.get(url_for(self.endpoint, **kwargs))
+        assert b"pc-clipboard" in response.data
 
     def test_list_bookings_by_offer_name(self, authenticated_client, bookings):
         # when
@@ -623,3 +641,40 @@ class BatchOfferCancelTest(PostEndpointHelper):
         for booking in bookings:
             db.session.refresh(booking)
             assert booking.status is bookings_models.BookingStatus.CANCELLED
+
+
+class GetIndividualBookingCSVDownloadTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.individual_bookings.get_individual_booking_csv_download"
+    needed_permission = perm_models.Permissions.READ_BOOKINGS
+
+    def test_csv_length(self, authenticated_client, bookings):
+        venue_id = bookings[0].venueId
+        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+        expected_length = 1  # headers
+        expected_length += 1  # on booking
+        expected_length += 1  # empty line
+
+        assert response.status_code == 200
+        assert len(response.data.split(b"\n")) == 4
+
+
+class GetIndividualBookingXLSXDownloadTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.individual_bookings.get_individual_booking_xlsx_download"
+    needed_permission = perm_models.Permissions.READ_BOOKINGS
+
+    def reader_from_response(self, response):
+        wb = openpyxl.load_workbook(BytesIO(response.data))
+        return wb.active
+
+    def test_csv_length(self, authenticated_client, bookings):
+        venue_id = bookings[0].venueId
+        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+        expected_length = 1  # headers
+        expected_length += 1  # on booking
+        sheet = self.reader_from_response(response)
+
+        assert response.status_code == 200
+        assert sheet.cell(row=1, column=1).value == "Lieu"
+        assert sheet.cell(row=2, column=1).value == bookings[0].venue.name
+        assert sheet.cell(row=3, column=1).value == bookings[0].venue.name
+        assert sheet.cell(row=4, column=1).value == None

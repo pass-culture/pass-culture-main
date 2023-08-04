@@ -1,0 +1,8 @@
+{% macro copy_link_clipboard(link, over) %}
+  <i class="bi bi-clipboard pc-clipboard"
+     data-bs-toggle="tooltip"
+     data-bs-placement="top"
+     data-bs-title="{{ over }}"
+     data-text="{{ link }}">
+  </i>
+{% endmacro %}

@@ -1,6 +1,8 @@
 import datetime
+from io import BytesIO
 
 from flask import url_for
+import openpyxl
 import pytest
 
 from pcapi.core.categories import categories
@@ -40,6 +42,7 @@ def collective_bookings_fixture() -> tuple:
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4),
         venue=venue,
     )
+    offerers_factories.UserOffererFactory(offerer=pending.offerer)
     # 1
     confirmed = educational_factories.CollectiveBookingFactory(
         educationalInstitution=institution1,
@@ -146,6 +149,28 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         assert "Date d'annulation" not in extra_data
 
         assert html_parser.extract_pagination_info(response.data) == (1, 1, len(rows))
+
+    @pytest.mark.parametrize(
+        "query_args",
+        [
+            {},
+            {
+                "from_date": datetime.datetime(1970, 1, 1),
+            },
+            {
+                "to_date": datetime.datetime(2037, 12, 31),
+            },
+            {
+                "from_date": datetime.datetime(1970, 1, 1),
+                "to_date": datetime.datetime(2037, 12, 31),
+            },
+        ],
+    )
+    def test_display_download_link(self, authenticated_client, collective_bookings, query_args):
+        venue_id = [collective_bookings[0].venueId]
+        kwargs = {**query_args, "venue_id": venue_id}
+        response = authenticated_client.get(url_for(self.endpoint, **kwargs))
+        assert b"pc-clipboard" in response.data
 
     def test_list_bookings_by_name(self, authenticated_client, collective_bookings):
         # when
@@ -527,3 +552,39 @@ class CancelCollectiveBookingTest(PostEndpointHelper):
         assert "Impossible d'annuler une réservation déjà annulée" in html_parser.extract_alert(
             redirected_response.data
         )
+
+
+class GetCollectiveBookingCSVDownloadTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.collective_bookings.get_collective_booking_csv_download"
+    needed_permission = perm_models.Permissions.READ_BOOKINGS
+
+    def test_csv_length(self, authenticated_client, collective_bookings):
+        venue_id = collective_bookings[0].venueId
+        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+        expected_length = 1  # headers
+        expected_length += 1  # on booking
+        expected_length += 1  # empty line
+
+        assert response.status_code == 200
+        assert len(response.data.split(b"\n")) == 3
+
+
+class GetCollectiveBookingXLSXDownloadTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.collective_bookings.get_collective_booking_xlsx_download"
+    needed_permission = perm_models.Permissions.READ_BOOKINGS
+
+    def reader_from_response(self, response):
+        wb = openpyxl.load_workbook(BytesIO(response.data))
+        return wb.active
+
+    def test_xlsx_length(self, authenticated_client, collective_bookings):
+        venue_id = collective_bookings[0].venueId
+        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+        expected_length = 1  # headers
+        expected_length += 1  # on booking
+        sheet = self.reader_from_response(response)
+
+        assert response.status_code == 200
+        assert sheet.cell(row=1, column=1).value == "Lieu"
+        assert sheet.cell(row=2, column=1).value == collective_bookings[0].venue.name
+        assert sheet.cell(row=3, column=1).value == None

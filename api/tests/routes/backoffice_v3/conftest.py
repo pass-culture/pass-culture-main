@@ -154,7 +154,11 @@ def roles_with_permissions_fixture():
 
 @pytest.fixture(scope="function", name="legit_user")
 def legit_user_fixture(roles_with_permissions: None) -> users_models.User:
-    user = users_factories.UserFactory(firstName="Hercule", lastName="Poirot")
+    user = users_factories.UserFactory(
+        firstName="Hercule",
+        lastName="Poirot",
+        roles=["ADMIN"],
+    )
 
     user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
     backoffice_api.upsert_roles(user, list(perm_models.Roles))
