@@ -6,7 +6,7 @@ import { Venue } from 'core/Venue/types'
 import fullEditIcon from 'icons/full-edit.svg'
 import { venueHasCollectiveInformation } from 'pages/Offerers/Offerer/VenueV1/VenueEdition/EACInformation/utils/venueHasCollectiveInformation'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { Banner, ButtonLink, Title } from 'ui-kit/index'
+import { Banner, ButtonLink } from 'ui-kit/index'
 
 import styles from './eacInformation.module.scss'
 
@@ -25,9 +25,9 @@ const EACInformation = ({ venue, isCreatingVenue }: EACInformationProps) => {
   return (
     <>
       {!isCreatingVenue && (
-        <Title as="h4" level={4} className={styles['eac-title-info']}>
+        <h4 className={styles['eac-title-info']}>
           Mes informations pour les enseignants
-        </Title>
+        </h4>
       )}
       <p className={styles['eac-description-info']}>
         Il s'agit d'un formulaire vous permettant de renseigner vos informations
