@@ -137,6 +137,16 @@ class PriceBookingTest:
         assert pricing.customRule is None
         assert pricing.revenue == 1000
 
+    def test_migration_to_finance_events(self):
+        event = factories.UsedBookingFinanceEventFactory(booking__stock=individual_stock_factory())
+        booking = event.booking
+        pricing = api.price_booking(booking)
+
+        assert models.Pricing.query.count() == 1
+        assert pricing.booking == booking
+        assert pricing.event == event
+        assert event.status == models.FinanceEventStatus.PRICED
+
     def test_link_to_finance_event(self):
         booking = bookings_factories.BookingFactory(stock=individual_stock_factory())
         bookings_api.mark_as_used(booking)
