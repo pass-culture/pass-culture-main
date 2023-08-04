@@ -235,4 +235,26 @@ describe('offersSearch component', () => {
     // Then
     expect(screen.getByPlaceholderText('Ex: Nantes')).toBeInTheDocument()
   })
+
+  it('should filters department on venue filter if provided', async () => {
+    renderOffersSearchComponent(
+      {
+        ...props,
+        venueFilter: {
+          id: 1,
+          name: 'test',
+          relative: [],
+          departementCode: '75',
+        },
+      },
+      user
+    )
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: /Localisation des partenaires/,
+      })
+    )
+    expect(screen.getByLabelText('75 - Paris', { exact: false })).toBeChecked()
+    expect(screen.getByLabelText('30 - Gard', { exact: false })).toBeChecked()
+  })
 })

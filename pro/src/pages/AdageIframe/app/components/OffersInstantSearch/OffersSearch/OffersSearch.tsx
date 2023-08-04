@@ -112,6 +112,7 @@ export const OffersSearchComponent = ({
     })
 
     setFacetFilters(updatedFilters.queryFilters)
+    setQuery(formik.values.query)
     refine(formik.values.query)
   }
 
