@@ -4,6 +4,7 @@
 /* eslint-disable */
 
 export type VenueResponse = {
+  departementCode: string;
   id: number;
   name: string;
   publicName?: string | null;

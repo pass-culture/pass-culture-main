@@ -25,10 +25,14 @@ export const computeFiltersInitialValues = (
   userDepartmentCode?: string | null,
   venueFilter?: VenueResponse | null
 ) => {
+  const venueDepartementFilter =
+    venueFilter && venueFilter.departementCode !== userDepartmentCode
+      ? [venueFilter.departementCode]
+      : []
   return {
     ...ADAGE_FILTERS_DEFAULT_VALUES,
     departments: userDepartmentCode
-      ? [userDepartmentCode]
+      ? [userDepartmentCode, ...venueDepartementFilter]
       : ADAGE_FILTERS_DEFAULT_VALUES.departments,
     query: venueFilter ? venueFilter.publicName || venueFilter.name : '',
   }

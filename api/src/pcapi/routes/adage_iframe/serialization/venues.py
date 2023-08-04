@@ -10,6 +10,7 @@ class VenueResponse(BaseModel):
     id: int
     publicName: str | None
     name: str
+    departementCode: str
     relative: list[int]
 
     class Config:

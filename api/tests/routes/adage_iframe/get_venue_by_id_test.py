@@ -39,6 +39,7 @@ class VenueByIdTest:
             "name": requested_venue.name,
             "publicName": requested_venue.publicName,
             "relative": [],
+            "departementCode": '75'
         }
 
     def test_return_venue_without_publicName_of_given_id(self, client):
@@ -60,6 +61,7 @@ class VenueByIdTest:
             "name": requested_venue.name,
             "publicName": None,
             "relative": [],
+            "departementCode": '75'
         }
 
     def test_relative_venue(self, client):
@@ -85,6 +87,7 @@ class VenueByIdTest:
             "name": requested_venue.name,
             "publicName": None,
             "relative": [venue2.id, venue3.id],
+            "departementCode": '75'
         }
 
     def _create_adage_valid_token(self) -> ByteString:

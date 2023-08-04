@@ -292,6 +292,7 @@ describe('offersSearch component', () => {
           id: 1,
           name: 'Mon lieu',
           relative: [],
+          departementCode: '30',
         },
       },
       user
