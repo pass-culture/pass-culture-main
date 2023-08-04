@@ -56,6 +56,15 @@ Cypress.Commands.add('login', (email: string, password: string) => {
   cy.url().should('be.equal', 'http://localhost:3001/accueil')
 })
 
+Cypress.Commands.add('logout', () => {
+  cy.intercept({ method: 'GET', url: '/users/signout' }).as('signoutUser')
+
+  cy.get('[aria-label="Déconnexion"]').click()
+  cy.wait('@signoutUser')
+
+  cy.url().should('be.equal', 'http://localhost:3001/connexion')
+})
+
 Cypress.Commands.add('setFeatureFlags', (features: Feature[]) => {
   cy.request({
     method: 'PATCH',
