@@ -6,10 +6,18 @@ app = Flask(__name__)
 def hello_geek():
     return '<h1>Hello from Flask & Docker</h2>'
 
-@app.post('/tickets')
+@app.post('/tickets/create')
 def create_ticket():
     print(request.form)
-    return {'code': randrange(1_000_000_000, 10_000_000_000)}
+    return {'code': randrange(1_000_000_000, 10_000_000_000)}, 201
+
+@app.get('/tickets/<int:ticket_id>')
+def get_ticket(ticket_id):
+    return {'code': ticket_id, 'status': 'open'}, 200
+
+@app.post('/tickets/<int:ticket_id>/delete')
+def delete_ticket(ticket_id):
+    return ('',204)
 
 
 if __name__ == "__main__":
