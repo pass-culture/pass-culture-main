@@ -41,7 +41,7 @@ class VenueBySiretTest:
             "name": requested_venue.name,
             "publicName": requested_venue.publicName,
             "relative": [],
-            "departementCode": '75'
+            "departementCode": "75",
         }
 
     def test_return_venue_without_publicName_of_given_siret(self, client):
@@ -63,7 +63,7 @@ class VenueBySiretTest:
             "name": requested_venue.name,
             "publicName": None,
             "relative": [],
-            "departementCode": '75'
+            "departementCode": "75",
         }
 
     def test_return_relative_venue(self, client):
@@ -85,7 +85,7 @@ class VenueBySiretTest:
             "name": requested_venue.name,
             "publicName": requested_venue.publicName,
             "relative": [venue2.id],
-            "departementCode": '75'
+            "departementCode": "75",
         }
 
     def _create_adage_valid_token(self) -> ByteString:
