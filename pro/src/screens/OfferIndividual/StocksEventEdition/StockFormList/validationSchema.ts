@@ -2,6 +2,7 @@ import * as yup from 'yup'
 
 import { oneOfSelectOption } from 'core/shared/utils/validation'
 import { SelectOption } from 'custom_types/form'
+import { MAX_STOCKS_QUANTITY } from 'screens/OfferIndividual/StocksThing/validationSchema'
 import { getToday, removeTime } from 'utils/date'
 
 const isBeforeBeginningDate = (
@@ -53,7 +54,11 @@ const getSingleValidationSchema = (
     .number()
     .nullable()
     .typeError('Doit être un nombre')
-    .min(0, 'Doit être positif'),
+    .min(0, 'Doit être positif')
+    .max(
+      MAX_STOCKS_QUANTITY,
+      'Veuillez modifier la quantité. Celle-ci ne peut pas être supérieure à 1 million'
+    ),
 })
 
 export const getValidationSchema = (priceCategoriesOptions?: SelectOption[]) =>
