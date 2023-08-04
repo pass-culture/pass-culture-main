@@ -2,6 +2,7 @@
 {% from "components/bookings/extra_row.html" import build_booking_extra_row with context %}
 {% import "components/forms.html" as forms with context %}
 {% import "components/links.html" as links %}
+{% import "components/copy_link.html" as copy_link %}
 {% extends "layouts/connected.html" %}
 {% set pc_validate_booking_modal_id = random_hash() %}
 {% set pc_cancel_booking_modal_id = random_hash() %}
@@ -25,8 +26,23 @@
     <div class="filters-container">{{ forms.build_filters_form(form, dst) }}</div>
     <div>
       {% if rows %}
-        <div class="d-flex justify-content-between">
-          <p class="lead num-results">{{ rows|length }} résultat{{ "s" if rows|length > 1 else "" }}</p>
+        <div class="d-flex">
+          <div>
+            <p class="lead num-results d-inline">{{ rows|length }} résultat{{ "s" if rows|length > 1 else "" }}</p>
+            <span class="mx-2 fs-3">
+              <a href="{{ url_for("backoffice_v3_web.collective_bookings.get_collective_booking_csv_download", venue=form.venue.data[0], from_date=form.from_date.data, to_date=form.to_date.data) }}"
+                 class="mx-2"><i class="bi bi-filetype-csv"
+   data-bs-toggle="tooltip"
+   data-bs-placement="top"
+   data-bs-title="Télécharger en CSV."></i></a>
+              <a href="{{ url_for("backoffice_v3_web.collective_bookings.get_collective_booking_xlsx_download", venue=form.venue.data[0], from_date=form.from_date.data, to_date=form.to_date.data) }}"
+                 class="mx-2"><i class="bi bi-filetype-xlsx"
+   data-bs-toggle="tooltip"
+   data-bs-placement="top"
+   data-bs-title="Télécharger en Excel."></i></a>
+              <span class="mx-2">{{ copy_link.copy_link_clipboard(pro_visualisation_link, "Copier l'url pour PC pro.") }}</span>
+            </span>
+          </div>
         </div>
         <table class="table mb-4">
           <thead>

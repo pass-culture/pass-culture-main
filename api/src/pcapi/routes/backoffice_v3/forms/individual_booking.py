@@ -71,3 +71,40 @@ class GetIndividualBookingListForm(FlaskForm):
                 self.cashflow_batches.data,
             )
         )
+
+    @property
+    def pro_view_args(self) -> str:
+        output = ""
+        if len(self.venue.data) == 1 and not any(
+            (
+                self.q.data,
+                self.offerer.data,
+                self.category.data,
+                self.status.data,
+                self.event_from_date.data,
+                self.event_to_date.data,
+                self.cashflow_batches.data,
+            )
+        ):
+            from_date = self.from_to_date.data[0].date() if self.from_to_date.data else datetime.date.today()
+            to_date = (
+                self.from_to_date.data[1].date() if self.from_to_date.data else from_date - datetime.timedelta(days=30)
+            )
+            output = (
+                f"?page=1&bookingBeginningDate={str(from_date)}&bookingEndingDate={str(to_date)}&bookingStatusFilter=booked"
+                f"&bookingStatusFilter=booked&offerType=all&offerVenueId={self.venue.data[0]}"
+            )
+        return output
+
+
+class GetDownloadBookingsForm(FlaskForm):
+    class Meta:
+        csrf = False
+
+    venue = fields.PCIntegerField("Lieux")
+    from_to_date = fields.PCDateRangeField(
+        "Créées entre",
+        validators=(wtforms.validators.Optional(),),
+        max_date=datetime.date.today(),
+        reset_to_blank=True,
+    )

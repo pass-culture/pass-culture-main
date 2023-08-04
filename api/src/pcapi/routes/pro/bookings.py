@@ -82,7 +82,7 @@ def get_bookings_csv(query: ListBookingsQueryModel) -> bytes:
 @spectree_serialize(
     json_format=False,
     response_headers={
-        "Content-Type": "application/vnd.ms-excel",
+        "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         "Content-Disposition": "attachment; filename=reservations_pass_culture.xlsx",
     },
 )
