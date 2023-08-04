@@ -2087,7 +2087,7 @@ class UbbleWebhookTest:
             (
                 fraud_models.FraudReasonCode.BLURRY_VIDEO,
                 ubble_models.UBBLE_CODE_ERROR_MAPPING[fraud_models.FraudReasonCode.BLURRY_VIDEO].retryable_user_message,
-                1310,
+                1301,
             ),
             (
                 fraud_models.FraudReasonCode.DOCUMENT_DAMAGED,
