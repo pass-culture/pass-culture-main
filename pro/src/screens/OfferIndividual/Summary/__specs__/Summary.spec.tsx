@@ -357,8 +357,7 @@ describe('Summary', () => {
       ).toBeInTheDocument()
     })
 
-    // TODO investigate why this test is flaky
-    it.skip('should display notification on api error', async () => {
+    it('should display notification on api error', async () => {
       // when
       renderSummary(
         customContext,

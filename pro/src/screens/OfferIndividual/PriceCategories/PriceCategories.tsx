@@ -225,7 +225,9 @@ const PriceCategories = ({ offer }: PriceCategoriesProps): JSX.Element => {
       offerId: offer.id,
     })
     navigate(afterSubmitUrl)
-    notify.success(getSuccessMessage(mode))
+    if (isClickingDraft || mode === OFFER_WIZARD_MODE.EDITION) {
+      notify.success(getSuccessMessage(mode))
+    }
     setIsClickingDraft(false)
   }
 
