@@ -10,11 +10,14 @@ from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers.provider_manager import synchronize_data_for_provider
+from pcapi.local_providers.provider_manager import synchronize_ems_venue_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_providers
 from pcapi.repository import repository
 
+from tests.local_providers.cinema_providers.ems import fixtures as ems_fixtures
 from tests.local_providers.provider_test_utils import TestLocalProvider
 
 
@@ -198,3 +201,21 @@ class SynchronizeDataForProviderTest:
         # Then
         mock_get_provider_class.assert_called_once()
         mock_updateObjects.assert_called_once_with(None)
+
+
+class SynchronizeEMSVenueProviderTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_should_synchronize_ems_venue_provider(self):
+        ems_provider = get_provider_by_local_class("EMSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider, venueIdAtOfferProvider="0063")
+        pivot = providers_factories.EMSCinemaProviderPivotFactory(idAtProvider=venue_provider.venueIdAtOfferProvider)
+        ems_cinema_details = providers_factories.EMSCinemaDetailsFactory(cinemaProviderPivot=pivot, lastVersion=0)
+        with requests_mock.Mocker() as requests_mocker:
+            requests_mocker.get("https://fake_url.com?version=0", json=ems_fixtures.DATA_VERSION_0)
+            requests_mocker.get("https://example.com/FR/poster/982D31BE/600/CDFG5.jpg", content=bytes())
+
+            synchronize_ems_venue_provider(venue_provider)
+
+            assert ems_cinema_details.lastVersion == 86400
+            assert venue_provider.lastSyncDate
+            assert Offer.query.count() == 1

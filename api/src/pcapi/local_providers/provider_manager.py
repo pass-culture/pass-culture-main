@@ -87,7 +87,6 @@ def synchronize_venue_provider(venue_provider: VenueProvider, limit: int | None 
 
 
 def synchronize_ems_venue_providers(from_last_version: bool = False) -> None:
-    last_version = 0
     venues_provider_to_sync: set[int] = set()
     venue_provider_by_site_id: dict[str, VenueProvider] = {}
     last_version = providers_repository.get_ems_oldest_sync_version() if from_last_version else 0
@@ -132,4 +131,18 @@ def synchronize_ems_venue_providers(from_last_version: bool = False) -> None:
 
     with transaction():
         providers_repository.bump_ems_sync_version(new_version, venues_provider_to_sync)
+        db.session.commit()
+
+
+def synchronize_ems_venue_provider(venue_provider: VenueProvider) -> None:
+    ems_cinema_details = providers_repository.get_ems_cinema_details(venue_provider.venueIdAtOfferProvider)
+    last_version = ems_cinema_details.lastVersion
+    cinemas_programs = ems.get_cinemas_programs(last_version)
+    new_version = cinemas_programs.version
+    for site in cinemas_programs.sites:
+        if site.id != venue_provider.venueIdAtOfferProvider:
+            continue
+        ems_stocks = EMSStocks(venue_provider=venue_provider, site=site)
+        ems_stocks.synchronize()
+        providers_repository.bump_ems_sync_version(new_version, [venue_provider.id])
         db.session.commit()
