@@ -48,7 +48,25 @@ class PCOptStringField(wtforms.StringField):
         super().__init__(label, filters=(sanitize_pc_string,), **kwargs)
 
 
+class PCOptPasswordField(wtforms.PasswordField):
+    widget = partial(widget, template="components/forms/string_field.html")
+    validators = [
+        validators.Optional(""),
+        validators.Length(max=64, message="doit contenir au maximum %(max)d caractères"),
+    ]
+
+    def __init__(self, label: str | None = None, **kwargs: typing.Any):
+        super().__init__(label, filters=(sanitize_pc_string,), **kwargs)
+
+
 class PCStringField(PCOptStringField):
+    validators = [
+        validators.InputRequired("Information obligatoire"),
+        validators.Length(min=1, max=64, message="doit contenir entre %(min)d et %(max)d caractères"),
+    ]
+
+
+class PCPasswordField(PCOptPasswordField):
     validators = [
         validators.InputRequired("Information obligatoire"),
         validators.Length(min=1, max=64, message="doit contenir entre %(min)d et %(max)d caractères"),

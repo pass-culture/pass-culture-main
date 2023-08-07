@@ -34,7 +34,7 @@ class EditAllocineForm(EditPivotForm):
 class EditBoostForm(EditPivotForm):
     cinema_id = fields.PCStringField("Identifiant Cinéma (Boost)")
     username = fields.PCStringField("Nom de l'utilisateur (Boost)")
-    password = fields.PCStringField("Mot de passe (Boost)")
+    password = fields.PCPasswordField("Mot de passe (Boost)")
     cinema_url = fields.PCStringField(
         "URL du cinéma (Boost)",
         validators=(
@@ -68,7 +68,7 @@ class EditCGRForm(EditPivotForm):
             wtforms.validators.URL("Doit avoir la forme d'une URL"),
         ),
     )
-    password = fields.PCStringField("Mot de passe (CGR)")
+    password = fields.PCPasswordField("Mot de passe (CGR)")
 
     def validate(self, extra_validators=None) -> bool:  # type: ignore [no-untyped-def]
         # do not use this custom validation on DeleteForm
