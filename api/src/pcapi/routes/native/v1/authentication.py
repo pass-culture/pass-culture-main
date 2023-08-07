@@ -22,6 +22,7 @@ from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v1.serialization.authentication import ChangePasswordRequest
 from pcapi.routes.native.v1.serialization.authentication import RequestPasswordResetRequest
 from pcapi.routes.native.v1.serialization.authentication import ResetPasswordRequest
+from pcapi.routes.native.v1.serialization.authentication import ResetPasswordResponse
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailRequest
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailResponse
 from pcapi.serialization.decorator import spectree_serialize
@@ -108,8 +109,10 @@ def request_password_reset(body: RequestPasswordResetRequest) -> None:
 
 
 @blueprint.native_v1.route("/reset_password", methods=["POST"])
-@spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
-def reset_password(body: ResetPasswordRequest) -> None:
+@spectree_serialize(
+    response_model=ResetPasswordResponse, on_success_status=200, api=blueprint.api, on_error_statuses=[400]
+)
+def reset_password(body: ResetPasswordRequest) -> ResetPasswordResponse:
     check_password_strength("newPassword", body.new_password)
 
     try:
@@ -129,6 +132,11 @@ def reset_password(body: ResetPasswordRequest) -> None:
             )
 
     repository.save(user)
+
+    return ResetPasswordResponse(
+        access_token=users_api.create_user_access_token(user),
+        refresh_token=users_api.create_user_refresh_token(user, body.device_info),
+    )
 
 
 @blueprint.native_v1.route("/change_password", methods=["POST"])

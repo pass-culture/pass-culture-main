@@ -495,12 +495,24 @@ def test_reset_password_success(client):
     data = {"reset_password_token": token.value, "new_password": new_password}
     response = client.post("/native/v1/reset_password", json=data)
 
-    assert response.status_code == 204
+    assert response.status_code == 200
     db.session.refresh(user)
     assert user.password == crypto.hash_password(new_password)
 
     token = Token.query.get(token.id)
     assert token.isUsed
+
+    # Ensure the access token is valid
+    access_token = response.json["accessToken"]
+    client.auth_header = {"Authorization": f"Bearer {access_token}"}
+    protected_response = client.get("/native/v1/me")
+    assert protected_response.status_code == 200
+
+    # Ensure the refresh token is valid
+    refresh_token = response.json["refreshToken"]
+    client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
+    refresh_response = client.post("/native/v1/refresh_access_token", json={})
+    assert refresh_response.status_code == 200
 
 
 @patch("pcapi.core.subscription.dms.api.try_dms_orphan_adoption")
@@ -513,11 +525,23 @@ def test_reset_password_for_unvalidated_email(try_dms_orphan_adoption_mock, clie
     data = {"reset_password_token": token.value, "new_password": new_password}
     response = client.post("/native/v1/reset_password", json=data)
 
-    assert response.status_code == 204
+    assert response.status_code == 200
     db.session.refresh(user)
     assert user.password == crypto.hash_password(new_password)
     try_dms_orphan_adoption_mock.assert_called_once_with(user)
     assert user.isEmailValidated
+
+    # Ensure the access token is valid
+    access_token = response.json["accessToken"]
+    client.auth_header = {"Authorization": f"Bearer {access_token}"}
+    protected_response = client.get("/native/v1/me")
+    assert protected_response.status_code == 200
+
+    # Ensure the refresh token is valid
+    refresh_token = response.json["refreshToken"]
+    client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
+    refresh_response = client.post("/native/v1/refresh_access_token", json={})
+    assert refresh_response.status_code == 200
 
 
 def test_reset_password_fail_for_password_strength(client):
