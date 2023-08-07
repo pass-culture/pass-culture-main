@@ -223,7 +223,6 @@ const Bookings = <
       setVenues(payload.venues)
       setIsLocalLoading(false)
     }
-
     fetchVenues()
   }, [setIsLocalLoading, setVenues, notify, getVenuesAdapter])
 

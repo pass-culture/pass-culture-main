@@ -18,6 +18,7 @@ module.exports = {
     '**/*.md',
     '**/*.jpg',
     '**/*.png',
+    'vitest.config.ts',
   ],
   overrides: [
     {

@@ -27,22 +27,5 @@ export default defineConfig(({ mode }) => {
     ],
     server: { port: 3001 },
     preview: { port: 3001 },
-    test: {
-      globals: true,
-      environment: 'jsdom',
-      setupFiles: './vitest.setup.ts',
-      deps: { inline: ['vitest-canvas-mock'] },
-      clearMocks: true,
-      restoreMocks: true,
-      cache: { dir: '../.vitest_cache' },
-      css: { modules: { classNameStrategy: 'non-scoped' } },
-      coverage: {
-        reportsDirectory: '../coverage',
-        reporter: ['text', 'html', 'lcov'],
-      },
-      minThreads: 4,
-      maxThreads: 6,
-      testTimeout: 30000,
-    },
   }
 })
