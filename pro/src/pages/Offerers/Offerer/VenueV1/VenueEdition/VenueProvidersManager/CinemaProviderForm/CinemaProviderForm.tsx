@@ -18,7 +18,7 @@ import { DEFAULT_CINEMA_PROVIDER_FORM_VALUES } from './constants'
 import { CinemaProviderFormValues } from './types'
 
 export interface CinemaProviderFormProps {
-  saveVenueProvider: (values: PostVenueProviderBody) => void
+  saveVenueProvider: (values: PostVenueProviderBody) => boolean
   providerId: number
   venueId: number
   offererId: number
@@ -49,11 +49,12 @@ export const CinemaProviderForm = ({
 
     setIsLoading(true)
 
-    saveVenueProvider(payload)
+    const isSuccess = saveVenueProvider(payload)
     logEvent?.(SynchronizationEvents.CLICKED_IMPORT, {
       offererId: offererId,
       venueId: venueId,
       providerId: providerId,
+      saved: isSuccess,
     })
   }
   const formik = useFormik({

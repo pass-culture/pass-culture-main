@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'
@@ -27,45 +27,46 @@ const AllocineProviderParameters = ({
   const [isOpenedFormDialog, setIsOpenedFormDialog] = useState(false)
   const notification = useNotification()
 
-  const editVenueProvider = useCallback(
-    (payload: PostVenueProviderBody) => {
-      api
-        .updateVenueProvider(payload)
-        .then(editedVenueProvider => {
-          afterVenueProviderEdit(editedVenueProvider)
-          notification.success(
-            "Les modifications ont bien été importées et s'appliqueront aux nouvelles séances créées."
-          )
-        })
-        .catch(error => {
-          if (isErrorAPIError(error)) {
-            notification.error(getRequestErrorStringFromErrors(getError(error)))
-          }
-        })
-    },
-    [afterVenueProviderEdit]
-  )
+  const editVenueProvider = (payload: PostVenueProviderBody): boolean => {
+    let isSucess = false
 
-  const openFormDialog = useCallback(() => {
+    api
+      .updateVenueProvider(payload)
+      .then(editedVenueProvider => {
+        afterVenueProviderEdit(editedVenueProvider)
+        notification.success(
+          "Les modifications ont bien été importées et s'appliqueront aux nouvelles séances créées."
+        )
+        isSucess = true
+      })
+      .catch(error => {
+        isSucess = false
+        if (isErrorAPIError(error)) {
+          notification.error(getRequestErrorStringFromErrors(getError(error)))
+        }
+      })
+
+    return isSucess
+  }
+
+  const openFormDialog = () => {
     setIsOpenedFormDialog(true)
-  }, [])
+  }
 
-  const closeFormDialog = useCallback(() => {
+  const closeFormDialog = () => {
     setIsOpenedFormDialog(false)
-  }, [])
+  }
 
-  const onConfirmDialog = useCallback(
-    (payload: PostVenueProviderBody) => {
-      payload = {
-        ...payload,
-        isActive: venueProvider.isActive,
-      }
-      editVenueProvider(payload)
+  const onConfirmDialog = (payload: PostVenueProviderBody): boolean => {
+    payload = {
+      ...payload,
+      isActive: venueProvider.isActive,
+    }
+    const isSuccess = editVenueProvider(payload)
 
-      closeFormDialog()
-    },
-    [closeFormDialog, editVenueProvider]
-  )
+    closeFormDialog()
+    return isSuccess
+  }
 
   const initialValues: FormValuesProps = {
     price: venueProvider.price ? venueProvider.price : '',

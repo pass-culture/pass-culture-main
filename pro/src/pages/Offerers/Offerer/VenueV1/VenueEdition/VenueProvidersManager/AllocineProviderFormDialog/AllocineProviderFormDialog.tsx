@@ -12,7 +12,7 @@ import styles from './AllocineProviderFormDialog.module.scss'
 interface AllocineProviderFormDialogProps {
   initialValues: FormValuesProps
   onCancel: () => void
-  onConfirm: (payload: PostVenueProviderBody) => void
+  onConfirm: (payload: PostVenueProviderBody) => boolean
   providerId: number
   venueId: number
   offererId: number

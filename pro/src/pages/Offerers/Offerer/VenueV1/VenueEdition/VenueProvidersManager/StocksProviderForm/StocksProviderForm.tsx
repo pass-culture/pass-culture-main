@@ -20,7 +20,7 @@ interface PayloadProps {
 export interface StocksProviderFormProps {
   offererId: number
   providerId: number
-  saveVenueProvider: (payload: PostVenueProviderBody) => void
+  saveVenueProvider: (payload: PostVenueProviderBody) => boolean
   siret: string
   venueId: number
   hasOffererProvider: boolean
@@ -65,11 +65,12 @@ const StocksProviderForm = ({
       venueId,
     }
 
-    saveVenueProvider(payload)
+    const isSuccess = saveVenueProvider(payload)
     logEvent?.(SynchronizationEvents.CLICKED_VALIDATE_IMPORT, {
       offererId: offererId,
       venueId: venueId,
       providerId: providerId,
+      saved: isSuccess,
     })
     setIsConfirmDialogOpened(false)
   }

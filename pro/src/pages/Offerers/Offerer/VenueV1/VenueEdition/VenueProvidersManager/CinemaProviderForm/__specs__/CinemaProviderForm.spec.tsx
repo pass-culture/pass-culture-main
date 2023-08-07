@@ -28,7 +28,7 @@ describe('CinemaProviderForm', () => {
 
   beforeEach(async () => {
     props = {
-      saveVenueProvider: vi.fn(),
+      saveVenueProvider: vi.fn().mockReturnValue(true),
       providerId: providerId,
       venueId: venueId,
       offererId: offererId,
@@ -44,8 +44,6 @@ describe('CinemaProviderForm', () => {
   })
 
   describe('import form cinema provider for the first time', () => {
-    beforeEach(() => {})
-
     it('should display the isDuo checkbox checked by default', async () => {
       await renderCinemaProviderForm(props)
 
@@ -81,6 +79,7 @@ describe('CinemaProviderForm', () => {
           offererId: offererId,
           venueId: venueId,
           providerId: providerId,
+          saved: true,
         }
       )
     })

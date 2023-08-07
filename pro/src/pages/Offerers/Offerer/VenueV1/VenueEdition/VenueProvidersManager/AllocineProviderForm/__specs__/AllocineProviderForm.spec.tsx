@@ -36,7 +36,7 @@ describe('AllocineProviderForm', () => {
   beforeEach(async () => {
     props = {
       venueId: venueId,
-      saveVenueProvider: vi.fn(),
+      saveVenueProvider: vi.fn().mockReturnValue(true),
       providerId: providerId,
       offererId: offererId,
       onCancel: vi.fn(),
@@ -184,6 +184,7 @@ describe('AllocineProviderForm', () => {
         offererId: offererId,
         venueId: venueId,
         providerId: providerId,
+        saved: true,
       }
     )
   })
