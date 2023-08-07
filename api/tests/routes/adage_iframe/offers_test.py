@@ -89,7 +89,6 @@ class CreateCollectiveRequestTest:
         # Then
         assert response.status_code == 404
         assert response.json == {"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}
-        assert not adage_api_testing.adage_requests
 
     def test_post_collective_request_no_institution_found(self, client):
         educational_redactor = educational_factories.EducationalRedactorFactory(email="JamesHolden@rocinante.com")

@@ -3,11 +3,14 @@ from decimal import Decimal
 import typing
 
 from pcapi.core.educational import adage_backends as adage_client
+from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational.adage_backends import get_adage_educational_institutions
 from pcapi.core.educational.adage_backends.serialize import AdageEducationalInstitution
 from pcapi.core.educational.constants import INSTITUTION_TYPES
 from pcapi.core.educational.models import EducationalInstitution
+from pcapi.core.educational.repository import find_educational_year_by_date
 from pcapi.models import db
 from pcapi.repository import repository
 import pcapi.utils.postal_code as postal_code_utils
@@ -184,3 +187,38 @@ def get_current_year_remaining_credit(institution: educational_models.Educationa
         institution.id, educational_year.adageId
     )
     return deposit.get_amount() - spent_amount
+
+
+def create_missing_educational_institution_from_adage(destination_uai: str) -> EducationalInstitution:
+    """
+    Fetch known adage institutions of the current year and create the
+    missing institution inside or database if the target uai exists.
+    """
+    year = find_educational_year_by_date(datetime.utcnow())
+    adage_institutions = get_adage_educational_institutions(year)  # type: ignore [arg-type]
+    if not adage_institutions:
+        raise educational_exceptions.NoAdageInstitution()
+
+    try:
+        adage_institution = next(
+            adage_institution for adage_institution in adage_institutions if adage_institution.uai == destination_uai
+        )
+    except StopIteration:
+        raise educational_exceptions.MissingAdageInstitution()
+    return create_educational_institution_from_adage(adage_institution)
+
+
+def create_educational_institution_from_adage(institution: AdageEducationalInstitution) -> EducationalInstitution:
+    educational_institution = EducationalInstitution(
+        institutionId=institution.uai,
+        institutionType=institution.sigle,
+        name=institution.libelle,
+        city=institution.communeLibelle,
+        postalCode=institution.codePostal,
+        email=institution.courriel or "",
+        phoneNumber=institution.telephone or "",
+        isActive=True,
+    )
+
+    repository.save(educational_institution)
+    return educational_institution

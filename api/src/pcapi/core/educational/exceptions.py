@@ -187,3 +187,11 @@ class CantGetImageFromUrl(Exception):
 
 class NationalProgramNotFound(Exception):
     pass
+
+
+class NoAdageInstitution(Exception):
+    pass
+
+
+class MissingAdageInstitution(Exception):
+    pass
