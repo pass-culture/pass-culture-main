@@ -937,7 +937,6 @@ def reject_inappropriate_products(ean: str, send_booking_cancellation_emails: bo
         if send_booking_cancellation_emails:
             for booking in bookings:
                 send_booking_cancellation_emails_to_user_and_offerer(booking, reason=BookingCancellationReasons.FRAUD)
-        db.session.commit()
 
     logger.info(
         "Rejected inappropriate products",
