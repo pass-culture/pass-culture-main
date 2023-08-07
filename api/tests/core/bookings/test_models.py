@@ -3,7 +3,6 @@ from datetime import timedelta
 from decimal import Decimal
 
 from dateutil.relativedelta import relativedelta
-from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings import factories
@@ -12,6 +11,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 import pcapi.core.users.factories as users_factories
+from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
@@ -156,20 +156,31 @@ class BookingIsConfirmedSqlQueryTest:
 
 
 class BookingExpirationDateTest:
-    @freeze_time("2021-08-05 15:00:00")
     def test_booking_expiration_date_after_new_rules_start_date(self):
+        user = BeneficiaryGrant18Factory()
         book_booking = factories.BookingFactory(
-            dateCreated=datetime.utcnow(), stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id
+            user=user,
+            dateCreated=datetime.utcnow(),
+            stock__price=10,
+            stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
         dvd_booking = factories.BookingFactory(
+            user=user,
             dateCreated=datetime.utcnow(),
+            stock__price=10,
             stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         digital_book_booking = factories.BookingFactory(
+            user=user,
             dateCreated=datetime.utcnow(),
+            stock__price=10,
             stock__offer__product__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
         )
 
-        assert book_booking.expirationDate == datetime(2021, 8, 15, 15, 0, 0)
-        assert dvd_booking.expirationDate == datetime(2021, 9, 4, 15, 0, 0)
+        assert book_booking.expirationDate.strftime("%d/%m/%Y") == (
+            datetime.utcnow() + relativedelta(days=10)
+        ).strftime("%d/%m/%Y")
+        assert dvd_booking.expirationDate.strftime("%d/%m/%Y") == (datetime.utcnow() + relativedelta(days=30)).strftime(
+            "%d/%m/%Y"
+        )
         assert not digital_book_booking.expirationDate
