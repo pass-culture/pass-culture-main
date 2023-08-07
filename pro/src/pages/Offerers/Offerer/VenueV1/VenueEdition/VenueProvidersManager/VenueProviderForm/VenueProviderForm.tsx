@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 
 import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'
@@ -26,23 +26,26 @@ const VenueProviderForm = ({
   const displayAllocineProviderForm = isAllocineProvider(provider)
   const displayCDSProviderForm = isCinemaProvider(provider)
   const notify = useNotification()
-  const createVenueProvider = useCallback(
-    (payload?: PostVenueProviderBody) => {
-      api
-        .createVenueProvider(payload)
-        .then(createdVenueProvider => {
-          notify.success('La synchronisation a bien été initiée.')
-          afterSubmit(createdVenueProvider)
-        })
-        .catch(error => {
-          if (isErrorAPIError(error)) {
-            notify.error(getRequestErrorStringFromErrors(getError(error)))
-            afterSubmit()
-          }
-        })
-    },
-    [afterSubmit]
-  )
+  const createVenueProvider = (payload?: PostVenueProviderBody): boolean => {
+    let isSucess = false
+
+    api
+      .createVenueProvider(payload)
+      .then(createdVenueProvider => {
+        isSucess = true
+        notify.success('La synchronisation a bien été initiée.')
+        afterSubmit(createdVenueProvider)
+      })
+      .catch(error => {
+        isSucess = false
+        if (isErrorAPIError(error)) {
+          notify.error(getRequestErrorStringFromErrors(getError(error)))
+          afterSubmit()
+        }
+      })
+
+    return isSucess
+  }
 
   return displayAllocineProviderForm ? (
     <AllocineProviderForm

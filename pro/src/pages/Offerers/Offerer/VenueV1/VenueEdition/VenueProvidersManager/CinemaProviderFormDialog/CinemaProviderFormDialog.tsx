@@ -8,7 +8,7 @@ import { CinemaProviderForm } from '../CinemaProviderForm/CinemaProviderForm'
 
 interface CinemaProviderFormDialogProps {
   onCancel: () => void
-  onConfirm: (payload: any) => void
+  onConfirm: (payload: any) => boolean
   initialValues: any
   providerId: number
   venueId: number
