@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { VenueProviderResponse } from 'apiClient/v1'
@@ -25,43 +25,48 @@ const CinemaProviderParameters = ({
   const [isOpenedFormDialog, setIsOpenedFormDialog] = useState(false)
   const notification = useNotification()
 
-  const editVenueProvider = useCallback(
-    (payload: CinemaProviderParametersValues) => {
-      api
-        .updateVenueProvider(payload)
-        .then(editedVenueProvider => {
-          afterVenueProviderEdit(editedVenueProvider)
-          notification.success(
-            "Les modifications ont bien été importées et s'appliqueront aux nouvelles séances créées."
-          )
-        })
-        .catch(() => {
-          notification.error("Une erreur s'est produite, veuillez réessayer")
-        })
-    },
-    [afterVenueProviderEdit]
-  )
+  const editVenueProvider = (
+    payload: CinemaProviderParametersValues
+  ): boolean => {
+    let isSucess = false
 
-  const openFormDialog = useCallback(() => {
+    api
+      .updateVenueProvider(payload)
+      .then(editedVenueProvider => {
+        afterVenueProviderEdit(editedVenueProvider)
+        notification.success(
+          "Les modifications ont bien été importées et s'appliqueront aux nouvelles séances créées."
+        )
+        isSucess = true
+      })
+      .catch(() => {
+        isSucess = false
+        notification.error("Une erreur s'est produite, veuillez réessayer")
+      })
+
+    return isSucess
+  }
+
+  const openFormDialog = () => {
     setIsOpenedFormDialog(true)
-  }, [])
+  }
 
-  const closeFormDialog = useCallback(() => {
+  const closeFormDialog = () => {
     setIsOpenedFormDialog(false)
-  }, [])
+  }
 
-  const onConfirmDialog = useCallback(
-    (payload: CinemaProviderParametersValues) => {
-      payload = {
-        ...payload,
-        isActive: venueProvider.isActive,
-      }
-      editVenueProvider(payload)
+  const onConfirmDialog = (
+    payload: CinemaProviderParametersValues
+  ): boolean => {
+    payload = {
+      ...payload,
+      isActive: venueProvider.isActive,
+    }
+    const isSuccess = editVenueProvider(payload)
 
-      closeFormDialog()
-    },
-    [closeFormDialog, editVenueProvider]
-  )
+    closeFormDialog()
+    return isSuccess
+  }
 
   const initialValues = {
     isDuo: venueProvider.isDuo,

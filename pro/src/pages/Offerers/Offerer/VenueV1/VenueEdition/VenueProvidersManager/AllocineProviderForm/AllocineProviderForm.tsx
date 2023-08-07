@@ -19,7 +19,7 @@ export interface FormValuesProps {
 }
 
 export interface AllocineProviderFormProps {
-  saveVenueProvider: (payload: PostVenueProviderBody) => void
+  saveVenueProvider: (payload: PostVenueProviderBody) => boolean
   providerId: number
   offererId: number
   venueId: number
@@ -63,11 +63,12 @@ const AllocineProviderForm = ({
 
     setIsLoading(true)
 
-    saveVenueProvider(payload)
+    const isSuccess = saveVenueProvider(payload)
     logEvent?.(SynchronizationEvents.CLICKED_IMPORT, {
       offererId: offererId,
       venueId: venueId,
       providerId: providerId,
+      saved: isSuccess,
     })
   }
 

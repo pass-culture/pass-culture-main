@@ -26,7 +26,7 @@ describe('StocksProviderForm', () => {
     props = {
       offererId: offererId,
       providerId: providerId,
-      saveVenueProvider: vi.fn(),
+      saveVenueProvider: vi.fn().mockReturnValue(true),
       siret: '12345678901234',
       venueId: venueId,
       hasOffererProvider: true,
@@ -106,6 +106,7 @@ describe('StocksProviderForm', () => {
           offererId: offererId,
           venueId: venueId,
           providerId: providerId,
+          saved: true,
         }
       )
     })
