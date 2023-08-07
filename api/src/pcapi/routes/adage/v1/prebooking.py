@@ -4,6 +4,7 @@ from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import booking as educational_api_booking
+from pcapi.core.educational.api.institution import create_missing_educational_institution_from_adage
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.educational_institution import educational_institution_path
@@ -120,9 +121,17 @@ def merge_institution_prebookings(body: prebooking_serialization.MergeInstitutio
     institution_source = educational_repository.find_educational_institution_by_uai_code(body.source_uai)
     if not institution_source:
         raise ApiErrors({"code": "Source institution not found"}, status_code=404)
+
     institution_destination = educational_repository.find_educational_institution_by_uai_code(body.destination_uai)
     if not institution_destination:
-        raise ApiErrors({"code": "destination institution not found"}, status_code=404)
+        try:
+            institution_destination = create_missing_educational_institution_from_adage(
+                destination_uai=body.destination_uai
+            )
+        except exceptions.NoAdageInstitution:
+            raise ApiErrors({"code": "no institution found in the current year"}, status_code=404)
+        except exceptions.MissingAdageInstitution:
+            raise ApiErrors({"destination_uai": "not found"}, status_code=404)
 
     educational_api_booking.update_collective_bookings_for_new_institution(
         booking_ids=body.bookings_ids,
