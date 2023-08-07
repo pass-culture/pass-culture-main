@@ -14,29 +14,37 @@ from tests.connector_creators.demarches_simplifiees_creators import get_bank_inf
 @patch("pcapi.connectors.dms.api.DMSGraphQLClient")
 class GetVenueBankInformationApplicationDetailsByApplicationIdTest:
     @pytest.mark.parametrize(
-        "annotation",
+        "annotation, procedure_version",
         [
-            {"label": "Erreur traitement pass Culture", "id": "INTERESTINGID"},
+            ({"label": "Erreur traitement pass Culture", "id": "INTERESTINGID"}, 3),
+            ({"label": "Erreur traitement pass Culture", "id": "INTERESTINGID"}, 4),
             # "Nouvelle annotation Texte" is a default annotation created by DMS
-            {"label": "Nouvelle annotation Texte", "id": "OTHERID"},
+            ({"label": "Nouvelle annotation Texte", "id": "OTHERID"}, 3),
+            ({"label": "Nouvelle annotation Texte", "id": "OTHERID"}, 4),
         ],
     )
-    def test_retrieve_and_format_all_fields_v2(self, DMSGraphQLClient, annotation):
+    def test_retrieve_and_format_all_fields_v2(self, DMSGraphQLClient, annotation, procedure_version):
         # Given
         updated_at = datetime(2020, 1, 3)
         DMSGraphQLClient.return_value.get_bank_info.return_value = get_bank_info_response_procedure_v2(annotation)
 
         # When
-        application_details = get_venue_bank_information_application_details_by_application_id("8", 3)
+        application_details = get_venue_bank_information_application_details_by_application_id("8", procedure_version)
 
         # Then
         assert isinstance(application_details, ApplicationDetail)
-        assert application_details.siren == "123456789"
+        if procedure_version == 3:
+            assert application_details.siren == "123456789"
+            assert application_details.siret == "12345678900014"
+            assert application_details.dms_token is None
+        else:
+            assert application_details.siren is None
+            assert application_details.siret is None
+            assert application_details.dms_token == "60a7536a21c8"
         assert application_details.status == BankInformationStatus.ACCEPTED
         assert application_details.application_id == 8
         assert application_details.iban == "FR7630007000111234567890144"
         assert application_details.bic == "SOGEFRPP"
-        assert application_details.siret == "12345678900014"
         assert application_details.dossier_id == "Q2zzbXAtNzgyODAw"
         assert application_details.modification_date == updated_at
         assert application_details.error_annotation_id == (
