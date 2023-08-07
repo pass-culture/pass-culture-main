@@ -1228,11 +1228,7 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
 
 
 def whitelist_product(idAtProviders: str) -> models.Product | None:
-    product = (
-        models.Product.query.filter(models.Product.can_be_synchronized == False)
-        .filter_by(idAtProviders=idAtProviders)
-        .one_or_none()
-    )
+    product = models.Product.query.filter_by(idAtProviders=idAtProviders).one_or_none()
     if product:
         product.isGcuCompatible = True
         product.isSynchronizationCompatible = True
