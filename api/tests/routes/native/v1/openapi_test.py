@@ -1168,11 +1168,25 @@ def test_public_api(client):
                 },
                 "ResetPasswordRequest": {
                     "properties": {
+                        "deviceInfo": {
+                            "anyOf": [{"$ref": "#/components/schemas/TrustedDevice"}],
+                            "nullable": True,
+                            "title": "TrustedDevice",
+                        },
                         "newPassword": {"title": "Newpassword", "type": "string"},
                         "resetPasswordToken": {"title": "Resetpasswordtoken", "type": "string"},
                     },
                     "required": ["resetPasswordToken", "newPassword"],
                     "title": "ResetPasswordRequest",
+                    "type": "object",
+                },
+                "ResetPasswordResponse": {
+                    "properties": {
+                        "accessToken": {"title": "Accesstoken", "type": "string"},
+                        "refreshToken": {"title": "Refreshtoken", "type": "string"},
+                    },
+                    "required": ["accessToken", "refreshToken"],
+                    "title": "ResetPasswordResponse",
                     "type": "object",
                 },
                 "SchoolTypeResponseModel": {
@@ -2984,7 +2998,12 @@ def test_public_api(client):
                         }
                     },
                     "responses": {
-                        "204": {"description": "No Content"},
+                        "200": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ResetPasswordResponse"}}
+                            },
+                            "description": "OK",
+                        },
                         "400": {"description": "Bad Request"},
                         "403": {"description": "Forbidden"},
                         "422": {
