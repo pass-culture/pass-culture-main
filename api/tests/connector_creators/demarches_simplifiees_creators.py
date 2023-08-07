@@ -21,10 +21,10 @@ def get_bank_info_response_procedure_v2(annotation: dict):
                 {
                     "id": "Q2hhbXAtMzUyNzIy",
                     "label": "IBAN",
-                    "stringValue": "FR7630007000111234567890144",
-                    "value": "FR7630007000111234567890144",
+                    "stringValue": "FR7630007000111234567890144 ",
+                    "value": "FR7630007000111234567890144 ",
                 },
-                {"id": "Q2hhbXAtMzUyNzI3", "label": "BIC", "stringValue": "SOGEFRPP", "value": "SOGEFRPP"},
+                {"id": "Q2hhbXAtMzUyNzI3", "label": "BIC", "stringValue": "SOGEFRPP ", "value": "SOGEFRPP "},
                 {
                     "id": "Q2hhbXAtNDA3ODk1",
                     "label": "N° d'identifiant du lieu",
