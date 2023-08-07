@@ -26,10 +26,10 @@ def get_bank_info_response_procedure_v2(annotation: dict):
                 },
                 {"id": "Q2hhbXAtMzUyNzI3", "label": "BIC", "stringValue": "SOGEFRPP ", "value": "SOGEFRPP "},
                 {
-                    "id": "Q2hhbXAtNDA3ODk1",
+                    "id": "Q2hhbXAtMjY3NDMyMQ==",
                     "label": "N° d'identifiant du lieu",
-                    "stringValue": "60a7536a21c8",
-                    "value": "60a7536a21c8",
+                    "stringValue": " PRO-60a7536a21c8 ",
+                    "value": " PRO-60a7536a21c8 ",
                 },
             ],
             "dateDerniereModification": "2020-01-03T01:00:00+01:00",
