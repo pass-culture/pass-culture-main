@@ -72,7 +72,7 @@ def parse_raw_bank_info_data(data: dict, procedure_version: int) -> dict:
         if field["id"] in ID_TO_NAME_MAPPING:
             result[ID_TO_NAME_MAPPING[field["id"]]] = field["value"]
         elif field["id"] == DMS_TOKEN_ID:
-            result["dms_token"] = _remove_dms_pro_prefix(field["value"])
+            result["dms_token"] = _remove_dms_pro_prefix(field["value"].strip("  "))
         elif field["id"] == "Q2hhbXAtNzgyODAw" and procedure_version in (2, 3):
             result["siret"] = field["etablissement"]["siret"]
             result["siren"] = field["etablissement"]["siret"][:9]
