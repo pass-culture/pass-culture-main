@@ -39,6 +39,16 @@ class RequestPasswordResetRequest(BaseModel):
 class ResetPasswordRequest(BaseModel):
     reset_password_token: str
     new_password: str
+    device_info: TrustedDevice | None = None
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
+
+class ResetPasswordResponse(BaseModel):
+    access_token: str
+    refresh_token: str
 
     class Config:
         alias_generator = to_camel
