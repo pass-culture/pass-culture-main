@@ -11,6 +11,7 @@ const InvoicesServerError = (): JSX.Element => {
         src={strokeWipIcon}
         className="no-refunds-icon"
         viewBox="0 0 200 156"
+        width="130"
       />
       <p className="no-refunds-title">Une erreur est survenue</p>
       <p className="no-refunds-description">Veuillez réessayer plus tard</p>
