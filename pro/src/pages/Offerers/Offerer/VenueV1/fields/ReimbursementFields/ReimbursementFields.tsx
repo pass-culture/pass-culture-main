@@ -5,8 +5,7 @@ import FormLayout from 'components/FormLayout'
 import ReimbursementPoint from 'components/VenueForm/ReimbursementPoint/ReimbursementPoint'
 import { Venue } from 'core/Venue/types'
 import useActiveFeature from 'hooks/useActiveFeature'
-import fullLinkIcon from 'icons/full-link.svg'
-import InternalBanner from 'ui-kit/Banners/InternalBanner'
+import { Banner } from 'ui-kit'
 
 import PricingPoint from '../PricingPoint'
 
@@ -28,7 +27,6 @@ const ReimbursementFields = ({
   )
   const venueHaveSiret = !!venue.siret
   const offererHaveVenueWithSiret = offerer.hasAvailablePricingPoints
-  const createVenuePath = `/structures/${offerer.id}/lieux/creation`
   const [venueHasPricingPoint, setVenueHasPricingPoint] = useState<boolean>(
     !!venue.pricingPoint
   )
@@ -46,14 +44,18 @@ const ReimbursementFields = ({
       <div ref={scrollToReimbursementSection} id="reimbursement-section">
         <FormLayout.Section title="Remboursement">
           {!venueHaveSiret && !offererHaveVenueWithSiret ? (
-            <InternalBanner
-              to={createVenuePath}
-              icon={fullLinkIcon}
-              linkTitle="Créer un lieu avec SIRET"
+            <Banner
+              links={[
+                {
+                  href: `/structures/${offerer.id}/lieux/creation`,
+                  linkTitle: 'Créer un lieu avec SIRET',
+                  isExternal: false,
+                },
+              ]}
             >
               Afin de pouvoir ajouter de nouvelles coordonnées bancaires, vous
               devez avoir, au minimum, un lieu rattaché à un SIRET.
-            </InternalBanner>
+            </Banner>
           ) : (
             <>
               {!venueHaveSiret && (

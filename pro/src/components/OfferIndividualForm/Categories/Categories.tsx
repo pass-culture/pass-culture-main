@@ -2,7 +2,6 @@ import cn from 'classnames'
 import { useFormikContext } from 'formik'
 import React from 'react'
 
-import BannerAddVenue from 'components/Banner/BannerAddVenue'
 import FormLayout from 'components/FormLayout'
 import {
   FORM_DEFAULT_VALUES,
@@ -13,7 +12,7 @@ import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
 import { OfferIndividualVenue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
-import { InfoBox, Select } from 'ui-kit'
+import { Banner, InfoBox, Select } from 'ui-kit'
 
 import styles from '../OfferIndividualForm.module.scss'
 import { onVenueChange } from '../UsefulInformations/Venue/Venue'
@@ -209,7 +208,19 @@ const Categories = ({
       )}
       {showAddVenueBanner && (
         <FormLayout.Row>
-          <BannerAddVenue offererId={offererId} />
+          <Banner
+            links={[
+              {
+                href: `/structures/${offererId}/lieux/creation`,
+                linkTitle: '+ Ajouter un lieu',
+                isExternal: false,
+              },
+            ]}
+            type="notification-info"
+          >
+            Pour créer une offre de ce type, ajoutez d’abord un lieu à l’une de
+            vos structures.
+          </Banner>
         </FormLayout.Row>
       )}
     </FormLayout.Section>
