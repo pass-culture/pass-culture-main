@@ -365,6 +365,14 @@ def pro_no_active_offers_since_40_days_automation() -> None:
     pro_user_automations.pro_no_active_offers_since_40_days_automation()
 
 
+@blueprint.cli.command("pro_no_bookings_since_40_days_automation")
+@log_cron_with_transaction
+def pro_no_bookings_since_40_days_automation() -> None:
+    """Updates the list of pros whose offers haven't been booked since exactly 40 days ago ("pros-pas-de-resa-40-j" list).
+    This command is meant to be called every day."""
+    pro_user_automations.pro_no_bookings_since_40_days_automation()
+
+
 @blueprint.cli.command("notify_users_bookings_not_retrieved")
 @log_cron_with_transaction
 def notify_users_bookings_not_retrieved_command() -> None:
