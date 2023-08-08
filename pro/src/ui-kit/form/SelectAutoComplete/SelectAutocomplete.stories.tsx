@@ -6,7 +6,7 @@ import SelectAutocomplete from './SelectAutocomplete'
 import type { SelectAutocompleteProps } from './SelectAutocomplete'
 
 export default {
-  title: 'ui-kit/forms/SelectAutocomplete2',
+  title: 'ui-kit/forms/SelectAutocomplete',
   component: SelectAutocomplete,
 }
 interface Args extends SelectAutocompleteProps {
