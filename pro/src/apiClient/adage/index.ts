@@ -20,6 +20,7 @@ export type { BookCollectiveOfferResponse } from './models/BookCollectiveOfferRe
 export type { CatalogViewBody } from './models/CatalogViewBody';
 export type { CategoriesResponseModel } from './models/CategoriesResponseModel';
 export type { CategoryResponseModel } from './models/CategoryResponseModel';
+export type { ClosedSatisfactionSurvey } from './models/ClosedSatisfactionSurvey';
 export type { CollectiveOfferOfferVenue } from './models/CollectiveOfferOfferVenue';
 export type { CollectiveOfferResponseModel } from './models/CollectiveOfferResponseModel';
 export type { CollectiveOfferTemplateResponseModel } from './models/CollectiveOfferTemplateResponseModel';

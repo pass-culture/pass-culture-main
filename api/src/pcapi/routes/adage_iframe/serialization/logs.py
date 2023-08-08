@@ -12,6 +12,10 @@ class CatalogViewBody(AdageBaseModel):
     source: str
 
 
+class ClosedSatisfactionSurvey(AdageBaseModel):
+    source: str
+
+
 class StockIdBody(AdageBaseModel):
     stockId: int
 
