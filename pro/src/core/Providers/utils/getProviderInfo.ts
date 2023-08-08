@@ -4,6 +4,7 @@ import cdiBookshopLogo from '../logos/logo-cdi-bookshop.svg'
 import cgrLogo from '../logos/logo-cgr.svg'
 import cineDigitalServiceLogo from '../logos/logo-cine-digital-service.svg'
 import decitreLogo from '../logos/logo-decitre.svg'
+import emsLogo from '../logos/logo-ems.svg'
 import fnacLogo from '../logos/logo-fnac.svg'
 import librairesLogo from '../logos/logo-libraires.svg'
 import librisoftLogo from '../logos/logo-librisoft.svg'
@@ -109,6 +110,12 @@ export const getProviderInfo = (
       logo: cgrLogo,
       name: 'CGR',
       synchronizedOfferMessage: 'Offre synchronisée avec CGR',
+    },
+    {
+      id: 'ems',
+      logo: emsLogo,
+      name: 'EMS',
+      synchronizedOfferMessage: 'Offre synchronisée avec EMS',
     },
   ]
 
