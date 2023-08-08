@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
-import Banner from 'ui-kit/Banners/Banner'
+import { Banner } from 'ui-kit'
 
 import styles from './OperationProcedures.module.scss'
 
