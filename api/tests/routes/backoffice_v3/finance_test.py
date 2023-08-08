@@ -46,6 +46,63 @@ class ListIncidentsTest(GetEndpointHelper):
         assert rows[0]["Type d'incident"] == "Trop Perçu"
 
 
+class GetIncidentCancellationFormTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.finance_incident.get_finance_incident_cancellation_form"
+    endpoint_kwargs = {"finance_incident_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
+
+    def test_get_incident_cancellation_form(self, legit_user, authenticated_client):
+        incident = finance_factories.FinanceIncidentFactory()
+        url = url_for(self.endpoint, finance_incident_id=incident.id)
+        response = authenticated_client.get(url)
+
+        assert response.status_code == 200
+
+
+class CancelIncidentTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.finance_incident.cancel_finance_incident"
+    endpoint_kwargs = {"finance_incident_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
+
+    def test_cancel_incident(self, authenticated_client):
+        incident = finance_factories.FinanceIncidentFactory()
+        self.form_data = {"comment": "L'incident n'est pas conforme"}
+
+        response = self.post_to_endpoint(authenticated_client, finance_incident_id=incident.id, form=self.form_data)
+
+        assert response.status_code == 200
+
+        assert (
+            finance_models.FinanceIncident.query.filter(
+                finance_models.FinanceIncident.status == finance_models.IncidentStatus.CREATED
+            ).count()
+            == 0
+        )
+
+        badges = html_parser.extract(response.data, tag="span", class_="badge")
+        assert "Annulé" in badges
+
+    def test_cancel_already_cancelled_incident(self, authenticated_client):
+        incident = finance_factories.FinanceIncidentFactory(status=finance_models.IncidentStatus.CANCELLED)
+        self.form_data = {"comment": "L'incident n'est pas conforme"}
+
+        response = self.post_to_endpoint(authenticated_client, finance_incident_id=incident.id, form=self.form_data)
+
+        assert response.status_code == 200
+
+        assert "L'incident a déjà été annulé" in html_parser.extract_alert(response.data)
+
+    def test_cancel_already_validated_incident(self, authenticated_client):
+        incident = finance_factories.FinanceIncidentFactory(status=finance_models.IncidentStatus.VALIDATED)
+        self.form_data = {"comment": "L'incident n'est pas conforme"}
+
+        response = self.post_to_endpoint(authenticated_client, finance_incident_id=incident.id, form=self.form_data)
+
+        assert response.status_code == 200
+
+        assert "Impossible d'annuler un incident déjà validé" in html_parser.extract_alert(response.data)
+
+
 class GetIncidentTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.finance_incident.get_incident"
     endpoint_kwargs = {"finance_incident_id": 1}
