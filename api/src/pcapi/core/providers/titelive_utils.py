@@ -89,12 +89,13 @@ def generate_titelive_gtl_from_file(file: str) -> None:
 
     import_str = "from .titelive_utils import Gtl"
     method_str = """
-def get_gtl(gtl_id: str) -> Gtl:
-    return GTLS[gtl_id.zfill(8)]
+def get_gtl(gtl_id: str) -> Gtl | None:
+    gtl_id_8chars = gtl_id.zfill(8)
+    return GTLS.get(gtl_id_8chars)
     """
 
-    with open(file, newline="", encoding="utf-8") as gtL_csv_file:
-        gtl_reader = csv.reader(gtL_csv_file, delimiter="\t")
+    with open(file, newline="", encoding="utf-8") as gtl_csv_file:
+        gtl_reader = csv.reader(gtl_csv_file, delimiter="\t")
         gtls = _get_gtls_from_csv_reader(gtl_reader)
 
         if not os.path.isdir(DIRECTORY):

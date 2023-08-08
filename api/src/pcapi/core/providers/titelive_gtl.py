@@ -19,8 +19,9 @@
 from .titelive_utils import Gtl
 
 
-def get_gtl(gtl_id: str) -> Gtl:
-    return GTLS[gtl_id.zfill(8)]
+def get_gtl(gtl_id: str) -> Gtl | None:
+    gtl_id_8chars = gtl_id.zfill(8)
+    return GTLS.get(gtl_id_8chars)
 
 
 GTLS: dict[str, Gtl] = {
