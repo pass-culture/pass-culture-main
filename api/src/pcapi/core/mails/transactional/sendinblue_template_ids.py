@@ -13,7 +13,7 @@ class TransactionalEmail(Enum):
         id_prod=223, id_not_prod=33, tags=["jeunes_offre_annulee_jeune"]
     )
     BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY = models.Template(
-        id_prod=225, id_not_prod=37, tags=["jeunes_offre_annulee_pros"]
+        id_prod=225, id_not_prod=37, tags=["jeunes_offre_annulee_pros"], send_to_ehp=False
     )
     BOOKING_CONFIRMATION_BY_BENEFICIARY = models.Template(
         id_prod=725, id_not_prod=96, tags=["jeunes_reservation_confirmee_v3"]
@@ -25,7 +25,7 @@ class TransactionalEmail(Enum):
         id_prod=941, id_not_prod=124, tags=["jeunes_rappel_evenement_j-1"]
     )
     BOOKING_POSTPONED_BY_PRO_TO_BENEFICIARY = models.Template(
-        id_prod=224, id_not_prod=36, tags=["jeunes_offre_reportee_pro"]
+        id_prod=224, id_not_prod=36, tags=["jeunes_offre_reportee_pro"], send_to_ehp=False
     )
     BOOKING_SOON_TO_BE_EXPIRED_TO_BENEFICIARY = models.Template(
         id_prod=144, id_not_prod=42, tags=["jeunes_reservation_bientot_expiree"]
@@ -117,7 +117,9 @@ class TransactionalEmail(Enum):
         id_prod=524, id_not_prod=64, tags=["pro_preresa_3_jours_avant_la_date_limite"]
     )
     EAC_NEW_REQUEST_FOR_OFFER = models.TemplatePro(id_prod=962, id_not_prod=128, tags=["pro_nouvel_offre_requete_eac"])
-    EAC_OFFERER_ACTIVATION_EMAIL = models.TemplatePro(id_prod=815, id_not_prod=114, tags=["pro_offerer_activation"])
+    EAC_OFFERER_ACTIVATION_EMAIL = models.TemplatePro(
+        id_prod=815, id_not_prod=114, tags=["pro_offerer_activation"], send_to_ehp=False
+    )
     EDUCATIONAL_BOOKING_CANCELLATION = models.TemplatePro(
         id_prod=522, id_not_prod=65, tags=["pro_eac_annulation_reservation"]
     )
