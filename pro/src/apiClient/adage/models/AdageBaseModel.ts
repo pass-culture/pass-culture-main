@@ -3,9 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type ClosedSatisfactionSurvey = {
+export type AdageBaseModel = {
   iframeFrom: string;
   queryId?: string | null;
-  source: string;
 };
 
