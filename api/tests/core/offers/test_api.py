@@ -2280,7 +2280,9 @@ class WhitelistExistingProductTest:
 
         api.whitelist_product(ean)
 
-        assert models.Product.query.filter(models.Product.idAtProviders == ean).one()
+        product = models.Product.query.filter(models.Product.idAtProviders == ean).one()
+        assert product
+        assert len(product.extraData["gtl_id"]) == 8
 
 
 @pytest.mark.usefixtures("db_session")
