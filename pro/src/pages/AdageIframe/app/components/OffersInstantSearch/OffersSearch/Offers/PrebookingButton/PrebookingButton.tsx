@@ -41,6 +41,7 @@ const PrebookingButton = ({
       apiAdage.logBookingModalButtonClick({
         iframeFrom: removeParamsFromUrl(location.pathname),
         stockId,
+        queryId: queryId,
       })
     }
     setIsModalOpen(true)
