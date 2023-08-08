@@ -2182,3 +2182,28 @@ class CreateFromOnboardingDataTest:
         assert len(mails_testing.outbox) == 0
         # Venue Registration
         assert offerers_models.VenueRegistration.query.count() == 0
+
+    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
+    def test_missing_address(self):
+        user = users_factories.UserFactory(email="pro@example.com")
+        user.add_non_attached_pro_role()
+        onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
+        onboarding_data.address = None
+
+        created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
+
+        # Offerer has been created
+        created_offerer = created_user_offerer.offerer
+        assert created_offerer.name == "MINISTERE DE LA CULTURE"
+        assert created_offerer.siren == "853318459"
+        assert created_offerer.address is None
+        assert created_offerer.city == "Paris"
+        assert created_offerer.postalCode == "75001"
+        # 1 virtual Venue + 1 Venue with siret have been created
+        assert len(created_user_offerer.offerer.managedVenues) == 2
+        created_venue, _ = sorted(created_user_offerer.offerer.managedVenues, key=lambda v: v.isVirtual)
+        assert created_venue.address == "n/d"
+        assert created_venue.city == "Paris"
+        assert created_venue.latitude == decimal.Decimal("2.30829")
+        assert created_venue.longitude == decimal.Decimal("48.87171")
+        assert created_venue.postalCode == "75001"
