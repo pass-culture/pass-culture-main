@@ -1,7 +1,7 @@
 import React from 'react'
 
 import strokeShowIcon from 'icons/stroke-show.svg'
-import Banner from 'ui-kit/Banners/Banner'
+import { Banner } from 'ui-kit'
 
 const BannerCreateOfferAdmin = (): JSX.Element => (
   <Banner

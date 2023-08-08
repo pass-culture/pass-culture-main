@@ -1,12 +1,14 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
+import fullNextIcon from 'icons/full-next.svg'
+
 import Banner, { BannerProps } from '../Banner'
 
 describe('Banner', () => {
   const props: BannerProps = {
     closable: true,
-    links: [{ href: '/some/site', linkTitle: 'linkTitle' }],
+    links: [{ href: '/some/site', linkTitle: 'linkTitle', icon: fullNextIcon }],
   }
 
   it('should render the Banner', () => {

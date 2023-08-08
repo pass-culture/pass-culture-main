@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React from 'react'
 
 import logoPassCultureIcon from 'icons/logo-pass-culture.svg'
-import Banner from 'ui-kit/Banners/Banner'
+import { Banner } from 'ui-kit'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './BannerPublicApi.module.scss'

@@ -14,6 +14,7 @@ export type Link = {
   isExternal?: boolean
   onClick?: () => void
 }
+
 interface LinkNodesProps {
   links?: Link[]
   defaultLinkIcon?: string

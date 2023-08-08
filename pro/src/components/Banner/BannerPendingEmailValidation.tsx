@@ -1,6 +1,6 @@
 import React from 'react'
 
-import Banner from 'ui-kit/Banners/Banner'
+import { Banner } from 'ui-kit'
 
 import styles from './BannerPendingEmailValidation.module.scss'
 
