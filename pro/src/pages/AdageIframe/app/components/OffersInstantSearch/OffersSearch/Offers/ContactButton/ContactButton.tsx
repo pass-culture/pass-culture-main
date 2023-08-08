@@ -38,6 +38,7 @@ const ContactButton = ({
     apiAdage.logContactModalButtonClick({
       iframeFrom: removeParamsFromUrl(location.pathname),
       offerId,
+      queryId: queryId,
     })
     logClickOnOffer(offerId.toString(), position, queryId)
   }
