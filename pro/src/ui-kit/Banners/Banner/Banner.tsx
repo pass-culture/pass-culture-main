@@ -1,10 +1,15 @@
+import cn from 'classnames'
 import React from 'react'
 
-import fullLinkIcon from 'icons/full-link.svg'
-import styles from 'ui-kit/Banners/BannerLayout/BannerLayout.module.scss'
-import { ButtonLink } from 'ui-kit/Button'
+import fullClearIcon from 'icons/full-clear.svg'
+import shadowTipsHelpIcon from 'icons/shadow-tips-help.svg'
+import shadowTipsWarningIcon from 'icons/shadow-tips-warning.svg'
+import strokeCloseIcon from 'icons/stroke-close.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import BannerLayout, { BannerLayoutProps } from '../BannerLayout/BannerLayout'
+import LinkNodes from '../LinkNodes/LinkNodes'
+
+import styles from './Banner.module.scss'
 
 export type Link = {
   icon?: string
@@ -15,59 +20,107 @@ export type Link = {
   isExternal?: boolean
   onClick?: () => void
 }
-export interface BannerProps extends BannerLayoutProps {
+
+export interface BannerProps {
   children?: React.ReactNode | React.ReactNode[]
   links?: Link[]
+  type?: 'notification-info' | 'attention' | 'light'
+  closable?: boolean
+  minimalStyle?: boolean
+  handleOnClick?: () => void
+  className?: string
+  showTitle?: boolean
+  isProvider?: boolean
 }
 
 const Banner = ({
   children,
-  links = [],
-  ...bannerLayoutProps
+  type = 'attention',
+  closable = false,
+  minimalStyle = false,
+  handleOnClick,
+  className,
+  links,
+  showTitle = true,
+  isProvider = false,
 }: BannerProps): JSX.Element => {
-  /* istanbul ignore next: DEBT to fix */
-  const getLinkNode = (link: Link) => (
-    /* istanbul ignore next: DEBT to fix */
-    <ButtonLink
-      link={{
-        isExternal: link.isExternal === undefined ? true : link.isExternal,
-        to: link.href,
-        target: link.targetLink || '_blank',
-        rel: 'noopener noreferrer',
-      }}
-      icon={
-        /* istanbul ignore next: DEBT to fix */
-        link.hideLinkIcon ? undefined : link.icon || fullLinkIcon
-      }
-      className={styles['bi-link']}
-      onClick={link.onClick ?? undefined}
-    >
-      {link.linkTitle}
-    </ButtonLink>
-  )
-
-  const getLinksNode = () => {
-    if (links.length > 1) {
-      return (
-        <ul>
-          {links.map(link => {
-            return (
-              <li key={link.href} className={styles['bi-link-item']}>
-                {getLinkNode(link)}
-              </li>
-            )
-          })}
-        </ul>
-      )
-    }
-
-    return links[0] && getLinkNode(links[0])
-  }
-
   return (
-    <BannerLayout linkNode={getLinksNode()} {...bannerLayoutProps}>
-      {children}
-    </BannerLayout>
+    <div
+      className={cn(
+        styles[`bi-banner`],
+        styles[type],
+        minimalStyle && styles['is-minimal'],
+        showTitle && styles['title'],
+        className
+      )}
+    >
+      {type === 'notification-info' && showTitle && (
+        <div className={styles['container']}>
+          <SvgIcon
+            src={shadowTipsHelpIcon}
+            alt=""
+            className={styles['icon']}
+            width="24"
+          />
+          <span className={styles['container-title']}>À SAVOIR</span>
+        </div>
+      )}
+      {type === 'attention' && showTitle && (
+        <div className={styles['container']}>
+          <SvgIcon
+            src={shadowTipsWarningIcon}
+            alt=""
+            className={styles['icon']}
+            width="24"
+          />
+          <span className={styles['container-title']}>IMPORTANT</span>
+        </div>
+      )}
+      <div className={styles['border-cut']}>
+        {closable && (
+          <button onClick={handleOnClick} type="button">
+            {
+              /* istanbul ignore next: graphic variation */
+              type != 'light' ? (
+                <SvgIcon
+                  src={fullClearIcon}
+                  alt="Masquer le bandeau"
+                  className={cn(styles['close-icon-banner'])}
+                />
+              ) : (
+                <SvgIcon
+                  src={strokeCloseIcon}
+                  alt="Masquer le bandeau"
+                  className={styles['close-icon']}
+                />
+              )
+            }
+          </button>
+        )}
+
+        <div className={styles['content']}>
+          <div>
+            {children && (
+              <div
+                className={cn(
+                  styles['bi-banner-text'],
+                  {
+                    [styles['with-margin']]: !!links,
+                  },
+                  {
+                    [styles['provider']]: !!isProvider,
+                  }
+                )}
+              >
+                {children}
+              </div>
+            )}
+
+            <LinkNodes links={links} />
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 

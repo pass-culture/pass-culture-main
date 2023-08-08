@@ -194,23 +194,6 @@ $banner-left-padding: rem.torem(16px);
   }
 }
 
-.bi-link {
-  &-item {
-    display: flex;
-
-    &:not(:last-of-type) {
-      margin-bottom: rem.torem(8px);
-    }
-  }
-
-  /* stylelint-disable-next-line */
-  &.bi-external-link--mod-topright {
-    position: absolute;
-    right: 0;
-    top: rem.torem(-6px);
-  }
-}
-
 .domain-name-banner {
   margin: rem.torem(0) 0 rem.torem(32px) 0;
 }
