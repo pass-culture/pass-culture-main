@@ -12,6 +12,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
+from pcapi.core.users import factories as users_factories
 
 
 logger = logging.getLogger(__name__)
@@ -41,11 +42,18 @@ def create_offerer_provider(
     return offerer, provider
 
 
-def create_offerer_provider_with_offers(name: str) -> None:
+def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
     now = datetime.datetime.utcnow().replace(second=0, microsecond=0)
     in_five_days = now + datetime.timedelta(days=5)
     in_ten_days = now + datetime.timedelta(days=10)
     offerer, provider = create_offerer_provider(name, provider_name="TaylorManager")
+    user = users_factories.ProFactory(
+        email=user_email,
+        firstName="taylor",
+        lastName="young",
+        phoneNumber="+33100000000",
+    )
+    offerers_factories.UserOffererFactory(offerer=offerer, user=user)
     first_venue = offerers_factories.VenueFactory(name="Zénith de Lisieux", managingOfferer=offerer)
     second_venue = offerers_factories.VenueFactory(name="Olympia de Besançon", managingOfferer=offerer)
     providers_factories.VenueProviderFactory(venue=first_venue, provider=provider)
@@ -105,7 +113,7 @@ def create_offerer_providers_for_apis() -> None:
     create_offerer_provider("TicketBusters")
     create_offerer_provider("MangaMania")
     create_offerer_provider("VinylVibes")
-    create_offerer_provider_with_offers("Structure avec lieux synchronisés billetterie")
+    create_offerer_provider_with_offers("Structure avec lieux synchronisés billetterie", "taylor@example.com")
 
     create_offerer_provider("Private distributor", isActive=True, enabledForPro=False)
     create_offerer_provider("Malicious RiotRecords", isActive=False, enabledForPro=True)
