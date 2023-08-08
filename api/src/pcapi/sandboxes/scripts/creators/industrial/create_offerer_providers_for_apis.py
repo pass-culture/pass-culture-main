@@ -5,7 +5,7 @@ import typing
 from pcapi import settings
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
-from pcapi.core.offerers import factories as offerers_facotries
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.providers import factories as providers_factories
@@ -18,12 +18,12 @@ logger = logging.getLogger(__name__)
 def create_offerer_provider(
     name: str, isActive: bool = True, enabledForPro: bool = True
 ) -> typing.Tuple[offerers_models.Offerer, providers_models.Provider]:
-    offerer = offerers_facotries.OffererFactory(name=name)
+    offerer = offerers_factories.OffererFactory(name=name)
     provider = providers_factories.ProviderFactory(
         name=name, localClass=None, isActive=isActive, enabledForPro=enabledForPro
     )
 
-    offerers_facotries.ApiKeyFactory(
+    offerers_factories.ApiKeyFactory(
         offererId=offerer.id,
         prefix=f"{settings.ENV}_{offerer.id}",
         secret=f"clearSecret{offerer.id}",
@@ -40,8 +40,8 @@ def create_offerer_provider(
 def create_offerer_provider_with_offers(name: str) -> None:
     in_five_days = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=5)
     offerer, provider = create_offerer_provider(name)
-    first_venue = offerers_facotries.VenueFactory(name="Zénith de Lisieux", managingOfferer=offerer)
-    second_venue = offerers_facotries.VenueFactory(name="Olympia de Besançon", managingOfferer=offerer)
+    first_venue = offerers_factories.VenueFactory(name="Zénith de Lisieux", managingOfferer=offerer)
+    second_venue = offerers_factories.VenueFactory(name="Olympia de Besançon", managingOfferer=offerer)
     providers_factories.VenueProviderFactory(venue=first_venue, provider=provider)
     providers_factories.VenueProviderFactory(venue=second_venue, provider=provider)
     first_offer = offers_factories.EventOfferFactory(
