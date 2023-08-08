@@ -6,7 +6,7 @@
 import type { Target } from './Target';
 
 export type SaveNewOnboardingDataQueryModel = {
-  address: string;
+  address?: string | null;
   city: string;
   createVenueWithoutSiret?: boolean;
   latitude: number;
