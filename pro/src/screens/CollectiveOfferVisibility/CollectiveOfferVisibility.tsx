@@ -320,7 +320,10 @@ const CollectiveOfferVisibility = ({
                     />
                     {selectedTeacher && (
                       <Banner type="light" className={styles['institution']}>
-                        <div className={styles['banner-with-bin']}>
+                        <div
+                          className={styles['banner-with-bin']}
+                          data-testid="teacher-banner"
+                        >
                           <div>
                             {`${selectedTeacher.surname} ${selectedTeacher.name}`.trim()}
                           </div>

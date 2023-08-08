@@ -38,7 +38,6 @@ const SelectAutocomplete = ({
   inline,
   isOptional = false,
   label,
-  maxHeight,
   multi = false,
   options,
   placeholder,
@@ -115,8 +114,9 @@ const SelectAutocomplete = ({
     setHoveredOptionIndex(null)
   }, [searchField.value])
 
-  /* istanbul ignore next */
+  /* istanbul ignore next: DEBT TO FIX */
   const handleKeyDown: KeyboardEventHandler<HTMLDivElement> = event => {
+    /* istanbul ignore next */
     switch (event.key) {
       case 'ArrowUp':
         if (hoveredOptionIndex !== null) {
@@ -171,7 +171,7 @@ const SelectAutocomplete = ({
   const selectOption = (value: string) => {
     let updatedSelection
     if (multi) {
-      if ((field.value || []).includes(value) && Array.isArray(field.value)) {
+      if (field.value.includes(value) && Array.isArray(field.value)) {
         updatedSelection = field.value.filter(li => li !== value)
       } else {
         updatedSelection = [...field.value, value]
@@ -296,7 +296,6 @@ const SelectAutocomplete = ({
             <OptionsList
               className={className}
               fieldName={name}
-              maxHeight={maxHeight}
               selectedValues={field.value}
               filteredOptions={filteredOptions}
               setHoveredOptionIndex={setHoveredOptionIndex}
