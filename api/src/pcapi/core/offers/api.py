@@ -946,7 +946,7 @@ def reject_inappropriate_products(ean: str, send_booking_cancellation_emails: bo
     if offer_ids:
         favorites = users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).all()
         repository.delete(*favorites)
-        search.async_index_offer_ids(offer_ids)
+        search.async_index_offer_ids(set(offer_ids))
 
     return True
 

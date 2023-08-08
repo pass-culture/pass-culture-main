@@ -260,5 +260,5 @@ class SetProductGcuIncompatibleTest(PostEndpointHelper):
                 assert offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
                 assert datetime.datetime.utcnow() - offer.lastValidationDate < datetime.timedelta(seconds=5)
         mocked_async_index_offer_ids.assert_called_once_with(
-            [offer.id for offer in offers if offer.id not in initially_rejected]
+            {offer.id for offer in offers if offer.id not in initially_rejected}
         )
