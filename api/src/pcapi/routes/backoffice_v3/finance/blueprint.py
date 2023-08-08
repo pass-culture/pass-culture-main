@@ -11,6 +11,7 @@ import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
 from pcapi.core.bookings import models as bookings_models
+from pcapi.core.finance import exceptions as finance_exceptions
 import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.models as offerer_models
 from pcapi.core.offers import models as offers_models
@@ -20,6 +21,7 @@ from pcapi.models import db
 from pcapi.repository import repository
 from pcapi.routes.backoffice_v3 import utils
 from pcapi.routes.backoffice_v3.finance import forms
+from pcapi.routes.backoffice_v3.offerers import forms as offerer_forms
 from pcapi.utils.human_ids import humanize
 
 
@@ -71,6 +73,57 @@ def render_finance_incident(incident: finance_models.FinanceIncident) -> utils.B
         reimbursement_point_humanized_id=humanize(current_reimbursement_point.id),
         active_tab=request.args.get("active_tab", "bookings"),
     )
+
+
+@finance_incident_blueprint.route("/incident/<int:finance_incident_id>/cancel", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+def get_finance_incident_cancellation_form(finance_incident_id: int) -> utils.BackofficeResponse:
+    form = offerer_forms.CommentForm()
+    return render_template(
+        "components/turbo/modal_form.html",
+        form=form,
+        dst=url_for(
+            "backoffice_v3_web.finance_incident.cancel_finance_incident", finance_incident_id=finance_incident_id
+        ),
+        div_id=f"reject-finance-incident-modal-{finance_incident_id}",
+        title="Annuler l'incident",
+        button_text="Confirmer l'annulation",
+    )
+
+
+def _cancel_finance_incident(incident: finance_models.FinanceIncident) -> None:
+    if incident.status == finance_models.IncidentStatus.CANCELLED:
+        raise finance_exceptions.FinanceIncidentAlreadyCancelled
+    if incident.status == finance_models.IncidentStatus.VALIDATED:
+        raise finance_exceptions.FinanceIncidentAlreadyValidated
+
+    incident.status = finance_models.IncidentStatus.CANCELLED
+    # Todo (akarki): log in history the cancellation
+
+    repository.save(incident)
+
+
+@finance_incident_blueprint.route("/incident/<int:finance_incident_id>/cancel", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeResponse:
+    incident: finance_models.FinanceIncident = finance_models.FinanceIncident.query.get_or_404(finance_incident_id)
+
+    form = offerer_forms.CommentForm()
+    if not form.validate():
+        flash("Les données envoyées comportent des erreurs", "warning")
+        return render_finance_incident(incident)
+
+    try:
+        _cancel_finance_incident(incident)
+    except finance_exceptions.FinanceIncidentAlreadyCancelled:
+        flash("L'incident a déjà été annulé", "warning")
+        return render_finance_incident(incident)
+    except finance_exceptions.FinanceIncidentAlreadyValidated:
+        flash("Impossible d'annuler un incident déjà validé", "warning")
+        return render_finance_incident(incident)
+
+    flash("L'incident a été annulé avec succès", "success")
+    return render_finance_incident(incident)
 
 
 @finance_incident_blueprint.route("/incident/<int:finance_incident_id>", methods=["GET"])

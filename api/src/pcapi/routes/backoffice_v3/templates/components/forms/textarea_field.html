@@ -4,7 +4,7 @@
             data-original-name="{{ field.name }}"
             class="form-control pc-override-custom-textarea-enter value-element-form {% if field.flags.required %}pc-required{% endif %}"
             rows="{{ field.rows }}"
-            {% if field.flags.required %}required{% endif %}
+            {% if field.flags.required %}required=""{% endif %}
             {% if field.flags.minlength %}minlength="{{ field.flags.minlength }}"{% endif %}
             {% if field.flags.maxlength %}maxlength="{{ field.flags.maxlength }}"{% endif %}>{{ field.data | empty_string_if_null }}</textarea>
   <label class="label-element-form"
