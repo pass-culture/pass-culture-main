@@ -10,7 +10,13 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SurveySatisfaction.module.scss'
 
-export const SurveySatisfaction = (): JSX.Element => {
+interface SurveySatisfactionProps {
+  queryId?: string
+}
+
+export const SurveySatisfaction = ({
+  queryId,
+}: SurveySatisfactionProps): JSX.Element => {
   const [shouldHideSurveySatisfaction, setShouldHideSurveySatisfaction] =
     useState(false)
 
@@ -25,6 +31,13 @@ export const SurveySatisfaction = (): JSX.Element => {
     } catch {
       notify.error('Une erreur est survenue. Merci de réessayer plus tard')
     }
+  }
+
+  const logOpenSatisfactionSurvey = async () => {
+    apiAdage.logOpenSatisfactionSurvey({
+      iframeFrom: location.pathname,
+      queryId: queryId,
+    })
   }
 
   return !shouldHideSurveySatisfaction ? (
@@ -73,6 +86,7 @@ export const SurveySatisfaction = (): JSX.Element => {
               target: '_blank',
             }}
             className={styles['survey-button']}
+            onClick={logOpenSatisfactionSurvey}
           >
             Je donne mon avis
           </ButtonLink>

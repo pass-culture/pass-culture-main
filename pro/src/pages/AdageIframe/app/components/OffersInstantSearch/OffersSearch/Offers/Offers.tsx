@@ -196,7 +196,9 @@ export const OffersComponent = ({
                 }
               />
             )}
-            {index === 1 && showSurveySatisfaction && <SurveySatisfaction />}
+            {index === 1 && showSurveySatisfaction && (
+              <SurveySatisfaction queryId={queryId} />
+            )}
           </div>
         ))}
         <div className={styles['offers-load-more']}>

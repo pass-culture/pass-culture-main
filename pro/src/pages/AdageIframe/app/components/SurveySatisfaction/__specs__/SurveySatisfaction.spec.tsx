@@ -10,13 +10,17 @@ import { SurveySatisfaction } from '../SurveySatisfaction'
 
 vi.mock('apiClient/api', () => ({
   apiAdage: {
-    saveRedactorPreferences: jest.fn(() => Promise.resolve({})),
+    saveRedactorPreferences: vi.fn(),
+    logOpenSatisfactionSurvey: vi.fn(),
   },
 }))
 
 describe('SurveySatisfaction', () => {
+  const defaultProps = {
+    queryId: '123',
+  }
   it('should close survey satisfaction', async () => {
-    renderWithProviders(<SurveySatisfaction />)
+    renderWithProviders(<SurveySatisfaction {...defaultProps} />)
 
     screen.getByText('Enquête de satisfaction')
 
@@ -42,7 +46,7 @@ describe('SurveySatisfaction', () => {
       isOk: false,
     })
 
-    renderWithProviders(<SurveySatisfaction />)
+    renderWithProviders(<SurveySatisfaction {...defaultProps} />)
 
     screen.getByText('Enquête de satisfaction')
 
@@ -51,5 +55,18 @@ describe('SurveySatisfaction', () => {
     userEvent.click(closeButton)
 
     await waitFor(() => expect(notifyError).toHaveBeenCalledTimes(1))
+  })
+
+  it('should log info when opening sastisfaction survey', async () => {
+    renderWithProviders(<SurveySatisfaction {...defaultProps} />)
+
+    const openButton = screen.getByRole('link', { name: 'Je donne mon avis' })
+
+    await userEvent.click(openButton)
+
+    expect(apiAdage.logOpenSatisfactionSurvey).toHaveBeenCalledWith({
+      iframeFrom: '/',
+      queryId: '123',
+    })
   })
 })
