@@ -2,7 +2,7 @@ import cn from 'classnames'
 import React from 'react'
 
 import { Title } from 'ui-kit'
-import { Link } from 'ui-kit/Banners/Banner'
+import { Link } from 'ui-kit/Banners/LinkNodes/LinkNodes'
 
 import style from './FormLayout.module.scss'
 

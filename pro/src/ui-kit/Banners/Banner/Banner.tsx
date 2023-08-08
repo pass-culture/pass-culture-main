@@ -7,19 +7,9 @@ import shadowTipsWarningIcon from 'icons/shadow-tips-warning.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import LinkNodes from '../LinkNodes/LinkNodes'
+import LinkNodes, { Link } from '../LinkNodes/LinkNodes'
 
 import styles from './Banner.module.scss'
-
-export type Link = {
-  icon?: string
-  href: string
-  linkTitle: string
-  targetLink?: string
-  hideLinkIcon?: boolean
-  isExternal?: boolean
-  onClick?: () => void
-}
 
 export interface BannerProps {
   children?: React.ReactNode | React.ReactNode[]

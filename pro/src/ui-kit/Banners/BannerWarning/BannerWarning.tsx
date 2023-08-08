@@ -5,8 +5,7 @@ import fullNextIcon from 'icons/full-next.svg'
 import strokeWarningIcon from 'icons/stroke-warning.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { Link } from '../Banner'
-import LinkNodes from '../LinkNodes/LinkNodes'
+import LinkNodes, { Link } from '../LinkNodes/LinkNodes'
 
 import styles from './BannerWarning.module.scss'
 

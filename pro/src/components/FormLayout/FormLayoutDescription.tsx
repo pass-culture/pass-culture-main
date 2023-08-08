@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { Banner } from 'ui-kit'
-import { Link } from 'ui-kit/Banners/Banner'
+import { Link } from 'ui-kit/Banners/LinkNodes/LinkNodes'
 
 import style from './FormLayout.module.scss'
 
