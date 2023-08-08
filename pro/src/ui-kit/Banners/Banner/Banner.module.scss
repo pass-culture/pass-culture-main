@@ -102,14 +102,10 @@ $banner-left-padding: rem.torem(16px);
     border: rem.torem(1px) solid colors.$tertiary;
     color: colors.$tertiary;
 
-    svg {
+    .close-icon-banner,
+    .close-icon {
       fill: colors.$tertiary;
       color: colors.$tertiary;
-    }
-
-    .bi-link > svg {
-      fill: colors.$black;
-      color: colors.$black;
     }
   }
 
