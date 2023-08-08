@@ -2,7 +2,7 @@ import { useField, useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 
 import { SelectOption } from 'custom_types/form'
-import SelectAutocomplete from 'ui-kit/form/SelectAutoComplete2/SelectAutocomplete'
+import SelectAutocomplete from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { AutocompleteItemProps } from 'ui-kit/form/shared/AutocompleteList/type'
 
 import { getAdressDataAdapter } from './adapter'
