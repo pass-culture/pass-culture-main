@@ -11,7 +11,7 @@ interface OptionsListProps {
   className?: string
   fieldName: string
   maxHeight?: number
-  selectedValues: string | string[]
+  selectedValues: string | string[] | null
   filteredOptions: SelectOption[]
   setHoveredOptionIndex: (value: number | null) => void
   listRef: Ref<HTMLUListElement>
@@ -59,7 +59,7 @@ const OptionsList = ({
       >
         {filteredOptions.map(
           ({ value, label }: SelectOption, index: number) => {
-            const isSelected = selectedValues.includes(String(value))
+            const isSelected = (selectedValues || []).includes(String(value))
             return (
               <li
                 aria-selected={isSelected}

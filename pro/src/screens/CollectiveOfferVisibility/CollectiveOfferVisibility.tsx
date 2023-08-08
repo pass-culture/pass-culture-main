@@ -22,15 +22,10 @@ import useNotification from 'hooks/useNotification'
 import fullTrashIcon from 'icons/full-trash.svg'
 import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
 import { PatchEducationalInstitutionAdapter } from 'pages/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
-import {
-  Banner,
-  Button,
-  ButtonLink,
-  SelectAutocomplete,
-  SubmitButton,
-} from 'ui-kit'
+import { Banner, Button, ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import RadioGroup from 'ui-kit/form/RadioGroup'
+import SelectAutocomplete2 from 'ui-kit/form/SelectAutoComplete2/SelectAutocomplete'
 import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -160,7 +155,7 @@ const CollectiveOfferVisibility = ({
     .filter(({ label }) =>
       label
         .toLowerCase()
-        .includes(formik.values['search-institution'].toLowerCase())
+        .includes(formik.values['search-institution'].trim().toLowerCase())
     )
 
   const selectedInstitution: InstitutionOption | null = requestId
@@ -173,18 +168,19 @@ const CollectiveOfferVisibility = ({
     if (requestId) {
       formik.setFieldValue('institution', selectedInstitution?.value)
     }
+
+    const searchTeacherValue = formik.values['search-teacher']?.trim()
+
     if (
-      !(
-        formik.values['search-teacher'] &&
-        formik.values['search-teacher'].length > 2
-      ) ||
+      !searchTeacherValue ||
+      searchTeacherValue.length < 3 ||
       !selectedInstitution
     ) {
       return
     }
     const { payload } = await getEducationalRedactorsAdapter({
       uai: selectedInstitution?.institutionId,
-      candidate: formik.values['search-teacher'],
+      candidate: searchTeacherValue,
     })
     payload &&
       setTeachersOptions(
@@ -269,16 +265,13 @@ const CollectiveOfferVisibility = ({
                     <Spinner />
                   ) : (
                     <>
-                      <SelectAutocomplete
+                      <SelectAutocomplete2
                         name="institution"
                         options={institutionsOptions}
                         label="Nom de l’établissement scolaire"
                         placeholder="Saisir l’établissement scolaire ou le code UAI"
-                        maxDisplayOptions={20}
-                        maxDisplayOptionsLabel="20 résultats maximum. Veuillez affiner votre recherche"
-                        maxHeight={100}
                         hideArrow
-                        onSearchChange={() => setTeachersOptions([])}
+                        onSearch={() => setTeachersOptions([])}
                         disabled={mode === Mode.READ_ONLY}
                       />
                       {selectedInstitution && (
@@ -313,18 +306,15 @@ const CollectiveOfferVisibility = ({
                     À quel enseignant destinez-vous cette offre ?
                   </fieldset>
                   <>
-                    <SelectAutocomplete
+                    <SelectAutocomplete2
                       name="teacher"
                       options={teachersOptions}
                       label="Prénom et nom de l’enseignant (au moins 3 caractères)"
                       isOptional
                       placeholder="Saisir le prénom et le nom de l’enseignant"
-                      maxDisplayOptions={5}
-                      maxDisplayOptionsLabel="5 résultats maximum. Veuillez affiner votre recherche"
-                      maxHeight={190}
                       hideArrow
                       disabled={mode === Mode.READ_ONLY}
-                      onSearchChange={() => {
+                      onSearch={() => {
                         onChangeTeacher()
                       }}
                     />
