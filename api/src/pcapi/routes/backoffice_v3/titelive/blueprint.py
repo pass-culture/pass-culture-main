@@ -121,24 +121,25 @@ def add_product_whitelist(ean: str, title: str) -> utils.BackofficeResponse:
         else:
             flash(f'L\'EAN "{ean}" a été ajouté dans la whitelist', "success")
 
-        if product:
-            offers_query = offers_models.Offer.query.filter(
-                offers_models.Offer.productId == product.id,
-                offers_models.Offer.validation == offers_models.OfferValidationStatus.REJECTED,
-                offers_models.Offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
-            )
-            offer_ids = [o.id for o in offers_query.with_entities(offers_models.Offer.id)]
-
-            if offer_ids:
-                offers_query.update(
-                    values={
-                        "validation": offers_models.OfferValidationStatus.APPROVED,
-                        "lastValidationDate": datetime.datetime.utcnow(),
-                        "lastValidationType": OfferValidationType.MANUAL,
-                    },
-                    synchronize_session="fetch",
+            if product:
+                offers_query = offers_models.Offer.query.filter(
+                    offers_models.Offer.productId == product.id,
+                    offers_models.Offer.validation == offers_models.OfferValidationStatus.REJECTED,
+                    offers_models.Offer.lastValidationType == OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
                 )
-                search.async_index_offer_ids(offer_ids)
+                offer_ids = [o.id for o in offers_query.with_entities(offers_models.Offer.id)]
+
+                if offer_ids:
+                    offers_query.update(
+                        values={
+                            "validation": offers_models.OfferValidationStatus.APPROVED,
+                            "lastValidationDate": datetime.datetime.utcnow(),
+                            "lastValidationType": OfferValidationType.MANUAL,
+                        },
+                        synchronize_session=False,
+                    )
+                    db.session.commit()
+                    search.async_index_offer_ids(offer_ids)
 
     return redirect(url_for(".search_titelive", ean=ean), code=303)
 
