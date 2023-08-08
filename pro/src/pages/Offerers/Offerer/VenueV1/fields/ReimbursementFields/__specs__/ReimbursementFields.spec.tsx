@@ -14,7 +14,17 @@ import ReimbursementFields, {
   ReimbursementFieldsProps,
 } from '../ReimbursementFields'
 
-const renderReimbursementFields = async (props: ReimbursementFieldsProps) => {
+const renderReimbursementFields = async (
+  props: ReimbursementFieldsProps,
+  featuresOverride?: { nameKey: string; isActive: boolean }[]
+) => {
+  const storeOverrides = {
+    features: {
+      list: featuresOverride,
+      initialized: true,
+    },
+  }
+
   const rtlReturn = renderWithProviders(
     <Formik onSubmit={() => {}} initialValues={{}}>
       {({ handleSubmit }) => (
@@ -22,7 +32,8 @@ const renderReimbursementFields = async (props: ReimbursementFieldsProps) => {
           <ReimbursementFields {...props} />
         </Form>
       )}
-    </Formik>
+    </Formik>,
+    { storeOverrides }
   )
 
   const loadingMessage = screen.queryByText('Chargement en cours ...')
@@ -94,6 +105,32 @@ describe('ReimbursementFields', () => {
 
     await renderReimbursementFields(props)
 
-    expect(screen.queryByText('Barème de remboursement')).toBeInTheDocument()
+    expect(screen.getByText('Barème de remboursement')).toBeInTheDocument()
+
+    expect(screen.getByText('Coordonnées bancaires')).toBeInTheDocument()
+  })
+
+  it('should not display bank details section if ff is active', async () => {
+    const featuresOverride = [
+      {
+        nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY',
+        isActive: true,
+      },
+    ]
+    const venueWithoutSiret = {
+      ...venue,
+      siret: '',
+    }
+    props.venue = venueWithoutSiret
+
+    await renderReimbursementFields(props, featuresOverride)
+
+    expect(screen.getByText('Barème de remboursement')).toBeInTheDocument()
+
+    await expect(
+      screen.queryByText('Chargement en cours ...')
+    ).not.toBeInTheDocument()
+
+    expect(screen.queryByText('Coordonnées bancaires')).not.toBeInTheDocument()
   })
 })

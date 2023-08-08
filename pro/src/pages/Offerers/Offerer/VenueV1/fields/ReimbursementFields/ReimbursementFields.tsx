@@ -4,6 +4,7 @@ import { GetOffererResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import ReimbursementPoint from 'components/VenueForm/ReimbursementPoint/ReimbursementPoint'
 import { Venue } from 'core/Venue/types'
+import useActiveFeature from 'hooks/useActiveFeature'
 import fullLinkIcon from 'icons/full-link.svg'
 import InternalBanner from 'ui-kit/Banners/InternalBanner'
 
@@ -22,6 +23,9 @@ const ReimbursementFields = ({
   scrollToSection,
   venue,
 }: ReimbursementFieldsProps) => {
+  const isNewBankDetailsJourneyEnable = useActiveFeature(
+    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
+  )
   const venueHaveSiret = !!venue.siret
   const offererHaveVenueWithSiret = offerer.hasAvailablePricingPoints
   const createVenuePath = `/structures/${offerer.id}/lieux/creation`
@@ -60,12 +64,15 @@ const ReimbursementFields = ({
                   setVenueHasPricingPoint={setVenueHasPricingPoint}
                 />
               )}
-              <ReimbursementPoint
-                offerer={offerer}
-                readOnly={readOnly}
-                initialVenue={venue}
-                venueHasPricingPoint={venueHasPricingPoint}
-              />
+
+              {!isNewBankDetailsJourneyEnable && (
+                <ReimbursementPoint
+                  offerer={offerer}
+                  readOnly={readOnly}
+                  initialVenue={venue}
+                  venueHasPricingPoint={venueHasPricingPoint}
+                />
+              )}
             </>
           )}
         </FormLayout.Section>
