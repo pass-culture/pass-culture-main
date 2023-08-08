@@ -37,6 +37,7 @@ list_offers_blueprint = utils.child_backoffice_blueprint(
     permission=perm_models.Permissions.READ_OFFERS,
 )
 
+aliased_stock = sa.orm.aliased(offers_models.Stock)
 
 SEARCH_FIELD_TO_PYTHON = {
     "CATEGORY": {
@@ -63,13 +64,13 @@ SEARCH_FIELD_TO_PYTHON = {
     },
     "EVENT_DATE": {
         "field": "date",
-        "column": offers_models.Stock.beginningDatetime,
+        "column": aliased_stock.beginningDatetime,
         "special": partial(date_utils.date_to_localized_datetime, time_=datetime.datetime.min.time()),
         "inner_join": "stock",
     },
     "BOOKING_LIMIT_DATE": {
         "field": "date",
-        "column": offers_models.Stock.bookingLimitDatetime,
+        "column": aliased_stock.bookingLimitDatetime,
         "special": partial(date_utils.date_to_localized_datetime, time_=datetime.datetime.min.time()),
         "inner_join": "stock",
     },
@@ -130,10 +131,10 @@ JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
         {
             "name": "stock",
             "args": (
-                offers_models.Stock,
+                aliased_stock,
                 sa.and_(
-                    offers_models.Stock.offerId == offers_models.Offer.id,
-                    offers_models.Stock.isSoftDeleted.is_(False),
+                    aliased_stock.offerId == offers_models.Offer.id,
+                    aliased_stock.isSoftDeleted.is_(False),
                 ),
             ),
         }
