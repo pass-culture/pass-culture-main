@@ -28,9 +28,5 @@ WithLink.args = {
       href: 'https://pro.testing.passculture.team',
       linkTitle: 'Lien vers le pass culture',
     },
-    {
-      href: '#',
-      linkTitle: 'Un autre lien',
-    },
   ],
 }
