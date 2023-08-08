@@ -50,3 +50,9 @@ def test_get_gtl(gtl_id, label, level_01, level_02, level_03, level_04):
     assert gtl["level_03_label"] == level_03
     assert gtl["level_04_code"] == gtl_id[6:]
     assert gtl["level_04_label"] == level_04
+
+
+def test_get_gtl_not_found():
+    non_existing_gtl_id = "03040202"
+    gtl = get_gtl(non_existing_gtl_id)
+    assert gtl is None
