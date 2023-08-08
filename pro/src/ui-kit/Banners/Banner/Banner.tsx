@@ -49,6 +49,7 @@ const Banner = ({
       className={cn(
         styles[`bi-banner`],
         styles[type],
+        /* istanbul ignore next: graphic variation */
         minimalStyle && styles['is-minimal'],
         showTitle && styles['title'],
         className
