@@ -16,9 +16,11 @@ export type Link = {
 }
 export interface LinkNodesProps {
   links?: Link[]
+  defaultLinkIcon?: string
 }
 
 const LinkNodes = ({
+  defaultLinkIcon = fullLinkIcon,
   links = [],
 }: LinkNodesProps): React.ReactNode | React.ReactNode[] => {
   const getLinkNode = (link: Link) => (
@@ -29,7 +31,7 @@ const LinkNodes = ({
         target: link.targetLink || '_blank',
         rel: 'noopener noreferrer',
       }}
-      icon={link.hideLinkIcon ? undefined : link.icon || fullLinkIcon}
+      icon={link.hideLinkIcon ? undefined : link.icon || defaultLinkIcon}
       className={styles['bi-link']}
       onClick={link.onClick ?? undefined}
     >
