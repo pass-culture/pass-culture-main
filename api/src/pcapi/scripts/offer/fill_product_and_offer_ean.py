@@ -40,8 +40,8 @@ def delete_offer_isbn(start: int, end: int) -> None:
         start_time = time.perf_counter()
         db.session.execute(
             """
-            update offer set "jsonData" = "offer.jsonsData" - 'isbn'::text
-            and id between :start and :end
+            update offer set "jsonData" = "jsonData" - 'isbn'::text
+            where id between :start and :end and "jsonData" is not null and "jsonData" <> 'null'
             """,
             params={"start": i, "end": i + BATCH_SIZE},
         )
@@ -69,7 +69,7 @@ def delete_product_isbn(start: int, end: int) -> None:
         db.session.execute(
             """
             update product set "jsonData" = "jsonData" - 'isbn'::text
-            where id between :start and :end
+            where id between :start and :end and "jsonData" is not null and "jsonData" <> 'null'
             """,
             params={"start": i, "end": i + BATCH_SIZE},
         )
