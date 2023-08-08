@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
@@ -158,21 +158,25 @@ describe('CollectiveOfferVisibility', () => {
       screen.getByLabelText(/Un établissement en particulier/)
     )
 
+    //  Open the autocomplete select panel
     await userEvent.click(
       await screen.findByPlaceholderText(
         /Saisir l’établissement scolaire ou le code UAI/
       )
     )
-    await userEvent.click(await screen.findByLabelText(/Collège Institution 1/))
-    expect(await screen.findByText(/91190 Gif-sur-Yvette/)).toBeInTheDocument()
 
+    const optionsList = await screen.findByTestId('list')
+    expect(optionsList).toBeInTheDocument()
+
+    //  Click an option in the opened panel
     await userEvent.click(
-      await screen.findByPlaceholderText(
-        /Saisir l’établissement scolaire ou le code UAI/
-      )
+      within(optionsList).getByText(/Collège Institution 1/)
     )
-    await userEvent.click(await screen.findByLabelText(/Institution 2/))
-    expect(await screen.findByText(/75005 Paris/)).toBeInTheDocument()
+
+    //  The panel should be closed
+    expect(optionsList).not.toBeInTheDocument()
+
+    expect(await screen.findByText(/91190 Gif-sur-Yvette/)).toBeInTheDocument()
   })
 
   it('should save selected institution and call onSuccess props', async () => {
@@ -188,7 +192,11 @@ describe('CollectiveOfferVisibility', () => {
         /Saisir l’établissement scolaire ou le code UAI/
       )
     )
-    await userEvent.click(await screen.findByLabelText(/Collège Institution 1/))
+
+    const optionsList = await screen.findByTestId('list')
+    await userEvent.click(
+      within(optionsList).getByText(/Collège Institution 1/)
+    )
     await userEvent.click(
       screen.getByRole('button', { name: /Étape suivante/ })
     )
@@ -200,6 +208,23 @@ describe('CollectiveOfferVisibility', () => {
         institutions: [],
       },
     })
+  })
+
+  it('should clear search input field when clicking on the input again', async () => {
+    renderVisibilityStep(props)
+
+    const institutionInput = await screen.findByPlaceholderText(
+      /Saisir l’établissement scolaire ou le code UAI/
+    )
+    await userEvent.click(institutionInput)
+
+    await userEvent.type(institutionInput, 'Test input')
+
+    await userEvent.click(await screen.findByTestId(/wrapper-visibility/))
+
+    await userEvent.click(institutionInput)
+
+    expect(institutionInput).toHaveDisplayValue('')
   })
 
   it('should display an error when the institution could not be saved', async () => {
@@ -220,7 +245,11 @@ describe('CollectiveOfferVisibility', () => {
         /Saisir l’établissement scolaire ou le code UAI/
       )
     )
-    await userEvent.click(await screen.findByLabelText(/Collège Institution 1/))
+    const optionsList = await screen.findByTestId('list')
+    await userEvent.click(
+      within(optionsList).getByText(/Collège Institution 1/)
+    )
+
     await userEvent.click(
       screen.getByRole('button', { name: /Étape suivante/ })
     )
@@ -238,12 +267,35 @@ describe('CollectiveOfferVisibility', () => {
         /Saisir l’établissement scolaire ou le code UAI/
       )
     )
+    const optionsList = await screen.findByTestId('list')
     expect(
-      await screen.findByLabelText(/Collège Institution 1 - Gif-sur-Yvette/)
+      await within(optionsList).findByText(
+        /Collège Institution 1 - Gif-sur-Yvette/
+      )
     ).toBeInTheDocument()
     expect(
-      await screen.findByLabelText(/Institution 2 - Paris/)
+      await within(optionsList).findByText(/Institution 2 - Paris/)
     ).toBeInTheDocument()
+  })
+
+  it('should trim values when searching in a SelectAutocomplete', async () => {
+    renderVisibilityStep(props)
+    await userEvent.click(
+      screen.getByLabelText(/Un établissement en particulier/)
+    )
+
+    const institutionInput = await screen.findByPlaceholderText(
+      /Saisir l’établissement scolaire ou le code UAI/
+    )
+    await userEvent.click(institutionInput)
+
+    await userEvent.type(institutionInput, '   Institu   ')
+
+    const optionsList = await screen.findByTestId('list')
+
+    expect(await within(optionsList).findAllByText(/Institution/)).toHaveLength(
+      3
+    )
   })
 
   describe('edition', () => {
@@ -262,9 +314,6 @@ describe('CollectiveOfferVisibility', () => {
       expect(
         screen.getByLabelText(/Un établissement en particulier/)
       ).toBeChecked()
-      expect(
-        await screen.findByText(/Collège Institution 1/)
-      ).toBeInTheDocument()
       expect(
         await screen.findByText(/91190 Gif-sur-Yvette/)
       ).toBeInTheDocument()
@@ -285,19 +334,18 @@ describe('CollectiveOfferVisibility', () => {
       expect(
         screen.getByLabelText(/Un établissement en particulier/)
       ).toBeChecked()
-      expect(
-        await screen.findByText(/Collège Institution 1/)
-      ).toBeInTheDocument()
+
       expect(
         await screen.findByText(/91190 Gif-sur-Yvette/)
       ).toBeInTheDocument()
+
       await userEvent.click(
         screen.getByRole('button', {
           name: /Supprimer/i,
         })
       )
       expect(
-        await screen.queryByText(/Collège Institution 1/)
+        await screen.queryByText(/91190 Gif-sur-Yvette/)
       ).not.toBeInTheDocument()
     })
 
@@ -310,18 +358,24 @@ describe('CollectiveOfferVisibility', () => {
       await userEvent.click(
         screen.getByLabelText(/Un établissement en particulier/)
       )
+      // open hidden select options
       await userEvent.click(
         await screen.findByPlaceholderText(
           /Saisir l’établissement scolaire ou le code UAI/
         )
       )
+
+      const optionsListInstitution = await screen.findByTestId('list')
+
+      //  Click an option in the opened panel
       await userEvent.click(
-        await screen.findByLabelText(/Collège Institution 1/)
+        within(optionsListInstitution).getByText(/Collège Institution 1/)
       )
 
-      const teacherInput = await screen.findByPlaceholderText(
-        /Saisir le prénom et le nom de l’enseignant/
+      const teacherInput = await screen.findByLabelText(
+        /Prénom et nom de l’enseignant/
       )
+      // open hidden select options, empty by default
       await userEvent.click(teacherInput)
 
       vi.spyOn(
@@ -335,16 +389,22 @@ describe('CollectiveOfferVisibility', () => {
           surname: 'MARIA',
         },
       ])
+      // filter options to have results
       await userEvent.type(teacherInput, 'mar')
-      await userEvent.click(await screen.findByLabelText(/MARIA SKLODOWSKA/))
+
+      const optionsListTeacher = await screen.findByTestId('list')
+
+      //  Click an option in the opened panel
+      await userEvent.click(
+        within(optionsListTeacher).getByText(/MARIA SKLODOWSKA/)
+      )
+
       await userEvent.click(
         screen.getAllByRole('button', {
           name: /Supprimer/i,
         })[1]
       )
-      expect(
-        await screen.queryByText(/MARIA SKLODOWSKA/)
-      ).not.toBeInTheDocument()
+      expect(await screen.findAllByText(/MARIA SKLODOWSKA/)).toHaveLength(1)
     })
 
     it('should prefill form with requested information', async () => {
@@ -386,14 +446,18 @@ describe('CollectiveOfferVisibility', () => {
       expect(
         screen.getByLabelText(/Un établissement en particulier/)
       ).toBeChecked()
+
       expect(
-        await screen.findByText(/METIER ROBERT DOISNEAU/)
-      ).toBeInTheDocument()
-      expect(
-        await screen.findByText(/91000 CORBEIL-ESSONNES/)
-      ).toBeInTheDocument()
-      expect(await screen.findByText(/AZERTY13/)).toBeInTheDocument()
-      expect(await screen.findByText(/KHTEUR REDA/)).toBeInTheDocument()
+        within(await screen.findByTestId('teacher-banner')).findByText(
+          /KHTEUR REDA/
+        )
+      )
+
+      expect(await screen.findAllByText(/METIER ROBERT DOISNEAU/)).toHaveLength(
+        3
+      )
+      expect(screen.getByText(/91000 CORBEIL-ESSONNES/)).toBeInTheDocument()
+      expect(screen.getAllByText(/AZERTY13/)).toHaveLength(3)
     })
 
     it('should display error message on api error getting requested info', async () => {
