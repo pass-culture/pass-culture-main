@@ -977,6 +977,28 @@ class DeleteOffererTest:
         assert offers_models.Stock.query.count() == 1
         assert bookings_models.Booking.query.count() == 1
 
+    def test_delete_cascade_offerer_should_abort_when_offerer_has_collective_bookings(self):
+        # Given
+        offerer_to_delete = offerers_factories.OffererFactory()
+        educational_factories.CollectiveOfferFactory(venue__managingOfferer=offerer_to_delete)
+        educational_factories.CollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue__managingOfferer=offerer_to_delete
+        )
+
+        # When
+        with pytest.raises(offerers_exceptions.CannotDeleteOffererWithBookingsException) as exception:
+            offerers_api.delete_offerer(offerer_to_delete.id)
+
+        # Then
+        assert exception.value.errors["cannotDeleteOffererWithBookingsException"] == [
+            "Structure juridique non supprimable car elle contient des réservations"
+        ]
+        assert offerers_models.Offerer.query.count() == 1
+        assert offerers_models.Venue.query.count() == 2
+        assert educational_models.CollectiveOffer.query.count() == 2
+        assert educational_models.CollectiveStock.query.count() == 1
+        assert educational_models.CollectiveBooking.query.count() == 1
+
     def test_delete_cascade_offerer_should_remove_managed_venues_offers_stocks_and_activation_codes(self):
         # Given
         offerer_to_delete = offerers_factories.OffererFactory()

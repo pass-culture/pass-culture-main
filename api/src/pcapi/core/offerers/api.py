@@ -1793,7 +1793,13 @@ def delete_offerer(offerer_id: int) -> None:
         bookings_models.Booking.query.filter(bookings_models.Booking.offererId == offerer_id).exists()
     ).scalar()
 
-    if offerer_has_bookings:
+    offerer_has_collective_bookings = db.session.query(
+        educational_models.CollectiveBooking.query.filter(
+            educational_models.CollectiveBooking.offererId == offerer_id
+        ).exists()
+    ).scalar()
+
+    if offerer_has_bookings or offerer_has_collective_bookings:
         raise exceptions.CannotDeleteOffererWithBookingsException()
 
     venue_ids_subquery = offerers_models.Venue.query.filter_by(managingOffererId=offerer_id).with_entities(
