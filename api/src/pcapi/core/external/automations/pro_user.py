@@ -11,3 +11,13 @@ def pro_no_active_offers_since_40_days_automation() -> bool:
     """
     churned_pro_emails = [row.venue_booking_email for row in big_queries.ChurnedProEmail().execute()]
     return add_contacts_to_list(churned_pro_emails, settings.SENDINBLUE_PRO_NO_ACTIVE_OFFERS_40_DAYS_ID)
+
+
+def pro_no_bookings_since_40_days_automation() -> bool:
+    """
+    Send a notification email to pros whose offers haven't been booked since 40 days ago.
+
+    List: pros-pas-de-resa-40-j
+    """
+    no_bookings_pro_emails = [row.venue_booking_email for row in big_queries.NoBookingsProEmail().execute()]
+    return add_contacts_to_list(no_bookings_pro_emails, settings.SENDINBLUE_PRO_NO_BOOKINGS_40_DAYS_ID)
