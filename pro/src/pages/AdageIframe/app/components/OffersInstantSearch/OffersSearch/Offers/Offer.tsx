@@ -50,10 +50,12 @@ const Offer = ({ offer, queryId, position }: OfferProps): JSX.Element => {
         ? apiAdage.logOfferDetailsButtonClick({
             iframeFrom: removeParamsFromUrl(location.pathname),
             stockId: offer.stock.id,
+            queryId: queryId,
           })
         : apiAdage.logOfferTemplateDetailsButtonClick({
             iframeFrom: removeParamsFromUrl(location.pathname),
             offerId: offer.id,
+            queryId: queryId,
           })
     }
     setDisplayDetails(!displayDetails)
@@ -63,6 +65,7 @@ const Offer = ({ offer, queryId, position }: OfferProps): JSX.Element => {
     apiAdage.logFavOfferButtonClick({
       iframeFrom: removeParamsFromUrl(location.pathname),
       offerId: offer.id,
+      queryId: queryId,
     })
     setIsModalLikeOpen(true)
   }
