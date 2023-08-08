@@ -9,6 +9,7 @@ import type { BookCollectiveOfferRequest } from '../models/BookCollectiveOfferRe
 import type { BookCollectiveOfferResponse } from '../models/BookCollectiveOfferResponse';
 import type { CatalogViewBody } from '../models/CatalogViewBody';
 import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
+import type { ClosedSatisfactionSurvey } from '../models/ClosedSatisfactionSurvey';
 import type { CollectiveOfferResponseModel } from '../models/CollectiveOfferResponseModel';
 import type { CollectiveOfferTemplateResponseModel } from '../models/CollectiveOfferTemplateResponseModel';
 import type { CollectiveRequestBody } from '../models/CollectiveRequestBody';
@@ -356,6 +357,28 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/request-popin-dismiss',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * log_closer_satisfaction_survey <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public logCloserSatisfactionSurvey(
+    requestBody?: ClosedSatisfactionSurvey,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/logs/sat-survey',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
