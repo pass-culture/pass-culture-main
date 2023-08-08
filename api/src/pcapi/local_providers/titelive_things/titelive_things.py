@@ -311,12 +311,12 @@ class TiteLiveThings(LocalProvider):
                 return "vat-20"
 
             # ouvrage du rayon scolaire
-            if gtl["level_01_code"] == GTL_LEVEL_01_SCHOOL:
+            if gtl and gtl["level_01_code"] == GTL_LEVEL_01_SCHOOL:
                 return "school"
 
             # ouvrage du rayon parascolaire,
             # code de la route (méthode d'apprentissage + codes basiques), code nautique, code aviation, etc...
-            if gtl["level_01_code"] == GTL_LEVEL_01_EXTRACURRICULAR:
+            if gtl and gtl["level_01_code"] == GTL_LEVEL_01_EXTRACURRICULAR:
                 return "extracurricular"
 
             if self.product_infos[INFO_KEYS["CODE_SUPPORT"]] == CALENDAR_SUPPORT_CODE:
@@ -344,10 +344,15 @@ class TiteLiveThings(LocalProvider):
                 return "pornography-or-violence"
 
             # Petite jeunesse (livres pour le bains, peluches, puzzles, etc...)
-            if gtl["level_01_code"] == GTL_LEVEL_01_YOUNG and gtl["level_02_code"] in [
-                GTL_LEVEL_02_BEFORE_3,
-                GTL_LEVEL_02_AFTER_3_AND_BEFORE_6,
-            ]:
+            if (
+                gtl
+                and gtl["level_01_code"] == GTL_LEVEL_01_YOUNG
+                and gtl["level_02_code"]
+                in [
+                    GTL_LEVEL_02_BEFORE_3,
+                    GTL_LEVEL_02_AFTER_3_AND_BEFORE_6,
+                ]
+            ):
                 return "small-young"
 
             # Toeic or toefl
