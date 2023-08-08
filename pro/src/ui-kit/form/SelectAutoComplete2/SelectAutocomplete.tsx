@@ -25,6 +25,7 @@ export type SelectAutocompleteProps = FieldLayoutBaseProps & {
   placeholder?: string
   pluralLabel?: string
   resetOnOpen?: boolean
+  onSearch?: (pattern: string) => void
 }
 
 const SelectAutocomplete = ({
@@ -45,6 +46,7 @@ const SelectAutocomplete = ({
   smallLabel = false,
   resetOnOpen = true,
   description,
+  onSearch = () => {},
 }: SelectAutocompleteProps): JSX.Element => {
   const { setFieldTouched, setFieldValue } = useFormikContext<any>()
 
@@ -98,12 +100,18 @@ const SelectAutocomplete = ({
   }, [containerRef])
 
   useEffect(() => {
-    const regExp = new RegExp(searchField.value, 'i')
+    const trimmedValue = searchField.value.trim()
+    if (onSearch) {
+      onSearch(trimmedValue)
+    }
+
+    const regExp = new RegExp(trimmedValue, 'i')
     setFilteredOptions(
       options.filter(
-        option => searchField.value === '' || option.label.match(regExp)
+        option => trimmedValue === '' || option.label.match(regExp)
       )
     )
+
     setHoveredOptionIndex(null)
   }, [searchField.value])
 
@@ -163,7 +171,7 @@ const SelectAutocomplete = ({
   const selectOption = (value: string) => {
     let updatedSelection
     if (multi) {
-      if (field.value.includes(value) && Array.isArray(field.value)) {
+      if ((field.value || []).includes(value) && Array.isArray(field.value)) {
         updatedSelection = field.value.filter(li => li !== value)
       } else {
         updatedSelection = [...field.value, value]
@@ -262,6 +270,7 @@ const SelectAutocomplete = ({
           hidden
           {...(multi && { multiple: true })}
           {...field}
+          value={field.value || ''}
           data-testid="select"
         >
           {options?.map(({ label, value }) => (
