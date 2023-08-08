@@ -1,8 +1,10 @@
 import datetime
 import logging
+import random
 import typing
 
 from pcapi import settings
+from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
@@ -16,11 +18,13 @@ logger = logging.getLogger(__name__)
 
 
 def create_offerer_provider(
-    name: str, isActive: bool = True, enabledForPro: bool = True
+    name: str, isActive: bool = True, enabledForPro: bool = True, provider_name: str = None
 ) -> typing.Tuple[offerers_models.Offerer, providers_models.Provider]:
     offerer = offerers_factories.OffererFactory(name=name)
+    if provider_name is None:
+        provider_name = name
     provider = providers_factories.ProviderFactory(
-        name=name, localClass=None, isActive=isActive, enabledForPro=enabledForPro
+        name=provider_name, localClass=None, isActive=isActive, enabledForPro=enabledForPro
     )
 
     offerers_factories.ApiKeyFactory(
@@ -38,28 +42,46 @@ def create_offerer_provider(
 
 
 def create_offerer_provider_with_offers(name: str) -> None:
-    in_five_days = datetime.datetime.utcnow().replace(second=0, microsecond=0) + datetime.timedelta(days=5)
-    offerer, provider = create_offerer_provider(name)
+    now = datetime.datetime.utcnow().replace(second=0, microsecond=0)
+    in_five_days = now + datetime.timedelta(days=5)
+    in_ten_days = now + datetime.timedelta(days=10)
+    offerer, provider = create_offerer_provider(name, provider_name="TaylorManager")
     first_venue = offerers_factories.VenueFactory(name="Zénith de Lisieux", managingOfferer=offerer)
     second_venue = offerers_factories.VenueFactory(name="Olympia de Besançon", managingOfferer=offerer)
     providers_factories.VenueProviderFactory(venue=first_venue, provider=provider)
     providers_factories.VenueProviderFactory(venue=second_venue, provider=provider)
-    first_offer = offers_factories.EventOfferFactory(
-        name="Taylor à Besançon !",
-        venue=first_venue,
-        subcategoryId=subcategories.CONCERT.id,
-        lastProvider=provider,
-    )
+    offers = []
+    for i in range(10):
+        offer = offers_factories.EventOfferFactory(
+            name=f"Taylor à Lisieux {i}",
+            venue=first_venue,
+            subcategoryId=subcategories.CONCERT.id,
+            lastProvider=provider,
+        )
+
+        stocks = []
+        for _ in range(5):
+            stocks.append(
+                offers_factories.EventStockFactory(
+                    offer=offer,
+                    beginningDatetime=in_ten_days + datetime.timedelta(days=random.randint(0, 10)),
+                )
+            )
+
+        for _ in range(15):
+            bookings_factories.BookingFactory(
+                quantity=random.randint(0, 5),
+                stock=random.choice(stocks),
+                dateCreated=now
+                + datetime.timedelta(
+                    days=random.randint(0, 10), hours=random.randint(0, 23), minutes=random.randint(0, 59)
+                ),
+            )
+
+        offers.append(offer)
+
     offers_factories.EventStockFactory(
-        offer=first_offer,
-        beginningDatetime=in_five_days,
-    )
-    offers_factories.EventStockFactory(
-        offer=first_offer,
-        beginningDatetime=in_five_days + datetime.timedelta(days=1),
-    )
-    offers_factories.EventStockFactory(
-        offer__name="Taylor à Lisieux !",
+        offer__name="Taylor à Besançon !",
         offer__venue=second_venue,
         offer__subcategoryId=subcategories.CONCERT.id,
         offer__lastProvider=provider,
@@ -83,7 +105,7 @@ def create_offerer_providers_for_apis() -> None:
     create_offerer_provider("TicketBusters")
     create_offerer_provider("MangaMania")
     create_offerer_provider("VinylVibes")
-    create_offerer_provider_with_offers("TaylorManager")
+    create_offerer_provider_with_offers("Structure avec lieux synchronisés billetterie")
 
     create_offerer_provider("Private distributor", isActive=True, enabledForPro=False)
     create_offerer_provider("Malicious RiotRecords", isActive=False, enabledForPro=True)
