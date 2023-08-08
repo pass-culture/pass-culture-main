@@ -23,7 +23,6 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     """Order of deletions matters because of foreign key constraints"""
     if settings.ENV not in ("development", "testing"):
         raise ValueError(f"You cannot do this on this environment: '{settings.ENV}'")
-    fraud_models.ProductWhitelist.query.delete()
     providers_models.LocalProviderEvent.query.delete()
     offers_models.ActivationCode.query.delete()
     providers_models.AllocineVenueProviderPriceRule.query.delete()
@@ -88,6 +87,9 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     finance_models.Deposit.query.delete()
     BeneficiaryImportStatus.query.delete()
     BeneficiaryImport.query.delete()
+    fraud_models.ProductWhitelist.query.delete()
+    fraud_models.OrphanDmsApplication.query.delete()
+    fraud_models.BlacklistedDomainName.query.delete()
     fraud_models.BeneficiaryFraudCheck.query.delete()
     fraud_models.BeneficiaryFraudReview.query.delete()
     users_models.Token.query.delete()
