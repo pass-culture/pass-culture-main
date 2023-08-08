@@ -11,6 +11,7 @@ export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { AcademiesResponseModel } from './models/AcademiesResponseModel';
+export type { AdageBaseModel } from './models/AdageBaseModel';
 export { AdageFrontRoles } from './models/AdageFrontRoles';
 export { AdageHeaderLink } from './models/AdageHeaderLink';
 export type { AdageHeaderLogBody } from './models/AdageHeaderLogBody';
@@ -20,7 +21,6 @@ export type { BookCollectiveOfferResponse } from './models/BookCollectiveOfferRe
 export type { CatalogViewBody } from './models/CatalogViewBody';
 export type { CategoriesResponseModel } from './models/CategoriesResponseModel';
 export type { CategoryResponseModel } from './models/CategoryResponseModel';
-export type { ClosedSatisfactionSurvey } from './models/ClosedSatisfactionSurvey';
 export type { CollectiveOfferOfferVenue } from './models/CollectiveOfferOfferVenue';
 export type { CollectiveOfferResponseModel } from './models/CollectiveOfferResponseModel';
 export type { CollectiveOfferTemplateResponseModel } from './models/CollectiveOfferTemplateResponseModel';

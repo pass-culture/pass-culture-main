@@ -310,10 +310,9 @@ class LogsTest:
 
         # then
         assert response.status_code == 204
-        assert caplog.records[0].message == "CloseSatisfactionSurvey"
+        assert caplog.records[0].message == "OpenSatisfactionSurvey"
         assert caplog.records[0].extra == {
             "analyticsSource": "adage",
-            "source": "Academic Octathalon",
             "queryId": "1234a",
             "from": "for_my_institution",
             "uai": "EAU123",

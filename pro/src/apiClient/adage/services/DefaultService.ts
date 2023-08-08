@@ -3,13 +3,13 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { AcademiesResponseModel } from '../models/AcademiesResponseModel';
+import type { AdageBaseModel } from '../models/AdageBaseModel';
 import type { AdageHeaderLogBody } from '../models/AdageHeaderLogBody';
 import type { AuthenticatedResponse } from '../models/AuthenticatedResponse';
 import type { BookCollectiveOfferRequest } from '../models/BookCollectiveOfferRequest';
 import type { BookCollectiveOfferResponse } from '../models/BookCollectiveOfferResponse';
 import type { CatalogViewBody } from '../models/CatalogViewBody';
 import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
-import type { ClosedSatisfactionSurvey } from '../models/ClosedSatisfactionSurvey';
 import type { CollectiveOfferResponseModel } from '../models/CollectiveOfferResponseModel';
 import type { CollectiveOfferTemplateResponseModel } from '../models/CollectiveOfferTemplateResponseModel';
 import type { CollectiveRequestBody } from '../models/CollectiveRequestBody';
@@ -368,13 +368,13 @@ export class DefaultService {
   }
 
   /**
-   * log_closer_satisfaction_survey <POST>
+   * log_open_satisfaction_survey <POST>
    * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logCloserSatisfactionSurvey(
-    requestBody?: ClosedSatisfactionSurvey,
+  public logOpenSatisfactionSurvey(
+    requestBody?: AdageBaseModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',

@@ -204,15 +204,14 @@ def log_tracking_filter(
 @blueprint.adage_iframe.route("/logs/sat-survey", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
 @adage_jwt_required
-def log_closer_satisfaction_survey(
+def log_open_satisfaction_survey(
     authenticated_information: AuthenticatedInformation,
-    body: serialization.ClosedSatisfactionSurvey,
+    body: serialization.AdageBaseModel,
 ) -> None:
     institution = find_educational_institution_by_uai_code(authenticated_information.uai)  # type: ignore [arg-type]
     educational_utils.log_information_for_data_purpose(
-        event_name="CloseSatisfactionSurvey",
+        event_name="OpenSatisfactionSurvey",
         extra_data={
-            "source": body.source,
             "from": body.iframeFrom,
             "queryId": body.queryId,
         },
