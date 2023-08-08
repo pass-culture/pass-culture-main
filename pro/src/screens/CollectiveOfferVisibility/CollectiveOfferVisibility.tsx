@@ -25,7 +25,7 @@ import { PatchEducationalInstitutionAdapter } from 'pages/CollectiveOfferVisibil
 import { Banner, Button, ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import RadioGroup from 'ui-kit/form/RadioGroup'
-import SelectAutocomplete2 from 'ui-kit/form/SelectAutoComplete2/SelectAutocomplete'
+import SelectAutocomplete from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -265,7 +265,7 @@ const CollectiveOfferVisibility = ({
                     <Spinner />
                   ) : (
                     <>
-                      <SelectAutocomplete2
+                      <SelectAutocomplete
                         name="institution"
                         options={institutionsOptions}
                         label="Nom de l’établissement scolaire"
@@ -306,7 +306,7 @@ const CollectiveOfferVisibility = ({
                     À quel enseignant destinez-vous cette offre ?
                   </fieldset>
                   <>
-                    <SelectAutocomplete2
+                    <SelectAutocomplete
                       name="teacher"
                       options={teachersOptions}
                       label="Prénom et nom de l’enseignant (au moins 3 caractères)"
