@@ -52,3 +52,11 @@ class UserNotGrantable(Exception):
 
 class UserHasAlreadyActiveDeposit(UserNotGrantable):
     pass
+
+
+class FinanceIncidentAlreadyCancelled(Exception):
+    pass
+
+
+class FinanceIncidentAlreadyValidated(Exception):
+    pass
