@@ -1,0 +1,17 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+.bi-link {
+	&-item {
+		display: flex;
+
+		&:not(:last-of-type) {
+			margin-bottom: rem.torem(8px);
+		}
+	}
+
+	&.bi-external-link--mod-topright {
+		position: absolute;
+		right: 0;
+		top: rem.torem(-6px);
+	}
+}
