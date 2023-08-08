@@ -82,7 +82,7 @@ def create_provider() -> utils.BackofficeResponse:
             history_models.ActionType.OFFERER_NEW,
             current_user,
             offerer=offerer,
-            comment="Création automatique via création de prestataire",
+            comment="Création automatique via création de partenaire",
             save=False,
         )
 
@@ -90,12 +90,12 @@ def create_provider() -> utils.BackofficeResponse:
         db.session.commit()
     except sa.exc.IntegrityError:
         db.session.rollback()
-        flash("Ce prestataire existe déjà", "warning")
+        flash("Ce partenaire existe déjà", "warning")
     else:
         if is_offerer_new:
             zendesk_sell.create_offerer(offerer)
         flash(
-            f"Le prestataire {provider.name} a été créé. La Clé API ne peut être régénérée ni ré-affichée, veillez à la sauvegarder immédiatement : {clear_secret}",
+            f"Le partenaire {provider.name} a été créé. La Clé API ne peut être régénérée ni ré-affichée, veillez à la sauvegarder immédiatement : {clear_secret}",
             "success",
         )
 
@@ -159,8 +159,8 @@ def update_provider(provider_id: int) -> utils.BackofficeResponse:
         db.session.commit()
     except sa.exc.IntegrityError:
         db.session.rollback()
-        flash("Ce prestataire existe déjà", "warning")
+        flash("Ce partenaire existe déjà", "warning")
     else:
-        flash(f"Le prestataire {provider.name} a été modifié.", "success")
+        flash(f"Le partenaire {provider.name} a été modifié.", "success")
 
     return redirect(url_for("backoffice_v3_web.providers.get_providers"), code=303)
