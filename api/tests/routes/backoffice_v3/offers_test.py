@@ -109,6 +109,22 @@ class ListOffersTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(int(row["ID"]) for row in rows) == {offers[2].id}
 
+    def test_list_offers_by_status_and_event_date(self, authenticated_client, offers):
+        query_args = {
+            "search-0-search_field": "STATUS",
+            "search-0-operator": "IN",
+            "search-0-status": offers_models.OfferStatus.ACTIVE.value,
+            "search-2-search_field": "EVENT_DATE",
+            "search-2-operator": "LESS_THAN",
+            "search-2-date": datetime.date.today().isoformat(),
+        }
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, **query_args))
+
+        # assert there is no problem joining stock table twice (for status and event date)
+        assert response.status_code == 200
+
     def test_list_offers_without_sort_should_not_have_created_date_sort_link(self, authenticated_client):
         # given
         query_args = {}
