@@ -1,19 +1,19 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import Banner, { BannerProps } from '../Banner'
+import BannerWarning, { BannerWarningProps } from '../BannerWarning'
 
-describe('Banner', () => {
-  const props: BannerProps = {
-    closable: true,
+describe('BannerWarning', () => {
+  const props: BannerWarningProps = {
+    title: 'This is a banner warning',
     links: [{ href: '/some/site', linkTitle: 'linkTitle' }],
   }
 
-  it('should render the Banner', () => {
-    render(<Banner {...props}>This is the banner content</Banner>)
+  it('should render BannerWarning', () => {
+    render(<BannerWarning {...props}>This is the content</BannerWarning>)
 
-    // then
-    expect(screen.getByText('This is the banner content')).toBeInTheDocument()
+    expect(screen.getByText('This is a banner warning')).toBeInTheDocument()
+    expect(screen.getByText('This is the content')).toBeInTheDocument()
     const link = screen.getByRole('link', {
       name: props.links?.[0]?.linkTitle,
     })
@@ -21,10 +21,5 @@ describe('Banner', () => {
     expect(link).toHaveAttribute('href', props.links?.[0]?.href)
     expect(link).toHaveAttribute('target', '_blank')
     expect(link).toHaveAttribute('rel', 'noopener noreferrer')
-
-    expect(screen.getByRole('img')).toHaveAttribute(
-      'aria-label',
-      'Masquer le bandeau'
-    )
   })
 })
