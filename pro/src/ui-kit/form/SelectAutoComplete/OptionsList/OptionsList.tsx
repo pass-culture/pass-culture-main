@@ -10,7 +10,6 @@ import styles from './OptionsList.module.scss'
 interface OptionsListProps {
   className?: string
   fieldName: string
-  maxHeight?: number
   selectedValues: string | string[] | null
   filteredOptions: SelectOption[]
   setHoveredOptionIndex: (value: number | null) => void
@@ -23,7 +22,6 @@ interface OptionsListProps {
 const OptionsList = ({
   className,
   fieldName,
-  maxHeight,
   selectedValues,
   filteredOptions,
   setHoveredOptionIndex,
@@ -33,15 +31,7 @@ const OptionsList = ({
   multi,
 }: OptionsListProps): JSX.Element => {
   return (
-    <div
-      className={cx(styles['menu'], className)}
-      style={
-        /* istanbul ignore next: graphic variation */ maxHeight
-          ? { maxHeight }
-          : {}
-      }
-      role="listbox"
-    >
+    <div className={cx(styles['menu'], className)} role="listbox">
       {filteredOptions.length === 0 && (
         <span
           className={cx({
