@@ -45,7 +45,7 @@ class GetProvidersPageTest(GetEndpointHelper):
         provider_rows = html_parser.extract_table_rows(response.data)
 
         provider_row = next((row for row in provider_rows if row["ID"] == str(provider.id)))
-        assert provider_row["Prestataire technique"] == provider.name
+        assert provider_row["Partenaire technique"] == provider.name
         assert provider_row["SIREN"] == offerer.siren
         assert provider_row["Ville"] == offerer.city
         assert provider_row["Code postal"] == offerer.postalCode
@@ -163,7 +163,7 @@ class UpdateProviderTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.headers["location"])
 
         created_provider_alert = html_parser.extract_alert(redirected_response.data)
-        assert created_provider_alert == f'Le prestataire {form_data["name"]} a été modifié.'
+        assert created_provider_alert == f'Le partenaire {form_data["name"]} a été modifié.'
 
         updated_provider = providers_models.Provider.query.get(provider.id)
         assert updated_provider.name == form_data["name"]
