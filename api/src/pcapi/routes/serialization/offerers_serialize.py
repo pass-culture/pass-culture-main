@@ -200,7 +200,7 @@ class CreateOffererQueryModel(BaseModel):
 
 
 class SaveNewOnboardingDataQueryModel(BaseModel):
-    address: str
+    address: str | None
     city: str
     createVenueWithoutSiret: bool = False
     latitude: float

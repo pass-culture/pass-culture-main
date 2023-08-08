@@ -1707,7 +1707,7 @@ def create_from_onboarding_data(
     # Create Venue with siret if it's not in DB yet, or Venue without siret if requested
     if not offerers_repository.find_venue_by_siret(onboarding_data.siret) or onboarding_data.createVenueWithoutSiret:
         common_kwargs = dict(
-            address=onboarding_data.address,
+            address=onboarding_data.address or "n/d",  # handle empty VoieEtablissement from Sirene API
             bookingEmail=user.email,
             city=onboarding_data.city,
             latitude=onboarding_data.latitude,
