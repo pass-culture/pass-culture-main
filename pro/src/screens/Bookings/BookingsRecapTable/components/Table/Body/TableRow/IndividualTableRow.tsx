@@ -14,7 +14,7 @@ interface TableBodyProps<
   row: Row<T>
 }
 
-// This component goal is to keep consistancy with CollectiveTableRow
+// This component goal is to keep consistency with CollectiveTableRow
 const IndividualTableRow = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >({

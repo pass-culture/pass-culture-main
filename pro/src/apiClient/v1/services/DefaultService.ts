@@ -36,11 +36,13 @@ import type { GetCollectiveOfferTemplateResponseModel } from '../models/GetColle
 import type { GetCollectiveVenueResponseModel } from '../models/GetCollectiveVenueResponseModel';
 import type { GetEducationalOfferersResponseModel } from '../models/GetEducationalOfferersResponseModel';
 import type { GetIndividualOfferResponseModel } from '../models/GetIndividualOfferResponseModel';
+import type { GetOffererMembersResponseModel } from '../models/GetOffererMembersResponseModel';
 import type { GetOffererResponseModel } from '../models/GetOffererResponseModel';
 import type { GetOfferersNamesResponseModel } from '../models/GetOfferersNamesResponseModel';
 import type { GetVenueListResponseModel } from '../models/GetVenueListResponseModel';
 import type { GetVenueResponseModel } from '../models/GetVenueResponseModel';
 import type { GetVenuesOfOffererFromSiretResponseModel } from '../models/GetVenuesOfOffererFromSiretResponseModel';
+import type { InviteMembersQueryModel } from '../models/InviteMembersQueryModel';
 import type { InvoiceListResponseModel } from '../models/InvoiceListResponseModel';
 import type { LinkVenueToPricingPointBodyModel } from '../models/LinkVenueToPricingPointBodyModel';
 import type { ListBookingsResponseModel } from '../models/ListBookingsResponseModel';
@@ -1173,6 +1175,54 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/offerers/{offerer_id}/eac-eligibility',
+      path: {
+        'offerer_id': offererId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * invite_members <POST>
+   * @param offererId
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public inviteMembers(
+    offererId: number,
+    requestBody?: InviteMembersQueryModel,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/offerers/{offerer_id}/invite',
+      path: {
+        'offerer_id': offererId,
+      },
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_offerer_members <GET>
+   * @param offererId
+   * @returns GetOffererMembersResponseModel OK
+   * @throws ApiError
+   */
+  public getOffererMembers(
+    offererId: number,
+  ): CancelablePromise<GetOffererMembersResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/offerers/{offerer_id}/members',
       path: {
         'offerer_id': offererId,
       },

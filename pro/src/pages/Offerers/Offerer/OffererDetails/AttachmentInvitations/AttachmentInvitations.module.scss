@@ -1,0 +1,74 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
+
+.section {
+  margin-bottom: rem.torem(32px);
+  padding-bottom: 0;
+  padding-top: 0;
+
+  .main-list-title {
+    @include fonts.title4;
+
+    border-bottom: thin solid colors.$grey-medium;
+    margin: rem.torem(12px) 0 rem.torem(32px) 0;
+    padding-bottom: rem.torem(8px);
+
+    .main-list-title-text {
+      @include fonts.title4;
+    }
+  }
+
+  .subtitle {
+    @include fonts.button;
+
+    margin-bottom: rem.torem(16px);
+  }
+
+  .description {
+    margin-bottom: rem.torem(16px);
+  }
+
+  .invitation-form {
+    margin-bottom: rem.torem(32px);
+  }
+
+  .invitation-email-wrapepr {
+    display: flex;
+    gap: rem.torem(8px);
+  }
+
+  .invitation-email-field {
+    width: 50%;
+    margin-bottom: rem.torem(8px);
+  }
+
+  .add-member-button-wrapper {
+    padding-top: rem.torem(26px);
+  }
+
+  .add-member-button {
+    margin-bottom: rem.torem(24px);
+  }
+
+  .members-list {
+    width: 100%;
+    margin-bottom: rem.torem(16px);
+
+    th {
+      @include fonts.caption;
+
+      padding-bottom: rem.torem(16px);
+      vertical-align: middle;
+      text-align: left;
+    }
+
+    td {
+      @include fonts.body;
+
+      padding-bottom: rem.torem(12px);
+      vertical-align: middle;
+      text-align: left;
+    }
+  }
+}
