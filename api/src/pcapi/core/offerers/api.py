@@ -1861,3 +1861,56 @@ def delete_offerer(offerer_id: int) -> None:
     search.unindex_collective_offer_ids(offer_ids_to_delete["collective_offer_ids_to_delete"])
     search.unindex_collective_offer_template_ids(offer_ids_to_delete["collective_offer_template_ids_to_delete"])
     search.unindex_venue_ids(venue_ids_subquery)
+
+
+def invite_members(offerer: models.Offerer, emails: list[str], current_user: users_models.User) -> None:
+    existing_invited_emails = (
+        models.OffererInvitation.query.filter(models.OffererInvitation.offererId == offerer.id)
+        .filter(models.OffererInvitation.email.in_(emails))
+        .all()
+    )
+    for email in emails:
+        if email in existing_invited_emails:  # already invited
+            continue
+        user = (
+            users_models.User.query.filter_by(email=email)
+            .join(models.UserOfferer)
+            .filter(models.UserOfferer.offererId == offerer.id)
+            .one_or_none()
+        )
+        if user and user.UserOfferers:  # User already attached to offerer
+            continue
+        if user and user.isEmailValidated:  # User exists but not attached to offerer
+            pass  # TODO create user offerer
+        offerer_invitation = models.OffererInvitation(offerer=offerer, email=email, user=current_user)
+        db.session.add(offerer_invitation)
+
+    db.session.commit()
+    transactional_mails.send_offerer_attachment_invitation(
+        emails
+    )  # TODO à modifier envoyer email seulement aux nouveaux invités
+
+
+def get_offerer_members(offerer: models.Offerer) -> list[models.UserOfferer]:
+    return models.UserOfferer.query.filter_by(offererId=offerer.id).join(users_models.User).all()
+
+
+def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
+    offerer_invitations = models.OffererInvitation.query.filter_by(email=user.email).all()
+    if not offerer_invitations:
+        return
+    for offerer_invitation in offerer_invitations:
+        try:
+            inviter_email = offerer_invitation.user.email
+            user_offerer = grant_user_offerer_access(user=user, offerer=offerer_invitation.offerer)
+            user_offerer.user.add_pro_role()
+            db.session.add(user_offerer)
+            db.session.delete(offerer_invitation)
+
+            db.session.commit()
+        except Exception:  # pylint: disable=broad-except
+            db.session.rollback()
+            logger.info("User offferer already exists")
+            continue
+        transactional_mails.send_offerer_attachment_invitation_confirmed([user.email])
+        transactional_mails.send_offerer_attachment_invitation_accepted([inviter_email])
