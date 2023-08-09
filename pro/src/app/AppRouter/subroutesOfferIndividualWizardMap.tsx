@@ -19,6 +19,21 @@ export const routesOfferIndividualWizard: RouteConfig[] = [
   },
   {
     element: <Offer />,
+    // This route is duplicated with the one above because
+    // /offre/individuelle/creation also matches /offre/individuelle/:offerId
+    // but we do not want to display the same title for both routes
+    // In addition, this route is placed after the one above because
+    // in usePageTitle we `.reverse()` the routes list when matching paths
+    // to find the title. So this one is after so that `creation` is matched first
+    // when displaying the title.
+    // Ultimately, the best solution would be to have different urls that don't overlap
+    // but this would require a lot of refactoring/changes
+    parentPath: '/offre/individuelle/creation',
+    path: '/informations',
+    title: 'Création - Détail de l’offre',
+  },
+  {
+    element: <Offer />,
     parentPath: '/offre/individuelle/:offerId',
     path: '/creation/informations',
     title: 'Détails - Créer une offre individuelle',
