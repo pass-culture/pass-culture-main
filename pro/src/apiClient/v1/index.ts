@@ -88,6 +88,8 @@ export type { GetEducationalOfferersQueryModel } from './models/GetEducationalOf
 export type { GetEducationalOfferersResponseModel } from './models/GetEducationalOfferersResponseModel';
 export type { GetEducationalOffererVenueResponseModel } from './models/GetEducationalOffererVenueResponseModel';
 export type { GetIndividualOfferResponseModel } from './models/GetIndividualOfferResponseModel';
+export type { GetOffererMemberResponseModel } from './models/GetOffererMemberResponseModel';
+export type { GetOffererMembersResponseModel } from './models/GetOffererMembersResponseModel';
 export type { GetOffererNameResponseModel } from './models/GetOffererNameResponseModel';
 export type { GetOffererResponseModel } from './models/GetOffererResponseModel';
 export type { GetOfferersNamesQueryModel } from './models/GetOfferersNamesQueryModel';
@@ -104,6 +106,7 @@ export type { GetVenueManagingOffererResponseModel } from './models/GetVenueMana
 export type { GetVenuePricingPointResponseModel } from './models/GetVenuePricingPointResponseModel';
 export type { GetVenueResponseModel } from './models/GetVenueResponseModel';
 export type { GetVenuesOfOffererFromSiretResponseModel } from './models/GetVenuesOfOffererFromSiretResponseModel';
+export type { InviteMembersQueryModel } from './models/InviteMembersQueryModel';
 export type { InvoiceListQueryModel } from './models/InvoiceListQueryModel';
 export type { InvoiceListResponseModel } from './models/InvoiceListResponseModel';
 export type { InvoiceResponseModel } from './models/InvoiceResponseModel';

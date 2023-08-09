@@ -6,10 +6,11 @@ import { Button } from 'ui-kit/Button'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import { suggestEmail } from 'ui-kit/form/EmailSpellCheckInput/suggestEmail'
 import { TextInput } from 'ui-kit/form/index'
+import { FieldLayoutBaseProps } from 'ui-kit/form/shared/FieldLayout/FieldLayout'
 
 import styles from './EmailSpellCheckInput.module.scss'
 
-export interface EmailSpellCheckInputProps<FormType> {
+export type EmailSpellCheckInputProps<FormType> = FieldLayoutBaseProps & {
   // `Extract` needed so the key is a string. See https://stackoverflow.com/a/51808262
   name: Extract<keyof FormType, string>
   placeholder: string
@@ -21,6 +22,7 @@ const EmailSpellCheckInput = <FormType,>({
   name,
   placeholder,
   label,
+  className,
   overrideInitialTip = null,
 }: EmailSpellCheckInputProps<FormType>): JSX.Element => {
   const { setFieldValue, setFieldTouched } = useFormikContext<FormType>()
@@ -60,6 +62,7 @@ const EmailSpellCheckInput = <FormType,>({
         onFocus={resetEmailValidation}
         hideFooter={emailValidationTip != null} // This is needed to hide the footer div that takes some space
         autoComplete="email"
+        className={className}
         ErrorDetails={
           emailValidationTip ? (
             <div className={styles['email-validation-error']}>
