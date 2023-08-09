@@ -28,5 +28,19 @@ describe('Banner', () => {
       'aria-label',
       'Masquer le bandeau'
     )
+    expect(screen.getByRole('img')).toHaveAttribute(
+      'class',
+      'close-icon-banner'
+    )
+  })
+
+  it('should display close icon with light type', async () => {
+    props.type = 'light'
+    render(<Banner {...props}>This is the banner light content</Banner>)
+    expect(screen.getByRole('img')).toHaveAttribute(
+      'aria-label',
+      'Masquer le bandeau'
+    )
+    expect(screen.getByRole('img')).toHaveAttribute('class', 'close-icon')
   })
 })
