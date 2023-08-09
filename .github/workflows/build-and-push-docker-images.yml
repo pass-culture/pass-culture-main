@@ -35,7 +35,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    runs-on: docker-cache
+    runs-on: [self-hosted, linux, x64]
     steps:
     - name: Output variables
       id: vars
