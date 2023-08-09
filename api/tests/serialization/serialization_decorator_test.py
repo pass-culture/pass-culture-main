@@ -3,9 +3,7 @@ from unittest.mock import Mock
 from unittest.mock import patch
 
 from flask.blueprints import Blueprint
-import pytest
 
-from pcapi.models import api_errors
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
 
@@ -40,6 +38,12 @@ def spectree_get_test_endpoint():
 @spectree_serialize(on_success_status=204)
 def spectree_post_test_endpoint():
     endpoint_method()
+
+
+@test_blueprint.route("/validation", methods=["POST"])
+@spectree_serialize(on_success_status=206)
+def spectree_empty_form_validation(form: TestQueryModel):
+    return
 
 
 @test_bookings_blueprint.route("/bookings", methods=["GET"])
@@ -143,12 +147,12 @@ class SerializationDecoratorTest:
         )
         assert response.status_code == 400
 
-    def test_http_form_validation(self):
-        @spectree_serialize(response_model=TestResponseModel, on_success_status=206)
-        def mock_func(form: TestQueryModel):
-            return
+    def test_http_form_validation(self, client):
+        response = client.post(
+            "/test-blueprint/validation", form=None, headers={"Content-Type": "application/x-www-form-urlencoded"}
+        )
 
-        with pytest.raises(api_errors.ApiErrors) as exc_info:
-            mock_func(form=None)
-
-        assert exc_info.value.errors == {"compulsory_int_query": "field required"}
+        assert response.status_code == 400
+        assert response.json == {
+            "compulsory_int_query": ["Ce champ est obligatoire"],
+        }
