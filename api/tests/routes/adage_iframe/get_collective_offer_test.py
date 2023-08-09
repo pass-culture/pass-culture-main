@@ -112,7 +112,7 @@ class CollectiveOfferTest:
                 "lastName": stock.collectiveOffer.teacher.lastName,
                 "civility": stock.collectiveOffer.teacher.civility,
             },
-            "nationalProgramId": national_program.id,
+            "nationalProgram": {"id": national_program.id, "name": national_program.name},
         }
 
     def test_get_collective_offer_with_offer_venue(self, client):
@@ -207,7 +207,7 @@ class CollectiveOfferTest:
             "imageCredit": None,
             "imageUrl": None,
             "teacher": None,
-            "nationalProgramId": national_program.id,
+            "nationalProgram": {"id": national_program.id, "name": national_program.name},
         }
 
     def test_should_return_404_when_no_collective_offer(self, client):

@@ -7,6 +7,7 @@ import type { CollectiveOffersBookingResponseModel } from './CollectiveOffersBoo
 import type { CollectiveOffersStockResponseModel } from './CollectiveOffersStockResponseModel';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 import type { ListOffersVenueResponseModel } from './ListOffersVenueResponseModel';
+import type { NationalProgramModel } from './NationalProgramModel';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 
 export type CollectiveOfferResponseModel = {
@@ -23,7 +24,7 @@ export type CollectiveOfferResponseModel = {
   isPublicApi: boolean;
   isShowcase: boolean;
   name: string;
-  nationalProgramId?: number | null;
+  nationalProgram?: NationalProgramModel | null;
   status: string;
   stocks: Array<CollectiveOffersStockResponseModel>;
   subcategoryId: SubcategoryIdEnum;

@@ -5,6 +5,7 @@
 
 import type { CollectiveOfferOfferVenueResponseModel } from './CollectiveOfferOfferVenueResponseModel';
 import type { GetCollectiveOfferVenueResponseModel } from './GetCollectiveOfferVenueResponseModel';
+import type { NationalProgramModel } from './NationalProgramModel';
 import type { OfferDomain } from './OfferDomain';
 import type { OfferStatus } from './OfferStatus';
 import type { StudentLevels } from './StudentLevels';
@@ -31,7 +32,7 @@ export type GetCollectiveOfferTemplateResponseModel = {
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
-  nationalProgramId?: number | null;
+  nationalProgram?: NationalProgramModel | null;
   offerId?: number | null;
   offerVenue: CollectiveOfferOfferVenueResponseModel;
   status: OfferStatus;

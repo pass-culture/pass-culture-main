@@ -6,6 +6,7 @@
 import type { CollectiveOfferOfferVenue } from './CollectiveOfferOfferVenue';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 import type { EducationalRedactorResponseModel } from './EducationalRedactorResponseModel';
+import type { NationalProgramModel } from './NationalProgramModel';
 import type { OfferDomain } from './OfferDomain';
 import type { OfferStockResponse } from './OfferStockResponse';
 import type { OfferVenueResponse } from './OfferVenueResponse';
@@ -29,7 +30,7 @@ export type CollectiveOfferResponseModel = {
   mentalDisabilityCompliant: boolean;
   motorDisabilityCompliant: boolean;
   name: string;
-  nationalProgramId?: number | null;
+  nationalProgram?: NationalProgramModel | null;
   offerId?: string | null;
   offerVenue: CollectiveOfferOfferVenue;
   stock: OfferStockResponse;

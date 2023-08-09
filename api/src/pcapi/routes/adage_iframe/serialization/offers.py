@@ -11,6 +11,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.native.v1.serialization import common_models
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 
@@ -165,7 +166,7 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
     imageCredit: str | None
     imageUrl: str | None
     teacher: EducationalRedactorResponseModel | None
-    nationalProgramId: int | None
+    nationalProgram: NationalProgramModel | None
 
     @classmethod
     def from_orm(
@@ -219,7 +220,7 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
     interventionArea: list[str]
     imageCredit: str | None
     imageUrl: str | None
-    nationalProgramId: int | None
+    nationalProgram: NationalProgramModel | None
 
     @classmethod
     def from_orm(

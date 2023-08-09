@@ -34,7 +34,7 @@ class Returns200Test:
         assert response_json["imageUrl"] is None
         assert response_json["name"] == offer.name
         assert response_json["id"] == offer.id
-        assert response_json["nationalProgramId"] == national_program.id
+        assert response.json["nationalProgram"] == {"id": national_program.id, "name": national_program.name}
 
     def test_performance(self, client):
         # Given

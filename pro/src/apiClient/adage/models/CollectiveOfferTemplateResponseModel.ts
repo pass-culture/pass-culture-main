@@ -4,6 +4,7 @@
 /* eslint-disable */
 
 import type { CollectiveOfferOfferVenue } from './CollectiveOfferOfferVenue';
+import type { NationalProgramModel } from './NationalProgramModel';
 import type { OfferDomain } from './OfferDomain';
 import type { OfferVenueResponse } from './OfferVenueResponse';
 import type { StudentLevels } from './StudentLevels';
@@ -25,7 +26,7 @@ export type CollectiveOfferTemplateResponseModel = {
   mentalDisabilityCompliant: boolean;
   motorDisabilityCompliant: boolean;
   name: string;
-  nationalProgramId?: number | null;
+  nationalProgram?: NationalProgramModel | null;
   offerId?: string | null;
   offerVenue: CollectiveOfferOfferVenue;
   students: Array<StudentLevels>;
