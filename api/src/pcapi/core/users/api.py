@@ -1337,14 +1337,12 @@ def _get_users_with_suspended_account() -> Query:
     # distinct keeps the first row if duplicates are found. Since rows
     # are ordered by userId and eventDate, this query will fetch the
     # latest event for each userId.
-    latest_user_suspension_history_query = (
+    return (
         users_models.User.query.distinct(history_models.ActionHistory.userId)
         .join(users_models.User.action_history)
         .filter(
-            sa.or_(
-                history_models.ActionHistory.actionType == history_models.ActionType.USER_SUSPENDED,
-                history_models.ActionHistory.actionType == history_models.ActionType.USER_UNSUSPENDED,
-            )
+            history_models.ActionHistory.actionType == history_models.ActionType.USER_SUSPENDED,
+            users_models.User.isActive.is_(False),
         )
         .order_by(history_models.ActionHistory.userId, history_models.ActionHistory.actionDate.desc())
         .with_entities(
@@ -1353,10 +1351,6 @@ def _get_users_with_suspended_account() -> Query:
             history_models.ActionHistory.actionType,
             history_models.ActionHistory.extraData["reason"].astext,
         )
-    )
-
-    return latest_user_suspension_history_query.filter(
-        history_models.ActionHistory.actionType == history_models.ActionType.USER_SUSPENDED
     )
 
 
@@ -1373,7 +1367,6 @@ def _get_users_with_suspended_account_to_notify(expiration_delta_in_days: int) -
 def get_suspended_upon_user_request_accounts_since(expiration_delta_in_days: int) -> Query:
     start = datetime.date.today() - datetime.timedelta(days=expiration_delta_in_days)
     user_ids_and_latest_action = _get_users_with_suspended_account()
-
     return user_ids_and_latest_action.filter(
         history_models.ActionHistory.actionDate <= start,
         history_models.ActionHistory.extraData["reason"].astext == constants.SuspensionReason.UPON_USER_REQUEST.value,
