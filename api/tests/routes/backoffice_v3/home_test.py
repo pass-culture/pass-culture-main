@@ -70,3 +70,26 @@ class HomePageTest:
             "3 offres collectives en attente CONSULTER",
             "4 offres collectives vitrine en attente CONSULTER",
         ]
+        # No card for "structure en attente de conformité" because tag "conformité" does not exist
+
+    def test_view_home_page_pending_offerers_conformite(self, authenticated_client):
+        tag = offerers_factories.OffererTagFactory(name="conformité", label="En attente de conformité")
+        other_tag = offerers_factories.OffererTagFactory()
+
+        offerers_factories.NotValidatedOffererFactory(tags=[tag, other_tag])
+
+        # others should not be counted
+        offerers_factories.OffererFactory(tags=[tag])
+        offerers_factories.NotValidatedOffererFactory(tags=[other_tag])
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for("backoffice_v3_web.home"))
+            assert response.status_code == 200
+
+        cards_text = html_parser.extract_cards_text(response.data)
+        assert cards_text == [
+            "0 offre individuelle en attente CONSULTER",
+            "0 offre collective en attente CONSULTER",
+            "0 offre collective vitrine en attente CONSULTER",
+            "1 structure en attente de conformité CONSULTER",
+        ]
