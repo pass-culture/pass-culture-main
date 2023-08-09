@@ -9,21 +9,17 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  height: 100vh;
 
   h1 {
     @include fonts.hero;
 
     color: colors.$white;
-    line-height: normal;
     margin: rem.torem(32px) 0 rem.torem(16px);
   }
 
   p {
     @include fonts.title2;
-  }
-
-  &-icon {
-    width: rem.torem(350px);
   }
 
   .nm-redirection-link {
