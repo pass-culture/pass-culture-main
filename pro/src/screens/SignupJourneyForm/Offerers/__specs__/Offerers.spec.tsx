@@ -24,7 +24,10 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const renderOfferersScreen = (contextValue: SignupJourneyContextValues) => {
+const renderOfferersScreen = (
+  contextValue: SignupJourneyContextValues,
+  store: any = {}
+) => {
   const storeOverrides = {
     user: {
       initialized: true,
@@ -33,6 +36,7 @@ const renderOfferersScreen = (contextValue: SignupJourneyContextValues) => {
         email: 'email@example.com',
       },
     },
+    ...store,
   }
 
   return renderWithProviders(
@@ -376,6 +380,35 @@ describe('screens:SignupJourney::Offerers', () => {
         siren: '123456789',
       })
       expect(await screen.findByText('Confirmation screen')).toBeInTheDocument()
+    })
+  })
+
+  describe('New user offerer link', () => {
+    const newFFEnabled = {
+      features: {
+        list: [
+          {
+            nameKey: 'WIP_ENABLE_NEW_USER_OFFERER_LINK',
+            isActive: true,
+          },
+        ],
+        initialized: true,
+      },
+    }
+
+    it('Should display the new banner when the FF is enabled', async () => {
+      renderOfferersScreen(contextValue, newFFEnabled)
+      const loadingMessage = screen.queryByText('Chargement en cours ...')
+      await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
+      expect(
+        screen.queryByRole('button', { name: 'Rejoindre cet espace' })
+      ).not.toBeInTheDocument()
+
+      expect(
+        screen.getByText(
+          /Vos collaborateurs peuvent vous inviter en passant par leur espace pass Culture Pro./
+        )
+      ).toBeInTheDocument()
     })
   })
 })

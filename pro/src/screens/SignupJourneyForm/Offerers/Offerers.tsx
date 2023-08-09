@@ -12,12 +12,13 @@ import { Events } from 'core/FirebaseEvents/constants'
 import { getSirenDataAdapter } from 'core/Offerers/adapters'
 import { getVenuesOfOffererFromSiretAdapter } from 'core/Venue/adapters/getVenuesOfOffererFromSiretAdapter'
 import { useAdapter } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import tempStrokeAddUserIcon from 'icons/temp-stroke-add-user.svg'
-import { Button } from 'ui-kit'
+import { Banner, Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -31,6 +32,9 @@ const Offerers = (): JSX.Element => {
   const navigate = useNavigate()
   const [isVenueListOpen, setIsVenueListOpen] = useState<boolean>(false)
   const [showLinkDialog, setShowLinkDialog] = useState<boolean>(false)
+  const isNewOffererLinkEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_USER_OFFERER_LINK'
+  )
 
   const { offerer, setOfferer } = useSignupJourneyContext()
 
@@ -159,20 +163,51 @@ const Offerers = (): JSX.Element => {
             </Button>
           )}
         </div>
-        <Button variant={ButtonVariant.SECONDARY} onClick={doLinkUserToOfferer}>
-          Rejoindre cet espace
-        </Button>
+        {!isNewOffererLinkEnabled && (
+          <Button
+            variant={ButtonVariant.SECONDARY}
+            onClick={doLinkUserToOfferer}
+          >
+            Rejoindre cet espace
+          </Button>
+        )}
       </div>
-      <div className={cn(styles['wrong-offerer-title'], styles['title-4'])}>
+      <div
+        className={cn(
+          styles['wrong-offerer-title'],
+          /* istanbul ignore next: displaying changes */
+          !isNewOffererLinkEnabled ? styles['title-4'] : ''
+        )}
+      >
         Vous souhaitez ajouter une nouvelle structure à cet espace ?
       </div>
       <Button
-        className={styles['button-add-new-offerer']}
+        className={
+          /* istanbul ignore next: displaying changes */
+          isNewOffererLinkEnabled ? styles['button-add-new-offerer'] : ''
+        }
         onClick={redirectToOnboarding}
         variant={ButtonVariant.SECONDARY}
       >
         Ajouter une nouvelle structure
       </Button>
+      {isNewOffererLinkEnabled && (
+        <Banner
+          type="notification-info"
+          links={[
+            {
+              href: `#TODO`, // TODO: sera donné plus tard
+              linkTitle: 'En savoir plus',
+            },
+          ]}
+        >
+          <strong>Vous souhaitez rejoindre cet espace ?</strong>
+          <br />
+          Vos collaborateurs peuvent vous inviter en passant par leur espace
+          pass Culture Pro. Vous recevrez alors un email vous permettant
+          d’accéder à cet espace.
+        </Banner>
+      )}
       <ActionBar
         previousStepTitle="Retour"
         hideRightButton
