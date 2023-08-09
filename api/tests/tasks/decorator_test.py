@@ -1,14 +1,9 @@
-from unittest.mock import MagicMock
-from unittest.mock import Mock
-from unittest.mock import call
-from unittest.mock import patch
+from unittest import mock
 
 from google.cloud import tasks_v2
-import pytest
 
 from pcapi import settings
 from pcapi.core.testing import override_settings
-from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import BaseModel
 from pcapi.tasks.decorator import task
 from pcapi.utils import requests
@@ -16,163 +11,176 @@ from pcapi.utils import requests
 from tests.conftest import TestClient
 
 
-class VoidTaskPayload(BaseModel):
-    chouquette_price: int
+slow_chouquette_handler = mock.Mock()
 
 
-def generate_task(f):
-    TEST_QUEUE = "test-queue"
-
-    @task(TEST_QUEUE, "/void_task")
-    def test_task(payload: VoidTaskPayload):
-        f(payload)
-
-    return test_task
+class ChouquetteSender(BaseModel):
+    number: int
 
 
-endpoint_method = Mock()
-
-
-@task("endpoint-test-queue", "/endpoint_test")
-def cloud_task_test_endpoint(body):
-    endpoint_method(body)
+@task("chouquettes-test-queue", "/send-chouquettes")
+def send_chouquettes(payload: ChouquetteSender):
+    slow_chouquette_handler(payload.number)
 
 
 class CloudTaskDecoratorTest:
-    def test_calling_task(self):
-        inner_task = MagicMock()
-        test_task = generate_task(inner_task)
-        payload = VoidTaskPayload(chouquette_price=12)
+    def teardown_method(self, method):
+        slow_chouquette_handler.reset_mock()
 
-        # Synchronous call
-        test_task(payload)
-        # Asynchronous call, but synchronous in tests
-        test_task.delay(payload)
+    def test_calling_function_in_tests(self):
+        # When running tests, the decorated function is executed
+        # immediately, whether or not we use `.delay()`.
+        payload = ChouquetteSender(number=12)
 
-        assert inner_task.call_args_list == [call(payload), call(payload)]
+        send_chouquettes(payload)
+        send_chouquettes.delay(payload)
 
-    @patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
-    @override_settings(IS_RUNNING_TESTS=False)
-    @patch("pcapi.tasks.cloud_task.requests.post")
-    def test_calling_task_in_dev(self, requests_post):
-        inner_task = MagicMock()
-        test_task = generate_task(inner_task)
-        payload = VoidTaskPayload(chouquette_price=12)
+        assert slow_chouquette_handler.call_args_list == [mock.call(12), mock.call(12)]
 
-        # Synchronous call
-        test_task(payload)
+    @mock.patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
+    @override_settings(IS_RUNNING_TESTS=False, IS_DEV=True)
+    @mock.patch("pcapi.tasks.cloud_task.requests.post")
+    def test_calling_function_in_development_environment(self, requests_post):
+        # When running locally ("development" environment), the
+        # decorated function is not directly executed, but our code
+        # calls our own route (to simulate Google Cloud Tasks calling
+        # that route).
+        payload = ChouquetteSender(number=12)
+
+        # Synchronous call.
+        send_chouquettes(payload)
+        slow_chouquette_handler.assert_called_with(12)
         requests_post.assert_not_called()
+        slow_chouquette_handler.reset_mock()
 
-        # Asynchronous call
-        test_task.delay(payload)
+        # "Asynchronous" (more or less) call. Our code calls our own
+        # route.
+        send_chouquettes.delay(payload)
+        slow_chouquette_handler.assert_not_called()
         requests_post.assert_called_once_with(
-            "http://localhost:5001/cloud-tasks/void_task",
-            headers={"HTTP_X_CLOUDTASKS_QUEUENAME": "test-queue", "AUTHORIZATION": "Bearer secret-token"},
-            json={"chouquette_price": 12},
+            "http://localhost:5001/cloud-tasks/send-chouquettes",
+            headers={
+                "HTTP_X_CLOUDTASKS_QUEUENAME": "chouquettes-test-queue",
+                "AUTHORIZATION": "Bearer secret-token",
+            },
+            json={"number": 12},
         )
 
-    @patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
-    @override_settings(IS_RUNNING_TESTS=False)
-    @override_settings(IS_DEV=False)
-    def test_calling_google_cloud_task_client(self, cloud_task_client):
-        inner_task = MagicMock()
-        test_task = generate_task(inner_task)
-        payload = VoidTaskPayload(chouquette_price=12)
-        cloud_task_client.queue_path.return_value = "queue_path"
+    @mock.patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
+    @override_settings(IS_RUNNING_TESTS=False, IS_DEV=False)
+    def test_calling_function_calls_google_cloud_tasks(self, cloud_task_client):
+        # When running in production, the decorated function is not
+        # directly executed. Instead, we call Google Cloud Tasks and
+        # ask it to call our task route.
+        cloud_task_client.queue_path.return_value = "fake queue path"
 
-        test_task.delay(payload)
+        payload = ChouquetteSender(number=12)
+        send_chouquettes.delay(payload)
 
+        slow_chouquette_handler.assert_not_called()
         cloud_task_client.create_task.assert_called_once()
-
         _, call_args = cloud_task_client.create_task.call_args
-
         assert call_args["request"] == tasks_v2.CreateTaskRequest(
-            parent="queue_path",
+            parent="fake queue path",
             task=tasks_v2.Task(
                 http_request=tasks_v2.HttpRequest(
-                    body=b'{"chouquette_price": 12}',
-                    headers={"AUTHORIZATION": "Bearer " "secret-token", "Content-type": "application/json"},
+                    body=b'{"number": 12}',
+                    headers={
+                        "AUTHORIZATION": "Bearer " "secret-token",
+                        "Content-type": "application/json",
+                    },
                     http_method=tasks_v2.HttpMethod.POST,
-                    url=f"{settings.API_URL}/cloud-tasks/void_task",
+                    url=f"{settings.API_URL}/cloud-tasks/send-chouquettes",
                 )
             ),
         )
 
-    @patch("pcapi.tasks.decorator.cloud_task_api.route")
-    def test_creates_a_handler_endoint(self, route_helper, app):
-        route_wrapper = MagicMock()
-        route_helper.return_value = route_wrapper
-
-        inner_task = MagicMock()
-        generate_task(inner_task)
-
-        route_helper.assert_called_once_with("/void_task", methods=["POST"], endpoint="/void_task")
-
-        route_function = route_wrapper.call_args_list[0].args[0]
-
-        with pytest.raises(ApiErrors) as e:
-            route_function({})
-        assert e.value.errors["chouquette_price"] == ["Ce champ est obligatoire"]
-
-    @patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
-    def test_authorization(self, client: TestClient):
-        endpoint_method.reset_mock()
-
-        response = client.post("/cloud-tasks/endpoint_test", headers={"AUTHORIZATION": "Bearer secret-token"})
-
+    @mock.patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
+    def test_route_ok(self, client):
+        # When using the `task` decorator, a route is defined and can
+        # be used.
+        response = client.post(
+            "/cloud-tasks/send-chouquettes",
+            headers={"AUTHORIZATION": "Bearer secret-token"},
+            json={"number": 12},
+        )
         assert response.status_code == 204
-        endpoint_method.assert_called_once()
+        slow_chouquette_handler.assert_called_once_with(12)
 
-    def test_unauthorized(self, client: TestClient):
-        endpoint_method.reset_mock()
+    @mock.patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
+    def test_route_invalid_input(self, client):
+        # When using the `task` decorator, a route is defined and
+        # validates input.
+        response = client.post(
+            "/cloud-tasks/send-chouquettes",
+            headers={"AUTHORIZATION": "Bearer secret-token"},
+            json={"number": "not a number"},
+        )
+        assert response.status_code == 400
+        assert response.json == {"number": ["Saisissez un nombre valide"]}
 
-        response = client.post("/cloud-tasks/endpoint_test", headers={"AUTHORIZATION": "Bearer wrong-token"})
-
+    def test_route_unauthorized(self, client):
+        # When using the `task` decorator, a route is defined and
+        # verifies authorization.
+        response = client.post(
+            "/cloud-tasks/send-chouquettes",
+            headers={"AUTHORIZATION": "Bearer wrong-token"},
+            json={"number": 12},
+        )
         assert response.status_code == 299
-        endpoint_method.assert_not_called()
 
 
 class PostHandlerTest:
-    @patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
+    def teardown_method(self, method):
+        slow_chouquette_handler.reset_mock()
+
+    @mock.patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
     def test_max_attempt_reached(self, client: TestClient, caplog):
-        endpoint_method.reset_mock()
-        endpoint_method.side_effect = requests.ExternalAPIException(is_retryable=True)
+        slow_chouquette_handler.side_effect = requests.ExternalAPIException(is_retryable=True)
 
         response = client.post(
-            "/cloud-tasks/endpoint_test",
-            headers={"AUTHORIZATION": "Bearer secret-token", "X-CloudTasks-TaskRetryCount": "9"},
+            "/cloud-tasks/send-chouquettes",
+            headers={
+                "AUTHORIZATION": "Bearer secret-token",
+                "X-CloudTasks-TaskRetryCount": "9",
+            },
+            json={"number": 12},
         )
 
         assert response.status_code == 400
         assert len(caplog.records) == 1
-        assert caplog.records[0].message == "External API unavailable for CloudTask /endpoint_test"
+        assert caplog.records[0].message == "External API unavailable for CloudTask /send-chouquettes"
         assert caplog.records[0].levelname == "ERROR"
 
-    @patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
+    @mock.patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
     def test_max_attempt_not_reached(self, client: TestClient, caplog):
-        endpoint_method.reset_mock()
-        endpoint_method.side_effect = requests.ExternalAPIException(is_retryable=True)
+        slow_chouquette_handler.side_effect = requests.ExternalAPIException(is_retryable=True)
 
         response = client.post(
-            "/cloud-tasks/endpoint_test",
+            "/cloud-tasks/send-chouquettes",
             headers={"AUTHORIZATION": "Bearer secret-token", "X-CloudTasks-TaskRetryCount": "8"},
+            json={"number": 12},
         )
 
         assert response.status_code == 400
         assert len(caplog.records) == 1
         assert (
-            caplog.records[0].message == "The cloud task has failed and will automatically be retried: /endpoint_test"
+            caplog.records[0].message
+            == "The cloud task has failed and will automatically be retried: /send-chouquettes"
         )
         assert caplog.records[0].levelname == "WARNING"
 
-    @patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
+    @mock.patch("pcapi.tasks.cloud_task.AUTHORIZATION_HEADER_VALUE", "Bearer secret-token")
     def test_not_retryable(self, client: TestClient):
-        endpoint_method.reset_mock()
-        endpoint_method.side_effect = requests.ExternalAPIException(is_retryable=False)
+        slow_chouquette_handler.side_effect = requests.ExternalAPIException(is_retryable=False)
 
         response = client.post(
-            "/cloud-tasks/endpoint_test",
-            headers={"AUTHORIZATION": "Bearer secret-token", "X-CloudTasks-TaskRetryCount": "8"},
+            "/cloud-tasks/send-chouquettes",
+            headers={
+                "AUTHORIZATION": "Bearer secret-token",
+                "X-CloudTasks-TaskRetryCount": "8",
+            },
+            json={"number": 12},
         )
 
         assert response.status_code == 204
