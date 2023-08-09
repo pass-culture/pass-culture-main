@@ -46,7 +46,7 @@ class Returns200Test:
         assert response_json[0]["educationalInstitution"]["name"] == institution.name
         assert response_json[0]["imageCredit"] is None
         assert response_json[0]["imageUrl"] is None
-        assert response_json[0]["nationalProgramId"] == national_program.id
+        assert response_json[0]["nationalProgram"] == {"id": national_program.id, "name": national_program.name}
 
     def test_one_inactive_offer(self, client):
         # Given

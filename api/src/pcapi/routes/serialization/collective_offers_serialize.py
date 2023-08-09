@@ -26,6 +26,7 @@ from pcapi.routes.native.v1.serialization.common_models import AccessibilityComp
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
+from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.image_conversion import CropParams
@@ -101,7 +102,7 @@ class CollectiveOfferResponseModel(BaseModel):
     imageCredit: str | None
     imageUrl: str | None
     isPublicApi: bool
-    nationalProgramId: int | None
+    nationalProgram: NationalProgramModel | None
 
     class Config:
         alias_generator = to_camel
@@ -152,7 +153,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
         imageCredit=offer.imageCredit,
         imageUrl=offer.imageUrl,
         isPublicApi=offer.isPublicApi if not is_offer_template else False,
-        nationalProgramId=offer.nationalProgramId,
+        nationalProgram=offer.nationalProgram,
     )
 
 
@@ -277,7 +278,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     is_cancellable_from_offerer: bool = Field(alias="isCancellable")
     imageCredit: str | None
     imageUrl: str | None
-    nationalProgramId: int | None
+    nationalProgram: NationalProgramModel | None
 
     class Config:
         allow_population_by_field_name = True
