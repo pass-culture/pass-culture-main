@@ -581,10 +581,6 @@ def find_event_stocks_day(start: datetime.datetime, end: datetime.datetime) -> f
     )
 
 
-def get_current_offer_validation_config() -> models.OfferValidationConfig | None:
-    return models.OfferValidationConfig.query.order_by(models.OfferValidationConfig.id.desc()).first()
-
-
 def get_expired_offers(interval: typing.List[datetime.datetime]) -> flask_sqlalchemy.BaseQuery:
     """Return a query of offers whose latest booking limit occurs within
     the given interval.

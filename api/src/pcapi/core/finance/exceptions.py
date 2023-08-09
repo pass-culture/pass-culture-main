@@ -15,14 +15,6 @@ class InvalidSiret(Exception):
     pass
 
 
-class WrongLengthSiret(InvalidSiret):
-    pass
-
-
-class NotAllDigitSiret(InvalidSiret):
-    pass
-
-
 class ReimbursementRuleValidationError(Exception):
     pass
 

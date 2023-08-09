@@ -301,22 +301,6 @@ def handle_create_account_with_existing_email(user: models.User) -> None:
         raise exceptions.EmailNotSent()
 
 
-def fulfill_account_password(user: models.User) -> models.User:
-    _generate_random_password(user)
-    return user
-
-
-def fulfill_beneficiary_data(
-    user: models.User, deposit_source: str, eligibility: models.EligibilityType
-) -> models.User:
-    _generate_random_password(user)
-
-    deposit = finance_api.create_deposit(user, deposit_source, eligibility=eligibility)
-    user.deposits = [deposit]
-
-    return user
-
-
 def _generate_random_password(user):  # type: ignore [no-untyped-def]
     user.password = random_hashed_password()
 
@@ -451,26 +435,6 @@ def unsuspend_account(
 
     if send_email:
         transactional_mails.send_unsuspension_email(user)
-
-
-def bulk_unsuspend_account(user_ids: list[int], actor: models.User) -> None:
-    models.User.query.filter(models.User.id.in_(user_ids)).update(
-        values={"isActive": True},
-        synchronize_session=False,
-    )
-    users = models.User.query.filter(models.User.id.in_(user_ids)).all()
-    for user in users:
-        history_api.log_action(history_models.ActionType.USER_UNSUSPENDED, author=actor, user=user)
-
-    db.session.commit()
-
-    logger.info(
-        "Some accounts have been reactivated",
-        extra={
-            "actor": actor.id,
-            "users": user_ids,
-        },
-    )
 
 
 def change_email(
