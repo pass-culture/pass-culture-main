@@ -35,15 +35,11 @@ BASE_CODE_DESCRIPTIONS = {
     api=blueprints.v2_prefixed_public_api_schema,
     tags=["API offres collectives"],
     resp=SpectreeResponse(
-        **(
-            BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_200": (
-                    offers_serialization.CollectiveOffersListResponseModel,
-                    "L'offre collective existe",
-                ),
-            }
-        )
+        **(BASE_CODE_DESCRIPTIONS),
+        HTTP_200=(
+            offers_serialization.CollectiveOffersListResponseModel,
+            "L'offre collective existe",
+        ),
     ),
 )
 @api_key_required
@@ -76,15 +72,11 @@ def get_collective_offers_public(
     api=blueprints.v2_prefixed_public_api_schema,
     tags=["API offres collectives"],
     resp=SpectreeResponse(
-        **(
-            BASE_CODE_DESCRIPTIONS
-            | {
-                "HTTP_200": (
-                    offers_serialization.GetPublicCollectiveOfferResponseModel,
-                    "L'offre collective existe",
-                ),
-            }
-        )
+        **(BASE_CODE_DESCRIPTIONS),
+        HTTP_200=(
+            offers_serialization.GetPublicCollectiveOfferResponseModel,
+            "L'offre collective existe",
+        ),
     ),
 )
 @api_key_required
