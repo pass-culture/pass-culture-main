@@ -30,7 +30,7 @@ jobs:
 
   build-docker:
     name: 'Build and push Docker images'
-    runs-on: [self-hosted, linux, x64]
+    runs-on: docker-cache
     needs:
       - find-hotfix-tag-number
     permissions:
