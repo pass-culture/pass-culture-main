@@ -806,37 +806,6 @@ def _delete_mediations_and_thumbs(mediations: list[models.Mediation]) -> None:
             db.session.delete(mediation)
 
 
-def update_stock_id_at_providers(venue: offerers_models.Venue, old_siret: str) -> None:
-    current_siret = venue.siret
-
-    stocks = (
-        models.Stock.query.join(models.Offer)
-        .filter(models.Offer.venueId == venue.id)
-        .filter(models.Stock.idAtProviders.endswith(old_siret))
-        .all()
-    )
-
-    stock_ids_already_migrated = []
-    stocks_to_update = []
-
-    for stock in stocks:
-        new_id_at_providers = stock.idAtProviders.replace(old_siret, current_siret)
-        if db.session.query(models.Stock.query.filter_by(idAtProviders=new_id_at_providers).exists()).scalar():
-            stock_ids_already_migrated.append(stock.id)
-            continue
-        stock.idAtProviders = new_id_at_providers
-        stocks_to_update.append(stock)
-
-    if stock_ids_already_migrated:
-        logger.warning(
-            "The following stocks are already migrated from old siret to new siret: [%s]",
-            stock_ids_already_migrated,
-            extra={"venueId": venue.id, "current_siret": venue.siret, "old_siret": old_siret},
-        )
-
-    repository.save(*stocks_to_update)
-
-
 def get_expense_domains(offer: models.Offer) -> list[users_models.ExpenseDomain]:
     domains = {users_models.ExpenseDomain.ALL}
 
@@ -1043,40 +1012,6 @@ def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferVal
 
     logger.info("Computed offer validation", extra={"offer": offer.id, "status": status.value})
     return status
-
-
-def update_pending_offer_validation(offer: models.Offer, validation_status: models.OfferValidationStatus) -> bool:
-    offer = type(offer).query.filter_by(id=offer.id).one()
-    if offer.validation != models.OfferValidationStatus.PENDING:
-        template = f"{type(offer)} validation status cannot be updated, initial validation status is not PENDING. %s"
-        logger.info(template, extra={"offer": offer.id})
-        return False
-    offer.validation = validation_status
-    if validation_status == models.OfferValidationStatus.APPROVED:
-        offer.isActive = True
-
-    try:
-        db.session.commit()
-    except Exception as exception:  # pylint: disable=broad-except
-        template = f"Could not update {type(offer)} validation status: %s"
-        logger.exception(
-            template,
-            extra={"offer": offer.id, "validation_status": validation_status, "exc": str(exception)},
-        )
-        return False
-    if isinstance(offer, models.Offer):
-        search.async_index_offer_ids([offer.id])
-    elif isinstance(offer, educational_models.CollectiveOffer):
-        search.async_index_collective_offer_ids([offer.id])
-    elif isinstance(offer, educational_models.CollectiveOfferTemplate):
-        search.async_index_collective_offer_template_ids([offer.id])
-    template = f"{type(offer)} validation status updated"
-    logger.info(
-        template,
-        extra={"offer": offer.id, "offer_validation": offer.validation},
-        technical_message_id="offers.validation_updated",
-    )
-    return True
 
 
 def import_offer_validation_config(config_as_yaml: str, user: users_models.User) -> models.OfferValidationConfig:

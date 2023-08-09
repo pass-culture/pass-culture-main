@@ -4,10 +4,6 @@ from pcapi import settings
 
 
 def install_all_routes(app: Flask) -> None:
-    from pcapi.admin.install import install_admin
-    from pcapi.admin.install import install_admin_autocomplete_views
-    from pcapi.admin.install import install_admin_template_filters
-    from pcapi.models import db
     from pcapi.routes.adage.v1.blueprint import adage_v1 as adage_v1_blueprint
     from pcapi.routes.adage_iframe.blueprint import adage_iframe as adage_iframe_blueprint
     from pcapi.routes.apis import private_api
@@ -31,8 +27,6 @@ def install_all_routes(app: Flask) -> None:
     from . import saml
     from . import shared
 
-    install_admin(app, db.session)
-    install_admin_autocomplete_views()
     adage.install_routes(app)
     external.install_routes(app)
     internal.install_routes(app)
@@ -43,7 +37,6 @@ def install_all_routes(app: Flask) -> None:
     shared.install_routes(app)
     adage_iframe.install_routes(app)
     pcapi.tasks.install_handlers(app)
-    install_admin_template_filters(app)
 
     app.register_blueprint(adage_v1_blueprint, url_prefix="/adage/v1")
     app.register_blueprint(native_v1_blueprint, url_prefix="/native/v1")

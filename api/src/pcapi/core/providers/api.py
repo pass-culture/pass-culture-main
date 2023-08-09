@@ -83,46 +83,6 @@ def reset_stock_quantity(venue: offerers_models.Venue) -> None:
     db.session.commit()
 
 
-def update_last_provider_id(venue: offerers_models.Venue, provider_id: int) -> None:
-    """Update all offers' lastProviderId with the new provider_id."""
-    logger.info(
-        "Updating Offer.last_provider_id for changed sync",
-        extra={"venue": venue.id, "provider": provider_id},
-    )
-    offers = offers_models.Offer.query.filter(
-        offers_models.Offer.venue == venue, offers_models.Offer.idAtProvider.isnot(None)
-    )
-    offers.update({"lastProviderId": provider_id}, synchronize_session=False)
-    db.session.commit()
-
-
-def change_venue_provider(
-    venue_provider: providers_models.VenueProvider, new_provider_id: int, venueIdAtOfferProvider: str = None
-) -> providers_models.VenueProvider:
-    new_provider = providers_repository.get_provider_enabled_for_pro_by_id(new_provider_id)
-    if not new_provider:
-        raise providers_exceptions.ProviderNotFound()
-
-    id_at_provider = _get_siret(venueIdAtOfferProvider, venue_provider.venue.siret)
-
-    _check_provider_can_be_connected(new_provider, id_at_provider)
-
-    reset_stock_quantity(venue_provider.venue)
-
-    venue_provider.lastSyncDate = None
-    venue_provider.provider = new_provider
-    venue_provider.venueIdAtOfferProvider = id_at_provider
-
-    logger.info(
-        "Changing venue_provider.provider_id", extra={"venue_provider": venue_provider.id, "provider": new_provider_id}
-    )
-    repository.save(venue_provider)
-
-    update_last_provider_id(venue_provider.venue, new_provider_id)
-
-    return venue_provider
-
-
 def delete_venue_provider(venue_provider: providers_models.VenueProvider) -> None:
     update_venue_synchronized_offers_active_status_job.delay(venue_provider.venueId, venue_provider.providerId, False)
     if venue_provider.venue.bookingEmail:

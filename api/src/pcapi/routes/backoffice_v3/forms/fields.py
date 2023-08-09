@@ -10,7 +10,18 @@ import wtforms
 from wtforms import validators
 import wtforms_sqlalchemy.fields
 
-from pcapi.admin.validators import PhoneNumberValidator
+from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
+from pcapi.utils import phone_number
+
+
+class PhoneNumberValidator:
+    def __call__(self, form: wtforms.Form, field: wtforms.Field) -> None:
+        value = field.data
+        if value:
+            try:
+                phone_number.parse_phone_number(value)
+            except phone_validation_exceptions.InvalidPhoneNumber:
+                raise validators.ValidationError("Numéro de téléphone invalide")
 
 
 def widget(field: wtforms.Field, template: str, *args: typing.Any, **kwargs: typing.Any) -> str:

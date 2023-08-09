@@ -116,44 +116,6 @@ def test_reset_stock_quantity():
     assert stock5_other_venue.quantity == 10
 
 
-@pytest.mark.usefixtures("db_session")
-def test_update_last_provider_id():
-    provider1 = providers_factories.ProviderFactory()
-    provider2 = providers_factories.ProviderFactory()
-    venue = offerers_factories.VenueFactory()
-    offer1_synced = OfferFactory(venue=venue, idAtProvider=1, lastProvider=provider1)
-    offer2_manual = OfferFactory(venue=venue, idAtProvider=None)
-    offer3_other_venue = OfferFactory(idAtProvider=2, lastProvider=provider1)
-
-    api.update_last_provider_id(venue, provider2.id)
-
-    assert offer1_synced.lastProvider == provider2
-    assert offer2_manual.idAtProvider is None
-    assert offer3_other_venue.lastProvider == provider1
-
-
-@pytest.mark.usefixtures("db_session")
-@mock.patch("pcapi.core.providers.api._siret_can_be_synchronized", lambda *args: True)
-def test_change_venue_provider():
-    api_url = "https://example.com/provider/api"
-    provider = providers_factories.APIProviderFactory()
-    venue_provider = providers_factories.VenueProviderFactory(provider=provider)
-    venue = venue_provider.venue
-    stock = StockFactory(quantity=10, offer__venue=venue, offer__idAtProvider="1")
-    BookingFactory(stock=stock)
-    new_provider = providers_factories.APIProviderFactory(apiUrl=api_url)
-
-    api.change_venue_provider(venue_provider, new_provider.id)
-
-    # Check venue_provider has change provider and sync date reset
-    assert len(venue.venueProviders) == 1
-    assert venue.venueProviders[0].providerId == new_provider.id
-    assert venue.venueProviders[0].lastSyncDate is None
-    # Check that the quantity of existing stocks has been reset.
-    assert stock.quantity == 1
-    assert stock.offer.lastProviderId == new_provider.id
-
-
 class SynchronizeStocksTest:
     @pytest.mark.usefixtures("db_session")
     @freeze_time("2022-10-15 09:00:00")

@@ -8,25 +8,6 @@ from pcapi.core.users.models import User
 from pcapi.core.users.models import UserEmailHistory
 
 
-def has_been_validated(entry: UserEmailHistory) -> bool:
-    query = UserEmailHistory.query.filter_by(
-        userId=entry.userId,
-        oldUserEmail=entry.oldUserEmail,
-        oldDomainEmail=entry.oldDomainEmail,
-        newUserEmail=entry.newUserEmail,
-        newDomainEmail=entry.newDomainEmail,
-    ).filter(
-        UserEmailHistory.eventType.in_(
-            [
-                EmailHistoryEventTypeEnum.ADMIN_VALIDATION.value,
-                EmailHistoryEventTypeEnum.VALIDATION.value,
-            ]
-        ),
-    )
-
-    return query.first() is not None
-
-
 def _query_ordered_email_update_entry(user: User) -> BaseQuery:
     latest_entries = UserEmailHistory.query.filter_by(user=user).order_by(UserEmailHistory.creationDate.desc())
     return latest_entries
