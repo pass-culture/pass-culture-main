@@ -1,11 +1,9 @@
 from collections import defaultdict
-from typing import cast
 
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2
 from pcapi.routes.public import blueprints
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
-from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.validation.routes.users_authentifications import api_key_required
@@ -16,18 +14,14 @@ from pcapi.validation.routes.users_authentifications import api_key_required
     api=blueprints.v2_prefixed_public_api_schema,
     tags=["API offres collectives"],
     resp=SpectreeResponse(
-        **(
-            {
-                "HTTP_200": (
-                    offers_serialization.CollectiveOffersListCategoriesResponseModel,
-                    "La liste des catégories éligibles existantes.",
-                ),
-                "HTTP_401": (
-                    cast(BaseModel, offers_serialization.AuthErrorResponseModel),
-                    "Authentification nécessaire",
-                ),
-            }
-        )
+        HTTP_200=(
+            offers_serialization.CollectiveOffersListCategoriesResponseModel,
+            "La liste des catégories éligibles existantes.",
+        ),
+        HTTP_401=(
+            offers_serialization.AuthErrorResponseModel,
+            "Authentification nécessaire",
+        ),
     ),
 )
 @api_key_required
@@ -48,18 +42,14 @@ def list_categories() -> offers_serialization.CollectiveOffersListCategoriesResp
     api=blueprints.v2_prefixed_public_api_schema,
     tags=["API offres collectives"],
     resp=SpectreeResponse(
-        **(
-            {
-                "HTTP_200": (
-                    offers_serialization.CollectiveOffersListSubCategoriesResponseModel,
-                    "La liste des sous-catégories éligibles existantes.",
-                ),
-                "HTTP_401": (
-                    cast(BaseModel, offers_serialization.AuthErrorResponseModel),
-                    "Authentification nécessaire",
-                ),
-            }
-        )
+        HTTP_200=(
+            offers_serialization.CollectiveOffersListSubCategoriesResponseModel,
+            "La liste des sous-catégories éligibles existantes.",
+        ),
+        HTTP_401=(
+            offers_serialization.AuthErrorResponseModel,
+            "Authentification nécessaire",
+        ),
     ),
 )
 @api_key_required

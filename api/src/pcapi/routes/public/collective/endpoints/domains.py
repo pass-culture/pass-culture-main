@@ -1,10 +1,7 @@
-from typing import cast
-
 from pcapi.core.educational import repository as educational_repository
 from pcapi.routes.public import blueprints
 from pcapi.routes.public.collective.serialization import domains as domains_serialization
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
-from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.cache import cached_view
@@ -16,18 +13,14 @@ from pcapi.validation.routes.users_authentifications import api_key_required
     api=blueprints.v2_prefixed_public_api_schema,
     tags=["API offres collectives"],
     resp=SpectreeResponse(
-        **(
-            {
-                "HTTP_200": (
-                    domains_serialization.CollectiveOffersListDomainsResponseModel,
-                    "La liste des domaines d'éducation.",
-                ),
-                "HTTP_401": (
-                    cast(BaseModel, offers_serialization.AuthErrorResponseModel),
-                    "Authentification nécessaire",
-                ),
-            }
-        )
+        HTTP_200=(
+            domains_serialization.CollectiveOffersListDomainsResponseModel,
+            "La liste des domaines d'éducation.",
+        ),
+        HTTP_401=(
+            offers_serialization.AuthErrorResponseModel,
+            "Authentification nécessaire",
+        ),
     ),
 )
 @api_key_required

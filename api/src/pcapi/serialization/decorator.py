@@ -9,13 +9,13 @@ from typing import Type
 from flask import Response
 from flask import make_response
 from flask import request
+import spectree
 from werkzeug.exceptions import BadRequest
 
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import api as default_api
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
-from pcapi.serialization.spec_tree import ExtendedSpecTree
 
 
 logger = logging.getLogger(__name__)
@@ -71,7 +71,7 @@ def spectree_serialize(
     on_success_status: int = 200,
     on_empty_status: int | None = None,
     on_error_statuses: list[int] | None = None,
-    api: ExtendedSpecTree = default_api,
+    api: spectree.SpecTree = default_api,
     json_format: bool = True,
     response_headers: dict[str, str] | None = None,
     resp: SpectreeResponse | None = None,
