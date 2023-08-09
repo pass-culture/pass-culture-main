@@ -19,8 +19,12 @@ from . import utils
 
 REDIRECT_AFTER_LOGIN_COOKIE_NAME = "redirect_after_login"
 
+# Tags are created from the backoffice, so there is nothing in the code which forces this tag to exist.
+# Let's hardcode the name given in production (also created in sandbox for testing purpose).
+CONFORMITE_TAG_NAME = "conformité"
 
-def _get_pending_offers_stats() -> dict[str, typing.Any]:
+
+def _get_fraud_stats() -> dict[str, typing.Any]:
     pending_individual_offers_query = (
         sa.select(sa.func.count(offers_models.Offer.id))
         .select_from(offers_models.Offer)
@@ -52,11 +56,25 @@ def _get_pending_offers_stats() -> dict[str, typing.Any]:
         )
     )
 
+    pending_conformite_offerers_count = (
+        sa.select(sa.func.count(offerers_models.Offerer.id))
+        .select_from(offerers_models.Offerer)
+        .join(offerers_models.Offerer.tags)
+        .filter(offerers_models.Offerer.isWaitingForValidation, offerers_models.OffererTag.name == CONFORMITE_TAG_NAME)
+    )
+    conformite_tag_id = (
+        sa.select(offerers_models.OffererTag.id)
+        .select_from(offerers_models.OffererTag)
+        .filter(offerers_models.OffererTag.name == CONFORMITE_TAG_NAME)
+    )
+
     stats = db.session.execute(
         sa.select(
             pending_individual_offers_query.scalar_subquery().label("pending_individual_offers_count"),
             pending_collective_offers_query.scalar_subquery().label("pending_collective_offers_count"),
             pending_collective_templates_query.scalar_subquery().label("pending_collective_templates_count"),
+            pending_conformite_offerers_count.scalar_subquery().label("pending_conformite_offerers_count"),
+            conformite_tag_id.scalar_subquery().label("conformite_tag_id"),
         )
     ).one()
 
@@ -88,6 +106,6 @@ def home() -> utils.BackofficeResponse:
                 "limit": "1000",
             }
         }
-        data.update(_get_pending_offers_stats())
+        data.update(_get_fraud_stats())
 
     return render_template("home/home.html", **data)
