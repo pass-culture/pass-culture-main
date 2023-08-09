@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOffererVenueResponseModel } from 'apiClient/v1'
+import useActiveFeature from 'hooks/useActiveFeature'
 import fullBackIcon from 'icons/full-back.svg'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import { ButtonLink } from 'ui-kit'
@@ -13,9 +14,10 @@ import Titles from 'ui-kit/Titles/Titles'
 import { hasProperty } from 'utils/types'
 
 import ApiKey from './ApiKey/ApiKey'
+import AttachmentInvitations from './AttachmentInvitations/AttachmentInvitations'
 import {
-  Offerer,
   formatSiren,
+  Offerer,
   transformOffererResponseModelToOfferer,
 } from './Offerer'
 import styles from './OffererDetails.module.scss'
@@ -33,6 +35,10 @@ const OffererDetails = () => {
     setOfferer(null)
     setPhysicalVenues([])
   }, [])
+
+  const isNewOffererLinkEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_USER_OFFERER_LINK'
+  )
 
   const loadOfferer = useCallback(
     async (id: number) => {
@@ -95,8 +101,8 @@ const OffererDetails = () => {
       <Titles subtitle={offerer.name} title="Structure" />
 
       <p className={styles['op-teaser']}>
-        Détails de la structure rattachée, des lieux et des fournisseurs de ses
-        offres.
+        Détails de la structure rattachée, des collaborateurs, des lieux et des
+        fournisseurs de ses offres
       </p>
 
       <div className={cn(styles['section'], styles['op-content-section'])}>
@@ -116,6 +122,10 @@ const OffererDetails = () => {
           </span>
         </div>
       </div>
+
+      {isNewOffererLinkEnabled && (
+        <AttachmentInvitations offererId={offerer.id} />
+      )}
 
       <ApiKey
         maxAllowedApiKeys={offerer.apiKey.maxAllowed}
