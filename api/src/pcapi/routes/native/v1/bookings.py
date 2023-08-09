@@ -3,7 +3,7 @@ import logging
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.bookings.models import Booking
-from pcapi.core.external_bookings.exceptions import ExternalBookingException
+from pcapi.core.external_bookings import exceptions as external_bookings_exceptions
 import pcapi.core.finance.models as finance_models
 from pcapi.core.offers.exceptions import StockDoesNotExist
 from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
@@ -73,20 +73,31 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
             "Could not book offer: The CinemaProvider for the Venue does not match the Offer Provider",
             extra={"offer_id": stock.offer.id, "venue_id": stock.offer.venue.id},
         )
-        raise ApiErrors({"external_booking": "Cette offre n'est plus réservable."})
+        raise ApiErrors({"code": "CINEMA_PROVIDER_ERROR"})
     except InactiveProvider:
         logger.info(
             "Could not book offer: The CinemaProvider for this offer is inactive",
             extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
         )
-        raise ApiErrors({"external_booking": "Cette offre n'est plus réservable."})
-    except ExternalBookingException:
+        raise ApiErrors({"code": "CINEMA_PROVIDER_INACTIVE"})
+    except external_bookings_exceptions.ExternalBookingException:
         logger.info(
             "Could not book offer: Error when booking external ticket",
             extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
         )
-        raise ApiErrors({"external_booking": "La réservation a échoué. Essaye un peu plus tard."})
-
+        raise ApiErrors({"code": "CINEMA_PROVIDER_BOOKING_FAILED"})
+    except external_bookings_exceptions.ExternalBookingSoldOutError:
+        logger.info(
+            "Could not book offer: Event sold out",
+            extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
+        )
+        raise ApiErrors({"code": "PROVIDER_STOCK_SOLD_OUT"})
+    except external_bookings_exceptions.ExternalBookingNotEnoughSeatsError:
+        logger.info(
+            "Could not book offer: Event has not enough seats left",
+            extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
+        )
+        raise ApiErrors({"code": "PROVIDER_STOCK_NOT_ENOUGH_SEATS"})
     return BookOfferResponse(bookingId=booking.id)
 
 

@@ -158,7 +158,7 @@ def classify_and_sort_bookings(individual_bookings: list[Booking]) -> tuple[list
     ongoing_bookings = []
     for booking in individual_bookings:
         if (
-            booking.externalBookings and booking.stock.lastProvider.localClass == "BoostStocks"
+            booking.externalBookings and booking.stock.offer.lastProvider.localClass == "BoostStocks"
         ):  # TODO(yacine) to be removed with WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING
             for external_booking in booking.externalBookings:
                 external_booking.barcode = get_boost_external_booking_barcode(external_booking.barcode)
@@ -252,11 +252,14 @@ def book_offer(
             booking.mark_as_used()
 
         stock.dnBookedQuantity += booking.quantity
-        is_external_ticket_applicable = providers_repository.is_external_ticket_applicable(stock.offer)
+        is_cinema_external_ticket_applicable = providers_repository.is_cinema_external_ticket_applicable(stock.offer)
 
-        if is_external_ticket_applicable:
+        if is_cinema_external_ticket_applicable:
             offers_validation.check_offer_is_from_current_cinema_provider(stock.offer)
-            _book_external_ticket(booking, stock, beneficiary)
+            _book_cinema_external_ticket(booking, stock, beneficiary)
+
+        if providers_repository.is_event_external_ticket_applicable(stock.offer):
+            _book_event_external_ticket(booking, stock, beneficiary)
 
         repository.save(booking, stock)
 
@@ -291,7 +294,7 @@ def book_offer(
     return booking
 
 
-def _book_external_ticket(booking: Booking, stock: Stock, beneficiary: User) -> None:
+def _book_cinema_external_ticket(booking: Booking, stock: Stock, beneficiary: User) -> None:
     venue_provider_name = external_bookings_api.get_active_cinema_venue_provider(
         stock.offer.venueId
     ).provider.localClass
@@ -324,12 +327,24 @@ def _book_external_ticket(booking: Booking, stock: Stock, beneficiary: User) -> 
     if not show_id:
         raise providers_exceptions.ShowIdNotFound("Could not retrieve show_id")
     try:
-        tickets = external_bookings_api.book_ticket(
+        tickets = external_bookings_api.book_cinema_ticket(
             venue_id=stock.offer.venueId, show_id=show_id, booking=booking, beneficiary=beneficiary
         )
     except Exception as exc:
         logger.exception("Could not book external ticket: %s", exc)
         raise external_bookings_exceptions.ExternalBookingException
+
+    booking.externalBookings = [ExternalBooking(barcode=ticket.barcode, seat=ticket.seat_number) for ticket in tickets]
+
+
+def _book_event_external_ticket(booking: Booking, stock: Stock, beneficiary: User) -> None:
+    if not FeatureToggle.ENABLE_CHARLIE_BOOKINGS_API.is_active():
+        raise feature.DisabledFeatureError("ENABLE_CHARLIE_BOOKINGS_API is inactive")
+    try:
+        tickets = external_bookings_api.book_event_ticket(booking, stock, beneficiary)
+    except external_bookings_exceptions.ExternalBookingException as exc:
+        logger.exception("Could not book external ticket: %s", exc)
+        raise exc
 
     booking.externalBookings = [ExternalBooking(barcode=ticket.barcode, seat=ticket.seat_number) for ticket in tickets]
 

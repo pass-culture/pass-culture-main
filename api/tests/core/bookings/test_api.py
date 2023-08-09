@@ -422,7 +422,7 @@ class BookOfferTest:
             }
 
     class WithExternalBookingApiTest:
-        @patch("pcapi.core.bookings.api.external_bookings_api.book_ticket")
+        @patch("pcapi.core.bookings.api.external_bookings_api.book_cinema_ticket")
         @override_features(ENABLE_EMS_INTEGRATION=True)
         def test_ems_solo_external_booking(self, mocked_book_ticket):
             mocked_book_ticket.return_value = [Ticket(barcode="111", seat_number="")]
@@ -445,7 +445,7 @@ class BookOfferTest:
             assert booking.externalBookings[0].barcode == "111"
             assert booking.externalBookings[0].seat == ""
 
-        @patch("pcapi.core.bookings.api.external_bookings_api.book_ticket")
+        @patch("pcapi.core.bookings.api.external_bookings_api.book_cinema_ticket")
         @override_features(ENABLE_EMS_INTEGRATION=True)
         def test_ems_duo_external_booking(self, mocked_book_ticket):
             mocked_book_ticket.return_value = [
@@ -474,10 +474,10 @@ class BookOfferTest:
             assert booking.externalBookings[1].barcode == "222"
             assert booking.externalBookings[1].seat == ""
 
-        @patch("pcapi.core.bookings.api.external_bookings_api.book_ticket")
+        @patch("pcapi.core.bookings.api.external_bookings_api.book_cinema_ticket")
         @override_features(ENABLE_CDS_IMPLEMENTATION=True)
-        def test_solo_external_booking(self, mocked_book_ticket):
-            mocked_book_ticket.return_value = [Ticket(barcode="testbarcode", seat_number="A_1")]
+        def test_solo_external_booking(self, mocked_book_cinema_ticket):
+            mocked_book_cinema_ticket.return_value = [Ticket(barcode="testbarcode", seat_number="A_1")]
 
             # Given
 
@@ -501,10 +501,10 @@ class BookOfferTest:
             assert booking.externalBookings[0].barcode == "testbarcode"
             assert booking.externalBookings[0].seat == "A_1"
 
-        @patch("pcapi.core.bookings.api.external_bookings_api.book_ticket")
+        @patch("pcapi.core.bookings.api.external_bookings_api.book_cinema_ticket")
         @override_features(ENABLE_CDS_IMPLEMENTATION=True)
-        def test_duo_external_booking(self, mocked_book_ticket):
-            mocked_book_ticket.return_value = [
+        def test_duo_external_booking(self, mocked_book_cinema_ticket):
+            mocked_book_cinema_ticket.return_value = [
                 Ticket(barcode="barcode1", seat_number="B_1"),
                 Ticket(barcode="barcode2", seat_number="B_2"),
             ]
@@ -551,14 +551,14 @@ class BookOfferTest:
             assert Booking.query.count() == 0
             assert str(exc.value) == f"No active cinema venue provider found for venue #{venue_provider.venue.id}"
 
-        @patch("pcapi.core.bookings.api.external_bookings_api.book_ticket")
+        @patch("pcapi.core.bookings.api.external_bookings_api.book_cinema_ticket")
         @override_features(ENABLE_CDS_IMPLEMENTATION=True)
         def test_no_booking_if_external_booking_fails(
             self,
-            mocked_book_ticket,
+            mocked_book_cinema_ticket,
         ):
             # Given
-            mocked_book_ticket.side_effect = Exception("Something wrong happened")
+            mocked_book_cinema_ticket.side_effect = Exception("Something wrong happened")
             cds_provider = get_provider_by_local_class("CDSStocks")
             venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
             providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue, provider=cds_provider)
