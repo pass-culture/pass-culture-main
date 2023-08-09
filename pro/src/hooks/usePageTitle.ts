@@ -17,7 +17,7 @@ const usePageTitle = (): LocationListener | void => {
       ...routesSignupDefinitions,
       ...routesSignupJourneyDefinitions,
     ]
-      .reverse()
+      .reverse() // Albéric 09/08/2023 : I don't know why we reverse this list
       .find(
         ({ path, parentPath }: RouteConfig) =>
           matchPath(`${parentPath || ''}${path}`, location.pathname) !== null
