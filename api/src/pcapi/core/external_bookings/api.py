@@ -1,14 +1,26 @@
+import datetime
+
+from pydantic.tools import parse_obj_as
+
 from pcapi import settings
+from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.external_bookings.boost.client import BoostClientAPI
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 from pcapi.core.external_bookings.cgr.client import CGRClientAPI
 from pcapi.core.external_bookings.ems.client import EMSClientAPI
 import pcapi.core.external_bookings.models as external_bookings_models
+from pcapi.core.external_bookings.models import Ticket
+import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.exceptions as providers_exceptions
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
 import pcapi.core.users.models as users_models
+from pcapi.utils import requests
+from pcapi.utils.queue import add_to_queue
+
+from . import exceptions
+from . import serialize
 
 
 def get_shows_stock(venue_id: int, shows_id: list[int]) -> dict[int, int]:
@@ -26,7 +38,7 @@ def cancel_booking(venue_id: int, barcodes: list[str]) -> None:
     client.cancel_booking(barcodes)
 
 
-def book_ticket(
+def book_cinema_ticket(
     venue_id: int, show_id: int, booking: bookings_models.Booking, beneficiary: users_models.User
 ) -> list[external_bookings_models.Ticket]:
     client = _get_external_bookings_client_api(venue_id)
@@ -62,3 +74,48 @@ def get_active_cinema_venue_provider(venue_id: int) -> providers_models.VenuePro
     if not cinema_venue_provider:
         raise providers_exceptions.InactiveProvider(f"No active cinema venue provider found for venue #{venue_id}")
     return cinema_venue_provider
+
+
+def book_event_ticket(
+    booking: bookings_models.Booking,
+    stock: offers_models.Stock,
+    beneficiary: users_models.User,
+) -> list[external_bookings_models.Ticket]:
+    provider = providers_repository.get_provider_enabled_for_pro_by_id(stock.offer.lastProviderId)
+    if not provider:
+        raise providers_exceptions.InactiveProvider()
+
+    payload = serialize.ExternalEventBookingRequest.build_external_booking(stock, booking, beneficiary)
+    response = requests.post(
+        provider.bookingExternalUrl, json=payload.json(), headers={"Content-Type": "application/json"}
+    )
+    _check_external_booking_response_is_ok(response)
+    parsed_response = parse_obj_as(serialize.ExternalEventBookingResponse, response.json())
+    for ticket in parsed_response.tickets:
+        add_to_queue(
+            REDIS_EXTERNAL_BOOKINGS_NAME,
+            {
+                "barcode": ticket.barcode,
+                "venue_id": booking.venueId,
+                "timestamp": datetime.datetime.utcnow().timestamp(),
+            },
+        )
+    return [Ticket(barcode=ticket.barcode, seat_number=ticket.seat) for ticket in parsed_response.tickets]
+
+
+def _check_external_booking_response_is_ok(response: requests.Response) -> None:
+    if response.status_code == 409:
+        try:
+            json_response = response.json()
+        except ValueError:
+            raise exceptions.ExternalBookingException(
+                f"External booking failed with status code {response.status_code} and message {response.text}"
+            )
+        if json_response["error"] == "sold_out":
+            raise exceptions.ExternalBookingSoldOutError()
+        if json_response["error"] == "not_enough_seats":
+            raise exceptions.ExternalBookingNotEnoughSeatsError()
+    if response.status_code != 201:
+        raise exceptions.ExternalBookingException(
+            f"External booking failed with status code {response.status_code} and message {response.text}"
+        )

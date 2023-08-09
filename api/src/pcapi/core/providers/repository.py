@@ -224,11 +224,20 @@ def get_pivot_for_id_at_provider(id_at_provider: str, provider_id: int) -> model
     return pivot
 
 
-def is_external_ticket_applicable(offer: offers_models.Offer) -> bool:
+def is_cinema_external_ticket_applicable(offer: offers_models.Offer) -> bool:
     return (
         offer.subcategory.id == subcategories.SEANCE_CINE.id
         and offer.lastProviderId
         and db.session.query(get_cinema_venue_provider_query(offer.venueId).exists()).scalar()
+    )
+
+
+def is_event_external_ticket_applicable(offer: offers_models.Offer) -> bool:
+    return (
+        offer.isEvent
+        and offer.lastProviderId
+        and offer.lastProvider.bookingExternalUrl
+        and offer.withdrawalType != offers_models.WithdrawalTypeEnum.NO_TICKET
     )
 
 

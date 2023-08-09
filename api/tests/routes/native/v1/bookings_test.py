@@ -1,16 +1,20 @@
 from datetime import datetime
 from datetime import timedelta
+import json
 from unittest.mock import patch
 
+from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings import factories as booking_factories
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings.constants import FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
+from pcapi.core.finance import utils as finance_utils
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
 import pcapi.core.offers.factories as offers_factories
@@ -98,7 +102,7 @@ class PostBookingTest:
         response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 400
-        assert response.json["external_booking"] == "Cette offre n'est plus réservable."
+        assert response.json["code"] == "CINEMA_PROVIDER_INACTIVE"
 
     @patch("pcapi.core.bookings.api.book_offer")
     def test_inactive_provider(self, mocked_book_offer, client):
@@ -110,7 +114,7 @@ class PostBookingTest:
         response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 400
-        assert response.json["external_booking"] == "Cette offre n'est plus réservable."
+        assert response.json["code"] == "CINEMA_PROVIDER_INACTIVE"
 
     @pytest.mark.parametrize(
         "subcategoryId,price",
@@ -154,6 +158,124 @@ class PostBookingTest:
         assert response.json["bookingId"] == booking.id
         assert booking.status == BookingStatus.CONFIRMED
         assert not booking.dateUsed
+
+    @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
+    @freeze_time("2022-10-12 17:09:25")
+    def test_bookings_with_external_event_booking_infos(self, client, requests_mock):
+        external_booking_url = "https://book_my_offer.com/confirm"
+        user = users_factories.BeneficiaryGrant18Factory(
+            email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101"
+        )
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider", localClass=None, bookingExternalUrl=external_booking_url
+        )
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = EventStockFactory(
+            lastProvider=provider,
+            priceCategory__price=2,
+            offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
+            offer__lastProvider=provider,
+            offer__venue__address="1 boulevard Poissonniere",
+            offer__extraData={"ean": "1234567890123"},
+            idAtProviders="",
+        )
+
+        requests_mock.post(
+            external_booking_url, json={"tickets": [{"barcode": "12123932898127", "seat": "A12"}]}, status_code=201
+        )
+
+        response = client.with_token(self.identifier).post(
+            "/native/v1/bookings",
+            json={"stockId": stock.id, "quantity": 1},
+        )
+
+        assert response.status_code == 200
+        assert json.loads(requests_mock.last_request.json()) == {
+            "booking_confirmation_date": "2022-10-14T17:09:25",
+            "booking_creation_date": "2022-10-12T17:09:25",
+            "booking_quantity": 1,
+            "offer_ean": "1234567890123",
+            "offer_id": stock.offer.id,
+            "offer_name": stock.offer.name,
+            "offer_price": finance_utils.to_eurocents(stock.priceCategory.price),
+            "price_category_id": stock.priceCategoryId,
+            "price_category_label": stock.priceCategory.label,
+            "stock_id": stock.id,
+            "user_birth_date": "2007-01-01",
+            "user_email": user.email,
+            "user_first_name": user.firstName,
+            "user_last_name": user.lastName,
+            "user_phone": user.phoneNumber,
+            "venue_address": "1 boulevard Poissonniere",
+            "venue_department_code": "75",
+            "venue_id": stock.offer.venue.id,
+            "venue_name": stock.offer.venue.name,
+        }
+        external_bookings = bookings_models.ExternalBooking.query.one()
+        assert external_bookings.bookingId == response.json["bookingId"]
+        assert external_bookings.barcode == "12123932898127"
+        assert external_bookings.seat == "A12"
+
+    @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
+    @freeze_time("2022-10-12 17:09:25")
+    def test_bookings_with_external_event_booking_sold_out(self, client, requests_mock):
+        external_booking_url = "https://book_my_offer.com/confirm"
+        users_factories.BeneficiaryGrant18Factory(
+            email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101"
+        )
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider", localClass=None, bookingExternalUrl=external_booking_url
+        )
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = EventStockFactory(
+            lastProvider=provider,
+            offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
+            offer__lastProvider=provider,
+            idAtProviders="",
+        )
+
+        requests_mock.post(external_booking_url, json={"error": "sold_out"}, status_code=409)
+
+        response = client.with_token(self.identifier).post(
+            "/native/v1/bookings", json={"stockId": stock.id, "quantity": 1}
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"code": "PROVIDER_STOCK_SOLD_OUT"}
+        assert len(bookings_models.ExternalBooking.query.all()) == 0
+        assert len(bookings_models.Booking.query.all()) == 0
+
+    @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
+    @freeze_time("2022-10-12 17:09:25")
+    def test_bookings_with_external_event_booking_not_enough_quantity(self, client, requests_mock):
+        external_booking_url = "https://book_my_offer.com/confirm"
+        users_factories.BeneficiaryGrant18Factory(
+            email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101", deposit__amount=500
+        )
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider", localClass=None, bookingExternalUrl=external_booking_url
+        )
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = EventStockFactory(
+            lastProvider=provider,
+            offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
+            offer__lastProvider=provider,
+            offer__isDuo=True,
+            idAtProviders="",
+        )
+
+        requests_mock.post(
+            external_booking_url, json={"error": "not_enough_seats", "remainingQuantity": 1}, status_code=409
+        )
+
+        response = client.with_token(self.identifier).post(
+            "/native/v1/bookings", json={"stockId": stock.id, "quantity": 2}
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"code": "PROVIDER_STOCK_NOT_ENOUGH_SEATS"}
+        assert len(bookings_models.ExternalBooking.query.all()) == 0
+        assert len(bookings_models.Booking.query.all()) == 0
 
 
 class GetBookingsTest:
@@ -385,6 +507,7 @@ class GetBookingsTest:
             stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
             stock__idAtProviders="11#11#CDS",
             stock__lastProvider=provider,
+            stock__offer__lastProvider=provider,
         )
         ExternalBookingFactory(booking=booking, barcode="111111111", seat="A_1")
         ExternalBookingFactory(booking=booking, barcode="111111112", seat="A_2")
@@ -417,6 +540,7 @@ class GetBookingsTest:
             stock__offer__subcategoryId=subcategories.SEANCE_CINE.id,
             stock__idAtProviders="11#11#BOOST",
             stock__lastProvider=provider,
+            stock__offer__lastProvider=provider,
         )
         ExternalBookingFactory(booking=booking, barcode=barcode, seat="A_1")
         with override_features(WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING=ff_is_active):
