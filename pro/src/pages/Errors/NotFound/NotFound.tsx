@@ -10,12 +10,13 @@ interface Props {
 }
 
 const NotFound = ({ redirect = '/accueil' }: Props) => (
-  <main className={`page fullscreen ${styles['no-match']}`} id="content">
+  <main className={styles['no-match']} id="content">
     <SvgIcon
       src={stroke404Icon}
       alt=""
       className={styles['no-match-icon']}
       viewBox="0 0 308 194"
+      width="350"
     />
     <h1>Oh non !</h1>
     <p>Cette page n’existe pas.</p>
