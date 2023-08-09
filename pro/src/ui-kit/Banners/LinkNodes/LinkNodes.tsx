@@ -15,38 +15,54 @@ export type Link = {
   onClick?: () => void
 }
 
+interface LinkNodeProps {
+  link: Link
+  defaultLinkIcon?: string
+}
+
 interface LinkNodesProps {
   links?: Link[]
   defaultLinkIcon?: string
 }
 
-const LinkNodes = ({
+const LinkNode = ({
+  link: {
+    icon,
+    href,
+    linkTitle,
+    targetLink = '_blank',
+    hideLinkIcon,
+    isExternal = true,
+    onClick,
+  },
   defaultLinkIcon = fullLinkIcon,
+}: LinkNodeProps): React.ReactNode => (
+  <ButtonLink
+    link={{
+      isExternal: isExternal,
+      to: href,
+      target: targetLink,
+      rel: 'noopener noreferrer',
+    }}
+    icon={hideLinkIcon ? undefined : icon ?? defaultLinkIcon}
+    className={styles['bi-link']}
+    onClick={onClick}
+  >
+    {linkTitle}
+  </ButtonLink>
+)
+
+const LinkNodes = ({
+  defaultLinkIcon,
   links = [],
 }: LinkNodesProps): React.ReactNode | React.ReactNode[] => {
-  const getLinkNode = (link: Link) => (
-    <ButtonLink
-      link={{
-        isExternal: link.isExternal === undefined ? true : link.isExternal,
-        to: link.href,
-        target: link.targetLink || '_blank',
-        rel: 'noopener noreferrer',
-      }}
-      icon={link.hideLinkIcon ? undefined : link.icon || defaultLinkIcon}
-      className={styles['bi-link']}
-      onClick={link.onClick ?? undefined}
-    >
-      {link.linkTitle}
-    </ButtonLink>
-  )
-
   if (links.length > 1) {
     return (
       <ul>
         {links.map(link => {
           return (
             <li key={link.href} className={styles['bi-link-item']}>
-              {getLinkNode(link)}
+              <LinkNode link={link} defaultLinkIcon={defaultLinkIcon} />
             </li>
           )
         })}
@@ -54,7 +70,9 @@ const LinkNodes = ({
     )
   }
 
-  return links[0] && getLinkNode(links[0])
+  return (
+    links[0] && <LinkNode link={links[0]} defaultLinkIcon={defaultLinkIcon} />
+  )
 }
 
 export default LinkNodes
