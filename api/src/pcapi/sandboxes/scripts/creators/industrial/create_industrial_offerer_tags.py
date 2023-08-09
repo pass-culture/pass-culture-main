@@ -1,6 +1,7 @@
 import logging
 
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.routes.backoffice_v3.home import CONFORMITE_TAG_NAME
 
 
 logger = logging.getLogger(__name__)
@@ -25,3 +26,4 @@ def create_industrial_offerer_tags() -> None:
         name="culture-scientifique", label="Culture scientifique", categories=[homologation]
     )
     offerers_factories.OffererTagFactory(name="partenaire-national", label="Partenaire national", categories=[comptage])
+    offerers_factories.OffererTagFactory(name=CONFORMITE_TAG_NAME, label="Conformité", categories=[homologation])
