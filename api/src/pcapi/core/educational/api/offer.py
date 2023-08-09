@@ -246,7 +246,7 @@ def create_collective_offer_template(
     db.session.commit()
 
     if offer_data.nationalProgramId:
-        national_program_api.link_offer_to_program(offer_data.nationalProgramId, collective_offer_template)
+        national_program_api.link_or_unlink_offer_to_program(offer_data.nationalProgramId, collective_offer_template)
 
     logger.info(
         "Collective offer template has been created",
@@ -293,7 +293,7 @@ def create_collective_offer(
     db.session.commit()
 
     if offer_data.nationalProgramId:
-        national_program_api.link_offer_to_program(offer_data.nationalProgramId, collective_offer)
+        national_program_api.link_or_unlink_offer_to_program(offer_data.nationalProgramId, collective_offer)
 
     logger.info(
         "Collective offer has been created",

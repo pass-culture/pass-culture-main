@@ -353,8 +353,9 @@ def update_collective_offer(
         if new_venue.managingOffererId != offerer.id:
             raise educational_exceptions.OffererOfVenueDontMatchOfferer()
 
-    if nationalProgramId := new_values.pop("nationalProgramId", None):
-        national_program_api.link_offer_to_program(nationalProgramId, offer_to_update)
+    nationalProgramId = new_values.pop("nationalProgramId", None)
+    national_program_api.link_or_unlink_offer_to_program(nationalProgramId, offer_to_update)
+
     updated_fields = _update_collective_offer(offer=offer_to_update, new_values=new_values)
 
     search.async_index_collective_offer_ids([offer_to_update.id])
@@ -378,8 +379,8 @@ def update_collective_offer_template(offer_id: int, new_values: dict) -> None:
         if new_venue.managingOffererId != offerer.id:
             raise educational_exceptions.OffererOfVenueDontMatchOfferer()
 
-    if nationalProgramId := new_values.pop("nationalProgramId", None):
-        national_program_api.link_offer_to_program(nationalProgramId, offer_to_update)
+    nationalProgramId = new_values.pop("nationalProgramId", None)
+    national_program_api.link_or_unlink_offer_to_program(nationalProgramId, offer_to_update)
 
     _update_collective_offer(offer=offer_to_update, new_values=new_values)
     search.async_index_collective_offer_template_ids([offer_to_update.id])
