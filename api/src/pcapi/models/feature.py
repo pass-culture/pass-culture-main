@@ -128,6 +128,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API = "Activer la création événements avec tickets dans l'API publique"
     WIP_OFFER_TO_INSTITUTION = "Activer le fléchage d'une offre à un établissement"
     WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY = "Activer le nouveau parcours de dépôt de coordonnées bancaires"
+    WIP_CATEGORY_SELECTION = "Activer la nouvelle sélection de catégories"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -201,6 +202,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API,
     FeatureToggle.WIP_OFFER_TO_INSTITUTION,
     FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY,
+    FeatureToggle.WIP_CATEGORY_SELECTION,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
