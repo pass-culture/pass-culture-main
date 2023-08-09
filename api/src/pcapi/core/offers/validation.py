@@ -7,7 +7,6 @@ from PIL import Image
 from PIL import UnidentifiedImageError
 import sqlalchemy as sqla
 
-from pcapi import settings
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.subcategories_v2 import ExtraDataFieldEnum
 from pcapi.core.educational import models as educational_models
@@ -17,7 +16,6 @@ from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import repository
 from pcapi.core.providers import models as providers_models
-from pcapi.core.users import models as user_models
 from pcapi.domain import music_types
 from pcapi.domain import show_types
 from pcapi.models import api_errors
@@ -327,13 +325,6 @@ def check_activation_codes_expiration_datetime_on_stock_edition(
 
     activation_codes_expiration_datetime = activation_codes[0].expirationDate
     check_activation_codes_expiration_datetime(activation_codes_expiration_datetime, booking_limit_datetime)
-
-
-def check_user_can_load_config(user: user_models.User) -> None:
-    if settings.IS_PROD and user.email not in settings.SUPER_ADMIN_EMAIL_ADDRESSES:
-        error = api_errors.ForbiddenError()
-        error.add_error("type", "Seuls les membres de l'équipe de validation peuvent éditer cette configuration")
-        raise error
 
 
 def check_validation_config_parameters(config_as_dict: dict, valid_keys: list) -> None:

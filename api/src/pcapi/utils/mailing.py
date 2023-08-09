@@ -16,10 +16,6 @@ def build_pc_pro_reset_password_link(token_value: str) -> str:
     return f"{settings.PRO_URL}/mot-de-passe-perdu?token={token_value}"
 
 
-def build_pc_webapp_reset_password_link(token_value: str) -> str:
-    return f"{settings.WEBAPP_V2_URL}/mot-de-passe-perdu?token={token_value}"
-
-
 def format_booking_date_for_email(booking: Booking | CollectiveBooking) -> str:
     if isinstance(booking, CollectiveBooking) or booking.stock.offer.isEvent:
         stock = booking.collectiveStock if isinstance(booking, CollectiveBooking) else booking.stock

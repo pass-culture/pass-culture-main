@@ -389,26 +389,6 @@ class UnsuspendAccountTest:
             history[0], user, author, history_models.ActionType.USER_UNSUSPENDED, reason=None, comment=comment
         )
 
-    def test_bulk_unsuspend_account(self):
-        author = users_factories.AdminFactory()
-        user1 = users_factories.UserFactory(isActive=False)
-        user2 = users_factories.UserFactory(isActive=False)
-        user3 = users_factories.UserFactory(isActive=False)
-
-        users_api.bulk_unsuspend_account([user1.id, user2.id, user3.id], author)
-
-        for user in [user1, user2, user3]:
-            assert not user.suspension_reason
-            assert not user.suspension_date
-            assert user.isActive
-
-            history = history_models.ActionHistory.query.filter_by(userId=user.id).all()
-            assert len(history) == 1
-            _assert_user_action_history_as_expected(
-                history[0], user, author, history_models.ActionType.USER_UNSUSPENDED, reason=None
-            )
-            assert _datetime_within_last_5sec(history[0].actionDate)
-
 
 @pytest.mark.usefixtures("db_session")
 class ChangeUserEmailTest:
@@ -573,49 +553,6 @@ class CreateBeneficiaryTest:
 
         assert fifteen_year_old.is_beneficiary
         assert fifteen_year_old.deposit.amount == 20
-
-
-class FulfillBeneficiaryDataTest:
-    AGE18_ELIGIBLE_BIRTH_DATE = datetime.datetime.utcnow() - relativedelta(years=18, months=4)
-
-    def test_fill_user_with_password_token_and_deposit(self):
-        # given
-        user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
-
-        # when
-        user = users_api.fulfill_beneficiary_data(user, "deposit_source", users_models.EligibilityType.AGE18)
-
-        # then
-        assert isinstance(user, users_models.User)
-        assert user.password is not None
-        assert len(user.deposits) == 1
-
-    def test_fill_user_with_specific_deposit_version(self):
-        # given
-        user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
-
-        # when
-        user = users_api.fulfill_beneficiary_data(user, "deposit_source", users_models.EligibilityType.AGE18)
-
-        # then
-        assert isinstance(user, users_models.User)
-        assert user.password is not None
-        assert len(user.deposits) == 1
-        assert user.deposit_version == 2
-
-
-class FulfillAccountPasswordTest:
-    def test_fill_user_with_password_token(self):
-        # given
-        user = users_models.User()
-
-        # when
-        user = users_api.fulfill_account_password(user)
-
-        # then
-        assert isinstance(user, users_models.User)
-        assert user.password is not None
-        assert len(user.deposits) == 0
 
 
 class SetOffererDepartementCodeTest:

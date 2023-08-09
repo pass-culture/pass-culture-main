@@ -10,13 +10,6 @@ from . import models
 from . import utils
 
 
-def validate_siret_format(siret: str) -> None:
-    if len(siret) != 14:
-        raise exceptions.WrongLengthSiret()
-    if not siret.isdigit():
-        raise exceptions.NotAllDigitSiret()
-
-
 def validate_reimbursement_rule(
     rule: models.CustomReimbursementRule,
     check_start_date: bool = True,
