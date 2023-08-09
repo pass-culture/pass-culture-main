@@ -62,10 +62,11 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         institution = educational_factories.EducationalInstitutionFactory()
+        national_program = educational_factories.NationalProgramFactory()
         offer = educational_factories.CollectiveOfferFactory(
             venue=venue,
             institution=institution,
-            nationalProgram=educational_factories.NationalProgramFactory(),
+            nationalProgram=national_program,
         )
         offer_id = offer.id
         educational_factories.CollectiveStockFactory(collectiveOffer=offer)
@@ -143,7 +144,7 @@ class Returns200Test:
             "lastBookingStatus": None,
             "lastBookingId": None,
             "teacher": None,
-            "nationalProgramId": offer.nationalProgramId,
+            "nationalProgram": {"id": national_program.id, "name": national_program.name},
         }
 
     def test_duplicate_collective_offer_draft_offer(self, client):

@@ -60,7 +60,7 @@ class Returns200Test:
         assert response.json["contactEmail"] == "toto@example.com"
         assert response.json["subcategoryId"] == "CONCERT"
         assert response.json["educationalPriceDetail"] == "pouet"
-        assert response.json["nationalProgramId"] == national_program.id
+        assert response.json["nationalProgram"] == {"id": national_program.id, "name": national_program.name}
 
         updated_offer = CollectiveOfferTemplate.query.get(offer.id)
         assert updated_offer.name == "New name"

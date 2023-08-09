@@ -54,7 +54,7 @@ class Returns200Test:
             "civility": offer.teacher.civility,
         }
         assert response_json["templateId"] == template.id
-        assert response_json["nationalProgramId"] == national_program.id
+        assert response_json["nationalProgram"] == {"id": national_program.id, "name": national_program.name}
 
     def test_sold_out(self, client):
         # Given

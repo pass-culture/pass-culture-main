@@ -82,7 +82,7 @@ class CollectiveOfferTemplateTest:
             "domains": [{"id": offer.domains[0].id, "name": offer.domains[0].name}],
             "imageUrl": None,
             "imageCredit": None,
-            "nationalProgramId": national_program.id,
+            "nationalProgram": {"id": national_program.id, "name": national_program.name},
         }
 
     def test_get_collective_offer_template_with_offer_venue(self, client):
@@ -153,7 +153,7 @@ class CollectiveOfferTemplateTest:
             "domains": [{"id": offer.domains[0].id, "name": offer.domains[0].name}],
             "imageUrl": None,
             "imageCredit": None,
-            "nationalProgramId": national_program.id,
+            "nationalProgram": {"id": national_program.id, "name": national_program.name},
         }
 
     def test_should_return_404_when_no_collective_offer_template(self, client):
