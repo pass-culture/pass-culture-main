@@ -38,12 +38,12 @@ class CheckPasswordValidityTest:
 
         # then
         assert api_errors.value.errors["newPassword"] == [
-            "Ton mot de passe doit contenir au moins :\n"
+            "Le mot de passe doit contenir au moins :\n"
             "- 12 caractères\n"
             "- Un chiffre\n"
             "- Une majuscule et une minuscule\n"
             "- Un caractère spécial",
-            "Ton nouveau mot de passe est identique à l’ancien.",
+            "Le nouveau mot de passe est identique à l’ancien.",
         ]
 
         assert api_errors.value.errors["newConfirmationPassword"] == ["Les deux mots de passe ne sont pas identiques."]
@@ -119,7 +119,7 @@ class EnsureNewPasswordIsStrongEnoughTest:
 
         # then
         assert api_errors.errors["newPassword"] == [
-            "Ton mot de passe doit contenir au moins :\n"
+            "Le mot de passe doit contenir au moins :\n"
             "- 12 caractères\n"
             "- Un chiffre\n"
             "- Une majuscule et une minuscule\n"
@@ -163,7 +163,7 @@ class EnsureGivenOldPasswordIsCorrectTest:
         _ensure_given_old_password_is_correct(user, old_password, api_errors)
 
         # then
-        assert api_errors.errors["oldPassword"] == ["Votre mot de passe actuel est incorrect"]
+        assert api_errors.errors["oldPassword"] == ["Le mot de passe actuel est incorrect."]
 
 
 class EnsureNewPasswordIsDifertFromOldTest:
@@ -178,4 +178,4 @@ class EnsureNewPasswordIsDifertFromOldTest:
         _ensure_new_password_is_different_from_old(user, new_password, api_errors)
 
         # then
-        assert api_errors.errors["newPassword"] == ["Ton nouveau mot de passe est identique à l’ancien."]
+        assert api_errors.errors["newPassword"] == ["Le nouveau mot de passe est identique à l’ancien."]
