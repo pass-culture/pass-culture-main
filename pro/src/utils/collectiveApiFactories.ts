@@ -62,6 +62,10 @@ const sharedCollectiveOfferData = {
   venueId: 'VENUE_ID',
   imageUrl: 'https://example.com/image.jpg',
   imageCredit: 'image credit',
+  nationalProgram: {
+    id: 1,
+    name: 'Collège au cinéma',
+  },
 }
 
 export const collectiveOfferFactory = (
