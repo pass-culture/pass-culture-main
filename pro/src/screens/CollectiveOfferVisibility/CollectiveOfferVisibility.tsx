@@ -28,6 +28,7 @@ import RadioGroup from 'ui-kit/form/RadioGroup'
 import SelectAutocomplete from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
+import { searchPatternInOptions } from 'utils/searchPatternInOptions'
 
 import getEducationalRedactorsAdapter from './adapters/getEducationalRedactorAdapter'
 import styles from './CollectiveOfferVisibility.module.scss'
@@ -140,8 +141,8 @@ const CollectiveOfferVisibility = ({
         teacher => teacher.value === formik.values.teacher
       ) ?? null
 
-  const institutionsOptions: InstitutionOption[] = institutions
-    .map(({ name, id, city, postalCode, institutionType, institutionId }) => ({
+  const institutionsOptions: InstitutionOption[] = institutions.map(
+    ({ name, id, city, postalCode, institutionType, institutionId }) => ({
       label: `${
         institutionType ?? ''
       } ${name} - ${city} - ${institutionId}`.trim(),
@@ -151,15 +152,15 @@ const CollectiveOfferVisibility = ({
       name,
       institutionType: institutionType ?? '',
       institutionId: institutionId,
-    }))
-    .filter(({ label }) =>
-      label
-        .toLowerCase()
-        .includes(formik.values['search-institution'].trim().toLowerCase())
-    )
+    })
+  )
 
   const selectedInstitution: InstitutionOption | null = requestId
-    ? institutionsOptions[0]
+    ? institutionsOptions.filter(({ label }) =>
+        label
+          .toLowerCase()
+          .includes(formik.values['search-institution'].trim().toLowerCase())
+      )[0]
     : institutionsOptions?.find(
         institution => institution?.value === formik.values.institution
       ) ?? null
@@ -273,6 +274,7 @@ const CollectiveOfferVisibility = ({
                         hideArrow
                         onSearch={() => setTeachersOptions([])}
                         disabled={mode === Mode.READ_ONLY}
+                        searchInOptions={searchPatternInOptions}
                       />
                       {selectedInstitution && (
                         <Banner type="light" className={styles['institution']}>

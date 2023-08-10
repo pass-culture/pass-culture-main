@@ -4,6 +4,8 @@ import { Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
+import { searchPatternInOptions } from 'utils/searchPatternInOptions'
+
 import SelectAutocomplete, {
   SelectAutocompleteProps,
 } from '../SelectAutocomplete'
@@ -33,6 +35,7 @@ describe('SelectAutocomplete', () => {
       { value: '15', label: 'Cantal' },
     ],
     pluralLabel: 'Départements',
+    searchInOptions: searchPatternInOptions,
   }
   const initialValues = { departement: '01', 'search-departement': '' }
 

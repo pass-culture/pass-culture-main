@@ -26,6 +26,7 @@ export type SelectAutocompleteProps = FieldLayoutBaseProps & {
   pluralLabel?: string
   resetOnOpen?: boolean
   onSearch?: (pattern: string) => void
+  searchInOptions?: (options: SelectOption[], pattern: string) => SelectOption[]
 }
 
 const SelectAutocomplete = ({
@@ -46,6 +47,7 @@ const SelectAutocomplete = ({
   resetOnOpen = true,
   description,
   onSearch = () => {},
+  searchInOptions = options => options,
 }: SelectAutocompleteProps): JSX.Element => {
   const { setFieldTouched, setFieldValue } = useFormikContext<any>()
 
@@ -62,10 +64,6 @@ const SelectAutocomplete = ({
   const listRef = useRef<HTMLUListElement>(null)
   const [isOpen, setIsOpen] = useState(false)
   const [filteredOptions, setFilteredOptions] = useState(options)
-
-  useEffect(() => {
-    setFilteredOptions(options)
-  }, [options])
 
   useEffect(() => {
     if (isOpen && resetOnOpen && searchField.value !== '') {
@@ -99,20 +97,16 @@ const SelectAutocomplete = ({
   }, [containerRef])
 
   useEffect(() => {
-    const trimmedValue = searchField.value.trim()
     if (onSearch) {
-      onSearch(trimmedValue)
+      onSearch(searchField.value.trim())
     }
-
-    const regExp = new RegExp(trimmedValue, 'i')
-    setFilteredOptions(
-      options.filter(
-        option => trimmedValue === '' || option.label.match(regExp)
-      )
-    )
 
     setHoveredOptionIndex(null)
   }, [searchField.value])
+
+  useEffect(() => {
+    setFilteredOptions(searchInOptions(options, searchField.value))
+  }, [searchField.value, options])
 
   /* istanbul ignore next: DEBT TO FIX */
   const handleKeyDown: KeyboardEventHandler<HTMLDivElement> = event => {
