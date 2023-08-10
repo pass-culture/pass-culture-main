@@ -45,6 +45,7 @@ from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.routes.backoffice_v3.serialization import accounts as serialization_accounts
+from pcapi.routes.backoffice_v3.users import forms as user_forms
 import pcapi.utils.email as email_utils
 
 from . import search_utils
@@ -52,7 +53,6 @@ from . import utils
 from .forms import account as account_forms
 from .forms import empty as empty_forms
 from .forms import search as search_forms
-from .forms import user as user_forms
 from .serialization import accounts
 from .serialization import search
 

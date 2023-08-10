@@ -19,9 +19,7 @@ def install_routes(app: Flask) -> None:
     from . import individual_bookings
     from . import move_siret
     from . import pro
-    from . import pro_users
     from . import tags
-    from . import users
     from . import venues
     from .admin import blueprint as admin_blueprint
     from .admin import bo_users_blueprint
@@ -34,8 +32,10 @@ def install_routes(app: Flask) -> None:
     from .offerers import validation_blueprint
     from .offers import blueprint as offers_blueprint
     from .pivots import blueprint as pivots_blueprint
+    from .pro_users import blueprint as pro_users_blueprint
     from .providers import blueprint as providers_blueprint
     from .titelive import blueprint as titelive_blueprint
+    from .users import blueprint as users_blueprint
 
     if settings.ENABLE_TEST_USER_GENERATION:
         from .user_generation import blueprint as user_generation_blueprint

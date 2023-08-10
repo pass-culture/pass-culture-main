@@ -11,7 +11,7 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.routes.backoffice_v3.utils import has_current_user_permission
 
-from . import fields
+from pcapi.routes.backoffice_v3.forms import fields
 
 
 class SuspensionUserType(enum.Enum):
