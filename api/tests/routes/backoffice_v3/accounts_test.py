@@ -19,6 +19,7 @@ import pcapi.core.permissions.models as perm_models
 from pcapi.core.subscription.models import SubscriptionItemStatus
 from pcapi.core.subscription.models import SubscriptionStep
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -155,6 +156,23 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 1
         assert_user_equals(cards_text[0], underage)
+
+    @override_features(WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT=True)
+    def test_can_search_public_account_by_id_redirected(self, authenticated_client):
+        # given
+        underage, _, _, _, _ = create_bunch_of_accounts()
+
+        # when
+        response = authenticated_client.get(url_for(self.endpoint, terms=underage.id))
+
+        # then redirect on single result
+        assert response.status_code == 303
+        assert response.location == url_for(
+            "backoffice_v3_web.public_accounts.get_public_account",
+            user_id=underage.id,
+            terms=underage.id,
+            _external=True,
+        )
 
     @pytest.mark.parametrize(
         "query,expected_found",
