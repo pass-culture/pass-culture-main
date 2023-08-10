@@ -465,6 +465,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "thumbUrl": url_path(offer.thumbUrl),
                 "tags": tags,
                 "times": list(set(times)),
+                "visa": extra_data.get("visa"),
             },
             "offerer": {
                 "name": offerer.name,
