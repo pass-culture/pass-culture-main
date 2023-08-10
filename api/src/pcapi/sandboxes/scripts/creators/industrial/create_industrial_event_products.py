@@ -1,4 +1,5 @@
 import logging
+import random
 
 from pcapi.core.categories import subcategories_v2
 import pcapi.core.offers.factories as offers_factories
@@ -79,7 +80,7 @@ def create_industrial_event_products() -> dict[str, offers_models.Product]:
                     show_sub_type = show_type.children[show_sub_type_index]
                     extraData["showSubType"] = str(show_sub_type.code)
                 elif conditional_field_name == subcategories_v2.ExtraDataFieldEnum.VISA.value:
-                    pass
+                    extraData[conditional_field_name] = "".join(random.choices([str(i) for i in range(9)], k=10))
                 extra_data_index += 1
             event_product.extraData = extraData
             event_products_by_name[name] = event_product

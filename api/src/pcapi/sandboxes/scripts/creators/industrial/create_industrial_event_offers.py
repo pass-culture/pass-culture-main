@@ -51,6 +51,7 @@ def create_industrial_event_offers(
             event_offers_by_name[name] = offers_factories.OfferFactory(
                 venue=event_venue,
                 product=event,
+                extraData=event.extraData,
                 isActive=is_active,
                 isDuo=is_duo,
             )
