@@ -18,7 +18,7 @@
 
   .buttons-field {
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     gap: rem.torem(24px);
     margin-top: rem.torem(16px);
     margin-bottom: rem.torem(32px);
