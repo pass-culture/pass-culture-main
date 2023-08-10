@@ -60,7 +60,7 @@ class FraudReasonCode(enum.Enum):
 
     # Specific to Ubble
     # Ubble native errors
-    BLURRY_VIDEO = "blurry_video"
+    BLURRY_DOCUMENT_VIDEO = "blurry_video"
     DOCUMENT_DAMAGED = "document_damaged"
     ELIGIBILITY_CHANGED = "eligibility_changed"  # The user's eligibility detected by ubble is different from the eligibility declared by the user
     ID_CHECK_BLOCKED_OTHER = (
@@ -328,9 +328,10 @@ class DMSContent(common_models.IdentityCheckContent):
         return dms_models.parse_dms_datetime(self.registration_datetime)
 
 
+# https://ubbleai.github.io/developer-documentation/#reason-codes
 UBBLE_REASON_CODE_MAPPING = {
     1201: FraudReasonCode.NETWORK_CONNECTION_ISSUE,  # applicant did not have a sufficient connection
-    1301: FraudReasonCode.BLURRY_VIDEO,  # applicant’s document video is too blurry
+    1301: FraudReasonCode.BLURRY_DOCUMENT_VIDEO,  # applicant’s document video is too blurry
     1320: FraudReasonCode.LACK_OF_LUMINOSITY,  # applicant performed their id verification under poor lighting conditions
     2101: FraudReasonCode.ID_CHECK_EXPIRED,  # applicant presented an expired document
     2102: FraudReasonCode.ID_CHECK_NOT_SUPPORTED,  # applicant presented a document which is not accepted
