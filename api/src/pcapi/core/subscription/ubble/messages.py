@@ -6,6 +6,7 @@ from pcapi.core.fraud.common import models as common_fraud_models
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 
+from . import api
 from . import models
 
 
@@ -14,18 +15,6 @@ REDIRECT_TO_IDENTIFICATION = subscription_models.CallToActionMessage(
     link="passculture://verification-identite/identification",
     icon=subscription_models.CallToActionIcon.RETRY,
 )
-
-
-def _get_relevant_reason_code(reason_codes: list[fraud_models.FraudReasonCode]) -> fraud_models.FraudReasonCode | None:
-    relevant = None
-    if reason_codes:
-        sorted_reason_codes = sorted(
-            reason_codes,
-            key=lambda rc: models.UBBLE_CODE_ERROR_MAPPING[rc].priority if rc in models.UBBLE_CODE_ERROR_MAPPING else 0,
-            reverse=True,
-        )
-        relevant = sorted_reason_codes[0]
-    return relevant
 
 
 def get_application_pending_message(updated_at: datetime.datetime | None) -> subscription_models.SubscriptionMessage:
@@ -40,7 +29,7 @@ def get_application_pending_message(updated_at: datetime.datetime | None) -> sub
 def get_ubble_retryable_message(
     reason_codes: list[fraud_models.FraudReasonCode], updated_at: datetime.datetime | None
 ) -> subscription_models.SubscriptionMessage:
-    relevant_reason_code = _get_relevant_reason_code(reason_codes)
+    relevant_reason_code = api.get_most_relevant_ubble_error(reason_codes)
     if relevant_reason_code in models.UBBLE_CODE_ERROR_MAPPING:
         relevant_error = models.UBBLE_CODE_ERROR_MAPPING[relevant_reason_code]
     else:
@@ -59,8 +48,7 @@ def get_ubble_retryable_message(
 def get_ubble_not_retryable_message(
     fraud_check: fraud_models.BeneficiaryFraudCheck,
 ) -> subscription_models.SubscriptionMessage:
-    reason_codes = fraud_check.reasonCodes or []
-    relevant_reason_code = _get_relevant_reason_code(reason_codes)
+    relevant_reason_code = api.get_most_relevant_ubble_error(fraud_check.reasonCodes or [])
     if relevant_reason_code in models.UBBLE_CODE_ERROR_MAPPING:
         relevant_error = models.UBBLE_CODE_ERROR_MAPPING[relevant_reason_code]
     else:
