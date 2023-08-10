@@ -163,7 +163,7 @@ def list_collective_bookings() -> utils.BackofficeResponse:
 
     bookings = _get_collective_bookings(form)
 
-    pro_visualisation_link = f"{settings.PRO_URL}collective/bookings{form.pro_view_args}" if form.pro_view_args else ""
+    pro_visualisation_link = f"{settings.PRO_URL}/collective/bookings{form.pro_view_args}" if form.pro_view_args else ""
     if len(bookings) > form.limit.data:
         flash(
             f"Il y a plus de {form.limit.data} résultats dans la base de données, la liste ci-dessous n'en donne donc "
