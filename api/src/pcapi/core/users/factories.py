@@ -966,6 +966,10 @@ class EmailUpdateEntryFactory(UserEmailHistoryFactory):
     eventType = models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value
 
 
+class EmailConfirmationEntryFactory(UserEmailHistoryFactory):
+    eventType = models.EmailHistoryEventTypeEnum.CONFIRMATION.value
+
+
 class EmailValidationEntryFactory(UserEmailHistoryFactory):
     eventType = models.EmailHistoryEventTypeEnum.VALIDATION.value
 

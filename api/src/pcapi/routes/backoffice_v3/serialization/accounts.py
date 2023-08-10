@@ -93,6 +93,10 @@ class EmailChangeAction(AccountAction):
         match self._email_change.eventType:
             case users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST:
                 return "Demande de changement d'email"
+            case users_models.EmailHistoryEventTypeEnum.CONFIRMATION:
+                return "Confirmation de changement d'email"
+            case users_models.EmailHistoryEventTypeEnum.CANCELLATION:
+                return "Annulation de changement d'email"
             case users_models.EmailHistoryEventTypeEnum.VALIDATION:
                 return "Validation de changement d'email"
             case users_models.EmailHistoryEventTypeEnum.ADMIN_VALIDATION:
@@ -108,10 +112,7 @@ class EmailChangeAction(AccountAction):
 
     @property
     def comment(self) -> str | None:
-        return (
-            f"de {self._email_change.oldUserEmail}@{self._email_change.oldDomainEmail} "
-            f"à {self._email_change.newUserEmail}@{self._email_change.newDomainEmail}"
-        )
+        return f"de {self._email_change.oldEmail} à {self._email_change.newEmail}"
 
 
 class FraudCheckAction(AccountAction):
