@@ -1,8 +1,9 @@
 @use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
 
 .reset-filters-reservation-link-icon svg {
-  width: rem(16px);
-  height: rem(16px);
+  width: rem.torem(16px);
+  height: rem.torem(16px);
   fill: colors.$primary;
 }
 

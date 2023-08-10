@@ -97,15 +97,26 @@ describe('ReimbursementFields', () => {
   })
 
   it('should display pricing point section when venue has no siret', async () => {
+    const featuresOverride = [
+      {
+        nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY',
+        isActive: false,
+      },
+    ]
     const venueWithoutSiret = {
       ...venue,
       siret: '',
     }
+
     props.venue = venueWithoutSiret
 
-    await renderReimbursementFields(props)
+    await renderReimbursementFields(props, featuresOverride)
 
     expect(screen.getByText('Barème de remboursement')).toBeInTheDocument()
+
+    await expect(
+      screen.queryByText('Chargement en cours ...')
+    ).not.toBeInTheDocument()
 
     expect(screen.getByText('Coordonnées bancaires')).toBeInTheDocument()
   })
