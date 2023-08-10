@@ -1,6 +1,7 @@
 from functools import partial
 import typing
 
+from flask import redirect
 from flask import render_template
 from flask import request
 from flask import url_for
@@ -10,6 +11,7 @@ import pydantic
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import api as users_api
+from pcapi.models.feature import FeatureToggle
 
 from . import blueprint
 from . import search_utils
@@ -31,7 +33,7 @@ class Context:
     get_item_base_query: GetBaseQuery
 
     @classmethod
-    def get_pro_link(cls, row_id: int) -> str:
+    def get_pro_link(cls, row_id: int, **kwargs: typing.Any) -> str:
         raise NotImplementedError()
 
 
@@ -40,8 +42,8 @@ class UserContext(Context):
     get_item_base_query = users_api.get_pro_account_base_query
 
     @classmethod
-    def get_pro_link(cls, row_id: int) -> str:
-        return url_for(".pro_user.get", user_id=row_id)
+    def get_pro_link(cls, row_id: int, **kwargs: typing.Any) -> str:
+        return url_for(".pro_user.get", user_id=row_id, **kwargs)
 
 
 class OffererContext(Context):
@@ -49,8 +51,8 @@ class OffererContext(Context):
     get_item_base_query = offerers_api.get_offerer_base_query
 
     @classmethod
-    def get_pro_link(cls, row_id: int) -> str:
-        return url_for(".offerer.get", offerer_id=row_id)
+    def get_pro_link(cls, row_id: int, **kwargs: typing.Any) -> str:
+        return url_for(".offerer.get", offerer_id=row_id, **kwargs)
 
 
 class VenueContext(Context):
@@ -58,8 +60,8 @@ class VenueContext(Context):
     get_item_base_query = offerers_api.get_venue_base_query
 
     @classmethod
-    def get_pro_link(cls, row_id: int) -> str:
-        return url_for(".venue.get", venue_id=row_id)
+    def get_pro_link(cls, row_id: int, **kwargs: typing.Any) -> str:
+        return url_for(".venue.get", venue_id=row_id, **kwargs)
 
 
 def render_search_template(form: search_forms.ProSearchForm | None = None) -> str:
@@ -103,6 +105,10 @@ def search_pro() -> utils.BackofficeResponse:
 
     context = get_context(search_model.pro_type)
     paginated_rows = search_utils.fetch_paginated_rows(context.fetch_rows_func, search_model)
+
+    if paginated_rows.total == 1 and FeatureToggle.WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT.is_active():
+        return redirect(context.get_pro_link(paginated_rows.items[0].id, terms=form.terms.data), code=303)
+
     next_pages_urls = search_utils.pagination_links(next_page, search_model.page, paginated_rows.pages)
 
     form.page.data = 1  # Reset to first page when form is submitted ("Chercher" clicked)

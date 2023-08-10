@@ -43,6 +43,7 @@ from pcapi.core.users.models import EligibilityType
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.routes.backoffice_v3.serialization import accounts as serialization_accounts
 import pcapi.utils.email as email_utils
@@ -101,6 +102,12 @@ def search_public_accounts() -> utils.BackofficeResponse:
     )
 
     paginated_rows = fetch_rows(search_model)
+
+    if paginated_rows.total == 1 and FeatureToggle.WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT.is_active():
+        return redirect(
+            url_for(".get_public_account", user_id=paginated_rows.items[0].id, terms=form.terms.data), code=303
+        )
+
     next_pages_urls = search_utils.pagination_links(next_page, search_model.page, paginated_rows.pages)
 
     form.page.data = 1  # Reset to first page when form is submitted ("Chercher" clicked)
@@ -279,7 +286,7 @@ def render_public_account_details(
 
     return render_template(
         "accounts/get.html",
-        search_form=search_forms.SearchForm(),
+        search_form=search_forms.SearchForm(terms=request.args.get("terms")),
         search_dst=url_for(".search_public_accounts"),
         user=user,
         tunnel=tunnel,
