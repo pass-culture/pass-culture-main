@@ -295,7 +295,8 @@ def _send_email_reminder_tomorrow_event_to_beneficiaries() -> None:
 @blueprint.cli.command("clean_past_draft_offers")
 @log_cron_with_transaction
 def clean_past_draft_offers() -> None:
-    """Deletes past offers and past collective offers that are in draft status"""
+    """Deletes past collective offers that are in draft status.
+    Individual offers are not deleted, pro users can delete and manage them themselves."""
     delete_past_draft_collective_offers()
 
 
