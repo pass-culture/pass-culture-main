@@ -29,7 +29,6 @@
   padding: rem.torem(24px);
 
   @media (min-width: size.$tablet) {
-    padding: 0;
     min-width: size.$full-content-min-width;
     max-width: size.$full-content-max-width;
   }
