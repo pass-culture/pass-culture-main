@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 
-from . import fields
-from . import utils
+from pcapi.routes.backoffice_v3.forms import fields
+from pcapi.routes.backoffice_v3.forms import utils
 
 
 class EditProUserForm(utils.PCForm):

@@ -13,15 +13,15 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
-import pcapi.core.users.email.update as email_update
-import pcapi.utils.email as email_utils
+from pcapi.core.users.email import update as email_update
+from pcapi.utils import email as email_utils
 
-from . import utils
-from .forms import empty as empty_forms
-from .forms import pro_user as pro_user_forms
-from .forms import search as search_forms
-from .forms import user as user_forms
-from .serialization.search import TypeOptions
+from pcapi.routes.backoffice_v3 import utils
+from pcapi.routes.backoffice_v3.forms import empty as empty_forms
+from pcapi.routes.backoffice_v3.forms import search as search_forms
+from pcapi.routes.backoffice_v3.pro_users import forms as pro_users_forms
+from pcapi.routes.backoffice_v3.users import forms as user_forms
+from pcapi.routes.backoffice_v3.serialization.search import TypeOptions
 
 
 pro_user_blueprint = utils.child_backoffice_blueprint(
@@ -42,7 +42,7 @@ def get(user_id: int) -> utils.BackofficeResponse:
         flash("Cet utilisateur n'a pas de compte pro ou n'existe pas", "warning")
         return redirect(url_for("backoffice_v3_web.search_pro"), code=303)
 
-    form = pro_user_forms.EditProUserForm(
+    form = pro_users_forms.EditProUserForm(
         first_name=user.firstName,
         last_name=user.lastName,
         email=user.email,
@@ -75,7 +75,7 @@ def get_details(user_id: int) -> utils.BackofficeResponse:
         .all()
     )
 
-    form = pro_user_forms.CommentForm()
+    form = pro_users_forms.CommentForm()
     dst = url_for("backoffice_v3_web.pro_user.comment_pro_user", user_id=user.id)
 
     return render_template(
@@ -95,7 +95,7 @@ def get_details(user_id: int) -> utils.BackofficeResponse:
 def update_pro_user(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
 
-    form = pro_user_forms.EditProUserForm()
+    form = pro_users_forms.EditProUserForm()
     if not form.validate():
         dst = url_for(".update_pro_user", user_id=user_id)
         flash("Le formulaire n'est pas valide", "warning")
@@ -135,7 +135,7 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
 def comment_pro_user(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
 
-    form = pro_user_forms.CommentForm()
+    form = pro_users_forms.CommentForm()
     if not form.validate():
         flash("Les données envoyées comportent des erreurs", "warning")
         return redirect(url_for("backoffice_v3_web.pro_user.get", user_id=user_id), code=302)
