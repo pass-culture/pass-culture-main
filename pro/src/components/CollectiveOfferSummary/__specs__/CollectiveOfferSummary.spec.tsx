@@ -20,8 +20,13 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-const renderCollectiveOfferSummary = (props: CollectiveOfferSummaryProps) => {
-  renderWithProviders(<CollectiveOfferSummary {...props} />)
+const renderCollectiveOfferSummary = (
+  props: CollectiveOfferSummaryProps,
+  storeOverride?: any
+) => {
+  renderWithProviders(<CollectiveOfferSummary {...props} />, {
+    storeOverrides: storeOverride,
+  })
 }
 
 describe('CollectiveOfferSummary', () => {
@@ -63,5 +68,21 @@ describe('CollectiveOfferSummary', () => {
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
     expect(screen.queryAllByRole('link', { name: 'Modifier' })).toHaveLength(0)
+  })
+  it('should display national program if ff is active', async () => {
+    renderCollectiveOfferSummary(props, {
+      features: {
+        initialized: true,
+        list: [
+          {
+            isActive: true,
+            nameKey: 'WIP_ENABLE_NATIONAL_SYSTEM',
+          },
+        ],
+      },
+    })
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    expect(screen.getByText('Dispositif national :')).toBeInTheDocument()
+    expect(screen.getByText('Collège au cinéma')).toBeInTheDocument()
   })
 })
