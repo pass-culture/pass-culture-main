@@ -16,13 +16,13 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
-import pcapi.core.users.email.update as email_update
-import pcapi.utils.email as email_utils
+from pcapi.core.users.email import update as email_update
+from pcapi.routes.backoffice_v3.users import forms as user_forms
+from pcapi.utils import email as email_utils
 
 from . import forms
 from .. import search_utils
 from .. import utils
-from ..forms import user as user_forms
 from ..serialization import accounts
 
 

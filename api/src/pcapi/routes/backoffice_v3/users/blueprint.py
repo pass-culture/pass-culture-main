@@ -15,8 +15,8 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 
-from . import utils
-from .forms import user as user_forms
+from pcapi.routes.backoffice_v3 import utils
+from pcapi.routes.backoffice_v3.users import forms
 
 
 # This blueprint is for common actions on User, which can be beneficiary, pro, admin...
@@ -45,7 +45,7 @@ def _redirect_to_user_page(user: users_models.User) -> utils.BackofficeResponse:
 def suspend_user(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
 
-    form = user_forms.SuspendUserForm()
+    form = forms.SuspendUserForm()
     if form.validate():
         users_api.suspend_account(
             user, users_constants.SuspensionReason[form.reason.data], current_user, comment=form.comment.data
@@ -62,7 +62,7 @@ def suspend_user(user_id: int) -> utils.BackofficeResponse:
 def unsuspend_user(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
 
-    form = user_forms.UnsuspendUserForm()
+    form = forms.UnsuspendUserForm()
     if form.validate():
         users_api.unsuspend_account(user, current_user, comment=form.comment.data)
         flash(f"Le compte de l'utilisateur {user.email} ({user.id}) a été réactivé", "success")
@@ -72,7 +72,7 @@ def unsuspend_user(user_id: int) -> utils.BackofficeResponse:
     return _redirect_to_user_page(user)
 
 
-def _render_batch_suspend_users_form(form: user_forms.BatchSuspendUsersForm) -> str:
+def _render_batch_suspend_users_form(form: forms.BatchSuspendUsersForm) -> str:
     return render_template(
         "components/turbo/modal_form.html",
         form=form,
@@ -88,7 +88,7 @@ def _render_batch_suspend_users_form(form: user_forms.BatchSuspendUsersForm) -> 
 @users_blueprint.route("/batch-suspend-form", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.SUSPEND_USER)
 def get_batch_suspend_users_form() -> utils.BackofficeResponse:
-    form = user_forms.BatchSuspendUsersForm(suspension_type=user_forms.SuspensionUserType.PUBLIC)
+    form = forms.BatchSuspendUsersForm(suspension_type=forms.SuspensionUserType.PUBLIC)
     return _render_batch_suspend_users_form(form)
 
 
@@ -124,7 +124,7 @@ def _check_users_to_suspend(ids_list: set[int]) -> tuple[list[users_models.User]
 @users_blueprint.route("/batch-suspend", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.SUSPEND_USER)
 def batch_suspend_users() -> utils.BackofficeResponse:
-    form = user_forms.BatchSuspendUsersForm()
+    form = forms.BatchSuspendUsersForm()
     if not form.validate():
         return _render_batch_suspend_users_form(form), 400
 
@@ -154,7 +154,7 @@ def batch_suspend_users() -> utils.BackofficeResponse:
 @users_blueprint.route("/batch-suspend/confirm", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.SUSPEND_USER)
 def confirm_batch_suspend_users() -> utils.BackofficeResponse:
-    form = user_forms.BatchSuspendUsersForm()
+    form = forms.BatchSuspendUsersForm()
     if not form.validate():
         return _render_batch_suspend_users_form(form), 400
 
