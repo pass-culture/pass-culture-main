@@ -1,7 +1,6 @@
 from pcapi import settings
 
 from .base import BaseQuery
-from .base import RowIterator
 from .models import ProEmailModel
 
 
@@ -16,7 +15,3 @@ class ChurnedProEmail(BaseQuery):
     """
 
     model = ProEmailModel
-
-    def execute(self, page_size: int = 1_000) -> RowIterator:
-        for row in super().execute(page_size):
-            yield ProEmailModel(venue_booking_email=row.venue_booking_email)
