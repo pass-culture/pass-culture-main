@@ -1,10 +1,21 @@
 import {
+  CollectiveOfferInstitutionModel,
   EducationalInstitutionResponseModel,
   EducationalRedactorResponseModel,
   GetCollectiveOfferRequestResponseModel,
 } from 'apiClient/v1'
 
 import { VisibilityFormValues } from '../types'
+
+export const formatInstitutionDisplayName = (
+  institution:
+    | EducationalInstitutionResponseModel
+    | CollectiveOfferInstitutionModel
+) => {
+  return `${institution.institutionType || ''} ${institution.name} - ${
+    institution.city
+  } - ${institution.institutionId}`.trim()
+}
 
 export const extractInitialVisibilityValues = (
   institution?: EducationalInstitutionResponseModel | null,
@@ -13,9 +24,9 @@ export const extractInitialVisibilityValues = (
 ): VisibilityFormValues => ({
   institution: institution?.id?.toString() ?? '',
   'search-institution': institution
-    ? `${institution.name} - ${institution.city}`
+    ? formatInstitutionDisplayName(institution)
     : requestInformations
-    ? `${requestInformations.institution.name} - ${requestInformations.institution.city}`
+    ? formatInstitutionDisplayName(requestInformations.institution)
     : '',
   teacher: teacher
     ? `${teacher.email}`
