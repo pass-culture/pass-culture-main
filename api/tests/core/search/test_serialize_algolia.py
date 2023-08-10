@@ -92,6 +92,7 @@ def test_serialize_offer():
             "gtl_level2": None,
             "gtl_level3": None,
             "gtl_level4": None,
+            "visa": None,
         },
         "offerer": {
             "name": "Les Librairies Associées",
@@ -231,6 +232,14 @@ def test_serialize_offer_gtl():
     assert serialized["offer"]["gtl_level2"] == "Œuvres classiques"
     assert serialized["offer"]["gtl_level3"] == "Antiquité"
     assert serialized["offer"]["gtl_level4"] is None
+
+
+def test_serialize_offer_visa():
+    offer = offers_factories.OfferFactory(
+        extraData={"visa": "2607019901"},
+    )
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
+    assert serialized["offer"]["visa"] == "2607019901"
 
 
 def test_serialize_venue():
