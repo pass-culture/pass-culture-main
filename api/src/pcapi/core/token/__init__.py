@@ -95,4 +95,4 @@ class Token:
         return app.redis_client.exists(cls._get_redis_key(type_, user_id))  # type: ignore [attr-defined]
 
     def _log(self, action: _TokenAction) -> None:
-        logger.info("[TOKEN](%s){%i, %s, %s}", action, self.user_id, self.type_.value, self.encoded_token)
+        logger.info("[TOKEN](%s){%i, %s, %s}", action.value, self.user_id, self.type_.value, self.encoded_token)
