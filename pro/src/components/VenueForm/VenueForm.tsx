@@ -13,6 +13,7 @@ import { Offerer } from 'core/Offerers/types'
 import { Providers, Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
+import useActiveFeature from 'hooks/useActiveFeature'
 import ReimbursementFields from 'pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import { venueSubmitRedirectUrl } from 'screens/VenueForm/utils/venueSubmitRedirectUrl'
 
@@ -86,6 +87,9 @@ const VenueForm = ({
   const {
     values: { isPermanent },
   } = useFormikContext<VenueFormValues>()
+  const isNewBankDetailsJourneyEnable = useActiveFeature(
+    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
+  )
   const shouldDisplayImageVenueUploaderSection = isPermanent
   useScrollToFirstErrorAfterSubmit()
   const location = useLocation()
@@ -171,14 +175,16 @@ const VenueForm = ({
               canCreateCollectiveOffer={canOffererCreateCollectiveOffer}
             />
           )}
-        {!isCreatingVenue && venue && (
-          <ReimbursementFields
-            offerer={offerer}
-            readOnly={false}
-            scrollToSection={!!location.state || !!location.hash}
-            venue={venue}
-          />
-        )}
+        {((!isNewBankDetailsJourneyEnable && !isCreatingVenue) ||
+          (isNewBankDetailsJourneyEnable && !venue?.siret)) &&
+          venue && (
+            <ReimbursementFields
+              offerer={offerer}
+              readOnly={false}
+              scrollToSection={!!location.state || !!location.hash}
+              venue={venue}
+            />
+          )}
         <RouteLeavingGuard
           shouldBlockNavigation={shouldBlockVenueNavigation({
             isCreatingVenue,
