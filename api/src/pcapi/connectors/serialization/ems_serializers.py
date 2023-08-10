@@ -12,12 +12,12 @@ class Session(BaseModel):
 
 class Event(BaseModel):
     id: str
-    allocine_id: int
+    allocine_id: int | None
     title: str
     director: str | None
     synopsis: str | None
     bill_url: str | None
-    duration: int
+    duration: int | None
     sessions: list[Session]
 
 

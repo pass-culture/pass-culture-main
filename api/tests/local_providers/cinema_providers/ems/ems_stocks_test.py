@@ -55,7 +55,7 @@ class EMSStocksTest:
 
         synchronize_ems_venue_providers()
 
-        self._assert_seyne_sur_mer_initial_sync(venue, venue_provider, cinema_provider_pivot, cinema_detail, 86400)
+        self._assert_seyne_sur_mer_initial_sync(venue, venue_provider, cinema_detail, 86400)
 
     def should_reuse_price_category(self, requests_mock):
         connector = EMSScheduleConnector()
@@ -148,14 +148,12 @@ class EMSStocksTest:
         self._assert_seyne_sur_mer_initial_sync(
             ems_cine_venue,
             ems_cine_venue_provider,
-            ems_cine_cinema_provider_pivot,
             ems_cine_cinema_detail,
             86400,
         )
         self._assert_ormeaux_initial_sync(
             ormeaux_venue,
             ormeaux_venue_provider,
-            ormeaux_cinema_provider_pivot,
             ormeaux_cinema_detail,
             86400,
         )
@@ -168,7 +166,6 @@ class EMSStocksTest:
         self._assert_seyne_sur_mer_initial_sync(
             ems_cine_venue,
             ems_cine_venue_provider,
-            ems_cine_cinema_provider_pivot,
             ems_cine_cinema_detail,
             172800,
         )
@@ -176,7 +173,6 @@ class EMSStocksTest:
         self._assert_ormeaux_version_sync(
             ormeaux_venue,
             ormeaux_venue_provider,
-            ormeaux_cinema_provider_pivot,
             ormeaux_cinema_detail,
             172800,
         )
@@ -185,13 +181,12 @@ class EMSStocksTest:
         self,
         venue: Venue,
         venue_provider: providers_models.VenueProvider,
-        cinema_provider_pivot: providers_models.CinemaProviderPivot,
         cinema_detail: providers_models.EMSCinemaDetails,
         version: int,
     ):
         created_offers = offers_models.Offer.query.filter_by(venueId=venue.id).order_by(offers_models.Offer.id).all()
         created_products = (
-            offers_models.Product.query.filter_by(idAtProviders="14790%EMS").order_by(offers_models.Product.id).all()
+            offers_models.Product.query.filter_by(idAtProviders="CDFG5%EMS").order_by(offers_models.Product.id).all()
         )
         created_stocks = (
             offers_models.Stock.query.filter(offers_models.Stock.offerId.in_(offer.id for offer in created_offers))
@@ -254,13 +249,12 @@ class EMSStocksTest:
         self,
         venue: Venue,
         venue_provider: providers_models.VenueProvider,
-        cinema_provider_pivot: providers_models.CinemaProviderPivot,
         cinema_detail: providers_models.EMSCinemaDetails,
         version: int,
     ):
         created_offers = offers_models.Offer.query.filter_by(venueId=venue.id).order_by(offers_models.Offer.id).all()
         created_products = (
-            offers_models.Product.query.filter(offers_models.Product.idAtProviders.in_(["269975%EMS", "241065%EMS"]))
+            offers_models.Product.query.filter(offers_models.Product.idAtProviders.in_(["FGMSE%EMS", "SHJRH%EMS"]))
             .order_by(offers_models.Product.id)
             .all()
         )
@@ -364,13 +358,12 @@ class EMSStocksTest:
         self,
         venue: Venue,
         venue_provider: providers_models.VenueProvider,
-        cinema_provider_pivot: providers_models.CinemaProviderPivot,
         cinema_detail: providers_models.EMSCinemaDetails,
         version: int,
     ):
         created_offers = offers_models.Offer.query.filter_by(venueId=venue.id).order_by(offers_models.Offer.id).all()
         created_products = (
-            offers_models.Product.query.filter(offers_models.Product.idAtProviders.in_(["14790%EMS", "258374%EMS"]))
+            offers_models.Product.query.filter(offers_models.Product.idAtProviders.in_(["CDFG5%EMS", "HIJIC%EMS"]))
             .order_by(offers_models.Product.id)
             .all()
         )
