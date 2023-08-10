@@ -165,6 +165,7 @@ describe('offer', () => {
       domains: [],
       interventionArea: ['973'],
       isTemplate: false,
+      nationalProgram: { name: 'Program Test', id: 123 },
     }
     offerProps = {
       offer: offerInParis,
@@ -202,7 +203,12 @@ describe('offer', () => {
 
     it('should show all offer informations if user click on "en savoir plus"', async () => {
       // When
-      renderOffers({ ...offerProps, offer: offerInCayenne })
+      renderOffers({ ...offerProps, offer: offerInCayenne }, [
+        {
+          isActive: true,
+          nameKey: 'WIP_ENABLE_NATIONAL_SYSTEM',
+        },
+      ])
 
       const offerName = await screen.findByText(offerInCayenne.name)
       expect(offerName).toBeInTheDocument()
@@ -230,6 +236,7 @@ describe('offer', () => {
       })
 
       // Info that are in offer details component
+      expect(screen.queryByText('Dispositif National')).toBeInTheDocument()
       expect(screen.queryByText('Le détail de mon prix')).toBeInTheDocument()
       expect(screen.queryByText('Zone de Mobilité')).toBeInTheDocument()
       expect(screen.queryByText('Moteur', { exact: false })).toBeInTheDocument()
