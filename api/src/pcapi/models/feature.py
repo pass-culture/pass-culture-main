@@ -130,6 +130,9 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY = "Activer le nouveau parcours de dépôt de coordonnées bancaires"
     WIP_CATEGORY_SELECTION = "Activer la nouvelle sélection de catégories"
     WIP_ENABLE_ADAGE_GEO_LOCATION = "Activer le filtre d'offres adage par géolocalisation"
+    WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT = (
+        "Backoffice : Afficher directement les détails lorsque la recherche ne renvoie qu'un seul résultat"
+    )
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -205,6 +208,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY,
     FeatureToggle.WIP_CATEGORY_SELECTION,
     FeatureToggle.WIP_ENABLE_ADAGE_GEO_LOCATION,
+    FeatureToggle.WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:

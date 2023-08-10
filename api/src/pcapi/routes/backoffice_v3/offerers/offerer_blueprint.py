@@ -78,7 +78,7 @@ def render_offerer_details(
 
     return render_template(
         "offerer/get.html",
-        search_form=search_forms.ProSearchForm(pro_type=TypeOptions.OFFERER.value),
+        search_form=search_forms.ProSearchForm(terms=request.args.get("terms"), pro_type=TypeOptions.OFFERER.value),
         search_dst=url_for("backoffice_v3_web.search_pro"),
         offerer=offerer,
         region=regions_utils.get_region_name_from_postal_code(offerer.postalCode),

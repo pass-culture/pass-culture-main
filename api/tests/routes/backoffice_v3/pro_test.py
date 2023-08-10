@@ -6,6 +6,7 @@ import pytest
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.permissions.models as perm_models
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models.validation_status_mixin import ValidationStatus
@@ -129,6 +130,23 @@ class SearchProUserTest:
         cards_text = html_parser.extract_cards_text(response.data)
         assert len(cards_text) == 1
         assert_user_equals(cards_text[0], self.pro_accounts[2])
+
+    @override_features(WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT=True)
+    def test_can_search_pro_by_email_redirected(self, authenticated_client):
+        # given
+        self._create_accounts()
+
+        # when
+        response = authenticated_client.get(url_for(self.endpoint, terms=self.pro_accounts[2].email, pro_type="user"))
+
+        # then redirect on single result
+        assert response.status_code == 303
+        assert response.location == url_for(
+            "backoffice_v3_web.pro_user.get",
+            user_id=self.pro_accounts[2].id,
+            terms=self.pro_accounts[2].email,
+            _external=True,
+        )
 
     def test_can_search_pro_by_last_name(self, authenticated_client):
         # given
