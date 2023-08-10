@@ -3,6 +3,7 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { VenueTypeCode } from 'apiClient/v1'
+import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OffererDetails from '../OffererDetails'
@@ -59,6 +60,39 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
 
       expect(screen.getByText('Lieux')).toBeInTheDocument()
       expect(screen.getByText('fake venue')).toBeInTheDocument()
+    })
+
+    it("shouldn't render anything if venues won't load", async () => {
+      vi.spyOn(api, 'getOfferer').mockRejectedValueOnce({
+        status: HTTP_STATUS.FORBIDDEN,
+      })
+      renderWithProviders(<OffererDetails />)
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+      expect(
+        screen.queryByText(
+          /Détails de la structure rattachée, des collaborateurs, des lieux et des fournisseurs de ses offres/
+        )
+      ).not.toBeInTheDocument()
+    })
+
+    it('Should show invite section if the FF is enabled', async () => {
+      renderWithProviders(<OffererDetails />, {
+        storeOverrides: {
+          features: {
+            list: [
+              {
+                nameKey: 'WIP_ENABLE_NEW_USER_OFFERER_LINK',
+                isActive: true,
+              },
+            ],
+            initialized: true,
+          },
+        },
+      })
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+      expect(screen.getByText('Collaborateurs')).toBeInTheDocument()
     })
   })
 })
