@@ -1283,6 +1283,9 @@ class GetPublicAccountHistoryTest:
         email_request = users_factories.EmailUpdateEntryFactory(
             user=user, creationDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=10)
         )
+        email_confirmation = users_factories.EmailConfirmationEntryFactory(
+            user=user, creationDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
+        )
         email_validation = users_factories.EmailValidationEntryFactory(
             user=user, creationDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
         )
@@ -1295,17 +1298,15 @@ class GetPublicAccountHistoryTest:
 
         assert history[0].actionType == "Validation de changement d'email"
         assert history[0].actionDate == email_validation.creationDate
-        assert history[0].comment == (
-            f"de {email_validation.oldUserEmail}@{email_validation.oldDomainEmail} "
-            f"à {email_validation.newUserEmail}@{email_validation.newDomainEmail}"
-        )
+        assert history[0].comment == f"de {email_validation.oldEmail} à {email_validation.newEmail}"
 
-        assert history[1].actionType == "Demande de changement d'email"
-        assert history[1].actionDate == email_request.creationDate
-        assert history[1].comment == (
-            f"de {email_request.oldUserEmail}@{email_request.oldDomainEmail} "
-            f"à {email_request.newUserEmail}@{email_request.newDomainEmail}"
-        )
+        assert history[1].actionType == "Confirmation de changement d'email"
+        assert history[1].actionDate == email_confirmation.creationDate
+        assert history[1].comment == f"de {email_confirmation.oldEmail} à {email_confirmation.newEmail}"
+
+        assert history[2].actionType == "Demande de changement d'email"
+        assert history[2].actionDate == email_request.creationDate
+        assert history[2].comment == f"de {email_request.oldEmail} à {email_request.newEmail}"
 
     def test_history_contains_suspensions(self):
         # given
