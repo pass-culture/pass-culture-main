@@ -5,6 +5,7 @@
 @use "styles/mixins/_a11y.scss" as a11y;
 
 $border-size-selected: rem.torem(2px);
+$radio-size: rem.torem(16px);
 
 .button {
   background-color: transparent;
@@ -25,7 +26,9 @@ $border-size-selected: rem.torem(2px);
     fill: colors.$white;
     position: absolute;
     top: rem.torem(16px);
-    right: rem.torem(16px);
+    left: rem.torem(16px);
+    width: $radio-size;
+    height: $radio-size;
   }
 
   &-radio-on {
@@ -110,7 +113,8 @@ $border-size-selected: rem.torem(2px);
 .layout-row {
   padding: rem.torem(16px);
   display: flex;
-  flex-direction: row;
+  flex-direction: row-reverse;
+  align-items: center;
 
   &.is-selected {
     $padding: rem.torem(16px);
@@ -119,6 +123,17 @@ $border-size-selected: rem.torem(2px);
   }
 
   .button-icon {
-    margin-right: rem.torem(12px);
+    margin-left: rem.torem(12px);
+  }
+
+  .button-text {
+    flex-grow: 1;
+    margin-left: calc(rem.torem(12px) + $radio-size);
+  }
+
+  .button-radio-on,
+  .button-radio-off {
+    top: 50%;
+    transform: translateY(-50%);
   }
 }
