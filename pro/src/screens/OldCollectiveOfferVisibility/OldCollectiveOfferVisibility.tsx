@@ -16,25 +16,24 @@ import {
   Mode,
   VisibilityFormValues,
 } from 'core/OfferEducational'
-import {
-  extractInitialVisibilityValues,
-  formatInstitutionDisplayName,
-} from 'core/OfferEducational/utils/extractInitialVisibilityValues'
+import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
+import fullTrashIcon from 'icons/full-trash.svg'
 import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
 import { PatchEducationalInstitutionAdapter } from 'pages/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
-import { ButtonLink, SubmitButton } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
+import getEducationalRedactorsAdapter from 'screens/CollectiveOfferVisibility/adapters/getEducationalRedactorAdapter'
+import { Banner, Button, ButtonLink, SubmitButton } from 'ui-kit'
+import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import RadioGroup from 'ui-kit/form/RadioGroup'
 import SelectAutocomplete from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
+import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import { searchPatternInOptions } from 'utils/searchPatternInOptions'
 
-import getEducationalRedactorsAdapter from './adapters/getEducationalRedactorAdapter'
-import styles from './CollectiveOfferVisibility.module.scss'
+import styles from './OldCollectiveOfferVisibility.module.scss'
 import validationSchema from './validationSchema'
 
-export interface CollectiveOfferVisibilityProps {
+export interface OldCollectiveOfferVisibilityProps {
   patchInstitution: PatchEducationalInstitutionAdapter
   mode: Mode
   initialValues: VisibilityFormValues
@@ -78,31 +77,13 @@ const CollectiveOfferVisibility = ({
   offer,
   reloadCollectiveOffer,
   requestId = '',
-}: CollectiveOfferVisibilityProps) => {
+}: OldCollectiveOfferVisibilityProps) => {
   const notify = useNotification()
 
   const [teachersOptions, setTeachersOptions] = useState<TeacherOption[]>([])
   const [buttonPressed, setButtonPressed] = useState(false)
   const [requestInformations, setRequestInformations] =
     useState<GetCollectiveOfferRequestResponseModel | null>(null)
-
-  const institutionsOptions: InstitutionOption[] = institutions.map(
-    ({ name, id, city, postalCode, institutionType, institutionId }) => ({
-      label: formatInstitutionDisplayName({
-        name,
-        institutionType: institutionType || '',
-        institutionId,
-        city,
-        postalCode,
-      }),
-      value: String(id),
-      city,
-      postalCode,
-      name,
-      institutionType: institutionType ?? '',
-      institutionId: institutionId,
-    })
-  )
 
   const getOfferRequestInformation = async () => {
     const { isOk, message, payload } = await getOfferRequestInformationsAdapter(
@@ -124,7 +105,7 @@ const CollectiveOfferVisibility = ({
     setButtonPressed(true)
     const result = await patchInstitution({
       offerId: offer.id,
-      institutionId: values.institution,
+      institutionId: values.visibility === 'all' ? null : values.institution,
       teacherEmail: selectedTeacher ? selectedTeacher.email : null,
     })
     if (!result.isOk) {
@@ -142,19 +123,10 @@ const CollectiveOfferVisibility = ({
     })
   }
 
-  initialValues = requestInformations
-    ? {
-        ...extractInitialVisibilityValues(null, null, requestInformations),
-        institution:
-          institutionsOptions
-            .find(
-              option =>
-                option.institutionId ==
-                requestInformations?.institution.institutionId
-            )
-            ?.value.toString() || '',
-      }
+  initialValues = requestId
+    ? extractInitialVisibilityValues(null, null, requestInformations)
     : initialValues
+
   const formik = useFormik<VisibilityFormValues>({
     initialValues,
     onSubmit,
@@ -168,17 +140,35 @@ const CollectiveOfferVisibility = ({
         teacher => teacher.value === formik.values.teacher
       ) ?? null
 
+  const institutionsOptions: InstitutionOption[] = institutions
+    .map(({ name, id, city, postalCode, institutionType, institutionId }) => ({
+      label: `${
+        institutionType ?? ''
+      } ${name} - ${city} - ${institutionId}`.trim(),
+      value: String(id),
+      city,
+      postalCode,
+      name,
+      institutionType: institutionType ?? '',
+      institutionId: institutionId,
+    }))
+    .filter(({ label }) =>
+      label
+        .toLowerCase()
+        .includes(formik.values['search-institution'].trim().toLowerCase())
+    )
+
   const selectedInstitution: InstitutionOption | null = requestId
-    ? institutionsOptions.filter(({ label }) =>
-        label
-          .toLowerCase()
-          .includes(formik.values['search-institution'].trim().toLowerCase())
-      )[0]
+    ? institutionsOptions[0]
     : institutionsOptions?.find(
         institution => institution?.value === formik.values.institution
       ) ?? null
 
   const onChangeTeacher = async () => {
+    if (requestId) {
+      formik.setFieldValue('institution', selectedInstitution?.value)
+    }
+
     const searchTeacherValue = formik.values['search-teacher']?.trim()
 
     if (
@@ -212,6 +202,17 @@ const CollectiveOfferVisibility = ({
       )
   }
 
+  const clearAllFields = () => {
+    formik.setFieldValue('search-institution', '')
+    formik.setFieldValue('institution', '')
+    formik.setFieldValue('search-teacher', '')
+    formik.setFieldValue('teacher', '')
+  }
+  const noInstitutionSelected =
+    formik.values.visibility === 'one' && formik.values.institution.length === 0
+  const nextStepDisabled =
+    buttonPressed || noInstitutionSelected || mode === Mode.READ_ONLY
+
   return (
     <>
       <OfferEducationalActions
@@ -229,12 +230,36 @@ const CollectiveOfferVisibility = ({
                 Offre importée automatiquement
               </BannerPublicApi>
             )}
-            <FormLayout.Section title="Établissement scolaire et enseignant">
+            <FormLayout.Section title="Visibilité de l’offre">
               <p className={styles['description-text']}>
-                L’établissement scolaire et l’enseignant renseignés seront les
-                seuls à pouvoir visualiser et préréserver votre offre sur ADAGE.
+                Les établissements concernés par vos choix seront les seuls à
+                pouvoir visualiser et/ou préréserver votre offre sur ADAGE. Vous
+                avez jusqu’à la préréservation d’un enseignant pour modifier la
+                visibilité de votre offre.
               </p>
-              {institutionsOptions && (
+              <FormLayout.Row className={styles['row-layout']}>
+                <fieldset className={styles['legend']}>
+                  Quel établissement scolaire peut voir votre offre ?
+                </fieldset>
+                <RadioGroup
+                  className={styles['radio-group']}
+                  disabled={mode === Mode.READ_ONLY}
+                  variant={BaseRadioVariant.SECONDARY}
+                  group={[
+                    {
+                      label: 'Un établissement en particulier',
+                      value: 'one',
+                    },
+                    {
+                      label: 'Tous les établissements',
+                      value: 'all',
+                    },
+                  ]}
+                  name="visibility"
+                  withBorder
+                />
+              </FormLayout.Row>
+              {institutionsOptions && formik.values.visibility === 'one' && (
                 <FormLayout.Row className={styles['row-layout']}>
                   {isLoadingInstitutions ? (
                     <Spinner />
@@ -242,45 +267,84 @@ const CollectiveOfferVisibility = ({
                     <>
                       <SelectAutocomplete
                         name="institution"
-                        type="search"
-                        options={institutionsOptions.filter(({ label }) =>
-                          label
-                            .toLowerCase()
-                            .includes(
-                              formik.values['search-institution']
-                                .trim()
-                                .toLowerCase()
-                            )
-                        )}
+                        options={institutionsOptions}
                         label="Nom de l’établissement scolaire"
-                        placeholder="Ex : Lycee General Simone Weil ou 010456E ou Le Havre"
+                        placeholder="Saisir l’établissement scolaire ou le code UAI"
                         hideArrow
-                        onReset={() => {
-                          setTeachersOptions([])
-                          formik.setFieldValue('search-teacher', '')
-                        }}
+                        onSearch={() => setTeachersOptions([])}
                         disabled={mode === Mode.READ_ONLY}
-                        searchInOptions={searchPatternInOptions}
                       />
+                      {selectedInstitution && (
+                        <Banner type="light" className={styles['institution']}>
+                          <div className={styles['banner-with-bin']}>
+                            <div>
+                              {`${selectedInstitution.institutionType} ${selectedInstitution.name}`.trim()}
+                              <br />
+                              {`${selectedInstitution.postalCode} ${selectedInstitution.city}`}
+                              <br />
+                              {selectedInstitution.institutionId}
+                            </div>
+                            <Button
+                              variant={ButtonVariant.TERNARY}
+                              onClick={() => clearAllFields()}
+                              icon={fullTrashIcon}
+                              iconPosition={IconPositionEnum.CENTER}
+                              hasTooltip
+                            >
+                              Supprimer
+                            </Button>
+                          </div>
+                        </Banner>
+                      )}
                     </>
                   )}
                 </FormLayout.Row>
               )}
-              <FormLayout.Row className={styles['row-layout']}>
-                <SelectAutocomplete
-                  name="teacher"
-                  type="search"
-                  options={teachersOptions}
-                  label="Prénom et nom de l’enseignant (au moins 3 caractères)"
-                  isOptional
-                  placeholder="Ex: Camille Dupont"
-                  hideArrow
-                  disabled={mode === Mode.READ_ONLY || !selectedInstitution}
-                  onSearch={() => {
-                    onChangeTeacher()
-                  }}
-                />
-              </FormLayout.Row>
+              {formik.values.visibility === 'one' && selectedInstitution && (
+                <FormLayout.Row className={styles['row-layout']}>
+                  <fieldset className={styles['legend']}>
+                    À quel enseignant destinez-vous cette offre ?
+                  </fieldset>
+                  <>
+                    <SelectAutocomplete
+                      name="teacher"
+                      options={teachersOptions}
+                      label="Prénom et nom de l’enseignant (au moins 3 caractères)"
+                      isOptional
+                      placeholder="Saisir le prénom et le nom de l’enseignant"
+                      hideArrow
+                      disabled={mode === Mode.READ_ONLY}
+                      onSearch={() => {
+                        onChangeTeacher()
+                      }}
+                    />
+                    {selectedTeacher && (
+                      <Banner type="light" className={styles['institution']}>
+                        <div
+                          className={styles['banner-with-bin']}
+                          data-testid="teacher-banner"
+                        >
+                          <div>
+                            {`${selectedTeacher.surname} ${selectedTeacher.name}`.trim()}
+                          </div>
+                          <Button
+                            variant={ButtonVariant.TERNARY}
+                            onClick={() => {
+                              formik.setFieldValue('search-teacher', '')
+                              formik.setFieldValue('teacher', null)
+                            }}
+                            icon={fullTrashIcon}
+                            iconPosition={IconPositionEnum.CENTER}
+                            hasTooltip
+                          >
+                            Supprimer
+                          </Button>
+                        </div>
+                      </Banner>
+                    )}
+                  </>
+                </FormLayout.Row>
+              )}
             </FormLayout.Section>
             <ActionsBarSticky>
               <ActionsBarSticky.Left>
@@ -297,14 +361,7 @@ const CollectiveOfferVisibility = ({
                 </ButtonLink>
               </ActionsBarSticky.Left>
               <ActionsBarSticky.Right>
-                <SubmitButton
-                  disabled={
-                    buttonPressed ||
-                    !formik.values.institution ||
-                    mode === Mode.READ_ONLY
-                  }
-                  isLoading={false}
-                >
+                <SubmitButton disabled={nextStepDisabled} isLoading={false}>
                   {mode === Mode.CREATION
                     ? 'Étape suivante'
                     : 'Valider et enregistrer l’offre'}

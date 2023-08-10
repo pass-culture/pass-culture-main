@@ -27,6 +27,8 @@ export type SelectAutocompleteProps = FieldLayoutBaseProps & {
   resetOnOpen?: boolean
   onSearch?: (pattern: string) => void
   searchInOptions?: (options: SelectOption[], pattern: string) => SelectOption[]
+  onReset?: () => void
+  type?: 'text' | 'search'
 }
 
 const SelectAutocomplete = ({
@@ -48,6 +50,8 @@ const SelectAutocomplete = ({
   description,
   onSearch = () => {},
   searchInOptions = options => options,
+  onReset = () => {},
+  type = 'text',
 }: SelectAutocompleteProps): JSX.Element => {
   const { setFieldTouched, setFieldValue } = useFormikContext<any>()
 
@@ -68,6 +72,8 @@ const SelectAutocomplete = ({
   useEffect(() => {
     if (isOpen && resetOnOpen && searchField.value !== '') {
       setFieldValue(`search-${name}`, '', false)
+      setFieldValue(name, '', false)
+      onReset()
     }
   }, [isOpen])
 
@@ -231,7 +237,7 @@ const SelectAutocomplete = ({
           }}
           className={styles['multi-select-autocomplete-placeholder-input']}
           hasError={searchMeta.touched && !!meta.error}
-          type="text"
+          type={type}
           disabled={disabled}
           {...searchField}
           aria-autocomplete="list"
