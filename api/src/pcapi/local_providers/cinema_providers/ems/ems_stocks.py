@@ -39,7 +39,7 @@ class EMSStocks:
         self.venue_provider = venue_provider
         self.venue = venue_provider.venue
         self.provider = venue_provider.provider
-        self.poster_urls_map: dict[int, str | None] = {}
+        self.poster_urls_map: dict[str, str | None] = {}
         self.created_products: set[offers_models.Product] = set()
         self.created_offers: set[offers_models.Offer] = set()
         self.price_category_labels: list[
@@ -57,7 +57,7 @@ class EMSStocks:
                 continue
             db.session.add(product)
 
-            self.poster_urls_map.update({event.allocine_id: event.bill_url})
+            self.poster_urls_map.update({event.id: event.bill_url})
 
             offer = self.get_or_create_offer(event, self.provider.id, self.venue)
             offer.product = product
@@ -90,8 +90,8 @@ class EMSStocks:
 
         for product in self.created_products:
             assert product.idAtProviders  # helps mypy
-            allocine_movie_id = _get_movie_id_from_id_at_provider(product.idAtProviders)
-            poster_url = self.poster_urls_map.get(allocine_movie_id)
+            movie_id = _get_movie_id_from_id_at_provider(product.idAtProviders)
+            poster_url = self.poster_urls_map.get(movie_id)
             if not poster_url:
                 continue
             thumb = self.connector.get_movie_poster_from_api(poster_url.replace("/120/", "/600/"))
@@ -113,7 +113,7 @@ class EMSStocks:
         )
 
     def get_or_create_product(self, event: ems_serializers.Event, provider_id: int) -> offers_models.Product:
-        movie_product_uuid = _build_movie_uuid_for_product(event.allocine_id)
+        movie_product_uuid = _build_movie_uuid_for_product(event.id)
         product = offers_models.Product.query.filter_by(idAtProviders=movie_product_uuid).one_or_none()
         if product:
             return product
@@ -139,7 +139,7 @@ class EMSStocks:
     def get_or_create_offer(
         self, event: ems_serializers.Event, provider_id: int, venue: offerers_models.Venue
     ) -> offers_models.Offer:
-        movie_offer_uuid = _build_movie_uuid_for_offer(event.allocine_id, venue.id)
+        movie_offer_uuid = _build_movie_uuid_for_offer(event.id, venue.id)
         offer = offers_models.Offer.query.filter_by(idAtProvider=movie_offer_uuid).one_or_none()
         if offer:
             return offer
@@ -167,7 +167,7 @@ class EMSStocks:
     def get_or_create_stock(
         self, session: ems_serializers.Session, event: ems_serializers.Event, offer: offers_models.Offer
     ) -> offers_models.Stock:
-        session_stock_uuid = _build_session_uuid_for_stock(event.allocine_id, offer.venueId, session.id)
+        session_stock_uuid = _build_session_uuid_for_stock(event.id, offer.venueId, session.id)
         stock = offers_models.Stock.query.filter_by(idAtProviders=session_stock_uuid).one_or_none()
         if stock:
             return stock
@@ -228,17 +228,17 @@ class EMSStocks:
         return price_category_label
 
 
-def _build_session_uuid_for_stock(allocine_movie_id: int, venue_id: int, session_id: str) -> str:
-    return f"{_build_movie_uuid_for_offer(allocine_movie_id, venue_id)}#{session_id}"
+def _build_session_uuid_for_stock(movie_id: str, venue_id: int, session_id: str) -> str:
+    return f"{_build_movie_uuid_for_offer(movie_id, venue_id)}#{session_id}"
 
 
-def _build_movie_uuid_for_offer(allocine_movie_id: int, venue_id: int) -> str:
-    return f"{allocine_movie_id}%{venue_id}%EMS"
+def _build_movie_uuid_for_offer(movie_id: str, venue_id: int) -> str:
+    return f"{movie_id}%{venue_id}%EMS"
 
 
-def _build_movie_uuid_for_product(allocine_movie_id: int) -> str:
-    return f"{allocine_movie_id}%EMS"
+def _build_movie_uuid_for_product(movie_id: str) -> str:
+    return f"{movie_id}%EMS"
 
 
-def _get_movie_id_from_id_at_provider(id_at_provider: str) -> int:
-    return int(id_at_provider.split("%")[0])
+def _get_movie_id_from_id_at_provider(id_at_provider: str) -> str:
+    return id_at_provider.split("%")[0]
