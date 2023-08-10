@@ -6,6 +6,7 @@ import {
   CollectiveOfferTemplate,
   EducationalCategories,
 } from 'core/OfferEducational'
+import useActiveFeature from 'hooks/useActiveFeature'
 
 import { DEFAULT_RECAP_VALUE } from '../constants'
 import { formatDuration } from '../utils/formatDuration'
@@ -36,7 +37,7 @@ const CollectiveOfferTypeSection = ({
 
     return
   }, [offer.subcategoryId])
-
+  const isNationalProgramActive = useActiveFeature('WIP_ENABLE_NATIONAL_SYSTEM')
   return (
     <SummaryLayout.SubSection title="Type d’offre">
       <SummaryLayout.Row
@@ -51,6 +52,13 @@ const CollectiveOfferTypeSection = ({
         title="Domaine artistiques et culturels"
         description={offer.domains.map(domain => domain.name).join(', ')}
       />
+      {isNationalProgramActive && (
+        <SummaryLayout.Row
+          title="Dispositif national"
+          description={offer.nationalProgram?.name || DEFAULT_RECAP_VALUE}
+        />
+      )}
+
       <SummaryLayout.Row title="Titre de l’offre" description={offer.name} />
       <SummaryLayout.Row
         title="Description"
