@@ -35,6 +35,14 @@ UBBLE_CODE_ERROR_MAPPING = {
         retryable_user_message="Nous n'arrivons pas à lire ton document, les vidéos transmises sont floues. Réessaie la vérification d’identité en t’assurant de la netteté lors de l’envoi.",
         priority=30,
     ),
+    fraud_models.FraudReasonCode.BLURRY_VIDEO: UbbleError(
+        detail_message="La vidéo est floue",
+        not_retryable_user_message="Nous n'arrivons pas à lire ton document, les vidéos transmises sont floues. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande.",
+        retryable_action_hint="Réessaie avec ta pièce d'identité en t'assurant qu'elle soit lisible",
+        retryable_message_summary=f"Le document que tu as présenté est illisible{u_nbsp}: les vidéos sont floues.",
+        retryable_user_message="Nous n'arrivons pas à lire ton document, les vidéos transmises sont floues. Réessaie la vérification d’identité en t’assurant de la netteté lors de l’envoi.",
+        priority=30,
+    ),
     fraud_models.FraudReasonCode.DOCUMENT_DAMAGED: UbbleError(
         detail_message="Le document est endommagé",
         not_retryable_user_message="Nous n'arrivons pas à lire ton document. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande.",
