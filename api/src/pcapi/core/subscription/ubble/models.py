@@ -27,7 +27,7 @@ UBBLE_CODE_ERROR_MAPPING = {
         not_retryable_user_message=f"Ton dossier a été refusé{u_nbsp}: tu n'as pas encore l'âge pour bénéficier du pass Culture. Reviens à tes 15 ans pour profiter de ton crédit.",
         priority=50,
     ),
-    fraud_models.FraudReasonCode.BLURRY_VIDEO: UbbleError(
+    fraud_models.FraudReasonCode.BLURRY_DOCUMENT_VIDEO: UbbleError(
         detail_message="La vidéo est floue",
         not_retryable_user_message="Nous n'arrivons pas à lire ton document, les vidéos transmises sont floues. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande.",
         retryable_action_hint="Réessaie avec ta pièce d'identité en t'assurant qu'elle soit lisible",

@@ -691,8 +691,10 @@ class StepperTest:
                 ].retryable_action_hint,
             ),
             (
-                fraud_models.FraudReasonCode.BLURRY_VIDEO,
-                ubble_models.UBBLE_CODE_ERROR_MAPPING[fraud_models.FraudReasonCode.BLURRY_VIDEO].retryable_action_hint,
+                fraud_models.FraudReasonCode.BLURRY_DOCUMENT_VIDEO,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.BLURRY_DOCUMENT_VIDEO
+                ].retryable_action_hint,
             ),
             (
                 fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE,
