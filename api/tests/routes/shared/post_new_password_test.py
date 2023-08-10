@@ -103,7 +103,7 @@ def test_fail_if_new_password_is_not_strong_enough(client):
 
     assert response.status_code == 400
     assert response.json["newPassword"] == [
-        "Ton mot de passe doit contenir au moins :\n"
+        "Le mot de passe doit contenir au moins :\n"
         "- 12 caractères\n"
         "- Un chiffre\n"
         "- Une majuscule et une minuscule\n"
