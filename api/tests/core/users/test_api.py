@@ -1713,6 +1713,52 @@ class NotifyUserBeforeDeletionUponSuspensionTest:
         assert mails_testing.outbox[0].sent_data["params"]["FIRSTNAME"] == user.firstName
         assert mails_testing.outbox[0].sent_data["To"] == user.email
 
+    def test_multiple_suspensions_different_reason(self):
+        exact_time = datetime.datetime.utcnow() - datetime.timedelta(
+            days=settings.DELETE_SUSPENDED_ACCOUNTS_SINCE - settings.NOTIFY_X_DAYS_BEFORE_DELETION
+        )
+        user = users_factories.UserFactory(isActive=False)
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, actionDate=exact_time, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
+        )
+        history_factories.UnsuspendedUserActionHistoryFactory(
+            user=user, actionDate=exact_time + datetime.timedelta(minutes=1)
+        )
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user,
+            actionDate=exact_time + datetime.timedelta(minutes=2),
+            reason=users_constants.SuspensionReason.FRAUD_SUSPICION,
+        )
+
+        # when
+        users_api.notify_users_before_deletion_of_suspended_account()
+
+        # then
+        assert len(mails_testing.outbox) == 0
+
+    def test_multiple_suspensions_different_date(self):
+        exact_time = datetime.datetime.utcnow() - datetime.timedelta(
+            days=settings.DELETE_SUSPENDED_ACCOUNTS_SINCE - settings.NOTIFY_X_DAYS_BEFORE_DELETION
+        )
+        user = users_factories.UserFactory(isActive=False)
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, actionDate=exact_time, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
+        )
+        history_factories.UnsuspendedUserActionHistoryFactory(
+            user=user, actionDate=exact_time + datetime.timedelta(minutes=1)
+        )
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user,
+            actionDate=exact_time + datetime.timedelta(days=1),
+            reason=users_constants.SuspensionReason.UPON_USER_REQUEST,
+        )
+
+        # when
+        users_api.notify_users_before_deletion_of_suspended_account()
+
+        # then
+        assert len(mails_testing.outbox) == 0
+
 
 @pytest.mark.usefixtures("db_session")
 class GetSuspendedAccountsUponUserRequestSinceTest:

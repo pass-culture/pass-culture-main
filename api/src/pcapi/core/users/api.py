@@ -1345,32 +1345,54 @@ def _get_users_with_suspended_account() -> Query:
             users_models.User.isActive.is_(False),
         )
         .order_by(history_models.ActionHistory.userId, history_models.ActionHistory.actionDate.desc())
-        .with_entities(
-            users_models.User,
-            history_models.ActionHistory.actionDate,
-            history_models.ActionHistory.actionType,
-            history_models.ActionHistory.extraData["reason"].astext,
-        )
     )
 
 
 def _get_users_with_suspended_account_to_notify(expiration_delta_in_days: int) -> Query:
     start = datetime.date.today() - datetime.timedelta(days=expiration_delta_in_days)
-    user_ids_and_latest_action = _get_users_with_suspended_account()
-    return user_ids_and_latest_action.filter(
-        history_models.ActionHistory.actionDate - start >= datetime.timedelta(days=0),
-        history_models.ActionHistory.actionDate - start < datetime.timedelta(days=1),
-        history_models.ActionHistory.extraData["reason"].astext == constants.SuspensionReason.UPON_USER_REQUEST.value,
-    ).with_entities(users_models.User)
+    user_ids_and_latest_action = (
+        _get_users_with_suspended_account()
+        .with_entities(
+            users_models.User.id,
+            history_models.ActionHistory.actionDate,
+            history_models.ActionHistory.extraData["reason"].astext.label("reason"),
+        )
+        .subquery()
+    )
+    return (
+        users_models.User.query.join(
+            user_ids_and_latest_action, user_ids_and_latest_action.c.id == users_models.User.id
+        )
+        .filter(
+            user_ids_and_latest_action.c.actionDate - start >= datetime.timedelta(days=0),
+            user_ids_and_latest_action.c.actionDate - start < datetime.timedelta(days=1),
+            user_ids_and_latest_action.c.reason == constants.SuspensionReason.UPON_USER_REQUEST.value,
+        )
+        .with_entities(users_models.User)
+    )
 
 
 def get_suspended_upon_user_request_accounts_since(expiration_delta_in_days: int) -> Query:
     start = datetime.date.today() - datetime.timedelta(days=expiration_delta_in_days)
-    user_ids_and_latest_action = _get_users_with_suspended_account()
-    return user_ids_and_latest_action.filter(
-        history_models.ActionHistory.actionDate <= start,
-        history_models.ActionHistory.extraData["reason"].astext == constants.SuspensionReason.UPON_USER_REQUEST.value,
-    ).with_entities(users_models.User)
+    user_ids_and_latest_action = (
+        _get_users_with_suspended_account()
+        .with_entities(
+            users_models.User.id,
+            history_models.ActionHistory.actionDate,
+            history_models.ActionHistory.extraData["reason"].astext.label("reason"),
+        )
+        .subquery()
+    )
+    return (
+        users_models.User.query.join(
+            user_ids_and_latest_action, user_ids_and_latest_action.c.id == users_models.User.id
+        )
+        .filter(
+            user_ids_and_latest_action.c.actionDate <= start,
+            user_ids_and_latest_action.c.reason == constants.SuspensionReason.UPON_USER_REQUEST.value,
+        )
+        .with_entities(users_models.User)
+    )
 
 
 def notify_users_before_deletion_of_suspended_account() -> None:
