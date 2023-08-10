@@ -117,7 +117,9 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
         formik.resetForm({ values: buildInitialValues(response.payload) })
       }
       navigate(afterSubmitUrl)
-      notify.success(message)
+      if (isSubmittingDraft || mode === OFFER_WIZARD_MODE.EDITION) {
+        notify.success(message)
+      }
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         from: OFFER_WIZARD_STEP_IDS.STOCKS,
         to: isSubmittingDraft
