@@ -6,7 +6,7 @@ import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.search.backends import algolia
-from pcapi.scripts import mass_cancel_bookings_of_rejected_offers
+from pcapi.scripts import titelive_script_3_mass_cancel_bookings_of_rejected_offers
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -29,7 +29,7 @@ def test_process_bookings_does_not_perform_external_actions(
         stock__offer__venue__bookingEmail="test@example.com",
     )
 
-    mass_cancel_bookings_of_rejected_offers.process_booking(booking)
+    titelive_script_3_mass_cancel_bookings_of_rejected_offers.process_booking(booking)
 
     assert booking.status == bookings_models.BookingStatus.CANCELLED
     assert app.redis_client.scard(algolia.REDIS_OFFER_IDS_NAME) == 0
@@ -56,7 +56,7 @@ def test_process_offers():
         f"{stock4.offerId}\n",
     ]
 
-    mass_cancel_bookings_of_rejected_offers.process_offers(lines, 1)
+    titelive_script_3_mass_cancel_bookings_of_rejected_offers.process_offers(lines, 1)
 
     assert booking1_cancellable.status == bookings_models.BookingStatus.CANCELLED  # updated
     assert booking1_used.status == bookings_models.BookingStatus.USED  # unchanged
