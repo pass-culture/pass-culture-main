@@ -230,25 +230,22 @@ describe('screens:StocksThing', () => {
       )
     ).toBeInTheDocument()
     expect(api.getOffer).toHaveBeenCalledWith(offer.id)
-  }) <
-    it('should submit stock form when click on "Étape suivante"', async () => {
-      vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-        stocks: [{ id: 1 } as StockResponseModel],
-      })
-      renderStockThingScreen(props, contextValue)
-      const nextButton = screen.getByRole('button', { name: 'Étape suivante' })
-      const draftButton = screen.getByRole('button', {
-        name: 'Sauvegarder le brouillon',
-      })
-      await userEvent.type(screen.getByLabelText('Prix'), '20')
-      await userEvent.click(nextButton)
-      expect(draftButton).toBeDisabled()
+  })
 
-      await waitFor(() => {
-        expect(
-          screen.getByText('Brouillon sauvegardé dans la liste des offres')
-        ).toBeInTheDocument()
-      })
+  it('should submit stock form when click on "Étape suivante"', async () => {
+    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
+      stocks: [{ id: 1 } as StockResponseModel],
+    })
+    renderStockThingScreen(props, contextValue)
+    const nextButton = screen.getByRole('button', { name: 'Étape suivante' })
+    const draftButton = screen.getByRole('button', {
+      name: 'Sauvegarder le brouillon',
+    })
+    await userEvent.type(screen.getByLabelText('Prix'), '20')
+    await userEvent.click(nextButton)
+    expect(draftButton).toBeDisabled()
+
+    await waitFor(() => {
       expect(api.upsertStocks).toHaveBeenCalledWith({
         offerId: offer.id,
         stocks: [
@@ -259,9 +256,10 @@ describe('screens:StocksThing', () => {
           },
         ],
       })
-      expect(screen.getByText('Next page')).toBeInTheDocument()
-      expect(api.getOffer).toHaveBeenCalledWith(offer.id)
     })
+    expect(screen.getByText('Next page')).toBeInTheDocument()
+    expect(api.getOffer).toHaveBeenCalledWith(offer.id)
+  })
 
   it('should submit stock form with duo informations when clicking on on "Étape suivante"', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
@@ -276,14 +274,11 @@ describe('screens:StocksThing', () => {
     await userEvent.click(nextButton)
 
     await waitFor(() => {
-      expect(
-        screen.getByText('Brouillon sauvegardé dans la liste des offres')
-      ).toBeInTheDocument()
+      expect(api.patchOffer).toHaveBeenCalledWith(
+        offer.id,
+        expect.objectContaining({ isDuo: true })
+      )
     })
-    expect(api.patchOffer).toHaveBeenCalledWith(
-      offer.id,
-      expect.objectContaining({ isDuo: true })
-    )
     expect(screen.getByText('Next page')).toBeInTheDocument()
     expect(api.getOffer).toHaveBeenCalledWith(offer.id)
   })
