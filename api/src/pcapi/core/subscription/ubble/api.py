@@ -17,6 +17,7 @@ import pcapi.core.external.batch as batch_notification
 from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
+import pcapi.core.fraud.ubble.constants as ubble_fraud_constants
 import pcapi.core.fraud.ubble.models as ubble_fraud_models
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.subscription import api as subscription_api
@@ -29,6 +30,7 @@ from pcapi.utils import requests as requests_utils
 
 from . import exceptions
 from . import messages
+from . import models
 
 
 logger = logging.getLogger(__name__)
@@ -112,37 +114,18 @@ def start_ubble_workflow(user: users_models.User, first_name: str, last_name: st
 def get_most_relevant_ubble_error(
     reason_codes: list[fraud_models.FraudReasonCode],
 ) -> fraud_models.FraudReasonCode | None:
-    if fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE in reason_codes:
-        return fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE
-
-    if fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH in reason_codes:
-        return fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH
-
-    if fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED in reason_codes:
-        return fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED
-
-    if fraud_models.FraudReasonCode.ID_CHECK_EXPIRED in reason_codes:
-        return fraud_models.FraudReasonCode.ID_CHECK_EXPIRED
-
-    if fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC in reason_codes:
-        return fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC
-
-    if fraud_models.FraudReasonCode.BLURRY_DOCUMENT_VIDEO in reason_codes:
-        return fraud_models.FraudReasonCode.BLURRY_DOCUMENT_VIDEO
-
-    if fraud_models.FraudReasonCode.BLURRY_VIDEO in reason_codes:
-        return fraud_models.FraudReasonCode.BLURRY_VIDEO
-
-    if fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE in reason_codes:
-        return fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE
-
-    if fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY in reason_codes:
-        return fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY
-
-    if fraud_models.FraudReasonCode.DOCUMENT_DAMAGED in reason_codes:
-        return fraud_models.FraudReasonCode.DOCUMENT_DAMAGED
-
-    return None
+    return next(
+        iter(
+            sorted(
+                reason_codes,
+                key=lambda reason_code: models.UBBLE_CODE_ERROR_MAPPING[reason_code].priority
+                if reason_code in models.UBBLE_CODE_ERROR_MAPPING
+                else 0,
+                reverse=True,
+            )
+        ),
+        None,
+    )
 
 
 def handle_validation_errors(
@@ -151,8 +134,7 @@ def handle_validation_errors(
 ) -> None:
     error_codes = fraud_check.reasonCodes or []
     relevant_error_code = get_most_relevant_ubble_error(error_codes)
-
-    if relevant_error_code:
+    if relevant_error_code in ubble_fraud_constants.REASON_CODE_REQUIRING_EMAIL_UPDATE:
         transactional_mails.send_subscription_document_error_email(user.email, relevant_error_code)
     else:
         if fraud_models.FraudReasonCode.DUPLICATE_USER in error_codes:
