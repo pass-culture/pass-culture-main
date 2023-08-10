@@ -18,7 +18,11 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import VenueEdition from '../VenueEdition'
 
-const renderVenueEdition = (venueId: number, offererId: number) => {
+const renderVenueEdition = (
+  venueId: number,
+  offererId: number,
+  featuresOverride?: { nameKey: string; isActive: boolean }[]
+) => {
   const storeOverrides = {
     user: {
       initialized: true,
@@ -26,6 +30,10 @@ const renderVenueEdition = (venueId: number, offererId: number) => {
         id: 'EY',
         isAdmin: false,
       },
+    },
+    features: {
+      list: featuresOverride,
+      initialized: true,
     },
   }
 
@@ -123,11 +131,13 @@ describe('route VenueEdition', () => {
     })
     expect(api.getVenue).toHaveBeenCalledWith(12)
     expect(venuePublicName).toBeInTheDocument()
+    expect(screen.getByText('Remboursement')).toBeInTheDocument()
   })
 
   it('should check none accessibility', async () => {
     vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
       ...venue,
+      siret: undefined,
       visualDisabilityCompliant: false,
       mentalDisabilityCompliant: false,
       audioDisabilityCompliant: false,
@@ -163,6 +173,27 @@ describe('route VenueEdition', () => {
     expect(
       screen.getByLabelText('Non accessible', { exact: false })
     ).not.toBeChecked()
+  })
+
+  it('should not render reimbursement fields when FF bank details is enable and venue has no siret', async () => {
+    vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
+      ...venue,
+      siret: '11111111111111',
+    })
+
+    const featuresOverride = [
+      {
+        nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY',
+        isActive: true,
+      },
+    ]
+    renderVenueEdition(venue.id, offerer.id, featuresOverride)
+
+    await screen.findByRole('heading', {
+      name: 'Cinéma des iles',
+    })
+
+    expect(screen.queryByText(/Remboursement/)).not.toBeInTheDocument()
   })
 
   it('should return to home when not able to get venue informations', async () => {
