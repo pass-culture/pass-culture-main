@@ -8,9 +8,9 @@ import { extractInitialVisibilityValues } from '../extractInitialVisibilityValue
 describe('extractInitialVisibilityValues', () => {
   it('should return default values when institution is not defined', () => {
     expect(extractInitialVisibilityValues(null)).toStrictEqual({
+      visibility: 'all',
       institution: '',
       'search-institution': '',
-      visibility: 'all',
       'search-teacher': '',
       teacher: null,
     })
@@ -26,9 +26,9 @@ describe('extractInitialVisibilityValues', () => {
       institutionId: 'ABCDEF11',
     }
     expect(extractInitialVisibilityValues(institution)).toStrictEqual({
-      institution: '1',
-      'search-institution': 'Collège Bellevue - Alès',
       visibility: 'one',
+      institution: '1',
+      'search-institution': 'Collège Bellevue - Alès - ABCDEF11',
       'search-teacher': '',
       teacher: null,
     })
@@ -50,9 +50,9 @@ describe('extractInitialVisibilityValues', () => {
       email: 'reda.khteur@example.com',
     }
     expect(extractInitialVisibilityValues(institution, teacher)).toStrictEqual({
-      institution: '1',
-      'search-institution': 'Collège Bellevue - Alès',
       visibility: 'one',
+      institution: '1',
+      'search-institution': 'Collège Bellevue - Alès - ABCDEF11',
       'search-teacher': `${teacher.firstName} ${teacher.lastName}`,
       teacher: 'reda.khteur@example.com',
     })
@@ -77,9 +77,9 @@ describe('extractInitialVisibilityValues', () => {
     expect(
       extractInitialVisibilityValues(null, null, requestInformations)
     ).toStrictEqual({
-      institution: '',
-      'search-institution': 'Collège Bellevue - Alès',
       visibility: 'one',
+      institution: '',
+      'search-institution': 'COLLEGE Collège Bellevue - Alès - ABCDEF11',
       'search-teacher': `Reda Khteur`,
       teacher: 'reda.khteur@example.com',
     })

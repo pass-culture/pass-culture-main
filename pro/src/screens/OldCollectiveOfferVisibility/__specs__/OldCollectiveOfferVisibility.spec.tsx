@@ -14,15 +14,25 @@ import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest
 import { collectiveOfferFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CollectiveOfferVisibility, {
-  CollectiveOfferVisibilityProps,
-} from '../CollectiveOfferVisibility'
+import OldCollectiveOfferVisibility from '..'
+import { OldCollectiveOfferVisibilityProps } from '../OldCollectiveOfferVisibility'
 
 vi.mock('apiClient/api', () => ({
   api: {
     getAutocompleteEducationalRedactorsForUai: vi.fn(),
     getCollectiveOfferRequest: vi.fn(),
   },
+}))
+
+vi.mock('core/OfferEducational/utils/extractInitialVisibilityValues', () => ({
+  __esModule: true,
+  extractInitialVisibilityValues: vi.fn(() => ({
+    institution: '',
+    'search-institution': 'METIER ROBERT DOISNEAU - CORBEIL-ESSONNES',
+    teacher: 'compte.test@education.gouv.fr',
+    visibility: 'one',
+    'search-teacher': 'Reda Khteur',
+  })),
 }))
 
 const institutions: EducationalInstitutionResponseModel[] = [
@@ -57,17 +67,15 @@ const institutions: EducationalInstitutionResponseModel[] = [
     postalCode: '91000',
     city: 'CORBEIL-ESSONNES',
     phoneNumber: '',
-    institutionType: 'LYCEE POLYVALENT',
     institutionId: 'AZERTY13',
   },
 ]
 
-const renderVisibilityStep = (props: CollectiveOfferVisibilityProps) => {
-  return renderWithProviders(<CollectiveOfferVisibility {...props} />)
-}
+const renderVisibilityStep = (props: OldCollectiveOfferVisibilityProps) =>
+  renderWithProviders(<OldCollectiveOfferVisibility {...props} />)
 
 describe('CollectiveOfferVisibility', () => {
-  let props: CollectiveOfferVisibilityProps
+  let props: OldCollectiveOfferVisibilityProps
   const offerId = 1
   beforeEach(() => {
     props = {
@@ -118,16 +126,25 @@ describe('CollectiveOfferVisibility', () => {
     props.initialValues = {
       ...props.initialValues,
       institution: '12',
+      visibility: 'one',
     }
     renderVisibilityStep({ ...props, mode: Mode.READ_ONLY })
     expect(
-      await screen.findByLabelText(/Nom de l’établissement scolaire/)
+      screen.getByLabelText(/Un établissement en particulier/)
+    ).toBeDisabled()
+    expect(
+      await screen.findByPlaceholderText(
+        /Saisir l’établissement scolaire ou le code UAI/
+      )
     ).toBeDisabled()
     expect(screen.getByText(/Valider et enregistrer l’offre/)).toBeDisabled()
   })
 
-  it('should disable submit button if the user did not select an institution', async () => {
+  it('should disable submit button if the user wants his offer to concern one Institution but has selected none', async () => {
     renderVisibilityStep(props)
+    await userEvent.click(
+      screen.getByLabelText(/Un établissement en particulier/)
+    )
     expect(
       screen.getByRole('button', { name: /Étape suivante/ })
     ).toBeDisabled()
@@ -136,10 +153,15 @@ describe('CollectiveOfferVisibility', () => {
   it('should display details on selected institution', async () => {
     const spyPatch = vi.fn().mockResolvedValueOnce({ isOk: true })
     renderVisibilityStep({ ...props, patchInstitution: spyPatch })
+    await userEvent.click(
+      screen.getByLabelText(/Un établissement en particulier/)
+    )
 
     //  Open the autocomplete select panel
     await userEvent.click(
-      await screen.findByLabelText(/Nom de l’établissement scolaire/)
+      await screen.findByPlaceholderText(
+        /Saisir l’établissement scolaire ou le code UAI/
+      )
     )
 
     const optionsList = await screen.findByTestId('list')
@@ -153,11 +175,7 @@ describe('CollectiveOfferVisibility', () => {
     //  The panel should be closed
     expect(optionsList).not.toBeInTheDocument()
 
-    expect(
-      await screen.findByText(
-        'Collège Institution 1 - Gif-sur-Yvette - ABCDEF11'
-      )
-    ).toBeInTheDocument()
+    expect(await screen.findByText(/91190 Gif-sur-Yvette/)).toBeInTheDocument()
   })
 
   it('should save selected institution and call onSuccess props', async () => {
@@ -165,9 +183,13 @@ describe('CollectiveOfferVisibility', () => {
       .fn()
       .mockResolvedValueOnce({ isOk: true, payload: { institutions: [] } })
     renderVisibilityStep({ ...props, patchInstitution: spyPatch })
-
     await userEvent.click(
-      await screen.findByLabelText(/Nom de l’établissement scolaire/)
+      screen.getByLabelText(/Un établissement en particulier/)
+    )
+    await userEvent.click(
+      await screen.findByPlaceholderText(
+        /Saisir l’établissement scolaire ou le code UAI/
+      )
     )
 
     const optionsList = await screen.findByTestId('list')
@@ -190,16 +212,14 @@ describe('CollectiveOfferVisibility', () => {
   it('should clear search input field when clicking on the input again', async () => {
     renderVisibilityStep(props)
 
-    const institutionInput = await screen.findByLabelText(
-      /Nom de l’établissement scolaire/
+    const institutionInput = await screen.findByPlaceholderText(
+      /Saisir l’établissement scolaire ou le code UAI/
     )
     await userEvent.click(institutionInput)
 
     await userEvent.type(institutionInput, 'Test input')
 
-    await userEvent.click(
-      await screen.findByTestId('wrapper-search-institution')
-    )
+    await userEvent.click(await screen.findByTestId(/wrapper-visibility/))
 
     await userEvent.click(institutionInput)
 
@@ -217,7 +237,12 @@ describe('CollectiveOfferVisibility', () => {
     }))
     renderVisibilityStep({ ...props, patchInstitution: spyPatch })
     await userEvent.click(
-      await screen.findByLabelText(/Nom de l’établissement scolaire/)
+      screen.getByLabelText(/Un établissement en particulier/)
+    )
+    await userEvent.click(
+      await screen.findByPlaceholderText(
+        /Saisir l’établissement scolaire ou le code UAI/
+      )
     )
     const optionsList = await screen.findByTestId('list')
     await userEvent.click(
@@ -234,7 +259,12 @@ describe('CollectiveOfferVisibility', () => {
   it('should display institution type, name and city in select options', async () => {
     renderVisibilityStep(props)
     await userEvent.click(
-      await screen.findByLabelText(/Nom de l’établissement scolaire/)
+      screen.getByLabelText(/Un établissement en particulier/)
+    )
+    await userEvent.click(
+      await screen.findByPlaceholderText(
+        /Saisir l’établissement scolaire ou le code UAI/
+      )
     )
     const optionsList = await screen.findByTestId('list')
     expect(
@@ -249,9 +279,12 @@ describe('CollectiveOfferVisibility', () => {
 
   it('should trim values when searching in a SelectAutocomplete', async () => {
     renderVisibilityStep(props)
+    await userEvent.click(
+      screen.getByLabelText(/Un établissement en particulier/)
+    )
 
-    const institutionInput = await screen.findByLabelText(
-      /Nom de l’établissement scolaire/
+    const institutionInput = await screen.findByPlaceholderText(
+      /Saisir l’établissement scolaire ou le code UAI/
     )
     await userEvent.click(institutionInput)
 
@@ -271,17 +304,106 @@ describe('CollectiveOfferVisibility', () => {
         mode: Mode.EDITION,
         initialValues: {
           visibility: 'one',
-          institution: '24',
-          'search-institution': 'Institution 2',
+          institution: '12',
+          'search-institution': 'Institution 1',
           'search-teacher': 'Teacher 1',
           teacher: 'teacher.teach@example.com',
         },
       })
       expect(
-        await screen.findByText(
-          /Option sélectionnée : Institution 2 - Paris - ABCDEF12/
-        )
+        screen.getByLabelText(/Un établissement en particulier/)
+      ).toBeChecked()
+      expect(
+        await screen.findByText(/91190 Gif-sur-Yvette/)
       ).toBeInTheDocument()
+    })
+    it('shoud delete institution selection', async () => {
+      renderVisibilityStep({
+        ...props,
+        mode: Mode.EDITION,
+        initialValues: {
+          visibility: 'one',
+          institution: '12',
+          'search-institution': 'Institution 1',
+          'search-teacher': 'Teacher Teach',
+          teacher: 'teacher.teach@example.com',
+        },
+      })
+
+      expect(
+        screen.getByLabelText(/Un établissement en particulier/)
+      ).toBeChecked()
+
+      expect(
+        await screen.findByText(/91190 Gif-sur-Yvette/)
+      ).toBeInTheDocument()
+
+      await userEvent.click(
+        screen.getByRole('button', {
+          name: /Supprimer/i,
+        })
+      )
+      expect(
+        await screen.queryByText(/91190 Gif-sur-Yvette/)
+      ).not.toBeInTheDocument()
+    })
+
+    it('should hide banner when clicking on trash icon', async () => {
+      const spyPatch = vi.fn().mockResolvedValueOnce({
+        isOk: true,
+        payload: { teacherEmail: 'maria.sklodowska@example.com' },
+      })
+      renderVisibilityStep({ ...props, patchInstitution: spyPatch })
+      await userEvent.click(
+        screen.getByLabelText(/Un établissement en particulier/)
+      )
+      // open hidden select options
+      await userEvent.click(
+        await screen.findByPlaceholderText(
+          /Saisir l’établissement scolaire ou le code UAI/
+        )
+      )
+
+      const optionsListInstitution = await screen.findByTestId('list')
+
+      //  Click an option in the opened panel
+      await userEvent.click(
+        within(optionsListInstitution).getByText(/Collège Institution 1/)
+      )
+
+      const teacherInput = await screen.findByLabelText(
+        /Prénom et nom de l’enseignant/
+      )
+      // open hidden select options, empty by default
+      await userEvent.click(teacherInput)
+
+      vi.spyOn(
+        api,
+        'getAutocompleteEducationalRedactorsForUai'
+      ).mockResolvedValueOnce([
+        {
+          email: 'maria.sklodowska@example.com',
+          gender: 'Mme.',
+          name: 'SKLODOWSKA',
+          surname: 'MARIA',
+        },
+      ])
+      // filter options to have results
+      await userEvent.type(teacherInput, 'mar')
+
+      const optionsListTeacher = await screen.findByTestId('list')
+
+      //  Click an option in the opened panel
+      await userEvent.click(
+        within(optionsListTeacher).getByText(/MARIA SKLODOWSKA/)
+      )
+
+      await userEvent.click(
+        screen.getAllByRole('button', {
+          name: /Supprimer/i,
+        })[1]
+      )
+      expect(await screen.findAllByText(/MARIA SKLODOWSKA/)).toHaveLength(1)
     })
 
     it('should prefill form with requested information', async () => {
@@ -294,7 +416,7 @@ describe('CollectiveOfferVisibility', () => {
         },
         institution: {
           city: 'CORBEIL-ESSONNES',
-          institutionId: 'AZERTY13',
+          institutionId: '123456',
           institutionType: 'LYCEE POLYVALENT',
           name: 'METIER ROBERT DOISNEAU',
           postalCode: '91000',
@@ -316,18 +438,25 @@ describe('CollectiveOfferVisibility', () => {
       renderVisibilityStep({
         ...props,
         requestId: '1',
-        mode: Mode.EDITION,
+        mode: Mode.CREATION,
         initialValues: DEFAULT_VISIBILITY_FORM_VALUES,
       })
 
       expect(
-        await screen.findByText(/Option sélectionnée : KHTEUR REDA/)
-      ).toBeInTheDocument()
+        screen.getByLabelText(/Un établissement en particulier/)
+      ).toBeChecked()
+
       expect(
-        screen.getByText(
-          /Option sélectionnée : LYCEE POLYVALENT METIER ROBERT DOISNEAU - CORBEIL-ESSONNES - AZERTY13/
+        within(await screen.findByTestId('teacher-banner')).findByText(
+          /KHTEUR REDA/
         )
-      ).toBeInTheDocument()
+      )
+
+      expect(await screen.findAllByText(/METIER ROBERT DOISNEAU/)).toHaveLength(
+        3
+      )
+      expect(screen.getByText(/91000 CORBEIL-ESSONNES/)).toBeInTheDocument()
+      expect(screen.getAllByText(/AZERTY13/)).toHaveLength(3)
     })
 
     it('should display error message on api error getting requested info', async () => {

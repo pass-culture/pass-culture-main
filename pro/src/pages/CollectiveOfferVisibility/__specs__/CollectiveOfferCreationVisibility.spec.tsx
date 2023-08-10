@@ -17,10 +17,12 @@ vi.mock('apiClient/api', () => ({
 
 const renderCollectiveOfferCreationVisibility = (
   path: string,
-  props: MandatoryCollectiveOfferFromParamsProps
+  props: MandatoryCollectiveOfferFromParamsProps,
+  storeOverride?: any
 ) => {
   renderWithProviders(<CollectiveOfferVisibility {...props} />, {
     initialRouterEntries: [path],
+    storeOverrides: storeOverride,
   })
 }
 
@@ -46,6 +48,23 @@ describe('CollectiveOfferVisibility', () => {
     expect(
       screen.getByRole('heading', {
         name: 'Visibilité de l’offre',
+      })
+    ).toBeInTheDocument()
+  })
+  it('should render new collective offer visibility form if ff active', async () => {
+    renderCollectiveOfferCreationVisibility(
+      '/offre/A1/collectif/visibilite',
+      defaultProps,
+      {
+        features: {
+          list: [{ isActive: true, nameKey: 'WIP_OFFER_TO_INSTITUTION' }],
+        },
+      }
+    )
+
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Établissement scolaire et enseignant',
       })
     ).toBeInTheDocument()
   })
