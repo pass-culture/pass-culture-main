@@ -2,6 +2,8 @@ import type { Story } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
 
+import { searchPatternInOptions } from 'utils/searchPatternInOptions'
+
 import SelectAutocomplete from './SelectAutocomplete'
 import type { SelectAutocompleteProps } from './SelectAutocomplete'
 
@@ -48,6 +50,7 @@ const defaultProps: Args = {
   hideTags: false,
   isOptional: false,
   smallLabel: false,
+  searchInOptions: searchPatternInOptions,
 }
 
 export const Default = Template.bind({})
