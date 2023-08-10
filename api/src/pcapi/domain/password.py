@@ -42,12 +42,12 @@ def check_password_strength(key: str, password: str) -> None:
 
 def _ensure_new_password_is_different_from_old(user: User, new_password: str, errors: ApiErrors) -> None:
     if user.checkPassword(new_password):
-        errors.add_error("newPassword", "Ton nouveau mot de passe est identique à l’ancien.")
+        errors.add_error("newPassword", "Le nouveau mot de passe est identique à l’ancien.")
 
 
 def _ensure_given_old_password_is_correct(user: User, old_password: str, errors: ApiErrors) -> None:
     if not user.checkPassword(old_password):
-        errors.add_error("oldPassword", "Votre mot de passe actuel est incorrect")
+        errors.add_error("oldPassword", "Le mot de passe actuel est incorrect.")
 
 
 def _ensure_new_password_is_strong_enough(field_name: str, field_value: str, errors: ApiErrors) -> None:
@@ -64,7 +64,7 @@ def _ensure_new_password_is_strong_enough(field_name: str, field_value: str, err
     if not re.match(regex, field_value) or not at_least_one_special_char:
         errors.add_error(
             field_name,
-            "Ton mot de passe doit contenir au moins :\n"
+            "Le mot de passe doit contenir au moins :\n"
             "- 12 caractères\n"
             "- Un chiffre\n"
             "- Une majuscule et une minuscule\n"

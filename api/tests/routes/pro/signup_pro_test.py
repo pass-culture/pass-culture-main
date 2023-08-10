@@ -271,7 +271,7 @@ class Returns400Test:
         assert response.status_code == 400
         response = response.json
         assert response["password"] == [
-            "Ton mot de passe doit contenir au moins :\n"
+            "Le mot de passe doit contenir au moins :\n"
             "- 12 caractères\n"
             "- Un chiffre\n"
             "- Une majuscule et une minuscule\n"
