@@ -5,23 +5,23 @@ import fullNextIcon from 'icons/full-next.svg'
 import strokeWarningIcon from 'icons/stroke-warning.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import LinkNodes, { Link } from '../LinkNodes/LinkNodes'
+import LinkNodes, { Link } from '../../ui-kit/Banners/LinkNodes/LinkNodes'
 
-import styles from './BannerWarning.module.scss'
+import styles from './Callout.module.scss'
 
-export interface BannerWarningProps {
+export interface CalloutProps {
   children?: React.ReactNode | React.ReactNode[]
   className?: string
   title: string
   links?: Link[]
 }
 
-const BannerWarning = ({
+const Callout = ({
   children,
   className,
   title,
   links,
-}: BannerWarningProps): JSX.Element => {
+}: CalloutProps): JSX.Element => {
   return (
     <div className={cn(styles['banner'], className)}>
       <SvgIcon
@@ -39,4 +39,4 @@ const BannerWarning = ({
   )
 }
 
-export default BannerWarning
+export default Callout

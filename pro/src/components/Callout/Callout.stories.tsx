@@ -1,18 +1,18 @@
 import type { Story } from '@storybook/react'
 import React from 'react'
 
-import BannerWarning, { BannerWarningProps } from './BannerWarning'
+import Callout, { CalloutProps } from './Callout'
 
 export default {
-  title: 'ui-kit/BannerWarning',
-  component: BannerWarning,
+  title: 'components/Callout',
+  component: Callout,
 }
 
-const Template: Story<BannerWarningProps> = props => (
-  <BannerWarning {...props}>
+const Template: Story<CalloutProps> = props => (
+  <Callout {...props}>
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
     tempor incididunt ut labore et dolore magna aliqua.
-  </BannerWarning>
+  </Callout>
 )
 
 export const WithoutLink = Template.bind({})
