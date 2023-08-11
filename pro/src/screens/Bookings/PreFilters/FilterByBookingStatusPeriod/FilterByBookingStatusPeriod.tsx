@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { PreFiltersParams } from 'core/Bookings/types'
-import PeriodSelector from 'ui-kit/form_raw/PeriodSelector/PeriodSelector'
+import PeriodSelector from 'ui-kit/form/PeriodSelector/PeriodSelector'
 
 import styles from './FilterByBookingStatusPeriod.module.scss'
 import FilterByStatus from './FilterByStatus'
