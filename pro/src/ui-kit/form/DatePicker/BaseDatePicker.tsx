@@ -28,7 +28,7 @@ export const BaseDatePicker = ({
     : undefined
   const maxDateFormatted = isDateValid(maxDate)
     ? format(maxDate, FORMAT_ISO_DATE_ONLY)
-    : undefined
+    : '2050-01-01'
 
   return (
     <BaseInput
