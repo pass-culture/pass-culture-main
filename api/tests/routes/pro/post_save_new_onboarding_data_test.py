@@ -4,7 +4,6 @@ import pytest
 
 from pcapi.connectors import sirene
 import pcapi.core.offerers.models as offerers_models
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 
 
@@ -26,7 +25,6 @@ REQUEST_BODY = {
 
 
 class Returns200Test:
-    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_nominal(self, client):
         user = users_factories.UserFactory(email="pro@example.com")
 
@@ -59,7 +57,6 @@ class Returns200Test:
 
 
 class Returns400Test:
-    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     @patch("pcapi.connectors.sirene.get_siret", side_effect=sirene.UnknownEntityException())
     def test_siret_unknown(self, _get_siret_mock, client):
         user = users_factories.UserFactory()
@@ -72,7 +69,6 @@ class Returns400Test:
         assert offerers_models.UserOfferer.query.count() == 0
         assert offerers_models.Venue.query.count() == 0
 
-    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     @patch("pcapi.connectors.sirene.get_siret", side_effect=sirene.NonPublicDataException())
     def test_non_diffusible_siret(self, _get_siret_mock, client):
         user = users_factories.UserFactory()
@@ -87,19 +83,7 @@ class Returns400Test:
         assert offerers_models.Venue.query.count() == 0
 
 
-class Returns403Test:
-    @override_features(WIP_ENABLE_NEW_ONBOARDING=False)
-    def test_siret_unknown(self, client):
-        user = users_factories.UserFactory()
-
-        client = client.with_session_auth(user.email)
-        response = client.post("/offerers/new", json=REQUEST_BODY)
-
-        assert response.status_code == 403
-
-
 class Returns500Test:
-    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     @patch("pcapi.connectors.sirene.get_siret", side_effect=sirene.SireneApiException())
     def test_sirene_api_ko(self, _get_siret_mock, client):
         user = users_factories.UserFactory()

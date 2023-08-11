@@ -636,7 +636,7 @@ class NewOnboardingInfo:
 
 
 def _add_new_onboarding_info_to_extra_data(new_onboarding_info: NewOnboardingInfo | None, extra_data: dict) -> None:
-    if feature.FeatureToggle.WIP_ENABLE_NEW_ONBOARDING and new_onboarding_info:
+    if new_onboarding_info:
         extra_data["target"] = new_onboarding_info.target
         extra_data["venue_type_code"] = new_onboarding_info.venueTypeCode
         extra_data["web_presence"] = new_onboarding_info.webPresence
@@ -662,9 +662,8 @@ def create_offerer(
             objects_to_save += [offerer]
         else:
             user_offerer.validationStatus = ValidationStatus.NEW
-            if feature.FeatureToggle.WIP_ENABLE_NEW_ONBOARDING:
-                extra_data = {}
-                _add_new_onboarding_info_to_extra_data(new_onboarding_info, extra_data)
+            extra_data = {}
+            _add_new_onboarding_info_to_extra_data(new_onboarding_info, extra_data)
             objects_to_save += [
                 history_api.log_action(
                     history_models.ActionType.USER_OFFERER_NEW,
@@ -699,8 +698,7 @@ def create_offerer(
         extra_data = {}
         if siren_info:
             extra_data = {"sirene_info": dict(siren_info)}
-        if feature.FeatureToggle.WIP_ENABLE_NEW_ONBOARDING:
-            _add_new_onboarding_info_to_extra_data(new_onboarding_info, extra_data)
+        _add_new_onboarding_info_to_extra_data(new_onboarding_info, extra_data)
 
         history_api.log_action(
             history_models.ActionType.OFFERER_NEW,
