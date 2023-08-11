@@ -71,11 +71,6 @@ const ModalImageEdit = ({
     heightCropPercent: initalHeightCropPercent,
     widthCropPercent: initalWidthCropPercent,
   } = initialCropParams || {}
-  const [editorInitialScale, setEditorInitialScale] = useState(
-    initalHeightCropPercent
-      ? heightCropPercentToScale(initalHeightCropPercent)
-      : 1
-  )
   const [editorInitialPosition, setEditorInitialPosition] = useState({
     x:
       initalXCropPercent && initalWidthCropPercent
@@ -158,12 +153,15 @@ const ModalImageEdit = ({
           credit={credit}
           image={image}
           initialPosition={editorInitialPosition}
-          initialScale={editorInitialScale}
+          initialScale={
+            initalHeightCropPercent
+              ? heightCropPercentToScale(initalHeightCropPercent)
+              : 1
+          }
           onEditedImageSave={onEditedImageSave}
           onReplaceImage={onReplaceImage}
           onSetCredit={setCredit}
           saveInitialPosition={setEditorInitialPosition}
-          saveInitialScale={setEditorInitialScale}
           mode={mode}
           submitButtonText={showPreviewInModal ? 'Suivant' : 'Enregistrer'}
         />

@@ -1,15 +1,9 @@
-import Slider from '@mui/material/Slider'
-import { ThemeProvider, createTheme, styled } from '@mui/material/styles'
-import React, {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import { useFormikContext } from 'formik'
+import React, { forwardRef, useCallback, useState } from 'react'
 import AvatarEditor, { Position } from 'react-avatar-editor'
 
-import { useEffectUnmount } from 'hooks'
+import { ImageEditorFormValues } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageCrop/ModalImageCrop'
+import Slider from 'ui-kit/form/Slider/Slider'
 
 import CanvasTools from './canvas'
 import style from './ImageEditor.module.scss'
@@ -25,9 +19,7 @@ export interface ImageEditorConfig {
 
 export interface ImageEditorProps extends ImageEditorConfig {
   image: File
-  saveInitialScale?: (scale: number) => void
   initialPosition?: Position
-  initialScale?: number
   children?: never
 }
 
@@ -40,33 +32,13 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
       cropBorderColor,
       cropBorderHeight,
       cropBorderWidth,
-      saveInitialScale,
       initialPosition = { x: 0.5, y: 0.5 },
-      initialScale,
       maxScale = 4,
     },
     ref
   ) => {
-    const [scale, setScale] = useState(initialScale ? initialScale : 1)
     const [position, setPosition] = useState<Position>(initialPosition)
-    const scaleRef = useRef(scale)
-    const theme = createTheme({
-      palette: {
-        primary: {
-          main: '#eb0055',
-          dark: '#eb0055',
-          light: '#eb0055',
-        },
-      },
-    })
-
-    useEffect(() => {
-      scaleRef.current = scale
-    }, [scale])
-    useEffectUnmount(
-      () => saveInitialScale && saveInitialScale(scaleRef.current)
-    )
-
+    const formik = useFormikContext<ImageEditorFormValues>()
     const drawCropBorder = useCallback(() => {
       const canvas = document.querySelector('canvas')
       const ctx = canvas?.getContext('2d')
@@ -93,10 +65,6 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
       canvasHeight,
     ])
 
-    const onScaleChange = useCallback(async (event: any) => {
-      setScale(event.target.value)
-    }, [])
-
     /* istanbul ignore next: DEBT, TO FIX */
     const onPositionChange = useCallback((position: Position) => {
       setPosition(position)
@@ -117,7 +85,7 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
           onPositionChange={onPositionChange}
           position={position}
           ref={ref}
-          scale={Number(scale)}
+          scale={Number(formik.values.scale)}
           width={canvasWidth}
         />
         <label className={style['image-editor-label']} htmlFor="scale">
@@ -126,15 +94,13 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
         <label className={style['image-editor-scale']} htmlFor="scale">
           <span className={style['image-editor-scale-label']}>min</span>
           <span className={style['image-editor-scale-input']}>
-            <ThemeProvider theme={theme}>
-              <CustomSlider
-                max={maxScale > 1 ? maxScale : 1}
-                min={1}
-                onChange={onScaleChange}
-                step={0.01}
-                value={scale}
-              />
-            </ThemeProvider>
+            <Slider
+              fieldName="scale"
+              step={0.01}
+              max={maxScale > 1 ? maxScale.toFixed(2) : 1}
+              min={1}
+              displayMinMaxValues={false}
+            />
           </span>
           <span className={style['image-editor-scale-label']}>max</span>
         </label>
@@ -142,12 +108,6 @@ const ImageEditor = forwardRef<AvatarEditor, ImageEditorProps>(
     )
   }
 )
-const CustomSlider = styled(Slider)(() => ({
-  '& .MuiSlider-thumb': {
-    height: 16,
-    width: 16,
-  },
-}))
 ImageEditor.displayName = 'ImageEditor'
 
 export default ImageEditor

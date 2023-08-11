@@ -26,11 +26,15 @@ interface ModalImageCropProps {
   onReplaceImage: () => void
   initialPosition?: Position
   initialScale?: number
-  saveInitialScale: (scale: number) => void
   saveInitialPosition: (position: Position) => void
   onEditedImageSave: (dataUrl: string, croppedRect: CroppedRect) => void
   mode: UploaderModeEnum
   submitButtonText: string
+}
+
+export interface ImageEditorFormValues {
+  credit: string
+  scale: number
 }
 
 const ModalImageCrop = ({
@@ -39,7 +43,6 @@ const ModalImageCrop = ({
   credit,
   onSetCredit,
   onEditedImageSave,
-  saveInitialScale,
   saveInitialPosition,
   initialPosition,
   initialScale,
@@ -116,9 +119,10 @@ const ModalImageCrop = ({
 
   const initialValues = {
     credit: '',
+    scale: initialScale || 1,
   }
 
-  const formik = useFormik({
+  const formik = useFormik<ImageEditorFormValues>({
     initialValues,
     onSubmit: handleNext,
   })
@@ -142,9 +146,7 @@ const ModalImageCrop = ({
               {...imageEditorConfig}
               image={image}
               initialPosition={initialPosition}
-              initialScale={initialScale}
               ref={editorRef}
-              saveInitialScale={saveInitialScale}
             />
             <CreditInput
               credit={credit}
