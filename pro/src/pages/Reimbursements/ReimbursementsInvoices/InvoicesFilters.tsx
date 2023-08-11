@@ -2,9 +2,9 @@ import React, { Dispatch, SetStateAction } from 'react'
 
 import FormLayout from 'components/FormLayout/FormLayout'
 import { SelectOption } from 'custom_types/form'
+import PeriodSelector from 'ui-kit/form/PeriodSelector/PeriodSelector'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared'
-import PeriodSelector from 'ui-kit/form_raw/PeriodSelector/PeriodSelector'
 import { getToday } from 'utils/date'
 
 import { FiltersType } from './types'
