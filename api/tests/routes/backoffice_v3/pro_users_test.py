@@ -4,17 +4,15 @@ from unittest.mock import patch
 from flask import url_for
 import pytest
 
-from pcapi.core.history import factories as history_factories
-from pcapi.core.history import models as history_models
-from pcapi.core.mails import testing as mails_testing
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.permissions import models as perm_models
+import pcapi.core.history.factories as history_factories
+import pcapi.core.history.models as history_models
+import pcapi.core.mails.testing as mails_testing
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
-from pcapi.core.testing import override_features
-from pcapi.core.users import constants as users_constants
-from pcapi.core.users import factories as users_factories
-from pcapi.core.users import models as users_models
+import pcapi.core.users.constants as users_constants
+import pcapi.core.users.factories as users_factories
+import pcapi.core.users.models as users_models
 from pcapi.routes.backoffice_v3.filters import format_date
 from pcapi.utils import email as email_utils
 
@@ -326,25 +324,6 @@ class ValidateProEmailTest(PostEndpointHelper):
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
 
-    @override_features(WIP_ENABLE_NEW_ONBOARDING=False)
-    def test_validate_pro_user_email_ff_off(self, authenticated_client):
-        pro_user = offerers_factories.NotValidatedUserOffererFactory(
-            user__validationToken=False, user__isEmailValidated=False
-        ).user
-        assert not pro_user.isEmailValidated
-
-        response = self.post_to_endpoint(authenticated_client, user_id=pro_user.id)
-        assert response.status_code == 303
-        assert pro_user.isEmailValidated
-
-        response_redirect = authenticated_client.get(response.location)
-        assert f"L&#39;email {pro_user.email} est validé !" in response_redirect.data.decode("utf-8")
-        assert len(mails_testing.outbox) == 1
-        assert (
-            mails_testing.outbox[0].sent_data["template"]["id_not_prod"] == TransactionalEmail.WELCOME_TO_PRO.value.id
-        )
-
-    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_validate_pro_user_email_ff_on(self, authenticated_client):
         pro_user = offerers_factories.NotValidatedUserOffererFactory(
             user__validationToken=False, user__isEmailValidated=False
@@ -358,21 +337,6 @@ class ValidateProEmailTest(PostEndpointHelper):
         response_redirect = authenticated_client.get(response.location)
         assert f"L&#39;email {pro_user.email} est validé !" in response_redirect.data.decode("utf-8")
         assert len(mails_testing.outbox) == 0
-
-    @override_features(WIP_ENABLE_NEW_ONBOARDING=False)
-    def test_already_validated_pro_user_email(self, authenticated_client):
-        pro_user = offerers_factories.NotValidatedUserOffererFactory(
-            user__validationToken=False, user__isEmailValidated=True
-        ).user
-
-        response = self.post_to_endpoint(authenticated_client, user_id=pro_user.id)
-        assert response.status_code == 303
-        assert pro_user.isEmailValidated
-
-        response_redirect = authenticated_client.get(response.location)
-        assert f"L&#39;email {pro_user.email} est déjà validé !" in response_redirect.data.decode("utf-8")
-        assert len(mails_testing.outbox) == 0
-
 
 class DeleteProUserTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.pro_user.delete"
