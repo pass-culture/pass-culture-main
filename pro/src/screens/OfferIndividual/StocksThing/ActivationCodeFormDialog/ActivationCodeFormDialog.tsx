@@ -1,8 +1,7 @@
 import React, { useCallback, useState } from 'react'
 
-import DialogBox from 'components/DialogBox'
+import Dialog from 'components/Dialog/Dialog'
 import strokeCodeIcon from 'icons/stroke-code.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import {
   checkAndParseUploadedFile,
@@ -11,8 +10,6 @@ import {
 import styles from './ActivationCodeFormDialog.module.scss'
 import AddActivationCodeConfirmationForm from './AddActivationCodeConfirmationForm'
 import AddActivationCodeForm from './AddActivationCodeForm'
-
-const ACTIVATION_CODES_UPLOAD_ID = 'ACTIVATION_CODES_UPLOAD_ID'
 
 interface ActivationCodeFormProps {
   onCancel: () => void
@@ -76,25 +73,12 @@ const ActivationCodeFormDialog = ({
   }, [onCancel])
 
   return (
-    <DialogBox
-      hasCloseButton
-      onDismiss={dismissModal}
-      labelledBy={ACTIVATION_CODES_UPLOAD_ID}
+    <Dialog
+      onCancel={dismissModal}
+      title="Ajouter des codes d’activation"
+      icon={strokeCodeIcon}
       extraClassNames={styles['activation-codes-upload']}
     >
-      <h4
-        className={styles['activation-codes-upload-title']}
-        id={ACTIVATION_CODES_UPLOAD_ID}
-      >
-        Ajouter des codes d’activation
-      </h4>
-
-      <SvgIcon
-        src={strokeCodeIcon}
-        alt=""
-        className={styles['activation-codes-upload-icon']}
-      />
-
       {hasNoActivationCodes && (
         <AddActivationCodeForm
           submitFile={submitFile}
@@ -112,7 +96,7 @@ const ActivationCodeFormDialog = ({
           minExpirationDate={minExpirationDate}
         />
       )}
-    </DialogBox>
+    </Dialog>
   )
 }
 

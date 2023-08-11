@@ -8,8 +8,8 @@ const ActivationCodesUploadInformationDescription = () => {
       <p>
         Pour les offres nécessitant une activation par code sur une plateforme
         extérieure, vous pouvez importer directement un fichier .csv.
-      </p>
-      <p>
+        <br />
+        <br />
         Le stock disponible sera automatiquement mis à jour. Les bénéficiaires
         auront accès à ce code dans leur espace réservation.
       </p>
