@@ -26,28 +26,30 @@ IN_REJECTED_PRODUCT_IDS_FILE_PATH = "/tmp/OUT_rejected_product_ids.csv"
 OUT_REJECTED_OFFER_IDS_FILE_PATH = "/tmp/OUT_rejected_offer_ids.csv"
 
 
-def reject_inappropriate_offers(productsIds: list[int], dry: bool = False) -> list[str]:
-    offers_query = models.Offer.query.filter(
-        models.Offer.productId.in_(productsIds),
-        models.Offer.validation != models.OfferValidationStatus.REJECTED,
-    )
+def reject_inappropriate_offers(products_ids: list[int], dry: bool = False) -> list[str]:
+    if dry:
+        offers = models.Offer.query.filter(
+            models.Offer.productId.in_(products_ids),
+            models.Offer.validation != models.OfferValidationStatus.REJECTED,
+        ).all()
 
-    offers = offers_query.all()
-
-    if not dry:
-        offers_query.update(
-            values={
-                "validation": models.OfferValidationStatus.REJECTED,
-                "lastValidationDate": datetime.datetime.utcnow(),
-                "lastValidationType": OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
-            },
-            synchronize_session="fetch",
+        offer_ids = [o.id for o in offers]
+    else:
+        res = db.session.execute(
+            sa.update(models.Offer)
+            .returning(models.Offer.id)
+            .where(
+                models.Offer.productId.in_(products_ids),
+                models.Offer.validation != models.OfferValidationStatus.REJECTED,
+            )
+            .values(
+                validation=models.OfferValidationStatus.REJECTED,
+                lastValidationDate=datetime.datetime.utcnow(),
+                lastValidationType=OfferValidationType.CGU_INCOMPATIBLE_PRODUCT,
+            ),
+            execution_options={"synchronize_session": False},
         )
-
-    offer_ids = []
-    for offer in offers:
-        offer_ids.append(offer.id)
-
+        offer_ids = [offer_id for offer_id, in res.fetchall()]
     try:
         if dry:
             db.session.rollback()
