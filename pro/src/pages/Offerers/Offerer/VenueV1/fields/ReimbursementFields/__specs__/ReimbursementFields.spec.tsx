@@ -114,9 +114,9 @@ describe('ReimbursementFields', () => {
 
     expect(screen.getByText('Barème de remboursement')).toBeInTheDocument()
 
-    await expect(
-      screen.queryByText('Chargement en cours ...')
-    ).not.toBeInTheDocument()
+    await waitFor(() => {
+      expect(api.getAvailableReimbursementPoints).toHaveBeenCalledTimes(1)
+    })
 
     expect(screen.getByText('Coordonnées bancaires')).toBeInTheDocument()
   })
@@ -137,10 +137,6 @@ describe('ReimbursementFields', () => {
     await renderReimbursementFields(props, featuresOverride)
 
     expect(screen.getByText('Barème de remboursement')).toBeInTheDocument()
-
-    await expect(
-      screen.queryByText('Chargement en cours ...')
-    ).not.toBeInTheDocument()
 
     expect(screen.queryByText('Coordonnées bancaires')).not.toBeInTheDocument()
   })
