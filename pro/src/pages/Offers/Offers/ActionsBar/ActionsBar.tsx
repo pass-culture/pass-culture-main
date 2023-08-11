@@ -7,7 +7,7 @@ import { Audience } from 'core/shared'
 import useNotification from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
-import strokeCheckIcon from 'icons/stroke-check.svg'
+import fullValidateIcon from 'icons/full-validate.svg'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
 import { searchFiltersSelector } from 'store/offers/selectors'
 import { Button } from 'ui-kit'
@@ -180,15 +180,27 @@ const ActionsBar = ({
       <Button onClick={handleClose} variant={ButtonVariant.SECONDARY}>
         Annuler
       </Button>
-      <Button onClick={() => setIsConfirmDialogOpen(true)} icon={fullHideIcon}>
+      <Button
+        onClick={() => setIsConfirmDialogOpen(true)}
+        icon={fullHideIcon}
+        variant={ButtonVariant.SECONDARY}
+      >
         Désactiver
       </Button>
       {audience == Audience.INDIVIDUAL && (
-        <Button onClick={() => handleOpenDeleteDialog()} icon={fullTrashIcon}>
+        <Button
+          onClick={() => handleOpenDeleteDialog()}
+          icon={fullTrashIcon}
+          variant={ButtonVariant.SECONDARY}
+        >
           Supprimer
         </Button>
       )}
-      <Button onClick={handleActivate} icon={strokeCheckIcon}>
+      <Button
+        onClick={handleActivate}
+        icon={fullValidateIcon}
+        variant={ButtonVariant.SECONDARY}
+      >
         Publier
       </Button>
     </>
