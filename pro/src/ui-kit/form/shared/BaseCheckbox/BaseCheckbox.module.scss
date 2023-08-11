@@ -36,7 +36,7 @@
 
   &-icon {
     width: rem.torem(20px);
-    margin-right: rem.torem(6px);
+    margin-right: rem.torem(8px);
     display: flex;
     flex-direction: column;
 
@@ -54,10 +54,12 @@
     background-color: forms.$input-bg-color;
     border: rem.torem(2px) solid forms.$input-border-color;
     border-radius: rem.torem(3px);
-    transition: border 150ms ease, background 150ms ease;
+    transition:
+      border 150ms ease,
+      background 150ms ease;
     flex: 0 0 auto;
     font-size: inherit;
-    margin-right: rem.torem(6px);
+    margin-right: rem.torem(8px);
     outline: none;
     padding: 0;
     position: relative;
