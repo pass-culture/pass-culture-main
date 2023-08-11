@@ -2,11 +2,18 @@
 {% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
 {% from "components/presentation/details/tabs.html" import build_details_tab_content %}
 {% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
+{% from "components/turbo/spinner.html" import build_loading_spinner with context %}
 {% call build_details_tabs_wrapper() %}
   {{ build_details_tab("bookings", "Réservations", active_tab == "bookings") }}
+  {{ build_details_tab("history", "Historique", active_tab == "history") }}
 {% endcall %}
 {% call build_details_tabs_content_wrapper() %}
   {% call build_details_tab_content("bookings", active_tab == 'bookings') %}
     {% include "finance/incident/get/details/bookings.html" %}
+  {% endcall %}
+  {% call build_details_tab_content("history", active_tab == 'history') %}
+    <turbo-frame data-turbo="false" id="incident_history_frame" loading="lazy" src="{{ url_for('backoffice_v3_web.finance_incident.get_history', finance_incident_id=incident.id) }}">
+    {{ build_loading_spinner() }}
+    </turbo-frame>
   {% endcall %}
 {% endcall %}

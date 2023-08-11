@@ -12,10 +12,12 @@ from werkzeug.exceptions import NotFound
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.finance import exceptions as finance_exceptions
-import pcapi.core.finance.models as finance_models
-import pcapi.core.offerers.models as offerer_models
+from pcapi.core.finance import models as finance_models
+from pcapi.core.history import api as history_api
+from pcapi.core.history import models as history_models
+from pcapi.core.offerers import models as offerer_models
 from pcapi.core.offers import models as offers_models
-import pcapi.core.permissions.models as perm_models
+from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.repository import repository
@@ -91,16 +93,23 @@ def get_finance_incident_cancellation_form(finance_incident_id: int) -> utils.Ba
     )
 
 
-def _cancel_finance_incident(incident: finance_models.FinanceIncident) -> None:
+def _cancel_finance_incident(incident: finance_models.FinanceIncident, comment: str) -> None:
     if incident.status == finance_models.IncidentStatus.CANCELLED:
         raise finance_exceptions.FinanceIncidentAlreadyCancelled
     if incident.status == finance_models.IncidentStatus.VALIDATED:
         raise finance_exceptions.FinanceIncidentAlreadyValidated
 
     incident.status = finance_models.IncidentStatus.CANCELLED
-    # Todo (akarki): log in history the cancellation
 
-    repository.save(incident)
+    action = history_api.log_action(
+        history_models.ActionType.FINANCE_INCIDENT_CANCELLED,
+        author=current_user,
+        finance_incident=incident,
+        comment=comment,
+        save=False,
+    )
+
+    repository.save(incident, action)
 
 
 @finance_incident_blueprint.route("/incident/<int:finance_incident_id>/cancel", methods=["POST"])
@@ -114,7 +123,7 @@ def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeRespons
         return render_finance_incident(incident)
 
     try:
-        _cancel_finance_incident(incident)
+        _cancel_finance_incident(incident, form.comment.data)
     except finance_exceptions.FinanceIncidentAlreadyCancelled:
         flash("L'incident a déjà été annulé", "warning")
         return render_finance_incident(incident)
@@ -127,6 +136,7 @@ def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeRespons
 
 
 @finance_incident_blueprint.route("/incident/<int:finance_incident_id>", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.READ_INCIDENTS)
 def get_incident(finance_incident_id: int) -> utils.BackofficeResponse:
     incident = (
         finance_models.FinanceIncident.query.filter_by(id=finance_incident_id)
@@ -210,6 +220,31 @@ def get_incident(finance_incident_id: int) -> utils.BackofficeResponse:
     return render_finance_incident(incident)
 
 
+@finance_incident_blueprint.route("/incident/<int:finance_incident_id>/history", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.READ_INCIDENTS)
+def get_history(finance_incident_id: int) -> utils.BackofficeResponse:
+    actions = (
+        history_models.ActionHistory.query.filter_by(financeIncidentId=finance_incident_id)
+        .order_by(history_models.ActionHistory.actionDate.desc())
+        .options(
+            sa.orm.joinedload(history_models.ActionHistory.user).load_only(
+                users_models.User.id, users_models.User.firstName, users_models.User.lastName
+            ),
+            sa.orm.joinedload(history_models.ActionHistory.authorUser).load_only(
+                users_models.User.id, users_models.User.firstName, users_models.User.lastName
+            ),
+        )
+        .all()
+    )
+
+    return render_template(
+        "finance/incident/get/details/history.html",
+        actions=actions,
+        form=offerer_forms.CommentForm(),
+        dst=url_for("backoffice_v3_web.finance_incident.comment_incident", finance_incident_id=finance_incident_id),
+    )
+
+
 @finance_incident_blueprint.route("get-incident-creation-form", methods=["GET", "POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_incident_creation_form() -> utils.BackofficeResponse:
@@ -289,7 +324,7 @@ def create_incident() -> utils.BackofficeResponse:
             request.referrer or url_for("backoffice_v3_web.individual_bookings.list_individual_bookings"), 301
         )
 
-    booking_incident_already_created = (
+    booking_incident_already_created_or_validated = (
         finance_models.BookingFinanceIncident.query.options(
             sa.orm.joinedload(finance_models.BookingFinanceIncident.incident)
         )
@@ -297,13 +332,15 @@ def create_incident() -> utils.BackofficeResponse:
         .filter(
             sa.and_(
                 finance_models.BookingFinanceIncident.bookingId.in_([booking.id for booking in bookings]),
-                finance_models.FinanceIncident.status == finance_models.IncidentStatus.CREATED,
+                finance_models.FinanceIncident.status.in_(
+                    [finance_models.IncidentStatus.CREATED, finance_models.IncidentStatus.VALIDATED]
+                ),
             )
         )
         .count()
     )
 
-    if booking_incident_already_created:
+    if booking_incident_already_created_or_validated:
         flash("Au moins une des réservations fait déjà l'objet d'un incident qui n'est pas encore validé.", "warning")
         return redirect(
             request.referrer or url_for("backoffice_v3_web.individual_bookings.list_individual_bookings"), 301
@@ -321,7 +358,16 @@ def create_incident() -> utils.BackofficeResponse:
             "validatedAt": "",
         },
     )
-    repository.save(incident)
+
+    action = history_api.log_action(
+        history_models.ActionType.FINANCE_INCIDENT_CREATED,
+        author=current_user,
+        finance_incident=incident,
+        comment=form.origin.data,
+        save=False,
+    )
+
+    repository.save(incident, action)
 
     booking_finance_incidents_to_create = []
 
@@ -356,3 +402,29 @@ def _initialize_additional_data(bookings: list[bookings_models.Booking]) -> dict
         additional_data["Nombre de réservations"] = len(bookings)
 
     return additional_data
+
+
+@finance_incident_blueprint.route("/incident/<int:finance_incident_id>/comment", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
+def comment_incident(finance_incident_id: int) -> utils.BackofficeResponse:
+    incident = finance_models.FinanceIncident.query.get_or_404(finance_incident_id)
+
+    form = offerer_forms.CommentForm()
+
+    if not form.validate():
+        flash("Le formulaire comporte des erreurs", "warning")
+    else:
+        history_api.log_action(
+            history_models.ActionType.COMMENT,
+            author=current_user,
+            finance_incident=incident,
+            comment=form.comment.data,
+            save=True,
+        )
+        flash("Commentaire enregistré", "success")
+
+    return redirect(
+        url_for(
+            "backoffice_v3_web.finance_incident.get_incident", finance_incident_id=incident.id, active_tab="history"
+        )
+    )

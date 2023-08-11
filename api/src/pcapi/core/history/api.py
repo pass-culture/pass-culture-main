@@ -4,6 +4,7 @@ import typing
 
 from sqlalchemy.ext.mutable import MutableDict
 
+from pcapi.core.finance import models as finance_models
 from pcapi.core.history import models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import models as users_models
@@ -17,6 +18,7 @@ def log_action(
     user: users_models.User | None = None,
     offerer: offerers_models.Offerer | None = None,
     venue: offerers_models.Venue | None = None,
+    finance_incident: finance_models.FinanceIncident | None = None,
     comment: str | None = None,
     save: bool = True,
     **extra_data: typing.Any,
@@ -29,8 +31,8 @@ def log_action(
     new resources in parameters; when such an exception is raised, it shows a bug in our code.
     """
     legit_actions = (models.ActionType.BLACKLIST_DOMAIN_NAME, models.ActionType.REMOVE_BLACKLISTED_DOMAIN_NAME)
-    if (not user and not offerer and not venue) and (action_type not in legit_actions):
-        raise ValueError("No resource (user, offerer, venue)")
+    if (not user and not offerer and not venue and not finance_incident) and (action_type not in legit_actions):
+        raise ValueError("No resource (user, offerer, venue, finance incident)")
 
     if save:
         if user is not None and user.id is None:
@@ -54,6 +56,7 @@ def log_action(
         # FIXME remove type ignores when upgrading to sqlalchemy 2.0
         offerer=offerer,  # type: ignore
         venue=venue,  # type: ignore
+        financeIncident=finance_incident,  # type: ignore
         comment=comment or None,  # do not store empty string
         extraData=extra_data,
     )
