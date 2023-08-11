@@ -38,5 +38,4 @@ WithInitialScale.args = {
   cropBorderHeight: 30,
   cropBorderWidth: 40,
   image: sampleImage as unknown as File,
-  initialScale: 1.5,
 }
