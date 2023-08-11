@@ -42,7 +42,6 @@ interface VenueFormProps {
   venueProvider?: VenueProviderResponse[]
   venue?: Venue
   initialIsVirtual?: boolean
-  isNewOnboardingActive: boolean
 }
 
 interface ShouldBlockVenueNavigationProps {
@@ -82,7 +81,6 @@ const VenueForm = ({
   venueProvider,
   venue,
   initialIsVirtual = false,
-  isNewOnboardingActive,
 }: VenueFormProps) => {
   const {
     values: { isPermanent },
@@ -129,7 +127,6 @@ const VenueForm = ({
           isVenueVirtual={initialIsVirtual}
           setIsSiretValued={setIsSiretValued}
           siren={offerer.siren}
-          isNewOnboardingActive={isNewOnboardingActive}
         />
         {
           /* istanbul ignore next: DEBT, TO FIX */
@@ -152,7 +149,6 @@ const VenueForm = ({
           venueLabels={venueLabels}
           isVenueVirtual={initialIsVirtual}
           isCreatingVenue={isCreatingVenue}
-          isNewOnboardingActive={isNewOnboardingActive}
         />
         {!initialIsVirtual && (
           <>

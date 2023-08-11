@@ -3,13 +3,11 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 
-import useActiveFeature from './useActiveFeature'
 import useCurrentUser from './useCurrentUser'
 
 const useRedirectLoggedUser = () => {
   const navigate = useNavigate()
   const { currentUser } = useCurrentUser()
-  const newOnboardingActive = useActiveFeature('WIP_ENABLE_NEW_ONBOARDING')
 
   const [searchParams] = useSearchParams()
   const redirectToUrl = () => {
@@ -30,7 +28,7 @@ const useRedirectLoggedUser = () => {
     }
 
     if (currentUser) {
-      if (newOnboardingActive && !currentUser.isAdmin) {
+      if (!currentUser.isAdmin) {
         fetchOfferersNames()
       } else {
         redirectToUrl()
