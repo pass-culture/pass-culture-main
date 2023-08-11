@@ -65,8 +65,8 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
     )
 
     logoUrl: str = Column(Text(), nullable=True)
-    bookingExternalUrl: str = Column(Text(), nullable=True)
-    cancelExternalUrl: str = Column(Text(), nullable=True)
+    bookingExternalUrl: str = Column(Text(), nullable=True)  # bookings api url for Charlie API
+    cancelExternalUrl: str = Column(Text(), nullable=True)  # cancel bookings api url for Charlie API
     pricesInCents: bool = Column(Boolean, nullable=False, default=False, server_default=expression.false())
 
     collectiveOffers: sa_orm.Mapped["CollectiveOffer"] = relationship("CollectiveOffer", back_populates="provider")
@@ -87,6 +87,11 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
         from pcapi import local_providers  # avoid import loop
 
         return self.localClass == local_providers.AllocineStocks.__name__
+
+    # Charlie api connects an external event stock managed by a provider and allow tickets collection
+    @property
+    def hasProviderEnableCharlie(self) -> bool:
+        return bool(self.bookingExternalUrl and self.cancelExternalUrl)
 
     @property
     def isCinemaProvider(self) -> bool:

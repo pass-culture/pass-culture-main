@@ -46,6 +46,26 @@ def book_cinema_ticket(
     return client.book_ticket(show_id, booking, beneficiary)
 
 
+def cancel_event_ticket(
+    provider: providers_models.Provider,
+    stock: offers_models.Stock,
+    barcodes: list[str],
+) -> None:
+    payload = serialize.ExternalEventCancelBookingRequest.build_external_cancel_booking(barcodes)
+    headers = {"Content-Type": "application/json"}
+    response = requests.post(provider.cancelExternalUrl, json=payload.json(), headers=headers)
+    parsed_response = pydantic.parse_obj_as(serialize.ExternalEventCancelBookingResponse, response.json())
+    if response.status_code != 200:
+        if parsed_response.remainingQuantity:
+            stock.quantity = parsed_response.remainingQuantity + stock.dnBookedQuantity
+        raise exceptions.ExternalBookingException(
+            f"External booking failed with status code {response.status_code} and message {response.text}"
+        )
+    stock.dnBookedQuantity -= len(barcodes)
+    if parsed_response.remainingQuantity:
+        stock.quantity = parsed_response.remainingQuantity + stock.dnBookedQuantity
+
+
 def _get_external_bookings_client_api(venue_id: int) -> external_bookings_models.ExternalBookingsClientAPI:
     cinema_venue_provider = get_active_cinema_venue_provider(venue_id)
     cinema_id = cinema_venue_provider.venueIdAtOfferProvider

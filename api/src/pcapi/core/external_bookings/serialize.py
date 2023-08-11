@@ -72,3 +72,16 @@ class ExternalEventBookingResponse(pydantic.BaseModel):
 class ExternalEventBookingErrorResponse(pydantic.BaseModel):
     error: str
     remainingQuantity: pydantic.StrictInt | None
+
+
+class ExternalEventCancelBookingRequest(pydantic.BaseModel):
+    barcodes: list[str]
+
+    @classmethod
+    def build_external_cancel_booking(cls, barcodes: list[str]) -> "ExternalEventCancelBookingRequest":
+        return cls(barcodes=barcodes)
+
+
+class ExternalEventCancelBookingResponse(pydantic.BaseModel):
+    error: str | None
+    remainingQuantity: pydantic.StrictInt | None

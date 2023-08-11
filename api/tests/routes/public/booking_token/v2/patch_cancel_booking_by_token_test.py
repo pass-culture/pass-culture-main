@@ -3,8 +3,12 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.categories import subcategories_v2
+import pcapi.core.external_bookings.factories as external_bookings_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+import pcapi.core.providers.factories as providers_factories
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 import pcapi.notifications.push.testing as push_testing
 
@@ -55,6 +59,44 @@ class Returns204Test:
         assert response.status_code == 204
         booking = Booking.query.one()
         assert booking.status is BookingStatus.CANCELLED
+
+    @pytest.mark.usefixtures("db_session")
+    @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
+    def test_should_returns_204_for_external_booking(self, client, requests_mock):
+        external_url = "https://book_my_offer.com"
+        # Given
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider",
+            bookingExternalUrl=external_url + "/book",
+            cancelExternalUrl=external_url + "/cancel",
+        )
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = offers_factories.EventStockFactory(
+            lastProvider=provider,
+            offer__subcategoryId=subcategories_v2.SEANCE_ESSAI_PRATIQUE_ART.id,
+            offer__lastProvider=provider,
+            idAtProviders="",
+            dnBookedQuantity=4,
+        )
+        booking = bookings_factories.BookingFactory(stock=stock)
+        offerers_factories.ApiKeyFactory(offerer=booking.offerer)
+        external_bookings_factories.ExternalBookingFactory(booking=booking, barcode="1234567890123")
+        requests_mock.post(
+            external_url + "/cancel",
+            json={"remainingQuantity": 10},
+            status_code=201,
+        )
+
+        # When
+        response = client.patch(
+            f"/v2/bookings/cancel/token/{booking.token}",
+            headers={"Authorization": "Bearer " + offerers_factories.DEFAULT_CLEAR_API_KEY},
+        )
+
+        assert response.status_code == 204
+        booking = Booking.query.one()
+        assert booking.status is BookingStatus.CANCELLED
+        assert booking.stock.quantity == 14
 
 
 class Returns401Test:

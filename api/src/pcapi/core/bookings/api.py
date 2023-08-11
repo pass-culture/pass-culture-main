@@ -365,6 +365,10 @@ def _cancel_booking(
     """Cancel booking and update a user's credit information on Batch"""
     with transaction():
         stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
+
+        # Since stock is refreshed every time we access it ([cf ](cf: comment in `offers_repository.get_and_lock_stock`))
+        # we must fetch the offer separately to avoid duplicating db calls
+        offer = offers_repository.get_offer_by_id(stock.offerId)
         db.session.refresh(booking)
         try:
             finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
@@ -379,8 +383,13 @@ def _cancel_booking(
                     finance_models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE,
                     commit=False,
                 )
-            _cancel_external_booking(booking, stock)
-        except (BookingIsAlreadyUsed, BookingIsAlreadyCancelled, finance_exceptions.NonCancellablePricingError) as e:
+            _cancel_external_booking(booking, stock, offer)
+        except (
+            BookingIsAlreadyUsed,
+            BookingIsAlreadyCancelled,
+            finance_exceptions.NonCancellablePricingError,
+            external_bookings_exceptions.ExternalBookingException,
+        ) as e:
             if raise_if_error:
                 raise
             logger.info(
@@ -393,7 +402,8 @@ def _cancel_booking(
                 },
             )
             return False
-        stock.dnBookedQuantity -= booking.quantity
+        if not (offer.lastProvider and offer.lastProvider.hasProviderEnableCharlie):
+            stock.dnBookedQuantity -= booking.quantity
         repository.save(booking, stock)
 
     logger.info(
@@ -409,8 +419,16 @@ def _cancel_booking(
     return True
 
 
-def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
+def _cancel_external_booking(booking: Booking, stock: Stock, offer: Offer) -> None:
     if not booking.isExternal:
+        return None
+    if offer.lastProvider and offer.lastProvider.hasProviderEnableCharlie:
+        barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
+        try:
+            external_bookings_api.cancel_event_ticket(offer.lastProvider, stock, barcodes)
+        except external_bookings_exceptions.ExternalBookingException:
+            logger.exception("Could not cancel external ticket")
+            raise external_bookings_exceptions.ExternalBookingException
         return None
     venue_provider_name = external_bookings_api.get_active_cinema_venue_provider(
         stock.offer.venueId
@@ -428,7 +446,7 @@ def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
         case _:
             raise offers_exceptions.UnexpectedCinemaProvider(f"Unknown Provider: {venue_provider_name}")
     barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
-    external_bookings_api.cancel_booking(stock.offer.venueId, barcodes)
+    external_bookings_api.cancel_booking(offer.venueId, barcodes)
 
 
 def _cancel_bookings_from_stock(stock: offers_models.Stock, reason: BookingCancellationReasons) -> list[Booking]:
