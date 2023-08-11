@@ -2,21 +2,25 @@ import { Form, FormikProvider, useFormikContext } from 'formik'
 import isEqual from 'lodash.isequal'
 import React, { useEffect, useState } from 'react'
 
-import { OfferAddressType } from 'apiClient/adage'
+import { AdageFrontRoles, OfferAddressType } from 'apiClient/adage'
 import AdageButtonFilter from 'components/AdageButtonFilter/AdageButtonFilter'
 import FormLayout from 'components/FormLayout'
+import useActiveFeature from 'hooks/useActiveFeature'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeFranceIcon from 'icons/stroke-france.svg'
+import strokeNearIcon from 'icons/stroke-near.svg'
 import strokeSearch from 'icons/stroke-search.svg'
 import { getAcademiesOptionsAdapter } from 'pages/AdageIframe/app/adapters/getAcademiesOptionsAdapter'
 import { getEducationalCategoriesOptionsAdapter } from 'pages/AdageIframe/app/adapters/getEducationalCategoriesOptionsAdapter'
 import { getEducationalDomainsOptionsAdapter } from 'pages/AdageIframe/app/adapters/getEducationalDomainsOptionsAdapter'
 import { departmentOptions } from 'pages/AdageIframe/app/constants/departmentOptions'
+import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { Option } from 'pages/AdageIframe/app/types'
 import { Button, RadioGroup, TextInput } from 'ui-kit'
-import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import AdageMultiselect from 'ui-kit/form/AdageMultiselect/AdageMultiselect'
+import Slider from 'ui-kit/form/Slider/Slider'
 
 import { ADAGE_FILTERS_DEFAULT_VALUES } from '../../utils'
 import { LocalisationFilterStates, SearchFormValues } from '../OffersSearch'
@@ -46,6 +50,10 @@ export const OfferFilters = ({
 
   const formik = useFormikContext<SearchFormValues>()
 
+  const adageUser = useAdageUser()
+
+  const isAdageGeolocEnabled = useActiveFeature('WIP_ENABLE_ADAGE_GEO_LOCATION')
+
   const getActiveLocalisationFilterCount = () => {
     if (!formik.values) {
       return 0
@@ -68,7 +76,7 @@ export const OfferFilters = ({
 
   const onReset = (
     modalName: string,
-    value: string | string[],
+    value: string | string[] | number,
     fieldName?: string
   ) => {
     clearFormikFieldValue(fieldName || modalName, value)
@@ -107,7 +115,7 @@ export const OfferFilters = ({
 
   const clearFormikFieldValue = (
     fieldName: string,
-    value: string | string[]
+    value: string | string[] | number
   ) => {
     formik.setFieldValue(fieldName, value)
     formik.handleSubmit()
@@ -184,11 +192,16 @@ export const OfferFilters = ({
           </AdageButtonFilter>
           <AdageButtonFilter
             isActive={
-              localisationFilterState !== LocalisationFilterStates.NONE &&
-              activeLocalisationFilterCount > 0
+              (localisationFilterState !== LocalisationFilterStates.NONE &&
+                activeLocalisationFilterCount > 0) ||
+              localisationFilterState === LocalisationFilterStates.GEOLOCATION
             }
             title="Localisation des partenaires"
-            itemsLength={activeLocalisationFilterCount}
+            itemsLength={
+              localisationFilterState === LocalisationFilterStates.GEOLOCATION
+                ? null
+                : activeLocalisationFilterCount
+            }
             isOpen={modalOpenStatus['localisation']}
             setIsOpen={setModalOpenStatus}
             filterName="localisation"
@@ -200,6 +213,22 @@ export const OfferFilters = ({
                 hideFooter
               >
                 <ul>
+                  {isAdageGeolocEnabled && (
+                    <li className={styles['localisation-list-button']}>
+                      <Button
+                        onClick={() =>
+                          setLocalisationFilterState(
+                            LocalisationFilterStates.GEOLOCATION
+                          )
+                        }
+                        disabled={adageUser.role === AdageFrontRoles.READONLY}
+                        variant={ButtonVariant.TERNARY}
+                        icon={strokeNearIcon}
+                      >
+                        Autour de mon établissement scolaire
+                      </Button>
+                    </li>
+                  )}
                   <li className={styles['localisation-list-button']}>
                     <Button
                       onClick={() =>
@@ -209,7 +238,6 @@ export const OfferFilters = ({
                       }
                       variant={ButtonVariant.TERNARY}
                       icon={strokeFranceIcon}
-                      iconPosition={IconPositionEnum.LEFT}
                     >
                       Choisir un département
                     </Button>
@@ -223,7 +251,6 @@ export const OfferFilters = ({
                       }
                       variant={ButtonVariant.TERNARY}
                       icon={strokeBuildingIcon}
-                      iconPosition={IconPositionEnum.LEFT}
                     >
                       Choisir une académie
                     </Button>
@@ -260,6 +287,25 @@ export const OfferFilters = ({
                   options={academiesOptions}
                   isOpen={modalOpenStatus['localisation']}
                 />
+              </ModalFilterLayout>
+            )}
+            {localisationFilterState ===
+              LocalisationFilterStates.GEOLOCATION && (
+              <ModalFilterLayout
+                onClean={() => onReset('localisation', 50, 'geolocRadius')}
+                onSearch={() => onSearch('localisation')}
+                title="Autour de mon établissement scolaire"
+              >
+                <div className={styles['geoloc-slider']}>
+                  <Slider
+                    fieldName="geolocRadius"
+                    label="Dans un rayon de"
+                    scale="km"
+                    min={1}
+                    max={100}
+                    displayValue={true}
+                  ></Slider>
+                </div>
               </ModalFilterLayout>
             )}
           </AdageButtonFilter>

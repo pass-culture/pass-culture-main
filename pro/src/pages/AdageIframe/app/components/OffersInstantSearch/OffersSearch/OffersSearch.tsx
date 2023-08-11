@@ -19,6 +19,7 @@ import {
 import Tabs from 'ui-kit/Tabs'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
+import { GeoLocation } from '../OffersInstantSearch'
 import {
   ADAGE_FILTERS_DEFAULT_VALUES,
   adageFiltersToFacetFilters,
@@ -32,11 +33,13 @@ import { Offers } from './Offers/Offers'
 export enum LocalisationFilterStates {
   DEPARTMENTS = 'departments',
   ACADEMIES = 'academies',
+  GEOLOCATION = 'geolocation',
   NONE = 'none',
 }
 
 export interface SearchProps extends SearchBoxProvided {
   venueFilter: VenueResponse | null
+  setGeoLocation: (geoloc: GeoLocation) => void
 }
 
 export interface SearchFormValues {
@@ -47,6 +50,7 @@ export interface SearchFormValues {
   academies: string[]
   eventAddressType: string
   categories: string[][]
+  geolocRadius: number
 }
 
 enum OfferTab {
@@ -56,6 +60,7 @@ enum OfferTab {
 
 export const OffersSearchComponent = ({
   venueFilter,
+  setGeoLocation,
   refine,
 }: SearchProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -112,6 +117,16 @@ export const OffersSearchComponent = ({
     })
 
     setFacetFilters(updatedFilters.queryFilters)
+
+    setGeoLocation(
+      localisationFilterState === LocalisationFilterStates.GEOLOCATION
+        ? {
+            radius: formik.values.geolocRadius * 1000,
+            //  TODO: get the adage user institution position from ADAGE
+            latLng: '48.864716, 2.349014',
+          }
+        : {}
+    )
     refine(formik.values.query)
   }
 
