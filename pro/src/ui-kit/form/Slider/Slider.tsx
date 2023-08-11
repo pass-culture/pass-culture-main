@@ -6,16 +6,19 @@ import styles from './Slider.module.scss'
 
 const DEFAULT_SLIDER_MIN_VALUE = 0
 const DEFAULT_SLIDER_MAX_VALUE = 100
+const DEFAULT_SLIDER_STEP_VALUE = 1
 export interface SliderProps extends React.HTMLProps<HTMLInputElement> {
   fieldName: string
   scale?: string
   hideLabel?: boolean
+  displayMinMaxValues?: boolean
 }
 
 const Slider = ({
   fieldName,
   scale = '',
   hideLabel = false,
+  displayMinMaxValues = true,
   ...inputAttrs
 }: SliderProps): JSX.Element => {
   const [field] = useField(fieldName)
@@ -29,16 +32,23 @@ const Slider = ({
         {inputAttrs.label}
       </label>
       <input
-        type="range"
-        min={0}
-        max={100}
-        className={styles.slider}
         {...field}
+        type="range"
+        className={styles.slider}
+        min={inputAttrs.min || DEFAULT_SLIDER_MIN_VALUE}
+        max={inputAttrs.max || DEFAULT_SLIDER_MIN_VALUE}
+        step={inputAttrs.step || DEFAULT_SLIDER_STEP_VALUE}
       />
-      <div className={styles['min-max-container']}>
-        <span>{`${inputAttrs.min || DEFAULT_SLIDER_MIN_VALUE} ${scale}`}</span>
-        <span>{`${inputAttrs.max || DEFAULT_SLIDER_MAX_VALUE} ${scale}`}</span>
-      </div>
+      {displayMinMaxValues && (
+        <div className={styles['min-max-container']}>
+          <span>{`${
+            inputAttrs.min || DEFAULT_SLIDER_MIN_VALUE
+          } ${scale}`}</span>
+          <span>{`${
+            inputAttrs.max || DEFAULT_SLIDER_MAX_VALUE
+          } ${scale}`}</span>
+        </div>
+      )}
     </div>
   )
 }
