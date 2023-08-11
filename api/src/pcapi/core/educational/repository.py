@@ -5,6 +5,7 @@ from datetime import timedelta
 from decimal import Decimal
 from typing import Iterable
 from typing import Tuple
+import typing
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
@@ -335,21 +336,41 @@ def get_paginated_collective_bookings_for_educational_year(
     return query.all()
 
 
-def get_expired_collective_offers(interval: tuple[datetime, datetime]) -> BaseQuery:
-    """Return a query of collective offers whose latest booking limit occurs within
-    the given interval.
-
+def get_expired_collective_offers_query(utc_now_with_offset: datetime, department_codes: typing.Collection[int]) -> BaseQuery:
+    """Return a query of collective offers who cannot be booked anymore.
     Inactive or deleted offers are ignored.
+
+    Collective offers can be filtered by department codes. This is
+    useful if one needs to handle offers from different timezones
+    separately.
+
+    No departments means metropolitan France.
     """
 
     # FIXME (cgaunet, 2022-03-08): This query could be optimized by returning offers
     # that do not have bookings because booking a collective offer will unindex it.
-    return (
+    query = (
         educational_models.CollectiveOffer.query.join(educational_models.CollectiveStock)
+        .join(educational_models.Venue)
         .filter(
             educational_models.CollectiveOffer.isActive.is_(True),
+            educational_models.CollectiveOffer.bookingLimitDatetime < utc_now_with_offset
         )
-        .having(sa.func.max(educational_models.CollectiveStock.bookingLimitDatetime).between(*interval))
+    )
+
+    if department_codes:
+        query = query.filter(
+            sa.and_(*[offerers_models.Venue.departementCode == code for code in department_codes])
+        )
+    else:
+        query = query.filter(sa.and_(
+            # metropolitan france departement codes are < "97"
+            sa.not_(offerers_models.Venue.departementCode.startswith("97")),
+            sa.not_(offerers_models.Venue.departementCode.startswith("98")),
+        ))
+
+    return (
+        query
         .group_by(educational_models.CollectiveOffer.id)
         .order_by(educational_models.CollectiveOffer.id)
     )

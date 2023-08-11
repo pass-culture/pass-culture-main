@@ -58,16 +58,29 @@ def delete_expired_offers_in_algolia() -> None:
     offers_api.unindex_expired_offers()
 
 
-@blueprint.cli.command("delete_expired_collective_offers_in_algolia")
-@log_cron_with_transaction
-def delete_expired_collective_offers_in_algolia() -> None:
-    """Unindex collective offers that have expired.
+#  @blueprint.cli.command("unindex_expired_collective_offers_metropolis")
+#  @log_cron_with_transaction
+#  def unindex_expired_collective_offers_metropolis() -> None:
+#      """Unindex expired collective offers that have expired.
+#
+#      Overseas offers are handled separately because of the different
+#      timezones.
+#      """
+#      unindex_expired_collective_offers(1)
 
-    By default, process collective offers that have expired within the last 2
-    days. For example, if run on Thursday (whatever the time), this
-    function handles collective offers that have expired between Tuesday 00:00
-    and Wednesday 23:59 (included)."""
-    unindex_expired_collective_offers()
+
+@blueprint.cli.command("unindex_expired_collective_offers_overseas")
+@log_cron_with_transaction
+@click.option("--utc-offset", help="UTC offset to use (can be negative)", type=int, required=True)
+@click.argument("departments", nargs=-1)
+def unindex_expired_collective_offers_overseas(utc_offset: int, departments: typing.Collection[str]) -> None:
+    """Unindex expired collective offers that have expired.
+
+    Overseas offers are handled separately because of the different
+    timezones.
+    """
+    print(utc_offset, departments)
+    #  unindex_expired_collective_offers(utc_offset, departments)
 
 
 @blueprint.cli.command("index_offers_in_error_in_algolia_by_offer")

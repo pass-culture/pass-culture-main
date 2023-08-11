@@ -42,6 +42,7 @@ from pcapi.routes.serialization.collective_offers_serialize import PostCollectiv
 from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
 from pcapi.utils import image_conversion
 from pcapi.utils import rest
+import pcapi.utils.chunks as chunks_utils
 
 
 logger = logging.getLogger(__name__)
@@ -77,32 +78,25 @@ def notify_educational_redactor_on_collective_offer_or_stock_edit(
         )
 
 
-def unindex_expired_collective_offers(process_all_expired: bool = False) -> None:
+def unindex_expired_collective_offers(utc_offset: int, department_codes: typing.Collection[str] | None) -> typing.Generator[typing.Collection[int], None, None]:
     """Unindex collective offers that have expired.
 
-    By default, process collective offers that have expired within the last 2
-    days. For example, if run on Thursday (whatever the time), this
-    function handles collective offers that have expired between Tuesday 00:00
-    and Wednesday 23:59 (included).
-
-    If ``process_all_expired`` is true, process... well all expired
-    collective offers.
+    Offers from different timezones should be handled separately: use
+    the appropriate utc offset and department codes.
     """
-    start_of_day = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
-    interval = (
-        datetime.datetime(2000, 1, 1) if process_all_expired else start_of_day - datetime.timedelta(days=2),
-        start_of_day,
+    utc_now_with_offset = (
+        datetime.datetime.utcnow(),
+        - datetime.timedelta(hours=utc_offset)
     )
 
-    page = 0
-    limit = settings.ALGOLIA_DELETING_COLLECTIVE_OFFERS_CHUNK_SIZE
-    while collective_offer_ids := _get_expired_collective_offer_ids(interval, page, limit):
+    collective_offer_ids = _get_expired_collective_offer_ids(utc_now_with_offset, department_codes)
+    for chunk in chunks_utils.get_chunks(collective_offer_ids, settings.ALGOLIA_DELETING_COLLECTIVE_OFFERS_CHUNK_SIZE):
         logger.info(
             "[ALGOLIA] Found %d expired collective offers to unindex",
-            len(collective_offer_ids),
+            len(chunk),
         )
-        search.unindex_collective_offer_ids(collective_offer_ids)
-        page += 1
+        search.unindex_collective_offer_ids(chunk)
+        yield chunk
 
 
 def list_collective_offers_for_pro_user(
@@ -709,13 +703,12 @@ def attach_image(
 
 
 def _get_expired_collective_offer_ids(
-    interval: tuple[datetime.datetime, datetime.datetime],
-    page: int,
-    limit: int,
-) -> list[int]:
-    collective_offers = educational_repository.get_expired_collective_offers(interval)
-    collective_offers = collective_offers.offset(page * limit).limit(limit)
-    return [offer_id for offer_id, in collective_offers.with_entities(educational_models.CollectiveOffer.id)]
+    utc_now_with_offset: datetime.datetime,
+    departments: typing.Collection[str] | None,
+    batch_size: int = 1_000,
+) -> typing.Generator[int, None, None]:
+    query = educational_repository.get_expired_collective_offers_query(utc_now_with_offset, department_codes)
+    return (offer_id for offer_id, in query.with_entities(educational_models.CollectiveOffer.id).yield_per(batch_size))
 
 
 def duplicate_offer_and_stock(
