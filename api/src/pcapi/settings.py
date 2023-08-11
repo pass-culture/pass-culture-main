@@ -208,6 +208,14 @@ TITELIVE_EPAGINE_API_URL = "https://catsearch.epagine.fr/v1"
 TITELIVE_EPAGINE_API_USERNAME = secrets_utils.get("TITELIVE_EPAGINE_API_USERNAME", "")
 TITELIVE_EPAGINE_API_PASSWORD = secrets_utils.get("TITELIVE_EPAGINE_API_PASSWORD", "")
 
+# CHARLIE URLS
+CHARLIE_BOOKING_URL = os.environ.get(
+    "CHARLIE_API_URL", "https://pass-culture-external-api-mpedokshja-od.a.run.app/tickets/create"
+)
+CHARLIE_CANCEL_BOOKING_URL = os.environ.get(
+    "CHARLIE_CANCEL_BOOKING_URL", "https://pass-culture-external-api-mpedokshja-od.a.run.app/tickets/cancel"
+)
+
 # UBBLE
 UBBLE_API_URL = os.environ.get("UBBLE_API_URL", "https://api.ubble.ai")
 UBBLE_CLIENT_ID = secrets_utils.get("UBBLE_CLIENT_ID", "")
