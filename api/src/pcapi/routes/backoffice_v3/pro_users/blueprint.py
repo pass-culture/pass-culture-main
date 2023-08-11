@@ -6,6 +6,7 @@ from flask import url_for
 from flask_login import current_user
 import sqlalchemy as sa
 
+from pcapi.core import mails as mails_api
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.history import repository as history_repository
 from pcapi.core.offerers import models as offerers_models
@@ -14,14 +15,15 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users.email import update as email_update
-from pcapi.utils import email as email_utils
-
 from pcapi.routes.backoffice_v3 import utils
 from pcapi.routes.backoffice_v3.forms import empty as empty_forms
 from pcapi.routes.backoffice_v3.forms import search as search_forms
 from pcapi.routes.backoffice_v3.pro_users import forms as pro_users_forms
-from pcapi.routes.backoffice_v3.users import forms as user_forms
 from pcapi.routes.backoffice_v3.serialization.search import TypeOptions
+from pcapi.routes.backoffice_v3.users import forms as user_forms
+from pcapi.tasks.batch_tasks import DeleteBatchUserAttributesRequest
+from pcapi.tasks.batch_tasks import delete_user_attributes_task
+from pcapi.utils import email as email_utils
 
 
 pro_user_blueprint = utils.child_backoffice_blueprint(
@@ -60,6 +62,7 @@ def get(user_id: int) -> utils.BackofficeResponse:
         dst=dst,
         empty_form=empty_forms.EmptyForm(),
         **user_forms.get_toggle_suspension_args(user, user_forms.SuspensionUserType.PRO),
+        **_get_delete_kwargs(user),
     )
 
 
@@ -130,6 +133,35 @@ def update_pro_user(user_id: int) -> utils.BackofficeResponse:
     return redirect(url_for(".get", user_id=user_id), code=303)
 
 
+@pro_user_blueprint.route("/delete", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
+def delete(user_id: int) -> utils.BackofficeResponse:
+    user = users_models.User.query.get_or_404(user_id)
+
+    if not _user_can_be_deleted(user):
+        flash("Le compte est rattaché à une structure", "warning")
+        return redirect(url_for("backoffice_v3_web.pro_user.get", user_id=user_id), code=303)
+
+    form = pro_users_forms.DeleteProUser()
+    if not form.validate():
+        flash("Le formulaire n'est pas valide", "warning")
+        return redirect(url_for("backoffice_v3_web.pro_user.get", user_id=user_id), code=303)
+
+    if not form.email.data == user.email:
+        flash("L'email saisi ne correspond pas à celui du compte", "warning")
+        return redirect(url_for("backoffice_v3_web.pro_user.get", user_id=user_id), code=303)
+
+    # clear from mailing list
+    mails_api.delete_contact(user.email)
+    # clear from push notifications
+    payload = DeleteBatchUserAttributesRequest(user_id=user.id)
+    delete_user_attributes_task.delay(payload)
+
+    users_models.User.query.filter(users_models.User.id == user_id).delete()
+    flash("Le compte a bien été supprimé", "success")
+    return redirect(url_for("backoffice_v3_web.search_pro"), code=303)
+
+
 @pro_user_blueprint.route("/comment", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PRO_ENTITY)
 def comment_pro_user(user_id: int) -> utils.BackofficeResponse:
@@ -156,3 +188,16 @@ def validate_pro_user_email(user_id: int) -> utils.BackofficeResponse:
         users_api.validate_pro_user_email(user=user, author_user=current_user)
         flash(f"L'email {user.email} est validé !", "success")
     return redirect(url_for("backoffice_v3_web.pro_user.get", user_id=user_id), code=303)
+
+
+def _user_can_be_deleted(user: users_models.User) -> bool:
+    return user.has_non_attached_pro_role and len(user.roles) == 1 and not user.UserOfferers
+
+
+def _get_delete_kwargs(user: users_models.User) -> dict:
+    kwargs = {
+        "can_be_deleted": _user_can_be_deleted(user),
+        "delete_dest": url_for("backoffice_v3_web.pro_user.delete", user_id=user.id),
+        "delete_form": pro_users_forms.DeleteProUser(),
+    }
+    return kwargs

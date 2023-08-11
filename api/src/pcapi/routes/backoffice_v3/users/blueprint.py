@@ -14,7 +14,6 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
-
 from pcapi.routes.backoffice_v3 import utils
 from pcapi.routes.backoffice_v3.users import forms
 
