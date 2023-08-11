@@ -4,14 +4,12 @@ from pcapi.core import testing
 import pcapi.core.finance.factories as finance_factories
 from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.testing import override_features
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Returns200Test:
-    @pytest.mark.skip("Keep single function WIP_ENABLE_NEW_ONBOARDING FF is removed")
     def test_available_reimbursement_points_sorted_by_common_name(self, client):
         user_offerer = offerers_factories.UserOffererFactory(
             user__email="user.pro@example.com",
@@ -51,15 +49,6 @@ class Returns200Test:
             },
         ]
 
-    @override_features(WIP_ENABLE_NEW_ONBOARDING=False)
-    def test_available_reimbursement_points_sorted_by_common_name_legacy(self, client):
-        self.test_available_reimbursement_points_sorted_by_common_name(client)
-
-    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
-    def test_available_reimbursement_points_sorted_by_common_name_new_onboarding(self, client):
-        self.test_available_reimbursement_points_sorted_by_common_name(client)
-
-    @pytest.mark.skip("Keep single function when WIP_ENABLE_NEW_ONBOARDING FF is removed")
     def test_no_available_reimbursement_point(self, client):
         user_offerer = offerers_factories.UserOffererFactory(
             user__email="user.pro@example.com",
@@ -75,11 +64,3 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert response.json == []
-
-    @override_features(WIP_ENABLE_NEW_ONBOARDING=False)
-    def test_no_available_reimbursement_point_legacy(self, client):
-        self.test_no_available_reimbursement_point(client)
-
-    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
-    def test_no_available_reimbursement_point_new_onboarding(self, client):
-        self.test_no_available_reimbursement_point(client)
