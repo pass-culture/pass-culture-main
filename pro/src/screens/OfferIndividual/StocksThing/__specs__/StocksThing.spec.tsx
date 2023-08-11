@@ -424,9 +424,7 @@ describe('screens:StocksThing', () => {
       const uploadButton = screen.getByText(
         "Importer un fichier .csv depuis l'ordinateur"
       )
-      const title = screen.getByRole('heading', {
-        name: /Ajouter des codes d’activation/,
-      })
+      const title = screen.getByText(/Ajouter des codes d’activation/)
 
       const file = new File(
         ['ABH\nJHB\nIOP\nKLM\nABH'],
