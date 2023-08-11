@@ -23,7 +23,6 @@ from pcapi.core.offerers.models import VenueTypeCode
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
@@ -219,10 +218,8 @@ class GetVenueTest(GetEndpointHelper):
     # get session (1 query)
     # get user with profile and permissions (1 query)
     # get venue (1 query)
-    # check WIP_ENABLE_NEW_ONBOARDING FF (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
-    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_get_venue(self, authenticated_client, venue):
         venue.publicName = "Le grand Rantanplan 1"
 
@@ -260,16 +257,6 @@ class GetVenueTest(GetEndpointHelper):
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         assert "Lieu" in badges
         assert "Suspendu" not in badges
-
-    @override_features(WIP_ENABLE_NEW_ONBOARDING=False)
-    def test_get_venue_ff_off(self, authenticated_client, venue):
-        url = url_for(self.endpoint, venue_id=venue.id)
-
-        response = authenticated_client.get(url)
-
-        response_text = html_parser.content_as_text(response.data)
-        assert f"Type de lieu : {venue.venueTypeCode.value}" in response_text
-        assert "Activité principale" not in response_text
 
     def test_get_venue_with_adage_id(self, authenticated_client):
         venue = offerers_factories.VenueFactory(adageId="7122022", contact=None)
