@@ -39,3 +39,9 @@ class LoggerBackend(BaseBackend):
             payload.attributes,
             payload.emailBlacklisted,
         )
+
+    def delete_contact(self, contact_email: str) -> None:
+        logger.info(
+            "A request to Sendinblue Contact API would be sent for user %s to delete them.",
+            contact_email,
+        )

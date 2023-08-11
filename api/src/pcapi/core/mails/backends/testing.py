@@ -32,3 +32,6 @@ class TestingBackend(BaseBackend):
         users_testing.sendinblue_requests.append(
             {"email": payload.email, "attributes": payload.attributes, "emailBlacklisted": payload.emailBlacklisted}
         )
+
+    def delete_contact(self, contact_email: str) -> None:
+        users_testing.sendinblue_requests.append({"email": contact_email, "action": "delete"})

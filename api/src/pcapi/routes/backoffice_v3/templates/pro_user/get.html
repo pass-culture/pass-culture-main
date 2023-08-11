@@ -59,6 +59,9 @@
               {% elif has_permission("UNSUSPEND_USER") and not user.isActive %}
                 {{ build_modal_form("unsuspend", suspension_dst, suspension_form, "Réactiver le compte", "Confirmer la réactivation") }}
               {% endif %}
+              {% if has_permission("MANAGE_PRO_ENTITY") and can_be_deleted %}
+                {{ build_modal_form("delete", delete_dest, delete_form, "Supprimer le compte", "Supprimer le compte", "Pour confirmer la suppression du compte merci de saisir son adresse email") }}
+              {% endif %}
             </div>
           </div>
           <p class="card-subtitle text-muted mb-3 h5">User ID : {{ user.id }}</p>

@@ -14,5 +14,9 @@ class EditProUserForm(utils.PCForm):
     postal_code = fields.PCOptPostalCodeField("Code postal")
 
 
+class DeleteProUser(utils.PCForm):
+    email = fields.PCEmailField("Email")
+
+
 class CommentForm(FlaskForm):
     comment = fields.PCCommentField("Commentaire interne pour le compte pro")

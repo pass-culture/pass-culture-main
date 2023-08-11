@@ -31,6 +31,11 @@ def create_contact(payload: sendinblue_tasks.UpdateSendinblueContactRequest) -> 
     backend().create_contact(payload)
 
 
+def delete_contact(contact_email: str) -> None:
+    backend = import_string(settings.EMAIL_BACKEND)
+    backend().delete_contact(contact_email)
+
+
 def _get_backend(data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData) -> type:
     # Do not send unnecessary transactional emails through Sendinblue in EHP
     if (
