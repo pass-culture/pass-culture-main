@@ -2031,7 +2031,6 @@ class CreateFromOnboardingDataTest:
             webPresence="https://www.example.com, https://instagram.com/example, https://mastodon.social/@example",
         )
 
-    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_new_siren_new_siret(self):
         user = users_factories.UserFactory(email="pro@example.com")
         user.add_non_attached_pro_role()
@@ -2075,7 +2074,6 @@ class CreateFromOnboardingDataTest:
         # Venue Registration
         self.assert_venue_registration_attrs(created_venue)
 
-    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_existing_siren_new_siret(self):
         offerer = offerers_factories.OffererFactory(siren="853318459")
         offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
@@ -2112,7 +2110,6 @@ class CreateFromOnboardingDataTest:
         # Venue Registration
         self.assert_venue_registration_attrs(created_venue)
 
-    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_existing_siren_new_venue_without_siret(self):
         offerer = offerers_factories.OffererFactory(siren="853318459")
         offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
@@ -2150,7 +2147,6 @@ class CreateFromOnboardingDataTest:
         # Venue Registration
         self.assert_venue_registration_attrs(created_venue)
 
-    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_existing_siren_existing_siret(self):
         offerer = offerers_factories.OffererFactory(siren="853318459")
         _virtual_venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
@@ -2183,7 +2179,6 @@ class CreateFromOnboardingDataTest:
         # Venue Registration
         assert offerers_models.VenueRegistration.query.count() == 0
 
-    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_missing_address(self):
         user = users_factories.UserFactory(email="pro@example.com")
         user.add_non_attached_pro_role()

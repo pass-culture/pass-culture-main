@@ -108,7 +108,6 @@ class FeatureToggle(enum.Enum):
     ENABLE_CGR_INTEGRATION = "Active la synchonisation de stocks et la réservation via CGR"
     WIP_ADD_CLG_6_5_COLLECTIVE_OFFER = "Ouverture des offres collectives au 6ème et 5ème"
     WIP_ENABLE_LIKE_IN_ADAGE = "Active la possibilité de liker une offre sur adage"
-    WIP_ENABLE_NEW_ONBOARDING = "Active le nouvel onboarding sans SIREN"
     WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY = "Changer le template d'email de confirmation de réservation"
     WIP_ENABLE_TRUSTED_DEVICE = "Active la fonctionnalité d'appareil de confiance"
     WIP_ENABLE_SUSPICIOUS_EMAIL_SEND = "Active l'envoie d'email lors de la détection d'une connexion suspicieuse"
@@ -188,7 +187,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.PRICE_FINANCE_EVENTS,
     FeatureToggle.WIP_ADD_CLG_6_5_COLLECTIVE_OFFER,
     FeatureToggle.WIP_ENABLE_LIKE_IN_ADAGE,
-    FeatureToggle.WIP_ENABLE_NEW_ONBOARDING,
     FeatureToggle.WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY,
     FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE,
     FeatureToggle.WIP_ENABLE_SUSPICIOUS_EMAIL_SEND,

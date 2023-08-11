@@ -1158,12 +1158,6 @@ def validate_pro_user_email(user: users_models.User, author_user: users_models.U
         repository.save(user, action)
     else:
         repository.save(user)
-    if not feature.FeatureToggle.WIP_ENABLE_NEW_ONBOARDING.is_active():
-        if not transactional_mails.send_welcome_to_pro_email(user):
-            logger.warning(
-                "Could not send welcome email when pro user is valid",
-                extra={"user": user.id},
-            )
     offerers_api.accept_offerer_invitation_if_exists(user)
 
 
