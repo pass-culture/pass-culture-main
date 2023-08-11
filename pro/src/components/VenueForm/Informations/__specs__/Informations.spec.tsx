@@ -50,7 +50,7 @@ const renderInformations = ({
   )
 
   const validationSchema = generateSiretOrCommentValidationSchema.concat(
-    yup.object().shape(informationsValidationSchema(false))
+    yup.object().shape(informationsValidationSchema)
   )
 
   const rtlReturns = render(
@@ -90,7 +90,6 @@ describe('components | Informations', () => {
       setIsSiretValued,
       isVenueVirtual: false,
       siren: '123456789',
-      isNewOnboardingActive: false,
     }
   })
 

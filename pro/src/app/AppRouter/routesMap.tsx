@@ -345,7 +345,6 @@ const routes: RouteConfig[] = [
     element: <SignupJourneyRoutes />,
     path: '/parcours-inscription/*',
     title: 'Parcours de souscription',
-    featureName: 'WIP_ENABLE_NEW_ONBOARDING',
     meta: { withoutLayout: true },
   },
 ]

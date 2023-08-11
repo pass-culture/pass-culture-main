@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
@@ -408,10 +408,7 @@ describe('Signup', () => {
   })
   describe('Without SIREN', () => {
     const features = {
-      list: [
-        { isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' },
-        { isActive: true, nameKey: 'WIP_ENABLE_NEW_ONBOARDING' },
-      ],
+      list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
     }
 
     it('should not render SIREN field', () => {

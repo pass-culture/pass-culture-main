@@ -36,10 +36,6 @@ describe('Signup journey', () => {
     cy.url().should('be.equal', 'http://localhost:3001/accueil')
   }
 
-  before(() => {
-    cy.setFeatureFlags([{ name: 'WIP_ENABLE_NEW_ONBOARDING', isActive: true }])
-  })
-
   it('should create offerer', () => {
     cy.login('pctest.pro93.0@example.com', 'user@AZERTY123')
 
@@ -75,9 +71,5 @@ describe('Signup journey', () => {
     validationStep()
 
     cy.logout()
-  })
-
-  after(() => {
-    cy.setFeatureFlags([{ name: 'WIP_ENABLE_NEW_ONBOARDING', isActive: false }])
   })
 })

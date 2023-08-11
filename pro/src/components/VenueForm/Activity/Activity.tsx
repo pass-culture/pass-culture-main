@@ -9,7 +9,6 @@ export interface ActivityProps {
   venueLabels: SelectOption[]
   isVenueVirtual?: boolean
   isCreatingVenue: boolean
-  isNewOnboardingActive: boolean
 }
 
 const Activity = ({
@@ -17,7 +16,6 @@ const Activity = ({
   venueLabels,
   isCreatingVenue,
   isVenueVirtual = false,
-  isNewOnboardingActive,
 }: ActivityProps) => {
   return (
     <>
@@ -39,9 +37,7 @@ const Activity = ({
               ...venueTypes,
             ]}
             name="venueType"
-            label={
-              isNewOnboardingActive ? 'Activité principale' : 'Type de lieu'
-            }
+            label="Activité principale"
             disabled={isVenueVirtual}
           />
         </FormLayout.Row>

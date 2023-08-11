@@ -621,12 +621,6 @@ describe('VenueFormScreen', () => {
   describe('Displaying with new onboarding', () => {
     let features: { list: { isActive: true; nameKey: string }[] }
 
-    beforeEach(() => {
-      features = {
-        list: [{ isActive: true, nameKey: 'WIP_ENABLE_NEW_ONBOARDING' }],
-      }
-    })
-
     it('should display new onboarding wording labels', async () => {
       venue.isVirtual = false
       renderForm(

@@ -5,24 +5,21 @@ import { validationSchema as activitySchema } from './Activity'
 import { validationSchema as contactValidationSchema } from './Contact'
 import { validationSchema as informationsValidationSchema } from './Informations'
 
-const validationSchemaConcat = (newOnboardingActive: boolean) => {
-  return {
-    ...informationsValidationSchema(newOnboardingActive),
-    ...activitySchema(newOnboardingActive),
-    ...accessibilityValidationSchema,
-    ...contactValidationSchema,
-    isVenueVirtual: yup.boolean(),
-    addressAutocomplete: yup.string().when('isVenueVirtual', {
-      is: false,
-      then: schema =>
-        schema.required(
-          'Veuillez sélectionner une adresse parmi les suggestions'
-        ),
-    }),
-  }
+const validationSchemaConcat = {
+  ...informationsValidationSchema,
+  ...activitySchema,
+  ...accessibilityValidationSchema,
+  ...contactValidationSchema,
+  isVenueVirtual: yup.boolean(),
+  addressAutocomplete: yup.string().when('isVenueVirtual', {
+    is: false,
+    then: schema =>
+      schema.required(
+        'Veuillez sélectionner une adresse parmi les suggestions'
+      ),
+  }),
 }
 
-const validationSchema = (newOnboardingActive: boolean) =>
-  yup.object().shape(validationSchemaConcat(newOnboardingActive))
+const validationSchema = yup.object().shape(validationSchemaConcat)
 
 export default validationSchema

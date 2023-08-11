@@ -112,10 +112,10 @@ describe('validationSchema', () => {
     },
   ]
 
-  cases.forEach(({ description, formValues, expectedErrors, withoutSiren }) => {
+  cases.forEach(({ description, formValues, expectedErrors }) => {
     it(`should validate the form for case: ${description}`, async () => {
       const errors = await getYupValidationSchemaErrors(
-        validationSchema(withoutSiren),
+        validationSchema,
         formValues
       )
       expect(errors).toEqual(expectedErrors)
