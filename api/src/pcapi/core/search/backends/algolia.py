@@ -511,6 +511,7 @@ class AlgoliaBackend(base.SearchBackend):
             "banner_url": venue.bannerUrl,
             "_geoloc": position(venue),
             "has_at_least_one_bookable_offer": has_at_least_one_bookable_offer,
+            "date_created": venue.dateCreated.timestamp(),
         }
 
     @classmethod

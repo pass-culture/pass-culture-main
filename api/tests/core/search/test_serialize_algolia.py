@@ -280,6 +280,7 @@ def test_serialize_venue():
         "banner_url": venue.bannerUrl,
         "_geoloc": {"lng": float(venue.longitude), "lat": float(venue.latitude)},
         "has_at_least_one_bookable_offer": False,
+        "date_created": venue.dateCreated.timestamp(),
     }
 
 
