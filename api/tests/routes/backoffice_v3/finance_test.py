@@ -5,10 +5,13 @@ from pcapi.core import testing
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.history import factories as history_factories
+from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.routes.backoffice_v3.finance.blueprint import _cancel_finance_incident
 
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
@@ -64,7 +67,7 @@ class CancelIncidentTest(PostEndpointHelper):
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
-    def test_cancel_incident(self, authenticated_client):
+    def test_cancel_incident(self, legit_user, authenticated_client):
         incident = finance_factories.FinanceIncidentFactory()
         self.form_data = {"comment": "L'incident n'est pas conforme"}
 
@@ -82,6 +85,11 @@ class CancelIncidentTest(PostEndpointHelper):
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         assert "Annulé" in badges
 
+        action_history = history_models.ActionHistory.query.one()
+        assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CANCELLED
+        assert action_history.authorUser == legit_user
+        assert action_history.comment == self.form_data["comment"]
+
     def test_cancel_already_cancelled_incident(self, authenticated_client):
         incident = finance_factories.FinanceIncidentFactory(status=finance_models.IncidentStatus.CANCELLED)
         self.form_data = {"comment": "L'incident n'est pas conforme"}
@@ -91,6 +99,7 @@ class CancelIncidentTest(PostEndpointHelper):
         assert response.status_code == 200
 
         assert "L'incident a déjà été annulé" in html_parser.extract_alert(response.data)
+        assert history_models.ActionHistory.query.count() == 0
 
     def test_cancel_already_validated_incident(self, authenticated_client):
         incident = finance_factories.FinanceIncidentFactory(status=finance_models.IncidentStatus.VALIDATED)
@@ -101,6 +110,7 @@ class CancelIncidentTest(PostEndpointHelper):
         assert response.status_code == 200
 
         assert "Impossible d'annuler un incident déjà validé" in html_parser.extract_alert(response.data)
+        assert history_models.ActionHistory.query.count() == 0
 
 
 class GetIncidentTest(GetEndpointHelper):
@@ -198,7 +208,7 @@ class CreateIncidentTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.finance_incident.create_incident"
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
-    def test_create_incident_from_one_booking(self, authenticated_client):
+    def test_create_incident_from_one_booking(self, legit_user, authenticated_client):
         pricing = finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED)
         booking = bookings_factories.ReimbursedBookingFactory(pricings=[pricing])
 
@@ -222,6 +232,11 @@ class CreateIncidentTest(PostEndpointHelper):
             booking.amount * 100
         )  # incident amount is stored as cents
 
+        action_history = history_models.ActionHistory.query.one()
+        assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED
+        assert action_history.authorUser == legit_user
+        assert action_history.comment == "Origine de la demande"
+
     def test_not_creating_incident_if_already_exists(self, authenticated_client):
         booking = bookings_factories.ReimbursedBookingFactory()
         finance_factories.IndividualBookingFinanceIncidentFactory(booking=booking)
@@ -240,7 +255,9 @@ class CreateIncidentTest(PostEndpointHelper):
         assert response.status_code == 301
         assert finance_models.FinanceIncident.query.count() == 1  # didn't create new incident
 
-    def test_create_incident_from_multiple_booking(self, authenticated_client):
+        assert history_models.ActionHistory.query.count() == 0
+
+    def test_create_incident_from_multiple_booking(self, legit_user, authenticated_client):
         venue = offerers_factories.VenueFactory()
         offer = offers_factories.OfferFactory(venue=venue)
         stock = offers_factories.StockFactory(offer=offer)
@@ -270,3 +287,32 @@ class CreateIncidentTest(PostEndpointHelper):
         finance_incident = finance_models.FinanceIncident.query.first()
         assert finance_incident.details["origin"] == "Origine de la demande"
         assert finance_models.BookingFinanceIncident.query.count() == 2
+
+        action_history = history_models.ActionHistory.query.one()
+        assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED
+        assert action_history.authorUser == legit_user
+        assert action_history.comment == "Origine de la demande"
+
+
+class GetIncidentHistoryTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.finance_incident.get_history"
+    endpoint_kwargs = {"finance_incident_id": 1}
+    needed_permission = perm_models.Permissions.READ_INCIDENTS
+
+    def test_get_incident_history(self, legit_user, authenticated_client):
+        finance_incident = finance_factories.FinanceIncidentFactory()
+        action = history_factories.ActionHistoryFactory(
+            financeIncident=finance_incident, actionType=history_models.ActionType.FINANCE_INCIDENT_CREATED
+        )
+        _cancel_finance_incident(finance_incident, comment="Je décide d'annuler l'incident")
+
+        response = authenticated_client.get(url_for(self.endpoint, finance_incident_id=finance_incident.id))
+        assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 2
+        assert rows[0]["Type"] == history_models.ActionType.FINANCE_INCIDENT_CANCELLED.value
+        assert rows[1]["Type"] == history_models.ActionType.FINANCE_INCIDENT_CREATED.value
+        assert rows[1]["Date/Heure"].startswith(action.actionDate.strftime("Le %d/%m/%Y à "))
+        assert rows[1]["Commentaire"] == action.comment
+        assert rows[1]["Auteur"] == action.authorUser.full_name
