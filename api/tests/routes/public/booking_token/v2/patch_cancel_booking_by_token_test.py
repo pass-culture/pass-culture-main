@@ -84,7 +84,7 @@ class Returns204Test:
         requests_mock.post(
             external_url + "/cancel",
             json={"remainingQuantity": 10},
-            status_code=201,
+            status_code=200,
         )
 
         # When
@@ -97,6 +97,45 @@ class Returns204Test:
         booking = Booking.query.one()
         assert booking.status is BookingStatus.CANCELLED
         assert booking.stock.quantity == 14
+
+    @pytest.mark.usefixtures("db_session")
+    @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
+    def test_should_returns_204_for_booking_duo_external_booking(self, client, requests_mock):
+        external_url = "https://book_my_offer.com"
+        # Given
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider",
+            bookingExternalUrl=external_url + "/book",
+            cancelExternalUrl=external_url + "/cancel",
+        )
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = offers_factories.EventStockFactory(
+            lastProvider=provider,
+            offer__subcategoryId=subcategories_v2.SEANCE_ESSAI_PRATIQUE_ART.id,
+            offer__lastProvider=provider,
+            idAtProviders="",
+            dnBookedQuantity=2,
+        )
+        booking = bookings_factories.BookingFactory(stock=stock, quantity=2)
+        offerers_factories.ApiKeyFactory(offerer=booking.offerer)
+        external_bookings_factories.ExternalBookingFactory(booking=booking, barcode="1234567890123")
+        external_bookings_factories.ExternalBookingFactory(booking=booking, barcode="1234567890124")
+        requests_mock.post(
+            external_url + "/cancel",
+            json={"remainingQuantity": 15},
+            status_code=200,
+        )
+
+        # When
+        response = client.patch(
+            f"/v2/bookings/cancel/token/{booking.token}",
+            headers={"Authorization": "Bearer " + offerers_factories.DEFAULT_CLEAR_API_KEY},
+        )
+
+        assert response.status_code == 204
+        booking = Booking.query.one()
+        assert booking.status is BookingStatus.CANCELLED
+        assert booking.stock.quantity == 17
 
 
 class Returns401Test:

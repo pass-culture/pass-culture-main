@@ -670,7 +670,7 @@ class CancelByBeneficiaryTest:
         with assert_no_duplicated_queries():
             api.cancel_booking_by_beneficiary(user, booking)
 
-        mocked_cancel_external_booking.assert_called_once_with(booking, stock)
+        mocked_cancel_external_booking.assert_called_once_with(booking, stock, stock.offer)
         # cancellation can trigger more than one request to Batch
         assert len(push_testing.requests) >= 1
 
