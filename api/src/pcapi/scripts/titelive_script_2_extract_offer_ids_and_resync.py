@@ -41,6 +41,7 @@ def reject_inappropriate_offers(products_ids: list[int], dry: bool = False) -> l
         execution_options={"synchronize_session": False},
     )
     offer_ids = [offer_id for offer_id, in res.fetchall()]
+
     try:
         if dry:
             db.session.rollback()
@@ -76,10 +77,14 @@ def update_offers(file_path: str, dry: bool) -> None:
         lines = list(csv_reader)
         total_lines = len(lines)
         batch = []
+        output_files: list[str] = []
 
         first_line_to_process = 1
 
-        for index, row in enumerate(csv_reader, start=1):
+        with open(OUT_REJECTED_OFFER_IDS_FILE_PATH, "w+", encoding="utf-8") as rejected_offer_ids_csv:
+            rejected_offer_ids_csv.write("")
+
+        for index, row in enumerate(lines, start=1):
             if index < first_line_to_process:
                 continue
             product_id = int(row[0])
@@ -89,11 +94,11 @@ def update_offers(file_path: str, dry: bool) -> None:
             batch.append(product_id)
 
             if len(batch) == BATCH_SIZE:
-                offer_ids += reject_inappropriate_offers(batch, dry=dry)
+                batch_offer_ids = reject_inappropriate_offers(batch, dry=dry)
+                offer_ids += batch_offer_ids
                 batch = []
-                # Et peut-être qu'on devrait écrire les offer_ids dans un fichier au fur et à mesure.
-                with open("OUT_REJECTED_OFFER_IDS_FILE_PATH", "a", encoding="utf-8") as fp:
-                    fp.write("\n".join([str(offer_id) for offer_id in offer_ids]))
+                with open(OUT_REJECTED_OFFER_IDS_FILE_PATH, "a", encoding="utf-8") as fp:
+                    fp.write("\n".join([str(offer_id) for offer_id in batch_offer_ids]))
                     fp.write("\n")  # pour que la prochaine écriture soit sur une ligne suivante.
 
                 elapsed_per_batch.append(int(time.perf_counter() - start_time))
@@ -102,15 +107,13 @@ def update_offers(file_path: str, dry: bool) -> None:
                 print(f"  => OK: {index} / {total_lines} | eta = {eta}")
 
         if batch:
-            offer_ids += reject_inappropriate_offers(batch, dry=dry)
+            batch_offer_ids = reject_inappropriate_offers(batch, dry=dry)
+            offer_ids += batch_offer_ids
+            with open(OUT_REJECTED_OFFER_IDS_FILE_PATH, "a", encoding="utf-8") as fp:
+                fp.write("\n".join([str(offer_id) for offer_id in batch_offer_ids]))
 
-        output_files: list[str] = []
-
-        with open(OUT_REJECTED_OFFER_IDS_FILE_PATH, "w+", encoding="utf-8") as cancelled_offer_ids_csv:
-            offer_ids = list(set(offer_ids))
-            cancelled_offer_ids_csv.write("\n".join(map(str, offer_ids)))
-            logger.info("%s cancelled offer written in %s", len(offer_ids), OUT_REJECTED_OFFER_IDS_FILE_PATH)
-            output_files.append(OUT_REJECTED_OFFER_IDS_FILE_PATH)
+        logger.info("%s cancelled offer written in %s", len(offer_ids), OUT_REJECTED_OFFER_IDS_FILE_PATH)
+        output_files.append(OUT_REJECTED_OFFER_IDS_FILE_PATH)
 
         if not dry:
             log_remote_to_local_cmd(output_files)
