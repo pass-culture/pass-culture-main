@@ -1,8 +1,12 @@
+import cn from 'classnames'
 import React from 'react'
 
 import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'
 
+import styles from './PeriodSelector.module.scss'
+
 interface PeriodSelectorProps {
+  className?: string
   onBeginningDateChange: (date: string) => void
   onEndingDateChange: (date: string) => void
   isDisabled?: boolean
@@ -14,6 +18,7 @@ interface PeriodSelectorProps {
 }
 
 const PeriodSelector = ({
+  className,
   onBeginningDateChange,
   onEndingDateChange,
   isDisabled,
@@ -23,13 +28,22 @@ const PeriodSelector = ({
   periodBeginningDate,
   periodEndingDate,
 }: PeriodSelectorProps) => (
-  <div className="period-filter">
-    <div className="period-filter-label">
+  <div className={styles['period-filter']}>
+    <div className={styles['period-filter-label']}>
       {label}
-      <div className={`period-filter-inputs ${isDisabled ? 'disabled' : ''}`}>
-        <div className="period-filter-begin-picker">
+      <div
+        className={cn(
+          styles['period-filter-inputs'],
+          { disabled: isDisabled },
+          className
+        )}
+      >
+        <div className={styles['period-filter-begin-picker']}>
           <BaseDatePicker
-            className="period-filter-input field-date-begin"
+            className={cn(
+              styles['period-filter-input'],
+              styles['field-date-begin']
+            )}
             aria-label="Début de la période"
             disabled={isDisabled}
             maxDate={new Date(periodEndingDate)}
@@ -39,11 +53,14 @@ const PeriodSelector = ({
           />
         </div>
 
-        <span className="vertical-bar" />
+        <span className={styles['vertical-bar']} />
 
-        <div className="period-filter-end-picker">
+        <div className={styles['period-filter-end-picker']}>
           <BaseDatePicker
-            className="period-filter-input field-date-end"
+            className={cn(
+              styles['period-filter-input'],
+              styles['field-date-end']
+            )}
             aria-label="Fin de la période"
             disabled={isDisabled}
             maxDate={maxDateEnding}
