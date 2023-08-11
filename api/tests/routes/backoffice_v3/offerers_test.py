@@ -21,7 +21,6 @@ from pcapi.core.offers import models as offers_models
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
@@ -890,10 +889,8 @@ class GetOffererVenuesTest(GetEndpointHelper):
 
     # - session + authenticated user (2 queries)
     # - venues with joined data (1 query)
-    # - FF: WIP_ENABLE_NEW_ONBOARDING (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
-    @override_features(WIP_ENABLE_NEW_ONBOARDING=True)
     def test_get_managed_venues(self, authenticated_client, offerer):
         other_offerer = offerers_factories.OffererFactory()
         venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -931,19 +928,6 @@ class GetOffererVenuesTest(GetEndpointHelper):
         assert rows[1]["Présence web"] == "https://example.com https://pass.culture.fr"
         assert rows[1]["Offres cibles"] == "Indiv. et coll."
         assert rows[1]["Statut du dossier DMS Adage"] == "En construction"
-
-    @override_features(WIP_ENABLE_NEW_ONBOARDING=False)
-    def test_get_managed_venues_ff_off(self, authenticated_client, offerer):
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        url = url_for(self.endpoint, offerer_id=offerer.id)
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-        rows = html_parser.extract_table_rows(response.data)
-        assert rows[0]["Type de lieu"] == venue.venueTypeCode.value
-        assert not rows[0].get("Activité principale")
 
 
 class CommentOffererTest(PostEndpointHelper):
