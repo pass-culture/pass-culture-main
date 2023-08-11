@@ -42,6 +42,7 @@ describe('ContactButton', () => {
         ...initialValues,
         query: 'test',
         domains: ['test'],
+        geolocRadius: 50,
       },
       resetForm: resetFormMock,
     })
@@ -61,6 +62,7 @@ describe('ContactButton', () => {
       initialValues: {
         ...initialValues,
         query: '',
+        geolocRadius: 50,
       },
     })
 

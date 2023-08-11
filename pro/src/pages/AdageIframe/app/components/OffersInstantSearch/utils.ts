@@ -19,6 +19,7 @@ export const ADAGE_FILTERS_DEFAULT_VALUES: SearchFormValues = {
   academies: [],
   categories: [],
   eventAddressType: OfferAddressType.OTHER,
+  geolocRadius: 50,
 }
 
 export const computeFiltersInitialValues = (

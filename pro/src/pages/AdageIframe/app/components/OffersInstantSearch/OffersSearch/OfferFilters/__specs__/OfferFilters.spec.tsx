@@ -4,7 +4,9 @@ import { Formik } from 'formik'
 import React from 'react'
 
 import { apiAdage } from 'apiClient/api'
+import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import * as pcapi from 'pages/AdageIframe/repository/pcapi/pcapi'
+import { defaultAdageUser } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { LocalisationFilterStates, SearchFormValues } from '../../OffersSearch'
@@ -23,24 +25,41 @@ jest.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
   getEducationalDomains: jest.fn(),
 }))
 
+const isGeolocationActive = {
+  features: {
+    list: [
+      {
+        nameKey: 'WIP_ENABLE_ADAGE_GEO_LOCATION',
+        isActive: true,
+      },
+    ],
+    initialized: true,
+  },
+}
+
 const renderOfferFilters = ({
   isLoading,
   initialValues,
   localisationFilterState = LocalisationFilterStates.NONE,
+  storeOverrides = null,
 }: {
   isLoading: boolean
   initialValues: SearchFormValues
   localisationFilterState?: LocalisationFilterStates
+  storeOverrides?: unknown
 }) =>
   renderWithProviders(
-    <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-      <OfferFilters
-        isLoading={isLoading}
-        localisationFilterState={localisationFilterState}
-        setLocalisationFilterState={mockSetLocalisationFilterState}
-        resetForm={resetFormMock}
-      />
-    </Formik>
+    <AdageUserContext.Provider value={{ adageUser: defaultAdageUser }}>
+      <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+        <OfferFilters
+          isLoading={isLoading}
+          localisationFilterState={localisationFilterState}
+          setLocalisationFilterState={mockSetLocalisationFilterState}
+          resetForm={resetFormMock}
+        />
+      </Formik>
+    </AdageUserContext.Provider>,
+    { storeOverrides: storeOverrides }
   )
 
 const initialValues = {
@@ -51,6 +70,7 @@ const initialValues = {
   departments: [],
   academies: [],
   categories: [],
+  geolocRadius: 50,
 }
 
 describe('OfferFilters', () => {
@@ -207,10 +227,14 @@ describe('OfferFilters', () => {
       isLoading: false,
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.NONE,
+      storeOverrides: isGeolocationActive,
     })
 
     expect(screen.getByText('Choisir un département')).toBeInTheDocument()
     expect(screen.getByText('Choisir une académie')).toBeInTheDocument()
+    expect(
+      screen.getByText('Autour de mon établissement scolaire')
+    ).toBeInTheDocument()
   })
 
   it('should display departments options in localisation filter modal', async () => {
@@ -232,6 +256,18 @@ describe('OfferFilters', () => {
     })
 
     expect(screen.getByPlaceholderText('Ex: Nantes')).toBeInTheDocument()
+  })
+
+  it('should display radius range input in localisation filter modal', async () => {
+    renderOfferFilters({
+      isLoading: false,
+      initialValues: initialValues,
+      localisationFilterState: LocalisationFilterStates.GEOLOCATION,
+      storeOverrides: isGeolocationActive,
+    })
+
+    expect(screen.getByText('Dans un rayon de')).toBeInTheDocument()
+    expect(screen.getByText('50 km')).toBeInTheDocument()
   })
 
   it('should reset modal state when closing departments filter modal', async () => {
@@ -278,6 +314,49 @@ describe('OfferFilters', () => {
       LocalisationFilterStates.NONE
     )
   })
+
+  it('should reset modal state when closing geoloc filter modal', async () => {
+    renderOfferFilters({
+      isLoading: false,
+      initialValues: initialValues,
+      localisationFilterState: LocalisationFilterStates.GEOLOCATION,
+      storeOverrides: isGeolocationActive,
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Localisation des partenaires',
+      })
+    )
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Réinitialiser',
+      })
+    )
+
+    expect(mockSetLocalisationFilterState).toHaveBeenCalledWith(
+      LocalisationFilterStates.NONE
+    )
+  })
+
+  it('should trigger search when clicking Rechercher while using geoloc', async () => {
+    renderOfferFilters({
+      isLoading: false,
+      initialValues: initialValues,
+      localisationFilterState: LocalisationFilterStates.GEOLOCATION,
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Localisation des partenaires',
+      })
+    )
+    screen.debug()
+    await userEvent.click(screen.getAllByTestId('search-button-modal')[0])
+
+    expect(handleSubmit).toHaveBeenCalled()
+  })
+
   it('should return categories options when the api call was successful', async () => {
     vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockResolvedValueOnce({
       categories: [{ id: 'CINEMA', proLabel: 'Cinéma' }],

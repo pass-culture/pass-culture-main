@@ -73,7 +73,7 @@ const AdageButtonFilter = ({
             [styles['adage-button-active-disabled']]: disabled,
           })}
         ></div>
-        {title} {isActive && `(${itemsLength})`}
+        {title} {isActive && itemsLength && `(${itemsLength})`}
         {!disabled && (
           <SvgIcon
             className={styles['adage-button-dropdown']}
