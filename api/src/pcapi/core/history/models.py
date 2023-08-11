@@ -13,6 +13,7 @@ from pcapi.models.pc_object import PcObject
 
 
 if typing.TYPE_CHECKING:
+    from pcapi.core.finance import models as finance_models
     from pcapi.core.offerers import models as offerers_models
 
 
@@ -43,6 +44,8 @@ class ActionType(enum.Enum):
     # Fraud and compliance actions:
     BLACKLIST_DOMAIN_NAME = "Blacklist d'un nom de domaine"
     REMOVE_BLACKLISTED_DOMAIN_NAME = "Suppression d'un nom de domaine banni"
+    FINANCE_INCIDENT_CREATED = "Création de l'incident"
+    FINANCE_INCIDENT_CANCELLED = "Annulation de l'incident"
 
 
 class ActionHistory(PcObject, Base, Model):
@@ -115,13 +118,22 @@ class ActionHistory(PcObject, Base, Model):
         ),
     )
 
+    financeIncidentId: int | None = sa.Column(
+        sa.BigInteger, sa.ForeignKey("finance_incident.id", ondelete="CASCADE"), index=True, nullable=True
+    )
+    financeIncident: sa.orm.Mapped["finance_models.FinanceIncident | None"] = sa.orm.relationship(
+        "FinanceIncident",
+        foreign_keys=[financeIncidentId],
+        backref=sa.orm.backref("action_history", order_by="ActionHistory.actionDate.asc()", passive_deletes=True),
+    )
+
     comment = sa.Column(sa.Text(), nullable=True)
 
     __table_args__ = (
         sa.CheckConstraint(
             (
-                'num_nonnulls("userId", "offererId", "venueId") >= 1 OR actionType = "BLACKLIST_DOMAIN_NAME" OR actionType = "REMOVE_BLACKLISTED_DOMAIN_NAME"'
+                'num_nonnulls("userId", "offererId", "venueId", "financeIncidentId") >= 1 OR actionType = "BLACKLIST_DOMAIN_NAME" OR actionType = "REMOVE_BLACKLISTED_DOMAIN_NAME"'
             ),
-            name="check_at_least_one_resource",
+            name="check_at_least_one_resource_or_is_fraud_action",
         ),
     )
