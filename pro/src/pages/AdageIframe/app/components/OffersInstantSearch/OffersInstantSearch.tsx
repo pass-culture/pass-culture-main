@@ -1,5 +1,5 @@
 import algoliasearch from 'algoliasearch/lite'
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch-dom'
 
 import { VenueResponse } from 'apiClient/adage'
@@ -28,6 +28,11 @@ const attributesToRetrieve = [
   'offer.interventionArea',
 ]
 
+export interface GeoLocation {
+  radius?: number
+  latLng?: string
+}
+
 export const OffersInstantSearch = ({
   removeVenueFilter,
   venueFilter,
@@ -38,6 +43,8 @@ export const OffersInstantSearch = ({
   const { facetFilters } = useContext(FacetFiltersContext)
 
   const newAdageFilters = useActiveFeature('WIP_ENABLE_NEW_ADAGE_FILTERS')
+
+  const [geoLocation, setGeoLocation] = useState<GeoLocation>({})
 
   return (
     <InstantSearch
@@ -50,12 +57,17 @@ export const OffersInstantSearch = ({
         clickAnalytics
         facetFilters={facetFilters}
         hitsPerPage={8}
+        aroundLatLng={geoLocation.latLng}
+        aroundRadius={geoLocation.radius}
       />
       <AnalyticsContextProvider>
         {
           /* istanbul ignore next: DEBT to fix: delete condition with ff */
           newAdageFilters ? (
-            <OffersSearch venueFilter={venueFilter} />
+            <OffersSearch
+              venueFilter={venueFilter}
+              setGeoLocation={setGeoLocation}
+            />
           ) : (
             <OldOffersSearch
               removeVenueFilter={removeVenueFilter}

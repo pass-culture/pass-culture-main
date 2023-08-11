@@ -35,9 +35,22 @@ jest.mock('hooks/useActiveFeature', () => ({
   default: vi.fn().mockReturnValue(true),
 }))
 
+const isGeolocationActive = {
+  features: {
+    list: [
+      {
+        nameKey: 'WIP_ENABLE_ADAGE_GEO_LOCATION',
+        isActive: true,
+      },
+    ],
+    initialized: true,
+  },
+}
+
 const renderOffersSearchComponent = (
   props: SearchProps,
-  user: AuthenticatedResponse
+  user: AuthenticatedResponse,
+  storeOverrides?: unknown
 ) => {
   renderWithProviders(
     <AdageUserContext.Provider value={{ adageUser: user }}>
@@ -46,7 +59,8 @@ const renderOffersSearchComponent = (
           <OffersSearchComponent {...props} />
         </AlgoliaQueryContextProvider>
       </FiltersContextProvider>
-    </AdageUserContext.Provider>
+    </AdageUserContext.Provider>,
+    { storeOverrides: storeOverrides }
   )
 }
 
@@ -67,6 +81,7 @@ describe('offersSearch component', () => {
       refine: vi.fn(),
       currentRefinement: '',
       isSearchStalled: false,
+      setGeoLocation: () => {},
     }
     vi.spyOn(pcapi, 'getEducationalDomains').mockResolvedValue([])
   })
@@ -234,6 +249,35 @@ describe('offersSearch component', () => {
 
     // Then
     expect(screen.getByPlaceholderText('Ex: Nantes')).toBeInTheDocument()
+  })
+
+  it('should display radius input filter if user has selected around me filter', async () => {
+    // Given
+    renderOffersSearchComponent(
+      props,
+      { ...user, departmentCode: null },
+      isGeolocationActive
+    )
+    await waitFor(() => {
+      expect(pcapi.getEducationalDomains).toHaveBeenCalled()
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Localisation des partenaires',
+      })
+    )
+    await userEvent.click(
+      screen.getByText('Autour de mon établissement scolaire')
+    )
+    await userEvent.click(
+      screen.getAllByRole('button', {
+        name: 'Rechercher',
+      })[1]
+    )
+
+    // Then
+    expect(props.refine).toHaveBeenCalled()
   })
 
   it('should filters department on venue filter if provided', async () => {
