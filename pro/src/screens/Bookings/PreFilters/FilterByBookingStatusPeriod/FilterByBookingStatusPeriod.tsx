@@ -38,6 +38,7 @@ const FilterByBookingStatusPeriod = ({
       />
 
       <PeriodSelector
+        className={styles['status-period-filter-selector']}
         onBeginningDateChange={handleBookingBeginningDateChange}
         onEndingDateChange={handleBookingEndingDateChange}
         isDisabled={isDisabled}
