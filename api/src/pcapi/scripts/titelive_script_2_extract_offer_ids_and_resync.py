@@ -2,8 +2,6 @@ import argparse
 import csv
 import datetime
 import logging
-import os
-import socket
 import time
 
 import sqlalchemy as sa
@@ -16,17 +14,16 @@ from pcapi.flask_app import app
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
+from pcapi.scripts.script_utils import log_remote_to_local_cmd
 
 
 logger = logging.getLogger(__name__)
-
-HOSTNAME = socket.gethostname()
 
 IN_REJECTED_PRODUCT_IDS_FILE_PATH = "/tmp/OUT_rejected_product_ids.csv"
 OUT_REJECTED_OFFER_IDS_FILE_PATH = "/tmp/OUT_rejected_offer_ids.csv"
 
 
-def reject_inappropriate_offers(products_ids: list[int], dry: bool = False) -> list[str]:
+def reject_inappropriate_offers(products_ids: list[int], dry: bool = False) -> list[int]:
     if dry:
         offers = models.Offer.query.filter(
             models.Offer.productId.in_(products_ids),
@@ -75,10 +72,6 @@ def reject_inappropriate_offers(products_ids: list[int], dry: bool = False) -> l
     return offer_ids
 
 
-def _get_remote_to_local_cmd(file_path: str, env: str) -> str:
-    return f"kubectl cp -n {env} {HOSTNAME}:{file_path} {os.path.basename(file_path)}"
-
-
 def update_offers(file_path: str, dry: bool) -> None:
     with open(file_path, newline="", encoding="utf-8") as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=";")
@@ -95,27 +88,11 @@ def update_offers(file_path: str, dry: bool) -> None:
         with open(OUT_REJECTED_OFFER_IDS_FILE_PATH, "w+", encoding="utf-8") as cancelled_offer_ids_csv:
             offer_ids = list(set(offer_ids))
             cancelled_offer_ids_csv.write("\n".join(map(str, offer_ids)))
-            logger.info("%s emails with bookings written in %s", len(offer_ids), OUT_REJECTED_OFFER_IDS_FILE_PATH)
+            logger.info("%s cancelled offer written in %s", len(offer_ids), OUT_REJECTED_OFFER_IDS_FILE_PATH)
             output_files.append(OUT_REJECTED_OFFER_IDS_FILE_PATH)
 
-        env = ""
-        if "staging" in HOSTNAME:
-            env = "staging"
-        elif "production" in HOSTNAME:
-            env = "production"
-
-        if env and not dry:
-            download_file_cmds = "\n            ".join(
-                [_get_remote_to_local_cmd(output_file, env) for output_file in output_files]
-            )
-            print(
-                f"""
-            To download output files:
-            
-            {download_file_cmds}
-            
-            """
-            )
+        if not dry:
+            log_remote_to_local_cmd(output_files)
 
 
 if __name__ == "__main__":

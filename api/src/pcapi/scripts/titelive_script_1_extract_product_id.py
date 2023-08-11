@@ -2,7 +2,6 @@ import argparse
 import collections
 import csv
 import logging
-import os
 import socket
 import time
 import typing
@@ -29,6 +28,7 @@ from pcapi.local_providers.titelive_things.titelive_things import POSTER_SUPPORT
 from pcapi.local_providers.titelive_things.titelive_things import TOEFL_TEXT
 from pcapi.local_providers.titelive_things.titelive_things import TOEIC_TEXT
 from pcapi.models import db
+from pcapi.scripts.script_utils import log_remote_to_local_cmd
 
 
 logger = logging.getLogger(__name__)
@@ -167,10 +167,6 @@ def get_ineligibility_reason(**kwargs: typing.Any) -> str | None:
     return None
 
 
-def _get_remote_to_local_cmd(file_path: str, env: str) -> str:
-    return f"kubectl cp -n {env} {HOSTNAME}:{file_path} {os.path.basename(file_path)}"
-
-
 def update_products(file_path: str, comments_file_path: str, dry: bool) -> None:
     product_whitelist_eans = {
         ean for ean, in fraud_models.ProductWhitelist.query.with_entities(fraud_models.ProductWhitelist.ean).all()
@@ -256,24 +252,8 @@ def update_products(file_path: str, comments_file_path: str, dry: bool) -> None:
             logger.info("%s rejected product ids written in %s", len(productIds), OUT_REJECTED_PRODUCT_IDS_FILE_PATH)
             output_files.append(OUT_REJECTED_PRODUCT_IDS_FILE_PATH)
 
-        env = ""
-        if "staging" in HOSTNAME:
-            env = "staging"
-        elif "production" in HOSTNAME:
-            env = "production"
-
-        if env and not dry:
-            download_file_cmds = "\n            ".join(
-                [_get_remote_to_local_cmd(output_file, env) for output_file in output_files]
-            )
-            print(
-                f"""
-            To download output files:
-            
-            {download_file_cmds}
-            
-            """
-            )
+        if not dry:
+            log_remote_to_local_cmd(output_files)
 
 
 if __name__ == "__main__":
