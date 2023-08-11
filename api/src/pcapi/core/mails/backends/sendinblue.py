@@ -92,6 +92,26 @@ class SendinblueBackend(BaseBackend):
         except Exception as exception:
             raise ExternalAPIException(is_retryable=True) from exception
 
+    def delete_contact(self, contact_email: str) -> None:
+        try:
+            self.contacts_api.delete_contact(contact_email)
+
+        except SendinblueApiException as exception:
+            if exception.status >= 500:
+                raise ExternalAPIException(is_retryable=True) from exception
+            if exception.status != 404:
+                # If we try to delete a non existing user, it's not a problem.
+                logger.exception(
+                    "Exception when calling Sendinblue delete_contact API",
+                    extra={
+                        "email": contact_email,
+                    },
+                )
+                raise ExternalAPIException(is_retryable=False) from exception
+
+        except Exception as exception:
+            raise ExternalAPIException(is_retryable=True) from exception
+
     def _handle_sendinblue_exception(
         self, exception: SendinblueApiException, payload: serializers.UpdateSendinblueContactRequest
     ) -> None:

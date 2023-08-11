@@ -9,9 +9,8 @@ import wtforms
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
-from pcapi.routes.backoffice_v3.utils import has_current_user_permission
-
 from pcapi.routes.backoffice_v3.forms import fields
+from pcapi.routes.backoffice_v3.utils import has_current_user_permission
 
 
 class SuspensionUserType(enum.Enum):
