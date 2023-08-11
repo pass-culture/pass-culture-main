@@ -2,12 +2,9 @@ import { useFormikContext } from 'formik'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { BannerInvisibleSiren, BannerRGS } from 'components/Banner'
+import { BannerRGS } from 'components/Banner'
 import FormLayout from 'components/FormLayout'
 import LegalInfos from 'components/LegalInfos/LegalInfos'
-import { getSirenDataAdapter } from 'core/Offerers/adapters'
-import { useScrollToFirstErrorAfterSubmit } from 'hooks'
-import useActiveFeature from 'hooks/useActiveFeature'
 import CookiesFooter from 'pages/CookiesFooter/CookiesFooter'
 import MaybeAppUserDialog from 'pages/Signup/SignupContainer/MaybeAppUserDialog'
 import {
@@ -18,48 +15,16 @@ import {
   TextInput,
 } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { PasswordInput, SirenInput } from 'ui-kit/form'
+import { PasswordInput } from 'ui-kit/form'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
-import { MAYBE_APP_USER_APE_CODE } from './constants'
 import styles from './SignupContainer.module.scss'
 import { SignupFormValues } from './types'
 
 const SignupForm = (): JSX.Element => {
   const navigate = useNavigate()
-  const [showAnonymousBanner, setShowAnonymousBanner] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const { values, setFieldValue, setFieldError, isSubmitting } =
-    useFormikContext<SignupFormValues>()
-
-  const newOnboardingActive = useActiveFeature('WIP_ENABLE_NEW_ONBOARDING')
-
-  useScrollToFirstErrorAfterSubmit()
-
-  const getSirenAPIData = async (siren: string) => {
-    setShowAnonymousBanner(false)
-    const response = await getSirenDataAdapter(siren)
-    if (response.isOk) {
-      let values = undefined
-      if (response.payload.values != null) {
-        const { apeCode, ...rest } = response.payload.values
-        values = rest
-        if (MAYBE_APP_USER_APE_CODE.includes(apeCode)) {
-          setIsModalOpen(true)
-        }
-      }
-
-      setFieldValue('legalUnitValues', values)
-    } else {
-      setFieldError('siren', response.message)
-      if (
-        response.message ==
-        'Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles.'
-      ) {
-        setShowAnonymousBanner(true)
-      }
-    }
-  }
+  const { isSubmitting } = useFormikContext<SignupFormValues>()
 
   return (
     <>
@@ -101,20 +66,6 @@ const SignupForm = (): JSX.Element => {
             }
           />
         </FormLayout.Row>
-        {!newOnboardingActive && (
-          <div className={styles['siren-field']}>
-            <FormLayout.Row>
-              <SirenInput
-                label="SIREN de la structure que vous représentez"
-                onValidSiren={getSirenAPIData}
-              />
-            </FormLayout.Row>
-            <span className={styles['field-siren-value']}>
-              {values.legalUnitValues.name}
-            </span>
-            {showAnonymousBanner && <BannerInvisibleSiren />}
-          </div>
-        )}
         <FormLayout.Row>
           <Checkbox
             hideFooter

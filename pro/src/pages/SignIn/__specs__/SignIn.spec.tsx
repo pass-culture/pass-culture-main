@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
@@ -297,7 +297,6 @@ describe('SignIn', () => {
             isActive: true,
             nameKey: 'API_SIRENE_AVAILABLE',
           },
-          { nameKey: 'WIP_ENABLE_NEW_ONBOARDING', isActive: true },
         ],
       },
     }

@@ -19,9 +19,7 @@ const renderContact = ({
   onSubmit: () => void
   props: ContactProps
 }) => {
-  const validationSchema = yup
-    .object()
-    .shape(informationsValidationSchema(false))
+  const validationSchema = yup.object().shape(informationsValidationSchema)
 
   render(
     <Formik

@@ -21,7 +21,6 @@ import {
 import { Offerer } from 'core/Offerers/types'
 import { Providers, Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
@@ -66,8 +65,6 @@ const VenueFormScreen = ({
   const [isSiretValued, setIsSiretValued] = useState(
     isCreatingVenue || !!venue?.siret
   )
-
-  const isNewOnboardingActive = useActiveFeature('WIP_ENABLE_NEW_ONBOARDING')
 
   const { logEvent } = useAnalytics()
 
@@ -190,7 +187,7 @@ const VenueFormScreen = ({
     [offerer.siren, isSiretValued]
   )
 
-  const formValidationSchema = validationSchema(isNewOnboardingActive).concat(
+  const formValidationSchema = validationSchema.concat(
     generateSiretOrCommentValidationSchema
   )
 
@@ -272,7 +269,6 @@ const VenueFormScreen = ({
             venue={venue}
             offerer={offerer}
             initialIsVirtual={initialIsVirtual}
-            isNewOnboardingActive={isNewOnboardingActive}
           />
         </form>
 
