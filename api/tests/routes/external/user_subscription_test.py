@@ -1858,6 +1858,141 @@ class UbbleWebhookTest:
 
         self._assert_email_sent(user, 410)
 
+    @pytest.mark.parametrize("code_number", list(fraud_models.UBBLE_REASON_CODE_MAPPING.keys()))
+    def test_unknown_reason_code_is_least_relevant(self, client, ubble_mocker, code_number):
+        user, ubble_fraud_check, request_data = self._init_decision_test()
+
+        ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
+            identification_state=test_factories.IdentificationState.INVALID,
+            data__attributes__identification_id=str(request_data.identification_id),
+            error_codes=[code_number, 999999],
+        )
+
+        self._post_webhook(client, ubble_mocker, request_data, ubble_identification_response)
+
+        db.session.refresh(user)
+        db.session.refresh(ubble_fraud_check)
+
+        reason_code = fraud_models.UBBLE_REASON_CODE_MAPPING[code_number]
+
+        assert reason_code in ubble_fraud_check.reasonCodes
+        assert fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER in ubble_fraud_check.reasonCodes
+        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
+        assert reason_code == ubble_subscription_api.get_most_relevant_ubble_error(ubble_fraud_check.reasonCodes)
+
+    def test_unknown_reason_code_is_retryable(self, client, ubble_mocker):
+        user, ubble_fraud_check, request_data = self._init_decision_test()
+
+        ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
+            identification_state=test_factories.IdentificationState.INVALID,
+            data__attributes__identification_id=str(request_data.identification_id),
+            error_codes=[999999],
+        )
+
+        self._post_webhook(client, ubble_mocker, request_data, ubble_identification_response)
+
+        db.session.refresh(user)
+        db.session.refresh(ubble_fraud_check)
+
+        reason_code = fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
+        ubble_error = ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code]
+
+        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
+        assert reason_code in ubble_fraud_check.reasonCodes
+
+        assert subscription_api.can_retry_identity_fraud_check(ubble_fraud_check)
+        message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
+        assert message.user_message == ubble_error.retryable_user_message
+        assert message.message_summary == ubble_error.retryable_message_summary
+        assert message.action_hint == ubble_error.retryable_action_hint
+
+    def test_id_is_unprocessable_only_if_no_clue(self, client, ubble_mocker):
+        user, ubble_fraud_check, request_data = self._init_decision_test()
+
+        ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
+            identification_state=test_factories.IdentificationState.UNPROCESSABLE,
+            data__attributes__identification_id=str(request_data.identification_id),
+            error_codes=[],
+        )
+
+        self._post_webhook(client, ubble_mocker, request_data, ubble_identification_response)
+
+        db.session.refresh(user)
+        db.session.refresh(ubble_fraud_check)
+
+        reason_code = fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE
+        ubble_error = ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code]
+
+        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
+        assert reason_code in ubble_fraud_check.reasonCodes
+
+        assert subscription_api.can_retry_identity_fraud_check(ubble_fraud_check)
+        message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
+        assert message.user_message == ubble_error.retryable_user_message
+        assert message.message_summary == ubble_error.retryable_message_summary
+        assert message.action_hint == ubble_error.retryable_action_hint
+
+    def test_blocked_other_and_ko_if_score_invalid_and_the_rest_is_valid(self, client, ubble_mocker):
+        user, ubble_fraud_check, request_data = self._init_decision_test()
+
+        ubble_identification_response = test_factories.UbbleIdentificationResponseFactory(
+            identification_state=test_factories.IdentificationState.INVALID,
+            data__attributes__identification_id=str(request_data.identification_id),
+            error_codes=[],
+            included=[
+                test_factories.UbbleIdentificationIncludedDocumentsFactory(
+                    attributes__birth_date=user.dateOfBirth.date().isoformat(),
+                    attributes__document_number="012345678910",
+                    attributes__document_type="CI",
+                    attributes__first_name="FRAUDSTER",
+                    attributes__last_name="FRAUDSTER",
+                ),
+                test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
+                    attributes__supported=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__data_extracted_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__expiry_date_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__issue_date_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__mrz_validity_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__mrz_viz_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_back_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__ove_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__visual_back_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__visual_front_score=ubble_fraud_models.UbbleScore.VALID.value,
+                ),
+                test_factories.UbbleIdentificationIncludedFaceChecksFactory(
+                    attributes__active_liveness_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__live_video_capture_score=ubble_fraud_models.UbbleScore.VALID.value,
+                    attributes__quality_score=ubble_fraud_models.UbbleScore.VALID.value,
+                ),
+                test_factories.UbbleIdentificationIncludedDocFaceMatchesFactory(
+                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                ),
+                test_factories.UbbleIdentificationIncludedReferenceDataChecksFactory(
+                    attributes__score=ubble_fraud_models.UbbleScore.VALID.value,
+                ),
+            ],
+        )
+
+        self._post_webhook(client, ubble_mocker, request_data, ubble_identification_response)
+
+        db.session.refresh(user)
+        db.session.refresh(ubble_fraud_check)
+
+        reason_code = fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
+        ubble_error = ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code]
+
+        assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.KO
+        assert reason_code in ubble_fraud_check.reasonCodes
+
+        assert subscription_api.can_retry_identity_fraud_check(ubble_fraud_check)
+        message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
+        assert message.user_message == ubble_error.retryable_user_message
+        assert message.message_summary == ubble_error.retryable_message_summary
+        assert message.action_hint == ubble_error.retryable_action_hint
+
     @pytest.mark.parametrize(
         "ref_data_check_score",
         [ubble_fraud_models.UbbleScore.VALID.value, ubble_fraud_models.UbbleScore.UNDECIDABLE.value],
