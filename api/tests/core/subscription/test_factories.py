@@ -10,7 +10,6 @@ import factory
 import pytz
 
 from pcapi import settings
-from pcapi.core.fraud.models import UBBLE_REASON_CODE_MAPPING
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
 
 
@@ -63,11 +62,7 @@ class UbbleReasonCodesFactory(factory.Factory):
 
     @factory.lazy_attribute
     def data(self):
-        return [
-            UbbleReasonCodeFactory(id=str(error_code))
-            for error_code in self.error_codes
-            if error_code in UBBLE_REASON_CODE_MAPPING
-        ]
+        return [UbbleReasonCodeFactory(id=str(error_code)) for error_code in self.error_codes]
 
 
 class UbbleIdentificationRelationshipsFactory(factory.Factory):
