@@ -119,7 +119,6 @@ class AccountTest:
                 "physical": None,
             },
             "birthDate": "2000-01-11",
-            "dateOfBirth": "2000-01-11",
             "depositType": "GRANT_18",
             "depositExpirationDate": "2040-01-01T00:00:00Z",
             "eligibility": "age-18",

@@ -131,7 +131,6 @@ class YoungStatusResponse(BaseModel):
 class UserProfileResponse(BaseModel):
     booked_offers: dict[str, int]
     birth_date: datetime.date | None
-    date_of_birth: datetime.date | None  # TODO: remove when all app clients use birth_date field
     deposit_expiration_date: datetime.datetime | None
     deposit_type: finance_models.DepositType | None
     domains_credit: DomainsCredit | None
@@ -209,7 +208,6 @@ class UserProfileResponse(BaseModel):
         serialized_user.needsToFillCulturalSurvey = (
             serialized_user.needsToFillCulturalSurvey and serialized_user.isBeneficiary and _is_cultural_survey_active()
         )
-        serialized_user.date_of_birth = user.birth_date  # type: ignore [assignment]
 
         return serialized_user
 
