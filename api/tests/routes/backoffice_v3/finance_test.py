@@ -315,8 +315,11 @@ class GetIncidentHistoryTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 2
-        assert rows[0]["Type"] == history_models.ActionType.FINANCE_INCIDENT_CANCELLED.value
-        assert rows[1]["Type"] == history_models.ActionType.FINANCE_INCIDENT_CREATED.value
-        assert rows[1]["Date/Heure"].startswith(action.actionDate.strftime("Le %d/%m/%Y à "))
-        assert rows[1]["Commentaire"] == action.comment
-        assert rows[1]["Auteur"] == action.authorUser.full_name
+        iterator_actions = iter(rows)
+        cancel_action = next(iterator_actions)
+        creation_action = next(iterator_actions)
+        assert cancel_action["Type"] == history_models.ActionType.FINANCE_INCIDENT_CANCELLED.value
+        assert creation_action["Type"] == history_models.ActionType.FINANCE_INCIDENT_CREATED.value
+        assert creation_action["Date/Heure"].startswith(action.actionDate.strftime("Le %d/%m/%Y à "))
+        assert creation_action["Commentaire"] == action.comment
+        assert creation_action["Auteur"] == action.authorUser.full_name
