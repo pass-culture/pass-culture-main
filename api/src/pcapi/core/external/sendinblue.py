@@ -101,6 +101,20 @@ class SendinblueOptionalAttributes(Enum):
     INTENDED_CATEGORIES = "INTENDED_CATEGORIES"
 
 
+def update_contact_email(old_email: str, new_email: str, asynchronous: bool = True) -> None:
+    contact_request = UpdateSendinblueContactRequest(
+        email=old_email,
+        attributes={"EMAIL": new_email},
+        contact_list_ids=[settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID],
+        emailBlacklisted=False,
+    )
+
+    if asynchronous:
+        update_contact_attributes_task.delay(contact_request)
+    else:
+        update_contact_attributes_task(contact_request)
+
+
 def update_contact_attributes(
     user_email: str,
     attributes: attributes_models.UserAttributes | attributes_models.ProAttributes,

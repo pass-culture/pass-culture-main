@@ -485,6 +485,19 @@ class ChangeUserEmailTest:
         reloaded_user = users_models.User.query.get(user.id)
         assert reloaded_user.email == self.new_email
 
+    def test_validating_email_updates_external_contact(self):
+        # Given
+        user = users_factories.UserFactory(email=self.old_email, firstName="UniqueNameForEmailChangeTest")
+        users_factories.UserSessionFactory(user=user)
+
+        token = self._init_token(user)
+        # When
+        email_update.validate_email_update_request(token)
+
+        assert sendinblue_testing.sendinblue_requests == [
+            {"email": self.old_email, "attributes": {"EMAIL": self.new_email}, "emailBlacklisted": False}
+        ]
+
 
 class CreateBeneficiaryTest:
     def test_with_eligible_user(self):
