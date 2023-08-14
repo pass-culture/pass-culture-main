@@ -71,6 +71,10 @@ class SendinblueBackend(BaseBackend):
         return models.MailResult(sent_data=asdict(data), successful=True)
 
     def create_contact(self, payload: serializers.UpdateSendinblueContactRequest) -> None:
+        """
+        Creates or updates a contact in Brevo (previously Sendinblue).
+        """
+
         contact = sib_api_v3_sdk.CreateContact(
             email=payload.email,
             attributes=payload.attributes,
@@ -83,20 +87,25 @@ class SendinblueBackend(BaseBackend):
             self.contacts_api.create_contact(contact)
 
         except SendinblueApiException as exception:
-            if exception.status >= 500:
-                raise ExternalAPIException(is_retryable=True) from exception
-
-            logger.exception(
-                "Exception when calling Sendinblue create_contact API",
-                extra={
-                    "email": payload.email,
-                    "attributes": payload.attributes,
-                },
-            )
-            raise ExternalAPIException(is_retryable=False) from exception
+            self._handle_sendinblue_exception(exception, payload)
 
         except Exception as exception:
             raise ExternalAPIException(is_retryable=True) from exception
+
+    def _handle_sendinblue_exception(
+        self, exception: SendinblueApiException, payload: serializers.UpdateSendinblueContactRequest
+    ) -> None:
+        if exception.status >= 500:
+            raise ExternalAPIException(is_retryable=True) from exception
+
+        logger.exception(
+            "Exception when calling Sendinblue create_contact API",
+            extra={
+                "email": payload.email,
+                "attributes": payload.attributes,
+            },
+        )
+        raise ExternalAPIException(is_retryable=False) from exception
 
 
 class ToDevSendinblueBackend(SendinblueBackend):
