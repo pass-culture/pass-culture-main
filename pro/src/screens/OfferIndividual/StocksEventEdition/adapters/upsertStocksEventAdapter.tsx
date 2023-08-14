@@ -1,5 +1,4 @@
 import { api } from 'apiClient/api'
-import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import {
   StockIdResponseModel,
   StockCreationBodyModel,
@@ -7,7 +6,7 @@ import {
 } from 'apiClient/v1'
 
 type SuccessPayload = { stockIds: number[] }
-type FailurePayload = { errors: Record<string, string>[] }
+type FailurePayload = { errors: string }
 type UpdateStocksAdapter = Adapter<
   {
     offerId: number
@@ -36,16 +35,11 @@ const upsertStocksEventAdapter: UpdateStocksAdapter = async ({
       },
     }
   } catch (error) {
-    let formErrors = []
-    /* istanbul ignore next */
-    if (isErrorAPIError(error)) {
-      formErrors = error.body.map(serializeApiErrors)
-    }
     return {
       isOk: false,
       message: 'Une erreur est survenue lors de la mise à jour de votre stock',
       payload: {
-        errors: formErrors,
+        errors: '',
       },
     }
   }
