@@ -6,6 +6,7 @@ from flask import current_app as app
 
 from pcapi import settings
 from pcapi.core import token as token_utils
+import pcapi.core.external.sendinblue as external_contacts
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.token import Token
 from pcapi.core.users import api
@@ -171,12 +172,14 @@ def validate_email_update_request(
     user = models.User.query.get(token.user_id)
     if not user:
         raise exceptions.UserDoesNotExist()
+    old_email = user.email
     new_email = token.data["new_email"]
-    if user.email == new_email:
+    if old_email == new_email:
         return
     token.check(token_utils.TokenType.EMAIL_CHANGE_VALIDATION)
     check_email_address_does_not_exist(new_email)
     api.change_email(user, new_email)
+    external_contacts.update_contact_email(old_email=old_email, new_email=new_email)
     transactional_mails.send_email_change_information_email(user)
     token.expire()
 
