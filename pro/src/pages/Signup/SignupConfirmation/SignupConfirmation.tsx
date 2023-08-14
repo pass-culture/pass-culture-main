@@ -35,7 +35,7 @@ const SignupConfirmation = () => (
           icon={fullMailIcon}
           className={styles['contact-link']}
         >
-          Contacter le support
+          Contacter le support par mail à support-pro@passculture.app
         </ButtonLink>
       </Banner>
     </div>

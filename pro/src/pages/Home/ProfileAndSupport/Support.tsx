@@ -78,7 +78,8 @@ const Support: () => JSX.Element | null = () => {
                   })
                 }
               >
-                Contacter le support
+                Contacter le support par mail à <br />
+                support-pro@passculture.app
               </ButtonLink>
             </li>
 
