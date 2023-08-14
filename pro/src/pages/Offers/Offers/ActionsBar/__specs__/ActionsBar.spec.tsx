@@ -90,6 +90,7 @@ describe('ActionsBar', () => {
     renderActionsBar(props)
 
     expect(screen.queryByText('1 offre sélectionnée')).toBeInTheDocument()
+    expect(screen.getByRole('status')).toBeInTheDocument()
   })
 
   it('should say how many offers are selected when more than 1 offer are selected', () => {
