@@ -27,7 +27,7 @@ const Header = () => {
   }, [navigate, logEvent, location.pathname])
   return (
     <header className="menu-v2" id="header-navigation">
-      <nav>
+      <nav aria-label="Menu principal">
         <div className="nav-brand">
           <NavLink
             className={classnames('logo', 'nav-item')}
@@ -44,104 +44,109 @@ const Header = () => {
           </NavLink>
         </div>
 
-        <div className="nav-menu">
-          <NavLink
-            className="nav-item"
-            onClick={() => {
-              logEvent?.(Events.CLICKED_HOME, { from: location.pathname })
-            }}
-            role="menuitem"
-            to={'/accueil'}
-          >
-            <SvgIcon className="nav-item-icon" src={strokeHomeIcon} alt="" />
-            Accueil
-          </NavLink>
-
-          <NavLink
-            className="nav-item"
-            onClick={() => {
-              logEvent?.(Events.CLICKED_TICKET, { from: location.pathname })
-            }}
-            role="menuitem"
-            to="/guichet"
-          >
-            <SvgIcon className="nav-item-icon" src={deskIcon} alt="" />
-            Guichet
-          </NavLink>
-
-          <NavLink
-            className="nav-item"
-            onClick={() => {
-              logEvent?.(Events.CLICKED_OFFER, { from: location.pathname })
-            }}
-            role="menuitem"
-            to="/offres"
-          >
-            <SvgIcon className="nav-item-icon" src={strokeOffersIcon} alt="" />
-            Offres
-          </NavLink>
-
-          <NavLink
-            className="nav-item"
-            onClick={() => {
-              logEvent?.(Events.CLICKED_BOOKING, { from: location.pathname })
-            }}
-            role="menuitem"
-            to="/reservations"
-          >
-            <SvgIcon
-              alt=""
-              src={strokeCalendarIcon}
-              className="nav-item-icon"
-            />
-            Réservations
-          </NavLink>
-
-          <NavLink
-            className="nav-item"
-            onClick={() => {
-              logEvent?.(Events.CLICKED_REIMBURSEMENT, {
-                from: location.pathname,
-              })
-            }}
-            role="menuitem"
-            to="/remboursements/justificatifs"
-          >
-            <SvgIcon className="nav-item-icon" src={strokeEuroIcon} alt="" />
-            Remboursements
-          </NavLink>
-
-          {isOffererStatsActive && (
+        <ul className="nav-menu">
+          <li>
             <NavLink
               className="nav-item"
               onClick={() => {
-                logEvent?.(Events.CLICKED_STATS, {
+                logEvent?.(Events.CLICKED_HOME, { from: location.pathname })
+              }}
+              to={'/accueil'}
+            >
+              <SvgIcon className="nav-item-icon" src={strokeHomeIcon} alt="" />
+              Accueil
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              className="nav-item"
+              onClick={() => {
+                logEvent?.(Events.CLICKED_TICKET, { from: location.pathname })
+              }}
+              to="/guichet"
+            >
+              <SvgIcon className="nav-item-icon" src={deskIcon} alt="" />
+              Guichet
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              className="nav-item"
+              onClick={() => {
+                logEvent?.(Events.CLICKED_OFFER, { from: location.pathname })
+              }}
+              to="/offres"
+            >
+              <SvgIcon
+                className="nav-item-icon"
+                src={strokeOffersIcon}
+                alt=""
+              />
+              Offres
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              className="nav-item"
+              onClick={() => {
+                logEvent?.(Events.CLICKED_BOOKING, { from: location.pathname })
+              }}
+              to="/reservations"
+            >
+              <SvgIcon
+                alt=""
+                src={strokeCalendarIcon}
+                className="nav-item-icon"
+              />
+              Réservations
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              className="nav-item"
+              onClick={() => {
+                logEvent?.(Events.CLICKED_REIMBURSEMENT, {
                   from: location.pathname,
                 })
               }}
-              role="menuitem"
-              to="/statistiques"
+              to="/remboursements/justificatifs"
             >
-              <SvgIcon src={strokePieIcon} alt="" className="nav-item-icon" />
-              Statistiques
+              <SvgIcon className="nav-item-icon" src={strokeEuroIcon} alt="" />
+              Remboursements
             </NavLink>
+          </li>
+          {isOffererStatsActive && (
+            <li>
+              <NavLink
+                className="nav-item"
+                onClick={() => {
+                  logEvent?.(Events.CLICKED_STATS, {
+                    from: location.pathname,
+                  })
+                }}
+                to="/statistiques"
+              >
+                <SvgIcon src={strokePieIcon} alt="" className="nav-item-icon" />
+                Statistiques
+              </NavLink>
+            </li>
           )}
+          <li>
+            <div className="separator" />
 
-          <div className="separator" />
-
-          <button
-            className="nav-item icon-only"
-            onClick={onSignoutClick}
-            role="menuitem"
-            type="button"
-          >
-            <SvgIcon
-              src={strokeLogoutIcon}
-              alt="Déconnexion"
-              className="nav-item-icon signout-icon"
-            />
-          </button>
-        </div>
+            <button
+              className="nav-item icon-only"
+              onClick={onSignoutClick}
+              type="button"
+            >
+              <SvgIcon
+                src={strokeLogoutIcon}
+                alt="Déconnexion"
+                className="nav-item-icon signout-icon"
+              />
+            </button>
+          </li>
+        </ul>
       </nav>
     </header>
   )

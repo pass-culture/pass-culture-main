@@ -64,6 +64,10 @@ header.menu-v2 {
         }
       }
 
+      & :last-child {
+        display: flex;
+      }
+
       .separator {
         align-self: center;
         background-color: colors.$white;
