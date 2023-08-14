@@ -28,7 +28,7 @@ describe('french phone number without region code', () => {
 
     // When
     expect(() => parseAndValidateFrenchPhoneNumber(phoneNumber)).toThrowError(
-      'Veuillez renseigner un numéro de téléphone valide'
+      'Veuillez renseigner un numéro de téléphone valide, exemple : 612345678'
     )
   })
 
@@ -72,7 +72,7 @@ describe('french phone number with region code', () => {
 
     // Then
     expect(() => parseAndValidateFrenchPhoneNumber(phoneNumber)).toThrowError(
-      'Veuillez renseigner un numéro de téléphone valide'
+      'Veuillez renseigner un numéro de téléphone valide, exemple : 612345678'
     )
   })
   it('should reformat french phone number with region code and invalid prefix', () => {
@@ -107,7 +107,7 @@ describe('dom-tom phone number with region code', () => {
     // Then
     expect(() =>
       parseAndValidateFrenchPhoneNumber(invalidPhoneNumber)
-    ).toThrowError('Veuillez renseigner un numéro de téléphone valide')
+    ).toThrowError('Veuillez renseigner un numéro de téléphone valide, exemple : 612345678')
   })
   it('should reject  dom-tom phone number with region code and invalid prefix', () => {
     // Given
@@ -116,6 +116,6 @@ describe('dom-tom phone number with region code', () => {
     // Then
     expect(() =>
       parseAndValidateFrenchPhoneNumber(phoneNumberWithInvalidPrefix)
-    ).toThrowError('Veuillez renseigner un numéro de téléphone valide')
+    ).toThrowError('Veuillez renseigner un numéro de téléphone valide, exemple : 612345678')
   })
 })
