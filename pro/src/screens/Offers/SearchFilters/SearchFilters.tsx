@@ -195,15 +195,17 @@ const SearchFilters = ({
               />
             </FieldLayout>
           )}
+          <fieldset>
+            <legend>Période de l’évènement</legend>
 
-          <PeriodSelector
-            onBeginningDateChange={onBeginningDateChange}
-            onEndingDateChange={onEndingDateChange}
-            isDisabled={disableAllFilters}
-            label="Période de l’évènement"
-            periodBeginningDate={selectedFilters.periodBeginningDate}
-            periodEndingDate={selectedFilters.periodEndingDate}
-          />
+            <PeriodSelector
+              onBeginningDateChange={onBeginningDateChange}
+              onEndingDateChange={onEndingDateChange}
+              isDisabled={disableAllFilters}
+              periodBeginningDate={selectedFilters.periodBeginningDate}
+              periodEndingDate={selectedFilters.periodEndingDate}
+            />
+          </fieldset>
         </FormLayout.Row>
 
         <div className={styles['reset-filters']}>

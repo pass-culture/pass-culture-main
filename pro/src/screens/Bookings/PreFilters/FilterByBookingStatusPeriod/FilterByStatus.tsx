@@ -18,18 +18,21 @@ const FilterByStatus = ({
   updateFilters,
   selectedStatusId,
 }: FilterByStatusProps): JSX.Element => (
-  <SelectInput
-    onChange={event =>
-      updateFilters({
-        bookingStatusFilter: event.target.value as BookingStatusFilter,
-      })
-    }
-    disabled={isDisabled}
-    name="statusFilter"
-    className={styles['status-filter']}
-    options={BOOKING_STATUS_FILTER_OPTIONS}
-    value={selectedStatusId}
-  />
+  <>
+    <label className={styles['visually-hidden']}>Type de période</label>
+    <SelectInput
+      onChange={event =>
+        updateFilters({
+          bookingStatusFilter: event.target.value as BookingStatusFilter,
+        })
+      }
+      disabled={isDisabled}
+      name="statusFilter"
+      className={styles['status-filter']}
+      options={BOOKING_STATUS_FILTER_OPTIONS}
+      value={selectedStatusId}
+    />
+  </>
 )
 
 export default FilterByStatus

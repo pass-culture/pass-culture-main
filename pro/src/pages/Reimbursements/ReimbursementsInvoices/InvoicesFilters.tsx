@@ -102,15 +102,17 @@ const InvoicesFilters = ({
           />
         </FieldLayout>
 
-        <PeriodSelector
-          onBeginningDateChange={setStartDateFilter}
-          onEndingDateChange={setEndDateFilter}
-          isDisabled={disable}
-          label="Période"
-          maxDateEnding={getToday()}
-          periodBeginningDate={selectedPeriodStart}
-          periodEndingDate={selectedPeriodEnd}
-        />
+        <fieldset>
+          <legend>Période</legend>
+          <PeriodSelector
+            onBeginningDateChange={setStartDateFilter}
+            onEndingDateChange={setEndDateFilter}
+            isDisabled={disable}
+            maxDateEnding={getToday()}
+            periodBeginningDate={selectedPeriodStart}
+            periodEndingDate={selectedPeriodEnd}
+          />
+        </fieldset>
       </FormLayout.Row>
 
       <div className="button-group">
