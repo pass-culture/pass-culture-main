@@ -19,6 +19,8 @@ export interface ListIconButtonProps
   isExternal?: boolean
 }
 
+const LIST_ICON_SIZE = '16'
+
 const ListIconButton = ({
   children,
   className,
@@ -33,7 +35,12 @@ const ListIconButton = ({
   const tooltipId = useId()
 
   const svgicon = (
-    <SvgIcon src={icon} alt="" className={cn(styles['button-icon'])} />
+    <SvgIcon
+      src={icon}
+      alt=""
+      className={cn(styles['button-icon'])}
+      width={LIST_ICON_SIZE}
+    />
   )
   const content =
     hasTooltip && !buttonAttrs?.disabled ? (
