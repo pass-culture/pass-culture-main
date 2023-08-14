@@ -3,16 +3,14 @@ import type { Story } from '@storybook/react'
 import React from 'react'
 import { withRouter } from 'storybook-addon-react-router-v6'
 
-import fullBackIcon from 'icons/full-back.svg'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullNextIcon from 'icons/full-next.svg'
 
 import { ButtonProps } from './Button'
-import { ButtonLinkProps } from './ButtonLink'
 import { ButtonVariant, IconPositionEnum } from './types'
 
-import { Button, ButtonLink } from './index'
+import { Button } from './index'
 
 export default {
   title: 'ui-kit/Button',
@@ -26,18 +24,20 @@ export default {
       options: ['left', 'right'],
       control: 'radio',
     },
+    isLoading: {
+      options: [true, false],
+      control: 'radio',
+    },
+    hasTooltip: {
+      options: [true, false],
+      control: 'radio',
+    },
   },
 }
 
 const Template: Story<ButtonProps> = args => (
   <div style={{ margin: '50px', display: 'flex' }}>
     <Button {...args}>{args.children}</Button>
-  </div>
-)
-
-const TemplateLink: Story<ButtonLinkProps> = args => (
-  <div style={{ margin: '50px', display: 'flex' }}>
-    <ButtonLink {...args}>{args.children}</ButtonLink>
   </div>
 )
 
@@ -65,31 +65,8 @@ DefaultSecondaryButton.args = {
   variant: ButtonVariant.SECONDARY,
 }
 
-export const LinkButton = TemplateLink.bind({})
-
-LinkButton.args = {
-  children: 'Éditer',
-  variant: ButtonVariant.TERNARY,
-  link: { to: '/my-path', isExternal: false },
-}
-
-export const LinkButtonWithIcon = TemplateLink.bind({})
-
-LinkButtonWithIcon.args = {
-  ...LinkButton.args,
-  icon: fullEditIcon,
-}
-
-export const LinkQuaternaryButtonWithIcon = TemplateLink.bind({})
-
-LinkQuaternaryButtonWithIcon.args = {
-  children: 'Accueil',
-  variant: ButtonVariant.QUATERNARY,
-  icon: fullBackIcon,
-  link: { to: '/my-path', isExternal: false },
-}
-
 export const WithTooltip = Template.bind({})
+
 WithTooltip.args = {
   ...DefaultButton.args,
   children: 'Créer une offre réservable pour un établissement scolaire',
