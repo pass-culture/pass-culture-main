@@ -1297,6 +1297,15 @@ def delete_old_trusted_devices() -> None:
     db.session.commit()
 
 
+def delete_old_login_device_history() -> None:
+    thirteen_months_ago = datetime.datetime.utcnow() - relativedelta(months=13)
+
+    users_models.LoginDeviceHistory.query.filter(
+        users_models.LoginDeviceHistory.dateCreated <= thirteen_months_ago
+    ).delete()
+    db.session.commit()
+
+
 def _get_users_with_suspended_account() -> Query:
     # distinct keeps the first row if duplicates are found. Since rows
     # are ordered by userId and eventDate, this query will fetch the
