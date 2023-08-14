@@ -15,6 +15,8 @@ import strokeOffersIcon from 'icons/stroke-offers.svg'
 import strokePieIcon from 'icons/stroke-pie.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
+const NAV_ITEM_ICON_SIZE = '24'
+
 const Header = () => {
   const navigate = useNavigate()
   const { logEvent } = useAnalytics()
@@ -40,6 +42,7 @@ const Header = () => {
               alt="Pass Culture pro, l'espace des acteurs culturels"
               src={logoPassCultureProIcon}
               viewBox="0 0 119 40"
+              width="119"
             />
           </NavLink>
         </div>
@@ -53,7 +56,12 @@ const Header = () => {
               }}
               to={'/accueil'}
             >
-              <SvgIcon className="nav-item-icon" src={strokeHomeIcon} alt="" />
+              <SvgIcon
+                className="nav-item-icon"
+                src={strokeHomeIcon}
+                alt=""
+                width={NAV_ITEM_ICON_SIZE}
+              />
               Accueil
             </NavLink>
           </li>
@@ -65,7 +73,12 @@ const Header = () => {
               }}
               to="/guichet"
             >
-              <SvgIcon className="nav-item-icon" src={deskIcon} alt="" />
+              <SvgIcon
+                className="nav-item-icon"
+                src={deskIcon}
+                alt=""
+                width={NAV_ITEM_ICON_SIZE}
+              />
               Guichet
             </NavLink>
           </li>
@@ -81,6 +94,7 @@ const Header = () => {
                 className="nav-item-icon"
                 src={strokeOffersIcon}
                 alt=""
+                width={NAV_ITEM_ICON_SIZE}
               />
               Offres
             </NavLink>
@@ -97,6 +111,7 @@ const Header = () => {
                 alt=""
                 src={strokeCalendarIcon}
                 className="nav-item-icon"
+                width={NAV_ITEM_ICON_SIZE}
               />
               Réservations
             </NavLink>
@@ -111,7 +126,12 @@ const Header = () => {
               }}
               to="/remboursements/justificatifs"
             >
-              <SvgIcon className="nav-item-icon" src={strokeEuroIcon} alt="" />
+              <SvgIcon
+                className="nav-item-icon"
+                src={strokeEuroIcon}
+                alt=""
+                width={NAV_ITEM_ICON_SIZE}
+              />
               Remboursements
             </NavLink>
           </li>
@@ -126,7 +146,12 @@ const Header = () => {
                 }}
                 to="/statistiques"
               >
-                <SvgIcon src={strokePieIcon} alt="" className="nav-item-icon" />
+                <SvgIcon
+                  src={strokePieIcon}
+                  alt=""
+                  className="nav-item-icon"
+                  width={NAV_ITEM_ICON_SIZE}
+                />
                 Statistiques
               </NavLink>
             </li>
@@ -143,6 +168,7 @@ const Header = () => {
                 src={strokeLogoutIcon}
                 alt="Déconnexion"
                 className="nav-item-icon signout-icon"
+                width={NAV_ITEM_ICON_SIZE}
               />
             </button>
           </li>
