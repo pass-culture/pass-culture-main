@@ -1,3 +1,4 @@
+@use "styles/mixins/_a11y.scss" as a11y;
 @use "styles/mixins/_rem.scss" as rem;
 
 .status-period-filter {
@@ -17,4 +18,8 @@
 .status-filter {
   border-right: none;
   border-radius: rem.torem(20px) 0 0 rem.torem(20px);
+}
+
+.visually-hidden {
+    @include a11y.visually-hidden;
 }

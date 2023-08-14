@@ -30,7 +30,8 @@ const FilterByBookingStatusPeriod = ({
   }
 
   return (
-    <div className={styles['status-period-filter']}>
+    <fieldset className={styles['status-period-filter']}>
+      <legend className={styles['visually-hidden']}>Période</legend>
       <FilterByStatus
         isDisabled={isDisabled}
         selectedStatusId={selectedBookingFilter}
@@ -46,7 +47,7 @@ const FilterByBookingStatusPeriod = ({
         periodBeginningDate={selectedBookingBeginningDate}
         periodEndingDate={selectedBookingEndingDate}
       />
-    </div>
+    </fieldset>
   )
 }
 

@@ -13,6 +13,7 @@ export interface BaseInputProps
   leftIcon?: string
   rightIcon?: string
   rightButton?: () => JSX.Element
+  id?: string
 }
 
 const BaseInput = forwardRef(
@@ -25,6 +26,7 @@ const BaseInput = forwardRef(
       leftIcon,
       rightIcon,
       rightButton,
+      id,
       ...props
     }: BaseInputProps,
     ref: ForwardedRef<HTMLInputElement>
@@ -52,7 +54,7 @@ const BaseInput = forwardRef(
               },
               className
             )}
-            id={name}
+            id={id ?? name}
             name={name}
             ref={ref}
           />
@@ -84,7 +86,7 @@ const BaseInput = forwardRef(
             },
             className
           )}
-          id={name}
+          id={id ?? name}
           name={name}
           ref={ref}
         />

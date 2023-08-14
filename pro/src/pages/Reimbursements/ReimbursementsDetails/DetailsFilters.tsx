@@ -104,15 +104,17 @@ const DetailsFilters = ({
           />
         </FieldLayout>
 
-        <PeriodSelector
-          onBeginningDateChange={setStartDateFilter}
-          onEndingDateChange={setEndDateFilter}
-          isDisabled={false}
-          label="Période"
-          maxDateEnding={getToday()}
-          periodBeginningDate={selectedPeriodStart}
-          periodEndingDate={selectedPeriodEnd}
-        />
+        <fieldset>
+          <legend>Période</legend>
+          <PeriodSelector
+            onBeginningDateChange={setStartDateFilter}
+            onEndingDateChange={setEndDateFilter}
+            isDisabled={false}
+            maxDateEnding={getToday()}
+            periodBeginningDate={selectedPeriodStart}
+            periodEndingDate={selectedPeriodEnd}
+          />
+        </fieldset>
       </FormLayout.Row>
 
       <div className="button-group">
