@@ -75,7 +75,11 @@ export const OffersStatusFiltersModal = ({
           },
         ]
   return (
-    <div className={styles['offers-status-filters']} ref={modalRef}>
+    <div
+      className={styles['offers-status-filters']}
+      ref={modalRef}
+      id="offer-status-filters-modal"
+    >
       <fieldset>
         <legend className={styles['osf-title']}>Afficher les offres</legend>
         {filters.map(({ label, value }) => (

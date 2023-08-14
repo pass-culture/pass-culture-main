@@ -132,11 +132,17 @@ describe('route Offers', () => {
         it('should filter offers given status filter when clicking on "Appliquer"', async () => {
           await renderOffers(store)
 
-          await userEvent.click(
-            screen.getByRole('button', {
-              name: 'Statut Afficher ou masquer le filtre par statut',
-            })
+          const statusFiltersButton = screen.getByRole('button', {
+            name: 'Statut Afficher ou masquer le filtre par statut',
+          })
+          expect(statusFiltersButton).toHaveAttribute(
+            'aria-controls',
+            'offer-status-filters-modal'
           )
+          expect(statusFiltersButton).toHaveAttribute('aria-expanded', 'false')
+          await userEvent.click(statusFiltersButton)
+          expect(statusFiltersButton).toHaveAttribute('aria-expanded', 'true')
+
           await userEvent.click(screen.getByLabelText('Expirée'))
           await userEvent.click(screen.getByText('Appliquer'))
 
