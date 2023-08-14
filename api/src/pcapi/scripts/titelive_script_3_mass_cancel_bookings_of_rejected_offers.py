@@ -19,7 +19,7 @@ from pcapi.scripts.script_utils import log_remote_to_local_cmd
 
 logger = logging.getLogger(__name__)
 
-LOG_EVERY_N_LINES = 100
+LOG_EVERY_N_LINES = 1000
 
 OUT_EMAIL_WITH_BOOKING_FILE_PATH = "/tmp/OUT_emails_with_booking.csv"
 
