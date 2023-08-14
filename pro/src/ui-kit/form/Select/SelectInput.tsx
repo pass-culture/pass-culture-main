@@ -62,7 +62,7 @@ const SelectInput = ({
         [styles['filter-variant']]: filterVariant,
       })}
     >
-      <SvgIcon src={strokeDownIcon} alt="" />
+      <SvgIcon src={strokeDownIcon} alt="" width="0" />
     </div>
   </div>
 )
