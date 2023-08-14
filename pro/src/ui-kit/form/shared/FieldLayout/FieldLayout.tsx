@@ -2,8 +2,8 @@ import cn from 'classnames'
 import React, { useId } from 'react'
 
 import fullClearIcon from 'icons/full-clear.svg'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import Tooltip from 'ui-kit/Tooltip'
+import { Button } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import FieldError from '../FieldError'
 
@@ -65,20 +65,6 @@ const FieldLayout = ({
   const hasCounter = count !== undefined && maxLength !== undefined
   const tooltipId = useId()
 
-  const clearButton = (
-    <button
-      type="button"
-      {...clearButtonProps}
-      aria-describedby={tooltipId}
-      className={styles['clear-button']}
-    >
-      <SvgIcon
-        src={fullClearIcon}
-        alt=""
-        className={styles['clear-button-icon']}
-      />
-    </button>
-  )
   const showFooter =
     !hideFooter || hasError || hasCounter || Boolean(ErrorDetails)
 
@@ -120,13 +106,17 @@ const FieldLayout = ({
           {children}
           {clearButtonProps && (
             <div className={styles['clear-button-container']}>
-              {clearButtonProps.disabled ? (
-                clearButton
-              ) : (
-                <Tooltip content={clearButtonProps.tooltip} id={tooltipId}>
-                  {clearButton}
-                </Tooltip>
-              )}
+              <Button
+                {...clearButtonProps}
+                aria-describedby={tooltipId}
+                className={styles['clear-button']}
+                hasTooltip={true}
+                type="button"
+                icon={fullClearIcon}
+                variant={ButtonVariant.TERNARY}
+              >
+                Supprimer
+              </Button>
             </div>
           )}
         </div>

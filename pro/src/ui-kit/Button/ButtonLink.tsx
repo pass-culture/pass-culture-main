@@ -62,13 +62,17 @@ const ButtonLink = ({
         /* istanbul ignore next: graphic variation */
         iconPosition !== IconPositionEnum.RIGHT && svgIcon
       }
-      <div
-        className={cn({
-          [styles['button-arrow-content']]: variant === ButtonVariant.BOX,
-        })}
-      >
-        {children}
-      </div>
+      {variant === ButtonVariant.BOX ? (
+        <div
+          className={cn({
+            [styles['button-arrow-content']]: variant === ButtonVariant.BOX,
+          })}
+        >
+          {children}
+        </div>
+      ) : (
+        <>{children}</>
+      )}
       {
         /* istanbul ignore next: graphic variation */ variant ===
           ButtonVariant.BOX && (

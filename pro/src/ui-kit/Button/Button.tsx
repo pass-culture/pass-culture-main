@@ -52,15 +52,19 @@ const Button = ({
           width="20"
         />
       )}
+      {variant === ButtonVariant.BOX ? (
+        <div
+          className={cn({
+            [styles['button-arrow-content']]: variant === ButtonVariant.BOX,
+          })}
+        ></div>
+      ) : (
+        <>
+          {isLoading && loadingDiv}
+          {!isLoading && !hasTooltip && children}
+        </>
+      )}
 
-      <div
-        className={cn({
-          [styles['button-arrow-content']]: variant === ButtonVariant.BOX,
-        })}
-      >
-        {isLoading && loadingDiv}
-        {!isLoading && !hasTooltip && children}
-      </div>
       {icon && !isLoading && iconPosition === IconPositionEnum.RIGHT && (
         <SvgIcon
           src={icon}
@@ -95,7 +99,7 @@ const Button = ({
       {...(hasTooltip ? { 'aria-describedby': tooltipId } : {})}
       {...buttonAttrs}
     >
-      {hasTooltip && !buttonAttrs?.disabled ? (
+      {hasTooltip ? (
         <Tooltip id={tooltipId} content={children}>
           {content}
         </Tooltip>
