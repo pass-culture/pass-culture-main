@@ -134,17 +134,21 @@ const FilterByBookingStatus = <
       <span className="bs-filter">
         {isToolTipVisible && (
           <div className="bs-filter-tooltip">
-            <div className="bs-filter-label">Afficher les réservations</div>
-            {filteredBookingStatuses.map(bookingStatus => (
-              <BaseCheckbox
-                key={bookingStatus.value}
-                checked={!bookingStatusFilters.includes(bookingStatus.value)}
-                id={`bs-${bookingStatus.value}`}
-                name={bookingStatus.value}
-                onChange={handleCheckboxChange}
-                label={bookingStatus.title}
-              />
-            ))}
+            <fieldset>
+              <legend className="bs-filter-label">
+                Afficher les réservations
+              </legend>
+              {filteredBookingStatuses.map(bookingStatus => (
+                <BaseCheckbox
+                  key={bookingStatus.value}
+                  checked={!bookingStatusFilters.includes(bookingStatus.value)}
+                  id={`bs-${bookingStatus.value}`}
+                  name={bookingStatus.value}
+                  onChange={handleCheckboxChange}
+                  label={bookingStatus.title}
+                />
+              ))}
+            </fieldset>
           </div>
         )}
       </span>
