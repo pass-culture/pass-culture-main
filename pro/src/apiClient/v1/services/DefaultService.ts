@@ -4,6 +4,7 @@
 /* eslint-disable */
 import type { AdageCulturalPartnerResponseModel } from '../models/AdageCulturalPartnerResponseModel';
 import type { AdageCulturalPartnersResponseModel } from '../models/AdageCulturalPartnersResponseModel';
+import type { AttachImageFormModel } from '../models/AttachImageFormModel';
 import type { AttachImageResponseModel } from '../models/AttachImageResponseModel';
 import type { BookingExportType } from '../models/BookingExportType';
 import type { BookingStatusFilter } from '../models/BookingStatusFilter';
@@ -21,6 +22,7 @@ import type { CollectiveStockEditionBodyModel } from '../models/CollectiveStockE
 import type { CollectiveStockResponseModel } from '../models/CollectiveStockResponseModel';
 import type { CookieConsentRequest } from '../models/CookieConsentRequest';
 import type { CreateOffererQueryModel } from '../models/CreateOffererQueryModel';
+import type { CreateThumbnailBodyModel } from '../models/CreateThumbnailBodyModel';
 import type { CreateThumbnailResponseModel } from '../models/CreateThumbnailResponseModel';
 import type { DeleteOfferRequestBody } from '../models/DeleteOfferRequestBody';
 import type { EditVenueBodyModel } from '../models/EditVenueBodyModel';
@@ -493,11 +495,13 @@ export class DefaultService {
   /**
    * attach_offer_template_image <POST>
    * @param offerId
+   * @param formData
    * @returns AttachImageResponseModel OK
    * @throws ApiError
    */
   public attachOfferTemplateImage(
     offerId: string,
+    formData?: AttachImageFormModel,
   ): CancelablePromise<AttachImageResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -505,6 +509,8 @@ export class DefaultService {
       path: {
         'offer_id': offerId,
       },
+      formData: formData,
+      mediaType: 'multipart/form-data',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
@@ -748,11 +754,13 @@ export class DefaultService {
   /**
    * attach_offer_image <POST>
    * @param offerId
+   * @param formData
    * @returns AttachImageResponseModel OK
    * @throws ApiError
    */
   public attachOfferImage(
     offerId: number,
+    formData?: AttachImageFormModel,
   ): CancelablePromise<AttachImageResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -760,6 +768,8 @@ export class DefaultService {
       path: {
         'offer_id': offerId,
       },
+      formData: formData,
+      mediaType: 'multipart/form-data',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
@@ -1425,13 +1435,18 @@ export class DefaultService {
 
   /**
    * create_thumbnail <POST>
+   * @param formData
    * @returns CreateThumbnailResponseModel Created
    * @throws ApiError
    */
-  public createThumbnail(): CancelablePromise<CreateThumbnailResponseModel> {
+  public createThumbnail(
+    formData?: CreateThumbnailBodyModel,
+  ): CancelablePromise<CreateThumbnailResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/offers/thumbnails/',
+      formData: formData,
+      mediaType: 'multipart/form-data',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
