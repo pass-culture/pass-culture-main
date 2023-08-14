@@ -1,10 +1,9 @@
 import cn from 'classnames'
-import React, { MouseEventHandler, useId } from 'react'
+import React, { MouseEventHandler } from 'react'
 import { Link } from 'react-router-dom'
 
 import fullRightIcon from 'icons/full-right.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import Tooltip from 'ui-kit/Tooltip'
 
 import styles from './Button.module.scss'
 import { ButtonVariant, IconPositionEnum, SharedButtonProps } from './types'
@@ -25,7 +24,6 @@ export interface ButtonLinkProps extends SharedButtonProps {
   className?: string
   isDisabled?: boolean
   onClick?: MouseEventHandler<HTMLAnchorElement>
-  hasTooltip?: boolean
   svgAlt?: string
 }
 
@@ -38,7 +36,6 @@ const ButtonLink = ({
   variant = ButtonVariant.TERNARY,
   link,
   iconPosition = IconPositionEnum.LEFT,
-  hasTooltip = false,
   svgAlt = '',
 }: ButtonLinkProps): JSX.Element => {
   const classNames = cn(
@@ -48,39 +45,30 @@ const ButtonLink = ({
     { [styles[`button-disabled`]]: isDisabled },
     className
   )
+  const svgIcon = icon ? (
+    <SvgIcon
+      src={icon}
+      alt={svgAlt}
+      className={styles['button-icon']}
+      width="22"
+    />
+  ) : (
+    <></>
+  )
 
   let body = (
     <>
       {
         /* istanbul ignore next: graphic variation */
-        icon && iconPosition !== IconPositionEnum.RIGHT && (
-          <SvgIcon
-            src={icon}
-            alt={svgAlt}
-            className={styles['button-icon']}
-            width="22"
-          />
-        )
+        iconPosition !== IconPositionEnum.RIGHT && svgIcon
       }
-      {hasTooltip ? (
-        <div className={styles['visually-hidden']}>{children}</div>
-      ) : /* istanbul ignore next: graphic variation */ variant ===
-        ButtonVariant.BOX ? (
-        <div className={styles['button-arrow-content']}>{children}</div>
-      ) : (
-        children
-      )}
-      {
-        /* istanbul ignore next: graphic variation */
-        icon && iconPosition === IconPositionEnum.RIGHT && (
-          <SvgIcon
-            src={icon}
-            alt={svgAlt}
-            className={styles['button-icon']}
-            width="22"
-          />
-        )
-      }
+      <div
+        className={cn({
+          [styles['button-arrow-content']]: variant === ButtonVariant.BOX,
+        })}
+      >
+        {children}
+      </div>
       {
         /* istanbul ignore next: graphic variation */ variant ===
           ButtonVariant.BOX && (
@@ -113,9 +101,6 @@ const ButtonLink = ({
       }
     : {}
 
-  const tooltipId = useId()
-  const tooltipProps = hasTooltip ? { 'aria-describedby': tooltipId } : {}
-
   body = isExternal ? (
     <a
       className={classNames}
@@ -123,7 +108,6 @@ const ButtonLink = ({
       onClick={callback}
       {...disabled}
       {...linkProps}
-      {...tooltipProps}
     >
       {body}
     </a>
@@ -133,20 +117,11 @@ const ButtonLink = ({
       onClick={callback}
       to={absoluteUrl}
       {...disabled}
-      {...tooltipProps}
       aria-label={linkProps['aria-label']}
     >
       {body}
     </Link>
   )
-
-  if (hasTooltip) {
-    body = (
-      <Tooltip id={tooltipId} content={children}>
-        {body}
-      </Tooltip>
-    )
-  }
 
   return body
 }
