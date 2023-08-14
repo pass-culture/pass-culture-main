@@ -183,7 +183,7 @@ describe('venue create offer link', () => {
 
       const stats = screen.getAllByTestId('venue-stat')
       await userEvent.click(
-        within(stats[index]).getByRole('link', { name: 'Voir' })
+        within(stats[index]).getByRole('link', { name: /Voir/ })
       )
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
       expect(mockLogEvent).toHaveBeenNthCalledWith(1, event, {

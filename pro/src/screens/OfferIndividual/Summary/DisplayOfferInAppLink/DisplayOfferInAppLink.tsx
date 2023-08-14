@@ -9,11 +9,12 @@ interface DisplayOfferInAppLinkProps extends SharedButtonProps {
   tracking?: { isTracked: boolean; trackingFunction: () => void }
   text?: string
   icon?: string
+  svgAlt?: string
 }
 
 export const DisplayOfferInAppLink: FunctionComponent<
   DisplayOfferInAppLinkProps
-> = ({ id, tracking, icon, variant, text }) => {
+> = ({ id, tracking, icon, variant, text, svgAlt }) => {
   const offerPreviewUrl = `${WEBAPP_URL}/offre/${id}`
 
   return (
@@ -22,6 +23,7 @@ export const DisplayOfferInAppLink: FunctionComponent<
       tracking={tracking}
       variant={variant}
       icon={icon}
+      svgAlt={svgAlt}
     >
       {text ? text : 'Visualiser dans l’app'}
     </ButtonLinkNewWindow>

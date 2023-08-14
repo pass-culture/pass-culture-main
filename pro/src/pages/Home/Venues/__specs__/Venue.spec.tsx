@@ -97,7 +97,7 @@ describe('venues', () => {
     expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
 
     // Then
-    expect(screen.getAllByRole('link', { name: 'Voir' })).toHaveLength(4)
+    expect(screen.getAllByRole('link', { name: /Voir/ })).toHaveLength(4)
   })
 
   describe('physical venue section', () => {

@@ -136,7 +136,6 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                     <div className={styles['offer-selection-label']}>
                       <Thumb
                         url={offer.thumbUrl}
-                        alt={offer.name}
                         className={styles['img-offer']}
                       />
                       <p className={styles['offer-title']}>
