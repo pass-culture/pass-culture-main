@@ -62,7 +62,7 @@ const VenueOfferSteps = ({
         >
           {(!hasCreatedOffer || shouldDisplayEACInformationSection) && (
             <div className="h-card-inner">
-              <h4>Prochaines étapes : </h4>
+              <h3 className={styles['card-title']}>Prochaines étapes : </h3>
 
               <div className={styles['venue-offer-steps']}>
                 {!hasVenue && (
@@ -175,7 +175,7 @@ const VenueOfferSteps = ({
           {(shouldDisplayEACInformationSection ||
             hasPendingBankInformationApplication) && (
             <div className="h-card-inner">
-              <h4>Démarche en cours : </h4>
+              <h3 className={styles['card-title']}>Démarche en cours : </h3>
 
               <div className={styles['venue-offer-steps']}>
                 <div className={styles['step-venue-creation']}>
