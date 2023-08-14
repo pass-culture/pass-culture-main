@@ -96,11 +96,20 @@ const FilterByOmniSearch = ({
   )?.placeholderText
 
   return (
-    <div
+    <fieldset
       className={cn(styles['omnisearch-container'], {
         [styles['omnisearch-container-disabled']]: isDisabled,
       })}
     >
+      <legend className={styles['visually-hidden']}>
+        Rechercher dans les réservations
+      </legend>
+      <label
+        htmlFor="omnisearch-criteria"
+        className={styles['visually-hidden']}
+      >
+        Informations dans laquelle rechercher
+      </label>
       <SelectInput
         name="omnisearch-criteria"
         className={styles['omnisearch-filter-select']}
@@ -112,7 +121,9 @@ const FilterByOmniSearch = ({
       />
 
       <span className={styles['vertical-bar']} />
-
+      <label htmlFor="text-filter-input" className={styles['visually-hidden']}>
+        Texte à rechercher
+      </label>
       <BaseInput
         type="text"
         className={styles['omnisearch-filter-input']}
@@ -122,7 +133,7 @@ const FilterByOmniSearch = ({
         placeholder={placeholderText}
         value={keywords}
       />
-    </div>
+    </fieldset>
   )
 }
 
