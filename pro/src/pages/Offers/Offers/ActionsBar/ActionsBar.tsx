@@ -173,7 +173,7 @@ const ActionsBar = ({
     setIsDeleteDialogOpen(true)
   }
 
-  const Left = () => <span>{computeSelectedOffersLabel()}</span>
+  const Left = () => <span role="status">{computeSelectedOffersLabel()}</span>
 
   const Right = () => (
     <>
