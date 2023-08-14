@@ -21,7 +21,9 @@ describe('homepage: ProfileAndSupport: Support', () => {
   describe('render', () => {
     it('should display help links', () => {
       renderSupport()
-      const contactLink = screen.getByText('Contacter le support')
+      const contactLink = screen.getByText(
+        'Contacter le support par mail à support-pro@passculture.app'
+      )
       const cguLink = screen.getByText('Conditions Générales d’Utilisation')
       const helpCenterLink = screen.getByText('Centre d’aide')
       const bestPracticesLink = screen.getByText('Bonnes pratiques et études')
@@ -51,7 +53,9 @@ describe('homepage: ProfileAndSupport: Support', () => {
         setLogEvent: null,
       }))
       renderSupport()
-      const contactLink = screen.getByText('Contacter le support')
+      const contactLink = screen.getByText(
+        'Contacter le support par mail à support-pro@passculture.app'
+      )
       const cguLink = screen.getByText('Conditions Générales d’Utilisation')
       const helpCenterLink = screen.getByText('Centre d’aide')
       const bestPracticesLink = screen.getByText('Bonnes pratiques et études')
