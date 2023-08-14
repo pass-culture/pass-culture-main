@@ -241,7 +241,9 @@ describe('CollectiveDataEdition', () => {
         )
       ).toBeInTheDocument()
       expect(
-        screen.queryByText('Veuillez renseigner un email valide')
+        screen.queryByText(
+          'Veuillez renseigner un email valide, exemple : mail@exemple.com'
+        )
       ).toBeInTheDocument()
     })
 

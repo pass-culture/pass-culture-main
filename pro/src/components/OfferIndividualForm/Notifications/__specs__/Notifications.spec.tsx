@@ -172,7 +172,9 @@ describe('OfferIndividual section: Notifications', () => {
     await userEvent.paste('not an email')
     await userEvent.click(screen.getByText('Submit'))
     expect(
-      await screen.findByText('Veuillez renseigner un email valide')
+      await screen.findByText(
+        'Veuillez renseigner un email valide, exemple : mail@exemple.com'
+      )
     ).toBeInTheDocument()
   })
 

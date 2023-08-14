@@ -31,7 +31,7 @@ export const validationSchema = yup.object().shape({
     .required('Veuillez renseigner un numéro de téléphone')
     .test(
       'isPhoneValid',
-      'Veuillez renseigner un numéro de téléphone valide',
+      'Veuillez renseigner un numéro de téléphone valide, exemple : 612345678',
       value => {
         if (!value) {
           return false
