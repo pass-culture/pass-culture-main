@@ -1,4 +1,5 @@
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_a11y.scss" as a11y;
 
 .status-period-filter {
   display: flex;
@@ -18,4 +19,8 @@
 .status-filter {
   border-right: none;
   border-radius: rem.torem(20px) 0 0 rem.torem(20px);
+}
+
+.hidden-label {
+  @include a11y.visually-hidden;
 }

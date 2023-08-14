@@ -15,6 +15,7 @@ export interface SelectInputProps extends ComponentProps<'select'> {
   filterVariant?: boolean
   hasDescription?: boolean
   value: string
+  ariaLabel?: string
 }
 
 const SelectInput = ({
@@ -26,6 +27,7 @@ const SelectInput = ({
   disabled,
   options,
   className,
+  ariaLabel = '',
   ...field
 }: SelectInputProps): JSX.Element => (
   <div
@@ -46,6 +48,7 @@ const SelectInput = ({
       disabled={disabled}
       id={name}
       name={name}
+      aria-labelledby={ariaLabel}
       {...field}
     >
       {defaultOption && (
