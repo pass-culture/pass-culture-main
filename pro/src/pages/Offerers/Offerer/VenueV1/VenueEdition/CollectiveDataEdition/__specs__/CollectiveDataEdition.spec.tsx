@@ -231,7 +231,9 @@ describe('CollectiveDataEdition', () => {
       await userEvent.click(title)
 
       expect(
-        screen.queryByText('Veuillez entrer un numéro de téléphone valide')
+        screen.queryByText(
+          'Veuillez entrer un numéro de téléphone valide, exemple : 612345678'
+        )
       ).toBeInTheDocument()
       expect(
         screen.queryByText(
@@ -265,7 +267,9 @@ describe('CollectiveDataEdition', () => {
         ).not.toBeInTheDocument()
       )
       expect(
-        screen.queryByText('Veuillez entrer un numéro de téléphone valide')
+        screen.queryByText(
+          'Veuillez entrer un numéro de téléphone valide, exemple : 612345678'
+        )
       ).not.toBeInTheDocument()
       expect(
         screen.queryByText(
@@ -295,7 +299,9 @@ describe('CollectiveDataEdition', () => {
         ).not.toBeInTheDocument()
       )
       expect(
-        screen.queryByText('Veuillez entrer un numéro de téléphone valide')
+        screen.queryByText(
+          'Veuillez entrer un numéro de téléphone valide, exemple : 612345678'
+        )
       ).not.toBeInTheDocument()
       expect(
         screen.queryByText(

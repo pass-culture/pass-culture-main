@@ -129,7 +129,9 @@ describe('RequestFormDialog', () => {
     await userEvent.click(submitButton)
 
     expect(
-      screen.getByText('Veuillez entrer un numéro de téléphone valide')
+      screen.getByText(
+        'Veuillez entrer un numéro de téléphone valide, exemple : 612345678'
+      )
     ).toBeInTheDocument()
   })
 

@@ -39,7 +39,7 @@ describe('validationSchema', () => {
       expectedErrors: [
         'Veuillez renseigner au moins 10 chiffres',
         'Veuillez renseigner un numéro de téléphone',
-        'Veuillez renseigner un numéro de téléphone valide',
+        'Veuillez renseigner un numéro de téléphone valide, exemple : 612345678',
       ],
     },
     {
@@ -47,7 +47,7 @@ describe('validationSchema', () => {
       formValues: { ...signupFormDefault, phoneNumber: '0102' },
       expectedErrors: [
         'Veuillez renseigner au moins 10 chiffres',
-        'Veuillez renseigner un numéro de téléphone valide',
+        'Veuillez renseigner un numéro de téléphone valide, exemple : 612345678',
       ],
     },
     {
@@ -58,7 +58,7 @@ describe('validationSchema', () => {
       },
       expectedErrors: [
         'Veuillez renseigner moins de 20 chiffres',
-        'Veuillez renseigner un numéro de téléphone valide',
+        'Veuillez renseigner un numéro de téléphone valide, exemple : 612345678',
       ],
     },
     {
