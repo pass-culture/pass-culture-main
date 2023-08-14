@@ -1,3 +1,5 @@
+import datetime
+
 from flask import url_for
 import pytest
 
@@ -302,7 +304,9 @@ class GetIncidentHistoryTest(GetEndpointHelper):
     def test_get_incident_history(self, legit_user, authenticated_client):
         finance_incident = finance_factories.FinanceIncidentFactory()
         action = history_factories.ActionHistoryFactory(
-            financeIncident=finance_incident, actionType=history_models.ActionType.FINANCE_INCIDENT_CREATED
+            financeIncident=finance_incident,
+            actionType=history_models.ActionType.FINANCE_INCIDENT_CREATED,
+            actionDate=datetime.datetime.utcnow() + datetime.timedelta(days=-1),
         )
         _cancel_finance_incident(finance_incident, comment="Je décide d'annuler l'incident")
 
