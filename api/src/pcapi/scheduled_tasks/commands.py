@@ -447,3 +447,9 @@ def _send_notification_favorites_not_booked() -> None:
 @log_cron_with_transaction
 def delete_old_trusted_devices() -> None:
     users_api.delete_old_trusted_devices()
+
+
+@blueprint.cli.command("delete_old_login_device_history")
+@log_cron_with_transaction
+def delete_old_login_device_history() -> None:
+    users_api.delete_old_login_device_history()
