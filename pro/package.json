@@ -76,7 +76,7 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.14.4",
-    "@storybook/addon-a11y": "^7.2.2",
+    "@storybook/addon-a11y": "^7.2.3",
     "@storybook/addon-controls": "^7.2.2",
     "@storybook/preset-scss": "^1.0.3",
     "@storybook/react": "^7.2.2",
