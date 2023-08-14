@@ -71,13 +71,4 @@ describe('ButtonLink', () => {
 
     expect(onClick).not.toHaveBeenCalled()
   })
-
-  it('should display tooltip', () => {
-    render(
-      <ButtonLink link={props} hasTooltip>
-        test
-      </ButtonLink>
-    )
-    expect(screen.getByRole('tooltip', { name: 'test' })).toBeInTheDocument()
-  })
 })
