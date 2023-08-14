@@ -29,7 +29,7 @@ const validationSchema = {
     then: schema =>
       schema
         .required('Veuillez renseigner une adresse email')
-        .email('Veuillez renseigner un email valide'),
+        .email('Veuillez renseigner un email valide, exemple : mail@exemple.com'),
   }),
 }
 

@@ -9,13 +9,13 @@ const validationSchema = {
     .nullable()
     .test({
       name: 'is-phone-valid',
-      message: 'Veuillez entrer un numéro de téléphone valide',
+      message: 'Veuillez entrer un numéro de téléphone valide, exemple : 612345678',
       test: (phone?: string | null) => {
         /* istanbul ignore next: DEBT, TO FIX */
         return phone ? isPhoneValid(phone) : true
       },
     }),
-  email: yup.string().nullable().email('Veuillez renseigner un email valide'),
+  email: yup.string().nullable().email('Veuillez renseigner un email valide, exemple : mail@exemple.com'),
   webSite: yup
     .string()
     .nullable()

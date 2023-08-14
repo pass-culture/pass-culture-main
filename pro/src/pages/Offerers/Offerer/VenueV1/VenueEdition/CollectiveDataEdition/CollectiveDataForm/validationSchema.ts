@@ -23,8 +23,11 @@ export const validationSchema = yup.object().shape({
   }),
   collectivePhone: yup.string().test({
     name: 'is-phone-valid',
-    message: 'Veuillez entrer un numéro de téléphone valide',
+    message:
+      'Veuillez entrer un numéro de téléphone valide, exemple : 612345678',
     test: isPhoneValid,
   }),
-  collectiveEmail: yup.string().email('Veuillez renseigner un email valide'),
+  collectiveEmail: yup
+    .string()
+    .email('Veuillez renseigner un email valide, exemple : mail@exemple.com'),
 })

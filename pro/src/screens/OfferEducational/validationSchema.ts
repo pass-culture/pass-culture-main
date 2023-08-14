@@ -83,19 +83,22 @@ export const validationSchema = yup.object().shape({
     }),
   phone: yup.string().test({
     name: 'is-phone-valid',
-    message: 'Veuillez entrer un numéro de téléphone valide',
+    message:
+      'Veuillez entrer un numéro de téléphone valide, exemple : 612345678',
     test: isPhoneValid,
   }),
   email: yup
     .string()
     .required('Veuillez renseigner une adresse email')
-    .email('Veuillez renseigner un email valide'),
+    .email('Veuillez renseigner un email valide, exemple : mail@exemple.com'),
   notificationEmails: yup
     .array()
     .of(
       yup
         .string()
-        .email('Veuillez renseigner un email valide')
+        .email(
+          'Veuillez renseigner un email valide, exemple : mail@exemple.com'
+        )
         .required('Veuillez renseigner une adresse email')
     ),
   domains: yup.array().test({
