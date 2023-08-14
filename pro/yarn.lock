@@ -2313,21 +2313,21 @@
     lodash "^4.17.21"
     react-resize-detector "^7.1.2"
 
-"@storybook/addon-controls@^7.2.2":
-  version "7.2.2"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-controls/-/addon-controls-7.2.2.tgz#21d80ee25f4eb351e3974019cd5e9441ed76bbd5"
-  integrity sha512-kcFG7RMQJVz3fNvQO+9vjAodKbRrobsdr3WJYN6zmugh+qxEdUvHUUe093t0MpMKp2njY6c9eAbfjN+PrLSCJQ==
+"@storybook/addon-controls@^7.2.3":
+  version "7.2.3"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-controls/-/addon-controls-7.2.3.tgz#d9447b92d6f8ed19dcc64ee1b1d781d7d4a3203e"
+  integrity sha512-e0Yro238/MJP+0pV9sZ/M8BWjabX9lesr03dhvYKLAEwKSbrtcPRTszkRYKlcY9GyUxOc2xji8cgEgq0TtJWNg==
   dependencies:
-    "@storybook/blocks" "7.2.2"
-    "@storybook/client-logger" "7.2.2"
-    "@storybook/components" "7.2.2"
-    "@storybook/core-common" "7.2.2"
-    "@storybook/core-events" "7.2.2"
-    "@storybook/manager-api" "7.2.2"
-    "@storybook/node-logger" "7.2.2"
-    "@storybook/preview-api" "7.2.2"
-    "@storybook/theming" "7.2.2"
-    "@storybook/types" "7.2.2"
+    "@storybook/blocks" "7.2.3"
+    "@storybook/client-logger" "7.2.3"
+    "@storybook/components" "7.2.3"
+    "@storybook/core-common" "7.2.3"
+    "@storybook/core-events" "7.2.3"
+    "@storybook/manager-api" "7.2.3"
+    "@storybook/node-logger" "7.2.3"
+    "@storybook/preview-api" "7.2.3"
+    "@storybook/theming" "7.2.3"
+    "@storybook/types" "7.2.3"
     lodash "^4.17.21"
     ts-dedent "^2.0.0"
 
@@ -2340,22 +2340,22 @@
     "@storybook/global" "^5.0.0"
     "@storybook/preview-api" "7.2.3"
 
-"@storybook/blocks@7.2.2":
-  version "7.2.2"
-  resolved "https://registry.yarnpkg.com/@storybook/blocks/-/blocks-7.2.2.tgz#5a6738460a669d627a821b192ffaace33aeedfba"
-  integrity sha512-VgO46E5zA8oo/Cn8kT9o3xiFtnqxlqsRRGp5t8A1YqgN2OvYTtg5/PLS16XH8Qui/m9EvOoT7DlOmcqlp3Z78w==
+"@storybook/blocks@7.2.3":
+  version "7.2.3"
+  resolved "https://registry.yarnpkg.com/@storybook/blocks/-/blocks-7.2.3.tgz#8dede4bae5520e2e0b6e2483a4f040330c215b1a"
+  integrity sha512-1s1BCWWxuK5gOpWPvSESULItwYtA1yQRjXJHWCDbjuDrm5DK+fQ2Asr4xl4MBzKfczw+7V8nsuEsTwybDS7/3A==
   dependencies:
-    "@storybook/channels" "7.2.2"
-    "@storybook/client-logger" "7.2.2"
-    "@storybook/components" "7.2.2"
-    "@storybook/core-events" "7.2.2"
+    "@storybook/channels" "7.2.3"
+    "@storybook/client-logger" "7.2.3"
+    "@storybook/components" "7.2.3"
+    "@storybook/core-events" "7.2.3"
     "@storybook/csf" "^0.1.0"
-    "@storybook/docs-tools" "7.2.2"
+    "@storybook/docs-tools" "7.2.3"
     "@storybook/global" "^5.0.0"
-    "@storybook/manager-api" "7.2.2"
-    "@storybook/preview-api" "7.2.2"
-    "@storybook/theming" "7.2.2"
-    "@storybook/types" "7.2.2"
+    "@storybook/manager-api" "7.2.3"
+    "@storybook/preview-api" "7.2.3"
+    "@storybook/theming" "7.2.3"
+    "@storybook/types" "7.2.3"
     "@types/lodash" "^4.14.167"
     color-convert "^2.0.1"
     dequal "^2.0.2"
@@ -2519,22 +2519,6 @@
     lodash "^4.17.21"
     prettier "^2.8.0"
     recast "^0.23.1"
-
-"@storybook/components@7.2.2":
-  version "7.2.2"
-  resolved "https://registry.yarnpkg.com/@storybook/components/-/components-7.2.2.tgz#8736a1fd8d6ecc8095d4af9b85c06dc2c3bd0096"
-  integrity sha512-A2SavROGKFK76w4pfMGr0Zf3A2QaQrnJqPZOfVB6dKrXBwgwM3VhdUj6N8cI9X4W7VaEvEyUWXVTCv+bG+yZtQ==
-  dependencies:
-    "@radix-ui/react-select" "^1.2.2"
-    "@storybook/client-logger" "7.2.2"
-    "@storybook/csf" "^0.1.0"
-    "@storybook/global" "^5.0.0"
-    "@storybook/icons" "^1.1.0"
-    "@storybook/theming" "7.2.2"
-    "@storybook/types" "7.2.2"
-    memoizerific "^1.11.3"
-    use-resize-observer "^9.1.0"
-    util-deprecate "^1.0.2"
 
 "@storybook/components@7.2.3":
   version "7.2.3"
@@ -2766,27 +2750,6 @@
   resolved "https://registry.yarnpkg.com/@storybook/icons/-/icons-1.1.5.tgz#5cc7a73921c407658d630f8977dc658eebccc09f"
   integrity sha512-PWJIaa/NtOu2VSWnj07evF1OI5+6H7ZTAvy0LO38RheW4W8iS+xoYsh2cr/nxLBblfhbw533uJrhdqpxCytxfA==
 
-"@storybook/manager-api@7.2.2":
-  version "7.2.2"
-  resolved "https://registry.yarnpkg.com/@storybook/manager-api/-/manager-api-7.2.2.tgz#05dba45fd19d93705115915522780cc29b47fbc4"
-  integrity sha512-7EI7TABGGB3VOTc4q7byC5dW/9A1xUJyR1gfCPU+7XiSNItnCz+seBJMSaf6Em/9wYxSAL6PQAGhrwTHGzgWAA==
-  dependencies:
-    "@storybook/channels" "7.2.2"
-    "@storybook/client-logger" "7.2.2"
-    "@storybook/core-events" "7.2.2"
-    "@storybook/csf" "^0.1.0"
-    "@storybook/global" "^5.0.0"
-    "@storybook/router" "7.2.2"
-    "@storybook/theming" "7.2.2"
-    "@storybook/types" "7.2.2"
-    dequal "^2.0.2"
-    lodash "^4.17.21"
-    memoizerific "^1.11.3"
-    semver "^7.3.7"
-    store2 "^2.14.2"
-    telejson "^7.0.3"
-    ts-dedent "^2.0.0"
-
 "@storybook/manager-api@7.2.3":
   version "7.2.3"
   resolved "https://registry.yarnpkg.com/@storybook/manager-api/-/manager-api-7.2.3.tgz#aba2d59025283c657222e8ae29ebaaf9d161dc74"
@@ -2956,15 +2919,6 @@
     type-fest "~2.19"
     util-deprecate "^1.0.2"
 
-"@storybook/router@7.2.2":
-  version "7.2.2"
-  resolved "https://registry.yarnpkg.com/@storybook/router/-/router-7.2.2.tgz#a9ee716fb428c89f77a16b816d6e184d60614e8d"
-  integrity sha512-cnJg43dm3dVifKkRBUsQ4wXC4sJOm46JAS95yRPeGACoHpJTcbCWk1n5GLYA7ozO+KFQSNdxHxPIjNqvnzMFiA==
-  dependencies:
-    "@storybook/client-logger" "7.2.2"
-    memoizerific "^1.11.3"
-    qs "^6.10.0"
-
 "@storybook/router@7.2.3":
   version "7.2.3"
   resolved "https://registry.yarnpkg.com/@storybook/router/-/router-7.2.3.tgz#1e871720b7f7d5c9eb8d6839110c08979e9bdd91"
@@ -2987,16 +2941,6 @@
     fetch-retry "^5.0.2"
     fs-extra "^11.1.0"
     read-pkg-up "^7.0.1"
-
-"@storybook/theming@7.2.2":
-  version "7.2.2"
-  resolved "https://registry.yarnpkg.com/@storybook/theming/-/theming-7.2.2.tgz#135489c47a43c1947683a697fa72d81168aacd5e"
-  integrity sha512-B4nxcxl4IyVvB1NXwRi4yopAS73zl052f2zJi3kVghJbZ3tgPwgvi3CVpOs2D4pgmxOrKCgiLnzLrGTH+13+0A==
-  dependencies:
-    "@emotion/use-insertion-effect-with-fallbacks" "^1.0.0"
-    "@storybook/client-logger" "7.2.2"
-    "@storybook/global" "^5.0.0"
-    memoizerific "^1.11.3"
 
 "@storybook/theming@7.2.3":
   version "7.2.3"
