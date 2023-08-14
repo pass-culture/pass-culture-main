@@ -21,6 +21,7 @@ export interface FilterTabsProps {
   tabs: Tab[]
   selectedKey?: string
 }
+const NAV_ITEM_ICON_SIZE = '24'
 
 const Tabs = ({ nav, selectedKey, tabs }: FilterTabsProps): JSX.Element => {
   const location = useLocation()
@@ -48,6 +49,7 @@ const Tabs = ({ nav, selectedKey, tabs }: FilterTabsProps): JSX.Element => {
                     src={icon}
                     alt=""
                     className={styles['tabs-tab-icon']}
+                    width={NAV_ITEM_ICON_SIZE}
                   />
                 )}
                 <span>{label}</span>
