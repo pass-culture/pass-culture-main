@@ -1553,6 +1553,28 @@ class DeleteOldTrustedDevicesTest:
         assert users_models.TrustedDevice.query.count() == 1
 
 
+class DeleteOldLoginDeviceHistoryTest:
+    def should_delete_device_history_older_than_thirteen_months_ago(self):
+        thirteen_months_ago = datetime.datetime.utcnow() - relativedelta(months=13)
+        fourteen_months_ago = datetime.datetime.utcnow() - relativedelta(months=14)
+        users_factories.LoginDeviceHistoryFactory(dateCreated=thirteen_months_ago)
+        users_factories.LoginDeviceHistoryFactory(dateCreated=fourteen_months_ago)
+
+        users_api.delete_old_login_device_history()
+
+        assert users_models.LoginDeviceHistory.query.count() == 0
+
+    def should_not_delete_device_history_created_less_than_thirteen_months_ago(self):
+        less_than_thirteen_months_ago = (
+            datetime.datetime.utcnow() - relativedelta(months=13) + datetime.timedelta(days=1)
+        )
+        users_factories.LoginDeviceHistoryFactory(dateCreated=less_than_thirteen_months_ago)
+
+        users_api.delete_old_login_device_history()
+
+        assert users_models.LoginDeviceHistory.query.count() == 1
+
+
 class RefreshAccessTokenTest:
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=True, WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True)
     def should_create_access_token_with_default_lifetime_when_no_device_info(self):
