@@ -31,6 +31,19 @@ const ListIconButton = ({
   ...buttonAttrs
 }: ListIconButtonProps): JSX.Element => {
   const tooltipId = useId()
+
+  const svgicon = (
+    <SvgIcon src={icon} alt="" className={cn(styles['button-icon'])} />
+  )
+  const content =
+    hasTooltip && !buttonAttrs?.disabled ? (
+      <Tooltip id={tooltipId} content={children} className={styles['tooltip']}>
+        {svgicon}
+      </Tooltip>
+    ) : (
+      svgicon
+    )
+
   const button = (
     <button
       className={cn(styles['button'], className)}
@@ -39,31 +52,21 @@ const ListIconButton = ({
       onClick={onClick}
       type="button"
     >
-      <SvgIcon src={icon} alt="" className={cn(styles['button-icon'])} />
-      <div className={styles['visually-hidden']}>{children}</div>
+      {content}
     </button>
   )
 
   const link = isExternal ? (
     <a className={cn(styles['button'], className)} href={url} onClick={onClick}>
-      <SvgIcon src={icon} alt="" className={cn(styles['button-icon'])} />
-      <div className={styles['visually-hidden']}>{children}</div>
+      {content}
     </a>
   ) : (
     <Link className={className} onClick={onClick} to={`${url}`}>
-      <SvgIcon src={icon} alt="" className={cn(styles['button-icon'])} />
-      <div className={styles['visually-hidden']}>{children}</div>
+      {content}
     </Link>
   )
 
-  if (hasTooltip && !buttonAttrs?.disabled) {
-    return (
-      <Tooltip id={tooltipId} content={children} className={styles['tooltip']}>
-        {url ? link : button}
-      </Tooltip>
-    )
-  }
-  return button
+  return url ? link : button
 }
 
 export default ListIconButton
