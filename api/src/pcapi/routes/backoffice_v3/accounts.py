@@ -1,7 +1,6 @@
 import datetime
 import enum
 from functools import partial
-import logging
 from operator import attrgetter
 import re
 from types import NotImplementedType
@@ -57,10 +56,6 @@ from .forms import user as user_forms
 from .serialization import accounts
 from .serialization import search
 
-
-DEBUG_USER_ID = 2602428
-
-logger = logging.getLogger(__name__)
 
 public_accounts_blueprint = utils.child_backoffice_blueprint(
     "public_accounts",
@@ -274,16 +269,6 @@ def render_public_account_details(
 
     kwargs.update(user_forms.get_toggle_suspension_args(user, user_forms.SuspensionUserType.PUBLIC))
 
-    if user_id == DEBUG_USER_ID:  # TODO: https://passculture.atlassian.net/browse/PC-23721 (debug log)
-        logger.info(
-            "PC-23721",
-            extra={
-                "tunnel": tunnel,
-                "id_check_histories_desc": id_check_histories_desc,
-                "eligibility_history": eligibility_history,
-            },
-        )
-
     return render_template(
         "accounts/get.html",
         search_form=search_forms.SearchForm(terms=request.args.get("terms")),
@@ -431,15 +416,6 @@ def _get_steps_for_tunnel(
     elif tunnel_type is TunnelType.AGE18:
         steps = _get_steps_tunnel_age18(user, id_check_histories, item_status_18, fraud_reviews_desc)
     elif tunnel_type is TunnelType.UNDERAGE_AGE18:
-        if user.id == DEBUG_USER_ID:  # TODO: https://passculture.atlassian.net/browse/PC-23721 (debug log)
-            logger.info(
-                "PC-23721 : TunnelType.UNDERAGE_AGE18",
-                extra={
-                    "UNDERAGE_subscription_item_status": subscription_item_status[EligibilityType.UNDERAGE.value],
-                    "AGE18_subscription_item_status": subscription_item_status[EligibilityType.AGE18.value],
-                },
-            )
-
         steps = _get_steps_tunnel_underage_age18(
             user, id_check_histories, item_status_15_17, item_status_18, fraud_reviews_desc
         )
