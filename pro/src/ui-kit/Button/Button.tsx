@@ -35,8 +35,52 @@ const Button = ({
   ...buttonAttrs
 }: ButtonProps): JSX.Element => {
   const tooltipId = useId()
+  const loadingDiv = (
+    <div className={styles['spinner-icon']} data-testid="spinner">
+      <SvgIcon src={strokePassIcon} alt="" />
+    </div>
+  )
+  const content = (
+    <>
+      {icon && !isLoading && iconPosition !== IconPositionEnum.RIGHT && (
+        <SvgIcon
+          src={icon}
+          alt=""
+          className={cn(styles['button-icon'], {
+            [styles['has-tooltip']]: hasTooltip,
+          })}
+          width="20"
+        />
+      )}
 
-  const button = (
+      <div
+        className={cn({
+          [styles['button-arrow-content']]: variant === ButtonVariant.BOX,
+        })}
+      >
+        {isLoading && loadingDiv}
+        {!isLoading && !hasTooltip && children}
+      </div>
+      {icon && !isLoading && iconPosition === IconPositionEnum.RIGHT && (
+        <SvgIcon
+          src={icon}
+          alt=""
+          className={styles['button-icon']}
+          width="20"
+        />
+      )}
+      {!isLoading && variant === ButtonVariant.BOX && (
+        <SvgIcon
+          src={fullRightIcon}
+          alt=""
+          className={cn(styles['button-icon'], styles['button-icon-arrow'])}
+          width="20"
+        />
+      )}
+    </>
+  )
+
+  return (
     <button
       className={cn(
         styles['button'],
@@ -51,71 +95,15 @@ const Button = ({
       {...(hasTooltip ? { 'aria-describedby': tooltipId } : {})}
       {...buttonAttrs}
     >
-      {icon && iconPosition !== IconPositionEnum.RIGHT && (
-        <SvgIcon
-          src={icon}
-          alt=""
-          className={cn(styles['button-icon'], {
-            [styles['has-tooltip']]: hasTooltip,
-          })}
-          width="20"
-        />
-      )}
-      {hasTooltip ? (
-        <div className={styles['visually-hidden']}>
-          {isLoading ? (
-            <div className={styles['spinner-icon']} data-testid="spinner">
-              <SvgIcon src={strokePassIcon} alt="" />
-            </div>
-          ) : (
-            children
-          )}
-        </div>
-      ) : variant === ButtonVariant.BOX ? (
-        <div className={styles['button-arrow-content']}>
-          {isLoading ? (
-            <div className={styles['spinner-icon']} data-testid="spinner">
-              <SvgIcon src={strokePassIcon} alt="" />
-            </div>
-          ) : (
-            children
-          )}
-        </div>
-      ) : isLoading ? (
-        <div className={styles['spinner-icon']} data-testid="spinner">
-          <SvgIcon src={strokePassIcon} alt="" />
-        </div>
+      {hasTooltip && !buttonAttrs?.disabled ? (
+        <Tooltip id={tooltipId} content={children}>
+          {content}
+        </Tooltip>
       ) : (
-        children
-      )}
-      {icon && iconPosition === IconPositionEnum.RIGHT && (
-        <SvgIcon
-          src={icon}
-          alt=""
-          className={styles['button-icon']}
-          width="20"
-        />
-      )}
-      {variant === ButtonVariant.BOX && (
-        <SvgIcon
-          src={fullRightIcon}
-          alt=""
-          className={cn(styles['button-icon'], styles['button-icon-arrow'])}
-          width="20"
-        />
+        content
       )}
     </button>
   )
-
-  if (hasTooltip && !buttonAttrs?.disabled) {
-    return (
-      <Tooltip id={tooltipId} content={children}>
-        {button}
-      </Tooltip>
-    )
-  }
-
-  return button
 }
 
 export default Button
