@@ -157,7 +157,7 @@ describe('navigation menu', () => {
       renderHeader(overrideStore)
 
       // When
-      await userEvent.click(screen.getAllByRole('menuitem')[5])
+      await userEvent.click(screen.getAllByRole('link')[6])
 
       // Then
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
@@ -172,7 +172,7 @@ describe('navigation menu', () => {
       vi.spyOn(api, 'signout').mockResolvedValue()
 
       // When
-      await userEvent.click(screen.getAllByRole('menuitem')[5])
+      await userEvent.click(screen.getByRole('button'))
 
       // Then
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
