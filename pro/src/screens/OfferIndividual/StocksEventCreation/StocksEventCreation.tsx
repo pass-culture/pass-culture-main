@@ -27,6 +27,7 @@ import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { ActionBar } from '../ActionBar'
+import { MAX_STOCKS_PER_OFFER } from '../constants'
 import { upsertStocksEventAdapter } from '../StocksEventEdition/adapters'
 import { getSuccessMessage } from '../utils'
 import { logTo } from '../utils/logTo'
@@ -136,7 +137,6 @@ export const StocksEventCreation = ({
     ({ saveDraft = false } = {}) =>
     async () => {
       setIsClickingFromActionBar(true)
-
       if (stocksToDelete.length > 0) {
         await Promise.all(stocksToDelete.map(s => api.deleteStock(s.id)))
       }
@@ -148,6 +148,10 @@ export const StocksEventCreation = ({
         } else {
           notify.error('Veuillez renseigner au moins une date')
         }
+        return
+      }
+      if (stocks.length > MAX_STOCKS_PER_OFFER) {
+        notify.error('Veuillez créer moins de 10 000 occurrences par offre.')
         return
       }
 

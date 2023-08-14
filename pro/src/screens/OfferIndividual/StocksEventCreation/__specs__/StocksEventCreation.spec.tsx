@@ -30,6 +30,10 @@ import {
   StocksEventCreation,
 } from '../StocksEventCreation'
 
+vi.mock('screens/OfferIndividual/constants', () => ({
+  MAX_STOCKS_PER_OFFER: 1,
+}))
+
 const renderStockEventCreation = (props: StocksEventCreationProps) =>
   renderWithProviders(
     <Routes>
@@ -285,6 +289,28 @@ describe('navigation and submit', () => {
         used: 'StickyButtons',
       }
     )
+  })
+
+  it('should trigger a warning when too many stocks are created', async () => {
+    const offer = individualOfferFactory({
+      stocks: [
+        individualStockFactory({
+          id: undefined,
+          priceCategoryId: 1,
+        }),
+        individualStockFactory({
+          id: undefined,
+          priceCategoryId: 1,
+        }),
+      ],
+    })
+    renderStockEventCreation({ offer })
+
+    await userEvent.click(screen.getByText('Étape suivante'))
+
+    expect(
+      screen.getByText('Veuillez créer moins de 10 000 occurrences par offre.')
+    ).toBeInTheDocument()
   })
 
   it('should submit and stay on stocks page on Sauvegarder le brouillon click', async () => {

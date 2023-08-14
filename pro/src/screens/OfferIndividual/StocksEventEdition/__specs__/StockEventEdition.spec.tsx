@@ -34,6 +34,10 @@ vi.mock('utils/date', async () => {
   }
 })
 
+vi.mock('screens/OfferIndividual/constants', () => ({
+  MAX_STOCKS_PER_OFFER: 1,
+}))
+
 const renderStockEventScreen = async (
   apiOffer: GetIndividualOfferResponseModel
 ) => {
@@ -432,7 +436,34 @@ describe('screens:StocksEventEdition', () => {
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
   })
 
-  it('should show a warning on "Enregistrer les modifications" button click then save the offer', async () => {
+  it('should show a warning when too many stock are created', async () => {
+    await renderStockEventScreen(apiOffer)
+
+    await userEvent.click(screen.getByText('Ajouter une ou plusieurs dates'))
+
+    await userEvent.type(
+      screen.getByLabelText('Date de l’évènement'),
+      format(new Date(), FORMAT_ISO_DATE_ONLY)
+    )
+    await userEvent.type(screen.getByLabelText('Horaire 1'), '12:15')
+    await userEvent.selectOptions(
+      screen.getAllByLabelText('Tarif')[1],
+      priceCategoryId
+    )
+    await userEvent.click(screen.getByText('Valider'))
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Enregistrer les modifications' })
+    )
+
+    expect(
+      await screen.findByText(
+        'Veuillez créer moins de 10 000 occurrences par offre.'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should show an error on click on "Enregistrer les modifications" when there are too many stocks', async () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 1 } as StockResponseModel],
     })

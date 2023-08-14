@@ -33,6 +33,7 @@ import { formatPrice } from 'utils/formatPrice'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { ActionBar } from '../ActionBar'
+import { MAX_STOCKS_PER_OFFER } from '../constants'
 import DialogStocksEventEditConfirm from '../DialogStocksEventEditConfirm/DialogStocksEventEditConfirm'
 import { useNotifyFormError } from '../hooks'
 import { RecurrenceForm } from '../StocksEventCreation/RecurrenceForm'
@@ -238,6 +239,11 @@ const StocksEventEdition = ({
       return
     } else {
       setShowStocksEventConfirmModal(false)
+    }
+
+    if (allStocks.length > MAX_STOCKS_PER_OFFER) {
+      notify.error('Veuillez créer moins de 10 000 occurrences par offre.')
+      return
     }
 
     const { isOk, payload } = await upsertStocksEventAdapter({
