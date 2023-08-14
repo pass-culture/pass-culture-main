@@ -12,7 +12,6 @@ describe('PeriodSelector', () => {
       <PeriodSelector
         onBeginningDateChange={mockOnBeginningDateChange}
         onEndingDateChange={mockOnEndingDateChange}
-        label="label"
         periodBeginningDate=""
         periodEndingDate=""
       />
