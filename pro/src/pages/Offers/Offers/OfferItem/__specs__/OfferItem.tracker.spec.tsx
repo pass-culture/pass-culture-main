@@ -72,7 +72,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       // then
       await userEvent.click(
-        screen.getAllByRole('img', { name: /éditer l’offre/ })[0]
+        screen.getAllByRole('link', { name: /éditer l’offre/ })[0]
       )
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
       expect(mockLogEvent).toHaveBeenNthCalledWith(

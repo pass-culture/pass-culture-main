@@ -26,6 +26,7 @@ export interface ButtonLinkProps extends SharedButtonProps {
   isDisabled?: boolean
   onClick?: MouseEventHandler<HTMLAnchorElement>
   hasTooltip?: boolean
+  svgAlt?: string
 }
 
 const ButtonLink = ({
@@ -38,6 +39,7 @@ const ButtonLink = ({
   link,
   iconPosition = IconPositionEnum.LEFT,
   hasTooltip = false,
+  svgAlt = '',
 }: ButtonLinkProps): JSX.Element => {
   const classNames = cn(
     styles['button'],
@@ -54,7 +56,7 @@ const ButtonLink = ({
         icon && iconPosition !== IconPositionEnum.RIGHT && (
           <SvgIcon
             src={icon}
-            alt=""
+            alt={svgAlt}
             className={styles['button-icon']}
             width="22"
           />
@@ -73,7 +75,7 @@ const ButtonLink = ({
         icon && iconPosition === IconPositionEnum.RIGHT && (
           <SvgIcon
             src={icon}
-            alt=""
+            alt={svgAlt}
             className={styles['button-icon']}
             width="22"
           />
@@ -84,7 +86,7 @@ const ButtonLink = ({
           ButtonVariant.BOX && (
           <SvgIcon
             src={fullRightIcon}
-            alt=""
+            alt={svgAlt}
             className={cn(styles['button-icon'], styles['button-icon-arrow'])}
             width="22"
           />

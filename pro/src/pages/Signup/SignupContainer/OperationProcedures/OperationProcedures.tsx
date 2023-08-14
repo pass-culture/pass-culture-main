@@ -21,6 +21,7 @@ const OperatingProcedures = (): JSX.Element => {
           isExternal: true,
           onClick: () =>
             logEvent?.(Events.CLICKED_HELP_CENTER, { from: location.pathname }),
+          svgAlt: 'Consulter notre centre d’aide (Nouvelle fenêtre)',
         },
       ]}
     >

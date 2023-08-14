@@ -12,6 +12,7 @@ interface VenueStatProps {
     state?: {
       statuses: string[]
     }
+    alt: string
   }
   onClick: () => void
 }
@@ -32,6 +33,7 @@ const VenueStat = ({ count, label, link, onClick }: VenueStatProps) => (
       link={{
         to: `${link.pathname}`,
         isExternal: false,
+        'aria-label': link.alt,
       }}
       onClick={onClick}
     >

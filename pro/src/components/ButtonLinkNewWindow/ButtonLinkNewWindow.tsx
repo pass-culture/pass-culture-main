@@ -8,6 +8,7 @@ export interface ButtonLinkNewWindowProps extends SharedButtonProps {
   linkTo: string
   children?: React.ReactNode
   tracking?: { isTracked: boolean; trackingFunction: () => void }
+  svgAlt?: string
 }
 
 export const ButtonLinkNewWindow: FunctionComponent<
@@ -19,6 +20,7 @@ export const ButtonLinkNewWindow: FunctionComponent<
   tracking,
   icon,
   variant = ButtonVariant.TERNARY,
+  svgAlt,
 }) => {
   const openWindow: MouseEventHandler = useCallback(
     event => {
@@ -42,6 +44,7 @@ export const ButtonLinkNewWindow: FunctionComponent<
       icon={icon}
       onClick={openWindow}
       variant={variant}
+      svgAlt={svgAlt}
     >
       {children}
     </ButtonLink>
