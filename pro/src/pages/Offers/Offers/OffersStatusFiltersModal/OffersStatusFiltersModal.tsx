@@ -76,8 +76,8 @@ export const OffersStatusFiltersModal = ({
         ]
   return (
     <div className={styles['offers-status-filters']} ref={modalRef}>
-      <div className={styles['osf-title']}>Afficher les offres</div>
-      <>
+      <fieldset>
+        <legend className={styles['osf-title']}>Afficher les offres</legend>
         {filters.map(({ label, value }) => (
           <BaseRadio
             key={value}
@@ -93,7 +93,7 @@ export const OffersStatusFiltersModal = ({
             }
           />
         ))}
-      </>
+      </fieldset>
 
       <Button
         className={styles['button']}
