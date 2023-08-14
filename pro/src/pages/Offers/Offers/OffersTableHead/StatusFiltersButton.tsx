@@ -44,6 +44,8 @@ const StatusFiltersButton = ({
         onClick={toggleStatusFiltersVisibility}
         title={disabled ? ADMINS_DISABLED_FILTERS_MESSAGE : undefined}
         type="button"
+        aria-expanded={isStatusFiltersVisible}
+        aria-controls="offer-status-filters-modal"
       >
         Statut
         <span className="status-container">
