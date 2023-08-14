@@ -8,21 +8,19 @@ import styles from './Thumb.module.scss'
 
 interface ThumbProps {
   url?: string | null
-  alt?: string
   className?: string
 }
 
-const Thumb = ({ url = '', alt = '', className }: ThumbProps) => {
+const Thumb = ({ url = '', className }: ThumbProps) => {
   return url ? (
     <img
-      alt={alt}
       className={cn(styles['offer-thumb'], className)}
       loading="lazy"
       src={url}
     />
   ) : (
     <div className={cn(styles['default-thumb'], className)}>
-      <SvgIcon alt={alt} src={strokeOfferIcon} width="40" />
+      <SvgIcon alt="" src={strokeOfferIcon} width="40" />
     </div>
   )
 }

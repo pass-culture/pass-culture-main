@@ -77,7 +77,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
         // then
         expect(
-          screen.getAllByRole('img', { name: /éditer l’offre/ })[0]
+          within(
+            screen.getAllByRole('link', { name: /éditer l’offre/ })[0]
+          ).getByRole('img')
         ).toHaveAttribute('src', eventOffer.thumbUrl)
       })
 

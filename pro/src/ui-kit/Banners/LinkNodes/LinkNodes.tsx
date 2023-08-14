@@ -13,6 +13,7 @@ export type Link = {
   hideLinkIcon?: boolean
   isExternal?: boolean
   onClick?: () => void
+  svgAlt?: string
 }
 
 interface LinkNodeProps {
@@ -34,6 +35,7 @@ const LinkNode = ({
     hideLinkIcon,
     isExternal = true,
     onClick,
+    svgAlt,
   },
   defaultLinkIcon = fullLinkIcon,
 }: LinkNodeProps): React.ReactNode => (
@@ -47,6 +49,7 @@ const LinkNode = ({
     icon={hideLinkIcon ? undefined : icon ?? defaultLinkIcon}
     className={styles['bi-link']}
     onClick={onClick}
+    svgAlt={svgAlt}
   >
     {linkTitle}
   </ButtonLink>

@@ -15,6 +15,7 @@ const BannerRGS = ({ closable = false, onClose }: Props): JSX.Element => (
       {
         href: 'https://aide.passculture.app/hc/fr/articles/4458607720732--Acteurs-Culturels-Comment-assurer-la-s%C3%A9curit%C3%A9-de-votre-compte-',
         linkTitle: 'Consulter nos recommandations de sécurité',
+        svgAlt: 'Consulter nos recommandations de sécurité (Nouvelle fenêtre)',
       },
     ]}
     type="attention"

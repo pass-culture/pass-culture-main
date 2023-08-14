@@ -37,7 +37,7 @@ const LegalInfos = ({ title, className }: LegalInfoProps): JSX.Element => {
       >
         <SvgIcon
           src={fullLink}
-          alt="Site pass.culture.fr"
+          alt="Site pass.culture.fr (Nouvelle fenêtre)"
           className={styles['icon-legal-infos']}
           width="22"
         />
@@ -59,7 +59,7 @@ const LegalInfos = ({ title, className }: LegalInfoProps): JSX.Element => {
       >
         <SvgIcon
           src={fullLink}
-          alt="Site pass.culture.fr"
+          alt="Site pass.culture.fr (Nouvelle fenêtre)"
           className={styles['icon-legal-infos']}
           width="22"
         />

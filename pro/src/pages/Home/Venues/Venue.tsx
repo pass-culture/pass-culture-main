@@ -113,6 +113,7 @@ const Venue = ({
       label: 'Offres publiées',
       link: {
         pathname: `/offres?lieu=${venueId}&statut=active`,
+        alt: 'Voir les offres publiées',
       },
       onClick: () => {
         logEvent?.(
@@ -135,6 +136,7 @@ const Venue = ({
             BOOKING_STATUS.VALIDATED,
           ],
         },
+        alt: 'Voir les réservations en cours',
       },
       onClick: () => {
         logEvent?.(
@@ -151,6 +153,7 @@ const Venue = ({
         state: {
           statuses: [BOOKING_STATUS.BOOKED, BOOKING_STATUS.CANCELLED],
         },
+        alt: 'Voir les réservations validées',
       },
       onClick: () => {
         logEvent?.(
@@ -164,6 +167,7 @@ const Venue = ({
       label: 'Offres stocks épuisés',
       link: {
         pathname: `/offres?lieu=${venueId}&statut=epuisee`,
+        alt: 'Voir les offres dont les stocks sont épuisés',
       },
       onClick: () => {
         logEvent?.(

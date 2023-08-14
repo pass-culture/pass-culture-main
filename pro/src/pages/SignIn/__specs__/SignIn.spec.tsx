@@ -93,9 +93,7 @@ describe('SignIn', () => {
     expect(screen.getByText('Créer un compte')).toBeInTheDocument()
     expect(screen.getByText('Mot de passe oublié ?')).toBeInTheDocument()
     expect(
-      screen.getByRole('link', {
-        name: 'Consulter nos recommandations de sécurité',
-      })
+      screen.getByText('Consulter nos recommandations de sécurité')
     ).toHaveAttribute(
       'href',
       'https://aide.passculture.app/hc/fr/articles/4458607720732--Acteurs-Culturels-Comment-assurer-la-s%C3%A9curit%C3%A9-de-votre-compte-'

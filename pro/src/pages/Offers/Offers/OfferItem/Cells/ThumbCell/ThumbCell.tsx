@@ -23,11 +23,7 @@ const ThumbCell = ({
         onClick={onThumbClick}
         to={editionOfferLink}
       >
-        <Thumb
-          alt={`${offer.name} - éditer l’offre`}
-          url={offer.thumbUrl}
-          className={styles['offer-thumb']}
-        />
+        <Thumb url={offer.thumbUrl} className={styles['offer-thumb']} />
       </Link>
     </td>
   )
