@@ -21,7 +21,8 @@ $arrow-triangle-height: rem.torem(8px);
 
 .tooltip-container {
   position: relative;
-  display: inline-block;
+  display: flex;
+  justify-content: center;
 
   &:hover,
   &:focus,
@@ -32,7 +33,7 @@ $arrow-triangle-height: rem.torem(8px);
       visibility: visible;
       top: 0;
       left: 50%;
-      transform: translate(-50%, calc(-100% - #{$arrow-triangle-height}));
+      transform: translate(-50%, calc(-120% - #{$arrow-triangle-height} ));
       background-color: colors.$dark-blue;
 
       &::after {
