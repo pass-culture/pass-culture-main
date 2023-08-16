@@ -259,6 +259,8 @@ const CollectiveOfferVisibility = ({
                           setTeachersOptions([])
                           formik.setFieldValue('search-teacher', '')
                         }}
+                        maxDisplayOptions={300}
+                        onSearch={() => setTeachersOptions([])}
                         disabled={mode === Mode.READ_ONLY}
                         searchInOptions={searchPatternInOptions}
                       />
