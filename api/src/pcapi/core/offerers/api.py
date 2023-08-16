@@ -1745,7 +1745,7 @@ def create_from_onboarding_data(
 
     # Send welcome email only in the case of offerer creation
     if user_offerer.validationStatus == ValidationStatus.VALIDATED:
-        if not transactional_mails.send_welcome_to_pro_email(user):
+        if not transactional_mails.send_welcome_to_pro_email(user, venue):
             logger.warning(
                 "Could not send welcome to pro email",
                 extra={"user": user.id},
