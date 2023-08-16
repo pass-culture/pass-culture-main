@@ -185,8 +185,8 @@ VENUE_TYPE_DEFAULT_BANNERS: dict[VenueTypeCode, tuple[str, ...]] = {
         "krists-luhaers-AtPWnYNDJnM-unsplash.png",
     ),
     VenueTypeCode.MUSEUM: (
-        "amy-leigh-barnard-H3APOiYLyzk-unsplash.png",
-        "zalfa-imani-66vHzkS_qvA-unsplash.png",
+        "amy-leigh-barnard-H3APOiYLyzk-unsplashed.png",
+        "musee1.png",
     ),
     VenueTypeCode.MUSICAL_INSTRUMENT_STORE: (
         "sandie-clarke-Ga6TvlrtTrE-unsplash.png",
@@ -206,8 +206,8 @@ VENUE_TYPE_DEFAULT_BANNERS: dict[VenueTypeCode, tuple[str, ...]] = {
         "ilya-blagoderov-t4csj4KilnE-unsplash.png",
     ),
     VenueTypeCode.SCIENTIFIC_CULTURE: (
-        "hans-reniers-lQGJCMY5qcM-unsplash.png",
-        "tobias-stonjeck-fBtruQj8rhc-unsplash.png",
+        "edd_Medium-Shot_avec_un_Canon_R5_50_mm_DSLR_Science_class_with__0251a3c2-c494-4b61-8116-a22c61848947%20(1).png",
+        "uxuipc_High_angle_avec_un_Canon_R5_50_mm_DSLR_planetarium_with__f16e10f2-eb38-4314-b5f2-784819f04c05%20(1).png",
     ),
     VenueTypeCode.TRAVELING_CINEMA: (),
     VenueTypeCode.VISUAL_ARTS: (
