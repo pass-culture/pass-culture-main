@@ -77,10 +77,13 @@ const MultiSelectAutocomplete = ({
   }, [containerRef])
 
   useEffect(() => {
-    const regExp = new RegExp(searchField.value, 'i')
     setFilteredOptions(
       options.filter(
-        option => searchField.value === '' || option.label.match(regExp)
+        option =>
+          searchField.value === '' ||
+          option.label
+            .toLocaleLowerCase()
+            .includes(searchField.value.toLocaleLowerCase())
       )
     )
   }, [searchField.value])
