@@ -32,12 +32,9 @@ export const buildBeginningDatetimeForStockPayload = (
   eventTime: string,
   departmentCode: string
 ): string => {
-  const beginningDateTimeInDepartmentTimezone = buildDateTime(
-    eventDate,
-    eventTime
-  )
+  const beginningDateTimeInUserTimezone = buildDateTime(eventDate, eventTime)
   const beginningDateTimeInUTCTimezone = getUtcDateTimeFromLocalDepartement(
-    beginningDateTimeInDepartmentTimezone,
+    beginningDateTimeInUserTimezone,
     departmentCode
   )
   return toISOStringWithoutMilliseconds(beginningDateTimeInUTCTimezone)
@@ -49,14 +46,11 @@ export const buildBookingLimitDatetimeForStockPayload = (
   bookingLimitDatetime: string,
   departmentCode: string
 ): string => {
-  const beginningDateTimeInDepartmentTimezone = buildDateTime(
-    eventDate,
-    eventTime
-  )
+  const beginningDateTimeInUserTimezone = buildDateTime(eventDate, eventTime)
   const bookingLimitDatetimeUtc = getUtcDateTimeFromLocalDepartement(
     getBookingLimitDatetime(
       bookingLimitDatetime,
-      beginningDateTimeInDepartmentTimezone
+      beginningDateTimeInUserTimezone
     ),
     departmentCode
   )
