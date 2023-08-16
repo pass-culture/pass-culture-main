@@ -20,7 +20,8 @@
     "filterOnly(offer.students)",
     "filterOnly(offer.subcategoryId)",
     "filterOnly(venue.departmentCode)",
-    "filterOnly(venue.id)"
+    "filterOnly(venue.id)",
+    "filterOnly(venue.academy)"
   ],
   "attributesToSnippet": null,
   "attributesToHighlight": null,
