@@ -1,7 +1,6 @@
 import cn from 'classnames'
-import { isAfter } from 'date-fns'
 import { FieldArray, useFormikContext } from 'formik'
-import React, { ChangeEvent, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { StockFormActions } from 'components/StockFormActions'
 import { FilterResultsRow } from 'components/StocksEventList/FilterResultsRow'
@@ -57,7 +56,7 @@ const StockFormList = ({
     deletingStock: StockEventFormValues
     deletingIndex: number
   } | null>(null)
-  const { values, setFieldValue, setTouched } = useFormikContext<{
+  const { values, setFieldValue } = useFormikContext<{
     stocks: StockEventFormValues[]
   }>()
   const today = getLocalDepartementDateTimeFromUtc(
@@ -327,35 +326,6 @@ const StockFormList = ({
                   }
                   const { readOnlyFields } = stockFormValues
 
-                  const onChangeBeginningDate = (
-                    event: ChangeEvent<HTMLInputElement>
-                  ) => {
-                    const date = event.target.value
-                    const stockBookingLimitDatetime =
-                      stockFormValues.bookingLimitDatetime
-                    /* istanbul ignore next: DEBT to fix */
-                    if (stockBookingLimitDatetime === null) {
-                      return
-                    }
-                    // tested but coverage don't see it.
-                    /* istanbul ignore next */
-                    if (
-                      date !== '' &&
-                      isAfter(
-                        new Date(stockBookingLimitDatetime),
-                        new Date(date)
-                      )
-                    ) {
-                      setTouched({
-                        [`stocks[${index}]bookingLimitDatetime`]: true,
-                      })
-                      setFieldValue(
-                        `stocks[${index}]bookingLimitDatetime`,
-                        date
-                      )
-                    }
-                  }
-
                   const beginningDate = stockFormValues.beginningDate
                   const actions = [
                     {
@@ -395,7 +365,6 @@ const StockFormList = ({
                           isLabelHidden
                           minDate={today}
                           disabled={readOnlyFields.includes('beginningDate')}
-                          onChange={onChangeBeginningDate}
                           hideFooter
                         />
                       </td>
