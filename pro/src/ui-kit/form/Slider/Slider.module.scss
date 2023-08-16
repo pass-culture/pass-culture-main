@@ -12,6 +12,18 @@
   @include fonts.button;
 }
 
+.slider-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: rem.torem(10px);
+  margin-bottom: rem.torem(12px);
+
+  .input-value {
+    font-weight: 700;
+  }
+}
+
 .min-max-container {
   @include fonts.caption;
 
