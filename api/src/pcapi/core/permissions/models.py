@@ -209,4 +209,10 @@ class BackOfficeUserProfile(Base, Model):
 
     @property
     def permissions(self) -> typing.Collection[Permissions]:
-        return [Permissions[perm.name] for role in self.roles for perm in role.permissions]
+        permissions_members = Permissions.__members__
+        return [
+            Permissions[perm.name]
+            for role in self.roles
+            for perm in role.permissions
+            if perm.name in permissions_members
+        ]
