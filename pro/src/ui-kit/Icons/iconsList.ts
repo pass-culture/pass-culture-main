@@ -77,6 +77,7 @@ import strokeLocationIcon from 'icons/stroke-location.svg'
 import strokeLogoutIcon from 'icons/stroke-logout.svg'
 import strokeMailIcon from 'icons/stroke-mail.svg'
 import strokeMoreIcon from 'icons/stroke-more.svg'
+import strokeNearIcon from 'icons/stroke-near.svg'
 import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
 import strokeNewIcon from 'icons/stroke-new.svg'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
@@ -175,6 +176,7 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeBookedIcon },
   { src: strokeMailIcon },
   { src: strokePhoneIcon },
+  { src: strokeNearIcon },
   { src: strokeLocationIcon },
   { src: strokeFranceIcon },
   { src: strokeHomeIcon },
