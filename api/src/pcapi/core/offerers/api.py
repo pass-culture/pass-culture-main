@@ -43,6 +43,7 @@ from pcapi.repository import repository
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
 import pcapi.routes.serialization.base as serialize_base
+from pcapi.routes.serialization.offerers_serialize import OffererMemberStatus
 from pcapi.utils import crypto
 from pcapi.utils import image_conversion
 import pcapi.utils.db as db_utils
@@ -1893,8 +1894,25 @@ def invite_members(offerer: models.Offerer, emails: list[str], current_user: use
     )  # TODO à modifier envoyer email seulement aux nouveaux invités
 
 
-def get_offerer_members(offerer: models.Offerer) -> list[models.UserOfferer]:
-    return models.UserOfferer.query.filter_by(offererId=offerer.id).join(users_models.User).all()
+def get_offerer_members(offerer: models.Offerer) -> list[typing.Tuple[str, OffererMemberStatus]]:
+    users_offerers = (
+        models.UserOfferer.query.filter(
+            models.UserOfferer.offererId == offerer.id, sa.not_(models.UserOfferer.isRejected)
+        )
+        .options(sa.orm.joinedload(models.UserOfferer.user).load_only(users_models.User.email))
+        .all()
+    )
+    invited_members = models.OffererInvitation.query.filter_by(offererId=offerer.id).all()
+    members = [
+        (
+            user_offerer.user.email,
+            OffererMemberStatus.VALIDATED if user_offerer.isValidated else OffererMemberStatus.PENDING,
+        )
+        for user_offerer in users_offerers
+    ]
+    members = members + [(invited_member.email, OffererMemberStatus.PENDING) for invited_member in invited_members]
+
+    return members
 
 
 def accept_offerer_invitation_if_exists(user: users_models.User) -> None:

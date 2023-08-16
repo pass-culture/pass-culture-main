@@ -1,4 +1,5 @@
 from datetime import datetime
+import enum
 from typing import Iterable
 
 from pydantic import validator
@@ -139,25 +140,18 @@ class GetOffererNameResponseModel(BaseModel):
         orm_mode = True
 
 
+class OffererMemberStatus(enum.Enum):
+    VALIDATED = "validated"
+    PENDING = "pending"
+
+
 class GetOffererMemberResponseModel(BaseModel):
-    firstName: str
-    lastName: str
     email: str
-
-    class Config:
-        orm_mode = True
-
-    @classmethod
-    def from_orm(cls, user_offerer: offerers_models.UserOfferer) -> "GetOffererMemberResponseModel":
-        res = super().from_orm(user_offerer.user)
-        return res
+    status: OffererMemberStatus
 
 
 class GetOffererMembersResponseModel(BaseModel):
     members: list[GetOffererMemberResponseModel]
-
-    class Config:
-        orm_mode = True
 
 
 class GetOfferersNamesResponseModel(BaseModel):
