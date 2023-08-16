@@ -12,60 +12,26 @@ const signupFormDefault = {
   contactOk: true,
 }
 
-const signupFormWithSiren = {
-  ...signupFormDefault,
-  siren: '123123123',
-  legalUnitValues: {
-    address: 'adress',
-    city: 'city',
-    name: 'name',
-    postalCode: '123123',
-    siren: '123123123',
-  },
-}
-
 describe('validationSchema', () => {
   const cases: {
     description: string
     formValues: Partial<SignupFormValues>
     expectedErrors: string[]
-    withoutSiren: boolean
   }[] = [
     {
-      description: 'valid form with SIREN',
-      formValues: signupFormWithSiren,
-      expectedErrors: [],
-      withoutSiren: false,
-    },
-    {
-      description: 'valid form with too short SIREN',
-      formValues: { ...signupFormWithSiren, siren: '123' },
-      expectedErrors: ['Le SIREN doit comporter 9 caractères.'],
-      withoutSiren: false,
-    },
-    {
-      description: 'valid form with too long SIREN',
-      formValues: { ...signupFormWithSiren, siren: '123456789101112' },
-      expectedErrors: ['Le SIREN doit comporter 9 caractères.'],
-      withoutSiren: false,
-    },
-    {
-      description: 'valid form without SIREN',
+      description: 'valid form',
       formValues: signupFormDefault,
       expectedErrors: [],
-      withoutSiren: true,
     },
     {
       description: 'not valid form without firstName',
       formValues: { ...signupFormDefault, firstName: '' },
       expectedErrors: ['Veuillez renseigner votre prénom'],
-      withoutSiren: true,
     },
     {
       description: 'not valid form without name',
       formValues: { ...signupFormDefault, lastName: '' },
       expectedErrors: ['Veuillez renseigner votre nom'],
-      withoutSiren: true,
     },
     {
       description: 'not valid form without phone',
@@ -75,7 +41,6 @@ describe('validationSchema', () => {
         'Veuillez renseigner un numéro de téléphone',
         'Veuillez renseigner un numéro de téléphone valide',
       ],
-      withoutSiren: true,
     },
     {
       description: 'not valid form with too short phone',
@@ -84,7 +49,6 @@ describe('validationSchema', () => {
         'Veuillez renseigner au moins 10 chiffres',
         'Veuillez renseigner un numéro de téléphone valide',
       ],
-      withoutSiren: true,
     },
     {
       description: 'not valid form with invalid and too long phone',
@@ -96,19 +60,16 @@ describe('validationSchema', () => {
         'Veuillez renseigner moins de 20 chiffres',
         'Veuillez renseigner un numéro de téléphone valide',
       ],
-      withoutSiren: true,
     },
     {
       description: 'not valid form without password',
       formValues: { ...signupFormDefault, password: '' },
       expectedErrors: ['Veuillez renseigner un mot de passe'],
-      withoutSiren: true,
     },
     {
       description: 'not valid form with wrong password',
       formValues: { ...signupFormDefault, password: 'aaaaaaaa' }, // NOSONAR
       expectedErrors: ['Veuillez renseigner un mot de passe valide avec : '],
-      withoutSiren: true,
     },
   ]
 

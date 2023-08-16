@@ -130,13 +130,13 @@ describe('components | Informations', () => {
       onSubmit,
       props,
     })
-    const nameInput = screen.getByText('Nom juridique')
+    const nameInput = screen.getByText('Raison sociale')
 
     await userEvent.click(nameInput)
     await userEvent.tab()
     expect(
       await screen.findByText(
-        'Veuillez renseigner le nom juridique de votre lieu'
+        'Veuillez renseigner la raison sociale de votre lieu'
       )
     ).toBeInTheDocument()
   })

@@ -601,7 +601,7 @@ describe('VenueFormScreen', () => {
     await waitFor(() => {
       expect(screen.queryByTestId('wrapper-publicName')).not.toBeInTheDocument()
     })
-    expect(screen.getByText('Type de lieu')).toBeInTheDocument()
+    expect(screen.getByText('Activité principale')).toBeInTheDocument()
 
     expect(screen.queryByText('Adresse du lieu')).not.toBeInTheDocument()
     expect(screen.queryByTestId('wrapper-description')).not.toBeInTheDocument()

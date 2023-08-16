@@ -59,7 +59,7 @@ describe('Activity', () => {
     const buttonSubmit = screen.getByRole('button', {
       name: 'Submit',
     })
-    const venueTypeSelect = screen.getByLabelText('Type de lieu')
+    const venueTypeSelect = screen.getByLabelText('Activité principale')
     await userEvent.selectOptions(venueTypeSelect, 'CINEMA')
     await userEvent.click(buttonSubmit)
     expect(onSubmit).toHaveBeenCalledTimes(1)
@@ -71,14 +71,14 @@ describe('Activity', () => {
       onSubmit,
       props,
     })
-    const venueTypeSelect = screen.getByLabelText('Type de lieu')
+    const venueTypeSelect = screen.getByLabelText('Activité principale')
     await userEvent.selectOptions(
       venueTypeSelect,
       'Sélectionnez celui qui correspond à votre lieu'
     )
     await userEvent.tab()
     expect(
-      screen.getByText('Veuillez sélectionner un type de lieu')
+      screen.getByText('Veuillez sélectionner une activité principale')
     ).toBeInTheDocument()
   })
 
@@ -96,6 +96,6 @@ describe('Activity', () => {
         'Ces informations seront affichées dans votre page lieu sur l’application pass Culture (sauf pour les lieux administratifs). Elles permettront aux jeunes d’en savoir plus sur votre lieu.'
       )
     ).not.toBeInTheDocument()
-    expect(screen.getByLabelText('Type de lieu')).toBeDisabled()
+    expect(screen.getByLabelText('Activité principale')).toBeDisabled()
   })
 })
