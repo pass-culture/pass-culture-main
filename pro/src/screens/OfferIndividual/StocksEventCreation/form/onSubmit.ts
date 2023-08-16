@@ -21,18 +21,28 @@ export const onSubmit = (
   departmentCode: string
 ): StocksEvent[] => {
   const dates = getRecurrenceDates(values)
-
   return generateStocksForDates(values, dates, departmentCode)
+}
+
+const getYearMonthDay = (date: string) => {
+  const [year, month, day] = date.split('-')
+  return {
+    year: parseInt(year),
+    month: parseInt(month) - 1,
+    day: parseInt(day),
+  }
 }
 
 const getRecurrenceDates = (values: RecurrenceFormValues): Date[] => {
   switch (values.recurrenceType) {
-    case RecurrenceType.UNIQUE:
+    case RecurrenceType.UNIQUE: {
       /* istanbul ignore next: should be already validated by yup */
       if (!isDateValid(values.startingDate)) {
         throw new Error('Starting date is empty')
       }
-      return [new Date(values.startingDate)]
+      const { year, month, day } = getYearMonthDay(values.startingDate)
+      return [new Date(year, month, day)]
+    }
 
     case RecurrenceType.DAILY: {
       /* istanbul ignore next: should be already validated by yup */
@@ -42,10 +52,20 @@ const getRecurrenceDates = (values: RecurrenceFormValues): Date[] => {
       ) {
         throw new Error('Starting or ending date is empty')
       }
+      const {
+        year: startYear,
+        month: startMonth,
+        day: startDay,
+      } = getYearMonthDay(values.startingDate)
+      const {
+        year: endYear,
+        month: endMonth,
+        day: endDay,
+      } = getYearMonthDay(values.endingDate)
 
       return getDatesInInterval(
-        new Date(values.startingDate),
-        new Date(values.endingDate)
+        new Date(startYear, startMonth, startDay),
+        new Date(endYear, endMonth, endDay)
       )
     }
 
@@ -58,10 +78,20 @@ const getRecurrenceDates = (values: RecurrenceFormValues): Date[] => {
       ) {
         throw new Error('Starting, ending date or days is empty')
       }
+      const {
+        year: startYear,
+        month: startMonth,
+        day: startDay,
+      } = getYearMonthDay(values.startingDate)
+      const {
+        year: endYear,
+        month: endMonth,
+        day: endDay,
+      } = getYearMonthDay(values.endingDate)
 
       return getDatesInInterval(
-        new Date(values.startingDate),
-        new Date(values.endingDate),
+        new Date(startYear, startMonth, startDay),
+        new Date(endYear, endMonth, endDay),
         values.days
       )
     }
@@ -76,10 +106,20 @@ const getRecurrenceDates = (values: RecurrenceFormValues): Date[] => {
       if (values.monthlyOption === null) {
         throw new Error('Monthly option is empty')
       }
+      const {
+        year: startYear,
+        month: startMonth,
+        day: startDay,
+      } = getYearMonthDay(values.startingDate)
+      const {
+        year: endYear,
+        month: endMonth,
+        day: endDay,
+      } = getYearMonthDay(values.endingDate)
 
       return getDatesWithMonthlyOption(
-        new Date(values.startingDate),
-        new Date(values.endingDate),
+        new Date(startYear, startMonth, startDay),
+        new Date(endYear, endMonth, endDay),
         values.monthlyOption
       )
     }

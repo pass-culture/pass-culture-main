@@ -42,15 +42,6 @@ export const buildDateTime = (date: string, time: string) => {
   }
   const [year, month, day] = date.split('-')
 
-  // previously method with :
-  // set(new Date(date), {
-  //   hours: parseInt(hours),
-  //   minutes: parseInt(minutes),
-  // })
-  // introduced a bug on western timezone,
-  // indeed new Date(date) return a date at 00h00 from user local timezone
-  // once set it was the day before
-
   // new Date(year, month, day, hours, minutes)
   return new Date(
     parseInt(year),
