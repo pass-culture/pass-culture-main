@@ -6,6 +6,7 @@ RESTARTABLE_FRAUD_CHECK_REASON_CODES = (
     fraud_models.FraudReasonCode.BLURRY_DOCUMENT_VIDEO,
     fraud_models.FraudReasonCode.BLURRY_VIDEO,
     fraud_models.FraudReasonCode.DOCUMENT_DAMAGED,
+    fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER,
     fraud_models.FraudReasonCode.ID_CHECK_EXPIRED,
     fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC,
     fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED,
