@@ -534,7 +534,7 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
         nullable=True,
     )
     resultContent: sa.orm.Mapped[dict | None] = sa.Column(sa.dialects.postgresql.JSONB(none_as_null=True))
-    status = sa.Column(sa.Enum(FraudCheckStatus, create_constraint=False), nullable=True)
+    status: FraudCheckStatus = sa.Column(sa.Enum(FraudCheckStatus, create_constraint=False), nullable=True)
     thirdPartyId: str = sa.Column(sa.TEXT(), index=True, nullable=False)
     type: FraudCheckType = sa.Column(sa.Enum(FraudCheckType, create_constraint=False), nullable=False)
     updatedAt: datetime.datetime = sa.Column(
