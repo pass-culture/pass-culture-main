@@ -9,11 +9,13 @@ from pcapi.core.offerers import api
 from pcapi.core.offerers import repository
 import pcapi.core.offerers.exceptions as offerers_exceptions
 import pcapi.core.offerers.models as offerers_models
+from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.feature import feature_required
 from pcapi.utils.rest import check_user_has_access_to_offerer
 
 from . import blueprint
@@ -79,6 +81,7 @@ def get_offerer(offerer_id: int) -> offerers_serialize.GetOffererResponseModel:
 
 
 @private_api.route("/offerers/<int:offerer_id>/invite", methods=["POST"])
+@feature_required(feature.FeatureToggle.WIP_ENABLE_NEW_USER_OFFERER_LINK)
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def invite_members(offerer_id: int, body: offerers_serialize.InviteMembersQueryModel) -> None:
@@ -88,14 +91,17 @@ def invite_members(offerer_id: int, body: offerers_serialize.InviteMembersQueryM
 
 
 @private_api.route("/offerers/<int:offerer_id>/members", methods=["GET"])
+@feature_required(feature.FeatureToggle.WIP_ENABLE_NEW_USER_OFFERER_LINK)
 @login_required
 @spectree_serialize(response_model=offerers_serialize.GetOffererMembersResponseModel, api=blueprint.pro_private_schema)
 def get_offerer_members(offerer_id: int) -> offerers_serialize.GetOffererMembersResponseModel:
     check_user_has_access_to_offerer(current_user, offerer_id)
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
-    users = api.get_offerer_members(offerer)
+    members = api.get_offerer_members(offerer)
     return offerers_serialize.GetOffererMembersResponseModel(
-        members=[offerers_serialize.GetOffererMemberResponseModel.from_orm(user) for user in users]
+        members=[
+            offerers_serialize.GetOffererMemberResponseModel(email=member[0], status=member[1]) for member in members
+        ]
     )
 
 

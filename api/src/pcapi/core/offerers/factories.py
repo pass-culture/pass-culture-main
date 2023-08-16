@@ -277,3 +277,13 @@ class VenueRegistrationFactory(BaseFactory):
     venue = factory.SubFactory(VenueFactory)
     target = models.Target.INDIVIDUAL_AND_EDUCATIONAL
     webPresence = "https://example.com, https://pass.culture.fr"
+
+
+class OffererInvitationFactory(BaseFactory):
+    class Meta:
+        model = models.OffererInvitation
+
+    offerer = factory.SubFactory(OffererFactory)
+    email = factory.Sequence("invited.pro{}@example.net".format)
+    dateCreated = datetime.datetime.utcnow()
+    user = factory.SubFactory(users_factories.ProFactory)
