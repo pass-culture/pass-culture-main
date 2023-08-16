@@ -6,7 +6,6 @@ import { Route, Routes } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
 import { Events } from 'core/FirebaseEvents/constants'
-import * as getSirenDataAdapter from 'core/Offerers/adapters/getSirenDataAdapter'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -17,12 +16,11 @@ const mockLogEvent = vi.fn()
 vi.mock('utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
 }))
-vi.mock('core/Offerers/adapters/getSirenDataAdapter')
 vi.mock('apiClient/api', () => ({
   api: {
     getProfile: vi.fn().mockResolvedValue({}),
-    signupPro: vi.fn(),
     signupProV2: vi.fn(),
+    listOfferersNames: vi.fn(),
   },
 }))
 
@@ -52,12 +50,24 @@ describe('Signup', () => {
         list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
       },
     }
-    vi.spyOn(api, 'signupPro').mockResolvedValue()
     vi.spyOn(api, 'signupProV2').mockResolvedValue()
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
+
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [
+        {
+          id: 1,
+          name: 'Mon super cinéma',
+        },
+        {
+          id: 1,
+          name: 'Ma super librairie',
+        },
+      ],
+    })
     Element.prototype.scrollIntoView = vi.fn()
   })
 
@@ -157,12 +167,6 @@ describe('Signup', () => {
       ).toBeInTheDocument()
       // and a telephone field
       expect(screen.getByLabelText('Numéro de téléphone')).toBeInTheDocument()
-      // and a SIREN field
-      expect(
-        screen.getByRole('textbox', {
-          name: /SIREN de la structure que vous représentez/,
-        })
-      ).toBeInTheDocument()
       // and a contact field
       expect(
         screen.getByRole('checkbox', {
@@ -238,101 +242,80 @@ describe('Signup', () => {
       })
     })
     describe('formValidation', () => {
-      beforeEach(() => {
-        vi.spyOn(getSirenDataAdapter, 'default').mockResolvedValue({
-          isOk: true,
-          message: '',
-          payload: {
-            values: {
-              address: '4 rue du test',
-              city: 'Plessix-Balisson',
-              name: 'Ma Petite structure',
-              postalCode: '22350',
-              siren: '881457238',
-              apeCode: '90.03A',
+      const features = {
+        list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
+      }
+
+      describe('formValidation', () => {
+        it('should enable submit button', async () => {
+          renderSignUp({ ...store, features })
+          const submitButton = screen.getByRole('button', {
+            name: /Créer mon compte/,
+          })
+          await userEvent.type(
+            screen.getByRole('textbox', {
+              name: /Adresse email/,
+            }),
+            'test@example.com'
+          )
+          await userEvent.type(
+            screen.getByLabelText(/Mot de passe/),
+            'user@AZERTY123'
+          )
+          await userEvent.type(
+            screen.getByRole('textbox', {
+              name: /Nom/,
+            }),
+            'Nom'
+          )
+          await userEvent.type(
+            screen.getByRole('textbox', {
+              name: /Prénom/,
+            }),
+            'Prénom'
+          )
+          await userEvent.type(
+            screen.getByLabelText('Numéro de téléphone'),
+            '+33722332233'
+          )
+          expect(submitButton).toBeEnabled()
+
+          // To simulate onBlur event
+          await userEvent.tab()
+
+          expect(submitButton).toBeEnabled()
+          await userEvent.click(submitButton)
+
+          expect(api.signupProV2).toHaveBeenCalledWith({
+            contactOk: false,
+            email: 'test@example.com',
+            firstName: 'Prénom',
+            lastName: 'Nom',
+            password: 'user@AZERTY123', // NOSONAR
+            phoneNumber: '+33722332233',
+            legalUnitValues: {
+              address: '',
+              city: '',
+              name: '',
+              postalCode: '',
+              siren: '',
             },
-          },
-        })
-      })
-
-      it('should enable submit button', async () => {
-        renderSignUp(store)
-        const submitButton = screen.getByRole('button', {
-          name: /Créer mon compte/,
-        })
-        await userEvent.type(
-          screen.getByRole('textbox', {
-            name: /Adresse email/,
-          }),
-          'test@example.com'
-        )
-        await userEvent.type(
-          screen.getByLabelText(/Mot de passe/),
-          'user@AZERTY123'
-        )
-        await userEvent.type(
-          screen.getByRole('textbox', {
-            name: /Nom/,
-          }),
-          'Nom'
-        )
-        await userEvent.type(
-          screen.getByRole('textbox', {
-            name: /Prénom/,
-          }),
-          'Prénom'
-        )
-        await userEvent.type(
-          screen.getByLabelText('Numéro de téléphone'),
-          '+33722332233'
-        )
-        expect(submitButton).toBeEnabled()
-        await userEvent.type(
-          screen.getByRole('textbox', {
-            name: /SIREN/,
-          }),
-          '881457238'
-        )
-
-        // To simulate onBlur event
-        await userEvent.tab()
-
-        expect(submitButton).toBeEnabled()
-        // Structure name should be displayed and submit button enabled
-        await waitFor(() =>
-          expect(
-            screen.findByText('Ma Petite structure')
+            siren: '',
+          })
+          await expect(
+            screen.findByText("I'm the confirmation page")
           ).resolves.toBeInTheDocument()
-        )
-
-        await userEvent.click(submitButton)
-
-        expect(api.signupPro).toHaveBeenCalledWith({
-          address: '4 rue du test',
-          city: 'Plessix-Balisson',
-          contactOk: false,
-          email: 'test@example.com',
-          firstName: 'Prénom',
-          lastName: 'Nom',
-          name: 'Ma Petite structure',
-          password: 'user@AZERTY123', // NOSONAR
-          phoneNumber: '+33722332233',
-          postalCode: '22350',
-          siren: '881457238',
+          expect(mockLogEvent).toHaveBeenNthCalledWith(
+            1,
+            Events.SIGNUP_FORM_SUCCESS,
+            {}
+          )
+          expect(mockLogEvent).toHaveBeenCalledTimes(1)
         })
-        await expect(
-          screen.findByText("I'm the confirmation page")
-        ).resolves.toBeInTheDocument()
-        expect(mockLogEvent).toHaveBeenNthCalledWith(
-          1,
-          Events.SIGNUP_FORM_SUCCESS,
-          {}
-        )
-        expect(mockLogEvent).toHaveBeenCalledTimes(1)
       })
 
       it('should show a notification on api call error', async () => {
-        vi.spyOn(api, 'signupPro').mockRejectedValue({
+        vi.spyOn(api, 'signupProV2').mockRejectedValue({
           body: {
             phoneNumber: 'Le téléphone doit faire moins de 20 caractères',
           },
@@ -358,15 +341,11 @@ describe('Signup', () => {
           screen.getByLabelText('Numéro de téléphone'),
           '0722332200'
         )
-        await userEvent.type(
-          screen.getByLabelText('SIREN de la structure que vous représentez'),
-          '881457238'
-        )
         // To simulate onBlur event
         await userEvent.tab()
 
         await userEvent.click(submitButton)
-        expect(api.signupPro).toHaveBeenCalledTimes(1)
+        expect(api.signupProV2).toHaveBeenCalledTimes(1)
 
         expect(
           await screen.findByText(
@@ -379,104 +358,6 @@ describe('Signup', () => {
         await userEvent.type(phoneInput, '0622332233')
         await userEvent.tab()
         await waitFor(() => expect(submitButton).toBeEnabled())
-      })
-
-      it('should display a Banner when SIREN is invisible', async () => {
-        vi.spyOn(getSirenDataAdapter, 'default').mockResolvedValue({
-          isOk: false,
-          message:
-            'Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles.',
-          payload: {},
-        })
-        renderSignUp(store)
-        expect(
-          screen.queryByText('Modifier la visibilité de mon SIREN')
-        ).not.toBeInTheDocument()
-        await userEvent.type(
-          screen.getByRole('textbox', {
-            name: /SIREN/,
-          }),
-          '881457238'
-        )
-        // To simulate onBlur event
-        await userEvent.tab()
-        expect(
-          screen.queryByText('Modifier la visibilité de mon SIREN')
-        ).toBeInTheDocument()
-      })
-    })
-  })
-  describe('Without SIREN', () => {
-    const features = {
-      list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
-    }
-
-    it('should not render SIREN field', () => {
-      renderSignUp({ ...store, features })
-      expect(
-        screen.queryByRole('textbox', {
-          name: /SIREN de la structure que vous représentez/,
-        })
-      ).not.toBeInTheDocument()
-    })
-
-    describe('formValidation', () => {
-      it('should enable submit button', async () => {
-        renderSignUp({ ...store, features })
-        const submitButton = screen.getByRole('button', {
-          name: /Créer mon compte/,
-        })
-        await userEvent.type(
-          screen.getByRole('textbox', {
-            name: /Adresse email/,
-          }),
-          'test@example.com'
-        )
-        await userEvent.type(
-          screen.getByLabelText(/Mot de passe/),
-          'user@AZERTY123'
-        )
-        await userEvent.type(
-          screen.getByRole('textbox', {
-            name: /Nom/,
-          }),
-          'Nom'
-        )
-        await userEvent.type(
-          screen.getByRole('textbox', {
-            name: /Prénom/,
-          }),
-          'Prénom'
-        )
-        await userEvent.type(
-          screen.getByLabelText('Numéro de téléphone'),
-          '+33722332233'
-        )
-        expect(submitButton).toBeEnabled()
-
-        // To simulate onBlur event
-        await userEvent.tab()
-
-        expect(submitButton).toBeEnabled()
-        await userEvent.click(submitButton)
-
-        expect(api.signupProV2).toHaveBeenCalledWith({
-          contactOk: false,
-          email: 'test@example.com',
-          firstName: 'Prénom',
-          lastName: 'Nom',
-          password: 'user@AZERTY123', // NOSONAR
-          phoneNumber: '+33722332233',
-        })
-        await expect(
-          screen.findByText("I'm the confirmation page")
-        ).resolves.toBeInTheDocument()
-        expect(mockLogEvent).toHaveBeenNthCalledWith(
-          1,
-          Events.SIGNUP_FORM_SUCCESS,
-          {}
-        )
-        expect(mockLogEvent).toHaveBeenCalledTimes(1)
       })
     })
   })

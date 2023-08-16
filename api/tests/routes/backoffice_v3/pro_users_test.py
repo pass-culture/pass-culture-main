@@ -338,6 +338,7 @@ class ValidateProEmailTest(PostEndpointHelper):
         assert f"L&#39;email {pro_user.email} est validé !" in response_redirect.data.decode("utf-8")
         assert len(mails_testing.outbox) == 0
 
+
 class DeleteProUserTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.pro_user.delete"
     endpoint_kwargs = {"user_id": 1}
