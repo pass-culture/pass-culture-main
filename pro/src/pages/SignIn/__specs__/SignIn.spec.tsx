@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
@@ -80,6 +80,19 @@ describe('SignIn', () => {
     vi.spyOn(api, 'signin').mockResolvedValue(
       {} as SharedLoginUserResponseModel
     )
+
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [
+        {
+          id: 1,
+          name: 'Mon super cinéma',
+        },
+        {
+          id: 1,
+          name: 'Ma super librairie',
+        },
+      ],
+    })
   })
 
   it('should display 2 inputs and one link to account creation and one button to login', () => {
@@ -206,6 +219,19 @@ describe('SignIn', () => {
 
   describe('when user is signed in', () => {
     it('should redirect to offerers page if user is not admin', async () => {
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValueOnce({
+        offerersNames: [
+          {
+            id: 1,
+            name: 'Mon super cinéma',
+          },
+          {
+            id: 1,
+            name: 'Ma super librairie',
+          },
+        ],
+      })
+
       renderSignIn({
         user: {
           currentUser: {
@@ -215,9 +241,12 @@ describe('SignIn', () => {
           initialized: true,
         },
       })
-      expect(
-        screen.getByText("I'm logged standard user redirect route")
-      ).toBeInTheDocument()
+
+      await waitFor(() =>
+        expect(
+          screen.getByText("I'm logged standard user redirect route")
+        ).toBeInTheDocument()
+      )
     })
   })
 
@@ -304,7 +333,7 @@ describe('SignIn', () => {
     it('should not call listOfferersNames if user is admin', async () => {
       const listOfferersNamesRequest = vi
         .spyOn(api, 'listOfferersNames')
-        .mockResolvedValue({
+        .mockResolvedValueOnce({
           offerersNames: [
             {
               id: 1,
@@ -334,7 +363,7 @@ describe('SignIn', () => {
     it('should redirect to onboarding page if offerer list is empty', async () => {
       const listOfferersNamesRequest = vi
         .spyOn(api, 'listOfferersNames')
-        .mockResolvedValue({
+        .mockResolvedValueOnce({
           offerersNames: [],
         })
 
@@ -390,19 +419,6 @@ describe('SignIn', () => {
     })
 
     it('should redirect user to offer page on signin with url parameter', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNames: [
-          {
-            id: 1,
-            name: 'Mon super cinéma',
-          },
-          {
-            id: 1,
-            name: 'Ma super librairie',
-          },
-        ],
-      })
-
       renderSignIn({ ...featureOverride }, ['/connexion?de=%2Foffres'])
 
       const email = screen.getByLabelText('Adresse email')
