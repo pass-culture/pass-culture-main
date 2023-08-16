@@ -1272,7 +1272,10 @@ def get_offerer_base_query(offerer_id: int) -> BaseQuery:
 
 
 def search_venue(search_query: str, order_by: list[str] | None = None) -> BaseQuery:
-    venues = models.Venue.query.outerjoin(offerers_models.VenueContact)
+    venues = models.Venue.query.outerjoin(models.VenueContact).options(
+        sa.orm.joinedload(models.Venue.contact),
+        sa.orm.joinedload(models.Venue.managingOfferer),
+    )
 
     search_query = search_query.strip()
     if not search_query:
