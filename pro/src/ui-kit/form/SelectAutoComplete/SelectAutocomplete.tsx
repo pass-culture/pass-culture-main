@@ -25,6 +25,7 @@ export type SelectAutocompleteProps = FieldLayoutBaseProps & {
   placeholder?: string
   pluralLabel?: string
   resetOnOpen?: boolean
+  maxDisplayOptions?: number
   onSearch?: (pattern: string) => void
   searchInOptions?: (options: SelectOption[], pattern: string) => SelectOption[]
   onReset?: () => void
@@ -48,6 +49,7 @@ const SelectAutocomplete = ({
   smallLabel = false,
   resetOnOpen = true,
   description,
+  maxDisplayOptions,
   onSearch = () => {},
   searchInOptions = options => options,
   onReset = () => {},
@@ -111,7 +113,12 @@ const SelectAutocomplete = ({
   }, [searchField.value])
 
   useEffect(() => {
-    setFilteredOptions(searchInOptions(options, searchField.value))
+    setFilteredOptions(
+      searchInOptions(options, searchField.value).slice(
+        0,
+        maxDisplayOptions ?? options.length
+      )
+    )
   }, [searchField.value, options])
 
   /* istanbul ignore next: DEBT TO FIX */
