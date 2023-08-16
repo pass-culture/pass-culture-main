@@ -1250,7 +1250,7 @@ class UbbleWebhookTest:
         assert not fraud_check.user.has_beneficiary_role
         assert len(fraud_check.user.deposits) == 0
 
-        assert len(mails_testing.outbox) == 0
+        assert len(mails_testing.outbox) == 1
 
         content = fraud_models.UbbleContent(**fraud_check.resultContent)
         document = list(filter(lambda included: included.type == "documents", ubble_identification_response.included))[
@@ -2238,11 +2238,11 @@ class UbbleWebhookTest:
             data__attributes__identification_id=str(request_data.identification_id),
             included=[
                 test_factories.UbbleIdentificationIncludedDocumentsFactory(
-                    attributes__birth_date=None,
+                    attributes__birth_date=(datetime.date.today() - relativedelta.relativedelta(years=18)).isoformat(),
                     attributes__document_number=None,
                     attributes__document_type=None,
-                    attributes__first_name=None,
-                    attributes__last_name=None,
+                    attributes__first_name="Prénom",
+                    attributes__last_name="Nom",
                 ),
                 test_factories.UbbleIdentificationIncludedDocumentChecksFactory(
                     attributes__supported=doc_supported,  # 1 or -1
@@ -2286,10 +2286,10 @@ class UbbleWebhookTest:
         assert reason_code in ubble_fraud_check.reasonCodes
 
         message = ubble_subscription_api.get_ubble_subscription_message(ubble_fraud_check)
-        assert message.user_message == ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code].not_retryable_user_message
-        assert message.call_to_action.link == "passculture://verification-identite/demarches-simplifiees"
+        assert message.user_message == ubble_models.UBBLE_CODE_ERROR_MAPPING[reason_code].retryable_user_message
+        assert message.call_to_action.link == "passculture://verification-identite"
 
-        assert len(mails_testing.outbox) == 0
+        assert len(mails_testing.outbox) == 1
 
     @pytest.mark.parametrize(
         "expiry_score",

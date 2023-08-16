@@ -1927,7 +1927,6 @@ class IdentificationSessionTest:
         [
             fraud_models.FraudReasonCode.DUPLICATE_USER,
             fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH,
-            fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER,
         ],
     )
     def test_request_ubble_retry_not_allowed(self, client, ubble_mock, reason):
