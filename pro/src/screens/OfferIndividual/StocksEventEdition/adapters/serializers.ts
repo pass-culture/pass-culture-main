@@ -1,4 +1,3 @@
-import { set } from 'date-fns'
 import endOfDay from 'date-fns/endOfDay'
 
 import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
@@ -41,11 +40,25 @@ export const buildDateTime = (date: string, time: string) => {
   if (!isDateValid(date) || hours === undefined || minutes === undefined) {
     throw Error('La date ou l’heure est invalide')
   }
+  const [year, month, day] = date.split('-')
 
-  return set(new Date(date), {
-    hours: parseInt(hours),
-    minutes: parseInt(minutes),
-  })
+  // previously method with :
+  // set(new Date(date), {
+  //   hours: parseInt(hours),
+  //   minutes: parseInt(minutes),
+  // })
+  // introduced a bug on western timezone,
+  // indeed new Date(date) return a date at 00h00 from user local timezone
+  // once set it was the day before
+
+  // new Date(year, month, day, hours, minutes)
+  return new Date(
+    parseInt(year),
+    parseInt(month) - 1,
+    parseInt(day),
+    parseInt(hours),
+    parseInt(minutes)
+  )
 }
 
 export const serializeBeginningDateTime = (
@@ -53,14 +66,16 @@ export const serializeBeginningDateTime = (
   beginningTime: string,
   departementCode: string
 ): string => {
-  const beginningDateTimeInDepartementTimezone = buildDateTime(
+  const beginningDateTimeInUserTimezone = buildDateTime(
     beginningDate,
     beginningTime
   )
+
   const beginningDateTimeInUTCTimezone = getUtcDateTimeFromLocalDepartement(
-    beginningDateTimeInDepartementTimezone,
+    beginningDateTimeInUserTimezone,
     departementCode
   )
+
   return toISOStringWithoutMilliseconds(beginningDateTimeInUTCTimezone)
 }
 
