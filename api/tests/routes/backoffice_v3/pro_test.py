@@ -6,6 +6,7 @@ import pytest
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.permissions.models as perm_models
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -60,6 +61,7 @@ def assert_venue_equals(result_card_text: str, expected_venue: offerers_models.V
     assert f"{expected_venue.name.upper()} " in result_card_text
     assert f"Venue ID : {expected_venue.id} " in result_card_text
     assert f"SIRET : {expected_venue.siret} " in result_card_text
+    assert f"Structure : {expected_venue.managingOfferer.name} " in result_card_text
     assert f"Email : {expected_venue.bookingEmail} " in result_card_text
     if expected_venue.contact:
         assert f"Tél : {expected_venue.contact.phone_number} " in result_card_text
@@ -296,6 +298,15 @@ class SearchOffererTest:
 class SearchVenueTest:
     endpoint = "backoffice_v3_web.search_pro"
 
+    # - fetch session
+    # - fetch authenticated user
+    # - fetch results
+    # - fetch count for pagination
+    expected_num_queries = 4
+
+    # - fetch feature flag: WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT when one single result is returned
+    expected_num_queries_with_ff = 5
+
     def _create_venues(
         self,
         number: int = 12,
@@ -329,7 +340,9 @@ class SearchVenueTest:
         self._create_venues()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=self.venues[2].id, pro_type="venue"))
+        venue_id = self.venues[2].id
+        with assert_num_queries(self.expected_num_queries_with_ff):
+            response = authenticated_client.get(url_for(self.endpoint, terms=venue_id, pro_type="venue"))
 
         # then
         assert response.status_code == 200
@@ -343,7 +356,8 @@ class SearchVenueTest:
         self._create_venues()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=siret, pro_type="venue"))
+        with assert_num_queries(self.expected_num_queries_with_ff):
+            response = authenticated_client.get(url_for(self.endpoint, terms=siret, pro_type="venue"))
 
         # then
         assert response.status_code == 200
@@ -356,7 +370,9 @@ class SearchVenueTest:
         self._create_venues()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=self.venues[1].bookingEmail, pro_type="venue"))
+        email = self.venues[1].bookingEmail
+        with assert_num_queries(self.expected_num_queries_with_ff):
+            response = authenticated_client.get(url_for(self.endpoint, terms=email, pro_type="venue"))
 
         # then
         assert response.status_code == 200
@@ -369,7 +385,8 @@ class SearchVenueTest:
         self._create_venues()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms="@librairie.fr", pro_type="venue"))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, terms="@librairie.fr", pro_type="venue"))
 
         # then
         assert response.status_code == 200
@@ -384,9 +401,9 @@ class SearchVenueTest:
         self._create_venues()
 
         # when
-        response = authenticated_client.get(
-            url_for(self.endpoint, terms=self.venues[1].contact.email, pro_type="venue")
-        )
+        email = self.venues[1].contact.email
+        with assert_num_queries(self.expected_num_queries_with_ff):
+            response = authenticated_client.get(url_for(self.endpoint, terms=email, pro_type="venue"))
 
         # then
         assert response.status_code == 200
@@ -399,7 +416,8 @@ class SearchVenueTest:
         self._create_venues()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms="Alpha", pro_type="venue"))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, terms="Alpha", pro_type="venue"))
 
         # then
         assert response.status_code == 200
@@ -415,7 +433,8 @@ class SearchVenueTest:
         self._create_venues()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms="Théâtre du Centre", pro_type="venue"))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, terms="Théâtre du Centre", pro_type="venue"))
 
         # then
         assert response.status_code == 200
@@ -437,7 +456,8 @@ class SearchVenueTest:
         )
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=query, pro_type="venue"))
+        with assert_num_queries(self.expected_num_queries_with_ff):
+            response = authenticated_client.get(url_for(self.endpoint, terms=query, pro_type="venue"))
 
         # then
         assert response.status_code == 200
@@ -451,7 +471,8 @@ class SearchVenueTest:
         self._create_venues()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=query, pro_type="venue"))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, terms=query, pro_type="venue"))
 
         # then
         assert response.status_code == 200
