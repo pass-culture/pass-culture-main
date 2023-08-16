@@ -319,10 +319,9 @@ def get_relevant_identity_fraud_check(
 def get_identity_check_subscription_item(
     user: users_models.User, eligibility: users_models.EligibilityType | None
 ) -> models.SubscriptionItem:
-    user_subscription_state = get_user_subscription_state(user)
-    return models.SubscriptionItem(
-        type=models.SubscriptionStep.IDENTITY_CHECK, status=user_subscription_state.fraud_status
-    )
+    id_check = get_relevant_identity_fraud_check(user, eligibility)
+    status = get_identity_check_fraud_status(user, eligibility, id_check)
+    return models.SubscriptionItem(type=models.SubscriptionStep.IDENTITY_CHECK, status=status)
 
 
 def get_honor_statement_subscription_item(
