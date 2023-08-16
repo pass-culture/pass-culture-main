@@ -17,7 +17,7 @@ from pcapi import settings
 from pcapi.core import mails as mails_api
 from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.external.attributes import models as attributes_models
-from pcapi.core.users.models import UserRole
+import pcapi.core.users.models as users_models
 from pcapi.tasks.sendinblue_tasks import update_contact_attributes_task
 from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRequest
 
@@ -101,12 +101,18 @@ class SendinblueOptionalAttributes(Enum):
     INTENDED_CATEGORIES = "INTENDED_CATEGORIES"
 
 
-def update_contact_email(old_email: str, new_email: str, asynchronous: bool = True) -> None:
+def update_contact_email(user: users_models.User, old_email: str, new_email: str, asynchronous: bool = True) -> None:
+    contact_list_ids = (
+        [settings.SENDINBLUE_PRO_CONTACT_LIST_ID]
+        if (user.has_pro_role or user.has_non_attached_pro_role)
+        else [settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID]
+    )
+
     contact_request = UpdateSendinblueContactRequest(
         email=old_email,
         attributes={"EMAIL": new_email},
-        contact_list_ids=[settings.SENDINBLUE_YOUNG_CONTACT_LIST_ID],
-        emailBlacklisted=False,
+        contact_list_ids=contact_list_ids,
+        emailBlacklisted=(not user.get_notification_subscriptions().marketing_email),
     )
 
     if asynchronous:
@@ -192,7 +198,7 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
         SendinblueAttributes.INITIAL_CREDIT.value: _get_attr(attributes, "domains_credit", lambda v: v.all.initial),
         SendinblueAttributes.IS_BENEFICIARY.value: _get_attr(attributes, "is_beneficiary"),
         SendinblueAttributes.IS_BENEFICIARY_18.value: _get_attr(
-            attributes, "roles", lambda v: UserRole.BENEFICIARY.value in v
+            attributes, "roles", lambda v: users_models.UserRole.BENEFICIARY.value in v
         ),
         SendinblueAttributes.IS_BOOKING_EMAIL.value: _get_attr(attributes, "is_booking_email"),
         SendinblueAttributes.IS_CURRENT_BENEFICIARY.value: _get_attr(attributes, "is_current_beneficiary"),
@@ -205,7 +211,7 @@ def format_user_attributes(attributes: attributes_models.UserAttributes | attrib
             attributes, "offerers_tags", lambda tags: "Collectivité" in tags
         ),
         SendinblueAttributes.IS_UNDERAGE_BENEFICIARY.value: _get_attr(
-            attributes, "roles", lambda v: UserRole.UNDERAGE_BENEFICIARY.value in v
+            attributes, "roles", lambda v: users_models.UserRole.UNDERAGE_BENEFICIARY.value in v
         ),
         SendinblueAttributes.IS_USER_EMAIL.value: _get_attr(attributes, "is_user_email"),
         SendinblueAttributes.IS_VIRTUAL.value: _get_attr(attributes, "isVirtual"),
