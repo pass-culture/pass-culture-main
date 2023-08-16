@@ -15,6 +15,10 @@ ubble_error_to_email_mapping = {
         template=sendinblue_template.TransactionalEmail.SUBSCRIPTION_INFORMATION_ERROR,
         reminder_template=sendinblue_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_DATA_MATCH,
     ),
+    fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER.value: UbbleErrorToEmailMapping(
+        template=sendinblue_template.TransactionalEmail.SUBSCRIPTION_UNREADABLE_DOCUMENT_ERROR,
+        reminder_template=sendinblue_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_UNPROCESSABLE,
+    ),
     fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE.value: UbbleErrorToEmailMapping(
         template=sendinblue_template.TransactionalEmail.SUBSCRIPTION_UNREADABLE_DOCUMENT_ERROR,
         reminder_template=sendinblue_template.TransactionalEmail.UBBLE_KO_REMINDER_ID_CHECK_UNPROCESSABLE,

@@ -808,6 +808,18 @@ class SubscriptionMessageTest:
         "reason_codes,expected_message,expected_message_summary,expected_action_hint",
         [
             (
+                [fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER],
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
+                ].retryable_user_message,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
+                ].retryable_message_summary,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
+                ].retryable_action_hint,
+            ),
+            (
                 [fraud_models.FraudReasonCode.ID_CHECK_EXPIRED],
                 ubble_models.UBBLE_CODE_ERROR_MAPPING[
                     fraud_models.FraudReasonCode.ID_CHECK_EXPIRED
@@ -953,12 +965,6 @@ class SubscriptionMessageTest:
         "reason_codes,expected_message",
         [
             (
-                [fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER],
-                ubble_models.UBBLE_CODE_ERROR_MAPPING[
-                    fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
-                ].not_retryable_user_message,
-            ),
-            (
                 None,
                 ubble_models.UBBLE_DEFAULT.not_retryable_user_message,
             ),
@@ -986,6 +992,12 @@ class SubscriptionMessageTest:
     @pytest.mark.parametrize(
         "reason_codes,expected_message",
         [
+            (
+                [fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER],
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER
+                ].not_retryable_user_message,
+            ),
             (
                 [fraud_models.FraudReasonCode.ID_CHECK_EXPIRED],
                 ubble_models.UBBLE_CODE_ERROR_MAPPING[
