@@ -15,6 +15,7 @@ describe('Slider', () => {
   const defaultProps = {
     fieldName: 'sliderValue',
     scale: 'km',
+    displayValue: false,
   }
   it('should render default min and max value with scale', () => {
     renderSlider(defaultProps)
@@ -26,5 +27,16 @@ describe('Slider', () => {
     renderSlider({ ...defaultProps, min: 1, max: 5 })
     expect(screen.getByText('1 km')).toBeInTheDocument()
     expect(screen.getByText('5 km')).toBeInTheDocument()
+  })
+
+  it('should display the value', () => {
+    renderSlider({
+      ...defaultProps,
+      min: 1,
+      max: 5,
+      displayValue: true,
+    })
+
+    expect(screen.getByText('0 km')).toBeInTheDocument()
   })
 })

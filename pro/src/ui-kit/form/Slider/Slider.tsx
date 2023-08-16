@@ -12,6 +12,7 @@ export interface SliderProps extends React.HTMLProps<HTMLInputElement> {
   scale?: string
   hideLabel?: boolean
   displayMinMaxValues?: boolean
+  displayValue?: boolean
 }
 
 const Slider = ({
@@ -19,18 +20,26 @@ const Slider = ({
   scale = '',
   hideLabel = false,
   displayMinMaxValues = true,
+  displayValue = false,
   ...inputAttrs
 }: SliderProps): JSX.Element => {
   const [field] = useField(fieldName)
 
   return (
     <div>
-      <label
-        htmlFor={fieldName}
-        className={cn(hideLabel ? styles['visually-hidden'] : '')}
-      >
-        {inputAttrs.label}
-      </label>
+      <div className={styles['slider-header']}>
+        <label
+          htmlFor={fieldName}
+          className={cn(hideLabel ? styles['visually-hidden'] : '')}
+        >
+          {inputAttrs.label}
+        </label>
+        {displayValue && (
+          <span className={styles['input-value']}>
+            {field.value}&nbsp;{scale}
+          </span>
+        )}
+      </div>
       <input
         {...field}
         type="range"
