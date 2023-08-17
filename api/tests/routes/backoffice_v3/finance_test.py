@@ -5,6 +5,7 @@ import pytest
 
 from pcapi.core import testing
 from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import factories as history_factories
@@ -13,6 +14,8 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.routes.backoffice_v3.filters import format_booking_status
+from pcapi.routes.backoffice_v3.filters import format_date_time
 from pcapi.routes.backoffice_v3.finance.blueprint import _cancel_finance_incident
 
 from .helpers import html_parser
@@ -24,6 +27,16 @@ pytestmark = [
     pytest.mark.usefixtures("db_session"),
     pytest.mark.backoffice_v3,
 ]
+
+
+@pytest.fixture(scope="function", name="invoiced_pricing")
+def invoiced_pricing_fixture() -> list:
+    return finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED)
+
+
+@pytest.fixture(scope="function", name="invoiced_collective_pricing")
+def invoiced_collective_pricing_fixture() -> list:
+    return finance_factories.CollectivePricingFactory(status=finance_models.PricingStatus.INVOICED)
 
 
 class ListIncidentsTest(GetEndpointHelper):
@@ -46,7 +59,8 @@ class ListIncidentsTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == len(incidents)
-        assert rows[0]["ID"] == str(incidents[0].id)
+        last_created_incident = incidents[-1]
+        assert rows[0]["ID"] == str(last_created_incident.id)
         assert rows[0]["Statut de l'incident"] == "Créé"
         assert rows[0]["Type d'incident"] == "Trop Perçu"
 
@@ -135,7 +149,23 @@ class GetIncidentTest(GetEndpointHelper):
         content = html_parser.content_as_text(response.data)
 
         assert f"ID : {finance_incident.id}" in content
-        assert f" Lieu porteur de l'offre : {finance_incident.venue.name}" in content
+        assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
+        assert f"Incident créé par : {finance_incident.details['author']}" in content
+
+    def test_get_collective_booking_incident(self, authenticated_client):
+        finance_incident = finance_factories.FinanceIncidentFactory(
+            booking_finance_incidents=[finance_factories.CollectiveBookingFinanceIncidentFactory()]
+        )
+        url = url_for(self.endpoint, finance_incident_id=finance_incident.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+
+        assert f"ID : {finance_incident.id}" in content
+        assert f"Lieu porteur de l'offre : {finance_incident.venue.name}" in content
         assert f"Incident créé par : {finance_incident.details['author']}" in content
 
 
@@ -147,32 +177,32 @@ class GetIncidentCreationFormTest(PostEndpointHelper):
 
     expected_num_queries = 7
 
-    def test_get_incident_creation_for_one_booking_form(self, authenticated_client):
+    def test_get_incident_creation_for_one_booking_form(self, authenticated_client, invoiced_pricing):
         venue = offerers_factories.VenueFactory()
         offer = offers_factories.OfferFactory(venue=venue)
         stock = offers_factories.StockFactory(offer=offer)
-        booking = bookings_factories.ReimbursedBookingFactory(stock=stock)
+        booking = bookings_factories.ReimbursedBookingFactory(stock=stock, pricings=[invoiced_pricing])
         object_ids = str(booking.id)
 
         with assert_num_queries(self.expected_num_queries):
             response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
 
         assert response.status_code == 200
-        additionnal_data_text = html_parser.extract_cards_text(response.data)[0]
-        assert f"Lieu : {venue.name}" in additionnal_data_text
-        assert f"ID de la réservation : {booking.id}" in additionnal_data_text
-        assert f"Statut de la réservation : {booking.status.name}" in additionnal_data_text
-        assert f"Contremarque : {booking.token}" in additionnal_data_text
-        assert f"Nom de l'offre : {offer.name}" in additionnal_data_text
-        assert f"Bénéficiaire : {booking.user.full_name}" in additionnal_data_text
+        additional_data_text = html_parser.extract_cards_text(response.data)[0]
+        assert f"Lieu : {venue.name}" in additional_data_text
+        assert f"ID de la réservation : {booking.id}" in additional_data_text
+        assert f"Statut de la réservation : {format_booking_status(booking.status)}" in additional_data_text
+        assert f"Contremarque : {booking.token}" in additional_data_text
+        assert f"Nom de l'offre : {offer.name}" in additional_data_text
+        assert f"Bénéficiaire : {booking.user.full_name}" in additional_data_text
 
-    def test_get_incident_creation_for_multiple_bookings_form(self, authenticated_client):
+    def test_get_incident_creation_for_multiple_bookings_form(self, authenticated_client, invoiced_pricing):
         venue = offerers_factories.VenueFactory()
         offer = offers_factories.OfferFactory(venue=venue)
         stock = offers_factories.StockFactory(offer=offer)
         selected_bookings = [
-            bookings_factories.ReimbursedBookingFactory(stock=stock),
-            bookings_factories.ReimbursedBookingFactory(stock=stock),
+            bookings_factories.ReimbursedBookingFactory(stock=stock, pricings=[invoiced_pricing]),
+            bookings_factories.ReimbursedBookingFactory(stock=stock, pricings=[invoiced_pricing]),
         ]
         object_ids = ",".join([str(booking.id) for booking in selected_bookings])
 
@@ -180,9 +210,9 @@ class GetIncidentCreationFormTest(PostEndpointHelper):
             response = self.post_to_endpoint(authenticated_client, form={"object_ids": object_ids})
 
         assert response.status_code == 200
-        additionnal_data_text = html_parser.extract_cards_text(response.data)[0]
-        assert f"Lieu : {venue.name}" in additionnal_data_text
-        assert f"Nombre de réservations : {len(selected_bookings)}" in additionnal_data_text
+        additional_data_text = html_parser.extract_cards_text(response.data)[0]
+        assert f"Lieu : {venue.name}" in additional_data_text
+        assert f"Nombre de réservations : {len(selected_bookings)}" in additional_data_text
 
     def test_display_error_if_booking_not_reimbursed(self, authenticated_client):
         booking = bookings_factories.UsedBookingFactory()
@@ -206,13 +236,41 @@ class GetIncidentCreationFormTest(PostEndpointHelper):
         assert self.error_message in html_parser.content_as_text(response.data)
 
 
-class CreateIncidentTest(PostEndpointHelper):
-    endpoint = "backoffice_v3_web.finance_incident.create_incident"
+class GetCollectiveBookingIncidentFormTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.finance_incident.get_collective_booking_incident_creation_form"
+    endpoint_kwargs = {"collective_booking_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
-    def test_create_incident_from_one_booking(self, legit_user, authenticated_client):
-        pricing = finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED)
-        booking = bookings_factories.ReimbursedBookingFactory(pricings=[pricing])
+    expected_num_queries = 11
+
+    def test_get_form(self, authenticated_client, invoiced_collective_pricing):
+        collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
+            pricings=[invoiced_collective_pricing]
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = self.post_to_endpoint(authenticated_client, collective_booking_id=collective_booking.id)
+
+        assert response.status_code == 200
+        additional_data_text = html_parser.extract_cards_text(response.data)[0]
+
+        assert f"ID de la réservation : {collective_booking.id}" in additional_data_text
+        assert "Statut de la réservation : Remboursée" in additional_data_text
+        assert f"Nom de l'offre : {collective_booking.collectiveStock.collectiveOffer.name}" in additional_data_text
+        assert (
+            f"Date de l'offre : {format_date_time(collective_booking.collectiveStock.beginningDatetime)}"
+            in additional_data_text
+        )
+        assert f"Établissement : {collective_booking.educationalInstitution.name}" in additional_data_text
+        assert f"Nombre d'élèves : {collective_booking.collectiveStock.numberOfTickets}" in additional_data_text
+
+
+class CreateIncidentTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.finance_incident.create_individual_booking_incident"
+    needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
+
+    def test_create_incident_from_one_booking(self, legit_user, authenticated_client, invoiced_pricing):
+        booking = bookings_factories.ReimbursedBookingFactory(pricings=[invoiced_pricing])
 
         object_ids = str(booking.id)
 
@@ -259,7 +317,7 @@ class CreateIncidentTest(PostEndpointHelper):
 
         assert history_models.ActionHistory.query.count() == 0
 
-    def test_create_incident_from_multiple_booking(self, legit_user, authenticated_client):
+    def test_create_incident_from_multiple_booking(self, legit_user, authenticated_client, invoiced_pricing):
         venue = offerers_factories.VenueFactory()
         offer = offers_factories.OfferFactory(venue=venue)
         stock = offers_factories.StockFactory(offer=offer)
@@ -294,6 +352,79 @@ class CreateIncidentTest(PostEndpointHelper):
         assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED
         assert action_history.authorUser == legit_user
         assert action_history.comment == "Origine de la demande"
+
+
+class CreateIncidentOnCollectiveBookingTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.finance_incident.create_collective_booking_incident"
+    endpoint_kwargs = {"collective_booking_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
+
+    def test_create_incident(self, authenticated_client, invoiced_collective_pricing):
+        collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
+            pricings=[invoiced_collective_pricing]
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"total_amount": 40, "origin": "Demande E-mail", "kind": finance_models.IncidentType.OVERPAYMENT.name},
+            collective_booking_id=collective_booking.id,
+        )
+
+        assert response.status_code == 301
+
+        finance_incidents = finance_models.FinanceIncident.query.all()
+        assert len(finance_incidents) == 1
+        assert finance_incidents[0].details["origin"] == "Demande E-mail"
+        assert finance_incidents[0].kind == finance_models.IncidentType.OVERPAYMENT
+
+        booking_incidents = finance_incidents[0].booking_finance_incidents
+        assert len(booking_incidents) == 1
+        assert booking_incidents[0].collectiveBookingId == collective_booking.id
+        assert booking_incidents[0].newTotalAmount == 4000
+
+    def test_incident_amount_superior_to_pricing_amount(self, authenticated_client):
+        collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
+            pricings=[
+                finance_factories.CollectivePricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-4500)
+            ]
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"total_amount": 50, "origin": "Demande E-mail", "kind": finance_models.IncidentType.OVERPAYMENT.name},
+            collective_booking_id=collective_booking.id,
+        )
+
+        assert response.status_code == 301
+        assert finance_models.FinanceIncident.query.count() == 0
+
+    @pytest.mark.parametrize(
+        "incident_status,expect_incident_creation",
+        [
+            (finance_models.IncidentStatus.CREATED, False),
+            (finance_models.IncidentStatus.VALIDATED, False),
+            (finance_models.IncidentStatus.CANCELLED, True),
+        ],
+    )
+    def test_incident_already_exists(
+        self, authenticated_client, incident_status, expect_incident_creation, invoiced_collective_pricing
+    ):
+        collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
+            pricings=[invoiced_collective_pricing]
+        )
+        finance_factories.CollectiveBookingFinanceIncidentFactory(
+            collectiveBooking=collective_booking, incident__status=incident_status
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"total_amount": 50, "origin": "Demande E-mail", "kind": finance_models.IncidentType.OVERPAYMENT.name},
+            collective_booking_id=collective_booking.id,
+        )
+
+        assert response.status_code == 301
+        incident_expected_count = 2 if expect_incident_creation else 1
+        assert finance_models.FinanceIncident.query.count() == incident_expected_count
 
 
 class GetIncidentHistoryTest(GetEndpointHelper):
