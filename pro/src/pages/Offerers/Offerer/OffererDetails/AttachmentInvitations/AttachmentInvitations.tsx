@@ -6,6 +6,8 @@ import { api } from 'apiClient/api'
 import { GetOffererMemberResponseModel } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout/FormLayout'
 import useNotification from 'hooks/useNotification'
+import fullDownIcon from 'icons/full-down.svg'
+import fullUpIcon from 'icons/full-up.svg'
 import { Button, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import EmailSpellCheckInput from 'ui-kit/form/EmailSpellCheckInput/EmailSpellCheckInput'
@@ -25,6 +27,7 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
   const location = useLocation()
   const notify = useNotification()
   const [isLoading, setIsLoading] = useState(false)
+  const [displayAllMembers, setDisplayAllMembers] = useState(false)
   const [members, setMembers] = useState<Array<GetOffererMemberResponseModel>>(
     []
   )
@@ -79,22 +82,39 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
       </div>
 
       {!!members && (
-        <table className={styles['members-list']}>
-          <thead>
-            <tr>
-              <th scope="col">Email</th>
-              <th scope="col">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {members.map(({ email }) => (
-              <tr key={email}>
-                <td>{email}</td>
-                <td>Validé (à récupérer du back)</td>
+        <div className={styles['members-container']}>
+          <table className={styles['members-list']}>
+            <thead>
+              <tr>
+                <th scope="col">Email</th>
+                <th scope="col">Statut</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {members.map(
+                ({ email }, index) =>
+                  !(!displayAllMembers && index > 4) && (
+                    <tr key={email}>
+                      <td>{email}</td>
+                      <td>Validé (à récupérer du back)</td>
+                    </tr>
+                  )
+              )}
+            </tbody>
+          </table>
+          {members.length > 5 && (
+            <Button
+              onClick={() => setDisplayAllMembers(!displayAllMembers)}
+              variant={ButtonVariant.TERNARY}
+              icon={displayAllMembers ? fullUpIcon : fullDownIcon}
+              className={styles['display-all-members-button']}
+            >
+              {displayAllMembers
+                ? 'Voir moins de collaborateurs'
+                : 'Voir plus de collaborateurs'}
+            </Button>
+          )}
+        </div>
       )}
 
       {!showInvitationForm ? (
