@@ -6,9 +6,10 @@ from itertools import cycle
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
-import pcapi.core.finance.factories as finance_factories
+from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
-import pcapi.core.providers.models as providers_models
+from pcapi.core.providers import models as providers_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils.image_conversion import DO_NOT_CROP
@@ -406,6 +407,7 @@ def create_booking_base_list(
                 cancellationLimitDate=datetime.utcnow() - timedelta(days=16),
                 confirmationLimitDate=datetime.utcnow() - timedelta(days=18),
                 reimbursementDate=datetime.utcnow() - timedelta(days=12),
+                pricings=[finance_factories.CollectivePricingFactory(status=finance_models.PricingStatus.INVOICED)],
             )
     if cancelled_ac:
         for _i in range(5):

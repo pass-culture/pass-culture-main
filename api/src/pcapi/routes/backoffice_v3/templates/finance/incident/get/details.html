@@ -9,7 +9,11 @@
 {% endcall %}
 {% call build_details_tabs_content_wrapper() %}
   {% call build_details_tab_content("bookings", active_tab == 'bookings') %}
-    {% include "finance/incident/get/details/bookings.html" %}
+    {% if incident.relates_to_collective_bookings %}
+      {% include "finance/incident/get/details/collective_bookings.html" %}
+    {% else %}
+      {% include "finance/incident/get/details/bookings.html" %}
+    {% endif %}
   {% endcall %}
   {% call build_details_tab_content("history", active_tab == 'history') %}
     <turbo-frame data-turbo="false" id="incident_history_frame" loading="lazy" src="{{ url_for('backoffice_v3_web.finance_incident.get_history', finance_incident_id=incident.id) }}">

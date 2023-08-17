@@ -18,7 +18,7 @@
         <tr>
           <th scope="row">{{ build_booking_toggle_extra_row_button(booking_finance_incident.booking) }}</th>
           <td>{{ booking_finance_incident.booking.id }}</td>
-          <td>{{ links.build_public_user_name_to_details_link(booking_finance_incident.booking.user) }}</td>
+          <td>{{ links.build_public_user_name_to_details_link(booking_finance_incident.beneficiary) }}</td>
           <td>
             {% if booking_finance_incident.booking.token %}
               {{ links.build_booking_token_to_booking_details_link(booking_finance_incident.booking.token) }}

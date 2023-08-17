@@ -858,6 +858,10 @@ class FinanceIncident(Base, Model):
         sqla_mutable.MutableDict.as_mutable(sqla_psql.JSONB), nullable=False, default={}, server_default="{}"
     )
 
+    @property
+    def relates_to_collective_bookings(self) -> bool:
+        return any(booking_incident.collectiveBooking for booking_incident in self.booking_finance_incidents)
+
 
 class BookingFinanceIncident(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
@@ -880,9 +884,14 @@ class BookingFinanceIncident(Base, Model):
         "FinanceIncident", foreign_keys=[incidentId], backref="booking_finance_incidents"
     )
 
-    beneficiaryId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("user.id"), index=True, nullable=False)
-    beneficiary: sqla_orm.Mapped["users_models.User"] = sqla_orm.relationship(
+    beneficiaryId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("user.id"), index=True, nullable=True)
+    beneficiary: sqla_orm.Mapped["users_models.User | None"] = sqla_orm.relationship(
         "User", foreign_keys=[beneficiaryId], backref="incidents"
     )
 
     newTotalAmount: int = sqla.Column(sqla.Integer, nullable=False)
+
+    # beneficiary must be set if incident concerns individual booking
+    __table_args__ = (
+        sqla.CheckConstraint("bookingId IS NULL OR beneficiaryId IS NOT NULL", name="booking_beneficiary_check"),
+    )
