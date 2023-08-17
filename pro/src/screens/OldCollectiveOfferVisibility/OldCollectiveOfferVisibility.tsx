@@ -29,6 +29,7 @@ import RadioGroup from 'ui-kit/form/RadioGroup'
 import SelectAutocomplete from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
+import { searchPatternInOptions } from 'utils/searchPatternInOptions'
 
 import styles from './OldCollectiveOfferVisibility.module.scss'
 import validationSchema from './validationSchema'
@@ -140,8 +141,8 @@ const CollectiveOfferVisibility = ({
         teacher => teacher.value === formik.values.teacher
       ) ?? null
 
-  const institutionsOptions: InstitutionOption[] = institutions
-    .map(({ name, id, city, postalCode, institutionType, institutionId }) => ({
+  const institutionsOptions: InstitutionOption[] = institutions.map(
+    ({ name, id, city, postalCode, institutionType, institutionId }) => ({
       label: `${
         institutionType ?? ''
       } ${name} - ${city} - ${institutionId}`.trim(),
@@ -151,12 +152,8 @@ const CollectiveOfferVisibility = ({
       name,
       institutionType: institutionType ?? '',
       institutionId: institutionId,
-    }))
-    .filter(({ label }) =>
-      label
-        .toLowerCase()
-        .includes(formik.values['search-institution'].trim().toLowerCase())
-    )
+    })
+  )
 
   const selectedInstitution: InstitutionOption | null = requestId
     ? institutionsOptions[0]
@@ -271,8 +268,14 @@ const CollectiveOfferVisibility = ({
                         label="Nom de l’établissement scolaire"
                         placeholder="Saisir l’établissement scolaire ou le code UAI"
                         hideArrow
-                        onSearch={() => setTeachersOptions([])}
+                        onReset={() => {
+                          setTeachersOptions([])
+                          formik.setFieldValue('search-teacher', '')
+                        }}
                         disabled={mode === Mode.READ_ONLY}
+                        searchInOptions={(options, pattern) =>
+                          searchPatternInOptions(options, pattern, 300)
+                        }
                       />
                       {selectedInstitution && (
                         <Banner type="light" className={styles['institution']}>

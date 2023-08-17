@@ -243,15 +243,7 @@ const CollectiveOfferVisibility = ({
                       <SelectAutocomplete
                         name="institution"
                         type="search"
-                        options={institutionsOptions.filter(({ label }) =>
-                          label
-                            .toLowerCase()
-                            .includes(
-                              formik.values['search-institution']
-                                .trim()
-                                .toLowerCase()
-                            )
-                        )}
+                        options={institutionsOptions}
                         label="Nom de l’établissement scolaire"
                         placeholder="Ex : Lycee General Simone Weil ou 010456E ou Le Havre"
                         hideArrow
@@ -259,10 +251,10 @@ const CollectiveOfferVisibility = ({
                           setTeachersOptions([])
                           formik.setFieldValue('search-teacher', '')
                         }}
-                        maxDisplayOptions={300}
-                        onSearch={() => setTeachersOptions([])}
                         disabled={mode === Mode.READ_ONLY}
-                        searchInOptions={searchPatternInOptions}
+                        searchInOptions={(options, pattern) =>
+                          searchPatternInOptions(options, pattern, 300)
+                        }
                       />
                     </>
                   )}
