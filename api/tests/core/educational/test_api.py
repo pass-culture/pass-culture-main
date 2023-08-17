@@ -23,39 +23,6 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.serialization import collective_stock_serialize
 
 
-SIMPLE_OFFER_VALIDATION_CONFIG = """
-        minimum_score: 0.6
-        rules:
-            - name: "check offer name"
-              factor: 0
-              conditions:
-               - model: "Offer"
-                 attribute: "name"
-                 condition:
-                    operator: "contains"
-                    comparated:
-                      - "suspicious"
-            - name: "check CollectiveOffer name"
-              factor: 0
-              conditions:
-               - model: "CollectiveOffer"
-                 attribute: "name"
-                 condition:
-                    operator: "contains"
-                    comparated:
-                      - "suspicious"
-            - name: "check CollectiveOfferTemplate name"
-              factor: 0
-              conditions:
-               - model: "CollectiveOfferTemplate"
-                 attribute: "name"
-                 condition:
-                    operator: "contains"
-                    comparated:
-                      - "suspicious"
-        """
-
-
 @freeze_time("2020-11-17 15:00:00")
 @pytest.mark.usefixtures("db_session")
 class CreateCollectiveOfferStocksTest:

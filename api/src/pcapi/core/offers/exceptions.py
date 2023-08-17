@@ -201,12 +201,6 @@ class StockDoesNotExist(ApiErrors):
     status_code = 400
 
 
-class WrongFormatInFraudConfigurationFile(ApiErrors):
-    def __init__(self, error: Exception):
-        super().__init__()
-        self.errors = {type(error).__name__: str(error)}
-
-
 class OfferReportError(Exception):
     code = "OFFER_REPORT_ERROR"
 
