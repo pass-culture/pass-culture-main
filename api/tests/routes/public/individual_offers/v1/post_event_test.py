@@ -261,9 +261,7 @@ class PostEventTest:
 
         assert response.status_code == 400
         assert offers_models.Offer.query.count() == 0
-        assert response.json == {
-            "offer": ["Une offre qui n'a pas de ticket retirable ne peut pas avoir un type de retrait renseigné"]
-        }
+        assert response.json == {"offer": ["La catégorie de l'offre n'accepte pas de modalité de retrait de billet"]}
 
     @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
     def test_error_when_withdrawable_event_but_no_booking_contact(self, client):
