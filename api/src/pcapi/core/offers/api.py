@@ -11,8 +11,6 @@ import sentry_sdk
 import sqlalchemy as sa
 import sqlalchemy.exc as sqla_exc
 from werkzeug.exceptions import BadRequest
-import yaml
-from yaml.scanner import ScannerError
 
 from pcapi import settings
 from pcapi.connectors.thumb_storage import create_thumb
@@ -1012,23 +1010,6 @@ def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferVal
 
     logger.info("Computed offer validation", extra={"offer": offer.id, "status": status.value})
     return status
-
-
-def import_offer_validation_config(config_as_yaml: str, user: users_models.User) -> models.OfferValidationConfig:
-    try:
-        config_as_dict = yaml.safe_load(config_as_yaml)
-        validation.check_validation_config_parameters(config_as_dict, validation.KEY_VALIDATION_CONFIG["init"])
-    except (KeyError, ValueError, ScannerError) as error:
-        logger.exception(
-            "Wrong configuration file format: %s",
-            error,
-            extra={"exc": str(error)},
-        )
-        raise exceptions.WrongFormatInFraudConfigurationFile(error)
-
-    config = models.OfferValidationConfig(specs=config_as_dict, user=user)
-    repository.save(config)
-    return config
 
 
 def _load_product_by_ean(ean: str | None) -> models.Product:

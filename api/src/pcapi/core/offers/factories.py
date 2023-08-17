@@ -223,14 +223,6 @@ class OfferReportFactory(BaseFactory):
     reason = "INAPPROPRIATE"
 
 
-class OfferValidationConfigFactory(BaseFactory):
-    class Meta:
-        model = models.OfferValidationConfig
-
-    user = factory.SubFactory(users_factories.UserFactory)
-    specs = factory.LazyAttribute(lambda config: {"minimum_score": 0.1, "rules": []})
-
-
 class OfferValidationRuleFactory(BaseFactory):
     class Meta:
         model = models.OfferValidationRule
