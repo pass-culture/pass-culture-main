@@ -380,7 +380,7 @@ class CreatePivotTest(PostEndpointHelper):
         form = {
             "venue_id": venue_id,
             "cinema_id": "cineoffice cinema 1",
-            "account_id": "cineoffice account 1",
+            "account_id": "cineofficeaccount1",
             "api_token": "====?azerty!123",
         }
 
@@ -391,6 +391,27 @@ class CreatePivotTest(PostEndpointHelper):
         assert created.cinemaProviderPivot.idAtProvider == form["cinema_id"]
         assert created.accountId == form["account_id"]
         assert created.cinemaApiToken == form["api_token"]
+
+    def test_create_pivot_cineoffice_with_forbidden_characters(self, authenticated_client):
+        venue_id = offerers_factories.VenueFactory().id
+        form = {
+            "venue_id": venue_id,
+            "cinema_id": "cineoffice cinema 1",
+            "account_id": "cineoffice account with spaces",
+            "api_token": "====?azerty!123",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, name="cineoffice", form=form)
+
+        created = providers_models.CDSCinemaDetails.query.one_or_none()
+        assert created is None
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+
+        assert (
+            "Le nom de compte ne peut pas contenir de caractères autres que chiffres, lettres et tirets"
+            in html_parser.content_as_text(redirected_response.data)
+        )
 
 
 class GetUpdatePivotFormTest(GetEndpointHelper):
@@ -538,7 +559,7 @@ class UpdatePivotTest(PostEndpointHelper):
 
         form = {
             "cinema_id": "boost 1",
-            "account_id": "account 1er",
+            "account_id": "account1er",
             "api_token": "==@/@414324rF!",
         }
 
@@ -548,6 +569,31 @@ class UpdatePivotTest(PostEndpointHelper):
         assert updated.cinemaProviderPivot.idAtProvider == form["cinema_id"]
         assert updated.accountId == form["account_id"]
         assert updated.cinemaApiToken == form["api_token"]
+
+    def test_update_pivot_cineoffice_with_forbidden_characters(self, authenticated_client):
+        cineoffice_pivot = providers_factories.CDSCinemaDetailsFactory()
+
+        form = {
+            "cinema_id": "very unusual id",
+            "account_id": "account id with forbidden chars !!",
+            "api_token": "==@/@414324rF!",
+        }
+
+        response = self.post_to_endpoint(
+            authenticated_client, name="cineoffice", pivot_id=cineoffice_pivot.id, form=form
+        )
+
+        updated = providers_models.CDSCinemaDetails.query.one()
+        assert updated.cinemaProviderPivot.idAtProvider != form["cinema_id"]
+        assert updated.accountId != form["account_id"]
+        assert updated.cinemaApiToken != form["api_token"]
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+
+        assert (
+            "Le nom de compte ne peut pas contenir de caractères autres que chiffres, lettres et tirets"
+            in html_parser.content_as_text(redirected_response.data)
+        )
 
 
 class DeleteProviderTest(PostEndpointHelper):
