@@ -16,13 +16,14 @@ import useParticipantsOptions from './useParticipantsOptions'
 const FormParticipants = ({
   disableForm,
   offerStock,
+  isTemplate,
 }: {
   disableForm: boolean
   offerStock?: GetCollectiveOfferCollectiveStockResponseModel | null
+  isTemplate: boolean
 }): JSX.Element => {
   const { values, setFieldValue } =
     useFormikContext<OfferEducationalFormValues>()
-
   const isCLG6Active = useActiveFeature('WIP_ADD_CLG_6_5_COLLECTIVE_OFFER')
   const isBeforeSeptembre1st =
     offerStock?.beginningDatetime &&
@@ -32,7 +33,8 @@ const FormParticipants = ({
     )
   const defaultPartipantsOptions = useParticipantsOptions(
     values.participants,
-    setFieldValue
+    setFieldValue,
+    isTemplate
   )
   const filteredParticipantsOptions =
     isCLG6Active && !isBeforeSeptembre1st
