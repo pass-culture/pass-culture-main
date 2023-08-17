@@ -152,7 +152,9 @@ def delete(user_id: int) -> utils.BackofficeResponse:
         return redirect(url_for("backoffice_v3_web.pro_user.get", user_id=user_id), code=303)
 
     # clear from mailing list
-    mails_api.delete_contact(user.email)
+    if not offerers_models.Venue.query.filter(offerers_models.Venue.bookingEmail == user.email).limit(1).count():
+        mails_api.delete_contact(user.email)
+
     # clear from push notifications
     payload = DeleteBatchUserAttributesRequest(user_id=user.id)
     delete_user_attributes_task.delay(payload)

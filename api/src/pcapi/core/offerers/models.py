@@ -252,6 +252,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
     )
 
     bookingEmail = Column(String(120), nullable=True)
+    sa.Index("idx_venue_bookingEmail", bookingEmail)
 
     address = Column(String(200), nullable=True)
 
