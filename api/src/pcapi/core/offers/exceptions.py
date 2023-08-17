@@ -158,7 +158,7 @@ class NonWithdrawableEventOfferCantHaveWithdrawal(OfferCreationBaseException):
     def __init__(self) -> None:
         super().__init__(
             "offer",
-            "Une offre qui n'a pas de ticket retirable ne peut pas avoir un type de retrait renseigné",
+            "La catégorie de l'offre n'accepte pas de modalité de retrait de billet",
         )
 
 
