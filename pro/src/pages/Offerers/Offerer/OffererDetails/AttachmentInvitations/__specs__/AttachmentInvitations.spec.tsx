@@ -2,9 +2,17 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
+import { api } from 'apiClient/api'
 import Notification from 'components/Notification/Notification'
 import AttachmentInvitations from 'pages/Offerers/Offerer/OffererDetails/AttachmentInvitations/AttachmentInvitations'
 import { renderWithProviders } from 'utils/renderWithProviders'
+
+vi.mock('apiClient/api', () => ({
+  api: {
+    getOffererMembers: vi.fn(),
+    inviteMembers: vi.fn(),
+  },
+}))
 
 const renderAttachmentInvitations = () => {
   renderWithProviders(
@@ -16,6 +24,13 @@ const renderAttachmentInvitations = () => {
 }
 
 describe('AttachmentInvitations', () => {
+  beforeEach(() => {
+    vi.spyOn(api, 'getOffererMembers').mockResolvedValueOnce({ members: [] })
+    waitFor(() => {
+      expect(api.getOffererMembers).toHaveBeenCalled()
+    })
+  })
+
   it('The user should see a button to display the invite form', async () => {
     renderAttachmentInvitations()
     expect(screen.getByText('Ajouter un collaborateur')).toBeInTheDocument()
@@ -23,6 +38,10 @@ describe('AttachmentInvitations', () => {
       screen.queryByText(
         /Vous pouvez inviter des collaborateurs à rejoindre votre espace/
       )
+    ).not.toBeInTheDocument()
+
+    expect(
+      screen.queryByRole('button', { name: 'Voir moins de collaborateurs' })
     ).not.toBeInTheDocument()
   })
 
@@ -57,11 +76,41 @@ describe('AttachmentInvitations', () => {
       'test@test.fr'
     )
     await userEvent.click(screen.getByText('Inviter'))
-    expect(
-      screen.getByText(/L'invitation a bien été envoyée/)
-    ).toBeInTheDocument()
+
     await waitFor(() => {
-      expect(screen.getByText('test@test.fr')).toBeInTheDocument()
+      expect(
+        screen.getByText(/L'invitation a bien été envoyée/)
+      ).toBeInTheDocument()
     })
+
+    expect(screen.getByText('test@test.fr')).toBeInTheDocument()
+  })
+
+  it('should display button to show all members', async () => {
+    vi.spyOn(api, 'getOffererMembers').mockResolvedValue({
+      members: [
+        { email: 'email1@gmail.com', firstName: '', lastName: '' },
+        { email: 'email2@gmail.com', firstName: '', lastName: '' },
+        { email: 'email3@gmail.com', firstName: '', lastName: '' },
+        { email: 'email4@gmail.com', firstName: '', lastName: '' },
+        { email: 'email5@gmail.com', firstName: '', lastName: '' },
+        { email: 'email6@gmail.com', firstName: '', lastName: '' },
+      ],
+    })
+
+    renderAttachmentInvitations()
+
+    await waitFor(() => {
+      expect(screen.getByText('email1@gmail.com')).toBeInTheDocument()
+    })
+    expect(
+      screen.getByRole('button', { name: 'Voir plus de collaborateurs' })
+    ).toBeInTheDocument()
+
+    await userEvent.click(screen.getByText('Voir plus de collaborateurs'))
+
+    expect(
+      screen.getByRole('button', { name: 'Voir moins de collaborateurs' })
+    ).toBeInTheDocument()
   })
 })
