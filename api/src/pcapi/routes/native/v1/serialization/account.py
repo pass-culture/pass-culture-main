@@ -84,6 +84,20 @@ class DomainsCredit(BaseModel):
 
 class ChangeBeneficiaryEmailBody(BaseModel):
     token: str
+    device_info: TrustedDevice | None = None
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
+
+class ChangeBeneficiaryEmailResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
 
 
 class ChangeEmailTokenContent(BaseModel):

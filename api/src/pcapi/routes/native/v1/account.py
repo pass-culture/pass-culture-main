@@ -7,6 +7,7 @@ import pydantic
 import sqlalchemy as sa
 
 from pcapi.connectors import api_recaptcha
+from pcapi.core import token as token_utils
 import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.fraud.phone_validation import sending_limit
@@ -146,10 +147,10 @@ def cancel_email_update(body: serializers.ChangeBeneficiaryEmailBody) -> None:
 
 
 @blueprint.native_v1.route("/profile/email_update/validate", methods=["PUT"])
-@spectree_serialize(on_success_status=204, api=blueprint.api)
-def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> None:
+@spectree_serialize(response_model=serializers.ChangeBeneficiaryEmailResponse, on_success_status=200, api=blueprint.api)
+def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> serializers.ChangeBeneficiaryEmailResponse:
     try:
-        email_api.update.validate_email_update_request(body.token)
+        user = email_api.update.validate_email_update_request(body.token)
     except pydantic.ValidationError:
         raise api_errors.ApiErrors(
             {"code": "INVALID_EMAIL", "message": "Adresse email invalide"},
@@ -163,7 +164,12 @@ def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> None:
     except exceptions.EmailExistsError:
         # Returning an error message might help the end client find
         # existing email addresses.
-        pass
+        token = token_utils.Token.load_without_checking(body.token)
+        user = users_models.User.query.get(token.user_id)
+    return serializers.ChangeBeneficiaryEmailResponse(
+        access_token=api.create_user_access_token(user),
+        refresh_token=api.create_user_refresh_token(user, body.device_info),
+    )
 
 
 @blueprint.native_v1.route("/profile/token_expiration", methods=["GET"])

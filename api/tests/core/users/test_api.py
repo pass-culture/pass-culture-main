@@ -410,10 +410,11 @@ class ChangeUserEmailTest:
 
         token = self._init_token(user)
         # When
-        email_update.validate_email_update_request(token)
+        returned_user = email_update.validate_email_update_request(token)
 
         # Then
         reloaded_user = users_models.User.query.get(user.id)
+        assert returned_user == reloaded_user
         assert reloaded_user.email == self.new_email
         assert users_models.User.query.filter_by(email=self.old_email).first() is None
         assert users_models.UserSession.query.filter_by(userId=reloaded_user.id).first() is None
@@ -474,14 +475,16 @@ class ChangeUserEmailTest:
         token = self._init_token(user)
 
         # first call, email is updated as expected
-        email_update.validate_email_update_request(token)
+        returned_user = email_update.validate_email_update_request(token)
 
         reloaded_user = users_models.User.query.get(user.id)
+        assert returned_user == reloaded_user
         assert reloaded_user.email == self.new_email
 
         # second call, no error, no update
-        email_update.validate_email_update_request(token)
+        returned_user = email_update.validate_email_update_request(token)
         reloaded_user = users_models.User.query.get(user.id)
+        assert returned_user == reloaded_user
         assert reloaded_user.email == self.new_email
 
     def test_validating_email_updates_external_contact(self):
