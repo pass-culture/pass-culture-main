@@ -25,7 +25,8 @@ const filteredParticipants = Object.values(StudentLevels).filter(
 const renderFormParticipants = (
   participants: Record<string, boolean>,
   storeOverride?: Partial<RootState>,
-  offerStock?: GetCollectiveOfferCollectiveStockResponseModel | null
+  offerStock?: GetCollectiveOfferCollectiveStockResponseModel | null,
+  isTemplate: boolean = true
 ) => {
   const storeOverrides = {
     features: {
@@ -41,7 +42,11 @@ const renderFormParticipants = (
   }
   return renderWithProviders(
     <Formik initialValues={{ participants }} onSubmit={() => {}}>
-      <FormParticipants disableForm={false} offerStock={offerStock} />
+      <FormParticipants
+        disableForm={false}
+        offerStock={offerStock}
+        isTemplate={isTemplate}
+      />
     </Formik>,
     { storeOverrides }
   )
@@ -229,5 +234,23 @@ describe('FormParticipants', () => {
         screen.queryByLabelText(StudentLevels.COLL_GE_5E)
       ).not.toBeInTheDocument()
     })
+  })
+
+  it('should not display the all participants option when the collective offer is bookable', () => {
+    const storeOverride = {
+      features: {
+        initialized: true,
+        list: [
+          {
+            isActive: true,
+            nameKey: 'WIP_ADD_CLG_6_5_COLLECTIVE_OFFER',
+          } as FeatureResponseModel,
+        ],
+      },
+    }
+    const offerStock = collectiveStockFactory()
+    renderFormParticipants(participants, storeOverride, offerStock, false)
+
+    expect(screen.queryByLabelText(ALL_STUDENTS_LABEL)).not.toBeInTheDocument()
   })
 })
