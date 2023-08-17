@@ -4,7 +4,6 @@ from pcapi.core.fraud import models as fraud_models
 RESTARTABLE_FRAUD_CHECK_REASON_CODES = (
     # Reasons which allow user to retry ubble identification
     fraud_models.FraudReasonCode.BLURRY_DOCUMENT_VIDEO,
-    fraud_models.FraudReasonCode.BLURRY_VIDEO,
     fraud_models.FraudReasonCode.DOCUMENT_DAMAGED,
     fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER,
     fraud_models.FraudReasonCode.ID_CHECK_EXPIRED,
@@ -19,7 +18,6 @@ RESTARTABLE_FRAUD_CHECK_REASON_CODES = (
 REASON_CODE_REQUIRING_EMAIL_UPDATE = (
     # Reasons which require an email to user when occuring
     fraud_models.FraudReasonCode.BLURRY_DOCUMENT_VIDEO,
-    fraud_models.FraudReasonCode.BLURRY_VIDEO,
     fraud_models.FraudReasonCode.DOCUMENT_DAMAGED,
     fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER,
     fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH,

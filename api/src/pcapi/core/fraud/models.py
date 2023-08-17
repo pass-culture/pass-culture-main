@@ -60,7 +60,6 @@ class FraudReasonCode(enum.Enum):
     # Specific to Ubble
     # Ubble native errors
     BLURRY_DOCUMENT_VIDEO = "blurry_video"
-    BLURRY_VIDEO = "blurry_video"
     DOCUMENT_DAMAGED = "document_damaged"
     ELIGIBILITY_CHANGED = "eligibility_changed"  # The user's eligibility detected by ubble is different from the eligibility declared by the user
     ID_CHECK_BLOCKED_OTHER = (
