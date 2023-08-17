@@ -199,6 +199,7 @@ def render_venue_details(
                 is_permanent=venue.isPermanent,
                 latitude=venue.latitude,
                 longitude=venue.longitude,
+                venue_type_code=venue.venueTypeCode.name,
             )
             edit_venue_form.siret.flags.disabled = not _can_edit_siret()
         edit_venue_form.tags.choices = [(criterion.id, criterion.name) for criterion in venue.criteria]
