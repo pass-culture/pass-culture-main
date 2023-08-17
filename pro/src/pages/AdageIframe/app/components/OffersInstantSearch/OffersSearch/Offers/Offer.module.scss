@@ -12,30 +12,6 @@ $offer-image-width: rem.torem(176px);
   border-radius: 8px;
   font-size: rem.torem(15px);
 
-  &-logo-placeholder {
-    width: rem.torem(64px);
-    background-color: #7b1e82;
-    border-radius: rem.torem(8px) 0 0 rem.torem(8px);
-    fill: colors.$white;
-    padding: rem.torem(8px);
-    box-sizing: border-box;
-
-    &-showcase {
-      background-color: colors.$purple;
-    }
-
-    .ico-logo-passculture {
-      width: rem.torem(44px);
-      height: rem.torem(44px);
-      color: colors.$white;
-    }
-  }
-
-  &-main-container {
-    display: flex;
-    width: 100%;
-  }
-
   &-image-container {
     border-radius: rem.torem(3px);
     object-fit: cover;
@@ -68,7 +44,7 @@ $offer-image-width: rem.torem(176px);
   }
 
   &-container {
-    padding: rem.torem(18px) rem.torem(18px) rem.torem(18px) rem.torem(0);
+    padding: rem.torem(16px) rem.torem(16px) rem.torem(16px) rem.torem(0);
     position: relative;
     width: 100%;
   }
