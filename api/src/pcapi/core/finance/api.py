@@ -209,7 +209,7 @@ def cancel_latest_event(
         return None
     pricing = _cancel_event_pricing(event, models.PricingLogReason.MARK_AS_UNUSED)
     event.status = models.FinanceEventStatus.CANCELLED
-    db.session.add(event)
+    db.session.flush()
     logger.info(
         "Cancelled finance event and its pricing",
         extra={
@@ -919,7 +919,7 @@ def _cancel_event_pricing(
     if not event.pricingPointId:
         return None
 
-    with transaction():
+    try:
         lock_pricing_point(event.pricingPointId)
 
         pricing = models.Pricing.query.filter(
@@ -958,6 +958,13 @@ def _cancel_event_pricing(
             "Cancelled pricing",
             extra={"event": event.id, "pricing": pricing.id},
         )
+    except Exception:
+        db.session.rollback()
+        raise
+    if commit:
+        db.session.commit()
+    else:
+        db.session.flush()
     return pricing
 
 
@@ -1208,7 +1215,7 @@ def cancel_pricing(
     if not pricing:
         return None
 
-    with transaction():
+    try:
         lock_pricing_point(pricing.pricingPointId)
 
         pricing = models.Pricing.query.filter(
@@ -1240,8 +1247,14 @@ def cancel_pricing(
         )
         pricing.status = models.PricingStatus.CANCELLED
         db.session.add(pricing)
-        db.session.commit()
         logger.info("Cancelled pricing", extra={"pricing": pricing.id})
+    except Exception:
+        db.session.rollback()
+        raise
+    if commit:
+        db.session.commit()
+    else:
+        db.session.flush()
     return pricing
 
 
