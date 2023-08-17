@@ -64,6 +64,7 @@ UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER = "xxx"
 
 
 class OfferExtraData(typing.TypedDict, total=False):
+    artist: str | None
     author: str | None
     ean: str | None
     musicSubType: str | None
@@ -92,8 +93,11 @@ class OfferExtraData(typing.TypedDict, total=False):
     comment: str | None
     date_parution: str | None
     dewey: str | None
+    disponibility: str | None
     distributeur: str | None
     editeur: str | None
+    music_label: str | None
+    nb_galettes: str | None
     num_in_collection: str | None
     prix_livre: str | None
     rayon: str | None  # this is csr_label, it should be stored as csr_id as titelive can update them
