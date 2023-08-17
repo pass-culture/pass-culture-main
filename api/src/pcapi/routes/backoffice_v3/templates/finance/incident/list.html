@@ -4,7 +4,7 @@
 {% extends "layouts/connected.html" %}
 {% block page %}
   <div class="pt-3 px-5">
-    <h2 class="fw-light">Incidents sur les réservations individuelles</h2>
+    <h2 class="fw-light">Liste des incidents</h2>
     <div>
       {% if rows %}
         <div class="d-flex flex-column">
@@ -24,6 +24,7 @@
                 <th scope="col">ID</th>
                 <th scope="col">Statut de l'incident</th>
                 <th scope="col">Type d'incident</th>
+                <th scope="col">Type de résa</th>
                 <th scope="col">Nb. Réservation(s)</th>
                 <th scope="col">Montant total</th>
                 <th scope="col">Structure</th>
@@ -44,6 +45,7 @@
                   <td>{{ links.build_finance_incident_to_details_link(incident) }}</td>
                   <td>{{ incident.status | format_finance_incident_status | safe }}</td>
                   <td>{{ incident.kind | format_finance_incident_type | safe }}</td>
+                  <td>{{ "Collective" if incident.relates_to_collective_bookings else "Individuelle" }}</td>
                   <td>{{ incident.booking_finance_incidents | length }}</td>
                   <td>{{ incident.booking_finance_incidents | sum(attribute="newTotalAmount") | format_cents }}</td>
                   <td>{{ links.build_offerer_name_to_details_link(incident.venue.managingOfferer) }}</td>

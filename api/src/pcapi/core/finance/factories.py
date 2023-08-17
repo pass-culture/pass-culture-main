@@ -7,6 +7,7 @@ import factory
 import schwifty
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.factories import UsedCollectiveBookingFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
@@ -280,4 +281,13 @@ class IndividualBookingFinanceIncidentFactory(BaseFactory):
     booking = factory.SubFactory(bookings_factories.ReimbursedBookingFactory)
     incident = factory.SubFactory(FinanceIncidentFactory)
     beneficiary = factory.SelfAttribute("booking.user")
+    newTotalAmount = 1020
+
+
+class CollectiveBookingFinanceIncidentFactory(BaseFactory):
+    class Meta:
+        model = models.BookingFinanceIncident
+
+    collectiveBooking = factory.SubFactory(educational_factories.ReimbursedCollectiveBookingFactory)
+    incident = factory.SubFactory(FinanceIncidentFactory)
     newTotalAmount = 1020
