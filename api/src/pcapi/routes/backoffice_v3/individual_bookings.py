@@ -205,7 +205,7 @@ def list_individual_bookings() -> utils.BackofficeResponse:
         rows=bookings,
         form=form,
         mark_as_used_booking_form=empty_forms.EmptyForm(),
-        cancel_booking_form=empty_forms.EmptyForm(),
+        cancel_booking_form=individual_booking_forms.CancelBookingForm(),
         pro_visualisation_link=pro_visualisation_link,
     )
 
@@ -273,8 +273,13 @@ def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
 def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
     booking = bookings_models.Booking.query.get_or_404(booking_id)
 
+    form = individual_booking_forms.CancelBookingForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return _redirect_after_individual_booking_action()
+
     try:
-        bookings_api.mark_as_cancelled(booking)
+        bookings_api.mark_as_cancelled(booking, bookings_models.BookingCancellationReasons(form.reason.data))
     except bookings_exceptions.BookingIsAlreadyCancelled:
         flash("Impossible d'annuler une réservation déjà annulée", "warning")
     except bookings_exceptions.BookingIsAlreadyRefunded:
@@ -307,15 +312,24 @@ def get_batch_validate_individual_bookings_form() -> utils.BackofficeResponse:
 @individual_bookings_blueprint.route("/batch-validate", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def batch_validate_individual_bookings() -> utils.BackofficeResponse:
-    return _batch_individual_bookings_action(
-        success_message="Les réservations ont été validées avec succès", validate=True
-    )
+    form = empty_forms.BatchForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return _redirect_after_individual_booking_action()
+
+    def _booking_callback(booking: bookings_models.Booking) -> None:
+        try:
+            bookings_api.mark_as_used(booking)
+        except bookings_exceptions.BookingIsAlreadyCancelled:
+            bookings_api.mark_as_used_with_uncancelling(booking)
+
+    return _batch_individual_bookings_action(form, _booking_callback, "Les réservations ont été validées avec succès")
 
 
 @individual_bookings_blueprint.route("/batch-cancel", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def get_batch_cancel_individual_bookings_form() -> utils.BackofficeResponse:
-    form = empty_forms.BatchForm()
+    form = individual_booking_forms.BatchCancelBookingForm()
     return render_template(
         "components/turbo/modal_form.html",
         form=form,
@@ -329,31 +343,31 @@ def get_batch_cancel_individual_bookings_form() -> utils.BackofficeResponse:
 @individual_bookings_blueprint.route("/batch-cancel", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_BOOKINGS)
 def batch_cancel_individual_bookings() -> utils.BackofficeResponse:
-    return _batch_individual_bookings_action(
-        success_message="Les réservations ont été annulées avec succès", validate=False
-    )
-
-
-def _batch_individual_bookings_action(success_message: str, validate: bool = False) -> utils.BackofficeResponse:
-    form = empty_forms.BatchForm()
+    form = individual_booking_forms.BatchCancelBookingForm()
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         return _redirect_after_individual_booking_action()
 
+    return _batch_individual_bookings_action(
+        form,
+        lambda booking: bookings_api.mark_as_cancelled(
+            booking, bookings_models.BookingCancellationReasons(form.reason.data)
+        ),
+        "Les réservations ont été annulées avec succès",
+    )
+
+
+def _batch_individual_bookings_action(
+    form: empty_forms.BatchForm, booking_callback: typing.Callable, success_message: str
+) -> utils.BackofficeResponse:
     bookings = bookings_models.Booking.query.filter(bookings_models.Booking.id.in_(form.object_ids_list)).all()
-    api_function = bookings_api.mark_as_cancelled
-    if validate:
-        api_function = bookings_api.mark_as_used
 
     for booking in bookings:
         try:
-            api_function(booking)
+            booking_callback(booking)
         except bookings_exceptions.BookingIsAlreadyCancelled:
-            if validate:
-                bookings_api.mark_as_used_with_uncancelling(booking)
-            else:
-                flash("Au moins une des réservations a déjà été annulée", "error")
-                return _redirect_after_individual_booking_action()
+            flash("Au moins une des réservations a déjà été annulée", "error")
+            return _redirect_after_individual_booking_action()
         except bookings_exceptions.BookingIsAlreadyUsed:
             flash("Au moins une des réservations a déjà été validée", "error")
             return _redirect_after_individual_booking_action()

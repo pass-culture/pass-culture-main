@@ -387,6 +387,7 @@ def _cancel_collective_booking_by_offerer(
 
 def cancel_collective_booking_by_id_from_support(
     collective_booking: educational_models.CollectiveBooking,
+    reason: educational_models.CollectiveBookingCancellationReasons,
 ) -> None:
     with transaction():
         educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
@@ -407,10 +408,7 @@ def cancel_collective_booking_by_id_from_support(
                 commit=False,
             )
         finance_api.cancel_pricing(collective_booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
-        collective_booking.cancel_booking(
-            reason=educational_models.CollectiveBookingCancellationReasons.OFFERER,
-            cancel_even_if_used=True,
-        )
+        collective_booking.cancel_booking(reason=reason, cancel_even_if_used=True)
 
         db.session.commit()
     search.async_index_collective_offer_ids([collective_booking.collectiveStock.collectiveOfferId])

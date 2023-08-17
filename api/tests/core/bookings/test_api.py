@@ -914,8 +914,9 @@ def test_mark_as_cancelled():
     assert booking.status == BookingStatus.USED
     assert pricing.status == finance_models.PricingStatus.VALIDATED
 
-    api.mark_as_cancelled(booking)
+    api.mark_as_cancelled(booking, BookingCancellationReasons.FRAUD)
     assert booking.status == BookingStatus.CANCELLED
+    assert booking.cancellationReason == BookingCancellationReasons.FRAUD
     assert event.status == finance_models.FinanceEventStatus.CANCELLED
     assert pricing.status == finance_models.PricingStatus.CANCELLED
     unuse_event = finance_models.FinanceEvent.query.filter(finance_models.FinanceEvent.id != event.id).one()

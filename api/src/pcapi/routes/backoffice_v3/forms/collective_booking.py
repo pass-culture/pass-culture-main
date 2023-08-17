@@ -4,6 +4,7 @@ from flask_wtf import FlaskForm
 import wtforms
 
 from pcapi.core.categories import categories
+from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.models import CollectiveBookingStatus
 
 from . import fields
@@ -97,3 +98,13 @@ class GetDownloadBookingsForm(FlaskForm):
     venue = fields.PCIntegerField("Lieux")
     from_date = fields.PCDateField("À partir du", validators=(wtforms.validators.Optional(),))
     to_date = fields.PCDateField("Jusqu'au", validators=(wtforms.validators.Optional(),))
+
+
+class CancelBookingForm(FlaskForm):
+    reason = fields.PCSelectWithPlaceholderValueField(
+        "Raison",
+        choices=utils.choices_from_enum(
+            educational_models.CollectiveBookingCancellationReasons,
+            formatter=filters.format_booking_cancellation_reason,
+        ),
+    )
