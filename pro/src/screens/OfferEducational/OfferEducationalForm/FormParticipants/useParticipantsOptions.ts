@@ -19,8 +19,11 @@ const useParticipantsOptions = (
     field: string,
     value: any,
     shouldValidate?: boolean | undefined
-  ) => void
+  ) => void,
+  isTemplate: boolean = false
 ) => {
+  const canToggleAllParticipants = isTemplate
+
   const handleParticipantsAllChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -39,16 +42,21 @@ const useParticipantsOptions = (
   const handleParticipantsChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    if (!event.target.checked) {
+    if (!event.target.checked && canToggleAllParticipants) {
       setFieldValue('participants.all', false)
     }
   }
+
   return [
-    {
-      label: ALL_STUDENTS_LABEL,
-      name: 'participants.all',
-      onChange: handleParticipantsAllChange,
-    },
+    ...(canToggleAllParticipants
+      ? [
+          {
+            label: ALL_STUDENTS_LABEL,
+            name: 'participants.all',
+            onChange: handleParticipantsAllChange,
+          },
+        ]
+      : []),
     ...Object.values(StudentLevels).map(studentLevel => ({
       label: getStudentLevelLabel(studentLevel),
       name: `participants.${studentLevel}`,
