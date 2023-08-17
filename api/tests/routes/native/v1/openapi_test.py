@@ -1687,7 +1687,7 @@ def test_public_api(client):
                 },
                 "UbbleError": {
                     "description": "An enumeration.",
-                    "enum": [1201, 1310, 1320, 2101, 2102, 2103, 2201],
+                    "enum": [1201, 1301, 1320, 2101, 2102, 2103, 2201],
                     "title": "UbbleError",
                 },
                 "UpdateEmailTokenExpiration": {
