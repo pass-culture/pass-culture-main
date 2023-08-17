@@ -156,7 +156,7 @@ def cancel_email_update_request(encoded_token: str) -> None:
 
 def validate_email_update_request(
     encoded_token: str,
-) -> None:
+) -> models.User:
     """
     Change a user's email and add a new (validation) entry to its email
     history.
@@ -175,13 +175,14 @@ def validate_email_update_request(
     old_email = user.email
     new_email = token.data["new_email"]
     if old_email == new_email:
-        return
+        return user
     token.check(token_utils.TokenType.EMAIL_CHANGE_VALIDATION)
     check_email_address_does_not_exist(new_email)
     api.change_email(user, new_email)
     external_contacts.update_contact_email(user=user, old_email=old_email, new_email=new_email)
     transactional_mails.send_email_change_information_email(user)
     token.expire()
+    return models.User.query.get(user.id)
 
 
 def request_email_update_from_pro(user: models.User, email: str, password: str) -> None:
