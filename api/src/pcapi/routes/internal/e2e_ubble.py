@@ -18,7 +18,7 @@ from pcapi.serialization.decorator import spectree_serialize
 
 class UbbleError(enum.Enum):
     NETWORK_CONNECTION_ISSUE = 1201
-    BLURRY_VIDEO = 1310
+    BLURRY_DOCUMENT_VIDEO = 1301
     LACK_OF_LUMINOSITY = 1320
     ID_CHECK_EXPIRED = 2101
     ID_CHECK_NOT_SUPPORTED = 2102
