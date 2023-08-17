@@ -3,12 +3,14 @@ import datetime
 from flask_wtf import FlaskForm
 import wtforms
 
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import categories
 
 from . import fields
 from . import utils
 from .. import filters
+from .empty import BatchForm
 
 
 class GetIndividualBookingListForm(FlaskForm):
@@ -108,3 +110,16 @@ class GetDownloadBookingsForm(FlaskForm):
         max_date=datetime.date.today(),
         reset_to_blank=True,
     )
+
+
+class CancelBookingForm(FlaskForm):
+    reason = fields.PCSelectWithPlaceholderValueField(
+        "Raison",
+        choices=utils.choices_from_enum(
+            bookings_models.BookingCancellationReasons, formatter=filters.format_booking_cancellation_reason
+        ),
+    )
+
+
+class BatchCancelBookingForm(BatchForm, CancelBookingForm):
+    pass

@@ -495,13 +495,18 @@ class CancelBookingTest(PostEndpointHelper):
         confirmed = bookings[2]
 
         # when
-        response = self.post_to_endpoint(authenticated_client, booking_id=confirmed.id)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            booking_id=confirmed.id,
+            form={"reason": bookings_models.BookingCancellationReasons.OFFERER.value},
+        )
 
         # then
         assert response.status_code == 302
 
         db.session.refresh(confirmed)
         assert confirmed.status is bookings_models.BookingStatus.CANCELLED
+        assert confirmed.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
 
         redirected_response = authenticated_client.get(response.headers["location"])
         assert html_parser.extract_alert(redirected_response.data) == f"La réservation {confirmed.token} a été annulée"
@@ -511,7 +516,11 @@ class CancelBookingTest(PostEndpointHelper):
         pricing = finance_factories.PricingFactory(status=finance_models.PricingStatus.PROCESSED)
 
         # when
-        response = self.post_to_endpoint(authenticated_client, booking_id=pricing.bookingId)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            booking_id=pricing.bookingId,
+            form={"reason": bookings_models.BookingCancellationReasons.OFFERER.value},
+        )
 
         # then
         assert response.status_code == 302
@@ -541,7 +550,11 @@ class CancelBookingTest(PostEndpointHelper):
             finance_factories.PaymentFactory(booking=reimbursed)
 
         # when
-        response = self.post_to_endpoint(authenticated_client, booking_id=reimbursed.id)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            booking_id=reimbursed.id,
+            form={"reason": bookings_models.BookingCancellationReasons.FRAUD.value},
+        )
 
         # then
         assert response.status_code == 302
@@ -558,7 +571,11 @@ class CancelBookingTest(PostEndpointHelper):
         old_status = cancelled.status
 
         # when
-        response = self.post_to_endpoint(authenticated_client, booking_id=cancelled.id)
+        response = self.post_to_endpoint(
+            authenticated_client,
+            booking_id=cancelled.id,
+            form={"reason": bookings_models.BookingCancellationReasons.FRAUD.value},
+        )
 
         # then
         assert response.status_code == 302
@@ -569,6 +586,27 @@ class CancelBookingTest(PostEndpointHelper):
         redirected_response = authenticated_client.get(response.headers["location"])
         assert (
             html_parser.extract_alert(redirected_response.data) == "Impossible d'annuler une réservation déjà annulée"
+        )
+
+    def test_cant_cancel_booking_without_reason(self, authenticated_client, bookings):
+        # give
+        confirmed = bookings[2]
+
+        # when
+        response = self.post_to_endpoint(authenticated_client, booking_id=confirmed.id)
+
+        # then
+        assert response.status_code == 302
+
+        db.session.refresh(confirmed)
+        assert confirmed.status == bookings_models.BookingStatus.CONFIRMED
+        assert confirmed.cancellationReason is None
+
+        redirected_response = authenticated_client.get(response.headers["location"])
+
+        assert (
+            "Les données envoyées comportent des erreurs. Raison: Information obligatoire"
+            in html_parser.extract_alert(redirected_response.data)
         )
 
 
@@ -635,12 +673,16 @@ class BatchOfferCancelTest(PostEndpointHelper):
     def test_batch_cancel_bookings(self, legit_user, authenticated_client):
         bookings = bookings_factories.BookingFactory.create_batch(3)
         parameter_ids = ",".join(str(booking.id) for booking in bookings)
-        response = self.post_to_endpoint(authenticated_client, form={"object_ids": parameter_ids})
+        response = self.post_to_endpoint(
+            authenticated_client,
+            form={"object_ids": parameter_ids, "reason": bookings_models.BookingCancellationReasons.OFFERER.value},
+        )
 
         assert response.status_code == 302
         for booking in bookings:
             db.session.refresh(booking)
             assert booking.status is bookings_models.BookingStatus.CANCELLED
+            assert booking.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
 
 
 class GetIndividualBookingCSVDownloadTest(GetEndpointHelper):
