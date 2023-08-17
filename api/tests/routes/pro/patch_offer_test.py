@@ -263,9 +263,7 @@ class Returns400Test:
         response = client.with_session_auth("user@example.com").patch(f"offers/{offer.id}", json=data)
 
         assert response.status_code == 400
-        assert response.json["offer"] == [
-            "Une offre qui n'a pas de ticket retirable ne peut pas avoir un type de retrait renseigné"
-        ]
+        assert response.json["offer"] == ["La catégorie de l'offre n'accepte pas de modalité de retrait de billet"]
 
     def test_reuse_unchanged_withdrawal(self, client):
         offer = offers_factories.OfferFactory(
