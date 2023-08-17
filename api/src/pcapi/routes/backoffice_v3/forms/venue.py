@@ -60,6 +60,9 @@ class EditVenueForm(EditVirtualVenueForm):
     postal_code = fields.PCPostalCodeHiddenField("Code postal")  # match Venue.postalCode case
     latitude = fields.PCOptHiddenField("Latitude")
     longitude = fields.PCOptHiddenField("Longitude")
+    venue_type_code = fields.PCSelectWithPlaceholderValueField(
+        "Activité principale", choices=utils.choices_from_enum(offerers_models.VenueTypeCode)
+    )
     is_permanent = fields.PCSwitchBooleanField("Lieu permanent")
 
     def __init__(self, venue: offerers_models.Venue, *args: typing.Any, **kwargs: typing.Any) -> None:
@@ -75,6 +78,7 @@ class EditVenueForm(EditVirtualVenueForm):
         # self._fields is a collections.OrderedDict
         self._fields.move_to_end("booking_email")
         self._fields.move_to_end("phone_number")
+        self._fields.move_to_end("venue_type_code")
         self._fields.move_to_end("is_permanent")
 
     def filter_siret(self, raw_siret: str | None) -> str | None:
