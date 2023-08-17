@@ -7852,10 +7852,10 @@ ora@^5.4.1:
     strip-ansi "^6.0.0"
     wcwidth "^1.0.1"
 
-orejime@^2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/orejime/-/orejime-2.2.1.tgz#05ba7e6a095b8460d14ecb6cdd2dfd37c225eace"
-  integrity sha512-pau2FbsH+Cn1RayVTHsyxPLviLZW7jyVZ+ofdpZRAZo+d/m8vJZtpUp7hHo4+oyOSGTV8IafVf9AUbwSMUDDDA==
+orejime@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/orejime/-/orejime-2.3.0.tgz#1fc6f570c9bcb11538cc5d270997a526d8135af0"
+  integrity sha512-eDUgd5yEF5pCIUHPNXVDKmgH+4k4GEwxU7eexBFeVESba3ZYDHSDq4ULXiF2LnZwxg+H6Qi28o8rGfGxNeOriA==
   dependencies:
     "@babel/runtime" "^7.1.2"
     react-modal "^3.13.1"
