@@ -547,7 +547,7 @@ def mark_as_used_with_uncancelling(booking: Booking) -> None:
     update_external_user(booking.user)
 
 
-def mark_as_cancelled(booking: Booking) -> None:
+def mark_as_cancelled(booking: Booking, reason: BookingCancellationReasons) -> None:
     """
     A booking can be cancelled only if it has not been cancelled before and if
     it has not been refunded. Since a payment can be retried, it is safer to
@@ -561,7 +561,7 @@ def mark_as_cancelled(booking: Booking) -> None:
     if finance_repository.has_reimbursement(booking):
         raise exceptions.BookingIsAlreadyRefunded()
 
-    _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY, cancel_even_if_used=True, raise_if_error=True)
+    _cancel_booking(booking, reason, cancel_even_if_used=True, raise_if_error=True)
     transactional_mails.send_booking_cancellation_by_beneficiary_to_pro_email(booking)
 
 

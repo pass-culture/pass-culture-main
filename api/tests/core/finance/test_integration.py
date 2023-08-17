@@ -112,7 +112,7 @@ def test_integration_partial_used_then_cancelled():
         assert models.Pricing.query.count() == 1
 
         # Now cancel the booking. We should not get a new pricing.
-        bookings_api.mark_as_cancelled(booking)
+        bookings_api.mark_as_cancelled(booking, bookings_models.BookingCancellationReasons.BENEFICIARY)
 
         # `price_events()` ignores recently created events (< 1 minute).
         now += datetime.timedelta(minutes=1)

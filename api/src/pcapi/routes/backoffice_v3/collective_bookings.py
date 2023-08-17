@@ -181,7 +181,7 @@ def list_collective_bookings() -> utils.BackofficeResponse:
         rows=bookings,
         form=form,
         mark_as_used_booking_form=empty_forms.EmptyForm(),
-        cancel_booking_form=empty_forms.EmptyForm(),
+        cancel_booking_form=collective_booking_forms.CancelBookingForm(),
         pro_visualisation_link=pro_visualisation_link,
     )
 
@@ -247,8 +247,15 @@ def mark_booking_as_used(collective_booking_id: int) -> utils.BackofficeResponse
 def mark_booking_as_cancelled(collective_booking_id: int) -> utils.BackofficeResponse:
     collective_booking = educational_models.CollectiveBooking.query.get_or_404(collective_booking_id)
 
+    form = collective_booking_forms.CancelBookingForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return _redirect_after_collective_booking_action()
+
     try:
-        educational_api_booking.cancel_collective_booking_by_id_from_support(collective_booking)
+        educational_api_booking.cancel_collective_booking_by_id_from_support(
+            collective_booking, educational_models.CollectiveBookingCancellationReasons(form.reason.data)
+        )
     except educational_exceptions.CollectiveBookingAlreadyCancelled:
         flash("Impossible d'annuler une réservation déjà annulée", "warning")
     except educational_exceptions.BookingIsAlreadyRefunded:
