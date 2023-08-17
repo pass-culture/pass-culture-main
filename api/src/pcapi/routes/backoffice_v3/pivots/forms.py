@@ -1,3 +1,5 @@
+import re
+
 from flask import flash
 from flask_wtf import FlaskForm
 import wtforms
@@ -90,6 +92,14 @@ class EditCineOfficeForm(EditPivotForm):
     cinema_id = fields.PCStringField("Identifiant cinéma (CDS)")
     account_id = fields.PCStringField("Nom de compte (CDS)")
     api_token = fields.PCStringField("Clé API (CDS)")
+
+    def validate_account_id(self, account_id: fields.PCStringField) -> fields.PCStringField:
+        # account_id is used to build a url; only some specific characters are allowed
+        if not re.match("^[a-zA-Z0-9_-]+$", account_id.data):
+            raise wtforms.validators.ValidationError(
+                "Le nom de compte ne peut pas contenir de caractères autres que chiffres, lettres et tirets"
+            )
+        return account_id
 
     def validate(self, extra_validators=None) -> bool:  # type: ignore [no-untyped-def]
         # do not use this custom validation on DeleteForm
