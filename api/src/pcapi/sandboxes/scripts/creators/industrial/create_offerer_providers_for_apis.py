@@ -66,6 +66,7 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
             subcategoryId=subcategories.CONCERT.id,
             lastProvider=provider,
         )
+        price_category = offers_factories.PriceCategoryFactory(offer=offer)
 
         stocks = []
         for _ in range(5):
@@ -73,12 +74,13 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
                 offers_factories.EventStockFactory(
                     offer=offer,
                     beginningDatetime=in_ten_days + datetime.timedelta(days=random.randint(0, 10)),
+                    priceCategory=price_category,
                 )
             )
 
         for _ in range(15):
             bookings_factories.BookingFactory(
-                quantity=random.randint(0, 5),
+                quantity=random.randint(1, 2),
                 stock=random.choice(stocks),
                 dateCreated=now
                 + datetime.timedelta(
