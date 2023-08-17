@@ -93,7 +93,6 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     fraud_models.BeneficiaryFraudCheck.query.delete()
     fraud_models.BeneficiaryFraudReview.query.delete()
     users_models.Token.query.delete()
-    offers_models.OfferValidationConfig.query.delete()
     offers_models.OfferValidationSubRule.query.delete()
     offers_models.OfferValidationRule.query.delete()
     users_models.User.query.delete()

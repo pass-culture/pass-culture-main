@@ -54,32 +54,6 @@ STANDARD_THUMBNAIL_WIDTH = 400
 STANDARD_THUMBNAIL_HEIGHT = 600
 ACCEPTED_THUMBNAIL_FORMATS = ("png", "jpg", "jpeg", "mpo")
 
-KEY_VALIDATION_CONFIG = {
-    "init": ["minimum_score", "rules"],
-    "rules": ["name", "factor", "conditions"],
-    "conditions": ["model", "attribute", "condition"],
-    "condition": ["operator", "comparated"],
-}
-
-VALUE_VALIDATION_CONFIG = {
-    "name": [str],
-    "conditions": [list],
-    "model": [
-        "Offer",
-        "Venue",
-        "Offerer",
-        "CollectiveOffer",
-        "CollectiveOfferTemplate",
-        "CollectiveStock",
-    ],
-    "attribute": [str],
-    "type": [str, list],
-    "factor": [float, int],
-    "operator": [">", ">=", "<", "<=", "==", "!=", "is", "in", "not in", "contains", "contains-exact"],
-    "comparated": [str, bool, float, int, list, None],
-    "minimum_score": [float, int],
-}
-
 
 def check_provider_can_edit_stock(
     offer: models.Offer, editing_provider: providers_models.Provider | None = None
@@ -325,24 +299,6 @@ def check_activation_codes_expiration_datetime_on_stock_edition(
 
     activation_codes_expiration_datetime = activation_codes[0].expirationDate
     check_activation_codes_expiration_datetime(activation_codes_expiration_datetime, booking_limit_datetime)
-
-
-def check_validation_config_parameters(config_as_dict: dict, valid_keys: list) -> None:
-    for key, value in config_as_dict.items():
-        if key not in valid_keys:
-            raise KeyError(f"Wrong key: {key}")
-        if key == "condition" and value["operator"] == "contains" and not isinstance(value["comparated"], list):
-            raise TypeError(
-                f"The `comparated` argument `{value['comparated']}` for the `contains` operator is not a list"
-            )
-        if isinstance(value, list) and key in KEY_VALIDATION_CONFIG:
-            for item in value:
-                check_validation_config_parameters(item, KEY_VALIDATION_CONFIG[key])
-        elif isinstance(value, dict):
-            check_validation_config_parameters(value, KEY_VALIDATION_CONFIG[key])
-        # Note that these are case-senstive
-        elif not (value in VALUE_VALIDATION_CONFIG[key] or type(value) in VALUE_VALIDATION_CONFIG[key]):  # type: ignore [operator]
-            raise ValueError(f"{value} of type {type(value)} not in: {VALUE_VALIDATION_CONFIG[key]}")
 
 
 def check_offer_is_eligible_for_educational(subcategory_id: str) -> None:
