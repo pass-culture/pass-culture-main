@@ -369,6 +369,29 @@ class DeleteProUserTest(PostEndpointHelper):
     @patch("pcapi.routes.backoffice_v3.pro_users.blueprint.mails_api")
     @patch("pcapi.routes.backoffice_v3.pro_users.blueprint.DeleteBatchUserAttributesRequest", return_value="canary")
     @patch("pcapi.routes.backoffice_v3.pro_users.blueprint.delete_user_attributes_task")
+    def test_delete_pro_user_and_keep_email_in_mailing_List(
+        self, delete_user_attributes_task, DeleteBatchUserAttributesRequest, mails_api, authenticated_client
+    ):
+        user = users_factories.UserFactory(roles=[users_models.UserRole.NON_ATTACHED_PRO])
+        offerers_factories.VenueFactory(bookingEmail=user.email)
+        history_factories.SuspendedUserActionHistoryFactory(user=user)
+        user_id = user.id
+        form = {"email": user.email}
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user_id, form=form)
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_v3_web.search_pro", _external=True)
+
+        mails_api.delete_contact.assert_not_called()
+        DeleteBatchUserAttributesRequest.assert_called_once_with(user_id=user_id)
+        delete_user_attributes_task.delay.assert_called_once_with("canary")
+        assert users_models.User.query.filter(users_models.User.id == user_id).count() == 0
+        assert history_models.ActionHistory.query.filter(history_models.ActionHistory.userId == user_id).count() == 0
+
+    @patch("pcapi.routes.backoffice_v3.pro_users.blueprint.mails_api")
+    @patch("pcapi.routes.backoffice_v3.pro_users.blueprint.DeleteBatchUserAttributesRequest", return_value="canary")
+    @patch("pcapi.routes.backoffice_v3.pro_users.blueprint.delete_user_attributes_task")
     def test_delete_pro_user_mismatch_email(
         self, delete_user_attributes_task, DeleteBatchUserAttributesRequest, mails_api, authenticated_client
     ):
