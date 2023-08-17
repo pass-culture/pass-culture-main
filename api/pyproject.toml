@@ -174,7 +174,6 @@ python_files = ["*test.py", "test*.py"]
 python_classes = ["*Test"]
 python_functions = ["test_*", "when_*", "expect_*", "should_*"]
 env_files = ["local_test_env_file"]
-mocked-sessions = ["pcapi.models.db.session"]
 junit_family = "xunit1"
 markers = [
     "backoffice_v3"

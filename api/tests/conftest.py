@@ -31,7 +31,7 @@ import pcapi.core.testing
 from pcapi.core.users import testing as users_testing
 import pcapi.core.users.models as users_models
 from pcapi.install_database_extensions import install_database_extensions
-from pcapi.models import db
+import pcapi.models
 from pcapi.models.feature import install_feature_flags
 from pcapi.notifications.internal import testing as internal_notifications_testing
 from pcapi.notifications.push import testing as push_notifications_testing
@@ -194,21 +194,27 @@ def clean_database(f: object) -> object:
     return decorated_function
 
 
-@pytest.fixture(scope="session")
-def _db(app):
-    """
-    Provide the transactional fixtures with access to the database via a Flask-SQLAlchemy
-    database connection.
-    """
-    mock_db = db
-
-    mock_db.init_app(app)
-    install_database_extensions()
-    run_migrations()
-
-    clean_all_database()
-
-    return mock_db
+@pytest.fixture(scope="function")
+def db_session():
+    # FIXME (dbaty, 2023-08-17): for each test, we want a transaction,
+    # which is rolled back at the end of the test. That way, we get a
+    # clean state (empty tables) when each test starts. The problem is
+    # that the code uses `commit()` too much (everywhere, basically).
+    # So, the transaction is started here, gets (wrongly) committed by
+    # the implementation. And we're back in the `finally` clause,
+    # there is nothing to be rolled back anymore. What we should
+    # really do is get rid of calls to `commit()` in our
+    # implementation, unless they are preceded by an explicit call to
+    # "begin". That way, these commits will end these transactions,
+    # and not the global-for-each-test transaction that is started
+    # here.
+    pcapi.models.db.session.commit = lambda *args, **kwargs: None
+    this_function_transaction = pcapi.models.db.session.begin_nested()
+    try:
+        yield pcapi.models.db.session
+    finally:
+        this_function_transaction.rollback()
+        pcapi.models.db.session.close()
 
 
 pcapi.core.testing.register_event_for_query_logger()

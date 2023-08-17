@@ -51,7 +51,6 @@ pysaml2
 pytest
 pytest-cov
 pytest-flask
-pytest-flask-sqlalchemy
 pytest-mock
 pytest-dotenv
 pytest-socket
