@@ -416,7 +416,7 @@ describe('CollectiveOfferVisibility', () => {
         },
         institution: {
           city: 'CORBEIL-ESSONNES',
-          institutionId: '123456',
+          institutionId: 'AZERTY13',
           institutionType: 'LYCEE POLYVALENT',
           name: 'METIER ROBERT DOISNEAU',
           postalCode: '91000',
@@ -438,25 +438,16 @@ describe('CollectiveOfferVisibility', () => {
       renderVisibilityStep({
         ...props,
         requestId: '1',
-        mode: Mode.CREATION,
+        mode: Mode.EDITION,
         initialValues: DEFAULT_VISIBILITY_FORM_VALUES,
       })
 
       expect(
-        screen.getByLabelText(/Un établissement en particulier/)
-      ).toBeChecked()
-
+        await screen.findByText(/Option sélectionnée : KHTEUR REDA/)
+      ).toBeInTheDocument()
       expect(
-        within(await screen.findByTestId('teacher-banner')).findByText(
-          /KHTEUR REDA/
-        )
-      )
-
-      expect(await screen.findAllByText(/METIER ROBERT DOISNEAU/)).toHaveLength(
-        3
-      )
-      expect(screen.getByText(/91000 CORBEIL-ESSONNES/)).toBeInTheDocument()
-      expect(screen.getAllByText(/AZERTY13/)).toHaveLength(3)
+        screen.getByText(/METIER ROBERT DOISNEAU - CORBEIL-ESSONNES - AZERTY13/)
+      ).toBeInTheDocument()
     })
 
     it('should display error message on api error getting requested info', async () => {
