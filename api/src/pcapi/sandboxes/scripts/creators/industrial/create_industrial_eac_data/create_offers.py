@@ -22,6 +22,7 @@ def create_offers(
     reset_offer_id_seq()
     domains = create_domains()
     offerers_iterator = iter(offerers)
+    national_programs = create_national_programs()
 
     # eac_1
     offerer = next(offerers_iterator)
@@ -31,6 +32,7 @@ def create_offers(
         offerer=offerer,
         institutions=institutions,
         domains=domains,
+        national_programs=national_programs,
     )
     create_booking_base_list(
         offerer=offerer,
@@ -45,6 +47,7 @@ def create_offers(
         offerer=offerer,
         institutions=institutions,
         domains=domains,
+        national_programs=national_programs,
     )
     create_booking_base_list(
         offerer=offerer,
@@ -60,6 +63,7 @@ def create_offers(
         offerer=offerer,
         institutions=institutions,
         domains=domains,
+        national_programs=national_programs,
     )
     create_booking_base_list(
         offerer=offerer,
@@ -76,6 +80,7 @@ def create_offers(
         offerer=offerer,
         institutions=institutions,
         domains=domains,
+        national_programs=national_programs,
     )
     create_booking_base_list(
         offerer=offerer,
@@ -90,6 +95,7 @@ def create_offers_base_list(
     offerer: offerers_models.Offerer,
     institutions: list[educational_models.EducationalInstitution],
     domains: list[educational_models.EducationalDomain],
+    national_programs: educational_models.NationalProgram,
     basic_offers: bool = True,
     basic_templates: bool = True,
     from_templates_offers: bool = True,
@@ -108,6 +114,7 @@ def create_offers_base_list(
     venue_iterator = cycle(offerer.managedVenues)
     image_iterator = cycle(["collective_offer_1.png", "collective_offer_2.jpg"])
     institution_iterator = cycle(institutions)
+    national_program_iterator = cycle(national_programs)
     number_iterator = count()
     offers = []
     templates = []
@@ -117,6 +124,7 @@ def create_offers_base_list(
                 collectiveOffer__name=f"offer {next(number_iterator)} pour {offerer.name}",
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
+                collectiveOffer__nationalProgram=next(national_program_iterator),
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
                 beginningDatetime=datetime.utcnow() + timedelta(days=60),
             )
@@ -166,6 +174,7 @@ def create_offers_base_list(
                 collectiveOffer__educational_domains=[next(domains_iterator)],
                 collectiveOffer__venue=next(venue_iterator),
                 collectiveOffer__institution=next(institution_iterator),
+                collectiveOffer__nationalProgram=next(national_program_iterator),
                 collectiveOffer__interventionArea=[],
                 collectiveOffer__provider=provider,
                 collectiveOffer__bookingEmails=["toto@totoland.com"],
@@ -237,6 +246,7 @@ def create_offers_base_list(
                 educational_domains=[next(domains_iterator)],
                 venue=next(venue_iterator),
                 bookingEmails=["toto@totoland.com"],
+                nationalProgram=next(national_program_iterator),
             )
             templates.append(template)
         if from_templates_offers:
@@ -247,6 +257,7 @@ def create_offers_base_list(
                     collectiveOffer__venue=next(venue_iterator),
                     collectiveOffer__template=template,
                     collectiveOffer__institution=next(institution_iterator),
+                    collectiveOffer__nationalProgram=next(national_program_iterator),
                     collectiveOffer__bookingEmails=["toto@totoland.com"],
                 )
     if image_template:
@@ -472,6 +483,16 @@ def create_domains() -> list[educational_models.EducationalDomain]:
         educational_factories.EducationalDomainFactory(name="Théâtre, expression dramatique, marionnettes", id=15),
         educational_factories.EducationalDomainFactory(name="Bande dessinée", id=16),
         educational_factories.EducationalDomainFactory(name="Média et information", id=17),
+    ]
+
+
+def create_national_programs() -> list[educational_models.NationalProgram]:
+    return [
+        educational_factories.NationalProgramFactory(name="collège au cinéma", id=1),
+        educational_factories.NationalProgramFactory(name="Le Prix des Incorruptibles", id=2),
+        educational_factories.NationalProgramFactory(name="Lycéens et apprentis au cinéma", id=3),
+        educational_factories.NationalProgramFactory(name="L’Olympiade culturelle", id=4),
+        educational_factories.NationalProgramFactory(name="Théâtre au collège", id=5),
     ]
 
 
