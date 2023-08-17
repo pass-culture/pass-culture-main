@@ -109,6 +109,7 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     perm_models.Permission.query.delete()
     perm_models.Role.query.delete()
     history_models.ActionHistory.query.delete()
+    educational_models.NationalProgram.query.delete()
 
     # Dans le cadre du projet EAC, notre partenaire Adage requête notre api sur le endpoint get_pre_bookings.
     # Ils récupèrent les pré-réservations EAC liées à un utilisateur EAC et stockent les ids en base.
