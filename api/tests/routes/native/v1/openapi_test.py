@@ -334,9 +334,25 @@ def test_public_api(client):
                     "title": "CategoryIdEnum",
                 },
                 "ChangeBeneficiaryEmailBody": {
-                    "properties": {"token": {"title": "Token", "type": "string"}},
+                    "properties": {
+                        "deviceInfo": {
+                            "anyOf": [{"$ref": "#/components/schemas/TrustedDevice"}],
+                            "nullable": True,
+                            "title": "TrustedDevice",
+                        },
+                        "token": {"title": "Token", "type": "string"},
+                    },
                     "required": ["token"],
                     "title": "ChangeBeneficiaryEmailBody",
+                    "type": "object",
+                },
+                "ChangeBeneficiaryEmailResponse": {
+                    "properties": {
+                        "accessToken": {"title": "Accesstoken", "type": "string"},
+                        "refreshToken": {"title": "Refreshtoken", "type": "string"},
+                    },
+                    "required": ["accessToken", "refreshToken"],
+                    "title": "ChangeBeneficiaryEmailResponse",
                     "type": "object",
                 },
                 "ChangePasswordRequest": {
@@ -2839,7 +2855,14 @@ def test_public_api(client):
                         }
                     },
                     "responses": {
-                        "204": {"description": "No Content"},
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/ChangeBeneficiaryEmailResponse"}
+                                }
+                            },
+                            "description": "OK",
+                        },
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {

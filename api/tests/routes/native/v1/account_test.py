@@ -935,7 +935,18 @@ class UpdateUserEmailTest:
                 "token": base_url_params_validation["token"][0],
             },
         )
-        assert response.status_code == 204
+        assert response.status_code == 200
+        # Ensure the access token is valid
+        access_token = response.json["accessToken"]
+        client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        protected_response = client.get("/native/v1/me")
+        assert protected_response.status_code == 200
+
+        # Ensure the refresh token is valid
+        refresh_token = response.json["refreshToken"]
+        client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
+        refresh_response = client.post("/native/v1/refresh_access_token", json={})
+        assert refresh_response.status_code == 200
 
         # the email changes
         user = users_models.User.query.get(user.id)
@@ -1112,7 +1123,18 @@ class ValidateEmailTest:
         token = self._initialize_token(user, app, self.new_email)
         response = client.put("/native/v1/profile/email_update/validate", json={"token": token})
 
-        assert response.status_code == 204
+        assert response.status_code == 200
+        # Ensure the access token is valid
+        access_token = response.json["accessToken"]
+        client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        protected_response = client.get("/native/v1/me")
+        assert protected_response.status_code == 200
+
+        # Ensure the refresh token is valid
+        refresh_token = response.json["refreshToken"]
+        client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
+        refresh_response = client.post("/native/v1/refresh_access_token", json={})
+        assert refresh_response.status_code == 200
 
         user = users_models.User.query.get(user.id)
         assert user.email == self.new_email
@@ -1127,7 +1149,18 @@ class ValidateEmailTest:
         token = self._initialize_token(user, app, self.new_email)
         response = client.put("/native/v1/profile/email_update/validate", json={"token": token})
 
-        assert response.status_code == 204
+        assert response.status_code == 200
+        # Ensure the access token is valid
+        access_token = response.json["accessToken"]
+        client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        protected_response = client.get("/native/v1/me")
+        assert protected_response.status_code == 200
+
+        # Ensure the refresh token is valid
+        refresh_token = response.json["refreshToken"]
+        client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
+        refresh_response = client.post("/native/v1/refresh_access_token", json={})
+        assert refresh_response.status_code == 200
 
         user = users_models.User.query.get(user.id)
         assert user.email == self.old_email
