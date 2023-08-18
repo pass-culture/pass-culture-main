@@ -77,11 +77,12 @@ def test_get_showtime_id_from_uuid(stock_uuid, provider_name, result):
 @pytest.mark.parametrize(
     "offer_uuid,result",
     [
-        ("123%45%Boost", 123),
-        ("369%45%CGR", 369),
+        ("123%45%Boost", "123"),
+        ("369%45%CGR", "369"),
+        ("X8OSR%1097%EMS", "X8OSR"),
         ("123445+43423", None),
         (None, None),
-        ("movie_id%%venue_id%Boost", None),
+        ("%venue_id%Boost", None),
     ],
 )
 def test_get_boost_film_id_from_uuid(offer_uuid, result):
