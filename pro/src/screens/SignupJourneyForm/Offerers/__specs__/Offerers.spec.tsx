@@ -396,19 +396,13 @@ describe('screens:SignupJourney::Offerers', () => {
       },
     }
 
-    it('Should display the new banner when the FF is enabled', async () => {
+    it('Should not display join button when add collaborator feature is enabled', async () => {
       renderOfferersScreen(contextValue, newFFEnabled)
       const loadingMessage = screen.queryByText('Chargement en cours ...')
       await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
       expect(
         screen.queryByRole('button', { name: 'Rejoindre cet espace' })
       ).not.toBeInTheDocument()
-
-      expect(
-        screen.getByText(
-          /Vos collaborateurs peuvent vous inviter en passant par leur espace pass Culture Pro./
-        )
-      ).toBeInTheDocument()
     })
   })
 })
