@@ -4,6 +4,7 @@
 /* eslint-disable */
 
 import type { VenueContactModel } from './VenueContactModel';
+import type { VenueTypeCode } from './VenueTypeCode';
 
 export type EditVenueBodyModel = {
   address?: string | null;
@@ -27,7 +28,7 @@ export type EditVenueBodyModel = {
   shouldSendMail?: boolean | null;
   siret?: string | null;
   venueLabelId?: number | null;
-  venueTypeCode?: string | null;
+  venueTypeCode?: VenueTypeCode | null;
   visualDisabilityCompliant?: boolean | null;
   withdrawalDetails?: string | null;
 };

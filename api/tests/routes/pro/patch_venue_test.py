@@ -339,3 +339,16 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["withdrawalDetails"] == ["ensure this value has at most 500 characters"]
+
+    def test_raises_if_invalid_venue_type_code(self, client) -> None:
+        venue = offerers_factories.VenueFactory()
+        user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+
+        venue_data = populate_missing_data_from_venue(
+            {"venueTypeCode": "("},
+            venue,
+        )
+        response = client.with_session_auth(email=user_offerer.user.email).patch(f"/venues/{venue.id}", json=venue_data)
+
+        assert response.status_code == 400
+        assert response.json["venueTypeCode"] == ["(: invalide"]
