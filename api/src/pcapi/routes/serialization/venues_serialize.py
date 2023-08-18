@@ -313,7 +313,7 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     city: base.VenueCity | None
     publicName: base.VenuePublicName | None
     comment: base.VenueComment | None
-    venueTypeCode: str | None
+    venueTypeCode: offerers_models.VenueTypeCode | None
     venueLabelId: int | None
     withdrawalDetails: base.VenueWithdrawalDetails | None
     isAccessibilityAppliedOnAllOffers: bool | None
