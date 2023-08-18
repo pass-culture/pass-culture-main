@@ -121,7 +121,7 @@
     "vite-tsconfig-paths": "^4.2.0",
     "vitest": "^0.34.2",
     "vitest-axe": "^0.1.0",
-    "vitest-canvas-mock": "^0.3.2",
+    "vitest-canvas-mock": "^0.3.3",
     "vitest-fetch-mock": "^0.2.2"
   },
   "resolutions": {
