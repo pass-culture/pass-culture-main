@@ -262,7 +262,7 @@ describe('VenueFormScreen', () => {
       name: 'MINISTERE DE LA CULTURE',
       publicName: 'Melodie Sims',
       siret: '88145723823022',
-      venueType: 'GAMES',
+      venueType: VenueTypeCode.JEUX_JEUX_VID_OS,
       venueLabel: 'EM',
       departmentCode: '',
       address: 'PARIS',
@@ -709,7 +709,7 @@ describe('VenueFormScreen', () => {
         reimbursementPointId: 91,
         shouldSendMail: false,
         siret: '88145723823022',
-        venueTypeCode: 'GAMES',
+        venueTypeCode: VenueTypeCode.JEUX_JEUX_VID_OS,
         // @ts-expect-error string is not assignable to type number
         venueLabelId: 'EM',
         visualDisabilityCompliant: false,
