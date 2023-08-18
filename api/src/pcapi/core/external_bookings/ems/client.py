@@ -39,8 +39,8 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[int, int]:
         raise NotImplementedError()
 
-    def get_film_showtimes_stocks(self, film_id: int) -> dict[int, int]:
-        payload = ems_serializers.AvailableShowsRequest(num_cine=self.cinema_id, id_film=str(film_id))
+    def get_film_showtimes_stocks(self, film_id: str) -> dict[int, int]:
+        payload = ems_serializers.AvailableShowsRequest(num_cine=self.cinema_id, id_film=film_id)
         response = self.connector.do_request(self.connector.shows_availability_endpoint, payload.dict())
         self.connector.raise_for_status(response)
 

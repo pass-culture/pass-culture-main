@@ -35,7 +35,7 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
         self.account_id = account_id
         super()
 
-    def get_film_showtimes_stocks(self, film_id: int) -> dict[int, int]:  # type: ignore [empty-body]
+    def get_film_showtimes_stocks(self, film_id: str) -> dict[int, int]:  # type: ignore [empty-body]
         pass
 
     @lru_cache
