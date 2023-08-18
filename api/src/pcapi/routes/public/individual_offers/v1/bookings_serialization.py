@@ -25,6 +25,7 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
         description="For event offers, deadline for cancellation by the beneficiary."
     )
     price: pydantic.StrictInt
+    status: booking_models.BookingStatus
 
     offer_id: int
     stock_id: int
@@ -43,6 +44,7 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
     user_first_name: str | None
     user_last_name: str | None
     user_birth_date: str | None
+    user_postal_code: str | None
 
     @classmethod
     def build_booking(cls, booking: booking_models.Booking) -> "GetBookingResponse":
@@ -56,6 +58,7 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
             else None,
             quantity=booking.quantity,
             price=finance_utils.to_eurocents(booking.amount),
+            status=booking.status,
             price_category_id=booking.stock.priceCategory.id if booking.stock.priceCategory else None,
             price_category_label=booking.stock.priceCategory.label if booking.stock.priceCategory else None,
             offer_id=booking.stock.offer.id,
@@ -71,6 +74,7 @@ class GetBookingResponse(serialization.ConfiguredBaseModel):
             user_first_name=booking.user.firstName,
             user_last_name=booking.user.lastName,
             user_phone_number=booking.user.phoneNumber,
+            user_postal_code=booking.user.postalCode,
         )
 
 

@@ -71,6 +71,7 @@ class GetBookingsByOfferReturns200Test:
                     "offerId": product_offer.id,
                     "offerName": "Vieux motard que jamais",
                     "price": 1010,
+                    "status": "CONFIRMED",
                     "priceCategoryId": None,
                     "priceCategoryLabel": None,
                     "quantity": 1,
@@ -84,6 +85,7 @@ class GetBookingsByOfferReturns200Test:
                     "userFirstName": booking.user.firstName,
                     "userLastName": booking.user.lastName,
                     "userPhoneNumber": booking.user.phoneNumber,
+                    "userPostalCode": booking.user.postalCode,
                 }
             ]
         }
@@ -129,6 +131,7 @@ class GetBookingsByOfferReturns200Test:
                     "offerId": event_offer.id,
                     "offerName": "Vieux motard que jamais",
                     "price": 1010,
+                    "status": "CONFIRMED",
                     "priceCategoryId": event_stock.priceCategory.id,
                     "priceCategoryLabel": event_stock.priceCategory.label,
                     "quantity": 1,
@@ -142,6 +145,7 @@ class GetBookingsByOfferReturns200Test:
                     "userFirstName": booking.user.firstName,
                     "userLastName": booking.user.lastName,
                     "userPhoneNumber": booking.user.phoneNumber,
+                    "userPostalCode": booking.user.postalCode,
                 },
                 {
                     "confirmationDate": booking_2.cancellationLimitDate.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
@@ -151,6 +155,7 @@ class GetBookingsByOfferReturns200Test:
                     "offerId": event_offer.id,
                     "offerName": "Vieux motard que jamais",
                     "price": 1010,
+                    "status": "CONFIRMED",
                     "priceCategoryId": event_stock.priceCategory.id,
                     "priceCategoryLabel": event_stock.priceCategory.label,
                     "quantity": 1,
@@ -164,6 +169,7 @@ class GetBookingsByOfferReturns200Test:
                     "userFirstName": booking_2.user.firstName,
                     "userLastName": booking_2.user.lastName,
                     "userPhoneNumber": booking_2.user.phoneNumber,
+                    "userPostalCode": booking_2.user.postalCode,
                 },
             ]
         }
@@ -213,6 +219,7 @@ class GetBookingsByOfferReturns200Test:
                     "offerId": event_offer.id,
                     "offerName": "Vieux motard que jamais",
                     "price": 1010,
+                    "status": "CONFIRMED",
                     "priceCategoryId": event_stock.priceCategory.id,
                     "priceCategoryLabel": event_stock.priceCategory.label,
                     "quantity": 1,
@@ -226,6 +233,7 @@ class GetBookingsByOfferReturns200Test:
                     "userFirstName": booking.user.firstName,
                     "userLastName": booking.user.lastName,
                     "userPhoneNumber": booking.user.phoneNumber,
+                    "userPostalCode": booking.user.postalCode,
                 },
                 {
                     "confirmationDate": booking_2.cancellationLimitDate.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
@@ -235,6 +243,7 @@ class GetBookingsByOfferReturns200Test:
                     "offerId": event_offer.id,
                     "offerName": "Vieux motard que jamais",
                     "price": 1010,
+                    "status": "CONFIRMED",
                     "priceCategoryId": event_stock.priceCategory.id,
                     "priceCategoryLabel": event_stock.priceCategory.label,
                     "quantity": 1,
@@ -248,6 +257,7 @@ class GetBookingsByOfferReturns200Test:
                     "userFirstName": booking_2.user.firstName,
                     "userLastName": booking_2.user.lastName,
                     "userPhoneNumber": booking_2.user.phoneNumber,
+                    "userPostalCode": booking_2.user.postalCode,
                 },
             ]
         }
@@ -300,6 +310,7 @@ class GetBookingsByOfferReturns200Test:
                     "offerId": event_offer.id,
                     "offerName": "Vieux motard que jamais",
                     "price": 1010,
+                    "status": "CONFIRMED",
                     "priceCategoryId": event_stock.priceCategory.id,
                     "priceCategoryLabel": event_stock.priceCategory.label,
                     "quantity": 1,
@@ -313,6 +324,7 @@ class GetBookingsByOfferReturns200Test:
                     "userFirstName": booking.user.firstName,
                     "userLastName": booking.user.lastName,
                     "userPhoneNumber": booking.user.phoneNumber,
+                    "userPostalCode": booking.user.postalCode,
                 },
             ]
         }
@@ -365,6 +377,7 @@ class GetBookingsByOfferReturns200Test:
                     "offerId": event_offer.id,
                     "offerName": "Vieux motard que jamais",
                     "price": 1010,
+                    "status": "CONFIRMED",
                     "priceCategoryId": event_stock.priceCategory.id,
                     "priceCategoryLabel": event_stock.priceCategory.label,
                     "quantity": 1,
@@ -378,6 +391,7 @@ class GetBookingsByOfferReturns200Test:
                     "userFirstName": booking.user.firstName,
                     "userLastName": booking.user.lastName,
                     "userPhoneNumber": booking.user.phoneNumber,
+                    "userPostalCode": booking.user.postalCode,
                 },
             ]
         }
@@ -431,6 +445,7 @@ class GetBookingsByOfferReturns200Test:
                     "offerId": event_offer.id,
                     "offerName": "Vieux motard que jamais",
                     "price": 1010,
+                    "status": "REIMBURSED",
                     "priceCategoryId": event_stock.priceCategory.id,
                     "priceCategoryLabel": event_stock.priceCategory.label,
                     "quantity": 1,
@@ -444,6 +459,7 @@ class GetBookingsByOfferReturns200Test:
                     "userFirstName": booking.user.firstName,
                     "userLastName": booking.user.lastName,
                     "userPhoneNumber": booking.user.phoneNumber,
+                    "userPostalCode": booking.user.postalCode,
                 },
             ]
         }
@@ -504,6 +520,7 @@ class GetBookingsByOfferReturns200Test:
                     "offerId": event_offer.id,
                     "offerName": "Vieux motard que jamais",
                     "price": 1010,
+                    "status": "USED",
                     "priceCategoryId": event_stock_2.priceCategory.id,
                     "priceCategoryLabel": event_stock_2.priceCategory.label,
                     "quantity": 1,
@@ -517,6 +534,7 @@ class GetBookingsByOfferReturns200Test:
                     "userFirstName": booking.user.firstName,
                     "userLastName": booking.user.lastName,
                     "userPhoneNumber": booking.user.phoneNumber,
+                    "userPostalCode": booking.user.postalCode,
                 },
             ]
         }
@@ -570,6 +588,7 @@ class GetBookingsByOfferReturns200Test:
                     "offerId": event_offer.id,
                     "offerName": "Vieux motard que jamais",
                     "price": 1010,
+                    "status": "CONFIRMED",
                     "priceCategoryId": event_stock.priceCategory.id,
                     "priceCategoryLabel": event_stock.priceCategory.label,
                     "quantity": 1,
@@ -583,6 +602,7 @@ class GetBookingsByOfferReturns200Test:
                     "userFirstName": booking.user.firstName,
                     "userLastName": booking.user.lastName,
                     "userPhoneNumber": booking.user.phoneNumber,
+                    "userPostalCode": booking.user.postalCode,
                 },
                 {
                     "confirmationDate": booking_2.cancellationLimitDate.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
@@ -592,6 +612,7 @@ class GetBookingsByOfferReturns200Test:
                     "offerId": event_offer.id,
                     "offerName": "Vieux motard que jamais",
                     "price": 1010,
+                    "status": "CONFIRMED",
                     "priceCategoryId": event_stock.priceCategory.id,
                     "priceCategoryLabel": event_stock.priceCategory.label,
                     "quantity": 1,
@@ -605,6 +626,7 @@ class GetBookingsByOfferReturns200Test:
                     "userFirstName": booking_2.user.firstName,
                     "userLastName": booking_2.user.lastName,
                     "userPhoneNumber": booking_2.user.phoneNumber,
+                    "userPostalCode": booking_2.user.postalCode,
                 },
             ]
         }
@@ -658,6 +680,7 @@ class GetBookingsByOfferReturns200Test:
                     "offerId": event_offer.id,
                     "offerName": "Vieux motard que jamais",
                     "price": 1010,
+                    "status": "CONFIRMED",
                     "priceCategoryId": event_stock.priceCategory.id,
                     "priceCategoryLabel": event_stock.priceCategory.label,
                     "quantity": 1,
@@ -671,6 +694,7 @@ class GetBookingsByOfferReturns200Test:
                     "userFirstName": booking_2.user.firstName,
                     "userLastName": booking_2.user.lastName,
                     "userPhoneNumber": booking_2.user.phoneNumber,
+                    "userPostalCode": booking_2.user.postalCode,
                 },
                 {
                     "confirmationDate": booking_3.cancellationLimitDate.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
@@ -680,6 +704,7 @@ class GetBookingsByOfferReturns200Test:
                     "offerId": event_offer.id,
                     "offerName": "Vieux motard que jamais",
                     "price": 1010,
+                    "status": "CONFIRMED",
                     "priceCategoryId": event_stock.priceCategory.id,
                     "priceCategoryLabel": event_stock.priceCategory.label,
                     "quantity": 1,
@@ -693,6 +718,7 @@ class GetBookingsByOfferReturns200Test:
                     "userFirstName": booking_3.user.firstName,
                     "userLastName": booking_3.user.lastName,
                     "userPhoneNumber": booking_3.user.phoneNumber,
+                    "userPostalCode": booking_3.user.postalCode,
                 },
             ]
         }
