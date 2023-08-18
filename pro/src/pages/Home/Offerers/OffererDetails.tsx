@@ -3,9 +3,11 @@ import React, { useMemo } from 'react'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import { SelectOption } from 'custom_types/form'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullLinkIcon from 'icons/full-link.svg'
+import fullMoreIcon from 'icons/full-more.svg'
 import { Banner, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
@@ -26,6 +28,9 @@ const OffererDetails = ({
   selectedOfferer,
 }: OffererDetailsProps) => {
   const { logEvent } = useAnalytics()
+  const isNewOffererLinkEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_USER_OFFERER_LINK'
+  )
 
   const hasAtLeastOnePhysicalVenue = selectedOfferer.managedVenues
     ?.filter(venue => !venue.isVirtual)
@@ -81,6 +86,23 @@ const OffererDetails = ({
               value={selectedOfferer.id.toString()}
             />
           </div>
+
+          {isNewOffererLinkEnabled && (
+            <>
+              <div className="od-separator vertical" />
+              <ButtonLink
+                variant={ButtonVariant.TERNARY}
+                link={{
+                  to: `/structures/${selectedOfferer.id}#attachment-invitations-section`,
+                  isExternal: false,
+                }}
+                icon={fullMoreIcon}
+                isDisabled={!isUserOffererValidated}
+              >
+                Inviter
+              </ButtonLink>
+            </>
+          )}
 
           <div className="od-separator vertical" />
           <ButtonLink

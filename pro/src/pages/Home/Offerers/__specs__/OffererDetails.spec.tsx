@@ -82,6 +82,11 @@ describe('offererDetailsLegacy', () => {
         },
         initialized: true,
       },
+      features: {
+        list: [
+          { isActive: false, nameKey: 'WIP_ENABLE_NEW_USER_OFFERER_LINK' },
+        ],
+      },
     }
 
     virtualVenue = {
@@ -213,6 +218,18 @@ describe('offererDetailsLegacy', () => {
 
     const secondOfflineVenueTitle = screen.getByText('Le deuxième Sous-sol')
     expect(secondOfflineVenueTitle).toBeInTheDocument()
+  })
+
+  it('should display invite member button if FF is enable', async () => {
+    const storeOverrides = {
+      ...store,
+      features: {
+        list: [{ isActive: true, nameKey: 'WIP_ENABLE_NEW_USER_OFFERER_LINK' }],
+      },
+    }
+    await renderHomePage(storeOverrides)
+
+    expect(screen.getByText('Inviter')).toBeInTheDocument()
   })
 
   it('should not display virtual venue informations when no virtual offers', async () => {
