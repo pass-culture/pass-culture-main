@@ -325,7 +325,7 @@ describe('OfferFilters', () => {
 
     await userEvent.click(
       screen.getByRole('button', {
-        name: 'Localisation des partenaires',
+        name: /Localisation des partenaires/,
       })
     )
     await userEvent.click(
@@ -344,11 +344,12 @@ describe('OfferFilters', () => {
       isLoading: false,
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.GEOLOCATION,
+      storeOverrides: isGeolocationActive,
     })
 
     await userEvent.click(
       screen.getByRole('button', {
-        name: 'Localisation des partenaires',
+        name: /Localisation des partenaires/,
       })
     )
     screen.debug()
@@ -366,6 +367,7 @@ describe('OfferFilters', () => {
     renderOfferFilters({
       isLoading: false,
       initialValues: initialValues,
+      storeOverrides: isGeolocationActive,
     })
 
     await userEvent.click(screen.getByRole('button', { name: 'Catégorie' }))

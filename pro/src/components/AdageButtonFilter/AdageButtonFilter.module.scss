@@ -8,8 +8,6 @@
 }
 
 .adage-button {
-  @include fonts.preview-text;
-
   display: flex;
   align-items: center;
   background-color: colors.$white;
@@ -18,17 +16,15 @@
   border: rem.torem(1px) solid colors.$input-text-color;
   height: rem.torem(40px);
   white-space: nowrap;
+  font-size: rem.torem(15px);
 
   &-is-active {
-    @include fonts.caption;
-
+    font-weight: 700;
     line-height: rem.torem(20px);
-    border: rem.torem(2px) solid colors.$input-text-color;
   }
 
   &-selected {
-    @include fonts.caption;
-
+    font-weight: 700;
     line-height: rem.torem(20px);
     border: rem.torem(2px) solid colors.$primary;
   }
@@ -41,25 +37,12 @@
   &:focus-visible {
     outline: rem.torem(1px) solid colors.$black;
     outline-offset: rem.torem(2px);
-    border: rem.torem(2px) solid colors.$input-text-color;
   }
 
   &:disabled {
     cursor: not-allowed;
     border: none;
     color: colors.$grey-dark;
-  }
-
-  &-active {
-    background: colors.$primary;
-    width: rem.torem(8px);
-    height: rem.torem(8px);
-    border-radius: rem.torem(8px);
-    margin-right: rem.torem(8px);
-
-    &-disabled {
-      background-color: colors.$grey-dark;
-    }
   }
 
   &-modal {
