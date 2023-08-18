@@ -18,7 +18,7 @@ import useNotification from 'hooks/useNotification'
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import tempStrokeAddUserIcon from 'icons/temp-stroke-add-user.svg'
-import { Banner, Button } from 'ui-kit'
+import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -191,23 +191,6 @@ const Offerers = (): JSX.Element => {
       >
         Ajouter une nouvelle structure
       </Button>
-      {isNewOffererLinkEnabled && (
-        <Banner
-          type="notification-info"
-          links={[
-            {
-              href: `#TODO`, // TODO: sera donné plus tard
-              linkTitle: 'En savoir plus',
-            },
-          ]}
-        >
-          <strong>Vous souhaitez rejoindre cet espace ?</strong>
-          <br />
-          Vos collaborateurs peuvent vous inviter en passant par leur espace
-          pass Culture Pro. Vous recevrez alors un email vous permettant
-          d’accéder à cet espace.
-        </Banner>
-      )}
       <ActionBar
         previousStepTitle="Retour"
         hideRightButton
