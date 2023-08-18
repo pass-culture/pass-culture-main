@@ -2210,7 +2210,7 @@ class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
             provider=venue_provider.provider,
             idAtProvider=venue_provider.venueIdAtOfferProvider,
         )
-        movie_id = 523
+        movie_id = "52F3G"
         offer_id_at_provider = f"{movie_id}%{venue_provider.venueId}%EMS"
         offer = factories.EventOfferFactory(
             venue=venue_provider.venue, idAtProvider=offer_id_at_provider, lastProviderId=ems_provider.id
