@@ -251,16 +251,22 @@ def book_offer(
         if stock.price == 0 and stock.offer.subcategoryId in constants.FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE:
             booking.mark_as_used()
 
-        stock.dnBookedQuantity += booking.quantity
         is_cinema_external_ticket_applicable = providers_repository.is_cinema_external_ticket_applicable(stock.offer)
 
         if is_cinema_external_ticket_applicable:
             offers_validation.check_offer_is_from_current_cinema_provider(stock.offer)
             _book_cinema_external_ticket(booking, stock, beneficiary)
 
+        remaining_quantity = None
         if providers_repository.is_event_external_ticket_applicable(stock.offer):
-            _book_event_external_ticket(booking, stock, beneficiary)
+            remaining_quantity = _book_event_external_ticket(booking, stock, beneficiary)
 
+        stock.dnBookedQuantity += booking.quantity
+
+        # If a partner have implemented our external ticket api (charlie api),
+        # they should send us the remaining seats for the event.
+        if remaining_quantity:
+            stock.quantity = stock.dnBookedQuantity + remaining_quantity
         repository.save(booking, stock)
 
         if booking.status == BookingStatus.USED:
@@ -337,16 +343,17 @@ def _book_cinema_external_ticket(booking: Booking, stock: Stock, beneficiary: Us
     booking.externalBookings = [ExternalBooking(barcode=ticket.barcode, seat=ticket.seat_number) for ticket in tickets]
 
 
-def _book_event_external_ticket(booking: Booking, stock: Stock, beneficiary: User) -> None:
+def _book_event_external_ticket(booking: Booking, stock: Stock, beneficiary: User) -> int:
     if not FeatureToggle.ENABLE_CHARLIE_BOOKINGS_API.is_active():
         raise feature.DisabledFeatureError("ENABLE_CHARLIE_BOOKINGS_API is inactive")
     try:
-        tickets = external_bookings_api.book_event_ticket(booking, stock, beneficiary)
+        tickets, remaining_quantity = external_bookings_api.book_event_ticket(booking, stock, beneficiary)
     except external_bookings_exceptions.ExternalBookingException as exc:
         logger.exception("Could not book external ticket: %s", exc)
         raise exc
 
     booking.externalBookings = [ExternalBooking(barcode=ticket.barcode, seat=ticket.seat_number) for ticket in tickets]
+    return remaining_quantity
 
 
 def _cancel_booking(

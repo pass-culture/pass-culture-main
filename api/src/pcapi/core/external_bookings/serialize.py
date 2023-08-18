@@ -66,4 +66,9 @@ class ExternalEventTicket(pydantic.BaseModel):
 
 class ExternalEventBookingResponse(pydantic.BaseModel):
     tickets: list[ExternalEventTicket]
+    remainingQuantity: pydantic.StrictInt
+
+
+class ExternalEventBookingErrorResponse(pydantic.BaseModel):
+    error: str
     remainingQuantity: pydantic.StrictInt | None
