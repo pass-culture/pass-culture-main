@@ -42,6 +42,20 @@ class OfferMetadataTest:
 
         assert "image" not in metadata
 
+    def test_can_have_a_description(self):
+        offer = offers_factories.OfferFactory(description="Pass valable partout")
+
+        metadata = get_metadata_from_offer(offer)
+
+        assert metadata["description"] == "Pass valable partout"
+
+    def test_can_have_no_description(self):
+        offer = offers_factories.OfferFactory(description=None)
+
+        metadata = get_metadata_from_offer(offer)
+
+        assert "description" not in metadata
+
     class OfferTest:
         def should_have_an_offer(self):
             offer = offers_factories.OfferFactory()
