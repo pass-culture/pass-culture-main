@@ -35,19 +35,13 @@ logger = logging.getLogger(__name__)
 
 HOSTNAME = socket.gethostname()
 
-TITELIVE_EXTRACT_FILE_PATH = "/tmp/ExtractPassCulture.csv"
-TITELIVE_EXTRACT_COMMENT_FILE_PATH = "/tmp/extraction_public_averti.csv"
-
+TITELIVE_EXTRACT_FILE_PATH = "/tmp/extractionPassCulture-2023-08-18.csv"
 
 OUT_REJECTED_PRODUCT_IDS_FILE_PATH = "/tmp/OUT_rejected_product_ids.csv"
 OUT_ALL_REJECTED_EANS_FILE_PATH = "/tmp/OUT_all_rejected_eans.csv"
 GET_OUT_DETAIL_REJECTED_EANS_FILE_PATH = lambda reason: f"/tmp/OUT_{reason}_rejected_eans.csv"
 
 HEADER_LINE_COUNT = 1
-COMMENT_COLUMN_INDICES = {
-    "EAN": 0,
-    "COMMENT": 1,
-}
 COLUMN_INDICES = {
     "EAN": 0,
     "CODE_SUPPORT": 1,
@@ -55,7 +49,12 @@ COLUMN_INDICES = {
     "TAUX_TVA": 3,
     "CODE_GTL": 4,
     "TITLE": 7,
+    "COMMENT": 8,
 }
+
+# because titelive now use 0.1 precision decimal :)
+PAPER_PRESS_VAT_LOW_PRECISION = "2,10"
+BASE_VAT_LOW_PRECISION = "20,0"
 
 
 def reject_inappropriate_products(ean: str, dry: bool = False) -> list[int]:
@@ -112,7 +111,7 @@ def get_ineligibility_reason(**kwargs: typing.Any) -> str | None:
 
     # Ouvrage avec pierres ou encens, jeux de société ou escape game en coffrets,
     # marchandisage : jouets, goodies, peluches, posters, papeterie, etc...
-    if taux_tva == BASE_VAT:
+    if taux_tva in (BASE_VAT, BASE_VAT_LOW_PRECISION):
         return "vat-20"
 
     # ouvrage du rayon scolaire
@@ -161,27 +160,18 @@ def get_ineligibility_reason(**kwargs: typing.Any) -> str | None:
     if TOEIC_TEXT in title or TOEFL_TEXT in title:
         return "toeic-toefl"
 
-    if taux_tva == PAPER_PRESS_VAT and code_support == PAPER_PRESS_SUPPORT_CODE:
+    if taux_tva in (PAPER_PRESS_VAT, PAPER_PRESS_VAT_LOW_PRECISION) and code_support == PAPER_PRESS_SUPPORT_CODE:
         return "press"
 
     return None
 
 
-def update_products(file_path: str, comments_file_path: str, dry: bool) -> None:
+def update_products(file_path: str, dry: bool) -> None:
     product_whitelist_eans = {
         ean for ean, in fraud_models.ProductWhitelist.query.with_entities(fraud_models.ProductWhitelist.ean).all()
     }
 
     comments_dict: dict[str, str] = {}
-
-    with open(comments_file_path, newline="", encoding="utf-8") as csv_comments_file:
-        csv_reader = csv.reader(csv_comments_file, delimiter=";")
-        for index, row in enumerate(csv_reader, 1):
-            if index <= HEADER_LINE_COUNT:
-                continue
-            ean = row[COMMENT_COLUMN_INDICES["EAN"]]
-            if ean:
-                comments_dict[ean] = row[COMMENT_COLUMN_INDICES["COMMENT"]]
 
     with open(file_path, newline="", encoding="utf-8") as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=";")
@@ -204,6 +194,7 @@ def update_products(file_path: str, comments_file_path: str, dry: bool) -> None:
             taux_tva = row[COLUMN_INDICES["TAUX_TVA"]]
             taux_tva = taux_tva.replace(".", ",")  #  fix decimal separator different from titelive_things files.
             title = row[COLUMN_INDICES["TITLE"]]
+            comments_dict[ean] = row[COLUMN_INDICES["COMMENT"]]
 
             ineligibility_reason = get_ineligibility_reason(
                 gtl_id=gtl_id,
@@ -266,12 +257,11 @@ if __name__ == "__main__":
         dry_run = not parser.parse_args().save
 
         logger.info(
-            "[reject products] Reading GTL csv extract %s,%s %s",
+            "[reject products] Reading GTL csv extract %s %s",
             TITELIVE_EXTRACT_FILE_PATH,
-            TITELIVE_EXTRACT_COMMENT_FILE_PATH,
             "in dry run mode" if dry_run else "",
         )
-        update_products(TITELIVE_EXTRACT_FILE_PATH, TITELIVE_EXTRACT_COMMENT_FILE_PATH, dry_run)
+        update_products(TITELIVE_EXTRACT_FILE_PATH, dry_run)
         logger.info("Total duration: %s seconds", time.time() - start)
         if dry_run:
             logger.info("[dryrun] Rerun with --save to apply those changes into the database")
