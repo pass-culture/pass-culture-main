@@ -178,10 +178,14 @@ class PostBookingTest:
             offer__venue__address="1 boulevard Poissonniere",
             offer__extraData={"ean": "1234567890123"},
             idAtProviders="",
+            dnBookedQuantity=14,
+            quantity=20,
         )
 
         requests_mock.post(
-            external_booking_url, json={"tickets": [{"barcode": "12123932898127", "seat": "A12"}]}, status_code=201
+            external_booking_url,
+            json={"tickets": [{"barcode": "12123932898127", "seat": "A12"}], "remainingQuantity": 50},
+            status_code=201,
         )
 
         response = client.with_token(self.identifier).post(
@@ -215,6 +219,8 @@ class PostBookingTest:
         assert external_bookings.bookingId == response.json["bookingId"]
         assert external_bookings.barcode == "12123932898127"
         assert external_bookings.seat == "A12"
+        assert stock.quantity == 50 + 15  # remainingQuantity + dnBookedQuantity after new booking
+        assert stock.dnBookedQuantity == 15
 
     @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
     @freeze_time("2022-10-12 17:09:25")
@@ -232,6 +238,8 @@ class PostBookingTest:
             offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
             offer__lastProvider=provider,
             idAtProviders="",
+            quantity=25,
+            dnBookedQuantity=10,
         )
 
         requests_mock.post(external_booking_url, json={"error": "sold_out"}, status_code=409)
@@ -242,6 +250,7 @@ class PostBookingTest:
 
         assert response.status_code == 400
         assert response.json == {"code": "PROVIDER_STOCK_SOLD_OUT"}
+        assert stock.quantity == 10
         assert len(bookings_models.ExternalBooking.query.all()) == 0
         assert len(bookings_models.Booking.query.all()) == 0
 
@@ -262,6 +271,8 @@ class PostBookingTest:
             offer__lastProvider=provider,
             offer__isDuo=True,
             idAtProviders="",
+            quantity=25,
+            dnBookedQuantity=10,
         )
 
         requests_mock.post(
@@ -274,6 +285,7 @@ class PostBookingTest:
 
         assert response.status_code == 400
         assert response.json == {"code": "PROVIDER_STOCK_NOT_ENOUGH_SEATS"}
+        assert stock.quantity == 11
         assert len(bookings_models.ExternalBooking.query.all()) == 0
         assert len(bookings_models.Booking.query.all()) == 0
 

@@ -5,6 +5,7 @@ import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.external_bookings import exceptions as external_bookings_exceptions
 import pcapi.core.finance.models as finance_models
+import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.exceptions import StockDoesNotExist
 from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
 from pcapi.core.offers.models import Stock
@@ -87,12 +88,18 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
         )
         raise ApiErrors({"code": "CINEMA_PROVIDER_BOOKING_FAILED"})
     except external_bookings_exceptions.ExternalBookingSoldOutError:
+        offers_api.edit_stock(stock, quantity=stock.dnBookedQuantity, editing_provider=stock.offer.lastProvider)
         logger.info(
             "Could not book offer: Event sold out",
             extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
         )
         raise ApiErrors({"code": "PROVIDER_STOCK_SOLD_OUT"})
-    except external_bookings_exceptions.ExternalBookingNotEnoughSeatsError:
+    except external_bookings_exceptions.ExternalBookingNotEnoughSeatsError as error:
+        offers_api.edit_stock(
+            stock,
+            quantity=(stock.dnBookedQuantity + error.remainingQuantity),
+            editing_provider=stock.offer.lastProvider,
+        )
         logger.info(
             "Could not book offer: Event has not enough seats left",
             extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
