@@ -49,6 +49,7 @@ CUSTOM_TIMEZONES = {
     # very few events, there...
 }
 METROPOLE_TIMEZONE = "Europe/Paris"
+FRENCH_DATE_FORMAT = "%d/%m/%Y"
 
 
 class FrenchParserInfo(parserinfo):
@@ -160,3 +161,11 @@ def date_to_localized_datetime(date_: date | None, time_: time) -> datetime | No
         return None
     naive_utc_datetime = datetime.combine(date_, time_)
     return pytz.timezone(METROPOLE_TIMEZONE).localize(naive_utc_datetime).astimezone(pytz.utc)
+
+
+def parse_french_date(date_str: str | None) -> datetime | None:
+    return datetime.strptime(date_str, FRENCH_DATE_FORMAT) if date_str else None
+
+
+def format_date_to_french_locale(date_: date | None) -> str | None:
+    return date_.strftime(FRENCH_DATE_FORMAT) if date_ else None
