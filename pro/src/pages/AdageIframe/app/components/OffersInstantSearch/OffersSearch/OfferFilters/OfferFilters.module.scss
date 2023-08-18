@@ -26,24 +26,24 @@
     }
   }
 
-  &-filter {
+  &-buttons {
     display: flex;
-    flex-flow: row wrap;
-    max-width: 80%;
-    gap: rem.torem(16px);
+    flex-direction: column;
     align-items: center;
 
-    &:last-child {
-      margin-top: rem.torem(16px);
+    &-list {
+      &-items {
+        display: flex;
+        flex-flow: row wrap;
+        gap: rem.torem(16px);
+        align-items: center;
+        margin-bottom: rem.torem(16px);
+      }
     }
   }
 
   &-evenement {
     @include fonts.body;
-
-    div:not(:last-of-type) {
-      margin-bottom: rem.torem(16px);
-    }
   }
 }
 

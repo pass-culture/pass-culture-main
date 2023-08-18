@@ -13,7 +13,7 @@ export interface AdageButtonFilterProps
   isActive: boolean
   itemsLength?: number | null
   isOpen: boolean
-  setIsOpen: (value: { [key: string]: boolean }) => void
+  setIsOpen: React.Dispatch<React.SetStateAction<{ [key: string]: boolean }>>
   filterName: string
   handleSubmit: () => void
 }
@@ -72,8 +72,8 @@ const AdageButtonFilter = ({
     }
   }, [containerRef, handleClickOutside])
 
-  const modalButton = () => {
-    setIsOpen({ [filterName]: !isOpen })
+  const clickModalButtonHandler = () => {
+    setIsOpen(previousIsOpen => ({ [filterName]: !previousIsOpen[filterName] }))
   }
 
   return (
@@ -81,19 +81,13 @@ const AdageButtonFilter = ({
       <button
         type="button"
         disabled={disabled}
-        onClick={modalButton}
+        onClick={clickModalButtonHandler}
         className={cn([styles['adage-button']], {
           [styles['adage-button-is-active']]: isActive,
           [styles['adage-button-selected']]: isOpen,
         })}
       >
-        <div
-          className={cn({
-            [styles['adage-button-active']]: isActive,
-            [styles['adage-button-active-disabled']]: disabled,
-          })}
-        ></div>
-        {title} {isActive && itemsLength && `(${itemsLength})`}
+        {title} {isActive && `(${itemsLength})`}
         {!disabled && (
           <SvgIcon
             className={styles['adage-button-dropdown']}
