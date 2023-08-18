@@ -1,6 +1,7 @@
 import datetime
+import typing
 
-from pydantic.tools import parse_obj_as
+import pydantic
 
 from pcapi import settings
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
@@ -80,7 +81,7 @@ def book_event_ticket(
     booking: bookings_models.Booking,
     stock: offers_models.Stock,
     beneficiary: users_models.User,
-) -> list[external_bookings_models.Ticket]:
+) -> typing.Tuple[list[external_bookings_models.Ticket], int]:
     provider = providers_repository.get_provider_enabled_for_pro_by_id(stock.offer.lastProviderId)
     if not provider:
         raise providers_exceptions.InactiveProvider()
@@ -90,7 +91,7 @@ def book_event_ticket(
         provider.bookingExternalUrl, json=payload.json(), headers={"Content-Type": "application/json"}
     )
     _check_external_booking_response_is_ok(response)
-    parsed_response = parse_obj_as(serialize.ExternalEventBookingResponse, response.json())
+    parsed_response = pydantic.parse_obj_as(serialize.ExternalEventBookingResponse, response.json())
     for ticket in parsed_response.tickets:
         add_to_queue(
             REDIS_EXTERNAL_BOOKINGS_NAME,
@@ -100,21 +101,23 @@ def book_event_ticket(
                 "timestamp": datetime.datetime.utcnow().timestamp(),
             },
         )
-    return [Ticket(barcode=ticket.barcode, seat_number=ticket.seat) for ticket in parsed_response.tickets]
+    return [
+        Ticket(barcode=ticket.barcode, seat_number=ticket.seat) for ticket in parsed_response.tickets
+    ], parsed_response.remainingQuantity
 
 
 def _check_external_booking_response_is_ok(response: requests.Response) -> None:
     if response.status_code == 409:
         try:
-            json_response = response.json()
-        except ValueError:
+            error_response = pydantic.parse_obj_as(serialize.ExternalEventBookingErrorResponse, response.json())
+        except (ValueError, pydantic.ValidationError):
             raise exceptions.ExternalBookingException(
                 f"External booking failed with status code {response.status_code} and message {response.text}"
             )
-        if json_response["error"] == "sold_out":
+        if error_response.error == "sold_out":
             raise exceptions.ExternalBookingSoldOutError()
-        if json_response["error"] == "not_enough_seats":
-            raise exceptions.ExternalBookingNotEnoughSeatsError()
+        if error_response.error == "not_enough_seats" and error_response.remainingQuantity:
+            raise exceptions.ExternalBookingNotEnoughSeatsError(remainingQuantity=error_response.remainingQuantity)
     if response.status_code != 201:
         raise exceptions.ExternalBookingException(
             f"External booking failed with status code {response.status_code} and message {response.text}"
