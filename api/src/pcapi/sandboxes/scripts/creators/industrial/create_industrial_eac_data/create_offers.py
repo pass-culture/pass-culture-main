@@ -95,7 +95,7 @@ def create_offers_base_list(
     offerer: offerers_models.Offerer,
     institutions: list[educational_models.EducationalInstitution],
     domains: list[educational_models.EducationalDomain],
-    national_programs: educational_models.NationalProgram,
+    national_programs: list[educational_models.NationalProgram],
     basic_offers: bool = True,
     basic_templates: bool = True,
     from_templates_offers: bool = True,
