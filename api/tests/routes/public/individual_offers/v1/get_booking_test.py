@@ -33,6 +33,7 @@ class GetBookingByTokenReturns200Test:
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
             user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2),
+            user__postalCode="75001",
             stock=product_stock,
         )
 
@@ -48,6 +49,7 @@ class GetBookingByTokenReturns200Test:
             "offerId": product_offer.id,
             "offerName": product_offer.name,
             "price": finance_utils.to_eurocents(booking.amount),
+            "status": "CONFIRMED",
             "priceCategoryId": None,
             "priceCategoryLabel": None,
             "quantity": booking.quantity,
@@ -61,6 +63,7 @@ class GetBookingByTokenReturns200Test:
             "userFirstName": "Jeanne",
             "userLastName": "Doux",
             "userPhoneNumber": "+33101010101",
+            "userPostalCode": "75001",
         }
 
     def test_key_has_rights_and_regular_event_offer(self, client):
@@ -78,6 +81,7 @@ class GetBookingByTokenReturns200Test:
             user__email="beneficiary@example.com",
             user__phoneNumber="0101010101",
             user__dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2),
+            user__postalCode="69100",
             stock=event_stock,
         )
 
@@ -94,6 +98,7 @@ class GetBookingByTokenReturns200Test:
             "offerId": event_offer.id,
             "offerName": event_offer.name,
             "price": finance_utils.to_eurocents(booking.amount),
+            "status": "CONFIRMED",
             "priceCategoryId": booking.stock.priceCategory.id,
             "priceCategoryLabel": booking.stock.priceCategory.label,
             "quantity": booking.quantity,
@@ -107,6 +112,7 @@ class GetBookingByTokenReturns200Test:
             "userFirstName": "Jeanne",
             "userLastName": "Doux",
             "userPhoneNumber": "+33101010101",
+            "userPostalCode": "69100",
         }
 
 
