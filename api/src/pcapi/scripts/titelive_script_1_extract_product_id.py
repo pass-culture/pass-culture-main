@@ -173,7 +173,7 @@ def update_products(file_path: str, dry: bool) -> None:
 
     comments_dict: dict[str, str] = {}
 
-    with open(file_path, newline="", encoding="utf-8") as csv_file:
+    with open(file_path, newline="", encoding="iso-8859-1") as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=";")
 
         total_rows = 0
