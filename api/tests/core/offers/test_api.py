@@ -1840,7 +1840,7 @@ class WhitelistExistingProductTest:
         )
         requests_mock.get(
             f"https://catsearch.epagine.fr/v1/ean/{ean}",
-            json=fixtures.EAN_SEARCH_FIXTURE,
+            json=fixtures.BOOK_BY_EAN_FIXTURE,
         )
         assert not models.Product.query.filter(models.Product.idAtProviders == ean).one_or_none()
 
