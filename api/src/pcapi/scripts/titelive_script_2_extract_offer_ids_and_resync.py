@@ -67,7 +67,7 @@ def reject_inappropriate_offers(products_ids: list[int], dry: bool = False) -> l
     return offer_ids
 
 
-def update_offers(file_path: str, dry: bool) -> None:
+def update_offers(file_path: str, first_line_to_process: int, dry: bool) -> None:
     with open(file_path, newline="", encoding="utf-8") as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=";")
         product_ids: list[int] = []
@@ -78,11 +78,6 @@ def update_offers(file_path: str, dry: bool) -> None:
         total_lines = len(lines)
         batch = []
         output_files: list[str] = []
-
-        first_line_to_process = 1
-
-        with open(OUT_REJECTED_OFFER_IDS_FILE_PATH, "w+", encoding="utf-8") as rejected_offer_ids_csv:
-            rejected_offer_ids_csv.write("")
 
         for index, row in enumerate(lines, start=1):
             if index < first_line_to_process:
@@ -126,14 +121,16 @@ if __name__ == "__main__":
         parser.add_argument(
             "--save", help="Save change to database", type=bool, action=argparse.BooleanOptionalAction, default=False
         )
+        parser.add_argument("--line", help="Line from to start batch processing", type=int, default=1)
         dry_run = not parser.parse_args().save
+        line_from = parser.parse_args().line
 
         logger.info(
             "[reject offers] Reading productIds csv extract %s %s",
             IN_REJECTED_PRODUCT_IDS_FILE_PATH,
             "in dry run mode" if dry_run else "",
         )
-        update_offers(IN_REJECTED_PRODUCT_IDS_FILE_PATH, dry_run)
+        update_offers(IN_REJECTED_PRODUCT_IDS_FILE_PATH, line_from, dry_run)
         logger.info("Total duration: %s seconds", time.time() - start)
         if dry_run:
             logger.info("[dryrun] Rerun with --save to apply those changes into the database")
