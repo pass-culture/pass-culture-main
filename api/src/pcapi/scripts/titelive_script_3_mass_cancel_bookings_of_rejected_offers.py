@@ -32,7 +32,9 @@ def process_offers(lines: t.Iterable[str], first_line_to_process: int) -> list[s
     for i, line in enumerate(lines, start=1):
         if i < first_line_to_process:
             continue
-        offer_id = int(line)
+        if not line.strip().isdigit():  # skip \n on first line
+            continue
+        offer_id = int(line.strip())
         bookings = (
             bookings_models.Booking.query.filter_by(
                 status=bookings_models.BookingStatus.CONFIRMED,
