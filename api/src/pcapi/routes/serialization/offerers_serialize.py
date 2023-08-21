@@ -65,6 +65,15 @@ class OffererApiKey(BaseModel):
     prefixes: list[str]
 
 
+class PostOffererResponseModel(BaseModel):
+    name: str
+    id: int
+    siren: str
+
+    class Config:
+        orm_mode = True
+
+
 class GetOffererResponseModel(BaseModel):
     address: str | None
     apiKey: OffererApiKey

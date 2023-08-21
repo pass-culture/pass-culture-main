@@ -110,12 +110,12 @@ def delete_api_key(api_key_prefix: str) -> None:
 @private_api.route("/offerers", methods=["POST"])
 @login_required
 @spectree_serialize(
-    on_success_status=201, response_model=offerers_serialize.GetOffererResponseModel, api=blueprint.pro_private_schema
+    on_success_status=201, response_model=offerers_serialize.PostOffererResponseModel, api=blueprint.pro_private_schema
 )
-def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers_serialize.GetOffererResponseModel:
+def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers_serialize.PostOffererResponseModel:
     user_offerer = api.create_offerer(current_user, body)
 
-    return offerers_serialize.GetOffererResponseModel.from_orm(user_offerer.offerer)
+    return offerers_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)
 
 
 @private_api.route("/offerers/<int:offerer_id>/eac-eligibility", methods=["GET"])
