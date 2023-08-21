@@ -19,6 +19,7 @@ import { Button, Tag } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { LOGS_DATA } from 'utils/config'
+import { getDistance } from 'utils/getDistance'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import ContactButton from './ContactButton'
@@ -39,6 +40,7 @@ const Offer = ({ offer, queryId, position }: OfferProps): JSX.Element => {
   const [displayDetails, setDisplayDetails] = useState(false)
   const [isModalLikeOpen, setIsModalLikeOpen] = useState(false)
   const isLikeActive = useActiveFeature('WIP_ENABLE_LIKE_IN_ADAGE')
+  const isGeolocationActive = useActiveFeature('WIP_ENABLE_ADAGE_GEO_LOCATION')
   const adageUser = useAdageUser()
 
   const openOfferDetails = (
@@ -112,6 +114,26 @@ const Offer = ({ offer, queryId, position }: OfferProps): JSX.Element => {
             <span className={style['offer-header-label']}>Proposée par </span>
             <span>{getOfferVenueAndOffererName(offer.venue)}</span>
           </div>
+          {offer.venue.coordinates.latitude &&
+            offer.venue.coordinates.longitude &&
+            isGeolocationActive && (
+              <div className={style['offer-header-subtitles']}>
+                <span className={style['offer-header-label']}>Basée à </span>
+                <span>
+                  {getDistance(
+                    {
+                      latitude: offer.venue.coordinates.latitude,
+                      longitude: offer.venue.coordinates.longitude,
+                    },
+                    {
+                      latitude: 0,
+                      longitude: 0,
+                    }
+                  )}{' '}
+                  km
+                </span>
+              </div>
+            )}
           {isCollectiveOffer(offer) && offer.teacher && (
             <div className={style['offer-header-subtitles']}>
               <span className={style['offer-header-label']}>Destinée à </span>
