@@ -366,23 +366,6 @@ class DeleteVenueTest:
 
 class EditVenueTest:
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
-    def when_changes_on_name_algolia_indexing_is_triggered(self, mocked_async_index_offers_of_venue_ids):
-        # Given
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory(
-            name="old names",
-            publicName="old name",
-            city="old City",
-        )
-
-        # When
-        json_data = {"name": "my new name"}
-        offerers_api.update_venue(venue, author=user, **json_data)
-
-        # Then
-        mocked_async_index_offers_of_venue_ids.assert_called_once_with([venue.id])
-
-    @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def when_changes_on_public_name_algolia_indexing_is_triggered(self, mocked_async_index_offers_of_venue_ids):
         # Given
         user = users_factories.UserFactory()
@@ -470,20 +453,31 @@ class EditVenueTest:
         # Then
         assert updated_venue.siret == venue_data["siret"]
 
-    def test_existing_siret_is_not_editable(self, app) -> None:
+    @pytest.mark.parametrize("venue_data", [{"siret": "12345678954321"}, {"siret": None, "comment": "test"}])
+    def test_existing_siret_is_not_editable(self, venue_data, app) -> None:
         # Given
         user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory(siret="12345678900001")
 
         # when
-        venue_data = {
-            "siret": venue.managingOfferer.siren + "54321",
-        }
         with pytest.raises(api_errors.ApiErrors) as error:
             offerers_api.update_venue(venue, author=user, **venue_data)
 
         # Then
         assert error.value.errors["siret"] == ["Vous ne pouvez pas modifier le siret d'un lieu"]
+
+    @pytest.mark.parametrize("venue_data", [{"name": "New name"}, {"name": None}])
+    def test_name_is_not_editable(self, venue_data, app) -> None:
+        # Given
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory()
+
+        # when
+        with pytest.raises(api_errors.ApiErrors) as error:
+            offerers_api.update_venue(venue, author=user, **venue_data)
+
+        # Then
+        assert error.value.errors["name"] == ["Vous ne pouvez pas modifier la raison sociale d'un lieu"]
 
     def test_latitude_and_longitude_wrong_format(self, app) -> None:
         # given
