@@ -1,390 +1,204 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import React, { useState } from 'react'
+import React from 'react'
 
-import { apiContremarque } from 'apiClient/api'
-import { HTTP_STATUS } from 'apiClient/helpers'
-import {
-  ApiError,
-  BookingFormula,
-  BookingOfferType,
-  GetBookingResponse,
-} from 'apiClient/v2'
-import { ApiRequestOptions } from 'apiClient/v2/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v2/core/ApiResult'
-import { DeskProps, MESSAGE_VARIANT } from 'screens/Desk'
-import { Button } from 'ui-kit'
+import { CancelablePromise } from 'apiClient/v1'
+import { defaultBookingResponse } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
+import * as getBookingAdapter from '../adapters/getBooking'
+import * as submitTokenAdapter from '../adapters/submitToken'
 import Desk from '../Desk'
+import { DeskSubmitResponse, MESSAGE_VARIANT } from '../types'
 
-const mocks = vi.hoisted(() => {
-  return {
-    someVariable: '1',
-    TestScreen: ({
-      getBooking,
-      submitInvalidate,
-      submitValidate,
-    }: DeskProps) => {
-      const [response, setResponse] = useState({})
-      return (
-        <div>
-          <h1>Test Screen loaded</h1>
-          <Button
-            onClick={async () => setResponse(await getBooking(testToken))}
-          >
-            getBooking
-          </Button>
-          <Button
-            onClick={async () => setResponse(await submitInvalidate(testToken))}
-          >
-            submitInvalidate
-          </Button>
-          <Button
-            onClick={async () => setResponse(await submitValidate(testToken))}
-          >
-            submitValidate
-          </Button>
-          <div data-testid="response-data">
-            {JSON.stringify(response, null, 2)}
-          </div>
-        </div>
-      )
-    },
-  }
-})
-
-vi.mock('screens/Desk/Desk', () => ({
-  __esModule: true,
-  ...vi.importActual('screens/Desk/Desk'),
-  default: mocks.TestScreen,
-}))
-
-const testToken = 'AAAAAA'
-
-const renderDeskRoute = async () => {
-  const rtlReturns = renderWithProviders(<Desk />)
-  await screen.findByText('Test Screen loaded')
-  return {
-    ...rtlReturns,
-    buttonGetBooking: screen.getByText('getBooking'),
-    buttonSubmitInvalidate: screen.getByText('submitInvalidate'),
-    buttonSubmitValidate: screen.getByText('submitValidate'),
-    responseDataContainer: screen.getByTestId('response-data'),
-  }
+const renderDesk = () => {
+  renderWithProviders(<Desk />)
 }
 
-describe('src | routes | Desk', () => {
-  it('test getBooking success', async () => {
-    const apiBooking: GetBookingResponse = {
-      bookingId: 'test_booking_id',
-      dateOfBirth: '1980-02-01T20:00:00Z',
-      email: 'test@email.com',
-      formula: BookingFormula.PLACE,
-      isUsed: false,
-      offerId: 12345,
-      offerType: BookingOfferType.EVENEMENT,
-      phoneNumber: '0100000000',
-      publicOfferId: 'test_public_offer_id',
-      theater: { theater_any: 'theater_any' },
-      venueAddress: null,
-      venueName: 'mon lieu',
-      datetime: '2001-02-01T20:00:00Z',
-      ean13: 'test ean113',
-      offerName: 'Nom de la structure',
-      price: 13,
-      quantity: 1,
-      userName: 'USER',
-      venueDepartmentCode: '75',
-    }
-    const deskBooking = {
-      datetime: '2001-02-01T20:00:00Z',
-      ean13: 'test ean113',
-      offerName: 'Nom de la structure',
-      price: 13,
-      quantity: 1,
-      userName: 'USER',
-      venueDepartmentCode: '75',
-    }
-    vi.spyOn(apiContremarque, 'getBookingByTokenV2').mockResolvedValue(
-      apiBooking
-    )
-    const { buttonGetBooking, responseDataContainer } = await renderDeskRoute()
-
-    await userEvent.click(buttonGetBooking)
-    await waitFor(() => {
-      expect(apiContremarque.getBookingByTokenV2).toHaveBeenCalledWith(
-        testToken
-      )
+describe('src | components | Desk', () => {
+  describe('Should validate while user is typing', () => {
+    it('should remove QRcode prefix', async () => {
+      renderDesk()
+      const contremarque = screen.getByLabelText('Contremarque')
+      await userEvent.type(contremarque, 'AA:ZERRZ')
+      expect(contremarque).toHaveValue('ZERRZ')
     })
-    // to fix - no-conditional-in-test
-    const response = JSON.parse(responseDataContainer.textContent || '')
 
-    expect(Object.keys(response)).toHaveLength(1)
-    expect(response.booking).toBeDefined()
-    expect(response.booking.datetime).toBe(deskBooking.datetime)
-    expect(response.booking.ean13).toBe(deskBooking.ean13)
-    expect(response.booking.offerName).toBe(deskBooking.offerName)
-    expect(response.booking.price).toBe(deskBooking.price)
-    expect(response.booking.quantity).toBe(deskBooking.quantity)
-    expect(response.booking.userName).toBe(deskBooking.userName)
-    expect(response.booking.venueDepartmentCode).toBe(
-      deskBooking.venueDepartmentCode
-    )
+    it('should display default messages and disable submit button', async () => {
+      renderDesk()
+      expect(screen.getByText('Saisissez une contremarque')).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'Saisissez les contremarques présentées par les bénéficiaires afin de les valider ou de les invalider.'
+        )
+      ).toBeInTheDocument()
+      expect(screen.getByText('Valider la contremarque')).toBeDisabled()
+    })
+
+    it('should indicate the number of characters missing', async () => {
+      renderDesk()
+      const contremarque = screen.getByLabelText('Contremarque')
+      await userEvent.type(contremarque, 'AA')
+      expect(screen.getByText('Caractères restants : 4/6')).toBeInTheDocument()
+    })
+
+    it('should indicate the maximum number of caracters', async () => {
+      renderDesk()
+      const contremarque = screen.getByLabelText('Contremarque')
+      await userEvent.type(contremarque, 'AAOURIRIR')
+      expect(
+        screen.getByText(
+          'La contremarque ne peut pas faire plus de 6 caractères'
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('should indicate that the format is invalid and which characters are valid', async () => {
+      renderDesk()
+      const contremarque = screen.getByLabelText('Contremarque')
+      await userEvent.type(contremarque, 'AA-@')
+      expect(
+        screen.getByText('Caractères valides : de A à Z et de 0 à 9')
+      ).toBeInTheDocument()
+    })
+
+    it('should check that token is valid and display booking details', async () => {
+      vi.spyOn(getBookingAdapter, 'getBooking').mockResolvedValue({
+        booking: defaultBookingResponse,
+      })
+      renderDesk()
+      const contremarque = screen.getByLabelText('Contremarque')
+      await userEvent.type(contremarque, 'AAAAAA')
+      expect(getBookingAdapter.getBooking).toHaveBeenCalledWith('AAAAAA')
+      expect(
+        await screen.findByText(
+          'Coupon vérifié, cliquez sur "Valider" pour enregistrer'
+        )
+      ).toBeInTheDocument()
+      expect(
+        await screen.findByText(defaultBookingResponse.offerName)
+      ).toBeInTheDocument()
+    })
+
+    it('should display error message when validation fails', async () => {
+      vi.spyOn(getBookingAdapter, 'getBooking').mockResolvedValue({
+        error: {
+          message: 'Erreur',
+          isTokenValidated: false,
+          variant: MESSAGE_VARIANT.ERROR,
+        },
+      })
+      renderDesk()
+      const contremarque = screen.getByLabelText('Contremarque')
+      await userEvent.type(contremarque, 'AAAAAA')
+      expect(await screen.findByText(/Erreur/)).toBeInTheDocument()
+    })
   })
 
-  it('test getBooking failure, booking already validated', async () => {
-    const globalErrorMessage = 'Cette réservation a déjà été validée'
-    vi.spyOn(apiContremarque, 'getBookingByTokenV2').mockRejectedValue(
-      new ApiError(
-        {} as ApiRequestOptions,
-        { status: HTTP_STATUS.GONE, body: {} } as ApiResult,
-        globalErrorMessage
-      )
-    )
-
-    const { buttonGetBooking, responseDataContainer } = await renderDeskRoute()
-
-    await userEvent.click(buttonGetBooking)
-    await waitFor(() => {
-      expect(apiContremarque.getBookingByTokenV2).toHaveBeenCalledWith(
-        testToken
-      )
+  describe('Should validate contremarque when the user submits the form', () => {
+    beforeEach(() => {
+      vi.spyOn(getBookingAdapter, 'getBooking').mockResolvedValueOnce({
+        booking: defaultBookingResponse,
+      })
     })
-    // to fix - no-conditional-in-test
-    const response = JSON.parse(responseDataContainer.textContent || '')
+    it('should display confirmation message and empty field when contremarque is validated', async () => {
+      vi.spyOn(submitTokenAdapter, 'submitValidate').mockResolvedValueOnce({})
+      renderDesk()
+      const contremarque = screen.getByLabelText('Contremarque')
+      await userEvent.type(contremarque, 'AAAAAA')
+      await userEvent.click(screen.getByText('Valider la contremarque'))
+      expect(
+        await screen.findByText('Contremarque validée !')
+      ).toBeInTheDocument()
+      expect(contremarque).toHaveValue('')
+    })
 
-    expect(Object.keys(response)).toHaveLength(1)
-    expect(response.error).toBeDefined()
-    expect(response.error.isTokenValidated).toBe(true)
-    expect(response.error.message).toBe(globalErrorMessage)
-    expect(response.error.variant).toBe(MESSAGE_VARIANT.ERROR)
+    it('should display error message and empty field when contremarque could not be validated', async () => {
+      vi.spyOn(submitTokenAdapter, 'submitValidate').mockResolvedValueOnce({
+        error: {
+          message: 'Erreur',
+          variant: MESSAGE_VARIANT.ERROR,
+        },
+      })
+      renderDesk()
+      const contremarque = screen.getByLabelText('Contremarque')
+      await userEvent.type(contremarque, 'AAAAAA')
+      await userEvent.click(screen.getByText('Valider la contremarque'))
+      expect(await screen.findByText(/Erreur/)).toBeInTheDocument()
+      expect(contremarque).toHaveValue('AAAAAA')
+    })
   })
 
-  it('test getBooking failure, booking cancelled', async () => {
-    const cancelledErrorMessage = 'Cette réservation a été annulée'
-    vi.spyOn(apiContremarque, 'getBookingByTokenV2').mockRejectedValue(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          status: HTTP_STATUS.GONE,
-          body: { booking_cancelled: 'Cette réservation a été annulée' },
-        } as ApiResult,
-        cancelledErrorMessage
-      )
-    )
-
-    const { buttonGetBooking, responseDataContainer } = await renderDeskRoute()
-
-    await userEvent.click(buttonGetBooking)
-    await waitFor(() => {
-      expect(apiContremarque.getBookingByTokenV2).toHaveBeenCalledWith(
-        testToken
-      )
+  describe('Should invalidate contremarque when the user submits the form', () => {
+    beforeEach(() => {
+      vi.spyOn(getBookingAdapter, 'getBooking').mockResolvedValueOnce({
+        error: {
+          isTokenValidated: true,
+          message: '',
+          variant: MESSAGE_VARIANT.ERROR,
+        },
+      })
     })
-    // to fix - no-conditional-in-test
-    const response = JSON.parse(responseDataContainer.textContent || '')
 
-    expect(Object.keys(response)).toHaveLength(1)
-    expect(response.error).toBeDefined()
-    expect(response.error.isTokenValidated).toBe(false)
-    expect(response.error.message).toBe(cancelledErrorMessage)
-    expect(response.error.variant).toBe(MESSAGE_VARIANT.ERROR)
-  })
-
-  it('test getBooking failure, booking reimbursed', async () => {
-    const cancelledErrorMessage = 'Cette réservation a été remboursée'
-    vi.spyOn(apiContremarque, 'getBookingByTokenV2').mockRejectedValue(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          status: HTTP_STATUS.FORBIDDEN,
-          body: { payment: 'Cette réservation a été remboursée' },
-        } as ApiResult,
-        cancelledErrorMessage
+    it('should display invaladating message when waiting for invalidation', async () => {
+      vi.spyOn(submitTokenAdapter, 'submitInvalidate').mockImplementation(
+        () => {
+          return new CancelablePromise<DeskSubmitResponse>(resolve =>
+            setTimeout(() => resolve({} as DeskSubmitResponse), 50)
+          )
+        }
       )
-    )
+      renderDesk()
 
-    const { buttonGetBooking, responseDataContainer } = await renderDeskRoute()
+      await userEvent.type(screen.getByLabelText('Contremarque'), 'AAAAAA')
+      await userEvent.click(screen.getByText('Invalider la contremarque'))
 
-    await userEvent.click(buttonGetBooking)
-    await waitFor(() => {
-      expect(apiContremarque.getBookingByTokenV2).toHaveBeenCalledWith(
-        testToken
-      )
+      const confirmModalButton = screen.getByRole('button', {
+        name: 'Continuer',
+      })
+      await userEvent.click(confirmModalButton)
+
+      expect(screen.getByText('Invalidation en cours...')).toBeInTheDocument()
     })
-    // to fix - no-conditional-in-test
-    const response = JSON.parse(responseDataContainer.textContent || '')
 
-    expect(Object.keys(response)).toHaveLength(1)
-    expect(response.error).toBeDefined()
-    expect(response.error.isTokenValidated).toBe(false)
-    expect(response.error.message).toBe(cancelledErrorMessage)
-    expect(response.error.variant).toBe(MESSAGE_VARIANT.ERROR)
-  })
+    it('should display validated message when token invalidation has been done', async () => {
+      vi.spyOn(submitTokenAdapter, 'submitInvalidate').mockResolvedValueOnce({})
 
-  it('test getBooking failure, booking cant be validated yet', async () => {
-    const notConfirmedErrorMessage =
-      'Cette réservation a été effectuée le 05/09/2022.\nVeuillez attendre jusqu’au 07/09/2022 pour valider la contremarque.'
-    vi.spyOn(apiContremarque, 'getBookingByTokenV2').mockRejectedValue(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          status: HTTP_STATUS.FORBIDDEN,
-          body: {
-            booking:
-              'Cette réservation a été effectuée le 05/09/2022.\nVeuillez attendre jusqu’au 07/09/2022 pour valider la contremarque.',
-          },
-        } as ApiResult,
-        notConfirmedErrorMessage
-      )
-    )
+      renderDesk()
 
-    const { buttonGetBooking, responseDataContainer } = await renderDeskRoute()
+      await userEvent.type(screen.getByLabelText('Contremarque'), 'AAAAAA')
+      await userEvent.click(screen.getByText('Invalider la contremarque'))
 
-    await userEvent.click(buttonGetBooking)
-    await waitFor(() => {
-      expect(apiContremarque.getBookingByTokenV2).toHaveBeenCalledWith(
-        testToken
-      )
+      const confirmModalButton = screen.getByRole('button', {
+        name: 'Continuer',
+      })
+      await userEvent.click(confirmModalButton)
+
+      expect(screen.getByText('Contremarque invalidée !')).toBeInTheDocument()
     })
-    // to fix - no-conditional-in-test
-    const response = JSON.parse(responseDataContainer.textContent || '')
 
-    expect(Object.keys(response)).toHaveLength(1)
-    expect(response.error).toBeDefined()
-    expect(response.error.isTokenValidated).toBe(false)
-    expect(response.error.message).toBe(notConfirmedErrorMessage)
-    expect(response.error.variant).toBe(MESSAGE_VARIANT.ERROR)
-  })
+    it('should display error message when invalidation failed', async () => {
+      vi.spyOn(submitTokenAdapter, 'submitInvalidate').mockResolvedValueOnce({
+        error: {
+          message: 'Erreur lors de la validation de la contremarque',
+          variant: MESSAGE_VARIANT.ERROR,
+        },
+      })
 
-  it('test getBooking failure, api error', async () => {
-    const globalErrorMessage = 'Server error'
-    vi.spyOn(apiContremarque, 'getBookingByTokenV2').mockRejectedValue(
-      new ApiError(
-        {} as ApiRequestOptions,
-        { status: HTTP_STATUS.NOT_FOUND } as ApiResult,
-        globalErrorMessage
+      renderDesk()
+
+      await userEvent.type(screen.getByLabelText('Contremarque'), 'AAAAAA')
+      await userEvent.click(screen.getByText('Invalider la contremarque'))
+
+      const confirmModalButton = screen.getByRole('button', {
+        name: 'Continuer',
+      })
+      await userEvent.click(confirmModalButton)
+      const errorMessage = await screen.findByText(
+        'Erreur lors de la validation de la contremarque'
       )
-    )
 
-    const { buttonGetBooking, responseDataContainer } = await renderDeskRoute()
-
-    await userEvent.click(buttonGetBooking)
-    await waitFor(() => {
-      expect(apiContremarque.getBookingByTokenV2).toHaveBeenCalledWith(
-        testToken
-      )
+      expect(errorMessage).toBeInTheDocument()
     })
-    // to fix - no-conditional-in-test
-    const response = JSON.parse(responseDataContainer.textContent || '')
-
-    expect(Object.keys(response)).toHaveLength(1)
-    expect(response.error).toBeDefined()
-    expect(response.error.isTokenValidated).toBe(false)
-    expect(response.error.message).toBe(globalErrorMessage)
-    expect(response.error.variant).toBe(MESSAGE_VARIANT.ERROR)
-  })
-
-  it('test submitInvalidate success', async () => {
-    vi.spyOn(apiContremarque, 'patchBookingKeepByToken').mockResolvedValue()
-
-    const { buttonSubmitInvalidate, responseDataContainer } =
-      await renderDeskRoute()
-
-    await userEvent.click(buttonSubmitInvalidate)
-    await waitFor(() => {
-      expect(apiContremarque.patchBookingKeepByToken).toHaveBeenCalledWith(
-        testToken
-      )
-    })
-    // to fix - no-conditional-in-test
-    const response = JSON.parse(responseDataContainer.textContent || '')
-    expect(Object.keys(response)).toHaveLength(0)
-  })
-
-  it('test submitInvalidate error', async () => {
-    const submitInvalidateErrorMessage = 'An Error Happen on submitInvalidate !'
-    vi.spyOn(apiContremarque, 'patchBookingKeepByToken').mockRejectedValue(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          status: HTTP_STATUS.FORBIDDEN,
-          body: {
-            global: submitInvalidateErrorMessage,
-          },
-        } as ApiResult,
-        ''
-      )
-    )
-
-    const { buttonSubmitInvalidate, responseDataContainer } =
-      await renderDeskRoute()
-
-    await userEvent.click(buttonSubmitInvalidate)
-    await waitFor(() => {
-      expect(apiContremarque.patchBookingKeepByToken).toHaveBeenCalledWith(
-        testToken
-      )
-    })
-    // to fix - no-conditional-in-test
-    const response = JSON.parse(responseDataContainer.textContent || '')
-
-    expect(Object.keys(response)).toHaveLength(1)
-    expect(response.error).toBeDefined()
-    expect(Object.keys(response.error)).toHaveLength(2)
-    expect(response.error.message).toBe(submitInvalidateErrorMessage)
-    expect(response.error.variant).toBe(MESSAGE_VARIANT.ERROR)
-  })
-
-  it('test submitValidate success', async () => {
-    vi.spyOn(apiContremarque, 'patchBookingUseByToken').mockResolvedValue()
-
-    const { buttonSubmitValidate, responseDataContainer } =
-      await renderDeskRoute()
-
-    await userEvent.click(buttonSubmitValidate)
-    await waitFor(() => {
-      expect(apiContremarque.patchBookingUseByToken).toHaveBeenCalledWith(
-        testToken
-      )
-    })
-    // to fix - no-conditional-in-test
-    const response = JSON.parse(responseDataContainer.textContent || '')
-    expect(Object.keys(response)).toHaveLength(0)
-  })
-
-  it('test submitValidate error', async () => {
-    const submitInvalidateErrorMessage = 'An Error Happen on submitValidate!'
-    vi.spyOn(apiContremarque, 'patchBookingUseByToken').mockRejectedValue(
-      new ApiError(
-        {} as ApiRequestOptions,
-        {
-          status: HTTP_STATUS.FORBIDDEN,
-          body: {
-            global: submitInvalidateErrorMessage,
-          },
-        } as ApiResult,
-        ''
-      )
-    )
-
-    const { buttonSubmitValidate, responseDataContainer } =
-      await renderDeskRoute()
-
-    await userEvent.click(buttonSubmitValidate)
-    await waitFor(() => {
-      expect(apiContremarque.patchBookingUseByToken).toHaveBeenCalledWith(
-        testToken
-      )
-    })
-    // to fix - no-conditional-in-test
-    const response = JSON.parse(responseDataContainer.textContent || '')
-
-    expect(Object.keys(response)).toHaveLength(1)
-    expect(response.error).toBeDefined()
-    expect(Object.keys(response.error)).toHaveLength(2)
-    expect(response.error.message).toBe(submitInvalidateErrorMessage)
-    expect(response.error.variant).toBe(MESSAGE_VARIANT.ERROR)
   })
 })
