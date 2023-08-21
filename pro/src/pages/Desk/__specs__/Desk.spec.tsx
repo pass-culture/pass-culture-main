@@ -1,31 +1,26 @@
-import { screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
-import { CancelablePromise } from 'apiClient/v1'
+import { apiContremarque } from 'apiClient/api'
+import { CancelablePromise } from 'apiClient/v2'
 import { defaultBookingResponse } from 'utils/apiFactories'
-import { renderWithProviders } from 'utils/renderWithProviders'
 
 import * as getBookingAdapter from '../adapters/getBooking'
-import * as submitTokenAdapter from '../adapters/submitToken'
 import Desk from '../Desk'
-import { DeskSubmitResponse, MESSAGE_VARIANT } from '../types'
-
-const renderDesk = () => {
-  renderWithProviders(<Desk />)
-}
+import { MESSAGE_VARIANT } from '../types'
 
 describe('src | components | Desk', () => {
   describe('Should validate while user is typing', () => {
     it('should remove QRcode prefix', async () => {
-      renderDesk()
+      render(<Desk />)
       const contremarque = screen.getByLabelText('Contremarque')
       await userEvent.type(contremarque, 'AA:ZERRZ')
       expect(contremarque).toHaveValue('ZERRZ')
     })
 
     it('should display default messages and disable submit button', async () => {
-      renderDesk()
+      render(<Desk />)
       expect(screen.getByText('Saisissez une contremarque')).toBeInTheDocument()
       expect(
         screen.getByText(
@@ -36,14 +31,14 @@ describe('src | components | Desk', () => {
     })
 
     it('should indicate the number of characters missing', async () => {
-      renderDesk()
+      render(<Desk />)
       const contremarque = screen.getByLabelText('Contremarque')
       await userEvent.type(contremarque, 'AA')
       expect(screen.getByText('Caractères restants : 4/6')).toBeInTheDocument()
     })
 
     it('should indicate the maximum number of caracters', async () => {
-      renderDesk()
+      render(<Desk />)
       const contremarque = screen.getByLabelText('Contremarque')
       await userEvent.type(contremarque, 'AAOURIRIR')
       expect(
@@ -54,7 +49,7 @@ describe('src | components | Desk', () => {
     })
 
     it('should indicate that the format is invalid and which characters are valid', async () => {
-      renderDesk()
+      render(<Desk />)
       const contremarque = screen.getByLabelText('Contremarque')
       await userEvent.type(contremarque, 'AA-@')
       expect(
@@ -66,7 +61,7 @@ describe('src | components | Desk', () => {
       vi.spyOn(getBookingAdapter, 'getBooking').mockResolvedValue({
         booking: defaultBookingResponse,
       })
-      renderDesk()
+      render(<Desk />)
       const contremarque = screen.getByLabelText('Contremarque')
       await userEvent.type(contremarque, 'AAAAAA')
       expect(getBookingAdapter.getBooking).toHaveBeenCalledWith('AAAAAA')
@@ -88,7 +83,7 @@ describe('src | components | Desk', () => {
           variant: MESSAGE_VARIANT.ERROR,
         },
       })
-      renderDesk()
+      render(<Desk />)
       const contremarque = screen.getByLabelText('Contremarque')
       await userEvent.type(contremarque, 'AAAAAA')
       expect(await screen.findByText(/Erreur/)).toBeInTheDocument()
@@ -102,8 +97,11 @@ describe('src | components | Desk', () => {
       })
     })
     it('should display confirmation message and empty field when contremarque is validated', async () => {
-      vi.spyOn(submitTokenAdapter, 'submitValidate').mockResolvedValueOnce({})
-      renderDesk()
+      vi.spyOn(
+        apiContremarque,
+        'patchBookingKeepByToken'
+      ).mockResolvedValueOnce()
+      render(<Desk />)
       const contremarque = screen.getByLabelText('Contremarque')
       await userEvent.type(contremarque, 'AAAAAA')
       await userEvent.click(screen.getByText('Valider la contremarque'))
@@ -114,13 +112,15 @@ describe('src | components | Desk', () => {
     })
 
     it('should display error message and empty field when contremarque could not be validated', async () => {
-      vi.spyOn(submitTokenAdapter, 'submitValidate').mockResolvedValueOnce({
-        error: {
-          message: 'Erreur',
-          variant: MESSAGE_VARIANT.ERROR,
-        },
-      })
-      renderDesk()
+      vi.spyOn(apiContremarque, 'patchBookingUseByToken').mockRejectedValueOnce(
+        {
+          body: {
+            global: 'Erreur',
+            variant: MESSAGE_VARIANT.ERROR,
+          },
+        }
+      )
+      render(<Desk />)
       const contremarque = screen.getByLabelText('Contremarque')
       await userEvent.type(contremarque, 'AAAAAA')
       await userEvent.click(screen.getByText('Valider la contremarque'))
@@ -141,14 +141,14 @@ describe('src | components | Desk', () => {
     })
 
     it('should display invaladating message when waiting for invalidation', async () => {
-      vi.spyOn(submitTokenAdapter, 'submitInvalidate').mockImplementation(
+      vi.spyOn(apiContremarque, 'patchBookingKeepByToken').mockImplementation(
         () => {
-          return new CancelablePromise<DeskSubmitResponse>(resolve =>
-            setTimeout(() => resolve({} as DeskSubmitResponse), 50)
+          return new CancelablePromise<void>(resolve =>
+            setTimeout(() => resolve(), 50)
           )
         }
       )
-      renderDesk()
+      render(<Desk />)
 
       await userEvent.type(screen.getByLabelText('Contremarque'), 'AAAAAA')
       await userEvent.click(screen.getByText('Invalider la contremarque'))
@@ -162,9 +162,12 @@ describe('src | components | Desk', () => {
     })
 
     it('should display validated message when token invalidation has been done', async () => {
-      vi.spyOn(submitTokenAdapter, 'submitInvalidate').mockResolvedValueOnce({})
+      vi.spyOn(
+        apiContremarque,
+        'patchBookingUseByToken'
+      ).mockResolvedValueOnce()
 
-      renderDesk()
+      render(<Desk />)
 
       await userEvent.type(screen.getByLabelText('Contremarque'), 'AAAAAA')
       await userEvent.click(screen.getByText('Invalider la contremarque'))
@@ -178,14 +181,16 @@ describe('src | components | Desk', () => {
     })
 
     it('should display error message when invalidation failed', async () => {
-      vi.spyOn(submitTokenAdapter, 'submitInvalidate').mockResolvedValueOnce({
-        error: {
-          message: 'Erreur lors de la validation de la contremarque',
-          variant: MESSAGE_VARIANT.ERROR,
+      vi.spyOn(
+        apiContremarque,
+        'patchBookingKeepByToken'
+      ).mockRejectedValueOnce({
+        body: {
+          global: 'Erreur lors de la validation de la contremarque',
         },
       })
 
-      renderDesk()
+      render(<Desk />)
 
       await userEvent.type(screen.getByLabelText('Contremarque'), 'AAAAAA')
       await userEvent.click(screen.getByText('Invalider la contremarque'))
