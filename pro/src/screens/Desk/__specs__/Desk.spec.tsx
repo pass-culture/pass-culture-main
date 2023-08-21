@@ -2,9 +2,10 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
+import { CancelablePromise } from 'apiClient/v1'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { DeskScreen, DeskProps } from '..'
+import { DeskScreen, DeskProps, DeskSubmitResponse } from '..'
 
 const renderDeskScreen = (props: DeskProps) => {
   const rtlReturns = renderWithProviders(<DeskScreen {...props} />)
@@ -188,45 +189,92 @@ describe('src | components | Desk', () => {
     expect(screen.queryByText(`${deskBooking.price} €`)).not.toBeInTheDocument()
   })
 
-  it('test invalidate token submit success', async () => {
-    const alreadyValidatedErrorMessage = {
-      message: 'Token already validated',
-      isTokenValidated: true,
-    }
-    const submitInvalidateMock = vi
-      .fn()
-      .mockImplementation(() => Promise.resolve({}))
+  describe('invalidate button clicked', () => {
+    it('should display invaladating message when waiting for invalidation', async () => {
+      const submitInvalidateMock = vi.fn().mockImplementation(() => {
+        return new CancelablePromise<DeskSubmitResponse>(resolve =>
+          setTimeout(() => resolve({} as DeskSubmitResponse), 50)
+        )
+      })
 
-    const { inputToken, buttonSubmitValidated } = renderDeskScreen({
-      ...defaultProps,
-      getBooking: vi.fn().mockResolvedValue({
-        error: alreadyValidatedErrorMessage,
-      }),
-      submitInvalidate: submitInvalidateMock,
+      renderDeskScreen({
+        ...defaultProps,
+        getBooking: vi.fn().mockResolvedValue({
+          error: {
+            isTokenValidated: true,
+          },
+        }),
+        submitInvalidate: submitInvalidateMock,
+      })
+
+      await userEvent.type(screen.getByLabelText('Contremarque'), 'AAAAAA')
+      await userEvent.click(screen.getByText('Invalider la contremarque'))
+
+      const confirmModalButton = screen.getByRole('button', {
+        name: 'Continuer',
+      })
+      await userEvent.click(confirmModalButton)
+
+      expect(screen.getByText('Invalidation en cours...')).toBeInTheDocument()
     })
-    await userEvent.clear(inputToken)
-    await userEvent.type(inputToken, 'AAAAAA')
-    expect(screen.getByTestId('desk-message')).toHaveTextContent(
-      alreadyValidatedErrorMessage.message
-    )
-    const buttonSubmitInvalidated = await screen.findByText(
-      'Invalider la contremarque'
-    )
-    await userEvent.click(buttonSubmitInvalidated)
 
-    const modalConfirmButton = await screen.findByRole('button', {
-      name: 'Continuer',
+    it('should display validated message when token invalidation has been done', async () => {
+      const submitInvalidateMock = vi
+        .fn()
+        .mockImplementation(() => Promise.resolve({}))
+
+      renderDeskScreen({
+        ...defaultProps,
+        getBooking: vi.fn().mockResolvedValue({
+          error: {
+            isTokenValidated: true,
+          },
+        }),
+        submitInvalidate: submitInvalidateMock,
+      })
+
+      await userEvent.type(screen.getByLabelText('Contremarque'), 'AAAAAA')
+      await userEvent.click(screen.getByText('Invalider la contremarque'))
+
+      const confirmModalButton = screen.getByRole('button', {
+        name: 'Continuer',
+      })
+      await userEvent.click(confirmModalButton)
+
+      expect(screen.getByText('Contremarque invalidée !')).toBeInTheDocument()
     })
 
-    await userEvent.click(modalConfirmButton)
+    it('should display error message when invalidation failed', async () => {
+      const submitInvalidateMock = vi.fn().mockImplementation(() =>
+        Promise.resolve({
+          error: {
+            message: 'Erreur lors de la validation de la contremarque',
+            variant: 'error',
+          },
+        })
+      )
 
-    expect(
-      await screen.findByText('Contremarque invalidée !')
-    ).toBeInTheDocument()
+      renderDeskScreen({
+        ...defaultProps,
+        getBooking: vi.fn().mockResolvedValue({
+          error: {
+            isTokenValidated: true,
+          },
+        }),
+        submitInvalidate: submitInvalidateMock,
+      })
 
-    expect(submitInvalidateMock).toHaveBeenCalledWith('AAAAAA')
-    expect(inputToken).toHaveValue('')
-    expect(buttonSubmitInvalidated).not.toBeInTheDocument()
-    expect(buttonSubmitValidated).toBeDisabled()
+      await userEvent.type(screen.getByLabelText('Contremarque'), 'AAAAAA')
+      await userEvent.click(screen.getByText('Invalider la contremarque'))
+
+      const confirmModalButton = screen.getByRole('button', {
+        name: 'Continuer',
+      })
+      await userEvent.click(confirmModalButton)
+
+      expect(
+        screen.getByText('Erreur lors de la validation de la contremarque')
+      ).toBeInTheDocument()
+    })
   })
 })
