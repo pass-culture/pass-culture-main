@@ -21,27 +21,20 @@ const BookingDetailsLine = ({ label, value }: BookingDetailsLine) => (
 )
 
 interface BookingDetailsProps {
-  booking: GetBookingResponse | null
+  booking: GetBookingResponse
 }
 
-const BookingDetails = ({
-  booking,
-}: BookingDetailsProps): JSX.Element | null => {
-  /* istanbul ignore next: DEBT, TO FIX */
-  const formattedBookingDate = (booking: GetBookingResponse): string => {
-    return !booking.datetime
-      ? 'Permanent'
-      : formatLocalTimeDateString(
-          booking.datetime,
-          booking.venueDepartmentCode || undefined,
-          "dd/MM/yyyy - HH'h'mm"
-        )
-  }
+const formattedBookingDate = (booking: GetBookingResponse): string => {
+  return !booking.datetime
+    ? 'Permanent'
+    : formatLocalTimeDateString(
+        booking.datetime,
+        booking.venueDepartmentCode || undefined,
+        "dd/MM/yyyy - HH'h'mm"
+      )
+}
 
-  if (!booking) {
-    return null
-  }
-
+const BookingDetails = ({ booking }: BookingDetailsProps) => {
   return (
     <div
       aria-live="polite"
@@ -55,20 +48,17 @@ const BookingDetails = ({
         value={formattedBookingDate(booking)}
       />
 
-      {
-        /* istanbul ignore next: DEBT, TO FIX */
-        booking.quantity === 2 ? (
-          <div>
-            <div className={styles['desk-label']}>{'Prix : '}</div>
-            <div className={cx(styles['desk-value'], styles['duo-price'])}>
-              {`${booking.price * 2} €`}
-              <SvgIcon src={strokeDuoIcon} alt="Réservation DUO" />
-            </div>
+      {booking.quantity === 2 ? (
+        <div>
+          <div className={styles['desk-label']}>{'Prix : '}</div>
+          <div className={cx(styles['desk-value'], styles['duo-price'])}>
+            {`${booking.price * 2} €`}
+            <SvgIcon src={strokeDuoIcon} alt="Réservation DUO" />
           </div>
-        ) : (
-          <BookingDetailsLine label="Prix : " value={`${booking.price} €`} />
-        )
-      }
+        </div>
+      ) : (
+        <BookingDetailsLine label="Prix : " value={`${booking.price} €`} />
+      )}
       {booking.priceCategoryLabel && (
         <BookingDetailsLine
           label="Intitulé du tarif : "
