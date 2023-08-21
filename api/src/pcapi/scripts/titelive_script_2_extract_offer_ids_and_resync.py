@@ -100,6 +100,8 @@ def update_offers(file_path: str, first_line_to_process: int, dry: bool) -> None
 
                 eta = get_eta(total_lines, index, elapsed_per_batch, BATCH_SIZE)
                 print(f"  => OK: {index} / {total_lines} | eta = {eta}")
+                last_offer_id_in_batch = batch_offer_ids[-1]
+                logger.info("[Reject offers for Tite Live] Last offer id rejected: %s", last_offer_id_in_batch)
 
         if batch:
             batch_offer_ids = reject_inappropriate_offers(batch, dry=dry)
