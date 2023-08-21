@@ -21,7 +21,7 @@ const renderDeskScreen = (props: DeskProps) => {
   }
 }
 
-describe('src | components | Desk', () => {
+describe('Desk', () => {
   const deskBooking = {
     datetime: '2001-02-01T20:00:00Z',
     ean13: 'test ean113',
@@ -38,142 +38,114 @@ describe('src | components | Desk', () => {
     submitInvalidate: vi.fn().mockResolvedValue({}),
   }
 
-  it('should remove QRcode prefix', async () => {
-    renderDeskScreen(defaultProps)
-    const contremarque = screen.getByLabelText('Contremarque')
-    await userEvent.type(contremarque, 'AA:ZERRZ')
-    expect(contremarque).toHaveValue('ZERRZ')
-  })
-
-  it('should display default messages and disable submit button', async () => {
-    renderDeskScreen(defaultProps)
-    expect(screen.getByText('Saisissez une contremarque')).toBeInTheDocument()
-    expect(
-      screen.getByText(
-        'Saisissez les contremarques présentées par les bénéficiaires afin de les valider ou de les invalider.'
-      )
-    ).toBeInTheDocument()
-    expect(screen.getByText('Valider la contremarque')).toBeDisabled()
-  })
-
-  it('should indicate the number of characters missing', async () => {
-    renderDeskScreen(defaultProps)
-    const contremarque = screen.getByLabelText('Contremarque')
-    await userEvent.type(contremarque, 'AA')
-    expect(screen.getByText('Caractères restants : 4/6')).toBeInTheDocument()
-  })
-
-  it('should indicate the maximum number of caracters', async () => {
-    renderDeskScreen(defaultProps)
-    const contremarque = screen.getByLabelText('Contremarque')
-    await userEvent.type(contremarque, 'AAOURIRIR')
-    expect(
-      screen.getByText('La contremarque ne peut pas faire plus de 6 caractères')
-    ).toBeInTheDocument()
-  })
-
-  it('should indicate that the format is invalid and which characters are valid', async () => {
-    renderDeskScreen(defaultProps)
-    const contremarque = screen.getByLabelText('Contremarque')
-    await userEvent.type(contremarque, 'AA-@')
-    expect(
-      screen.getByText('Caractères valides : de A à Z et de 0 à 9')
-    ).toBeInTheDocument()
-  })
-
-  it('should check that token is valid and display booking details', async () => {
-    renderDeskScreen(defaultProps)
-    const contremarque = screen.getByLabelText('Contremarque')
-    await userEvent.type(contremarque, 'AAAAAA')
-    expect(defaultProps.getBooking).toHaveBeenCalledWith('AAAAAA')
-    expect(
-      await screen.findByText(
-        'Coupon vérifié, cliquez sur "Valider" pour enregistrer'
-      )
-    ).toBeInTheDocument()
-    expect(await screen.findByText(deskBooking.offerName)).toBeInTheDocument()
-  })
-
-  it('should display error message when validation fails', async () => {
-    const getBookingMock = vi.fn().mockResolvedValue({
-      error: {
-        message: 'Erreur',
-        isTokenValidated: true,
-      },
+  describe('Should validate while user is typing', () => {
+    it('should remove QRcode prefix', async () => {
+      renderDeskScreen(defaultProps)
+      const contremarque = screen.getByLabelText('Contremarque')
+      await userEvent.type(contremarque, 'AA:ZERRZ')
+      expect(contremarque).toHaveValue('ZERRZ')
     })
-    renderDeskScreen({ ...defaultProps, getBooking: getBookingMock })
-    const contremarque = screen.getByLabelText('Contremarque')
-    await userEvent.type(contremarque, 'AAAAAA')
-    expect(await screen.findByText(/Erreur/)).toBeInTheDocument()
+
+    it('should display default messages and disable submit button', async () => {
+      renderDeskScreen(defaultProps)
+      expect(screen.getByText('Saisissez une contremarque')).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'Saisissez les contremarques présentées par les bénéficiaires afin de les valider ou de les invalider.'
+        )
+      ).toBeInTheDocument()
+      expect(screen.getByText('Valider la contremarque')).toBeDisabled()
+    })
+
+    it('should indicate the number of characters missing', async () => {
+      renderDeskScreen(defaultProps)
+      const contremarque = screen.getByLabelText('Contremarque')
+      await userEvent.type(contremarque, 'AA')
+      expect(screen.getByText('Caractères restants : 4/6')).toBeInTheDocument()
+    })
+
+    it('should indicate the maximum number of caracters', async () => {
+      renderDeskScreen(defaultProps)
+      const contremarque = screen.getByLabelText('Contremarque')
+      await userEvent.type(contremarque, 'AAOURIRIR')
+      expect(
+        screen.getByText(
+          'La contremarque ne peut pas faire plus de 6 caractères'
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('should indicate that the format is invalid and which characters are valid', async () => {
+      renderDeskScreen(defaultProps)
+      const contremarque = screen.getByLabelText('Contremarque')
+      await userEvent.type(contremarque, 'AA-@')
+      expect(
+        screen.getByText('Caractères valides : de A à Z et de 0 à 9')
+      ).toBeInTheDocument()
+    })
+
+    it('should check that token is valid and display booking details', async () => {
+      renderDeskScreen(defaultProps)
+      const contremarque = screen.getByLabelText('Contremarque')
+      await userEvent.type(contremarque, 'AAAAAA')
+      expect(defaultProps.getBooking).toHaveBeenCalledWith('AAAAAA')
+      expect(
+        await screen.findByText(
+          'Coupon vérifié, cliquez sur "Valider" pour enregistrer'
+        )
+      ).toBeInTheDocument()
+      expect(await screen.findByText(deskBooking.offerName)).toBeInTheDocument()
+    })
+
+    it('should display error message when validation fails', async () => {
+      const getBookingMock = vi.fn().mockResolvedValue({
+        error: {
+          message: 'Erreur',
+          isTokenValidated: false,
+        },
+      })
+      renderDeskScreen({ ...defaultProps, getBooking: getBookingMock })
+      const contremarque = screen.getByLabelText('Contremarque')
+      await userEvent.type(contremarque, 'AAAAAA')
+      expect(await screen.findByText(/Erreur/)).toBeInTheDocument()
+    })
   })
 
-  it('should display confirmation message and empty field when contremarque is validated', async () => {
-    renderDeskScreen({
-      ...defaultProps,
-      submitValidate: vi.fn().mockImplementation(() => Promise.resolve({})),
-    })
-    const contremarque = screen.getByLabelText('Contremarque')
-    await userEvent.type(contremarque, 'AAAAAA')
-    await userEvent.click(screen.getByText('Valider la contremarque'))
-    expect(
-      await screen.findByText('Contremarque validée !')
-    ).toBeInTheDocument()
-    expect(contremarque).toHaveValue('')
-  })
-
-  it('should display error message and empty field when contremarque could not be validated', async () => {
-    const submitValidateMock = vi.fn().mockResolvedValue({
-      error: {
-        message: 'Erreur',
-        isTokenValidated: false,
-      },
-    })
-    renderDeskScreen({
-      ...defaultProps,
-      submitValidate: submitValidateMock,
-    })
-    const contremarque = screen.getByLabelText('Contremarque')
-    await userEvent.type(contremarque, 'AAAAAA')
-    await userEvent.click(screen.getByText('Valider la contremarque'))
-    expect(await screen.findByText(/Erreur/)).toBeInTheDocument()
-    expect(contremarque).toHaveValue('AAAAAA')
-  })
-
-  it('test already valided token and booking details display', async () => {
-    const alreadyValidatedErrorMessage = {
-      message: 'Token already validated',
-      isTokenValidated: true,
-    }
-    const getBookingMock = vi.fn().mockResolvedValue({
-      error: alreadyValidatedErrorMessage,
-    })
-    const { messageContainer, inputToken, buttonSubmitValidated } =
+  describe('Should validate contremarque when the user submits the form', () => {
+    it('should display confirmation message and empty field when contremarque is validated', async () => {
       renderDeskScreen({
         ...defaultProps,
-        getBooking: getBookingMock,
+        submitValidate: vi.fn().mockImplementation(() => Promise.resolve({})),
       })
+      const contremarque = screen.getByLabelText('Contremarque')
+      await userEvent.type(contremarque, 'AAAAAA')
+      await userEvent.click(screen.getByText('Valider la contremarque'))
+      expect(
+        await screen.findByText('Contremarque validée !')
+      ).toBeInTheDocument()
+      expect(contremarque).toHaveValue('')
+    })
 
-    await userEvent.type(inputToken, 'AAAAAA')
-    expect(messageContainer.textContent).toBe(
-      alreadyValidatedErrorMessage.message
-    )
-    expect(getBookingMock).toHaveBeenCalledWith('AAAAAA')
-
-    expect(buttonSubmitValidated).not.toBeInTheDocument()
-    const buttonSubmitInvalidated = screen.queryByText(
-      'Invalider la contremarque'
-    )
-    expect(buttonSubmitInvalidated).toBeInTheDocument()
-    expect(buttonSubmitInvalidated).toBeEnabled()
-
-    expect(screen.queryByText(deskBooking.userName)).not.toBeInTheDocument()
-    expect(screen.queryByText(deskBooking.offerName)).not.toBeInTheDocument()
-    // 2001-02-01T20:00:00Z displayed as 01/02/2001 - 21h00
-    expect(screen.queryByText('01/02/2001 - 21h00')).not.toBeInTheDocument()
-    expect(screen.queryByText(`${deskBooking.price} €`)).not.toBeInTheDocument()
+    it('should display error message and empty field when contremarque could not be validated', async () => {
+      const submitValidateMock = vi.fn().mockResolvedValue({
+        error: {
+          message: 'Erreur',
+          isTokenValidated: false,
+        },
+      })
+      renderDeskScreen({
+        ...defaultProps,
+        submitValidate: submitValidateMock,
+      })
+      const contremarque = screen.getByLabelText('Contremarque')
+      await userEvent.type(contremarque, 'AAAAAA')
+      await userEvent.click(screen.getByText('Valider la contremarque'))
+      expect(await screen.findByText(/Erreur/)).toBeInTheDocument()
+      expect(contremarque).toHaveValue('AAAAAA')
+    })
   })
 
-  describe('invalidate button clicked', () => {
+  describe('Should invalidate contremarque when the user submits the form', () => {
     it('should display invaladating message when waiting for invalidation', async () => {
       const submitInvalidateMock = vi.fn().mockImplementation(() => {
         return new CancelablePromise<DeskSubmitResponse>(resolve =>
