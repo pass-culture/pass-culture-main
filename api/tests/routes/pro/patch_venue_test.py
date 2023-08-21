@@ -48,7 +48,7 @@ class Returns200Test:
         # when
         venue_data = populate_missing_data_from_venue(
             {
-                "name": "Ma librairie",
+                "publicName": "Ma librairie",
                 "venueTypeCode": "BOOKSTORE",
                 "venueLabelId": venue_label.id,
             },
@@ -60,7 +60,7 @@ class Returns200Test:
         # then
         assert response.status_code == 200
         venue = offerers_models.Venue.query.get(venue_id)
-        assert venue.name == "Ma librairie"
+        assert venue.publicName == "Ma librairie"
         assert venue.venueTypeCode == offerers_models.VenueTypeCode.BOOKSTORE
         assert len(external_testing.sendinblue_requests) == 1
         assert external_testing.zendesk_sell_requests == [{"action": "update", "type": "Venue", "id": venue.id}]
@@ -76,7 +76,7 @@ class Returns200Test:
 
         venue_data = populate_missing_data_from_venue(
             {
-                "name": "new name",
+                "publicName": "new public name",
                 "bookingEmail": "no.update@email.com",
                 "isEmailAppliedOnAllOffers": False,
             },
@@ -90,7 +90,7 @@ class Returns200Test:
 
         venue_data = populate_missing_data_from_venue(
             {
-                "name": "new name",
+                "publicName": "new public name",
                 "bookingEmail": "new.venue@email.com",
                 "isEmailAppliedOnAllOffers": True,
             },
@@ -131,7 +131,7 @@ class Returns200Test:
 
         venue_data = populate_missing_data_from_venue(
             {
-                "name": "new name",
+                "publicName": "new public name",
                 "withdrawalDetails": "Ceci est un texte de modalités de retrait",
                 "isWithdrawalAppliedOnAllOffers": True,
                 "shouldSendMail": True,
@@ -164,7 +164,7 @@ class Returns200Test:
 
         venue_data = populate_missing_data_from_venue(
             {
-                "name": "new name",
+                "publicName": "new public name",
                 "withdrawalDetails": "Ceci est un texte de modalités de retrait",
                 "isWithdrawalAppliedOnAllOffers": True,
                 "shouldSendMail": False,
@@ -194,7 +194,7 @@ class Returns200Test:
 
         venue_data = populate_missing_data_from_venue(
             {
-                "name": "new name",
+                "publicName": "new public name",
                 "audioDisabilityCompliant": True,
                 "isAccessibilityAppliedOnAllOffers": True,
             },
@@ -218,7 +218,7 @@ class Returns200Test:
 
         assert len(venue.action_history) == 1
         update_snapshot = venue.action_history[0].extraData["modified_info"]
-        assert update_snapshot["name"]["new_info"] == venue_data["name"]
+        assert update_snapshot["publicName"]["new_info"] == venue_data["publicName"]
 
     def when_siret_does_not_change(self, app) -> None:
         # Given
