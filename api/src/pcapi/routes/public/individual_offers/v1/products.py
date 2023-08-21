@@ -121,9 +121,6 @@ def post_product_offer(body: serialization.BatchProductOfferCreation) -> seriali
                 )
                 created_offers.append(created_offer)
 
-            db.session.add_all(created_offers)
-            db.session.flush()
-
             # FIXME (ghaliela, 2023-06-15): stock saving optimisation
             # Stocks are inserted one by one for now, we need to improve create_stock to remove the repository.session.add()
             # It will be done before the release of this API
@@ -203,7 +200,6 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
                 continue
 
         db.session.bulk_save_objects(created_offers)
-        db.session.commit()
 
         reloaded_offers = _get_existing_offers(ean_list_to_create, venue, provider)
         for offer in reloaded_offers:
