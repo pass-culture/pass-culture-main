@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import { OffererMemberStatus } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
 import AttachmentInvitations from 'pages/Offerers/Offerer/OffererDetails/AttachmentInvitations/AttachmentInvitations'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -89,12 +90,12 @@ describe('AttachmentInvitations', () => {
   it('should display button to show all members', async () => {
     vi.spyOn(api, 'getOffererMembers').mockResolvedValue({
       members: [
-        { email: 'email1@gmail.com', firstName: '', lastName: '' },
-        { email: 'email2@gmail.com', firstName: '', lastName: '' },
-        { email: 'email3@gmail.com', firstName: '', lastName: '' },
-        { email: 'email4@gmail.com', firstName: '', lastName: '' },
-        { email: 'email5@gmail.com', firstName: '', lastName: '' },
-        { email: 'email6@gmail.com', firstName: '', lastName: '' },
+        { email: 'email1@gmail.com', status: OffererMemberStatus.VALIDATED },
+        { email: 'email2@gmail.com', status: OffererMemberStatus.VALIDATED },
+        { email: 'email3@gmail.com', status: OffererMemberStatus.VALIDATED },
+        { email: 'email4@gmail.com', status: OffererMemberStatus.PENDING },
+        { email: 'email5@gmail.com', status: OffererMemberStatus.PENDING },
+        { email: 'email6@gmail.com', status: OffererMemberStatus.PENDING },
       ],
     })
 

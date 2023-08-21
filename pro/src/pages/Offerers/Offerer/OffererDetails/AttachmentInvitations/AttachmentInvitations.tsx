@@ -3,7 +3,10 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { GetOffererMemberResponseModel } from 'apiClient/v1'
+import {
+  GetOffererMemberResponseModel,
+  OffererMemberStatus,
+} from 'apiClient/v1'
 import FormLayout from 'components/FormLayout/FormLayout'
 import useNotification from 'hooks/useNotification'
 import fullDownIcon from 'icons/full-down.svg'
@@ -40,8 +43,7 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
       members.push({
         email,
         // TODO: replace by default status when api code is changed.
-        firstName: '',
-        lastName: '',
+        status: OffererMemberStatus.PENDING,
       })
       formik.resetForm()
       notify.success(SUCCESS_MESSAGE)
