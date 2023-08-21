@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { CancelablePromise } from 'apiClient/v1'
+import { defaultBookingResponse } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { DeskScreen, DeskProps, DeskSubmitResponse } from '..'
@@ -21,19 +22,11 @@ const renderDeskScreen = (props: DeskProps) => {
   }
 }
 
-describe('Desk', () => {
-  const deskBooking = {
-    datetime: '2001-02-01T20:00:00Z',
-    ean13: 'test ean113',
-    offerName: 'Nom de la structure',
-    price: 13,
-    quantity: 1,
-    userName: 'USER',
-    priceCategoryLabel: 'mon label',
-    venueDepartmentCode: '75',
-  }
+describe('src | components | Desk', () => {
   const defaultProps: DeskProps = {
-    getBooking: vi.fn(() => Promise.resolve({ booking: deskBooking })),
+    getBooking: vi.fn(() =>
+      Promise.resolve({ booking: defaultBookingResponse })
+    ),
     submitValidate: vi.fn().mockResolvedValue({}),
     submitInvalidate: vi.fn().mockResolvedValue({}),
   }
@@ -94,7 +87,9 @@ describe('Desk', () => {
           'Coupon vérifié, cliquez sur "Valider" pour enregistrer'
         )
       ).toBeInTheDocument()
-      expect(await screen.findByText(deskBooking.offerName)).toBeInTheDocument()
+      expect(
+        await screen.findByText(defaultBookingResponse.offerName)
+      ).toBeInTheDocument()
     })
 
     it('should display error message when validation fails', async () => {

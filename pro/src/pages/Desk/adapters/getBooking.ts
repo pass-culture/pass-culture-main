@@ -1,24 +1,7 @@
 import { apiContremarque } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
-import { ApiError, GetBookingResponse } from 'apiClient/v2'
-import { Booking, DeskGetBookingResponse, MESSAGE_VARIANT } from 'screens/Desk'
-
-const getBookingSuccess = (
-  response: GetBookingResponse
-): DeskGetBookingResponse => {
-  return {
-    booking: {
-      datetime: response.datetime,
-      ean13: response.ean13,
-      offerName: response.offerName,
-      price: response.price,
-      quantity: response.quantity,
-      userName: response.userName,
-      priceCategoryLabel: response.priceCategoryLabel,
-      venueDepartmentCode: response.venueDepartmentCode,
-    } as Booking,
-  }
-}
+import { ApiError } from 'apiClient/v2'
+import { DeskGetBookingResponse, MESSAGE_VARIANT } from 'screens/Desk'
 
 const getBookingFailure = (
   apiResponseError: ApiError
@@ -83,7 +66,7 @@ const getBookingFailure = (
 const getBooking = async (token: string): Promise<DeskGetBookingResponse> => {
   return apiContremarque
     .getBookingByTokenV2(token)
-    .then(getBookingSuccess)
+    .then(booking => ({ booking }))
     .catch(getBookingFailure)
 }
 
