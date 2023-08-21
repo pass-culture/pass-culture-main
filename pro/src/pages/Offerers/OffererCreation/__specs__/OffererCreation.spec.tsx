@@ -4,7 +4,7 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { ApiError, GetOffererResponseModel } from 'apiClient/v1'
+import { ApiError, PostOffererResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
@@ -90,7 +90,7 @@ describe('src | components | OffererCreation', () => {
     })
     const offerer = {
       id: 1,
-    } as GetOffererResponseModel
+    } as PostOffererResponseModel
     vi.spyOn(api, 'createOfferer').mockResolvedValue(offerer)
 
     renderOffererCreation({})
