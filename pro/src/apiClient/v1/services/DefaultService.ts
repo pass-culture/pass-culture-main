@@ -71,6 +71,7 @@ import type { PatchOfferPublishBodyModel } from '../models/PatchOfferPublishBody
 import type { PostCollectiveOfferBodyModel } from '../models/PostCollectiveOfferBodyModel';
 import type { PostCollectiveOfferTemplateBodyModel } from '../models/PostCollectiveOfferTemplateBodyModel';
 import type { PostOfferBodyModel } from '../models/PostOfferBodyModel';
+import type { PostOffererResponseModel } from '../models/PostOffererResponseModel';
 import type { PostVenueBodyModel } from '../models/PostVenueBodyModel';
 import type { PostVenueProviderBody } from '../models/PostVenueProviderBody';
 import type { PriceCategoryBody } from '../models/PriceCategoryBody';
@@ -996,12 +997,12 @@ export class DefaultService {
   /**
    * create_offerer <POST>
    * @param requestBody
-   * @returns GetOffererResponseModel Created
+   * @returns PostOffererResponseModel Created
    * @throws ApiError
    */
   public createOfferer(
     requestBody?: CreateOffererQueryModel,
-  ): CancelablePromise<GetOffererResponseModel> {
+  ): CancelablePromise<PostOffererResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/offerers',
