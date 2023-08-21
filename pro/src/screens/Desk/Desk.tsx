@@ -1,6 +1,6 @@
 import cx from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 
 import { Banner, SubmitButton, TextInput } from 'ui-kit'
 import Titles from 'ui-kit/Titles/Titles'
@@ -35,21 +35,12 @@ const Desk = ({
     variant: MESSAGE_VARIANT.DEFAULT,
   })
   const [disableSubmitValidate, setDisableSubmitValidate] = useState(true)
-  const tokenInputRef = useRef<HTMLInputElement | null>(null)
 
   const resetMessage = () => {
     setMessage({
       message: 'Saisissez une contremarque',
       variant: MESSAGE_VARIANT.DEFAULT,
     })
-  }
-
-  const resetTokenField = () => {
-    if (tokenInputRef.current !== null) {
-      tokenInputRef.current.value = ''
-      tokenInputRef.current.focus()
-    }
-    setDisableSubmitValidate(true)
   }
 
   const handleSubmitValidate = (formValues: FormValues) => {
@@ -124,7 +115,7 @@ const Desk = ({
     setIsTokenValidated(false)
     setToken('')
     setBooking(null)
-    resetTokenField()
+    setDisableSubmitValidate(true)
   }
 
   const handleSubmitInvalidate = (token: string) => {
