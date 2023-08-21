@@ -13,6 +13,8 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 export type { AuthErrorResponseModel } from './models/AuthErrorResponseModel';
 export { BookingFormula } from './models/BookingFormula';
 export { BookingOfferType } from './models/BookingOfferType';
+export type { CollectiveBookingResponseModel } from './models/CollectiveBookingResponseModel';
+export { CollectiveBookingStatus } from './models/CollectiveBookingStatus';
 export type { CollectiveOffersCategoryResponseModel } from './models/CollectiveOffersCategoryResponseModel';
 export type { CollectiveOffersDomainResponseModel } from './models/CollectiveOffersDomainResponseModel';
 export type { CollectiveOffersEducationalInstitutionResponseModel } from './models/CollectiveOffersEducationalInstitutionResponseModel';
@@ -26,6 +28,7 @@ export type { CollectiveOffersListVenuesResponseModel } from './models/Collectiv
 export type { CollectiveOffersResponseModel } from './models/CollectiveOffersResponseModel';
 export type { CollectiveOffersStudentLevelResponseModel } from './models/CollectiveOffersStudentLevelResponseModel';
 export type { CollectiveOffersSubCategoryResponseModel } from './models/CollectiveOffersSubCategoryResponseModel';
+export type { EducationalYearModel } from './models/EducationalYearModel';
 export type { ErrorResponseModel } from './models/ErrorResponseModel';
 export type { GetBookingResponse } from './models/GetBookingResponse';
 export type { GetListEducationalInstitutionsQueryModel } from './models/GetListEducationalInstitutionsQueryModel';

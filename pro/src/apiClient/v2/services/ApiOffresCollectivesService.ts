@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { CollectiveBookingResponseModel } from '../models/CollectiveBookingResponseModel';
 import type { CollectiveOffersListCategoriesResponseModel } from '../models/CollectiveOffersListCategoriesResponseModel';
 import type { CollectiveOffersListDomainsResponseModel } from '../models/CollectiveOffersListDomainsResponseModel';
 import type { CollectiveOffersListEducationalInstitutionResponseModel } from '../models/CollectiveOffersListEducationalInstitutionResponseModel';
@@ -20,6 +21,28 @@ import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class ApiOffresCollectivesService {
 
   constructor(public readonly httpRequest: BaseHttpRequest) {}
+
+  /**
+   * Récupération les informations d'une réservation collective
+   * @param bookingId
+   * @returns CollectiveBookingResponseModel Les informations d'une réservation collective
+   * @throws ApiError
+   */
+  public getCollectiveBooking(
+    bookingId: number,
+  ): CancelablePromise<CollectiveBookingResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/v2/collective/bookings/{booking_id}',
+      path: {
+        'booking_id': bookingId,
+      },
+      errors: {
+        401: `Authentification nécessaire`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
 
   /**
    * Récupération de la liste des catégories d'offres proposées.
