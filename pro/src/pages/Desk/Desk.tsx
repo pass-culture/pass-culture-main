@@ -148,7 +148,7 @@ const Desk = (): JSX.Element => {
             hideFooter
           />
 
-          <BookingDetails booking={booking} />
+          {booking && <BookingDetails booking={booking} />}
 
           <div className={styles['desk-button']}>
             {isTokenValidated ? (
