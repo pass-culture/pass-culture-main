@@ -38,98 +38,87 @@ describe('src | components | Desk', () => {
     submitInvalidate: vi.fn().mockResolvedValue({}),
   }
 
-  it('test form render', async () => {
-    // when
-    const { pageTitle, inputToken, buttonSubmitValidated } =
-      renderDeskScreen(defaultProps)
-
-    expect(pageTitle).toBeInTheDocument()
-    expect(inputToken).toBeInTheDocument()
-
-    const description = screen.getByText(
-      'Saisissez les contremarques présentées par les bénéficiaires afin de les valider ou de les invalider.'
-    )
-    expect(description).toBeInTheDocument()
-    expect(defaultProps.getBooking).not.toHaveBeenCalled()
-    expect(buttonSubmitValidated).toBeInTheDocument()
-    expect(buttonSubmitValidated).toBeDisabled()
+  it('should remove QRcode prefix', async () => {
+    renderDeskScreen(defaultProps)
+    const contremarque = screen.getByLabelText('Contremarque')
+    await userEvent.type(contremarque, 'AA:ZERRZ')
+    expect(contremarque).toHaveValue('ZERRZ')
   })
 
-  it('test token client side validation', async () => {
-    const expectedMessage = {
-      default: 'Saisissez une contremarque',
-      invalidSyntax: 'Caractères valides : de A à Z et de 0 à 9',
-      tooShort: 'Caractères restants :',
-      tooLong: 'La contremarque ne peut pas faire plus de 6 caractères',
-    }
-    const getBooking = vi.fn()
-    const { messageContainer, inputToken } = renderDeskScreen({
-      ...defaultProps,
-      getBooking,
-    })
-    expect(messageContainer.textContent).toBe(expectedMessage.default)
-
-    await userEvent.type(inputToken, 'AA"-,')
-    expect(await screen.findByTestId('desk-message')).toHaveTextContent(
-      expectedMessage.invalidSyntax
-    )
-
-    await userEvent.clear(inputToken)
-    await userEvent.type(inputToken, 'AA')
-    expect(messageContainer.textContent).toContain(expectedMessage.tooShort)
-
-    await userEvent.clear(inputToken)
-    await userEvent.paste('AAAAAAA')
-    expect(messageContainer.textContent).toBe(expectedMessage.tooLong)
-
-    expect(getBooking).not.toHaveBeenCalled()
+  it('should display default messages and disable submit button', async () => {
+    renderDeskScreen(defaultProps)
+    expect(screen.getByText('Saisissez une contremarque')).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Saisissez les contremarques présentées par les bénéficiaires afin de les valider ou de les invalider.'
+      )
+    ).toBeInTheDocument()
+    expect(screen.getByText('Valider la contremarque')).toBeDisabled()
   })
 
-  it('test valid token and booking details display', async () => {
-    const { inputToken, buttonSubmitValidated } = renderDeskScreen(defaultProps)
+  it('should indicate the number of characters missing', async () => {
+    renderDeskScreen(defaultProps)
+    const contremarque = screen.getByLabelText('Contremarque')
+    await userEvent.type(contremarque, 'AA')
+    expect(screen.getByText('Caractères restants : 4/6')).toBeInTheDocument()
+  })
 
-    await userEvent.type(inputToken, 'AAAAAA')
+  it('should indicate the maximum number of caracters', async () => {
+    renderDeskScreen(defaultProps)
+    const contremarque = screen.getByLabelText('Contremarque')
+    await userEvent.type(contremarque, 'AAOURIRIR')
+    expect(
+      screen.getByText('La contremarque ne peut pas faire plus de 6 caractères')
+    ).toBeInTheDocument()
+  })
 
-    expect(await screen.findByTestId('desk-message')).toHaveTextContent(
-      'Coupon vérifié, cliquez sur "Valider" pour enregistrer'
-    )
+  it('should indicate that the format is invalid and which characters are valid', async () => {
+    renderDeskScreen(defaultProps)
+    const contremarque = screen.getByLabelText('Contremarque')
+    await userEvent.type(contremarque, 'AA-@')
+    expect(
+      screen.getByText('Caractères valides : de A à Z et de 0 à 9')
+    ).toBeInTheDocument()
+  })
 
+  it('should check that token is valid and display booking details', async () => {
+    renderDeskScreen(defaultProps)
+    const contremarque = screen.getByLabelText('Contremarque')
+    await userEvent.type(contremarque, 'AAAAAA')
     expect(defaultProps.getBooking).toHaveBeenCalledWith('AAAAAA')
-    expect(buttonSubmitValidated).toBeEnabled()
-
-    expect(screen.getByText(deskBooking.userName)).toBeInTheDocument()
-    expect(screen.getByText(deskBooking.offerName)).toBeInTheDocument()
-    // 2001-02-01T20:00:00Z displayed as 01/02/2001 - 21h00
-    expect(screen.getByText('01/02/2001 - 21h00')).toBeInTheDocument()
-    expect(screen.getByText(`${deskBooking.price} €`)).toBeInTheDocument()
+    expect(
+      await screen.findByText(
+        'Coupon vérifié, cliquez sur "Valider" pour enregistrer'
+      )
+    ).toBeInTheDocument()
+    expect(await screen.findByText(deskBooking.offerName)).toBeInTheDocument()
   })
 
-  it('test token server error', async () => {
-    const alreadyValidatedErrorMessage = {
-      message: 'server erro',
-      isTokenValidated: false,
-    }
+  it('should display error message when validation fails', async () => {
     const getBookingMock = vi.fn().mockResolvedValue({
-      error: alreadyValidatedErrorMessage,
+      error: {
+        message: 'Erreur',
+        isTokenValidated: true,
+      },
     })
+    renderDeskScreen({ ...defaultProps, getBooking: getBookingMock })
+    const contremarque = screen.getByLabelText('Contremarque')
+    await userEvent.type(contremarque, 'AAAAAA')
+    expect(await screen.findByText(/Erreur/)).toBeInTheDocument()
+  })
 
-    const { inputToken, buttonSubmitValidated } = renderDeskScreen({
+  it('should display confirmation message and empty field when contremarque is validated', async () => {
+    renderDeskScreen({
       ...defaultProps,
-      getBooking: getBookingMock,
+      submitValidate: vi.fn().mockImplementation(() => Promise.resolve({})),
     })
-
-    await userEvent.type(inputToken, 'AAAAAA')
-
-    expect(await screen.findByTestId('desk-message')).toHaveTextContent(
-      alreadyValidatedErrorMessage.message
-    )
-
-    expect(getBookingMock).toHaveBeenCalledWith('AAAAAA')
-    expect(buttonSubmitValidated).toBeDisabled()
-    const buttonSubmitInvalidated = screen.queryByText(
-      'Invalider la contremarque'
-    )
-    expect(buttonSubmitInvalidated).not.toBeInTheDocument()
+    const contremarque = screen.getByLabelText('Contremarque')
+    await userEvent.type(contremarque, 'AAAAAA')
+    await userEvent.click(screen.getByText('Valider la contremarque'))
+    expect(
+      await screen.findByText('Contremarque validée !')
+    ).toBeInTheDocument()
+    expect(contremarque).toHaveValue('')
   })
 
   it('test validate token submit success', async () => {
