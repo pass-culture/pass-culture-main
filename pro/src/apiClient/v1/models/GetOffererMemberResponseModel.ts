@@ -3,9 +3,10 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { OffererMemberStatus } from './OffererMemberStatus';
+
 export type GetOffererMemberResponseModel = {
   email: string;
-  firstName: string;
-  lastName: string;
+  status: OffererMemberStatus;
 };
 

@@ -136,6 +136,7 @@ export type { NewPasswordBodyModel } from './models/NewPasswordBodyModel';
 export { OfferAddressType } from './models/OfferAddressType';
 export type { OfferDomain } from './models/OfferDomain';
 export type { OffererApiKey } from './models/OffererApiKey';
+export { OffererMemberStatus } from './models/OffererMemberStatus';
 export type { OffererReimbursementPointListResponseModel } from './models/OffererReimbursementPointListResponseModel';
 export type { OffererReimbursementPointResponseModel } from './models/OffererReimbursementPointResponseModel';
 export type { OffererStatsResponseModel } from './models/OffererStatsResponseModel';
