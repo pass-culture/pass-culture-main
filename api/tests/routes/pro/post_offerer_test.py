@@ -34,9 +34,31 @@ def test_create_virtual_venue(client):
     assert response.status_code == 201
     assert response.json["siren"] == "418166096"
     assert response.json["name"] == "Test Offerer"
-    virtual_venues = list(filter(lambda v: v["isVirtual"], response.json["managedVenues"]))
+    virtual_venues = offerers_models.Venue.query.filter(offerers_models.Venue.isVirtual == True).all()
     assert len(virtual_venues) == 1
     assert len(users_testing.sendinblue_requests) == 1
+
+
+def test_returned_data(client):
+    pro = users_factories.ProFactory()
+
+    body = {
+        "name": "Test Offerer",
+        "siren": "418166096",
+        "address": "123 rue de Paris",
+        "postalCode": "93100",
+        "city": "Montreuil",
+    }
+
+    client = client.with_session_auth(pro.email)
+    response = client.post("/offerers", json=body)
+
+    created_offerer = offerers_models.Offerer.query.one()
+    assert response.json == {
+        "id": created_offerer.id,
+        "siren": "418166096",
+        "name": "Test Offerer",
+    }
 
 
 def test_when_no_address_is_provided(client):
