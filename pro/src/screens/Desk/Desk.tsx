@@ -2,6 +2,7 @@ import cx from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 
+import { GetBookingResponse } from 'apiClient/v2'
 import { Banner, SubmitButton, TextInput } from 'ui-kit'
 import Titles from 'ui-kit/Titles/Titles'
 
@@ -9,7 +10,6 @@ import { BookingDetails } from './BookingDetails'
 import { ButtonInvalidateToken } from './ButtonInvalidateToken'
 import styles from './Desk.module.scss'
 import {
-  Booking,
   DeskGetBookingResponse,
   DeskProps,
   DeskSubmitResponse,
@@ -29,7 +29,7 @@ const Desk = ({
 }: DeskProps): JSX.Element => {
   const [token, setToken] = useState('')
   const [isTokenValidated, setIsTokenValidated] = useState(false)
-  const [booking, setBooking] = useState<Booking | null>(null)
+  const [booking, setBooking] = useState<GetBookingResponse | null>(null)
   const [message, setMessage] = useState<ErrorMessage>({
     message: 'Saisissez une contremarque',
     variant: MESSAGE_VARIANT.DEFAULT,

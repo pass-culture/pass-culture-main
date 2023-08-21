@@ -13,16 +13,7 @@ describe('getBooking', () => {
 
       const serializedBooking = await getBooking('test_booking_id')
       expect(serializedBooking).toStrictEqual({
-        booking: {
-          datetime: '2001-02-01T20:00:00Z',
-          ean13: 'test ean113',
-          offerName: 'Nom de la structure',
-          price: 13,
-          quantity: 1,
-          userName: 'USER',
-          priceCategoryLabel: 'price label',
-          venueDepartmentCode: '75',
-        },
+        booking: defaultBookingResponse,
       })
     })
   })

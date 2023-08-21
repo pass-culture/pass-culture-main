@@ -1,3 +1,5 @@
+import { GetBookingResponse } from 'apiClient/v2'
+
 export enum MESSAGE_VARIANT {
   DEFAULT = 'default',
   ERROR = 'error',
@@ -8,22 +10,11 @@ export interface ErrorMessage {
   variant: MESSAGE_VARIANT
 }
 
-export interface Booking {
-  datetime: string
-  ean13?: string | null
-  offerName: string
-  price: number
-  quantity: number
-  userName: string
-  priceCategoryLabel: string | null
-  venueDepartmentCode?: string | null
-}
-
 export interface DeskGetBookingResponse {
   error?: ErrorMessage & {
     isTokenValidated: boolean
   }
-  booking?: Booking
+  booking?: GetBookingResponse
 }
 
 export interface DeskProps {
