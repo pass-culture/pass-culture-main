@@ -12,6 +12,11 @@ import {
   VenueTypeCode,
 } from 'apiClient/v1'
 import { BookingRecapStatus } from 'apiClient/v1/models/BookingRecapStatus'
+import {
+  BookingFormula,
+  BookingOfferType,
+  GetBookingResponse,
+} from 'apiClient/v2'
 
 let offerId = 1
 let venueId = 1
@@ -219,3 +224,26 @@ export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
     id: 0,
     venueTypeCode: VenueTypeCode.LIEU_ADMINISTRATIF,
   }
+
+export const defaultBookingResponse: GetBookingResponse = {
+  bookingId: 'test_booking_id',
+  dateOfBirth: '1980-02-01T20:00:00Z',
+  email: 'test@email.com',
+  formula: BookingFormula.PLACE,
+  isUsed: false,
+  offerId: 12345,
+  offerType: BookingOfferType.EVENEMENT,
+  phoneNumber: '0100000000',
+  publicOfferId: 'test_public_offer_id',
+  theater: { theater_any: 'theater_any' },
+  venueAddress: null,
+  venueName: 'mon lieu',
+  datetime: '2001-02-01T20:00:00Z',
+  ean13: 'test ean113',
+  offerName: 'Nom de la structure',
+  price: 13,
+  quantity: 1,
+  userName: 'USER',
+  venueDepartmentCode: '75',
+  priceCategoryLabel: 'price label',
+}
