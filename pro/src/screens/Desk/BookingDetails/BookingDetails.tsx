@@ -1,11 +1,10 @@
 import cx from 'classnames'
 import React from 'react'
 
+import { GetBookingResponse } from 'apiClient/v2'
 import strokeDuoIcon from 'icons/stroke-duo.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { formatLocalTimeDateString } from 'utils/timezone'
-
-import { Booking } from '..'
 
 import styles from './BookingDetails.module.scss'
 
@@ -22,14 +21,14 @@ const BookingDetailsLine = ({ label, value }: BookingDetailsLine) => (
 )
 
 interface BookingDetailsProps {
-  booking: Booking | null
+  booking: GetBookingResponse | null
 }
 
 const BookingDetails = ({
   booking,
 }: BookingDetailsProps): JSX.Element | null => {
   /* istanbul ignore next: DEBT, TO FIX */
-  const formattedBookingDate = (booking: Booking): string => {
+  const formattedBookingDate = (booking: GetBookingResponse): string => {
     return !booking.datetime
       ? 'Permanent'
       : formatLocalTimeDateString(
