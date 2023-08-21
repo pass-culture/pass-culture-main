@@ -27,6 +27,36 @@ def test_public_api(client, app):
                     "title": "BookingOfferType",
                     "type": "string",
                 },
+                "CollectiveBookingResponseModel": {
+                    "properties": {
+                        "cancellationLimitDate": {
+                            "format": "date-time",
+                            "nullable": True,
+                            "title": "Cancellationlimitdate",
+                            "type": "string",
+                        },
+                        "confirmationDate": {
+                            "format": "date-time",
+                            "nullable": True,
+                            "title": "Confirmationdate",
+                            "type": "string",
+                        },
+                        "dateCreated": {"format": "date-time", "title": "Datecreated", "type": "string"},
+                        "dateUsed": {"format": "date-time", "nullable": True, "title": "Dateused", "type": "string"},
+                        "educationalYear": {"$ref": "#/components/schemas/EducationalYearModel"},
+                        "id": {"title": "Id", "type": "integer"},
+                        "status": {"$ref": "#/components/schemas/CollectiveBookingStatus"},
+                        "venueId": {"title": "Venueid", "type": "integer"},
+                    },
+                    "required": ["id", "status", "dateCreated", "educationalYear", "venueId"],
+                    "title": "CollectiveBookingResponseModel",
+                    "type": "object",
+                },
+                "CollectiveBookingStatus": {
+                    "description": "An enumeration.",
+                    "enum": ["PENDING", "CONFIRMED", "USED", "CANCELLED", "REIMBURSED"],
+                    "title": "CollectiveBookingStatus",
+                },
                 "CollectiveOffersCategoryResponseModel": {
                     "properties": {
                         "id": {"title": "Id", "type": "string"},
@@ -124,6 +154,16 @@ def test_public_api(client, app):
                     "title": "CollectiveOffersSubCategoryResponseModel",
                     "type": "object",
                 },
+                "EducationalYearModel": {
+                    "properties": {
+                        "adageId": {"title": "Adageid", "type": "string"},
+                        "beginningDate": {"format": "date-time", "title": "Beginningdate", "type": "string"},
+                        "expirationDate": {"format": "date-time", "title": "Expirationdate", "type": "string"},
+                    },
+                    "required": ["adageId", "beginningDate", "expirationDate"],
+                    "title": "EducationalYearModel",
+                    "type": "object",
+                },
                 "ErrorResponseModel": {
                     "properties": {
                         "errors": {
@@ -145,7 +185,7 @@ def test_public_api(client, app):
                         "email": {"title": "Email", "type": "string"},
                         "formula": {
                             "allOf": [{"$ref": "#/components/schemas/BookingFormula"}],
-                            "description": "S'applique uniquement aux offres de catégorie Cinéma. Abonnement (ABO) ou place (PLACE).",
+                            "description": "S'applique uniquement aux offres de cat\u00e9gorie Cin\u00e9ma. Abonnement (ABO) ou place (PLACE).",
                             "nullable": True,
                         },
                         "isUsed": {"title": "Isused", "type": "boolean"},
@@ -158,7 +198,7 @@ def test_public_api(client, app):
                         "publicOfferId": {"title": "Publicofferid", "type": "string"},
                         "quantity": {"title": "Quantity", "type": "integer"},
                         "theater": {
-                            "description": "Identifiant du film et de la salle dans le cas d’une offre synchronisée par Allociné.",
+                            "description": "Identifiant du film et de la salle dans le cas d\u2019une offre synchronis\u00e9e par Allocin\u00e9.",
                             "example": {"film_id": "...", "salle_id": "..."},
                             "title": "Theater",
                             "type": "object",
@@ -558,7 +598,7 @@ def test_public_api(client, app):
                 "VenuePhysicalLocation": {
                     "properties": {
                         "address": {
-                            "example": "55 rue du Faubourg-Saint-Honoré",
+                            "example": "55 rue du Faubourg-Saint-Honor\u00e9",
                             "nullable": True,
                             "title": "Address",
                             "type": "string",
@@ -576,7 +616,11 @@ def test_public_api(client, app):
                         "activityDomain": {"$ref": "#/components/schemas/VenueTypeEnum"},
                         "createdDatetime": {"format": "date-time", "title": "Createddatetime", "type": "string"},
                         "id": {"title": "Id", "type": "integer"},
-                        "legalName": {"example": "Palais de l'Élysée", "title": "Legalname", "type": "string"},
+                        "legalName": {
+                            "example": "Palais de l'\u00c9lys\u00e9e",
+                            "title": "Legalname",
+                            "type": "string",
+                        },
                         "location": {
                             "description": "Location where the offers will be available or will take place. There is exactly one digital venue per offerer, which is listed although its id is not required to create a digital offer (see DigitalLocation model).",
                             "discriminator": {
@@ -594,7 +638,7 @@ def test_public_api(client, app):
                         },
                         "publicName": {
                             "description": "If null, legalName is used.",
-                            "example": "Élysée",
+                            "example": "\u00c9lys\u00e9e",
                             "nullable": True,
                             "title": "Publicname",
                             "type": "string",
@@ -665,7 +709,7 @@ def test_public_api(client, app):
         "paths": {
             "/v2/bookings/cancel/token/{token}": {
                 "patch": {
-                    "description": "Bien que, dans le cas d’un évènement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier, cette API permet d’annuler la réservation d’un utilisateur si elle n’a pas encore été validé.",
+                    "description": "Bien que, dans le cas d\u2019un \u00e9v\u00e8nement, l\u2019utilisateur ne peut plus annuler sa r\u00e9servation 72h avant le d\u00e9but de ce dernier, cette API permet d\u2019annuler la r\u00e9servation d\u2019un utilisateur si elle n\u2019a pas encore \u00e9t\u00e9 valid\u00e9.",
                     "operationId": "PatchCancelBookingByToken",
                     "parameters": [
                         {
@@ -677,13 +721,13 @@ def test_public_api(client, app):
                         }
                     ],
                     "responses": {
-                        "204": {"description": "La contremarque a été annulée avec succès"},
-                        "401": {"description": "Authentification nécessaire"},
+                        "204": {"description": "La contremarque a \u00e9t\u00e9 annul\u00e9e avec succ\u00e8s"},
+                        "401": {"description": "Authentification n\u00e9cessaire"},
                         "403": {
-                            "description": "Vous n'avez pas les droits nécessaires pour annuler cette contremarque ou la réservation a déjà été validée"
+                            "description": "Vous n'avez pas les droits n\u00e9cessaires pour annuler cette contremarque ou la r\u00e9servation a d\u00e9j\u00e0 \u00e9t\u00e9 valid\u00e9e"
                         },
                         "404": {"description": "La contremarque n'existe pas"},
-                        "410": {"description": "La contremarque a déjà été annulée"},
+                        "410": {"description": "La contremarque a d\u00e9j\u00e0 \u00e9t\u00e9 annul\u00e9e"},
                         "422": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
@@ -692,7 +736,7 @@ def test_public_api(client, app):
                         },
                     },
                     "security": [{"ApiKeyAuth": []}, {"SessionAuth": []}],
-                    "summary": "Annulation d'une réservation.",
+                    "summary": "Annulation d'une r\u00e9servation.",
                     "tags": ["API Contremarque"],
                 }
             },
@@ -710,12 +754,16 @@ def test_public_api(client, app):
                         }
                     ],
                     "responses": {
-                        "204": {"description": "L'annulation de la validation de la contremarque a bien été effectuée"},
-                        "401": {"description": "Authentification nécessaire"},
-                        "403": {"description": "Vous n'avez pas les droits nécessaires pour voir cette contremarque"},
+                        "204": {
+                            "description": "L'annulation de la validation de la contremarque a bien \u00e9t\u00e9 effectu\u00e9e"
+                        },
+                        "401": {"description": "Authentification n\u00e9cessaire"},
+                        "403": {
+                            "description": "Vous n'avez pas les droits n\u00e9cessaires pour voir cette contremarque"
+                        },
                         "404": {"description": "La contremarque n'existe pas"},
                         "410": {
-                            "description": "La requête est refusée car la contremarque n'a pas encore été validée, a été annulée, ou son remboursement a été initié"
+                            "description": "La requ\u00eate est refus\u00e9e car la contremarque n'a pas encore \u00e9t\u00e9 valid\u00e9e, a \u00e9t\u00e9 annul\u00e9e, ou son remboursement a \u00e9t\u00e9 initi\u00e9"
                         },
                         "422": {
                             "content": {
@@ -725,13 +773,13 @@ def test_public_api(client, app):
                         },
                     },
                     "security": [{"ApiKeyAuth": []}, {"SessionAuth": []}],
-                    "summary": "Annulation de la validation d'une réservation.",
+                    "summary": "Annulation de la validation d'une r\u00e9servation.",
                     "tags": ["API Contremarque"],
                 }
             },
             "/v2/bookings/token/{token}": {
                 "get": {
-                    "description": "Le code “contremarque” ou \"token\" est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation. Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et lui est transmis à cette occasion.",
+                    "description": "Le code \u201ccontremarque\u201d ou \"token\" est une cha\u00eene de caract\u00e8res permettant d\u2019identifier la r\u00e9servation et qui sert de preuve de r\u00e9servation. Ce code unique est g\u00e9n\u00e9r\u00e9 pour chaque r\u00e9servation d'un utilisateur sur l'application et lui est transmis \u00e0 cette occasion.",
                     "operationId": "GetBookingByTokenV2",
                     "parameters": [
                         {
@@ -747,13 +795,15 @@ def test_public_api(client, app):
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/GetBookingResponse"}}
                             },
-                            "description": "La contremarque existe et n’est pas validée",
+                            "description": "La contremarque existe et n\u2019est pas valid\u00e9e",
                         },
-                        "401": {"description": "Authentification nécessaire"},
-                        "403": {"description": "Vous n'avez pas les droits nécessaires pour voir cette contremarque"},
+                        "401": {"description": "Authentification n\u00e9cessaire"},
+                        "403": {
+                            "description": "Vous n'avez pas les droits n\u00e9cessaires pour voir cette contremarque"
+                        },
                         "404": {"description": "La contremarque n'existe pas"},
                         "410": {
-                            "description": "Cette contremarque a été validée.\n En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé."
+                            "description": "Cette contremarque a \u00e9t\u00e9 valid\u00e9e.\n En l\u2019invalidant vous indiquez qu\u2019elle n\u2019a pas \u00e9t\u00e9 utilis\u00e9e et vous ne serez pas rembours\u00e9."
                         },
                         "422": {
                             "content": {
@@ -763,13 +813,13 @@ def test_public_api(client, app):
                         },
                     },
                     "security": [{"ApiKeyAuth": []}, {"SessionAuth": []}],
-                    "summary": "Consultation d'une réservation.",
+                    "summary": "Consultation d'une r\u00e9servation.",
                     "tags": ["API Contremarque"],
                 }
             },
             "/v2/bookings/use/token/{token}": {
                 "patch": {
-                    "description": "Pour confirmer que la réservation a bien été utilisée par le jeune.",
+                    "description": "Pour confirmer que la r\u00e9servation a bien \u00e9t\u00e9 utilis\u00e9e par le jeune.",
                     "operationId": "PatchBookingUseByToken",
                     "parameters": [
                         {
@@ -781,12 +831,14 @@ def test_public_api(client, app):
                         }
                     ],
                     "responses": {
-                        "204": {"description": "La contremarque a bien été validée"},
-                        "401": {"description": "Authentification nécessaire"},
-                        "403": {"description": "Vous n'avez pas les droits nécessaires pour voir cette contremarque"},
+                        "204": {"description": "La contremarque a bien \u00e9t\u00e9 valid\u00e9e"},
+                        "401": {"description": "Authentification n\u00e9cessaire"},
+                        "403": {
+                            "description": "Vous n'avez pas les droits n\u00e9cessaires pour voir cette contremarque"
+                        },
                         "404": {"description": "La contremarque n'existe pas"},
                         "410": {
-                            "description": "Cette contremarque a été validée.\n En l’invalidant vous indiquez qu’elle n’a pas été utilisée et vous ne serez pas remboursé."
+                            "description": "Cette contremarque a \u00e9t\u00e9 valid\u00e9e.\n En l\u2019invalidant vous indiquez qu\u2019elle n\u2019a pas \u00e9t\u00e9 utilis\u00e9e et vous ne serez pas rembours\u00e9."
                         },
                         "422": {
                             "content": {
@@ -796,8 +848,48 @@ def test_public_api(client, app):
                         },
                     },
                     "security": [{"ApiKeyAuth": []}, {"SessionAuth": []}],
-                    "summary": "Validation d'une réservation.",
+                    "summary": "Validation d'une r\u00e9servation.",
                     "tags": ["API Contremarque"],
+                }
+            },
+            "/v2/collective/bookings/{booking_id}": {
+                "get": {
+                    "description": "",
+                    "operationId": "GetCollectiveBooking",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "path",
+                            "name": "booking_id",
+                            "required": True,
+                            "schema": {"format": "int32", "type": "integer"},
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/CollectiveBookingResponseModel"}
+                                }
+                            },
+                            "description": "Les informations d'une r\u00e9servation collective",
+                        },
+                        "401": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
+                            },
+                            "description": "Authentification n\u00e9cessaire",
+                        },
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"ApiKeyAuth": []}],
+                    "summary": "R\u00e9cup\u00e9ration les informations d'une r\u00e9servation collective",
+                    "tags": ["API offres collectives"],
                 }
             },
             "/v2/collective/categories": {
@@ -814,13 +906,13 @@ def test_public_api(client, app):
                                     }
                                 }
                             },
-                            "description": "La liste des catégories éligibles existantes.",
+                            "description": "La liste des cat\u00e9gories \u00e9ligibles existantes.",
                         },
                         "401": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
                             },
-                            "description": "Authentification nécessaire",
+                            "description": "Authentification n\u00e9cessaire",
                         },
                         "422": {
                             "content": {
@@ -830,7 +922,7 @@ def test_public_api(client, app):
                         },
                     },
                     "security": [{"ApiKeyAuth": []}],
-                    "summary": "Récupération de la liste des catégories d'offres proposées.",
+                    "summary": "R\u00e9cup\u00e9ration de la liste des cat\u00e9gories d'offres propos\u00e9es.",
                     "tags": ["API offres collectives"],
                 }
             },
@@ -846,13 +938,13 @@ def test_public_api(client, app):
                                     "schema": {"$ref": "#/components/schemas/CollectiveOffersListDomainsResponseModel"}
                                 }
                             },
-                            "description": "La liste des domaines d'éducation.",
+                            "description": "La liste des domaines d'\u00e9ducation.",
                         },
                         "401": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
                             },
-                            "description": "Authentification nécessaire",
+                            "description": "Authentification n\u00e9cessaire",
                         },
                         "422": {
                             "content": {
@@ -862,7 +954,7 @@ def test_public_api(client, app):
                         },
                     },
                     "security": [{"ApiKeyAuth": []}],
-                    "summary": "Récupération de la liste des domaines d'éducation pouvant être associés aux offres collectives.",
+                    "summary": "R\u00e9cup\u00e9ration de la liste des domaines d'\u00e9ducation pouvant \u00eatre associ\u00e9s aux offres collectives.",
                     "tags": ["API offres collectives"],
                 }
             },
@@ -930,19 +1022,19 @@ def test_public_api(client, app):
                                     }
                                 }
                             },
-                            "description": "La liste des établissement scolaires éligibles.",
+                            "description": "La liste des \u00e9tablissement scolaires \u00e9ligibles.",
                         },
                         "400": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
                             },
-                            "description": "Requête malformée",
+                            "description": "Requ\u00eate malform\u00e9e",
                         },
                         "401": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
                             },
-                            "description": "Authentification nécessaire",
+                            "description": "Authentification n\u00e9cessaire",
                         },
                         "422": {
                             "content": {
@@ -952,7 +1044,7 @@ def test_public_api(client, app):
                         },
                     },
                     "security": [{"ApiKeyAuth": []}],
-                    "summary": "Récupération de la liste établissements scolaires.",
+                    "summary": "R\u00e9cup\u00e9ration de la liste \u00e9tablissements scolaires.",
                     "tags": ["API offres collectives"],
                 }
             },
@@ -1003,13 +1095,13 @@ def test_public_api(client, app):
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
                             },
-                            "description": "Authentification nécessaire",
+                            "description": "Authentification n\u00e9cessaire",
                         },
                         "403": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
                             },
-                            "description": "Vous n'avez pas les droits nécessaires pour voir cette offre collective",
+                            "description": "Vous n'avez pas les droits n\u00e9cessaires pour voir cette offre collective",
                         },
                         "404": {
                             "content": {
@@ -1025,7 +1117,7 @@ def test_public_api(client, app):
                         },
                     },
                     "security": [{"ApiKeyAuth": []}],
-                    "summary": "Récuperation de l'offre collective avec l'identifiant offer_id. Cette api ignore les offre vitrines et les offres commencées sur l'interface web et non finalisées.",
+                    "summary": "R\u00e9cuperation de l'offre collective avec l'identifiant offer_id. Cette api ignore les offre vitrines et les offres commenc\u00e9es sur l'interface web et non finalis\u00e9es.",
                     "tags": ["API offres collectives"],
                 },
                 "post": {
@@ -1046,31 +1138,31 @@ def test_public_api(client, app):
                                     "schema": {"$ref": "#/components/schemas/GetPublicCollectiveOfferResponseModel"}
                                 }
                             },
-                            "description": "L'offre collective à été créée avec succes",
+                            "description": "L'offre collective \u00e0 \u00e9t\u00e9 cr\u00e9\u00e9e avec succes",
                         },
                         "400": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
                             },
-                            "description": "Requête malformée",
+                            "description": "Requ\u00eate malform\u00e9e",
                         },
                         "401": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
                             },
-                            "description": "Authentification nécessaire",
+                            "description": "Authentification n\u00e9cessaire",
                         },
                         "403": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
                             },
-                            "description": "Non éligible pour les offres collectives",
+                            "description": "Non \u00e9ligible pour les offres collectives",
                         },
                         "404": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
                             },
-                            "description": "L'une des resources pour la création de l'offre n'a pas été trouvée",
+                            "description": "L'une des resources pour la cr\u00e9ation de l'offre n'a pas \u00e9t\u00e9 trouv\u00e9e",
                         },
                         "422": {
                             "content": {
@@ -1080,7 +1172,7 @@ def test_public_api(client, app):
                         },
                     },
                     "security": [{"ApiKeyAuth": []}],
-                    "summary": "Création d'une offre collective.",
+                    "summary": "Cr\u00e9ation d'une offre collective.",
                     "tags": ["API offres collectives"],
                 },
             },
@@ -1110,13 +1202,13 @@ def test_public_api(client, app):
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
                             },
-                            "description": "Authentification nécessaire",
+                            "description": "Authentification n\u00e9cessaire",
                         },
                         "403": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
                             },
-                            "description": "Vous n'avez pas les droits nécessaires pour voir cette offre collective",
+                            "description": "Vous n'avez pas les droits n\u00e9cessaires pour voir cette offre collective",
                         },
                         "404": {
                             "content": {
@@ -1132,7 +1224,7 @@ def test_public_api(client, app):
                         },
                     },
                     "security": [{"ApiKeyAuth": []}],
-                    "summary": "Récuperation de l'offre collective avec l'identifiant offer_id.",
+                    "summary": "R\u00e9cuperation de l'offre collective avec l'identifiant offer_id.",
                     "tags": ["API offres collectives"],
                 },
                 "patch": {
@@ -1161,41 +1253,41 @@ def test_public_api(client, app):
                                     "schema": {"$ref": "#/components/schemas/GetPublicCollectiveOfferResponseModel"}
                                 }
                             },
-                            "description": "L'offre collective à été édité avec succes",
+                            "description": "L'offre collective \u00e0 \u00e9t\u00e9 \u00e9dit\u00e9 avec succes",
                         },
                         "400": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
                             },
-                            "description": "Requête malformée",
+                            "description": "Requ\u00eate malform\u00e9e",
                         },
                         "401": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
                             },
-                            "description": "Authentification nécessaire",
+                            "description": "Authentification n\u00e9cessaire",
                         },
                         "403": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
                             },
-                            "description": "Vous n'avez pas les droits nécessaires pour éditer cette offre collective",
+                            "description": "Vous n'avez pas les droits n\u00e9cessaires pour \u00e9diter cette offre collective",
                         },
                         "404": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
                             },
-                            "description": "L'une des resources pour la création de l'offre n'a pas été trouvée",
+                            "description": "L'une des resources pour la cr\u00e9ation de l'offre n'a pas \u00e9t\u00e9 trouv\u00e9e",
                         },
                         "422": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
                             },
-                            "description": "Cetains champs ne peuvent pas être édités selon l'état de l'offre",
+                            "description": "Cetains champs ne peuvent pas \u00eatre \u00e9dit\u00e9s selon l'\u00e9tat de l'offre",
                         },
                     },
                     "security": [{"ApiKeyAuth": []}],
-                    "summary": "Édition d'une offre collective.",
+                    "summary": "\u00c9dition d'une offre collective.",
                     "tags": ["API offres collectives"],
                 },
             },
@@ -1213,13 +1305,13 @@ def test_public_api(client, app):
                                     }
                                 }
                             },
-                            "description": "La liste des domaines d'éducation.",
+                            "description": "La liste des domaines d'\u00e9ducation.",
                         },
                         "401": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
                             },
-                            "description": "Authentification nécessaire",
+                            "description": "Authentification n\u00e9cessaire",
                         },
                         "422": {
                             "content": {
@@ -1229,7 +1321,7 @@ def test_public_api(client, app):
                         },
                     },
                     "security": [{"ApiKeyAuth": []}],
-                    "summary": "Récupération de la liste des publics cibles pour lesquelles des offres collectives peuvent être proposées.",
+                    "summary": "R\u00e9cup\u00e9ration de la liste des publics cibles pour lesquelles des offres collectives peuvent \u00eatre propos\u00e9es.",
                     "tags": ["API offres collectives"],
                 }
             },
@@ -1247,13 +1339,13 @@ def test_public_api(client, app):
                                     }
                                 }
                             },
-                            "description": "La liste des sous-catégories éligibles existantes.",
+                            "description": "La liste des sous-cat\u00e9gories \u00e9ligibles existantes.",
                         },
                         "401": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
                             },
-                            "description": "Authentification nécessaire",
+                            "description": "Authentification n\u00e9cessaire",
                         },
                         "422": {
                             "content": {
@@ -1263,13 +1355,13 @@ def test_public_api(client, app):
                         },
                     },
                     "security": [{"ApiKeyAuth": []}],
-                    "summary": "Récupération de la liste des sous-catégories d'offres proposées a un public collectif.",
+                    "summary": "R\u00e9cup\u00e9ration de la liste des sous-cat\u00e9gories d'offres propos\u00e9es a un public collectif.",
                     "tags": ["API offres collectives"],
                 }
             },
             "/v2/collective/venues": {
                 "get": {
-                    "description": "Tous les lieux enregistrés, sont listés ici avec leurs coordonnées.",
+                    "description": "Tous les lieux enregistr\u00e9s, sont list\u00e9s ici avec leurs coordonn\u00e9es.",
                     "operationId": "ListVenues",
                     "parameters": [],
                     "responses": {
@@ -1279,13 +1371,13 @@ def test_public_api(client, app):
                                     "schema": {"$ref": "#/components/schemas/CollectiveOffersListVenuesResponseModel"}
                                 }
                             },
-                            "description": "La liste des lieux ou vous pouvez créer une offre.",
+                            "description": "La liste des lieux ou vous pouvez cr\u00e9er une offre.",
                         },
                         "401": {
                             "content": {
                                 "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
                             },
-                            "description": "Authentification nécessaire",
+                            "description": "Authentification n\u00e9cessaire",
                         },
                         "422": {
                             "content": {
@@ -1295,7 +1387,7 @@ def test_public_api(client, app):
                         },
                     },
                     "security": [{"ApiKeyAuth": []}],
-                    "summary": "Récupération de la liste des lieux associés au fournisseur authentifiée par le jeton d'API.",
+                    "summary": "R\u00e9cup\u00e9ration de la liste des lieux associ\u00e9s au fournisseur authentifi\u00e9e par le jeton d'API.",
                     "tags": ["API offres collectives"],
                 }
             },
