@@ -22,3 +22,12 @@ class SaveRedactorPreferencesTest:
 
         db.session.refresh(educational_redactor)
         assert educational_redactor.preferences == {"feedback_form_closed": True}
+
+    def test_save_preferences_no_email(self, client, caplog):
+        educational_institution = educational_factories.EducationalInstitutionFactory()
+
+        client = client.with_adage_token(email=None, uai=educational_institution.institutionId)
+        response = client.post(url_for(self.endpoint), json={"feedback_form_closed": True})
+
+        assert response.status_code == 401
+        assert response.json == {"message": "Missing authentication information"}
