@@ -474,8 +474,18 @@ def _handle_duplicate(fraud_items: list[models.FraudItem], fraud_check: models.B
     if not duplicate_had_underage_credit:
         return
 
-    users_api.suspend_account(user, constants.SuspensionReason.FRAUD_SUSPICION, actor=None)
-    users_api.suspend_account(duplicate_beneficiary, constants.SuspensionReason.FRAUD_SUSPICION, actor=None)
+    users_api.suspend_account(
+        user,
+        constants.SuspensionReason.FRAUD_SUSPICION,
+        actor=None,
+        comment="Compte automatiquement suspendu pour suspicion de doublon",
+    )
+    users_api.suspend_account(
+        duplicate_beneficiary,
+        constants.SuspensionReason.FRAUD_SUSPICION,
+        actor=None,
+        comment="Compte automatiquement suspendu pour suspicion de doublon",
+    )
     _send_duplicate_fraud_detection_mail(user, duplicate_beneficiary)
 
 
