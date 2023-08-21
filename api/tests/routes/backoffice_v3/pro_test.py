@@ -1,3 +1,4 @@
+import logging
 import re
 
 from flask import url_for
@@ -477,3 +478,27 @@ class SearchVenueTest:
         # then
         assert response.status_code == 200
         assert len(html_parser.extract_cards_text(response.data)) == 0
+
+
+class LogsTest:
+    endpoint = "backoffice_v3_web.search_pro"
+
+    def test_log_pro_search(self, authenticated_client, caplog):
+        # given
+        offerers_factories.OffererFactory(
+            name="Log à rythme",
+        )
+
+        # when
+        with caplog.at_level(logging.INFO):
+            response = authenticated_client.get(url_for(self.endpoint, terms="rythme", pro_type="offerer"))
+
+        # then
+        assert response.status_code == 200
+        assert caplog.records[0].message == "SearchPro"
+        assert caplog.records[0].extra == {
+            "analyticsSource": "backoffice",
+            "searchNbResults": 1,
+            "searchProType": "offerer",
+            "searchQuery": "rythme",
+        }
