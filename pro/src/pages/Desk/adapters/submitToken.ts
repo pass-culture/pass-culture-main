@@ -1,6 +1,7 @@
 import { apiContremarque } from 'apiClient/api'
 import { ApiError } from 'apiClient/v2'
-import { DeskSubmitResponse, MESSAGE_VARIANT } from 'screens/Desk'
+
+import { DeskSubmitResponse, MESSAGE_VARIANT } from '../types'
 
 const onSubmitFailure = (error: ApiError): DeskSubmitResponse => ({
   error: {
@@ -9,16 +10,14 @@ const onSubmitFailure = (error: ApiError): DeskSubmitResponse => ({
   },
 })
 
-const submitValidate = (token: string): Promise<DeskSubmitResponse> =>
+export const submitValidate = (token: string): Promise<DeskSubmitResponse> =>
   apiContremarque
     .patchBookingUseByToken(token)
     .then(() => ({}))
     .catch(onSubmitFailure)
 
-const submitInvalidate = (token: string): Promise<DeskSubmitResponse> =>
+export const submitInvalidate = (token: string): Promise<DeskSubmitResponse> =>
   apiContremarque
     .patchBookingKeepByToken(token)
     .then(() => ({}))
     .catch(onSubmitFailure)
-
-export { submitValidate, submitInvalidate }
