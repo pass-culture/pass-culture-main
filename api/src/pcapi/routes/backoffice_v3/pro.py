@@ -106,6 +106,15 @@ def search_pro() -> utils.BackofficeResponse:
     context = get_context(search_model.pro_type)
     paginated_rows = search_utils.fetch_paginated_rows(context.fetch_rows_func, search_model)
 
+    utils.log_backoffice_tracking_data(
+        event_name="SearchPro",
+        extra_data={
+            "searchNbResults": paginated_rows.total,
+            "searchProType": search_model.pro_type.value,
+            "searchQuery": search_model.terms,
+        },
+    )
+
     if paginated_rows.total == 1 and FeatureToggle.WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT.is_active():
         return redirect(context.get_pro_link(paginated_rows.items[0].id, terms=form.terms.data), code=303)
 
