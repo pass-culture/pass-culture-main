@@ -121,27 +121,22 @@ describe('src | components | Desk', () => {
     expect(contremarque).toHaveValue('')
   })
 
-  it('test validate token submit success', async () => {
-    const submitValidate = vi.fn().mockImplementation(() => Promise.resolve({}))
-    const { inputToken, buttonSubmitValidated } = renderDeskScreen({
-      ...defaultProps,
-      submitValidate,
+  it('should display error message and empty field when contremarque could not be validated', async () => {
+    const submitValidateMock = vi.fn().mockResolvedValue({
+      error: {
+        message: 'Erreur',
+        isTokenValidated: false,
+      },
     })
-
-    await userEvent.type(inputToken, 'AAAAAA')
-
-    expect(await screen.findByTestId('desk-message')).toHaveTextContent(
-      'Coupon vérifié, cliquez sur "Valider" pour enregistrer'
-    )
-
+    renderDeskScreen({
+      ...defaultProps,
+      submitValidate: submitValidateMock,
+    })
+    const contremarque = screen.getByLabelText('Contremarque')
+    await userEvent.type(contremarque, 'AAAAAA')
     await userEvent.click(screen.getByText('Valider la contremarque'))
-
-    expect(
-      await screen.findByText('Contremarque validée !')
-    ).toBeInTheDocument()
-    expect(submitValidate).toHaveBeenCalledWith('AAAAAA')
-    expect(inputToken).toHaveValue('')
-    expect(buttonSubmitValidated).toBeDisabled()
+    expect(await screen.findByText(/Erreur/)).toBeInTheDocument()
+    expect(contremarque).toHaveValue('AAAAAA')
   })
 
   it('test already valided token and booking details display', async () => {
