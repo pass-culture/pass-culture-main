@@ -17,12 +17,6 @@ export interface DeskGetBookingResponse {
   booking?: GetBookingResponse
 }
 
-export interface DeskProps {
-  getBooking: (token: string) => Promise<DeskGetBookingResponse>
-  submitInvalidate: (token: string) => Promise<DeskSubmitResponse>
-  submitValidate: (token: string) => Promise<DeskSubmitResponse>
-}
-
 export interface DeskSubmitResponse {
   error?: ErrorMessage
 }

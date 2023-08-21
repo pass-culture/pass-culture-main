@@ -1,5 +1,5 @@
 import { apiContremarque } from 'apiClient/api'
-import { MESSAGE_VARIANT } from 'screens/Desk'
+import { MESSAGE_VARIANT } from 'pages/Desk/types'
 import { defaultBookingResponse } from 'utils/apiFactories'
 
 import { getBooking } from '..'
