@@ -274,3 +274,17 @@ def _manage_joins(
                     raise ValueError(f"Unsupported join_type {join_type}. Supported : 'inner_join' or 'outer_join'.")
                 join_log.add(join_dict["name"])
     return query, join_log
+
+
+def log_backoffice_tracking_data(
+    event_name: str,
+    extra_data: dict | None = None,
+) -> None:
+    if extra_data is None:
+        extra_data = {}
+
+    logger.info(
+        event_name,
+        extra={"analyticsSource": "backoffice", **extra_data},
+        technical_message_id="backoffice_analytics_event",
+    )
