@@ -268,6 +268,55 @@ class Returns200Test:
             creation_mode=None,
         )
 
+    def should_return_event_correctly_serialized(self, client):
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        event_offer = offers_factories.EventOfferFactory(venue=venue)
+        event_stock = offers_factories.EventStockFactory(
+            offer=event_offer, beginningDatetime=datetime.datetime(2022, 9, 21, 13, 19)
+        )
+
+        response = client.with_session_auth(email=pro.email).get("/offers")
+
+        assert response.status_code == 200
+        assert response.json == [
+            {
+                "hasBookingLimitDatetimesPassed": True,
+                "id": event_offer.id,
+                "isActive": True,
+                "isEditable": True,
+                "isEvent": True,
+                "isThing": False,
+                "isEducational": False,
+                "name": "Product 0",
+                "stocks": [
+                    {
+                        "id": event_stock.id,
+                        "hasBookingLimitDatetimePassed": True,
+                        "remainingQuantity": 1000,
+                        "beginningDatetime": "2022-09-21T13:19:00Z",
+                        "bookingQuantity": 0,
+                    }
+                ],
+                "thumbUrl": None,
+                "productIsbn": None,
+                "subcategoryId": "SEANCE_CINE",
+                "venue": {
+                    "id": venue.id,
+                    "isVirtual": False,
+                    "name": "Le Petit Rintintin 0",
+                    "offererName": "Le Petit Rintintin Management 0",
+                    "publicName": "Le Petit Rintintin 0",
+                    "departementCode": "75",
+                },
+                "status": "EXPIRED",
+                "isShowcase": False,
+            }
+        ]
+
 
 class Returns404Test:
     def should_return_no_offers_when_user_has_no_rights_on_requested_venue(self, app, db_session):
