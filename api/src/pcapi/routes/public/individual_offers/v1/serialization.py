@@ -18,7 +18,7 @@ from pcapi.domain import music_types
 from pcapi.domain import show_types
 from pcapi.models import offer_mixin
 from pcapi.routes import serialization
-from pcapi.routes.public.individual_offers.v1.base_serialization import PaginationQueryParams
+from pcapi.routes.public.individual_offers.v1.base_serialization import IndexPaginationQueryParams
 import pcapi.routes.public.serialization.accessibility as accessibility_serialization
 from pcapi.routes.public.serialization.utils import StrEnum
 import pcapi.routes.public.serialization.venues as venues_serialization
@@ -819,11 +819,11 @@ class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
         )
 
 
-class GetOffersQueryParams(PaginationQueryParams):
+class GetOffersQueryParams(IndexPaginationQueryParams):
     venue_id: int = pydantic.Field(..., description="Venue id to filter offers on. Optional.")
 
 
-class GetDatesQueryParams(PaginationQueryParams):
+class GetDatesQueryParams(IndexPaginationQueryParams):
     pass
 
 
@@ -914,12 +914,10 @@ class ProductOffersByEanResponse(serialization.ConfiguredBaseModel):
 
 class EventOffersResponse(serialization.ConfiguredBaseModel):
     events: typing.List[EventOfferResponse]
-    pagination: Pagination
 
 
 class GetDatesResponse(serialization.ConfiguredBaseModel):
     dates: typing.List[DateResponse]
-    pagination: Pagination
 
     class Config:
         json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
