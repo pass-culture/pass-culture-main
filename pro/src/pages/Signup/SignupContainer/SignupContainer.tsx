@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { ProUserCreationBodyV2Model } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import useLogEventOnUnload from 'hooks/useLogEventOnUnload'
@@ -13,7 +14,6 @@ import { SIGNUP_FORM_DEFAULT_VALUES } from './constants'
 import OperatingProcedures from './OperationProcedures'
 import styles from './SignupContainer.module.scss'
 import SignupForm from './SignupForm'
-import { SignupApiErrorResponse, SignupFormValues } from './types'
 import { validationSchema } from './validationSchema'
 
 const SignupContainer = (): JSX.Element => {
@@ -22,7 +22,7 @@ const SignupContainer = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   useRedirectLoggedUser()
 
-  const onSubmit = (values: SignupFormValues) => {
+  const onSubmit = (values: ProUserCreationBodyV2Model) => {
     api
       .signupProV2({
         ...values,
@@ -36,7 +36,7 @@ const SignupContainer = (): JSX.Element => {
     navigate('/inscription/confirmation', { replace: true })
   }
 
-  const onHandleFail = (errors: SignupApiErrorResponse) => {
+  const onHandleFail = (errors: Partial<ProUserCreationBodyV2Model>) => {
     for (const field in errors) {
       formik.setFieldError(field, (errors as any)[field])
     }
