@@ -1,1 +1,0 @@
-{"version":3,"file":"getLabelString-a0462018.js","sources":["../../src/utils/getLabelString.ts"],"sourcesContent":["export const getLabelString = (label: string | JSX.Element): string =>\n  typeof label === 'string' ? label : ''\n"],"names":["getLabelString","label"],"mappings":"AAAO,MAAMA,EAAkBC,GAC7B,OAAOA,GAAU,SAAWA,EAAQ"}
