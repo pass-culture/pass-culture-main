@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { BannerRGS } from 'components/Banner'
 import FormLayout from 'components/FormLayout'
 import LegalInfos from 'components/LegalInfos/LegalInfos'
+import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import CookiesFooter from 'pages/CookiesFooter/CookiesFooter'
 import MaybeAppUserDialog from 'pages/Signup/SignupContainer/MaybeAppUserDialog'
 import {
@@ -22,6 +23,7 @@ import styles from './SignupContainer.module.scss'
 import { SignupFormValues } from './types'
 
 const SignupForm = (): JSX.Element => {
+  useScrollToFirstErrorAfterSubmit()
   const navigate = useNavigate()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { isSubmitting } = useFormikContext<SignupFormValues>()
