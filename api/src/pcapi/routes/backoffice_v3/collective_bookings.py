@@ -233,7 +233,7 @@ def mark_booking_as_used(collective_booking_id: int) -> utils.BackofficeResponse
         return _redirect_after_collective_booking_action()
 
     try:
-        educational_api_booking.uncancel_collective_booking_by_id_from_support(collective_booking)
+        educational_api_booking.uncancel_collective_booking(collective_booking)
     except Exception as exc:  # pylint: disable=broad-except
         flash(f"Une erreur s'est produite : {str(exc)}", "warning")
     else:
@@ -253,8 +253,10 @@ def mark_booking_as_cancelled(collective_booking_id: int) -> utils.BackofficeRes
         return _redirect_after_collective_booking_action()
 
     try:
-        educational_api_booking.cancel_collective_booking_by_id_from_support(
-            collective_booking, educational_models.CollectiveBookingCancellationReasons(form.reason.data)
+        educational_api_booking.cancel_collective_booking(
+            collective_booking,
+            educational_models.CollectiveBookingCancellationReasons(form.reason.data),
+            _from="support",
         )
     except educational_exceptions.CollectiveBookingAlreadyCancelled:
         flash("Impossible d'annuler une réservation déjà annulée", "warning")

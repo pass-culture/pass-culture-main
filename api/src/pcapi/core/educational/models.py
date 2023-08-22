@@ -67,6 +67,7 @@ class CollectiveBookingCancellationReasons(enum.Enum):
     FRAUD = "FRAUD"
     REFUSED_BY_INSTITUTE = "REFUSED_BY_INSTITUTE"
     REFUSED_BY_HEADMASTER = "REFUSED_BY_HEADMASTER"
+    PUBLIC_API = "PUBLIC_API"
 
 
 class Ministry(enum.Enum):
