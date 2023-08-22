@@ -117,4 +117,14 @@ describe('AdageButtonFilter', () => {
       })
     ).toBeInTheDocument()
   })
+
+  it('should not display the dialog when the button modal was not opened or was closed', async () => {
+    renderAdageButtonFilter({
+      ...props,
+      children: <div>Test adagebuttonfilter</div>,
+      isOpen: false,
+    })
+
+    expect(screen.getByRole('dialog', { hidden: true })).toBeInTheDocument()
+  })
 })
