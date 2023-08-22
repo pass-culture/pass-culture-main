@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { useCallback, useEffect, useRef } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
@@ -29,7 +29,27 @@ const AdageButtonFilter = ({
   filterName,
   handleSubmit,
 }: AdageButtonFilterProps): JSX.Element => {
+  const [dialogLeftOffset, setDialogLeftOffset] = useState(0)
   const containerRef = useRef<HTMLDivElement | null>(null)
+  const dialogRef = useRef<HTMLDialogElement | null>(null)
+
+  useEffect(() => {
+    const containerElm = containerRef.current
+    const dialogElm = dialogRef.current
+
+    //  Only reposition when opening the dialog
+    if (!isOpen || !containerElm || !dialogElm) {
+      return
+    }
+
+    //  Part of the dialog width that goes beyond the body width on the right
+    const dialogOutOfScreenDistance =
+      containerElm.getBoundingClientRect().left +
+      dialogElm.getBoundingClientRect().width -
+      document.body.clientWidth
+
+    setDialogLeftOffset(Math.max(dialogOutOfScreenDistance, 0))
+  }, [isOpen])
 
   const handleClickOutside = useCallback(
     (e: MouseEvent): void => {
@@ -85,7 +105,12 @@ const AdageButtonFilter = ({
       </button>
 
       <div className={styles['adage-button-modal']}>
-        <dialog open={isOpen} className={styles['adage-button-children']}>
+        <dialog
+          open={isOpen}
+          className={styles['adage-button-children']}
+          style={{ left: `${-dialogLeftOffset}px` }}
+          ref={dialogRef}
+        >
           {children}
         </dialog>
       </div>
