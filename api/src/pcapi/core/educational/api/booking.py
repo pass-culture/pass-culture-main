@@ -385,9 +385,10 @@ def _cancel_collective_booking_by_offerer(
     return booking_to_cancel
 
 
-def cancel_collective_booking_by_id_from_support(
+def cancel_collective_booking(
     collective_booking: educational_models.CollectiveBooking,
     reason: educational_models.CollectiveBookingCancellationReasons,
+    _from: str | None = None,
 ) -> None:
     with transaction():
         educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
@@ -413,7 +414,9 @@ def cancel_collective_booking_by_id_from_support(
         db.session.commit()
     search.async_index_collective_offer_ids([collective_booking.collectiveStock.collectiveOfferId])
     logger.info(
-        "CollectiveBooking has been cancelled by support",
+        "CollectiveBooking has been cancelled by %s %s",
+        reason.value.lower(),
+        f"from {_from}" if _from else "",
         extra={
             "collective_booking": collective_booking.id,
             "reason": str(educational_models.CollectiveBookingCancellationReasons.OFFERER),
@@ -421,7 +424,7 @@ def cancel_collective_booking_by_id_from_support(
     )
 
 
-def uncancel_collective_booking_by_id_from_support(
+def uncancel_collective_booking(
     collective_booking: educational_models.CollectiveBooking,
 ) -> None:
     with transaction():
