@@ -17,7 +17,6 @@ from pcapi.domain.titelive import get_date_from_filename
 from pcapi.domain.titelive import read_things_date
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils.csr import get_closest_csr
 
 
@@ -300,89 +299,71 @@ class TiteLiveThings(LocalProvider):
         return [providable_info]
 
     def get_ineligibility_reason(self) -> str | None:
-        # TODO(kopax-polyconseil): remove FF and old filters when this is active in production (after 23 august 2023) https://passculture.atlassian.net/browse/PC-23474
-        if FeatureToggle.WIP_ENABLE_NEW_TITELIVE_ELIGIBILITY_FILTERS.is_active():
-            gtl = get_gtl(self.product_infos[INFO_KEYS["GTL_ID"]])
-            title = self.product_infos.get(INFO_KEYS["TITRE"], "").lower()
+        gtl = get_gtl(self.product_infos[INFO_KEYS["GTL_ID"]])
+        title = self.product_infos.get(INFO_KEYS["TITRE"], "").lower()
 
-            # Ouvrage avec pierres ou encens, jeux de société ou escape game en coffrets,
-            # marchandisage : jouets, goodies, peluches, posters, papeterie, etc...
-            if self.product_infos[INFO_KEYS["TAUX_TVA"]] == BASE_VAT:
-                return "vat-20"
+        # Ouvrage avec pierres ou encens, jeux de société ou escape game en coffrets,
+        # marchandisage : jouets, goodies, peluches, posters, papeterie, etc...
+        if self.product_infos[INFO_KEYS["TAUX_TVA"]] == BASE_VAT:
+            return "vat-20"
 
-            # ouvrage du rayon scolaire
-            if gtl and gtl["level_01_code"] == GTL_LEVEL_01_SCHOOL:
-                return "school"
+        # ouvrage du rayon scolaire
+        if gtl and gtl["level_01_code"] == GTL_LEVEL_01_SCHOOL:
+            return "school"
 
-            # ouvrage du rayon parascolaire,
-            # code de la route (méthode d'apprentissage + codes basiques), code nautique, code aviation, etc...
-            if gtl and gtl["level_01_code"] == GTL_LEVEL_01_EXTRACURRICULAR:
-                return "extracurricular"
+        # ouvrage du rayon parascolaire,
+        # code de la route (méthode d'apprentissage + codes basiques), code nautique, code aviation, etc...
+        if gtl and gtl["level_01_code"] == GTL_LEVEL_01_EXTRACURRICULAR:
+            return "extracurricular"
 
-            if self.product_infos[INFO_KEYS["CODE_SUPPORT"]] == CALENDAR_SUPPORT_CODE:
-                return "calendar"
+        if self.product_infos[INFO_KEYS["CODE_SUPPORT"]] == CALENDAR_SUPPORT_CODE:
+            return "calendar"
 
-            if self.product_infos[INFO_KEYS["CODE_SUPPORT"]] == POSTER_SUPPORT_CODE:
-                return "poster"
+        if self.product_infos[INFO_KEYS["CODE_SUPPORT"]] == POSTER_SUPPORT_CODE:
+            return "poster"
 
-            if self.product_infos[INFO_KEYS["CODE_SUPPORT"]] == PAPER_CONSUMABLE_SUPPORT_CODE:
-                return "paper-consumable"
+        if self.product_infos[INFO_KEYS["CODE_SUPPORT"]] == PAPER_CONSUMABLE_SUPPORT_CODE:
+            return "paper-consumable"
 
-            # Coffrets (contenant un produit + un petit livret)
-            if self.product_infos[INFO_KEYS["CODE_SUPPORT"]] == BOX_SUPPORT_CODE:
-                return "box"
+        # Coffrets (contenant un produit + un petit livret)
+        if self.product_infos[INFO_KEYS["CODE_SUPPORT"]] == BOX_SUPPORT_CODE:
+            return "box"
 
-            # Oracles contenant des jeux de tarot
-            if self.product_infos[INFO_KEYS["CODE_SUPPORT"]] == OBJECT_SUPPORT_CODE:
-                return "object"
+        # Oracles contenant des jeux de tarot
+        if self.product_infos[INFO_KEYS["CODE_SUPPORT"]] == OBJECT_SUPPORT_CODE:
+            return "object"
 
-            # ouvrage "lectorat 18+" (Pornographie / ultra-violence)
-            if (
-                self.product_infos[INFO_KEYS["LECTORAT_ID"]] == LECTORAT_EIGHTEEN_ID
-                and ADULT_ADVISOR_TEXT in self.product_infos[INFO_KEYS["COMMENTAIRE"]]
-            ):
-                return "pornography-or-violence"
+        # ouvrage "lectorat 18+" (Pornographie / ultra-violence)
+        if (
+            self.product_infos[INFO_KEYS["LECTORAT_ID"]] == LECTORAT_EIGHTEEN_ID
+            and ADULT_ADVISOR_TEXT in self.product_infos[INFO_KEYS["COMMENTAIRE"]]
+        ):
+            return "pornography-or-violence"
 
-            # Petite jeunesse (livres pour le bains, peluches, puzzles, etc...)
-            if (
-                gtl
-                and gtl["level_01_code"] == GTL_LEVEL_01_YOUNG
-                and gtl["level_02_code"]
-                in [
-                    GTL_LEVEL_02_BEFORE_3,
-                    GTL_LEVEL_02_AFTER_3_AND_BEFORE_6,
-                ]
-            ):
-                return "small-young"
+        # Petite jeunesse (livres pour le bains, peluches, puzzles, etc...)
+        if (
+            gtl
+            and gtl["level_01_code"] == GTL_LEVEL_01_YOUNG
+            and gtl["level_02_code"]
+            in [
+                GTL_LEVEL_02_BEFORE_3,
+                GTL_LEVEL_02_AFTER_3_AND_BEFORE_6,
+            ]
+        ):
+            return "small-young"
 
-            # Toeic or toefl
-            if TOEIC_TEXT in title or TOEFL_TEXT in title:
-                return "toeic-toefl"
+        # Toeic or toefl
+        if TOEIC_TEXT in title or TOEFL_TEXT in title:
+            return "toeic-toefl"
 
-            if (
-                self.product_infos[INFO_KEYS["TAUX_TVA"]] == PAPER_PRESS_VAT
-                and self.product_infos[INFO_KEYS["CODE_SUPPORT"]] == PAPER_PRESS_SUPPORT_CODE
-            ):
-                return "press"
+        if (
+            self.product_infos[INFO_KEYS["TAUX_TVA"]] == PAPER_PRESS_VAT
+            and self.product_infos[INFO_KEYS["CODE_SUPPORT"]] == PAPER_PRESS_SUPPORT_CODE
+        ):
+            return "press"
 
-            if not self.product_subcategory_id:
-                return "uneligible-product-subcategory"
-
-        else:
-            if (
-                self.product_infos[INFO_KEYS["IS_SCOLAIRE"]] == "1"
-                or self.product_infos[INFO_KEYS["CODE_CSR"]] in OLD_FILTER_SCHOOL_RELATED_CSR_CODE
-            ):
-                return "school"
-
-            if (
-                self.product_infos[INFO_KEYS["TAUX_TVA"]] == PAPER_PRESS_VAT
-                and self.product_infos[INFO_KEYS["CODE_SUPPORT"]] == PAPER_PRESS_SUPPORT_CODE
-            ):
-                return "press"
-
-            if not self.product_subcategory_id:
-                return "uneligible-product-subcategory"
+        if not self.product_subcategory_id:
+            return "uneligible-product-subcategory"
 
         return None
 
