@@ -5,14 +5,6 @@ export interface SignupFormValues {
   lastName: string
   phoneNumber: string
   contactOk: boolean
-  siren: string
-  legalUnitValues: {
-    address: string
-    city: string
-    name: string
-    postalCode: string
-    siren: string
-  }
 }
 
 export interface SignupApiErrorResponse {
