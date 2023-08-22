@@ -14,7 +14,6 @@ from pcapi.core.offers.factories import ThingStockFactory
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.local_providers import TiteLiveThings
@@ -136,7 +135,6 @@ class TiteliveThingsTest:
         assert product.extraData.get("rayon") == closest_csr.get("label")
         assert product.extraData.get("code_clil") == CODE_CLIL_TEST
 
-    @override_features(WIP_ENABLE_NEW_TITELIVE_ELIGIBILITY_FILTERS=True)
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
@@ -161,7 +159,6 @@ class TiteliveThingsTest:
         # Then
         assert offers_models.Product.query.count() == 0
 
-    @override_features(WIP_ENABLE_NEW_TITELIVE_ELIGIBILITY_FILTERS=True)
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
@@ -186,7 +183,6 @@ class TiteliveThingsTest:
         # Then
         assert offers_models.Product.query.count() == 0
 
-    @override_features(WIP_ENABLE_NEW_TITELIVE_ELIGIBILITY_FILTERS=True)
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
@@ -268,7 +264,6 @@ class TiteliveThingsTest:
         # Then
         assert offers_models.Product.query.count() == 1
 
-    @override_features(WIP_ENABLE_NEW_TITELIVE_ELIGIBILITY_FILTERS=True)
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
@@ -293,7 +288,6 @@ class TiteliveThingsTest:
         # Then
         assert offers_models.Product.query.count() == 0
 
-    @override_features(WIP_ENABLE_NEW_TITELIVE_ELIGIBILITY_FILTERS=True)
     @pytest.mark.parametrize(
         "level_02_code_gtl",
         [
@@ -324,7 +318,6 @@ class TiteliveThingsTest:
         # Then
         assert offers_models.Product.query.count() == 0
 
-    @override_features(WIP_ENABLE_NEW_TITELIVE_ELIGIBILITY_FILTERS=True)
     @pytest.mark.parametrize(
         "title",
         [
@@ -445,7 +438,6 @@ class TiteliveThingsTest:
         # Then
         assert offers_models.Product.query.count() == 0
 
-    @override_features(WIP_ENABLE_NEW_TITELIVE_ELIGIBILITY_FILTERS=True)
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
@@ -470,7 +462,6 @@ class TiteliveThingsTest:
         # Then
         assert offers_models.Product.query.count() == 0
 
-    @override_features(WIP_ENABLE_NEW_TITELIVE_ELIGIBILITY_FILTERS=True)
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
