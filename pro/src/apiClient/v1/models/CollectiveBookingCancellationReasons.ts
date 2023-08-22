@@ -13,4 +13,5 @@ export enum CollectiveBookingCancellationReasons {
   FRAUD = 'FRAUD',
   REFUSED_BY_INSTITUTE = 'REFUSED_BY_INSTITUTE',
   REFUSED_BY_HEADMASTER = 'REFUSED_BY_HEADMASTER',
+  PUBLIC_API = 'PUBLIC_API',
 }

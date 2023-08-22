@@ -45,6 +45,28 @@ export class ApiOffresCollectivesService {
   }
 
   /**
+   * Annuler une réservation collective
+   * @param bookingId
+   * @returns void
+   * @throws ApiError
+   */
+  public cancelCollectiveBooking(
+    bookingId: number,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/v2/collective/bookings/{booking_id}',
+      path: {
+        'booking_id': bookingId,
+      },
+      errors: {
+        401: `Authentification nécessaire`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * Récupération de la liste des catégories d'offres proposées.
    * @returns CollectiveOffersListCategoriesResponseModel La liste des catégories éligibles existantes.
    * @throws ApiError

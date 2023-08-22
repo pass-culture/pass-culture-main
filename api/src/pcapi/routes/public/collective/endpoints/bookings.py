@@ -1,8 +1,12 @@
+import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
+from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models
+from pcapi.core.educational.api import booking as educational_api_booking
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.providers.models as providers_models
+from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.public import blueprints
 from pcapi.routes.public.collective.serialization import bookings as serialization
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
@@ -31,7 +35,45 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 def get_collective_booking(booking_id: int) -> serialization.CollectiveBookingResponseModel:
     # in French, to be used by Swagger for the API documentation
     """Récupération les informations d'une réservation collective"""
-    booking = (
+    booking = _get_booking(booking_id)
+    if not booking:
+        raise NotFound()
+
+    return serialization.CollectiveBookingResponseModel.from_orm(booking)
+
+
+@blueprints.v2_prefixed_public_api.route("/collective/bookings/<int:booking_id>", methods=["PATCH"])
+@spectree_serialize(
+    api=blueprints.v2_prefixed_public_api_schema,
+    tags=["API offres collectives"],
+    on_success_status=204,
+    resp=SpectreeResponse(
+        HTTP_204=(None, "Annuler une réservation collective"),
+        HTTP_401=(
+            offers_serialization.AuthErrorResponseModel,
+            "Authentification nécessaire",
+        ),
+    ),
+)
+@api_key_required
+def cancel_collective_booking(booking_id: int) -> None:
+    # in French, to be used by Swagger for the API documentation
+    """Annuler une réservation collective"""
+    booking = _get_booking(booking_id, load_offer=True)
+    if not booking:
+        raise NotFound()
+
+    try:
+        reason = models.CollectiveBookingCancellationReasons.PUBLIC_API
+        educational_api_booking.cancel_collective_booking(booking, reason=reason)
+    except educational_exceptions.CollectiveBookingAlreadyCancelled:
+        raise ApiErrors({"booking": "Impossible d'annuler une réservation déjà annulée"}, status_code=403)
+    except educational_exceptions.BookingIsAlreadyRefunded:
+        raise ApiErrors({"booking": "Impossible d'annuler une réservation remboursée"}, status_code=403)
+
+
+def _get_booking(booking_id: int, load_offer: bool = False) -> models.CollectiveBooking | None:
+    query = (
         models.CollectiveBooking.query.filter(models.CollectiveBooking.id == booking_id)
         .join(models.CollectiveStock)
         .join(models.CollectiveOffer)
@@ -39,9 +81,14 @@ def get_collective_booking(booking_id: int) -> serialization.CollectiveBookingRe
         .join(providers_models.VenueProvider)
         .filter(providers_models.VenueProvider.providerId == current_api_key.providerId)
         .filter(providers_models.VenueProvider.isActive == True)
-        .one_or_none()
     )
-    if not booking:
-        raise NotFound()
 
-    return serialization.CollectiveBookingResponseModel.from_orm(booking)
+    if load_offer:
+        query = query.options(
+            sa.orm.joinedload(models.CollectiveBooking.collectiveStock)
+            .load_only(models.CollectiveStock.id)
+            .joinedload(models.CollectiveStock.collectiveOffer)
+            .load_only(models.CollectiveOffer.id),
+        )
+
+    return query.one_or_none()
