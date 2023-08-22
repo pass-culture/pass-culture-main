@@ -1,4 +1,4 @@
-import { SignupFormValues } from 'pages/Signup/SignupContainer/types'
+import { ProUserCreationBodyV2Model } from 'apiClient/v1'
 import { getYupValidationSchemaErrors } from 'utils/yupValidationTestHelpers'
 
 import { validationSchema } from '../validationSchema'
@@ -15,7 +15,7 @@ const signupFormDefault = {
 describe('validationSchema', () => {
   const cases: {
     description: string
-    formValues: Partial<SignupFormValues>
+    formValues: Partial<ProUserCreationBodyV2Model>
     expectedErrors: string[]
   }[] = [
     {

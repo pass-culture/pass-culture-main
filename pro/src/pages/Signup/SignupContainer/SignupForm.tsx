@@ -2,6 +2,7 @@ import { useFormikContext } from 'formik'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { ProUserCreationBodyV2Model } from 'apiClient/v1'
 import { BannerRGS } from 'components/Banner'
 import FormLayout from 'components/FormLayout'
 import LegalInfos from 'components/LegalInfos/LegalInfos'
@@ -19,12 +20,11 @@ import { PasswordInput } from 'ui-kit/form'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
 import styles from './SignupContainer.module.scss'
-import { SignupFormValues } from './types'
 
 const SignupForm = (): JSX.Element => {
   const navigate = useNavigate()
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const { isSubmitting } = useFormikContext<SignupFormValues>()
+  const { isSubmitting } = useFormikContext<ProUserCreationBodyV2Model>()
 
   return (
     <>
