@@ -215,7 +215,7 @@ class ListOffersResponseModel(BaseModel):
     __root__: list[ListOffersOfferResponseModel]
 
     class Config:
-        json_encoders = {datetime: format_into_utc_date}
+        json_encoders = {datetime.datetime: format_into_utc_date}
 
 
 class ListOffersQueryModel(BaseModel):
