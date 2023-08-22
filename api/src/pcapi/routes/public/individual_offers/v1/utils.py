@@ -101,19 +101,20 @@ def _retrieve_offer_tied_to_user_query() -> sqla_orm.Query:
     )
 
 
-def retrieve_offer_ids(is_event: bool, filtered_venue_id: int | None) -> list[int]:
+def retrieve_offer_ids(is_event: bool, firstIndex: int, limit: int, filtered_venue_id: int | None) -> list[int]:
     offer_ids_query = (
         offers_models.Offer.query.join(offerers_models.Venue)
         .join(providers_models.VenueProvider)
         .filter(providers_models.VenueProvider.provider == current_api_key.provider)
         .filter(offers_models.Offer.isEvent == is_event)
+        .filter(offers_models.Offer.id >= firstIndex)
         .with_entities(offers_models.Offer.id)
         .order_by(offers_models.Offer.id)
     )
     if filtered_venue_id is not None:
         offer_ids_query = offer_ids_query.filter(offers_models.Offer.venueId == filtered_venue_id)
 
-    return [offer_id for offer_id, in offer_ids_query.all()]
+    return [offer_id for offer_id, in offer_ids_query.limit(limit)]
 
 
 def save_image(image_body: serialization.ImageBody, offer: offers_models.Offer) -> None:

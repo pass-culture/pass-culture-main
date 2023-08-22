@@ -64,10 +64,6 @@ class GetEventDatesTest:
                 "quantity": 2,
             },
         ]
-        assert (
-            response.json["pagination"]["pagesLinks"]["current"]
-            == f"http://localhost/public/offers/v1/events/{event_offer.id}/dates?page=1&limit=50"
-        )
 
     def test_event_without_dates(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
@@ -82,33 +78,17 @@ class GetEventDatesTest:
         assert response.status_code == 200
         assert response.json == {
             "dates": [],
-            "pagination": {
-                "currentPage": 1,
-                "itemsCount": 0,
-                "itemsTotal": 0,
-                "lastPage": 1,
-                "limitPerPage": 50,
-                "pagesLinks": {
-                    "current": f"http://localhost/public/offers/v1/events/{event_offer.id}/dates?page=1&limit=50",
-                    "first": f"http://localhost/public/offers/v1/events/{event_offer.id}/dates?page=1&limit=50",
-                    "last": f"http://localhost/public/offers/v1/events/{event_offer.id}/dates?page=1&limit=50",
-                    "next": None,
-                    "previous": None,
-                },
-            },
         }
 
     def test_404_when_page_is_too_high(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(venue=venue)
-        offers_factories.EventStockFactory(offer=event_offer)  # deleted stock, not returned
+        event_stock = offers_factories.EventStockFactory(offer=event_offer)
 
         with testing.assert_no_duplicated_queries():
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-                f"/public/offers/v1/events/{event_offer.id}/dates?page=2&limit=50"
+                f"/public/offers/v1/events/{event_offer.id}/dates?firstIndex={int(event_stock.id)+1}&limit=50"
             )
 
-        assert response.status_code == 404
-        assert response.json == {
-            "page": "The page you requested does not exist. The maximum page for the specified limit is 1"
-        }
+        assert response.status_code == 200
+        assert response.json == {"dates": []}

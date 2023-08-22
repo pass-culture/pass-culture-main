@@ -1,6 +1,5 @@
 import copy
 
-import flask
 import sqlalchemy as sqla
 
 from pcapi import repository
@@ -148,20 +147,13 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
     Get events. Results are paginated.
     """
     utils.check_venue_id_is_tied_to_api_key(query.venue_id)
-    total_offer_ids = utils.retrieve_offer_ids(is_event=True, filtered_venue_id=query.venue_id)
-    offset = query.limit * (query.page - 1)
-
-    if offset > len(total_offer_ids):
-        raise api_errors.ApiErrors(
-            {
-                "page": f"The page you requested does not exist. The maximum page for the specified limit is {len(total_offer_ids)//query.limit+1}"
-            },
-            status_code=404,
-        )
+    total_offer_ids = utils.retrieve_offer_ids(
+        is_event=True, firstIndex=query.firstIndex, limit=query.limit, filtered_venue_id=query.venue_id
+    )
 
     offers = (
         utils.retrieve_offer_relations_query(
-            offers_models.Offer.query.filter(offers_models.Offer.id.in_(total_offer_ids[offset : offset + query.limit]))
+            offers_models.Offer.query.filter(offers_models.Offer.id.in_(total_offer_ids))
         )
         .order_by(offers_models.Offer.id)
         .all()
@@ -169,14 +161,6 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
 
     return serialization.EventOffersResponse(
         events=[serialization.EventOfferResponse.build_event_offer(offer) for offer in offers],
-        pagination=serialization.Pagination.build_pagination(
-            flask.url_for(".get_events", _external=True),
-            query.page,
-            len(offers),
-            len(total_offer_ids),
-            query.limit,
-            query.venue_id,
-        ),
     )
 
 
@@ -388,38 +372,23 @@ def get_event_dates(event_id: int, query: serialization.GetDatesQueryParams) -> 
     stock_id_query = offers_models.Stock.query.filter(
         offers_models.Stock.offerId == offer.id,
         sqla.not_(offers_models.Stock.isSoftDeleted),
+        offers_models.Stock.id >= query.firstIndex,
     ).with_entities(offers_models.Stock.id)
     total_stock_ids = [stock_id for (stock_id,) in stock_id_query.all()]
 
-    offset = query.limit * (query.page - 1)
-    if offset > len(total_stock_ids):
-        raise api_errors.ApiErrors(
-            {
-                "page": f"The page you requested does not exist. The maximum page for the specified limit is {len(total_stock_ids)//query.limit+1}"
-            },
-            status_code=404,
-        )
-
     stocks = (
-        offers_models.Stock.query.filter(offers_models.Stock.id.in_(total_stock_ids[offset : offset + query.limit]))
+        offers_models.Stock.query.filter(offers_models.Stock.id.in_(total_stock_ids))
         .options(
             sqla.orm.joinedload(offers_models.Stock.priceCategory).joinedload(
                 offers_models.PriceCategory.priceCategoryLabel
             )
         )
         .order_by(offers_models.Stock.id)
-        .all()
+        .limit(query.limit)
     )
 
     return serialization.GetDatesResponse(
         dates=[serialization.DateResponse.build_date(stock) for stock in stocks],
-        pagination=serialization.Pagination.build_pagination(
-            flask.url_for(".get_event_dates", event_id=event_id, _external=True),
-            query.page,
-            len(stocks),
-            len(total_stock_ids),
-            query.limit,
-        ),
     )
 
 

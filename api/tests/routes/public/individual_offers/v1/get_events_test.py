@@ -22,20 +22,6 @@ class GetEventsTest:
             )
 
         assert response.status_code == 200
-        assert response.json["pagination"] == {
-            "currentPage": 1,
-            "itemsCount": 5,
-            "itemsTotal": 12,
-            "lastPage": 3,
-            "limitPerPage": 5,
-            "pagesLinks": {
-                "current": f"{self.ENDPOINT_URL}?venueId={venue.id}&page=1&limit=5",
-                "first": f"{self.ENDPOINT_URL}?venueId={venue.id}&page=1&limit=5",
-                "last": f"{self.ENDPOINT_URL}?venueId={venue.id}&page=3&limit=5",
-                "next": f"{self.ENDPOINT_URL}?venueId={venue.id}&page=2&limit=5",
-                "previous": None,
-            },
-        }
         assert [event["id"] for event in response.json["events"]] == [offer.id for offer in offers[0:5]]
 
     def test_404_when_venue_id_not_tied_to_api_key(self, client):
