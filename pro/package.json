@@ -95,7 +95,7 @@
     "@types/react-router-dom": "^5.1.8",
     "@types/react-select": "^5.0.1",
     "@types/react-table": "^7.7.14",
-    "@typescript-eslint/eslint-plugin": "^6.4.0",
+    "@typescript-eslint/eslint-plugin": "^6.4.1",
     "@typescript-eslint/parser": "^6.4.1",
     "@vitejs/plugin-react": "^4.0.3",
     "@vitest/coverage-v8": "^0.34.2",
