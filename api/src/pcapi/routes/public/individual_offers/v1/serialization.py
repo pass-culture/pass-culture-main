@@ -905,7 +905,6 @@ class Pagination(serialization.ConfiguredBaseModel):
 
 class ProductOffersResponse(serialization.ConfiguredBaseModel):
     products: typing.List[ProductOfferResponse]
-    pagination: Pagination
 
 
 class ProductOffersByEanResponse(serialization.ConfiguredBaseModel):
