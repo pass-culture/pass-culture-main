@@ -3,7 +3,6 @@ import datetime
 import itertools
 import logging
 
-import flask
 import sqlalchemy as sqla
 
 from pcapi import repository
@@ -392,20 +391,13 @@ def get_products(
     Get products. Results are paginated.
     """
     utils.check_venue_id_is_tied_to_api_key(query.venue_id)
-    total_offer_ids = utils.retrieve_offer_ids(is_event=False, filtered_venue_id=query.venue_id)
-    offset = query.limit * (query.page - 1)
-
-    if offset > len(total_offer_ids):
-        raise api_errors.ApiErrors(
-            {
-                "page": f"The page you requested does not exist. The maximum page for the specified limit is {len(total_offer_ids)//query.limit+1}"
-            },
-            status_code=404,
-        )
+    total_offer_ids = utils.retrieve_offer_ids(
+        is_event=False, firstIndex=query.firstIndex, limit=query.limit, filtered_venue_id=query.venue_id
+    )
 
     offers = (
         utils.retrieve_offer_relations_query(
-            offers_models.Offer.query.filter(offers_models.Offer.id.in_(total_offer_ids[offset : offset + query.limit]))
+            offers_models.Offer.query.filter(offers_models.Offer.id.in_(total_offer_ids))
         )
         .order_by(offers_models.Offer.id)
         .all()
@@ -413,14 +405,6 @@ def get_products(
 
     return serialization.ProductOffersResponse(
         products=[serialization.ProductOfferResponse.build_product_offer(offer) for offer in offers],
-        pagination=serialization.Pagination.build_pagination(
-            flask.url_for(".get_products", _external=True),
-            query.page,
-            len(offers),
-            len(total_offer_ids),
-            query.limit,
-            query.venue_id,
-        ),
     )
 
 
