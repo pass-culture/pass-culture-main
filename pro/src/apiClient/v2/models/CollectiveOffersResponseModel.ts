@@ -3,8 +3,11 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { CollectiveBookingResponseModel } from './CollectiveBookingResponseModel';
+
 export type CollectiveOffersResponseModel = {
   beginningDatetime: string;
+  bookings: Array<CollectiveBookingResponseModel>;
   id: number;
   status: string;
   venueId: number;
