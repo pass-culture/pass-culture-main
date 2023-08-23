@@ -2,12 +2,12 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_colors.scss" as colors;
 
+.offerer-page-container {
+  max-width: rem.torem(486px);
+}
+
 .offerer-page {
   position: relative;
-
-  .op-teaser {
-    margin-bottom: rem.torem(24px);
-  }
 
   .has-text-grey {
     color: colors.$grey-dark;
@@ -61,10 +61,6 @@
     @include fonts.body;
   }
 
-  .op-content-section {
-    margin-bottom: rem.torem(48px);
-  }
-
   .offerer-page-go-back-link {
     margin-bottom: rem.torem(30px);
     color: colors.$primary
@@ -77,19 +73,11 @@
   padding-top: 0;
 
   .main-list-title {
-    @include fonts.title4;
+    @include fonts.title3;
 
-    border-bottom: thin solid colors.$grey-medium;
-    margin: rem.torem(12px) 0;
+    border-bottom: rem.torem(2px) solid colors.$black;
+    margin-bottom: rem.torem(24px);
     padding-bottom: rem.torem(8px);
-
-    .main-list-title-text {
-      @include fonts.title4;
-    }
-
-    span {
-      margin-top: rem.torem(3.5px);
-    }
   }
 
   .title-actions-container {

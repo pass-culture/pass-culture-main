@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -98,43 +97,45 @@ const OffererDetails = () => {
         Accueil
       </ButtonLink>
 
-      <Titles subtitle={offerer.name} title="Structure" />
-
-      <p className={styles['op-teaser']}>
-        Détails de la structure rattachée, des collaborateurs, des lieux et des
-        fournisseurs de ses offres
-      </p>
-
-      <div className={cn(styles['section'], styles['op-content-section'])}>
-        <h2 className={styles['main-list-title']}>Informations structure</h2>
-        <div className={styles['op-detail']}>
-          <span>{'SIREN : '}</span>
-          <span>{formatSiren(offerer.siren)}</span>
-        </div>
-        <div className={styles['op-detail']}>
-          <span>{'Désignation : '}</span>
-          <span>{offerer.name}</span>
-        </div>
-        <div className={styles['op-detail']}>
-          <span>{'Siège social : '}</span>
-          <span>
-            {`${offerer.address} - ${offerer.postalCode} ${offerer.city}`}
-          </span>
-        </div>
-      </div>
-
-      {isNewOffererLinkEnabled && (
-        <AttachmentInvitations offererId={offerer.id} />
-      )}
-
-      <ApiKey
-        maxAllowedApiKeys={offerer.apiKey.maxAllowed}
-        offererId={offerer.id}
-        reloadOfferer={loadOfferer}
-        savedApiKeys={offerer.apiKey.savedApiKeys}
+      <Titles
+        title="Structure"
+        subtitle={offerer.name}
+        description="Détails de la structure rattachée, des collaborateurs, des lieux et des
+        fournisseurs de ses offres"
       />
 
-      <Venues offererId={offerer.id} venues={physicalVenues} />
+      <div className={styles['offerer-page-container']}>
+        <div className={styles['section']}>
+          <h2 className={styles['main-list-title']}>Informations structure</h2>
+          <div className={styles['op-detail']}>
+            <span>{'SIREN : '}</span>
+            <span>{formatSiren(offerer.siren)}</span>
+          </div>
+          <div className={styles['op-detail']}>
+            <span>{'Désignation : '}</span>
+            <span>{offerer.name}</span>
+          </div>
+          <div className={styles['op-detail']}>
+            <span>{'Siège social : '}</span>
+            <span>
+              {`${offerer.address} - ${offerer.postalCode} ${offerer.city}`}
+            </span>
+          </div>
+        </div>
+
+        {isNewOffererLinkEnabled && (
+          <AttachmentInvitations offererId={offerer.id} />
+        )}
+
+        <ApiKey
+          maxAllowedApiKeys={offerer.apiKey.maxAllowed}
+          offererId={offerer.id}
+          reloadOfferer={loadOfferer}
+          savedApiKeys={offerer.apiKey.savedApiKeys}
+        />
+
+        <Venues offererId={offerer.id} venues={physicalVenues} />
+      </div>
     </div>
   ) : (
     <></>
