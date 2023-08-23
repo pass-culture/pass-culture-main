@@ -52,7 +52,7 @@ MIN_THUMBNAIL_WIDTH = 400
 MIN_THUMBNAIL_HEIGHT = 400
 STANDARD_THUMBNAIL_WIDTH = 400
 STANDARD_THUMBNAIL_HEIGHT = 600
-ACCEPTED_THUMBNAIL_FORMATS = ("png", "jpg", "jpeg", "mpo")
+ACCEPTED_THUMBNAIL_FORMATS = ("png", "jpg", "jpeg", "mpo", "webp")
 
 
 def check_provider_can_edit_stock(

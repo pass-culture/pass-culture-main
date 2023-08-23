@@ -265,6 +265,15 @@ class CheckImageTest:
             min_height=400,
         )
 
+    def test_ok_converted_webp(self):
+        image_as_bytes = (IMAGES_DIR / "wrbp-type-image.webp").read_bytes()
+        validation.check_image(
+            image_as_bytes,
+            accepted_types=("jpeg", "jpg", "webp"),
+            min_width=400,
+            min_height=400,
+        )
+
     def test_image_too_small(self):
         image_as_bytes = (IMAGES_DIR / "mouette_portrait.jpg").read_bytes()
         with pytest.raises(exceptions.ImageTooSmall):
