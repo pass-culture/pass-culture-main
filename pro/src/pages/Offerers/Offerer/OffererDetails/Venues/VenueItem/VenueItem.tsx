@@ -27,7 +27,7 @@ const VenueItem = ({ venue, offererId }: VenueItemProps) => {
   const showPath = `/structures/${offererId}/lieux/${id}`
 
   return (
-    <li>
+    <li className={styles['venue-item']}>
       <SvgIcon alt="" src={strokeVenueIcon} className={styles['picto']} />
 
       <div>
