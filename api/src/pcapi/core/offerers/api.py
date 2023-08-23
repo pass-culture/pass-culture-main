@@ -1908,7 +1908,8 @@ def invite_member(offerer: models.Offerer, email: str, current_user: users_model
             "New user invited to join offerer",
             extra={"offerer": offerer.id, "invited_user": email, "invited_by": current_user.id},
         )
-        transactional_mails.send_offerer_attachment_invitation([email])
+
+    transactional_mails.send_offerer_attachment_invitation([email], offerer=offerer, user=existing_user)
 
 
 def get_offerer_members(offerer: models.Offerer) -> list[typing.Tuple[str, OffererMemberStatus]]:
