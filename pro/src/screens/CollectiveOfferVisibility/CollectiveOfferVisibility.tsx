@@ -22,6 +22,7 @@ import {
 } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
+import strokeSearch from 'icons/stroke-search.svg'
 import getOfferRequestInformationsAdapter from 'pages/CollectiveOfferFromRequest/adapters/getOfferRequestInformationsAdapter'
 import { PatchEducationalInstitutionAdapter } from 'pages/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
 import { ButtonLink, SubmitButton } from 'ui-kit'
@@ -256,6 +257,7 @@ const CollectiveOfferVisibility = ({
                         searchInOptions={(options, pattern) =>
                           searchPatternInOptions(options, pattern, 300)
                         }
+                        leftIcon={strokeSearch}
                       />
                     </>
                   )}
@@ -274,6 +276,7 @@ const CollectiveOfferVisibility = ({
                   onSearch={() => {
                     onChangeTeacher()
                   }}
+                  leftIcon={strokeSearch}
                 />
               </FormLayout.Row>
             </FormLayout.Section>
