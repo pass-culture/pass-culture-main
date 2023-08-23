@@ -20,12 +20,12 @@ from pcapi.core.educational.api import booking as educational_api_booking
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.routes.backoffice_v3 import autocomplete
+from pcapi.routes.backoffice_v3 import utils
+from pcapi.routes.backoffice_v3.forms import empty as empty_forms
 from pcapi.utils import date as date_utils
 
-from . import autocomplete
-from . import utils
-from .forms import collective_booking as collective_booking_forms
-from .forms import empty as empty_forms
+from . import form as collective_booking_forms
 
 
 collective_bookings_blueprint = utils.child_backoffice_blueprint(

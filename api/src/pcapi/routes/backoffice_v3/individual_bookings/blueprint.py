@@ -23,14 +23,14 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
+from pcapi.routes.backoffice_v3 import autocomplete
+from pcapi.routes.backoffice_v3 import utils
+from pcapi.routes.backoffice_v3.forms import empty as empty_forms
 from pcapi.routes.serialization.bookings_recap_serialize import OfferType
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 
-from . import autocomplete
-from . import utils
-from .forms import empty as empty_forms
-from .forms import individual_booking as individual_booking_forms
+from . import form as individual_booking_forms
 
 
 individual_bookings_blueprint = utils.child_backoffice_blueprint(

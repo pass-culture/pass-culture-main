@@ -2,9 +2,8 @@ from flask_wtf import FlaskForm
 
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.users.models as users_models
-
-from . import fields
-from . import utils
+from pcapi.routes.backoffice_v3.forms import fields
+from pcapi.routes.backoffice_v3.forms import utils
 
 
 class EditAccountForm(utils.PCForm):

@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 import wtforms
 
-from . import fields
+from pcapi.routes.backoffice_v3.forms import fields
 
 
 class EditTagForm(FlaskForm):

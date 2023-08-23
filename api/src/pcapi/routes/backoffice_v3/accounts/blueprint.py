@@ -44,17 +44,16 @@ from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
-from pcapi.routes.backoffice_v3.serialization import accounts as serialization_accounts
+from pcapi.routes.backoffice_v3 import search_utils
+from pcapi.routes.backoffice_v3 import utils
+from pcapi.routes.backoffice_v3.forms import empty as empty_forms
+from pcapi.routes.backoffice_v3.forms import search as search_forms
+from pcapi.routes.backoffice_v3.serialization import search
 from pcapi.routes.backoffice_v3.users import forms as user_forms
 import pcapi.utils.email as email_utils
 
-from . import search_utils
-from . import utils
-from .forms import account as account_forms
-from .forms import empty as empty_forms
-from .forms import search as search_forms
-from .serialization import accounts
-from .serialization import search
+from . import form as account_forms
+from . import serialization
 
 
 public_accounts_blueprint = utils.child_backoffice_blueprint(
@@ -146,7 +145,7 @@ def _convert_fraud_review_to_fraud_action_dict(fraud_review: fraud_models.Benefi
     }
 
 
-def _convert_check_item_to_fraud_action_dict(id_check_item: accounts.IdCheckItemModel) -> dict:
+def _convert_check_item_to_fraud_action_dict(id_check_item: serialization.IdCheckItemModel) -> dict:
     return {
         "creationDate": id_check_item.dateCreated,
         "techId": id_check_item.thirdPartyId,
@@ -301,9 +300,9 @@ def _get_fraud_reviews_desc(
 
 
 def _get_id_check_histories_desc(
-    eligibility_history: dict[str, accounts.EligibilitySubscriptionHistoryModel]
-) -> list[serialization_accounts.IdCheckItemModel]:
-    id_check_histories_desc: list[serialization_accounts.IdCheckItemModel] = []
+    eligibility_history: dict[str, serialization.EligibilitySubscriptionHistoryModel]
+) -> list[serialization.IdCheckItemModel]:
+    id_check_histories_desc: list[serialization.IdCheckItemModel] = []
     for history in eligibility_history.values():
         id_check_histories_desc += history.idCheckHistory
     return sorted(
@@ -735,7 +734,7 @@ def _get_steps_tunnel_underage(
 
 def _get_tunnel(
     user: users_models.User,
-    eligibility_history: dict[str, accounts.EligibilitySubscriptionHistoryModel],
+    eligibility_history: dict[str, serialization.EligibilitySubscriptionHistoryModel],
     fraud_reviews_desc: list[fraud_models.BeneficiaryFraudReview],
 ) -> dict:
     subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
@@ -752,7 +751,7 @@ def _get_tunnel(
 
 
 def _get_subscription_item_status_by_eligibility(
-    eligibility_history: dict[str, accounts.EligibilitySubscriptionHistoryModel]
+    eligibility_history: dict[str, serialization.EligibilitySubscriptionHistoryModel]
 ) -> dict[str, dict]:
     subscription_item_status: dict[str, dict] = {EligibilityType.UNDERAGE.value: {}, EligibilityType.AGE18.value: {}}
     for key, value in eligibility_history.items():
@@ -977,7 +976,7 @@ def get_fraud_check_target_eligibility(
     return target_eligibility
 
 
-def get_eligibility_history(user: users_models.User) -> dict[str, accounts.EligibilitySubscriptionHistoryModel]:
+def get_eligibility_history(user: users_models.User) -> dict[str, serialization.EligibilitySubscriptionHistoryModel]:
     subscriptions = {}
     eligibility_types = []
 
@@ -1010,13 +1009,13 @@ def get_eligibility_history(user: users_models.User) -> dict[str, accounts.Eligi
         eligibility_types = list(users_models.EligibilityType)
 
     for eligibility in eligibility_types:
-        subscriptions[eligibility.value] = accounts.EligibilitySubscriptionHistoryModel(
+        subscriptions[eligibility.value] = serialization.EligibilitySubscriptionHistoryModel(
             subscriptionItems=[
-                accounts.SubscriptionItemModel.from_orm(method(user, eligibility))
+                serialization.SubscriptionItemModel.from_orm(method(user, eligibility))
                 for method in subscription_item_methods
             ],
             idCheckHistory=[
-                accounts.IdCheckItemModel.from_orm(fraud_check)
+                serialization.IdCheckItemModel.from_orm(fraud_check)
                 for fraud_check in user.beneficiaryFraudChecks
                 if fraud_check.eligibilityType == eligibility
                 or get_fraud_check_target_eligibility(user, fraud_check) == eligibility
@@ -1027,9 +1026,9 @@ def get_eligibility_history(user: users_models.User) -> dict[str, accounts.Eligi
 
 
 def _get_latest_fraud_check(
-    eligibility_history: dict[str, accounts.EligibilitySubscriptionHistoryModel],
+    eligibility_history: dict[str, serialization.EligibilitySubscriptionHistoryModel],
     check_types: list[fraud_models.FraudCheckType],
-) -> accounts.IdCheckItemModel | None:
+) -> serialization.IdCheckItemModel | None:
     latest_fraud_check = None
     check_list = []
     for history in eligibility_history.values():
@@ -1043,7 +1042,7 @@ def _get_latest_fraud_check(
 
 
 def _get_duplicate_fraud_history(
-    eligibility_history: dict[str, accounts.EligibilitySubscriptionHistoryModel],
+    eligibility_history: dict[str, serialization.EligibilitySubscriptionHistoryModel],
 ) -> str | None:
     for history_item in eligibility_history.values():
         check_history_items = sorted(history_item.idCheckHistory, key=attrgetter("dateCreated"), reverse=True)
@@ -1061,25 +1060,27 @@ def _get_duplicate_fraud_history(
     return None
 
 
-def get_public_account_history(user: users_models.User) -> list[accounts.AccountAction | history_models.ActionHistory]:
+def get_public_account_history(
+    user: users_models.User,
+) -> list[serialization.AccountAction | history_models.ActionHistory]:
     # All data should have been joinloaded with user
-    history: list[history_models.ActionHistory | accounts.AccountAction] = list(user.action_history)
+    history: list[history_models.ActionHistory | serialization.AccountAction] = list(user.action_history)
 
     if history_models.ActionType.USER_CREATED not in (action.actionType for action in user.action_history):
-        history.append(accounts.AccountCreatedAction(user))
+        history.append(serialization.AccountCreatedAction(user))
 
     for change in user.email_history:
-        history.append(accounts.EmailChangeAction(change))
+        history.append(serialization.EmailChangeAction(change))
 
     for fraud_check in user.beneficiaryFraudChecks:
-        history.append(accounts.FraudCheckAction(fraud_check))
+        history.append(serialization.FraudCheckAction(fraud_check))
 
     for review in user.beneficiaryFraudReviews:
-        history.append(accounts.ReviewAction(review))
+        history.append(serialization.ReviewAction(review))
 
     for import_ in user.beneficiaryImports:
         for status in import_.statuses:
-            history.append(accounts.ImportStatusAction(import_, status))
+            history.append(serialization.ImportStatusAction(import_, status))
 
     history = sorted(history, key=lambda item: item.actionDate or datetime.datetime.min, reverse=True)
 

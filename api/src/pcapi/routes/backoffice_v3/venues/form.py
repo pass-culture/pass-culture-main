@@ -8,13 +8,12 @@ from wtforms import validators
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.permissions import models as perm_models
+from pcapi.routes.backoffice_v3.forms import empty as empty_forms
+from pcapi.routes.backoffice_v3.forms import fields
+from pcapi.routes.backoffice_v3.forms import utils
+from pcapi.routes.backoffice_v3.forms.constants import area_choices
 from pcapi.routes.backoffice_v3.utils import get_regions_choices
 from pcapi.routes.backoffice_v3.utils import has_current_user_permission
-
-from . import fields
-from . import utils
-from ..forms import empty as empty_forms
-from .constants import area_choices
 
 
 class EditVirtualVenueForm(utils.PCForm):

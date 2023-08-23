@@ -26,8 +26,8 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
-from pcapi.routes.backoffice_v3 import venues as venues_blueprint
 from pcapi.routes.backoffice_v3.filters import format_dms_status
+from pcapi.routes.backoffice_v3.venues import blueprint as venues_blueprint
 
 from .helpers import button as button_helpers
 from .helpers import html_parser

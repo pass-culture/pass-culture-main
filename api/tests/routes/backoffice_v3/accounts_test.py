@@ -30,24 +30,24 @@ from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.notifications.sms import testing as sms_testing
 from pcapi.repository import repository
-from pcapi.routes.backoffice_v3.accounts import RegistrationStep
-from pcapi.routes.backoffice_v3.accounts import RegistrationStepStatus
-from pcapi.routes.backoffice_v3.accounts import TunnelType
-from pcapi.routes.backoffice_v3.accounts import _get_fraud_reviews_desc
-from pcapi.routes.backoffice_v3.accounts import _get_id_check_histories_desc
-from pcapi.routes.backoffice_v3.accounts import _get_progress
-from pcapi.routes.backoffice_v3.accounts import _get_status
-from pcapi.routes.backoffice_v3.accounts import _get_steps_for_tunnel
-from pcapi.routes.backoffice_v3.accounts import _get_steps_tunnel_age18
-from pcapi.routes.backoffice_v3.accounts import _get_steps_tunnel_underage
-from pcapi.routes.backoffice_v3.accounts import _get_steps_tunnel_underage_age18
-from pcapi.routes.backoffice_v3.accounts import _get_steps_tunnel_unspecified
-from pcapi.routes.backoffice_v3.accounts import _get_subscription_item_status_by_eligibility
-from pcapi.routes.backoffice_v3.accounts import _get_tunnel
-from pcapi.routes.backoffice_v3.accounts import _get_tunnel_type
-from pcapi.routes.backoffice_v3.accounts import _set_steps_with_active_and_disabled
-from pcapi.routes.backoffice_v3.accounts import get_eligibility_history
-from pcapi.routes.backoffice_v3.accounts import get_public_account_history
+from pcapi.routes.backoffice_v3.accounts.blueprint import RegistrationStep
+from pcapi.routes.backoffice_v3.accounts.blueprint import RegistrationStepStatus
+from pcapi.routes.backoffice_v3.accounts.blueprint import TunnelType
+from pcapi.routes.backoffice_v3.accounts.blueprint import _get_fraud_reviews_desc
+from pcapi.routes.backoffice_v3.accounts.blueprint import _get_id_check_histories_desc
+from pcapi.routes.backoffice_v3.accounts.blueprint import _get_progress
+from pcapi.routes.backoffice_v3.accounts.blueprint import _get_status
+from pcapi.routes.backoffice_v3.accounts.blueprint import _get_steps_for_tunnel
+from pcapi.routes.backoffice_v3.accounts.blueprint import _get_steps_tunnel_age18
+from pcapi.routes.backoffice_v3.accounts.blueprint import _get_steps_tunnel_underage
+from pcapi.routes.backoffice_v3.accounts.blueprint import _get_steps_tunnel_underage_age18
+from pcapi.routes.backoffice_v3.accounts.blueprint import _get_steps_tunnel_unspecified
+from pcapi.routes.backoffice_v3.accounts.blueprint import _get_subscription_item_status_by_eligibility
+from pcapi.routes.backoffice_v3.accounts.blueprint import _get_tunnel
+from pcapi.routes.backoffice_v3.accounts.blueprint import _get_tunnel_type
+from pcapi.routes.backoffice_v3.accounts.blueprint import _set_steps_with_active_and_disabled
+from pcapi.routes.backoffice_v3.accounts.blueprint import get_eligibility_history
+from pcapi.routes.backoffice_v3.accounts.blueprint import get_public_account_history
 import pcapi.utils.email as email_utils
 
 from .helpers import button as button_helpers
