@@ -1495,6 +1495,35 @@ class ListOfferersToValidateTest(GetEndpointHelper):
             assert len(rows) == 1
             assert rows[0]["ID"] == str(user_offerer.offerer.id)
 
+        @pytest.mark.parametrize(
+            "query, dms_status_filter",
+            (
+                ("124578235689", "accepted"),
+                ("PRO-124578235689", "on_going"),
+                ("124578235689", None),
+                (None, "accepted"),
+            ),
+        )
+        def test_list_filtering_with_filters_using_same_joins(
+            self, authenticated_client, query, dms_status_filter, offerers_to_be_validated
+        ):
+            # given
+            user_offerer = offerers_factories.UserNotValidatedOffererFactory()
+            offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, dmsToken="124578235689")
+
+            # when
+            with assert_num_queries(self.expected_num_queries):
+                response = authenticated_client.get(
+                    url_for(
+                        "backoffice_v3_web.validation.list_offerers_to_validate",
+                        q=query,
+                        dms_adage_status=dms_status_filter,
+                    )
+                )
+
+            # then
+            assert response.status_code == 200
+
         def test_offerers_stats_are_displayed(self, authenticated_client, offerers_to_be_validated):
             # given
             offerers_factories.UserOffererFactory(offerer__validationStatus=ValidationStatus.PENDING)

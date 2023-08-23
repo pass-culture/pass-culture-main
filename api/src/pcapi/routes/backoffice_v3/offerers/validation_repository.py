@@ -22,6 +22,12 @@ import pcapi.utils.email as email_utils
 from pcapi.utils.regions import get_department_codes_for_region
 
 
+def _join_venue(query: sa.orm.Query, is_venue_table_joined: bool = False) -> tuple[sa.orm.Query, bool]:
+    if not is_venue_table_joined:
+        query = query.join(offerers_models.Venue)
+    return query, True
+
+
 def _apply_query_filters(
     query: sa.orm.Query,
     q: str | None,  # search query
@@ -34,6 +40,7 @@ def _apply_query_filters(
     cls: typing.Type[offerers_models.Offerer | offerers_models.UserOfferer],
     offerer_id_column: sa.orm.InstrumentedAttribute,
 ) -> sa.orm.Query:
+    is_venue_table_joined = False
     if q:
         sanitized_q = email_utils.sanitize_email(q)
 
@@ -41,7 +48,8 @@ def _apply_query_filters(
             num_digits = len(sanitized_q)
             # for dmsToken containing digits only
             if num_digits == 12:
-                query = query.join(offerers_models.Venue).filter(offerers_models.Venue.dmsToken == sanitized_q)
+                query, is_venue_table_joined = _join_venue(query, is_venue_table_joined)
+                query = query.filter(offerers_models.Venue.dmsToken == sanitized_q)
             elif num_digits == 9:
                 query = query.filter(offerers_models.Offerer.siren == sanitized_q)
             elif num_digits == 5:
@@ -62,9 +70,8 @@ def _apply_query_filters(
         # We theoretically can have venues which name is 12 letters between a and f
         # But it never happened in the database, and it's costly to handle
         elif dms_token_term := re.match(offerers_api.DMS_TOKEN_REGEX, q):
-            query = query.join(offerers_models.Venue).filter(
-                offerers_models.Venue.dmsToken == dms_token_term.group(1).lower()
-            )
+            query, is_venue_table_joined = _join_venue(query, is_venue_table_joined)
+            query = query.filter(offerers_models.Venue.dmsToken == dms_token_term.group(1).lower())
         else:
             name_query = "%{}%".format(clean_accents(q))
             query = query.filter(
@@ -81,13 +88,12 @@ def _apply_query_filters(
         query = query.filter(cls.validationStatus.in_(status))  # type: ignore [attr-defined]
 
     if dms_adage_status:
-        query = (
-            query.join(offerers_models.Venue)
-            .join(educational_models.CollectiveDmsApplication, offerers_models.Venue.collectiveDmsApplications)
-            .filter(
-                educational_models.CollectiveDmsApplication.state.in_(
-                    [GraphQLApplicationStates[str(state)].value for state in dms_adage_status]
-                )
+        query, is_venue_table_joined = _join_venue(query, is_venue_table_joined)
+        query = query.join(
+            educational_models.CollectiveDmsApplication, offerers_models.Venue.collectiveDmsApplications
+        ).filter(
+            educational_models.CollectiveDmsApplication.state.in_(
+                [GraphQLApplicationStates[str(state)].value for state in dms_adage_status]
             )
         )
 
