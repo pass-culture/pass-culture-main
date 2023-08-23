@@ -28,7 +28,7 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.domain.show_types import SHOW_SUB_TYPES_LABEL_BY_CODE
 from pcapi.models import offer_mixin
-from pcapi.routes.backoffice_v3.serialization import accounts as serialization_accounts
+from pcapi.routes.backoffice_v3.accounts import serialization as serialization_accounts
 from pcapi.utils import urls
 from pcapi.utils.csr import Csr
 from pcapi.utils.csr import get_csr

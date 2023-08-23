@@ -19,11 +19,11 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
+from pcapi.routes.backoffice_v3 import autocomplete
+from pcapi.routes.backoffice_v3 import utils
 from pcapi.utils import date as date_utils
 
-from . import autocomplete
-from . import utils
-from .forms import custom_reimbursement_rule as custom_reimbursement_rule_forms
+from . import form as custom_reimbursement_rule_forms
 
 
 custom_reimbursement_rules_blueprint = utils.child_backoffice_blueprint(

@@ -18,9 +18,9 @@ from pcapi.core.users.api import suspend_account
 import pcapi.core.users.constants as users_constants
 import pcapi.core.users.models as users_models
 from pcapi.repository import repository
+from pcapi.routes.backoffice_v3 import utils
 
-from . import utils
-from .forms import fraud as forms
+from . import form as forms
 
 
 fraud_blueprint = utils.child_backoffice_blueprint(
