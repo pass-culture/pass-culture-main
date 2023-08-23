@@ -121,7 +121,9 @@ describe('CollectiveOfferVisibility', () => {
     }
     renderVisibilityStep({ ...props, mode: Mode.READ_ONLY })
     expect(
-      await screen.findByLabelText(/Nom de l’établissement scolaire/)
+      await screen.findByLabelText(
+        /Nom de l'établissement scolaire ou code UAI/
+      )
     ).toBeDisabled()
     expect(screen.getByText(/Valider et enregistrer l’offre/)).toBeDisabled()
   })
@@ -139,7 +141,9 @@ describe('CollectiveOfferVisibility', () => {
 
     //  Open the autocomplete select panel
     await userEvent.click(
-      await screen.findByLabelText(/Nom de l’établissement scolaire/)
+      await screen.findByLabelText(
+        /Nom de l'établissement scolaire ou code UAI/
+      )
     )
 
     const optionsList = await screen.findByTestId('list')
@@ -167,7 +171,9 @@ describe('CollectiveOfferVisibility', () => {
     renderVisibilityStep({ ...props, patchInstitution: spyPatch })
 
     await userEvent.click(
-      await screen.findByLabelText(/Nom de l’établissement scolaire/)
+      await screen.findByLabelText(
+        /Nom de l'établissement scolaire ou code UAI/
+      )
     )
 
     const optionsList = await screen.findByTestId('list')
@@ -191,7 +197,7 @@ describe('CollectiveOfferVisibility', () => {
     renderVisibilityStep(props)
 
     const institutionInput = await screen.findByLabelText(
-      /Nom de l’établissement scolaire/
+      /Nom de l'établissement scolaire ou code UAI/
     )
     await userEvent.click(institutionInput)
 
@@ -217,7 +223,9 @@ describe('CollectiveOfferVisibility', () => {
     }))
     renderVisibilityStep({ ...props, patchInstitution: spyPatch })
     await userEvent.click(
-      await screen.findByLabelText(/Nom de l’établissement scolaire/)
+      await screen.findByLabelText(
+        /Nom de l'établissement scolaire ou code UAI/
+      )
     )
     const optionsList = await screen.findByTestId('list')
     await userEvent.click(
@@ -234,7 +242,9 @@ describe('CollectiveOfferVisibility', () => {
   it('should display institution type, name and city in select options', async () => {
     renderVisibilityStep(props)
     await userEvent.click(
-      await screen.findByLabelText(/Nom de l’établissement scolaire/)
+      await screen.findByLabelText(
+        /Nom de l'établissement scolaire ou code UAI/
+      )
     )
     const optionsList = await screen.findByTestId('list')
     expect(
@@ -251,7 +261,7 @@ describe('CollectiveOfferVisibility', () => {
     renderVisibilityStep(props)
 
     const institutionInput = await screen.findByLabelText(
-      /Nom de l’établissement scolaire/
+      /Nom de l'établissement scolaire ou code UAI/
     )
     await userEvent.click(institutionInput)
 

@@ -214,6 +214,7 @@ const CollectiveOfferVisibility = ({
 
   return (
     <>
+      <FormLayout.MandatoryInfo />
       <OfferEducationalActions
         reloadCollectiveOffer={reloadCollectiveOffer}
         className={styles.actions}
@@ -244,7 +245,7 @@ const CollectiveOfferVisibility = ({
                         name="institution"
                         type="search"
                         options={institutionsOptions}
-                        label="Nom de l’établissement scolaire"
+                        label="Nom de l'établissement scolaire ou code UAI"
                         placeholder="Ex : Lycee General Simone Weil ou 010456E ou Le Havre"
                         hideArrow
                         onReset={() => {
