@@ -9,6 +9,7 @@ import { ButtonLink } from 'ui-kit'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 import VenueItem from './VenueItem/VenueItem'
+import styles from './Venues.module.scss'
 
 interface VenuesProps {
   venues: GetOffererVenueResponseModel[]
@@ -24,16 +25,9 @@ const Venues = ({ venues, offererId }: VenuesProps) => {
   const { logEvent } = useAnalytics()
 
   return (
-    <div className="section op-content-section">
-      <h2 className="main-list-title">Lieux</h2>
-
-      <ul className="main-list venues-list">
-        {venues.map(venue => (
-          <VenueItem key={venue.id} venue={venue} offererId={offererId} />
-        ))}
-      </ul>
-
-      <div className="has-text-centered">
+    <div className={styles['section']}>
+      <div className={styles['main-list-title']}>
+        <h2>Lieux</h2>
         <ButtonLink
           link={{
             to: venueCreationUrl,
@@ -45,10 +39,17 @@ const Venues = ({ venues, offererId }: VenuesProps) => {
             })
           }}
           icon={fullMoreIcon}
+          className={styles['main-list-title-button']}
         >
           Ajouter un lieu
         </ButtonLink>
       </div>
+
+      <ul className={styles['venue-list']}>
+        {venues.map(venue => (
+          <VenueItem key={venue.id} venue={venue} offererId={offererId} />
+        ))}
+      </ul>
     </div>
   )
 }
