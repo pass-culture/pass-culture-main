@@ -4,6 +4,7 @@ from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import repository as booking_repository
 from pcapi.core.bookings import validation as bookings_validation
+from pcapi.core.external_bookings import exceptions as external_bookings_exceptions
 from pcapi.models import api_errors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.routes.public import blueprints
@@ -143,6 +144,7 @@ def patch_cancel_booking_by_token(token: str) -> None:
     """
     token = token.upper()
     booking = booking_repository.find_by(token=token)
+    current_status = booking.status
 
     if current_user.is_authenticated:
         check_user_has_access_to_offerer(current_user, booking.offererId)
@@ -161,6 +163,9 @@ def patch_cancel_booking_by_token(token: str) -> None:
         raise api_errors.ResourceGoneError({"global": ["Cette contremarque a déjà été annulée"]})
     except exceptions.BookingIsAlreadyRefunded:
         raise api_errors.ForbiddenError({"global": ["Impossible d'annuler une réservation consommée"]})
+    except external_bookings_exceptions.ExternalBookingException:
+        booking.status = current_status
+        raise api_errors.ApiErrors({"global": ["L'annulation de réservation a échoué."]})
 
 
 @blueprints.v2_prefixed_public_api.route("/bookings/keep/token/<token>", methods=["PATCH"])

@@ -137,6 +137,48 @@ class Returns204Test:
         assert booking.status is BookingStatus.CANCELLED
         assert booking.stock.quantity == 17
 
+    @pytest.mark.usefixtures("db_session")
+    @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
+    def test_should_returns_204_for_external_booking_when_external_api_returns_200_with_no_remaining_quantity(
+        self, client, requests_mock
+    ):
+        external_url = "https://book_my_offer.com"
+        # Given
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider",
+            bookingExternalUrl=external_url + "/book",
+            cancelExternalUrl=external_url + "/cancel",
+        )
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = offers_factories.EventStockFactory(
+            lastProvider=provider,
+            offer__subcategoryId=subcategories_v2.SEANCE_ESSAI_PRATIQUE_ART.id,
+            offer__lastProvider=provider,
+            idAtProviders="",
+            dnBookedQuantity=4,
+            quantity=10,
+        )
+        # this bookings bumps the stock.dnBookedQuantity to 5
+        booking = bookings_factories.BookingFactory(stock=stock)
+        offerers_factories.ApiKeyFactory(offerer=booking.offerer)
+        external_bookings_factories.ExternalBookingFactory(booking=booking, barcode="1234567890123")
+        requests_mock.post(
+            external_url + "/cancel",
+            text="{remainingQuantity: }",
+            status_code=200,
+        )
+
+        # When
+        response = client.patch(
+            f"/v2/bookings/cancel/token/{booking.token}",
+            headers={"Authorization": "Bearer " + offerers_factories.DEFAULT_CLEAR_API_KEY},
+        )
+
+        assert response.status_code == 204
+        booking = Booking.query.one()
+        assert booking.status is BookingStatus.CANCELLED
+        assert booking.stock.dnBookedQuantity == 4
+
 
 class Returns401Test:
     @pytest.mark.usefixtures("db_session")
@@ -226,3 +268,48 @@ class Returns410Test:
         # Then
         assert response.status_code == 410
         assert response.json["global"] == ["Cette contremarque a déjà été annulée"]
+
+
+class Returns400Test:
+    @pytest.mark.usefixtures("db_session")
+    @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
+    def test_should_raise_error_for_external_booking_when_external_api_returns_error_code(self, client, requests_mock):
+        external_url = "https://book_my_offer.com"
+        # Given
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider",
+            bookingExternalUrl=external_url + "/book",
+            cancelExternalUrl=external_url + "/cancel",
+        )
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = offers_factories.EventStockFactory(
+            lastProvider=provider,
+            offer__subcategoryId=subcategories_v2.SEANCE_ESSAI_PRATIQUE_ART.id,
+            offer__lastProvider=provider,
+            idAtProviders="",
+            dnBookedQuantity=4,
+            quantity=10,
+        )
+        # This bookings bumps the stock.dnBookedQuantity to 5
+        booking = bookings_factories.BookingFactory(stock=stock)
+        offerers_factories.ApiKeyFactory(offerer=booking.offerer)
+        external_bookings_factories.ExternalBookingFactory(booking=booking, barcode="1234567890123")
+        requests_mock.post(
+            external_url + "/cancel",
+            text="internal error",
+            status_code=500,
+        )
+
+        # When
+        response = client.patch(
+            f"/v2/bookings/cancel/token/{booking.token}",
+            headers={"Authorization": "Bearer " + offerers_factories.DEFAULT_CLEAR_API_KEY},
+        )
+
+        assert response.status_code == 400
+        assert response.json == {
+            "global": ["L'annulation de réservation a échoué."],
+        }
+        booking = Booking.query.one()
+        assert booking.status is BookingStatus.CONFIRMED
+        assert booking.stock.dnBookedQuantity == 5

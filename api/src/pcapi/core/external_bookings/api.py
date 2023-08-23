@@ -1,4 +1,5 @@
 import datetime
+import logging
 import typing
 
 import pydantic
@@ -22,6 +23,9 @@ from pcapi.utils.queue import add_to_queue
 
 from . import exceptions
 from . import serialize
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_shows_stock(venue_id: int, shows_id: list[int]) -> dict[int, int]:
@@ -54,16 +58,19 @@ def cancel_event_ticket(
     payload = serialize.ExternalEventCancelBookingRequest.build_external_cancel_booking(barcodes)
     headers = {"Content-Type": "application/json"}
     response = requests.post(provider.cancelExternalUrl, json=payload.json(), headers=headers)
-    parsed_response = pydantic.parse_obj_as(serialize.ExternalEventCancelBookingResponse, response.json())
     if response.status_code != 200:
-        if parsed_response.remainingQuantity:
-            stock.quantity = parsed_response.remainingQuantity + stock.dnBookedQuantity
         raise exceptions.ExternalBookingException(
             f"External booking failed with status code {response.status_code} and message {response.text}"
         )
-    stock.dnBookedQuantity -= len(barcodes)
-    if parsed_response.remainingQuantity:
-        stock.quantity = parsed_response.remainingQuantity + stock.dnBookedQuantity
+    try:
+        parsed_response = pydantic.parse_obj_as(serialize.ExternalEventCancelBookingResponse, response.json())
+        if parsed_response.remainingQuantity:
+            stock.quantity = parsed_response.remainingQuantity + stock.dnBookedQuantity - len(barcodes)
+    except (ValueError, pydantic.ValidationError):
+        logger.exception(
+            "Could not parse external booking cancel response",
+            extra={"status_code": response.status_code, "response": response.text},
+        )
 
 
 def _get_external_bookings_client_api(venue_id: int) -> external_bookings_models.ExternalBookingsClientAPI:

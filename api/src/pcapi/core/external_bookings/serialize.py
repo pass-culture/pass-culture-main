@@ -84,4 +84,4 @@ class ExternalEventCancelBookingRequest(pydantic.BaseModel):
 
 class ExternalEventCancelBookingResponse(pydantic.BaseModel):
     error: str | None
-    remainingQuantity: pydantic.StrictInt | None
+    remainingQuantity: pydantic.StrictInt

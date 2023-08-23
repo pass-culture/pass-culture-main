@@ -388,7 +388,6 @@ def _cancel_booking(
             BookingIsAlreadyUsed,
             BookingIsAlreadyCancelled,
             finance_exceptions.NonCancellablePricingError,
-            external_bookings_exceptions.ExternalBookingException,
         ) as e:
             if raise_if_error:
                 raise
@@ -402,8 +401,10 @@ def _cancel_booking(
                 },
             )
             return False
-        if not (offer.lastProvider and offer.lastProvider.hasProviderEnableCharlie):
-            stock.dnBookedQuantity -= booking.quantity
+        except external_bookings_exceptions.ExternalBookingException as e:
+            logger.exception("Cancel external booking failed with error: %s", str(e))
+            raise e
+        stock.dnBookedQuantity -= booking.quantity
         repository.save(booking, stock)
 
     logger.info(
