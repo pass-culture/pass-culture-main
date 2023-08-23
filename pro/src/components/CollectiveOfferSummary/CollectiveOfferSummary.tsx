@@ -8,6 +8,7 @@ import {
   EducationalCategories,
   isCollectiveOffer,
 } from 'core/OfferEducational'
+import useActiveFeature from 'hooks/useActiveFeature'
 
 import styles from './CollectiveOfferSummary.module.scss'
 import CollectiveOfferAccessibilitySection from './components/CollectiveOfferAccessibilitySection'
@@ -37,7 +38,9 @@ const CollectiveOfferSummary = ({
   visibilityEditLink,
 }: CollectiveOfferSummaryProps) => {
   const offerManuallyCreated = isCollectiveOffer(offer) && !offer.isPublicApi
-
+  const isOfferToInstitutionActive = useActiveFeature(
+    'WIP_OFFER_TO_INSTITUTION'
+  )
   return (
     <>
       <SummaryLayout>
@@ -87,7 +90,11 @@ const CollectiveOfferSummary = ({
 
           {!offer.isTemplate && (
             <SummaryLayout.Section
-              title="Visibilité"
+              title={
+                isOfferToInstitutionActive
+                  ? 'Établissement et enseignant'
+                  : 'Visibilité'
+              }
               editLink={
                 offerManuallyCreated || offer.isTemplate
                   ? visibilityEditLink
