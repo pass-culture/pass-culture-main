@@ -104,43 +104,45 @@ const ApiKey = ({
         {' API.'}
       </div>
 
-      <div className={styles['list']}>
-        {savedApiKeys.map(savedApiKey => {
-          return (
-            <div className={styles['item']} key={savedApiKey}>
-              <span className={styles['text']}>
-                {savedApiKey}
-                ********
-              </span>
-              <Button
-                className={styles['action']}
-                onClick={() => setApiKeyToDelete(savedApiKey)}
-                variant={ButtonVariant.TERNARY}
-                icon={strokeTrashIcon}
-              >
-                supprimer
-              </Button>
-            </div>
-          )
-        })}
+      {(savedApiKeys.length > 0 || newlyGeneratedKeys.length > 0) && (
+        <div className={styles['list']}>
+          {savedApiKeys.map(savedApiKey => {
+            return (
+              <div className={styles['item']} key={savedApiKey}>
+                <span className={styles['text']}>
+                  {savedApiKey}
+                  ********
+                </span>
+                <Button
+                  className={styles['action']}
+                  onClick={() => setApiKeyToDelete(savedApiKey)}
+                  variant={ButtonVariant.TERNARY}
+                  icon={strokeTrashIcon}
+                >
+                  supprimer
+                </Button>
+              </div>
+            )
+          })}
 
-        {newlyGeneratedKeys.map(newKey => {
-          return (
-            <div className={styles['item']} key={newKey}>
-              <span className={cn(styles['text'], styles['text--new-key'])}>
-                {newKey}
-              </span>
-              <Button
-                className={styles['action']}
-                onClick={copyKey(newKey)}
-                variant={ButtonVariant.PRIMARY}
-              >
-                Copier
-              </Button>
-            </div>
-          )
-        })}
-      </div>
+          {newlyGeneratedKeys.map(newKey => {
+            return (
+              <div className={styles['item']} key={newKey}>
+                <span className={cn(styles['text'], styles['text--new-key'])}>
+                  {newKey}
+                </span>
+                <Button
+                  className={styles['action']}
+                  onClick={copyKey(newKey)}
+                  variant={ButtonVariant.PRIMARY}
+                >
+                  Copier
+                </Button>
+              </div>
+            )
+          })}
+        </div>
+      )}
 
       {!!newlyGeneratedKeys.length && (
         <Banner>
@@ -165,7 +167,7 @@ const ApiKey = ({
           onCancel={() => setApiKeyToDelete(null)}
           onConfirm={confirmApiKeyDeletion}
           title="Êtes-vous sûr de vouloir supprimer votre clé API ?"
-          confirmText="Confirmer la suppr ession"
+          confirmText="Confirmer la suppression"
           cancelText="Annuler"
           icon={strokeTrashIcon}
         >
