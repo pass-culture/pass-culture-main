@@ -8,12 +8,11 @@ import sqlalchemy as sa
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.permissions.models as perm_models
 from pcapi.models import db
+from pcapi.routes.backoffice_v3 import utils
+from pcapi.routes.backoffice_v3.forms import empty as empty_forms
 from pcapi.utils.clean_accents import clean_accents
 
-from . import utils
-from .forms import empty as empty_forms
-from .forms import tags as tags_forms
-from .forms.tags import SearchTagForm
+from . import form as tags_forms
 
 
 tags_blueprint = utils.child_backoffice_blueprint(
@@ -30,7 +29,7 @@ def get_tags_categories() -> list[criteria_models.CriterionCategory]:
 
 @tags_blueprint.route("", methods=["GET"])
 def list_tags() -> utils.BackofficeResponse:
-    form = SearchTagForm(formdata=utils.get_query_params())
+    form = tags_forms.SearchTagForm(formdata=utils.get_query_params())
 
     base_query = criteria_models.Criterion.query
 

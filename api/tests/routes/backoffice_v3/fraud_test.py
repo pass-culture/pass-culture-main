@@ -11,7 +11,7 @@ import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
-from pcapi.routes.backoffice_v3.fraud import _blacklist_domain_name
+from pcapi.routes.backoffice_v3.fraud.blueprint import _blacklist_domain_name
 
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper

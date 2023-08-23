@@ -6,11 +6,10 @@ import wtforms
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import categories
-
-from . import fields
-from . import utils
-from .. import filters
-from .empty import BatchForm
+from pcapi.routes.backoffice_v3 import filters
+from pcapi.routes.backoffice_v3.forms import fields
+from pcapi.routes.backoffice_v3.forms import utils
+from pcapi.routes.backoffice_v3.forms.empty import BatchForm
 
 
 class GetIndividualBookingListForm(FlaskForm):

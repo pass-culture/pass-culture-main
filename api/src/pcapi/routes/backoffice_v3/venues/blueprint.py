@@ -32,20 +32,18 @@ from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.permissions.models as perm_models
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
+from pcapi.routes.backoffice_v3 import autocomplete
+from pcapi.routes.backoffice_v3 import utils
+from pcapi.routes.backoffice_v3.forms import empty as empty_forms
+from pcapi.routes.backoffice_v3.forms import search as search_forms
+from pcapi.routes.backoffice_v3.serialization.search import TypeOptions
 import pcapi.routes.serialization.base as serialize_base
 import pcapi.utils.regions as regions_utils
 from pcapi.utils.regions import get_department_codes_for_region
 from pcapi.utils.string import to_camelcase
 
-from . import autocomplete
-from . import utils
-from ...core.offerers.models import VenuePricingPointLink
-from ...core.offerers.models import VenueReimbursementPointLink
-from .forms import empty as empty_forms
-from .forms import search as search_forms
-from .forms import venue as forms
-from .serialization import venues as serialization
-from .serialization.search import TypeOptions
+from . import form as forms
+from . import serialization
 
 
 venue_blueprint = utils.child_backoffice_blueprint(
@@ -354,9 +352,11 @@ def get_stats(venue_id: int) -> utils.BackofficeResponse:
     venue = (
         offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
         .options(
-            sa.orm.joinedload(offerers_models.Venue.pricing_point_links).joinedload(VenuePricingPointLink.pricingPoint),
+            sa.orm.joinedload(offerers_models.Venue.pricing_point_links).joinedload(
+                offerers_models.VenuePricingPointLink.pricingPoint
+            ),
             sa.orm.joinedload(offerers_models.Venue.reimbursement_point_links)
-            .joinedload(VenueReimbursementPointLink.reimbursementPoint)
+            .joinedload(offerers_models.VenueReimbursementPointLink.reimbursementPoint)
             .load_only(offerers_models.Venue.name)
             .joinedload(offerers_models.Venue.bankInformation)
             .load_only(finance_models.BankInformation.bic, finance_models.BankInformation.iban),

@@ -5,8 +5,7 @@ from flask_wtf import FlaskForm
 import wtforms
 
 from pcapi.core.categories import subcategories_v2
-
-from . import fields
+from pcapi.routes.backoffice_v3.forms import fields
 
 
 class GetCustomReimbursementRulesListForm(FlaskForm):

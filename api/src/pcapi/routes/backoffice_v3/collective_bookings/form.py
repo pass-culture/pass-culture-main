@@ -6,10 +6,9 @@ import wtforms
 from pcapi.core.categories import categories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.models import CollectiveBookingStatus
-
-from . import fields
-from . import utils
-from .. import filters
+from pcapi.routes.backoffice_v3 import filters
+from pcapi.routes.backoffice_v3.forms import fields
+from pcapi.routes.backoffice_v3.forms import utils
 
 
 class GetCollectiveBookingListForm(FlaskForm):

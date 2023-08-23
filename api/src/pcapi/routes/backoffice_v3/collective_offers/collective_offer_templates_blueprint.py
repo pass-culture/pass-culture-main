@@ -17,12 +17,12 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.routes.backoffice_v3.collective_offers import forms as collective_offer_forms
+from pcapi.routes.backoffice_v3 import autocomplete
+from pcapi.routes.backoffice_v3 import utils
+from pcapi.routes.backoffice_v3.forms import empty as empty_forms
 from pcapi.utils import date as date_utils
 
-from . import autocomplete
-from . import utils
-from .forms import empty as empty_forms
+from . import forms as collective_offer_forms
 
 
 list_collective_offer_templates_blueprint = utils.child_backoffice_blueprint(

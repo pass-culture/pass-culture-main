@@ -17,13 +17,13 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users.email import update as email_update
+from pcapi.routes.backoffice_v3 import search_utils
+from pcapi.routes.backoffice_v3 import utils
+from pcapi.routes.backoffice_v3.accounts import serialization
 from pcapi.routes.backoffice_v3.users import forms as user_forms
 from pcapi.utils import email as email_utils
 
 from . import forms
-from .. import search_utils
-from .. import utils
-from ..serialization import accounts
 
 
 bo_users_blueprint = utils.child_backoffice_blueprint(
@@ -71,15 +71,15 @@ def search_bo_users() -> utils.BackofficeResponse:
     )
 
 
-def get_bo_user_history(user: users_models.User) -> list[accounts.AccountAction | history_models.ActionHistory]:
+def get_bo_user_history(user: users_models.User) -> list[serialization.AccountAction | history_models.ActionHistory]:
     # All data should have been joinloaded with user
-    history: list[history_models.ActionHistory | accounts.AccountAction] = list(user.action_history)
+    history: list[history_models.ActionHistory | serialization.AccountAction] = list(user.action_history)
 
     if history_models.ActionType.USER_CREATED not in (action.actionType for action in user.action_history):
-        history.append(accounts.AccountCreatedAction(user))
+        history.append(serialization.AccountCreatedAction(user))
 
     for change in user.email_history:
-        history.append(accounts.EmailChangeAction(change))
+        history.append(serialization.EmailChangeAction(change))
 
     history = sorted(history, key=lambda item: item.actionDate or datetime.datetime.min, reverse=True)
 
