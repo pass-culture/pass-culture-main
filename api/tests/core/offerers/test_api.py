@@ -2196,3 +2196,90 @@ class CreateFromOnboardingDataTest:
         assert created_venue.latitude == decimal.Decimal("2.30829")
         assert created_venue.longitude == decimal.Decimal("48.87171")
         assert created_venue.postalCode == "75001"
+
+
+class InviteMembersTest:
+    def test_offerer_invitation_created_when_invite_new_user(self):
+        pro_user = users_factories.ProFactory(email="pro.user@example.com")
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+
+        offerers_api.invite_member(offerer=offerer, email="new.user@example.com", current_user=pro_user)
+
+        offerer_invitation = offerers_models.OffererInvitation.query.one()
+        assert offerer_invitation.email == "new.user@example.com"
+        assert offerer_invitation.userId == pro_user.id
+        assert offerer_invitation.offererId == offerer.id
+        assert len(mails_testing.outbox) == 1
+        assert (
+            mails_testing.outbox[0].sent_data["template"]["id_not_prod"]
+            == TransactionalEmail.OFFERER_ATTACHMENT_INVITATION.value.id
+        )
+
+    def test_offerer_invitation_created_when_user_exists_and_email_not_validated(self):
+        pro_user = users_factories.ProFactory(email="pro.user@example.com")
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        users_factories.UserFactory(email="new.user@example.com", isEmailValidated=False)
+
+        offerers_api.invite_member(offerer=offerer, email="new.user@example.com", current_user=pro_user)
+
+        offerer_invitation = offerers_models.OffererInvitation.query.one()
+        assert offerer_invitation.email == "new.user@example.com"
+        assert offerer_invitation.userId == pro_user.id
+        assert offerer_invitation.offererId == offerer.id
+        assert len(mails_testing.outbox) == 1
+        assert (
+            mails_testing.outbox[0].sent_data["template"]["id_not_prod"]
+            == TransactionalEmail.OFFERER_ATTACHMENT_INVITATION.value.id
+        )
+
+    def test_raise_and_not_create_offerer_invitation_when_invitation_already_exists(self):
+        pro_user = users_factories.ProFactory(email="pro.user@example.com")
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offerers_factories.OffererInvitationFactory(user=pro_user, offerer=offerer, email="new.user@example.com")
+
+        with pytest.raises(offerers_exceptions.EmailAlreadyInvitedException) as exception:
+            offerers_api.invite_member(offerer=offerer, email="new.user@example.com", current_user=pro_user)
+
+        assert exception.value.errors["EmailAlreadyInvitedException"] == [
+            "Une invitation a déjà été envoyée à ce collaborateur"
+        ]
+        offerer_invitations = offerers_models.OffererInvitation.query.all()
+        assert len(offerer_invitations) == 1
+        assert len(mails_testing.outbox) == 0
+
+    def test_raise_error_not_create_offerer_invitation_when_user_already_attached_to_offerer(self):
+        pro_user = users_factories.ProFactory(email="pro.user@example.com")
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        attached_user = users_factories.ProFactory(email="attached.user@example.com")
+        offerers_factories.UserOffererFactory(user=attached_user, offerer=offerer)
+
+        with pytest.raises(offerers_exceptions.UserAlreadyAttachedToOffererException) as exception:
+            offerers_api.invite_member(offerer=offerer, email="attached.user@example.com", current_user=pro_user)
+
+        assert exception.value.errors["UserAlreadyAttachedToOffererException"] == [
+            "Ce collaborateur est déjà membre de votre structure"
+        ]
+        offerer_invitations = offerers_models.OffererInvitation.query.all()
+        assert len(offerer_invitations) == 0
+        assert len(mails_testing.outbox) == 0
+
+    def test_user_offerer_created_when_user_exists_and_attached_to_another_offerer(self):
+        pro_user = users_factories.ProFactory(email="pro.user@example.com")
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        attached_to_other_offerer_user = users_factories.ProFactory(email="attached.user@example.com")
+        offerers_factories.UserOffererFactory(user=attached_to_other_offerer_user)
+
+        offerers_api.invite_member(offerer=offerer, email="attached.user@example.com", current_user=pro_user)
+
+        offerer_invitations = offerers_models.OffererInvitation.query.all()
+        assert len(offerer_invitations) == 0
+        assert len(mails_testing.outbox) == 0
+        user_offerer = offerers_models.UserOfferer.query.filter_by(
+            userId=attached_to_other_offerer_user.id, offererId=offerer.id
+        ).one()
+        assert user_offerer.validationStatus == ValidationStatus.NEW

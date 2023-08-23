@@ -257,12 +257,12 @@ class OffererStatsResponseModel(BaseModel):
     dashboardUrl: str
 
 
-class InviteMembersQueryModel(BaseModel):
-    emails: list[str]
+class InviteMemberQueryModel(BaseModel):
+    email: str
 
-    @validator("emails", each_item=True)
+    @validator("email")
     @classmethod
-    def validate_emails(cls, email: str) -> str:
+    def validate_email(cls, email: str) -> str:
         try:
             return sanitize_email(email)
         except Exception as e:

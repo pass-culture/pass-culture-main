@@ -38,7 +38,7 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
   const onSubmit = async ({ email }: { email: string }) => {
     try {
       setIsLoading(true)
-      await api.inviteMembers(offererId, { emails: [email] })
+      await api.inviteMember(offererId, { email: email })
       members.push({
         email,
         // TODO: replace by default status when api code is changed.

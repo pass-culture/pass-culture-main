@@ -1866,32 +1866,49 @@ def delete_offerer(offerer_id: int) -> None:
     search.unindex_venue_ids(venue_ids_subquery)
 
 
-def invite_members(offerer: models.Offerer, emails: list[str], current_user: users_models.User) -> None:
-    existing_invited_emails = (
+def invite_member(offerer: models.Offerer, email: str, current_user: users_models.User) -> None:
+    existing_invited_email = (
         models.OffererInvitation.query.filter(models.OffererInvitation.offererId == offerer.id)
-        .filter(models.OffererInvitation.email.in_(emails))
-        .all()
+        .filter(models.OffererInvitation.email == email)
+        .one_or_none()
     )
-    for email in emails:
-        if email in existing_invited_emails:  # already invited
-            continue
-        user = (
-            users_models.User.query.filter_by(email=email)
-            .join(models.UserOfferer)
-            .filter(models.UserOfferer.offererId == offerer.id)
-            .one_or_none()
+
+    if existing_invited_email:  # already invited
+        raise exceptions.EmailAlreadyInvitedException()
+
+    existing_user = (
+        users_models.User.query.filter(users_models.User.email == email)
+        .outerjoin(users_models.User.UserOfferers)
+        .options(sa.orm.joinedload(users_models.User.UserOfferers).load_only(models.UserOfferer.offererId))
+        .one_or_none()
+    )
+
+    if existing_user and next(
+        (u_o for u_o in existing_user.UserOfferers if u_o.offererId == offerer.id), None
+    ):  # User already attached to the offerer
+        raise exceptions.UserAlreadyAttachedToOffererException()
+
+    if existing_user and existing_user.isEmailValidated:  # User exists but not attached to the offerer
+        new_user_offerer = models.UserOfferer(
+            offerer=offerer, user=existing_user, validationStatus=ValidationStatus.NEW
         )
-        if user and user.UserOfferers:  # User already attached to offerer
-            continue
-        if user and user.isEmailValidated:  # User exists but not attached to offerer
-            pass  # TODO create user offerer
+        db.session.add(new_user_offerer)
+        db.session.commit()
+        logger.info(
+            "Existing user invited to join offerer",
+            extra={"offerer": offerer.id, "invited_user": existing_user.id, "invited_by": current_user.id},
+        )
+        external_attributes_api.update_external_pro(existing_user.email)
+        zendesk_sell.create_offerer(offerer)
+    else:  # User not exists or exists with not validated email yet
         offerer_invitation = models.OffererInvitation(offerer=offerer, email=email, user=current_user)
         db.session.add(offerer_invitation)
-
-    db.session.commit()
-    transactional_mails.send_offerer_attachment_invitation(
-        emails
-    )  # TODO à modifier envoyer email seulement aux nouveaux invités
+        db.session.commit()
+        logger.info(
+            "New user invited to join offerer",
+            extra={"offerer": offerer.id, "invited_user": email, "invited_by": current_user.id},
+        )
+        transactional_mails.send_offerer_attachment_invitation([email])
 
 
 def get_offerer_members(offerer: models.Offerer) -> list[typing.Tuple[str, OffererMemberStatus]]:

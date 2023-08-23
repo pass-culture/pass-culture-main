@@ -44,7 +44,7 @@ import type { GetOfferersNamesResponseModel } from '../models/GetOfferersNamesRe
 import type { GetVenueListResponseModel } from '../models/GetVenueListResponseModel';
 import type { GetVenueResponseModel } from '../models/GetVenueResponseModel';
 import type { GetVenuesOfOffererFromSiretResponseModel } from '../models/GetVenuesOfOffererFromSiretResponseModel';
-import type { InviteMembersQueryModel } from '../models/InviteMembersQueryModel';
+import type { InviteMemberQueryModel } from '../models/InviteMemberQueryModel';
 import type { InvoiceListResponseModel } from '../models/InvoiceListResponseModel';
 import type { LinkVenueToPricingPointBodyModel } from '../models/LinkVenueToPricingPointBodyModel';
 import type { ListBookingsResponseModel } from '../models/ListBookingsResponseModel';
@@ -1197,15 +1197,15 @@ export class DefaultService {
   }
 
   /**
-   * invite_members <POST>
+   * invite_member <POST>
    * @param offererId
    * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public inviteMembers(
+  public inviteMember(
     offererId: number,
-    requestBody?: InviteMembersQueryModel,
+    requestBody?: InviteMemberQueryModel,
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
