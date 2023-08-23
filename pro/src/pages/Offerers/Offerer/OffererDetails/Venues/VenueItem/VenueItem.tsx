@@ -1,5 +1,4 @@
 import React from 'react'
-import Dotdotdot from 'react-dotdotdot'
 
 import { GetOffererVenueResponseModel } from 'apiClient/v1'
 import {
@@ -31,9 +30,9 @@ const VenueItem = ({ venue, offererId }: VenueItemProps) => {
     <li>
       <SvgIcon alt="" src={strokeVenueIcon} className={styles['picto']} />
 
-      <div className="list-content">
+      <div>
         <ButtonLink
-          className="name"
+          className={styles['name']}
           link={{
             to: showPath,
             isExternal: false,
@@ -42,33 +41,29 @@ const VenueItem = ({ venue, offererId }: VenueItemProps) => {
           {publicName || name}
         </ButtonLink>
 
-        <ul>
-          <li>
-            <Dotdotdot clamp={2} className="has-text-grey">
-              {`${address} ${postalCode} ${city}`}
-            </Dotdotdot>
-          </li>
-          <li>
-            <ButtonLink
-              className={styles['create-offer-button']}
-              link={{
-                to: `/offre/creation?lieu=${id}&structure=${offererId}`,
-                isExternal: false,
-              }}
-              onClick={() =>
-                logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                  from: OFFER_FORM_NAVIGATION_IN.OFFERER,
-                  to: OFFER_FORM_HOMEPAGE,
-                  used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERER_LINK,
-                  isEdition: false,
-                })
-              }
-              icon={fullMoreIcon}
-            >
-              {' Créer une offre'}
-            </ButtonLink>
-          </li>
-        </ul>
+        <div
+          className={styles['address']}
+        >{`${address} ${postalCode} ${city}`}</div>
+        <div>
+          <ButtonLink
+            className={styles['create-offer-button']}
+            link={{
+              to: `/offre/creation?lieu=${id}&structure=${offererId}`,
+              isExternal: false,
+            }}
+            onClick={() =>
+              logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                from: OFFER_FORM_NAVIGATION_IN.OFFERER,
+                to: OFFER_FORM_HOMEPAGE,
+                used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERER_LINK,
+                isEdition: false,
+              })
+            }
+            icon={fullMoreIcon}
+          >
+            {' Créer une offre'}
+          </ButtonLink>
+        </div>
       </div>
     </li>
   )
