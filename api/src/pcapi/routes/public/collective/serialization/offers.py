@@ -1,12 +1,14 @@
 from datetime import datetime
 from datetime import timezone
 from typing import Any
+from typing import Sequence
 
 from pydantic import Field
 from pydantic import root_validator
 from pydantic import validator
 
 from pcapi.core.categories import subcategories_v2
+from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.subscription.phone_validation.exceptions import InvalidPhoneNumber
@@ -193,22 +195,40 @@ def image_file_validator(field_name: str) -> classmethod:
     return validator(field_name, allow_reuse=True, pre=True)(validate_image_file)
 
 
+class CollectiveBookingResponseModel(BaseModel):
+    id: int
+    status: CollectiveBookingStatus
+    confirmationDate: datetime | None
+    cancellationLimitDate: datetime | None
+    reimbursementDate: datetime | None
+    dateUsed: datetime | None
+    dateCreated: datetime
+
+    class Config:
+        orm_mode = True
+
+
 class CollectiveOffersResponseModel(BaseModel):
     id: int
     beginningDatetime: str
     status: str
     venueId: int
+    bookings: Sequence[CollectiveBookingResponseModel]
 
     class Config:
         orm_mode = True
 
     @classmethod
     def from_orm(cls, offer: CollectiveOffer) -> "CollectiveOffersResponseModel":
+        bookings = [
+            CollectiveBookingResponseModel.from_orm(booking) for booking in offer.collectiveStock.collectiveBookings
+        ]
         return cls(
             id=offer.id,
             beginningDatetime=offer.collectiveStock.beginningDatetime.replace(microsecond=0).isoformat(),
             status=offer.status.value,  # type: ignore [attr-defined]
             venueId=offer.venueId,
+            bookings=bookings,
         )
 
 
@@ -280,6 +300,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     offerVenue: OfferVenueModel
     imageCredit: str | None
     imageUrl: str | None
+    bookings: Sequence[CollectiveBookingResponseModel]
 
     class Config:
         extra = "forbid"
@@ -287,6 +308,9 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
 
     @classmethod
     def from_orm(cls, offer: CollectiveOffer) -> "GetPublicCollectiveOfferResponseModel":
+        bookings = [
+            CollectiveBookingResponseModel.from_orm(booking) for booking in offer.collectiveStock.collectiveBookings
+        ]
         return cls(
             id=offer.id,
             status=offer.status.name,  # type: ignore [attr-defined]
@@ -323,6 +347,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             },
             imageCredit=offer.imageCredit,
             imageUrl=offer.imageUrl,
+            bookings=bookings,
         )
 
 
