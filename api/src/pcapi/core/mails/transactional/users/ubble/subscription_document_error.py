@@ -14,7 +14,7 @@ def send_subscription_document_error_email(email: str, code: fraud_models.FraudR
 def get_subscription_document_error_email_data(code: fraud_models.FraudReasonCode) -> models.TransactionalEmailData:
     mapping = constants.ubble_error_to_email_mapping.get(code.value)
     if not mapping:
-        template = TransactionalEmail.SUBSCRIPTION_INFORMATION_ERROR
+        template = TransactionalEmail.SUBSCRIPTION_UNREADABLE_DOCUMENT_ERROR
     else:
         template = mapping.template
 
