@@ -431,14 +431,16 @@ def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
     external_bookings_api.cancel_booking(stock.offer.venueId, barcodes)
 
 
-def _cancel_bookings_from_stock(stock: offers_models.Stock, reason: BookingCancellationReasons) -> list[Booking]:
+def _cancel_bookings_from_stock(
+    stock: offers_models.Stock, reason: BookingCancellationReasons, cancel_even_if_used: bool
+) -> list[Booking]:
     """
     Cancel multiple bookings and update the users' credit information on Batch.
     Note that this will not reindex the stock.offer in Algolia
     """
     deleted_bookings: list[Booking] = []
     for booking in stock.bookings:
-        if _cancel_booking(booking, reason, cancel_even_if_used=typing.cast(bool, stock.offer.isEvent)):
+        if _cancel_booking(booking, reason, cancel_even_if_used=cancel_even_if_used):
             deleted_bookings.append(booking)
 
     return deleted_bookings
@@ -460,7 +462,17 @@ def cancel_booking_by_offerer(booking: Booking) -> None:
 
 
 def cancel_bookings_from_stock_by_offerer(stock: offers_models.Stock) -> list[Booking]:
-    cancelled_bookings = _cancel_bookings_from_stock(stock, BookingCancellationReasons.OFFERER)
+    cancelled_bookings = _cancel_bookings_from_stock(stock, BookingCancellationReasons.OFFERER, stock.offer.isEvent)
+    search.async_index_offer_ids([stock.offerId])
+    return cancelled_bookings
+
+
+def cancel_bookings_from_stock_no_longer_free(stock: offers_models.Stock) -> list[Booking]:
+    cancelled_bookings = _cancel_bookings_from_stock(
+        stock,
+        BookingCancellationReasons.OFFERER,
+        stock.offer.subcategoryId in constants.FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE,
+    )
     search.async_index_offer_ids([stock.offerId])
     return cancelled_bookings
 
@@ -468,7 +480,9 @@ def cancel_bookings_from_stock_by_offerer(stock: offers_models.Stock) -> list[Bo
 def cancel_bookings_from_rejected_offer(offer: offers_models.Offer) -> list[Booking]:
     cancelled_bookings = []
     for stock in offer.stocks:
-        cancelled_bookings.extend(_cancel_bookings_from_stock(stock, BookingCancellationReasons.FRAUD))
+        cancelled_bookings.extend(
+            _cancel_bookings_from_stock(stock, BookingCancellationReasons.FRAUD, stock.offer.isEvent)
+        )
     logger.info(
         "Cancelled bookings for rejected offer",
         extra={
