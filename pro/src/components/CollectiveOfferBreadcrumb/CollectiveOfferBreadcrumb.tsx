@@ -2,6 +2,7 @@ import React from 'react'
 
 import type { Step } from 'components/Breadcrumb'
 import Breadcrumb, { BreadcrumbStyle } from 'components/Breadcrumb/Breadcrumb'
+import useActiveFeature from 'hooks/useActiveFeature'
 import { useOfferStockEditionURL } from 'hooks/useOfferEditionURL'
 
 export enum CollectiveOfferBreadcrumbStep {
@@ -36,6 +37,9 @@ const CollectiveOfferBreadcrumb = ({
 }: OfferBreadcrumbProps): JSX.Element => {
   const stockEditionUrl = useOfferStockEditionURL(true, offerId, true)
   const isEditingExistingOffer = !(isCreatingOffer || isCompletingDraft)
+  const isOfferToInstitutionActive = useActiveFeature(
+    'WIP_OFFER_TO_INSTITUTION'
+  )
 
   const stepList: { [key: string]: Step } = {}
 
@@ -55,7 +59,9 @@ const CollectiveOfferBreadcrumb = ({
       }
       stepList[CollectiveOfferBreadcrumbStep.VISIBILITY] = {
         id: CollectiveOfferBreadcrumbStep.VISIBILITY,
-        label: 'Visibilité',
+        label: isOfferToInstitutionActive
+          ? 'Établissement et enseignant'
+          : 'Visibilité',
         url: `/offre/${offerId}/collectif/visibilite/edition`,
       }
     }
@@ -72,7 +78,9 @@ const CollectiveOfferBreadcrumb = ({
       }
       stepList[CollectiveOfferBreadcrumbStep.VISIBILITY] = {
         id: CollectiveOfferBreadcrumbStep.VISIBILITY,
-        label: 'Visibilité',
+        label: isOfferToInstitutionActive
+          ? 'Établissement et enseignant'
+          : 'Visibilité',
         url:
           offerId && haveStock
             ? `/offre/${offerId}/collectif/visibilite${requestIdUrl}`
