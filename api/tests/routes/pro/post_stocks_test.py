@@ -6,6 +6,7 @@ from unittest.mock import patch
 from dateutil.relativedelta import relativedelta
 import pytest
 
+from pcapi.core.bookings import constants
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 import pcapi.core.mails.testing as mails_testing
@@ -513,6 +514,28 @@ class Returns201Test:
         updated_booking = bookings_models.Booking.query.get(booking.id)
         assert updated_booking.status is bookings_models.BookingStatus.USED
         assert updated_booking.dateUsed == date_used_in_48_hours
+
+    @pytest.mark.parametrize("subcategoryId", constants.FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE)
+    def should_cancel_booking_when_stock_is_no_longer_free(self, client, subcategoryId):
+        offer = offers_factories.ThingOfferFactory(subcategoryId=subcategoryId)
+        existing_stock = offers_factories.StockFactory(offer=offer, price=0)
+        booking = bookings_factories.UsedBookingFactory(stock=existing_stock)
+
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_data = {
+            "offerId": offer.id,
+            "stocks": [{"id": existing_stock.id, "price": 20}],
+        }
+
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        assert response.status_code == 201
+        updated_booking = bookings_models.Booking.query.get(booking.id)
+        assert updated_booking.status == bookings_models.BookingStatus.CANCELLED
 
     def test_update_thing_stock_without_booking_limit_date(self, client):
         # We allow nullable bookingLimitDate for thing Stock.
