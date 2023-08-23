@@ -46,8 +46,11 @@ def get_collective_offers_public(
     query: offers_serialization.ListCollectiveOffersQueryModel,
 ) -> offers_serialization.CollectiveOffersListResponseModel:
     # in French, to be used by Swagger for the API documentation
-    """Récuperation de l'offre collective avec l'identifiant offer_id.
-    Cette api ignore les offre vitrines et les offres commencées sur l'interface web et non finalisées."""
+    """
+    Récuperation des offres collectives
+    Cette api ignore les offre vitrines et les offres commencées sur
+    l'interface web et non finalisées.
+    """
 
     offers = educational_api_offer.list_public_collective_offers(
         required_id=current_api_key.providerId,

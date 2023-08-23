@@ -43,12 +43,16 @@ def test_public_api(client, app):
                         },
                         "dateCreated": {"format": "date-time", "title": "Datecreated", "type": "string"},
                         "dateUsed": {"format": "date-time", "nullable": True, "title": "Dateused", "type": "string"},
-                        "educationalYear": {"$ref": "#/components/schemas/EducationalYearModel"},
                         "id": {"title": "Id", "type": "integer"},
+                        "reimbursementDate": {
+                            "format": "date-time",
+                            "nullable": True,
+                            "title": "Reimbursementdate",
+                            "type": "string",
+                        },
                         "status": {"$ref": "#/components/schemas/CollectiveBookingStatus"},
-                        "venueId": {"title": "Venueid", "type": "integer"},
                     },
-                    "required": ["id", "status", "dateCreated", "educationalYear", "venueId"],
+                    "required": ["id", "status", "dateCreated"],
                     "title": "CollectiveBookingResponseModel",
                     "type": "object",
                 },
@@ -126,11 +130,16 @@ def test_public_api(client, app):
                 "CollectiveOffersResponseModel": {
                     "properties": {
                         "beginningDatetime": {"title": "Beginningdatetime", "type": "string"},
+                        "bookings": {
+                            "items": {"$ref": "#/components/schemas/CollectiveBookingResponseModel"},
+                            "title": "Bookings",
+                            "type": "array",
+                        },
                         "id": {"title": "Id", "type": "integer"},
                         "status": {"title": "Status", "type": "string"},
                         "venueId": {"title": "Venueid", "type": "integer"},
                     },
-                    "required": ["id", "beginningDatetime", "status", "venueId"],
+                    "required": ["id", "beginningDatetime", "status", "venueId", "bookings"],
                     "title": "CollectiveOffersResponseModel",
                     "type": "object",
                 },
@@ -152,16 +161,6 @@ def test_public_api(client, app):
                     },
                     "required": ["id", "label", "category", "categoryId"],
                     "title": "CollectiveOffersSubCategoryResponseModel",
-                    "type": "object",
-                },
-                "EducationalYearModel": {
-                    "properties": {
-                        "adageId": {"title": "Adageid", "type": "string"},
-                        "beginningDate": {"format": "date-time", "title": "Beginningdate", "type": "string"},
-                        "expirationDate": {"format": "date-time", "title": "Expirationdate", "type": "string"},
-                    },
-                    "required": ["adageId", "beginningDate", "expirationDate"],
-                    "title": "EducationalYearModel",
                     "type": "object",
                 },
                 "ErrorResponseModel": {
@@ -256,6 +255,11 @@ def test_public_api(client, app):
                             "type": "array",
                         },
                         "bookingLimitDatetime": {"title": "Bookinglimitdatetime", "type": "string"},
+                        "bookings": {
+                            "items": {"$ref": "#/components/schemas/CollectiveBookingResponseModel"},
+                            "title": "Bookings",
+                            "type": "array",
+                        },
                         "contactEmail": {"title": "Contactemail", "type": "string"},
                         "contactPhone": {"title": "Contactphone", "type": "string"},
                         "dateCreated": {"title": "Datecreated", "type": "string"},
@@ -330,6 +334,7 @@ def test_public_api(client, app):
                         "totalPrice",
                         "numberOfTickets",
                         "offerVenue",
+                        "bookings",
                     ],
                     "title": "GetPublicCollectiveOfferResponseModel",
                     "type": "object",
@@ -841,44 +846,6 @@ def test_public_api(client, app):
                 }
             },
             "/v2/collective/bookings/{booking_id}": {
-                "get": {
-                    "description": "",
-                    "operationId": "GetCollectiveBooking",
-                    "parameters": [
-                        {
-                            "description": "",
-                            "in": "path",
-                            "name": "booking_id",
-                            "required": True,
-                            "schema": {"format": "int32", "type": "integer"},
-                        }
-                    ],
-                    "responses": {
-                        "200": {
-                            "content": {
-                                "application/json": {
-                                    "schema": {"$ref": "#/components/schemas/CollectiveBookingResponseModel"}
-                                }
-                            },
-                            "description": "Les informations d'une réservation collective",
-                        },
-                        "401": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
-                            },
-                            "description": "Authentification nécessaire",
-                        },
-                        "422": {
-                            "content": {
-                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
-                            },
-                            "description": "Unprocessable Entity",
-                        },
-                    },
-                    "security": [{"ApiKeyAuth": []}],
-                    "summary": "Récupération les informations d'une réservation collective",
-                    "tags": ["API offres collectives"],
-                },
                 "patch": {
                     "description": "",
                     "operationId": "CancelCollectiveBooking",
@@ -909,7 +876,7 @@ def test_public_api(client, app):
                     "security": [{"ApiKeyAuth": []}],
                     "summary": "Annuler une réservation collective",
                     "tags": ["API offres collectives"],
-                },
+                }
             },
             "/v2/collective/categories": {
                 "get": {
@@ -1136,7 +1103,7 @@ def test_public_api(client, app):
                         },
                     },
                     "security": [{"ApiKeyAuth": []}],
-                    "summary": "Récuperation de l'offre collective avec l'identifiant offer_id. Cette api ignore les offre vitrines et les offres commencées sur l'interface web et non finalisées.",
+                    "summary": "Récuperation des offres collectives Cette api ignore les offre vitrines et les offres commencées sur l'interface web et non finalisées.",
                     "tags": ["API offres collectives"],
                 },
                 "post": {

@@ -6,6 +6,7 @@ import pytest
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as provider_factories
+from pcapi.core.testing import assert_num_queries
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
@@ -20,17 +21,19 @@ class CollectiveOffersPublicGetOfferTest:
 
         stock1 = educational_factories.CollectiveStockFactory(collectiveOffer__provider=venue_provider.provider)
         offer1 = stock1.collectiveOffer
-        stock2 = educational_factories.CollectiveStockFactory(collectiveOffer__provider=venue_provider.provider)
-        offer2 = stock2.collectiveOffer
-        stock3 = educational_factories.CollectiveStockFactory(collectiveOffer__provider=venue_provider.provider)
-        offer3 = stock3.collectiveOffer
-        stock4 = educational_factories.CollectiveStockFactory(collectiveOffer__provider=venue_provider.provider)
-        offer4 = stock4.collectiveOffer
-        stock5 = educational_factories.CollectiveStockFactory(collectiveOffer__provider=venue_provider.provider)
-        offer5 = stock5.collectiveOffer
+
+        offer2 = educational_factories.CollectiveBookingFactory(
+            collectiveStock__collectiveOffer__provider=venue_provider.provider
+        ).collectiveStock.collectiveOffer
+        booking2 = offer2.collectiveStock.collectiveBookings[0]
 
         # When
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get("/v2/collective/offers/")
+        # 1. fetch api key
+        # 2. fetch data
+        with assert_num_queries(2):
+            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+                "/v2/collective/offers/"
+            )
 
         # Then
         assert response.status_code == 200
@@ -41,30 +44,30 @@ class CollectiveOffersPublicGetOfferTest:
                 "venueId": offer1.venueId,
                 "beginningDatetime": "2022-05-02T15:00:00",
                 "status": offer1.status.name,
+                "bookings": [],
             },
             {
                 "id": offer2.id,
                 "venueId": offer2.venueId,
                 "beginningDatetime": "2022-05-02T15:00:00",
                 "status": offer2.status.name,
-            },
-            {
-                "id": offer3.id,
-                "venueId": offer3.venueId,
-                "beginningDatetime": "2022-05-02T15:00:00",
-                "status": offer3.status.name,
-            },
-            {
-                "id": offer4.id,
-                "venueId": offer4.venueId,
-                "beginningDatetime": "2022-05-02T15:00:00",
-                "status": offer4.status.name,
-            },
-            {
-                "id": offer5.id,
-                "venueId": offer5.venueId,
-                "beginningDatetime": "2022-05-02T15:00:00",
-                "status": offer5.status.name,
+                "bookings": [
+                    {
+                        "id": booking2.id,
+                        "status": booking2.status.value,
+                        "confirmationDate": booking2.confirmationDate.isoformat()
+                        if booking2.confirmationDate
+                        else None,
+                        "cancellationLimitDate": booking2.cancellationLimitDate.isoformat()
+                        if booking2.cancellationLimitDate
+                        else None,
+                        "reimbursementDate": booking2.reimbursementDate.isoformat()
+                        if booking2.reimbursementDate
+                        else None,
+                        "dateUsed": booking2.dateUsed.isoformat() if booking2.dateUsed else None,
+                        "dateCreated": booking2.dateCreated.isoformat() if booking2.dateCreated else None,
+                    }
+                ],
             },
         ]
 
@@ -99,12 +102,14 @@ class CollectiveOffersPublicGetOfferTest:
                 "venueId": offer1.venueId,
                 "beginningDatetime": "2043-05-02T15:00:00",
                 "status": "ACTIVE",
+                "bookings": [],
             },
             {
                 "id": offer2.id,
                 "venueId": offer2.venueId,
                 "beginningDatetime": "2043-05-02T15:00:00",
                 "status": "ACTIVE",
+                "bookings": [],
             },
         ]
 
@@ -140,6 +145,7 @@ class CollectiveOffersPublicGetOfferTest:
                 "venueId": offer.venueId,
                 "beginningDatetime": "2022-05-02T15:00:00",
                 "status": offer.status.name,
+                "bookings": [],
             },
         ]
 
@@ -166,6 +172,7 @@ class CollectiveOffersPublicGetOfferTest:
                 "venueId": offer1.venueId,
                 "beginningDatetime": "2022-05-02T15:00:00",
                 "status": offer1.status.name,
+                "bookings": [],
             },
         ]
 
@@ -193,6 +200,7 @@ class CollectiveOffersPublicGetOfferTest:
                 "venueId": offer1.venueId,
                 "beginningDatetime": "2022-05-02T15:00:00",
                 "status": offer1.status.name,
+                "bookings": [],
             },
         ]
 

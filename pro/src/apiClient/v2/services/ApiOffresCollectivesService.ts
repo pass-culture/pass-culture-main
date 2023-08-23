@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { CollectiveBookingResponseModel } from '../models/CollectiveBookingResponseModel';
 import type { CollectiveOffersListCategoriesResponseModel } from '../models/CollectiveOffersListCategoriesResponseModel';
 import type { CollectiveOffersListDomainsResponseModel } from '../models/CollectiveOffersListDomainsResponseModel';
 import type { CollectiveOffersListEducationalInstitutionResponseModel } from '../models/CollectiveOffersListEducationalInstitutionResponseModel';
@@ -21,28 +20,6 @@ import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class ApiOffresCollectivesService {
 
   constructor(public readonly httpRequest: BaseHttpRequest) {}
-
-  /**
-   * Récupération les informations d'une réservation collective
-   * @param bookingId
-   * @returns CollectiveBookingResponseModel Les informations d'une réservation collective
-   * @throws ApiError
-   */
-  public getCollectiveBooking(
-    bookingId: number,
-  ): CancelablePromise<CollectiveBookingResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/v2/collective/bookings/{booking_id}',
-      path: {
-        'booking_id': bookingId,
-      },
-      errors: {
-        401: `Authentification nécessaire`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
 
   /**
    * Annuler une réservation collective
@@ -140,7 +117,7 @@ export class ApiOffresCollectivesService {
   }
 
   /**
-   * Récuperation de l'offre collective avec l'identifiant offer_id. Cette api ignore les offre vitrines et les offres commencées sur l'interface web et non finalisées.
+   * Récuperation des offres collectives Cette api ignore les offre vitrines et les offres commencées sur l'interface web et non finalisées.
    * @param status
    * @param venueId
    * @param periodBeginningDate
