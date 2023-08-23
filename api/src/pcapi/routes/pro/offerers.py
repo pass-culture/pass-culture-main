@@ -84,10 +84,15 @@ def get_offerer(offerer_id: int) -> offerers_serialize.GetOffererResponseModel:
 @feature_required(feature.FeatureToggle.WIP_ENABLE_NEW_USER_OFFERER_LINK)
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
-def invite_members(offerer_id: int, body: offerers_serialize.InviteMembersQueryModel) -> None:
+def invite_member(offerer_id: int, body: offerers_serialize.InviteMemberQueryModel) -> None:
     check_user_has_access_to_offerer(current_user, offerer_id)
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
-    api.invite_members(offerer, body.emails, current_user)
+    try:
+        api.invite_member(offerer, body.email, current_user)
+    except offerers_exceptions.EmailAlreadyInvitedException:
+        raise ApiErrors({"email": "Une invitation a déjà été envoyée à ce collaborateur"})
+    except offerers_exceptions.UserAlreadyAttachedToOffererException:
+        raise ApiErrors({"email": "Ce collaborateur est déjà membre de votre structure"})
 
 
 @private_api.route("/offerers/<int:offerer_id>/members", methods=["GET"])

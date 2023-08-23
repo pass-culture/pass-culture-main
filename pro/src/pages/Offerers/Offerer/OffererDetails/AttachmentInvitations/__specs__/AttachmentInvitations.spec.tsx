@@ -11,7 +11,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 vi.mock('apiClient/api', () => ({
   api: {
     getOffererMembers: vi.fn(),
-    inviteMembers: vi.fn(),
+    inviteMember: vi.fn(),
   },
 }))
 

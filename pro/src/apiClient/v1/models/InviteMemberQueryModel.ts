@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type InviteMembersQueryModel = {
-  emails: Array<string>;
+export type InviteMemberQueryModel = {
+  email: string;
 };
 
