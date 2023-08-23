@@ -291,7 +291,7 @@ class Returns200Test:
                 "isEvent": True,
                 "isThing": False,
                 "isEducational": False,
-                "name": "Product 0",
+                "name": event_offer.name,
                 "stocks": [
                     {
                         "id": event_stock.id,
@@ -307,9 +307,9 @@ class Returns200Test:
                 "venue": {
                     "id": venue.id,
                     "isVirtual": False,
-                    "name": "Le Petit Rintintin 0",
-                    "offererName": "Le Petit Rintintin Management 0",
-                    "publicName": "Le Petit Rintintin 0",
+                    "name": venue.name,
+                    "offererName": venue.managingOfferer.name,
+                    "publicName": venue.publicName,
                     "departementCode": "75",
                 },
                 "status": "EXPIRED",
