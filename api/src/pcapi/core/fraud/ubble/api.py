@@ -1,3 +1,4 @@
+import datetime
 import logging
 import re
 
@@ -29,7 +30,29 @@ def _ubble_message_from_code(code: fraud_models.FraudReasonCode) -> str:
     return ubble_subsciption_models.UBBLE_CODE_ERROR_MAPPING[code].detail_message
 
 
+def _update_ubble_test_content(data: dict, content: fraud_models.UbbleContent) -> None:
+    for key, value in data.items():
+        if not hasattr(content, key):
+            continue
+
+        formatted_value = value
+        attr_type = content.__class__.__fields__[key].type_
+        if key == "reason_codes":
+            formatted_value = [
+                fraud_models.UBBLE_REASON_CODE_MAPPING.get(number, fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER)
+                for number in value
+            ]
+        elif attr_type == datetime.datetime:
+            formatted_value = datetime.datetime.fromisoformat(value)
+        elif attr_type == datetime.date:
+            formatted_value = datetime.date.fromisoformat(value)
+
+        setattr(content, key, formatted_value)
+
+
 def _ubble_result_fraud_item(user: users_models.User, content: fraud_models.UbbleContent) -> fraud_models.FraudItem:
+    if not settings.IS_PROD and user.extraData:
+        _update_ubble_test_content(user.extraData, content)
     status = None
     reason_codes = set(content.reason_codes or [])
     detail = f"Ubble score {_ubble_readable_score(content.score)}: {content.comment}"

@@ -37,3 +37,4 @@ class UserGeneratorForm(utils.PCForm):
         default=GeneratedSubscriptionStep.EMAIL_VALIDATION.name,
     )
     transition_17_18 = fields.PCCheckboxField("Transition 17-18")
+    ubble_data = fields.PCTextareaField("Réponse Ubble")

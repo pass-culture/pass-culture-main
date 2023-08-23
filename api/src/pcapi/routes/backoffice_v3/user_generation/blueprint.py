@@ -1,4 +1,5 @@
 import datetime
+import json
 from urllib.parse import urlencode
 
 from flask import flash
@@ -78,6 +79,7 @@ def generate_user() -> utils.BackofficeResponse:
             id_provider=users_generator.GeneratedIdProvider[form.id_provider.data],
             step=users_generator.GeneratedSubscriptionStep[form.step.data],
             transition_17_18=form.transition_17_18.data,
+            ubble_data=json.loads(form.ubble_data.data),
         )
         user = users_generator.generate_user(user_data=user_data)
     except users_exceptions.UserGenerationForbiddenException:

@@ -32,6 +32,7 @@ class GenerateUserData:
     id_provider: GeneratedIdProvider = GeneratedIdProvider.UBBLE
     step: GeneratedSubscriptionStep = GeneratedSubscriptionStep.EMAIL_VALIDATION
     transition_17_18: bool = False
+    ubble_data: dict = dataclasses.field(default_factory=dict)
 
 
 def generate_user(user_data: GenerateUserData) -> users_models.User:
@@ -58,4 +59,4 @@ def generate_user(user_data: GenerateUserData) -> users_models.User:
         factory = users_factories.Transition1718Factory
 
     id_provider = user_data.id_provider.value
-    return factory(age=user_data.age, beneficiaryFraudChecks__type=id_provider)
+    return factory(age=user_data.age, beneficiaryFraudChecks__type=id_provider, extraData=user_data.ubble_data)
