@@ -2217,7 +2217,7 @@ class InviteMembersTest:
         assert len(mails_testing.outbox) == 1
         assert (
             mails_testing.outbox[0].sent_data["template"]["id_not_prod"]
-            == TransactionalEmail.OFFERER_ATTACHMENT_INVITATION.value.id
+            == TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_NEW_USER.value.id
         )
 
     def test_offerer_invitation_created_when_user_exists_and_email_not_validated(self):
@@ -2235,7 +2235,7 @@ class InviteMembersTest:
         assert len(mails_testing.outbox) == 1
         assert (
             mails_testing.outbox[0].sent_data["template"]["id_not_prod"]
-            == TransactionalEmail.OFFERER_ATTACHMENT_INVITATION.value.id
+            == TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_EXISTING_NOT_VALIDATED_USER_EMAIL.value.id
         )
 
     def test_raise_and_not_create_offerer_invitation_when_invitation_already_exists(self):
@@ -2282,7 +2282,11 @@ class InviteMembersTest:
 
         offerer_invitations = offerers_models.OffererInvitation.query.all()
         assert len(offerer_invitations) == 0
-        assert len(mails_testing.outbox) == 0
+        assert len(mails_testing.outbox) == 1
+        assert (
+            mails_testing.outbox[0].sent_data["template"]["id_not_prod"]
+            == TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_EXISTING_VALIDATED_USER_EMAIL.value.id
+        )
         user_offerer = offerers_models.UserOfferer.query.filter_by(
             userId=attached_to_other_offerer_user.id, offererId=offerer.id
         ).one()

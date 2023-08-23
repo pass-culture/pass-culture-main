@@ -145,8 +145,14 @@ class TransactionalEmail(Enum):
         tags=["pro_validation_offre"],
         sender=models.TransactionalSender.COMPLIANCE,
     )
-    OFFERER_ATTACHMENT_INVITATION = models.TemplatePro(
-        id_prod=0, id_not_prod=137, tags=["pro_invitation_a_rejoindre_le_pass"]
+    OFFERER_ATTACHMENT_INVITATION_NEW_USER = models.TemplatePro(
+        id_prod=1045, id_not_prod=137, tags=["pro_invitation_a_rejoindre_le_pass_nouveau_utilisateur"]
+    )
+    OFFERER_ATTACHMENT_INVITATION_EXISTING_VALIDATED_USER_EMAIL = models.TemplatePro(
+        id_prod=1047, id_not_prod=143, tags=["pro_invitation_a_rejoindre_le_pass_email_existant_valide"]
+    )
+    OFFERER_ATTACHMENT_INVITATION_EXISTING_NOT_VALIDATED_USER_EMAIL = models.TemplatePro(
+        id_prod=1046, id_not_prod=142, tags=["pro_invitation_a_rejoindre_le_pass_email_existant_non_valide"]
     )
     OFFERER_ATTACHMENT_INVITATION_ACCEPTED = models.TemplatePro(
         id_prod=0, id_not_prod=138, tags=["pro_invitation_rattachement_acceptee"]
