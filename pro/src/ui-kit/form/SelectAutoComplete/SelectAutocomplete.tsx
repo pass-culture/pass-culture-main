@@ -29,6 +29,7 @@ export type SelectAutocompleteProps = FieldLayoutBaseProps & {
   searchInOptions?: (options: SelectOption[], pattern: string) => SelectOption[]
   onReset?: () => void
   type?: 'text' | 'search'
+  leftIcon?: string
 }
 
 const SelectAutocomplete = ({
@@ -52,6 +53,7 @@ const SelectAutocomplete = ({
   searchInOptions = options => options,
   onReset = () => {},
   type = 'text',
+  leftIcon,
 }: SelectAutocompleteProps): JSX.Element => {
   const { setFieldTouched, setFieldValue } = useFormikContext<any>()
 
@@ -233,7 +235,8 @@ const SelectAutocomplete = ({
           onFocus={openField}
           placeholder={getLabelString(placeholderDisplay)}
           style={{
-            paddingLeft: multi && field.value.length > 0 ? '2.2rem' : '1rem',
+            paddingLeft:
+              (multi && field.value.length > 0) || leftIcon ? '2.2rem' : '1rem',
           }}
           className={styles['multi-select-autocomplete-placeholder-input']}
           hasError={searchMeta.touched && !!meta.error}
@@ -246,6 +249,7 @@ const SelectAutocomplete = ({
           aria-expanded={isOpen}
           aria-haspopup="listbox"
           role="combobox"
+          leftIcon={leftIcon}
         />
         <div
           aria-live="polite"
