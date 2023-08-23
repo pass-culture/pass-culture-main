@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { CollectiveBookingResponseModel } from './CollectiveBookingResponseModel';
 import type { OfferVenueModel } from './OfferVenueModel';
 
 export type GetPublicCollectiveOfferResponseModel = {
@@ -10,6 +11,7 @@ export type GetPublicCollectiveOfferResponseModel = {
   beginningDatetime: string;
   bookingEmails?: Array<string> | null;
   bookingLimitDatetime: string;
+  bookings: Array<CollectiveBookingResponseModel>;
   contactEmail: string;
   contactPhone: string;
   dateCreated: string;

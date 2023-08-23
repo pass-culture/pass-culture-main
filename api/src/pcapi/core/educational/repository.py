@@ -595,12 +595,23 @@ def list_public_collective_offers(
         filters.append(educational_models.CollectiveStock.beginningDatetime <= period_ending_date)
     query = query.filter(*filters)
     query = query.options(
-        sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock),
-        sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
-            # used to compute CollectiveOffer.status
-            educational_models.CollectiveStock.collectiveBookings
-        ),
+        sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock)
+        .load_only(
+            educational_models.CollectiveStock.bookingLimitDatetime,
+            educational_models.CollectiveStock.beginningDatetime,
+        )
+        .joinedload(educational_models.CollectiveStock.collectiveBookings)
+        .load_only(
+            educational_models.CollectiveBooking.id,
+            educational_models.CollectiveBooking.status,
+            educational_models.CollectiveBooking.confirmationDate,
+            educational_models.CollectiveBooking.cancellationLimitDate,
+            educational_models.CollectiveBooking.reimbursementDate,
+            educational_models.CollectiveBooking.dateUsed,
+            educational_models.CollectiveBooking.dateCreated,
+        )
     )
+
     query = query.order_by(educational_models.CollectiveOffer.id)
     query = query.limit(limit)
     return query.all()
