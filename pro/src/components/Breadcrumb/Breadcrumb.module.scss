@@ -8,6 +8,7 @@
 
   .bc-step {
     @include fonts.button;
+    width: auto;
 
     color: colors.$grey-medium;
     display: flex;
