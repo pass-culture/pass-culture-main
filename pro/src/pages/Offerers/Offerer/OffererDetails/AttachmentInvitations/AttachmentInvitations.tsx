@@ -79,9 +79,7 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
 
   return (
     <section className={styles['section']} ref={scrollToSection}>
-      <div className={styles['main-list-title']}>
-        <h2 className={styles['main-list-title-text']}>Collaborateurs</h2>
-      </div>
+      <h2 className={styles['main-list-title']}>Collaborateurs</h2>
 
       {!!members && (
         <div className={styles['members-container']}>
