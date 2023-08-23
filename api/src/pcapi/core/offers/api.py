@@ -526,6 +526,17 @@ def _notify_beneficiaries_upon_stock_edit(stock: models.Stock, bookings: typing.
             )
 
 
+def _notify_beneficiaries_upon_stock_edit_no_longer_free(
+    stock: models.Stock, bookings: typing.List[bookings_models.Booking]
+) -> None:
+    if bookings:
+        if not transactional_mails.send_batch_booking_cancelation_email_to_users(bookings, True):
+            logger.warning(
+                "Could not notify beneficiaries about update of stock",
+                extra={"stock": stock.id},
+            )
+
+
 def create_stock(
     offer: models.Offer,
     quantity: int | None,
@@ -647,9 +658,13 @@ def edit_stock(
     return stock, is_beginning_updated
 
 
-def handle_stocks_edition(offer_id: int, edited_stocks: list[typing.Tuple[models.Stock, bool]]) -> None:
-    for stock, is_beginning_datetime_updated in edited_stocks:
-        if is_beginning_datetime_updated:
+def handle_stocks_edition(edited_stocks: list[typing.Tuple[models.Stock, bool, bool]]) -> None:
+    for stock, is_beginning_datetime_updated, should_bookings_be_canceled in edited_stocks:
+        if should_bookings_be_canceled:
+            bookings = bookings_repository.find_not_cancelled_bookings_by_stock(stock)
+            bookings_api.cancel_bookings_from_stock_no_longer_free(stock)
+            _notify_beneficiaries_upon_stock_edit_no_longer_free(stock, bookings)
+        elif is_beginning_datetime_updated:
             bookings = bookings_repository.find_not_cancelled_bookings_by_stock(stock)
             _notify_pro_upon_stock_edit_for_event_offer(stock, bookings)
             _notify_beneficiaries_upon_stock_edit(stock, bookings)

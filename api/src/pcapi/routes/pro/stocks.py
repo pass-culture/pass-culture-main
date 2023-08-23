@@ -4,6 +4,7 @@ from flask_login import current_user
 from flask_login import login_required
 import sqlalchemy.orm as sqla_orm
 
+from pcapi.core.bookings import constants as booking_constants
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offerers.repository as offerers_repository
@@ -78,7 +79,7 @@ def upsert_stocks(body: serialization.StocksUpsertBodyModel) -> serialization.St
     price_categories = {price_category.id: price_category for price_category in offer.priceCategories}
 
     upserted_stocks = []
-    edited_stocks_with_update_info: list[tuple[offers_models.Stock, bool]] = []
+    edited_stocks_with_update_info: list[tuple[offers_models.Stock, bool, bool]] = []
     try:
         with transaction():
             for stock_to_edit in stocks_to_edit:
@@ -87,9 +88,14 @@ def upsert_stocks(body: serialization.StocksUpsertBodyModel) -> serialization.St
                         {"stock_id": ["Le stock avec l'id %s n'existe pas" % stock_to_edit.id]}, status_code=400
                     )
                 offers_validation.check_stock_has_price_or_price_category(offer, stock_to_edit, price_categories)
-
+                old_stock = existing_stocks[stock_to_edit.id]
+                should_bookings_be_canceled = bool(
+                    not old_stock.price
+                    and stock_to_edit.price
+                    and old_stock.offer.subcategoryId in booking_constants.FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE
+                )
                 edited_stock, is_beginning_updated = offers_api.edit_stock(
-                    existing_stocks[stock_to_edit.id],
+                    old_stock,
                     price=stock_to_edit.price,
                     quantity=stock_to_edit.quantity,
                     beginning_datetime=serialization_utils.as_utc_without_timezone(stock_to_edit.beginning_datetime)
@@ -103,7 +109,7 @@ def upsert_stocks(body: serialization.StocksUpsertBodyModel) -> serialization.St
                     price_category=price_categories.get(stock_to_edit.price_category_id, None),
                 )
                 upserted_stocks.append(edited_stock)
-                edited_stocks_with_update_info.append((edited_stock, is_beginning_updated))
+                edited_stocks_with_update_info.append((edited_stock, is_beginning_updated, should_bookings_be_canceled))
 
             for stock_to_create in stocks_to_create:
                 offers_validation.check_stock_has_price_or_price_category(offer, stock_to_create, price_categories)
@@ -125,7 +131,7 @@ def upsert_stocks(body: serialization.StocksUpsertBodyModel) -> serialization.St
             status_code=400,
         )
 
-    offers_api.handle_stocks_edition(body.offer_id, edited_stocks_with_update_info)
+    offers_api.handle_stocks_edition(edited_stocks_with_update_info)
 
     return serialization.StocksResponseModel(
         stocks=[serialization.StockResponseModel.from_orm(stock) for stock in upserted_stocks]

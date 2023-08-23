@@ -10,6 +10,7 @@ from pcapi.utils.mailing import get_event_datetime
 
 def get_booking_cancellation_by_pro_to_beneficiary_email_data(
     booking: Booking,
+    is_no_longer_free: bool = False,
 ) -> models.TransactionalEmailData:
     stock = booking.stock
     offer = stock.offer
@@ -30,6 +31,7 @@ def get_booking_cancellation_by_pro_to_beneficiary_email_data(
             "EVENT_HOUR": event_hour,
             "IS_EVENT": offer.isEvent,
             "IS_FREE_OFFER": is_free_offer,
+            "IS_NO_LONGER_FREE": is_no_longer_free,
             "IS_ONLINE": offer.isDigital,
             "IS_THING": not offer.isDigital and offer.isThing,
             "IS_EXTERNAL": booking.isExternal,
@@ -43,6 +45,13 @@ def get_booking_cancellation_by_pro_to_beneficiary_email_data(
     )
 
 
-def send_booking_cancellation_by_pro_to_beneficiary_email(booking: Booking) -> bool:
-    data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking)
+def send_batch_booking_cancelation_email_to_users(bookings: list[Booking], is_no_longer_free: bool = False) -> bool:
+    success = True
+    for booking in bookings:
+        success &= send_booking_cancellation_by_pro_to_beneficiary_email(booking, is_no_longer_free)
+    return success
+
+
+def send_booking_cancellation_by_pro_to_beneficiary_email(booking: Booking, is_no_longer_free: bool = False) -> bool:
+    data = get_booking_cancellation_by_pro_to_beneficiary_email_data(booking, is_no_longer_free)
     return mails.send(recipients=[booking.email], data=data)
