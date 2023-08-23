@@ -55,8 +55,9 @@ export const filterAndSortStocks = (
   const { dateFilter, hourFilter, priceCategoryFilter } = filters
   const filteredStocks = stocks.filter(stock => {
     const stockDate = new Date(stock.beginningDatetime)
+    const [year, month, day] = dateFilter.split('-')
+    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
 
-    const date = new Date(dateFilter)
     if (isDateValid(date)) {
       const isSameDay =
         stockDate.getFullYear() === date.getFullYear() &&
