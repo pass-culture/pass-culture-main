@@ -87,6 +87,7 @@ class SendinblueBackend(BaseBackend):
 
         try:
             print("create_contact_try", contact, payload)
+            # TODO : Ajouter une nouvelle classe pour les tests e2e, qui hérite de celle-là et override la méthode create_contact. Elle doit logguer qqchose, comme sur cette PR : https://github.com/pass-culture/pass-culture-main/pull/6097/files
             self.contacts_api.create_contact(contact)
             print("create_contact_success")
 
