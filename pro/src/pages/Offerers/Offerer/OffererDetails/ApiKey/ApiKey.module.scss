@@ -4,33 +4,23 @@
 
 .api-key {
   .title {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-    margin-top: rem.torem(32px);
+    @include fonts.title4;
+    
+    margin-top: rem.torem(24px);
 
-    .text {
-      @include fonts.title3;
-    }
-
-    .counter {
-      @include fonts.title4;
-
-      &--error {
-        color: colors.$red-error;
-      }
+    .counter-error {
+      color: colors.$red-error;
     }
   }
 
   .info {
-    color: colors.$grey-dark;
-    margin-top: rem.torem(16px);
+    margin-top: rem.torem(8px);
   }
 
   .list {
     display: flex;
     flex-direction: column;
-    margin-top: rem.torem(16px);
+    margin: rem.torem(24px) 0;
 
     .item {
       align-items: center;
@@ -75,47 +65,16 @@
   justify-content: center;
   max-width: rem.torem(532px);
   text-align: center;
-
-  .title {
-    @include fonts.gabarit;
-
-    margin-top: rem.torem(24px);
-  }
-
-  .actions {
-    display: flex;
-    margin-top: rem.torem(80px);
-
-    .confirm {
-      margin-left: rem.torem(24px);
-    }
-  }
 }
 
 .section {
-  margin-bottom: rem.torem(48px);
-  padding-bottom: 0;
-  padding-top: 0;
+  margin-bottom: rem.torem(32px);
 
   .main-list-title {
-    @include fonts.title4;
+    @include fonts.title3;
 
-    border-bottom: thin solid colors.$grey-medium;
-    margin: rem.torem(12px) 0;
+    border-bottom: rem.torem(2px) solid colors.$black;
     padding-bottom: rem.torem(8px);
-
-    .main-list-title-text {
-      @include fonts.title4;
-    }
-
-    span {
-      margin-top: rem.torem(3.5px);
-    }
-  }
-
-  .title-actions-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    margin-bottom: rem.torem(24px);
   }
 }

@@ -75,9 +75,7 @@ const ApiKey = ({
 
   return (
     <div className={cn(styles['section'], styles['api-key'])}>
-      <div className={styles['main-list-title']}>
-        <h2 className={styles['main-list-title-text']}>Gestion des clés API</h2>
-      </div>
+      <h2 className={styles['main-list-title']}>Gestion des clés API</h2>
 
       <Banner
         links={[
@@ -90,17 +88,12 @@ const ApiKey = ({
       />
 
       <div className={styles['title']}>
-        <div className={styles['text']}>
-          {'API '}
-          {ENV_WORDING}
-        </div>
-        <div
-          className={cn(styles['counter'], {
-            [styles['counter--error']]: isMaxAllowedReached,
-          })}
-        >
+        {'API '}
+        {ENV_WORDING}
+        <span className={isMaxAllowedReached ? styles['counter-error'] : ''}>
+          {' '}
           {generatedKeysCount}/{maxAllowedApiKeys}
-        </div>
+        </span>
       </div>
 
       <div className={styles['info']}>
@@ -172,11 +165,11 @@ const ApiKey = ({
           onCancel={() => setApiKeyToDelete(null)}
           onConfirm={confirmApiKeyDeletion}
           title="Êtes-vous sûr de vouloir supprimer votre clé API ?"
-          confirmText="Confirmer la suppression"
+          confirmText="Confirmer la suppr ession"
           cancelText="Annuler"
           icon={strokeTrashIcon}
         >
-          <div className={styles['explanation']}>
+          <div>
             <p>
               Attention, si vous supprimez cette clé, et qu’aucune autre n’a été
               générée, cela entraînera une rupture du service.
