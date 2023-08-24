@@ -8,7 +8,6 @@ from sqlalchemy.orm import joinedload
 
 from pcapi.analytics.amplitude import events as amplitude_events
 from pcapi.core import search
-from pcapi.core.bookings.constants import FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
@@ -75,9 +74,7 @@ def _is_ended_booking(booking: Booking) -> bool:
         # consider future events as "ongoing" even if they are used
         return False
 
-    if (booking.stock.canHaveActivationCodes and booking.activationCode) or (
-        booking.stock.offer.subcategoryId in FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE and booking.stock.price == 0
-    ):
+    if (booking.stock.canHaveActivationCodes and booking.activationCode) or booking.stock.is_automatically_used:
         # consider digital bookings and free offer from defined subcategories as special: is_used should be true anyway so
         # let's use displayAsEnded
         return booking.displayAsEnded  # type: ignore [return-value]
@@ -248,7 +245,7 @@ def book_offer(
         if is_activation_code_applicable:
             booking.activationCode = offers_repository.get_available_activation_code(stock)
             booking.mark_as_used()
-        if stock.price == 0 and stock.offer.subcategoryId in constants.FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE:
+        if stock.is_automatically_used:
             booking.mark_as_used()
 
         is_cinema_external_ticket_applicable = providers_repository.is_cinema_external_ticket_applicable(stock.offer)
@@ -471,7 +468,7 @@ def cancel_bookings_from_stock_no_longer_free(stock: offers_models.Stock) -> lis
     cancelled_bookings = _cancel_bookings_from_stock(
         stock,
         BookingCancellationReasons.OFFERER,
-        stock.offer.subcategoryId in constants.FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE,
+        stock.offer.subcategoryId in stock.AUTOMATICALLY_USED_SUBCATEGORIES,
     )
     search.async_index_offer_ids([stock.offerId])
     return cancelled_bookings
@@ -816,8 +813,7 @@ def archive_old_bookings() -> None:
             Booking.query.join(Booking.stock, Stock.offer)
             .filter(date_condition)
             .filter(
-                offers_models.Offer.subcategoryId.in_(constants.FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE),
-                offers_models.Stock.price == 0,
+                offers_models.Stock.is_automatically_used,
             )
             .with_entities(Booking.id)
         )
