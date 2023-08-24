@@ -8,6 +8,7 @@
   @include fonts.button;
 
   align-items: center;
+  margin: auto 0;
   border: rem.torem(2px) solid;
   border-radius: rem.torem(24px);
   display: inline-flex;
@@ -25,7 +26,6 @@
     height: size.$button-icon-size;
     width: size.$button-icon-size;
     flex-shrink: 0;
-    margin-bottom: auto;
   }
 
   &.button-center {
@@ -137,6 +137,12 @@
       .button-icon {
         margin-right: 0;
       }
+    }
+  }
+
+  &-ternary {
+    .button-icon {
+      margin-bottom: auto;
     }
   }
 
