@@ -1,9 +1,7 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import { api } from 'apiClient/api'
-import { DMSApplicationForEAC } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import {
@@ -11,36 +9,24 @@ import {
   OFFER_FORM_HOMEPAGE,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import {
   INDIVIDUAL_OFFER_SUBTYPE,
   COLLECTIVE_OFFER_SUBTYPE,
   OFFER_TYPES,
   OFFER_WIZARD_MODE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
-  DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
-import strokeBookedIcon from 'icons/stroke-booked.svg'
-import strokeDateIcon from 'icons/stroke-date.svg'
-import duplicateOfferIcon from 'icons/stroke-duplicate-offer.svg'
-import strokeNewOfferIcon from 'icons/stroke-new-offer.svg'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
 import strokeProfIcon from 'icons/stroke-prof.svg'
-import strokeTemplateOfferIcon from 'icons/stroke-template-offer.svg'
-import thingStrokeIcon from 'icons/stroke-thing.svg'
-import strokeVirtualEventIcon from 'icons/stroke-virtual-event.svg'
-import strokeVirtualThingIcon from 'icons/stroke-virtual-thing.svg'
-import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapters'
-import { Banner } from 'ui-kit'
 import RadioButtonWithImage from 'ui-kit/RadioButtonWithImage'
-import Spinner from 'ui-kit/Spinner/Spinner'
-import { getLastDmsApplicationForOfferer } from 'utils/getLastCollectiveDmsApplication'
 
 import ActionsBar from './ActionsBar/ActionsBar'
 import styles from './OfferType.module.scss'
+import OfferTypeEducational from './OfferTypeEducational/OfferTypeEducational'
+import OfferTypeIndividual from './OfferTypeIndividual/OfferTypeIndividual'
 import { OfferTypeFormValues } from './types'
 
 const OfferType = (): JSX.Element => {
@@ -58,79 +44,7 @@ const OfferType = (): JSX.Element => {
 
   const [hasCollectiveTemplateOffer, setHasCollectiveTemplateOffer] =
     useState(false)
-  const queryParams = new URLSearchParams(location.search)
-  const queryOffererId = queryParams.get('structure')
-  const queryVenueId = queryParams.get('lieu')
-  const [isLoadingEligibility, setIsLoadingEligibility] = useState(false)
-  const [isLoadingValidation, setIsLoadingValidation] = useState(false)
   const [isEligible, setIsEligible] = useState(false)
-  const [isValidated, setIsValidated] = useState(true)
-  const [lastDmsApplication, setLastDmsApplication] = useState<
-    DMSApplicationForEAC | null | undefined
-  >(null)
-
-  useEffect(() => {
-    const getTemplateCollectiveOffers = async () => {
-      const apiFilters = {
-        ...DEFAULT_SEARCH_FILTERS,
-        collectiveOfferType: COLLECTIVE_OFFER_SUBTYPE.TEMPLATE.toLowerCase(),
-        offererId: queryOffererId ? queryOffererId : 'all',
-        venueId: queryVenueId ? queryVenueId : 'all',
-      }
-      const { isOk, message, payload } =
-        await getFilteredCollectiveOffersAdapter(apiFilters)
-
-      if (!isOk) {
-        setHasCollectiveTemplateOffer(false)
-        return notify.error(message)
-      }
-
-      if (payload.offers.length > 0) {
-        setHasCollectiveTemplateOffer(true)
-      }
-    }
-    const checkOffererEligibility = async () => {
-      setIsLoadingEligibility(true)
-      const offererNames = await api.listOfferersNames()
-
-      const offererId = queryOffererId ?? offererNames.offerersNames[0].id
-      if (offererNames.offerersNames.length > 1 && !queryOffererId) {
-        setIsEligible(true)
-        setIsLoadingEligibility(false)
-        return
-      }
-
-      if (offererId) {
-        const { isOk, message, payload } =
-          await canOffererCreateCollectiveOfferAdapter(Number(offererId))
-
-        if (!isOk) {
-          notify.error(message)
-        }
-        setIsEligible(payload.isOffererEligibleToEducationalOffer)
-      }
-      setIsLoadingEligibility(false)
-    }
-    const checkOffererValidation = async () => {
-      setIsLoadingValidation(true)
-      if (queryOffererId !== null) {
-        const response = await api.getOfferer(Number(queryOffererId))
-        setIsValidated(response.isValidated)
-        const lastDmsApplication = getLastDmsApplicationForOfferer(
-          queryVenueId,
-          response
-        )
-        setLastDmsApplication(lastDmsApplication)
-      }
-      setIsLoadingValidation(false)
-    }
-    const initializeStates = async () => {
-      await getTemplateCollectiveOffers()
-      await checkOffererEligibility()
-      await checkOffererValidation()
-    }
-    initializeStates()
-  }, [queryOffererId, queryVenueId])
 
   const getNextPageHref = (values: OfferTypeFormValues) => {
     if (values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
@@ -216,201 +130,17 @@ const OfferType = (): JSX.Element => {
               </FormLayout.Row>
             </FormLayout.Section>
 
-            {isValidated &&
-              values.offerType === OFFER_TYPES.EDUCATIONAL &&
-              isEligible &&
-              !isLoadingEligibility && (
-                <FormLayout.Section
-                  title="Quel est le type de l’offre ?"
-                  className={styles['subtype-section']}
-                >
-                  <FormLayout.Row inline mdSpaceAfter>
-                    <RadioButtonWithImage
-                      name="collectiveOfferSubtype"
-                      icon={strokeBookedIcon}
-                      isChecked={
-                        values.collectiveOfferSubtype ===
-                        COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE
-                      }
-                      label="Une offre réservable"
-                      description="Cette offre a une date et un prix. Elle doit être associée à un établissement scolaire avec lequel vous avez préalablement échangé."
-                      onChange={handleChange}
-                      value={COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE}
-                    />
-                  </FormLayout.Row>
-
-                  <FormLayout.Row inline mdSpaceAfter>
-                    <RadioButtonWithImage
-                      name="collectiveOfferSubtype"
-                      icon={strokeTemplateOfferIcon}
-                      isChecked={
-                        values.collectiveOfferSubtype ===
-                        COLLECTIVE_OFFER_SUBTYPE.TEMPLATE
-                      }
-                      label="Une offre vitrine"
-                      description="Cette offre n’est pas réservable. Elle n’a ni date, ni prix et permet aux enseignants de vous contacter pour co-construire une offre adaptée. Vous pourrez facilement la dupliquer pour chaque enseignant intéressé."
-                      onChange={handleChange}
-                      value={COLLECTIVE_OFFER_SUBTYPE.TEMPLATE}
-                    />
-                  </FormLayout.Row>
-                </FormLayout.Section>
-              )}
             {values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
-              <FormLayout.Section
-                title="Quel est le type de l’offre ?"
-                className={styles['subtype-section']}
-              >
-                <FormLayout.Row inline mdSpaceAfter>
-                  <RadioButtonWithImage
-                    className={styles['individual-radio-button']}
-                    name="individualOfferSubtype"
-                    icon={thingStrokeIcon}
-                    isChecked={
-                      values.individualOfferSubtype ===
-                      INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD
-                    }
-                    label="Un bien physique"
-                    description="Livre, instrument de musique, abonnement, cartes et pass…"
-                    onChange={handleChange}
-                    value={INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD}
-                    dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD}`}
-                  />
-                </FormLayout.Row>
-
-                <FormLayout.Row inline mdSpaceAfter>
-                  <RadioButtonWithImage
-                    className={styles['individual-radio-button']}
-                    name="individualOfferSubtype"
-                    icon={strokeVirtualThingIcon}
-                    isChecked={
-                      values.individualOfferSubtype ===
-                      INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD
-                    }
-                    label="Un bien numérique"
-                    description="Ebook, jeu vidéo, abonnement streaming..."
-                    onChange={handleChange}
-                    value={INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD}
-                    dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD}`}
-                  />
-                </FormLayout.Row>
-
-                <FormLayout.Row inline mdSpaceAfter>
-                  <RadioButtonWithImage
-                    className={styles['individual-radio-button']}
-                    name="individualOfferSubtype"
-                    icon={strokeDateIcon}
-                    isChecked={
-                      values.individualOfferSubtype ===
-                      INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT
-                    }
-                    label="Un évènement physique daté"
-                    description="Concert, représentation, conférence, ateliers..."
-                    onChange={handleChange}
-                    value={INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT}
-                    dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT}`}
-                  />
-                </FormLayout.Row>
-
-                <FormLayout.Row inline mdSpaceAfter>
-                  <RadioButtonWithImage
-                    className={styles['individual-radio-button']}
-                    name="individualOfferSubtype"
-                    icon={strokeVirtualEventIcon}
-                    isChecked={
-                      values.individualOfferSubtype ===
-                      INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT
-                    }
-                    label="Un évènement numérique daté"
-                    description="Livestream, cours en ligne, conférence en ligne..."
-                    onChange={handleChange}
-                    value={INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT}
-                    dataTestid={`radio-${INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT}`}
-                  />
-                </FormLayout.Row>
-              </FormLayout.Section>
+              <OfferTypeIndividual />
             )}
 
-            {isEligible &&
-              values.offerType === OFFER_TYPES.EDUCATIONAL &&
-              values.collectiveOfferSubtype ===
-                COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE && (
-                <FormLayout.Section
-                  title="Créer une nouvelle offre ou dupliquer une offre ?"
-                  className={styles['subtype-section']}
-                >
-                  <FormLayout.Row inline mdSpaceAfter>
-                    <RadioButtonWithImage
-                      name="collectiveOfferSubtypeDuplicate"
-                      icon={strokeNewOfferIcon}
-                      isChecked={
-                        values.collectiveOfferSubtypeDuplicate ===
-                        COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER
-                      }
-                      label="Créer une nouvelle offre"
-                      description="Créer une nouvelle offre réservable en partant d’un formulaire vierge."
-                      onChange={handleChange}
-                      value={COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER}
-                    />
-                  </FormLayout.Row>
-                  <FormLayout.Row inline mdSpaceAfter>
-                    <RadioButtonWithImage
-                      name="collectiveOfferSubtypeDuplicate"
-                      icon={duplicateOfferIcon}
-                      isChecked={
-                        values.collectiveOfferSubtypeDuplicate ===
-                        COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE
-                      }
-                      label="Dupliquer les informations d’une d’offre vitrine"
-                      description="Créez une offre réservable en dupliquant les informations d’une offre vitrine existante."
-                      onChange={handleChange}
-                      value={COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE}
-                    />
-                  </FormLayout.Row>
-                </FormLayout.Section>
-              )}
-
-            {values.offerType === OFFER_TYPES.EDUCATIONAL &&
-              (isLoadingEligibility || isLoadingValidation) && <Spinner />}
-            {values.offerType === OFFER_TYPES.EDUCATIONAL && !isValidated && (
-              <Banner>
-                Votre structure est en cours de validation par les équipes pass
-                Culture.
-              </Banner>
+            {values.offerType === OFFER_TYPES.EDUCATIONAL && (
+              <OfferTypeEducational
+                setHasCollectiveTemplateOffer={setHasCollectiveTemplateOffer}
+                setIsEligible={setIsEligible}
+                isEligible={isEligible}
+              />
             )}
-            {values.offerType === OFFER_TYPES.EDUCATIONAL &&
-              !isEligible &&
-              !isLoadingEligibility &&
-              !isLoadingValidation &&
-              (lastDmsApplication ? (
-                <Banner
-                  links={[
-                    {
-                      href: `/structures/${queryOffererId}/lieux/${lastDmsApplication?.venueId}#venue-collective-data`,
-                      linkTitle: 'Voir ma demande de référencement',
-                    },
-                  ]}
-                >
-                  Vous avez une demande de référencement en cours de traitement
-                </Banner>
-              ) : (
-                <Banner
-                  links={[
-                    {
-                      href: 'https://www.demarches-simplifiees.fr/commencer/demande-de-referencement-sur-adage',
-                      linkTitle: 'Faire une demande de référencement',
-                    },
-                    {
-                      href: 'https://aide.passculture.app/hc/fr/articles/5700215550364',
-                      linkTitle:
-                        'Ma demande de référencement a été acceptée mais je ne peux toujours pas créer d’offres collectives',
-                    },
-                  ]}
-                >
-                  Pour proposer des offres à destination d’un groupe scolaire,
-                  vous devez être référencé auprès du ministère de l’Éducation
-                  Nationale et du ministère de la Culture.
-                </Banner>
-              ))}
             <ActionsBar
               disableNextButton={
                 values.offerType === OFFER_TYPES.EDUCATIONAL && !isEligible
