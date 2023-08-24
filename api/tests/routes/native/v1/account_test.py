@@ -120,6 +120,7 @@ class AccountTest:
             },
             "birthDate": "2000-01-11",
             "depositType": "GRANT_18",
+            "depositActivationDate": "2018-06-01T00:00:00Z",
             "depositExpirationDate": "2040-01-01T00:00:00Z",
             "eligibility": "age-18",
             "eligibilityEndDatetime": "2019-01-11T11:00:00Z",
