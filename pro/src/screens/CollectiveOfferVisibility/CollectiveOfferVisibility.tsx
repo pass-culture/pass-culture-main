@@ -1,5 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import {
   EducationalInstitutionResponseModel,
@@ -29,7 +29,11 @@ import { ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import SelectAutocomplete from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import { searchPatternInOptions } from 'utils/searchPatternInOptions'
+import {
+  normalizeStrForSearch,
+  searchPatternInOptions,
+  SelectOptionNormalized,
+} from 'utils/searchPatternInOptions'
 
 import getEducationalRedactorsAdapter from './adapters/getEducationalRedactorAdapter'
 import styles from './CollectiveOfferVisibility.module.scss'
@@ -54,7 +58,7 @@ export interface CollectiveOfferVisibilityProps {
   reloadCollectiveOffer?: () => void
   requestId?: string | null
 }
-interface InstitutionOption extends SelectOption {
+interface InstitutionOption extends SelectOptionNormalized {
   postalCode?: string
   city?: string
   name: string
@@ -87,22 +91,30 @@ const CollectiveOfferVisibility = ({
   const [requestInformations, setRequestInformations] =
     useState<GetCollectiveOfferRequestResponseModel | null>(null)
 
-  const institutionsOptions: InstitutionOption[] = institutions.map(
-    ({ name, id, city, postalCode, institutionType, institutionId }) => ({
-      label: formatInstitutionDisplayName({
-        name,
-        institutionType: institutionType || '',
-        institutionId,
-        city,
-        postalCode,
-      }),
-      value: String(id),
-      city,
-      postalCode,
-      name,
-      institutionType: institutionType ?? '',
-      institutionId: institutionId,
-    })
+  const institutionsOptions: InstitutionOption[] = useMemo(
+    () =>
+      institutions.map(
+        ({ name, id, city, postalCode, institutionType, institutionId }) => {
+          const label = formatInstitutionDisplayName({
+            name,
+            institutionType: institutionType || '',
+            institutionId,
+            city,
+            postalCode,
+          })
+          return {
+            label: label,
+            normalizedLabel: normalizeStrForSearch(label),
+            value: String(id),
+            city,
+            postalCode,
+            name,
+            institutionType: institutionType ?? '',
+            institutionId: institutionId,
+          }
+        }
+      ),
+    [institutions]
   )
 
   const getOfferRequestInformation = async () => {
