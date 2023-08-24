@@ -1,5 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import {
   EducationalInstitutionResponseModel,
@@ -29,7 +29,11 @@ import RadioGroup from 'ui-kit/form/RadioGroup'
 import SelectAutocomplete from 'ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import { searchPatternInOptions } from 'utils/searchPatternInOptions'
+import {
+  normalizeStrForSearch,
+  searchPatternInOptions,
+  SelectOptionNormalized,
+} from 'utils/searchPatternInOptions'
 
 import styles from './OldCollectiveOfferVisibility.module.scss'
 import validationSchema from './validationSchema'
@@ -53,7 +57,7 @@ export interface OldCollectiveOfferVisibilityProps {
   reloadCollectiveOffer?: () => void
   requestId?: string | null
 }
-interface InstitutionOption extends SelectOption {
+interface InstitutionOption extends SelectOptionNormalized {
   postalCode?: string
   city?: string
   name: string
@@ -141,18 +145,26 @@ const CollectiveOfferVisibility = ({
         teacher => teacher.value === formik.values.teacher
       ) ?? null
 
-  const institutionsOptions: InstitutionOption[] = institutions.map(
-    ({ name, id, city, postalCode, institutionType, institutionId }) => ({
-      label: `${
-        institutionType ?? ''
-      } ${name} - ${city} - ${institutionId}`.trim(),
-      value: String(id),
-      city,
-      postalCode,
-      name,
-      institutionType: institutionType ?? '',
-      institutionId: institutionId,
-    })
+  const institutionsOptions: InstitutionOption[] = useMemo(
+    () =>
+      institutions.map(
+        ({ name, id, city, postalCode, institutionType, institutionId }) => {
+          const label = `${
+            institutionType ?? ''
+          } ${name} - ${city} - ${institutionId}`
+          return {
+            label: label,
+            normalizedLabel: normalizeStrForSearch(label),
+            value: String(id),
+            city,
+            postalCode,
+            name,
+            institutionType: institutionType ?? '',
+            institutionId: institutionId,
+          }
+        }
+      ),
+    [institutions]
   )
 
   const selectedInstitution: InstitutionOption | null = requestId

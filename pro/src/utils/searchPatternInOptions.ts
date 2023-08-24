@@ -1,6 +1,8 @@
 import { SelectOption } from 'custom_types/form'
 
-const normalizeStr = (str: string): string => {
+export type SelectOptionNormalized = SelectOption & { normalizedLabel?: string }
+
+export const normalizeStrForSearch = (str: string): string => {
   return (
     str
       .trim()
@@ -13,17 +15,30 @@ const normalizeStr = (str: string): string => {
 }
 
 export const searchPatternInOptions = (
-  options: SelectOption[],
+  options: SelectOptionNormalized[],
   pattern: string,
   maxDisplayedCount?: number
-): SelectOption[] => {
-  //  Filter options containing all of the pattern words
-  const matchingOptions = options.filter(option => {
-    const normalizedOptionLabel = normalizeStr(option.label)
-    return normalizeStr(pattern || '')
+): SelectOptionNormalized[] => {
+  const matchingOptions: SelectOptionNormalized[] = []
+
+  for (let i = 0; i < options.length; i++) {
+    //  Only search for matches while there are less matches found than max expected results
+    if (maxDisplayedCount && matchingOptions.length >= maxDisplayedCount) {
+      break
+    }
+
+    const normalizedOptionLabel =
+      options[i].normalizedLabel ?? normalizeStrForSearch(options[i].label)
+
+    //  Look for options containing all of the pattern words
+    const isLabelMatchingPattern = normalizeStrForSearch(pattern || '')
       .split(' ')
       .every(word => normalizedOptionLabel.includes(word))
-  })
 
-  return matchingOptions.slice(0, maxDisplayedCount ?? options.length)
+    if (isLabelMatchingPattern) {
+      matchingOptions.push(options[i])
+    }
+  }
+
+  return matchingOptions
 }
