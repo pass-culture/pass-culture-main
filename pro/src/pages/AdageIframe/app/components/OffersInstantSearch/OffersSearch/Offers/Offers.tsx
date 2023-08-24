@@ -13,6 +13,7 @@ import {
 } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import useActiveFeature from 'hooks/useActiveFeature'
+import fullGoTop from 'icons/full-go-top.svg'
 import { getCollectiveOfferAdapter } from 'pages/AdageIframe/app/adapters/getCollectiveOfferAdapter'
 import { getCollectiveOfferTemplateAdapter } from 'pages/AdageIframe/app/adapters/getCollectiveOfferTemplateAdapter'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
@@ -24,6 +25,7 @@ import {
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { LOGS_DATA } from 'utils/config'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 import { ResultType } from 'utils/types'
@@ -221,6 +223,15 @@ export const OffersComponent = ({
             ))}
         </div>
       </ul>
+      <a href="#root" className={styles['back-to-top-button']}>
+        <SvgIcon
+          alt=""
+          src={fullGoTop}
+          className={styles['back-to-top-button-icon']}
+          width="20px"
+        />
+        Retour en haut
+      </a>
     </>
   )
 }

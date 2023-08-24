@@ -1,5 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_colors.scss" as colors;
 
 .offers-stats {
   margin-top: rem.torem(24px);
@@ -37,5 +38,40 @@
     @include fonts.small-caption;
 
     margin-bottom: rem.torem(10px);
+  }
+}
+
+.back-to-top-button {
+  @include fonts.button;
+
+  position: fixed;
+  right: rem.torem(16px);
+  bottom: rem.torem(16px);
+  display: flex;
+  align-items: center;
+  gap: rem.torem(8px);
+  background-color: colors.$grey-light;
+  padding: rem.torem(16px);
+  border-radius: rem.torem(30px);
+  box-shadow: 0 3px 4px 0 rgb(103 104 107 / 16%);
+  cursor: pointer;
+
+  &-icon {
+    width: rem.torem(20px);
+    height: rem.torem(20px);
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:active {
+    color: colors.$grey-dark;
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    border: solid rem.torem(2px) colors.$black;
+    text-decoration: underline;
   }
 }
