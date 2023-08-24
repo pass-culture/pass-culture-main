@@ -236,8 +236,8 @@ def is_event_external_ticket_applicable(offer: offers_models.Offer) -> bool:
     return (
         offer.isEvent
         and offer.lastProviderId
-        and offer.lastProvider.bookingExternalUrl
-        and offer.withdrawalType != offers_models.WithdrawalTypeEnum.NO_TICKET
+        and offer.lastProvider.hasProviderEnableCharlie
+        and offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
     )
 
 

@@ -8,6 +8,7 @@ import { RadioGroup, Select } from 'ui-kit'
 import { OfferIndividualFormValues } from '../../types'
 
 import {
+  providedTicketWithdrawalTypeRadios,
   ticketSentDateOptions,
   ticketWithdrawalHourOptions,
   ticketWithdrawalTypeRadios,
@@ -51,11 +52,24 @@ const TicketWithdrawal = ({
   return (
     <>
       <FormLayout.Row mdSpaceAfter>
+        {/*
+          IN_APP withdrawal type is only selectable by offers created by the event API
+          Theses offers are not editable by the user
+        */}
         <RadioGroup
-          group={ticketWithdrawalTypeRadios}
+          group={
+            withdrawalType === WithdrawalTypeEnum.IN_APP
+              ? providedTicketWithdrawalTypeRadios
+              : ticketWithdrawalTypeRadios
+          }
           legend="Précisez la façon dont vous distribuerez les billets :"
           name="withdrawalType"
-          disabled={readOnlyFields.includes('withdrawalType')}
+          // when withdrawal Type is IN_APP the field should also be readOnly.
+          // I find it better to be explicit about it
+          disabled={
+            readOnlyFields.includes('withdrawalType') ||
+            withdrawalType === WithdrawalTypeEnum.IN_APP
+          }
         />
       </FormLayout.Row>
 

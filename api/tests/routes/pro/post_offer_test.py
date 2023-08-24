@@ -423,6 +423,25 @@ class Returns400Test:
         # Then
         assert response.status_code == 400
 
+    def test_withdrawalable_event_cannot_be_in_app_mode(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
+        # When
+        data = {
+            "venueId": venue.id,
+            "name": "Vernissage",
+            "subcategoryId": subcategories.CONCERT.id,
+            "mentalDisabilityCompliant": False,
+            "audioDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
+            "withdrawalType": "in_app",
+        }
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"withdrawalType": ["Withdrawal type cannot be in_app for manually created offers"]}
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
