@@ -1,0 +1,73 @@
+{% from "offer_validation_rules/sub_rules_extra_row.html" import build_offer_validation_sub_rules_toggle_extra_row_button with context %}
+{% from "offer_validation_rules/sub_rules_extra_row.html" import build_offer_validation_sub_rules_extra_row with context %}
+{% from "components/forms.html" import build_filters_form with context %}
+{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% extends "layouts/connected.html" %}
+{% block page %}
+  <div class="pt-3 px-5">
+    <h2 class="fw-light">Règles de validation d'offres</h2>
+    {{ build_filters_form(form, dst) }}
+    <button class="btn btn-outline-primary lead fw-bold mt-2"
+            data-bs-toggle="modal"
+            data-bs-target="#create-offer-validation-rule"
+            type="button">Créer une règle de validation d'offre</button>
+    {{ build_lazy_modal(url_for("backoffice_web.offer_validation_rules.get_create_offer_validation_rule_form"), "create-offer-validation-rule") }}
+    <div>
+      <table class="table mb-4">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">ID</th>
+            <th scope="col">Nom</th>
+            <th scope="col">Dernier auteur</th>
+            <th scope="col">Date de dernière modification</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for rule in rows %}
+            <tr>
+              <td>
+                <div class="d-flex">
+                  <div class="dropdown">
+                    <button type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            class="btn p-0">
+                      <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li class="dropdown-item p-0">
+                        <a class="btn btn-sm d-block w-100 text-start px-3"
+                           data-bs-toggle="modal"
+                           data-bs-target="#edit-offer-validation-rule-{{ rule.id }}">Modifier</a>
+                      </li>
+                      <li class="dropdown-item p-0">
+                        <a class="btn btn-sm d-block w-100 text-start px-3"
+                           data-bs-toggle="modal"
+                           data-bs-target="#delete-offer-validation-rule-{{ rule.id }}">Supprimer</a>
+                      </li>
+                    </ul>
+                  </div>
+                  {{ build_offer_validation_sub_rules_toggle_extra_row_button(rule.id) }}
+                </div>
+              </td>
+              <td>{{ rule.id }}</td>
+              <td>{{ rule.name }}</td>
+              <td>{{ rule.latestAuthor.full_name }}</td>
+              <td>{{ rule.dateModified | format_date_time }}</td>
+            </tr>
+            {{ build_offer_validation_sub_rules_extra_row(rule) }}
+          {% endfor %}
+        </tbody>
+      </table>
+      {% for rule in rows %}
+        {{ build_lazy_modal(
+        url_for("backoffice_web.offer_validation_rules.get_edit_offer_validation_rule_form", rule_id=rule.id),
+        "edit-offer-validation-rule-" + rule.id|string) }}
+        {{ build_lazy_modal(
+        url_for("backoffice_web.offer_validation_rules.get_delete_offer_validation_rule_form", rule_id=rule.id),
+        "delete-offer-validation-rule-" + rule.id|string) }}
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}

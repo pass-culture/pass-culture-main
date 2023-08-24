@@ -1,0 +1,293 @@
+{% from "components/badges.html" import build_venue_badges %}
+{% from "components/forms.html" import build_form_fields_group with context %}
+{% import "components/links.html" as links %}
+{% from "components/presentation/details/tabs.html" import build_details_tab %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
+{% from "components/presentation/details/tabs.html" import build_details_tab_content %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
+{% from "components/turbo/spinner.html" import build_loading_spinner with context %}
+{% extends "layouts/pro.html" %}
+{% block pro_main_content %}
+  <div class="row row-cols-1 g-4 py-3">
+    <div class="col">
+      <div class="card shadow">
+        <div class="card-body">
+          <div class="d-flex flex-fill align-items-center">
+            <h2 class="card-title text-primary">{{ links.build_venue_name_to_pc_pro_link(venue) }}</h2>
+            <span class="fs-5 ps-4">{{ build_venue_badges(venue) }}</span>
+            <div class="d-flex row-reverse justify-content-end flex-grow-1">
+              {% if has_permission("MANAGE_PRO_ENTITY") %}
+                <button class="btn btn-outline-primary lead fw-bold mt-2 mx-3"
+                        data-bs-toggle="modal"
+                        data-bs-target="#edit-venue-modal"
+                        type="button">Modifier les informations</button>
+                <div class="modal modal-lg fade"
+                     id="edit-venue-modal"
+                     tabindex="-1"
+                     aria-labelledby="edit-venue-modal-label"
+                     aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <form action="{{ url_for("backoffice_web.venue.update_venue", venue_id=venue.id) }}"
+                            name="{{ url_for("backoffice_web.venue.update_venue", venue_id=venue.id) | action_to_name }}"
+                            method="post">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Modifier les informations du lieu</h5>
+                        </div>
+                        <div class="modal-body">
+                          <div class="form-floating my-3">{{ build_form_fields_group(edit_venue_form) }}</div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button"
+                                  class="btn btn-outline-primary"
+                                  data-bs-dismiss="modal">Annuler</button>
+                          <button type="submit"
+                                  class="btn btn-primary">Enregistrer</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+              {% if has_permission("DELETE_PRO_ENTITY") %}
+                {% set delete_venue_modal_label_id = random_hash() %}
+                <button class="btn btn-outline-primary lead fw-bold mt-2"
+                        data-bs-toggle="modal"
+                        data-bs-target=".pc-delete-venue-modal"
+                        type="button">
+                  <i class="bi bi-trash3-fill"></i>
+                  Supprimer le lieu
+                </button>
+                <div class="modal modal-lg fade pc-delete-venue-modal"
+                     tabindex="-1"
+                     aria-describedby="{{ delete_venue_modal_label_id }}"
+                     aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <form action="{{ url_for("backoffice_web.venue.delete_venue", venue_id=venue.id) }}"
+                            name="{{ url_for("backoffice_web.venue.delete_venue", venue_id=venue.id) | action_to_name }}"
+                            method="post"
+                            data-turbo="false">
+                        <div class="modal-header"
+                             id="delete-venue-modal-label">
+                          <h5 class="modal-title">Supprimer le lieu {{ venue.name }}</h5>
+                        </div>
+                        <div class="modal-body row">
+                          <p>
+                            Le lieu <strong>{{ venue.name }} ({{ venue.id }})</strong> sera définitivement supprimé
+                            de la base de données. Veuillez confirmer ce choix.
+                          </p>
+                          {{ build_form_fields_group(delete_venue_form) }}
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button"
+                                  class="btn btn-outline-primary"
+                                  data-bs-dismiss="modal">Annuler</button>
+                          <button type="submit"
+                                  class="btn btn-primary">Confirmer</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+          {% if venue.publicName and venue.publicName != venue.name %}
+            <p class="card-subtitle text-muted mb-3 h5">Nom d'usage : {{ venue.publicName }}</p>
+          {% endif %}
+          <p class="card-subtitle text-muted mb-3 h5">Venue ID : {{ venue.id }}</p>
+          <p class="card-subtitle text-muted mb-3 h5">SIRET : {{ links.build_siret_to_external_link(venue) }}</p>
+          <div class="row pt-3">
+            <div class="col-4">
+              <div class="fs-6">
+                {% if region %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Région :</span>
+                    {{ region }}
+                  </p>
+                {% endif %}
+                {% if venue.city %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Ville :</span>
+                    {{ venue.city }}
+                  </p>
+                {% endif %}
+                {% if venue.postalCode %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Code postal :</span>
+                    {{ venue.postalCode }}
+                  </p>
+                {% endif %}
+                {% if venue.address %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Adresse :</span>
+                    {{ venue.address }}
+                  </p>
+                {% endif %}
+                {% if venue.latitude and venue.longitude %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Coordonnées :</span>
+                    {{ venue.latitude }} (latitude) / {{ venue.longitude }} (longitude)
+                  </p>
+                {% endif %}
+                {% if venue.bookingEmail %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Email :</span>
+                    {{ venue.bookingEmail }}
+                  </p>
+                {% endif %}
+                {% if venue.contact %}
+                  {% if venue.contact.phone_number %}
+                    <p class="mb-1">
+                      <span class="fw-bold">Numéro de téléphone :</span>
+                      {{ venue.contact.phone_number }}
+                    </p>
+                  {% endif %}
+                {% endif %}
+              </div>
+            </div>
+            <div class="col-4">
+              <p class="mb-1">
+                <span class="fw-bold">Peut créer une offre EAC :
+                  {% if venue.adageId %}
+                    <span class="mx-2 pb-1 badge rounded-pill text-bg-success">
+                      <i class="bi bi-check-circle"></i> Oui
+                    </span>
+                  {% else %}
+                    <span class="mx-2 pb-1 badge rounded-pill text-bg-dark">
+                      <i class="bi bi-x-circle"></i> Non
+                    </span>
+                  {% endif %}
+                </span>
+              </p>
+              {% if not venue.dms_adage_status %}
+                <p class="mb-1">
+                  <span class="fw-bold">Pas de dossier DMS Adage</span>
+                </p>
+              {% endif %}
+              {% if venue.adageId %}
+                <p class="mb-1">
+                  <span class="fw-bold">ID Adage :</span>
+                  {{ venue.adageId }}
+                </p>
+              {% endif %}
+              {% if venue.dms_adage_status %}
+                {% if venue.dms_adage_status == 'accepte' %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Date de validation DMS Adage :</span>
+                    {{ venue.last_collective_dms_application.lastChangeDate | format_date }}
+                  </p>
+                {% elif venue.dms_adage_status != 'accepte' %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Date de dépôt DMS Adage :</span>
+                    {{ venue.last_collective_dms_application.depositDate | format_date }}
+                  </p>
+                {% endif %}
+                <p class="mb-1">
+                  <span class="fw-bold">Statut du dossier DMS Adage :</span>
+                  {{ venue.dms_adage_status | format_dms_status }}
+                </p>
+              {% endif %}
+              <p class="mb-1">
+                <span class="fw-bold">Activité principale :</span>
+                {{ venue.venueTypeCode.value }}
+              </p>
+              {% if venue.venueLabel %}
+                <p class="mb-1">
+                  <span class="fw-bold">Label :</span>
+                  {{ venue.venueLabel.label }}
+                </p>
+              {% endif %}
+              <p class="mb-1">
+                <span class="fw-bold">Structure :</span>
+                {{ links.build_offerer_name_to_details_link(venue.managingOfferer) }}
+              </p>
+              <p class="mb-1">
+                <span class="fw-bold">Relié à un point de remboursement :</span>
+                {{ has_reimbursement_point | format_bool }}
+              </p>
+              {% if venue.contact and venue.contact.website %}
+                <p class="mb-1">
+                  <span class="fw-bold">Site web :</span>
+                  <a href="{{ venue.contact.website | format_website }}"
+                     target="_blank"
+                     class="link-primary">{{ venue.contact.website | format_website }}</a>
+                </p>
+              {% endif %}
+              {% if venue.criteria %}
+                <p class="mb-1">
+                  <span class="fw-bold">Tags :</span>
+                  {{ venue.criteria | format_criteria | safe }}
+                </p>
+              {% endif %}
+            </div>
+            <div class="col-4">
+              {% if dms_stats %}
+                <p class="mb-1">
+                  <span class="fw-bold">Statut DMS CB :</span>
+                  {{ dms_stats.status | format_dms_status }}
+                </p>
+                {% if dms_stats.status == "accepte" %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Date de validation du dossier DMS CB :</span>
+                    {{ dms_stats.lastChangeDate | format_date }}
+                  </p>
+                {% else %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Date de dépôt du dossier DMS CB :</span>
+                    {{ dms_stats.subscriptionDate | format_date }}
+                  </p>
+                {% endif %}
+                <p class="mb-4 d-flex">
+                  <a href="{{ dms_stats.url }}"
+                     target="_blank"
+                     class="card-link">
+                    <button class="btn btn-outline-primary lead fw-bold mt-2">ACCÉDER AU DOSSIER DMS CB</button>
+                  </a>
+                </p>
+              {% else %}
+                <p class="mb-1">
+                  <span class="fw-bold">Pas de dossier DMS CB</span>
+                </p>
+              {% endif %}
+              <p class="mb-1">
+                <a href="{{ venue | pc_pro_venue_bookings_link }}"
+                   target="_blank"
+                   class="fw-bold link-primary">Réservations</a>
+              </p>
+              <p class="mb-1">
+                <a href="{{ venue | pc_pro_venue_offers_link }}"
+                   target="_blank"
+                   class="fw-bold link-primary">Offres associées</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-4">
+        <turbo-frame data-turbo="false" id="venue_total_revenue_frame" src="{{ url_for("backoffice_web.venue.get_stats", venue_id=venue.id) }}">
+        {{ build_loading_spinner() }}
+        </turbo-frame>
+      </div>
+      <div class="mt-4">
+        {% call build_details_tabs_wrapper() %}
+          {{ build_details_tab("history", "Historique du compte", active_tab == 'history') }}
+          {{ build_details_tab("invoices", "Remboursements", active_tab == 'invoices') }}
+        {% endcall %}
+        {% call build_details_tabs_content_wrapper() %}
+          {% call build_details_tab_content("history", active_tab == 'history') %}
+            <turbo-frame data-turbo="false" id="venue_history_frame" loading="lazy" src="{{ url_for("backoffice_web.venue.get_history", venue_id=venue.id) }}">
+            {{ build_loading_spinner() }}
+            </turbo-frame>
+          {% endcall %}
+          {% call build_details_tab_content("invoices", active_tab == 'invoices') %}
+            <turbo-frame data-turbo="false" id="venue_invoices_frame" loading="lazy" src="{{ url_for("backoffice_web.venue.get_invoices", venue_id=venue.id) }}">
+            {{ build_loading_spinner() }}
+            </turbo-frame>
+          {% endcall %}
+        {% endcall %}
+      </div>
+    </div>
+  </div>
+{% endblock pro_main_content %}

@@ -1,0 +1,12 @@
+{% extends "layouts/base.html" %}
+{% block content %}
+  <div class="d-flex align-items-center justify-content-center vh-100">
+    <div class="text-center">
+      {% block error %}
+      {% endblock error %}
+      <a href="{{ url_for('backoffice_web.home') }}"
+         class="btn btn-primary">Retour au
+      backoffice</a>
+    </div>
+  </div>
+{% endblock content %}

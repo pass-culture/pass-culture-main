@@ -37,7 +37,7 @@ from pcapi.notifications.internal import testing as internal_notifications_testi
 from pcapi.notifications.push import testing as push_notifications_testing
 from pcapi.notifications.sms import testing as sms_notifications_testing
 from pcapi.repository.clean_database import clean_all_database
-from pcapi.routes.backoffice_v3 import install_routes
+from pcapi.routes.backoffice import install_routes
 from pcapi.utils.module_loading import import_string
 
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
@@ -133,7 +133,7 @@ def build_main_app():
 
 @pytest.fixture(scope="session", name="app")
 def app_fixture(pytestconfig):
-    if pytestconfig.option.markexpr == "backoffice_v3":
+    if pytestconfig.option.markexpr == "backoffice":
         yield from build_backoffice_app()
     else:
         yield from build_main_app()

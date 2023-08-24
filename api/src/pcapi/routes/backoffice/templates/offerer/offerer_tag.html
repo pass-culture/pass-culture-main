@@ -1,0 +1,149 @@
+{% from "components/forms.html" import build_form_fields_group with context %}
+{% extends "layouts/connected.html" %}
+{% block page %}
+  {% set create_offerer_tag_modal_label_id = random_hash() %}
+  {% set edit_offerer_tag_modal_label_id = random_hash() %}
+  {% set delete_offerer_tag_modal_label_id = random_hash() %}
+  <div class="pt-3 px-5">
+    <h2 class="fw-light">Tags structure</h2>
+    <button class="btn btn-outline-primary lead fw-bold mt-2"
+            data-bs-toggle="modal"
+            data-bs-target=".pc-create-offerer-tag-modal"
+            type="button">Créer un tag structure</button>
+    <div class="modal modal-lg fade pc-create-offerer-tag-modal"
+         tabindex="-1"
+         aria-describedby="{{ create_offerer_tag_modal_label_id }}"
+         aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <form action="{{ url_for("backoffice_web.offerer_tag.create_offerer_tag") }}"
+                name="{{ url_for("backoffice_web.offerer_tag.create_offerer_tag") | action_to_name }}"
+                method="post"
+                data-turbo="false">
+            <div class="modal-header"
+                 id="{{ create_offerer_tag_modal_label_id }}">
+              <h5 class="modal-title">Créer un tag structure</h5>
+            </div>
+            <div class="modal-body row">{{ build_form_fields_group(create_tag_form) }}</div>
+            <div class="modal-footer">
+              <button type="button"
+                      class="btn btn-outline-primary"
+                      data-bs-dismiss="modal">Annuler</button>
+              <button type="submit"
+                      class="btn btn-primary">Enregistrer</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div>
+      <table class="table mb-4">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">ID</th>
+            <th scope="col">Nom</th>
+            <th scope="col">Libellé</th>
+            <th scope="col" class="col-5">Description</th>
+            <th scope="col">Catégories</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for offerer_tag in rows %}
+            <tr>
+              <td>
+                <div class="dropdown">
+                  <button type="button"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                          class="btn p-0">
+                    <i class="bi bi-three-dots-vertical"></i>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-item p-0">
+                      <a class="btn btn-sm d-block w-100 text-start px-3"
+                         data-bs-toggle="modal"
+                         data-bs-target=".pc-edit-offerer-tag-modal-{{ offerer_tag.id }}">Modifier le tag structure</a>
+                    </li>
+                    {% if has_permission("DELETE_OFFERER_TAG") %}
+                      <li class="dropdown-item p-0">
+                        <a class="btn btn-sm d-block w-100 text-start px-3"
+                           data-bs-toggle="modal"
+                           data-bs-target=".pc-delete-offerer-tag-modal-{{ offerer_tag.id }}">Supprimer le tag structure</a>
+                      </li>
+                    {% endif %}
+                  </ul>
+                  <div class="modal modal-lg fade pc-edit-offerer-tag-modal-{{ offerer_tag.id }}"
+                       tabindex="-1"
+                       aria-labelledby="{{ edit_offerer_tag_modal_label_id }}"
+                       aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <form action="{{ url_for("backoffice_web.offerer_tag.update_offerer_tag", offerer_tag_id=offerer_tag.id) }}"
+                              name="{{ url_for("backoffice_web.offerer_tag.update_offerer_tag", offerer_tag_id=offerer_tag.id) | action_to_name }}"
+                              method="post"
+                              data-turbo="false">
+                          <div class="modal-header"
+                               id="{{ edit_offerer_tag_modal_label_id }}">
+                            <h5 class="modal-title">Modifier le tag {{ offerer_tag.name }}</h5>
+                          </div>
+                          <div class="modal-body row">{{ build_form_fields_group(forms[offerer_tag.id]) }}</div>
+                          <div class="modal-footer">
+                            <button type="button"
+                                    class="btn btn-outline-primary"
+                                    data-bs-dismiss="modal">Annuler</button>
+                            <button type="submit"
+                                    class="btn btn-primary">Enregistrer</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                  {% if has_permission("DELETE_OFFERER_TAG") %}
+                    <div class="modal modal-lg fade pc-delete-offerer-tag-modal-{{ offerer_tag.id }}"
+                         tabindex="-1"
+                         aria-labelledby="{{ delete_offerer_tag_modal_label_id }}"
+                         aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                          <form action="{{ url_for("backoffice_web.offerer_tag.delete_offerer_tag", offerer_tag_id=offerer_tag.id) }}"
+                                name="{{ url_for("backoffice_web.offerer_tag.delete_offerer_tag", offerer_tag_id=offerer_tag.id) | action_to_name }}"
+                                method="post"
+                                data-turbo="false">
+                            <div class="modal-header"
+                                 id="{{ delete_offerer_tag_modal_label_id }}">
+                              <h5 class="modal-title">Supprimer le tag {{ offerer_tag.name }}</h5>
+                            </div>
+                            <div class="modal-body row">
+                              <p>
+                                Le tag <strong>{{ offerer_tag.label or offerer_tag.name }}</strong> sera définitivement supprimé
+                                de la base de données et retiré de toutes les structures auxquelles il est associé. Veuillez confirmer ce choix.
+                              </p>
+                              {{ build_form_fields_group(delete_tag_form) }}
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button"
+                                      class="btn btn-outline-primary"
+                                      data-bs-dismiss="modal">Annuler</button>
+                              <button type="submit"
+                                      class="btn btn-primary">Confirmer</button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  {% endif %}
+                </div>
+              </td>
+              <td>{{ offerer_tag.id }}</td>
+              <td>{{ offerer_tag.name }}</td>
+              <td>{{ offerer_tag.label }}</td>
+              <td>{{ offerer_tag.description | empty_string_if_null }}</td>
+              <td>{{ offerer_tag.categories | format_tag_object_list }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock page %}

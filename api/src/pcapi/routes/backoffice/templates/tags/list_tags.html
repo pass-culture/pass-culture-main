@@ -1,0 +1,85 @@
+{% from "components/forms.html" import build_form_fields_group with context %}
+{% from "components/forms.html" import build_filters_form with context %}
+{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% extends "layouts/connected.html" %}
+{% block page %}
+  <div class="pt-3 px-5">
+    <h2 class="fw-light">Tags offres et lieux</h2>
+    <button class="btn btn-outline-primary lead fw-bold mt-2"
+            data-bs-toggle="modal"
+            data-bs-target="#create-offer-venue-tag"
+            type="button">Créer un tag offres et lieux</button>
+    {{ build_lazy_modal(url_for("backoffice_web.tags.get_create_tag_form"), "create-offer-venue-tag") }}
+    <div class="mt-4">
+      <form name="filter-offer-venue-tag"
+            action="{{ dst }}"
+            method="get"
+            class="col-8 row">
+        <div class="col-8">
+          <div class="input-group mb-3">
+            {% for form_field in form %}{{ form_field }}{% endfor %}
+          </div>
+        </div>
+        <div class="col-4">
+          <button type="submit"
+                  class="btn btn-primary">Chercher</button>
+        </div>
+      </form>
+    </div>
+    <div>
+      <table class="table mb-4">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">ID</th>
+            <th scope="col" class="col-2">Nom</th>
+            <th scope="col" class="col-4">Description</th>
+            <th scope="col" class="col-2">Catégories</th>
+            <th scope="col" class="col-1">Date de début</th>
+            <th scope="col" class="col-1">Date de fin</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tag in rows %}
+            <tr>
+              <td>
+                <div class="dropdown">
+                  <button type="button"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                          class="btn p-0">
+                    <i class="bi bi-three-dots-vertical"></i>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li class="dropdown-item p-0">
+                      <a class="btn btn-sm d-block w-100 text-start px-3"
+                         data-bs-toggle="modal"
+                         data-bs-target="#update-offer-venue-tag-{{ tag.id }}">Modifier le tag</a>
+                    </li>
+                    {% if has_permission("DELETE_OFFERER_TAG") %}
+                      <li class="dropdown-item p-0">
+                        <a class="btn btn-sm d-block w-100 text-start px-3"
+                           data-bs-toggle="modal"
+                           data-bs-target="#delete-offer-venue-tag-{{ tag.id }}">Supprimer le tag</a>
+                      </li>
+                    {% endif %}
+                  </ul>
+                  {{ build_lazy_modal(url_for("backoffice_web.tags.get_update_tag_form", tag_id=tag.id), "update-offer-venue-tag-" + tag.id | string) }}
+                  {% if has_permission("DELETE_OFFERER_TAG") %}
+                    {{ build_lazy_modal(url_for("backoffice_web.tags.get_delete_tag_form", tag_id=tag.id), "delete-offer-venue-tag-" + tag.id | string) }}
+                  {% endif %}
+                </div>
+              </td>
+              <td>{{ tag.id }}</td>
+              <td>{{ tag.name }}</td>
+              <td>{{ tag.description | empty_string_if_null }}</td>
+              <td>{{ tag.categories | format_tag_object_list }}</td>
+              <td>{{ tag.startDateTime | format_date }}</td>
+              <td>{{ tag.endDateTime | format_date }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

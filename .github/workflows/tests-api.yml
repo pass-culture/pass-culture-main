@@ -270,7 +270,7 @@ jobs:
           [
             "tests/core/bookings tests/core/offers tests/core/finance",
             "tests/core --ignore=tests/core/bookings --ignore=tests/core/offers --ignore=tests/core/finance",
-            "tests/routes -m 'not backoffice_v3'",
+            "tests/routes -m 'not backoffice'",
             "tests --ignore=tests/core --ignore=tests/routes",
           ]
     needs: build-tests-docker-image

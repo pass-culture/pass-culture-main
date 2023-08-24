@@ -57,7 +57,7 @@ jobs:
 
   test-backoffice:
     name: Test backoffice
-    uses: ./.github/workflows/tests-backoffice-v3.yml
+    uses: ./.github/workflows/tests-backoffice.yml
     secrets: inherit
 
   test-pro:

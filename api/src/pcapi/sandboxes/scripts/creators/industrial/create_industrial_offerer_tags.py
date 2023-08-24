@@ -1,7 +1,7 @@
 import logging
 
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.routes.backoffice_v3.home import CONFORMITE_TAG_NAME
+from pcapi.routes.backoffice.home import CONFORMITE_TAG_NAME
 
 
 logger = logging.getLogger(__name__)

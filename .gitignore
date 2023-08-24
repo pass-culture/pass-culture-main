@@ -42,4 +42,4 @@ pro-packed-staging/
 docs-build/
 
 # Backoffice scss to css tmp assets
-/api/src/pcapi/static/backofficev3/css/compiled/
+/api/src/pcapi/static/backoffice/css/compiled/

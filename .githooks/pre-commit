@@ -179,15 +179,15 @@ cd ../
 ##########
 
 ################
-## BACKOFFICE V3 ##
+## BACKOFFICE ##
 ################
 cd $DIR/api
-STAGED_HTML_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep '^api/src/pcapi/routes/backoffice_v3/*' | grep 'html' | sed 's|^api\/||g')
+STAGED_HTML_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep '^api/src/pcapi/routes/backoffice/*' | grep 'html' | sed 's|^api\/||g')
 if [[ ! -z "$STAGED_HTML_FILES" ]]; then
   # run stylelint on staged files
-  if [[ ! ",${DISABLED_BOV3_PRE_COMMIT_CHECKS}," =~ ",djlint," ]]; then
+  if [[ ! ",${DISABLED_BO_PRE_COMMIT_CHECKS}," =~ ",djlint," ]]; then
     echo "Running dj formater and linter..."
-    djlint $STAGED_HTML_FILES --configuration src/pcapi/routes/backoffice_v3/.djlintrc --reformat
+    djlint $STAGED_HTML_FILES --configuration src/pcapi/routes/backoffice/.djlintrc --reformat
     DJLINT_EXIT_CODE=$?
 
     # add files auto-fixed by the linter
@@ -195,7 +195,7 @@ if [[ ! -z "$STAGED_HTML_FILES" ]]; then
 
     # check linter exit code
     if [ $DJLINT_EXIT_CODE -ne 0 ]; then
-      echo "❌ Please fix djlint errors first: djlint $DIR/api/src/pcapi/routes/backoffice_v3/ --configuration $DIR/api/src/pcapi/routes/backoffice_v3/.djlintrc --reformat"
+      echo "❌ Please fix djlint errors first: djlint $DIR/api/src/pcapi/routes/backoffice/ --configuration $DIR/api/src/pcapi/routes/backoffice/.djlintrc --reformat"
       exit 1
     else
       echo "✅ djlint all good"

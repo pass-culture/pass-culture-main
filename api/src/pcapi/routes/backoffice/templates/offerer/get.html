@@ -1,0 +1,196 @@
+{% from "components/badges.html" import build_offerer_badges %}
+{% from "components/forms.html" import build_form_fields_group with context %}
+{% from "components/generic_modal.html" import build_modal_form with context %}
+{% import "components/links.html" as links %}
+{% from "components/presentation/details/tabs.html" import build_details_tab %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_wrapper %}
+{% from "components/presentation/details/tabs.html" import build_details_tab_content %}
+{% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
+{% from "components/turbo/spinner.html" import build_loading_spinner with context %}
+{% extends "layouts/pro.html" %}
+{% set edit_offerer_aria_described_by_id = random_hash() %}
+{% set delete_offerer_aria_described_by_id = random_hash() %}
+{% block pro_main_content %}
+  <div class="row row-cols-1 g-4 py-3">
+    <div class="col">
+      <div class="card shadow">
+        <div class="card-body">
+          <div class="d-flex flex-fill align-items-center">
+            <h2 class="card-title text-primary">{{ links.build_offerer_name_to_pc_pro_link(offerer) }}</h2>
+            <span class="fs-5 ps-4">{{ build_offerer_badges(offerer) }}</span>
+            <div class="d-flex row-reverse justify-content-end flex-grow-1">
+              {% if has_permission("MANAGE_PRO_ENTITY") %}
+                <button class="btn btn-outline-primary lead fw-bold mt-2 mx-2"
+                        data-bs-toggle="modal"
+                        data-bs-target=".pc-edit-offerer-modal"
+                        type="button">Modifier les informations</button>
+                <div class="modal modal-lg fade pc-edit-offerer-modal"
+                     tabindex="-1"
+                     aria-describedby="{{ edit_offerer_aria_described_by_id }}"
+                     aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                      <form action="{{ url_for("backoffice_web.offerer.update_offerer", offerer_id=offerer.id) }}"
+                            name="{{ url_for("backoffice_web.offerer.update_offerer", offerer_id=offerer.id) | action_to_name }}"
+                            method="post">
+                        <div class="modal-header"
+                             id="{{ edit_offerer_aria_described_by_id }}">
+                          <h5 class="modal-title">Modifier les informations de la structure</h5>
+                        </div>
+                        <div class="modal-body pb-3">{{ build_form_fields_group(edit_offerer_form) }}</div>
+                        <div class="modal-footer">
+                          <button type="button"
+                                  class="btn btn-outline-primary"
+                                  data-bs-dismiss="modal">Annuler</button>
+                          <button type="submit"
+                                  class="btn btn-primary">Enregistrer</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+              {% if has_permission("PRO_FRAUD_ACTIONS") %}
+                {% if offerer.isActive %}
+                  {{ build_modal_form("suspend", url_for("backoffice_web.offerer.suspend_offerer", offerer_id=offerer.id),
+                  suspension_form, "Suspendre la structure", "Confirmer la suspension") }}
+                {% else %}
+                  {{ build_modal_form("unsuspend", url_for("backoffice_web.offerer.unsuspend_offerer", offerer_id=offerer.id),
+                  suspension_form, "Réactiver la structure", "Confirmer la réactivation") }}
+                {% endif %}
+              {% endif %}
+              {% if has_permission("DELETE_PRO_ENTITY") %}
+                <button class="btn btn-outline-primary lead fw-bold mt-2 mx-2"
+                        data-bs-toggle="modal"
+                        data-bs-target=".pc-delete-offerer-modal"
+                        type="button">
+                  <i class="bi bi-trash3-fill"></i>
+                  Supprimer la structure
+                </button>
+                <div class="modal modal-lg fade pc-delete-offerer-modal"
+                     tabindex="-1"
+                     aria-describedby="{{ delete_offerer_aria_described_by_id }}"
+                     aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <form action="{{ url_for("backoffice_web.offerer.delete_offerer", offerer_id=offerer.id) }}"
+                            name="{{ url_for("backoffice_web.offerer.delete_offerer", offerer_id=offerer.id) | action_to_name }}"
+                            method="post"
+                            data-turbo="false">
+                        <div class="modal-header"
+                             id="{{ delete_offerer_aria_described_by_id }}">
+                          <h5 class="modal-title">Supprimer la structure {{ offerer.name }}</h5>
+                        </div>
+                        <div class="modal-body row">
+                          <p>
+                            La structure <strong>{{ offerer.name }} ({{ offerer.id }})</strong> sera définitivement supprimée
+                            de la base de données. Veuillez confirmer ce choix.
+                          </p>
+                          {{ build_form_fields_group(delete_offerer_form) }}
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button"
+                                  class="btn btn-outline-primary"
+                                  data-bs-dismiss="modal">Annuler</button>
+                          <button type="submit"
+                                  class="btn btn-primary">Confirmer</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+          <p class="card-subtitle text-muted mb-3 h5">Offerer ID : {{ offerer.id }}</p>
+          <p class="card-subtitle text-muted mb-3 h5">SIREN : {{ links.build_siren_to_external_link(offerer) }}</p>
+          <div class="row pt-3">
+            <div class="col-4">
+              <div class="fs-6">
+                {% if offerer.email %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Email :</span>
+                    {{ offerer.email }}
+                  </p>
+                {% endif %}
+                {% if offerer.phoneNumber %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Tél :</span>
+                    {{ offerer.phoneNumber | empty_string_if_null }}
+                  </p>
+                {% endif %}
+                <p class="mb-1">
+                  <span class="fw-bold">Région :</span>
+                  {{ region }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Ville :</span>
+                  {{ offerer.city }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Code postal :</span>
+                  {{ offerer.postalCode }}
+                </p>
+                {% if offerer.address %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Adresse :</span>
+                    {{ offerer.address }}
+                  </p>
+                {% endif %}
+                {% if offerer.first_user %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Numéro d'inscription :</span>
+                    {{ offerer.first_user.phoneNumber | empty_string_if_null }}
+                  </p>
+                {% endif %}
+              </div>
+            </div>
+            <div class="col-4">
+              <p class="mb-1">
+                <span class="fw-bold">Référencement Adage : {{ offerer.managedVenues | format_adage_referred }}</span>
+              </p>
+              <p class="mb-1">
+                <span class="fw-bold">Présence CB dans les lieux :</span>
+                {{ bank_information_status.ok }} OK
+                / {{ bank_information_status.ko }} KO
+              </p>
+              <p class="mb-1">
+                <span class="fw-bold">Tags structure :</span>
+                {{ offerer.tags | format_tag_object_list | escape }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-4">
+        <turbo-frame id="total_revenue_frame" src="{{ url_for("backoffice_web.offerer.get_stats", offerer_id=offerer.id) }}">
+        {{ build_loading_spinner() }}
+        </turbo-frame>
+      </div>
+      <div class="mt-4">
+        {% call build_details_tabs_wrapper() %}
+          {{ build_details_tab("history", "Historique du compte", active_tab == 'history') }}
+          {{ build_details_tab("pro-users", "Compte(s) pro rattaché(s)", active_tab == 'users') }}
+          {{ build_details_tab("managed-venues", "Lieux associés", active_tab == 'managed_venues') }}
+        {% endcall %}
+        {% call build_details_tabs_content_wrapper() %}
+          {% call build_details_tab_content("history", active_tab == 'history') %}
+            <turbo-frame data-turbo="false" id="offerer_history_frame" loading="lazy" src="{{ url_for("backoffice_web.offerer.get_history", offerer_id=offerer.id) }}">
+            {{ build_loading_spinner() }}
+            </turbo-frame>
+          {% endcall %}
+          {% call build_details_tab_content("pro-users", active_tab == 'users') %}
+            <turbo-frame data-turbo="false" id="offerer_users_frame" loading="lazy" src="{{ url_for("backoffice_web.offerer.get_pro_users", offerer_id=offerer.id) }}">
+            {{ build_loading_spinner() }}
+            </turbo-frame>
+          {% endcall %}
+          {% call build_details_tab_content("managed-venues", active_tab == 'managed_venues') %}
+            <turbo-frame data-turbo="false" id="offerer_venues_frame" loading="lazy" src="{{ url_for("backoffice_web.offerer.get_managed_venues", offerer_id=offerer.id) }}">
+            {{ build_loading_spinner() }}
+            </turbo-frame>
+          {% endcall %}
+        {% endcall %}
+      </div>
+    </div>
+  </div>
+{% endblock pro_main_content %}

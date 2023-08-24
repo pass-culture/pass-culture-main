@@ -396,7 +396,7 @@
 #            # Synchronize these globs with `python_files` in `pytest.ini`
 #            TEST_FILES=$(circleci tests glob "tests/**/*test.py" "tests/**/test*.py" | circleci tests split)
 #            mkdir -p test-results
-#            pytest $TEST_FILES --durations=10 --junitxml=test-results/junit.xml -m "not backoffice_v3"
+#            pytest $TEST_FILES --durations=10 --junitxml=test-results/junit.xml -m "not backoffice"
 #          working_directory: /usr/src/app
 #      - store_test_results:
 #          path: /usr/src/app/test-results
@@ -409,7 +409,7 @@
 #            - notify-slack:
 #                channel: dev
 #
-#  tests-backoffice-v3:
+#  tests-backoffice:
 #    parameters:
 #      is_nightly_build:
 #        type: boolean
@@ -455,9 +455,9 @@
 #            alembic upgrade post@head
 #            flask install_data
 #            # Synchronize these globs with `python_files` in `pytest.ini`
-#            TEST_FILES=$(circleci tests glob "tests/routes/backoffice_v3/**/*test.py" )
+#            TEST_FILES=$(circleci tests glob "tests/routes/backoffice/**/*test.py" )
 #            mkdir -p test-results
-#            pytest $TEST_FILES --durations=10 --junitxml=test-results/junit.xml -m backoffice_v3
+#            pytest $TEST_FILES --durations=10 --junitxml=test-results/junit.xml -m backoffice
 #          working_directory: /usr/src/app
 #      - store_test_results:
 #          path: /usr/src/app/test-results
@@ -808,7 +808,7 @@
 #          - GCP_EHP
 #         requires:
 #           - build-and-push-image
-#      - tests-backoffice-v3:
+#      - tests-backoffice:
 #         filters:
 #           branches:
 #             ignore:
