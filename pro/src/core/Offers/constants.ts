@@ -1,4 +1,4 @@
-import { OfferStatus } from 'apiClient/v1'
+import { OfferStatus, WithdrawalTypeEnum } from 'apiClient/v1'
 import { SelectOption } from 'custom_types/form'
 
 import { SearchFiltersParams } from './types'
@@ -31,12 +31,6 @@ export enum CATEGORY_STATUS {
   ONLINE_OR_OFFLINE = 'ONLINE_OR_OFFLINE',
 }
 
-enum OFFER_WITHDRAWAL_TYPE_OPTIONS {
-  ON_SITE = 'on_site',
-  NO_TICKET = 'no_ticket',
-  BY_EMAIL = 'by_email',
-}
-
 export enum OFFER_WIZARD_MODE {
   CREATION = 'creation',
   DRAFT = 'draft',
@@ -44,11 +38,10 @@ export enum OFFER_WIZARD_MODE {
 }
 
 export const OFFER_WITHDRAWAL_TYPE_LABELS = {
-  [OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE]:
-    'Retrait sur place (guichet, comptoir...)',
-  [OFFER_WITHDRAWAL_TYPE_OPTIONS.NO_TICKET]: 'Aucun billet n’est nécessaire',
-  [OFFER_WITHDRAWAL_TYPE_OPTIONS.BY_EMAIL]:
-    'Les billets seront envoyés par email',
+  [WithdrawalTypeEnum.ON_SITE]: 'Retrait sur place (guichet, comptoir...)',
+  [WithdrawalTypeEnum.NO_TICKET]: 'Aucun billet n’est nécessaire',
+  [WithdrawalTypeEnum.BY_EMAIL]: 'Les billets seront envoyés par email',
+  [WithdrawalTypeEnum.IN_APP]: 'Les billets seront dans l’application',
 }
 
 export const OFFER_STATUS_ACTIVE = OfferStatus.ACTIVE

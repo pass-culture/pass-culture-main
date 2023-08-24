@@ -166,7 +166,10 @@ class PostBookingTest:
             email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101"
         )
         provider = providers_factories.ProviderFactory(
-            name="Technical provider", localClass=None, bookingExternalUrl=external_booking_url
+            name="Technical provider",
+            localClass=None,
+            bookingExternalUrl=external_booking_url,
+            cancelExternalUrl=external_booking_url,
         )
         providers_factories.OffererProviderFactory(provider=provider)
         stock = EventStockFactory(
@@ -174,6 +177,7 @@ class PostBookingTest:
             priceCategory__price=2,
             offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
             offer__lastProvider=provider,
+            offer__withdrawalType=WithdrawalTypeEnum.IN_APP,
             offer__venue__address="1 boulevard Poissonniere",
             offer__extraData={"ean": "1234567890123"},
             idAtProviders="",
@@ -229,13 +233,17 @@ class PostBookingTest:
             email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101"
         )
         provider = providers_factories.ProviderFactory(
-            name="Technical provider", localClass=None, bookingExternalUrl=external_booking_url
+            name="Technical provider",
+            localClass=None,
+            bookingExternalUrl=external_booking_url,
+            cancelExternalUrl=external_booking_url,
         )
         providers_factories.OffererProviderFactory(provider=provider)
         stock = EventStockFactory(
             lastProvider=provider,
             offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
             offer__lastProvider=provider,
+            offer__withdrawalType=WithdrawalTypeEnum.IN_APP,
             idAtProviders="",
             quantity=25,
             dnBookedQuantity=10,
@@ -261,13 +269,17 @@ class PostBookingTest:
             email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101", deposit__amount=500
         )
         provider = providers_factories.ProviderFactory(
-            name="Technical provider", localClass=None, bookingExternalUrl=external_booking_url
+            name="Technical provider",
+            localClass=None,
+            bookingExternalUrl=external_booking_url,
+            cancelExternalUrl=external_booking_url,
         )
         providers_factories.OffererProviderFactory(provider=provider)
         stock = EventStockFactory(
             lastProvider=provider,
             offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
             offer__lastProvider=provider,
+            offer__withdrawalType=WithdrawalTypeEnum.IN_APP,
             offer__isDuo=True,
             idAtProviders="",
             quantity=25,

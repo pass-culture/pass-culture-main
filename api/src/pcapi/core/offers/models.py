@@ -388,6 +388,7 @@ class OfferImage:
 
 class WithdrawalTypeEnum(enum.Enum):
     BY_EMAIL = "by_email"
+    IN_APP = "in_app"
     NO_TICKET = "no_ticket"
     ON_SITE = "on_site"
 

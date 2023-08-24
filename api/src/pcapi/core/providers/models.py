@@ -92,6 +92,11 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
     def isCinemaProvider(self) -> bool:
         return self.localClass in provider_constants.CINEMA_PROVIDER_NAMES
 
+    # Charlie api connects an external event stock managed by a provider and allow tickets collection
+    @property
+    def hasProviderEnableCharlie(self) -> bool:
+        return bool(self.bookingExternalUrl and self.cancelExternalUrl)
+
     @property
     def hasOffererProvider(self) -> bool:
         return bool(self.offererProvider)

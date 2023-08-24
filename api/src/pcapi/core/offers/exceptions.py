@@ -154,6 +154,14 @@ class EventWithTicketMustHaveDelay(OfferCreationBaseException):
         )
 
 
+class NonLinkedProviderCannotHaveInAppTicket(OfferCreationBaseException):
+    def __init__(self) -> None:
+        super().__init__(
+            "offer",
+            "L'offre ne supporte pas de billet dans l'application mobile",
+        )
+
+
 class NonWithdrawableEventOfferCantHaveWithdrawal(OfferCreationBaseException):
     def __init__(self) -> None:
         super().__init__(

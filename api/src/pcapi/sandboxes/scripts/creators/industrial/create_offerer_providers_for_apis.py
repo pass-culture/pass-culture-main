@@ -10,6 +10,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users import factories as users_factories
@@ -65,6 +66,7 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
             venue=first_venue,
             subcategoryId=subcategories.CONCERT.id,
             lastProvider=provider,
+            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
         )
         price_category = offers_factories.PriceCategoryFactory(offer=offer)
 

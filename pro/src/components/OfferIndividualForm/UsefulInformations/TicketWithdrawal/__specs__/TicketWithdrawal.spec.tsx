@@ -4,6 +4,7 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 import * as yup from 'yup'
 
+import { WithdrawalTypeEnum } from 'apiClient/v1'
 import { OfferIndividualFormValues } from 'components/OfferIndividualForm/types'
 import { SubmitButton } from 'ui-kit'
 
@@ -108,5 +109,32 @@ describe('OfferIndividual section: TicketWithdrawal', () => {
     expect(
       screen.getByLabelText('Retrait sur place (guichet, comptoir...)')
     ).toBeDisabled()
+  })
+  it('should disable read if offer has a withdrawal type "IN_APP"', () => {
+    const props = { readOnlyFields: ['withdrawalType', 'withdrawalDelay'] }
+    initialValues = {
+      subCategoryFields: ['withdrawalType', 'withdrawalDelay'],
+      isEvent: true,
+      withdrawalDetails: '',
+      withdrawalType: WithdrawalTypeEnum.IN_APP,
+      withdrawalDelay: undefined,
+    }
+
+    renderTicketWithdrawal({
+      props,
+      initialValues,
+      onSubmit,
+    })
+
+    expect(
+      screen.getByLabelText('Les billets seront envoyés par email')
+    ).toBeDisabled()
+    expect(
+      screen.getByLabelText('Aucun billet n’est nécessaire')
+    ).toBeDisabled()
+    expect(
+      screen.getByLabelText('Retrait sur place (guichet, comptoir...)')
+    ).toBeDisabled()
+    expect(screen.getByLabelText('Retrait dans l’app')).toBeDisabled()
   })
 })

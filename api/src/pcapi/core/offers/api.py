@@ -162,7 +162,7 @@ def create_offer(
     withdrawal_details: str | None = None,
     withdrawal_type: models.WithdrawalTypeEnum | None = None,
 ) -> models.Offer:
-    validation.check_offer_withdrawal(withdrawal_type, withdrawal_delay, subcategory_id, booking_contact)
+    validation.check_offer_withdrawal(withdrawal_type, withdrawal_delay, subcategory_id, booking_contact, provider)
     validation.check_offer_subcategory_is_valid(subcategory_id)
     formatted_extra_data = _format_extra_data(subcategory_id, extra_data)
     validation.check_offer_extra_data(subcategory_id, formatted_extra_data, venue)
@@ -289,7 +289,11 @@ def update_offer(
 
         if not (withdrawalType is UNCHANGED and withdrawalDelay is UNCHANGED and changed_bookingContact is UNCHANGED):
             validation.check_offer_withdrawal(
-                changed_withdrawalType, changed_withdrawalDelay, offer.subcategoryId, changed_bookingContact
+                changed_withdrawalType,
+                changed_withdrawalDelay,
+                offer.subcategoryId,
+                changed_bookingContact,
+                offer.lastProvider,
             )
 
     if offer.isFromProvider:

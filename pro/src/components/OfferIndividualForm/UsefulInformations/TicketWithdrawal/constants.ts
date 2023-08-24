@@ -22,6 +22,14 @@ export const ticketWithdrawalTypeRadios = [
   },
 ]
 
+export const providedTicketWithdrawalTypeRadios = [
+  ...ticketWithdrawalTypeRadios,
+  {
+    label: 'Retrait dans l’app',
+    value: WithdrawalTypeEnum.IN_APP,
+  },
+]
+
 export const ticketSentDateOptions = [
   {
     label: '24 heures',
