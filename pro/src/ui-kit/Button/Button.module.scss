@@ -25,7 +25,6 @@
     height: size.$button-icon-size;
     width: size.$button-icon-size;
     flex-shrink: 0;
-    margin-bottom: auto;
   }
 
   &.button-center {
@@ -137,6 +136,12 @@
       .button-icon {
         margin-right: 0;
       }
+    }
+  }
+
+  &-ternary {
+    .button-icon {
+      margin-bottom: auto;
     }
   }
 
