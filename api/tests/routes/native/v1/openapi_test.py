@@ -1975,7 +1975,7 @@ def test_public_api(client):
                 },
                 "WithdrawalTypeEnum": {
                     "description": "An enumeration.",
-                    "enum": ["by_email", "no_ticket", "on_site"],
+                    "enum": ["by_email", "in_app", "no_ticket", "on_site"],
                     "title": "WithdrawalTypeEnum",
                 },
                 "YoungStatusResponse": {
