@@ -8,7 +8,6 @@ import pytest
 
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.bookings.constants import FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
@@ -16,13 +15,13 @@ from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.finance import utils as finance_utils
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.offers import models as offer_models
 from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import StockWithActivationCodesFactory
-from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.providers.exceptions import InactiveProvider
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_api
@@ -118,7 +117,7 @@ class PostBookingTest:
 
     @pytest.mark.parametrize(
         "subcategoryId,price",
-        [(subcategoryId, 0) for subcategoryId in FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE],
+        [(subcategoryId, 0) for subcategoryId in offer_models.Stock.AUTOMATICALLY_USED_SUBCATEGORIES],
     )
     def test_post_free_bookings_from_subcategories_with_archive(self, client, subcategoryId, price):
         stock = StockFactory(price=price, offer__subcategoryId=subcategoryId)
@@ -497,7 +496,7 @@ class GetBookingsTest:
             user=user,
             stock__offer__subcategoryId=subcategories.CONCERT.id,
             stock__offer__withdrawalDetails="Veuillez chercher votre billet au guichet",
-            stock__offer__withdrawalType=WithdrawalTypeEnum.ON_SITE,
+            stock__offer__withdrawalType=offer_models.WithdrawalTypeEnum.ON_SITE,
             stock__offer__withdrawalDelay=60 * 30,
         )
 

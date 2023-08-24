@@ -4,8 +4,8 @@ import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.bookings.constants import FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offer_models
 
 from tests.conftest import clean_database
 from tests.test_utils import run_command
@@ -39,7 +39,7 @@ class ArchiveOldBookingsTest:
     @clean_database
     @pytest.mark.parametrize(
         "subcategoryId",
-        FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE,
+        offer_models.Stock.AUTOMATICALLY_USED_SUBCATEGORIES,
     )
     def test_old_subcategories_bookings_are_archived(self, app, subcategoryId):
         # given
