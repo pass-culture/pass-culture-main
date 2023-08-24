@@ -161,6 +161,20 @@ class GetOffererVenuesTest:
         assert json_dict[0]["offerer"]["siren"] == offerer_with_two_venues.siren
         assert len(json_dict[0]["venues"]) == 2
 
+    def test_get_filtered_offerer_venues_with_siren_more_than_9_characters(self, client):
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            "/public/offers/v1/offerer_venues?siren=1234567890",
+        )
+        assert response == 400
+        assert response.json == {"siren": ['string does not match regex "^\\d{9}$"']}
+
+    def test_get_filtered_offerer_venues_with_siren_less_than_9_characters(self, client):
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            "/public/offers/v1/offerer_venues?siren=1234890",
+        )
+        assert response == 400
+        assert response.json == {"siren": ['string does not match regex "^\\d{9}$"']}
+
     def test_when_no_venues(self, client):
         utils.create_offerer_provider()
 

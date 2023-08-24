@@ -939,7 +939,7 @@ class GetOfferersVenuesResponse(serialization.BaseModel):
 
 
 class GetOfferersVenuesQuery(serialization.ConfiguredBaseModel):
-    siren: str | None = pydantic.Field(example="123456789")
+    siren: str | None = pydantic.Field(example="123456789", regex=r"^\d{9}$")
 
 
 class GetProductsListByEansQuery(serialization.ConfiguredBaseModel):
