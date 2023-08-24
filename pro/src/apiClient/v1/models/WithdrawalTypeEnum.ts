@@ -10,4 +10,5 @@ export enum WithdrawalTypeEnum {
   BY_EMAIL = 'by_email',
   NO_TICKET = 'no_ticket',
   ON_SITE = 'on_site',
+  IN_APP = 'in_app',
 }

@@ -333,10 +333,7 @@ class CheckValidationStatusTest:
 class CheckOfferWithdrawalTest:
     def test_offer_can_have_no_withdrawal_informations(self):
         assert not validation.check_offer_withdrawal(
-            withdrawal_type=None,
-            withdrawal_delay=None,
-            subcategory_id=None,
-            booking_contact=None,
+            withdrawal_type=None, withdrawal_delay=None, subcategory_id=None, booking_contact=None, provider=None
         )
 
     def test_withdrawable_event_offer_can_have_no_ticket_to_withdraw(self):
@@ -345,6 +342,7 @@ class CheckOfferWithdrawalTest:
             withdrawal_delay=None,
             subcategory_id=subcategories.CONCERT.id,
             booking_contact="booking@conta.ct",
+            provider=None,
         )
 
     def test_withdrawable_event_offer_with_no_ticket_to_withdraw_cant_have_delay(self):
@@ -354,6 +352,7 @@ class CheckOfferWithdrawalTest:
                 withdrawal_delay=60 * 30,
                 subcategory_id=subcategories.CONCERT.id,
                 booking_contact="booking@conta.ct",
+                provider=None,
             )
 
     def test_non_withdrawable_event_offer_cant_have_withdrawal(self):
@@ -363,6 +362,7 @@ class CheckOfferWithdrawalTest:
                 withdrawal_delay=None,
                 subcategory_id=subcategories.JEU_EN_LIGNE.id,
                 booking_contact=None,
+                provider=None,
             )
 
     @pytest.mark.parametrize(
@@ -378,6 +378,7 @@ class CheckOfferWithdrawalTest:
             withdrawal_delay=60 * 30,
             subcategory_id=subcategories.CONCERT.id,
             booking_contact="booking@conta.ct",
+            provider=None,
         )
 
     @pytest.mark.parametrize(
@@ -394,6 +395,7 @@ class CheckOfferWithdrawalTest:
                 withdrawal_delay=None,
                 subcategory_id=subcategories.CONCERT.id,
                 booking_contact="booking@conta.ct",
+                provider=None,
             )
 
     @override_features(PRO_DISABLE_EVENTS_QRCODE=True)
@@ -407,6 +409,7 @@ class CheckOfferWithdrawalTest:
             withdrawal_delay=None,
             subcategory_id=subcategory_id,
             booking_contact="booking@conta.ct",
+            provider=None,
         )
 
     # @TODO: bruno: remove this test when removing the feature flag PC-14050
@@ -421,6 +424,7 @@ class CheckOfferWithdrawalTest:
             withdrawal_delay=None,
             subcategory_id=subcategories.CONCERT.id,
             booking_contact="booking@conta.ct",
+            provider=None,
         )
 
     @override_features(PRO_DISABLE_EVENTS_QRCODE=True)
@@ -431,6 +435,7 @@ class CheckOfferWithdrawalTest:
                 withdrawal_delay=None,
                 subcategory_id=subcategories.FESTIVAL_MUSIQUE.id,
                 booking_contact=None,
+                provider=None,
             )
 
     def test_withdrawable_event_offer_must_have_booking_contact(self):
@@ -440,6 +445,7 @@ class CheckOfferWithdrawalTest:
                 withdrawal_delay=None,
                 subcategory_id=subcategories.FESTIVAL_MUSIQUE.id,
                 booking_contact=None,
+                provider=None,
             )
 
     @override_features(WIP_MANDATORY_BOOKING_CONTACT=False)
@@ -449,7 +455,42 @@ class CheckOfferWithdrawalTest:
             withdrawal_delay=None,
             subcategory_id=subcategories.FESTIVAL_MUSIQUE.id,
             booking_contact=None,
+            provider=None,
         )
+
+    def test_withdrawable_event_offer_with_provider_can_be_in_app(self):
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider", localClass=None, bookingExternalUrl="url", cancelExternalUrl="url"
+        )
+        assert not validation.check_offer_withdrawal(
+            withdrawal_type=WithdrawalTypeEnum.IN_APP,
+            withdrawal_delay=None,
+            subcategory_id=subcategories.FESTIVAL_MUSIQUE.id,
+            booking_contact="booking@conta.ct",
+            provider=provider,
+        )
+
+    def test_withdrawable_event_offer_without_provider_cannot_be_in_app(self):
+        with pytest.raises(exceptions.NonLinkedProviderCannotHaveInAppTicket):
+            validation.check_offer_withdrawal(
+                withdrawal_type=WithdrawalTypeEnum.IN_APP,
+                withdrawal_delay=None,
+                subcategory_id=subcategories.FESTIVAL_MUSIQUE.id,
+                booking_contact="booking@conta.ct",
+                provider=None,
+            )
+
+    def test_withdrawable_event_offer_with_provider_without_charlie_implementation_cannot_be_in_app(self):
+        # A provider without bookingExternalUrl or cancelExternalUrl
+        provider = providers_factories.ProviderFactory(name="Technical provider", localClass=None)
+        with pytest.raises(exceptions.NonLinkedProviderCannotHaveInAppTicket):
+            validation.check_offer_withdrawal(
+                withdrawal_type=WithdrawalTypeEnum.IN_APP,
+                withdrawal_delay=None,
+                subcategory_id=subcategories.FESTIVAL_MUSIQUE.id,
+                booking_contact="booking@conta.ct",
+                provider=provider,
+            )
 
 
 @pytest.mark.usefixtures("db_session")

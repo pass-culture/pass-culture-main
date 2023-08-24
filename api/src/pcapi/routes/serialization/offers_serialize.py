@@ -102,6 +102,12 @@ class PostOfferBodyModel(BaseModel):
             check_offer_ean_is_valid(values.get("extra_data", {}).get("ean"))
         return values
 
+    @validator("withdrawal_type")
+    def validate_withdrawal_type(cls, value: offers_models.WithdrawalTypeEnum) -> offers_models.WithdrawalTypeEnum:
+        if value == offers_models.WithdrawalTypeEnum.IN_APP:
+            raise ValueError("Withdrawal type cannot be in_app for manually created offers")
+        return value
+
     class Config:
         alias_generator = to_camel
         extra = "forbid"
