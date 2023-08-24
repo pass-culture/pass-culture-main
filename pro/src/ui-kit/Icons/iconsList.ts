@@ -1,3 +1,5 @@
+import fullGoTop from 'icons/stroke-goTop.svg'
+
 import fullArrowRightIcon from 'icons/full-arrow-right.svg'
 import fullBackIcon from 'icons/full-back.svg'
 import fullClearIcon from 'icons/full-clear.svg'
@@ -145,6 +147,7 @@ export const fullIcons: IconListItem[] = [
   { src: fullUpIcon },
   { src: fullRightIcon },
   { src: fullLeftIcon },
+  { src: fullGoTop },
   { src: fullArrowRightIcon },
   { src: fullDisclosureCloseIcon, viewBox: '0 0 16 16' }, // TODO clean viewbox
   { src: fullDisclosureOpenIcon, viewBox: '0 0 16 16' }, // TODO clean viewbox
@@ -190,6 +193,7 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeLikeIcon },
   { src: strokeLogoutIcon },
   { src: strokeDownloadIcon },
+
   { src: strokeSearchIcon },
   { src: strokeTrashIcon },
   { src: strokeDraftIcon },
