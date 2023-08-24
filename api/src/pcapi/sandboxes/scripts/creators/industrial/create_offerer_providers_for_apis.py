@@ -7,6 +7,7 @@ from pcapi import settings
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.external_bookings import factories as external_bookings_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
@@ -20,13 +21,27 @@ logger = logging.getLogger(__name__)
 
 
 def create_offerer_provider(
-    name: str, isActive: bool = True, enabledForPro: bool = True, provider_name: str = None
+    name: str,
+    isActive: bool = True,
+    enabledForPro: bool = True,
+    provider_name: str = None,
+    with_charlie_url: bool = False,
 ) -> typing.Tuple[offerers_models.Offerer, providers_models.Provider]:
     offerer = offerers_factories.OffererFactory(name=name)
     if provider_name is None:
         provider_name = name
+    booking_url = None
+    cancel_booking_url = None
+    if with_charlie_url:
+        booking_url = settings.CHARLIE_BOOKING_URL
+        cancel_booking_url = settings.CHARLIE_CANCEL_BOOKING_URL
     provider = providers_factories.ProviderFactory(
-        name=provider_name, localClass=None, isActive=isActive, enabledForPro=enabledForPro
+        name=provider_name,
+        localClass=None,
+        isActive=isActive,
+        enabledForPro=enabledForPro,
+        bookingExternalUrl=booking_url,
+        cancelExternalUrl=cancel_booking_url,
     )
 
     offerers_factories.ApiKeyFactory(
@@ -47,7 +62,7 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
     now = datetime.datetime.utcnow().replace(second=0, microsecond=0)
     in_five_days = now + datetime.timedelta(days=5)
     in_ten_days = now + datetime.timedelta(days=10)
-    offerer, provider = create_offerer_provider(name, provider_name="TaylorManager")
+    offerer, provider = create_offerer_provider(name, provider_name="TaylorManager", with_charlie_url=True)
     user = users_factories.ProFactory(
         email=user_email,
         firstName="taylor",
@@ -81,7 +96,7 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
             )
 
         for _ in range(15):
-            bookings_factories.BookingFactory(
+            booking = bookings_factories.BookingFactory(
                 quantity=random.randint(1, 2),
                 stock=random.choice(stocks),
                 dateCreated=now
@@ -89,6 +104,7 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
                     days=random.randint(0, 10), hours=random.randint(0, 23), minutes=random.randint(0, 59)
                 ),
             )
+            external_bookings_factories.ExternalBookingFactory(booking=booking)
 
         offers.append(offer)
 
