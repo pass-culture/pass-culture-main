@@ -19,7 +19,6 @@ from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models
 from pcapi.core.bookings.api import cancel_unstored_external_bookings
-from pcapi.core.bookings.constants import FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
@@ -1359,7 +1358,7 @@ class ArchiveOldBookingsTest:
 
     @pytest.mark.parametrize(
         "subcategoryId",
-        FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE,
+        offers_models.Stock.AUTOMATICALLY_USED_SUBCATEGORIES,
     )
     def test_old_subcategories_bookings_are_archived(self, db_session, subcategoryId):
         # given

@@ -6,7 +6,6 @@ from unittest.mock import patch
 from dateutil.relativedelta import relativedelta
 import pytest
 
-from pcapi.core.bookings import constants
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 import pcapi.core.mails.testing as mails_testing
@@ -515,8 +514,10 @@ class Returns201Test:
         assert updated_booking.status is bookings_models.BookingStatus.USED
         assert updated_booking.dateUsed == date_used_in_48_hours
 
-    @pytest.mark.parametrize("subcategoryId", constants.FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE)
-    def should_cancel_booking_when_stock_is_no_longer_free(self, client, subcategoryId):
+    @pytest.mark.parametrize("subcategoryId", offers_models.Stock.AUTOMATICALLY_USED_SUBCATEGORIES)
+    def should_cancel_bookings_when_stock_is_no_longer_free_for_automatically_used_subcategories(
+        self, client, subcategoryId
+    ):
         offer = offers_factories.ThingOfferFactory(subcategoryId=subcategoryId)
         existing_stock = offers_factories.StockFactory(offer=offer, price=0)
         booking = bookings_factories.UsedBookingFactory(stock=existing_stock)

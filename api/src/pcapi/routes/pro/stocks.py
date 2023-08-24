@@ -4,7 +4,6 @@ from flask_login import current_user
 from flask_login import login_required
 import sqlalchemy.orm as sqla_orm
 
-from pcapi.core.bookings import constants as booking_constants
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offerers.repository as offerers_repository
@@ -89,11 +88,7 @@ def upsert_stocks(body: serialization.StocksUpsertBodyModel) -> serialization.St
                     )
                 offers_validation.check_stock_has_price_or_price_category(offer, stock_to_edit, price_categories)
                 old_stock = existing_stocks[stock_to_edit.id]
-                should_bookings_be_canceled = bool(
-                    not old_stock.price
-                    and stock_to_edit.price
-                    and old_stock.offer.subcategoryId in booking_constants.FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE
-                )
+                should_bookings_be_canceled = old_stock.is_automatically_used and bool(stock_to_edit.price)
                 edited_stock, is_beginning_updated = offers_api.edit_stock(
                     old_stock,
                     price=stock_to_edit.price,
