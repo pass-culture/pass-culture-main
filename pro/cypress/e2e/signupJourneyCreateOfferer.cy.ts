@@ -37,7 +37,7 @@ describe('Signup journey', () => {
   }
 
   it('should create offerer', () => {
-    cy.login('pctest.pro93.0@example.com', 'user@AZERTY123')
+    cy.login('pctest.admin93.0@example.com', 'user@AZERTY123')
 
     welcomeStep()
     offererStep()
@@ -69,6 +69,27 @@ describe('Signup journey', () => {
 
     activityStep()
     validationStep()
+
+    cy.logout()
+  })
+
+  it('should attach user to an existing offerer', () => {
+    cy.login('pctest.pro93.0@example.com', 'user@AZERTY123')
+
+    welcomeStep()
+    offererStep()
+
+    // Offerer attachment
+    cy.contains('Rejoindre cet espace').click()
+
+    cy.get('[data-testid="confirm-dialog-button-confirm"]').as(
+      'dialogConfirmButton'
+    )
+    cy.get('@dialogConfirmButton').click()
+
+    cy.contains('Accéder à votre espace').click()
+
+    cy.url().should('be.equal', 'http://localhost:3001/accueil')
 
     cy.logout()
   })
