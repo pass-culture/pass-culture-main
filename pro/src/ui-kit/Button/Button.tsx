@@ -41,7 +41,7 @@ const Button = ({
     </div>
   )
   const content = (
-    <>
+    <div className={styles['content']}>
       {icon && !isLoading && iconPosition !== IconPositionEnum.RIGHT && (
         <SvgIcon
           src={icon}
@@ -81,7 +81,7 @@ const Button = ({
           width="20"
         />
       )}
-    </>
+    </div>
   )
 
   return (

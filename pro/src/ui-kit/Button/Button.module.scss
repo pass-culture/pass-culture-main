@@ -4,6 +4,10 @@
 @use "styles/mixins/_a11y.scss" as a11y;
 @use "styles/variables/_size.scss" as size;
 
+.content {
+  display: flex;
+}
+
 .button {
   @include fonts.button;
 
