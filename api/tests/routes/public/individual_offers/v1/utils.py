@@ -10,10 +10,17 @@ ACCESSIBILITY_FIELDS = {
 }
 
 
-def create_offerer_provider():
+def create_offerer_provider(with_charlie=False):
+    booking_url = "http://example.com/booking" if with_charlie else None
+    cancellation_url = "http://example.com/cancellation" if with_charlie else None
     offerer = offerers_factories.OffererFactory(name="Technical provider")
     provider = providers_factories.ProviderFactory(
-        name="Technical provider", localClass=None, isActive=True, enabledForPro=True
+        name="Technical provider",
+        localClass=None,
+        isActive=True,
+        enabledForPro=True,
+        bookingExternalUrl=booking_url,
+        cancelExternalUrl=cancellation_url,
     )
     api_key = offerers_factories.ApiKeyFactory(
         offerer=offerer,
@@ -26,9 +33,9 @@ def create_offerer_provider():
     return provider, api_key
 
 
-def create_offerer_provider_linked_to_venue(venue_params=None, is_virtual=False):
+def create_offerer_provider_linked_to_venue(venue_params=None, is_virtual=False, with_charlie=False):
     venue_params = venue_params if venue_params else {}
-    provider, api_key = create_offerer_provider()
+    provider, api_key = create_offerer_provider(with_charlie)
     if is_virtual:
         venue = offerers_factories.VirtualVenueFactory(**venue_params)
     else:

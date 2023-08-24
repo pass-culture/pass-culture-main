@@ -132,7 +132,7 @@ NAME_FIELD = pydantic.Field(description="Offer title", example="Le Petit Prince"
 DURATION_MINUTES_FIELD = pydantic.Field(description="Event duration in minutes", example=60, alias="eventDuration")
 TICKET_COLLECTION_FIELD = pydantic.Field(
     None,
-    description="How the ticket will be collected. Leave empty if there is no ticket. Only some categories are compatible with tickets.",
+    description="How the ticket will be collected. Leave empty if there is no ticket. To use 'in_app' you must have developed the pass culture ticketing interface. Only some categories are compatible with tickets.",
     discriminator="way",
     example=None,
 )
@@ -430,6 +430,10 @@ class SentByEmailDetailsResponse(serialization.ConfiguredBaseModel):
     way: typing.Literal["by_email"] = "by_email"
 
 
+class InAppDetails(serialization.ConfiguredBaseModel):
+    way: typing.Literal["in_app"] = "in_app"
+
+
 class ProductOfferCreation(OfferCreationBase):
     category_related_fields: product_category_creation_fields
     stock: StockCreation | None
@@ -517,7 +521,7 @@ class EventOfferCreation(OfferCreationBase):
     category_related_fields: event_category_creation_fields
     duration_minutes: int | None = DURATION_MINUTES_FIELD
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
-    ticket_collection: SentByEmailDetails | OnSiteCollectionDetails | None = TICKET_COLLECTION_FIELD
+    ticket_collection: SentByEmailDetails | OnSiteCollectionDetails | InAppDetails | None = TICKET_COLLECTION_FIELD
     price_categories: typing.List[PriceCategoryCreation] | None = PRICE_CATEGORIES_FIELD
 
     @pydantic.validator("price_categories")
@@ -777,9 +781,11 @@ class BatchProductOfferResponse(serialization.ConfiguredBaseModel):
 
 def _serialize_ticket_collection(
     offer: offers_models.Offer,
-) -> SentByEmailDetailsResponse | OnSiteCollectionDetailsResponse | None:
+) -> SentByEmailDetailsResponse | OnSiteCollectionDetailsResponse | InAppDetails | None:
     if offer.withdrawalType is None or offer.withdrawalType == offers_models.WithdrawalTypeEnum.NO_TICKET:
         return None
+    if offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP:
+        return InAppDetails()
     if offer.withdrawalDelay is None:
         logger.error("Missing withdrawal delay for offer %s", offer.id)
         return None
@@ -794,7 +800,9 @@ def _serialize_ticket_collection(
 class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
     category_related_fields: event_category_reading_fields
     duration_minutes: int | None = DURATION_MINUTES_FIELD
-    ticket_collection: SentByEmailDetailsResponse | OnSiteCollectionDetailsResponse | None = TICKET_COLLECTION_FIELD
+    ticket_collection: SentByEmailDetailsResponse | OnSiteCollectionDetailsResponse | InAppDetails | None = (
+        TICKET_COLLECTION_FIELD
+    )
 
     @classmethod
     def build_event_offer(cls, offer: offers_models.Offer) -> "EventOfferResponse":

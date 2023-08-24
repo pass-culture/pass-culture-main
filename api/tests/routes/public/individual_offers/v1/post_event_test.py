@@ -245,6 +245,25 @@ class PostEventTest:
         assert created_offer.withdrawalDelay == 3 * 24 * 3600
 
     @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
+    def test_event_with_in_app_ticket(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue(with_charlie=True)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/events",
+            json={
+                "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+                "ticketCollection": {"way": "in_app"},
+                "bookingContact": "booking@conta.ct",
+            },
+        )
+        assert response.status_code == 200
+        created_offer = offers_models.Offer.query.one()
+        assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
+
+    @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
     def test_error_when_ticket_specified_but_not_applicable(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
