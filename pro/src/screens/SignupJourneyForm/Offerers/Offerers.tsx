@@ -163,22 +163,11 @@ const Offerers = (): JSX.Element => {
             </Button>
           )}
         </div>
-        {!isNewOffererLinkEnabled && (
-          <Button
-            variant={ButtonVariant.SECONDARY}
-            onClick={doLinkUserToOfferer}
-          >
-            Rejoindre cet espace
-          </Button>
-        )}
+        <Button variant={ButtonVariant.SECONDARY} onClick={doLinkUserToOfferer}>
+          Rejoindre cet espace
+        </Button>
       </div>
-      <div
-        className={cn(
-          styles['wrong-offerer-title'],
-          /* istanbul ignore next: displaying changes */
-          !isNewOffererLinkEnabled ? styles['title-4'] : ''
-        )}
-      >
+      <div className={cn(styles['wrong-offerer-title'], styles['title-4'])}>
         Vous souhaitez ajouter une nouvelle structure à cet espace ?
       </div>
       <Button
