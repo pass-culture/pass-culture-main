@@ -141,7 +141,7 @@ if not settings.JWT_SECRET_KEY:
     raise ValueError("JWT_SECRET_KEY not found in env")
 
 app.secret_key = settings.FLASK_SECRET
-app.json_encoder = EnumJSONEncoder
+app.json_provider_class = EnumJSONEncoder
 
 app.config["SQLALCHEMY_DATABASE_URI"] = settings.DATABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
