@@ -145,6 +145,7 @@ class YoungStatusResponse(BaseModel):
 class UserProfileResponse(BaseModel):
     booked_offers: dict[str, int]
     birth_date: datetime.date | None
+    deposit_activation_date: datetime.datetime | None
     deposit_expiration_date: datetime.datetime | None
     deposit_type: finance_models.DepositType | None
     domains_credit: DomainsCredit | None

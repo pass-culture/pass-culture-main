@@ -1730,6 +1730,12 @@ def test_public_api(client):
                             "title": "Bookedoffers",
                             "type": "object",
                         },
+                        "depositActivationDate": {
+                            "format": "date-time",
+                            "nullable": True,
+                            "title": "Depositactivationdate",
+                            "type": "string",
+                        },
                         "depositExpirationDate": {
                             "format": "date-time",
                             "nullable": True,
