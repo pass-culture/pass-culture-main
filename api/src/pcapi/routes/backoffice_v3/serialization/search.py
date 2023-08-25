@@ -54,4 +54,4 @@ class SearchProModel(SearchUserModel):
 
     @pydantic.validator("pro_type", pre=True)
     def validate_pro_type(cls, pro_type: str) -> TypeOptions:
-        return TypeOptions(pro_type)
+        return TypeOptions[pro_type]

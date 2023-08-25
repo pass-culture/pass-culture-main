@@ -9,7 +9,7 @@
           size="2">
     {% for value, label, selected in field.iter_choices() %}
       <option value="{{ value }}" {{ "selected" if selected else "" }}>
-        {{ label | i18n_public_account }}
+        {{ label }}
       </option>
     {% endfor %}
   </select>
@@ -27,7 +27,7 @@
           size="2">
     {% for value, label, selected in field.iter_choices() %}
       <option value="{{ value }}" {{ "selected" if selected else "" }}>
-        {{ label | i18n_public_account }}
+        {{ label  }}
       </option>
     {% endfor %}
   </select>

@@ -41,7 +41,7 @@
                   <span class="badge rounded-pill bg-secondary px-3 py-2">NA</span>
                 {% else %}
                   {% for applicable_eligibility in fraud_action['applicableEligibilities'] %}
-                    <span class="badge rounded-pill bg-primary px-3 py-2">{{ applicable_eligibility | i18n_public_account }}</span>
+                    <span class="badge rounded-pill bg-primary px-3 py-2">{{ applicable_eligibility | format_eligibility_value }}</span>
                   {% endfor %}
                 {% endif %}
               </td>
@@ -158,7 +158,7 @@
           {% endif %}
         </div>
       </span>
-      <span class="step-text center-smallcontainer pe-none">{{ description | i18n_subscription_type }}</span>
+      <span class="step-text center-smallcontainer pe-none">{{ description | format_registration_step_description }}</span>
     </div>
   </li>
 {% endmacro %}
@@ -174,7 +174,7 @@
     <div class="card-body">
       <h5 class="card-title text-bold fs-2 m-3">
         Parcours d'inscription
-        <span class="badge rounded-pill text-bg-primary fs-6 align-middle mx-4">{{ tunnel.type.value | i18n_public_account }}</span>
+        <span class="badge rounded-pill text-bg-primary fs-6 align-middle mx-4">{{ tunnel.type.value | format_eligibility_value }}</span>
       </h5>
       <div class="card-body">
         <div class="row py-1"

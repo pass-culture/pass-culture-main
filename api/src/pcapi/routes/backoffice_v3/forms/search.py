@@ -4,6 +4,7 @@ from flask_wtf import FlaskForm
 import wtforms
 from wtforms import validators
 
+from pcapi.routes.backoffice_v3 import filters
 from pcapi.routes.backoffice_v3.serialization.search import TypeOptions
 
 from . import fields
@@ -49,7 +50,9 @@ class SearchForm(FlaskForm):
 
 class ProSearchForm(SearchForm):
     pro_type = fields.PCSelectField(
-        "Type", choices=utils.values_from_enum(TypeOptions), default=TypeOptions.OFFERER.value
+        "Type",
+        choices=utils.choices_from_enum(TypeOptions, filters.format_search_type_options),
+        default=TypeOptions.OFFERER,
     )
 
     def filter_terms(self, value: str | None) -> str | None:
