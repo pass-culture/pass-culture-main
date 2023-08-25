@@ -43,6 +43,7 @@ vi.mock('react-instantsearch-dom', () => {
 const user = {
   role: AdageFrontRoles.REDACTOR,
   email: 'test@example.com',
+  departmentCode: '75',
 }
 
 const renderOffers = (
@@ -341,6 +342,53 @@ describe('offer', () => {
       await userEvent.click(contactButton)
 
       expect(screen.getByText('Contacter le partenaire culturel'))
+    })
+
+    it('should display distance when offer has coordinates and FF is active', async () => {
+      renderOffers(
+        {
+          ...offerProps,
+          offer: {
+            ...offerInParis,
+            venue: {
+              ...offerInParis.venue,
+              coordinates: { latitude: 1, longitude: 1 },
+            },
+          },
+        },
+        [{ nameKey: 'WIP_ENABLE_ADAGE_GEO_LOCATION', isActive: true }]
+      )
+
+      // Distance between {0, 0} and {1, 1} is 157km
+      expect(
+        screen.getByText('basé à 157 km de votre établissement')
+      ).toBeInTheDocument()
+    })
+
+    it('should display can move in your institution is offer intervention area match user one', async () => {
+      renderOffers(
+        {
+          ...offerProps,
+          offer: {
+            ...offerInParis,
+            venue: {
+              ...offerInParis.venue,
+              coordinates: { latitude: 1, longitude: 1 },
+            },
+            offerVenue: {
+              venueId: null,
+              otherAddress: 'A la mairie',
+              addressType: OfferAddressType.OTHER,
+            },
+            interventionArea: ['75'],
+          },
+        },
+        [{ nameKey: 'WIP_ENABLE_ADAGE_GEO_LOCATION', isActive: true }]
+      )
+
+      expect(
+        screen.getByText('peut se déplacer dans votre département')
+      ).toBeInTheDocument()
     })
   })
 })
