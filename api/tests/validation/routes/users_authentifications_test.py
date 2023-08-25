@@ -1,34 +1,12 @@
 import flask
-from flask_login.mixins import AnonymousUserMixin
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core.users.models import User
 from pcapi.models import api_errors
 from pcapi.validation.routes import users_authentifications
 
 from tests.conftest import TestClient
-
-
-class CheckUserIsLoggedInOrEmailIsProvidedTest:
-    def test_raises_an_error_when_no_email_nor_user_logged(self):
-        anonymous = AnonymousUserMixin()
-        with pytest.raises(api_errors.ApiErrors) as excinfo:
-            users_authentifications.check_user_is_logged_in_or_email_is_provided(anonymous, email=None)
-        assert excinfo.value.errors["email"] == [
-            "Vous devez préciser l'email de l'utilisateur quand vous n'êtes pas connecté(e)"
-        ]
-
-    def test_does_not_raise_error_when_email_is_provided(self):
-        anonymous = AnonymousUserMixin()
-        # The following call should not raise.
-        users_authentifications.check_user_is_logged_in_or_email_is_provided(anonymous, email="fake@example.com")
-
-    def test_does_not_raise_error_when_user_is_authenticated(self):
-        user = User()
-        # The following call should not raise.
-        users_authentifications.check_user_is_logged_in_or_email_is_provided(user, email="fake@example.com")
 
 
 @pytest.mark.usefixtures("db_session")

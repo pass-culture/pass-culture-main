@@ -24,13 +24,6 @@ API_KEY_AUTH_NAME = "ApiKeyAuth"
 COOKIE_AUTH_NAME = "SessionAuth"
 
 
-def check_user_is_logged_in_or_email_is_provided(user: User, email: str | None) -> None:
-    if not (user.is_authenticated or email):
-        raise api_errors.ApiErrors(
-            {"email": ["Vous devez préciser l'email de l'utilisateur quand vous n'êtes pas connecté(e)"]}
-        )
-
-
 def login_or_api_key_required(function: typing.Callable) -> typing.Callable:
     add_security_scheme(function, API_KEY_AUTH_NAME)
     add_security_scheme(function, COOKIE_AUTH_NAME)
