@@ -51,6 +51,7 @@ interface OffersComponentPropsWithHits
   resetForm?: () => void
   logFiltersOnSearch?: (nbHits: number, queryId: string) => void
   submitCount?: number
+  isBackToTopVisibile?: boolean
 }
 
 type OfferMap = Map<
@@ -69,6 +70,7 @@ export const OffersComponent = ({
   resetForm,
   logFiltersOnSearch,
   submitCount,
+  isBackToTopVisibile = false,
 }: OffersComponentProps): JSX.Element => {
   const [queriesAreLoading, setQueriesAreLoading] = useState(false)
   const [offers, setOffers] = useState<
@@ -223,15 +225,17 @@ export const OffersComponent = ({
             ))}
         </div>
       </ul>
-      <a href="#root" className={styles['back-to-top-button']}>
-        <SvgIcon
-          alt=""
-          src={fullGoTop}
-          className={styles['back-to-top-button-icon']}
-          width="20px"
-        />
-        Retour en haut
-      </a>
+      {isBackToTopVisibile && (
+        <a href="#root" className={styles['back-to-top-button']}>
+          <SvgIcon
+            alt=""
+            src={fullGoTop}
+            className={styles['back-to-top-button-icon']}
+            width="20"
+          />
+          Retour en haut
+        </a>
+      )}
     </>
   )
 }
