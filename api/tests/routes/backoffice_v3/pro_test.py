@@ -12,6 +12,7 @@ from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.routes.backoffice_v3.serialization.search import TypeOptions
 
 from .helpers import html_parser
 from .helpers import search as search_helpers
@@ -113,7 +114,9 @@ class SearchProUserTest:
         self._create_accounts()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=self.pro_accounts[5].id, pro_type="user"))
+        response = authenticated_client.get(
+            url_for(self.endpoint, terms=self.pro_accounts[5].id, pro_type=TypeOptions.USER.name)
+        )
 
         # then
         assert response.status_code == 200
@@ -126,7 +129,9 @@ class SearchProUserTest:
         self._create_accounts()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=self.pro_accounts[2].email, pro_type="user"))
+        response = authenticated_client.get(
+            url_for(self.endpoint, terms=self.pro_accounts[2].email, pro_type=TypeOptions.USER.name)
+        )
 
         # then
         assert response.status_code == 200
@@ -140,7 +145,9 @@ class SearchProUserTest:
         self._create_accounts()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=self.pro_accounts[2].email, pro_type="user"))
+        response = authenticated_client.get(
+            url_for(self.endpoint, terms=self.pro_accounts[2].email, pro_type=TypeOptions.USER.name)
+        )
 
         # then redirect on single result
         assert response.status_code == 303
@@ -157,7 +164,7 @@ class SearchProUserTest:
         users_factories.AdminFactory(firstName="Admin", lastName="Dubois")
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms="Dubois", pro_type="user"))
+        response = authenticated_client.get(url_for(self.endpoint, terms="Dubois", pro_type=TypeOptions.USER.name))
 
         # then
         assert response.status_code == 200
@@ -169,7 +176,9 @@ class SearchProUserTest:
         self._create_accounts()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms="Alice Dubois", pro_type="user"))
+        response = authenticated_client.get(
+            url_for(self.endpoint, terms="Alice Dubois", pro_type=TypeOptions.USER.name)
+        )
 
         # then
         assert response.status_code == 200
@@ -183,7 +192,7 @@ class SearchProUserTest:
         self._create_accounts()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=query, pro_type="user"))
+        response = authenticated_client.get(url_for(self.endpoint, terms=query, pro_type=TypeOptions.USER.name))
 
         # then
         assert response.status_code == 200
@@ -194,7 +203,7 @@ class SearchProUserTest:
         self._create_accounts()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms="%terms", pro_type="user"))
+        response = authenticated_client.get(url_for(self.endpoint, terms="%terms", pro_type=TypeOptions.USER.name))
 
         # then
         assert response.status_code == 400
@@ -212,7 +221,9 @@ class SearchProUserTest:
         offerers_factories.UserOffererFactory(user=pro_beneficiary)
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=pro_beneficiary.id, pro_type="user"))
+        response = authenticated_client.get(
+            url_for(self.endpoint, terms=pro_beneficiary.id, pro_type=TypeOptions.USER.name)
+        )
 
         # then
         assert response.status_code == 200
@@ -246,7 +257,9 @@ class SearchOffererTest:
         self._create_offerers()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=self.offerers[2].id, pro_type="offerer"))
+        response = authenticated_client.get(
+            url_for(self.endpoint, terms=self.offerers[2].id, pro_type=TypeOptions.OFFERER.name)
+        )
 
         # then
         assert response.status_code == 200
@@ -260,7 +273,7 @@ class SearchOffererTest:
         self._create_offerers()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=siren, pro_type="offerer"))
+        response = authenticated_client.get(url_for(self.endpoint, terms=siren, pro_type=TypeOptions.OFFERER.name))
 
         # then
         assert response.status_code == 200
@@ -273,7 +286,9 @@ class SearchOffererTest:
         self._create_offerers()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms="Théâtre du Centre", pro_type="offerer"))
+        response = authenticated_client.get(
+            url_for(self.endpoint, terms="Théâtre du Centre", pro_type=TypeOptions.OFFERER.name)
+        )
 
         # then
         assert response.status_code == 200
@@ -289,7 +304,7 @@ class SearchOffererTest:
         self._create_offerers()
 
         # when
-        response = authenticated_client.get(url_for(self.endpoint, terms=query, pro_type="offerer"))
+        response = authenticated_client.get(url_for(self.endpoint, terms=query, pro_type=TypeOptions.OFFERER.name))
 
         # then
         assert response.status_code == 200
@@ -343,7 +358,7 @@ class SearchVenueTest:
         # when
         venue_id = self.venues[2].id
         with assert_num_queries(self.expected_num_queries_with_ff):
-            response = authenticated_client.get(url_for(self.endpoint, terms=venue_id, pro_type="venue"))
+            response = authenticated_client.get(url_for(self.endpoint, terms=venue_id, pro_type=TypeOptions.VENUE.name))
 
         # then
         assert response.status_code == 200
@@ -358,7 +373,7 @@ class SearchVenueTest:
 
         # when
         with assert_num_queries(self.expected_num_queries_with_ff):
-            response = authenticated_client.get(url_for(self.endpoint, terms=siret, pro_type="venue"))
+            response = authenticated_client.get(url_for(self.endpoint, terms=siret, pro_type=TypeOptions.VENUE.name))
 
         # then
         assert response.status_code == 200
@@ -373,7 +388,7 @@ class SearchVenueTest:
         # when
         email = self.venues[1].bookingEmail
         with assert_num_queries(self.expected_num_queries_with_ff):
-            response = authenticated_client.get(url_for(self.endpoint, terms=email, pro_type="venue"))
+            response = authenticated_client.get(url_for(self.endpoint, terms=email, pro_type=TypeOptions.VENUE.name))
 
         # then
         assert response.status_code == 200
@@ -387,7 +402,9 @@ class SearchVenueTest:
 
         # when
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, terms="@librairie.fr", pro_type="venue"))
+            response = authenticated_client.get(
+                url_for(self.endpoint, terms="@librairie.fr", pro_type=TypeOptions.VENUE.name)
+            )
 
         # then
         assert response.status_code == 200
@@ -404,7 +421,7 @@ class SearchVenueTest:
         # when
         email = self.venues[1].contact.email
         with assert_num_queries(self.expected_num_queries_with_ff):
-            response = authenticated_client.get(url_for(self.endpoint, terms=email, pro_type="venue"))
+            response = authenticated_client.get(url_for(self.endpoint, terms=email, pro_type=TypeOptions.VENUE.name))
 
         # then
         assert response.status_code == 200
@@ -418,7 +435,7 @@ class SearchVenueTest:
 
         # when
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, terms="Alpha", pro_type="venue"))
+            response = authenticated_client.get(url_for(self.endpoint, terms="Alpha", pro_type=TypeOptions.VENUE.name))
 
         # then
         assert response.status_code == 200
@@ -435,7 +452,9 @@ class SearchVenueTest:
 
         # when
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, terms="Théâtre du Centre", pro_type="venue"))
+            response = authenticated_client.get(
+                url_for(self.endpoint, terms="Théâtre du Centre", pro_type=TypeOptions.VENUE.name)
+            )
 
         # then
         assert response.status_code == 200
@@ -458,7 +477,7 @@ class SearchVenueTest:
 
         # when
         with assert_num_queries(self.expected_num_queries_with_ff):
-            response = authenticated_client.get(url_for(self.endpoint, terms=query, pro_type="venue"))
+            response = authenticated_client.get(url_for(self.endpoint, terms=query, pro_type=TypeOptions.VENUE.name))
 
         # then
         assert response.status_code == 200
@@ -473,7 +492,7 @@ class SearchVenueTest:
 
         # when
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, terms=query, pro_type="venue"))
+            response = authenticated_client.get(url_for(self.endpoint, terms=query, pro_type=TypeOptions.VENUE.name))
 
         # then
         assert response.status_code == 200
@@ -491,7 +510,9 @@ class LogsTest:
 
         # when
         with caplog.at_level(logging.INFO):
-            response = authenticated_client.get(url_for(self.endpoint, terms="rythme", pro_type="offerer"))
+            response = authenticated_client.get(
+                url_for(self.endpoint, terms="rythme", pro_type=TypeOptions.OFFERER.name)
+            )
 
         # then
         assert response.status_code == 200

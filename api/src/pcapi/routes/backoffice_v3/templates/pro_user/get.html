@@ -89,7 +89,7 @@
             <div class="col-4">
               <div class="fs-6">
                 <p class="mb-1">
-                  <span class="fw-bold">Email validé :</span> {{ "Oui" if user.isEmailValidated else "Non" }}
+                  <span class="fw-bold">Email validé :</span> {{ user.isEmailValidated | format_bool }}
                 </p>
                 {% if not user.isEmailValidated and has_permission("MANAGE_PRO_ENTITY") %}
                   <p class="mb-1">
