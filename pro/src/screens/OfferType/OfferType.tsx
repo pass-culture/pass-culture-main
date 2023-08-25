@@ -40,6 +40,7 @@ const OfferType = (): JSX.Element => {
     collectiveOfferSubtypeDuplicate:
       COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER,
     individualOfferSubtype: INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD,
+    individualOfferSubcategory: '',
   }
 
   const [hasCollectiveTemplateOffer, setHasCollectiveTemplateOffer] =
