@@ -65,7 +65,7 @@
     td {
       @include fonts.body;
 
-      vertical-align: middle;
+      vertical-align: baseline;
       text-align: left;
     }
 
@@ -73,6 +73,16 @@
       padding-bottom: rem.torem(12px);
     }
   }
+}
+
+.member-email {
+  display: flex;
+  width: rem.torem(380px);
+  word-break: break-word;
+}
+
+.member-status {
+  width: rem.torem(90px);
 }
 
 .display-all-members-button {
