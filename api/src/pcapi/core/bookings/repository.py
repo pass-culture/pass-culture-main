@@ -86,6 +86,8 @@ BOOKING_EXPORT_HEADER = [
     "Statut de la contremarque",
     "Date et heure de remboursement",
     "Type d'offre",
+    "Code postal du bénéficiaire",
+    "Duo",
 ]
 
 
@@ -465,6 +467,7 @@ def _get_filtered_booking_report(
             User.lastName.label("beneficiaryLastName"),
             User.email.label("beneficiaryEmail"),
             User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
+            User.postalCode.label("beneficiaryPostalCode"),
             Booking.id,
             Booking.token,
             Booking.priceCategoryLabel,
@@ -634,6 +637,8 @@ def _serialize_csv_report(query: BaseQuery) -> str:
                 convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking),
                 # This method is still used in the old Payment model
                 serialize_offer_type_educational_or_individual(offer_is_educational=False),
+                booking.beneficiaryPostalCode or "",
+                "Oui" if booking.quantity == DUO_QUANTITY else "Non",
             )
         )
 
@@ -682,6 +687,12 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
         worksheet.write(row, 12, _get_booking_status(booking.status, booking.isConfirmed))
         worksheet.write(row, 13, str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
         worksheet.write(row, 14, serialize_offer_type_educational_or_individual(offer_is_educational=False))
+        worksheet.write(row, 15, booking.beneficiaryPostalCode)
+        worksheet.write(
+            row,
+            16,
+            "Oui" if booking.quantity == DUO_QUANTITY else "Non",
+        )
         row += 1
 
     workbook.close()
