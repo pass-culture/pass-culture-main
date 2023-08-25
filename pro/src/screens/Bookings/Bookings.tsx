@@ -31,10 +31,6 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 import Tabs from 'ui-kit/Tabs'
 import Titles from 'ui-kit/Titles/Titles'
 
-import {
-  FORMAT_ISO_DATE_ONLY,
-  formatBrowserTimezonedDateAsUTC,
-} from '../../utils/date'
 import { stringify } from '../../utils/query-string'
 
 import BookingsRecapTable from './BookingsRecapTable'
@@ -139,9 +135,6 @@ const Bookings = <
     checkUserHasBookings()
   }, [checkUserHasBookings])
 
-  const dateFilterFormat = (date: Date | number) =>
-    formatBrowserTimezonedDateAsUTC(date, FORMAT_ISO_DATE_ONLY)
-
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -186,7 +179,7 @@ const Bookings = <
   const updateUrl = (filter: PreFiltersParams) => {
     const partialUrlInfo = {
       ...(filter.offerEventDate && filter.offerEventDate !== 'all'
-        ? { offerEventDate: dateFilterFormat(new Date(filter.offerEventDate)) }
+        ? { offerEventDate: filter.offerEventDate }
         : {}),
       ...(filter.bookingBeginningDate
         ? {
@@ -202,6 +195,7 @@ const Bookings = <
       ...(filter.offerType ? { offerType: filter.offerType } : {}),
       ...(filter.offerVenueId ? { offerVenueId: filter.offerVenueId } : {}),
     } as Partial<PreFiltersParams>
+
     setUrlParams({
       ...urlParams,
       ...partialUrlInfo,
