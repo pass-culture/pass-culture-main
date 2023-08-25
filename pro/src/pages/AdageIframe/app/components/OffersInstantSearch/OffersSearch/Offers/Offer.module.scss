@@ -1,6 +1,7 @@
 @use "styles/variables/_colorsAdageIframe.scss" as colors;
 @use "styles/variables/_colors.scss" as defaultColors;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 $offer-image-height: rem.torem(264px);
 $offer-image-width: rem.torem(176px);
@@ -8,9 +9,38 @@ $offer-image-width: rem.torem(176px);
 .offer {
   display: flex;
   flex: 1;
+  flex-direction: column;
   border: 1px solid #c7c8cb;
   border-radius: 8px;
   font-size: rem.torem(15px);
+
+  &-container {
+    display: flex;
+  }
+
+  &-geoloc {
+    @include fonts.body-important;
+
+    display: flex;
+    align-items: center;
+    gap: rem.torem(8px);
+    padding: rem.torem(8px) rem.torem(16px);
+    background-color: #37323e08;
+    height: rem.torem(36px);
+    border-top-right-radius: rem.torem(3px);
+    border-top-left-radius: rem.torem(3px);
+
+    &-icon {
+      color: colors.$primary;
+      width: rem.torem(16px);
+    }
+
+    &-separator {
+      background-color: defaultColors.$border-grey-color;
+      width: rem.torem(2px);
+      height: rem.torem(18px);
+    }
+  }
 
   &-image-container {
     border-radius: rem.torem(3px);
@@ -43,7 +73,7 @@ $offer-image-width: rem.torem(176px);
     }
   }
 
-  &-container {
+  &-details-container {
     padding: rem.torem(16px) rem.torem(16px) rem.torem(16px) rem.torem(0);
     position: relative;
     width: 100%;

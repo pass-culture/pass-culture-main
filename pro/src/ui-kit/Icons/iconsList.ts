@@ -75,6 +75,7 @@ import strokeInfoIcon from 'icons/stroke-info.svg'
 import strokeLeftIcon from 'icons/stroke-left.svg'
 import strokeLibraryIcon from 'icons/stroke-library.svg'
 import strokeLikeIcon from 'icons/stroke-like.svg'
+import strokeLocalisationIcon from 'icons/stroke-localisation.svg'
 import strokeLocationIcon from 'icons/stroke-location.svg'
 import strokeLogoutIcon from 'icons/stroke-logout.svg'
 import strokeMailIcon from 'icons/stroke-mail.svg'
@@ -181,6 +182,7 @@ export const strokeIcons: IconListItem[] = [
   { src: strokePhoneIcon },
   { src: strokeNearIcon },
   { src: strokeLocationIcon },
+  { src: strokeLocalisationIcon },
   { src: strokeFranceIcon },
   { src: strokeHomeIcon },
   { src: strokeBuildingIcon },
