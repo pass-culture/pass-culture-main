@@ -12,7 +12,6 @@ interface FacetsWithData {
 }
 
 export const ADAGE_FILTERS_DEFAULT_VALUES: SearchFormValues = {
-  query: '',
   domains: [],
   students: [],
   departments: [],
@@ -35,7 +34,6 @@ export const computeFiltersInitialValues = (
     departments: userDepartmentCode
       ? [userDepartmentCode, ...venueDepartementFilter]
       : ADAGE_FILTERS_DEFAULT_VALUES.departments,
-    query: venueFilter ? venueFilter.publicName || venueFilter.name : '',
   }
 }
 

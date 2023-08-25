@@ -1,5 +1,4 @@
 import { captureException } from '@sentry/react'
-import isEqual from 'lodash/isEqual'
 import React, { memo, useContext, useEffect, useState } from 'react'
 import type {
   InfiniteHitsProvided,
@@ -247,26 +246,32 @@ export const Offers = connectInfiniteHits<
   connectStats<OffersComponentProps>(
     memo(OffersComponent, (prevProps, nextProps) => {
       // prevent OffersComponent from rerendering if props are equal by value
-      // and thus trigger fetch multiple times
-      let arePropsEqual = true
-      Object.keys(prevProps).forEach(prop => {
-        if (
-          prop !== 'refineNext' &&
-          prop !== 'refinePrevious' &&
-          !isEqual(
-            prevProps[prop as keyof OffersComponentProps],
-            nextProps[prop as keyof OffersComponentProps]
-          ) &&
-          // add this condition to fix multiple renders when nbHits and hits.length doesn't match
-          (nextProps['nbHits'] === nextProps['hits'].length ||
-            (nextProps['nbHits'] > nextProps['hits'].length &&
-              nextProps['hasMore']))
-        ) {
-          arePropsEqual = false
-        }
-      })
+      // If they are not equal, the offers details will be fetched again
+      const {
+        hits: prevHits,
+        hasMore: prevHasMore,
+        displayStats: prevDisplayStats,
+      } = prevProps
+      const {
+        hits: nextHits,
+        hasMore: nextHasMore,
+        displayStats: nextDisplayStats,
+        setIsLoading: nextSetIsLoading,
+      } = nextProps
+
+      const prevHitsIds = new Set(prevHits.map(hit => hit.objectID))
+      const nextHitsIds = new Set(nextHits.map(hit => hit.objectID))
+      const areEqualHits =
+        prevHitsIds.size === nextHitsIds.size &&
+        [...prevHitsIds].every(hit => nextHitsIds.has(hit))
+
+      const areEqualHasMore = prevHasMore === nextHasMore
+      const areEqualDisplayStats = prevDisplayStats === nextDisplayStats
+      const arePropsEqual =
+        areEqualHits && areEqualHasMore && areEqualDisplayStats
+
       if (arePropsEqual) {
-        nextProps.setIsLoading(false)
+        nextSetIsLoading(false)
       }
       return arePropsEqual
     })
