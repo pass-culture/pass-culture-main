@@ -2010,12 +2010,12 @@ class RegistrationStepTest:
             SubscriptionStep.PROFILE_COMPLETION.value,
             SubscriptionStep.IDENTITY_CHECK.value,
             SubscriptionStep.HONOR_STATEMENT.value,
-            "Pass 15-17",
+            EligibilityType.UNDERAGE.value,
             SubscriptionStep.PHONE_VALIDATION.value,
             SubscriptionStep.PROFILE_COMPLETION.value,
             SubscriptionStep.IDENTITY_CHECK.value,
             SubscriptionStep.HONOR_STATEMENT.value,
-            "Pass 18",
+            EligibilityType.AGE18.value,
         ]
         assert len(steps) == len(steps_description)
         for index, step in enumerate(steps):

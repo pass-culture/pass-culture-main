@@ -518,7 +518,7 @@ def _get_steps_tunnel_underage_age18(
         ),
         RegistrationStep(
             step_id=5,
-            description="Pass 15-17",
+            description=TunnelType.UNDERAGE.value,
             subscription_item_status=SubscriptionItemStatus.OK.value
             if user.received_pass_15_17
             else SubscriptionItemStatus.VOID.value,
@@ -573,7 +573,7 @@ def _get_steps_tunnel_underage_age18(
         ),
         RegistrationStep(
             step_id=10,
-            description="Pass 18",
+            description=TunnelType.AGE18.value,
             subscription_item_status=SubscriptionItemStatus.OK.value
             if user.received_pass_18
             else SubscriptionItemStatus.VOID.value,

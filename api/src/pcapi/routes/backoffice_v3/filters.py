@@ -28,7 +28,9 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.domain.show_types import SHOW_SUB_TYPES_LABEL_BY_CODE
 from pcapi.models import offer_mixin
+from pcapi.models import validation_status_mixin
 from pcapi.routes.backoffice_v3.accounts import serialization as serialization_accounts
+from pcapi.routes.backoffice_v3.serialization.search import TypeOptions
 from pcapi.utils import urls
 from pcapi.utils.csr import Csr
 from pcapi.utils.csr import get_csr
@@ -149,6 +151,19 @@ def format_bool(data: bool | None) -> str:
     return "Non"
 
 
+def format_bool_str(data: str | None) -> str:
+    if data is None:
+        return ""
+
+    match data:
+        case "True":
+            return "Oui"
+        case "False":
+            return "Non"
+        case _:
+            return data
+
+
 def format_string_list(data: list[str] | None) -> str:
     if data is None:
         return ""
@@ -161,6 +176,18 @@ def format_reason_label(reason: str | None) -> str:
             users_constants.SuspensionReason(reason), "Raison inconnue"
         )
     return ""
+
+
+def format_search_type_options(type_option: TypeOptions) -> str:
+    match type_option:
+        case TypeOptions.OFFERER:
+            return "Structure"
+        case TypeOptions.VENUE:
+            return "Lieu"
+        case TypeOptions.USER:
+            return "Compte pro"
+        case _:
+            return type_option.value
 
 
 def format_booking_cancellation_reason(
@@ -211,6 +238,20 @@ def format_booking_status(
             return '<span class="badge text-bg-danger">Annulée</span>' if with_badge else "Annulée"
         case bookings_models.BookingStatus.REIMBURSED | educational_models.CollectiveBookingStatus.REIMBURSED:
             return '<span class="badge text-bg-success">Remboursée</span>' if with_badge else "Remboursée"
+        case _:
+            return status.value
+
+
+def format_validation_status(status: validation_status_mixin.ValidationStatus) -> str:
+    match status:
+        case validation_status_mixin.ValidationStatus.NEW:
+            return "Nouveau"
+        case validation_status_mixin.ValidationStatus.PENDING:
+            return "En attente"
+        case validation_status_mixin.ValidationStatus.VALIDATED:
+            return "Validé"
+        case validation_status_mixin.ValidationStatus.REJECTED:
+            return "Rejeté"
         case _:
             return status.value
 
@@ -266,6 +307,18 @@ def format_subcategories(subcategories: list[str]) -> str:
     return displayed_labels
 
 
+def format_fraud_review_status(status: fraud_models.FraudReviewStatus) -> str:
+    match status:
+        case fraud_models.FraudReviewStatus.OK:
+            return "OK"
+        case fraud_models.FraudReviewStatus.KO:
+            return "KO"
+        case fraud_models.FraudReviewStatus.REDIRECTED_TO_DMS:
+            return "Redirigé vers DMS"
+        case _:
+            return status.value
+
+
 def format_dms_status(status: str) -> str:
     match status:
         case "accepte":
@@ -296,6 +349,52 @@ def format_graphql_application_status(status: GraphQLApplicationStates) -> str:
             return "Classé sans suite"
         case _:
             return status.value
+
+
+def format_registration_step_description(description: str) -> str:
+    description = format_subscription_step(description)
+    description = format_eligibility_value(description)
+    return description
+
+
+def format_subscription_step(step_value: str) -> str:
+    match step_value.lower():
+        case "email-validation":
+            return "Validation Email"
+        case "phone-validation":
+            return "Validation N° téléphone"
+        case "profile-completion":
+            return "Profil Complet"
+        case "identity-check":
+            return "ID Check"
+        case "honor-statement":
+            return "Attestation sur l'honneur"
+        case _:
+            return step_value
+
+
+def format_eligibility_value(tunnel_type: str) -> str:
+    match tunnel_type.lower():
+        case "underage":
+            return "Pass 15-17"
+        case "age-18":
+            return "Pass 18"
+        case "underage+age-18":
+            return "Pass 15-17+18"
+        case "not-eligible":
+            return "Non éligible"
+        case _:
+            return tunnel_type
+
+
+def format_eligibility_type(eligibility_type: users_models.EligibilityType) -> str:
+    match eligibility_type:
+        case users_models.EligibilityType.UNDERAGE:
+            return "Pass 15-17"
+        case users_models.EligibilityType.AGE18:
+            return "Pass 18"
+        case _:
+            return eligibility_type.value
 
 
 def format_tag_object_list(
@@ -336,7 +435,47 @@ def format_adage_referred(venues: list[offerers_models.Venue]) -> str:
 def format_modified_info_value(value: typing.Any) -> str:
     if isinstance(value, list):
         return format_string_list(value)
+    if isinstance(value, bool):
+        return format_bool(value)
+    if isinstance(value, str) and value in ["True", "False"]:
+        return format_bool_str(value)
     return str(value)
+
+
+def format_modified_info_name(info_name: str) -> str:
+    match info_name.lower():
+        case "email":
+            return "Email"
+        case "firstname":
+            return "Prénom"
+        case "lastname":
+            return "Nom"
+        case "validatedbirthdate":
+            return "Date de naissance"
+        case "postalcode":
+            return "Code postal"
+        case "phonenumber":
+            return "Téléphone"
+        case "city":
+            return "Ville"
+        case "address":
+            return "Adresse"
+        case "bookingemail":
+            return "Email"
+        case "contact.email":
+            return "Email de contact"
+        case "contact.phone_number":
+            return "Numéro de téléphone de contact"
+        case "ispermanent":
+            return "Permanent"
+        case "name":
+            return "Nom juridique"
+        case "publicname":
+            return "Nom d'usage"
+        case "criteria":
+            return "Tags"
+        case _:
+            return info_name.replace("_", " ").capitalize()
 
 
 def format_offer_validation_sub_rule_field(sub_rule_field: offers_models.OfferValidationSubRuleField) -> str:
@@ -689,10 +828,12 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.lstrip_blocks = True
     app.jinja_env.filters["empty_string_if_null"] = empty_string_if_null
     app.jinja_env.filters["format_amount"] = format_amount
+    app.jinja_env.filters["format_search_type_options"] = format_search_type_options
     app.jinja_env.filters["format_booking_cancellation_reason"] = format_booking_cancellation_reason
     app.jinja_env.filters["format_booking_status"] = format_booking_status
     app.jinja_env.filters["format_booking_status_long"] = format_booking_status_long
     app.jinja_env.filters["format_bool"] = format_bool
+    app.jinja_env.filters["format_bool_str"] = format_bool_str
     app.jinja_env.filters["format_cents"] = format_cents
     app.jinja_env.filters["format_rate"] = format_rate
     app.jinja_env.filters["format_rate_multiply_by_100"] = format_rate_multiply_by_100
@@ -702,14 +843,20 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_string_to_date_time"] = format_string_to_date_time
     app.jinja_env.filters["format_timespan"] = format_timespan
     app.jinja_env.filters["format_deposit_type"] = format_deposit_type
+    app.jinja_env.filters["format_validation_status"] = format_validation_status
     app.jinja_env.filters["format_offer_validation_status"] = format_offer_validation_status
     app.jinja_env.filters["format_offer_status"] = format_offer_status
     app.jinja_env.filters["format_offer_category"] = format_offer_category
     app.jinja_env.filters["format_subcategories"] = format_subcategories
     app.jinja_env.filters["format_criteria"] = format_criteria
     app.jinja_env.filters["format_tag_object_list"] = format_tag_object_list
+    app.jinja_env.filters["format_fraud_review_status"] = format_fraud_review_status
     app.jinja_env.filters["format_dms_status"] = format_dms_status
     app.jinja_env.filters["format_graphql_application_status"] = format_graphql_application_status
+    app.jinja_env.filters["format_registration_step_description"] = format_registration_step_description
+    app.jinja_env.filters["format_subscription_step"] = format_subscription_step
+    app.jinja_env.filters["format_eligibility_value"] = format_eligibility_value
+    app.jinja_env.filters["format_eligibility_type"] = format_eligibility_type
     app.jinja_env.filters["format_fraud_check_url"] = format_fraud_check_url
     app.jinja_env.filters["format_fraud_action_dict_url"] = format_fraud_action_dict_url
     app.jinja_env.filters["format_role"] = format_role
@@ -717,6 +864,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_reason_label"] = format_reason_label
     app.jinja_env.filters["format_adage_referred"] = format_adage_referred
     app.jinja_env.filters["format_modified_info_value"] = format_modified_info_value
+    app.jinja_env.filters["format_modified_info_name"] = format_modified_info_name
     app.jinja_env.filters["format_gtl_id"] = format_gtl_id
     app.jinja_env.filters["format_gtl_as_csr"] = format_gtl_as_csr
     app.jinja_env.filters["format_offer_validation_rule_list"] = format_offer_validation_rule_list

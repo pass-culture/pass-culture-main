@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.users.models as users_models
+from pcapi.routes.backoffice_v3 import filters
 from pcapi.routes.backoffice_v3.forms import fields
 from pcapi.routes.backoffice_v3.forms import utils
 
@@ -32,10 +33,12 @@ class EditAccountForm(utils.PCForm):
 
 class ManualReviewForm(FlaskForm):
     status = fields.PCSelectWithPlaceholderValueField(
-        "Statut", choices=utils.choices_from_enum(fraud_models.FraudReviewStatus)
+        "Statut",
+        choices=utils.choices_from_enum(fraud_models.FraudReviewStatus, formatter=filters.format_fraud_review_status),
     )
     eligibility = fields.PCSelectWithPlaceholderValueField(
-        "Éligibilité", choices=utils.choices_from_enum(users_models.EligibilityType)
+        "Éligibilité",
+        choices=utils.choices_from_enum(users_models.EligibilityType, formatter=filters.format_eligibility_type),
     )
     reason = fields.PCOptStringField("Raison du changement")
 

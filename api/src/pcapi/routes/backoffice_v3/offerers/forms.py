@@ -7,12 +7,11 @@ import wtforms
 from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.routes.backoffice_v3 import filters
+from pcapi.routes.backoffice_v3.forms import empty as empty_forms
+from pcapi.routes.backoffice_v3.forms import fields
+from pcapi.routes.backoffice_v3.forms import utils
 from pcapi.routes.backoffice_v3.utils import get_regions_choices
-
-from ..filters import format_graphql_application_status
-from ..forms import fields
-from ..forms import utils
-from ..forms.empty import BatchForm
 
 
 TAG_NAME_REGEX = r"^[^\s]+$"
@@ -89,10 +88,12 @@ class OffererValidationListForm(utils.PCForm):
         get_pk=lambda tag: tag.id,
         get_label=lambda tag: tag.label or tag.name,
     )
-    status = fields.PCSelectMultipleField("États", choices=utils.choices_from_enum(ValidationStatus))
+    status = fields.PCSelectMultipleField(
+        "États", choices=utils.choices_from_enum(ValidationStatus, filters.format_validation_status)
+    )
     dms_adage_status = fields.PCSelectMultipleField(
         "États du dossier DMS Adage",
-        choices=utils.choices_from_enum(GraphQLApplicationStates, format_graphql_application_status),
+        choices=utils.choices_from_enum(GraphQLApplicationStates, filters.format_graphql_application_status),
     )
     from_date = fields.PCDateField("Demande à partir du", validators=(wtforms.validators.Optional(),))
     to_date = fields.PCDateField("Demande jusqu'au", validators=(wtforms.validators.Optional(),))
@@ -139,10 +140,11 @@ class UserOffererValidationListForm(utils.PCForm):
         get_label=lambda tag: tag.label or tag.name,
     )
     status = fields.PCSelectMultipleField(
-        "États de la demande de rattachement", choices=utils.choices_from_enum(ValidationStatus)
+        "États de la demande de rattachement",
+        choices=utils.choices_from_enum(ValidationStatus, filters.format_validation_status),
     )
     offerer_status = fields.PCSelectMultipleField(
-        "États de la structure", choices=utils.choices_from_enum(ValidationStatus)
+        "États de la structure", choices=utils.choices_from_enum(ValidationStatus, filters.format_validation_status)
     )
     from_date = fields.PCDateField("Demande à partir du", validators=(wtforms.validators.Optional(),))
     to_date = fields.PCDateField("Demande jusqu'au", validators=(wtforms.validators.Optional(),))
@@ -183,7 +185,7 @@ class OptionalCommentForm(FlaskForm):
     comment = fields.PCOptCommentField("Commentaire interne")
 
 
-class BatchOptionalCommentForm(BatchForm, OptionalCommentForm):
+class BatchOptionalCommentForm(empty_forms.BatchForm, OptionalCommentForm):
     pass
 
 
@@ -196,7 +198,7 @@ class CommentAndTagOffererForm(OptionalCommentForm):
     )
 
 
-class BatchCommentAndTagOffererForm(BatchForm, CommentAndTagOffererForm):
+class BatchCommentAndTagOffererForm(empty_forms.BatchForm, CommentAndTagOffererForm):
     pass
 
 

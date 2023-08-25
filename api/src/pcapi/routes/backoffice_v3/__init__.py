@@ -10,7 +10,6 @@ def install_routes(app: Flask) -> None:
     from . import filters
     from . import health_check
     from . import home
-    from . import i18n
     from . import move_siret
     from . import pro
     from .accounts import blueprint as accounts_blueprint
@@ -41,4 +40,3 @@ def install_routes(app: Flask) -> None:
         from .user_generation import blueprint as user_generation_blueprint
 
     filters.install_template_filters(app)
-    i18n.install_template_filters(app)

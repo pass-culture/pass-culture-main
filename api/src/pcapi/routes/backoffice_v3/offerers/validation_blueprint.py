@@ -22,12 +22,13 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
+from pcapi.routes.backoffice_v3 import search_utils
+from pcapi.routes.backoffice_v3 import utils
+from pcapi.routes.backoffice_v3.forms.empty import BatchForm
 from pcapi.utils import date as date_utils
 
 from . import forms as offerer_forms
 from . import validation_repository
-from .. import search_utils
-from .. import utils
 
 
 validation_blueprint = utils.child_backoffice_blueprint(
@@ -258,7 +259,7 @@ def batch_validate_offerer() -> utils.BackofficeResponse:
         return _offerer_batch_action(
             offerers_api.validate_offerer,
             "Les structures sélectionnées ont été validées avec succès",
-            offerer_forms.BatchForm,
+            BatchForm,
         )
     except offerers_exceptions.OffererAlreadyValidatedException:
         flash("Au moins une des structures a déjà été validée", "error")
