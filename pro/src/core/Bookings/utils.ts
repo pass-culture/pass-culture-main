@@ -1,9 +1,5 @@
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { APIFilters, PreFiltersParams } from 'core/Bookings/types'
-import {
-  FORMAT_ISO_DATE_ONLY,
-  formatBrowserTimezonedDateAsUTC,
-} from 'utils/date'
 
 export const buildBookingsRecapQuery = ({
   offerVenueId = DEFAULT_PRE_FILTERS.offerVenueId,
@@ -23,10 +19,7 @@ export const buildBookingsRecapQuery = ({
     params.offerType = offerType
   }
   if (offerEventDate !== DEFAULT_PRE_FILTERS.offerEventDate) {
-    params.eventDate = formatBrowserTimezonedDateAsUTC(
-      new Date(offerEventDate),
-      FORMAT_ISO_DATE_ONLY
-    )
+    params.eventDate = offerEventDate
   }
   if (bookingBeginningDate) {
     params.bookingPeriodBeginningDate = bookingBeginningDate
