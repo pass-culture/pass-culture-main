@@ -86,6 +86,9 @@ describe('screens:OfferIndividual::OfferType', () => {
           email: 'email@example.com',
         },
       },
+      features: {
+        list: [{ isActive: true, nameKey: 'WIP_CATEGORY_SELECTION' }],
+      },
     }
 
     vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
@@ -129,7 +132,7 @@ describe('screens:OfferIndividual::OfferType', () => {
     renderOfferTypes(store)
 
     expect(
-      screen.queryByRole('heading', { name: 'Quel est le type de l’offre ?' })
+      screen.queryByRole('heading', { name: 'Votre offre est :' })
     ).toBeInTheDocument()
 
     await userEvent.click(
@@ -157,7 +160,7 @@ describe('screens:OfferIndividual::OfferType', () => {
     renderOfferTypes(store)
 
     expect(
-      screen.queryByRole('heading', { name: 'Quel est le type de l’offre ?' })
+      screen.queryByRole('heading', { name: 'Votre offre est :' })
     ).toBeInTheDocument()
 
     await userEvent.click(
