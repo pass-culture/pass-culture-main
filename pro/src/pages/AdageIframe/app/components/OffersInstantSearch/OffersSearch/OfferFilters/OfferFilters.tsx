@@ -10,14 +10,13 @@ import fullRefreshIcon from 'icons/full-refresh.svg'
 import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeFranceIcon from 'icons/stroke-france.svg'
 import strokeNearIcon from 'icons/stroke-near.svg'
-import strokeSearch from 'icons/stroke-search.svg'
 import { getAcademiesOptionsAdapter } from 'pages/AdageIframe/app/adapters/getAcademiesOptionsAdapter'
 import { getEducationalCategoriesOptionsAdapter } from 'pages/AdageIframe/app/adapters/getEducationalCategoriesOptionsAdapter'
 import { getEducationalDomainsOptionsAdapter } from 'pages/AdageIframe/app/adapters/getEducationalDomainsOptionsAdapter'
 import { departmentOptions } from 'pages/AdageIframe/app/constants/departmentOptions'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { Option } from 'pages/AdageIframe/app/types'
-import { Button, RadioGroup, TextInput } from 'ui-kit'
+import { Button, RadioGroup } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import AdageMultiselect from 'ui-kit/form/AdageMultiselect/AdageMultiselect'
 import Slider from 'ui-kit/form/Slider/Slider'
@@ -31,7 +30,6 @@ import { studentsOptions } from './studentsOptions'
 
 interface OfferFiltersProps {
   className?: string
-  isLoading: boolean
   localisationFilterState: LocalisationFilterStates
   setLocalisationFilterState: (state: LocalisationFilterStates) => void
   resetForm: () => void
@@ -39,7 +37,6 @@ interface OfferFiltersProps {
 
 export const OfferFilters = ({
   className,
-  isLoading,
   localisationFilterState,
   setLocalisationFilterState,
   resetForm,
@@ -139,26 +136,6 @@ export const OfferFilters = ({
   return (
     <FormikProvider value={formik}>
       <Form onSubmit={formik.handleSubmit} className={className}>
-        <FormLayout.Row>
-          <div className={styles['filter-container-search']}>
-            <TextInput
-              label=""
-              className={styles['filter-container-search-input']}
-              name="query"
-              type="search"
-              placeholder="Rechercher : nom de l’offre, partenaire culturel"
-              hideFooter
-              leftIcon={strokeSearch}
-            />
-            <Button
-              disabled={isLoading}
-              type="submit"
-              className={styles['filter-container-search-button']}
-            >
-              Rechercher
-            </Button>
-          </div>
-        </FormLayout.Row>
         <FormLayout.Row className={styles['filter-container-buttons']}>
           <div className={styles['filter-container-buttons-list']}>
             <div className={styles['filter-container-buttons-list-items']}>
