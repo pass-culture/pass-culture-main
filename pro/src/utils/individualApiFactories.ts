@@ -3,8 +3,11 @@
 import { v4 as uuidv4 } from 'uuid'
 
 import {
+  GetVenueResponseModel,
   PriceCategoryResponseModel,
   SubcategoryIdEnum,
+  SubcategoryResponseModel,
+  VenueTypeCode,
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
 import { OfferStatus } from 'apiClient/v2'
@@ -134,6 +137,40 @@ export const individualOfferVenueFactory = (
   }
 }
 
+export const individualOfferVenueResponseModelFactory = (
+  customVenue: Partial<GetVenueResponseModel> = {}
+): GetVenueResponseModel => {
+  const currentVenueId = venueId++
+
+  return {
+    id: currentVenueId,
+    address: 'Ma Rue',
+    city: 'Ma Ville',
+    isVirtual: false,
+    name: `Le nom du lieu ${currentVenueId}`,
+    postalCode: '11100',
+    publicName: 'Mon Lieu',
+    departementCode: '78',
+    managingOfferer: {
+      city: 'Paris',
+      dateCreated: '2021-10-15T12:00:00Z',
+      fieldsUpdated: [],
+      id: 1,
+      isValidated: true,
+      name: 'managingOffererName',
+      postalCode: '78140',
+    },
+    collectiveDmsApplications: [],
+    collectiveDomains: [],
+    dateCreated: '2021-10-15T12:00:00Z',
+    dmsToken: 'token',
+    fieldsUpdated: [],
+    hasAdageId: false,
+    venueTypeCode: VenueTypeCode.AUTRE,
+    ...customVenue,
+  }
+}
+
 export const individualOfferOffererFactory = (
   customOfferer: Partial<OfferIndividualOfferer> = {}
 ): OfferIndividualOfferer => {
@@ -178,6 +215,27 @@ export const individualOfferSubCategoryFactory = (
   onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
   reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
   isSelectable: true,
+  ...customOfferSubCategory,
+})
+
+export const individualOfferSubCategoryResponseModelFactory = (
+  customOfferSubCategory: Partial<SubcategoryResponseModel> = {}
+): SubcategoryResponseModel => ({
+  id: String(offerSubCategoryId++),
+  categoryId: 'A',
+  proLabel: `sous catégorie ${offerSubCategoryId}`,
+  isEvent: false,
+  conditionalFields: [],
+  canBeDuo: false,
+  canBeEducational: false,
+  canBeWithdrawable: false,
+  onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
+  reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
+  isSelectable: true,
+  appLabel: 'appLabel',
+  canExpire: true,
+  isDigitalDeposit: true,
+  isPhysicalDeposit: true,
   ...customOfferSubCategory,
 })
 
