@@ -28,8 +28,9 @@ const serializeBookingLimitDatetime = (
       departementCode
     )
   }
+  const [year, month, day] = bookingLimitDatetime.split('-')
   const endOfBookingLimitDayUtcDatetime = getUtcDateTimeFromLocalDepartement(
-    endOfDay(new Date(bookingLimitDatetime)),
+    endOfDay(new Date(parseInt(year), parseInt(month) - 1, parseInt(day))),
     departementCode
   )
   return toISOStringWithoutMilliseconds(endOfBookingLimitDayUtcDatetime)
