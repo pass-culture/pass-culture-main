@@ -34,7 +34,7 @@ const validationSchema = {
   isVenueVirtual: yup.boolean(),
   bookingEmail: yup
     .string()
-    .email('Veuillez renseigner un email valide')
+    .email('Veuillez renseigner un email valide, exemple : mail@exemple.com')
     .when('isVenueVirtual', {
       is: false,
       then: schema => schema.required('Veuillez renseigner une adresse email'),
