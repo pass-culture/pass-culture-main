@@ -6,6 +6,7 @@ import typing
 
 from flask import Blueprint
 from flask import Response as FlaskResponse
+from flask import flash
 from flask import request
 from flask import url_for
 from flask_login import current_user
@@ -274,6 +275,17 @@ def _manage_joins(
                     raise ValueError(f"Unsupported join_type {join_type}. Supported : 'inner_join' or 'outer_join'.")
                 join_log.add(join_dict["name"])
     return query, join_log
+
+
+def limit_rows(rows: list[typing.Any], limit: int) -> list[typing.Any]:
+    if len(rows) > limit:
+        flash(
+            f"Il y a plus de {limit} résultats dans la base de données, la liste ci-dessous n'en donne donc "
+            "qu'une partie. Veuillez affiner les filtres de recherche.",
+            "info",
+        )
+        rows = rows[:limit]
+    return rows
 
 
 def log_backoffice_tracking_data(

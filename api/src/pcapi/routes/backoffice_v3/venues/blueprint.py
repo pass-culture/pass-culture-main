@@ -229,14 +229,7 @@ def list_venues() -> utils.BackofficeResponse:
         return render_template("venue/list.html", rows=[], form=form)
 
     venues = _get_venues(form)
-
-    if len(venues) > form.limit.data:
-        flash(
-            f"Il y a plus de {form.limit.data} résultats dans la base de données, la liste ci-dessous n'en donne donc "
-            "qu'une partie. Veuillez affiner les filtres de recherche.",
-            "info",
-        )
-        venues = venues[: form.limit.data]
+    venues = utils.limit_rows(venues, form.limit.data)
 
     autocomplete.prefill_criteria_choices(form.criteria)
 

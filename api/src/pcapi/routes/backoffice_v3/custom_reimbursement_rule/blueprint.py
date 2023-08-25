@@ -109,13 +109,7 @@ def list_custom_reimbursement_rules() -> utils.BackofficeResponse:
 
     custom_reimbursement_rules = _get_custom_reimbursement_rules(form)
 
-    if len(custom_reimbursement_rules) > form.limit.data:
-        flash(
-            f"Il y a plus de {form.limit.data} résultats dans la base de données, la liste ci-dessous n'en donne donc "
-            "qu'une partie. Veuillez affiner les filtres de recherche.",
-            "info",
-        )
-        custom_reimbursement_rules = custom_reimbursement_rules[: form.limit.data]
+    custom_reimbursement_rules = utils.limit_rows(custom_reimbursement_rules, form.limit.data)
 
     autocomplete.prefill_offerers_choices(form.offerer)
 

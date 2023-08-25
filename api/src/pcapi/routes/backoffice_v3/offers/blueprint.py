@@ -290,13 +290,7 @@ def list_offers() -> utils.BackofficeResponse:
     offers = _get_offers(form)
     advanced_query = ""
 
-    if len(offers) > form.limit.data:
-        flash(
-            f"Il y a plus de {form.limit.data} résultats dans la base de données, la liste ci-dessous n'en donne donc "
-            "qu'une partie. Veuillez affiner les filtres de recherche.",
-            "info",
-        )
-        offers = offers[: form.limit.data]
+    offers = utils.limit_rows(offers, form.limit.data)
 
     search_data_tags = set()
     if form.search.data:
