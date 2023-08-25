@@ -188,13 +188,7 @@ def list_individual_bookings() -> utils.BackofficeResponse:
 
     pro_visualisation_link = f"{settings.PRO_URL}/reservations{form.pro_view_args}" if form.pro_view_args else ""
 
-    if len(bookings) > form.limit.data:
-        flash(
-            f"Il y a plus de {form.limit.data} résultats dans la base de données, la liste ci-dessous n'en donne donc "
-            "qu'une partie. Veuillez affiner les filtres de recherche.",
-            "info",
-        )
-        bookings = bookings[: form.limit.data]
+    bookings = utils.limit_rows(bookings, form.limit.data)
 
     autocomplete.prefill_offerers_choices(form.offerer)
     autocomplete.prefill_venues_choices(form.venue)

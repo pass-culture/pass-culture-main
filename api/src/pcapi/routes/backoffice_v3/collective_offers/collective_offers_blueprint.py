@@ -128,13 +128,7 @@ def list_collective_offers() -> utils.BackofficeResponse:
 
     collective_offers = _get_collective_offers(form)
 
-    if len(collective_offers) > form.limit.data:
-        flash(
-            f"Il y a plus de {form.limit.data} résultats dans la base de données, la liste ci-dessous n'en donne donc "
-            "qu'une partie. Veuillez affiner les filtres de recherche.",
-            "info",
-        )
-        collective_offers = collective_offers[: form.limit.data]
+    collective_offers = utils.limit_rows(collective_offers, form.limit.data)
 
     autocomplete.prefill_offerers_choices(form.offerer)
     autocomplete.prefill_venues_choices(form.venue)
