@@ -84,6 +84,11 @@ describe('offersSearch component', () => {
       setGeoLocation: () => {},
     }
     vi.spyOn(pcapi, 'getEducationalDomains').mockResolvedValue([])
+    window.IntersectionObserver = vi.fn().mockImplementation(() => ({
+      observe: vi.fn(),
+      unobserve: vi.fn(),
+      disconnect: vi.fn(),
+    }))
   })
 
   it('should call algolia with requested query and uai all', async () => {

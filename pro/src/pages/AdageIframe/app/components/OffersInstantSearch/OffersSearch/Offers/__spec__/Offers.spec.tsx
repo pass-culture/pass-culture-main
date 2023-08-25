@@ -697,5 +697,20 @@ describe('offers', () => {
 
       expect(diffuseHelp).toBeInTheDocument()
     })
+
+    it('should display back to top button if filters are not visible', async () => {
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+        offerInParis
+      )
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+        offerInCayenne
+      )
+      renderOffers({ ...offersProps, isBackToTopVisibile: true }, adageUser)
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+      expect(
+        screen.getByRole('link', { name: /Retour en haut/ })
+      ).toBeInTheDocument()
+    })
   })
 })
