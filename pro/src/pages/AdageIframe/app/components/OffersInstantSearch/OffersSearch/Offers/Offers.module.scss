@@ -53,7 +53,7 @@
   background-color: colors.$grey-light;
   padding: rem.torem(16px);
   border-radius: rem.torem(30px);
-  box-shadow: 0 3px 4px 0 rgb(103 104 107 / 16%);
+  box-shadow: 0 3px 4px 0 rgb(103 104 107 / 10%);
   cursor: pointer;
 
   &-icon {
@@ -63,15 +63,19 @@
 
   &:hover {
     text-decoration: underline;
+    box-shadow: 0 3px 4px 0 rgb(103 104 107 / 16%);
   }
 
   &:active {
     color: colors.$grey-dark;
     text-decoration: none;
+    box-shadow: 0 3px 4px 0 rgb(103 104 107 / 16%);
   }
 
   &:focus-visible {
     border: solid rem.torem(2px) colors.$black;
     text-decoration: underline;
+    outline: none;
+    box-shadow: 0 3px 4px 0 rgb(103 104 107 / 16%);
   }
 }

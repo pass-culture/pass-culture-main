@@ -1,7 +1,7 @@
 import './OldOffersSearch.scss'
 
 import { FormikContext, useFormik } from 'formik'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import * as React from 'react'
 import type { SearchBoxProvided } from 'react-instantsearch-core'
 import { connectSearchBox } from 'react-instantsearch-dom'
@@ -9,6 +9,7 @@ import { connectSearchBox } from 'react-instantsearch-dom'
 import { VenueResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import useActiveFeature from 'hooks/useActiveFeature'
+import useIsElementVisible from 'hooks/useIsElementVisible'
 import strokeOffersIcon from 'icons/stroke-offers.svg'
 import strokeVenueIcon from 'icons/stroke-venue.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
@@ -169,25 +170,31 @@ export const OffersSearchComponent = ({
   const [localisationFilterState, setlocalisationFilterState] =
     useState<LocalisationFilterStates>(getActiveLocalisationFilter())
 
+  const offerFilterRef = useRef<HTMLDivElement>(null)
+  const isOfferFiltersVisible = useIsElementVisible(offerFilterRef)
+
   return (
     <>
       <FormikContext.Provider value={formik}>
         {!!adageUser.uai && !isNewHeaderActive && (
           <Tabs selectedKey={activeTab} tabs={tabs} />
         )}
-        <OfferFilters
-          className="search-filters"
-          isLoading={isLoading}
-          localisationFilterState={localisationFilterState}
-          setLocalisationFilterState={setlocalisationFilterState}
-          resetForm={resetForm}
-        />
+        <div ref={offerFilterRef}>
+          <OfferFilters
+            className="search-filters"
+            isLoading={isLoading}
+            localisationFilterState={localisationFilterState}
+            setLocalisationFilterState={setlocalisationFilterState}
+            resetForm={resetForm}
+          />
+        </div>
         <div className="search-results">
           <Offers
             setIsLoading={setIsLoading}
             resetForm={resetForm}
             logFiltersOnSearch={logFiltersOnSearch}
             submitCount={formik.submitCount}
+            isBackToTopVisibile={!isOfferFiltersVisible}
           />
         </div>
       </FormikContext.Provider>

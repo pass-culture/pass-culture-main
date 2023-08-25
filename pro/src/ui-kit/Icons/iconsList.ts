@@ -193,7 +193,6 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeLikeIcon },
   { src: strokeLogoutIcon },
   { src: strokeDownloadIcon },
-
   { src: strokeSearchIcon },
   { src: strokeTrashIcon },
   { src: strokeDraftIcon },
