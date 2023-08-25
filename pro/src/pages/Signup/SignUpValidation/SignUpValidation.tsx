@@ -35,7 +35,7 @@ const SignupValidation = (): null => {
       }
     }
     void validateTokenAndRedirect()
-  }, [notify, token, currentUser?.id])
+  }, [token, currentUser?.id])
 
   return null
 }
