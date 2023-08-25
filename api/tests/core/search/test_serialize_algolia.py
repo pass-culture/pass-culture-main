@@ -281,6 +281,7 @@ def test_serialize_venue():
         "_geoloc": {"lng": float(venue.longitude), "lat": float(venue.latitude)},
         "has_at_least_one_bookable_offer": False,
         "date_created": venue.dateCreated.timestamp(),
+        "postalCode": venue.postalCode,
     }
 
 
