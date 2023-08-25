@@ -28,6 +28,7 @@ import {
   populateFacetFilters,
 } from '../utils'
 
+import { Autocomplete } from './Autocomplete/Autocomplete'
 import { OfferFilters } from './OfferFilters/OfferFilters'
 import { Offers } from './Offers/Offers'
 
@@ -44,7 +45,6 @@ export interface SearchProps extends SearchBoxProvided {
 }
 
 export interface SearchFormValues {
-  query: string
   domains: string[]
   students: string[]
   departments: string[]
@@ -64,7 +64,7 @@ export const OffersSearchComponent = ({
   setGeoLocation,
   refine,
 }: SearchProps): JSX.Element => {
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [, setIsLoading] = useState<boolean>(false)
   const [activeTab, setActiveTab] = useState(OfferTab.ALL)
 
   const { dispatchCurrentFilters, currentFilters } = useContext(FiltersContext)
@@ -128,7 +128,6 @@ export const OffersSearchComponent = ({
           }
         : {}
     )
-    refine(formik.values.query)
   }
 
   const resetForm = () => {
@@ -180,9 +179,12 @@ export const OffersSearchComponent = ({
           <Tabs selectedKey={activeTab} tabs={tabs} />
         )}
         <div ref={offerFilterRef}>
+          <Autocomplete
+            placeholder="Rechercher : nom de l’offre, partenaire culturel"
+            refine={refine}
+          />
           <OfferFilters
             className="search-filters"
-            isLoading={isLoading}
             localisationFilterState={localisationFilterState}
             setLocalisationFilterState={setlocalisationFilterState}
             resetForm={resetForm}
