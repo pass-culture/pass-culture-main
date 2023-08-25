@@ -104,11 +104,17 @@ describe('AttachmentInvitations', () => {
     await waitFor(() => {
       expect(screen.getByText('email1@gmail.com')).toBeInTheDocument()
     })
+
+    expect(screen.getAllByText(/Validé/)).toHaveLength(3)
+    expect(screen.getAllByText(/En attente/)).toHaveLength(2)
+
     expect(
       screen.getByRole('button', { name: 'Voir plus de collaborateurs' })
     ).toBeInTheDocument()
 
     await userEvent.click(screen.getByText('Voir plus de collaborateurs'))
+
+    expect(screen.getAllByText(/En attente/)).toHaveLength(3)
 
     expect(
       screen.getByRole('button', { name: 'Voir moins de collaborateurs' })
