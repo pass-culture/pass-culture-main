@@ -93,7 +93,7 @@ const OffererDetails = ({
               <ButtonLink
                 variant={ButtonVariant.TERNARY}
                 link={{
-                  to: `/structures/${selectedOfferer.id}#attachment-invitations-section`,
+                  to: `/structures/${selectedOfferer.id}`,
                   isExternal: false,
                 }}
                 icon={fullMoreIcon}
