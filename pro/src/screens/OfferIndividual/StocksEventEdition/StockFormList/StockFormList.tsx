@@ -103,6 +103,14 @@ const StockFormList = ({
   const { page, setPage, previousPage, nextPage, currentPageItems, pageCount } =
     usePagination(values.stocks, STOCKS_PER_PAGE)
 
+  const computeMaxBookingLimitDatetime = (beginningDate: string) => {
+    const [year, month, day] = beginningDate.split('-')
+
+    return beginningDate !== ''
+      ? new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+      : undefined
+  }
+
   return (
     <FieldArray
       name="stocks"
@@ -406,11 +414,9 @@ const StockFormList = ({
                           label="Date limite de réservation"
                           isLabelHidden
                           minDate={today}
-                          maxDate={
-                            beginningDate !== ''
-                              ? new Date(beginningDate)
-                              : undefined
-                          }
+                          maxDate={computeMaxBookingLimitDatetime(
+                            beginningDate
+                          )}
                           disabled={readOnlyFields.includes(
                             'bookingLimitDatetime'
                           )}
