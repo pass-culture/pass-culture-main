@@ -43,6 +43,7 @@ const ButtonLink = ({
     styles[`button-${variant}`],
     styles[`button-${iconPosition}`],
     { [styles[`button-disabled`]]: isDisabled },
+    styles['button-link'],
     className
   )
   const svgIcon = icon ? (
