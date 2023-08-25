@@ -866,7 +866,7 @@ class GetCsvReportTest:
     def test_should_return_only_expected_booking_attributes(self, app: fixture):
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory(
-            email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley", postalCode="97300"
         )
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -908,6 +908,8 @@ class GetCsvReportTest:
             "Statut de la contremarque",
             "Date et heure de remboursement",
             "Type d'offre",
+            "Code postal du bénéficiaire",
+            "Duo",
         ]
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
@@ -928,6 +930,8 @@ class GetCsvReportTest:
         assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[booking.status]
         assert data_dict["Date et heure de remboursement"] == ""
         assert data_dict["Type d'offre"] == "offre grand public"
+        assert data_dict["Code postal du bénéficiaire"] == beneficiary.postalCode
+        assert data_dict["Duo"] == "Non"
 
     def test_should_not_return_token_for_non_used_goods(self, app: fixture):
         # Given
@@ -974,6 +978,8 @@ class GetCsvReportTest:
             "Statut de la contremarque",
             "Date et heure de remboursement",
             "Type d'offre",
+            "Code postal du bénéficiaire",
+            "Duo",
         ]
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
@@ -993,6 +999,8 @@ class GetCsvReportTest:
         assert data_dict["Prix de la réservation"] == f"{booking.amount:.2f}"
         assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[booking.status]
         assert data_dict["Date et heure de remboursement"] == ""
+        assert data_dict["Code postal du bénéficiaire"] == ""
+        assert data_dict["Duo"] == "Non"
 
     def test_should_return_only_validated_bookings_for_requested_period(self, app: fixture):
         pro = users_factories.ProFactory()
@@ -1098,6 +1106,8 @@ class GetCsvReportTest:
         # Then
         _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
         assert len(data) == 2
+        assert data[0][16] == "Oui"
+        assert data[1][16] == "Oui"
 
     def test_should_not_duplicate_bookings_when_user_is_admin_and_bookings_offerer_has_multiple_user(
         self, app: fixture
@@ -1162,6 +1172,8 @@ class GetCsvReportTest:
             "Statut de la contremarque",
             "Date et heure de remboursement",
             "Type d'offre",
+            "Code postal du bénéficiaire",
+            "Duo",
         ]
         assert len(data) == 1
         data_dict = dict(zip(headers, data[0]))
@@ -1181,6 +1193,8 @@ class GetCsvReportTest:
         assert data_dict["Prix de la réservation"] == f"{booking.amount:.2f}"
         assert data_dict["Statut de la contremarque"] == booking_repository.BOOKING_STATUS_LABELS[booking.status]
         assert data_dict["Date et heure de remboursement"] == ""
+        assert data_dict["Code postal du bénéficiaire"] == ""
+        assert data_dict["Duo"] == "Non"
 
     def test_should_return_event_confirmed_booking_when_booking_is_on_an_event_in_confirmation_period(
         self, app: fixture
@@ -1905,6 +1919,8 @@ class GetExcelReportTest:
             "Statut de la contremarque",
             "Date et heure de remboursement",
             "Type d'offre",
+            "Code postal du bénéficiaire",
+            "Duo",
         ]
 
         # When
@@ -1950,6 +1966,10 @@ class GetExcelReportTest:
         assert sheet.cell(row=2, column=14).value == "None"
         # Type d'offre
         assert sheet.cell(row=2, column=15).value == "offre grand public"
+        # Code postal du bénéficiaire
+        assert sheet.cell(row=2, column=16).value == beneficiary.postalCode
+        # Duo
+        assert sheet.cell(row=2, column=17).value == "Non"
 
 
 class FindSoonToBeExpiredBookingsTest:
