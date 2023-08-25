@@ -1346,3 +1346,21 @@ class NationalProgramOfferTemplateLinkHistory(PcObject, Base, Model):
     nationalProgramId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("national_program.id", ondelete="CASCADE"), nullable=False
     )
+
+
+class AdageFavoriteOffer(PcObject, Base, Model):
+    __tablename__ = "adage_favorite_offer"
+    """Allow adding to favorite the offer for adage user"""
+
+    educationalRedactor: str = sa.Column(sa.String(30), unique=True, nullable=False)
+    offerId: int = sa.Column(sa.BigInteger, sa.ForeignKey("collective_offer.id", ondelete="CASCADE"), nullable=False)
+
+
+class AdageFavoriteOfferTemplate(PcObject, Base, Model):
+    __tablename__ = "adage_favorite_offer_template"
+    """Allow adding to favorite the offer template for adage user"""
+
+    educationalRedactor: str = sa.Column(sa.String(30), unique=True, nullable=False)
+    offerTemplateId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("collective_offer_template.id", ondelete="CASCADE"), nullable=False
+    )
