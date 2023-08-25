@@ -35,7 +35,6 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
     []
   )
   const [showInvitationForm, setShowInvitationForm] = useState(false)
-
   const onSubmit = async ({ email }: { email: string }) => {
     try {
       setIsLoading(true)
@@ -92,11 +91,15 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
             </thead>
             <tbody>
               {members.map(
-                ({ email }, index) =>
+                ({ email, status }, index) =>
                   !(!displayAllMembers && index > 4) && (
                     <tr key={email}>
-                      <td>{email}</td>
-                      <td>Validé (à récupérer du back)</td>
+                      <td className={styles['member-email']}>{email}</td>
+                      <td className={styles['member-status']}>
+                        {status === OffererMemberStatus.VALIDATED
+                          ? 'Validé'
+                          : 'En attente'}
+                      </td>
                     </tr>
                   )
               )}
