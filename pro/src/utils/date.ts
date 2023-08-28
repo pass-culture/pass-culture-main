@@ -51,3 +51,8 @@ export const getDateToFrenchText = (dateIsoString: string) => {
 export const toISOStringWithoutMilliseconds = (date: Date) => {
   return date.toISOString().replace(/\.\d{3}/, '')
 }
+
+export const getYearMonthDay = (date: string) => {
+  const [year, month, day] = date.split('-')
+  return [parseInt(year), parseInt(month) - 1, parseInt(day)]
+}
