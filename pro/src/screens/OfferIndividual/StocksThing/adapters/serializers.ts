@@ -1,7 +1,11 @@
 import endOfDay from 'date-fns/endOfDay'
 
 import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
-import { isDateValid, toISOStringWithoutMilliseconds } from 'utils/date'
+import {
+  getYearMonthDay,
+  isDateValid,
+  toISOStringWithoutMilliseconds,
+} from 'utils/date'
 import { getUtcDateTimeFromLocalDepartement } from 'utils/timezone'
 
 import { StockThingFormValues } from '../'
@@ -21,10 +25,20 @@ export const serializeStockThingList = (
   formValues: StockThingFormValues,
   departementCode: string
 ): StockCreationBodyModel[] | StockEditionBodyModel[] => {
+  const [
+    yearBookingLimitDatetime,
+    monthBookingLimitDatetime,
+    dayBookingLimitDatetime,
+  ] = getYearMonthDay(formValues.bookingLimitDatetime)
+
   const apiStock: StockCreationBodyModel = {
     bookingLimitDatetime: isDateValid(formValues.bookingLimitDatetime)
       ? serializeThingBookingLimitDatetime(
-          new Date(formValues.bookingLimitDatetime),
+          new Date(
+            yearBookingLimitDatetime,
+            monthBookingLimitDatetime,
+            dayBookingLimitDatetime
+          ),
           departementCode
         )
       : null,
@@ -38,9 +52,19 @@ export const serializeStockThingList = (
     apiStock.activationCodes = formValues.activationCodes
     /* istanbul ignore next */
     if (isDateValid(formValues.activationCodesExpirationDatetime)) {
+      const [
+        yearActivationCodesExpirationDatetime,
+        monthActivationCodesExpirationDatetime,
+        dayActivationCodesExpirationDatetime,
+      ] = getYearMonthDay(formValues.activationCodesExpirationDatetime)
+
       apiStock.activationCodesExpirationDatetime =
         serializeThingBookingLimitDatetime(
-          new Date(formValues.activationCodesExpirationDatetime),
+          new Date(
+            yearActivationCodesExpirationDatetime,
+            monthActivationCodesExpirationDatetime,
+            dayActivationCodesExpirationDatetime
+          ),
           departementCode
         )
     }
