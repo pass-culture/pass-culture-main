@@ -10,11 +10,14 @@ import type { BookCollectiveOfferRequest } from '../models/BookCollectiveOfferRe
 import type { BookCollectiveOfferResponse } from '../models/BookCollectiveOfferResponse';
 import type { CatalogViewBody } from '../models/CatalogViewBody';
 import type { CategoriesResponseModel } from '../models/CategoriesResponseModel';
+import type { CollectiveOfferFavoritesBodyModel } from '../models/CollectiveOfferFavoritesBodyModel';
 import type { CollectiveOfferResponseModel } from '../models/CollectiveOfferResponseModel';
 import type { CollectiveOfferTemplateResponseModel } from '../models/CollectiveOfferTemplateResponseModel';
 import type { CollectiveRequestBody } from '../models/CollectiveRequestBody';
 import type { CollectiveRequestResponseModel } from '../models/CollectiveRequestResponseModel';
 import type { EducationalInstitutionWithBudgetResponseModel } from '../models/EducationalInstitutionWithBudgetResponseModel';
+import type { FavoritesOfferResponseModel } from '../models/FavoritesOfferResponseModel';
+import type { FavoritesTemplateResponseModel } from '../models/FavoritesTemplateResponseModel';
 import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
 import type { OfferIdBody } from '../models/OfferIdBody';
 import type { PostCollectiveRequestBodyModel } from '../models/PostCollectiveRequestBodyModel';
@@ -102,6 +105,27 @@ export class DefaultService {
   }
 
   /**
+   * post_collective_offer_favorites <POST>
+   * @param requestBody
+   * @returns FavoritesOfferResponseModel OK
+   * @throws ApiError
+   */
+  public postCollectiveOfferFavorites(
+    requestBody?: CollectiveOfferFavoritesBodyModel,
+  ): CancelablePromise<FavoritesOfferResponseModel> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/collective/offer-favorites',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * get_collective_offer_template <GET>
    * @param offerId
    * @returns CollectiveOfferTemplateResponseModel OK
@@ -169,6 +193,27 @@ export class DefaultService {
       errors: {
         403: `Forbidden`,
         404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * post_collective_template_favorites <POST>
+   * @param requestBody
+   * @returns FavoritesTemplateResponseModel OK
+   * @throws ApiError
+   */
+  public postCollectiveTemplateFavorites(
+    requestBody?: CollectiveOfferFavoritesBodyModel,
+  ): CancelablePromise<FavoritesTemplateResponseModel> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/collective/template-favorites',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
     });

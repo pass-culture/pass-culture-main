@@ -21,6 +21,7 @@ export type { BookCollectiveOfferResponse } from './models/BookCollectiveOfferRe
 export type { CatalogViewBody } from './models/CatalogViewBody';
 export type { CategoriesResponseModel } from './models/CategoriesResponseModel';
 export type { CategoryResponseModel } from './models/CategoryResponseModel';
+export type { CollectiveOfferFavoritesBodyModel } from './models/CollectiveOfferFavoritesBodyModel';
 export type { CollectiveOfferOfferVenue } from './models/CollectiveOfferOfferVenue';
 export type { CollectiveOfferResponseModel } from './models/CollectiveOfferResponseModel';
 export type { CollectiveOfferTemplateResponseModel } from './models/CollectiveOfferTemplateResponseModel';
@@ -30,6 +31,8 @@ export type { Coordinates } from './models/Coordinates';
 export type { EducationalInstitutionResponseModel } from './models/EducationalInstitutionResponseModel';
 export type { EducationalInstitutionWithBudgetResponseModel } from './models/EducationalInstitutionWithBudgetResponseModel';
 export type { EducationalRedactorResponseModel } from './models/EducationalRedactorResponseModel';
+export type { FavoritesOfferResponseModel } from './models/FavoritesOfferResponseModel';
+export type { FavoritesTemplateResponseModel } from './models/FavoritesTemplateResponseModel';
 export type { FeatureResponseModel } from './models/FeatureResponseModel';
 export type { GetRelativeVenuesQueryModel } from './models/GetRelativeVenuesQueryModel';
 export type { ListFeatureResponseModel } from './models/ListFeatureResponseModel';
