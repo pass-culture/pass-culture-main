@@ -424,7 +424,18 @@ class BookOfferTest:
         @patch("pcapi.core.bookings.api.external_bookings_api.book_cinema_ticket")
         @override_features(ENABLE_EMS_INTEGRATION=True)
         def test_ems_solo_external_booking(self, mocked_book_ticket):
-            mocked_book_ticket.return_value = [Ticket(barcode="111", seat_number="")]
+            mocked_book_ticket.return_value = [
+                Ticket(
+                    barcode="111",
+                    seat_number="",
+                    additional_information={
+                        "num_cine": "9997",
+                        "num_caisse": "255",
+                        "num_trans": 1257,
+                        "num_ope": 147149,
+                    },
+                )
+            ]
 
             beneficiary = users_factories.BeneficiaryGrant18Factory()
             ems_provider = get_provider_by_local_class("EMSStocks")
@@ -443,13 +454,37 @@ class BookOfferTest:
             assert len(booking.externalBookings) == 1
             assert booking.externalBookings[0].barcode == "111"
             assert booking.externalBookings[0].seat == ""
+            assert booking.externalBookings[0].additional_information == {
+                "num_cine": "9997",
+                "num_caisse": "255",
+                "num_trans": 1257,
+                "num_ope": 147149,
+            }
 
         @patch("pcapi.core.bookings.api.external_bookings_api.book_cinema_ticket")
         @override_features(ENABLE_EMS_INTEGRATION=True)
         def test_ems_duo_external_booking(self, mocked_book_ticket):
             mocked_book_ticket.return_value = [
-                Ticket(barcode="111", seat_number=""),
-                Ticket(barcode="222", seat_number=""),
+                Ticket(
+                    barcode="111",
+                    seat_number="",
+                    additional_information={
+                        "num_cine": "9997",
+                        "num_caisse": "255",
+                        "num_trans": 1257,
+                        "num_ope": 147149,
+                    },
+                ),
+                Ticket(
+                    barcode="222",
+                    seat_number="",
+                    additional_information={
+                        "num_cine": "9997",
+                        "num_caisse": "255",
+                        "num_trans": 1258,
+                        "num_ope": 147150,
+                    },
+                ),
             ]
 
             beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -470,8 +505,20 @@ class BookOfferTest:
             assert len(booking.externalBookings) == 2
             assert booking.externalBookings[0].barcode == "111"
             assert booking.externalBookings[0].seat == ""
+            assert booking.externalBookings[0].additional_information == {
+                "num_cine": "9997",
+                "num_caisse": "255",
+                "num_trans": 1257,
+                "num_ope": 147149,
+            }
             assert booking.externalBookings[1].barcode == "222"
             assert booking.externalBookings[1].seat == ""
+            assert booking.externalBookings[1].additional_information == {
+                "num_cine": "9997",
+                "num_caisse": "255",
+                "num_trans": 1258,
+                "num_ope": 147150,
+            }
 
         @patch("pcapi.core.bookings.api.external_bookings_api.book_cinema_ticket")
         @override_features(ENABLE_CDS_IMPLEMENTATION=True)

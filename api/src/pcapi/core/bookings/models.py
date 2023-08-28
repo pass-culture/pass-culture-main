@@ -21,6 +21,7 @@ from sqlalchemy import case
 from sqlalchemy import event
 from sqlalchemy import exists
 from sqlalchemy import select
+from sqlalchemy.dialects import postgresql
 import sqlalchemy.exc as sa_exc
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped
@@ -79,6 +80,8 @@ class ExternalBooking(PcObject, Base, Model):
     barcode: str = Column(String, nullable=False)
 
     seat = Column(String)
+
+    additional_information: dict = Column(postgresql.JSONB)
 
 
 class Booking(PcObject, Base, Model):
