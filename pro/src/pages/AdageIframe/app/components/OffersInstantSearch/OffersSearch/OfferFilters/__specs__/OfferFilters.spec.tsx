@@ -38,12 +38,10 @@ const isGeolocationActive = {
 }
 
 const renderOfferFilters = ({
-  isLoading,
   initialValues,
   localisationFilterState = LocalisationFilterStates.NONE,
   storeOverrides = null,
 }: {
-  isLoading: boolean
   initialValues: SearchFormValues
   localisationFilterState?: LocalisationFilterStates
   storeOverrides?: unknown
@@ -52,7 +50,6 @@ const renderOfferFilters = ({
     <AdageUserContext.Provider value={{ adageUser: defaultAdageUser }}>
       <Formik initialValues={initialValues} onSubmit={handleSubmit}>
         <OfferFilters
-          isLoading={isLoading}
           localisationFilterState={localisationFilterState}
           setLocalisationFilterState={mockSetLocalisationFilterState}
           resetForm={resetFormMock}
@@ -75,16 +72,8 @@ const initialValues = {
 
 describe('OfferFilters', () => {
   it('renders correctly', () => {
-    renderOfferFilters({ isLoading: false, initialValues })
+    renderOfferFilters({ initialValues })
 
-    expect(
-      screen.getByPlaceholderText(
-        'Rechercher : nom de l’offre, partenaire culturel'
-      )
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: 'Rechercher' })
-    ).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: 'Domaine artistique' })
     ).toBeInTheDocument()
@@ -102,16 +91,8 @@ describe('OfferFilters', () => {
     ).toBeInTheDocument()
   })
 
-  it('should submit onclick search button', async () => {
-    renderOfferFilters({ isLoading: false, initialValues })
-
-    await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
-    expect(handleSubmit).toHaveBeenCalled()
-  })
-
   it('should submit onclick modal search button domain artistic', async () => {
     renderOfferFilters({
-      isLoading: false,
       initialValues: {
         ...initialValues,
         domains: ['test'],
@@ -129,7 +110,6 @@ describe('OfferFilters', () => {
 
   it('should submit onclick modal search button cateogires', async () => {
     renderOfferFilters({
-      isLoading: false,
       initialValues: {
         ...initialValues,
         categories: [['test']],
@@ -145,7 +125,6 @@ describe('OfferFilters', () => {
 
   it('should submit onclick modal search button school level', async () => {
     renderOfferFilters({
-      isLoading: false,
       initialValues: {
         ...initialValues,
         students: ['test'],
@@ -163,7 +142,6 @@ describe('OfferFilters', () => {
 
   it('should reset filter onclick modal clear artistic domain', async () => {
     renderOfferFilters({
-      isLoading: false,
       initialValues: {
         ...initialValues,
         domains: ['test'],
@@ -183,7 +161,6 @@ describe('OfferFilters', () => {
 
   it('should reset filter onclick modal clear students', async () => {
     renderOfferFilters({
-      isLoading: false,
       initialValues: {
         ...initialValues,
         students: ['test'],
@@ -209,7 +186,6 @@ describe('OfferFilters', () => {
     ])
 
     renderOfferFilters({
-      isLoading: false,
       initialValues: initialValues,
     })
 
@@ -224,7 +200,6 @@ describe('OfferFilters', () => {
 
   it('should display departments and academies button in localisation filter modal', async () => {
     renderOfferFilters({
-      isLoading: false,
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.NONE,
       storeOverrides: isGeolocationActive,
@@ -239,7 +214,6 @@ describe('OfferFilters', () => {
 
   it('should display departments options in localisation filter modal', async () => {
     renderOfferFilters({
-      isLoading: false,
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.DEPARTMENTS,
     })
@@ -250,7 +224,6 @@ describe('OfferFilters', () => {
   })
   it('should display academies options in localisation filter modal', async () => {
     renderOfferFilters({
-      isLoading: false,
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.ACADEMIES,
     })
@@ -260,7 +233,6 @@ describe('OfferFilters', () => {
 
   it('should display radius range input in localisation filter modal', async () => {
     renderOfferFilters({
-      isLoading: false,
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.GEOLOCATION,
       storeOverrides: isGeolocationActive,
@@ -272,7 +244,6 @@ describe('OfferFilters', () => {
 
   it('should reset modal state when closing departments filter modal', async () => {
     renderOfferFilters({
-      isLoading: false,
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.DEPARTMENTS,
     })
@@ -294,7 +265,6 @@ describe('OfferFilters', () => {
   })
   it('should reset modal state when closing academies filter modal', async () => {
     renderOfferFilters({
-      isLoading: false,
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.ACADEMIES,
     })
@@ -317,7 +287,6 @@ describe('OfferFilters', () => {
 
   it('should reset modal state when closing geoloc filter modal', async () => {
     renderOfferFilters({
-      isLoading: false,
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.GEOLOCATION,
       storeOverrides: isGeolocationActive,
@@ -341,7 +310,6 @@ describe('OfferFilters', () => {
 
   it('should trigger search when clicking Rechercher while using geoloc', async () => {
     renderOfferFilters({
-      isLoading: false,
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.GEOLOCATION,
       storeOverrides: isGeolocationActive,
@@ -365,7 +333,6 @@ describe('OfferFilters', () => {
     })
 
     renderOfferFilters({
-      isLoading: false,
       initialValues: initialValues,
       storeOverrides: isGeolocationActive,
     })
@@ -373,18 +340,5 @@ describe('OfferFilters', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Catégorie' }))
 
     expect(screen.getByText('Cinéma')).toBeInTheDocument()
-  })
-
-  it('should clear text input', async () => {
-    renderOfferFilters({ isLoading: false, initialValues })
-
-    const textInput = screen.getByPlaceholderText(
-      'Rechercher : nom de l’offre, partenaire culturel'
-    )
-    await userEvent.type(textInput, 'Paris')
-
-    userEvent.clear(textInput)
-
-    expect(textInput).toHaveValue('')
   })
 })

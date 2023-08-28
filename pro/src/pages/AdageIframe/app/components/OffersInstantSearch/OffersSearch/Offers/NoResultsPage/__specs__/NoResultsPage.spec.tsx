@@ -1,48 +1,38 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Formik } from 'formik'
 import React from 'react'
 
+import {
+  FacetFiltersContext,
+  FacetFiltersContextType,
+} from 'pages/AdageIframe/app/providers'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { SearchFormValues } from '../../../OffersSearch'
 import { NoResultsPage } from '../NoResultsPage'
 
-const handleSubmit = vi.fn()
 const resetFormMock = vi.fn()
+const setFacetFiltersMock = vi.fn()
 
 const renderNoResultsPage = ({
-  initialValues,
+  facetFiltersContextValue,
   resetForm,
 }: {
-  initialValues: SearchFormValues
+  facetFiltersContextValue: FacetFiltersContextType
   resetForm?: () => void
 }) => {
   return renderWithProviders(
-    <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+    <FacetFiltersContext.Provider value={facetFiltersContextValue}>
       <NoResultsPage resetForm={resetForm} />
-    </Formik>
+    </FacetFiltersContext.Provider>
   )
-}
-
-const initialValues = {
-  query: '',
-  domains: [],
-  students: [],
-  eventAddressType: '',
-  departments: [],
-  academies: [],
-  categories: [],
 }
 
 describe('ContactButton', () => {
   it('should clear all filters on click button ', async () => {
     renderNoResultsPage({
-      initialValues: {
-        ...initialValues,
-        query: 'test',
-        domains: ['test'],
-        geolocRadius: 50,
+      facetFiltersContextValue: {
+        facetFilters: ['1', '2'],
+        setFacetFilters: setFacetFiltersMock,
       },
       resetForm: resetFormMock,
     })
@@ -59,10 +49,9 @@ describe('ContactButton', () => {
 
   it('should not display clear all filters button ', async () => {
     renderNoResultsPage({
-      initialValues: {
-        ...initialValues,
-        query: '',
-        geolocRadius: 50,
+      facetFiltersContextValue: {
+        facetFilters: ['1'],
+        setFacetFilters: setFacetFiltersMock,
       },
     })
 

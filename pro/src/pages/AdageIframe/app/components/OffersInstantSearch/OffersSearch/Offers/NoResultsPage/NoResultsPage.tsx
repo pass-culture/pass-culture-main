@@ -1,5 +1,4 @@
 import './NoResultsPage.scss'
-
 import React, { useContext } from 'react'
 
 import fullRefreshIcon from 'icons/full-refresh.svg'
