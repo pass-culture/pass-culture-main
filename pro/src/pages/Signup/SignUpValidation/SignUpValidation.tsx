@@ -20,18 +20,17 @@ const SignupValidation = (): null => {
         navigate('/')
       } else if (token) {
         try {
-          await new Promise(resolve => setTimeout(resolve, 1000))
           await api.validateUser(token)
-          navigate('/connexion')
           notify.success(
             'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.'
           )
-        } catch (error) {
           navigate('/connexion')
+        } catch (error) {
           if (isErrorAPIError(error)) {
             const errors = getError(error)
             notify.error(errors.global)
           }
+          navigate('/connexion')
         }
       }
     }
