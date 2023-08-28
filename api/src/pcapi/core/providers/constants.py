@@ -12,3 +12,5 @@ EMS_STOCKS_FAKE_CLASS_NAME = "EMSStocks"
 # To delete few iterations after v240
 INDIVIDUAL_OFFERS_API_FAKE_CLASS_NAME = "IndividualOffersPublicAPI"
 INDIVIDUAL_OFFERS_API_PROVIDER_NAME = "Individual Offers public API"
+
+TITELIVE_EPAGINE_PROVIDER_NAME = "TiteLive API Epagine"

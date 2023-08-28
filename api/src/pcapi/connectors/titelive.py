@@ -14,6 +14,9 @@ from pcapi.core import logging as core_logging
 from pcapi.core.categories import subcategories
 from pcapi.core.offers import exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
+import pcapi.core.providers.constants as providers_constants
+import pcapi.core.providers.models as providers_models
+import pcapi.core.providers.repository as providers_repository
 from pcapi.domain.music_types import MUSIC_SUB_TYPES_BY_SLUG
 from pcapi.domain.music_types import MUSIC_TYPES_BY_SLUG
 from pcapi.domain.music_types import OTHER_SHOW_TYPE_SLUG
@@ -204,12 +207,48 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
     max_results_per_page = 25
     titelive_base: TiteliveBase
 
-    def synchronize_products(self, from_date: datetime.date) -> None:
+    def __init__(self) -> None:
+        self.provider = providers_repository.get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
+
+    def synchronize_products(self, from_date: datetime.date | None = None) -> None:
+        if from_date is None:
+            from_date = self.get_last_sync_date()
+
+        start_sync_event = self.log_sync_status(providers_models.LocalProviderEventType.SyncStart)
+        db.session.add(start_sync_event)
+
         products_to_update_pages = self.get_updated_titelive_pages(from_date)
         for titelive_page in products_to_update_pages:
             with repository.transaction():
                 updated_products = self.upsert_titelive_page(titelive_page)
                 db.session.add_all(updated_products)
+
+        stop_sync_event = self.log_sync_status(providers_models.LocalProviderEventType.SyncEnd)
+        db.session.add(stop_sync_event)
+
+    def get_last_sync_date(self) -> datetime.date:
+        last_sync_event = (
+            providers_models.LocalProviderEvent.query.filter(
+                providers_models.LocalProviderEvent.provider == self.provider,
+                providers_models.LocalProviderEvent.type == providers_models.LocalProviderEventType.SyncEnd,
+                providers_models.LocalProviderEvent.payload == self.titelive_base.value,
+            )
+            .order_by(providers_models.LocalProviderEvent.id.desc())
+            .first()
+        )
+        if last_sync_event is None:
+            raise TiteliveDatabaseNotInitializedException()
+        return last_sync_event.date.date()
+
+    def log_sync_status(
+        self, provider_event_type: providers_models.LocalProviderEventType
+    ) -> providers_models.LocalProviderEvent:
+        return providers_models.LocalProviderEvent(
+            date=datetime.datetime.utcnow(),
+            payload=self.titelive_base.value,
+            provider=self.provider,
+            type=provider_event_type,
+        )
 
     def get_updated_titelive_pages(
         self,
@@ -288,7 +327,8 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
         titelive_eans = [article.gencod for result in titelive_results for article in result.article]
 
         products = offers_models.Product.query.filter(
-            offers_models.Product.extraData["ean"].astext.in_(titelive_eans)
+            offers_models.Product.extraData["ean"].astext.in_(titelive_eans),
+            offers_models.Product.lastProvider == self.provider,  # pylint: disable=comparison-with-callable
         ).all()
         products_by_ean: dict[str, offers_models.Product] = {p.extraData["ean"]: p for p in products}
         for titelive_search_result in titelive_results:
@@ -344,6 +384,7 @@ class TiteliveMusicSearch(TiteliveSearch[TiteliveMusicOeuvre]):
             description=article.resume,
             extraData=self.build_music_extra_data(article, genre),
             idAtProviders=article.gencod,
+            lastProvider=self.provider,
             name=title,
             subcategoryId=self.parse_titelive_product_format(article.codesupport),
         )
@@ -392,3 +433,7 @@ class TiteliveMusicSearch(TiteliveSearch[TiteliveMusicOeuvre]):
 
     def parse_titelive_product_format(self, codesupport: str) -> str:
         return subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id
+
+
+class TiteliveDatabaseNotInitializedException(Exception):
+    pass

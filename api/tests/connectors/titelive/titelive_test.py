@@ -1,15 +1,22 @@
 import datetime
 import html
 
+import freezegun
 import pytest
+import requests
 
 from pcapi.connectors import titelive
 from pcapi.connectors.titelive import GtlIdError
 from pcapi.core.categories import subcategories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+import pcapi.core.providers.constants as providers_constants
+import pcapi.core.providers.factories as providers_factories
+import pcapi.core.providers.models as providers_models
+import pcapi.core.providers.repository as providers_repository
 from pcapi.core.testing import override_settings
 from pcapi.domain.titelive import read_things_date
+from pcapi.utils.requests import ExternalAPIException
 
 from tests.connectors.titelive import fixtures
 
@@ -96,11 +103,19 @@ class TiteliveSearchTest:
     def test_titelive_music_sync(self, requests_mock):
         self._configure_login_mock(requests_mock)
         requests_mock.get("https://catsearch.epagine.fr/v1/search", json=fixtures.MUSIC_SEARCH_FIXTURE)
-        offers_factories.ProductFactory(extraData={"ean": "3700187679323"}, idAtProviders="3700187679323")
+        titelive_epagine_provider = providers_repository.get_provider_by_name(
+            providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME
+        )
+        offers_factories.ProductFactory(
+            extraData={"ean": "3700187679323"}, idAtProviders="3700187679323", lastProvider=titelive_epagine_provider
+        )
 
         titelive.TiteliveMusicSearch().synchronize_products(datetime.date(2022, 12, 1))
 
-        cd_product = offers_models.Product.query.filter(offers_models.Product.idAtProviders == "3700187679323").one()
+        cd_product = offers_models.Product.query.filter(
+            offers_models.Product.idAtProviders == "3700187679323",
+            offers_models.Product.lastProvider == titelive_epagine_provider,  # pylint: disable=comparison-with-callable
+        ).one()
         assert cd_product is not None
         assert cd_product.name == "Les dernières volontés de Mozart (symphony)"
         assert cd_product.description == 'GIMS revient avec " Les dernières volontés de Mozart ", un album de tubes.'
@@ -119,7 +134,8 @@ class TiteliveSearchTest:
         assert cd_product.extraData["musicSubType"] == "-1"
 
         shared_gtl_product = offers_models.Product.query.filter(
-            offers_models.Product.idAtProviders == "3700187679324"
+            offers_models.Product.idAtProviders == "3700187679324",
+            offers_models.Product.lastProvider == titelive_epagine_provider,  # pylint: disable=comparison-with-callable
         ).one()
         assert shared_gtl_product is not None
         assert shared_gtl_product.name == "Les dernières volontés de Mozart (symphony)"
@@ -142,7 +158,8 @@ class TiteliveSearchTest:
         assert shared_gtl_product.extraData["musicSubType"] == "-1"
 
         vinyle_product = offers_models.Product.query.filter(
-            offers_models.Product.idAtProviders == "5054197199738"
+            offers_models.Product.idAtProviders == "5054197199738",
+            offers_models.Product.lastProvider == titelive_epagine_provider,  # pylint: disable=comparison-with-callable
         ).one()
         assert vinyle_product.name is not None
         assert vinyle_product.name == "Cracker Island"
@@ -176,3 +193,82 @@ class TiteliveSearchTest:
         assert requests_mock.last_request.qs["tri"] == ["datemodification"]
         assert requests_mock.last_request.qs["tri_ordre"] == ["asc"]
         assert requests_mock.last_request.qs["dateminm"] == ["01/12/2022"]
+
+    @freezegun.freeze_time("2023-01-01")
+    def test_titelive_sync_event(self, requests_mock):
+        self._configure_login_mock(requests_mock)
+        requests_mock.get(
+            "https://catsearch.epagine.fr/v1/search",
+            json={"type": 4, "magid": "7", "nombre": 10, "page": 1, "result": []},
+        )
+        titelive_epagine_provider = providers_repository.get_provider_by_name(
+            providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME
+        )
+        providers_factories.LocalProviderEventFactory(
+            provider=titelive_epagine_provider,
+            type=providers_models.LocalProviderEventType.SyncEnd,
+            date=datetime.datetime(2022, 5, 5),
+            payload=titelive.TiteliveBase.MUSIC.value,
+        )
+
+        titelive.TiteliveMusicSearch().synchronize_products()
+
+        assert requests_mock.last_request.qs["dateminm"] == ["05/05/2022"]
+
+        stop_event, start_event = providers_models.LocalProviderEvent.query.order_by(
+            providers_models.LocalProviderEvent.id.desc()
+        ).limit(2)
+        assert stop_event.provider == start_event.provider == titelive_epagine_provider
+        assert stop_event.date == start_event.date == datetime.datetime(2023, 1, 1)
+        assert stop_event.payload == start_event.payload == titelive.TiteliveBase.MUSIC.value
+        assert stop_event.type == providers_models.LocalProviderEventType.SyncEnd
+        assert start_event.type == providers_models.LocalProviderEventType.SyncStart
+
+    def test_titelive_sync_event_on_failure(self, requests_mock):
+        self._configure_login_mock(requests_mock)
+        requests_mock.get("https://catsearch.epagine.fr/v1/search", exc=requests.exceptions.RequestException)
+        titelive_epagine_provider = providers_repository.get_provider_by_name(
+            providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME
+        )
+        providers_factories.LocalProviderEventFactory(
+            provider=titelive_epagine_provider,
+            type=providers_models.LocalProviderEventType.SyncEnd,
+            payload=titelive.TiteliveBase.MUSIC.value,
+        )
+
+        with pytest.raises(ExternalAPIException):
+            titelive.TiteliveMusicSearch().synchronize_products()
+
+        start_sync_events_query = providers_models.LocalProviderEvent.query.filter(
+            providers_models.LocalProviderEvent.provider == titelive_epagine_provider,
+            providers_models.LocalProviderEvent.type == providers_models.LocalProviderEventType.SyncStart,
+            providers_models.LocalProviderEvent.payload == titelive.TiteliveBase.MUSIC.value,
+        )
+        assert start_sync_events_query.count() == 1
+
+        end_sync_events_query = providers_models.LocalProviderEvent.query.filter(
+            providers_models.LocalProviderEvent.provider == titelive_epagine_provider,
+            providers_models.LocalProviderEvent.type == providers_models.LocalProviderEventType.SyncEnd,
+            providers_models.LocalProviderEvent.payload == titelive.TiteliveBase.MUSIC.value,
+        )
+        assert end_sync_events_query.count() == 1
+
+    def test_sync_does_not_overwrite_existing_provider(self, requests_mock):
+        self._configure_login_mock(requests_mock)
+        requests_mock.get("https://catsearch.epagine.fr/v1/search", json=fixtures.MUSIC_SEARCH_FIXTURE)
+        offers_factories.ProductFactory(extraData={"ean": "3700187679323"})
+
+        titelive.TiteliveMusicSearch().synchronize_products(datetime.date(2022, 12, 1))
+
+        products_with_same_ean_query = offers_models.Product.query.filter(
+            offers_models.Product.extraData["ean"].astext == "3700187679323"
+        )
+        assert products_with_same_ean_query.count() == 2
+
+        titelive_epagine_provider = providers_repository.get_provider_by_name(
+            providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME
+        )
+        titelive_synced_products_query = offers_models.Product.query.filter(
+            offers_models.Product.lastProvider == titelive_epagine_provider  # pylint: disable=comparison-with-callable
+        )
+        assert titelive_synced_products_query.count() == 3
