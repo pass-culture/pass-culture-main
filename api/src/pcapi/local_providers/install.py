@@ -19,3 +19,7 @@ def install_local_providers() -> None:
         name="EMS",
         localClass=providers_constants.EMS_STOCKS_FAKE_CLASS_NAME,
     )
+    providers_factories.ProviderFactory(
+        name=providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME,
+        enabledForPro=False,
+    )

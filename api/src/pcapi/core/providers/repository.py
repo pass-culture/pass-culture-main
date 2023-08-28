@@ -46,6 +46,10 @@ def get_provider_by_local_class(local_class: str) -> models.Provider:
     return models.Provider.query.filter_by(localClass=local_class).one_or_none()
 
 
+def get_provider_by_name(name: str) -> models.Provider:
+    return models.Provider.query.filter_by(name=name).one()
+
+
 def get_active_providers_query() -> BaseQuery:
     return models.Provider.query.filter_by(isActive=True).order_by(models.Provider.name)
 

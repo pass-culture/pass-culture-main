@@ -193,3 +193,12 @@ class OffererProviderFactory(BaseFactory):
 
     offerer = factory.SubFactory(offerers_factories.OffererFactory)
     provider = factory.SubFactory(ProviderFactory)
+
+
+class LocalProviderEventFactory(BaseFactory):
+    class Meta:
+        model = models.LocalProviderEvent
+
+    provider = factory.SubFactory(ProviderFactory)
+    type = models.LocalProviderEventType.SyncStart
+    date = factory.LazyAttribute(lambda _: datetime.datetime.utcnow() - datetime.timedelta(days=30))
