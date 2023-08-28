@@ -1,41 +1,43 @@
-import { useEffect } from 'react'
-import { useNavigate, useParams, Navigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useParams, Navigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { getError, isErrorAPIError } from 'apiClient/helpers'
 import useCurrentUser from 'hooks/useCurrentUser'
-import useNotification from 'hooks/useNotification'
 
 type Params = { token: string }
 
-const SignupValidation = (): JSX.Element => {
+const SignupValidation = (): JSX.Element | null => {
   const { token } = useParams<Params>()
   const { currentUser } = useCurrentUser()
-  const navigate = useNavigate()
-  const notify = useNotification()
+  const [urlToRedirect, setUrlToRedirect] = useState<string>()
 
   useEffect(() => {
     const validateTokenAndRedirect = async () => {
       if (currentUser?.id) {
-        navigate('/')
+        setUrlToRedirect('/')
       } else if (token) {
         try {
           await api.validateUser(token)
-          notify.success(
-            'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.'
-          )
+          setUrlToRedirect('/connexion?accountValidation=true')
         } catch (error) {
           if (isErrorAPIError(error)) {
             const errors = getError(error)
-            notify.error(errors.global)
+            // FIXME: if we use notify, the notification doesn't appear,
+            // we have to send the message and status with get parameters
+            setUrlToRedirect(
+              '/connexion?accountValidation=false&message=' + errors.global
+            )
+          } else {
+            setUrlToRedirect('/connexion')
           }
         }
       }
     }
     void validateTokenAndRedirect()
-  }, [notify, token, currentUser?.id])
+  }, [token, currentUser?.id])
 
-  return <Navigate to="/connexion" replace />
+  return urlToRedirect ? <Navigate to={urlToRedirect} replace /> : null
 }
 
 export default SignupValidation

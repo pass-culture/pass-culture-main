@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
 import SkipLinks from 'components/SkipLinks'
+import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import CookiesFooter from 'pages/CookiesFooter/CookiesFooter'
@@ -12,6 +14,24 @@ import SigninForm from './SigninForm/SigninForm'
 
 const SignIn = (): JSX.Element => {
   useRedirectLoggedUser()
+  const notify = useNotification()
+
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  useEffect(() => {
+    if (searchParams.get('accountValidation') === 'true') {
+      notify.success(
+        'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.'
+      )
+      setSearchParams('')
+    } else if (
+      searchParams.get('accountValidation') === 'false' &&
+      searchParams.get('message')
+    ) {
+      notify.error(searchParams.get('message'))
+      setSearchParams('')
+    }
+  }, [searchParams])
 
   return (
     <>
