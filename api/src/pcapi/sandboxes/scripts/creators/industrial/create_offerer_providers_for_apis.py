@@ -114,6 +114,7 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
         offer__subcategoryId=subcategories.CONCERT.id,
         offer__lastProvider=provider,
         beginningDatetime=in_five_days + datetime.timedelta(days=3),
+        offer__withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
     )
     educational_factories.CollectiveStockFactory(
         collectiveOffer__name="Taylor à l'école",
