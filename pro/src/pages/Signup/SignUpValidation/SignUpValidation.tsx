@@ -20,6 +20,7 @@ const SignupValidation = (): null => {
         navigate('/')
       } else if (token) {
         try {
+          await new Promise(resolve => setTimeout(resolve, 1000))
           await api.validateUser(token)
           navigate('/connexion')
           notify.success(
