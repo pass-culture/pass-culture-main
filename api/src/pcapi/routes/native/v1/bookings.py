@@ -148,6 +148,10 @@ def cancel_booking(user: User, booking_id: int) -> None:
         raise ApiErrors({"external_booking": "L'annulation de réservation a échoué."})
     except InactiveProvider:
         raise ApiErrors({"external_booking": "L'annulation de réservation a échoué."})
+    except external_bookings_exceptions.ExternalBookingException:
+        raise ApiErrors(
+            {"code": "FAILED_TO_CANCEL_EXTERNAL_BOOKING", "message": "L'annulation de réservation a échoué."}
+        )
 
 
 @blueprint.native_v1.route("/bookings/<int:booking_id>/toggle_display", methods=["POST"])
