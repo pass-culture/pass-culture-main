@@ -78,33 +78,7 @@ describe('src | components | pages | Signup | validation', () => {
     })
   })
 
-  it('should display a success message when token verification is successful', async () => {
-    vi.spyOn(api, 'validateUser').mockResolvedValue()
-    const notifySuccess = vi.fn()
-    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
-      ...mockUseNotification,
-      success: notifySuccess,
-    }))
-    // given the user lands on signup validation page
-    renderSignupValidation('/validation/AAA')
-
-    // when his token is successfully validated
-    // then a success message should be dispatched
-    await waitFor(() => {
-      expect(notifySuccess).toHaveBeenNthCalledWith(
-        1,
-        'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.'
-      )
-    })
-    expect(screen.getByText('Connexion')).toBeInTheDocument()
-  })
-
-  it('should display an error message when token verification is not successful', async () => {
-    const notifyError = vi.fn()
-    vi.spyOn(useNotification, 'default').mockImplementation(() => ({
-      ...mockUseNotification,
-      error: notifyError,
-    }))
+  it('should verify user link is not valid and redirect to connexion', async () => {
     vi.spyOn(api, 'validateUser').mockRejectedValue(
       new ApiError(
         {} as ApiRequestOptions,
@@ -118,10 +92,19 @@ describe('src | components | pages | Signup | validation', () => {
     )
     // given the user lands on signup validation page
     renderSignupValidation('/validation/AAA')
-    // when his token is not successfully validated
-    // then an error message should be dispatched
+
     await waitFor(() => {
-      expect(notifyError).toHaveBeenNthCalledWith(1, ['error1', 'error2'])
+      expect(screen.getByText('Connexion')).toBeInTheDocument()
+    })
+  })
+
+  it('should verify user link is not valid and redirect to connexion even if the error is not an ApiError', async () => {
+    vi.spyOn(api, 'validateUser').mockRejectedValue({ name: 'error' })
+    // given the user lands on signup validation page
+    renderSignupValidation('/validation/AAA')
+
+    await waitFor(() => {
+      expect(screen.getByText('Connexion')).toBeInTheDocument()
     })
   })
 })

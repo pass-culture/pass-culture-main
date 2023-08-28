@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
+import * as router from 'react-router-dom'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -434,6 +435,33 @@ describe('SignIn', () => {
       )
 
       expect(screen.getByText("I'm the offer page")).toBeInTheDocument()
+    })
+  })
+
+  describe('should display messages after account validation', () => {
+    it('should display confirmation', async () => {
+      vi.spyOn(router, 'useSearchParams').mockReturnValue([
+        new URLSearchParams({ accountValidation: 'true' }),
+        vi.fn(),
+      ])
+      renderSignIn()
+      expect(
+        await screen.findByText(
+          'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.'
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('should display error', async () => {
+      vi.spyOn(router, 'useSearchParams').mockReturnValue([
+        new URLSearchParams({
+          accountValidation: 'false',
+          message: 'Erreur invalide',
+        }),
+        vi.fn(),
+      ])
+      renderSignIn()
+      expect(await screen.findByText('Erreur invalide')).toBeInTheDocument()
     })
   })
 })
