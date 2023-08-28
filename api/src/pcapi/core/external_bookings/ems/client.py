@@ -1,8 +1,14 @@
+import logging
+
 from pcapi.connectors.ems import EMSBookingConnector
 from pcapi.connectors.serialization import ems_serializers
 from pcapi.core.bookings import models as booking_models
+from pcapi.core.bookings import repository as bookings_repository
 from pcapi.core.external_bookings import models as external_bookings_models
 from pcapi.core.users import models as users_models
+
+
+logger = logging.getLogger(__name__)
 
 
 class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
@@ -43,7 +49,21 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         ]
 
     def cancel_booking(self, barcodes: list[str]) -> None:
-        raise NotImplementedError()
+        external_bookings = bookings_repository.get_external_bookings_by_cinema_id_and_barcodes(
+            self.cinema_id, barcodes
+        )
+        for booking in external_bookings:
+            assert booking.additional_information is not None
+            payload = ems_serializers.AnnulationPassCultureRequest(
+                num_cine=booking.additional_information["num_cine"],
+                num_caisse=booking.additional_information["num_caisse"],
+                num_trans=booking.additional_information["num_trans"],
+                num_ope=booking.additional_information["num_ope"],
+            )
+            response = self.connector.do_request(self.connector.cancelation_endpoint, payload=payload.dict())
+            self.connector.raise_for_status(response)
+
+            logger.info("Successfully canceled an EMS external booking", extra={"barcode": booking.barcode})
 
     def get_shows_remaining_places(self, shows_id: list[int]) -> dict[int, int]:
         raise NotImplementedError()

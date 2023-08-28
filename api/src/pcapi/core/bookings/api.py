@@ -440,6 +440,9 @@ def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
         case "CGRStocks":
             if not FeatureToggle.ENABLE_CGR_INTEGRATION.is_active():
                 raise feature.DisabledFeatureError("ENABLE_CGR_INTEGRATION is inactive")
+        case "EMSStocks":
+            if not FeatureToggle.ENABLE_EMS_INTEGRATION.is_active():
+                raise feature.DisabledFeatureError("ENABLE_EMS_INTEGRATION is inactive")
         case _:
             raise offers_exceptions.UnexpectedCinemaProvider(f"Unknown Provider: {venue_provider_name}")
     barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
