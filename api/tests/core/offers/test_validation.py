@@ -184,6 +184,28 @@ class CheckStockIsDeletableTest:
             "L'évènement s'est terminé il y a plus de deux jours, la suppression est impossible."
         ]
 
+    def test_charlie_event_stock(self):
+        external_url = "https://book_my_offer.com"
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider",
+            bookingExternalUrl=external_url + "/book",
+            cancelExternalUrl=external_url + "/cancel",
+        )
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = offers_factories.EventStockFactory(
+            lastProvider=provider,
+            offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
+            offer__lastProvider=provider,
+            offer__withdrawalType=WithdrawalTypeEnum.IN_APP,
+            idAtProviders="",
+            dnBookedQuantity=4,
+            quantity=10,
+        )
+        with pytest.raises(exceptions.StockFromCharlieApiCannotBeDeleted) as error:
+            validation.check_stock_is_deletable(stock)
+
+        assert error.value.errors["global"] == ["You can't delete a stock where bookings have tickets"]
+
 
 @pytest.mark.usefixtures("db_session")
 class CheckStockIsUpdatableTest:

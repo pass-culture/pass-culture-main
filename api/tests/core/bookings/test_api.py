@@ -28,6 +28,8 @@ import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.external.batch import BATCH_DATETIME_FORMAT
+from pcapi.core.external_bookings import factories as external_bookings_factories
+import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
 from pcapi.core.external_bookings.factories import ExternalBookingFactory
 from pcapi.core.external_bookings.models import Ticket
 import pcapi.core.finance.api as finance_api
@@ -35,6 +37,7 @@ import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.offerers import factories as offerer_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
@@ -812,6 +815,35 @@ class CancelByBeneficiaryTest:
         assert booking.status is not BookingStatus.CANCELLED
         assert not booking.cancellationReason
 
+    def test_raise_external_booking_error_if_trying_to_cancel_with_external_server_error(self, requests_mock):
+        external_url = "https://book_my_offer.com"
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider",
+            bookingExternalUrl=external_url + "/book",
+            cancelExternalUrl=external_url + "/cancel",
+        )
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = offers_factories.EventStockFactory(
+            lastProvider=provider,
+            offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
+            offer__lastProvider=provider,
+            idAtProviders="",
+        )
+        booking = bookings_factories.BookingFactory(stock=stock)
+        offerer_factories.ApiKeyFactory(offerer=booking.offerer)
+        external_bookings_factories.ExternalBookingFactory(booking=booking, barcode="1234567890123")
+        requests_mock.post(
+            external_url + "/cancel",
+            text="internal error",
+            status_code=500,
+        )
+
+        with pytest.raises(external_bookings_exceptions.ExternalBookingException):
+            api.cancel_booking_by_beneficiary(booking.user, booking)
+
+        assert booking.status is not BookingStatus.CANCELLED
+        assert not booking.cancellationReason
+
     @patch("pcapi.core.bookings.api.external_bookings_api.cancel_booking")
     @override_features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_cds_cancel_external_booking(self, mocked_cancel_booking):
@@ -873,6 +905,32 @@ class CancelByBeneficiaryTest:
 
         assert booking.status is BookingStatus.CANCELLED
         assert stock.dnBookedQuantity == old_quantity - 1
+
+    @patch("pcapi.core.bookings.api.external_bookings_api.cancel_event_ticket")
+    def test_cancel_external_booking_from_charlie_api(self, mocked_cancel_booking):
+        external_url = "https://book_my_offer.com"
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider",
+            bookingExternalUrl=external_url + "/book",
+            cancelExternalUrl=external_url + "/cancel",
+        )
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = offers_factories.EventStockFactory(
+            lastProvider=provider,
+            offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
+            offer__lastProvider=provider,
+            idAtProviders="",
+            quantity=20,
+            dnBookedQuantity=4,
+        )
+        booking = bookings_factories.BookingFactory(stock=stock)
+        offerer_factories.ApiKeyFactory(offerer=booking.offerer)
+        external_bookings_factories.ExternalBookingFactory(booking=booking, barcode="1234567890123")
+        mocked_cancel_booking.return_value = None
+
+        api._cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
+
+        mocked_cancel_booking.assert_called()
 
     def test_cancel_booking_tracked_in_amplitude(self):
         booking = bookings_factories.BookingFactory()

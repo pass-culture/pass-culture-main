@@ -12,6 +12,14 @@ class TooLateToDeleteStock(ClientError):
         )
 
 
+class StockFromCharlieApiCannotBeDeleted(ClientError):
+    def __init__(self) -> None:
+        super().__init__(
+            "global",
+            "You can't delete a stock where bookings have tickets",
+        )
+
+
 class OfferUsedOrReimbursedCantBeEdit(Exception):
     pass
 
