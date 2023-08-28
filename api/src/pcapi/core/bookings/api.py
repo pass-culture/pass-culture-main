@@ -426,11 +426,20 @@ def _cancel_booking(
 
 
 def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
+    offer = stock.offer
+
     if not booking.isExternal:
         return None
-    venue_provider_name = external_bookings_api.get_active_cinema_venue_provider(
-        stock.offer.venueId
-    ).provider.localClass
+    if offer.lastProvider and offer.lastProvider.hasProviderEnableCharlie:
+        barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
+        try:
+            external_bookings_api.cancel_event_ticket(offer.lastProvider, stock, barcodes)
+        except external_bookings_exceptions.ExternalBookingException:
+            logger.exception("Could not cancel external ticket")
+            raise external_bookings_exceptions.ExternalBookingException
+        return None
+
+    venue_provider_name = external_bookings_api.get_active_cinema_venue_provider(offer.venueId).provider.localClass
     match venue_provider_name:
         case "CDSStocks":
             if not FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active():
