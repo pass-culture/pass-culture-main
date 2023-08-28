@@ -285,30 +285,8 @@ def cancel_collective_offer_booking(offer_id: int) -> None:
         extra={"collective_stock": collective_stock.id, "collective_booking": cancelled_booking.id},
     )
 
-    try:
-        adage_client.notify_booking_cancellation_by_offerer(data=serialize_collective_booking(cancelled_booking))
-    except exceptions.AdageException as adage_error:
-        logger.error(
-            "%s Could not notify adage of collective booking cancellation by offerer. Educational institution won't be notified.",
-            adage_error.message,
-            extra={
-                "collectiveBookingId": cancelled_booking.id,
-                "adage status code": adage_error.status_code,
-                "adage response text": adage_error.response_text,
-            },
-        )
-    except ValidationError:
-        logger.exception(
-            "Could not notify adage of prebooking, hence send booking cancellation email to educational institution, as educationalBooking serialization failed.",
-            extra={
-                "collectiveBookingId": cancelled_booking.id,
-            },
-        )
-    if not transactional_mails.send_collective_booking_cancellation_confirmation_by_pro_email(cancelled_booking):
-        logger.warning(
-            "Could not notify offerer about collective booking cancellation",
-            extra={"collectiveStock": collective_stock.id},
-        )
+    notify_redactor_that_booking_has_been_cancelled(cancelled_booking)
+    notify_pro_that_booking_has_been_cancelled(cancelled_booking)
 
 
 def notify_pro_users_one_day() -> None:
@@ -491,3 +469,33 @@ def update_collective_bookings_for_new_institution(
     bookings.update({"educationalInstitutionId": institution_destination.id})
 
     db.session.commit()
+
+
+def notify_redactor_that_booking_has_been_cancelled(booking: educational_models.CollectiveBooking) -> None:
+    try:
+        adage_client.notify_booking_cancellation_by_offerer(data=serialize_collective_booking(booking))
+    except exceptions.AdageException as adage_error:
+        logger.error(
+            "%s Could not notify adage of collective booking cancellation by offerer. Educational institution won't be notified.",
+            adage_error.message,
+            extra={
+                "collectiveBookingId": booking.id,
+                "adage status code": adage_error.status_code,
+                "adage response text": adage_error.response_text,
+            },
+        )
+    except ValidationError:
+        logger.exception(
+            "Could not notify adage of prebooking, hence send booking cancellation email to educational institution, as educationalBooking serialization failed.",
+            extra={
+                "collectiveBookingId": booking.id,
+            },
+        )
+
+
+def notify_pro_that_booking_has_been_cancelled(booking: educational_models.CollectiveBooking) -> None:
+    if not transactional_mails.send_collective_booking_cancellation_confirmation_by_pro_email(booking):
+        logger.warning(
+            "Could not notify offerer about collective booking cancellation",
+            extra={"collectiveStock": booking.collectiveStockId},
+        )
