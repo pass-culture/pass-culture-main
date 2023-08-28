@@ -16,6 +16,6 @@ export type VenueProviderResponse = {
   provider: ProviderResponse;
   quantity?: number;
   venueId: number;
-  venueIdAtOfferProvider: string;
+  venueIdAtOfferProvider?: string;
 };
 
