@@ -8,7 +8,7 @@ import { oldGetDefaultFacetFilterUAICodeValue } from 'utils/oldFacetFilters'
 import { computeVenueFacetFilter } from '../components/OffersInstantSearch/utils'
 import { Facets } from '../types'
 
-type FacetFiltersContextType = {
+export type FacetFiltersContextType = {
   facetFilters: Facets
   setFacetFilters: (facets: Facets) => void
 }
