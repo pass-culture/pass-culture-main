@@ -41,7 +41,7 @@ class VenueProviderResponse(BaseModel):
     provider: ProviderResponse
     quantity: int | None
     venueId: int
-    venueIdAtOfferProvider: str
+    venueIdAtOfferProvider: str | None
 
     @classmethod
     def from_orm(cls: Any, venue_provider: VenueProvider) -> "VenueProviderResponse":

@@ -160,10 +160,7 @@ def connect_venue_to_provider(
     venue: offerers_models.Venue, provider: providers_models.Provider, venueIdAtOfferProvider: str = None
 ) -> providers_models.VenueProvider:
     if provider.hasOffererProvider:
-        # FIXME (mageoffray, 16-06-2023): Column is not nullable but not
-        # needed for new provider apis. We will have few venues to sync
-        # without siret before the column is nullable.
-        id_at_provider = "dummyIdAtProvider"
+        id_at_provider = None
     else:
         id_at_provider = _get_siret(venueIdAtOfferProvider, venue.siret)
 
@@ -198,7 +195,7 @@ def connect_venue_to_cinema_provider(
     return venue_provider
 
 
-def _check_provider_can_be_connected(provider: providers_models.Provider, id_at_provider: str) -> None:
+def _check_provider_can_be_connected(provider: providers_models.Provider, id_at_provider: str | None) -> None:
     if provider.hasOffererProvider:
         return
     if not provider.implements_provider_api:
@@ -210,7 +207,7 @@ def _check_provider_can_be_connected(provider: providers_models.Provider, id_at_
 
 
 def _siret_can_be_synchronized(
-    siret: str,
+    siret: str | None,
     provider: providers_models.Provider,
 ) -> bool:
     if not siret:
