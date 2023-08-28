@@ -12,3 +12,4 @@ class ExternalBookingFactory(BaseFactory):
     booking = factory.SubFactory(BookingFactory)
     barcode = factory.Sequence(lambda n: f"{n:13}")
     seat = factory.Sequence("A_{}".format)
+    additional_information = factory.DictFactory()

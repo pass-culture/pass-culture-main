@@ -81,7 +81,7 @@ class ExternalBooking(PcObject, Base, Model):
 
     seat = Column(String)
 
-    additional_information: dict = Column(postgresql.JSONB)
+    additional_information: dict | None = Column(postgresql.JSONB)
 
 
 class Booking(PcObject, Base, Model):

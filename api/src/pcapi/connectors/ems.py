@@ -74,6 +74,7 @@ class EMSBookingConnector:
     digest_mode = "sha512"
     booking_endpoint = "VENTE"
     shows_availability_endpoint = "SEANCE"
+    cancelation_endpoint = "ANNULATION"
 
     def do_request(self, endpoint: str, payload: dict) -> Response:
         """
@@ -87,7 +88,7 @@ class EMSBookingConnector:
     def raise_for_status(self, response: Response) -> None:
         response.raise_for_status()
         content = response.json()
-        if content.get("statut") != 1:
+        if (statut := content.get("statut")) is not None and statut != 1:
             raise EMSAPIException(f'Error on EMS API with {content["code_erreur"]} - {content["message_erreur"]}')
 
     def _build_headers(self) -> dict[str, str]:
