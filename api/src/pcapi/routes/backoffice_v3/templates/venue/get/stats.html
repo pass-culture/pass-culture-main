@@ -1,3 +1,4 @@
+{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
 <turbo-frame data-turbo="false" id="venue_total_revenue_frame">
 <div class="row">
   <div class="col-4">
@@ -106,6 +107,15 @@
             {% if bank_information.pricing_point_url %}
               <a href="{{ bank_information.pricing_point_url }}"
                  class="link-primary">{{ bank_information.pricing_point_name }}</a>
+              {% if has_permission("ADVANCED_PRO_SUPPORT") %}
+                <button class="btn btn-link lead fw-bold mx-0 my-0 py-0"
+                        data-bs-toggle="modal"
+                        data-bs-target="#remove-venue-pricing-point"
+                        type="button">
+                  <i class="bi bi-trash3-fill"></i>
+                </button>
+                {{ build_lazy_modal(url_for("backoffice_v3_web.venue.get_remove_pricing_point_form", venue_id=venue.id), "remove-venue-pricing-point") }}
+              {% endif %}
             {% else %}
               {{ bank_information.pricing_point_name | empty_string_if_null }}
             {% endif %}
