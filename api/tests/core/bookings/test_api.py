@@ -2,6 +2,7 @@ import dataclasses
 from datetime import datetime
 from datetime import timedelta
 import logging
+import re
 from unittest import mock
 from unittest.mock import patch
 
@@ -813,7 +814,7 @@ class CancelByBeneficiaryTest:
 
     @patch("pcapi.core.bookings.api.external_bookings_api.cancel_booking")
     @override_features(ENABLE_CDS_IMPLEMENTATION=True)
-    def test_cancel_external_booking(self, mocked_cancel_booking):
+    def test_cds_cancel_external_booking(self, mocked_cancel_booking):
         cds_provider = get_provider_by_local_class("CDSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
         mocked_cancel_booking.return_value = None
@@ -829,6 +830,49 @@ class CancelByBeneficiaryTest:
         api._cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
 
         mocked_cancel_booking.assert_called()
+
+    @override_features(ENABLE_EMS_INTEGRATION=True)
+    def test_ems_cancel_external_booking(self, requests_mock):
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        ems_provider = get_provider_by_local_class("EMSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+        offer = offers_factories.EventOfferFactory(
+            name="Film",
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProviderId=cinema_provider_pivot.provider.id,
+        )
+        stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="1111%2222%EMS#3333")
+        booking = bookings_factories.BookingFactory(stock=stock, user=beneficiary)
+        ExternalBookingFactory(
+            booking=booking,
+            additional_information={
+                "num_cine": "9997",
+                "num_caisse": "255",
+                "num_trans": 1257,
+                "num_ope": 147149,
+            },
+        )
+
+        assert booking.status is BookingStatus.CONFIRMED
+        assert len(booking.externalBookings) == 1
+        assert booking.externalBookings[0].barcode
+        assert booking.externalBookings[0].seat
+        assert booking.externalBookings[0].additional_information == {
+            "num_cine": "9997",
+            "num_caisse": "255",
+            "num_trans": 1257,
+            "num_ope": 147149,
+        }
+
+        requests_mock.post(url=re.compile(r"https://fake_url.com/ANNULATION/*"), json={})
+        old_quantity = stock.dnBookedQuantity
+
+        api._cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
+
+        assert booking.status is BookingStatus.CANCELLED
+        assert stock.dnBookedQuantity == old_quantity - 1
 
     def test_cancel_booking_tracked_in_amplitude(self):
         booking = bookings_factories.BookingFactory()
