@@ -279,3 +279,115 @@ def remove_siret(
         db.session.commit()
     else:
         db.session.rollback()
+
+
+def check_can_remove_pricing_point(
+    venue: offerers_models.Venue,
+    override_revenue_check: bool = False,
+) -> None:
+    if venue.siret:
+        raise CheckError("Vous ne pouvez supprimer le point de valorisation d'un lieu avec SIRET")
+
+    if not venue.current_pricing_point:
+        raise CheckError("Ce lieu n'a pas de point de valorisation actif")
+
+    # Same conditions as in `check_can_remove_siret`
+    if has_pending_pricings(venue):
+        raise CheckError("Ce lieu a des valorisations en attente")
+    if not override_revenue_check:
+        revenue = get_yearly_revenue(venue.id)
+        if revenue and revenue >= YEARLY_REVENUE_THRESHOLD:
+            raise CheckError(f"Ce lieu a un chiffre d'affaires de l'année élevé : {revenue}")
+
+
+def remove_pricing_point_link(
+    venue: offerers_models.Venue,
+    comment: str,
+    apply_changes: bool = False,
+    override_revenue_check: bool = False,
+    author_user_id: int | None = None,
+) -> None:
+    check_can_remove_pricing_point(venue, override_revenue_check)
+
+    old_pricing_point_siret = venue.current_pricing_point.siret  # type: ignore [union-attr]
+    old_reimbursement_point_siret = (
+        venue.current_reimbursement_point.siret if venue.current_reimbursement_point else None
+    )
+
+    queries = (
+        # End this pricing point
+        """
+        update venue_pricing_point_link
+        set timespan = tsrange(lower(timespan), now()::timestamp, '[)')
+        where "venueId" = :venue_id and "pricingPointId" = :current_pricing_point_id
+        and timespan @> now()::timestamp
+        """,
+        # End the reimbursement point
+        """
+        update venue_reimbursement_point_link
+        set timespan = tsrange(lower(timespan), now()::timestamp, '[)')
+        where "venueId" = :venue_id and timespan @> now()::timestamp
+        """,
+        # Delete all ongoing pricings (and related pricing lines),
+        # except pending ones. The corresponding bookings will be
+        # priced again once a new pricing point has been selected for
+        # their venues.
+        """
+        update finance_event
+        set
+          "pricingPointId" = NULL,
+          status = :pending_finance_event_status
+        where
+          "pricingPointId" = :venue_id
+          and id in (
+            select "eventId" from pricing
+            where "pricingPointId" = :venue_id and status = :validated_pricing_status
+          )
+        """,
+        """
+        delete from pricing_line
+        where "pricingId" in (
+          select id from pricing
+          where "pricingPointId" = :venue_id and status = :validated_pricing_status
+        )
+        """,
+        """
+        delete from pricing
+        where "pricingPointId" = :venue_id and status = :validated_pricing_status
+        """,
+    )
+    try:
+        for query in queries:
+            db.session.execute(
+                query,
+                {
+                    "venue_id": venue.id,
+                    "current_pricing_point_id": venue.current_pricing_point.id,  # type: ignore [union-attr]
+                    "pending_finance_event_status": models.FinanceEventStatus.PENDING.value,
+                    "validated_pricing_status": models.PricingStatus.VALIDATED.value,
+                },
+            )
+
+        modified_info = {"pricingPointSiret": {"old_info": old_pricing_point_siret, "new_info": None}}
+        if old_reimbursement_point_siret:
+            modified_info["reimbursementPointSiret"] = {"old_info": old_reimbursement_point_siret, "new_info": None}
+
+        db.session.add(
+            history_models.ActionHistory(
+                actionType=history_models.ActionType.INFO_MODIFIED,
+                authorUserId=author_user_id,
+                offererId=venue.managingOffererId,
+                venueId=venue.id,
+                comment=comment,
+                extraData={"modified_info": modified_info},
+            )
+        )
+
+    except Exception:
+        db.session.rollback()
+        raise
+
+    if apply_changes:
+        db.session.commit()
+    else:
+        db.session.rollback()

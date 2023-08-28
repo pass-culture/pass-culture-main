@@ -566,6 +566,36 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
             .scalar()
         )
 
+    @property
+    def current_pricing_point(self) -> "Venue | None":
+        # Unlike current_pricing_point_id, this property uses pricing_point_links joinedloaded with the venue, which
+        # avoids additional SQL query
+        now = datetime.utcnow()
+
+        for link in self.pricing_point_links:
+            lower = link.timespan.lower
+            upper = link.timespan.upper
+
+            if lower <= now and (not upper or now <= upper):
+                return link.pricingPoint
+
+        return None
+
+    @property
+    def current_reimbursement_point(self) -> "Venue | None":
+        # Unlike current_reimbursement_point_id, this property uses reimbursement_point_links joinedloaded with the
+        # venue, which avoids additional SQL query
+        now = datetime.utcnow()
+
+        for link in self.reimbursement_point_links:
+            lower = link.timespan.lower
+            upper = link.timespan.upper
+
+            if lower <= now and (not upper or now <= upper):
+                return link.reimbursementPoint
+
+        return None
+
     @hybrid_property
     def common_name(self) -> str:
         return self.publicName or self.name

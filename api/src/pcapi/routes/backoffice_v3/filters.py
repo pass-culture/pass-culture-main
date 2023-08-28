@@ -474,6 +474,10 @@ def format_modified_info_name(info_name: str) -> str:
             return "Nom d'usage"
         case "criteria":
             return "Tags"
+        case "pricingpointsiret":
+            return "Siret de valorisation"
+        case "reimbursementpointsiret":
+            return "Siret de remboursement"
         case _:
             return info_name.replace("_", " ").capitalize()
 

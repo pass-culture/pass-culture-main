@@ -1,6 +1,6 @@
 {% from "components/turbo/spinner.html" import build_loading_spinner with context %}
-{% macro build_lazy_modal(url, div_id, loading = "lazy") %}
-  <div class="modal fade modal-xl"
+{% macro build_lazy_modal(url, div_id, loading = "lazy", modal_size = "lg") %}
+  <div class="modal fade modal-{{ modal_size }}"
        id="{{ div_id }}"
        tabindex="-1"
        aria-labelledby="{{ div_id }}-label"

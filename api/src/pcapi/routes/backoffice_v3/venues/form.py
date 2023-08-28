@@ -164,3 +164,11 @@ class BatchEditVenuesForm(empty_forms.BatchForm):
             raise wtforms.ValidationError("Impossible de passer tous les lieux en permanents et non permanents")
 
         return all_permanent
+
+
+class RemovePricingPointForm(utils.PCForm):
+    comment = fields.PCCommentField("Commentaire interne")
+    override_revenue_check = fields.PCSwitchBooleanField(
+        "Ignorer la limite de revenus annuels (accord de la comptabilité nécessaire)",
+        full_width=True,
+    )
