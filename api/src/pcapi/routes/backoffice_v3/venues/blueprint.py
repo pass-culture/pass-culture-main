@@ -24,6 +24,7 @@ from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import models as finance_models
+from pcapi.core.finance import siret_api
 import pcapi.core.history.models as history_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -33,6 +34,7 @@ import pcapi.core.permissions.models as perm_models
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.routes.backoffice_v3 import autocomplete
+from pcapi.routes.backoffice_v3 import filters
 from pcapi.routes.backoffice_v3 import utils
 from pcapi.routes.backoffice_v3.forms import empty as empty_forms
 from pcapi.routes.backoffice_v3.forms import search as search_forms
@@ -107,7 +109,9 @@ def get_venue(venue_id: int) -> offerers_models.Venue:
             sa.orm.joinedload(offerers_models.Venue.managingOfferer),
             sa.orm.joinedload(offerers_models.Venue.contact),
             sa.orm.joinedload(offerers_models.Venue.bankInformation),
-            sa.orm.joinedload(offerers_models.Venue.reimbursement_point_links),
+            sa.orm.joinedload(offerers_models.Venue.reimbursement_point_links)
+            .joinedload(offerers_models.VenueReimbursementPointLink.reimbursementPoint)
+            .load_only(offerers_models.Venue.id),
             sa.orm.joinedload(offerers_models.Venue.venueLabel),
             sa.orm.joinedload(offerers_models.Venue.criteria).load_only(criteria_models.Criterion.name),
             sa.orm.joinedload(offerers_models.Venue.collectiveDmsApplications).load_only(
@@ -150,21 +154,6 @@ def get_dms_stats(dms_application_id: int | None) -> serialization.VenueDmsStats
         ),
         url=f"https://www.demarches-simplifiees.fr/procedures/{settings.DMS_VENUE_PROCEDURE_ID_V4}/dossiers/{dms_application_id}",
     )
-
-
-def has_reimbursement_point(
-    venue: offerers_models.Venue,
-) -> bool:
-    now = datetime.utcnow()
-
-    for link in venue.reimbursement_point_links:
-        lower = link.timespan.lower
-        upper = link.timespan.upper
-
-        if lower <= now and (not upper or now <= upper):
-            return True
-
-    return False
 
 
 def render_venue_details(
@@ -211,7 +200,7 @@ def render_venue_details(
         venue=venue,
         edit_venue_form=edit_venue_form,
         region=region,
-        has_reimbursement_point=has_reimbursement_point(venue),
+        has_reimbursement_point=bool(venue.current_reimbursement_point),
         dms_stats=dms_stats,
         delete_venue_form=delete_venue_form,
         active_tab=request.args.get("active_tab", "history"),
@@ -292,29 +281,15 @@ def get_stats_data(venue_id: int) -> dict:
 
 
 def get_venue_bank_information(venue: offerers_models.Venue) -> serialization.VenueBankInformation:
-    now = datetime.utcnow()
     reimbursement_point_name = None
+    pricing_point_id = None
     pricing_point_name = None
     bic = None
     iban = None
     reimbursement_point_url = None
     pricing_point_url = None
-    current_pricing_point = next(
-        (
-            pricing_point_link.pricingPoint
-            for pricing_point_link in venue.pricing_point_links
-            if now in pricing_point_link.timespan
-        ),
-        None,
-    )
-    current_reimbursement_point = next(
-        (
-            reimbursement_point_link.reimbursementPoint
-            for reimbursement_point_link in venue.reimbursement_point_links
-            if now in reimbursement_point_link.timespan
-        ),
-        None,
-    )
+    current_pricing_point = venue.current_pricing_point
+    current_reimbursement_point = venue.current_reimbursement_point
 
     if current_reimbursement_point:
         bic = current_reimbursement_point.bic
@@ -327,12 +302,14 @@ def get_venue_bank_information(venue: offerers_models.Venue) -> serialization.Ve
     if venue.siret:
         pricing_point_name = venue.name
     elif current_pricing_point is not None:
+        pricing_point_id = current_pricing_point.id
         pricing_point_name = current_pricing_point.name
         pricing_point_url = url_for("backoffice_v3_web.venue.get", venue_id=current_pricing_point.id)
 
     return serialization.VenueBankInformation(
         reimbursement_point_name=reimbursement_point_name,
         reimbursement_point_url=reimbursement_point_url,
+        pricing_point_id=pricing_point_id,
         pricing_point_name=pricing_point_name,
         pricing_point_url=pricing_point_url,
         bic=bic,
@@ -668,9 +645,115 @@ def _update_venues_criteria(
     return changed_venues
 
 
+REMOVE_PRICING_POINT_TITLE = "Détacher les points de valorisation et remboursement"
+
+
 def _update_permanent_venues(venues: list[offerers_models.Venue], is_permanent: bool) -> list[offerers_models.Venue]:
     venues_to_update = [venue for venue in venues if venue.isPermanent != is_permanent]
     for venue in venues_to_update:
         venue.isPermanent = is_permanent
 
     return venues_to_update
+
+
+def _load_venue_for_removing_pricing_point(venue_id: int) -> offerers_models.Venue:
+    venue = (
+        offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
+        .options(
+            sa.orm.load_only(offerers_models.Venue.name, offerers_models.Venue.siret),
+            sa.orm.joinedload(offerers_models.Venue.pricing_point_links)
+            .joinedload(offerers_models.VenuePricingPointLink.pricingPoint)
+            .load_only(offerers_models.Venue.name, offerers_models.Venue.siret),
+            sa.orm.joinedload(offerers_models.Venue.reimbursement_point_links)
+            .joinedload(offerers_models.VenueReimbursementPointLink.reimbursementPoint)
+            .load_only(offerers_models.Venue.name, offerers_models.Venue.siret),
+        )
+        .one_or_none()
+    )
+
+    if not venue:
+        raise NotFound()
+
+    return venue
+
+
+def _render_remove_pricing_point_form(
+    form: forms.RemovePricingPointForm, venue: offerers_models.Venue, code: int = 200
+) -> utils.BackofficeResponse:
+    current_pricing_point = venue.current_pricing_point
+    current_reimbursement_point = venue.current_reimbursement_point
+
+    return (
+        render_template(
+            "components/turbo/modal_form.html",
+            form=form,
+            dst=url_for("backoffice_v3_web.venue.remove_pricing_point", venue_id=venue.id),
+            div_id="remove-venue-pricing-point",  # must be consistent with parameter passed to build_lazy_modal
+            title=REMOVE_PRICING_POINT_TITLE,
+            button_text="Confirmer",
+            additional_data={
+                "Lieu": venue.name,
+                "Venue ID": venue.id,
+                "SIRET": venue.siret or "Pas de SIRET",
+                "CA de l'année": filters.format_amount(siret_api.get_yearly_revenue(venue.id)),
+                "Point de valorisation": current_pricing_point.name,  # type: ignore [union-attr]
+                "SIRET de valorisation": current_pricing_point.siret,  # type: ignore [union-attr]
+                "Point de remboursement": current_reimbursement_point.name if current_reimbursement_point else "Aucun",
+                "SIRET de remboursement": current_reimbursement_point.siret if current_reimbursement_point else "Aucun",
+            },
+        ),
+        code,
+    )
+
+
+@venue_blueprint.route("/<int:venue_id>/remove-pricing-point", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def get_remove_pricing_point_form(venue_id: int) -> utils.BackofficeResponse:
+    venue = _load_venue_for_removing_pricing_point(venue_id)
+
+    try:
+        siret_api.check_can_remove_pricing_point(venue)
+    except siret_api.CheckError as exc:
+        return (
+            render_template(
+                "components/turbo/modal_form.html",
+                div_id="remove-venue-pricing-point",  # must be consistent with parameter passed to build_lazy_modal
+                title=REMOVE_PRICING_POINT_TITLE,
+                alert=str(exc),
+            ),
+            400,
+        )
+
+    form = forms.RemovePricingPointForm()
+    return _render_remove_pricing_point_form(form, venue)
+
+
+@venue_blueprint.route("/<int:venue_id>/remove-pricing-point", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def remove_pricing_point(venue_id: int) -> utils.BackofficeResponse:
+    venue = _load_venue_for_removing_pricing_point(venue_id)
+
+    form = forms.RemovePricingPointForm()
+    if not form.validate():
+        return _render_remove_pricing_point_form(form, venue)
+
+    try:
+        siret_api.remove_pricing_point_link(
+            venue,
+            form.comment.data,
+            apply_changes=True,
+            override_revenue_check=bool(form.override_revenue_check.data),
+            author_user_id=current_user.id,
+        )
+    except siret_api.CheckError as exc:
+        return (
+            render_template(
+                "components/turbo/modal_form.html",
+                div_id="remove-venue-pricing-point",  # must be consistent with parameter passed to build_lazy_modal
+                title=REMOVE_PRICING_POINT_TITLE,
+                alert=str(exc),
+            ),
+            400,
+        )
+
+    return redirect(url_for("backoffice_v3_web.venue.get", venue_id=venue_id), code=303)

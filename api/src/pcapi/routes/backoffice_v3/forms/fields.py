@@ -330,6 +330,10 @@ class PCSwitchBooleanField(wtforms.BooleanField):
     widget = partial(widget, template="components/forms/switch_boolean_field.html")
     false_values = (False, "False", "false", "off", "0", "")
 
+    def __init__(self, label: str, full_width: bool = False, **kwargs: typing.Any):
+        super().__init__(label, **kwargs)
+        self.full_width = full_width
+
 
 class PCCheckboxField(wtforms.BooleanField):
     widget = partial(widget, template="components/forms/checkbox_field.html")

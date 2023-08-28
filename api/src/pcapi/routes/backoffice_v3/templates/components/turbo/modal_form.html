@@ -1,11 +1,13 @@
 <turbo-frame id="turbo-{{ div_id }}">
-<form action="{{ dst }}"
-      name="{{ dst | action_to_name }}"
-      method="{% if form.method %}form.method{% else %}post{% endif %}"
-      target="_top"
-      data-turbo="{{ data_turbo or 'false' }}"
-      class="modal-content">
-  {% if form.meta.csrf %}{{ csrf_token }}{% endif %}
+{% if form %}
+  <form action="{{ dst }}"
+        name="{{ dst | action_to_name }}"
+        method="{% if form.method %}form.method{% else %}post{% endif %}"
+        target="_top"
+        data-turbo="{{ data_turbo or 'false' }}"
+        class="modal-content">
+    {% if form.meta.csrf %}{{ csrf_token }}{% endif %}
+  {% endif %}
   <div class="modal-header">
     <h5 class="modal-title">{{ title }}</h5>
     <button type="button"
@@ -15,6 +17,10 @@
   </div>
   <div class="modal-body row">
     <div class="d-flex flex-column">
+      {% if alert %}
+        <div class="alert alert-warning px-4"
+             role="alert">{{ alert }}</div>
+      {% endif %}
       {% if information %}<div class="my-1">{{ information | safe }}</div>{% endif %}
       {% if additional_data %}
         <div class="my-1 card">
@@ -27,24 +33,28 @@
           </div>
         </div>
       {% endif %}
-      {% for form_field in form %}
-        {% if "Hidden" in form_field.type %}
-          {{ form_field }}
-        {% else %}
-          <div class="my-1">
-            {% for error in form_field.errors %}<p class="text-warning lead">{{ error }}</p>{% endfor %}
+      {% if form %}
+        {% for form_field in form %}
+          {% if "Hidden" in form_field.type %}
             {{ form_field }}
-          </div>
-        {% endif %}
-      {% endfor %}
+          {% else %}
+            <div class="my-1">
+              {% for error in form_field.errors %}<p class="text-warning lead">{{ error }}</p>{% endfor %}
+              {{ form_field }}
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
     </div>
   </div>
   <div class="modal-footer">
     <button type="button"
             class="btn btn-outline-primary"
             data-bs-dismiss="modal">Annuler</button>
-    <button type="submit"
-            class="btn btn-primary">{{ button_text }}</button>
+    {% if button_text %}
+      <button type="submit"
+              class="btn btn-primary">{{ button_text }}</button>
+    {% endif %}
   </div>
 </form>
 </turbo-frame>

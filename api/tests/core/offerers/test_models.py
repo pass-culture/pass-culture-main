@@ -2,6 +2,7 @@ import datetime
 from unittest.mock import patch
 
 import pytest
+import sqlalchemy as sa
 from sqlalchemy.exc import IntegrityError
 
 from pcapi import settings
@@ -13,6 +14,7 @@ from pcapi.core.offerers import factories
 from pcapi.core.offerers import models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
+from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -383,3 +385,85 @@ class VenueDmsAdageStatusTest:
         # hybrid property: also check SQL expression
         assert db.session.query(models.Venue.dms_adage_status).filter_by(id=venue.id).scalar() == latest.state
         assert last_collective_dms_application is latest
+
+
+class CurrentPricingPointTest:
+    def _load_venue(self, venue_id) -> models.Venue:
+        return (
+            models.Venue.query.filter_by(id=venue_id)
+            .options(
+                sa.orm.joinedload(models.Venue.pricing_point_links).joinedload(
+                    models.VenuePricingPointLink.pricingPoint
+                )
+            )
+            .one()
+        )
+
+    def test_no_pricing_point(self):
+        venue = factories.VenueWithoutSiretFactory()
+
+        venue_with_joinedload = self._load_venue(venue.id)
+
+        with assert_num_queries(0):
+            assert venue_with_joinedload.current_pricing_point is None
+
+    def test_pricing_point(self):
+        venue = factories.VenueWithoutSiretFactory()
+        now = datetime.datetime.utcnow()
+        factories.VenuePricingPointLinkFactory(
+            venue=venue,
+            pricingPoint=factories.VenueFactory(managingOfferer=venue.managingOfferer, name="former"),
+            timespan=[now - datetime.timedelta(days=7), now - datetime.timedelta(days=1)],
+        )
+        factories.VenuePricingPointLinkFactory(
+            venue=venue,
+            pricingPoint=factories.VenueFactory(managingOfferer=venue.managingOfferer, name="current"),
+            timespan=[now - datetime.timedelta(days=1), None],
+        )
+
+        venue_with_joinedload = self._load_venue(venue.id)
+
+        with assert_num_queries(0):
+            assert venue_with_joinedload.current_pricing_point is not None
+            assert venue_with_joinedload.current_pricing_point.name == "current"
+
+
+class CurrentReimbursementPointTest:
+    def _load_venue(self, venue_id) -> models.Venue:
+        return (
+            models.Venue.query.filter_by(id=venue_id)
+            .options(
+                sa.orm.joinedload(models.Venue.reimbursement_point_links).joinedload(
+                    models.VenueReimbursementPointLink.reimbursementPoint
+                )
+            )
+            .one()
+        )
+
+    def test_no_reimbursement_point(self):
+        venue = factories.VenueWithoutSiretFactory()
+
+        venue_with_joinedload = self._load_venue(venue.id)
+
+        with assert_num_queries(0):
+            assert venue_with_joinedload.current_reimbursement_point is None
+
+    def test_reimbursement_point(self):
+        venue = factories.VenueWithoutSiretFactory()
+        now = datetime.datetime.utcnow()
+        factories.VenueReimbursementPointLinkFactory(
+            venue=venue,
+            reimbursementPoint=factories.VenueFactory(managingOfferer=venue.managingOfferer, name="former"),
+            timespan=[now - datetime.timedelta(days=7), now - datetime.timedelta(days=1)],
+        )
+        factories.VenueReimbursementPointLinkFactory(
+            venue=venue,
+            reimbursementPoint=factories.VenueFactory(managingOfferer=venue.managingOfferer, name="current"),
+            timespan=[now - datetime.timedelta(days=1), None],
+        )
+
+        venue_with_joinedload = self._load_venue(venue.id)
+
+        with assert_num_queries(0):
+            assert venue_with_joinedload.current_reimbursement_point is not None
+            assert venue_with_joinedload.current_reimbursement_point.name == "current"
