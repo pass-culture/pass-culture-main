@@ -56,6 +56,13 @@ class ReservationPassCultureRequest(BaseModel):
     num_pass_culture: str  # User.id
 
 
+class AnnulationPassCultureRequest(BaseModel):
+    num_cine: str
+    num_caisse: str
+    num_trans: int
+    num_ope: int
+
+
 class ReservationPassCultureResponse(ReservationPassCultureRequest):
     """EMS simply return our payload with additionnal fields."""
 

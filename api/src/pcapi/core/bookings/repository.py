@@ -32,6 +32,7 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import BookingStatusFilter
+from pcapi.core.bookings.models import ExternalBooking
 from pcapi.core.bookings.utils import _apply_departement_timezone
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.categories import subcategories
@@ -42,6 +43,7 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.serialize import serialize_offer_type_educational_or_individual
+from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import User
 from pcapi.domain.booking_recap import utils as booking_recap_utils
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
@@ -772,5 +774,17 @@ def find_individual_bookings_event_happening_tomorrow_query() -> list[Booking]:
                 contains_eager(Offer.criteria),
             )
         )
+        .all()
+    )
+
+
+def get_external_bookings_by_cinema_id_and_barcodes(
+    venueIdAtOfferProvider: str, barcodes: list[str]
+) -> list[ExternalBooking]:
+    return (
+        ExternalBooking.query.join(Booking)
+        .join(VenueProvider, Booking.venueId == VenueProvider.venueId)
+        .filter(VenueProvider.venueIdAtOfferProvider == venueIdAtOfferProvider)
+        .filter(ExternalBooking.barcode.in_(barcodes))
         .all()
     )
