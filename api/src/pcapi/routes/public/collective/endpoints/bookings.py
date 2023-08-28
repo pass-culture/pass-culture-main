@@ -44,6 +44,9 @@ def cancel_collective_booking(booking_id: int) -> None:
     except educational_exceptions.BookingIsAlreadyRefunded:
         raise ApiErrors({"booking": "Impossible d'annuler une réservation remboursée"}, status_code=403)
 
+    educational_api_booking.notify_redactor_that_booking_has_been_cancelled(booking)
+    educational_api_booking.notify_pro_that_booking_has_been_cancelled(booking)
+
 
 def _get_booking(booking_id: int) -> models.CollectiveBooking | None:
     return (
