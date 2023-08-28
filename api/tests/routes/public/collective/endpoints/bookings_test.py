@@ -4,8 +4,10 @@ from flask import url_for
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.educational import testing as educational_testing
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
+from pcapi.core.mails import testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.models import db
@@ -34,6 +36,9 @@ class CancelCollectiveBookingTest:
         assert booking.cancellationReason == educational_models.CollectiveBookingCancellationReasons.PUBLIC_API
         assert booking.cancellationDate == datetime(2023, 1, 1, 10)
         assert booking.status == educational_models.CollectiveBookingStatus.CANCELLED
+
+        assert len(educational_testing.adage_requests) == 1
+        assert len(mails_testing.outbox) == 1
 
     def test_cannot_cancel_reimbursed_booking(self, client, venue):
         booking = educational_factories.ReimbursedCollectiveBookingFactory(
