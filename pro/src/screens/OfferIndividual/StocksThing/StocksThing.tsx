@@ -34,7 +34,7 @@ import fullCodeIcon from 'icons/full-code.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
 import strokeEuroIcon from 'icons/stroke-euro.svg'
 import { Checkbox, DatePicker, InfoBox, TextInput } from 'ui-kit'
-import { getToday, isDateValid } from 'utils/date'
+import { getToday, getYearMonthDay, isDateValid } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { ActionBar } from '../ActionBar'
@@ -361,13 +361,19 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const readOnlyFields = setFormReadOnlyFields(offer, formik.values)
   const showExpirationDate =
     formik.values.activationCodesExpirationDatetime !== ''
+
+  const [minExpirationYear, minExpirationMonth, minExpirationDay] =
+    getYearMonthDay(formik.values.bookingLimitDatetime)
+  const [maxDateTimeYear, maxDateTimeMonth, maxDateTimeDay] = getYearMonthDay(
+    formik.values.activationCodesExpirationDatetime
+  )
   const minExpirationDate = isDateValid(formik.values.bookingLimitDatetime)
-    ? new Date(formik.values.bookingLimitDatetime)
+    ? new Date(minExpirationYear, minExpirationMonth, minExpirationDay)
     : null
   const maxDateTime = isDateValid(
     formik.values.activationCodesExpirationDatetime
   )
-    ? new Date(formik.values.activationCodesExpirationDatetime)
+    ? new Date(maxDateTimeYear, maxDateTimeMonth, maxDateTimeDay)
     : undefined
 
   return (
