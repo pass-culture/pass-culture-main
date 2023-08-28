@@ -2,14 +2,14 @@
 @use "styles/mixins/_forms.scss" as forms;
 @use "styles/variables/_colors.scss" as colors;
 
-.aa-InputWrapper {
+.aa-inputwrapper {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.aa-Input {
+.aa-input {
   @include forms.input-theme;
 
   position: relative;
@@ -20,27 +20,24 @@
   padding-left: rem.torem(36px);
 }
 
-.aa-Span {
+.aa-span {
   position: absolute;
-  right: 0;
   top: 0;
   left: 0;
   width: rem.torem(48px);
   height: 100%;
   display: flex;
-  pointer-events: none;
   align-items: center;
   justify-content: center;
-  color: colors.$black;
 }
 
-.aa-SearchButton {
+.aa-searchbutton {
   border-bottom-left-radius: 0;
   border-top-left-radius: 0;
   min-height: rem.torem(48px);
 }
 
-.aa-InputContainer {
+.aa-inputcontainer {
   position: relative;
   width: 100%;
   max-width: 51.5rem;

@@ -7,7 +7,7 @@ import React, {
   KeyboardEvent,
 } from 'react'
 
-import strokeSearch from 'icons/stroke-search.svg'
+import strokeSearchIcon from 'icons/stroke-search.svg'
 import { Button } from 'ui-kit'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
@@ -43,11 +43,6 @@ export function Autocomplete({
         onSubmit: ({ state }) => {
           refine(state.query)
         },
-        onReset: () => {
-          console.log('reset')
-          setInstantSearchUiState({ query: '' })
-          refine('')
-        },
         placeholder,
       }),
     [placeholder, refine]
@@ -57,30 +52,30 @@ export function Autocomplete({
   const formRef = React.useRef<HTMLFormElement>(null)
 
   return (
-    <div className="aa-Autocomplete" {...autocomplete.getRootProps({})}>
+    <div className="aa-autocomplete" {...autocomplete.getRootProps({})}>
       <form
         ref={formRef}
-        className="aa-Form"
+        className="aa-form"
         {...autocomplete.getFormProps({ inputElement: inputRef.current })}
       >
-        <div className={styles['aa-InputWrapper']}>
-          <div className={styles['aa-InputContainer']}>
+        <div className={styles['aa-inputwrapper']}>
+          <div className={styles['aa-inputcontainer']}>
             <input
-              className={styles['aa-Input']}
+              className={styles['aa-input']}
               ref={inputRef}
               {...autocomplete.getInputProps({
                 inputElement: inputRef.current,
               })}
             />
             <span
-              className={styles['aa-Span']}
+              className={styles['aa-span']}
               {...autocomplete.getLabelProps({})}
             >
-              <SvgIcon src={strokeSearch} alt="Rechercher" width="16" />
+              <SvgIcon src={strokeSearchIcon} alt="Rechercher" width="16" />
             </span>
           </div>
 
-          <Button type="submit" className={styles['aa-SearchButton']}>
+          <Button type="submit" className={styles['aa-searchbutton']}>
             Rechercher
           </Button>
         </div>
