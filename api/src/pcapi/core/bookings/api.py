@@ -346,7 +346,12 @@ def _book_cinema_external_ticket(booking: Booking, stock: Stock, beneficiary: Us
         logger.exception("Could not book external ticket: %s", exc)
         raise external_bookings_exceptions.ExternalBookingException
 
-    booking.externalBookings = [ExternalBooking(barcode=ticket.barcode, seat=ticket.seat_number) for ticket in tickets]
+    booking.externalBookings = [
+        ExternalBooking(
+            barcode=ticket.barcode, seat=ticket.seat_number, additional_information=ticket.additional_information
+        )
+        for ticket in tickets
+    ]
 
 
 def _book_event_external_ticket(booking: Booking, stock: Stock, beneficiary: User) -> int:

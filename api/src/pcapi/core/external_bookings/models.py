@@ -9,6 +9,7 @@ import pcapi.core.users.models as users_models
 class Ticket:
     barcode: str
     seat_number: Optional[str]
+    additional_information: dict | None = None
 
 
 @dataclass

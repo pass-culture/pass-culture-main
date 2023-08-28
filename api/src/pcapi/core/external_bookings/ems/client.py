@@ -29,7 +29,16 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
 
         content = ems_serializers.ReservationPassCultureResponse(**response.json())
         return [
-            external_bookings_models.Ticket(barcode=ticket.code_barre, seat_number=ticket.num_place)
+            external_bookings_models.Ticket(
+                barcode=ticket.code_barre,
+                seat_number=ticket.num_place,
+                additional_information={
+                    "num_cine": content.num_cine,
+                    "num_caisse": ticket.num_caisse,
+                    "num_trans": ticket.num_trans,
+                    "num_ope": ticket.num_ope,
+                },
+            )
             for ticket in content.billets
         ]
 
