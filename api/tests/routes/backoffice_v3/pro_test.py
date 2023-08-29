@@ -516,10 +516,11 @@ class LogsTest:
 
         # then
         assert response.status_code == 200
-        assert caplog.records[0].message == "SearchPro"
+        assert caplog.records[0].message == "PerformSearch"
         assert caplog.records[0].extra == {
             "analyticsSource": "backoffice",
-            "searchNbResults": 1,
-            "searchProType": "offerer",
+            "searchType": "ProSearch",
             "searchQuery": "rythme",
+            "searchNbResults": 1,
+            "searchSubType": "offerer",
         }
