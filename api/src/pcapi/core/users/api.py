@@ -939,7 +939,7 @@ def get_eligibility_at_date(
 
 
 def is_eligible_for_beneficiary_upgrade(user: models.User, eligibility: models.EligibilityType | None) -> bool:
-    return (eligibility == models.EligibilityType.UNDERAGE and not user.has_underage_beneficiary_role) or (
+    return (eligibility == models.EligibilityType.UNDERAGE and not user.is_beneficiary) or (
         eligibility == models.EligibilityType.AGE18 and not user.has_beneficiary_role
     )
 
