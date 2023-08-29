@@ -1,0 +1,1 @@
+UPDATE beneficiary_fraud_check SET "reasonCodes" = array_replace("reasonCodes", 'BLURRY_VIDEO', 'BLURRY_DOCUMENT_VIDEO') WHERE id > 11087810 AND "reasonCodes" @> ARRAY['BLURRY_VIDEO'];
