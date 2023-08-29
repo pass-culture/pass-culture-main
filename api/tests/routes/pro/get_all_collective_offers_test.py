@@ -350,3 +350,26 @@ class Returns200Test:
         assert response_json[0]["id"] == template.id
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["isShowcase"] is True
+
+
+@pytest.mark.usefixtures("db_session")
+class Return400Test:
+    def test_return_error_when_status_is_wrong(self, app):
+        # Given
+        user = users_factories.UserFactory()
+        offerer = offerer_factories.OffererFactory()
+        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        # When
+        client = TestClient(app.test_client()).with_session_auth(email=user.email)
+        response = client.get("/collective/offers?status=PUBLISH")
+
+        # Then
+        assert response.status_code == 400
+        assert response.json == {
+            "status": [
+                "value is not a valid enumeration member; permitted: 'ACTIVE', "
+                "'PENDING', 'EXPIRED', 'REJECTED', 'SOLD_OUT', 'INACTIVE', "
+                "'DRAFT'"
+            ]
+        }

@@ -5,6 +5,7 @@ import { generatePath, Route, Routes } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import {
   GetIndividualOfferResponseModel,
+  OfferStatus,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
@@ -67,7 +68,7 @@ describe('OfferIndividualWizard', () => {
     vi.spyOn(api, 'listOffers').mockResolvedValue([
       {
         id: 1,
-        status: 'ACTIVE',
+        status: OfferStatus.ACTIVE,
         isActive: true,
         hasBookingLimitDatetimesPassed: false,
         isEducational: false,

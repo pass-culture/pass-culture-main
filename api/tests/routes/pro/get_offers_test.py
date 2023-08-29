@@ -7,6 +7,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_no_duplicated_queries
 import pcapi.core.users.factories as users_factories
+from pcapi.models.offer_mixin import OfferStatus
 
 from tests.conftest import TestClient
 
@@ -125,7 +126,7 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         # when
-        response = client.with_session_auth(email=pro.email).get("/offers?status=active")
+        response = client.with_session_auth(email=pro.email).get("/offers?status=ACTIVE")
 
         # then
         assert response.status_code == 200
@@ -138,7 +139,7 @@ class Returns200Test:
             name_keywords_or_ean=None,
             period_beginning_date=None,
             period_ending_date=None,
-            status="active",
+            status=OfferStatus.ACTIVE,
             creation_mode=None,
         )
 
@@ -346,3 +347,22 @@ class Returns404Test:
         # then
         assert response.status_code == 200
         assert response.json == []
+
+
+class Returns400Test:
+    def should_return_error_if_status_is_not_valid(self, app, db_session):
+        # Given
+        pro = users_factories.ProFactory()
+
+        # when
+        response = TestClient(app.test_client()).with_session_auth(email=pro.email).get("/offers?status=PUBLISH")
+
+        # then
+        assert response.status_code == 400
+        assert response.json == {
+            "status": [
+                "value is not a valid enumeration member; permitted: 'ACTIVE', "
+                "'PENDING', 'EXPIRED', 'REJECTED', 'SOLD_OUT', 'INACTIVE', "
+                "'DRAFT'"
+            ]
+        }
