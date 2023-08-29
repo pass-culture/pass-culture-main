@@ -5,6 +5,7 @@ import pytest
 
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
+import pcapi.core.fraud.ubble.constants as ubble_constants
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.mails.transactional.sendinblue_template_ids as sendinblue_template
 from pcapi.core.mails.transactional.users.ubble.reminder_emails import _find_users_to_remind
@@ -54,13 +55,10 @@ def build_user_with_ko_retryable_ubble_fraud_check(
 class FindUsersThatFailedUbbleTest:
     def setup_method(self):
         self.eighteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=18)
-        self.error_codes = [
-            fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE,
-            fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH,
-            fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC,
-            fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED,
-            fraud_models.FraudReasonCode.ID_CHECK_EXPIRED,
-        ]
+        self.error_codes = (
+            ubble_constants.REASON_CODES_FOR_QUICK_ACTION_REMINDERS
+            + ubble_constants.REASON_CODES_FOR_LONG_ACTION_REMINDERS
+        )
 
     def should_find_users_to_remind(self):
         # Given
