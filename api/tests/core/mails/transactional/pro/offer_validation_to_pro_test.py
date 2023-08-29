@@ -39,7 +39,9 @@ class SendinblueSendOfferValidationTest:
         offer = offers_factories.OfferFactory(name="Michel Strogoff", venue=venue)
 
         # When
-        send_offer_validation_status_update_email(offer, OfferValidationStatus.APPROVED, ["jules.verne@example.com"])
+        send_offer_validation_status_update_email(
+            offer, offer.validation, OfferValidationStatus.APPROVED, ["jules.verne@example.com"]
+        )
 
         # Then
         assert len(mails_testing.outbox) == 1  # test number of emails sent
@@ -89,15 +91,75 @@ class SendinblueSendOfferValidationTest:
         assert new_offer_validation_email.template == TransactionalEmail.OFFER_REJECTION_TO_PRO.value
         assert new_offer_validation_email.params["IS_COLLECTIVE_OFFER"] is True
 
-    def test_send_offer_rejection_email(
+    def test_send_validated_offer_rejection_email(
         self,
     ):
         # Given
         venue = offerers_factories.VenueFactory(name="Sibérie orientale")
-        offer = offers_factories.OfferFactory(name="Michel Strogoff", venue=venue)
+        offer = offers_factories.OfferFactory(
+            name="Michel Strogoff", venue=venue, validation=OfferValidationStatus.APPROVED
+        )
 
         # When
-        send_offer_validation_status_update_email(offer, OfferValidationStatus.REJECTED, ["jules.verne@example.com"])
+        send_offer_validation_status_update_email(
+            offer, offer.validation, OfferValidationStatus.REJECTED, ["jules.verne@example.com"]
+        )
+
+        # Then
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
+        assert (
+            mails_testing.outbox[0].sent_data["template"]
+            == TransactionalEmail.OFFER_VALIDATED_TO_REJECTED_TO_PRO.value.__dict__
+        )
+        assert mails_testing.outbox[0].sent_data["To"] == "jules.verne@example.com"
+        assert mails_testing.outbox[0].sent_data["params"] == {
+            "IS_COLLECTIVE_OFFER": False,
+            "OFFER_NAME": offer.name,
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
+            "CREATION_DATE": offer.dateCreated,
+        }
+
+    def test_send_pending_offer_rejection_email(
+        self,
+    ):
+        # Given
+        venue = offerers_factories.VenueFactory(name="Sibérie orientale")
+        offer = offers_factories.OfferFactory(
+            name="Michel Strogoff", venue=venue, validation=OfferValidationStatus.PENDING
+        )
+
+        # When
+        send_offer_validation_status_update_email(
+            offer, offer.validation, OfferValidationStatus.REJECTED, ["jules.verne@example.com"]
+        )
+
+        # Then
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
+        assert (
+            mails_testing.outbox[0].sent_data["template"]
+            == TransactionalEmail.OFFER_PENDING_TO_REJECTED_TO_PRO.value.__dict__
+        )
+        assert mails_testing.outbox[0].sent_data["To"] == "jules.verne@example.com"
+        assert mails_testing.outbox[0].sent_data["params"] == {
+            "IS_COLLECTIVE_OFFER": False,
+            "OFFER_NAME": offer.name,
+            "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
+            "VENUE_NAME": venue.name,
+        }
+
+    def test_send_other_offer_rejection_email(
+        self,
+    ):
+        # Given
+        venue = offerers_factories.VenueFactory(name="Sibérie orientale")
+        offer = offers_factories.OfferFactory(
+            name="Michel Strogoff", venue=venue, validation=OfferValidationStatus.DRAFT
+        )
+
+        # When
+        send_offer_validation_status_update_email(
+            offer, offer.validation, OfferValidationStatus.REJECTED, ["jules.verne@example.com"]
+        )
 
         # Then
         assert len(mails_testing.outbox) == 1  # test number of emails sent

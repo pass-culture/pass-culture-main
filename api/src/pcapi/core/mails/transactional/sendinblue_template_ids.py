@@ -160,6 +160,16 @@ class TransactionalEmail(Enum):
         tags=["pro_offre_refusee"],
         sender=models.TransactionalSender.COMPLIANCE,
     )
+    OFFER_PENDING_TO_REJECTED_TO_PRO = models.TemplatePro(
+        id_prod=1026,
+        id_not_prod=141,
+        sender=models.TransactionalSender.COMPLIANCE,
+    )
+    OFFER_VALIDATED_TO_REJECTED_TO_PRO = models.TemplatePro(
+        id_prod=1023,
+        id_not_prod=140,
+        sender=models.TransactionalSender.COMPLIANCE,
+    )
     OFFERER_ATTACHMENT_VALIDATION = models.TemplatePro(
         id_prod=488, id_not_prod=62, tags=["pro_rattachement_structure_valide"]
     )

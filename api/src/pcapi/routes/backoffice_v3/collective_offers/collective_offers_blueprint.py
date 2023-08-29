@@ -188,6 +188,7 @@ def _batch_validate_or_reject_collective_offers(
     collective_offer_update_failed_ids: list[int] = []
 
     for collective_offer in collective_offers:
+        old_validation_status = collective_offer.validation
         new_validation_status = validation
         collective_offer.validation = new_validation_status
         collective_offer.lastValidationDate = datetime.datetime.utcnow()
@@ -211,7 +212,7 @@ def _batch_validate_or_reject_collective_offers(
         )
 
         transactional_mails.send_offer_validation_status_update_email(
-            collective_offer, new_validation_status, recipients
+            collective_offer, old_validation_status, new_validation_status, recipients
         )
 
         if collective_offer.institutionId is not None:
