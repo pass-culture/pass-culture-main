@@ -1,10 +1,7 @@
 import './OldOffersSearch.scss'
 
 import { FormikContext, useFormik } from 'formik'
-import { useContext, useEffect, useRef, useState } from 'react'
-import * as React from 'react'
-import type { SearchBoxProvided } from 'react-instantsearch-core'
-import { connectSearchBox } from 'react-instantsearch-dom'
+import { useContext, useRef, useState } from 'react'
 
 import { VenueResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
@@ -39,7 +36,7 @@ export enum LocalisationFilterStates {
   NONE = 'none',
 }
 
-export interface SearchProps extends SearchBoxProvided {
+export interface SearchProps {
   venueFilter: VenueResponse | null
   setGeoLocation: (geoloc: GeoLocation) => void
 }
@@ -59,10 +56,9 @@ enum OfferTab {
   ASSOCIATED_TO_INSTITUTION = 'associatedToInstitution',
 }
 
-export const OffersSearchComponent = ({
+export const OffersSearch = ({
   venueFilter,
   setGeoLocation,
-  refine,
 }: SearchProps): JSX.Element => {
   const [, setIsLoading] = useState<boolean>(false)
   const [activeTab, setActiveTab] = useState(OfferTab.ALL)
@@ -145,9 +141,6 @@ export const OffersSearchComponent = ({
       filterValues: formik ? formik.values : {},
     })
   }
-  useEffect(() => {
-    refine(venueFilter?.publicName || venueFilter?.name || '')
-  }, [venueFilter])
 
   const formik = useFormik<SearchFormValues>({
     initialValues: computeFiltersInitialValues(
@@ -171,18 +164,17 @@ export const OffersSearchComponent = ({
 
   const offerFilterRef = useRef<HTMLDivElement>(null)
   const isOfferFiltersVisible = useIsElementVisible(offerFilterRef)
-
   return (
     <>
       <FormikContext.Provider value={formik}>
         {!!adageUser.uai && !isNewHeaderActive && (
           <Tabs selectedKey={activeTab} tabs={tabs} />
         )}
+        <Autocomplete
+          initialQuery={venueFilter?.publicName || venueFilter?.name || ''}
+          placeholder={'Rechercher : nom de l’offre, partenaire culturel'}
+        />
         <div ref={offerFilterRef}>
-          <Autocomplete
-            placeholder="Rechercher : nom de l’offre, partenaire culturel"
-            refine={refine}
-          />
           <OfferFilters
             className="search-filters"
             localisationFilterState={localisationFilterState}
@@ -203,5 +195,3 @@ export const OffersSearchComponent = ({
     </>
   )
 }
-
-export const OffersSearch = connectSearchBox<SearchProps>(OffersSearchComponent)

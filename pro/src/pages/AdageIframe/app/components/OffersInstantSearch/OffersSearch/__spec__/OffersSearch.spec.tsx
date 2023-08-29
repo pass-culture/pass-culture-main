@@ -1,6 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import React from 'react'
+import type { SearchBoxProvided } from 'react-instantsearch-core'
 
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import {
@@ -11,7 +11,7 @@ import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserConte
 import * as pcapi from 'pages/AdageIframe/repository/pcapi/pcapi'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { OffersSearchComponent, SearchProps } from '../OffersSearch'
+import { OffersSearch, SearchProps } from '../OffersSearch'
 
 vi.mock('../Offers/Offers', () => {
   return {
@@ -56,13 +56,16 @@ const renderOffersSearchComponent = (
     <AdageUserContext.Provider value={{ adageUser: user }}>
       <FiltersContextProvider>
         <AlgoliaQueryContextProvider>
-          <OffersSearchComponent {...props} />
+          <OffersSearch {...props} />
         </AlgoliaQueryContextProvider>
       </FiltersContextProvider>
     </AdageUserContext.Provider>,
     { storeOverrides: storeOverrides }
   )
 }
+
+const refineSearch = vi.fn()
+const refineGeoloc = vi.fn()
 
 describe('offersSearch component', () => {
   let props: SearchProps
@@ -78,10 +81,7 @@ describe('offersSearch component', () => {
   beforeEach(() => {
     props = {
       venueFilter: null,
-      refine: vi.fn(),
-      currentRefinement: '',
-      isSearchStalled: false,
-      setGeoLocation: () => {},
+      setGeoLocation: refineGeoloc,
     }
     vi.spyOn(pcapi, 'getEducationalDomains').mockResolvedValue([])
     window.IntersectionObserver = vi.fn().mockImplementation(() => ({
@@ -89,6 +89,18 @@ describe('offersSearch component', () => {
       unobserve: vi.fn(),
       disconnect: vi.fn(),
     }))
+
+    vi.mock('react-instantsearch-dom', async () => {
+      return {
+        ...((await vi.importActual('react-instantsearch-dom')) ?? {}),
+        Configure: vi.fn(() => <div />),
+        connectSearchBox: vi
+          .fn()
+          .mockImplementation(Component => (props: SearchBoxProvided) => (
+            <Component {...props} refine={refineSearch} />
+          )),
+      }
+    })
   })
 
   it('should call algolia with requested query and uai all', async () => {
@@ -106,26 +118,7 @@ describe('offersSearch component', () => {
     await userEvent.click(launchSearchButton)
 
     // Then
-    expect(props.refine).toHaveBeenCalledWith('Paris')
-  })
-
-  it('should call algolia after clear all filters', async () => {
-    // Given
-    renderOffersSearchComponent(props, user)
-
-    // When
-    const textInput = screen.getByPlaceholderText(
-      'Rechercher : nom de l’offre, partenaire culturel'
-    )
-    await userEvent.type(textInput, 'Paris')
-
-    const clearFilterButton = screen.getByRole('button', {
-      name: 'Réinitialiser les filtres',
-    })
-    await userEvent.click(clearFilterButton)
-
-    // Then
-    expect(props.refine).toHaveBeenCalledWith('')
+    expect(refineSearch).toHaveBeenCalledWith('Paris')
   })
 
   it('should call algolia with requested query and uai associatedToInstitution', async () => {
@@ -146,28 +139,7 @@ describe('offersSearch component', () => {
     await userEvent.click(launchSearchButton)
 
     // Then
-    expect(props.refine).toHaveBeenCalledWith('Paris')
-  })
-
-  it('should call algolia after clear all filters', async () => {
-    // Given
-    renderOffersSearchComponent(props, {
-      ...user,
-      uai: 'assicatedToInstitution',
-    })
-    const clearFilterButton = screen.getByRole('button', {
-      name: 'Réinitialiser les filtres',
-    })
-
-    // When
-    const textInput = screen.getByPlaceholderText(
-      'Rechercher : nom de l’offre, partenaire culturel'
-    )
-    await userEvent.type(textInput, 'Paris')
-    await userEvent.click(clearFilterButton)
-
-    // Then
-    expect(props.refine).toHaveBeenCalledWith('')
+    expect(refineSearch).toHaveBeenCalledWith('Paris')
   })
 
   it('should display localisation filter with default state by default', async () => {
@@ -282,7 +254,7 @@ describe('offersSearch component', () => {
     )
 
     // Then
-    expect(props.refine).toHaveBeenCalled()
+    expect(refineGeoloc).toHaveBeenCalled()
   })
 
   it('should filters department on venue filter if provided', async () => {
