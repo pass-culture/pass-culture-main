@@ -107,11 +107,12 @@ def search_pro() -> utils.BackofficeResponse:
     paginated_rows = search_utils.fetch_paginated_rows(context.fetch_rows_func, search_model)
 
     utils.log_backoffice_tracking_data(
-        event_name="SearchPro",
+        event_name="PerformSearch",
         extra_data={
-            "searchNbResults": paginated_rows.total,
-            "searchProType": search_model.pro_type.value,
+            "searchType": "ProSearch",
             "searchQuery": search_model.terms,
+            "searchNbResults": paginated_rows.total,
+            "searchSubType": search_model.pro_type.value,
         },
     )
 
