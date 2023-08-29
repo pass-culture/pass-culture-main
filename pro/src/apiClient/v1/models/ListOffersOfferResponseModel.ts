@@ -5,6 +5,7 @@
 
 import type { ListOffersStockResponseModel } from './ListOffersStockResponseModel';
 import type { ListOffersVenueResponseModel } from './ListOffersVenueResponseModel';
+import type { OfferStatus } from './OfferStatus';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 
 export type ListOffersOfferResponseModel = {
@@ -18,7 +19,7 @@ export type ListOffersOfferResponseModel = {
   isThing: boolean;
   name: string;
   productIsbn?: string | null;
-  status: string;
+  status: OfferStatus;
   stocks: Array<ListOffersStockResponseModel>;
   subcategoryId: SubcategoryIdEnum;
   thumbUrl?: string | null;

@@ -41,7 +41,7 @@ T_GetCollectiveOfferBaseResponseModel = typing.TypeVar(
 class ListCollectiveOffersQueryModel(BaseModel):
     nameOrIsbn: str | None
     offerer_id: int | None
-    status: str | None
+    status: OfferStatus | None
     venue_id: int | None
     categoryId: str | None
     creation_mode: str | None

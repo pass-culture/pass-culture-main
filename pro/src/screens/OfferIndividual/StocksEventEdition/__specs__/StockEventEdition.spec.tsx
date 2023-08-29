@@ -52,7 +52,7 @@ const renderStockEventScreen = async (
   vi.spyOn(api, 'listOffers').mockResolvedValue([
     {
       id: 1,
-      status: 'ACTIVE',
+      status: OfferStatus.ACTIVE,
       isActive: true,
       hasBookingLimitDatetimesPassed: false,
       isEducational: false,
