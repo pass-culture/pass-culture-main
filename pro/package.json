@@ -46,7 +46,7 @@
     "downshift": "^8.1.0",
     "formik": "^2.4.3",
     "hi-base32": "^0.5.1",
-    "libphonenumber-js": "1.10.38",
+    "libphonenumber-js": "1.10.43",
     "lodash.debounce": "^4.0.8",
     "lodash.invert": "^4.3.0",
     "lodash.isequal": "^4.5.0",
