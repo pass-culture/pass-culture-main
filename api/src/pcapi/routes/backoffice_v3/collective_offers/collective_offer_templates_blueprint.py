@@ -217,6 +217,7 @@ def _batch_validate_or_reject_collective_offer_templates(
     collective_offer_template_update_failed_ids: list[int] = []
 
     for collective_offer_template in collective_offer_templates:
+        old_validation_status = collective_offer_template.validation
         new_validation_status = validation
         collective_offer_template.validation = new_validation_status
         collective_offer_template.lastValidationDate = datetime.datetime.utcnow()
@@ -239,7 +240,7 @@ def _batch_validate_or_reject_collective_offer_templates(
         )
 
         transactional_mails.send_offer_validation_status_update_email(
-            collective_offer_template, new_validation_status, recipients
+            collective_offer_template, old_validation_status, new_validation_status, recipients
         )
 
     search.async_index_collective_offer_template_ids(collective_offer_template_update_succeed_ids)

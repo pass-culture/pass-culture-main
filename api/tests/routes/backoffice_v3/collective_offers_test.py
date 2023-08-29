@@ -478,9 +478,9 @@ class BatchCollectiveOffersRejectTest(PostEndpointHelper):
 
         received_dict = {email.sent_data["To"]: email.sent_data["template"] for email in mails_testing.outbox}
         expected_dict = {
-            collective_offers[0].venue.bookingEmail: asdict(TransactionalEmail.OFFER_REJECTION_TO_PRO.value),
-            collective_offers[1].venue.bookingEmail: asdict(TransactionalEmail.OFFER_REJECTION_TO_PRO.value),
-            collective_offers[2].venue.bookingEmail: asdict(TransactionalEmail.OFFER_REJECTION_TO_PRO.value),
+            collective_offers[0].venue.bookingEmail: asdict(TransactionalEmail.OFFER_PENDING_TO_REJECTED_TO_PRO.value),
+            collective_offers[1].venue.bookingEmail: asdict(TransactionalEmail.OFFER_PENDING_TO_REJECTED_TO_PRO.value),
+            collective_offers[2].venue.bookingEmail: asdict(TransactionalEmail.OFFER_PENDING_TO_REJECTED_TO_PRO.value),
         }
         assert received_dict == expected_dict
 
