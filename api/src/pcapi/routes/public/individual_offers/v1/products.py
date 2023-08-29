@@ -381,20 +381,12 @@ def get_products(
     Get products. Results are paginated.
     """
     utils.check_venue_id_is_tied_to_api_key(query.venue_id)
-    total_offer_ids = utils.retrieve_offer_ids(
-        is_event=False, firstIndex=query.firstIndex, limit=query.limit, filtered_venue_id=query.venue_id
-    )
-
-    offers = (
-        utils.retrieve_offer_relations_query(
-            offers_models.Offer.query.filter(offers_models.Offer.id.in_(total_offer_ids))
-        )
-        .order_by(offers_models.Offer.id)
-        .all()
-    )
+    total_offers_query = utils.retrieve_offers(
+        is_event=False, firstIndex=query.firstIndex, filtered_venue_id=query.venue_id
+    ).limit(query.limit)
 
     return serialization.ProductOffersResponse(
-        products=[serialization.ProductOfferResponse.build_product_offer(offer) for offer in offers],
+        products=[serialization.ProductOfferResponse.build_product_offer(offer) for offer in total_offers_query],
     )
 
 
