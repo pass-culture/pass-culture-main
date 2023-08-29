@@ -9,6 +9,7 @@ from pcapi import settings
 from pcapi.core import mails
 from pcapi.core.external.batch import bulk_track_ubble_ko_events
 import pcapi.core.fraud.models as fraud_models
+import pcapi.core.fraud.ubble.constants as ubble_constants
 import pcapi.core.mails.models as mails_models
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.models as subscription_models
@@ -25,18 +26,11 @@ logger = logging.getLogger(__name__)
 def send_reminder_emails() -> None:
     users_with_quick_actions = _find_users_to_remind(
         days_ago=settings.DAYS_BEFORE_UBBLE_QUICK_ACTION_REMINDER,
-        reason_codes_filter=[
-            fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE,
-            fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH,
-            fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC,
-        ],
+        reason_codes_filter=list(ubble_constants.REASON_CODES_FOR_QUICK_ACTION_REMINDERS),
     )
     users_with_long_actions = _find_users_to_remind(
         days_ago=settings.DAYS_BEFORE_UBBLE_LONG_ACTION_REMINDER,
-        reason_codes_filter=[
-            fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED,
-            fraud_models.FraudReasonCode.ID_CHECK_EXPIRED,
-        ],
+        reason_codes_filter=list(ubble_constants.REASON_CODES_FOR_LONG_ACTION_REMINDERS),
     )
 
     users_to_notify_per_code = collections.defaultdict(list)
