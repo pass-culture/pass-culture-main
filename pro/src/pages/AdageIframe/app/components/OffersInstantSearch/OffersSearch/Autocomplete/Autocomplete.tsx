@@ -5,7 +5,10 @@ import React, {
   BaseSyntheticEvent,
   MouseEvent,
   KeyboardEvent,
+  useEffect,
 } from 'react'
+import type { SearchBoxProvided } from 'react-instantsearch-core'
+import { connectSearchBox } from 'react-instantsearch-dom'
 
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import { Button } from 'ui-kit'
@@ -17,13 +20,16 @@ type SetInstantSearchUiStateOptions = {
   query: string
 }
 
-export function Autocomplete({
-  placeholder,
-  refine,
-}: {
+type AutocompleteProps = SearchBoxProvided & {
+  initialQuery: string
   placeholder: string
-  refine: (...args: any[]) => any
-}) {
+}
+
+const AutocompleteComponent = ({
+  refine,
+  initialQuery,
+  placeholder,
+}: AutocompleteProps) => {
   const [, setInstantSearchUiState] = useState({
     query: '',
   })
@@ -43,10 +49,15 @@ export function Autocomplete({
         onSubmit: ({ state }) => {
           refine(state.query)
         },
-        placeholder,
+        placeholder: placeholder,
       }),
     [placeholder, refine]
   )
+
+  useEffect(() => {
+    autocomplete.setQuery(initialQuery)
+    refine(initialQuery)
+  }, [initialQuery])
 
   const inputRef = React.useRef<HTMLInputElement>(null)
   const formRef = React.useRef<HTMLFormElement>(null)
@@ -83,3 +94,7 @@ export function Autocomplete({
     </div>
   )
 }
+
+export const Autocomplete = connectSearchBox<AutocompleteProps>(
+  AutocompleteComponent
+)

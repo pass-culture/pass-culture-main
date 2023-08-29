@@ -267,6 +267,7 @@ export const Offers = connectInfiniteHits<
 
       const areEqualHasMore = prevHasMore === nextHasMore
       const areEqualDisplayStats = prevDisplayStats === nextDisplayStats
+
       const arePropsEqual =
         areEqualHits && areEqualHasMore && areEqualDisplayStats
 
