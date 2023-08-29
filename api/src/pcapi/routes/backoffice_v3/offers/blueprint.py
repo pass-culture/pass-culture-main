@@ -570,6 +570,7 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
 
     for offer in offers:
         if offer.validation != new_validation:
+            old_validation = offer.validation
             offer.validation = new_validation
             offer.lastValidationDate = datetime.datetime.utcnow()
             offer.lastValidationType = OfferValidationType.MANUAL
@@ -582,7 +583,9 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
                 if offer.venue.bookingEmail
                 else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
             )
-            transactional_mails.send_offer_validation_status_update_email(offer, new_validation, recipients)
+            transactional_mails.send_offer_validation_status_update_email(
+                offer, old_validation, new_validation, recipients
+            )
 
     search.async_index_offer_ids(offer_ids)
 
@@ -593,6 +596,7 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
 
     for offer in offers:
         if offer.validation != new_validation:
+            old_validation = offer.validation
             offer.validation = new_validation
             offer.lastValidationDate = datetime.datetime.utcnow()
             offer.lastValidationType = OfferValidationType.MANUAL
@@ -619,7 +623,9 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
                 if offer.venue.bookingEmail
                 else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
             )
-            transactional_mails.send_offer_validation_status_update_email(offer, new_validation, recipients)
+            transactional_mails.send_offer_validation_status_update_email(
+                offer, old_validation, new_validation, recipients
+            )
 
     if len(offer_ids) > 0:
         favorites = users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).all()
