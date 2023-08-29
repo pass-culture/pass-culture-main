@@ -1,5 +1,7 @@
 import datetime
 import html
+import pathlib
+import re
 
 import freezegun
 import pytest
@@ -20,6 +22,7 @@ from pcapi.domain import music_types
 from pcapi.domain.titelive import read_things_date
 from pcapi.utils.requests import ExternalAPIException
 
+import tests
 from tests.connectors.titelive import fixtures
 
 
@@ -27,14 +30,17 @@ from tests.connectors.titelive import fixtures
 @override_settings(TITELIVE_EPAGINE_API_PASSWORD="qwerty123")
 @pytest.mark.usefixtures("db_session")
 class TiteliveSearchTest:
-    def _configure_login_mock(self, requests_mock):
+    def _configure_login_and_images(self, requests_mock):
         requests_mock.post(
             "https://login.epagine.fr/v1/login/test@example.com/token",
             json={"token": "XYZ"},
         )
+        image_path = pathlib.Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
+        with open(image_path, "rb") as thumb_file:
+            requests_mock.get(re.compile("image"), content=thumb_file.read())
 
     def test_titelive_music_sync(self, requests_mock):
-        self._configure_login_mock(requests_mock)
+        self._configure_login_and_images(requests_mock)
         requests_mock.get("https://catsearch.epagine.fr/v1/search", json=fixtures.MUSIC_SEARCH_FIXTURE)
         titelive_epagine_provider = providers_repository.get_provider_by_name(
             providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME
@@ -124,7 +130,7 @@ class TiteliveSearchTest:
 
     @freezegun.freeze_time("2023-01-01")
     def test_titelive_sync_event(self, requests_mock):
-        self._configure_login_mock(requests_mock)
+        self._configure_login_and_images(requests_mock)
         requests_mock.get(
             "https://catsearch.epagine.fr/v1/search",
             json={"type": 4, "magid": "7", "nombre": 10, "page": 1, "result": []},
@@ -153,7 +159,7 @@ class TiteliveSearchTest:
         assert start_event.type == providers_models.LocalProviderEventType.SyncStart
 
     def test_titelive_sync_event_on_failure(self, requests_mock):
-        self._configure_login_mock(requests_mock)
+        self._configure_login_and_images(requests_mock)
         requests_mock.get("https://catsearch.epagine.fr/v1/search", exc=requests.exceptions.RequestException)
         titelive_epagine_provider = providers_repository.get_provider_by_name(
             providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME
@@ -182,7 +188,7 @@ class TiteliveSearchTest:
         assert end_sync_events_query.count() == 1
 
     def test_sync_does_not_overwrite_existing_provider(self, requests_mock):
-        self._configure_login_mock(requests_mock)
+        self._configure_login_and_images(requests_mock)
         requests_mock.get("https://catsearch.epagine.fr/v1/search", json=fixtures.MUSIC_SEARCH_FIXTURE)
         offers_factories.ProductFactory(extraData={"ean": "3700187679323"})
 
@@ -200,3 +206,30 @@ class TiteliveSearchTest:
             offers_models.Product.lastProvider == titelive_epagine_provider  # pylint: disable=comparison-with-callable
         )
         assert titelive_synced_products_query.count() == 3
+
+    def test_sync_thumbnails(self, requests_mock):
+        self._configure_login_and_images(requests_mock)
+        requests_mock.get("https://catsearch.epagine.fr/v1/search", json=fixtures.MUSIC_SEARCH_FIXTURE)
+
+        TiteliveMusicSearch().synchronize_products(datetime.date(2022, 12, 1))
+
+        synced_products = offers_models.Product.query.all()
+        assert len(synced_products) == 3
+        assert all(synced_product.thumbUrl is not None for synced_product in synced_products)
+
+    def test_sync_thumbnails_failure_is_silent(self, requests_mock):
+        self._configure_login_and_images(requests_mock)
+        requests_mock.get("https://catsearch.epagine.fr/v1/search", json=fixtures.MUSIC_SEARCH_FIXTURE)
+        requests_mock.get("https://images.epagine.fr/323/3700187679324.jpg", exc=requests.exceptions.RequestException)
+
+        assert TiteliveMusicSearch().synchronize_products(datetime.date(2022, 12, 1)) is None
+
+        synced_products = offers_models.Product.query.all()
+        assert len(synced_products) == 3
+        assert len([product for product in synced_products if product.thumbUrl is not None]) == 2
+
+        no_thumbnail_product = next(
+            (product for product in synced_products if product.idAtProviders == "3700187679324"), None
+        )
+        assert no_thumbnail_product is not None
+        assert no_thumbnail_product.thumbUrl is None
