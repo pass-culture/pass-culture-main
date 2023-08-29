@@ -58,6 +58,7 @@ import type { LoginUserBodyModel } from '../models/LoginUserBodyModel';
 import type { NewPasswordBodyModel } from '../models/NewPasswordBodyModel';
 import type { OffererReimbursementPointListResponseModel } from '../models/OffererReimbursementPointListResponseModel';
 import type { OffererStatsResponseModel } from '../models/OffererStatsResponseModel';
+import type { OfferStatus } from '../models/OfferStatus';
 import type { OfferType } from '../models/OfferType';
 import type { PatchAllCollectiveOffersActiveStatusBodyModel } from '../models/PatchAllCollectiveOffersActiveStatusBodyModel';
 import type { PatchAllOffersActiveStatusBodyModel } from '../models/PatchAllOffersActiveStatusBodyModel';
@@ -281,7 +282,7 @@ export class DefaultService {
   public getCollectiveOffers(
     nameOrIsbn?: string | null,
     offererId?: number | null,
-    status?: string | null,
+    status?: OfferStatus | null,
     venueId?: number | null,
     categoryId?: string | null,
     creationMode?: string | null,
@@ -1283,7 +1284,7 @@ export class DefaultService {
   public listOffers(
     nameOrIsbn?: string | null,
     offererId?: number | null,
-    status?: string | null,
+    status?: OfferStatus | null,
     venueId?: number | null,
     categoryId?: string | null,
     creationMode?: string | null,
