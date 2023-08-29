@@ -67,8 +67,8 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         showtimes = self.get_showtimes(film=int(film_id))
         return {showtime.id: showtime.numberSeatsRemaining for showtime in showtimes}
 
-    def cancel_booking(self, barcodes: list[str]) -> None:
-        barcodes = list(set(barcodes))
+    def cancel_booking(self, booking: bookings_models.Booking) -> None:
+        barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
         sale_cancel_items = []
         for barcode in barcodes:
             barcode = (

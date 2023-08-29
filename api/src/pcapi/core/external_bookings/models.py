@@ -31,7 +31,7 @@ class ExternalBookingsClientAPI:
     def get_film_showtimes_stocks(self, film_id: str) -> dict[int, int]:
         raise NotImplementedError("Should be implemented in subclass (abstract method)")
 
-    def cancel_booking(self, barcodes: list[str]) -> None:
+    def cancel_booking(self, booking: bookings_models.Booking) -> None:
         raise NotImplementedError("Should be implemented in subclass (abstract method)")
 
     def book_ticket(

@@ -192,7 +192,8 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
         index_min_distance = distances_to_center.index(min_distance)
         return seats_index[index_min_distance]
 
-    def cancel_booking(self, barcodes: list[str]) -> None:
+    def cancel_booking(self, booking: bookings_models.Booking) -> None:
+        barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
         paiement_type_id = self.get_voucher_payment_type().id
         barcodes_int: list[int] = []
         for barcode in barcodes:

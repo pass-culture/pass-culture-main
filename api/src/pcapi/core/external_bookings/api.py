@@ -34,9 +34,9 @@ def get_movie_stocks(venue_id: int, movie_id: str) -> dict[int, int]:
     return client.get_film_showtimes_stocks(movie_id)
 
 
-def cancel_booking(venue_id: int, barcodes: list[str]) -> None:
+def cancel_booking(venue_id: int, booking: bookings_models.Booking) -> None:
     client = _get_external_bookings_client_api(venue_id)
-    client.cancel_booking(barcodes)
+    client.cancel_booking(booking)
 
 
 def book_cinema_ticket(

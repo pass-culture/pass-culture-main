@@ -73,9 +73,9 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             ]
         return tickets
 
-    def cancel_booking(self, barcodes: list[str]) -> None:
-        barcodes_set = set(barcodes)
-        for barcode in barcodes_set:
+    def cancel_booking(self, booking: bookings_models.Booking) -> None:
+        barcodes = {external_booking.barcode for external_booking in booking.externalBookings}
+        for barcode in barcodes:
             annulation_pass_culture(self.cgr_cinema_details, barcode)
             logger.info("CGR Booking Cancelled", extra={"barcode": barcode})
 

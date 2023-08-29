@@ -5,10 +5,14 @@ import pytest
 
 from pcapi.connectors.serialization import boost_serializers
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.boost import client as boost_client
 import pcapi.core.external_bookings.boost.exceptions as boost_exceptions
+import pcapi.core.external_bookings.factories as external_bookings_factories
 import pcapi.core.external_bookings.models as external_bookings_models
+import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.utils import date
@@ -158,6 +162,20 @@ class CancelBookingTest:
     def test_should_cancel_booking_with_success(
         self, barcode: str, ff_is_active: bool, expected_barcode: str, requests_mock
     ):
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        boost_provider = get_provider_by_local_class("BoostStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=boost_provider)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+        offer = offers_factories.EventOfferFactory(
+            name="Film",
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProviderId=cinema_provider_pivot.provider.id,
+        )
+        stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="123")
+        booking = bookings_factories.BookingFactory(stock=stock, user=beneficiary)
+        external_bookings_factories.ExternalBookingFactory(booking=booking, barcode=barcode)
+
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         put_adapter = requests_mock.put(
@@ -169,7 +187,7 @@ class CancelBookingTest:
 
         try:
             with override_features(WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING=ff_is_active):
-                boost.cancel_booking(barcodes=[barcode])
+                boost.cancel_booking(booking)
         except Exception:  # pylint: disable=broad-except
             assert False, "Should not raise exception"
         assert put_adapter.last_request.json() == {"sales": [{"code": expected_barcode, "refundType": "pcu"}]}
@@ -185,9 +203,22 @@ class CancelBookingTest:
             status_code=404,
         )
         boost = boost_client.BoostClientAPI(cinema_str_id)
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        boost_provider = get_provider_by_local_class("BoostStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=boost_provider)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+        offer = offers_factories.EventOfferFactory(
+            name="Film",
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProviderId=cinema_provider_pivot.provider.id,
+        )
+        stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="123")
+        booking = bookings_factories.BookingFactory(stock=stock, user=beneficiary)
+        external_bookings_factories.ExternalBookingFactory(booking=booking, barcode="55555")
 
         with pytest.raises(boost_exceptions.BoostAPIException) as exception:
-            boost.cancel_booking(barcodes=["55555"])
+            boost.cancel_booking(booking=booking)
 
         assert (
             str(exception.value)

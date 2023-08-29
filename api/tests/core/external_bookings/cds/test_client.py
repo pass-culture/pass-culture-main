@@ -7,8 +7,13 @@ import pytest
 from pcapi.connectors.cine_digital_service import ResourceCDS
 import pcapi.connectors.serialization.cine_digital_service_serializers as cds_serializers
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.categories import subcategories
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
+import pcapi.core.external_bookings.factories as external_bookings_factories
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.providers.factories as providers_factories
+from pcapi.core.providers.repository import get_provider_by_local_class
 import pcapi.core.users.factories as users_factories
 
 
@@ -870,6 +875,7 @@ class CineDigitalServiceGetAvailableDuoSeatTest:
         assert duo_seats[1].seatNumber == "D_3"
 
 
+@pytest.mark.usefixtures("db_session")
 class CineDigitalServiceCancelBookingTest:
     @patch("pcapi.core.external_bookings.cds.client.put_resource")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_voucher_payment_type")
@@ -883,10 +889,30 @@ class CineDigitalServiceCancelBookingTest:
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
         )
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        cds_provider = get_provider_by_local_class("CDSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+        offer = offers_factories.EventOfferFactory(
+            name="Film",
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProviderId=cinema_provider_pivot.provider.id,
+        )
+        stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="123")
+        booking = bookings_factories.BookingFactory(stock=stock, user=beneficiary)
+        external_bookings_factories.ExternalBookingFactory(
+            booking=booking,
+            barcode="3107362853729",
+        )
+        external_bookings_factories.ExternalBookingFactory(
+            booking=booking,
+            barcode="1312079646868",
+        )
 
         # When
         try:
-            cine_digital_service.cancel_booking(["3107362853729", "1312079646868"])
+            cine_digital_service.cancel_booking(booking)
         except cds_exceptions.CineDigitalServiceAPIException:
             assert False, "Should not raise exception"
 
@@ -910,12 +936,27 @@ class CineDigitalServiceCancelBookingTest:
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
         )
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        cds_provider = get_provider_by_local_class("CDSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+        offer = offers_factories.EventOfferFactory(
+            name="Film",
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProviderId=cinema_provider_pivot.provider.id,
+        )
+        stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="123")
+        booking = bookings_factories.BookingFactory(stock=stock, user=beneficiary)
+        for barcode in ["111111111111", "222222222222", "333333333333", "444444444444", "555555555555"]:
+            external_bookings_factories.ExternalBookingFactory(
+                booking=booking,
+                barcode=barcode,
+            )
 
         # When
         with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as exception:
-            cine_digital_service.cancel_booking(
-                ["111111111111", "222222222222", "333333333333", "444444444444", "555555555555"]
-            )
+            cine_digital_service.cancel_booking(booking)
         sep = "\n"
         assert (
             str(exception.value)
@@ -941,9 +982,27 @@ class CineDigitalServiceCancelBookingTest:
             cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
         )
 
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        cds_provider = get_provider_by_local_class("CDSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cds_provider)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+        offer = offers_factories.EventOfferFactory(
+            name="Film",
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProviderId=cinema_provider_pivot.provider.id,
+        )
+        stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="123")
+        booking = bookings_factories.BookingFactory(stock=stock, user=beneficiary)
+        for barcode in ["111111111111", "222222222222", "333333333333"]:
+            external_bookings_factories.ExternalBookingFactory(
+                booking=booking,
+                barcode=barcode,
+            )
+
         # When
         try:
-            cine_digital_service.cancel_booking(["111111111111", "222222222222", "333333333333"])
+            cine_digital_service.cancel_booking(booking)
         except cds_exceptions.CineDigitalServiceAPIException:
             pytest.fail("Should not raise CineDigitalServiceAPIException")
 

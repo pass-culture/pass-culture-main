@@ -4,9 +4,12 @@ import pytest
 
 from pcapi.connectors.cgr.exceptions import CGRAPIException
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.categories import subcategories
 import pcapi.core.external_bookings.cgr.client as cgr_client
+import pcapi.core.external_bookings.factories as external_bookings_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.providers.repository import get_provider_by_local_class
 import pcapi.core.users.factories as users_factories
 
 from tests.connectors.cgr import soap_definitions
@@ -172,10 +175,24 @@ class CancelBookingTest:
             "https://cinema-0.example.com/web_service",
             text=fixtures.cgr_annulation_response_template(),
         )
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        cgr_provider = get_provider_by_local_class("CGRStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+        offer = offers_factories.EventOfferFactory(
+            name="Film",
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProviderId=cinema_provider_pivot.provider.id,
+        )
+        stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="123")
+        booking = bookings_factories.BookingFactory(stock=stock, user=beneficiary)
+        external_bookings_factories.ExternalBookingFactory(booking=booking, barcode="CINE-123456789")
 
         cgr = cgr_client.CGRClientAPI(cinema_id=cinema_str_id)
+
         try:
-            cgr.cancel_booking(barcodes=["CINE-123456789"])
+            cgr.cancel_booking(booking)
         except CGRAPIException:
             assert False, "Should not raise exception"
 
@@ -195,10 +212,23 @@ class CancelBookingTest:
                 message_error="L'annulation n'a pas pu être prise en compte : Code barre non reconnu / annulation impossible",
             ),
         )
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        cgr_provider = get_provider_by_local_class("CGRStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=cgr_provider)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+        offer = offers_factories.EventOfferFactory(
+            name="Film",
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProviderId=cinema_provider_pivot.provider.id,
+        )
+        stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="123")
+        booking = bookings_factories.BookingFactory(stock=stock, user=beneficiary)
+        external_bookings_factories.ExternalBookingFactory(booking=booking, barcode="CINE-987654321")
 
         cgr = cgr_client.CGRClientAPI(cinema_id=cinema_id)
         with pytest.raises(CGRAPIException) as exception:
-            cgr.cancel_booking(barcodes=["CINE-987654321"])
+            cgr.cancel_booking(booking)
 
         assert (
             str(exception.value)
