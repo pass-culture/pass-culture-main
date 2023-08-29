@@ -130,6 +130,7 @@ class FeatureToggle(enum.Enum):
     WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT = (
         "Backoffice : Afficher directement les détails lorsque la recherche ne renvoie qu'un seul résultat"
     )
+    WIP_ENABLE_SEARCH_HISTORY_ADAGE = "Activer la possibilité de voir l'historique des recherches sur adage"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -203,6 +204,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_CATEGORY_SELECTION,
     FeatureToggle.WIP_ENABLE_ADAGE_GEO_LOCATION,
     FeatureToggle.WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT,
+    FeatureToggle.WIP_ENABLE_SEARCH_HISTORY_ADAGE,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
