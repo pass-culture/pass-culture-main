@@ -178,52 +178,50 @@ const VenueOfferSteps = ({
               <h3 className={styles['card-title']}>Démarche en cours : </h3>
 
               <div className={styles['venue-offer-steps']}>
-                <div className={styles['step-venue-creation']}>
-                  {shouldDisplayEACInformationSection && (
-                    <ButtonLink
-                      className={styles['step-button-width']}
-                      variant={ButtonVariant.BOX}
-                      icon={fullNextIcon}
-                      link={{
-                        to: `/structures/${offererId}/lieux/${venueId}#venue-collective-data`,
-                        isExternal: false,
-                      }}
-                      onClick={() => {
-                        logEvent?.(Events.CLICKED_EAC_DMS_TIMELINE, {
+                {shouldDisplayEACInformationSection && (
+                  <ButtonLink
+                    className={styles['step-button-width']}
+                    variant={ButtonVariant.BOX}
+                    icon={fullNextIcon}
+                    link={{
+                      to: `/structures/${offererId}/lieux/${venueId}#venue-collective-data`,
+                      isExternal: false,
+                    }}
+                    onClick={() => {
+                      logEvent?.(Events.CLICKED_EAC_DMS_TIMELINE, {
+                        from: location.pathname,
+                      })
+                    }}
+                  >
+                    Suivre ma demande de référencement ADAGE
+                  </ButtonLink>
+                )}
+                {hasPendingBankInformationApplication && (
+                  <ButtonLink
+                    className={styles['step-button-width']}
+                    variant={ButtonVariant.BOX}
+                    icon={fullLinkIcon}
+                    link={{
+                      to: `https://www.demarches-simplifiees.fr/dossiers${
+                        demarchesSimplifieesApplicationId
+                          ? `/${demarchesSimplifieesApplicationId}/messagerie`
+                          : ''
+                      }`,
+                      isExternal: true,
+                      target: '_blank',
+                    }}
+                    onClick={() => {
+                      logEvent?.(
+                        VenueEvents.CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP,
+                        {
                           from: location.pathname,
-                        })
-                      }}
-                    >
-                      Suivre ma demande de référencement ADAGE
-                    </ButtonLink>
-                  )}
-                  {hasPendingBankInformationApplication && (
-                    <ButtonLink
-                      className={styles['step-button-width']}
-                      variant={ButtonVariant.BOX}
-                      icon={fullLinkIcon}
-                      link={{
-                        to: `https://www.demarches-simplifiees.fr/dossiers${
-                          demarchesSimplifieesApplicationId
-                            ? `/${demarchesSimplifieesApplicationId}/messagerie`
-                            : ''
-                        }`,
-                        isExternal: true,
-                        target: '_blank',
-                      }}
-                      onClick={() => {
-                        logEvent?.(
-                          VenueEvents.CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP,
-                          {
-                            from: location.pathname,
-                          }
-                        )
-                      }}
-                    >
-                      Suivre mon dossier de coordonnées bancaires
-                    </ButtonLink>
-                  )}
-                </div>
+                        }
+                      )
+                    }}
+                  >
+                    Suivre mon dossier de coordonnées bancaires
+                  </ButtonLink>
+                )}
               </div>
             </div>
           )}
