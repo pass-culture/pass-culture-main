@@ -233,3 +233,30 @@ def search_products(titelive_base: TiteliveBase, from_date: datetime.date, page_
         raise requests.ExternalAPIException(True, {"status_code": response.status_code})
 
     return response.json()
+
+
+def download_titelive_image(image_url: str) -> bytes:
+    try:
+        response = requests.get(image_url)
+    except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
+        logger.error(
+            "Titelive image: Network error",
+            extra={"exception": e, "alert": "Titelive error", "error_type": "network", "request_type": "image"},
+        )
+        raise requests.ExternalAPIException(is_retryable=True) from e
+
+    if not response.ok:
+        logger.error(
+            "Titelive image: External error %s",
+            response.status_code,
+            extra={
+                "alert": "Titelive error",
+                "error_type": "http",
+                "status_code": response.status_code,
+                "request_type": "image",
+                "response_text": response.text,
+            },
+        )
+        raise requests.ExternalAPIException(True, {"status_code": response.status_code})
+
+    return response.content

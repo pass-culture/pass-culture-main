@@ -1,8 +1,10 @@
 import abc
 import datetime
+import logging
 import typing
 
 from pcapi import repository
+from pcapi.connectors import thumb_storage
 from pcapi.connectors import titelive
 from pcapi.connectors.serialization.titelive_serializers import TiteliveProductSearchResponse
 from pcapi.connectors.serialization.titelive_serializers import TiteliveSearchResultType
@@ -11,6 +13,10 @@ import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
 from pcapi.models import db
+from pcapi.utils import requests
+
+
+logger = logging.getLogger(__name__)
 
 
 class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
@@ -31,6 +37,9 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
             with repository.transaction():
                 updated_products = self.upsert_titelive_page(titelive_page)
                 db.session.add_all(updated_products)
+
+            updated_thumb_products = update_product_thumbnails(updated_products, titelive_page)
+            db.session.add_all(updated_thumb_products)
 
         stop_sync_event = self.log_sync_status(providers_models.LocalProviderEventType.SyncEnd)
         db.session.add(stop_sync_event)
@@ -106,6 +115,44 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
         self, titelive_search_result: TiteliveSearchResultType, products_by_ean: dict[str, offers_models.Product]
     ) -> dict[str, offers_models.Product]:
         raise NotImplementedError()
+
+
+def update_product_thumbnails(
+    products: list[offers_models.Product],
+    titelive_page: TiteliveProductSearchResponse[TiteliveSearchResultType],
+) -> list[offers_models.Product]:
+    titelive_results = titelive_page.result
+    thumbnail_url_by_ean = {
+        article.gencod: article.imagesUrl.recto
+        for result in titelive_results
+        for article in result.article
+        if article.image != "0"
+    }
+
+    for product in products:
+        assert product.extraData, "product %s initialized without extra data" % product.id
+
+        ean = product.extraData.get("ean")
+        assert ean, "product %s initialized without ean" % product.id
+
+        new_thumbnail_url = thumbnail_url_by_ean.get(ean)
+        if not new_thumbnail_url:
+            logger.warning("No thumbnail for product ean %s", ean)
+            continue
+
+        try:
+            image_bytes = titelive.download_titelive_image(new_thumbnail_url)
+            if product.thumbCount > 0:
+                thumb_storage.remove_thumb(product, storage_id_suffix="")
+            thumb_storage.create_thumb(product, image_bytes, storage_id_suffix_str="", keep_ratio=True)
+        except requests.ExternalAPIException as e:
+            logger.error(
+                "Error while downloading Titelive image",
+                extra={"exception": e, "url": new_thumbnail_url, "request_type": "image"},
+            )
+            continue
+
+    return products
 
 
 class TiteliveDatabaseNotInitializedException(Exception):
