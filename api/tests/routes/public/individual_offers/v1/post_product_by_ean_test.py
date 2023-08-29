@@ -11,6 +11,7 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
+from pcapi.core.providers import factories as providers_factories
 
 from . import utils
 
@@ -118,6 +119,34 @@ class PostProductByEanTest:
         assert response.status_code == 204
         assert stock.quantity == 5
         assert stock.price == decimal.Decimal("12.34")
+
+    def test_update_last_provider_for_existing_offer(self, client):
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        old_provider = providers_factories.ProviderFactory()
+        product = offers_factories.ThingProductFactory(
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
+        )
+        offer = offers_factories.ThingOfferFactory(
+            product=product, venue=venue, lastProvider=old_provider, extraData=product.extraData, isActive=False
+        )
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products/ean",
+            json={
+                "location": {"type": "physical", "venueId": venue.id},
+                "products": [
+                    {
+                        "ean": product.extraData["ean"],
+                        "stock": {
+                            "price": 1234,
+                            "quantity": 0,
+                        },
+                    }
+                ],
+            },
+        )
+        assert response.status_code == 204
+        assert offer.lastProvider == api_key.provider
+        assert offer.isActive == True
 
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_update_stock_quantity_0_with_previous_bookings(self, client):
@@ -308,7 +337,8 @@ class PostProductByEanTest:
         assert created_stock.price == decimal.Decimal("78.90")
         assert created_stock.quantity == 3
 
-    def test_create_and_update_offer(self, client):
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_create_and_update_offer(self, async_index_offer_ids, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         ean_to_update = "1234567890123"
         ean_to_create = "1234567897123"
@@ -326,8 +356,8 @@ class PostProductByEanTest:
                     {
                         "ean": ean_to_update,
                         "stock": {
-                            "price": 1234,
-                            "quantity": 3,
+                            "price": 234,
+                            "quantity": 12,
                         },
                     },
                 ],

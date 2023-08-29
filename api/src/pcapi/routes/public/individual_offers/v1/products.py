@@ -169,7 +169,7 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
 
     ean_to_create_or_update = set(serialized_products_stocks.keys())
 
-    offers_to_update = _get_existing_offers(ean_to_create_or_update, venue, provider)
+    offers_to_update = _get_existing_offers(ean_to_create_or_update, venue)
 
     offer_to_update_by_ean = {}
     ean_list_to_update = set()
@@ -201,7 +201,7 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
 
         db.session.bulk_save_objects(created_offers)
 
-        reloaded_offers = _get_existing_offers(ean_list_to_create, venue, provider)
+        reloaded_offers = _get_existing_offers(ean_list_to_create, venue)
         for offer in reloaded_offers:
             ean = offer.extraData["ean"]  # type: ignore [index]
             stock_data = serialized_products_stocks[ean]
@@ -217,6 +217,9 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
             )
     for offer in offers_to_update:
         try:
+            offer.lastProvider = current_api_key.provider
+            offer.isActive = True
+
             ean = offer.extraData["ean"]  # type: ignore [index]
             stock_data = serialized_products_stocks[ean]
             # FIXME (mageoffray, 2023-05-26): stock upserting optimisation
@@ -257,14 +260,21 @@ def _get_existing_products(ean_to_create: set[str]) -> list[offers_models.Produc
 def _get_existing_offers(
     ean_to_create_or_update: set[str],
     venue: offerers_models.Venue,
-    provider: providers_models.Provider,
 ) -> list[offers_models.Offer]:
-    return (
-        utils.retrieve_offer_relations_query(offers_models.Offer.query)
+    subquery = (
+        db.session.query(
+            sqla.func.max(offers_models.Offer.id).label("max_id"),
+        )
         .filter(offers_models.Offer.isEvent == False)
         .filter(offers_models.Offer.venue == venue)
-        .filter(offers_models.Offer.lastProvider == provider)  # pylint: disable=comparison-with-callable
         .filter(offers_models.Offer.extraData["ean"].astext.in_(ean_to_create_or_update))
+        .group_by(offers_models.Offer.extraData["ean"], offers_models.Offer.venueId)
+        .subquery()
+    )
+
+    return (
+        utils.retrieve_offer_relations_query(offers_models.Offer.query)
+        .join(subquery, offers_models.Offer.id == subquery.c.max_id)
         .all()
     )
 
