@@ -30,4 +30,20 @@ REASON_CODE_REQUIRING_EMAIL_UPDATE = (
     fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE,
 )
 
+REASON_CODES_FOR_QUICK_ACTION_REMINDERS = (
+    fraud_models.FraudReasonCode.BLURRY_DOCUMENT_VIDEO,
+    fraud_models.FraudReasonCode.DOCUMENT_DAMAGED,
+    fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER,
+    fraud_models.FraudReasonCode.ID_CHECK_NOT_AUTHENTIC,
+    fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE,
+    fraud_models.FraudReasonCode.LACK_OF_LUMINOSITY,
+    fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA,
+    fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE,
+)
+
+REASON_CODES_FOR_LONG_ACTION_REMINDERS = (
+    fraud_models.FraudReasonCode.ID_CHECK_EXPIRED,
+    fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED,
+)
+
 MAX_UBBLE_RETRIES = 3
