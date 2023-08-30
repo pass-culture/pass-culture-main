@@ -100,10 +100,17 @@
   }
 
   &-ternary,
-  &-quaternary {
+  &-quaternary,
+  &-ternary-pink,
+  &-quaternary-pink {
     @include fonts.button;
 
     color: colors.$black;
+    
+    &-pink {
+      color: colors.$primary;
+    }
+
     background-color: transparent;
     border-color: transparent;
     padding: 0;

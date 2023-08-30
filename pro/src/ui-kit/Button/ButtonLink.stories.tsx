@@ -32,26 +32,40 @@ const TemplateLink: Story<ButtonLinkProps> = args => (
   </div>
 )
 
-export const LinkButton = TemplateLink.bind({})
+export const Ternary = TemplateLink.bind({})
 
-LinkButton.args = {
+Ternary.args = {
   children: 'Éditer',
   variant: ButtonVariant.TERNARY,
   link: { to: '/my-path', isExternal: false },
 }
 
-export const LinkButtonWithIcon = TemplateLink.bind({})
+export const TernaryWithIcon = TemplateLink.bind({})
 
-LinkButtonWithIcon.args = {
-  ...LinkButton.args,
+TernaryWithIcon.args = {
+  ...Ternary.args,
   icon: fullEditIcon,
 }
 
-export const LinkQuaternaryButtonWithIcon = TemplateLink.bind({})
+export const TernaryPinkWithIcon = TemplateLink.bind({})
 
-LinkQuaternaryButtonWithIcon.args = {
+TernaryPinkWithIcon.args = {
+  ...TernaryWithIcon.args,
+  variant: ButtonVariant.TERNARYPINK,
+}
+
+export const QuaternaryWithIcon = TemplateLink.bind({})
+
+QuaternaryWithIcon.args = {
   children: 'Accueil',
   variant: ButtonVariant.QUATERNARY,
   icon: fullBackIcon,
   link: { to: '/my-path', isExternal: false },
+}
+
+export const QuaternaryPinkWithIcon = TemplateLink.bind({})
+
+QuaternaryPinkWithIcon.args = {
+  ...QuaternaryWithIcon.args,
+  variant: ButtonVariant.QUATERNARYPINK,
 }
