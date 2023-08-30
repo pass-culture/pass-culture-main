@@ -8,7 +8,7 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
-import { GetOffererResponseModel, Target } from 'apiClient/v1'
+import { PostOffererResponseModel, Target } from 'apiClient/v1'
 import { Address } from 'components/Address'
 import Notification from 'components/Notification/Notification'
 import {
@@ -182,7 +182,7 @@ describe('ValidationScreen', () => {
 
     it('Should send the data on submit and redirect to home', async () => {
       vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
-        {} as GetOffererResponseModel
+        {} as PostOffererResponseModel
       )
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
@@ -228,7 +228,7 @@ describe('ValidationScreen', () => {
 
     it('Should send data with empty public name', async () => {
       vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
-        {} as GetOffererResponseModel
+        {} as PostOffererResponseModel
       )
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
