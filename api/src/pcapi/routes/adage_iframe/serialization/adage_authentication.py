@@ -23,6 +23,8 @@ class AuthenticatedInformation(BaseModel):
     firstname: str | None
     email: str | None
     uai: str | None
+    lat: float | None
+    lon: float | None
 
 
 class AuthenticatedResponse(BaseModel):
@@ -33,6 +35,8 @@ class AuthenticatedResponse(BaseModel):
     institutionCity: str | None
     email: str | None
     preferences: RedactorPreferences | None
+    lat: float | None
+    lon: float | None
 
     class Config:
         use_enum_values = True
