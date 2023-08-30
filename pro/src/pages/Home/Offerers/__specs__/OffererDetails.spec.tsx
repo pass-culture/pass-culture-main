@@ -220,7 +220,7 @@ describe('offererDetailsLegacy', () => {
     expect(secondOfflineVenueTitle).toBeInTheDocument()
   })
 
-  it('should display invite member button if FF is enable', async () => {
+  it('should display invite member button if FF is enable and track', async () => {
     const storeOverrides = {
       ...store,
       features: {
@@ -230,6 +230,23 @@ describe('offererDetailsLegacy', () => {
     await renderHomePage(storeOverrides)
 
     expect(screen.getByText('Inviter')).toBeInTheDocument()
+  })
+
+  it('should trigger an event when clicking on "Inviter" for offerers', async () => {
+    const storeOverrides = {
+      ...store,
+      features: {
+        list: [{ isActive: true, nameKey: 'WIP_ENABLE_NEW_USER_OFFERER_LINK' }],
+      },
+    }
+    await renderHomePage(storeOverrides)
+
+    await userEvent.click(screen.getByText('Inviter'))
+
+    expect(mockLogEvent).toHaveBeenCalledWith('hasClickedInviteCollaborator', {
+      offererId: 12,
+    })
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
   })
 
   it('should not display virtual venue informations when no virtual offers', async () => {
