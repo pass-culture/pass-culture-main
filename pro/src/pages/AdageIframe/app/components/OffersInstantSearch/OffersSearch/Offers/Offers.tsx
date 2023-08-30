@@ -249,14 +249,18 @@ export const Offers = connectInfiniteHits<
       // If they are not equal, the offers details will be fetched again
       const {
         hits: prevHits,
+        nbHits: prevNbHits,
         hasMore: prevHasMore,
         displayStats: prevDisplayStats,
+        isBackToTopVisibile: prevIsBackToTopVisibile,
       } = prevProps
       const {
         hits: nextHits,
         hasMore: nextHasMore,
+        nbHits: nextNbHits,
         displayStats: nextDisplayStats,
         setIsLoading: nextSetIsLoading,
+        isBackToTopVisibile: nextIsBackToTopVisibile,
       } = nextProps
 
       const prevHitsIds = new Set(prevHits.map(hit => hit.objectID))
@@ -267,9 +271,16 @@ export const Offers = connectInfiniteHits<
 
       const areEqualHasMore = prevHasMore === nextHasMore
       const areEqualDisplayStats = prevDisplayStats === nextDisplayStats
+      const areEqualBackToTopVisible =
+        prevIsBackToTopVisibile === nextIsBackToTopVisibile
+      const areEquelNbHits = prevNbHits === nextNbHits
 
       const arePropsEqual =
-        areEqualHits && areEqualHasMore && areEqualDisplayStats
+        areEqualHits &&
+        areEqualHasMore &&
+        areEqualDisplayStats &&
+        areEqualBackToTopVisible &&
+        areEquelNbHits
 
       if (arePropsEqual) {
         nextSetIsLoading(false)
