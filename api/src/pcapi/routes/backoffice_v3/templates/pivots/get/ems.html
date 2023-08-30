@@ -1,0 +1,27 @@
+{% import "components/links.html" as links %}
+{% import "pivots/get/common.html" as common %}
+<turbo-frame id="ems_frame">
+{{ common.build_pivot_bar("ems", form, dst) }}
+<table class="table table-hover my-4">
+  <thead>
+    <tr>
+      <th scope="col"></th>
+      <th scope="col">Id du Lieu</th>
+      <th scope="col">Lieu</th>
+      <th scope="col">Identifiant cinéma (EMS)</th>
+      <th scope="col">Dernière synchronisation réussie</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for pivot in rows %}
+      <tr>
+        <th scope="row">{{ common.build_pivot_row_menu("ems", pivot, true) }}</th>
+        <td class="fw-bolder">{{ pivot.cinemaProviderPivot.venue.id }}</td>
+        <td>{{ links.build_venue_name_to_details_link(pivot.cinemaProviderPivot.venue, text_attr="name") }}</td>
+        <td>{{ pivot.cinemaProviderPivot.idAtProvider }}</td>
+        <td>{{ pivot.last_version_as_isoformat }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</turbo-frame>

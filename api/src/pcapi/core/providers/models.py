@@ -368,3 +368,7 @@ class EMSCinemaDetails(PcObject, Base, Model):
         CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId]
     )
     lastVersion: int = Column(BigInteger, default=0, nullable=False)
+
+    @property
+    def last_version_as_isoformat(self) -> str:
+        return datetime.datetime.fromtimestamp(self.lastVersion).isoformat()
