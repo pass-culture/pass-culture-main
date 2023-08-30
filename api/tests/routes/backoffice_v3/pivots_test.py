@@ -1,3 +1,6 @@
+from datetime import datetime
+from unittest.mock import patch
+
 from flask import url_for
 import pytest
 
@@ -285,6 +288,20 @@ class ListPivotsTest(GetEndpointHelper):
         cgr_rows = html_parser.extract_table_rows(response.data)
         assert {row["Lieu"] for row in cgr_rows} == expected_venues
 
+    def test_list_pivots_ems(self, authenticated_client):
+        ems_pivot = providers_factories.EMSCinemaDetailsFactory()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, name="ems"))
+            assert response.status_code == 200
+
+        ems_rows = html_parser.extract_table_rows(response.data)
+
+        assert ems_rows[0]["Id du Lieu"] == str(ems_pivot.cinemaProviderPivot.venue.id)
+        assert ems_rows[0]["Lieu"] == ems_pivot.cinemaProviderPivot.venue.name
+        assert ems_rows[0]["Identifiant cinéma (EMS)"] == ems_pivot.cinemaProviderPivot.idAtProvider
+        assert ems_rows[0]["Dernière synchronisation réussie"] == ems_pivot.last_version_as_isoformat
+
 
 class GetCreatePivotFormTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.pivots.get_create_pivot_form"
@@ -313,6 +330,13 @@ class GetCreatePivotFormTest(GetEndpointHelper):
     def test_get_create_pivot_form_cineoffice(self, authenticated_client):
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, name="cineoffice"))
+            assert response.status_code == 200
+
+    @patch("pcapi.routes.backoffice_v3.pivots.contexts.ems.EMSContext.check_if_api_call_is_ok")
+    def test_get_create_pivot_form_ems(self, mocked_healthcheck, authenticated_client):
+        mocked_healthcheck.return_value = None
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, name="ems"))
             assert response.status_code == 200
 
 
@@ -391,6 +415,22 @@ class CreatePivotTest(PostEndpointHelper):
         assert created.cinemaProviderPivot.idAtProvider == form["cinema_id"]
         assert created.accountId == form["account_id"]
         assert created.cinemaApiToken == form["api_token"]
+
+    @patch("pcapi.routes.backoffice_v3.pivots.contexts.ems.EMSContext.check_if_api_call_is_ok")
+    def test_create_pivot_ems(self, mocked_healthcheck, authenticated_client):
+        mocked_healthcheck.return_value = None
+        venue_id = offerers_factories.VenueFactory().id
+        form = {
+            "venue_id": venue_id,
+            "cinema_id": "idAtProvider1",
+        }
+
+        self.post_to_endpoint(authenticated_client, name="ems", form=form)
+
+        created: providers_models.EMSCinemaDetails = providers_models.EMSCinemaDetails.query.one()
+        assert created.cinemaProviderPivot.venueId == venue_id
+        assert created.cinemaProviderPivot.idAtProvider == form["cinema_id"]
+        assert created.lastVersion == 0
 
     def test_create_pivot_cineoffice_with_forbidden_characters(self, authenticated_client):
         venue_id = offerers_factories.VenueFactory().id
@@ -494,6 +534,14 @@ class GetUpdatePivotFormTest(GetEndpointHelper):
             response = authenticated_client.get(url_for(self.endpoint, name="cineoffice", pivot_id=cineoffice_pivot.id))
             assert response.status_code == 200
 
+    @patch("pcapi.routes.backoffice_v3.pivots.contexts.ems.EMSContext.check_if_api_call_is_ok")
+    def test_get_update_pivot_form_ems(self, mocked_healthcheck, authenticated_client):
+        ems_pivot = providers_factories.EMSCinemaDetailsFactory()
+        db.session.expire(ems_pivot)
+        with assert_num_queries(6):
+            response = authenticated_client.get(url_for(self.endpoint, name="ems", pivot_id=ems_pivot.id))
+            assert response.status_code == 200
+
 
 class UpdatePivotTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.pivots.update_pivot"
@@ -570,6 +618,25 @@ class UpdatePivotTest(PostEndpointHelper):
         assert updated.accountId == form["account_id"]
         assert updated.cinemaApiToken == form["api_token"]
 
+    @patch("pcapi.routes.backoffice_v3.pivots.contexts.ems.EMSContext.check_if_api_call_is_ok")
+    def test_update_pivot_ems(self, mocked_healthcheck, authenticated_client):
+        ems_pivot = providers_factories.EMSCinemaDetailsFactory()
+
+        expected_data = {
+            "cinema_id": "New cinema id",
+            "last_version": "2023-01-01",
+        }
+
+        assert ems_pivot.cinemaProviderPivot.idAtProvider != "New cinema id"
+        assert ems_pivot.lastVersion == 0
+
+        self.post_to_endpoint(authenticated_client, name="ems", pivot_id=ems_pivot.id, form=expected_data)
+
+        db.session.refresh(ems_pivot)
+
+        assert ems_pivot.cinemaProviderPivot.idAtProvider == "New cinema id"
+        assert ems_pivot.lastVersion == int(datetime(2023, 1, 1, 0, 0).timestamp())
+
     def test_update_pivot_cineoffice_with_forbidden_characters(self, authenticated_client):
         cineoffice_pivot = providers_factories.CDSCinemaDetailsFactory()
 
@@ -601,6 +668,13 @@ class DeleteProviderTest(PostEndpointHelper):
     endpoint_kwargs = {"name": "cgr", "pivot_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
+    def test_delete_pivot_allocine(self, authenticated_client):
+        allocine_pivot = providers_factories.AllocinePivotFactory()
+
+        self.post_to_endpoint(authenticated_client, name="allocine", pivot_id=allocine_pivot.id)
+
+        db.session.refresh(allocine_pivot)
+
     def test_delete_pivot_boost(self, authenticated_client):
         boost_pivot = providers_factories.BoostCinemaDetailsFactory()
 
@@ -621,3 +695,10 @@ class DeleteProviderTest(PostEndpointHelper):
         self.post_to_endpoint(authenticated_client, name="cineoffice", pivot_id=cineoffice_pivot.id)
 
         assert not providers_models.CDSCinemaDetails.query.get(cineoffice_pivot.id)
+
+    def test_delete_pivot_ems(self, authenticated_client):
+        ems_pivot = providers_factories.EMSCinemaDetailsFactory()
+
+        self.post_to_endpoint(authenticated_client, name="ems", pivot_id=ems_pivot.id)
+
+        assert not providers_models.EMSCinemaDetails.query.get(ems_pivot.id)
