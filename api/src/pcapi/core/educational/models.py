@@ -7,6 +7,7 @@ import random
 import typing
 
 import sqlalchemy as sa
+from sqlalchemy import UniqueConstraint
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
@@ -352,6 +353,12 @@ class CollectiveOffer(
         "OfferValidationRule", secondary="validation_rule_collective_offer_link", back_populates="collectiveOffers"
     )
 
+    educationalRedactorsFavorite: sa.orm.Mapped["EducationalRedactor"] = relationship(
+        "EducationalRedactor",
+        secondary="collective_offer_educational_redactor",
+        back_populates="favoriteCollectiveOffers",
+    )
+
     # TODO(jeremieb): remove this property once the front end client
     # does not need this field anymore.
     @property
@@ -595,6 +602,12 @@ class CollectiveOfferTemplate(
     )
 
     nationalProgram: sa_orm.Mapped["NationalProgram"] = relationship("NationalProgram", foreign_keys=nationalProgramId)
+
+    educationalRedactorsFavorite: sa.orm.Mapped["EducationalRedactor"] = relationship(
+        "EducationalRedactor",
+        secondary="collective_offer_template_educational_redactor",
+        back_populates="favoriteCollectiveOfferTemplates",
+    )
 
     @property
     def isEducational(self) -> bool:
@@ -910,6 +923,18 @@ class EducationalRedactor(PcObject, Base, Model):
 
     collectiveOfferRequest: sa_orm.Mapped["CollectiveOfferRequest"] = relationship(
         "CollectiveOfferRequest", back_populates="educationalRedactor"
+    )
+
+    favoriteCollectiveOffers: sa.orm.Mapped["CollectiveOffer"] = relationship(
+        "CollectiveOffer",
+        secondary="collective_offer_educational_redactor",
+        back_populates="educationalRedactorsFavorite",
+    )
+
+    favoriteCollectiveOfferTemplates: sa.orm.Mapped["CollectiveOfferTemplate"] = relationship(
+        "CollectiveOfferTemplate",
+        secondary="collective_offer_template_educational_redactor",
+        back_populates="educationalRedactorsFavorite",
     )
 
 
@@ -1345,4 +1370,28 @@ class NationalProgramOfferTemplateLinkHistory(PcObject, Base, Model):
     )
     nationalProgramId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("national_program.id", ondelete="CASCADE"), nullable=False
+    )
+
+
+class CollectiveOfferEducationalRedactor(PcObject, Base, Model):
+    """Allow adding to favorite the collective offer for adage user"""
+
+    __tablename__ = "collective_offer_educational_redactor"
+
+    educationalRedactorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("educational_redactor.id"), nullable=False)
+    collectiveOfferId: int = sa.Column(sa.BigInteger, sa.ForeignKey("collective_offer.id"), nullable=False)
+    __table_args__ = (UniqueConstraint("educationalRedactorId", "collectiveOfferId", name="unique_redactorId_offer"),)
+
+
+class CollectiveOfferTemplateEducationalRedactor(PcObject, Base, Model):
+    """Allow adding to favorite the offer template for adage user"""
+
+    __tablename__ = "collective_offer_template_educational_redactor"
+
+    educationalRedactorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("educational_redactor.id"), nullable=False)
+    collectiveOfferTemplateId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("collective_offer_template.id"), nullable=False
+    )
+    __table_args__ = (
+        UniqueConstraint("educationalRedactorId", "collectiveOfferTemplateId", name="unique_redactorId_template"),
     )

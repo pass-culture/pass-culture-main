@@ -175,6 +175,50 @@ export class DefaultService {
   }
 
   /**
+   * post_collective_offer_favorites <POST>
+   * @param offerId
+   * @returns void
+   * @throws ApiError
+   */
+  public postCollectiveOfferFavorites(
+    offerId: number,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/collective/offers/{offer_id}/favorites',
+      path: {
+        'offer_id': offerId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * post_collective_template_favorites <POST>
+   * @param offerId
+   * @returns void
+   * @throws ApiError
+   */
+  public postCollectiveTemplateFavorites(
+    offerId: number,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/collective/templates/{offer_id}/favorites',
+      path: {
+        'offer_id': offerId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * list_features <GET>
    * @returns ListFeatureResponseModel OK
    * @throws ApiError
