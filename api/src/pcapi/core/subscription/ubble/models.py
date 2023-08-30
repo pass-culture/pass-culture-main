@@ -52,7 +52,11 @@ UBBLE_CODE_ERROR_MAPPING = {
         priority=60,
     ),
     fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER: UbbleError(
-        not_retryable_user_message="Ton dossier a été refusé. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande.",
+        detail_message="Ubble n'a pas réussi à lire le document",
+        not_retryable_user_message="Nous n'arrivons pas à lire ton document. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande.",
+        retryable_action_hint="Réessaie avec ta pièce d'identité en t'assurant qu'elle soit lisible",
+        retryable_message_summary="Le document que tu as présenté est illisible.",
+        retryable_user_message="Nous n'arrivons pas à lire ton document. Réessaie avec un passeport ou une carte d'identité française en cours de validité dans un lieu bien éclairé.",
         priority=10,
     ),
     fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH: UbbleError(
