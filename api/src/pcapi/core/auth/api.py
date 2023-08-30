@@ -4,6 +4,7 @@ import google.auth
 from google.auth import credentials as auth_credentials
 from google.auth import iam
 from google.auth.transport import requests as auth_requests
+from google.oauth2 import id_token
 from google.oauth2 import service_account
 import googleapiclient.discovery
 
@@ -59,3 +60,8 @@ def extract_roles_from_google_workspace_groups(api_response: dict) -> set[str]:
 
             roles.add(match.group("role"))
     return roles
+
+
+def get_id_token_from_google(client_id: str) -> str:
+    open_id_connect_token = id_token.fetch_id_token(auth_requests.Request(), client_id)
+    return open_id_connect_token

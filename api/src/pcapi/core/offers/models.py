@@ -67,6 +67,7 @@ UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER = "xxx"
 class OfferExtraData(typing.TypedDict, total=False):
     artist: str | None
     author: str | None
+    complianceScore: int | None
     ean: str | None
     musicSubType: str | None
     musicType: str | None

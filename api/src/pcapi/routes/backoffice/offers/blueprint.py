@@ -309,6 +309,7 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
                 offers_models.Offer.lastValidationDate,
                 offers_models.Offer.lastValidationType,
                 offers_models.Offer.isActive,
+                offers_models.Offer.extraData,
             ),
             sa.orm.contains_eager(offers_models.Offer.venue)
             .load_only(offerers_models.Venue.id, offerers_models.Venue.name, offerers_models.Venue.departementCode)

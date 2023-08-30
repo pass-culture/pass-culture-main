@@ -544,7 +544,9 @@ class ListOffersTest(GetEndpointHelper):
         rule_1 = offers_factories.OfferValidationRuleFactory(name="Règle magique")
         rule_2 = offers_factories.OfferValidationRuleFactory(name="Règle moldue")
         offers_factories.OfferFactory(
-            validation=offers_models.OfferValidationStatus.PENDING, flaggingValidationRules=[rule_1, rule_2]
+            validation=offers_models.OfferValidationStatus.PENDING,
+            flaggingValidationRules=[rule_1, rule_2],
+            extraData={"complianceScore": 50},
         )
 
         query_args = {
@@ -564,6 +566,7 @@ class ListOffersTest(GetEndpointHelper):
 
         rows = html_parser.extract_table_rows(response.data)
         assert rows[0]["Règles de conformité"] == ", ".join([rule_1.name, rule_2.name])
+        assert rows[0]["Score data"] == "50"
 
     def test_list_offers_advanced_search_by_no_tags(self, authenticated_client, offers):
         query_args = {
