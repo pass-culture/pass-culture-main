@@ -193,7 +193,7 @@ describe('CollectiveOfferVisibility', () => {
     })
   })
 
-  it('should clear search input field when clicking on the input again', async () => {
+  it('should not clear search input field when clicking on the input again', async () => {
     renderVisibilityStep(props)
 
     const institutionInput = await screen.findByLabelText(
@@ -209,7 +209,7 @@ describe('CollectiveOfferVisibility', () => {
 
     await userEvent.click(institutionInput)
 
-    expect(institutionInput).toHaveDisplayValue('')
+    expect(institutionInput).toHaveDisplayValue('Test input')
   })
 
   it('should display an error when the institution could not be saved', async () => {
