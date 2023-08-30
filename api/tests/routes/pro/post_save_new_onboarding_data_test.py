@@ -55,6 +55,19 @@ class Returns200Test:
         assert created_venue.venueTypeCode == offerers_models.VenueTypeCode.MOVIE
         assert created_venue.withdrawalDetails is None
 
+    def test_returns_public_information_only(self, client):
+        user = users_factories.UserFactory(email="pro@example.com")
+
+        client = client.with_session_auth(user.email)
+        response = client.post("/offerers/new", json=REQUEST_BODY)
+
+        created_offerer = offerers_models.Offerer.query.one()
+        assert response.json == {
+            "id": created_offerer.id,
+            "siren": "853318459",
+            "name": "MINISTERE DE LA CULTURE",
+        }
+
 
 class Returns400Test:
     @patch("pcapi.connectors.sirene.get_siret", side_effect=sirene.UnknownEntityException())
