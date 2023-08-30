@@ -1,6 +1,7 @@
 {% from "components/badges.html" import build_user_offerer_status_badge %}
 {% import "components/links.html" as links %}
 {% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% import "components/clipboard.html" as clipboard %}
 <turbo-frame id="offerer_users_frame">
 {% if has_permission("VALIDATE_OFFERER") %}
   {% if add_user_form %}
@@ -107,7 +108,9 @@
         <td class="text-muted">{{ build_user_offerer_status_badge(user_offerer) }}</td>
         <td class="fw-bolder text-break">{{ row.lastName | empty_string_if_null }}</td>
         <td class="text-muted">{{ row.firstName | empty_string_if_null }}</td>
-        <td class="fw-bolder">{{ row.email | empty_string_if_null }}</td>
+        <td class="fw-bolder">
+          {{ row.email | empty_string_if_null }}<span class="ms-1">{{ clipboard.copy_to_clipboard(row.email, "Copier l'email du compte") }}</span>
+        </td>
       </tr>
     {% endfor %}
   </tbody>

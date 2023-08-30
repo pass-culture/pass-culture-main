@@ -1,12 +1,15 @@
 {% from "components/forms.html" import build_form_fields_group with context %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
+{% import "components/clipboard.html" as clipboard %}
+{% set username = user.firstName | empty_string_if_null + ' ' + user.lastName | empty_string_if_null | upper %}
 <div class="row row-cols-1 g-4 py-3">
   <div class="col">
     <div class="card">
       <div class="card-body">
         <div class="d-flex flex-row justify-content-start">
           <h5 class="card-title">
-            {{ user.firstName | empty_string_if_null }} {{ user.lastName | empty_string_if_null | upper }}
+            {{ username }}
+            <span class="ms-1">{{ clipboard.copy_to_clipboard(username, "Copier l'état civil") }}</span>
             {% for role in user.roles %}<span class="me-2 badge rounded-pill text-bg-primary align-middle">{{ role | format_role }}</span>{% endfor %}
             {% if not user.isActive %}
               <span class="badge rounded-pill text-bg-secondary align-middle">{{ user.isActive | format_state }}</span>
@@ -100,6 +103,7 @@
                 <div class="d-flex align-items-center">
                   <span class="fw-bold me-1">Email :</span> {{ user.email }}
                   {% if user.email_history | length > 0 %}<i class="bi bi-bag-check-fill text-warning ms-1 fs-4 pc-email-changed-icon"></i>{% endif %}
+                  <span class="ms-1">{{ clipboard.copy_to_clipboard(user.email, "Copier l'adresse email") }}</span>
                 </div>
                 {% if resend_email_validation_form %}
                   <form action="{{ url_for('.resend_validation_email', user_id=user.id) }}"
