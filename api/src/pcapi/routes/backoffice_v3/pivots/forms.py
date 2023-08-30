@@ -115,3 +115,28 @@ class EditCineOfficeForm(EditPivotForm):
             return False
 
         return super().validate(extra_validators)
+
+
+class EditEMSForm(EditPivotForm):
+    cinema_id = fields.PCStringField("Identifiant cinéma (EMS)")
+    last_version = fields.PCDateField(
+        "Dernière synchronisation réussie (optionnel)", validators=[wtforms.validators.Optional()]
+    )
+
+    def validate(self, extra_validators: dict | None = None) -> bool:
+        if not isinstance(self, EditEMSForm):
+            return super().validate(extra_validators)
+
+        ems_provider = providers_repository.get_provider_by_local_class("EMSStocks")
+        if not ems_provider:
+            flash("Provider EMS n'existe pas.", "error")
+            return False
+
+        pivot = providers_repository.get_pivot_for_id_at_provider(
+            id_at_provider=self.cinema_id.data, provider_id=ems_provider.id
+        )
+        if pivot and pivot.venueId != self.venue_id.data[0]:
+            flash("Cet identifiant cinéma existe déjà pour un autre lieu", "danger")
+            return False
+
+        return super().validate(extra_validators)

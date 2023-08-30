@@ -7,6 +7,7 @@ from .base import PivotContext
 from .boost import BoostContext
 from .cgr import CGRContext
 from .cineoffice import CineofficeContext
+from .ems import EMSContext
 
 
 def get_context(provider_name: str) -> typing.Type[PivotContext]:
@@ -15,6 +16,7 @@ def get_context(provider_name: str) -> typing.Type[PivotContext]:
         "boost": BoostContext,
         "cgr": CGRContext,
         "cineoffice": CineofficeContext,
+        "ems": EMSContext,
     }.get(provider_name)
 
     if not context:
