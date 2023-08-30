@@ -450,7 +450,7 @@ def patch_event_date(
                 )
 
             quantity = serialization.deserialize_quantity(update_body.get("quantity", offers_api.UNCHANGED))
-            edited_date, _ = offers_api.edit_stock(
+            edited_date, is_beginning_updated = offers_api.edit_stock(
                 stock_to_edit,
                 quantity=quantity + stock_to_edit.dnBookedQuantity if isinstance(quantity, int) else quantity,
                 price_category=price_category,
@@ -458,6 +458,7 @@ def patch_event_date(
                 beginning_datetime=update_body.get("beginning_datetime", offers_api.UNCHANGED),
                 editing_provider=current_api_key.provider,
             )
+        offers_api.handle_stocks_edition([(stock_to_edit, is_beginning_updated)])
     except offers_exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
     return serialization.DateResponse.build_date(edited_date)

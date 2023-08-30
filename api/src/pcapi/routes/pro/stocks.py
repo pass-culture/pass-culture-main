@@ -136,7 +136,7 @@ def upsert_stocks(
             status_code=400,
         )
 
-    offers_api.handle_stocks_edition(body.offer_id, edited_stocks_with_update_info)
+    offers_api.handle_stocks_edition(edited_stocks_with_update_info)
 
     return serialization.StocksResponseModel(
         stocks=[serialization.StockResponseModel.from_orm(stock) for stock in upserted_stocks]
