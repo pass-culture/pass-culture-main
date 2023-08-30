@@ -91,7 +91,7 @@ describe('Signup journey', () => {
   }
 
   it('should create offerer', () => {
-    cy.login('pctest.admin93.0@example.com', 'user@AZERTY123')
+    cy.login('eac_1_lieu@example.com', 'user@AZERTY123')
 
     welcomeStep()
     offererStep()
