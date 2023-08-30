@@ -336,4 +336,40 @@ describe('SelectAutocomplete', () => {
       ).toBeInTheDocument()
     })
   })
+
+  it('should clear the input on focus', async () => {
+    render(
+      <Formik
+        initialValues={{
+          departement: ['01', '02'],
+          'search-departement': 'Test search',
+        }}
+        onSubmit={vi.fn()}
+      >
+        <SelectAutocomplete {...{ ...props, multi: true }} />
+      </Formik>
+    )
+    await userEvent.click(screen.getByLabelText('Département'))
+
+    expect(screen.getByLabelText('Département')).toHaveValue('')
+  })
+
+  it('should not clear the input on focus', async () => {
+    render(
+      <Formik
+        initialValues={{
+          departement: ['01', '02'],
+          'search-departement': 'Test search',
+        }}
+        onSubmit={vi.fn()}
+      >
+        <SelectAutocomplete
+          {...{ ...props, multi: true, resetOnOpen: false }}
+        />
+      </Formik>
+    )
+    await userEvent.click(screen.getByLabelText('Département'))
+
+    expect(screen.getByLabelText('Département')).toHaveValue('Test search')
+  })
 })
