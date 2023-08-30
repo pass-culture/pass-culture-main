@@ -1,20 +1,14 @@
 describe('Signup journey', () => {
   const siret = Math.random().toString().substring(2, 16)
+  const offererName = 'MINISTERE DE LA CULTURE'
 
-  const welcomeStep = () => {
-    // Welcome page
-    cy.visit({ method: 'GET', url: '/parcours-inscription' })
-    cy.contains('Commencer').click()
-  }
-
-  const offererStep = () => {
-    // Offerer page
+  beforeEach(() => {
     cy.intercept('GET', `http://localhost:5001/sirene/siret/${siret}`, req =>
       req.reply({
         statusCode: 200,
         body: {
           siret: siret,
-          name: 'MINISTERE DE LA CULTURE',
+          name: offererName,
           active: true,
           address: {
             street: '3 RUE DE VALOIS',
@@ -66,14 +60,25 @@ describe('Signup journey', () => {
           },
         })
     )
+  })
 
+  it('should create offerer', () => {
+    cy.login('eac_1_lieu@example.com', 'user@AZERTY123')
+
+    // Welcome page
+    cy.visit({ method: 'GET', url: '/parcours-inscription' })
+    cy.contains('Commencer').click()
+
+    // Offerer page
     cy.get('#siret').type(siret)
     cy.wait('@getSiret')
     cy.contains('Continuer').click()
     cy.wait('@getSiret')
-  }
 
-  const activityStep = () => {
+    // Authentication page
+    cy.get('#publicName').type('First Offerer')
+    cy.contains('Étape suivante').click()
+
     // Activity page
     cy.get('#venueTypeCode').select('Spectacle vivant')
     cy.get('[name="socialUrls[0]"]').type('https://exemple.com')
@@ -82,26 +87,12 @@ describe('Signup journey', () => {
 
     cy.get('[name="targetCustomer.individual"]').check()
     cy.contains('Étape suivante').click()
-  }
 
-  const validationStep = () => {
     // Validation page
     cy.contains('Valider et créer ma structure').click()
+
+    // Homepage
     cy.url().should('be.equal', 'http://localhost:3001/accueil')
-  }
-
-  it('should create offerer', () => {
-    cy.login('eac_1_lieu@example.com', 'user@AZERTY123')
-
-    welcomeStep()
-    offererStep()
-
-    // Authentication page
-    cy.get('#publicName').type('First Offerer')
-    cy.contains('Étape suivante').click()
-
-    activityStep()
-    validationStep()
 
     cy.logout()
   })
@@ -109,8 +100,14 @@ describe('Signup journey', () => {
   it('should ask offerer attachment to a user and create new offerer', () => {
     cy.login('pctest.pro97.0@example.com', 'user@AZERTY123')
 
-    welcomeStep()
-    offererStep()
+    // Welcome page
+    cy.visit({ method: 'GET', url: '/parcours-inscription' })
+    cy.contains('Commencer').click()
+    // Offerer page
+    cy.get('#siret').type(siret)
+    cy.wait('@getSiret')
+    cy.contains('Continuer').click()
+    cy.wait('@getSiret')
 
     // Offerer attachment
     cy.contains('Ajouter une nouvelle structure').click()
@@ -121,8 +118,20 @@ describe('Signup journey', () => {
     cy.get('#list-addressAutocomplete li').first().click()
     cy.contains('Étape suivante').click()
 
-    activityStep()
-    validationStep()
+    // Activity page
+    cy.get('#venueTypeCode').select('Spectacle vivant')
+    cy.get('[name="socialUrls[0]"]').type('https://exemple.com')
+    cy.contains('Ajouter un lien').click()
+    cy.get('[name="socialUrls[1]"]').type('https://exemple2.com')
+
+    cy.get('[name="targetCustomer.individual"]').check()
+    cy.contains('Étape suivante').click()
+
+    // Validation page
+    cy.contains('Valider et créer ma structure').click()
+
+    // Homepage
+    cy.url().should('be.equal', 'http://localhost:3001/accueil')
 
     cy.logout()
   })
@@ -130,8 +139,14 @@ describe('Signup journey', () => {
   it('should attach user to an existing offerer', () => {
     cy.login('pctest.pro93.0@example.com', 'user@AZERTY123')
 
-    welcomeStep()
-    offererStep()
+    // Welcome page
+    cy.visit({ method: 'GET', url: '/parcours-inscription' })
+    cy.contains('Commencer').click()
+    // Offerer page
+    cy.get('#siret').type(siret)
+    cy.wait('@getSiret')
+    cy.contains('Continuer').click()
+    cy.wait('@getSiret')
 
     // Offerer attachment
     cy.contains('Rejoindre cet espace').click()
@@ -141,9 +156,22 @@ describe('Signup journey', () => {
     )
     cy.get('@dialogConfirmButton').click()
 
+    // Confirmation page
     cy.contains('Accéder à votre espace').click()
 
+    // Homepage
     cy.url().should('be.equal', 'http://localhost:3001/accueil')
+
+    cy.get('#structures')
+      .find('option')
+      .its('length')
+      .then(len => {
+        cy.get('select').select(len - 2)
+      })
+
+    cy.contains(
+      'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
+    ).should('be.visible')
 
     cy.logout()
   })
