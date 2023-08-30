@@ -45,6 +45,8 @@ def adage_jwt_required(route_function):  # type: ignore [no-untyped-def]
                 firstname=adage_jwt_decoded.get("prenom"),
                 email=adage_jwt_decoded.get("mail"),
                 uai=adage_jwt_decoded.get("uai"),
+                lat=adage_jwt_decoded.get("lat"),
+                lon=adage_jwt_decoded.get("lon"),
             )
             kwargs["authenticated_information"] = authenticated_information
             return route_function(*args, **kwargs)

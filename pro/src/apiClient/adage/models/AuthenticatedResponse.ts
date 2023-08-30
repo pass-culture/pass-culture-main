@@ -11,6 +11,8 @@ export type AuthenticatedResponse = {
   email?: string | null;
   institutionCity?: string | null;
   institutionName?: string | null;
+  lat?: number | null;
+  lon?: number | null;
   preferences?: RedactorPreferences | null;
   role: AdageFrontRoles;
   uai?: string | null;

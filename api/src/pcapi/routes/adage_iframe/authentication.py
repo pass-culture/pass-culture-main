@@ -39,5 +39,7 @@ def authenticate(authenticated_information: AuthenticatedInformation) -> Authent
             institutionCity=institution.city if institution else None,
             email=authenticated_information.email,
             preferences=preferences,
+            lat=authenticated_information.lat,
+            lon=authenticated_information.lon,
         )
     return AuthenticatedResponse(role=AdageFrontRoles.READONLY)
