@@ -80,6 +80,7 @@ describe('src | components | pages | Signup | validation', () => {
 
   it('should display a success message when token verification is successful', async () => {
     vi.spyOn(api, 'validateUser').mockResolvedValue()
+    //
     const notifySuccess = vi.fn()
     vi.spyOn(useNotification, 'default').mockImplementation(() => ({
       ...mockUseNotification,
