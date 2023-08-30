@@ -218,6 +218,8 @@ CHARLIE_CANCEL_BOOKING_URL = os.environ.get(
 
 # UBBLE
 UBBLE_API_URL = os.environ.get("UBBLE_API_URL", "https://api.ubble.ai")
+UBBLE_USE_MOCK = True
+UBBLE_MOCK_PATH = "ubble_mock"
 UBBLE_CLIENT_ID = secrets_utils.get("UBBLE_CLIENT_ID", "")
 UBBLE_CLIENT_SECRET = secrets_utils.get("UBBLE_CLIENT_SECRET", "")
 UBBLE_WEBHOOK_SECRET = secrets_utils.get("UBBLE_WEBHOOK_SECRET")

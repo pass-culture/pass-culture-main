@@ -39,4 +39,7 @@ def install_routes(app: Flask) -> None:
     if settings.ENABLE_TEST_USER_GENERATION:
         from .user_generation import blueprint as user_generation_blueprint
 
+    if settings.UBBLE_USE_MOCK:
+        from .ubble_mock import blueprint as ubble_mock_blueprint
+
     filters.install_template_filters(app)

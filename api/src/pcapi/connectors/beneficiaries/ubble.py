@@ -31,6 +31,8 @@ def configure_session() -> requests.Session:
 
 
 def build_url(path: str) -> str:
+    if settings.UBBLE_USE_MOCK:
+        return urllib.parse.urljoin(settings.API_URL, settings.UBBLE_MOCK_PATH, path)
     return urllib.parse.urljoin(settings.UBBLE_API_URL, path)
 
 
@@ -85,16 +87,9 @@ def _parse_ubble_gender(ubble_gender: str | None) -> users_models.GenderEnum | N
 def _extract_useful_content_from_response(
     response: dict,
 ) -> fraud_models.UbbleContent:
-    documents = typing.cast(
-        ubble_fraud_models.UbbleIdentificationDocuments, _get_included_attributes(response, "documents")
-    )
-    document_checks = typing.cast(
-        ubble_fraud_models.UbbleIdentificationDocumentChecks, _get_included_attributes(response, "document-checks")
-    )
-    reference_data_checks = typing.cast(
-        ubble_fraud_models.UbbleIdentificationReferenceDataChecks,
-        _get_included_attributes(response, "reference-data-checks"),
-    )
+    documents = _get_included_attributes(response, "documents")
+    document_checks = _get_included_attributes(response, "document-checks")
+    reference_data_checks = _get_included_attributes(response, "reference-data-checks")
 
     comment = _get_data_attribute(response, "comment")
     identification_id = _get_data_attribute(response, "identification-id")

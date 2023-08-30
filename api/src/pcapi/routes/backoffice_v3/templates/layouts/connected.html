@@ -155,6 +155,7 @@
                   {% if get_setting("ENABLE_TEST_USER_GENERATION") %}
                     {{ menu_section_item("Générateur d'utilisateurs de test", "backoffice_v3_web.generate_user") }}
                   {% endif %}
+                  {{ menu_section_item("Configuration du mock Ubble", "backoffice_v3_web.configure_ubble_response") }}
                 {% endcall %}
               </div>
             </nav>
