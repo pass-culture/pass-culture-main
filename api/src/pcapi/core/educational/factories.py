@@ -303,3 +303,11 @@ class NationalProgramFactory(BaseFactory):
         model = models.NationalProgram
 
     name = factory.Sequence("Dispositif national {}".format)
+
+
+class EducationalRedactorWithFavoriteCollectiveOffer(EducationalRedactorFactory):
+    favoriteCollectiveOffers = factory.List([factory.SubFactory(CollectiveOfferFactory)])
+
+
+class EducationalRedactorWithFavoriteCollectiveOfferTemplate(EducationalRedactorFactory):
+    favoriteCollectiveOfferTemplates = factory.List([factory.SubFactory(CollectiveOfferTemplateFactory)])

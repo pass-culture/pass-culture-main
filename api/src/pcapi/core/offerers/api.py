@@ -358,6 +358,9 @@ def _delete_objects_linked_to_venue(venue_id: int) -> dict:
         educational_models.CollectiveStock.query.filter(
             educational_models.CollectiveStock.collectiveOfferId.in_(collective_offers_id_chunk)
         ).delete(synchronize_session=False)
+        educational_models.CollectiveOfferEducationalRedactor.query.filter(
+            educational_models.CollectiveOfferEducationalRedactor.collectiveOfferId.in_(collective_offers_id_chunk)
+        ).delete(synchronize_session=False)
 
     educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.venueId == venue_id).delete(
         synchronize_session=False
@@ -376,6 +379,11 @@ def _delete_objects_linked_to_venue(venue_id: int) -> dict:
         educational_models.CollectiveOffer.query.filter(
             educational_models.CollectiveOffer.templateId.in_(collective_offer_templates_id_chunk)
         ).update({"templateId": None}, synchronize_session=False)
+        educational_models.CollectiveOfferTemplateEducationalRedactor.query.filter(
+            educational_models.CollectiveOfferTemplateEducationalRedactor.collectiveOfferTemplateId.in_(
+                collective_offer_templates_id_chunk
+            )
+        ).delete(synchronize_session=False)
 
     educational_models.CollectiveOfferTemplate.query.filter(
         educational_models.CollectiveOfferTemplate.venueId == venue_id
