@@ -1,9 +1,12 @@
+import dataclasses
 import datetime
 
 import freezegun
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
+import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional import sendinblue_template_ids
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 
@@ -72,6 +75,50 @@ class PatchDateTest:
         assert event_stock.price == price_category.price
         assert event_stock.priceCategory == price_category
         assert event_stock.quantity == 24
+
+    @freezegun.freeze_time("2022-01-01 12:00:00")
+    def test_sends_email_if_beginning_date_changes_on_edition(self, client):
+        venue, api_key = utils.create_offerer_provider_linked_to_venue(venue_params={"bookingEmail": "venue@email.com"})
+        event_offer = offers_factories.EventOfferFactory(
+            venue=venue,
+            lastProvider=api_key.provider,
+        )
+        event_stock = offers_factories.EventStockFactory(
+            offer=event_offer,
+            quantity=10,
+            price=12,
+            priceCategory=None,
+            bookingLimitDatetime=datetime.datetime(2022, 1, 7),
+            beginningDatetime=datetime.datetime(2022, 1, 12),
+        )
+        price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
+        bookings_factories.BookingFactory(stock=event_stock, user__email="benefeciary@email.com")
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/events/{event_stock.offer.id}/dates/{event_stock.id}",
+            json={
+                "beginningDatetime": "2022-02-01T15:00:00+02:00",
+                "bookingLimitDatetime": "2022-01-20T12:00:00+02:00",
+                "priceCategoryId": price_category.id,
+                "quantity": 24,
+            },
+        )
+
+        # Then
+        assert response.status_code == 200
+        assert event_stock.bookingLimitDatetime == datetime.datetime(2022, 1, 20, 10)
+        assert event_stock.beginningDatetime == datetime.datetime(2022, 2, 1, 13)
+        assert event_stock.price == price_category.price
+        assert event_stock.priceCategory == price_category
+        assert event_stock.quantity == 25
+        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+            sendinblue_template_ids.TransactionalEmail.EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO.value
+        )
+        assert mails_testing.outbox[0].sent_data["To"] == "venue@email.com"
+        assert mails_testing.outbox[1].sent_data["template"] == dataclasses.asdict(
+            sendinblue_template_ids.TransactionalEmail.BOOKING_POSTPONED_BY_PRO_TO_BENEFICIARY.value
+        )
+        assert mails_testing.outbox[1].sent_data["To"] == "benefeciary@email.com"
 
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_update_all_fields_on_date_with_price_category(self, client):
