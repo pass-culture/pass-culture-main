@@ -45,7 +45,7 @@ class EditBoostForm(EditPivotForm):
         ),
     )
 
-    def validate(self, extra_validators=None) -> bool:  # type: ignore [no-untyped-def]
+    def validate(self, extra_validators: dict | None = None) -> bool:
         # do not use this custom validation on DeleteForm
         if not isinstance(self, EditBoostForm):
             return super().validate(extra_validators)
@@ -72,7 +72,7 @@ class EditCGRForm(EditPivotForm):
     )
     password = fields.PCPasswordField("Mot de passe (CGR)")
 
-    def validate(self, extra_validators=None) -> bool:  # type: ignore [no-untyped-def]
+    def validate(self, extra_validators: dict | None = None) -> bool:
         # do not use this custom validation on DeleteForm
         if not isinstance(self, EditCGRForm):
             return super().validate(extra_validators)
@@ -101,7 +101,7 @@ class EditCineOfficeForm(EditPivotForm):
             )
         return account_id
 
-    def validate(self, extra_validators=None) -> bool:  # type: ignore [no-untyped-def]
+    def validate(self, extra_validators: dict | None = None) -> bool:
         # do not use this custom validation on DeleteForm
         if not isinstance(self, EditCineOfficeForm):
             return super().validate(extra_validators)
