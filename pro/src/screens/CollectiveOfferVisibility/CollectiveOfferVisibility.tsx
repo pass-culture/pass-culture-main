@@ -265,6 +265,7 @@ const CollectiveOfferVisibility = ({
                           setTeachersOptions([])
                           formik.setFieldValue('search-teacher', '')
                         }}
+                        resetOnOpen={false}
                         disabled={mode === Mode.READ_ONLY}
                         searchInOptions={(options, pattern) =>
                           searchPatternInOptions(options, pattern, 300)
@@ -288,6 +289,7 @@ const CollectiveOfferVisibility = ({
                   onSearch={() => {
                     onChangeTeacher()
                   }}
+                  resetOnOpen={false}
                   leftIcon={strokeSearch}
                 />
               </FormLayout.Row>
