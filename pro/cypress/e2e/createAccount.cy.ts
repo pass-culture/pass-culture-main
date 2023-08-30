@@ -10,26 +10,10 @@ describe('Account creation', () => {
     cy.get('#countryCode').select('FR')
     cy.get('#phoneNumber').type('612345678')
 
-    // Fill in SIREN
-    cy.intercept(
-      { method: 'GET', url: '/sirene/siren/*' },
-      {
-        address: {
-          city: 'Paris',
-          postalCode: '75001',
-          street: '3 RUE DE VALOIS',
-        },
-        ape_code: '90.03A',
-        name: 'MINISTERE DE LA CULTURE',
-        siren: '306138900',
-      }
-    ).as('sirenApiCall')
-    cy.get('#siren').type('306138900')
-    cy.get('input[name=contactOk]').click() // We must tab out of the SIREN field for async validation to happen
-    cy.wait('@sirenApiCall')
-
     // Submit form
-    cy.intercept({ method: 'POST', url: '/users/signup/pro' }).as('signupUser')
+    cy.intercept({ method: 'POST', url: '/v2/users/signup/pro' }).as(
+      'signupUser'
+    )
     cy.get('button[type=submit]').click()
     cy.wait('@signupUser')
     cy.url().should(
