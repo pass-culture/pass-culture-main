@@ -76,7 +76,7 @@ def create_stock(ean, siret, venue: Venue, product_price, **kwargs):
 
 
 class ProviderAPICronTest:
-    @pytest.mark.usefixtures("db_session")
+
     @freeze_time("2020-10-15 09:00:00")
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_execution(self, mocked_async_index_offer_ids):
@@ -188,7 +188,7 @@ class ProviderAPICronTest:
             )
             synchronize_provider_api.synchronize_venue_provider(venue_provider)
 
-    @pytest.mark.usefixtures("db_session")
+
     class BuildStocksDetailsTest:
         def test_build_stock_details_from_raw_stocks(self):
             # Given

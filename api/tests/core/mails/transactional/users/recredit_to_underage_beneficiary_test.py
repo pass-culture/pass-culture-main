@@ -12,9 +12,6 @@ from pcapi.core.users.api import get_domains_credit
 import pcapi.core.users.factories as users_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class SendinblueSendNewlyEligibleUserEmailTest:
     def test_send_recredit_email_to_underage_beneficiary(self):
         # given

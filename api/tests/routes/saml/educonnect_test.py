@@ -23,9 +23,6 @@ from pcapi.core.users import models as user_models
 import pcapi.notifications.push.testing as push_testing
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def build_date_of_birth_from_age(age: Optional[int]) -> datetime.datetime:
     return datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0)) - relativedelta(years=age, months=1)
 

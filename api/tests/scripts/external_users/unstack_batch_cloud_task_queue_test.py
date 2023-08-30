@@ -9,9 +9,6 @@ from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.scripts.external_users.unstack_batch_cloud_task_queue import unstack_batch_queue
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 @dataclass
 class MockHttpRequest:
     body: bytes

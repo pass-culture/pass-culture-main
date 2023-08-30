@@ -5,9 +5,6 @@ from pcapi import settings
 import pcapi.core.offerers.factories as offerers_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class OffererStatsTest:
     def test_allowed_user(self, client):
         user_offerer = offerers_factories.UserOffererFactory()

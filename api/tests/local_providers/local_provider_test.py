@@ -17,7 +17,7 @@ from pcapi.utils.human_ids import humanize
 from . import provider_test_utils
 
 
-@pytest.mark.usefixtures("db_session")
+
 class UpdateObjectsTest:
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
     def test_iterator_is_called_until_exhausted(self, next_function):
@@ -172,7 +172,7 @@ class UpdateObjectsTest:
         assert new_product.subcategoryId == subcategories.LIVRE_PAPIER.id
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CreateObjectTest:
     def test_returns_object_with_expected_attributes(self):
         # Given
@@ -208,7 +208,7 @@ class CreateObjectTest:
         assert provider_event.type == providers_models.LocalProviderEventType.SyncError
 
 
-@pytest.mark.usefixtures("db_session")
+
 class HandleUpdateTest:
     def test_returns_object_with_expected_attributes(self):
         # Given
@@ -254,7 +254,7 @@ class HandleUpdateTest:
         assert provider_event.type == providers_models.LocalProviderEventType.SyncError
 
 
-@pytest.mark.usefixtures("db_session")
+
 class HandleThumbTest:
     def test_handle_thumb_increments_thumbCount(self):
         # Given
@@ -277,7 +277,7 @@ class HandleThumbTest:
         assert product.thumbCount == 1
 
 
-@pytest.mark.usefixtures("db_session")
+
 class UploadThumbTest:
     def test_first_thumb(self, app):
         # Given

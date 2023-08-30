@@ -7,9 +7,6 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.users import factories as users_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class Returns204Test:
     class WithApiKeyAuthTest:
         def test_when_api_key_is_provided_and_rights_and_regular_offer(self, client):

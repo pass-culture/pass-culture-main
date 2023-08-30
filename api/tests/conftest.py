@@ -20,6 +20,10 @@ from requests import Response
 from requests.auth import _basic_auth_str
 from requests.exceptions import ConnectionError as RequestConnectionError
 import requests_mock
+from sqlalchemy.exc import SAWarning
+from sqlalchemy.orm import scoped_session
+from sqlalchemy.orm import sessionmaker
+
 
 from pcapi import settings
 from pcapi.analytics.amplitude import testing as amplitude_testing
@@ -43,6 +47,7 @@ from pcapi.utils.module_loading import import_string
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
 from tests.serialization.serialization_decorator_test import test_blueprint
 from tests.serialization.serialization_decorator_test import test_bookings_blueprint
+
 
 
 def run_migrations():
@@ -181,88 +186,24 @@ def clear_tests_invoices_bucket():
     finally:
         object_storage_testing.reset_bucket()
 
-
-from flask_sqlalchemy import SignallingSession
-from sqlalchemy import exc as sa_exc
-from sqlalchemy.orm.session import Session
-from sqlalchemy.orm.session import SessionTransaction
-
-
-class TestSession(SignallingSession):
-    def __init__(self, *args, **kwargs):
-        self._pc_open = None
-        self._pc_begin_count = 0
-        super().__init__(*args, **kwargs)
-
-    def _autobegin(self):
-        if not self.autocommit and self._transaction is None:
-            SessionTransaction(self, autobegin=True)
-            self._pc_open = "PCSAVEPOINTTEST"
-            self.execute(f"SAVEPOINT {self._pc_open}")
-            return True
-        return False
-
-    def begin(self, *args, **kwargs):
-        self._pc_begin_count += 1
-        transaction = super().begin(*args, **kwargs)
-        if self._pc_begin_count == 1:
-            self._pc_begin_count += 1
-            return super().begin(nested=True)
-        return transaction
-
-    def rollback(self):
-        if self._pc_begin_count > 1:
-            self._pc_begin_count -= 1
-            super().rollback()
-
-    def commit(self):
-        if self._pc_begin_count > 1:
-            self._pc_begin_count -= 1
-            super().commit()
-
-    def close(self):
-        while self._pc_begin_count > 1:
-            self.rollback()
-        self.execute(f"ROLLBACK TO SAVEPOINT {self._pc_open}")
-        self._pc_open = None
-        self._pc_begin_count = 0
-        super().rollback()
-        return super().close()
-
-
 @pytest.fixture(scope="function", autouse=True)
-def sql_magic(app, _db, pytestconfig, mocker):
-    mocker.patch("flask_sqlalchemy.SignallingSession", TestSession)
-    connection = _db.engine.connect()
+def db_session(_db, request):
+    """Creates a new database session for a test."""
+    connection = db.engine.connect()
     transaction = connection.begin()
 
-    # Bind a session to the transaction. The empty `binds` dict is necessary
-    # when specifying a `bind` option, or else Flask-SQLAlchemy won't scope
-    # the connection properly
-    options = dict(bind=connection, binds={})
-    session = _db.create_scoped_session(options=options)
+    db.session = scoped_session(session_factory=sessionmaker(bind=connection))
 
-    # Whenever the code tries to access a Flask session, use the Session object
-    # instead
-    for mocked_session in pytestconfig._mocked_sessions:
-        mocker.patch(mocked_session, new=session)
+    def teardown():
+        try:
+            transaction.rollback()
+            connection.close()
+            db.session.remove()
+        except SAWarning:
+            pass
 
-    # tres chelou mais ça fait marcher pytest tests/admin/custom_views/user_email_history_view_test.py
-    session.begin(nested=True)
-    session.begin(nested=True)
-    session.begin(nested=True)
-    session.begin(nested=True)
-    session.begin(nested=True)
-    session.begin(nested=True)
-    session.begin(nested=True)
-    session.begin(nested=True)
-    session.begin(nested=True)
-    session.begin(nested=True)
-    session.begin(nested=True)
-    session.begin(nested=True)
-    session.begin(nested=True)
-    yield
-    connection.close()
+    request.addfinalizer(teardown)
+    return db.session
 
 
 def clean_database(f: object) -> object:
@@ -626,7 +567,7 @@ class TestClient:
         if not TestClient.WITH_DOC:
             return
 
-        print("\n===========================================")
+        print("===========================================")
         print("%s :: %s" % (verb, route))
         print("STATUS CODE :: %s" % result.status_code)
 
@@ -638,4 +579,4 @@ class TestClient:
             print("RESPONSE BODY")
             pprint(result.json)
 
-        print("===========================================\n")
+        print("===========================================")

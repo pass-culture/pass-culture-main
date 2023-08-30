@@ -13,7 +13,7 @@ from pcapi.core.users import testing as users_testing
 from pcapi.core.users.models import PhoneValidationStatusType
 
 
-@pytest.mark.usefixtures("db_session")
+
 class ZendeskWebhookTest:
     @pytest.mark.parametrize(
         "phone_number,postal_code", [("0612345678", 55270), ("06 12 34 56 78", None), ("+33612345678", 97600)]

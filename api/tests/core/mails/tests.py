@@ -13,7 +13,7 @@ from pcapi.tasks.serialization import sendinblue_tasks
 from pcapi.utils.module_loading import import_string
 
 
-@pytest.mark.usefixtures("db_session")
+
 class SendinblueBackendTest:
     recipients = ["lucy.ellingson@example.com", "avery.kelly@example.com"]
     bcc_recipients = ["catherine.clark@example.com", "tate.walker@example.com"]
@@ -90,7 +90,7 @@ class SendinblueBackendTest:
         assert result.successful
 
 
-@pytest.mark.usefixtures("db_session")
+
 class ToDevSendinblueBackendTest(SendinblueBackendTest):
     expected_sent_data_to_dev = sendinblue_tasks.SendTransactionalEmailRequest(
         recipients=["dev@example.com"],

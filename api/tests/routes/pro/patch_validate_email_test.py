@@ -11,9 +11,6 @@ import pcapi.core.users.factories as users_factories
 from pcapi.core.users.utils import ALGORITHM_HS_256
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class PatchValidateEmailTest:
     origin_email = "email@example.com"
     new_email = "update_" + origin_email

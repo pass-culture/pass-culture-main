@@ -15,7 +15,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.notifications.push import testing
 
 
-@pytest.mark.usefixtures("db_session")
+
 # Set time to evening so that `send_today_events_notifications_metropolitan_france()`
 # finds test stock in its `13:00 - 24:00` window.
 @freeze_time("20:00:00")
@@ -53,7 +53,7 @@ def test_send_today_events_notifications_only_to_individual_bookings_users():
     assert user_ids == {user1.id, user2.id}
 
 
-@pytest.mark.usefixtures("db_session")
+
 @override_settings(SOON_EXPIRING_BOOKINGS_DAYS_BEFORE_EXPIRATION=3)
 def test_notify_users_bookings_not_retrieved() -> None:
     user = users_factories.BeneficiaryGrant18Factory()

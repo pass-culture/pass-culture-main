@@ -16,9 +16,6 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class SendEventOfferPosponedConfirmationToProEmailTest:
     def test_sends_email_to_pro_user(self):
         # Given

@@ -9,7 +9,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.utils.human_ids import humanize
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns204Test:
     class WhenUserIsAnonymousTest:
         def expect_booking_to_be_used(self, client):
@@ -51,7 +51,7 @@ class Returns204Test:
             assert booking.status is BookingStatus.USED
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns400Test:
     class WhenUserIsAnonymousTest:
         def when_email_is_missing(self, client):
@@ -96,7 +96,7 @@ class Returns400Test:
             ]
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns403Test:  # Forbidden
     def when_user_is_not_attached_to_linked_offerer(self, client):
         # Given
@@ -117,7 +117,7 @@ class Returns403Test:  # Forbidden
         assert booking.status is not BookingStatus.USED
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns404Test:
     class WhenUserIsAnonymousTest:
         def when_booking_does_not_exist(self, client):
@@ -177,7 +177,7 @@ class Returns404Test:
             assert Booking.query.get(booking.id).status is not BookingStatus.USED
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns410Test:
     def when_booking_has_been_cancelled_already(self, client):
         # Given
@@ -194,7 +194,7 @@ class Returns410Test:
         assert Booking.query.get(booking.id).status is not BookingStatus.USED
 
 
-@pytest.mark.usefixtures("db_session")
+
 class GoodByeV1Test:
     @override_features(WIP_ENABLE_API_CONTREMARQUE_V1=False)
     def test_raise_404_if_api_is_deactivated(self, client):

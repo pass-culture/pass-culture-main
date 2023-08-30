@@ -8,7 +8,7 @@ from pcapi.core.subscription import messages
 from pcapi.core.users import factories as users_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 class SubscriptionMessagesTest:
     def test_build_duplicate_error_message_duplicate_user_ine(self):
         # Duplicate user

@@ -15,9 +15,6 @@ from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class Returns200Test:
     def test_when_user_has_rights_and_regular_offer(self, client):
         # Given

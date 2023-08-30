@@ -12,7 +12,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns200Test:
     def test_basics(self, client):
         # Given
@@ -168,7 +168,7 @@ class Returns200Test:
         assert response.json["isActive"] is False
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns403Test:
     def test_access_by_unauthorized_pro_user(self, client):
         # Given
@@ -184,7 +184,7 @@ class Returns403Test:
         assert response.status_code == 403
 
 
-@pytest.mark.usefixtures("db_session")
+
 class GetCollectiveOfferRequestTest:
     def test_get_offer_request(self, client):
         pro_user = users_factories.ProFactory()

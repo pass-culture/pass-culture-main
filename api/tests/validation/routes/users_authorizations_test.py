@@ -10,7 +10,7 @@ from pcapi.validation.routes.users_authorizations import check_user_can_validate
 
 
 class CheckUserCanValidateBookingTest:
-    @pytest.mark.usefixtures("db_session")
+
     def test_check_user_offerer_can_validate_bookings(self):
         user_offerer = offerers_factories.UserOffererFactory()
         user = user_offerer.user
@@ -30,7 +30,7 @@ class CheckUserCanValidateBookingTest:
 
 
 class CheckUserCanValidateBookingV2Test:
-    @pytest.mark.usefixtures("db_session")
+
     def test_ok_if_user_offerer(self):
         user_offerer = offerers_factories.UserOffererFactory()
         user = user_offerer.user
@@ -47,7 +47,7 @@ class CheckUserCanValidateBookingV2Test:
         ]
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CheckApiKeyAllowsToValidateBookingTest:
     def test_ok_if_api_key_is_related_to_offerer(self):
         key = offerers_factories.ApiKeyFactory(secret="foo")

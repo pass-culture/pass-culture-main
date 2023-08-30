@@ -10,9 +10,6 @@ import pcapi.core.users.factories as users_factories
 from pcapi.settings import PRO_URL
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class SendWelcomeToProEmailTest:
     def test_sends_email_to_pro_user(self):
         # Given

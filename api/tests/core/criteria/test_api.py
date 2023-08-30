@@ -9,9 +9,6 @@ import pcapi.core.offers.models as offers_models
 from pcapi.models import db
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def test_offers_update():
     """
     Test that a bulk criteria update creates the expected OfferCriterion

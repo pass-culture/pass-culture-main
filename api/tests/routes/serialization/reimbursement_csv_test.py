@@ -27,7 +27,7 @@ in_two_days = today + timedelta(days=2)
 reimbursement_period = (today, in_two_days)
 
 
-@pytest.mark.usefixtures("db_session")
+
 @mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
 class ReimbursementDetailsTest:
     def test_reimbursement_details_as_csv_individual_booking(self) -> None:
@@ -182,7 +182,7 @@ class ReimbursementDetailsTest:
         assert row[21] == ""
 
 
-@pytest.mark.usefixtures("db_session")
+
 @mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
 def test_generate_reimbursement_details_csv() -> None:
     # given
@@ -243,7 +243,7 @@ def test_generate_reimbursement_details_csv() -> None:
     )
 
 
-@pytest.mark.usefixtures("db_session")
+
 @mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
 def test_find_all_offerer_reimbursement_details() -> None:
     offerer = offerers_factories.OffererFactory()
@@ -287,7 +287,7 @@ def test_find_all_offerer_reimbursement_details() -> None:
     assert len(reimbursement_details) == 6
 
 
-@pytest.mark.usefixtures("db_session")
+
 @mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
 class CollectiveReimbursementDetailsTest:
     def test_find_all_offerer_reimbursement_details_on_collective(self) -> None:

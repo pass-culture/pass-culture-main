@@ -10,9 +10,6 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.users import factories as users_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class ProUpdateEmailTest:
     origin_email = "email@example.com"
     new_email = "updated_" + origin_email

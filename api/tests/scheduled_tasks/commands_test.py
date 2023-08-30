@@ -19,9 +19,6 @@ from pcapi.scheduled_tasks.commands import _send_notification_favorites_not_book
 from pcapi.scheduled_tasks.commands import send_email_reminder_tomorrow_event_to_beneficiaries
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class SendEmailReminderTomorrowEventToBeneficiariesTest:
     @patch(
         "pcapi.core.mails.transactional.bookings.booking_event_reminder_to_beneficiary.get_booking_event_reminder_to_beneficiary_email_data"

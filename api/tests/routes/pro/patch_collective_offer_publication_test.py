@@ -9,7 +9,7 @@ from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns204Test:
     def expect_offer_to_be_approved(self, client):
         stock = educational_factories.CollectiveStockFactory()
@@ -50,7 +50,7 @@ class Returns204Test:
         assert not response.json["isActive"]
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns403Test:
     def expect_offer_to_be_approved(self, client):
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.DRAFT)
@@ -65,7 +65,7 @@ class Returns403Test:
         assert offer.validation == OfferValidationStatus.DRAFT
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns401Test:
     def expect_offer_to_be_approved(self, client):
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.DRAFT)

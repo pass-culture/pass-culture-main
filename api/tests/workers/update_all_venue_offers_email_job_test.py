@@ -5,7 +5,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.workers.update_all_venue_offers_email_job import update_all_venue_offers_email_job
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_update_all_venue_offers_email_job():
     venue = offerers_factories.VenueFactory(bookingEmail="old.venue@email.com")
     offer1 = offers_factories.OfferFactory(bookingEmail="old.offer@email.com", venue=venue)

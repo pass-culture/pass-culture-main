@@ -17,9 +17,6 @@ from pcapi.repository import repository
 from pcapi.utils import human_ids
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class ProductModelTest:
     def test_thumb_url(self):
         product = factories.ProductFactory(thumbCount=1)

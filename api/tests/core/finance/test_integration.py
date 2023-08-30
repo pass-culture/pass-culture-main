@@ -14,9 +14,6 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.models import db
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def test_integration_full_workflow(css_font_http_request_mock):
     # A booking is manually marked as used. Check the whole workflow
     # until the invoice is generated.

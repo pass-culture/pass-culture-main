@@ -9,9 +9,6 @@ from pcapi.core.testing import assert_no_duplicated_queries
 import pcapi.core.users.factories as users_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def test_response_serialization(client):
     user_offerer = offerers_factories.UserOffererFactory()
     venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)

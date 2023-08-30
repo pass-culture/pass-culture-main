@@ -40,7 +40,7 @@ class GetSirenTest:
 
 
 class GetSiretTest:
-    @pytest.mark.usefixtures("db_session")
+
     def test_siret_ok(self, client):
         pro = users_factories.ProFactory()
         siret = "12345678900001"
@@ -62,7 +62,7 @@ class GetSiretTest:
             "legal_category_code": "1000",
         }
 
-    @pytest.mark.usefixtures("db_session")
+
     @mock.patch("pcapi.connectors.sirene.get_siret", get_siret_raises)
     def test_siret_error(self, client):
         pro = users_factories.ProFactory()

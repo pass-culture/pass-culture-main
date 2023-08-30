@@ -31,7 +31,7 @@ NOW = datetime.utcnow()
 AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=ELIGIBILITY_AGE_18)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class RunTest:
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_should_retrieve_applications_from_new_procedure_number(
@@ -135,7 +135,7 @@ class RunTest:
         activate_beneficiary_if_no_missing_step.assert_called_with(user=applicant)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class RunIntegrationTest:
     EMAIL = "john.doe@example.com"
     BENEFICIARY_BIRTH_DATE = date.today() - timedelta(days=6752)  # ~18.5 years
@@ -599,7 +599,7 @@ class RunIntegrationTest:
         assert users_models.UserRole.BENEFICIARY in user.roles
 
 
-@pytest.mark.usefixtures("db_session")
+
 class GraphQLSourceProcessApplicationTest:
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_process_accepted_application_user_already_created(self, get_applications_with_details):

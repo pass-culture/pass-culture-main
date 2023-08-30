@@ -11,9 +11,6 @@ from pcapi.core.mails.transactional.educational.eac_new_request_made_by_redactor
 )
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class SendEacNewBookingEmailToProTest:
     @freeze_time("2019-11-26 18:29:20.891028")
     @patch("pcapi.core.mails.transactional.educational.eac_new_request_made_by_redactor_to_pro.mails")

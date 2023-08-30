@@ -5,7 +5,7 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_venue_has_known_allocine_id(client):
     # Given
     user = users_factories.UserFactory()
@@ -37,7 +37,7 @@ def test_venue_has_known_allocine_id(client):
     } in response.json
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_venue_has_no_allocine_id(client):
     # Given
     user = users_factories.UserFactory(email="user@example.com")
@@ -62,7 +62,7 @@ def test_venue_has_no_allocine_id(client):
     assert allocine_provider.id not in [p["id"] for p in response.json]
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_venue_has_offerer_provider(client):
     # Given
     name = "MangoMusic"
@@ -97,7 +97,7 @@ def test_venue_has_offerer_provider(client):
     ]
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_venue_does_not_exist(client):
     user = users_factories.UserFactory()
 
@@ -106,7 +106,7 @@ def test_venue_does_not_exist(client):
     assert response.status_code == 404
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_user_is_not_logged_in(client):
     response = client.get("/providers/1234")
 

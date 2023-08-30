@@ -8,9 +8,6 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.testing import assert_no_duplicated_queries
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def test_send_withdrawalchanged_email():
     with assert_no_duplicated_queries():
         send_booking_withdrawal_updated(

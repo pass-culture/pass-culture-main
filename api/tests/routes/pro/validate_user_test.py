@@ -7,7 +7,7 @@ import pcapi.core.offerers.factories as offerers_factories
 from tests.conftest import TestClient
 
 
-@pytest.mark.usefixtures("db_session")
+
 @patch("pcapi.core.users.api.validate_pro_user_email")
 def test_validate_user_token(validate_pro_user_email, app):
     user_offerer = offerers_factories.UserOffererFactory(user__validationToken="token")
@@ -18,7 +18,7 @@ def test_validate_user_token(validate_pro_user_email, app):
     validate_pro_user_email.assert_called_once_with(user_offerer.user)
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_fail_if_unknown_token(app):
     client = TestClient(app.test_client())
     response = client.patch("/validate/user/unknown-token")

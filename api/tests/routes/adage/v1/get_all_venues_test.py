@@ -2,7 +2,7 @@ from pcapi.core.offerers import factories as offerer_factories
 
 
 class Returns200Test:
-    def test_get_all_venues_serialization(self, client, db_session) -> None:
+    def test_get_all_venues_serialization(self, client) -> None:
         venue1 = offerer_factories.CollectiveVenueFactory(
             name="a beautiful name",
             siret=None,
@@ -59,7 +59,7 @@ class Returns200Test:
             ]
         }
 
-    def test_get_all_venues_pagination(self, client, db_session) -> None:
+    def test_get_all_venues_pagination(self, client) -> None:
         first_venues = offerer_factories.VenueFactory.create_batch(2, isPermanent=True)
         offerer_factories.VenueFactory(isVirtual=True, siret=None, isPermanent=True)
         last_venues = offerer_factories.VenueFactory.create_batch(8, isPermanent=True)

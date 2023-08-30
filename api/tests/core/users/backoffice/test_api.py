@@ -8,9 +8,6 @@ import pcapi.core.users.backoffice.api as backoffice_api
 from pcapi.models import db
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 @pytest.fixture(scope="function", name="permissions")
 def permissions_fixture() -> list[perm_models.Permissions]:
     return perm_models.Permission.query.order_by(perm_models.Permission.name).limit(5).all()

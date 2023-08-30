@@ -8,9 +8,6 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.mails.transactional.educational.eac_new_booking_to_pro import send_eac_new_booking_email_to_pro
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class SendEacNewBookingEmailToProTest:
     @freeze_time("2019-11-26 18:29:20.891028")
     @patch("pcapi.core.mails.transactional.educational.eac_new_booking_to_pro.mails")

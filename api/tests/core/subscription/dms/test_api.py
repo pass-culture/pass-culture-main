@@ -20,6 +20,7 @@ from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
+from pcapi.models import db
 import pcapi.notifications.push.testing as push_testing
 from pcapi.repository import repository
 
@@ -30,7 +31,7 @@ from tests.scripts.beneficiary.fixture import make_single_application
 AGE18_ELIGIBLE_BIRTH_DATE = datetime.date.today() - relativedelta(years=ELIGIBILITY_AGE_18)
 
 
-@pytest.mark.usefixtures("db_session")
+
 @freezegun.freeze_time("2022-11-02")
 class DMSOrphanSubsriptionTest:
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -80,7 +81,7 @@ class DMSOrphanSubsriptionTest:
         assert dms_orphan is None
 
 
-@pytest.mark.usefixtures("db_session")
+
 class HandleDmsApplicationTest:
     id_piece_number_not_accepted_message = (
         "Bonjour,\n"
@@ -141,7 +142,7 @@ class HandleDmsApplicationTest:
 
     @patch("pcapi.core.subscription.dms.api._process_in_progress_application")
     @freezegun.freeze_time("2016-11-02")
-    def test_multiple_call_for_same_application(self, mock_process_in_progress, db_session):
+    def test_multiple_call_for_same_application(self, mock_process_in_progress):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime(2000, 1, 1), roles=[users_models.UserRole.UNDERAGE_BENEFICIARY]
         )
@@ -170,7 +171,7 @@ class HandleDmsApplicationTest:
         dms_subscription_api.handle_dms_application(dms_response)
 
         mock_process_in_progress.assert_not_called()
-        db_session.refresh(dms_fraud_check)
+        db.session.refresh(dms_fraud_check)
         assert (
             dms_fraud_check.source_data().get_latest_modification_datetime()
             == dms_response.latest_modification_datetime
@@ -406,7 +407,7 @@ class HandleDmsApplicationTest:
 
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
     @freezegun.freeze_time("2022-05-13")
-    def test_correcting_application_resets_errors(self, mock_send_user_message, db_session):
+    def test_correcting_application_resets_errors(self, mock_send_user_message):
         user = users_factories.UserFactory(email="john.stiles@example.com")
         dms_response = make_parsed_graphql_application(
             application_number=1,
@@ -436,7 +437,7 @@ class HandleDmsApplicationTest:
 
         dms_subscription_api.handle_dms_application(dms_response)
 
-        db_session.refresh(fraud_check)
+        db.session.refresh(fraud_check)
 
         assert fraud_check.reasonCodes == []
         assert fraud_check.reason is None
@@ -463,7 +464,7 @@ class HandleDmsApplicationTest:
         }
 
 
-@pytest.mark.usefixtures("db_session")
+
 class HandleDmsAnnotationsTest:
     @pytest.mark.parametrize(
         "field_errors,birth_date_error,expected_annotation",
@@ -556,7 +557,7 @@ class HandleDmsAnnotationsTest:
         assert f"[DMS] No annotation defined for procedure {dms_content.procedure_number}" in caplog.text
 
 
-@pytest.mark.usefixtures("db_session")
+
 class DmsSubscriptionMessageTest:
     user_email = "déesse@dms.com"
 
@@ -760,7 +761,7 @@ class DmsSubscriptionMessageTest:
         )
 
 
-@pytest.mark.usefixtures("db_session")
+
 class IsFraudCheckUpdToDateUnitTest:
     def test_is_fraud_check_up_to_date_empty(self):
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
@@ -813,7 +814,7 @@ class IsFraudCheckUpdToDateUnitTest:
         )
 
 
-@pytest.mark.usefixtures("db_session")
+
 class ShouldImportDmsApplicationTest:
     def setup_method(self):
         self.user_email = "john.stiles@example.com"

@@ -6,9 +6,6 @@ from pcapi.core.testing import override_settings
 from tests.conftest import TestClient
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class CheckClientVersionTest:
     def test_with_invalid_version(self, app):
         test_client = TestClient(app.test_client())

@@ -6,7 +6,7 @@ from pcapi.core.offers import factories as offers_factories
 from . import utils
 
 
-@pytest.mark.usefixtures("db_session")
+
 class DeleteDateTest:
     def test_delete_date(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()

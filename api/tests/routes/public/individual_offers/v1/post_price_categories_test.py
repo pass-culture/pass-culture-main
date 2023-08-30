@@ -9,7 +9,7 @@ from pcapi.core.offers import models as offers_models
 from . import utils
 
 
-@pytest.mark.usefixtures("db_session")
+
 class PostPriceCategoriesTest:
     def test_create_price_categories(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()

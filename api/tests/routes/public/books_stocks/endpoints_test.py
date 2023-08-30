@@ -7,9 +7,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 
-
-pytestmark = pytest.mark.usefixtures("db_session")
-
 NOT_SENT = object()
 
 

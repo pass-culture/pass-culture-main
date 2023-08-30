@@ -14,9 +14,6 @@ import pcapi.core.users.factories as users_factories
 from pcapi.routes.serialization import serialize
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class Returns200Test:
     def test_patch_offer(self, app, client):
         # Given

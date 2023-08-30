@@ -10,7 +10,7 @@ import pcapi.notifications.push.testing as push_testing
 
 
 class Returns204Test:
-    @pytest.mark.usefixtures("db_session")
+
     def test_should_returns_204_with_cancellation_allowed(self, client):
         # Given
         stock = offers_factories.EventStockFactory(offer__name="Chouette concert")
@@ -40,7 +40,7 @@ class Returns204Test:
             "can_be_asynchronously_retried": False,
         }
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_should_returns_204_with_lowercase_token(self, client):
         # Given
         booking = bookings_factories.BookingFactory()
@@ -58,12 +58,12 @@ class Returns204Test:
 
 
 class Returns401Test:
-    @pytest.mark.usefixtures("db_session")
+
     def when_not_authenticated_used_api_key_or_login(self, client):
         response = client.patch("/v2/bookings/cancel/token/TOKEN")
         assert response.status_code == 401
 
-    @pytest.mark.usefixtures("db_session")
+
     def when_giving_an_api_key_that_does_not_exists(self, client):
         headers = {"Authorization": "Bearer WrongApiKey1234567"}
         response = client.patch("/v2/bookings/cancel/token/TOKEN", headers=headers)
@@ -71,7 +71,7 @@ class Returns401Test:
 
 
 class Returns403Test:
-    @pytest.mark.usefixtures("db_session")
+
     def when_the_api_key_is_not_linked_to_the_right_offerer(self, client):
         # Given
         booking = bookings_factories.BookingFactory()
@@ -87,7 +87,7 @@ class Returns403Test:
         assert response.status_code == 403
         assert response.json["user"] == ["Vous n'avez pas les droits suffisants pour annuler cette réservation."]
 
-    @pytest.mark.usefixtures("db_session")
+
     def when_the_logged_user_has_not_rights_on_offerer(self, client):
         # Given
         booking = bookings_factories.BookingFactory()
@@ -103,7 +103,7 @@ class Returns403Test:
             "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
         ]
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_should_prevent_a_used_booking_from_being_cancelled(self, client):
         # Given
         booking = bookings_factories.UsedBookingFactory()
@@ -122,7 +122,7 @@ class Returns403Test:
 
 
 class Returns404Test:
-    @pytest.mark.usefixtures("db_session")
+
     def when_the_booking_does_not_exists(self, client):
         user = users_factories.ProFactory()
         url = "/v2/bookings/cancel/token/FAKETOKEN"
@@ -132,7 +132,7 @@ class Returns404Test:
 
 
 class Returns410Test:
-    @pytest.mark.usefixtures("db_session")
+
     def test_cancel_a_booking_already_cancelled(self, client):
         # Given
         booking = bookings_factories.CancelledBookingFactory()

@@ -44,7 +44,7 @@ DEFAULT_API_RESULT = [
 ]
 
 
-@pytest.mark.usefixtures("db_session")
+
 @freeze_time("2023-11-26 18:29:20.891028")
 class UpdateDmsStatusTest:
     def test_import_empty_db(self):

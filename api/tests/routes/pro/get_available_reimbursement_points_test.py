@@ -6,9 +6,6 @@ from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class Returns200Test:
     def test_available_reimbursement_points_sorted_by_common_name(self, client):
         user_offerer = offerers_factories.UserOffererFactory(

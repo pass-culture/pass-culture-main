@@ -11,9 +11,6 @@ from pcapi.models import offer_mixin
 
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
 
-
-pytestmark = pytest.mark.usefixtures("db_session")
-
 stock_date = datetime(2021, 5, 15)
 educational_year_dates = {"start": datetime(2020, 9, 1), "end": datetime(2021, 8, 31)}
 

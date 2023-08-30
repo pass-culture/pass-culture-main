@@ -9,10 +9,7 @@ from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
 
-
-@pytest.mark.usefixtures("db_session")
 class Returns200Test:
     @freeze_time("2022-05-01 15:00:00")
     def test_get_collective_booking(self, client):
@@ -107,7 +104,7 @@ class Returns200Test:
         }
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns404Test:
     @freeze_time("2022-05-01 15:00:00")
     def test_when_booking_not_found(self, client):
@@ -119,7 +116,7 @@ class Returns404Test:
         assert response.status_code == 404
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns403Test:
     @freeze_time("2022-05-01 15:00:00")
     def test_when_no_rights(self, client):

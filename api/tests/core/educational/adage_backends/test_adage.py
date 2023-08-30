@@ -18,7 +18,7 @@ ADAGE_RESPONSE_FOR_INSTITUTION_WITHOUT_EMAIL = {
 }
 
 
-@pytest.mark.usefixtures("db_session")
+
 class AdageHttpClientTest:
     @override_settings(ADAGE_API_URL=MOCK_API_URL)
     def test_notify_prebooking_success_if_201(self, requests_mock):

@@ -17,9 +17,6 @@ from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdi
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 @freeze_time("2020-11-17 15:00:00")
 class Return200Test:
     def test_edit_collective_stock(self, client):

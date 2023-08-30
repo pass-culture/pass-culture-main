@@ -6,7 +6,7 @@ from pcapi.core.educational.models import CollectiveOfferTemplate
 import pcapi.core.offerers.factories as offerers_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns200Test:
     def test_create_collective_offer_template_with_educational_price_detail(self, client):
         # Given
@@ -58,7 +58,7 @@ class Returns200Test:
         assert template.bookingEmails == offer.bookingEmails
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns400Test:
     def test_create_collective_offer_template_from_offer_with_stock(self, client):
         # Given
@@ -77,7 +77,7 @@ class Returns400Test:
         assert CollectiveOffer.query.filter_by(id=offer.id).one_or_none() is not None
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns403Test:
     def test_create_collective_offer_template_random_user(self, client):
         # Given
@@ -96,7 +96,7 @@ class Returns403Test:
         assert CollectiveOffer.query.filter_by(id=offer.id).one_or_none() is not None
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns404Test:
     def test_create_collective_offer_template_without_collective_offer(self, client):
         # Given

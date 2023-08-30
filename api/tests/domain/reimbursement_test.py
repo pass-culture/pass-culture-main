@@ -56,7 +56,7 @@ def create_event_booking(quantity=1, price=10, user=None, date_used=None):
     return bookings_factories.UsedBookingFactory(stock=stock, quantity=quantity, **booking_kwargs)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class DigitalThingsReimbursementTest:
     def test_apply(self):
         booking = create_digital_booking()
@@ -75,7 +75,7 @@ class DigitalThingsReimbursementTest:
         assert not rule.is_relevant(create_event_booking(), cumulative_revenue=0)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class EducationalOffersReimbursementTest:
     def test_apply(self):
         booking = educational_factories.CollectiveBookingFactory(collectiveStock__price=3000)
@@ -91,7 +91,7 @@ class EducationalOffersReimbursementTest:
         assert not rule.is_relevant(individual_booking, cumulative_revenue=0)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class PhysicalOffersReimbursementTest:
     def test_apply(self):
         booking = create_non_digital_thing_booking(price=10, quantity=2)
@@ -110,7 +110,7 @@ class PhysicalOffersReimbursementTest:
         assert rule.is_relevant(cinema_card_booking, cumulative_revenue=0)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000Test:
     rule = reimbursement.LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000()
 
@@ -133,7 +133,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween20000And40000Test:
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000Test:
     rule = reimbursement.LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000()
 
@@ -156,7 +156,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueBetween40000And150000Test:
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class LegacyPreSeptember2021ReimbursementRateByVenueAbove150000Test:
     rule = reimbursement.LegacyPreSeptember2021ReimbursementRateByVenueAbove150000()
 
@@ -177,7 +177,7 @@ class LegacyPreSeptember2021ReimbursementRateByVenueAbove150000Test:
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class ReimbursementRateByVenueBetween20000And40000Test:
     rule = reimbursement.ReimbursementRateByVenueBetween20000And40000()
 
@@ -200,7 +200,7 @@ class ReimbursementRateByVenueBetween20000And40000Test:
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class ReimbursementRateByVenueBetween40000And150000Test:
     rule = reimbursement.ReimbursementRateByVenueBetween40000And150000()
 
@@ -223,7 +223,7 @@ class ReimbursementRateByVenueBetween40000And150000Test:
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class ReimbursementRateByVenueAbove150000Test:
     rule = reimbursement.ReimbursementRateByVenueAbove150000()
 
@@ -244,7 +244,7 @@ class ReimbursementRateByVenueAbove150000Test:
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class ReimbursementRateForBookBelow20000Test:
     rule = reimbursement.ReimbursementRateForBookBelow20000()
 
@@ -272,7 +272,7 @@ class ReimbursementRateForBookBelow20000Test:
         )
 
 
-@pytest.mark.usefixtures("db_session")
+
 class ReimbursementRateForBookAbove20000Test:
     rule = reimbursement.ReimbursementRateForBookAbove20000()
 
@@ -361,7 +361,7 @@ class ReimbursementRuleIsActiveTest:
         assert not rule.is_active(self.booking)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CustomRuleFinderTest:
     def test_offer_rule(self):
         yesterday = datetime.utcnow() - timedelta(days=1)

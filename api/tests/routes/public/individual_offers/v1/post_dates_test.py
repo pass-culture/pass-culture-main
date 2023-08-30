@@ -11,7 +11,7 @@ from pcapi.core.offers import models as offers_models
 from . import utils
 
 
-@pytest.mark.usefixtures("db_session")
+
 class PostDatesTest:
     @freezegun.freeze_time("2022-01-01 10:00:00")
     def test_new_dates_are_added(self, client):

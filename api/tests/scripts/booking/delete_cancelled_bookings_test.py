@@ -10,7 +10,7 @@ from pcapi.core.finance.models import PricingStatus
 from pcapi.scripts.booking.delete_cancelled_booking import delete_cancelled_booking
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_should_not_delete_booking_with_reimbursement():
     # Given
     value_date = datetime.datetime.utcnow()
@@ -29,7 +29,7 @@ def test_should_not_delete_booking_with_reimbursement():
     assert bookings_models.Booking.query.count() == 1
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_should_delete_booking_without_reimbursement():
     # Given
     booking = bookings_factories.BookingFactory(status=bookings_models.BookingStatus.CANCELLED)
@@ -42,7 +42,7 @@ def test_should_delete_booking_without_reimbursement():
     assert bookings_models.Booking.query.count() == 0
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_should_delete_bookings_without_reimbursement_when_stop_on_exception_is_false():
     # Given
     value_date = datetime.datetime.utcnow()

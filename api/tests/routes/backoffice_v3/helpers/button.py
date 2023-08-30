@@ -8,7 +8,6 @@ import pcapi.core.users.models as users_models
 
 
 pytestmark = [
-    pytest.mark.usefixtures("db_session"),
     pytest.mark.backoffice_v3,
 ]
 

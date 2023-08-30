@@ -7,9 +7,6 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation import (
 )
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class SendOffererDrivenCancellationEmailToOffererTest:
     def test_should_send_cancellation_by_offerer_email_to_offerer(self):
         # Given

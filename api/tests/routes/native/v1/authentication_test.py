@@ -34,9 +34,6 @@ from pcapi.utils import crypto
 from tests.scripts.beneficiary.fixture import make_single_application
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def test_account_is_active_account_state(client, caplog):
     data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
     users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=True)

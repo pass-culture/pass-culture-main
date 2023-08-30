@@ -8,7 +8,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 
 
-@pytest.mark.usefixtures("db_session")
+
 class DmsApiTest:
     def test_create_fraud_check(self):
         user = users_factories.UserFactory()

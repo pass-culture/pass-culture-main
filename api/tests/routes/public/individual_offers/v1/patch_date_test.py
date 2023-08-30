@@ -10,7 +10,7 @@ from pcapi.core.offers import factories as offers_factories
 from . import utils
 
 
-@pytest.mark.usefixtures("db_session")
+
 class PatchDateTest:
     def test_find_no_stock_returns_404(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()

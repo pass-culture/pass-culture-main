@@ -11,9 +11,6 @@ import pcapi.core.users.factories as users_factories
 from tests.conftest import TestClient
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class Returns200Test:
     def should_filter_by_venue_when_user_is_admin_and_request_specific_venue_with_no_rights_on_it(self, client):
         admin = users_factories.AdminFactory()
@@ -244,7 +241,7 @@ class Returns200Test:
         )
 
     @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
-    def should_filter_offers_by_given_category_id(self, mocked_list_offers, app, db_session):
+    def should_filter_offers_by_given_category_id(self, mocked_list_offers, app):
         # given
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -319,7 +316,7 @@ class Returns200Test:
 
 
 class Returns404Test:
-    def should_return_no_offers_when_user_has_no_rights_on_requested_venue(self, app, db_session):
+    def should_return_no_offers_when_user_has_no_rights_on_requested_venue(self, app):
         # Given
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
@@ -332,7 +329,7 @@ class Returns404Test:
         assert response.status_code == 200
         assert response.json == []
 
-    def should_return_no_offers_when_user_offerer_is_not_validated(self, app, db_session):
+    def should_return_no_offers_when_user_offerer_is_not_validated(self, app):
         # Given
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()

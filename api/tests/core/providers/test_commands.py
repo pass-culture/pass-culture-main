@@ -7,9 +7,6 @@ from pcapi.core.providers import commands
 from pcapi.core.providers import factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class SynchronizeVenueProvidersApisTest:
     @patch("pcapi.local_providers.provider_manager.synchronize_venue_providers")
     def test_synchronize_venue_providers_apis(self, mock_synchronize_venue_providers):

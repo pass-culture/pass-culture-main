@@ -23,7 +23,6 @@ from .helpers.post import PostEndpointHelper
 
 
 pytestmark = [
-    pytest.mark.usefixtures("db_session"),
     pytest.mark.backoffice_v3,
 ]
 

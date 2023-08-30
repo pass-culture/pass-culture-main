@@ -10,9 +10,6 @@ import pcapi.core.educational.utils as educational_utils
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class CreateCollectiveRequestTest:
     endpoint = "adage_iframe.create_collective_request"
 

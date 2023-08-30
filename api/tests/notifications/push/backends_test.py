@@ -5,9 +5,6 @@ from pcapi.notifications.push import update_user_attributes
 from pcapi.notifications.push.backends.batch import BatchAPI
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def test_update_user_attributes():
     user_id = 123
     attributes = {"param": "value"}

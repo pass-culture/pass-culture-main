@@ -14,7 +14,7 @@ from tests.scripts.beneficiary import fixture
 
 
 class DmsImportTest:
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.get_applications_with_details")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.send_user_message")
     def test_initialize_latest_import_datetime(
@@ -59,7 +59,7 @@ class DmsImportTest:
         assert latest_import_record.procedureId == 1
         assert latest_import_record.latestImportDatetime == datetime.datetime(2020, 10, 1, 18, 10, 0)
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.get_applications_with_details")
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.send_user_message")
     def test_second_import_of_same_procedure_updates_latest_import_datetime(
@@ -97,7 +97,7 @@ class DmsImportTest:
         assert latest_import_record.latestImportDatetime == datetime.datetime(2020, 10, 1, 19, 0, 0)
         mock_get_applications_with_details.assert_called_once_with(1, since=datetime.datetime(2020, 10, 1, 15, 0))
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_is_cancelled_if_another_is_already_in_progress(self, mock_get_applications_with_details):
         dms_factories.LatestDmsImportFactory(procedureId=1, isProcessing=True)
@@ -107,7 +107,7 @@ class DmsImportTest:
         assert dms_models.LatestDmsImport.query.count() == 1
         mock_get_applications_with_details.assert_not_called()
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_latest_import_datetime_stays_the_same_when_no_import_happened(self, mock_get_applications_with_details):
         dms_factories.LatestDmsImportFactory(procedureId=1, latestImportDatetime=datetime.datetime(2020, 10, 1, 15, 0))

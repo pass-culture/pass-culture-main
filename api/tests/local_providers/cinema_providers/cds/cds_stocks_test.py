@@ -25,7 +25,7 @@ import tests
 from . import fixtures
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CDSStocksTest:
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
@@ -530,7 +530,7 @@ class CDSStocksTest:
         assert get_voucher_type_adapter.call_count == 2
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CDSStocksQuantityTest:
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")

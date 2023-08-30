@@ -14,7 +14,7 @@ from pcapi.scripts.fill_fraud_review_eligibility_type import add_eligibility_to_
 from pcapi.scripts.fill_fraud_review_eligibility_type import add_eligibility_to_reviews_based_on_deposit
 
 
-@pytest.mark.usefixtures("db_session")
+
 class FillFraudReviewEligibilityTypeTest:
     @pytest.mark.parametrize(
         "deposit_type",

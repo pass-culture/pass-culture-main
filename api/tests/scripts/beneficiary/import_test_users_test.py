@@ -20,7 +20,7 @@ Pro,Pierre,pro@example.com,0123456789,06,06000,2000-01-01,PRO,111222333,PierrePr
 """
 
 
-@pytest.mark.usefixtures("db_session")
+
 class ReadFileTest:
     @pytest.mark.parametrize("update_if_exists", [True, False])
     def test_read_file(self, update_if_exists):

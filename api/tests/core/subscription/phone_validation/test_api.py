@@ -12,7 +12,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 
 
-@pytest.mark.usefixtures("db_session")
+
 class EnsurePhoneNumberUnicityTest:
     def test_send_phone_code_error_if_validated_by_beneficiary(self):
         users_factories.EligibleGrant18Factory(
@@ -78,7 +78,7 @@ class EnsurePhoneNumberUnicityTest:
         assert success_check.reasonCodes is None
 
 
-@pytest.mark.usefixtures("db_session")
+
 class SendSMSTest:
     @patch(
         "pcapi.notifications.sms.backends.sendinblue.sib_api_v3_sdk.TransactionalSMSApi.send_transac_sms",

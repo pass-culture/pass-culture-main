@@ -38,6 +38,7 @@ from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
+from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.serialization import base as serialize_base
 from pcapi.routes.serialization import offerers_serialize
@@ -48,11 +49,8 @@ import tests
 from tests.test_utils import gen_offerer_tags
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 @pytest.mark.parametrize("ape_code, expected_tag", list(offerers_api.APE_TAG_MAPPING.items()))
-def test_new_offerer_auto_tagging(db_session, ape_code, expected_tag):
+def test_new_offerer_auto_tagging(ape_code, expected_tag):
     # given
     gen_offerer_tags()
     offerer = offerers_factories.OffererFactory()
@@ -69,7 +67,7 @@ def test_new_offerer_auto_tagging(db_session, ape_code, expected_tag):
     offerers_api.auto_tag_new_offerer(offerer, siren_info, user)
 
     # then
-    db_session.refresh(offerer)
+    db.session.refresh(offerer)
     assert expected_tag in (tag.label for tag in offerer.tags)
 
 

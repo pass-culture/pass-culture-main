@@ -18,7 +18,7 @@ from pcapi.utils.human_ids import humanize
 
 
 class Returns200Test:
-    @pytest.mark.usefixtures("db_session")
+
     def when_user_has_rights_and_regular_offer(self, client):
         # Given
         user_admin = users_factories.AdminFactory(email="admin@example.com")
@@ -42,7 +42,7 @@ class Returns200Test:
             "venueDepartementCode": booking.stock.offer.venue.departementCode,
         }
 
-    @pytest.mark.usefixtures("db_session")
+
     def when_user_has_rights_and_regular_offer_and_token_in_lower_case(self, client):
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
@@ -67,7 +67,7 @@ class Returns200Test:
             "venueDepartementCode": booking.stock.offer.venue.departementCode,
         }
 
-    @pytest.mark.usefixtures("db_session")
+
     def when_user_has_rights_and_email_with_special_characters_url_encoded(self, client):
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user+plus@example.com")
@@ -83,7 +83,7 @@ class Returns200Test:
         assert response.status_code == 200
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns204Test:
     def when_user_not_logged_in_and_gives_right_email(self, client):
         # Given
@@ -132,7 +132,7 @@ class Returns204Test:
 
 
 class Returns404Test:
-    @pytest.mark.usefixtures("db_session")
+
     def when_token_user_has_rights_but_token_not_found(self, client):
         # Given
         user_admin = users_factories.AdminFactory(email="admin@example.com")
@@ -145,7 +145,7 @@ class Returns404Test:
         assert response.status_code == 404
         assert response.json["global"] == ["Cette contremarque n'a pas été trouvée"]
 
-    @pytest.mark.usefixtures("db_session")
+
     def when_user_not_logged_in_and_wrong_email(self, client):
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
@@ -161,7 +161,7 @@ class Returns404Test:
         assert response.status_code == 404
         assert response.json["global"] == ["Cette contremarque n'a pas été trouvée"]
 
-    @pytest.mark.usefixtures("db_session")
+
     def when_user_not_logged_in_right_email_and_wrong_offer(self, client):
         # Given
 
@@ -177,7 +177,7 @@ class Returns404Test:
         assert response.status_code == 404
         assert response.json["global"] == ["Cette contremarque n'a pas été trouvée"]
 
-    @pytest.mark.usefixtures("db_session")
+
     def when_user_has_rights_and_email_with_special_characters_not_url_encoded(self, client):
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user+plus@example.com")
@@ -193,7 +193,7 @@ class Returns404Test:
 
 
 class Returns400Test:
-    @pytest.mark.usefixtures("db_session")
+
     def when_user_not_logged_in_and_doesnt_give_email(self, client):
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
@@ -210,7 +210,7 @@ class Returns400Test:
             "Vous devez préciser l'email de l'utilisateur quand vous n'êtes pas connecté(e)"
         ]
 
-    @pytest.mark.usefixtures("db_session")
+
     def when_user_doesnt_have_rights_and_token_exists(self, client):
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
@@ -227,7 +227,7 @@ class Returns400Test:
 
 
 class Returns403Test:
-    @pytest.mark.usefixtures("db_session")
+
     def when_booking_not_confirmed(self, client):
         # Given
         cancellation_date = datetime.utcnow() + timedelta(days=7)
@@ -253,7 +253,7 @@ class Returns403Test:
             == f"Vous pourrez valider cette contremarque à partir du {cancellation_limit_date}, une fois le délai d’annulation passé."
         )
 
-    @pytest.mark.usefixtures("db_session")
+
     def when_booking_is_refunded(self, client):
         # Given
         booking = finance_factories.PaymentFactory().booking
@@ -270,7 +270,7 @@ class Returns403Test:
 
 
 class Returns410Test:
-    @pytest.mark.usefixtures("db_session")
+
     def when_booking_is_cancelled(self, client):
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
@@ -284,7 +284,7 @@ class Returns410Test:
         assert response.status_code == 410
         assert response.json["booking_cancelled"] == ["Cette réservation a été annulée"]
 
-    @pytest.mark.usefixtures("db_session")
+
     def when_booking_is_already_validated(self, client):
         # Given
         user = users_factories.BeneficiaryGrant18Factory(email="user@example.com")
@@ -299,7 +299,7 @@ class Returns410Test:
         assert response.json["booking"] == ["Cette réservation a déjà été validée"]
 
 
-@pytest.mark.usefixtures("db_session")
+
 class GoodByeV1Test:
     @override_features(WIP_ENABLE_API_CONTREMARQUE_V1=False)
     def test_raise_404_if_api_is_deactivated(self, client):

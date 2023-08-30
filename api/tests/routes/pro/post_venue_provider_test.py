@@ -22,7 +22,7 @@ from tests.local_providers.cinema_providers.cds import fixtures as cds_fixtures
 
 
 class Returns201Test:
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
     @patch("pcapi.core.providers.api._siret_can_be_synchronized")
     def test_when_venue_provider_is_successfully_created(
@@ -56,7 +56,7 @@ class Returns201Test:
         venue_provider_id = response.json["id"]
         mock_synchronize_venue_provider.assert_called_once_with(venue_provider_id)
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
     def test_when_add_allocine_stocks_provider_with_default_settings_at_import(
         self, mock_synchronize_venue_provider, client
@@ -88,7 +88,7 @@ class Returns201Test:
         venue_provider = VenueProvider.query.one()
         mock_synchronize_venue_provider.assert_called_once_with(venue_provider)
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
     def test_when_add_allocine_stocks_provider_for_venue_without_siret(self, mock_synchronize_venue_provider, client):
         # Given
@@ -118,7 +118,7 @@ class Returns201Test:
         venue_provider = VenueProvider.query.one()
         mock_synchronize_venue_provider.assert_called_once_with(venue_provider)
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
     @patch("pcapi.core.providers.api._siret_can_be_synchronized")
     def test_when_no_regression_on_format(
@@ -163,7 +163,7 @@ class Returns201Test:
             "hasOffererProvider",
         }
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
     @patch("pcapi.core.providers.api._siret_can_be_synchronized")
     def test_when_venue_id_at_offer_provider_is_ignored_for_pro(
@@ -197,7 +197,7 @@ class Returns201Test:
         venue_provider_id = response.json["id"]
         mock_synchronize_venue_provider.assert_called_once_with(venue_provider_id)
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.core.providers.api._siret_can_be_synchronized", lambda *args: True)
     def test_when_add_same_provider(self, client):
         # Given
@@ -218,7 +218,7 @@ class Returns201Test:
         assert response.json == {"global": ["Votre lieu est déjà lié à cette source"]}
         assert venue_provider.venue.venueProviders == [venue_provider]
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl/")
@@ -310,7 +310,7 @@ class Returns201Test:
         assert response.json["venueId"] == venue.id
         assert response.json["venueIdAtOfferProvider"] == cds_pivot.idAtProvider
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.workers.venue_provider_job.synchronize_ems_venue_provider")
     def test_create_venue_provider_for_ems_cinema(self, mocked_synchronize_ems_venue_provider, requests_mock, client):
         admin = user_factories.AdminFactory()
@@ -333,7 +333,7 @@ class Returns201Test:
 
 
 class Returns400Test:
-    @pytest.mark.usefixtures("db_session")
+
     def test_when_api_error_raise_when_missing_fields(self, client):
         # Given
         user = user_factories.AdminFactory()
@@ -373,7 +373,7 @@ class Returns400Test:
         assert response.json["global"] == ["Le prix doit être un nombre décimal"]
         assert VenueProvider.query.count() == 0
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_when_add_allocine_stocks_provider_with_no_price(self, client):
         # Given
         venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
@@ -398,7 +398,7 @@ class Returns400Test:
 
 
 class Returns401Test:
-    @pytest.mark.usefixtures("db_session")
+
     def test_when_user_is_not_logged_in(self, client):
         # when
         response = client.post("/venueProviders")
@@ -408,7 +408,7 @@ class Returns401Test:
 
 
 class Returns404Test:
-    @pytest.mark.usefixtures("db_session")
+
     def test_when_venue_does_not_exist(self, client):
         # Given
         user = user_factories.AdminFactory()
@@ -428,7 +428,7 @@ class Returns404Test:
         # Then
         assert response.status_code == 404
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_when_add_allocine_pivot_is_missing(self, client):
         # Given
         venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
@@ -456,7 +456,7 @@ class Returns404Test:
 
 
 class Returns422Test:
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.core.providers.api._siret_can_be_synchronized")
     def test_when_provider_api_not_available(self, mock_siret_can_be_synchronized, client):
         # Given
@@ -492,7 +492,7 @@ class Returns422Test:
 
 
 class ConnectProviderToVenueTest:
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.core.providers.api._siret_can_be_synchronized")
     @patch("pcapi.core.providers.api.connect_venue_to_provider")
     def test_should_inject_the_appropriate_repository_to_the_usecase(
@@ -518,7 +518,7 @@ class ConnectProviderToVenueTest:
         # Then
         mocked_connect_venue_to_provider.assert_called_once_with(venue, provider, None)
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.workers.venue_provider_job.venue_provider_job")
     def test_should_connect_to_allocine(
         self,
@@ -549,7 +549,7 @@ class ConnectProviderToVenueTest:
         assert venue_provider.provider == provider
         mocked_venue_provider_job.assert_called_once_with(venue_provider.id)
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.workers.venue_provider_job.venue_provider_job")
     def test_should_connect_to_provider_linked_to_an_offerer(
         self,
@@ -576,7 +576,7 @@ class ConnectProviderToVenueTest:
         assert venue_provider.provider == provider
         mocked_venue_provider_job.assert_not_called()
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.workers.venue_provider_job.venue_provider_job")
     def test_should_connect_venue_without_siret_to_provider(
         self,

@@ -11,7 +11,7 @@ from pcapi.core.offers import factories as offers_factories
 from . import utils
 
 
-@pytest.mark.usefixtures("db_session")
+
 class GetEventDatesTest:
     @freezegun.freeze_time("2023-01-01 12:00:00")
     def test_event_with_dates(self, client):

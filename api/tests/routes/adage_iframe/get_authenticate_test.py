@@ -13,7 +13,7 @@ from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_f
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_fake_valid_token
 
 
-@pytest.mark.usefixtures("db_session")
+
 class AuthenticateTest:
     valid_user = {
         "mail": "sabine.laprof@example.com",

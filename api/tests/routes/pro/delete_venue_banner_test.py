@@ -7,7 +7,7 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.utils.human_ids import humanize
 
 
-@pytest.mark.usefixtures("db_session")
+
 class VenueBannerTest:
     @patch("pcapi.core.object_storage.backends.local.LocalBackend.delete_public_object")
     @patch("pcapi.core.search.async_index_venue_ids")

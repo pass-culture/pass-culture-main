@@ -19,9 +19,6 @@ from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def make_bookable_offer() -> offers_models.Offer:
     return offers_factories.StockFactory().offer
 

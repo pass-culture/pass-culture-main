@@ -14,7 +14,7 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 class EMSBookTicketTest:
     def _build_url(self, endpoint: str, payload: dict) -> str:
         base_url = urljoin(settings.EMS_API_BOOKING_URL, endpoint)
@@ -173,7 +173,7 @@ class EMSBookTicketTest:
             client.book_ticket(show_id="999700079979", booking=booking, beneficiary=beneficiary)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class EMSGetFilmShowtimesStocksTest:
     def test_get_film_showtimes_stocks(self, requests_mock):
         cinema_pivot = providers_factories.EMSCinemaProviderPivotFactory(idAtProvider="0003")

@@ -12,9 +12,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class Reminder7DaysBeforeEventToProEmailTest:
     def test_sends_email_to_pro_user(self):
         # Given

@@ -47,9 +47,6 @@ import pcapi.utils.db as db_utils
 import tests
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def create_booking_with_undeletable_dependent(date_used=None, **kwargs):
     if not date_used:
         date_used = datetime.datetime.utcnow()

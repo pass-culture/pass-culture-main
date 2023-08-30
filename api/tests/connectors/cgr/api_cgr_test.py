@@ -53,7 +53,6 @@ def _get_seances_pass_culture_xml_response_template(body_response: str) -> str:
         """.strip()
 
 
-@pytest.mark.usefixtures("db_session")
 class CGRGetSeancesPassCultureTest:
     @override_settings(CGR_API_USER="pass_user", CGR_API_PASSWORD="password")
     def test_should_return_pass_culture_shows(self, requests_mock):

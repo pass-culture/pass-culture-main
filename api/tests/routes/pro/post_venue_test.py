@@ -9,9 +9,6 @@ from pcapi.core.users import testing as external_testing
 from pcapi.core.users.factories import ProFactory
 
 import tests
-
-
-pytestmark = pytest.mark.usefixtures("db_session")
 IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 

@@ -9,9 +9,6 @@ from pcapi.core.mails.transactional.users.delete_account import send_user_reques
 from pcapi.core.users import factories as users_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class UserRequestDeleteAccountReceptionEmailTest:
     def test_get_email_metadata(self):
         # Given

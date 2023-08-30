@@ -17,7 +17,7 @@ import pcapi.core.offers.factories as offers_factories
 
 
 class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
-    @pytest.mark.usefixtures("db_session")
+
     def test_should_send_booking_cancellation_email_to_offerer(self):
         # Given
         booking = bookings_factories.BookingFactory(
@@ -40,7 +40,7 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
 
 
 class MakeOffererBookingRecapEmailAfterUserCancellationTest:
-    @pytest.mark.usefixtures("db_session")
+
     def test_should_return_sendinblue_data_with_no_ongoing_booking(self):
         # Given
         stock = offers_factories.EventStockFactory(beginningDatetime=datetime(2019, 10, 9, 10, 20, 00))
@@ -66,7 +66,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
             "VENUE_NAME": venue.name,
         }
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_should_return_sendinblue_data_with_ongoing_bookings(self):
         # Given
         stock = offers_factories.EventStockFactory(price=0, beginningDatetime=datetime(2019, 10, 9, 10, 20, 00))
@@ -92,7 +92,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
             "VENUE_NAME": venue.name,
         }
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_should_return_numerique_when_venue_is_virtual(self):
         # Given
         virtual_venue = offerers_factories.VirtualVenueFactory()

@@ -12,7 +12,6 @@ from tests.routes.backoffice_v3.helpers import post as post_endpoint_helper
 
 
 pytestmark = [
-    pytest.mark.usefixtures("db_session"),
     pytest.mark.backoffice_v3,
 ]
 

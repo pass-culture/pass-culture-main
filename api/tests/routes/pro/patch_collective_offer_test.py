@@ -26,9 +26,6 @@ from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdi
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class Returns200Test:
     @freeze_time("2019-01-01T12:00:00Z")
     @override_settings(ADAGE_API_URL="https://adage_base_url")
@@ -508,7 +505,7 @@ class Returns400Test:
         assert response.json == {"global": ["National program not found"]}
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns403Test:
     def when_user_is_not_attached_to_offerer(self, app, client):
         # Given

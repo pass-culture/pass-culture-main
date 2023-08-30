@@ -22,7 +22,7 @@ from . import utils
 
 
 class PostProductTest:
-    @pytest.mark.usefixtures("db_session")
+
     def test_physical_product_minimal_body(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
@@ -92,7 +92,7 @@ class PostProductTest:
             ]
         }
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_create_multiple_products(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
@@ -208,7 +208,7 @@ class PostProductTest:
             "stock": None,
         }
 
-    @pytest.mark.usefixtures("db_session")
+
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_product_creation_with_full_body(self, client, clear_tests_assets_bucket):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
@@ -332,7 +332,7 @@ class PostProductTest:
             ],
         }
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_unlimited_quantity(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
@@ -369,7 +369,7 @@ class PostProductTest:
         assert created_stock.quantity is None
         assert created_stock.offer == created_offer
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_price_must_be_integer_strict(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
@@ -398,7 +398,7 @@ class PostProductTest:
         assert response.status_code == 400
         assert response.json == {"productOffers.0.stock.price": ["Saisissez un nombre valide"]}
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_price_must_be_positive(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
@@ -427,7 +427,7 @@ class PostProductTest:
         assert response.status_code == 400
         assert response.json == {"productOffers.0.stock.price": ["Value must be positive"]}
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_quantity_must_be_positive(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
@@ -456,7 +456,7 @@ class PostProductTest:
         assert response.status_code == 400
         assert response.json == {"productOffers.0.stock.quantity": ["Value must be positive"]}
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_is_duo_not_applicable(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
@@ -482,7 +482,7 @@ class PostProductTest:
         assert offers_models.Offer.query.one_or_none() is None
         assert response.json == {"enableDoubleBookings": ["the category chosen does not allow double bookings"]}
 
-    @pytest.mark.usefixtures("db_session")
+
     @testing.override_features(WIP_ENABLE_OFFER_CREATION_API_V1=False)
     def test_api_disabled(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
@@ -505,7 +505,7 @@ class PostProductTest:
         assert offers_models.Offer.query.first() is None
         assert response.json == {"global": ["This API is not enabled"]}
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_extra_data_deserialization(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
@@ -546,7 +546,7 @@ class PostProductTest:
             "performer": "Ichika Nito",
         }
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_physical_product_attached_to_digital_venue(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue(is_virtual=True)
 
@@ -572,7 +572,7 @@ class PostProductTest:
         assert response.json == {"venue": ['Une offre physique ne peut être associée au lieu "Offre numérique"']}
         assert offers_models.Offer.query.first() is None
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_event_category_not_accepted(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
@@ -594,7 +594,7 @@ class PostProductTest:
         assert "productOffers.0.categoryRelatedFields.category" in response.json
         assert offers_models.Offer.query.first() is None
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_venue_allowed(self, client):
         utils.create_offerer_provider_linked_to_venue()
         not_allowed_venue = offerers_factories.VenueFactory()
@@ -716,7 +716,7 @@ class PostProductTest:
         assert offers_models.Offer.query.first() is None
         assert offers_models.Stock.query.first() is None
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_stock_booking_limit_without_timezone(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
@@ -745,7 +745,7 @@ class PostProductTest:
             "productOffers.0.stock.bookingLimitDatetime": ["The datetime must be timezone-aware."],
         }
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_only_physical_music_is_allowed(self, client):
         utils.create_offerer_provider_linked_to_venue()
 
@@ -769,7 +769,7 @@ class PostProductTest:
         assert "SUPPORT_PHYSIQUE_MUSIQUE" in response.json["productOffers.0.categoryRelatedFields.category"][0]
         assert offers_models.Offer.query.first() is None
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_books_are_not_allowed(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 

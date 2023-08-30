@@ -8,9 +8,6 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class Returns200Test:
     def test_create_one_price_category(self, client):
         offer = offers_factories.EventOfferFactory()

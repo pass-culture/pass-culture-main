@@ -23,11 +23,12 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.providers.exceptions import ProviderNotFound
 import pcapi.core.providers.factories as providers_factories
 from pcapi.local_providers.provider_api import synchronize_provider_api
+from pcapi.models import db
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 
 
 class CreateVenueProviderTest:
-    @pytest.mark.usefixtures("db_session")
+
     def test_prevent_creation_for_non_existing_provider(self):
         # Given
         providerId = 1
@@ -57,7 +58,6 @@ class CreateVenueProviderTest:
         _unused_mock,
         venue_type,
         is_permanent,
-        db_session,
     ):
         # Given
         venue = offerers_factories.VenueFactory(venueTypeCode=venue_type)
@@ -72,7 +72,7 @@ class CreateVenueProviderTest:
         api.create_venue_provider(provider.id, venue.id)
 
         # Then
-        db_session.refresh(venue)
+        db.session.refresh(venue)
         assert venue.isPermanent == is_permanent
 
 
@@ -93,7 +93,7 @@ def create_stock(ean, siret, venue: offerers_models.Venue, **kwargs):
     return offers_factories.StockFactory(offer=create_offer(ean, venue), idAtProviders=f"{ean}@{siret}", **kwargs)
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_reset_stock_quantity():
     offer = OfferFactory(idAtProvider="1")
     venue = offer.venue
@@ -117,7 +117,7 @@ def test_reset_stock_quantity():
 
 
 class SynchronizeStocksTest:
-    @pytest.mark.usefixtures("db_session")
+
     @freeze_time("2022-10-15 09:00:00")
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_execution(self, mock_async_index_offer_ids):
@@ -210,7 +210,7 @@ class SynchronizeStocksTest:
             {stock.offer.id, offer.id, stock_with_booking.offer.id, created_offer.id, second_created_offer.id}
         )
 
-    def test_build_new_offers_from_stock_details(self, db_session):
+    def test_build_new_offers_from_stock_details(self):
         # Given
         spec = [
             providers_models.StockDetail(  # known offer, must be ignored
@@ -378,7 +378,7 @@ class SynchronizeStocksTest:
 
 
 class DeleteVenueProviderTest:
-    @pytest.mark.usefixtures("db_session")
+
     @mock.patch("pcapi.core.providers.api.update_venue_synchronized_offers_active_status_job.delay")
     def test_delete_venue_provider(self, mocked_update_all_offers_active_status_job):
         venue_provider = providers_factories.VenueProviderFactory()
@@ -395,7 +395,7 @@ class DeleteVenueProviderTest:
 
 
 class DisableVenueProviderTest:
-    @pytest.mark.usefixtures("db_session")
+
     @mock.patch("pcapi.core.providers.api.update_venue_synchronized_offers_active_status_job.delay")
     def test_disable_venue_provider(self, mocked_update_all_offers_active_status_job):
         venue_provider = providers_factories.VenueProviderFactory()

@@ -93,7 +93,7 @@ class BookOfferConcurrencyTest:
         assert models.Booking.query.filter().count() == 1
         assert models.Booking.query.filter(models.Booking.status == BookingStatus.CANCELLED).count() == 0
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_cancel_booking_with_concurrent_cancel(self, app):
         booking = bookings_factories.BookingFactory(stock__dnBookedQuantity=1)
         booking_id = booking.id
@@ -134,7 +134,7 @@ class BookOfferConcurrencyTest:
         assert models.Booking.query.filter(models.Booking.status == BookingStatus.CANCELLED).count() == 1
 
 
-@pytest.mark.usefixtures("db_session")
+
 class BookOfferTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_create_booking(self, mocked_async_index_offer_ids, app):
@@ -660,7 +660,7 @@ class BookOfferTest:
             assert str(exc.value) == "DISABLE_CGR_EXTERNAL_BOOKINGS is active"
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CancelByBeneficiaryTest:
     @patch("pcapi.core.bookings.api._cancel_external_booking")
     def test_cancel_booking(self, mocked_cancel_external_booking):
@@ -803,7 +803,7 @@ class CancelByBeneficiaryTest:
         }
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CancelByOffererTest:
     def test_cancel(self):
         booking = bookings_factories.BookingFactory()
@@ -887,7 +887,7 @@ class CancelByOffererTest:
         assert "Confirmation de votre annulation de réservation " in mails_testing.outbox[1].sent_data["subject"]
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CancelForFraudTest:
     def test_cancel(self):
         booking = bookings_factories.BookingFactory()
@@ -901,7 +901,7 @@ class CancelForFraudTest:
         assert booking.cancellationReason == BookingCancellationReasons.FRAUD
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_mark_as_cancelled():
     booking = bookings_factories.BookingFactory(
         stock__offer__venue__pricing_point="self",
@@ -924,7 +924,7 @@ def test_mark_as_cancelled():
     assert unuse_event.status == finance_models.FinanceEventStatus.NOT_TO_BE_PRICED
 
 
-@pytest.mark.usefixtures("db_session")
+
 class MarkAsUsedTest:
     def test_mark_as_used(self):
         booking = bookings_factories.BookingFactory()
@@ -992,7 +992,7 @@ class MarkAsUsedTest:
         }
 
 
-@pytest.mark.usefixtures("db_session")
+
 class MarkAsUnusedTest:
     def test_mark_as_unused(self):
         booking = bookings_factories.UsedBookingFactory()
@@ -1061,7 +1061,7 @@ class MarkAsUnusedTest:
     [datetime(2020, 7, 14, 15, 30), datetime(2020, 10, 25, 1, 45), datetime.utcnow()],
     ids=["14 Jul", "Daylight Saving Switch", "Now"],
 )
-@pytest.mark.usefixtures("db_session")
+
 class ComputeCancellationDateTest:
     def test_returns_none_if_no_event_beginning(self, booking_creation_date):
         event_beginning = None
@@ -1092,7 +1092,7 @@ class ComputeCancellationDateTest:
 
 
 @freeze_time("2032-11-17 15:00:00")
-@pytest.mark.usefixtures("db_session")
+
 class UpdateCancellationLimitDatesTest:
     def should_update_bookings_cancellation_limit_dates_for_event_beginning_tomorrow(self):
         #  Given
@@ -1149,7 +1149,7 @@ class UpdateCancellationLimitDatesTest:
         assert recent_booking.cancellationLimitDate == old_booking.cancellationLimitDate == two_days_past_today
 
 
-@pytest.mark.usefixtures("db_session")
+
 class AutoMarkAsUsedAfterEventTest:
     def test_do_not_update_if_thing_product(self):
         bookings_factories.BookingFactory(stock=offers_factories.ThingStockFactory())
@@ -1303,7 +1303,7 @@ class AutoMarkAsUsedAfterEventTest:
             api.auto_mark_as_used_after_event()
 
 
-@pytest.mark.usefixtures("db_session")
+
 class GetInvidualBookingsFromStockTest:
     def test_has_bookings(self):
         stock = offers_factories.StockFactory()
@@ -1336,7 +1336,7 @@ class GetInvidualBookingsFromStockTest:
 
 
 class ArchiveOldBookingsTest:
-    def test_old_activation_code_bookings_are_archived(self, db_session):
+    def test_old_activation_code_bookings_are_archived(self):
         # given
         now = datetime.utcnow()
         recent = now - timedelta(days=29, hours=23)
@@ -1352,8 +1352,8 @@ class ArchiveOldBookingsTest:
         api.archive_old_bookings()
 
         # then
-        db_session.refresh(recent_booking)
-        db_session.refresh(old_booking)
+        db.session.refresh(recent_booking)
+        db.session.refresh(old_booking)
         assert not recent_booking.displayAsEnded
         assert old_booking.displayAsEnded
 
@@ -1361,7 +1361,7 @@ class ArchiveOldBookingsTest:
         "subcategoryId",
         FREE_OFFER_SUBCATEGORY_IDS_TO_ARCHIVE,
     )
-    def test_old_subcategories_bookings_are_archived(self, db_session, subcategoryId):
+    def test_old_subcategories_bookings_are_archived(self, subcategoryId):
         # given
         now = datetime.utcnow()
         recent = now - timedelta(days=29, hours=23)
@@ -1380,15 +1380,15 @@ class ArchiveOldBookingsTest:
         api.archive_old_bookings()
 
         # then
-        db_session.refresh(recent_booking)
-        db_session.refresh(old_booking)
-        db_session.refresh(old_not_free_booking)
+        db.session.refresh(recent_booking)
+        db.session.refresh(old_booking)
+        db.session.refresh(old_not_free_booking)
         assert not recent_booking.displayAsEnded
         assert not old_not_free_booking.displayAsEnded
         assert old_booking.displayAsEnded
 
 
-@pytest.mark.usefixtures("db_session")
+
 class PopBarcodesFromQueueAndCancelWastedExternalBookingTest:
     def test_should_not_pop_and_not_try_to_cancel_external_booking_if_minimum_age_not_reached(self, app):
         queue.add_to_queue(

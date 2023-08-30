@@ -8,7 +8,7 @@ import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 
 
-@pytest.mark.usefixtures("db_session")
+
 class GetCinemaVenueProviderTest:
     def test_should_return_cinema_venue_provider_according_to_venue_id(self) -> None:
         # Given
@@ -44,7 +44,7 @@ class GetCinemaVenueProviderTest:
         assert str(e.value) == f"No active cinema venue provider found for venue #{venue_id}"
 
 
-@pytest.mark.usefixtures("db_session")
+
 class GetExternalBookingsClientApiTest:
     def test_should_return_client_api_according_to_name(self) -> None:
         # Given

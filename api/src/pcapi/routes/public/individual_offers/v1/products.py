@@ -442,7 +442,6 @@ def edit_product(body: serialization.BatchProductOfferEdition) -> serialization.
 
     Leave fields undefined to keep their current value.
     """
-
     product_ids = [product.offer_id for product in body.product_offers]
     offers: list[offers_models.Offer] = (
         utils.retrieve_offer_relations_query(utils.retrieve_offers_query(product_ids))
@@ -464,26 +463,30 @@ def edit_product(body: serialization.BatchProductOfferEdition) -> serialization.
         try:
             with repository.transaction():
                 updated_offer_from_body = product_offer.dict(exclude_unset=True)
-                updated_offer = offers_api.update_offer(
-                    offer,
-                    bookingContact=updated_offer_from_body.get("booking_contact", offers_api.UNCHANGED),
-                    bookingEmail=updated_offer_from_body.get("booking_email", offers_api.UNCHANGED),
-                    extraData=serialization.deserialize_extra_data(
-                        product_offer.category_related_fields, copy.deepcopy(offer.extraData)
+                try:
+                    updated_offer = offers_api.update_offer(
+                        offer,
+                        bookingContact=updated_offer_from_body.get("booking_contact", offers_api.UNCHANGED),
+                        bookingEmail=updated_offer_from_body.get("booking_email", offers_api.UNCHANGED),
+                        extraData=serialization.deserialize_extra_data(
+                            product_offer.category_related_fields, copy.deepcopy(offer.extraData)
+                        )
+                        if product_offer.category_related_fields
+                        else offers_api.UNCHANGED,
+                        isActive=updated_offer_from_body.get("is_active", offers_api.UNCHANGED),
+                        isDuo=updated_offer_from_body.get("is_duo", offers_api.UNCHANGED),
+                        withdrawalDetails=updated_offer_from_body.get("withdrawal_details", offers_api.UNCHANGED),
+                        **utils.compute_accessibility_edition_fields(updated_offer_from_body.get("accessibility")),
                     )
-                    if product_offer.category_related_fields
-                    else offers_api.UNCHANGED,
-                    isActive=updated_offer_from_body.get("is_active", offers_api.UNCHANGED),
-                    isDuo=updated_offer_from_body.get("is_duo", offers_api.UNCHANGED),
-                    withdrawalDetails=updated_offer_from_body.get("withdrawal_details", offers_api.UNCHANGED),
-                    **utils.compute_accessibility_edition_fields(updated_offer_from_body.get("accessibility")),
-                )
+                except Exception as exc:
+                    from traceback import print_exc
+                    print_exc()
+                    raise exc
                 updated_offers.append(updated_offer)
                 if "stock" in updated_offer_from_body:
                     _upsert_product_stock(updated_offer, product_offer.stock, current_api_key.provider)
         except offers_exceptions.OfferCreationBaseException as e:
             raise api_errors.ApiErrors(e.errors, status_code=400)
-
     return serialization.BatchProductOfferResponse.build_product_offers(updated_offers)
 
 

@@ -12,7 +12,7 @@ from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.utils.date import format_into_utc_date
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns200Test:
     def test_get_educational_institution(self, client: Any) -> None:
         redactor = EducationalRedactorFactory(
@@ -176,7 +176,7 @@ class Returns200Test:
 
 
 class Returns404Test:
-    def test_get_educational_institution_not_found(self, client: Any, db_session: Any) -> None:
+    def test_get_educational_institution_not_found(self, client):
         educational_year = EducationalYearFactory()
         EducationalInstitutionFactory()
 

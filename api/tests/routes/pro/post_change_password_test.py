@@ -6,9 +6,6 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class Returns200Test:
     @freeze_time("2020-11-17 15:00:00", tz_offset=-2)
     def when_current_user_changes_password(self, client):

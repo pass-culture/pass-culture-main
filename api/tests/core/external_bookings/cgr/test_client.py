@@ -13,7 +13,7 @@ from tests.connectors.cgr import soap_definitions
 from tests.local_providers.cinema_providers.cgr import fixtures
 
 
-@pytest.mark.usefixtures("db_session")
+
 class BookTicketTest:
     def test_should_book_one_ticket(self, requests_mock, app):
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
@@ -160,7 +160,7 @@ class BookTicketTest:
         )
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CancelBookingTest:
     def test_should_cancel_booking_with_success(self, requests_mock):
         cinema_details = providers_factories.CGRCinemaDetailsFactory(

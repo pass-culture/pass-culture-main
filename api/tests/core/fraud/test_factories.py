@@ -4,9 +4,6 @@ import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class FactoriesTest:
     @pytest.mark.parametrize(
         "check_type,model_class",

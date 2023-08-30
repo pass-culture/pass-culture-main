@@ -17,9 +17,6 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def test_total_amount():
     booking = factories.BookingFactory(amount=1.2, quantity=2)
     assert booking.total_amount == Decimal("2.4")

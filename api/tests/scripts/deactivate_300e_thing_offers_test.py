@@ -7,7 +7,7 @@ from pcapi.scripts.deactivate_300e_thing_offers import deactivate_300e_thing_off
 
 
 class Deactivate300eThingOffersTest:
-    @pytest.mark.usefixtures("db_session")
+
     def test_should_deactivate_thing_offers_that_are_higher_than_300e(self):
         # Given
         ThingStockFactory(price=305)

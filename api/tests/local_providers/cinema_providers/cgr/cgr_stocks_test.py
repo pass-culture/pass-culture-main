@@ -18,7 +18,7 @@ from tests.connectors.cgr import soap_definitions
 from tests.local_providers.cinema_providers.cgr import fixtures
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CGRStocksTest:
     def should_return_providable_info_on_next(self, requests_mock):
         requests_mock.get("https://cgr-cinema-0.example.com/web_service", text=soap_definitions.WEB_SERVICE_DEFINITION)

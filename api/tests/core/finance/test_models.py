@@ -15,10 +15,7 @@ from pcapi.repository import repository
 import pcapi.utils.db as db_utils
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
 
-
-@pytest.mark.usefixtures("db_session")
 class CustomReimbursementRuleTest:
     @dataclasses.dataclass
     class DummyBooking:

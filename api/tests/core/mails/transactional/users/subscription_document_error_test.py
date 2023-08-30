@@ -8,9 +8,6 @@ from pcapi.core.mails.transactional.users.ubble.subscription_document_error impo
 )
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class SendinblueSubscriptionDocumentErrorEmailTest:
     def test_send_information_error_email(self) -> None:
         email = "123@test.com"

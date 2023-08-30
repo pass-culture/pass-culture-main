@@ -5,9 +5,6 @@ from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offerers.repository import offerer_has_venue_with_adage_id
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class OffererHasAdageIdTest:
     def test_ok(self):
         venue = VenueFactory(adageId="123")

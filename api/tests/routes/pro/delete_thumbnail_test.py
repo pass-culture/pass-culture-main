@@ -8,7 +8,7 @@ from pcapi.core.offers.models import Mediation
 from pcapi.utils.human_ids import humanize
 
 
-@pytest.mark.usefixtures("db_session")
+
 class OfferMediationTest:
     @patch("pcapi.core.object_storage.backends.local.LocalBackend.delete_public_object")
     @patch("pcapi.core.search.async_index_offer_ids")

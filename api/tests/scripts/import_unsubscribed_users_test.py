@@ -6,7 +6,7 @@ from pcapi.core.users.factories import UserFactory
 from pcapi.scripts.import_unsubscribed_users import synchronize_unsubscribed_users
 
 
-@pytest.mark.usefixtures("db_session")
+
 class ImportunsubscribedUsersTest:
     @patch("pcapi.scripts.import_unsubscribed_users.import_contacts_in_sendinblue")
     @patch("pcapi.scripts.import_unsubscribed_users.format_sendinblue_users")

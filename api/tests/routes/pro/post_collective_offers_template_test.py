@@ -28,7 +28,7 @@ base_collective_offer_payload = {
 }
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns200Test:
     def test_create_collective_offer_template(self, client):
         # Given
@@ -114,7 +114,7 @@ class Returns200Test:
         assert response.status_code == 201
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns403Test:
     def test_create_collective_offer_template_random_user(self, client):
         # Given
@@ -171,7 +171,7 @@ class Returns403Test:
         assert CollectiveOfferTemplate.query.count() == 0
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns400Test:
     def test_create_collective_offer_template_unknown_category(self, client):
         # Given
@@ -298,7 +298,7 @@ class Returns400Test:
         assert CollectiveOfferTemplate.query.count() == 0
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns404Test:
     def test_create_collective_offer_template_with_unknown_domain(self, client):
         # Given

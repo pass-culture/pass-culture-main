@@ -33,9 +33,6 @@ from pcapi.models import db
 from pcapi.utils.human_ids import humanize
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class PostBookingTest:
     identifier = "pascal.ture@example.com"
 

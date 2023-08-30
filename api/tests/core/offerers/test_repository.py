@@ -15,9 +15,6 @@ from pcapi.core.users import factories as users_factories
 from pcapi.models.offer_mixin import OfferStatus
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class GetAllVenueLabelsTest:
     def test_get_all_venue_labels(self):
         label1 = offerers_factories.VenueLabelFactory()
@@ -145,7 +142,7 @@ class FindNewOffererUserEmailTest:
             repository.find_new_offerer_user_email(offerer_id=1)
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_filter_query_where_user_is_user_offerer_and_is_validated():
     # Given
     offer1 = offers_factories.OfferFactory()

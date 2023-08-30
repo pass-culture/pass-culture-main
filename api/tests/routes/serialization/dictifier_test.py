@@ -74,7 +74,7 @@ class AsDictTest:
         # then
         assert dict_result["id"] == "BQ"
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_returns_humanized_ids_for_foreign_keys(self):
         # given
         user = users_factories.BeneficiaryGrant18Factory(id=12)

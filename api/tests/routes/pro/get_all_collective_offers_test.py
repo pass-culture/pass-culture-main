@@ -15,7 +15,7 @@ from tests.conftest import TestClient
 random.seed(12)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns200Test:
     def test_one_simple_collective_offer(self, app):
         # Given

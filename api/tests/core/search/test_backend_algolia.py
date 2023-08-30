@@ -9,9 +9,6 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.search.backends import algolia
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def get_backend():
     return algolia.AlgoliaBackend()
 
@@ -306,7 +303,7 @@ def test_pop_collective_offer_template_ids_from_error_queue(app):
     assert collective_offer_template_ids == set()
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_index_offers(app):
     backend = get_backend()
     offer = offers_factories.StockFactory().offer

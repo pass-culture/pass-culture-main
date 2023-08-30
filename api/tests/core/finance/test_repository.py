@@ -17,9 +17,6 @@ import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class GetReimbursementPointsTest:
     def test_admin(self):
         admin = users_factories.AdminFactory()
@@ -195,7 +192,7 @@ class HasActiveOrFutureCustomRemibursementRuleTest:
         assert not repository.has_active_or_future_custom_reimbursement_rule(offer)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class FindAllOffererPaymentsTest:
     def test_should_not_return_payment_info_with_error_status(self):
         # Given

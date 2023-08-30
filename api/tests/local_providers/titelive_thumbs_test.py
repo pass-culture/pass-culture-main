@@ -13,7 +13,7 @@ from pcapi.utils.human_ids import humanize
 
 
 class TiteliveThingThumbsTest:
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_thing_thumbs.titelive_thing_thumbs.get_zip_file_from_ftp")
     @patch("pcapi.core.object_storage.store_public_object")

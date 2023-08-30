@@ -10,7 +10,7 @@ from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.scheduled_tasks.logger import CronStatus
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CronRequireFeatureTest:
     @override_features(UPDATE_BOOKING_USED=True)
     def test_cron_require_feature(self):

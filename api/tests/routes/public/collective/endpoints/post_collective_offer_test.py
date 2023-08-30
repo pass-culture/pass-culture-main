@@ -20,7 +20,7 @@ IMAGES_DIR = Path(tests.__path__[0]) / "files"
 UPLOAD_FOLDER = settings.LOCAL_STORAGE_DIR / educational_models.CollectiveOffer.FOLDER
 
 
-@pytest.mark.usefixtures("db_session")
+
 @freeze_time("2022-05-01 15:00:00")
 class CollectiveOffersPublicPostOfferTest:
     def teardown_method(self, *args):

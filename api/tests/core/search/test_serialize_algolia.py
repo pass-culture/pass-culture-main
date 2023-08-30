@@ -17,9 +17,6 @@ from pcapi.routes.adage_iframe.serialization.offers import OfferAddressType
 from pcapi.utils.human_ids import humanize
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 @override_settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[1, 2, 3, 4])
 def test_serialize_offer():
     rayon = "Policier / Thriller format poche"  # fetched from provider

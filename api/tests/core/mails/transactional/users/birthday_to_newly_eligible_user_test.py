@@ -8,9 +8,6 @@ from pcapi.core.mails.transactional.users.birthday_to_newly_eligible_user import
 import pcapi.core.users.factories as users_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class SendinblueSendNewlyEligibleUserEmailTest:
     def test_send_anniversary_age_18_email(self):
         # given

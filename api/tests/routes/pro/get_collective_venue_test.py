@@ -5,7 +5,7 @@ import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.factories as offerers_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns200Test:
     def when_user_has_rights_on_managing_offerer(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")

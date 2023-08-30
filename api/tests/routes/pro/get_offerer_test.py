@@ -12,9 +12,6 @@ from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def test_basics(client):
     pro = users_factories.ProFactory()
     offerer = offerers_factories.OffererFactory()

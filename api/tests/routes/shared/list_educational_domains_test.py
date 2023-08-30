@@ -3,7 +3,7 @@ import pytest
 from pcapi.core.educational import factories as educational_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns200Test:
     def test_list_educational_domains(self, client):
         # given

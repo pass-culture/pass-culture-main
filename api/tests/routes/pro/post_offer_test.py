@@ -8,7 +8,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns200Test:
     def test_created_offer_should_be_inactive(self, client):
         venue = offerers_factories.VenueFactory()
@@ -173,7 +173,7 @@ class Returns200Test:
         assert offer.withdrawalType == WithdrawalTypeEnum.NO_TICKET
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns400Test:
     def test_fail_if_venue_is_not_found(self, client):
         # Given
@@ -424,7 +424,7 @@ class Returns400Test:
         assert response.status_code == 400
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns403Test:
     def test_when_user_is_not_attached_to_offerer(self, client):
         # Given

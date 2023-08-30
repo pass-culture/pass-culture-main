@@ -11,7 +11,7 @@ from pcapi.scripts.subscription.dms import archive_dms_applications
 from tests.scripts.beneficiary.fixture import make_parsed_graphql_application
 
 
-@pytest.mark.usefixtures("db_session")
+
 class ArchiveDMSApplicationsTest:
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
     @patch.object(api_dms.DMSGraphQLClient, "archive_application")

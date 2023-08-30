@@ -8,9 +8,6 @@ from pcapi.core.mails.transactional.users.dms_subscription_emails import (
 )
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class PreSubscriptionDmsErrorEmailSendinblueTest:
     def test_send_mail(self):
         # Given

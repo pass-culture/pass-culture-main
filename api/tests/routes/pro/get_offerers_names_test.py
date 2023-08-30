@@ -37,7 +37,7 @@ class Returns200ForProUserTest:
             "other_offerer_not_validated": other_offerer_not_validated,
         }
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_response_serializer(self, client):
         # given
         pro_user = users_factories.ProFactory()
@@ -52,7 +52,7 @@ class Returns200ForProUserTest:
         assert response.status_code == 200
         assert response.json == {"offerersNames": [{"name": offerer.name, "id": offerer.id}]}
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_get_offerers_names_for_id(self, client):
         # given
         pro_user = users_factories.ProFactory()
@@ -69,7 +69,7 @@ class Returns200ForProUserTest:
         assert response.json["offerersNames"][0]["id"] == offerers["owned_offerer_validated"].id
         assert response.json["offerersNames"][0]["name"] == offerers["owned_offerer_validated"].name
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_get_all_offerers_names(self, client):
         # given
         pro_user = users_factories.ProFactory()
@@ -90,7 +90,7 @@ class Returns200ForProUserTest:
         assert offerers["owned_offerer_validated_for_user"].id in offerer_ids
         assert offerers["owned_offerer_not_validated_for_user"].id in offerer_ids
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_get_all_validated_offerers_names(self, client):
         # given
         pro_user = users_factories.ProFactory()
@@ -110,7 +110,7 @@ class Returns200ForProUserTest:
         assert offerers["owned_offerer_validated_for_user"].id in offerer_ids
         assert offerers["owned_offerer_not_validated_for_user"].id in offerer_ids
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_get_all_validated_for_user_offerers_names(self, client):
         # given
         pro_user = users_factories.ProFactory()
@@ -151,7 +151,7 @@ class Returns200ForAdminTest:
             "other_offerer_not_validated": other_offerer_not_validated,
         }
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_get_all_offerers_names(self, client):
         # given
         admin = users_factories.AdminFactory()
@@ -172,7 +172,7 @@ class Returns200ForAdminTest:
         assert offerers["other_offerer"].id in offerer_ids
         assert offerers["other_offerer_not_validated"].id in offerer_ids
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_get_all_validated_offerers(self, client):
         # given
         admin = users_factories.AdminFactory()
@@ -191,7 +191,7 @@ class Returns200ForAdminTest:
         assert offerers["offerer"].id in offerer_ids
         assert offerers["other_offerer"].id in offerer_ids
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_get_all_not_validated_offerers(self, client):
         # given
         admin = users_factories.AdminFactory()
@@ -210,7 +210,7 @@ class Returns200ForAdminTest:
         assert offerers["offerer_not_validated"].id in offerer_ids
         assert offerers["other_offerer_not_validated"].id in offerer_ids
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_queries(self, client):
         admin = users_factories.AdminFactory()
         self._setup_offerers_for_users()

@@ -8,7 +8,7 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.users import factories as users_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns204Test:
     class WithApiKeyAuthTest:
         def test_when_api_key_provided_is_related_to_regular_offer_with_rights(self, client):
@@ -68,13 +68,13 @@ class Returns204Test:
 
 
 class Returns401Test:
-    @pytest.mark.usefixtures("db_session")
+
     def test_when_user_not_logged_in_and_doesnt_give_api_key(self, client):
         booking = bookings_factories.BookingFactory()
         response = client.patch(f"/v2/bookings/keep/token/{booking.token}")
         assert response.status_code == 401
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_when_user_not_logged_in_and_given_api_key_that_does_not_exists(self, client):
         # Given
         booking = bookings_factories.BookingFactory()
@@ -90,7 +90,7 @@ class Returns401Test:
 
 class Returns403Test:
     class WithApiKeyAuthTest:
-        @pytest.mark.usefixtures("db_session")
+
         def test_when_the_api_key_is_not_linked_to_the_right_offerer(self, client):
             # Given
             booking = bookings_factories.BookingFactory()
@@ -108,7 +108,7 @@ class Returns403Test:
             ]
 
     class WithBasicAuthTest:
-        @pytest.mark.usefixtures("db_session")
+
         def test_when_user_is_not_attached_to_linked_offerer(self, client):
             # Given
             booking = bookings_factories.BookingFactory()
@@ -127,13 +127,13 @@ class Returns403Test:
 
 
 class Returns404Test:
-    @pytest.mark.usefixtures("db_session")
+
     def test_missing_token(self, client):
         user = users_factories.ProFactory()
         response = client.with_basic_auth(user.email).patch("/v2/bookings/keep/token/")
         assert response.status_code == 404
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_unknown_token(self, client):
         user = users_factories.ProFactory()
         response = client.with_basic_auth(user.email).patch("/v2/bookings/keep/token/UNKNOWN")
@@ -142,7 +142,7 @@ class Returns404Test:
 
 
 class Returns410Test:
-    @pytest.mark.usefixtures("db_session")
+
     def test_when_booking_has_not_been_used_yet(self, client):
         # Given
         booking = bookings_factories.BookingFactory()
@@ -157,7 +157,7 @@ class Returns410Test:
         assert response.json["booking"] == ["Cette réservation n'a pas encore été validée"]
         assert booking.status is not BookingStatus.USED
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_when_user_is_logged_in_and_booking_payment_exists(self, client):
         # Given
         booking = finance_factories.PaymentFactory().booking
@@ -172,7 +172,7 @@ class Returns410Test:
         assert response.json["payment"] == ["Le remboursement est en cours de traitement"]
         assert booking.status is BookingStatus.USED
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_when_user_is_logged_in_and_booking_has_been_cancelled_already(self, client):
         # Given
         admin = users_factories.AdminFactory()

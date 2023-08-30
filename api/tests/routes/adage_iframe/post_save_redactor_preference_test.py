@@ -5,9 +5,6 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.models import db
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class SaveRedactorPreferencesTest:
     endpoint = "adage_iframe.save_redactor_preferences"
 

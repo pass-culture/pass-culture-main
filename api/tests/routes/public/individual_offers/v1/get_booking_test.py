@@ -13,9 +13,6 @@ from pcapi.utils import date as date_utils
 from . import utils
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class GetBookingByTokenReturns200Test:
     def test_key_has_rights_and_regular_product_offer(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()

@@ -8,7 +8,7 @@ from pcapi.core.providers.repository import get_allocine_theater
 
 
 class IsVenueKnownByAllocineTest:
-    @pytest.mark.usefixtures("db_session")
+
     def test_should_throw(self, app):
         # Given
         venue = offerers_factories.VenueFactory(id=1234)
@@ -19,7 +19,7 @@ class IsVenueKnownByAllocineTest:
         with pytest.raises(UnknownVenueToAlloCine):
             AllocineVenue(venue)
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_should_return_theater_when_allocine_theater_is_present(self, app):
         # Given
         venue_id = 1234
@@ -32,7 +32,7 @@ class IsVenueKnownByAllocineTest:
         # Then
         assert allocine_venue.get_theater() == allocine_theater
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_should_return_true_when_allocine_pivot_is_present(self, app):
         # Given
         venue_id = 1234
@@ -47,7 +47,7 @@ class IsVenueKnownByAllocineTest:
 
 
 class GetAllocineTheaterTest:
-    @pytest.mark.usefixtures("db_session")
+
     def test_should_return_none_when_not_matching_in_allocine_theater(self, app):
         # Given
         venue = offerers_factories.VenueFactory()
@@ -59,7 +59,7 @@ class GetAllocineTheaterTest:
         # Then
         assert actual is None
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_should_return_allocine_theater_when_venue_is_present_in_allocine_theater(self, app):
         # Given
         venue = offerers_factories.VenueFactory()

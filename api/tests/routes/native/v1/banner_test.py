@@ -12,7 +12,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.utils.string import u_nbsp
 
 
-@pytest.mark.usefixtures("db_session")
+
 class BannerTest:
     # - authenticated user
     # - user joinloaded with subscription data

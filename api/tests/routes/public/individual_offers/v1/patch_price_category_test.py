@@ -9,7 +9,7 @@ from pcapi.core.offers import factories as offers_factories
 from . import utils
 
 
-@pytest.mark.usefixtures("db_session")
+
 class PatchPriceCategoryTest:
     def test_find_no_offer_returns_404(self, client):
         utils.create_offerer_provider_linked_to_venue()

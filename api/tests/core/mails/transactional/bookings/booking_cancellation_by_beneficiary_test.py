@@ -18,7 +18,7 @@ from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 
 
-@pytest.mark.usefixtures("db_session")
+
 class SendSendiblueBeneficiaryBookingCancellationEmailTest:
     def test_should_called_send_email_with_valid_data(self):
         # given
@@ -48,7 +48,7 @@ class SendSendiblueBeneficiaryBookingCancellationEmailTest:
             assert params_key in mails_testing.outbox[0].sent_data["params"].keys()
 
 
-@pytest.mark.usefixtures("db_session")
+
 class MakeBeneficiaryBookingCancellationEmailSendinblueDataTest:
     def test_should_return_thing_data_when_booking_is_a_thing(self):
         # Given

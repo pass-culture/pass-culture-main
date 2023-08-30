@@ -9,7 +9,7 @@ from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_VALUE
 class CulturalSurveyAnswerTest:
     @freezegun.freeze_time("2020-01-01")
     @patch("pcapi.core.object_storage.backends.gcp.GCPBackend.store_public_object")
-    def test_cultural_survey_task(self, store_public_object, client, db_session):
+    def test_cultural_survey_task(self, store_public_object, client):
         data = {
             "user_id": 1,
             "submitted_at": "2020-01-01T00:00:00",

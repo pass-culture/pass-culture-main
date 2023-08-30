@@ -74,7 +74,7 @@ class DmsMessagesTest:
 
         assert message == expected_message
 
-    @pytest.mark.usefixtures("db_session")
+
     @pytest.mark.parametrize(
         "error_key, expected_error_message",
         [
@@ -127,7 +127,7 @@ class DmsMessagesTest:
 
         assert message == expected_message
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_get_error_processed_message_with_multiple_errors(self):
         user = users_factories.UserFactory()
         errors = [
@@ -156,7 +156,7 @@ class DmsMessagesTest:
 
         assert message == expected_message
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_get_error_processed_message_with_id_piece_number_errors(self):
         user = users_factories.UserFactory()
         application_content = fraud_factories.DMSContentFactory()
@@ -181,7 +181,7 @@ class DmsMessagesTest:
 
         assert message == expected_message
 
-    @pytest.mark.usefixtures("db_session")
+
     @pytest.mark.parametrize(
         "error_key, expected_error_message",
         [

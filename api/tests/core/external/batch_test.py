@@ -7,9 +7,6 @@ from pcapi.core.external.batch import format_user_attributes
 
 from . import common_user_attributes
 
-
-pytestmark = pytest.mark.usefixtures("db_session")
-
 MAX_BATCH_PARAMETER_SIZE = 30
 
 

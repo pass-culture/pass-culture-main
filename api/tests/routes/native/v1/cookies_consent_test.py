@@ -7,9 +7,6 @@ import pytest
 from pcapi.core.users import factories as users_factories
 from pcapi.routes.shared import cookies_consent as serializers
 
-
-pytestmark = pytest.mark.usefixtures("db_session")
-
 DEVICE_ID = str(uuid.uuid4())
 
 

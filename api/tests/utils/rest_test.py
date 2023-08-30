@@ -10,9 +10,6 @@ from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_raise_error
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class CheckUserHasAccessToOffererTest:
     def test_check_user_has_access_to_offerer(self, app):
         pro = users_factories.UserFactory()

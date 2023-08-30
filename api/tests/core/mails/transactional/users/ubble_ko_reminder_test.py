@@ -50,7 +50,7 @@ def build_user_with_ko_retryable_ubble_fraud_check(
     return user
 
 
-@pytest.mark.usefixtures("db_session")
+
 class FindUsersThatFailedUbbleTest:
     def setup_method(self):
         self.eighteen_years_ago = datetime.datetime.utcnow() - relativedelta(years=18)
@@ -179,7 +179,7 @@ class FindUsersThatFailedUbbleTest:
         assert result == [(user, [fraud_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE])]
 
 
-@pytest.mark.usefixtures("db_session")
+
 class SendUbbleKoReminderEmailTest:
     @override_settings(DAYS_BEFORE_UBBLE_QUICK_ACTION_REMINDER=7)
     def should_send_email_to_users(self):

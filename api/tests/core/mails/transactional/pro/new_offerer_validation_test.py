@@ -8,7 +8,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.offerers.factories import UserOffererFactory
 
 
-@pytest.mark.usefixtures("db_session")
+
 class SendNewOffererValidationEmailTest:
     def test_send_mail(self):
         # Given
@@ -23,7 +23,7 @@ class SendNewOffererValidationEmailTest:
         assert mails_testing.outbox[0].sent_data["params"] == {"OFFERER_NAME": offerer.name}
 
 
-@pytest.mark.usefixtures("db_session")
+
 class SendNewOffererRejectionEmailTest:
     def test_send_mail(self):
         # Given

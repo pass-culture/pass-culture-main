@@ -15,9 +15,6 @@ from pcapi.utils import date
 
 from tests.local_providers.cinema_providers.boost import fixtures
 
-
-pytestmark = pytest.mark.usefixtures("db_session")
-
 FULL_PRICING = boost_serializers.ShowtimePricing(
     id=1225351, pricingCode="PLE", amountTaxesIncluded=Decimal(12), title="PLEIN TARIF"
 )

@@ -15,9 +15,6 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.settings import PRO_URL
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class SendinblueSendFirstVenueOfferEmailTest:
     def test_get_first_venue_approved_offer_correct_email_metadata(self):
         # Given

@@ -10,7 +10,7 @@ from pcapi.core.users.models import TokenType
 from pcapi.notifications.push import testing as push_testing
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_change_password(client):
     user = users_factories.UserFactory()
     token = users_factories.TokenFactory(user=user, type=TokenType.RESET_PASSWORD)
@@ -26,7 +26,7 @@ def test_change_password(client):
     assert token.isUsed
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_change_password_validates_email(client):
     user = users_factories.UserFactory(isEmailValidated=False)
     token = users_factories.TokenFactory(user=user, type=TokenType.RESET_PASSWORD)
@@ -47,7 +47,7 @@ def test_change_password_validates_email(client):
     assert sendinblue_data["attributes"]["IS_EMAIL_VALIDATED"]
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_fail_if_token_has_expired(client):
     user = users_factories.UserFactory(password="Old_P4ssword")
     token = users_factories.TokenFactory(
@@ -64,7 +64,7 @@ def test_fail_if_token_has_expired(client):
     assert user.checkPassword("Old_P4ssword")
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_fail_if_token_is_unknown(client):
     user = users_factories.UserFactory()
     users_factories.TokenFactory(user=user, type=TokenType.RESET_PASSWORD, value="ONE TOKEN")
@@ -85,7 +85,7 @@ def test_fail_if_token_is_missing(client):
     assert response.json["token"] == ["Ce champ est obligatoire"]
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_fail_if_new_password_is_missing(client):
     data = {"token": "KL89PBNG51"}
 
@@ -95,7 +95,7 @@ def test_fail_if_new_password_is_missing(client):
     assert response.json["newPassword"] == ["Ce champ est obligatoire"]
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_fail_if_new_password_is_not_strong_enough(client):
     data = {"token": "TOKEN", "newPassword": "weak_password"}
 

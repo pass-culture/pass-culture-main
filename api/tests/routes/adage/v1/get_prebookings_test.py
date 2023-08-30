@@ -11,7 +11,7 @@ from pcapi.core.offers.utils import offer_app_link
 from pcapi.utils.date import format_into_utc_date
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns200Test:
     def test_get_prebookings_without_query_params(self, client: Any) -> None:
         redactor = EducationalRedactorFactory(

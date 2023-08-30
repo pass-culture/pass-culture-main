@@ -5,9 +5,6 @@ from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_KEY
 from pcapi.tasks.cloud_task import AUTHORIZATION_HEADER_VALUE
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def test_store_id_pictures_task(client):
     # When
     response = client.post(

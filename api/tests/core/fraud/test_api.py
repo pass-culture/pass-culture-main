@@ -16,7 +16,7 @@ import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CommonTest:
     @pytest.mark.parametrize(
         "id_piece_number",
@@ -116,7 +116,7 @@ def filter_invalid_fraud_items_to_reason_codes(
     )
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CommonFraudCheckTest:
     def test_duplicate_id_piece_number_ok(self):
         user = users_factories.UserFactory()
@@ -198,7 +198,7 @@ class CommonFraudCheckTest:
         assert fraud_models.FraudReasonCode.EMAIL_NOT_VALIDATED in invalid_codes
 
 
-@pytest.mark.usefixtures("db_session")
+
 class FindDuplicateUserTest:
     first_name = "Alice"
     last_name = "Ravineau"
@@ -347,7 +347,7 @@ class FindDuplicateUserTest:
         assert link.format(id=user3.id, url=settings.BACKOFFICE_URL) in sent_mail3.sent_data["html_content"]
 
 
-@pytest.mark.usefixtures("db_session")
+
 class EduconnectFraudTest:
     def test_on_educonnect_result(self):
         birth_date = (datetime.datetime.today() - relativedelta(years=15, days=5)).date()
@@ -537,7 +537,7 @@ def build_user_at_id_check(age, eligibility_type=users_models.EligibilityType.AG
     return user
 
 
-@pytest.mark.usefixtures("db_session")
+
 class HasUserPerformedIdentityCheckTest:
     def test_has_not_performed(self):
         user = build_user_at_id_check(18)
@@ -650,7 +650,7 @@ class HasUserPerformedIdentityCheckTest:
         assert fraud_api.has_user_performed_identity_check(user)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class DecideEligibilityTest:
     @freeze_time("2020-01-02")
     def test_19yo_is_eligible_if_application_at_18_yo(self):
@@ -829,7 +829,7 @@ class DecideEligibilityTest:
             )
 
 
-@pytest.mark.usefixtures("db_session")
+
 class DuplicateBeneficiaryEmailTest:
     @pytest.mark.parametrize(
         "input_email, anonymized_email",

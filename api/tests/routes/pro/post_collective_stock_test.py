@@ -9,9 +9,6 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 @freeze_time("2020-11-17 15:00:00")
 class Return200Test:
     def test_create_valid_stock_for_collective_offer(self, client):

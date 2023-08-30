@@ -8,7 +8,7 @@ from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
 
 
-@pytest.mark.usefixtures("db_session")
+
 class FormatDateAndHourForEmailTest:
     def test_should_return_formatted_event_beginningDatetime_when_offer_is_an_event(self):
         booking = bookings_factories.BookingFactory(
@@ -24,7 +24,7 @@ class FormatDateAndHourForEmailTest:
         assert format_booking_date_for_email(booking) == ""
 
 
-@pytest.mark.usefixtures("db_session")
+
 class FormatBookingHoursForEmailTest:
     def test_should_return_hours_and_minutes_from_beginningDatetime_when_contains_hours(self):
         booking = bookings_factories.BookingFactory(

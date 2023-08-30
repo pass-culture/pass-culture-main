@@ -20,9 +20,6 @@ from pcapi.routes.adage.v1.serialization import constants
 from pcapi.utils.date import format_into_utc_date
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 @freeze_time("2021-10-15 09:00:00")
 class Returns200Test:
     def test_confirm_collective_prebooking(self, client, caplog) -> None:  # type: ignore [no-untyped-def]

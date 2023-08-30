@@ -7,9 +7,6 @@ import pytest
 from pcapi.core.users import factories as users_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def test_get_user_email_pending_validation(app: Any, client: Any) -> None:
     user = users_factories.ProFactory(email="some@email.com")
     users_factories.EmailUpdateEntryFactory(user=user)

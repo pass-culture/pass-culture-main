@@ -5,9 +5,6 @@ from pcapi.core.mails.transactional.users.email_address_change_confirmation impo
 from pcapi.core.users import factories as users_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class SendinblueAddressEmailChangeConfirmationTest:
     def test_should_return_sendinblue_data_when_feature_toggled(self):
         # Given

@@ -46,7 +46,7 @@ from tests.connectors.titelive import fixtures
 IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CreateStockTest:
     def test_create_stock(self):
         # Given
@@ -216,7 +216,7 @@ class CreateStockTest:
         assert not mocked_send_first_venue_approved_offer_email_to_pro.called
 
 
-@pytest.mark.usefixtures("db_session")
+
 class EditStockTest:
     def test_edit_stock(self):
         # Given
@@ -512,7 +512,7 @@ class EditStockTest:
         assert not mocked_send_first_venue_approved_offer_email_to_pro.called
 
 
-@pytest.mark.usefixtures("db_session")
+
 class DeleteStockTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_delete_stock_basics(self, mocked_async_index_offer_ids):
@@ -617,7 +617,7 @@ class CreateMediationV2Test:
 
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     @override_settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
-    @pytest.mark.usefixtures("db_session")
+
     def test_ok(self, mocked_async_index_offer_ids, clear_tests_assets_bucket):
         # Given
         user = users_factories.ProFactory()
@@ -637,7 +637,7 @@ class CreateMediationV2Test:
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
     @override_settings(LOCAL_STORAGE_DIR=BASE_THUMBS_DIR)
-    @pytest.mark.usefixtures("db_session")
+
     def test_erase_former_mediations(self, clear_tests_assets_bucket):
         # Given
         user = users_factories.ProFactory()
@@ -687,7 +687,7 @@ class CreateMediationV2Test:
         assert len(os.listdir(self.THUMBS_DIR)) == existing_number_of_files
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CreateOfferTest:
     def test_create_offer_from_scratch(self):
         venue = offerers_factories.VenueFactory()
@@ -846,7 +846,7 @@ class CreateOfferTest:
         assert error.value.errors["musicType"] == ["Ce champ est obligatoire"]
 
 
-@pytest.mark.usefixtures("db_session")
+
 class UpdateOfferTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_basics(self, mocked_async_index_offer_ids):
@@ -1045,7 +1045,7 @@ class UpdateOfferTest:
         assert pending_offer.name == "Soliloquy"
 
 
-@pytest.mark.usefixtures("db_session")
+
 class BatchUpdateOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_activate_empty_list(self, mocked_async_index_offer_ids, caplog):
@@ -1137,7 +1137,7 @@ class BatchUpdateOffersTest:
         assert second_record.extra["venue_id"] == [offer1.venueId, offer2.venueId]
 
 
-@pytest.mark.usefixtures("db_session")
+
 class OfferExpenseDomainsTest:
     def test_offer_expense_domains(self):
         assert api.get_expense_domains(factories.OfferFactory(subcategoryId=subcategories.EVENEMENT_JEU.id)) == [
@@ -1157,7 +1157,7 @@ class OfferExpenseDomainsTest:
         }
 
 
-@pytest.mark.usefixtures("db_session")
+
 class AddCriterionToOffersTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_add_criteria_from_ean(self, mocked_async_index_offer_ids):
@@ -1251,7 +1251,7 @@ class AddCriterionToOffersTest:
         assert is_successful is False
 
 
-@pytest.mark.usefixtures("db_session")
+
 class RejectInappropriateProductTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     @mock.patch("pcapi.core.offers.api.send_booking_cancellation_emails_to_user_and_offerer")
@@ -1322,7 +1322,7 @@ class RejectInappropriateProductTest:
         mocked_send_booking_cancellation_emails_to_user_and_offerer.assert_called()
 
 
-@pytest.mark.usefixtures("db_session")
+
 class DeactivatePermanentlyUnavailableProductTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_should_deactivate_permanently_unavailable_product(self, mocked_async_index_offer_ids):
@@ -1351,7 +1351,7 @@ class DeactivatePermanentlyUnavailableProductTest:
         assert set(mocked_async_index_offer_ids.call_args[0][0]) == {o.id for o in offers}
 
 
-@pytest.mark.usefixtures("db_session")
+
 class ResolveOfferValidationRuleTest:
     def test_offer_validation_with_one_rule_with_in(self):
         offer = factories.OfferFactory(name="REJECTED")
@@ -1750,7 +1750,7 @@ class ResolveOfferValidationRuleTest:
         assert models.ValidationRuleOfferLink.query.count() == 3
 
 
-@pytest.mark.usefixtures("db_session")
+
 class LoadProductByEan:
     def test_returns_product_if_found_and_is_gcu_compatible(self):
         ean = "2221001648"
@@ -1779,7 +1779,7 @@ class LoadProductByEan:
 
 
 @freeze_time("2020-01-05 10:00:00")
-@pytest.mark.usefixtures("db_session")
+
 class UnindexExpiredOffersTest:
     @override_settings(ALGOLIA_DELETING_OFFERS_CHUNK_SIZE=2)
     @mock.patch("pcapi.core.search.unindex_offer_ids")
@@ -1816,7 +1816,7 @@ class UnindexExpiredOffersTest:
         ]
 
 
-@pytest.mark.usefixtures("db_session")
+
 class WhitelistExistingProductTest:
     def test_modify_product_if_existing_and_not_cgcompatible_nor_synchronizable(self):
         ean = "9782070455379"
@@ -1851,7 +1851,7 @@ class WhitelistExistingProductTest:
         assert len(product.extraData["gtl_id"]) == 8
 
 
-@pytest.mark.usefixtures("db_session")
+
 class DeleteDraftOffersTest:
     def test_delete_draft_with_mediation_offer_criterion_activation_code_and_stocks(self, client):
         criterion = criteria_factories.CriterionFactory()
@@ -1886,7 +1886,7 @@ class FormatExtraDataTest:
         }
 
 
-@pytest.mark.usefixtures("db_session")
+
 class UpdateStockQuantityToMatchCinemaVenueProviderRemainingPlacesTest:
     DATETIME_10_DAYS_AFTER = datetime.today() + timedelta(days=10)
     DATETIME_10_DAYS_AGO = datetime.today() - timedelta(days=10)

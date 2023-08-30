@@ -6,7 +6,7 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import Booking
 
 
-@pytest.mark.usefixtures("db_session")
+
 class BookingFactoryTest:
     def test_cancellation_limit_date_is_saved_to_db(self):
         booking = BookingFactory(stock__beginningDatetime=datetime.datetime.utcnow())

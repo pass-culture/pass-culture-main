@@ -17,9 +17,6 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import override_features
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 @freeze_time("2021-10-15 12:48:00")
 class SendEventReminderEmailToBeneficiaryTest:
     def test_sendinblue_send_email(self):

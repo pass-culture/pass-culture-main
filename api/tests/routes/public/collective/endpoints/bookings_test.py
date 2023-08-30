@@ -6,9 +6,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class GetCollectiveBookingTest:
     def test_get_collective_booking(self, client):
         vp = providers_factories.VenueProviderFactory(isActive=True)

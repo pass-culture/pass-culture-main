@@ -6,9 +6,6 @@ from pcapi.core.mails.transactional.users.email_address_change import get_valida
 from pcapi.core.users import factories as users_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class SendinblueEmailAddressChangeTest:
     def test_should_return_sendinblue_confirmation_data(self):
         # Given

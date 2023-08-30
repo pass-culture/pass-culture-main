@@ -6,7 +6,7 @@ from pcapi.core.offers import factories as offers_factories
 from . import utils
 
 
-@pytest.mark.usefixtures("db_session")
+
 class GetProductByEanTest:
     def test_valid_ean(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()

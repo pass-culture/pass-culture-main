@@ -13,7 +13,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 import pcapi.core.offerers.factories as offerers_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 class ProOffererAttachmentValidationEmailTest:
     def test_email_data(self):
         # given

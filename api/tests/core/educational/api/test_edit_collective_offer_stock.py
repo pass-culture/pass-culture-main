@@ -14,7 +14,7 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.serialization import collective_stock_serialize
 
 
-@pytest.mark.usefixtures("db_session")
+
 class EditCollectiveOfferStocksTest:
     def test_should_update_all_fields_when_all_changed(self) -> None:
         # Given
@@ -270,7 +270,7 @@ class EditCollectiveOfferStocksTest:
         assert stock.beginningDatetime == new_event_date.replace(tzinfo=None)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class returnErrorTest:
     def test_edit_stock_of_non_approved_offer_fails(self) -> None:
         # Given

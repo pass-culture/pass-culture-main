@@ -9,7 +9,7 @@ from tests.conftest import TestClient
 
 
 class Returns200Test:
-    def when_current_user_has_rights_on_offer(self, app, db_session):
+    def when_current_user_has_rights_on_offer(self, app):
         # given
         offer = offers_factories.OfferFactory()
         offerers_factories.UserOffererFactory(
@@ -39,7 +39,7 @@ class Returns200Test:
 
 
 class Returns400Test:
-    def test_delete_non_approved_offer_fails(self, app, db_session):
+    def test_delete_non_approved_offer_fails(self, app):
         pending_validation_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
         stock = offers_factories.StockFactory(offer=pending_validation_offer)
         user = users_factories.AdminFactory()
@@ -52,7 +52,7 @@ class Returns400Test:
 
 
 class Returns403Test:
-    def when_current_user_has_no_rights_on_offer(self, app, db_session):
+    def when_current_user_has_no_rights_on_offer(self, app):
         # given
         pro = users_factories.ProFactory(email="notadmin@example.com")
         stock = offers_factories.StockFactory()

@@ -46,7 +46,7 @@ class VenueValidationTest:
         api_errors = validate(venue)
         assert api_errors.errors == {}
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_siren_and_siret_mismatch(self):
         venue = offerers_factories.VenueFactory(
             managingOfferer__siren="987654321",
@@ -55,7 +55,7 @@ class VenueValidationTest:
         api_errors = validate(venue)
         assert api_errors.errors == {"siret": ["Le code SIRET doit correspondre à un établissement de votre structure"]}
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_missing_offerer_siren(self):
         venue = offerers_factories.VenueFactory(
             managingOfferer__siren=None,

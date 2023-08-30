@@ -5,9 +5,6 @@ import pytest
 from pcapi.core.users import factories as users_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def test_log_request_details(client, caplog):
     users_factories.BeneficiaryGrant18Factory(email="email@example.com")
     client.with_token("email@example.com")

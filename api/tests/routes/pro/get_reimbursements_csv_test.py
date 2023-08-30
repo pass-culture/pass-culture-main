@@ -11,7 +11,7 @@ import pcapi.core.users.factories as users_factories
 from tests.conftest import TestClient
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_with_venue_filter(app):
     beginning_date_iso_format = (date.today() - timedelta(days=2)).isoformat()
     ending_date_iso_format = (date.today() + timedelta(days=2)).isoformat()
@@ -41,7 +41,7 @@ def test_with_venue_filter(app):
     assert len(rows) == 1 + 1  # header + payments
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_with_reimbursement_period_filter(app):
     beginning_date_iso_format = (date.today() - timedelta(days=2)).isoformat()
     ending_date_iso_format = (date.today() + timedelta(days=2)).isoformat()
@@ -87,7 +87,7 @@ def test_with_reimbursement_period_filter(app):
     assert len(rows) == 1 + 2  # header + payments
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_with_non_given_reimbursement_period(app):
     user_offerer = offerers_factories.UserOffererFactory()
     pro = user_offerer.user
@@ -106,7 +106,7 @@ def test_with_non_given_reimbursement_period(app):
     ]
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_admin_can_access_reimbursements_data_with_venue_filter(app, client):
     # Given
     beginning_date = date.today() - timedelta(days=2)
@@ -136,7 +136,7 @@ def test_admin_can_access_reimbursements_data_with_venue_filter(app, client):
     assert len(rows) == 2  # header + payments
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_admin_cannot_access_reimbursements_data_without_venue_filter(app, client):
     # Given
     beginning_date = date.today() - timedelta(days=2)

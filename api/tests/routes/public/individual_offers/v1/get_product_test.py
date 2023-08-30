@@ -12,7 +12,7 @@ from pcapi.utils import human_ids
 from . import utils
 
 
-@pytest.mark.usefixtures("db_session")
+
 class GetProductTest:
     def test_product_without_stock(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()

@@ -7,9 +7,6 @@ import pcapi.core.users.factories as users_factory
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class Returns204Test:
     def test_delete_draft(self, client):
         pro = users_factory.ProFactory()

@@ -10,7 +10,7 @@ from pcapi.utils import human_ids
 from . import utils
 
 
-@pytest.mark.usefixtures("db_session")
+
 class GetEventTest:
     def test_404_when_requesting_a_product(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()

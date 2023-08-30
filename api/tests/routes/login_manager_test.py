@@ -5,7 +5,7 @@ import pytest
 import pcapi.core.users.factories as users_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 class BasicAuthenticationTest:
     def test_good_password(self, client):
         password = "sécrét"

@@ -8,9 +8,6 @@ import pcapi.core.search.testing as search_testing
 import pcapi.core.users.factories as users_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def test_offer_indexation_on_booking_cycle(app):
     beneficiary = users_factories.BeneficiaryGrant18Factory()
     stock = offers_factories.StockFactory(quantity=1)

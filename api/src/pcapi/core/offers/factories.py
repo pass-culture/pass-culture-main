@@ -77,7 +77,7 @@ class OfferFactory(BaseFactory):
     ) -> models.Offer:
         # Graciously provide the required idAtProvider if lastProvider is given.
         if kwargs.get("lastProvider") and not kwargs.get("idAtProvider"):
-            kwargs["idAtProvider"] = uuid.uuid4()
+            kwargs["idAtProvider"] = str(uuid.uuid4())
 
         if kwargs.get("isActive") is None:
             kwargs["isActive"] = kwargs.get("validation") not in (

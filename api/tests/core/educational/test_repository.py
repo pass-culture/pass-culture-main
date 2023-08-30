@@ -12,9 +12,6 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 @freeze_time("2022-03-20")
 class FindByProUserTest:
     def test_should_return_only_expected_collective_booking_attributes(self, app):

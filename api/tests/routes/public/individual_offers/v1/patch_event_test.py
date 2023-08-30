@@ -8,7 +8,7 @@ from pcapi.core.testing import override_features
 from . import utils
 
 
-@pytest.mark.usefixtures("db_session")
+
 class PatchEventTest:
     def test_edit_product_offer_returns_404(self, client):
         _, api_key = utils.create_offerer_provider_linked_to_venue()

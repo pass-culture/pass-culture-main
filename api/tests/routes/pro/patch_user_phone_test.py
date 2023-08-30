@@ -5,7 +5,7 @@ import pytest
 import pcapi.core.users.factories as users_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_patch_user_identity(client: Any) -> None:
     user = users_factories.ProFactory(phoneNumber="0123456789")
     form_data = {"phoneNumber": "0678961233"}
@@ -17,7 +17,7 @@ def test_patch_user_identity(client: Any) -> None:
     assert user.phoneNumber == "+33678961233"
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_patch_user_identity_missing_fields(client: Any) -> None:
     user = users_factories.ProFactory(phoneNumber="0123456789")
 
@@ -28,7 +28,7 @@ def test_patch_user_identity_missing_fields(client: Any) -> None:
     assert user.phoneNumber == "+33123456789"
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_patch_user_identity_without_auth(client: Any) -> None:
     user = users_factories.ProFactory(phoneNumber="0123456789")
     form_data = {"firstName": "Barrack", "lastName": "Afrit"}

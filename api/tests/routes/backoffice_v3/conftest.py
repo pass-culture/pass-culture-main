@@ -20,7 +20,6 @@ from pcapi.models.validation_status_mixin import ValidationStatus
 
 
 pytestmark = [
-    pytest.mark.usefixtures("db_session"),
     pytest.mark.backoffice_v3,
 ]
 

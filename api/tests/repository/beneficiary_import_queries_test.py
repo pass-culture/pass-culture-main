@@ -6,7 +6,7 @@ from pcapi.core.subscription.dms import repository as dms_repository
 
 
 class GetAlreadyProcessedApplicationIdTest:
-    @pytest.mark.usefixtures("db_session")
+
     def test_already_processed_application_numbers(self):
         content = fraud_factories.DMSContentFactory(application_number=8888, procedure_number=123)
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -40,7 +40,7 @@ class GetAlreadyProcessedApplicationIdTest:
         application_numbers = dms_repository.get_already_processed_applications_ids(123)
         assert application_numbers == {8888, 9999, 2222}
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_already_processed_application_numbers_with_all_fraud_checks_status(self):
         content = fraud_factories.DMSContentFactory(application_number=1111, procedure_number=123)
         fraud_factories.BeneficiaryFraudCheckFactory(

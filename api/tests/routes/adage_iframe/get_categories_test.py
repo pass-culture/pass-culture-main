@@ -9,9 +9,6 @@ from pcapi.core.categories.subcategories_v2 import NativeCategory
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 @patch(
     "pcapi.core.categories.subcategories.ALL_SUBCATEGORIES",
     (

@@ -7,7 +7,7 @@ import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CollectiveOffersGetEducationalDomainsTest:
     def test_list_educational_domains(self, client):
         # Given

@@ -11,9 +11,6 @@ import pcapi.core.providers.factories as providers_factories
 from pcapi.routes.serialization import BaseModel
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class BoostBuildUrlTest:
     def test_build_url(self):
         cinema_url = "https://cinema.example.com/"

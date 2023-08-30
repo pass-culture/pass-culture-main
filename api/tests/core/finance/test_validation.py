@@ -56,7 +56,7 @@ class CustomReimbursementRuleValidationTest:
         with pytest.raises(exceptions.WrongDateForReimbursementRule):
             validation.validate_reimbursement_rule(rule)
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_check_no_conflict_if_timespans_do_not_overlap(self):
         today = datetime.datetime.today()
         yesterday = today - datetime.timedelta(days=1)
@@ -67,7 +67,7 @@ class CustomReimbursementRuleValidationTest:
         rule2 = self._make_rule(offererId=rule1.offererId, timespan=timespan2)
         validation.validate_reimbursement_rule(rule2)  # should not raise
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_check_no_conflict_if_different_subcategories(self):
         tomorrow = datetime.datetime.today() + datetime.timedelta(days=1)
         timespan = (tomorrow, None)
@@ -75,13 +75,13 @@ class CustomReimbursementRuleValidationTest:
         rule2 = self._make_rule(offererId=rule1.offererId, timespan=timespan, subcategories=["VOD"])
         validation.validate_reimbursement_rule(rule2)  # should not raise
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_check_no_conflicts_with_itself(self):
         tomorrow = datetime.datetime.today() + datetime.timedelta(days=1)
         rule = factories.CustomReimbursementRuleFactory(timespan=(tomorrow, None))
         validation.validate_reimbursement_rule(rule)
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_check_conflicts_if_subcategories_overlap(self):
         tomorrow = datetime.datetime.today() + datetime.timedelta(days=1)
         timespan = (tomorrow, None)
@@ -90,7 +90,7 @@ class CustomReimbursementRuleValidationTest:
         with pytest.raises(exceptions.ConflictingReimbursementRule):
             validation.validate_reimbursement_rule(rule2)
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_check_conflicts_if_existing_rule_on_all_subcategories(self):
         tomorrow = datetime.datetime.today() + datetime.timedelta(days=1)
         timespan = (tomorrow, None)

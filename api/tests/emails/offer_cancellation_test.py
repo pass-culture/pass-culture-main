@@ -15,7 +15,7 @@ from pcapi.core.users import factories as users_factories
 
 
 class MakeOffererDrivenCancellationEmailForOffererTest:
-    @pytest.mark.usefixtures("db_session")
+
     def test_offer_cancellation_confirmation_by_offerer_event_when_no_other_booking(self, app):
         # Given
         beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
@@ -52,7 +52,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         html_no_recap = str(email_html.find("p", {"id": "no-recap"}))
         assert "Aucune réservation" in html_no_recap
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_offer_cancellation_confirmation_by_offerer_event_when_other_booking(self, app):
         # Given
         other_beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -77,7 +77,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         assert other_beneficiary.email in html_recap_table
         assert booking2.token in html_recap_table
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_offer_cancellation_confirmation_by_offerer_thing_and_already_existing_booking(self, app):
         # Given
         stock = offers_factories.ThingStockFactory(price=0, quantity=10)

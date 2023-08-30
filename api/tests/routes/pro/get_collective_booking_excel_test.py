@@ -12,9 +12,6 @@ from pcapi.routes.serialization.collective_bookings_serialize import COLLECTIVE_
 from tests.conftest import TestClient
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def reader_from_response(response):
     wb = openpyxl.load_workbook(BytesIO(response.data))
     return wb.active

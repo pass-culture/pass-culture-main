@@ -7,7 +7,7 @@ from pcapi.scripts.bulk_update_is_synchronization_compatible_product_via_eans im
 )
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_should_mark_synchronized_offers_and_products_as_not_synchronization_compatible_via_ean():
     product_1 = ProductFactory(id=1, extraData={"ean": "5555555555555"})
     product_2 = ProductFactory(id=2, extraData={"ean": "6666666666666"})
@@ -25,7 +25,7 @@ def test_should_mark_synchronized_offers_and_products_as_not_synchronization_com
     assert not product_4.isSynchronizationCompatible
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_should_mark_products_as_synchronization_compatible_via_ean():
     product_1 = ProductFactory(id=1, extraData={"ean": "5555555555555"}, isSynchronizationCompatible=False)
     product_2 = ProductFactory(id=2, extraData={"ean": "6666666666666"}, isSynchronizationCompatible=False)

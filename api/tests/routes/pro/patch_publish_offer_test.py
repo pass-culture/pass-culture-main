@@ -8,7 +8,7 @@ import pcapi.core.offers.models as offers_models
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns404Test:
     def test_patch_publish_offer_unaccessible(self, client):
         stock = offers_factories.StockFactory()
@@ -25,7 +25,7 @@ class Returns404Test:
 
 
 @patch("pcapi.core.search.async_index_offer_ids")
-@pytest.mark.usefixtures("db_session")
+
 class Returns204Test:
     @patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")
     def test_patch_publish_offer(

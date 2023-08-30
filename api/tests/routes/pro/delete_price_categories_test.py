@@ -5,9 +5,6 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class Return200Test:
     def test_delete_price_category(self, client):
         offer = offers_factories.ThingOfferFactory(isActive=False, validation=offers_models.OfferValidationStatus.DRAFT)

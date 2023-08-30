@@ -10,9 +10,6 @@ from pcapi.core.users import factories as user_factories
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 @override_settings(ADAGE_API_URL="https://adage_base_url")
 @override_settings(ADAGE_API_KEY="adage-api-key")
 class Returns204Test:

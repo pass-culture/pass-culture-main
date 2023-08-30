@@ -10,9 +10,6 @@ import pcapi.core.offerers.factories as offerers_factories
 from tests.conftest import TestClient
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def reader_from_response(response):
     csv_pseudo_file = StringIO(response.data.decode("utf-8-sig"))
     reader = csv.DictReader(csv_pseudo_file, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)

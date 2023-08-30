@@ -6,7 +6,7 @@ from pcapi.core.users.models import UserRole
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users import create_industrial_app_users
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CreateIndustrialWebappUsersTest:
     def test_create_industrial_app_users(self):
         create_industrial_app_users()

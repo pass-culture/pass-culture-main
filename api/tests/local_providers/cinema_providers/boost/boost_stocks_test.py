@@ -30,7 +30,7 @@ FUTURE_DATE_STR = (datetime.date.today() + datetime.timedelta(days=boost_constan
 )
 
 
-@pytest.mark.usefixtures("db_session")
+
 class BoostStocksTest:
     def should_return_providable_info_on_next(self, requests_mock):
         boost_provider = get_provider_by_local_class("BoostStocks")

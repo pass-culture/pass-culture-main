@@ -5,7 +5,7 @@ from pcapi.core.educational.api.institution import synchronise_adage_and_institu
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 
 
-@pytest.mark.usefixtures("db_session")
+
 class ReturnSuccessTest:
     def test_synchronise_educational_institution_from_adage(self, client):
         # GIVEN

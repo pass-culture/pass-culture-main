@@ -24,7 +24,7 @@ from pcapi.routes.serialization import collective_stock_serialize
 
 
 @freeze_time("2020-11-17 15:00:00")
-@pytest.mark.usefixtures("db_session")
+
 class CreateCollectiveOfferStocksTest:
     def should_create_one_stock_on_collective_offer_stock_creation(self) -> None:
         # Given
@@ -94,7 +94,7 @@ class CreateCollectiveOfferStocksTest:
 
 
 @freeze_time("2020-01-05 10:00:00")
-@pytest.mark.usefixtures("db_session")
+
 class UnindexExpiredOffersTest:
     @override_settings(ALGOLIA_DELETING_COLLECTIVE_OFFERS_CHUNK_SIZE=2)
     @mock.patch("pcapi.core.search.unindex_collective_offer_ids")
@@ -392,7 +392,7 @@ class GetCulturalPartnersTest:
 
 
 @freeze_time("2022-11-26 18:29:20.891028")
-@pytest.mark.usefixtures("db_session")
+
 class EACPendingBookingWithConfirmationLimitDate3DaysTest:
     @mock.patch(
         "pcapi.core.mails.transactional.educational.eac_pending_booking_confirmation_limit_date_in_3_days.mails.send"
@@ -459,7 +459,7 @@ class EACPendingBookingWithConfirmationLimitDate3DaysTest:
 
 
 @freeze_time("2020-01-05 10:00:00")
-@pytest.mark.usefixtures("db_session")
+
 class NotifyProUserOneDayTest:
     @mock.patch("pcapi.core.mails.transactional.educational.eac_one_day_before_event.mails.send")
     def test_notify_pro_users_one_day(self, mock_mail_sender) -> None:

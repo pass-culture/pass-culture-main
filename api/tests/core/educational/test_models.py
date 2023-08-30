@@ -18,9 +18,6 @@ from pcapi.utils.image_conversion import CropParams
 from pcapi.utils.image_conversion import ImageRatio
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class EducationalDepositTest:
     def test_final_educational_deposit_amounts(self) -> None:
         # When

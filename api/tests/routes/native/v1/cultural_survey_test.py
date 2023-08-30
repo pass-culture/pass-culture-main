@@ -13,9 +13,6 @@ from pcapi.core.users import testing
 from pcapi.utils.string import u_nbsp
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class CulturalSurveyQuestionsTest:
     def test_get_cultural_survey_questions(self, client):
         user = users_factories.UserFactory(

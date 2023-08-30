@@ -3,9 +3,6 @@ import pytest
 import pcapi.core.offerers.factories as offerer_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class VenuesTest:
     def test_get_venue(self, client):
         venue = offerer_factories.VenueFactory(

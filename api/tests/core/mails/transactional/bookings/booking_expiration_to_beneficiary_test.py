@@ -19,7 +19,7 @@ from pcapi.core.offers.factories import ProductFactory
 import pcapi.core.users.factories as users_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 class SendExpiredBookingsEmailToBeneficiarySendinblueTest:
     def test_should_send_email_to_beneficiary_when_expired_book_booking_cancelled(self):
         amnesiac_user = users_factories.BeneficiaryGrant18Factory(email="dory@example.com")

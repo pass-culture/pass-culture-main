@@ -6,9 +6,6 @@ from pcapi.connectors import sirene
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.users.factories as users_factories
 
-
-pytestmark = pytest.mark.usefixtures("db_session")
-
 REQUEST_BODY = {
     "address": "3 RUE DE VALOIS",
     "city": "Paris",

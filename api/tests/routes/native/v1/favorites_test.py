@@ -18,9 +18,6 @@ from tests.conftest import TestClient
 
 from . import utils
 
-
-pytestmark = pytest.mark.usefixtures("db_session")
-
 FAVORITES_URL = "/native/v1/me/favorites"
 FAVORITES_COUNT_URL = "/native/v1/me/favorites/count"
 

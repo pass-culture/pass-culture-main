@@ -15,7 +15,7 @@ from pcapi.scripts.subscription.dms.handle_inactive_dms_applications import hand
 from tests.scripts.beneficiary.fixture import make_parsed_graphql_application
 
 
-@pytest.mark.usefixtures("db_session")
+
 class HandleInactiveApplicationTest:
     @patch.object(api_dms.DMSGraphQLClient, "mark_without_continuation")
     @patch.object(api_dms.DMSGraphQLClient, "make_on_going")
@@ -135,7 +135,7 @@ class HandleInactiveApplicationTest:
         assert inactive_fraud_check.status == fraud_models.FraudCheckStatus.CANCELED
 
 
-@pytest.mark.usefixtures("db_session")
+
 class IsNeverEligibleTest:
     @freezegun.freeze_time("2022-04-27")
     def test_19_yo_at_generalisation_from_not_test_department(self):

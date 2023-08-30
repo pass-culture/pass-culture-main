@@ -6,9 +6,6 @@ from pcapi.core.mails.transactional.users.accepted_as_beneficiary import get_acc
 from pcapi.core.users import factories as users_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class GetAcceptedAsBeneficiaryEmailSendinblueTest:
     def test_return_correct_email_metadata(self):
         # Given

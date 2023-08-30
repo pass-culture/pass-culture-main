@@ -7,9 +7,6 @@ import pcapi.core.educational.api.institution as api
 import pcapi.core.educational.factories as educational_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 @pytest.fixture(name="freeze")
 def freeze_fixture():
     with freeze_time("2023-12-15 16:00:00"):

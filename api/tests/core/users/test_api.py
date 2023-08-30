@@ -46,9 +46,6 @@ from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from tests.test_utils import gen_offerer_tags
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class GenerateAndSaveTokenTest:
     def test_generate_and_save_token(self, app):
         user = users_factories.UserFactory(email="py@test.com")
@@ -213,7 +210,7 @@ def _assert_user_action_history_as_expected(
     assert action.comment == comment
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CancelBeneficiaryBookingsOnSuspendAccountTest:
     def should_cancel_booking_when_the_offer_is_a_thing(self):
         booking_thing = bookings_factories.BookingFactory(
@@ -279,7 +276,7 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
         assert booking_event.status is BookingStatus.CONFIRMED
 
 
-@pytest.mark.usefixtures("db_session")
+
 class SuspendAccountTest:
     def test_suspend_admin(self):
         user = users_factories.AdminFactory()
@@ -389,7 +386,7 @@ class UnsuspendAccountTest:
         )
 
 
-@pytest.mark.usefixtures("db_session")
+
 class ChangeUserEmailTest:
     old_email = "oldemail@mail.com"
     new_email = "newemail@mail.com"
@@ -594,7 +591,7 @@ class SetOffererDepartementCodeTest:
         assert updated_user.departementCode == "75"
 
 
-@pytest.mark.usefixtures("db_session")
+
 class SetProTutoAsSeenTest:
     def should_set_has_seen_pro_tutorials_to_true_for_user(self):
         # Given
@@ -607,7 +604,7 @@ class SetProTutoAsSeenTest:
         assert users_models.User.query.one().hasSeenProTutorials is True
 
 
-@pytest.mark.usefixtures("db_session")
+
 class SetProRgsAsSeenTest:
     def should_set_has_seen_pro_rgs_to_true_for_user(self):
         # Given
@@ -620,7 +617,7 @@ class SetProRgsAsSeenTest:
         assert users_models.User.query.one().hasSeenProRgs is True
 
 
-@pytest.mark.usefixtures("db_session")
+
 class UpdateUserInfoTest:
     def test_update_user_info(self):
         user = users_factories.UserFactory(email="initial@example.com")
@@ -662,7 +659,7 @@ class UpdateUserInfoTest:
         assert user.deposits[0].expirationDate == datetime.datetime(2021, 1, 1)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class DomainsCreditTest:
     def test_get_domains_credit_v1(self):
         user = users_factories.BeneficiaryGrant18Factory(deposit__version=1, deposit__amount=500)
@@ -1694,7 +1691,7 @@ class NotifyUserBeforeDeletionUponSuspensionTest:
         assert len(mails_testing.outbox) == 0
 
 
-@pytest.mark.usefixtures("db_session")
+
 class GetSuspendedAccountsUponUserRequestSinceTest:
     def test_get_suspended_upon_user_request_accounts_since(self) -> None:
         one_week_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)

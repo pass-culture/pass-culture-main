@@ -11,7 +11,7 @@ from pcapi.settings import PRO_URL
 from pcapi.utils.human_ids import humanize
 
 
-@pytest.mark.usefixtures("db_session")
+
 class ProReminderVenueCreationEmailTest:
     def test_email_data(self):
         # given

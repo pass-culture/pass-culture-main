@@ -15,7 +15,7 @@ from pcapi.core.offers import models as offers_models
 from . import utils
 
 
-@pytest.mark.usefixtures("db_session")
+
 class PostProductByEanTest:
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_valid_ean_with_stock(self, client):
@@ -368,7 +368,7 @@ class PostProductByEanTest:
         assert created_offer.activeStocks[0].quantity == 22
 
 
-@pytest.mark.usefixtures("db_session")
+
 class JsonFormatTest:
     def test_invalid_json_raise_syntax_error(self, client):
         utils.create_offerer_provider_linked_to_venue()

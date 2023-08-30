@@ -9,7 +9,7 @@ from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.educonnect import api as educonnect_subscription_api
 
 
-@pytest.mark.usefixtures("db_session")
+
 class SubscriptionMessageTest:
     def test_ok(self):
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(

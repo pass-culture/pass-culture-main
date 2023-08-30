@@ -9,9 +9,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class LogActionTest:
     def test_log_action(self):
         admin = users_factories.AdminFactory()

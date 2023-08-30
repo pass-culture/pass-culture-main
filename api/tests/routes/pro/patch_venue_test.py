@@ -11,9 +11,6 @@ from tests.conftest import TestClient
 from tests.routes.pro.post_venue_test import venue_malformed_test_data
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def populate_missing_data_from_venue(venue_data: dict, venue: offerers_models.Venue) -> dict:
     return {
         "address": venue.address,

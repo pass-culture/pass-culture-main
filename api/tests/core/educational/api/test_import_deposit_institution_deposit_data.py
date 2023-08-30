@@ -9,7 +9,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.api.institution import import_deposit_institution_data
 
 
-@pytest.mark.usefixtures("db_session")
+
 class ImportDepositInstitutionDataTest:
     def test_create_institution(self) -> None:
         ansco = educational_factories.EducationalYearFactory()

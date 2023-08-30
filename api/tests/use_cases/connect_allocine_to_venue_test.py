@@ -9,7 +9,7 @@ import pcapi.core.providers.models as providers_models
 from pcapi.use_cases.connect_venue_to_allocine import connect_venue_to_allocine
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_connect_venue_with_siret_to_allocine_provider():
     # Given
     venue = offerers_factories.VenueFactory()
@@ -45,7 +45,7 @@ def test_connect_venue_with_siret_to_allocine_provider():
     assert allocine_pivot.venueId == venue.id
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_connect_venue_without_siret_to_allocine_provider():
     # Given
     venue = offerers_factories.VenueFactory()
@@ -75,7 +75,7 @@ def test_connect_venue_without_siret_to_allocine_provider():
     assert venue_provider_price_rule.price == Decimal("9.99")
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_should_throw_when_venue_is_unknown_by_allocine():
     # Given
     venue = offerers_factories.VenueFactory()

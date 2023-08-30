@@ -15,7 +15,7 @@ IMAGES_DIR = Path(tests.__path__[0]) / "files"
 UPLOAD_FOLDER = settings.LOCAL_STORAGE_DIR / CollectiveOfferTemplate.FOLDER
 
 
-@pytest.mark.usefixtures("db_session")
+
 class DeleteImageFromFileTest:
     def test_delete_from_file(self, client):
         offer = CollectiveOfferTemplateFactory()

@@ -5,7 +5,7 @@ import pcapi.core.offerers.models as offerers_models
 from pcapi.scripts.user_offerer.delete_user_offerer_from_csv import _delete_user_offerers_from_rows
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_should_delete_user_offerers_in_csv():
     # Given
     user_offerer1 = offerers_factories.UserOffererFactory()

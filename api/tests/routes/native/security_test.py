@@ -7,9 +7,6 @@ from pcapi.routes.native.security import authenticated_maybe_inactive_user_requi
 from tests.serialization.serialization_decorator_test import test_blueprint
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 @test_blueprint.route("/authenticated_and_active_user_required", methods=["GET"])
 @authenticated_and_active_user_required
 def authenticated_and_active_user_required_route(*args, **kwargs) -> None:

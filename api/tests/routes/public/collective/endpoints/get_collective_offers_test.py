@@ -9,7 +9,7 @@ from pcapi.core.providers import factories as provider_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
-@pytest.mark.usefixtures("db_session")
+
 @freeze_time("2022-05-01 15:00:00")
 class CollectiveOffersPublicGetOfferTest:
     def test_get_offers(self, client):

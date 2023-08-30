@@ -18,9 +18,6 @@ import pcapi.repository
 from pcapi.utils.string import u_nbsp
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class NextStepTest:
     @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
     def test_next_subscription(self, client):
@@ -1211,7 +1208,7 @@ class HonorStatementTest:
         assert fraud_check.eligibilityType == eligibility_type
 
 
-@pytest.mark.usefixtures("db_session")
+
 class ActivateUserTest:
     @pytest.mark.parametrize(
         "age, fraud_check_type",

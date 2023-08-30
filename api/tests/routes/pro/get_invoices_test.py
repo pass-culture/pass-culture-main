@@ -7,9 +7,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class GetInvoicesTest:
     def test_get_invoices(self, client):
         offerer = offerers_factories.OffererFactory()

@@ -7,7 +7,7 @@ from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalYearFactory
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns200Test:
     def test_get_educational_deposit(self, client) -> None:
         educational_year1 = EducationalYearFactory()
@@ -56,7 +56,7 @@ class Returns200Test:
 
 
 class Returns404Test:
-    def test_get_educational_deposit_not_found(self, client: Any, db_session: Any) -> None:
+    def test_get_educational_deposit_not_found(self, client):
         educational_institution = EducationalInstitutionFactory()
         EducationalDepositFactory(
             educationalInstitution=educational_institution,

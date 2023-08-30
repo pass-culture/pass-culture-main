@@ -41,9 +41,6 @@ from pcapi.notifications.push import testing as batch_testing
 
 MAX_BATCH_PARAMETER_SIZE = 30
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def test_update_external_user():
     user = BeneficiaryGrant18Factory(
         email="jeanne@example.com",

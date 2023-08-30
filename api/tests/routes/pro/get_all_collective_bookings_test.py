@@ -12,15 +12,12 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.utils.human_ids import humanize
 
-
-pytestmark = pytest.mark.usefixtures("db_session")
-
 BOOKING_PERIOD_PARAMS = "bookingPeriodBeginningDate=2022-03-10&bookingPeriodEndingDate=2022-03-12"
 
 BOOKING_PERIOD = (datetime(2022, 3, 10, tzinfo=timezone.utc).date(), datetime(2022, 3, 12, tzinfo=timezone.utc).date())
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns200Test:
     @freeze_time("2022-05-01 15:00:00")
     def test_when_user_is_admin(self, client):
@@ -655,7 +652,7 @@ class Returns200Test:
         assert response.json["bookingsRecap"] == expected_bookings_recap
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns400Test:
     def when_page_number_is_not_a_number(self, client):
         pro = users_factories.ProFactory()

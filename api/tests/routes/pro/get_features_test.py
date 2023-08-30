@@ -4,7 +4,7 @@ from pcapi.core.users import factories as users_factories
 
 
 class Returns200Test:
-    @pytest.mark.usefixtures("db_session")
+
     def when_user_is_logged_in(self, client):
         # given
         user = users_factories.UserFactory()
@@ -17,7 +17,7 @@ class Returns200Test:
         feature_name_keys = [feature_dict["nameKey"] for feature_dict in response.json]
         assert "SYNCHRONIZE_ALLOCINE" in feature_name_keys
 
-    @pytest.mark.usefixtures("db_session")
+
     def when_user_is_not_logged_in(self, client):
         # when
         response = client.get("/features")

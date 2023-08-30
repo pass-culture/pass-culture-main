@@ -14,7 +14,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 
-@pytest.mark.usefixtures("db_session")
+
 class VenueAutomationsTest:
     def test_get_inactive_venues_emails(self):
         date_92_days_ago = datetime.utcnow() - relativedelta(days=92)

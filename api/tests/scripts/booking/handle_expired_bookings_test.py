@@ -20,9 +20,6 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.scripts.booking import handle_expired_bookings
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class CancelExpiredBookingsTest:
     def test_should_cancel_old_thing_that_can_expire_booking(self, app) -> None:
         now = datetime.utcnow()

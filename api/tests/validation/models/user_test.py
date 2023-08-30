@@ -8,7 +8,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.validation.models.user import validate
 
 
-@pytest.mark.usefixtures("db_session")
+
 class UserAlreadyExistsTest:
     def test_new_user_with_existing_email(self):
         existing = users_factories.UserFactory()

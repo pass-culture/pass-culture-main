@@ -16,9 +16,6 @@ from pcapi.core.offers.factories import ProductFactory
 import pcapi.core.users.factories as users_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class FilterBooksBookingsTest:
     def test_filter_books_bookings_with_empty_list(self):
         # Given

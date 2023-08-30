@@ -8,9 +8,6 @@ from pcapi.local_providers.chunk_manager import save_chunks
 from pcapi.models import db
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 # XXX: These unit tests are too much tied to what happens before
 # `save_chunks()` is called, e.g. how ids are manually set on unsaved
 # objects by peeking at the next sequence number. Tests try (too) hard

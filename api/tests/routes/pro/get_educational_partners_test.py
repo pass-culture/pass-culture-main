@@ -5,9 +5,6 @@ import pytest
 import pcapi.core.users.factories as users_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class Return200Test:
     def test_get_educational_partners(self, client: Any) -> None:
         # Given

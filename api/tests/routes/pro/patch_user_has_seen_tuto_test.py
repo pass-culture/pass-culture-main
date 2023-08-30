@@ -5,7 +5,7 @@ import pcapi.core.users.factories as users_factories
 from tests.conftest import TestClient
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_mark_as_seen(app):
     user = users_factories.UserFactory(hasSeenProTutorials=False)
 
@@ -16,7 +16,7 @@ def test_mark_as_seen(app):
     assert user.hasSeenProTutorials is True
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_mark_as_seen_without_auth(app):
     user = users_factories.UserFactory(hasSeenProTutorials=False)
 

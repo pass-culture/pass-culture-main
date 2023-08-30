@@ -12,9 +12,6 @@ from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.settings import PRO_URL
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class SendinblueSendOfferValidationTest:
     def test_get_validation_approval_correct_email_metadata(self):
         # Given

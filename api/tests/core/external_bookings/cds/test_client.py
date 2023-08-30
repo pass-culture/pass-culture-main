@@ -1020,7 +1020,7 @@ class CineDigitalServiceGetVoucherForShowTest:
         assert voucher_type.tariff.price == 5
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CineDigitalServiceBookTicketTest:
     @patch("pcapi.core.external_bookings.cds.client.post_resource")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_show")

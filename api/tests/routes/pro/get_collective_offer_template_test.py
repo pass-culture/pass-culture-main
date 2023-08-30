@@ -7,7 +7,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns200Test:
     def test_access_by_beneficiary(self, client):
         # Given
@@ -49,7 +49,7 @@ class Returns200Test:
             client.get(f"/collective/offers-template/{humanized_offer_id}")
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns403Test:
     def test_access_by_unauthorized_pro_user(self, client):
         # Given

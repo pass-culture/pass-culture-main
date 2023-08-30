@@ -11,9 +11,6 @@ from pcapi.core.users.exceptions import InvalidToken
 from pcapi.core.users.utils import encode_jwt_payload
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class TokenTest:
     token_type = token_tools.TokenType.EMAIL_CHANGE_CONFIRMATION
     ttl = timedelta(days=1)

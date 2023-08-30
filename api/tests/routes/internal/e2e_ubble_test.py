@@ -4,7 +4,7 @@ import pcapi.core.fraud.models as fraud_models
 import pcapi.core.users.factories as users_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 class E2EUbbleIdentificationTest:
     def get_ubble_fraud_check_status(self, user):
         ubble_fraud_checks = [

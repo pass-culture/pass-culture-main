@@ -32,9 +32,6 @@ from tests.local_providers.cinema_providers.cgr import fixtures as cgr_fixtures
 from .utils import create_user_and_test_client
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class OffersTest:
     @freeze_time("2020-01-01")
     def test_get_event_offer(self, app):

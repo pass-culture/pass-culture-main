@@ -3,7 +3,7 @@ import pytest
 import pcapi.core.users.factories as users_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_mark_as_seen(app, client):
     user = users_factories.UserFactory(hasSeenProRgs=False)
 
@@ -14,7 +14,7 @@ def test_mark_as_seen(app, client):
     assert user.hasSeenProRgs is True
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_mark_as_seen_without_auth(app, client):
     user = users_factories.UserFactory(hasSeenProRgs=False)
 

@@ -6,9 +6,6 @@ from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.scripts.offer.tag_many import create_missing_mappings
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def test_create_missing_mappings():
     criteria = criteria_factories.CriterionFactory.create_batch(2)
     offers = factories.OfferFactory.create_batch(3)

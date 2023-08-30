@@ -15,7 +15,7 @@ from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
 
 
-@pytest.mark.usefixtures("db_session")
+
 class UserAutomationsTest:
     def _create_users_around_18(self):
         today = datetime.combine(date.today(), datetime.min.time())

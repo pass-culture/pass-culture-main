@@ -5,9 +5,6 @@ from pcapi.core.educational import academies
 from pcapi.core.educational import factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class GetAcademiesTest:
     def test_get_academies(self, client):
         educational_institution = factories.EducationalInstitutionFactory()

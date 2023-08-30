@@ -21,14 +21,14 @@ from pcapi.models import db
 from pcapi.repository import repository
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CheckCanBookFreeOfferTest:
     def test_dont_raise(self):
         user = users_factories.BeneficiaryGrant18Factory()
         stock = offers_factories.StockFactory()
         validation.check_can_book_free_offer(user, stock)  # should not raise
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_should_raise_exception_when_user_cannot_book_a_free_offer(self, app):
         user = users_factories.UserFactory()
         stock = offers_factories.StockFactory(price=0)
@@ -40,7 +40,7 @@ class CheckCanBookFreeOfferTest:
         }
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CheckOfferAlreadyBookedTest:
     def test_dont_raise_if_user_never_booked_this_offer(self):
         offer = offers_factories.OfferFactory()
@@ -51,7 +51,7 @@ class CheckOfferAlreadyBookedTest:
         booking = factories.CancelledBookingFactory()
         validation.check_offer_already_booked(booking.user, booking.stock.offer)  # should not raise
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_raise_if_already_booked(self):
         booking = factories.BookingFactory()
 
@@ -60,7 +60,7 @@ class CheckOfferAlreadyBookedTest:
         assert error.value.errors == {"offerId": ["Cette offre a déja été reservée par l'utilisateur"]}
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CheckQuantityTest:
     def test_ok_on_single(self):
         offer = offers_factories.OfferFactory()
@@ -102,7 +102,7 @@ class CheckQuantityTest:
         assert error.value.errors["quantity"] == ["Vous devez réserver une place ou deux dans le cas d'une offre DUO."]
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CheckStockIsBookableTest:
     booking_quantity = 1
 
@@ -129,7 +129,7 @@ class CheckStockIsBookableTest:
         assert error.value.errors == {"stock": ["Ce stock n'est pas réservable"]}
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CheckExpenseLimitsDepositVersion1Test:
     def _get_beneficiary(self):
         return users_factories.BeneficiaryGrant18Factory(deposit__version=1, deposit__amount=500)
@@ -196,7 +196,7 @@ class CheckExpenseLimitsDepositVersion1Test:
         ]
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CheckExpenseLimitsDepositVersion2Test:
     def _get_beneficiary(self, **kwargs):
         return users_factories.BeneficiaryGrant18Factory(**kwargs)
@@ -256,7 +256,7 @@ class CheckExpenseLimitsDepositVersion2Test:
         ]
 
 
-@pytest.mark.usefixtures("db_session")
+
 class InsufficientFundsSQLCheckTest:
     def _expire_deposit(self, user):
         deposit = user.deposits[0]
@@ -354,7 +354,7 @@ class InsufficientFundsSQLCheckTest:
             assert "insufficientFunds" in exc.args[0]
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CheckIsUsableTest:
     def should_raise_if_used(self):
         booking = factories.UsedBookingFactory()
@@ -398,7 +398,7 @@ class CheckIsUsableTest:
             validation.check_is_usable(booking)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CheckBeneficiaryCanCancelBookingTest:
     def test_can_cancel(self):
         booking = factories.BookingFactory()
@@ -457,7 +457,7 @@ class CheckBeneficiaryCanCancelBookingTest:
         ]
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CheckOffererCanCancelBookingTest:
     def test_can_cancel(self):
         booking = factories.BookingFactory()
@@ -474,7 +474,7 @@ class CheckOffererCanCancelBookingTest:
             validation.check_booking_can_be_cancelled(booking)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CheckCanBeMarkAsUnusedTest:
     def test_should_raise_resource_gone_error_if_not_used(self, app):
         booking = factories.BookingFactory()
@@ -495,7 +495,7 @@ class CheckCanBeMarkAsUnusedTest:
         assert exc.value.errors["payment"] == ["Le remboursement est en cours de traitement"]
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CheckOfferCategoryIsBookableByUserTest:
     def test_should_raise_video_game_free(self):
         user = users_factories.UnderageBeneficiaryFactory()

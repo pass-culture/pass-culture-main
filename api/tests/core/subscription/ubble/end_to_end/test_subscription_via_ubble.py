@@ -28,7 +28,7 @@ from . import requests_data
 IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 
-@pytest.mark.usefixtures("db_session")
+
 class UbbleEndToEndTest:
     def _get_ubble_webhook_signature(self, payload):
         timestamp = str(int(time.time()))

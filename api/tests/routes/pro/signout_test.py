@@ -4,7 +4,7 @@ import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_existing_user_session_to_be_deleted(client):
     user = users_factories.ProFactory()
 

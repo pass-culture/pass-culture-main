@@ -13,9 +13,6 @@ from pcapi.core.users.models import UserRole
 from pcapi.core.users.repository import get_users_with_validated_attachment_by_offerer
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class CheckUserAndCredentialsTest:
     def test_unknown_user(self):
         with pytest.raises(exceptions.InvalidIdentifier):

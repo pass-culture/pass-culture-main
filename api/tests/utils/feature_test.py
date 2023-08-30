@@ -6,7 +6,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.utils.feature import feature_required
 
 
-@pytest.mark.usefixtures("db_session")
+
 class FeatureRequiredTest:
     @override_features(SYNCHRONIZE_ALLOCINE=True)
     def when_feature_is_activated_dont_raise_error(self):

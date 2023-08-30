@@ -14,9 +14,6 @@ from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 @patch("pcapi.core.external.zendesk_sell.zendesk_backend", ZendeskSellBackend())
 def test_create_offerer():
     offerer = offerers_factories.OffererFactory(postalCode="95300")

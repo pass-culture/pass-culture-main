@@ -12,9 +12,6 @@ import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import LoginDeviceHistory
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class SendinblueSuspiciousLoginEmailTest:
     login_info = LoginDeviceHistory(
         deviceId="2E429592-2446-425F-9A62-D6983F375B3B",

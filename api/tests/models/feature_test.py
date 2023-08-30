@@ -22,7 +22,7 @@ class TestingFeatureToggle(enum.Enum):
 FEATURES_DISABLED_BY_DEFAULT_TEST = [TestingFeatureToggle.ENABLE_LANDING]
 
 
-@pytest.mark.usefixtures("db_session")
+
 class FeatureToggleTest:
     def test_is_active_returns_true_when_feature_is_active(self):
         # Given
@@ -64,7 +64,7 @@ class FeatureToggleTest:
             FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
 
 
-@pytest.mark.usefixtures("db_session")
+
 class FeatureTest:
     def test_features_installation(self):
         # assert all defined feature flags are present in the database with the right initial value
@@ -74,7 +74,7 @@ class FeatureTest:
             )
 
 
-@pytest.mark.usefixtures("db_session")
+
 @patch("pcapi.models.feature.FeatureToggle", TestingFeatureToggle)
 @patch("pcapi.models.feature.FEATURES_DISABLED_BY_DEFAULT", FEATURES_DISABLED_BY_DEFAULT_TEST)
 def test_install_feature_flags(app, caplog):

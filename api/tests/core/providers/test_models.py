@@ -7,9 +7,6 @@ from pcapi.models.api_errors import ApiErrors
 import pcapi.repository.repository as db_repository
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def test_venue_provider_nOffers():
     venue = offerers_factories.VenueFactory()
     provider1 = factories.ProviderFactory()

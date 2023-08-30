@@ -10,9 +10,6 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.utils.human_ids import humanize
 
 import tests
-
-
-pytestmark = pytest.mark.usefixtures("db_session")
 IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 

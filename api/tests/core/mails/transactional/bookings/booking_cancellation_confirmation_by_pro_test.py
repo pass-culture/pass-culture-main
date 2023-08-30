@@ -16,7 +16,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 class BookingCancellationConfirmationByProEmailData:
     def test_should_return_email_data_with_correct_information_when_offer_is_an_event(self):
         # Given
@@ -98,7 +98,7 @@ class BookingCancellationConfirmationByProEmailData:
         }
 
 
-@pytest.mark.usefixtures("db_session")
+
 class SendOffererBookingsRecapEmailAfterOffererCancellationTest:
     def test_sends_to_offerer_administration(self):
         # Given

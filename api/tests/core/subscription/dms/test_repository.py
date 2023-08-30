@@ -6,7 +6,7 @@ from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.subscription.dms import repository
 
 
-@pytest.mark.usefixtures("db_session")
+
 class RepositoryUnitTest:
     def test_get_orphan_dms_application_by_application_id(self):
         fraud_factories.OrphanDmsApplicationFactory(application_id=88)

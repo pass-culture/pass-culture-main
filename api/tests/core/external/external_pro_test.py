@@ -17,9 +17,6 @@ from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.models import NotificationSubscriptions
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 # 1 query on user table with joinedload
 # 1 query on venue table with joinedload
 # 2 extra SQL queries: select exists on offer and booking tables

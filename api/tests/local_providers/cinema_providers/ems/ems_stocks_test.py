@@ -23,7 +23,7 @@ import tests
 from . import fixtures
 
 
-@pytest.mark.usefixtures("db_session")
+
 class EMSStocksTest:
     def test_we_log_accordingly_to_ems_api_specification(self, requests_mock):
         requests_mock.get("https://fake_url.com?version=0", json=fixtures.DATA_VERSION_0)

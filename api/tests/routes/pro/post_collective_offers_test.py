@@ -11,7 +11,7 @@ from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns200Test:
     def test_create_collective_offer(self, client):
         # Given
@@ -295,7 +295,7 @@ class Returns200Test:
         assert offer.templateId == template.id
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns403Test:
     def test_create_collective_offer_random_user(self, client):
         # Given
@@ -376,7 +376,7 @@ class Returns403Test:
         assert CollectiveOffer.query.count() == 0
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns400Test:
     def test_create_collective_offer_unknown_category(self, client):
         # Given
@@ -528,7 +528,7 @@ class Returns400Test:
         assert CollectiveOffer.query.count() == 0
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns404Test:
     def test_create_collective_offer_with_unknown_domain(self, client):
         # Given

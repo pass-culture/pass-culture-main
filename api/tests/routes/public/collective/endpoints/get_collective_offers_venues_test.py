@@ -7,9 +7,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class CollectiveOffersGetVenuesTest:
     def test_list_venues(self, client):
         # Given

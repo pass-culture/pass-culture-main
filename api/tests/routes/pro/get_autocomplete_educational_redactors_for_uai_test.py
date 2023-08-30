@@ -6,7 +6,7 @@ import pcapi.core.users.factories as users_factories
 VALID_UAI = "0470009E"
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns200Test:
     def test_get_one_redactor(self, client):
         # Given
@@ -113,7 +113,7 @@ class Returns200Test:
         assert response_json == []
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns404Test:
     def test_uai_not_found(self, client):
         # Given
@@ -128,7 +128,7 @@ class Returns404Test:
         assert response.status_code == 404
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns400Test:
     def test_uai_too_short(self, client):
         # Given
@@ -155,7 +155,7 @@ class Returns400Test:
         assert response.status_code == 400
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns401Test:
     def test_user_not_logged_in(self, client):
         # When

@@ -7,7 +7,7 @@ from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offerers.models import ApiKey
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_api_key_journey(client):
     booking = booking_factories.BookingFactory()
     user_offerer = UserOffererFactory(offerer=booking.offerer)
@@ -33,7 +33,7 @@ def test_api_key_journey(client):
     assert ApiKey.query.count() == 0
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_maximal_api_key_reached(client):
     user_offerer = UserOffererFactory()
     for i in range(5):
@@ -47,7 +47,7 @@ def test_maximal_api_key_reached(client):
     assert ApiKey.query.count() == 5
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_delete_api_key_not_found(client):
     user_offerer = UserOffererFactory()
 
@@ -57,7 +57,7 @@ def test_delete_api_key_not_found(client):
     assert response.status_code == 404
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_delete_api_key_not_allowed(client):
     user_offerer = UserOffererFactory()
     api_key = ApiKeyFactory()

@@ -15,7 +15,7 @@ from tests.routes import image_data
 from . import utils
 
 
-@pytest.mark.usefixtures("db_session")
+
 class PostEventTest:
     def test_event_minimal_body(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
@@ -157,7 +157,7 @@ class PostEventTest:
             "priceCategories": [{"id": created_price_category.id, "price": 2500, "label": "triangle or"}],
         }
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_other_music_type_serialization(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 

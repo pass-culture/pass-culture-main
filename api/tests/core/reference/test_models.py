@@ -11,17 +11,17 @@ from tests.conftest import clean_database
 
 
 class ReferenceSchemeTest:
-    @pytest.mark.usefixtures("db_session")
+
     def test_format_reference_with_year(self):
         scheme = factories.ReferenceSchemeFactory(year=None)
         assert scheme.formatted_reference == "F0000001"
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_format_reference_without_year(self):
         scheme = factories.ReferenceSchemeFactory(year=2023)
         assert scheme.formatted_reference == "F230000001"
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_increment_after_use(self):
         scheme = factories.ReferenceSchemeFactory()
         scheme.nextNumber = 1
@@ -32,7 +32,7 @@ class ReferenceSchemeTest:
         db.session.refresh(scheme)
         assert scheme.nextNumber == 2
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_usage(self):
         scheme = factories.ReferenceSchemeFactory(name="x", year=2023)
         scheme.nextNumber = 1

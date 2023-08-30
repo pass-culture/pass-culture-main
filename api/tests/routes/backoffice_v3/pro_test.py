@@ -19,7 +19,6 @@ from .helpers.get import GetEndpointHelper
 
 
 pytestmark = [
-    pytest.mark.usefixtures("db_session"),
     pytest.mark.backoffice_v3,
 ]
 

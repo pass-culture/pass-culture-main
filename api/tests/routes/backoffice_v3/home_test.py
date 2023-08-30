@@ -11,7 +11,6 @@ from .helpers import html_parser
 
 
 pytestmark = [
-    pytest.mark.usefixtures("db_session"),
     pytest.mark.backoffice_v3,
 ]
 

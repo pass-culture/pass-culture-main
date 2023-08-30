@@ -16,9 +16,6 @@ from pcapi.core.users.models import User
 from pcapi.core.users.utils import encode_jwt_payload
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def _initialize_token(user, new_email, app=None):
     return token_utils.Token.create(
         type_=token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION,

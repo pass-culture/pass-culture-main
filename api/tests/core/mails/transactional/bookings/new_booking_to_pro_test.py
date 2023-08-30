@@ -71,7 +71,7 @@ def get_expected_base_email_data(booking, **overrides):
 
 
 class OffererBookingRecapTest:
-    @pytest.mark.usefixtures("db_session")
+
     def test_with_event(self):
         booking = make_booking()
 
@@ -80,7 +80,7 @@ class OffererBookingRecapTest:
         expected = get_expected_base_email_data(booking)
         assert email_data.params == expected
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_with_book(self):
         booking = make_booking(
             stock__offer__name="Le récit de voyage",
@@ -104,7 +104,7 @@ class OffererBookingRecapTest:
         )
         assert email_data.params == expected
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_non_digital_bookings_can_expire_after_30_days(self):
         booking = make_booking(
             stock__offer__name="Le récit de voyage",
@@ -134,7 +134,7 @@ class OffererBookingRecapTest:
         )
         assert email_data.params == expected
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_with_book_with_missing_ean(self):
         booking = make_booking(
             stock__offer__name="Le récit de voyage",
@@ -166,7 +166,7 @@ class OffererBookingRecapTest:
         )
         assert email_data.params == expected
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_a_digital_booking_expires_after_30_days(self):
         # Given
         booking = make_booking(
@@ -198,7 +198,7 @@ class OffererBookingRecapTest:
         )
         assert email_data.params == expected
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_when_use_token_for_payment(self):
         # Given
         booking = make_booking(
@@ -212,7 +212,7 @@ class OffererBookingRecapTest:
         expected = get_expected_base_email_data(booking, MUST_USE_TOKEN_FOR_PAYMENT=True)
         assert email_data.params == expected
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_no_need_when_price_is_free(self):
         # Given
         booking = make_booking(
@@ -226,7 +226,7 @@ class OffererBookingRecapTest:
         expected = get_expected_base_email_data(booking, PRICE="Gratuit", MUST_USE_TOKEN_FOR_PAYMENT=False)
         assert email_data.params == expected
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_no_need_when_using_activation_code(self):
         # Given
         booking = make_booking()
@@ -239,7 +239,7 @@ class OffererBookingRecapTest:
         expected = get_expected_base_email_data(booking, MUST_USE_TOKEN_FOR_PAYMENT=False)
         assert email_data.params == expected
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_no_need_when_booking_is_autovalidated(self):
         # Given
         offer = offers_factories.OfferFactory(
@@ -278,7 +278,7 @@ class OffererBookingRecapTest:
         )
         assert email_data.params == expected
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_a_digital_booking_with_activation_code_is_automatically_used(self):
         # Given
         offer = offers_factories.OfferFactory(
@@ -320,7 +320,7 @@ class OffererBookingRecapTest:
         )
         assert email_data.params == expected
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_should_not_truncate_price(self):
         booking = make_booking(stock__price=5.86)
 
@@ -329,7 +329,7 @@ class OffererBookingRecapTest:
         expected = get_expected_base_email_data(booking, PRICE="5.86 €")
         assert email_data.params == expected
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_should_use_venue_public_name_when_available(self):
         booking = make_booking(
             stock__offer__venue__name="Legal name",
@@ -341,7 +341,7 @@ class OffererBookingRecapTest:
         expected = get_expected_base_email_data(booking, VENUE_NAME="Public name")
         assert email_data.params == expected
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_should_add_user_phone_number_to_params(self):
         # given
         booking = make_booking(user__phoneNumber="0123456789")
@@ -352,7 +352,7 @@ class OffererBookingRecapTest:
         # then
         assert email_data.params["USER_PHONENUMBER"] == "+33123456789"
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_when_venue_with_reimbursement_point(self):
         venue_reimbursement_point_link = offerers_factories.VenueReimbursementPointLinkFactory()
         booking = make_booking(stock__offer__venue=venue_reimbursement_point_link.venue)
@@ -361,7 +361,7 @@ class OffererBookingRecapTest:
 
         assert not email_data.params["NEEDS_BANK_INFORMATION_REMINDER"]
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_booking_with_features(self):
         stock = offers_factories.StockFactory(features=["VO", "IMAX"])
         booking = make_booking(stock=stock)
@@ -372,7 +372,7 @@ class OffererBookingRecapTest:
 
 
 class SendNewBookingEmailToProTest:
-    @pytest.mark.usefixtures("db_session")
+
     def test_send_to_offerer(self):
         booking = bookings_factories.BookingFactory(
             user__email="user@example.com",
@@ -393,7 +393,7 @@ class SendNewBookingEmailToProTest:
 
 
 class SendFirstVenueBookingEmailToProTest:
-    @pytest.mark.usefixtures("db_session")
+
     def test_send_to_offerer(self):
         booking = bookings_factories.BookingFactory(
             user__email="user@example.com",

@@ -13,9 +13,6 @@ import pcapi.core.users.generator as users_generator
 import pcapi.core.users.models as users_models
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class UserGeneratorTest:
     def has_fraud_check_validated(self, user, fraud_check_type) -> bool:
         return any(

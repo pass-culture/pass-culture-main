@@ -7,7 +7,7 @@ from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.mails.transactional.educational.eac_booking_cancellation import send_eac_booking_cancellation_email
 
 
-@pytest.mark.usefixtures("db_session")
+
 class SendEducationeBookingCancellationByInstitutionEmailTest:
     @patch("pcapi.core.mails.transactional.educational.eac_booking_cancellation.mails")
     def test_with_collective_booking(self, mails):

@@ -43,7 +43,7 @@ from tests.test_utils import json_default
 IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 
-@pytest.mark.usefixtures("db_session")
+
 class UbbleWorkflowTest:
     def test_start_ubble_workflow(self, ubble_mock):
         user = users_factories.UserFactory()
@@ -372,7 +372,7 @@ class UbbleWorkflowTest:
         assert user.dateOfBirth == datetime.datetime(year=2002, month=5, day=6)
 
     @freezegun.freeze_time("2019-05-05")
-    def test_ubble_workflow_started_at_19_with_previous_attempt_at_18(self, ubble_mocker, db_session):
+    def test_ubble_workflow_started_at_19_with_previous_attempt_at_18(self, ubble_mocker):
         # Given
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2000, month=5, day=1))
         # User started a ubble workflow at 18 years old and was rejected
@@ -409,7 +409,7 @@ class UbbleWorkflowTest:
         ):
             ubble_subscription_api.update_ubble_workflow(fraud_check)
 
-        db_session.refresh(fraud_check)
+        db.session.refresh(fraud_check)
 
         assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
@@ -417,7 +417,7 @@ class UbbleWorkflowTest:
         assert fraud_check.thirdPartyId == fraud_check.thirdPartyId
 
     @freezegun.freeze_time("2020-05-05")
-    def test_ubble_workflow_started_at_20_with_previous_attempt_at_18(self, ubble_mocker, db_session):
+    def test_ubble_workflow_started_at_20_with_previous_attempt_at_18(self, ubble_mocker):
         # Given
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2000, month=5, day=1))
         # User started a ubble workflow at 18 years old and was rejected
@@ -454,7 +454,7 @@ class UbbleWorkflowTest:
         ):
             ubble_subscription_api.update_ubble_workflow(fraud_check)
 
-        db_session.refresh(fraud_check)
+        db.session.refresh(fraud_check)
 
         assert fraud_check.type == fraud_models.FraudCheckType.UBBLE
         assert fraud_check.status == fraud_models.FraudCheckStatus.KO
@@ -573,7 +573,7 @@ class DownloadUbbleDocumentPictureTest:
         assert mocked_storage_client.return_value.upload_file.call_count == 1
 
 
-@pytest.mark.usefixtures("db_session")
+
 class ArchiveUbbleUserIdPicturesTest:
     front_picture_url = "https://storage.ubble.ai/front-picture.png?response-content-type=image%2Fpng"
     back_picture_url = "https://storage.ubble.ai/back-picture.png?response-content-type=image%2Fpng"
@@ -775,7 +775,7 @@ class ArchiveUbbleUserIdPicturesTest:
         assert mocked_storage_client.return_value.upload_file.call_count == 1
 
 
-@pytest.mark.usefixtures("db_session")
+
 class SubscriptionMessageTest:
     def test_started(self):
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(

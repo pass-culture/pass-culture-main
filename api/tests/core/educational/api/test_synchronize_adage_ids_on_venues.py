@@ -14,7 +14,7 @@ from pcapi.core.testing import override_settings
     ADAGE_API_KEY="adage-api-key",
     ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
 )
-def test_synchronize_adage_ids_on_venues(db_session):
+def test_synchronize_adage_ids_on_venues():
     venue1 = offerers_factories.VenueFactory()
     venue2 = offerers_factories.VenueFactory()
     venue3 = offerers_factories.VenueFactory()

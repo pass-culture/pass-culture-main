@@ -23,9 +23,6 @@ from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.utils.human_ids import humanize
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 @freeze_time("2021-10-15 12:48:00")
 def test_sendinblue_send_email():
     booking = BookingFactory(stock=offers_factories.EventStockFactory(price=1.99), dateCreated=datetime.utcnow())

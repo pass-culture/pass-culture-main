@@ -13,9 +13,6 @@ from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.users.factories as users_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class Returns200Test:
     @freeze_time("2019-01-01T12:00:00Z")
     def test_patch_collective_offer_template(self, client):

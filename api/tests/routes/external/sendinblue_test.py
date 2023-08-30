@@ -84,21 +84,21 @@ class SubscribeOrUnsubscribeUserTestHelper:
         assert response.status_code == 400
 
 
-@pytest.mark.usefixtures("db_session")
+
 class UnsubscribeUserTest(SubscribeOrUnsubscribeUserTestHelper):
     endpoint = "/webhooks/sendinblue/unsubscribe"
     initial_marketing_email = True
     expected_marketing_email = False
 
 
-@pytest.mark.usefixtures("db_session")
+
 class SubscribeUserTest(SubscribeOrUnsubscribeUserTestHelper):
     endpoint = "/webhooks/sendinblue/subscribe"
     initial_marketing_email = False
     expected_marketing_email = True
 
 
-@pytest.mark.usefixtures("db_session")
+
 class NotifyImportContactsTest:
     def test_notify_importcontacts(self, app, caplog):
         # Given

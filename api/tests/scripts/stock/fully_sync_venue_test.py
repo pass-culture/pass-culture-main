@@ -9,7 +9,7 @@ import pcapi.core.providers.factories as providers_factories
 from pcapi.scripts.stock import fully_sync_venue
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_fully_sync_venue():
     api_url = "https://example.com/provider/api"
     provider = providers_factories.APIProviderFactory(apiUrl=api_url)

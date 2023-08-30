@@ -17,7 +17,7 @@ from pcapi.core.users.factories import ProFactory
 from pcapi.scripts.suspend_fraudulent_pro_users import suspend_fraudulent_pro_by_email_providers
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_suspend_pros_in_given_emails_providers_list():
     # Given
     fraudulent_emails_providers = ["example.com"]
@@ -35,7 +35,7 @@ def test_suspend_pros_in_given_emails_providers_list():
     assert not fraudulent_user.isActive
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_only_suspend_pro_users_in_given_emails_providers_list():
     # Given
     fraudulent_emails_providers = ["example.com"]
@@ -59,7 +59,7 @@ def test_only_suspend_pro_users_in_given_emails_providers_list():
     assert beneficiary_fraudulent_user.isActive
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_dont_suspend_users_not_in_given_emails_providers_list():
     # Given
     fraudulent_emails_providers = ["example.com"]
@@ -73,7 +73,7 @@ def test_dont_suspend_users_not_in_given_emails_providers_list():
     assert non_fraudulent_pro.isActive
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_suspend_pro_user_with_many_offerers_and_delete_all_offerers():
     fraudulent_emails_providers = ["example.com"]
     admin_user = AdminFactory(email="admin@example.net")
@@ -91,7 +91,7 @@ def test_suspend_pro_user_with_many_offerers_and_delete_all_offerers():
     assert Offerer.query.count() == 0
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_delete_offerer_and_venue():
     # Given
     fraudulent_emails_providers = ["example.com"]
@@ -111,7 +111,7 @@ def test_delete_offerer_and_venue():
     assert Venue.query.count() == 0
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_cancel_bookings_when_offerer_has_one_or_more():
     # Given
     fraudulent_emails_providers = ["example.com"]

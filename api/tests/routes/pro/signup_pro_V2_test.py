@@ -14,7 +14,7 @@ BASE_DATA_PRO = {
 }
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns204Test:
     def test_when_user_data_is_valid(self, client):
         # Given
@@ -58,7 +58,7 @@ class Returns204Test:
         assert user.needsToFillCulturalSurvey is False
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns400Test:
     def test_when_email_is_missing(self, client):
         # Given

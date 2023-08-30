@@ -9,7 +9,7 @@ from pcapi.core.providers import factories as providers_factories
 from . import utils
 
 
-@pytest.mark.usefixtures("db_session")
+
 class GetOffererVenuesTest:
     def create_multiple_venue_providers(self):
         provider, _ = utils.create_offerer_provider()

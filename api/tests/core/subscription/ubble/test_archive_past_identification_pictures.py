@@ -9,7 +9,7 @@ from pcapi.core.subscription.ubble.archive_past_identification_pictures import g
 
 
 class ArchivePastIdentificationPicturesTest:
-    @pytest.mark.usefixtures("db_session")
+
     def test_get_fraud_check_to_archive(self):
         # Given
         start_date = datetime.datetime(2021, 1, 1)

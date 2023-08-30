@@ -12,9 +12,6 @@ from pcapi.core.offers.models import Reason
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class ReportedOfferByUserEmailTest:
     def test_report_other(self):
         # Given

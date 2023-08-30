@@ -28,9 +28,6 @@ from . import common_user_attributes
 SENDINBLUE_AUTOMATION_TEST_CONTACT_LIST_ID = 18
 SENDINBLUE_PRO_TESTING_CONTACT_LIST_ID = 12
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class FormatUserAttributesTest:
     def test_format_attributes(self):
         formatted_attributes = format_user_attributes(common_user_attributes)

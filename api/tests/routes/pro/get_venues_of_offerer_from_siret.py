@@ -5,7 +5,7 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns200Test:
     def test_get_venues_of_offerer_from_siret(self, client):
         siren = "123123123"
@@ -103,7 +103,7 @@ class Returns200Test:
 
 
 class Returns401Test:
-    @pytest.mark.usefixtures("db_session")
+
     def test_user_not_logged(self, client):
         response = client.get("/venues/siret/%s" % "12312312312312")
 

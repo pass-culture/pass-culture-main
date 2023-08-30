@@ -16,7 +16,7 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 
 
-@pytest.mark.usefixtures("db_session")
+
 @freeze_time("2022-11-17 15:00:00")
 class Returns200Test:
     def test_refuse_collective_booking(
@@ -132,7 +132,7 @@ class Returns200Test:
         assert len(mails_testing.outbox) == 0
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns400Test:
     def test_returns_error_when_not_refusable(self, client: Any) -> None:
         booking = UsedCollectiveBookingFactory()

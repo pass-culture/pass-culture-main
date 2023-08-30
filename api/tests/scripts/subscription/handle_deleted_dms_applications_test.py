@@ -13,7 +13,7 @@ from tests.scripts.beneficiary.fixture import make_graphql_deleted_applications
 
 
 class HandleDeletedDmsApplicationsTest:
-    @pytest.mark.usefixtures("db_session")
+
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_handle_deleted_dms_applications(self, execute_query):
         fraud_check_not_to_mark_as_deleted = fraud_factories.BeneficiaryFraudCheckFactory(
@@ -55,7 +55,7 @@ class HandleDeletedDmsApplicationsTest:
         assert fraud_check_to_mark_as_deleted.resultContent.get("deletion_datetime") == "2021-10-01T22:00:00"
         assert fraud_check_to_delete_with_empty_result_content.resultContent is None
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_get_latest_deleted_application_datetime(self, execute_query):
         procedure_number = 1

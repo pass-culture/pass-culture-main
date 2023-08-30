@@ -18,7 +18,7 @@ from pcapi.scripts.external_users.batch_update_users_attributes import get_users
 from pcapi.scripts.external_users.batch_update_users_attributes import run
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_get_users_chunks():
     """
     Test that the correct number of chunks have been fetched, that each one
@@ -36,7 +36,7 @@ def test_get_users_chunks():
     assert found_ids == expected_ids
 
 
-@pytest.mark.usefixtures("db_session")
+
 @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
 def test_run(mock_import_contacts):
     """
@@ -49,7 +49,7 @@ def test_run(mock_import_contacts):
     assert len(mock_import_contacts.call_args_list) == 2
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_run_batch_only():
     """
     Test that two chunks of users are used and therefore two requests are sent.
@@ -60,7 +60,7 @@ def test_run_batch_only():
     assert len(push_testing.requests) == 2
 
 
-@pytest.mark.usefixtures("db_session")
+
 @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
 def test_run_sendinblue_only(mock_import_contacts):
     """
@@ -72,7 +72,7 @@ def test_run_sendinblue_only(mock_import_contacts):
     assert len(mock_import_contacts.call_args_list) == 2
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_format_batch_user():
     user = BeneficiaryGrant18Factory(departementCode="75", city="Paris")
     booking = BookingFactory(user=user)
@@ -112,7 +112,7 @@ def test_format_batch_user():
     }
 
 
-@pytest.mark.usefixtures("db_session")
+
 @freeze_time("2022-12-06 10:00:00")  # Keep time frozen in 2022 as long as we send *_2022 attributes
 def test_format_sendinblue_user():
     user = BeneficiaryGrant18Factory(departementCode="75")

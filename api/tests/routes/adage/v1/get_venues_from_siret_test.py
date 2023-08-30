@@ -5,7 +5,7 @@ from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers import factories as offerer_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns200Test:
     def test_get_venues_from_siret(self, client) -> None:
         venue = offerer_factories.VenueFactory(
@@ -337,7 +337,7 @@ class Returns200Test:
         }
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns404Test:
     def test_when_no_venue_is_found(self, client) -> None:
         client.with_eac_token()

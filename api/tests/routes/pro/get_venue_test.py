@@ -13,9 +13,9 @@ from pcapi.utils.image_conversion import DO_NOT_CROP
 from tests.conftest import TestClient
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns200Test:
-    def when_user_has_rights_on_managing_offerer(self, client, db_session):
+    def when_user_has_rights_on_managing_offerer(self, client):
         now = datetime.datetime.utcnow()
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
         venue = offerers_factories.CollectiveVenueFactory(
@@ -370,7 +370,7 @@ class Returns200Test:
 
 
 class Returns403Test:
-    @pytest.mark.usefixtures("db_session")
+
     def when_current_user_doesnt_have_rights(self, app):
         # given
         pro = users_factories.ProFactory(email="user.pro@example.com")

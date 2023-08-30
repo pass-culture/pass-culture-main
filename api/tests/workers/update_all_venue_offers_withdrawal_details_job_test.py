@@ -8,7 +8,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.workers.update_all_venue_offers_withdrawal_details_job import update_all_venue_offers_withdrawal_details_job
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_update_all_venue_offers_withdrawal_details_job():
     venue = offerers_factories.VenueFactory()
     offer1 = offers_factories.OfferFactory(venue=venue)
@@ -27,7 +27,7 @@ def test_update_all_venue_offers_withdrawal_details_job():
     assert not mailer_mock.called
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_update_all_venue_offers_withdrawal_with_email_notif():
     venue = offerers_factories.VenueFactory()
     offer1 = offers_factories.OfferFactory(venue=venue)

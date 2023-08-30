@@ -11,9 +11,6 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import young_status
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def _with_age(age):
     return datetime.datetime.utcnow() - relativedelta(years=age)
 

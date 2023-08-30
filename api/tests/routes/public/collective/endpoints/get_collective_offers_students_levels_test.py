@@ -5,7 +5,7 @@ import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.factories as offerers_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CollectiveOffersGetStudentsLevelsTest:
     def test_list_students_levels(self, client):
         # Given

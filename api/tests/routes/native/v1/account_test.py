@@ -50,9 +50,6 @@ from pcapi.routes.native.v1.api_errors import account as account_errors
 from pcapi.routes.native.v1.serialization import account as account_serializers
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class AccountTest:
     identifier = "email@example.com"
 

@@ -4,7 +4,7 @@ from pcapi.core.users import factories as users_factories
 
 
 class Returns200Test:
-    @pytest.mark.usefixtures("db_session")
+
     def when_activation_token_exists(self, client):
         # given
         token = "U2NCXTNB2"
@@ -19,7 +19,7 @@ class Returns200Test:
 
 
 class Returns404Test:
-    @pytest.mark.usefixtures("db_session")
+
     def when_activation_token_does_not_exist(self, client):
         # when
         request = client.get("/users/token/3YU26FS")

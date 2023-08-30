@@ -9,7 +9,7 @@ from pcapi.core.offers import factories
 from pcapi.core.users import factories as users_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 class SendinblueEmailOfferLinkIosUserTest:
     def test_get_email_correct_metadata(self):
         # Given

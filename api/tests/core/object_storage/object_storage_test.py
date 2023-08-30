@@ -104,7 +104,7 @@ class DeletePublicObjectTest:
         mock_gcp_delete_public_object.assert_called_once_with("bucket", "object_id")
 
 
-@pytest.mark.usefixtures("db_session")
+
 class GetThumbStorageIdTest:
     def test_mediation(self):
         mediation = offers_factories.MediationFactory(id=123, thumbCount=1)

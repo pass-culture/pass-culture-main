@@ -6,9 +6,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def test_get_reimbursement_points_by_admin(client):
     pro_reimbursement_point_z = offerers_factories.VenueFactory(
         reimbursement_point="self", name="Reimbursement Point Z"

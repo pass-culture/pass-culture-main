@@ -21,7 +21,7 @@ import tests
 IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CheckProviderCanEditStockTest:
     def test_allocine_offer(self):
         provider = providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
@@ -45,7 +45,7 @@ class CheckProviderCanEditStockTest:
         validation.check_provider_can_edit_stock(provider_offer, provider)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CheckPricesForStockTest:
     def test_event_prices(self):
         offer = offers_factories.EventOfferFactory()
@@ -70,7 +70,7 @@ class CheckPricesForStockTest:
         assert error.value.errors["price"] == ["Le prix doit être positif"]
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CheckRequiredDatesForStockTest:
     def test_thing_offer_must_not_have_beginning(self):
         offer = offers_factories.ThingOfferFactory()
@@ -136,7 +136,7 @@ class CheckRequiredDatesForStockTest:
         )
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CheckStockCanBeCreatedForOfferTest:
     def test_offer_from_provider(self, app):
         provider = providers_factories.AllocineProviderFactory()
@@ -154,7 +154,7 @@ class CheckStockCanBeCreatedForOfferTest:
         validation.check_provider_can_create_stock(offer, provider)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CheckStockIsDeletableTest:
     def test_non_approved_offer(self):
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
@@ -185,7 +185,7 @@ class CheckStockIsDeletableTest:
         ]
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CheckStockIsUpdatableTest:
     def test_approved_offer(self):
         offer = offers_factories.OfferFactory()
@@ -296,7 +296,7 @@ class CheckImageTest:
             )
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CheckValidationStatusTest:
     def test_approved_offer(self):
         approved_offer = offers_factories.OfferFactory()
@@ -329,7 +329,7 @@ class CheckValidationStatusTest:
         ]
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CheckOfferWithdrawalTest:
     def test_offer_can_have_no_withdrawal_informations(self):
         assert not validation.check_offer_withdrawal(
@@ -452,7 +452,7 @@ class CheckOfferWithdrawalTest:
         )
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CheckOfferExtraDataTest:
     def test_missing_required_extra_data(self):
         with pytest.raises(ApiErrors) as error:

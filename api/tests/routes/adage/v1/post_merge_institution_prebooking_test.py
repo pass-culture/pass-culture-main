@@ -3,7 +3,7 @@ import pytest
 from pcapi.core.educational import factories as educational_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 class PostMergeInstitutionPrebookingTest:
     def test_merge_institution_prebooking(self, client) -> None:
         institution_source, institution_destination = educational_factories.EducationalInstitutionFactory.create_batch(

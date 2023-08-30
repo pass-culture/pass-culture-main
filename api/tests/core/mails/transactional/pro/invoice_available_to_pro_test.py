@@ -9,9 +9,6 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 import pcapi.core.offerers.factories as offerers_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class SendinblueProAvailableInvoiceEmailDataTest:
     def test_send_email_in_first_half_of_month(self):
         reimbursement_point = offerers_factories.VenueFactory(bookingEmail="pro@example.com")

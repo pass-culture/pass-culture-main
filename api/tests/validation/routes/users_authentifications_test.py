@@ -31,7 +31,7 @@ class CheckUserIsLoggedInOrEmailIsProvidedTest:
         users_authentifications.check_user_is_logged_in_or_email_is_provided(user, email="fake@example.com")
 
 
-@pytest.mark.usefixtures("db_session")
+
 class ApiKeyRequiredTest:
     def _make_app(self):
         app = flask.Flask(__name__)

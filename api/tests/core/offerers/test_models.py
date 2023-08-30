@@ -19,9 +19,6 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class VenueModelConstraintsTest:
     def test_virtual_venue_cannot_have_address(self):
         venue = factories.VirtualVenueFactory()
@@ -124,24 +121,24 @@ class VenueTimezoneSqlQueryTest:
 
 
 class VenueBannerUrlTest:
-    def test_can_set_banner_url_when_none(self, db_session):
+    def test_can_set_banner_url_when_none(self):
         expected_banner_url = "http://example.com/banner_url"
         venue = factories.VenueFactory()
 
         venue.bannerUrl = expected_banner_url
         repository.save(venue)
-        db_session.refresh(venue)
+        db.session.refresh(venue)
 
         assert venue.bannerUrl == expected_banner_url
         assert venue._bannerUrl == expected_banner_url
 
-    def test_can_update_existing_banner_url(self, db_session):
+    def test_can_update_existing_banner_url(self):
         expected_banner_url = "http://example.com/banner_url"
         venue = factories.VenueFactory(bannerUrl="http://example.com/legacy_url")
 
         venue.bannerUrl = expected_banner_url
         repository.save(venue)
-        db_session.refresh(venue)
+        db.session.refresh(venue)
 
         assert venue.bannerUrl == expected_banner_url
         assert venue._bannerUrl == expected_banner_url

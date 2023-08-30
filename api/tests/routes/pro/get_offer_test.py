@@ -17,7 +17,7 @@ from pcapi.utils.human_ids import humanize
 from tests.conftest import TestClient
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns403Test:
     def test_access_by_beneficiary(self, app):
         # Given
@@ -44,7 +44,7 @@ class Returns403Test:
         assert response.status_code == 403
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns200Test:
     def test_access_by_pro_user(self, app):
         # Given

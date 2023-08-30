@@ -12,9 +12,6 @@ from pcapi.core.testing import override_settings
 import tests
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class FormatQueryParamsTest:
     def test_format_params(self, app):
         with app.app_context():

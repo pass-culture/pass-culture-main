@@ -8,7 +8,7 @@ import pcapi.core.fraud.models as fraud_models
 import pcapi.core.users.factories as users_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 class RepositoryTest:
     def should_find_ko_reviews(self):
         user = users_factories.UserFactory()

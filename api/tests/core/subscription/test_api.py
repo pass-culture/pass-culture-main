@@ -28,7 +28,7 @@ from pcapi.core.users import young_status
 from pcapi.utils.string import u_nbsp
 
 
-@pytest.mark.usefixtures("db_session")
+
 class RequiresIdCheckTest:
     def test_requires_identity_check_step_with_no_underage_beneficiary_role(self):
         user = users_factories.UserFactory()
@@ -83,7 +83,7 @@ class RequiresIdCheckTest:
         assert subscription_api.requires_identity_check_step(user) is True
 
 
-@pytest.mark.usefixtures("db_session")
+
 class EduconnectFlowTest:
     @freeze_time("2021-10-10")
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_saml_client")
@@ -182,7 +182,7 @@ class EduconnectFlowTest:
         assert user.civility == "Mme"
 
 
-@pytest.mark.usefixtures("db_session")
+
 class NextSubscriptionStepTest:
     eighteen_years_ago = datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=18, months=1)
     fifteen_years_ago = datetime.combine(datetime.today(), datetime.min.time()) - relativedelta(years=15, months=1)
@@ -604,7 +604,7 @@ class NextSubscriptionStepTest:
         assert subscription_api.get_user_subscription_state(user).next_step is None
 
 
-@pytest.mark.usefixtures("db_session")
+
 class OverflowSubscriptionLimitationTest:
     @override_features(ENABLE_UBBLE_SUBSCRIPTION_LIMITATION=True)
     @pytest.mark.parametrize("age", [15, 16, 17, 18])
@@ -632,7 +632,7 @@ class OverflowSubscriptionLimitationTest:
         assert subscription_api._is_ubble_allowed_if_subscription_overflow(user)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CommonSubscritpionTest:
     def test_handle_eligibility_difference_between_declaration_and_identity_provider_no_difference(self):
         user = users_factories.UserFactory()
@@ -723,7 +723,7 @@ class CommonSubscritpionTest:
         )
 
 
-@pytest.mark.usefixtures("db_session")
+
 class SubscriptionItemTest:
     AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
 
@@ -756,7 +756,7 @@ class SubscriptionItemTest:
         )
 
 
-@pytest.mark.usefixtures("db_session")
+
 class IdentityCheckSubscriptionStatusTest:
     AGE16_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=16, months=4)
     AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
@@ -937,7 +937,7 @@ class IdentityCheckSubscriptionStatusTest:
         assert age18_status == subscription_models.SubscriptionItemStatus.TODO
 
 
-@pytest.mark.usefixtures("db_session")
+
 class NeedsToPerformeIdentityCheckTest:
     AGE16_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=16, months=4)
     AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
@@ -1041,7 +1041,7 @@ class NeedsToPerformeIdentityCheckTest:
         )
 
 
-@pytest.mark.usefixtures("db_session")
+
 class GetFirstRegistrationDateTest:
     def test_get_first_registration_date_no_check(self):
         user = users_factories.UserFactory()
@@ -1168,7 +1168,7 @@ class GetFirstRegistrationDateTest:
         )
 
 
-@pytest.mark.usefixtures("db_session")
+
 class ShouldValidatePhoneTest:
     def test_eligible_15_17(self):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=17))
@@ -1220,7 +1220,7 @@ class ShouldValidatePhoneTest:
         assert not subscription_api._should_validate_phone(user, user.eligibility)
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CompleteProfileTest:
     def test_when_profile_was_proviously_cancelled(self):
         """
@@ -1254,7 +1254,7 @@ class CompleteProfileTest:
         )
 
 
-@pytest.mark.usefixtures("db_session")
+
 class ActivateBeneficiaryIfNoMissingStepTest:
     def test_activation_success(self):
         user = users_factories.UserFactory(
@@ -1655,7 +1655,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         )
 
 
-@pytest.mark.usefixtures("db_session")
+
 class SubscriptionMessageTest:
     def test_not_eligible(self):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=20))
@@ -1864,7 +1864,7 @@ class SubscriptionMessageTest:
         assert message == educonnect_returned_message
 
 
-@pytest.mark.usefixtures("db_session")
+
 class HasCompletedProfileTest:
     def test_has_completed(self):
         user = users_factories.UserFactory(
@@ -1908,7 +1908,7 @@ class HasCompletedProfileTest:
         assert subscription_api.has_completed_profile_for_given_eligibility(user, user.eligibility) is False
 
 
-@pytest.mark.usefixtures("db_session")
+
 class GetRelevantFraudCheckTest:
     @pytest.mark.parametrize(
         "user_eligibility, fraud_check_type",
@@ -2043,7 +2043,7 @@ class GetRelevantFraudCheckTest:
         )
 
 
-@pytest.mark.usefixtures("db_session")
+
 class GetStatusFromFraudCheckTest:
     def get_date_of_birth_to_be_eligible(self, eligibility_type):
         return datetime.utcnow() - relativedelta(
@@ -2295,7 +2295,7 @@ class GetStatusFromFraudCheckTest:
         assert user_subscription_state.young_status == young_status.NonEligible()
 
 
-@pytest.mark.usefixtures("db_session")
+
 class StepperTest:
     def get_step(
         self,
@@ -2641,7 +2641,7 @@ class StepperTest:
 
 
 class TestQueriesTest:
-    @pytest.mark.usefixtures("db_session")
+
     def test_num_queries(self):
         user = users_factories.EligibleGrant18Factory(
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED

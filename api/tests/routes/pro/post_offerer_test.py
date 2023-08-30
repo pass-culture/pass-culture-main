@@ -8,9 +8,6 @@ import pcapi.core.users.testing as users_testing
 from pcapi.models.validation_status_mixin import ValidationStatus
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 DEFAULT_DIGITAL_VENUE_LABEL = "Offre numérique"
 
 

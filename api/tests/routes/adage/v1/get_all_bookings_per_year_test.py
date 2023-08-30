@@ -7,7 +7,7 @@ from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.utils.date import format_into_utc_date
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns200Test:
     def test_get_all_collective_bookings_per_year(self, client) -> None:  # type: ignore [no-untyped-def]
         educationalYear = EducationalYearFactory()

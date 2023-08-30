@@ -3,7 +3,7 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 class CollectiveOffersGetCategoriesTest:
     def test_list_sub_categories(self, client):
         # Given

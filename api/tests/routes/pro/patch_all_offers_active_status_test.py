@@ -11,7 +11,7 @@ from pcapi.core.providers import factories as providers_factories
 from tests.conftest import TestClient
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns204Test:
     def when_activating_all_existing_offers(self, app):
         # Given

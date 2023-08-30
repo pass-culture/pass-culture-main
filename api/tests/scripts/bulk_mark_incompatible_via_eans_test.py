@@ -10,7 +10,7 @@ from pcapi.scripts.bulk_mark_incompatible_via_eans import bulk_update_is_gcu_com
 
 
 class BulkUpdateIsGcuCompatibleViaEansTest:
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.scripts.bulk_mark_incompatible_via_eans.search.unindex_offer_ids")
     def test_should_mark_offers_and_products_as_incompatible_via_ean(self, mocked_unindex_offer_ids):
         # Given
@@ -49,7 +49,7 @@ class BulkUpdateIsGcuCompatibleViaEansTest:
         assert set(first_call_args[0]) == {1, 2}
         assert second_call_args[0] == [4]
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_should_mark_products_as_compatible_via_ean(self):
         product = ProductFactory(id=1, extraData={"ean": "ABCDEFG"}, isGcuCompatible=False)
         product_1 = ProductFactory(id=2, extraData={"ean": "HIJKLMN"}, isGcuCompatible=False)

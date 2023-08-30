@@ -7,9 +7,6 @@ from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class HistoryFactoriesTest:
     def test_action_history_factory(self):
         author = users_factories.AdminFactory()

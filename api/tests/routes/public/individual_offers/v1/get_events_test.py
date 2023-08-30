@@ -7,7 +7,7 @@ from pcapi.core.offers import factories as offers_factories
 from . import utils
 
 
-@pytest.mark.usefixtures("db_session")
+
 class GetEventsTest:
     ENDPOINT_URL = "http://localhost/public/offers/v1/events"
 

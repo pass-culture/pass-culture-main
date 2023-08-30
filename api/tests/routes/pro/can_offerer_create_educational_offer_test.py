@@ -12,7 +12,7 @@ import pcapi.core.users.factories as users_factories
 @override_settings(ADAGE_API_URL="https://adage-api-url")
 @override_settings(ADAGE_API_KEY="adage-api-key")
 @override_settings(ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient")
-@pytest.mark.usefixtures("db_session")
+
 class CanOffererCreateEducationalOfferTest:
     def test_offerer_can_create_educational_offer(self, client: Any) -> None:
         offerer = offerers_factories.OffererFactory()

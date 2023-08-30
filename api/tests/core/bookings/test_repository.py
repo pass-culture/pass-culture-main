@@ -33,9 +33,6 @@ from pcapi.routes.serialization.bookings_recap_serialize import OfferType
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 NOW = datetime.utcnow()
 YESTERDAY = NOW - timedelta(days=1)
 TWO_DAYS_AGO = NOW - timedelta(days=2)

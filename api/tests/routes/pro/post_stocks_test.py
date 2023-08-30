@@ -19,7 +19,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.routes.serialization import serialize
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns201Test:
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_create_one_product_stock(self, mocked_async_index_offer_ids, client):
@@ -537,7 +537,7 @@ class Returns201Test:
         assert created_stock.bookingLimitDatetime is None
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns400Test:
     def when_missing_offer_id(self, client):
         # Given
@@ -870,9 +870,9 @@ class Returns400Test:
         assert response.json["price_category_id"] == [f"Le tarif avec l'id {price_category.id + 1} n'existe pas"]
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns403Test:
-    def when_user_has_no_rights_and_creating_stock_from_offer_id(self, client, db_session):
+    def when_user_has_no_rights_and_creating_stock_from_offer_id(self, client):
         # Given
         user = users_factories.ProFactory(email="wrong@example.com")
         offer = offers_factories.ThingOfferFactory()

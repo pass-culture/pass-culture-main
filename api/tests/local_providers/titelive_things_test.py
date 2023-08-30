@@ -107,7 +107,7 @@ BASE_DATA_LINE_PARTS = [
 
 
 class TiteliveThingsTest:
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
     def test_create_1_thing_from_one_data_line_in_one_file(
@@ -135,7 +135,7 @@ class TiteliveThingsTest:
         assert product.extraData.get("rayon") == closest_csr.get("label")
         assert product.extraData.get("code_clil") == CODE_CLIL_TEST
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
     def test_does_not_create_product_when_product_is_gtl_school_book(
@@ -159,7 +159,7 @@ class TiteliveThingsTest:
         # Then
         assert offers_models.Product.query.count() == 0
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
     def test_does_not_create_product_when_product_is_vat_20(
@@ -183,7 +183,7 @@ class TiteliveThingsTest:
         # Then
         assert offers_models.Product.query.count() == 0
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
     def test_does_not_create_product_when_product_is_extracurricular(
@@ -217,7 +217,7 @@ class TiteliveThingsTest:
             OBJECT_SUPPORT_CODE,
         ],
     )
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
     def test_does_not_create_product_when_product_is_non_eligible_support_code(
@@ -240,7 +240,7 @@ class TiteliveThingsTest:
         # Then
         assert offers_models.Product.query.count() == 0
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
     def test_create_product_when_product_is_gtl_school_book_but_in_product_whitelist(
@@ -264,7 +264,7 @@ class TiteliveThingsTest:
         # Then
         assert offers_models.Product.query.count() == 1
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
     def test_does_not_create_product_when_product_is_lectorat_eighteen_with_adult_advisor_comment(
@@ -295,7 +295,7 @@ class TiteliveThingsTest:
             GTL_LEVEL_02_AFTER_3_AND_BEFORE_6,
         ],
     )
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
     def test_does_not_create_product_when_product_is_small_young(
@@ -325,7 +325,7 @@ class TiteliveThingsTest:
             "toefl yes we can",
         ],
     )
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
     def test_does_not_create_product_when_product_is_toeic_or_toefl(
@@ -348,7 +348,7 @@ class TiteliveThingsTest:
         # Then
         assert offers_models.Product.query.count() == 0
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
     def test_update_1_thing_from_one_data_line_in_one_file(
@@ -378,7 +378,7 @@ class TiteliveThingsTest:
         assert updated_product.name == EAN_TEST_TITLE
         assert updated_product.extraData.get("bookFormat") == offers_models.BookFormat.BEAUX_LIVRES.value
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     def test_does_not_create_thing_when_no_files_found(self, get_files_to_process_from_titelive_ftp, app):
         # Given
@@ -393,7 +393,7 @@ class TiteliveThingsTest:
         # Then
         assert offers_models.Product.query.count() == 0
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
     def test_does_not_create_thing_when_missing_columns_in_data_line(
@@ -414,7 +414,7 @@ class TiteliveThingsTest:
         # Then
         assert offers_models.Product.query.count() == 0
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
     def test_does_not_create_thing_when_too_many_columns_in_data_line(
@@ -438,7 +438,7 @@ class TiteliveThingsTest:
         # Then
         assert offers_models.Product.query.count() == 0
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
     def test_should_not_create_product_when_school_related_product(
@@ -462,7 +462,7 @@ class TiteliveThingsTest:
         # Then
         assert offers_models.Product.query.count() == 0
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
     def test_should_reject_product_when_gtl_changes_to_school_related_product(
@@ -507,7 +507,7 @@ class TiteliveThingsTest:
         assert offer.validation == offers_models.OfferValidationStatus.REJECTED
         assert offer.lastValidationType == offer_mixin.OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
     def test_should_reject_product_when_non_valid_product_type(
@@ -544,7 +544,7 @@ class TiteliveThingsTest:
         product = offers_models.Product.query.one()
         assert product.isGcuCompatible is False
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
     def test_should_not_create_product_when_product_is_paper_press(
@@ -575,7 +575,7 @@ class TiteliveThingsTest:
         assert len(products) == 1
         assert product.extraData["ean"] == EAN_TEST
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
     def test_should_reject_product_when_it_changes_to_paper_press_product(
@@ -612,7 +612,7 @@ class TiteliveThingsTest:
         product = offers_models.Product.query.one()
         assert product.isGcuCompatible is False
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
     def test_should_not_reject_product_and_deactivate_associated_offer_when_it_changes_to_paper_press_product(
@@ -653,7 +653,7 @@ class TiteliveThingsTest:
         assert offer.validation == offers_models.OfferValidationStatus.REJECTED
         assert offers_models.Product.query.count() == 1
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
     def test_does_not_create_product_with_xxx_mark(
@@ -676,7 +676,7 @@ class TiteliveThingsTest:
         # Then
         assert offers_models.Product.query.count() == 0
 
-    @pytest.mark.usefixtures("db_session")
+
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
     def test_deactivate_offers_with_product_with_xxx_mark(

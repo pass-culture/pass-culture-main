@@ -4,9 +4,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class Returns201Test:
     def test_no_pre_existing_link(self, client):
         venue = offerers_factories.VenueWithoutSiretFactory()

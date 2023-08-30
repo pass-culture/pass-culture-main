@@ -5,9 +5,6 @@ from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 def test_get_remaining_sms_sending_attempts(app):
     user = users_factories.UserFactory()
     app.redis_client.set(f"sent_SMS_counter_user_{user.id}", 0)

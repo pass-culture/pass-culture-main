@@ -40,7 +40,7 @@ from tests.scripts.beneficiary.fixture import make_single_application
 from tests.test_utils import json_default
 
 
-@pytest.mark.usefixtures("db_session")
+
 class DmsWebhookApplicationTest:
     def test_dms_request_no_token(self, client):
         response = client.post("/webhooks/dms/application_status")
@@ -959,7 +959,7 @@ class DmsWebhookApplicationTest:
         assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
 
 
-@pytest.mark.usefixtures("db_session")
+
 class UbbleWebhookTest:
     def _get_request_body(self, fraud_check, status) -> ubble_routes.WebhookRequest:
         return ubble_routes.WebhookRequest(
@@ -2218,7 +2218,7 @@ class UbbleWebhookTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 760
 
-    @pytest.mark.usefixtures("db_session")
+
     @pytest.mark.parametrize(
         "reason_code,retryable_message,code_number",
         [

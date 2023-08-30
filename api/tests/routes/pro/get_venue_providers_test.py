@@ -11,7 +11,7 @@ from tests.conftest import TestClient
 
 
 class Returns200Test:
-    @pytest.mark.usefixtures("db_session")
+
     def test_get_list_with_valid_venue_id(self, app):
         # given
         user_offerer = offerers_factories.UserOffererFactory()
@@ -48,7 +48,7 @@ class Returns200Test:
         assert response.json["venue_providers"][0].get("venueId") == venue_provider.venue.id
         assert response.json["venue_providers"][0].get("lastSyncDate") == "2021-08-16T00:00:00Z"
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_get_list_that_include_allocine_with_valid_venue_id(self, app):
         # given
         user_offerer = offerers_factories.UserOffererFactory()
@@ -74,7 +74,7 @@ class Returns200Test:
 
 
 class Returns400Test:
-    @pytest.mark.usefixtures("db_session")
+
     def when_listing_all_venues_without_venue_id_argument(self, app):
         # given
         user_offerer = offerers_factories.UserOffererFactory()

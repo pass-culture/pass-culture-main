@@ -8,7 +8,6 @@ from pcapi.core.offerers import factories as offerers_factories
 
 
 pytestmark = [
-    pytest.mark.usefixtures("db_session"),
     pytest.mark.backoffice_v3,
 ]
 

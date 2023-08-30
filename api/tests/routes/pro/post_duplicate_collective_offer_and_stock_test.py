@@ -19,7 +19,7 @@ IMAGES_DIR = Path(tests.__path__[0]) / "files"
 UPLOAD_FOLDER = settings.LOCAL_STORAGE_DIR / educational_models.CollectiveOffer.FOLDER
 
 
-@pytest.mark.usefixtures("db_session")
+
 class Returns200Test:
     def teardown_method(self, *args):
         """clear images after each tests"""

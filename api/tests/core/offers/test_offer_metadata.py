@@ -7,9 +7,6 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.offer_metadata import get_metadata_from_offer
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class OfferMetadataTest:
     def should_always_have_a_context(self):
         offer = offers_factories.OfferFactory()

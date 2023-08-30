@@ -4,9 +4,6 @@ from pcapi.core.testing import override_features
 from pcapi.models.feature import Feature
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class FeaturesToggleTest:
     @override_features(ENABLE_NATIVE_APP_RECAPTCHA=False)
     def test_set_features(self, client):

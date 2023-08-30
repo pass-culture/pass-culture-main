@@ -14,7 +14,7 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import override_settings
 
 
-@pytest.mark.usefixtures("db_session")
+
 @override_settings(ADAGE_API_URL="https://adage_base_url")
 class Returns200Test:
     def test_create_offer_institution_link(self, client: Any) -> None:
@@ -102,7 +102,7 @@ class Returns200Test:
         assert len(adage_api_testing.adage_requests) == 0
 
 
-@pytest.mark.usefixtures("db_session")
+
 @override_settings(ADAGE_API_URL="https://adage_base_url")
 class Returns404Test:
     def test_offer_not_found(self, client: Any) -> None:
@@ -139,7 +139,7 @@ class Returns404Test:
         assert offer_db.institution is None
 
 
-@pytest.mark.usefixtures("db_session")
+
 @override_settings(ADAGE_API_URL="https://adage_base_url")
 class Returns403Test:
     def test_change_institution_on_uneditable_offer_booking_confirmed(self, client: Any) -> None:

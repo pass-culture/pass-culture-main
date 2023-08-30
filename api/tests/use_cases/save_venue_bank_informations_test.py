@@ -25,9 +25,6 @@ from pcapi.use_cases.save_venue_bank_informations import SaveVenueBankInformatio
 import tests.connector_creators.demarches_simplifiees_creators as dms_creators
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class SaveVenueBankInformationsTest:
     class GetReferentVenueTest:
         def setup_method(self):

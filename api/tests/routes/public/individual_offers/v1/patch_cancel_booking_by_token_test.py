@@ -12,9 +12,6 @@ from pcapi.core.offers import factories as offers_factories
 from . import utils
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class CancelBookingByTokenReturns200Test:
     def test_key_has_rights_and_regular_product_offer(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()

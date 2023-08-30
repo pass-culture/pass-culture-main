@@ -34,7 +34,7 @@ class GetOrSetCorrelationIdTest:
             assert correlation_id == headers["X-Request-Id"]
 
 
-@pytest.mark.usefixtures("db_session")
+
 class GetLoggedInUserIdTest:
     def test_request_from_anonymous_user(self, app):
         with app.test_request_context():

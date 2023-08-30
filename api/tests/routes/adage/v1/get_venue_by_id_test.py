@@ -6,9 +6,6 @@ from pcapi.core.offerers import factories as offerer_factories
 from pcapi.core.offerers.models import VenueTypeCode
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class Returns200Test:
     def test_get_venue_by_id(self, client: Any) -> None:
         venue = offerer_factories.CollectiveVenueFactory(

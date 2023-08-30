@@ -5,7 +5,7 @@ import pytest
 import pcapi.core.users.factories as users_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_patch_user_identity(client: Any) -> None:
     user = users_factories.ProFactory(firstName="jean", lastName="Kadre")
     form_data = {"firstName": "Axel", "lastName": "Ere"}
@@ -18,7 +18,7 @@ def test_patch_user_identity(client: Any) -> None:
     assert user.lastName == "Ere"
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_patch_user_identity_missing_fields(client: Any) -> None:
     user = users_factories.ProFactory(firstName="jean", lastName="Kadre")
 
@@ -30,7 +30,7 @@ def test_patch_user_identity_missing_fields(client: Any) -> None:
     assert user.lastName == "Kadre"
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_patch_user_identity_without_auth(client: Any) -> None:
     user = users_factories.ProFactory(firstName="jean", lastName="Tours")
     form_data = {"firstName": "Barrack", "lastName": "Afrit"}

@@ -8,9 +8,6 @@ import pytest
 from pcapi.core.educational import factories as educational_factories
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 @freeze_time("2023-12-15 16:00:00")
 class EducationalInstitutionTest:
     endpoint = "adage_iframe.get_educational_institution_with_budget"

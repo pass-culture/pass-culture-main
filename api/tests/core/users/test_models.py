@@ -24,9 +24,6 @@ from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class UserTest:
     class DepositTest:
         def test_return_none_if_no_deposits_exists(self):

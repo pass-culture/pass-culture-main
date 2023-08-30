@@ -4,7 +4,7 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
 
 
-@pytest.mark.usefixtures("db_session")
+
 def test_allocine_venue_provider_inheritance():
     venue_provider = providers_factories.AllocineVenueProviderFactory(isDuo=True)
     allocine = venue_provider.provider

@@ -1,6 +1,8 @@
 import pathlib
 import re
 
+from pcapi.models import db
+
 import pcapi
 
 
@@ -8,7 +10,7 @@ ANONYMIZE_SQL_PATH = pathlib.Path(pcapi.__path__[0]) / "scripts" / "rebuild_stag
 
 
 class AnonymizeTest:
-    def test_run_sql_script(self, db_session):
+    def test_run_sql_script(self):
         sql = []
         with ANONYMIZE_SQL_PATH.open() as fp:
             for line in fp.readlines():
@@ -23,4 +25,4 @@ class AnonymizeTest:
                 else:
                     sql.append(line)
         sql = "\n".join(sql)
-        db_session.execute(sql)
+        db.session.execute(sql)

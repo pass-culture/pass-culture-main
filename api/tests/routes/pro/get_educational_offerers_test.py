@@ -5,7 +5,7 @@ import pcapi.core.users.factories as users_factories
 
 
 class GetEducationalOfferersTest:
-    @pytest.mark.usefixtures("db_session")
+
     def test_response_serializer_for_multiple_educational_offerers(self, client):
         # given
         pro_user = users_factories.ProFactory()
@@ -80,7 +80,7 @@ class GetEducationalOfferersTest:
             ]
         }
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_error_when_missing_offerer_id_query_param_for_admin_user(self, client):
         # given
         admin_user = users_factories.AdminFactory()
@@ -96,7 +96,7 @@ class GetEducationalOfferersTest:
         # then
         assert response.status_code == 400
 
-    @pytest.mark.usefixtures("db_session")
+
     def test_response_serializer_for_admin(self, client):
         # given
         admin_user = users_factories.AdminFactory()

@@ -9,9 +9,6 @@ from pcapi.core.mails.transactional.bookings.booking_postponed_by_pro_to_benefic
 from pcapi.core.offers.factories import EventStockFactory
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class GetBookingPostponedByProToBeneficiaryTest:
     def test_should_get_sendinblue_email_data_when_stock_date_have_been_changed(self):
         # Given

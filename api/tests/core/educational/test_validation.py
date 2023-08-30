@@ -14,7 +14,7 @@ from pcapi.core.educational.validation import check_institution_fund
 
 
 class EducationalValidationTest:
-    def test_institution_fund_is_ok(self, db_session):
+    def test_institution_fund_is_ok(self):
         educational_institution = EducationalInstitutionFactory()
         educational_year = EducationalYearFactory(adageId="1")
         educational_deposit = EducationalDeposit(
@@ -53,7 +53,7 @@ class EducationalValidationTest:
             educational_institution.id, educational_year.adageId, Decimal(200.00), educational_deposit
         )
 
-    def test_institution_fund_is_temporary_insufficient(self, db_session):
+    def test_institution_fund_is_temporary_insufficient(self):
         educational_institution = EducationalInstitutionFactory()
         educational_year = EducationalYearFactory(adageId="1")
         educational_deposit = EducationalDeposit(
@@ -83,7 +83,7 @@ class EducationalValidationTest:
                 educational_institution.id, educational_year.adageId, Decimal(200.00), educational_deposit
             )
 
-    def test_institution_fund_is_insufficient(self, db_session):
+    def test_institution_fund_is_insufficient(self):
         educational_institution = EducationalInstitutionFactory()
         educational_year = EducationalYearFactory(adageId="1")
         educational_deposit = EducationalDeposit(

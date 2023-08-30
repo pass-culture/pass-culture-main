@@ -17,7 +17,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 import pcapi.core.offers.factories as offers_factories
 
 
-@pytest.mark.usefixtures("db_session")
+
 class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
     def test_should_sends_email_to_beneficiary_when_pro_cancels_booking(self):
         # Given
@@ -52,7 +52,7 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
         }
 
 
-@pytest.mark.usefixtures("db_session")
+
 class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
     def test_should_return_event_data_when_booking_is_on_an_event(self):
         # Given

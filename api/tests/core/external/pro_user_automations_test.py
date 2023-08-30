@@ -8,9 +8,6 @@ from pcapi.core.external.automations.pro_user import pro_no_active_offers_since_
 from pcapi.core.external.automations.pro_user import pro_no_bookings_since_40_days_automation
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 class ChurnedProEmailTest:
     @patch("pcapi.connectors.big_query.TestingBackend.run_query")
     @patch("pcapi.core.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")

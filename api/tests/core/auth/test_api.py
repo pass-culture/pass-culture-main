@@ -16,9 +16,6 @@ from .factories import GoogleWorkspaceGroup
 from .factories import GoogleWorkspaceGroupList
 
 
-pytestmark = pytest.mark.usefixtures("db_session")
-
-
 @override_settings(ENV="staging")
 def test_can_extract_roles_from_google_workspace_groups():
     # given
