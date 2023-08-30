@@ -30,13 +30,16 @@ def _get_existing_stocks(
 ) -> dict[int, offers_models.Stock]:
     existing_stocks = offers_models.Stock.query.filter(
         offers_models.Stock.offerId == offer_id,
+        offers_models.Stock.isSoftDeleted == False,
         offers_models.Stock.id.in_([stock_payload.id for stock_payload in stocks_payload]),
     ).all()
     return {existing_stocks.id: existing_stocks for existing_stocks in existing_stocks}
 
 
 def _get_number_of_existing_stocks(offer_id: int) -> int:
-    return offers_models.Stock.query.filter_by(offerId=offer_id).count()
+    return (
+        offers_models.Stock.query.filter_by(offerId=offer_id).filter(offers_models.Stock.isSoftDeleted == False).count()
+    )
 
 
 @private_api.route("/stocks/bulk", methods=["POST"])
