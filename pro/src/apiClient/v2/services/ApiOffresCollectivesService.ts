@@ -10,6 +10,7 @@ import type { CollectiveOffersListStudentLevelsResponseModel } from '../models/C
 import type { CollectiveOffersListSubCategoriesResponseModel } from '../models/CollectiveOffersListSubCategoriesResponseModel';
 import type { CollectiveOffersListVenuesResponseModel } from '../models/CollectiveOffersListVenuesResponseModel';
 import type { GetPublicCollectiveOfferResponseModel } from '../models/GetPublicCollectiveOfferResponseModel';
+import type { ListNationalProgramsResponseModel } from '../models/ListNationalProgramsResponseModel';
 import type { OfferStatus } from '../models/OfferStatus';
 import type { PatchCollectiveOfferBodyModel } from '../models/PatchCollectiveOfferBodyModel';
 import type { PostCollectiveOfferBodyModel } from '../models/PostCollectiveOfferBodyModel';
@@ -111,6 +112,23 @@ export class ApiOffresCollectivesService {
       errors: {
         400: `Requête malformée`,
         401: `Authentification nécessaire`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * Liste de tous les dispositifs nationaux connus
+   * @returns ListNationalProgramsResponseModel Il n'y a pas de dispositifs nationaux
+   * @throws ApiError
+   */
+  public getNationalPrograms(): CancelablePromise<ListNationalProgramsResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/v2/collective/national-programs/',
+      errors: {
+        401: `Authentification nécessaire`,
+        403: `Vous n'avez pas les droits nécessaires pour voir ces informations`,
         422: `Unprocessable Entity`,
       },
     });

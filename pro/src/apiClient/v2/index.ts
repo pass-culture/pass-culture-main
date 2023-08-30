@@ -33,6 +33,8 @@ export type { GetBookingResponse } from './models/GetBookingResponse';
 export type { GetListEducationalInstitutionsQueryModel } from './models/GetListEducationalInstitutionsQueryModel';
 export type { GetPublicCollectiveOfferResponseModel } from './models/GetPublicCollectiveOfferResponseModel';
 export type { ListCollectiveOffersQueryModel } from './models/ListCollectiveOffersQueryModel';
+export type { ListNationalProgramsResponseModel } from './models/ListNationalProgramsResponseModel';
+export type { NationalProgramModel } from './models/NationalProgramModel';
 export { OfferAddressType } from './models/OfferAddressType';
 export { OfferStatus } from './models/OfferStatus';
 export type { OfferVenueModel } from './models/OfferVenueModel';
