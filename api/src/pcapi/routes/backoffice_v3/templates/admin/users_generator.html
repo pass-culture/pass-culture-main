@@ -1,5 +1,6 @@
 {% from "components/generic_modal.html" import build_modal_form with context %}
 {% extends "layouts/connected.html" %}
+{% import "components/clipboard.html" as clipboard %}
 {% block page %}
   <div class="pt-3 px-5">
     <h2 class="fw-light">Générateur d'utilisateurs de test</h2>
@@ -30,17 +31,18 @@
                 </div>
               </a>
               {% if link_to_app %}
-                <a href="{{ link_to_app }}" target="_blank">
+                <a href="{{ link_to_app }}"
+                   target="_blank">
                   <div class="mb-1">
                     <span class="fw-bold">Aller sur l'app en tant que {{ user.firstName or "User" }} {{ user.lastName or user.id }}</span>
                   </div>
                 </a>
               {% endif %}
               <div class="mb-1">
-                <span class="fw-bold">Email :</span> {{ user.email }}
+                <span class="fw-bold">Email :</span> {{ user.email }}<span class="ms-1">{{ clipboard.copy_to_clipboard(user.email, "Copier l'email du compte") }}</span>
               </div>
               <div class="mb-1">
-                <span class="fw-bold">Mot de passe par défaut :</span> {{ get_setting("TEST_DEFAULT_PASSWORD") }}
+                <span class="fw-bold">Mot de passe par défaut :</span> {{ get_setting("TEST_DEFAULT_PASSWORD") }}<span class="ms-1">{{ clipboard.copy_to_clipboard(get_setting("TEST_DEFAULT_PASSWORD"), "Copier le mot de passe du compte") }}</span>
               </div>
             </div>
             <hr>
