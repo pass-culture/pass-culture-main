@@ -8,6 +8,8 @@ from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalRedactorFactory
 
 from tests.conftest import TestClient
+from tests.routes.adage_iframe.utils_create_test_token import DEFAULT_LAT
+from tests.routes.adage_iframe.utils_create_test_token import DEFAULT_LON
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_default_fake_valid_token
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_fake_invalid_token
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_fake_valid_token
@@ -27,6 +29,8 @@ class AuthenticateTest:
             firstname=self.valid_user.get("prenom"),
             email=self.valid_user.get("mail"),
             uai=uai_code,
+            lat=DEFAULT_LAT,
+            lon=DEFAULT_LON,
         )
 
     def test_should_return_redactor_role_when_token_has_an_uai_code(self, app) -> None:
@@ -60,6 +64,8 @@ class AuthenticateTest:
                 "feedback_form_closed": None,
                 "broadcast_help_closed": None,
             },
+            "lat": DEFAULT_LAT,
+            "lon": DEFAULT_LON,
         }
 
     def test_preferences_are_correctly_serialized(self, client) -> None:
@@ -95,6 +101,8 @@ class AuthenticateTest:
             "institutionCity": None,
             "email": None,
             "preferences": None,
+            "lat": None,
+            "lon": None,
         }
 
     valid_user = {
@@ -115,6 +123,8 @@ class AuthenticateTest:
             email=self.valid_user.get("mail"),
             uai=self.valid_user.get("uai"),
             expiration_date=expiration_date,
+            lat=DEFAULT_LAT,
+            lon=DEFAULT_LON,
         )
 
     @staticmethod

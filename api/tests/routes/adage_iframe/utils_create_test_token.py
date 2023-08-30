@@ -11,8 +11,18 @@ from tests.routes.adage_iframe import INVALID_RSA_PRIVATE_KEY_PATH
 from tests.routes.adage_iframe import VALID_RSA_PRIVATE_KEY_PATH
 
 
+DEFAULT_LAT = 67.91865044229313
+DEFAULT_LON = 18.572766390584306
+
+
 def create_adage_jwt_default_fake_valid_token(
-    civility: str, lastname: str, firstname: str, email: str, uai: Optional[str]
+    civility: str,
+    lastname: str,
+    firstname: str,
+    email: str,
+    uai: Optional[str],
+    lat: float | None = None,
+    lon: float | None = None,
 ) -> ByteString:
     return create_adage_jwt_fake_valid_token(
         civility=civility,
@@ -21,6 +31,8 @@ def create_adage_jwt_default_fake_valid_token(
         email=email,
         uai=uai,
         expiration_date=datetime.utcnow() + timedelta(days=1),
+        lat=lat,
+        lon=lon,
     )
 
 
@@ -31,6 +43,8 @@ def create_adage_jwt_fake_valid_token(
     email: str,
     uai: Optional[str],
     expiration_date: datetime,
+    lat: float | None = None,
+    lon: float | None = None,
 ) -> ByteString:
     with open(VALID_RSA_PRIVATE_KEY_PATH, "rb") as reader:
         authenticated_informations = {
@@ -39,6 +53,8 @@ def create_adage_jwt_fake_valid_token(
             "prenom": firstname,
             "mail": email,
             "uai": uai,
+            "lat": lat,
+            "lon": lon,
         }
         if expiration_date:
             authenticated_informations["exp"] = expiration_date
@@ -56,6 +72,8 @@ def create_adage_valid_token_with_email(
     lastname: str = "LAPROF",
     firstname: str = "Jeanne",
     uai: str = "EAU123",
+    lat: float | None = None,
+    lon: float | None = None,
 ) -> ByteString:
     return create_adage_jwt_fake_valid_token(
         civility=civility,
@@ -64,11 +82,19 @@ def create_adage_valid_token_with_email(
         email=email,
         uai=uai,
         expiration_date=datetime.utcnow() + timedelta(days=1),
+        lat=lat,
+        lon=lon,
     )
 
 
 def create_adage_jwt_fake_invalid_token(
-    civility: str, lastname: str, firstname: str, email: str, uai: str
+    civility: str,
+    lastname: str,
+    firstname: str,
+    email: str,
+    uai: str,
+    lat: float | None = None,
+    lon: float | None = None,
 ) -> ByteString:
     now = datetime.utcnow()
     with open(INVALID_RSA_PRIVATE_KEY_PATH, "rb") as reader:
@@ -80,6 +106,8 @@ def create_adage_jwt_fake_invalid_token(
                 "mail": email,
                 "uai": uai,
                 "exp": now + timedelta(days=1),
+                "lat": lat,
+                "lon": lon,
             },
             key=reader.read(),
             algorithm=ALGORITHM_RS_256,
