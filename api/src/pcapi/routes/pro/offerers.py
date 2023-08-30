@@ -203,10 +203,10 @@ def get_offerer_stats_dashboard_url(
 @private_api.route("/offerers/new", methods=["POST"])
 @login_required
 @spectree_serialize(
-    on_success_status=201, response_model=offerers_serialize.GetOffererResponseModel, api=blueprint.pro_private_schema
+    on_success_status=201, response_model=offerers_serialize.PostOffererResponseModel, api=blueprint.pro_private_schema
 )
 def save_new_onboarding_data(
     body: offerers_serialize.SaveNewOnboardingDataQueryModel,
-) -> offerers_serialize.GetOffererResponseModel:
+) -> offerers_serialize.PostOffererResponseModel:
     user_offerer = api.create_from_onboarding_data(current_user, body)
-    return offerers_serialize.GetOffererResponseModel.from_orm(user_offerer.offerer)
+    return offerers_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)

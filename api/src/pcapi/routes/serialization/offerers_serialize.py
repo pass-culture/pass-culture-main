@@ -77,6 +77,8 @@ class PostOffererResponseModel(BaseModel):
         orm_mode = True
 
 
+# GetOffererResponseModel includes sensitive information and can be returned only if authenticated user has a validated
+# access to the offerer. During subscription process, use PostOffererResponseModel
 class GetOffererResponseModel(BaseModel):
     address: str | None
     apiKey: OffererApiKey
