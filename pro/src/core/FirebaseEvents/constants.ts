@@ -136,3 +136,7 @@ export enum SynchronizationEvents {
   CLICKED_IMPORT = 'hasClickedImport',
   CLICKED_VALIDATE_IMPORT = 'hasClickedValidateImport',
 }
+
+export enum OffererLinkEvents {
+  CLICKED_INVITE_COLLABORATOR = 'hasClickedInviteCollaborator',
+}

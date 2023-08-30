@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 
 import { GetOffererResponseModel } from 'apiClient/v1'
-import { Events } from 'core/FirebaseEvents/constants'
+import { Events, OffererLinkEvents } from 'core/FirebaseEvents/constants'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
@@ -98,6 +98,11 @@ const OffererDetails = ({
                 }}
                 icon={fullMoreIcon}
                 isDisabled={!isUserOffererValidated}
+                onClick={() => {
+                  logEvent?.(OffererLinkEvents.CLICKED_INVITE_COLLABORATOR, {
+                    offererId: selectedOfferer.id,
+                  })
+                }}
               >
                 Inviter
               </ButtonLink>
