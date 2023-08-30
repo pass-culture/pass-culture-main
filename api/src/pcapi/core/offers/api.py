@@ -29,6 +29,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.api import offer as educational_api_offer
 import pcapi.core.educational.api.national_program as national_program_api
+from pcapi.core.external import compliance
 from pcapi.core.external.attributes.api import update_external_pro
 import pcapi.core.external_bookings.api as external_bookings_api
 import pcapi.core.finance.conf as finance_conf
@@ -1017,8 +1018,13 @@ def set_offer_status_based_on_fraud_criteria(offer: AnyOffer) -> models.OfferVal
     if flagging_rules:
         status = models.OfferValidationStatus.PENDING
         offer.flaggingValidationRules = flagging_rules
+        if isinstance(offer, models.Offer):
+            compliance.update_offer_compliance_score(offer, is_primary=True)
+
     else:
         status = models.OfferValidationStatus.APPROVED
+        if isinstance(offer, models.Offer):
+            compliance.update_offer_compliance_score(offer, is_primary=False)
 
     logger.info("Computed offer validation", extra={"offer": offer.id, "status": status.value})
     return status

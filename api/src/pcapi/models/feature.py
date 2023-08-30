@@ -123,6 +123,7 @@ class FeatureToggle(enum.Enum):
         "Backoffice : Afficher directement les détails lorsque la recherche ne renvoie qu'un seul résultat"
     )
     WIP_ENABLE_SEARCH_HISTORY_ADAGE = "Activer la possibilité de voir l'historique des recherches sur adage"
+    WIP_ENABLE_COMPLIANCE_CALL = "Activer les appels à l'API Compliance pour donner un score aux offres"
     WIP_ENABLE_MOCK_UBBLE = "Utiliser le mock Ubble à la place du vrai Ubble"
     WIP_PRO_STOCK_PAGINATION = "Active la pagination pour les stocks"
     WIP_ENABLE_BOOST_SHOWTIMES_FILTER = "Activer le filtre pour les requêtes showtimes Boost"
@@ -187,6 +188,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_ADAGE_GEO_LOCATION,
     FeatureToggle.WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING,
     FeatureToggle.WIP_ENABLE_COLLECTIVE_REQUEST,
+    FeatureToggle.WIP_ENABLE_COMPLIANCE_CALL,
     FeatureToggle.WIP_ENABLE_DIFFUSE_HELP,
     FeatureToggle.WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API,
     FeatureToggle.WIP_ENABLE_LIKE_IN_ADAGE,
