@@ -4,6 +4,7 @@ from pcapi import settings
 def test_public_api(client, app):
     response = client.get("/v2/openapi.json")
     assert response.status_code == 200
+
     assert response.json == {
         "components": {
             "schemas": {
@@ -348,6 +349,20 @@ def test_public_api(client, app):
                         "venueId": {"nullable": True, "title": "Venueid", "type": "integer"},
                     },
                     "title": "ListCollectiveOffersQueryModel",
+                    "type": "object",
+                },
+                "ListNationalProgramsResponseModel": {
+                    "items": {"$ref": "#/components/schemas/NationalProgramModel"},
+                    "title": "ListNationalProgramsResponseModel",
+                    "type": "array",
+                },
+                "NationalProgramModel": {
+                    "properties": {
+                        "id": {"title": "Id", "type": "integer"},
+                        "name": {"title": "Name", "type": "string"},
+                    },
+                    "required": ["id", "name"],
+                    "title": "NationalProgramModel",
                     "type": "object",
                 },
                 "OfferAddressType": {
@@ -1031,6 +1046,44 @@ def test_public_api(client, app):
                     },
                     "security": [{"ApiKeyAuth": []}],
                     "summary": "Récupération de la liste établissements scolaires.",
+                    "tags": ["API offres collectives"],
+                }
+            },
+            "/v2/collective/national-programs/": {
+                "get": {
+                    "description": "",
+                    "operationId": "GetNationalPrograms",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/ListNationalProgramsResponseModel"}
+                                }
+                            },
+                            "description": "Il n'y a pas de dispositifs nationaux",
+                        },
+                        "401": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
+                            },
+                            "description": "Authentification nécessaire",
+                        },
+                        "403": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponseModel"}}
+                            },
+                            "description": "Vous n'avez pas les droits nécessaires pour voir ces informations",
+                        },
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"ApiKeyAuth": []}],
+                    "summary": "Liste de tous les dispositifs nationaux connus",
                     "tags": ["API offres collectives"],
                 }
             },
