@@ -116,7 +116,7 @@ class SendinblueSendOfferValidationTest:
             "IS_COLLECTIVE_OFFER": False,
             "OFFER_NAME": offer.name,
             "PC_PRO_OFFER_LINK": f"{PRO_URL}/offre/individuelle/{offer.id}/recapitulatif",
-            "CREATION_DATE": offer.dateCreated,
+            "CREATION_DATE": offer.dateCreated.strftime("%d/%m/%Y"),
         }
 
     def test_send_pending_offer_rejection_email(

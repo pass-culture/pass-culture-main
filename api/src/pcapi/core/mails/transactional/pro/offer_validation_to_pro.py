@@ -55,7 +55,7 @@ def retrieve_data_for_validated_offer_rejection_email(
         template=TransactionalEmail.OFFER_VALIDATED_TO_REJECTED_TO_PRO.value,
         params={
             "OFFER_NAME": offer.name,
-            "CREATION_DATE": offer.dateCreated,
+            "CREATION_DATE": offer.dateCreated.strftime("%d/%m/%Y"),
             "PC_PRO_OFFER_LINK": build_pc_pro_offer_link(offer),
             "IS_COLLECTIVE_OFFER": not isinstance(offer, Offer),
         },
