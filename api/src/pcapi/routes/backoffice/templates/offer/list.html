@@ -73,9 +73,14 @@
               <th scope="col">Catégorie</th>
               <th scope="col">Sous-catégorie</th>
               <th scope="col">Stock restant</th>
-              {% if has_permission("PRO_FRAUD_ACTIONS") %}<th scope="col">Règles de conformité</th>{% endif %}
-              {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<th scope="col">Tag</th>{% endif %}
-              <th scope="col">Pond.</th>
+              {% if has_permission("PRO_FRAUD_ACTIONS") %}
+                <th scope="col">Règles de conformité</th>
+                <th scope="col">Score data</th>
+              {% endif %}
+              {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}
+                <th scope="col">Tag</th>
+                <th scope="col">Pond.</th>
+              {% endif %}
               <th scope="col">État</th>
               <th scope="col">
                 {% if date_created_sort_url %}
@@ -143,12 +148,13 @@
                 <td>{{ offer.subcategory.pro_label }}</td>
                 <td class="text-nowrap">{{ row.remaining_stocks }}</td>
                 {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                  <td>
-                    {% if row.rules %}{{ row.rules | join(", ") | escape }}{% endif %}
-                  </td>
+                  <td>{% if row.rules %}{{ row.rules | join(", ") | escape }}{% endif %}</td>
+                  <td>{{ offer.extraData.get("complianceScore","") if offer.extraData else "" | safe }}</td>
                 {% endif %}
-                {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}<td>{{ row.tags | format_as_badges | safe }}</td>{% endif %}
-                <td>{{ offer.rankingWeight | empty_string_if_null }}</td>
+                {% if has_permission("MANAGE_OFFERS_AND_VENUES_TAGS") %}
+                  <td>{{ row.tags | format_as_badges | safe }}</td>
+                  <td>{{ offer.rankingWeight | empty_string_if_null }}</td>
+                {% endif %}
                 <td>{{ offer.validation | format_offer_validation_status }}</td>
                 <td>{{ offer.dateCreated | format_date("%d/%m/%Y") }}</td>
                 <td>{{ offer.lastValidationDate | format_date("%d/%m/%Y") }}</td>
