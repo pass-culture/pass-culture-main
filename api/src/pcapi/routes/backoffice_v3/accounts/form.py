@@ -40,7 +40,7 @@ class ManualReviewForm(FlaskForm):
         "Éligibilité",
         choices=utils.choices_from_enum(users_models.EligibilityType, formatter=filters.format_eligibility_type),
     )
-    reason = fields.PCOptStringField("Raison du changement")
+    reason = fields.PCOptCommentField("Raison du changement")
 
 
 class CommentForm(FlaskForm):
