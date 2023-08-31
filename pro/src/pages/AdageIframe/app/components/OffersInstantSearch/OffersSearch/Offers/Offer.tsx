@@ -77,6 +77,8 @@ const Offer = ({ offer, queryId, position }: OfferProps): JSX.Element => {
     <li className={style['offer']} data-testid="offer-listitem">
       {offer.venue.coordinates.latitude &&
         offer.venue.coordinates.longitude &&
+        (adageUser.lat || adageUser.lat === 0) &&
+        (adageUser.lon || adageUser.lon === 0) &&
         isGeolocationActive && (
           <div className={style['offer-geoloc']}>
             <SvgIcon
@@ -92,10 +94,9 @@ const Offer = ({ offer, queryId, position }: OfferProps): JSX.Element => {
                   latitude: offer.venue.coordinates.latitude,
                   longitude: offer.venue.coordinates.longitude,
                 },
-                // TODO: Change to real data when available (waiting for Adage to provide it)
                 {
-                  latitude: 0,
-                  longitude: 0,
+                  latitude: adageUser.lat,
+                  longitude: adageUser.lon,
                 }
               )}{' '}
               km de votre établissement
