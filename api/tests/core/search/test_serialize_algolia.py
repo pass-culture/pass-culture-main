@@ -311,6 +311,8 @@ def test_serialize_collective_offer():
         venue__publicName="La Moyenne Librairie",
         venue__managingOfferer__name="Les Librairies Associées",
         venue__departementCode="86",
+        venue__latitude=algolia.DEFAULT_LATITUDE,
+        venue__longitude=algolia.DEFAULT_LONGITUDE,
         educational_domains=[domain1, domain2],
         institution=educational_institution,
         interventionArea=["1", "90", "94"],
@@ -348,8 +350,8 @@ def test_serialize_collective_offer():
             "publicName": "La Moyenne Librairie",
         },
         "_geoloc": {
-            "lat": collective_offer.venue.latitude,
-            "lng": collective_offer.venue.longitude,
+            "lat": float(collective_offer.venue.latitude),
+            "lng": float(collective_offer.venue.longitude),
         },
         "isTemplate": False,
     }
@@ -364,6 +366,8 @@ def test_serialize_collective_offer_without_institution():
 def test_serialize_collective_offer_template():
     domain1 = educational_factories.EducationalDomainFactory(name="Danse")
     domain2 = educational_factories.EducationalDomainFactory(name="Architecture")
+    venue = offerers_factories.VenueFactory(latitude=algolia.DEFAULT_LATITUDE, longitude=algolia.DEFAULT_LONGITUDE)
+
     collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
         dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
         name="Titre formidable",
@@ -376,8 +380,8 @@ def test_serialize_collective_offer_template():
         venue__managingOfferer__name="Les Librairies Associées",
         venue__departementCode="86",
         educational_domains=[domain1, domain2],
-        interventionArea=["1", "90", "94"],
-        offerVenue={"addressType": OfferAddressType.SCHOOL, "venueId": None, "otherAddress": "Quelque part"},
+        interventionArea=None,
+        offerVenue={"addressType": OfferAddressType.OFFERER_VENUE, "venueId": venue.id, "otherAddress": ""},
     )
 
     serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
@@ -390,9 +394,9 @@ def test_serialize_collective_offer_template():
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "domains": [domain1.id, domain2.id],
             "educationalInstitutionUAICode": "all",
-            "interventionArea": ["1", "90", "94"],
-            "schoolInterventionArea": ["1", "90", "94"],
-            "eventAddressType": OfferAddressType.SCHOOL.value,
+            "interventionArea": [],
+            "schoolInterventionArea": None,
+            "eventAddressType": OfferAddressType.OFFERER_VENUE.value,
             "beginningDatetime": 1641031200.0,
             "description": collective_offer_template.description,
         },
@@ -407,8 +411,8 @@ def test_serialize_collective_offer_template():
             "publicName": "La Moyenne Librairie",
         },
         "_geoloc": {
-            "lat": collective_offer_template.venue.latitude,
-            "lng": collective_offer_template.venue.longitude,
+            "lat": float(venue.latitude),
+            "lng": float(venue.longitude),
         },
         "isTemplate": True,
     }

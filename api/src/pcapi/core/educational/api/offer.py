@@ -47,6 +47,9 @@ logger = logging.getLogger(__name__)
 OFFERS_RECAP_LIMIT = 501
 
 
+AnyCollectiveOffer = educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate
+
+
 def notify_educational_redactor_on_collective_offer_or_stock_edit(
     collective_offer_id: int,
     updated_fields: list[str],
@@ -801,3 +804,31 @@ def create_offer_request(
     adage_client.notify_redactor_when_collective_request_is_made(serialize_collective_offer_request(request))
 
     return request
+
+
+def get_offer_coordinates(offer: AnyCollectiveOffer) -> tuple[float, float] | tuple[None, None]:
+    """
+    Return the offer's coordinates to use. Use the specified venue
+    if any or use the offer's billing address as the default.
+    """
+    address_type = offer.offerVenue.get("addressType")
+    offerer_venue_id = offer.offerVenue.get("venueId")
+
+    # the offer takes place in a specific venue
+    if address_type == "offererVenue" and offerer_venue_id:
+        venue = offerers_models.Venue.query.get(offerer_venue_id)
+    else:
+        venue = None
+
+    # no specific venue specified - or it does not exists
+    # anymore
+    if not venue:
+        venue = offer.venue
+
+    # we should return a coherent value: either latitude AND
+    # longitude or empty coordinates.
+    latitude, longitude = venue.latitude, venue.longitude
+    if not latitude or not longitude:
+        return (None, None)
+
+    return latitude, longitude

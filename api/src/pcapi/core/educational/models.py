@@ -264,6 +264,8 @@ class CollectiveOffer(
 
     isActive: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
 
+    # the venueId is the billing address.
+    # To find where the offer takes place, check offerVenue.
     venueId: int = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
 
     venue: sa_orm.Mapped["Venue"] = sa.orm.relationship(
@@ -302,6 +304,14 @@ class CollectiveOffer(
 
     contactPhone: str | None = sa.Column(sa.Text, nullable=True)
 
+    # Where the offer takes place
+    # There are three types:
+    #   1. within an educational institution;
+    #   2. within the offerer's place;
+    #   3. in some random place.
+    # Each object should have the same three keys: one for the venue
+    # type, one for the venueId (filled when 1.) and one for the random
+    # place (filled when 3.)
     offerVenue: dict = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
 
     interventionArea: list[str] = sa.Column(
