@@ -1,3 +1,4 @@
+import decimal
 import enum
 import logging
 import re
@@ -12,6 +13,7 @@ import sqlalchemy as sa
 
 from pcapi import settings
 from pcapi.core.educational.academies import get_academy_from_department
+import pcapi.core.educational.api.offer as educational_api_offer
 import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
@@ -27,6 +29,8 @@ from pcapi.utils.stopwords import STOPWORDS
 
 
 logger = logging.getLogger(__name__)
+
+Numeric = float | decimal.Decimal
 
 
 REDIS_OFFER_IDS_NAME = "search:algolia:offer_ids"
@@ -522,6 +526,7 @@ class AlgoliaBackend(base.SearchBackend):
         date_created = collective_offer.dateCreated.timestamp()
         beginning_datetime = collective_offer.collectiveStock.beginningDatetime.timestamp()
         department_code = get_department_code_from_postal_code(venue.postalCode)
+        latitude, longitude = educational_api_offer.get_offer_coordinates(collective_offer)
 
         return {
             "objectID": collective_offer.id,
@@ -552,10 +557,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": venue.name,
                 "publicName": venue.publicName,
             },
-            "_geoloc": {
-                "lat": venue.latitude,
-                "lng": venue.longitude,
-            },
+            "_geoloc": format_coordinates(latitude, longitude),
             "isTemplate": False,
         }
 
@@ -567,6 +569,7 @@ class AlgoliaBackend(base.SearchBackend):
         offerer = venue.managingOfferer
         date_created = collective_offer_template.dateCreated.timestamp()
         department_code = get_department_code_from_postal_code(venue.postalCode)
+        latitude, longitude = educational_api_offer.get_offer_coordinates(collective_offer_template)
 
         return {
             "objectID": _transform_collective_offer_template_id(collective_offer_template.id),
@@ -595,18 +598,17 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": venue.name,
                 "publicName": venue.publicName,
             },
-            "_geoloc": {
-                "lat": venue.latitude,
-                "lng": venue.longitude,
-            },
+            "_geoloc": format_coordinates(latitude, longitude),
             "isTemplate": True,
         }
 
 
 def position(venue: offerers_models.Venue) -> dict[str, float]:
-    latitude = venue.latitude or DEFAULT_LATITUDE
-    longitude = venue.longitude or DEFAULT_LONGITUDE
-    return {"lat": float(latitude), "lng": float(longitude)}
+    return format_coordinates(venue.latitude, venue.longitude)
+
+
+def format_coordinates(latitude: Numeric | None, longitude: Numeric | None) -> dict[str, float]:
+    return {"lat": float(latitude or DEFAULT_LATITUDE), "lng": float(longitude or DEFAULT_LONGITUDE)}
 
 
 def _transform_collective_offer_template_id(collective_offer_template_id: int) -> str:
