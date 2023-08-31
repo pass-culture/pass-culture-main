@@ -114,7 +114,9 @@ describe('OfferEducationalStock', () => {
     expect(testProps.onSubmit).toHaveBeenCalled()
   })
 
-  describe('wrong students modal', () => {
+  //  FIXME (guillaumeMgz, 2023-08-31)
+  //  Tests disabled until the modal about 6e/5e being disabled until 2023-09-01 is deleted
+  describe.skip('wrong students modal', () => {
     it('should navigate to offer creation if user click modify participants', async () => {
       const offer = collectiveOfferFactory({
         id: 1,
@@ -310,5 +312,29 @@ describe('OfferEducationalStock', () => {
 
       screen.getByText("L'heure doit être postérieure à l'heure actuelle")
     })
+  })
+
+  //  FIXME (guillaumeMgz, 2023-08-31)
+  //  Test to be removed when the modal is deleted
+  it('should submit callback when clicking next step with 6e or 5e', async () => {
+    const offer = collectiveOfferFactory({
+      id: 1,
+      students: [
+        StudentLevels.COLL_GE_6E,
+        StudentLevels.COLL_GE_5E,
+        StudentLevels.COLL_GE_4E,
+      ],
+    })
+    const testProps: OfferEducationalStockProps = {
+      ...defaultProps,
+      offer,
+      initialValues: initialValuesNotEmpty,
+      mode: Mode.CREATION,
+    }
+    renderWithProviders(<OfferEducationalStock {...testProps} />)
+    const submitButton = screen.getByRole('button', { name: 'Étape suivante' })
+    await userEvent.click(submitButton)
+
+    expect(testProps.onSubmit).toHaveBeenCalled()
   })
 })
