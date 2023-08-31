@@ -42,13 +42,20 @@ def _get_number_of_existing_stocks(offer_id: int) -> int:
 @private_api.route("/stocks/bulk", methods=["POST"])
 @login_required
 @spectree_serialize(
-    on_success_status=201, response_model=serialization.StocksResponseModel, api=blueprint.pro_private_schema
+    on_success_status=201,
+    response_model=serialization.StocksResponseModel,
+    api=blueprint.pro_private_schema,
 )
-def upsert_stocks(body: serialization.StocksUpsertBodyModel) -> serialization.StocksResponseModel:
+def upsert_stocks(
+    body: serialization.StocksUpsertBodyModel,
+) -> serialization.StocksResponseModel:
     try:
         offerer = offerers_repository.get_by_offer_id(body.offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+        raise ApiErrors(
+            {"offerer": ["Aucune structure trouvée à partir de cette offre"]},
+            status_code=404,
+        )
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     offer = (
@@ -78,19 +85,19 @@ def upsert_stocks(body: serialization.StocksUpsertBodyModel) -> serialization.St
     price_categories = {price_category.id: price_category for price_category in offer.priceCategories}
 
     upserted_stocks = []
-    edited_stocks_with_update_info: list[tuple[offers_models.Stock, bool, bool]] = []
+    edited_stocks_with_update_info: list[tuple[offers_models.Stock, bool]] = []
     try:
         with transaction():
             for stock_to_edit in stocks_to_edit:
                 if stock_to_edit.id not in existing_stocks:
                     raise ApiErrors(
-                        {"stock_id": ["Le stock avec l'id %s n'existe pas" % stock_to_edit.id]}, status_code=400
+                        {"stock_id": ["Le stock avec l'id %s n'existe pas" % stock_to_edit.id]},
+                        status_code=400,
                     )
                 offers_validation.check_stock_has_price_or_price_category(offer, stock_to_edit, price_categories)
-                old_stock = existing_stocks[stock_to_edit.id]
-                should_bookings_be_canceled = old_stock.is_automatically_used and bool(stock_to_edit.price)
+
                 edited_stock, is_beginning_updated = offers_api.edit_stock(
-                    old_stock,
+                    existing_stocks[stock_to_edit.id],
                     price=stock_to_edit.price,
                     quantity=stock_to_edit.quantity,
                     beginning_datetime=serialization_utils.as_utc_without_timezone(stock_to_edit.beginning_datetime)
@@ -104,7 +111,7 @@ def upsert_stocks(body: serialization.StocksUpsertBodyModel) -> serialization.St
                     price_category=price_categories.get(stock_to_edit.price_category_id, None),
                 )
                 upserted_stocks.append(edited_stock)
-                edited_stocks_with_update_info.append((edited_stock, is_beginning_updated, should_bookings_be_canceled))
+                edited_stocks_with_update_info.append((edited_stock, is_beginning_updated))
 
             for stock_to_create in stocks_to_create:
                 offers_validation.check_stock_has_price_or_price_category(offer, stock_to_create, price_categories)
@@ -126,7 +133,7 @@ def upsert_stocks(body: serialization.StocksUpsertBodyModel) -> serialization.St
             status_code=400,
         )
 
-    offers_api.handle_stocks_edition(edited_stocks_with_update_info)
+    offers_api.handle_stocks_edition(body.offer_id, edited_stocks_with_update_info)
 
     return serialization.StocksResponseModel(
         stocks=[serialization.StockResponseModel.from_orm(stock) for stock in upserted_stocks]
