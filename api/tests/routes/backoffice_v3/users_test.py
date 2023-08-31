@@ -9,6 +9,8 @@ import pcapi.core.permissions.models as perm_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
+from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
 
 from .helpers import html_parser
@@ -22,16 +24,34 @@ pytestmark = [
 ]
 
 
+@pytest.fixture(scope="function", name="beneficiary_fraud_admin")
+def beneficiary_fraud_admin_fixture(roles_with_permissions: None) -> users_models.User:
+    user = users_factories.UserFactory(roles=["ADMIN"])
+    user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
+    backoffice_api.upsert_roles(user, {perm_models.Roles.FRAUDE_JEUNES})
+    db.session.commit()
+    return user
+
+
+@pytest.fixture(scope="function", name="pro_fraud_admin")
+def pro_fraud_admin_fixture(roles_with_permissions: None) -> users_models.User:
+    user = users_factories.UserFactory(roles=["ADMIN"])
+    user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
+    backoffice_api.upsert_roles(user, {perm_models.Roles.FRAUDE_CONFORMITE})
+    db.session.commit()
+    return user
+
+
 class SuspendUserTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.users.suspend_user"
     endpoint_kwargs = {"user_id": 1}
-    needed_permission = perm_models.Permissions.SUSPEND_USER
+    needed_permission = {perm_models.Permissions.SUSPEND_USER, perm_models.Permissions.PRO_FRAUD_ACTIONS}
 
-    def test_suspend_beneficiary_user(self, authenticated_client, legit_user):
+    def test_suspend_beneficiary_user(self, client, beneficiary_fraud_admin):
         user = users_factories.BeneficiaryGrant18Factory()
 
         response = self.post_to_endpoint(
-            authenticated_client,
+            client.with_bo_session_auth(beneficiary_fraud_admin),
             user_id=user.id,
             form={
                 "reason": users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT.name,
@@ -47,18 +67,18 @@ class SuspendUserTest(PostEndpointHelper):
         assert not user.isActive
         assert len(user.action_history) == 1
         assert user.action_history[0].actionType == history_models.ActionType.USER_SUSPENDED
-        assert user.action_history[0].authorUser == legit_user
+        assert user.action_history[0].authorUser == beneficiary_fraud_admin
         assert user.action_history[0].user == user
         assert user.action_history[0].offererId is None
         assert user.action_history[0].venueId is None
         assert user.action_history[0].extraData["reason"] == users_constants.SuspensionReason.FRAUD_RESELL_PRODUCT.value
         assert user.action_history[0].comment == "Le jeune a mis en ligne des annonces de vente le lendemain"
 
-    def test_suspend_pro_user(self, authenticated_client, legit_user):
+    def test_suspend_pro_user(self, client, pro_fraud_admin):
         user = offerers_factories.UserOffererFactory().user
 
         response = self.post_to_endpoint(
-            authenticated_client,
+            client.with_bo_session_auth(pro_fraud_admin),
             user_id=user.id,
             form={
                 "reason": users_constants.SuspensionReason.FRAUD_USURPATION_PRO.name,
@@ -72,12 +92,40 @@ class SuspendUserTest(PostEndpointHelper):
         assert not user.isActive
         assert len(user.action_history) == 1
         assert user.action_history[0].actionType == history_models.ActionType.USER_SUSPENDED
-        assert user.action_history[0].authorUser == legit_user
+        assert user.action_history[0].authorUser == pro_fraud_admin
         assert user.action_history[0].user == user
         assert user.action_history[0].offererId is None
         assert user.action_history[0].venueId is None
         assert user.action_history[0].extraData["reason"] == users_constants.SuspensionReason.FRAUD_USURPATION_PRO.value
         assert user.action_history[0].comment is None
+
+    def test_suspend_beneficiary_user_as_pro_fraud(self, client, pro_fraud_admin):
+        user = users_factories.BeneficiaryGrant18Factory()
+
+        response = self.post_to_endpoint(
+            client.with_bo_session_auth(pro_fraud_admin),
+            user_id=user.id,
+            form={
+                "reason": users_constants.SuspensionReason.FRAUD_HACK.name,
+                "comment": "",  # optional, keep empty
+            },
+        )
+
+        assert response.status_code == 403
+
+    def test_suspend_pro_user_as_beneficiary_fraud(self, client, beneficiary_fraud_admin):
+        user = offerers_factories.UserOffererFactory().user
+
+        response = self.post_to_endpoint(
+            client.with_bo_session_auth(beneficiary_fraud_admin),
+            user_id=user.id,
+            form={
+                "reason": users_constants.SuspensionReason.FRAUD_USURPATION_PRO.name,
+                "comment": "",  # optional, keep empty
+            },
+        )
+
+        assert response.status_code == 403
 
     def test_suspend_without_reason(self, authenticated_client, legit_user):
         user = users_factories.UnderageBeneficiaryFactory()
@@ -99,7 +147,7 @@ class SuspendUserTest(PostEndpointHelper):
 class UnsuspendUserTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.users.unsuspend_user"
     endpoint_kwargs = {"user_id": 1}
-    needed_permission = perm_models.Permissions.UNSUSPEND_USER
+    needed_permission = {perm_models.Permissions.UNSUSPEND_USER, perm_models.Permissions.PRO_FRAUD_ACTIONS}
 
     def test_unsuspend_beneficiary_user(self, authenticated_client, legit_user):
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
@@ -143,7 +191,7 @@ class UnsuspendUserTest(PostEndpointHelper):
 
 class GetBatchSuspendUsersFormTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.users.get_batch_suspend_users_form"
-    needed_permission = perm_models.Permissions.SUSPEND_USER
+    needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
 
     def test_get_batch_suspend_users_form(self, authenticated_client):
         with assert_num_queries(2):  # session + current user
@@ -202,7 +250,7 @@ class BatchSuspendUsersReturns400Helper(PostEndpointHelper):
 
 class BatchSuspendUsersTest(BatchSuspendUsersReturns400Helper):
     endpoint = "backoffice_v3_web.users.batch_suspend_users"
-    needed_permission = perm_models.Permissions.SUSPEND_USER
+    needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
 
     @pytest.mark.parametrize("separator", [",", ", ", "\n"])
     def test_batch_suspend_users(self, authenticated_client, separator):
@@ -250,7 +298,7 @@ class BatchSuspendUsersTest(BatchSuspendUsersReturns400Helper):
 
 class ConfirmBatchSuspendUsersTest(BatchSuspendUsersReturns400Helper):
     endpoint = "backoffice_v3_web.users.confirm_batch_suspend_users"
-    needed_permission = perm_models.Permissions.SUSPEND_USER
+    needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
 
     def test_confirm_batch_suspend_users(self, authenticated_client, legit_user):
         users = [

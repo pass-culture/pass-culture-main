@@ -102,7 +102,7 @@ class GetProUserTest(GetEndpointHelper):
             assert url not in response.data.decode("utf-8")
 
     class SuspendButtonTest(button_helpers.ButtonHelper):
-        needed_permission = perm_models.Permissions.SUSPEND_USER
+        needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
         button_label = "Suspendre le compte"
 
         @property
@@ -111,7 +111,7 @@ class GetProUserTest(GetEndpointHelper):
             return url_for("backoffice_v3_web.pro_user.get", user_id=user.id)
 
     class UnsuspendButtonTest(button_helpers.ButtonHelper):
-        needed_permission = perm_models.Permissions.UNSUSPEND_USER
+        needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
         button_label = "Réactiver le compte"
 
         @property
