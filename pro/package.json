@@ -68,7 +68,7 @@
     "react-tooltip": "^5.21.1",
     "redux": "^4.0.5",
     "reselect": "^4.1.5",
-    "search-insights": "^2.7.0",
+    "search-insights": "^2.8.0",
     "uuidv4": "^6.2.13",
     "yup": "^1.2.0"
   },
