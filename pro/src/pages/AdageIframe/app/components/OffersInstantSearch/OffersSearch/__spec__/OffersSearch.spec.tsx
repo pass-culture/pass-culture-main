@@ -76,6 +76,8 @@ describe('offersSearch component', () => {
     institutionName: 'COLLEGE BELLEVUE',
     institutionCity: 'ALES',
     email: 'test@example.com',
+    lat: 10,
+    lon: 10,
   }
 
   beforeEach(() => {
@@ -255,6 +257,36 @@ describe('offersSearch component', () => {
 
     // Then
     expect(refineGeoloc).toHaveBeenCalled()
+  })
+
+  it('should not let user select the geoloc filter if they have an invalid location', async () => {
+    renderOffersSearchComponent(
+      props,
+      { ...user, departmentCode: null, lat: 0, lon: null },
+      isGeolocationActive
+    )
+    await waitFor(() => {
+      expect(pcapi.getEducationalDomains).toHaveBeenCalled()
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Localisation des partenaires',
+      })
+    )
+    await userEvent.click(screen.getByText('Choisir une académie'))
+    await userEvent.click(
+      screen.getByRole('option', {
+        name: 'Amiens',
+      })
+    )
+    await userEvent.click(
+      screen.getAllByRole('button', {
+        name: 'Rechercher',
+      })[1]
+    )
+
+    expect(refineGeoloc).not.toHaveBeenCalled()
   })
 
   it('should filters department on venue filter if provided', async () => {
