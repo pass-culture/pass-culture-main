@@ -60,10 +60,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     ],
     "fraude-conformite": [
         perm_models.Permissions.PRO_FRAUD_ACTIONS,
-        perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS,
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
-        perm_models.Permissions.SUSPEND_USER,
-        perm_models.Permissions.UNSUSPEND_USER,
         perm_models.Permissions.READ_PRO_ENTITY,
         perm_models.Permissions.VALIDATE_OFFERER,
         perm_models.Permissions.MANAGE_BOOKINGS,
@@ -74,6 +71,8 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     ],
     "fraude-jeunes": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
+        perm_models.Permissions.SUSPEND_USER,
+        perm_models.Permissions.UNSUSPEND_USER,
         perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS,
         perm_models.Permissions.MANAGE_BOOKINGS,
         perm_models.Permissions.READ_BOOKINGS,
