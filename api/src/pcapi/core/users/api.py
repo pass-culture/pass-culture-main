@@ -16,6 +16,7 @@ from sqlalchemy.orm import Query
 
 from pcapi import settings
 from pcapi.connectors import sirene
+from pcapi.core import token as token_utils
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.external.attributes import api as external_attributes_api
@@ -66,14 +67,6 @@ class T_UNCHANGED(enum.Enum):
 UNCHANGED = T_UNCHANGED.TOKEN
 
 logger = logging.getLogger(__name__)
-
-
-def create_email_validation_token(user: models.User) -> models.Token:
-    return generate_and_save_token(
-        user,
-        models.TokenType.EMAIL_VALIDATION,
-        expiration=datetime.datetime.utcnow() + constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
-    )
 
 
 def create_reset_password_token(user: models.User, expiration: datetime.datetime | None = None) -> models.Token:
@@ -273,7 +266,11 @@ def update_user_information_from_external_source(
 
 
 def request_email_confirmation(user: models.User) -> None:
-    token = create_email_validation_token(user)
+    token = token_utils.Token.create(
+        token_utils.TokenType.EMAIL_VALIDATION,
+        constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
+        user.id,
+    )
     transactional_mails.send_email_confirmation_email(user, token=token)
 
 

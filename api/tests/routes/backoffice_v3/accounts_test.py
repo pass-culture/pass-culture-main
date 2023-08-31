@@ -6,6 +6,7 @@ from flask import url_for
 import pytest
 import pytz
 
+from pcapi.core import token as token_utils
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.fraud import factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
@@ -1083,14 +1084,13 @@ class ResendValidationEmailTest(PostEndpointHelper):
         assert updated_user.isEmailValidated is False
 
         # check that a new token has been generated
-        token: users_models.Token = users_models.Token.query.filter(users_models.Token.userId == user.id).one()
-        assert token.type == users_models.TokenType.EMAIL_VALIDATION
+        assert token_utils.Token.token_exists(token_utils.TokenType.EMAIL_VALIDATION, user.id)
 
         # check that email is sent
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["To"] == user.email
         assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.EMAIL_CONFIRMATION.value.__dict__
-        assert token.value in mails_testing.outbox[0].sent_data["params"]["CONFIRMATION_LINK"]
+        assert "token" in mails_testing.outbox[0].sent_data["params"]["CONFIRMATION_LINK"]
 
     @pytest.mark.parametrize("user_factory", [users_factories.AdminFactory, users_factories.ProFactory])
     def test_no_email_sent_if_admin_pro(self, authenticated_client, user_factory):
