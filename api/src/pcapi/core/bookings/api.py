@@ -147,7 +147,9 @@ def get_individual_bookings(user: User) -> list[Booking]:
     ).all()
 
 
-def classify_and_sort_bookings(individual_bookings: list[Booking]) -> tuple[list[Booking], list[Booking]]:
+def classify_and_sort_bookings(
+    individual_bookings: list[Booking],
+) -> tuple[list[Booking], list[Booking]]:
     """
     Classify bookings between ended and ongoing bookings
     """
@@ -173,7 +175,11 @@ def classify_and_sort_bookings(individual_bookings: list[Booking]) -> tuple[list
     )
     # put permanent bookings at the end with datetime.max
     sorted_ongoing_bookings = sorted(
-        ongoing_bookings, key=lambda b: (b.expirationDate or b.stock.beginningDatetime or datetime.datetime.max, -b.id)
+        ongoing_bookings,
+        key=lambda b: (
+            b.expirationDate or b.stock.beginningDatetime or datetime.datetime.max,
+            -b.id,
+        ),
     )
     return (sorted_ended_bookings, sorted_ongoing_bookings)
 
@@ -331,7 +337,10 @@ def _book_cinema_external_ticket(booking: Booking, stock: Stock, beneficiary: Us
         raise providers_exceptions.ShowIdNotFound("Could not retrieve show_id")
     try:
         tickets = external_bookings_api.book_cinema_ticket(
-            venue_id=stock.offer.venueId, show_id=show_id, booking=booking, beneficiary=beneficiary
+            venue_id=stock.offer.venueId,
+            show_id=show_id,
+            booking=booking,
+            beneficiary=beneficiary,
         )
     except Exception as exc:
         logger.exception("Could not book external ticket: %s", exc)
@@ -377,7 +386,11 @@ def _cancel_booking(
                     commit=False,
                 )
             _cancel_external_booking(booking, stock)
-        except (BookingIsAlreadyUsed, BookingIsAlreadyCancelled, finance_exceptions.NonCancellablePricingError) as e:
+        except (
+            BookingIsAlreadyUsed,
+            BookingIsAlreadyCancelled,
+            finance_exceptions.NonCancellablePricingError,
+        ) as e:
             if raise_if_error:
                 raise
             logger.info(
@@ -428,16 +441,14 @@ def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
     external_bookings_api.cancel_booking(stock.offer.venueId, barcodes)
 
 
-def _cancel_bookings_from_stock(
-    stock: offers_models.Stock, reason: BookingCancellationReasons, cancel_even_if_used: bool
-) -> list[Booking]:
+def _cancel_bookings_from_stock(stock: offers_models.Stock, reason: BookingCancellationReasons) -> list[Booking]:
     """
     Cancel multiple bookings and update the users' credit information on Batch.
     Note that this will not reindex the stock.offer in Algolia
     """
     deleted_bookings: list[Booking] = []
     for booking in stock.bookings:
-        if _cancel_booking(booking, reason, cancel_even_if_used=cancel_even_if_used):
+        if _cancel_booking(booking, reason, cancel_even_if_used=typing.cast(bool, stock.offer.isEvent)):
             deleted_bookings.append(booking)
 
     return deleted_bookings
@@ -459,17 +470,7 @@ def cancel_booking_by_offerer(booking: Booking) -> None:
 
 
 def cancel_bookings_from_stock_by_offerer(stock: offers_models.Stock) -> list[Booking]:
-    cancelled_bookings = _cancel_bookings_from_stock(stock, BookingCancellationReasons.OFFERER, stock.offer.isEvent)
-    search.async_index_offer_ids([stock.offerId])
-    return cancelled_bookings
-
-
-def cancel_bookings_from_stock_no_longer_free(stock: offers_models.Stock) -> list[Booking]:
-    cancelled_bookings = _cancel_bookings_from_stock(
-        stock,
-        BookingCancellationReasons.OFFERER,
-        stock.offer.subcategoryId in stock.AUTOMATICALLY_USED_SUBCATEGORIES,
-    )
+    cancelled_bookings = _cancel_bookings_from_stock(stock, BookingCancellationReasons.OFFERER)
     search.async_index_offer_ids([stock.offerId])
     return cancelled_bookings
 
@@ -477,9 +478,7 @@ def cancel_bookings_from_stock_no_longer_free(stock: offers_models.Stock) -> lis
 def cancel_bookings_from_rejected_offer(offer: offers_models.Offer) -> list[Booking]:
     cancelled_bookings = []
     for stock in offer.stocks:
-        cancelled_bookings.extend(
-            _cancel_bookings_from_stock(stock, BookingCancellationReasons.FRAUD, stock.offer.isEvent)
-        )
+        cancelled_bookings.extend(_cancel_bookings_from_stock(stock, BookingCancellationReasons.FRAUD))
     logger.info(
         "Cancelled bookings for rejected offer",
         extra={
@@ -511,7 +510,10 @@ def cancel_booking_for_fraud(booking: Booking) -> None:
 def cancel_booking_on_user_requested_account_suspension(booking: Booking) -> None:
     validation.check_booking_can_be_cancelled(booking)
     _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
-    logger.info("Cancelled booking on user-requested account suspension", extra={"booking": booking.id})
+    logger.info(
+        "Cancelled booking on user-requested account suspension",
+        extra={"booking": booking.id},
+    )
     if not transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(
         booking, booking.cancellationReason
     ):
@@ -527,7 +529,11 @@ def mark_as_used(booking: Booking) -> None:
     finance_api.add_event(booking, finance_models.FinanceEventMotive.BOOKING_USED, commit=False)
     repository.save(booking)
 
-    logger.info("Booking was marked as used", extra={"booking_id": booking.id}, technical_message_id="booking.used")
+    logger.info(
+        "Booking was marked as used",
+        extra={"booking_id": booking.id},
+        technical_message_id="booking.used",
+    )
     amplitude_events.track_mark_as_used_event(booking)
 
     update_external_user(booking.user)
@@ -591,7 +597,11 @@ def mark_as_unused(booking: Booking) -> None:
     booking.mark_as_unused_set_confirmed()
     repository.save(booking)
 
-    logger.info("Booking was marked as unused", extra={"booking_id": booking.id}, technical_message_id="booking.unused")
+    logger.info(
+        "Booking was marked as unused",
+        extra={"booking_id": booking.id},
+        technical_message_id="booking.unused",
+    )
 
     update_external_user(booking.user)
     update_external_pro(booking.venue.bookingEmail)
@@ -621,7 +631,8 @@ def update_cancellation_limit_dates(
 ) -> list[Booking]:
     for booking in bookings_to_update:
         booking.cancellationLimitDate = _compute_edition_cancellation_limit_date(
-            event_beginning=new_beginning_datetime, edition_date=datetime.datetime.utcnow()
+            event_beginning=new_beginning_datetime,
+            edition_date=datetime.datetime.utcnow(),
         )
     repository.save(*bookings_to_update)
     return bookings_to_update
@@ -787,7 +798,9 @@ def auto_mark_as_used_after_event() -> None:
     )
 
 
-def get_individual_bookings_from_stock(stock_id: int) -> typing.Generator[Booking, None, None]:
+def get_individual_bookings_from_stock(
+    stock_id: int,
+) -> typing.Generator[Booking, None, None]:
     query = (
         Booking.query.filter(Booking.stockId == stock_id, Booking.status != BookingStatus.CANCELLED)
         .with_entities(Booking.id, Booking.userId)
@@ -851,11 +864,16 @@ def cancel_unstored_external_bookings() -> None:
             datetime.datetime.utcnow().timestamp() - external_booking_info["timestamp"]
             < constants.EXTERNAL_BOOKINGS_MINIMUM_ITEM_AGE_IN_QUEUE
         ):
-            queue.add_to_queue(constants.REDIS_EXTERNAL_BOOKINGS_NAME, external_booking_info, at_head=True)
+            queue.add_to_queue(
+                constants.REDIS_EXTERNAL_BOOKINGS_NAME,
+                external_booking_info,
+                at_head=True,
+            )
             break
 
         external_bookings = ExternalBooking.query.filter_by(barcode=external_booking_info["barcode"]).all()
         if not external_bookings:
             external_bookings_api.cancel_booking(
-                int(external_booking_info["venue_id"]), [external_booking_info["barcode"]]
+                int(external_booking_info["venue_id"]),
+                [external_booking_info["barcode"]],
             )

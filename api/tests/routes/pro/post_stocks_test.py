@@ -192,7 +192,10 @@ class Returns201Test:
     def test_edit_one_event_stock_using_price_category(self, mocked_async_index_offer_ids, client):
         venue = offerers_factories.VenueFactory()
         offer = offers_factories.EventOfferFactory(
-            isActive=False, validation=OfferValidationStatus.DRAFT, priceCategories=[], venue=venue
+            isActive=False,
+            validation=OfferValidationStatus.DRAFT,
+            priceCategories=[],
+            venue=venue,
         )
         price_category = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel__venue=venue)
         existing_stock = offers_factories.StockFactory(offer=offer, price=10, priceCategory=None)
@@ -485,7 +488,10 @@ class Returns201Test:
         price_cat = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel=price_cat_label, price=10)
 
         existing_stock = offers_factories.EventStockFactory(
-            offer=offer, beginningDatetime=event_in_3_days, priceCategory=price_cat, bookingLimitDatetime=now
+            offer=offer,
+            beginningDatetime=event_in_3_days,
+            priceCategory=price_cat,
+            bookingLimitDatetime=now,
         )
         booking = bookings_factories.UsedBookingFactory(
             stock=existing_stock, dateCreated=now, dateUsed=date_used_in_48_hours
@@ -513,30 +519,6 @@ class Returns201Test:
         updated_booking = bookings_models.Booking.query.get(booking.id)
         assert updated_booking.status is bookings_models.BookingStatus.USED
         assert updated_booking.dateUsed == date_used_in_48_hours
-
-    @pytest.mark.parametrize("subcategoryId", offers_models.Stock.AUTOMATICALLY_USED_SUBCATEGORIES)
-    def should_cancel_bookings_when_stock_is_no_longer_free_for_automatically_used_subcategories(
-        self, client, subcategoryId
-    ):
-        offer = offers_factories.ThingOfferFactory(subcategoryId=subcategoryId)
-        existing_stock = offers_factories.StockFactory(offer=offer, price=0)
-        booking = bookings_factories.UsedBookingFactory(stock=existing_stock)
-
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-
-        # When
-        stock_data = {
-            "offerId": offer.id,
-            "stocks": [{"id": existing_stock.id, "price": 20}],
-        }
-
-        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
-        assert response.status_code == 201
-        updated_booking = bookings_models.Booking.query.get(booking.id)
-        assert updated_booking.status == bookings_models.BookingStatus.CANCELLED
 
     def test_update_thing_stock_without_booking_limit_date(self, client):
         # We allow nullable bookingLimitDate for thing Stock.
@@ -710,10 +692,12 @@ class Returns400Test:
         )
         existing_stock = offers_factories.StockFactory(offer=offer)
         offers_factories.ActivationCodeFactory(
-            expirationDate=datetime.datetime(2020, 5, 2, 23, 59, 59), stock=existing_stock
+            expirationDate=datetime.datetime(2020, 5, 2, 23, 59, 59),
+            stock=existing_stock,
         )
         offers_factories.ActivationCodeFactory(
-            expirationDate=datetime.datetime(2020, 5, 2, 23, 59, 59), stock=existing_stock
+            expirationDate=datetime.datetime(2020, 5, 2, 23, 59, 59),
+            stock=existing_stock,
         )
 
         # When
