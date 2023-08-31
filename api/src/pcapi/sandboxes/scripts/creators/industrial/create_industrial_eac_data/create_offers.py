@@ -316,8 +316,8 @@ def create_booking_base_list(
     cancelled_expired: bool = True,
 ) -> None:
     current_ansco = educational_models.EducationalYear.query.filter(
-        educational_models.EducationalYear.beginningDate < datetime.utcnow(),
-        educational_models.EducationalYear.expirationDate > datetime.utcnow(),
+        educational_models.EducationalYear.beginningDate <= datetime.utcnow(),
+        educational_models.EducationalYear.expirationDate >= datetime.utcnow(),
     ).one()
     institution_iterator = cycle(institutions)
     number_iterator = count()
