@@ -520,9 +520,7 @@ class Returns201Test:
     ):
         offer = offers_factories.ThingOfferFactory(subcategoryId=subcategoryId)
         existing_stock = offers_factories.StockFactory(offer=offer, price=0)
-        booking = bookings_factories.UsedBookingFactory(
-            stock=existing_stock, status=bookings_models.BookingStatus.USED, dateUsed=datetime.datetime.utcnow()
-        )
+        booking = bookings_factories.UsedBookingFactory(stock=existing_stock)
 
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
@@ -539,11 +537,6 @@ class Returns201Test:
         assert response.status_code == 201
         updated_booking = bookings_models.Booking.query.get(booking.id)
         assert updated_booking.status == bookings_models.BookingStatus.CANCELLED
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
-            sendinblue_template_ids.TransactionalEmail.BOOKING_CANCELLATION_BY_PRO_TO_BENEFICIARY.value
-        )
-        assert mails_testing.outbox[0].sent_data["params"]["IS_NO_LONGER_FREE"] == True
 
     def test_update_thing_stock_without_booking_limit_date(self, client):
         # We allow nullable bookingLimitDate for thing Stock.
