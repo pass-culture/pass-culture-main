@@ -49,6 +49,10 @@ export const OfferFilters = ({
 
   const adageUser = useAdageUser()
 
+  const adageUserHasValidGeoloc =
+    (adageUser.lat || adageUser.lat === 0) &&
+    (adageUser.lon || adageUser.lon === 0)
+
   const isAdageGeolocEnabled = useActiveFeature('WIP_ENABLE_ADAGE_GEO_LOCATION')
 
   const getActiveLocalisationFilterCount = () => {
@@ -194,7 +198,7 @@ export const OfferFilters = ({
                     hideFooter
                   >
                     <ul>
-                      {isAdageGeolocEnabled && (
+                      {isAdageGeolocEnabled && adageUserHasValidGeoloc && (
                         <li className={styles['localisation-list-button']}>
                           <Button
                             onClick={() =>
