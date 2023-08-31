@@ -608,135 +608,170 @@ def test_change_password_failures(client):
     assert user.password == crypto.hash_password(settings.TEST_DEFAULT_PASSWORD)
 
 
-@patch("pcapi.core.users.repository.get_user_with_valid_token", side_effect=users_exceptions.InvalidToken)
-def test_validate_email_with_invalid_token(mock_get_user_with_valid_token, client):
-    token = "email-validation-token"
+class EmailValidationTest:
+    def _initialize_old_token(self, user, is_expired=False):
+        return users_factories.TokenFactory(
+            user=user,
+            type=TokenType.EMAIL_VALIDATION,
+            expirationDate=datetime.utcnow() - timedelta(days=1)
+            if is_expired
+            else datetime.utcnow() + users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
+        ).value
 
-    response = client.post("/native/v1/validate_email", json={"email_validation_token": token})
+    def _initialize_token(self, user, is_expired=False):
+        token = token_utils.Token.create(
+            type_=token_utils.TokenType.EMAIL_VALIDATION,
+            ttl=users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
+            user_id=user.id,
+        )
+        if is_expired:
+            token.expire()
+        return token.encoded_token
 
-    mock_get_user_with_valid_token.assert_called_once_with(token, [TokenType.EMAIL_VALIDATION], use_token=True)
+    @patch("pcapi.core.users.repository.get_user_with_valid_token", side_effect=users_exceptions.InvalidToken)
+    def test_validate_email_with_invalid_token(self, mock_get_user_with_valid_token, client):
+        token = "email-validation-token"
 
-    assert response.status_code == 400
+        response = client.post("/native/v1/validate_email", json={"email_validation_token": token})
 
+        mock_get_user_with_valid_token.assert_called_once_with(token, [TokenType.EMAIL_VALIDATION], use_token=True)
 
-def test_validate_email_with_expired_token(client):
-    user = users_factories.UserFactory(isEmailValidated=False)
-    token = users_factories.TokenFactory(
-        user=user,
-        type=TokenType.EMAIL_VALIDATION,
-        expirationDate=datetime.utcnow() - timedelta(days=1),
+        assert response.status_code == 400
+
+    @pytest.mark.parametrize(
+        "token_init",
+        [(_initialize_token), (_initialize_old_token)],
     )
+    def test_validate_email_with_expired_token(self, client, token_init):
+        user = users_factories.UserFactory(isEmailValidated=False)
+        token = token_init(
+            self,
+            user=user,
+            is_expired=True,
+        )
 
-    response = client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
+        response = client.post("/native/v1/validate_email", json={"email_validation_token": token})
 
-    assert response.status_code == 400
+        assert response.status_code == 400
 
-    assert len(mails_testing.outbox) == 1
-    assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 201
-    assert mails_testing.outbox[0].sent_data["params"]["CONFIRMATION_LINK"]
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 201
+        assert mails_testing.outbox[0].sent_data["params"]["CONFIRMATION_LINK"]
 
-    assert token_utils.Token.token_exists(token_utils.TokenType.EMAIL_VALIDATION, user.id)
+        assert token_utils.Token.token_exists(token_utils.TokenType.EMAIL_VALIDATION, user.id)
 
-
-@freeze_time("2018-06-01")
-def test_validate_email_when_eligible(client):
-    user = users_factories.UserFactory(
-        isEmailValidated=False,
-        dateOfBirth=datetime(2000, 6, 1),
+    @pytest.mark.parametrize(
+        "token_init",
+        [(_initialize_token), (_initialize_old_token)],
     )
-    token = users_factories.TokenFactory(user=user, type=TokenType.EMAIL_VALIDATION)
+    @freeze_time("2018-06-01")
+    def test_validate_email_when_eligible(self, client, token_init):
+        user = users_factories.UserFactory(
+            isEmailValidated=False,
+            dateOfBirth=datetime(2000, 6, 1),
+        )
+        token = token_init(self, user)
 
-    response = client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
+        response = client.post("/native/v1/validate_email", json={"email_validation_token": token})
 
-    assert user.isEmailValidated
-    assert response.status_code == 200
+        assert user.isEmailValidated
+        assert response.status_code == 200
 
-    # Ensure the access token is valid
-    access_token = response.json["accessToken"]
-    client.auth_header = {"Authorization": f"Bearer {access_token}"}
-    protected_response = client.get("/native/v1/me")
-    assert protected_response.status_code == 200
+        # Ensure the access token is valid
+        access_token = response.json["accessToken"]
+        client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        protected_response = client.get("/native/v1/me")
+        assert protected_response.status_code == 200
 
-    # assert we updated the external users
-    assert len(bash_testing.requests) == 2
-    assert len(sendinblue_testing.sendinblue_requests) == 1
+        # assert we updated the external users
+        assert len(bash_testing.requests) == 2
+        assert len(sendinblue_testing.sendinblue_requests) == 1
 
-    # Ensure the access token contains user.id
-    decoded = decode_token(access_token)
-    assert decoded["user_claims"]["user_id"] == user.id
+        # Ensure the access token contains user.id
+        decoded = decode_token(access_token)
+        assert decoded["user_claims"]["user_id"] == user.id
 
-    # Ensure the refresh token is valid
-    refresh_token = response.json["refreshToken"]
-    client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
-    refresh_response = client.post("/native/v1/refresh_access_token", json={})
-    assert refresh_response.status_code == 200
+        # Ensure the refresh token is valid
+        refresh_token = response.json["refreshToken"]
+        client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
+        refresh_response = client.post("/native/v1/refresh_access_token", json={})
+        assert refresh_response.status_code == 200
 
-
-def test_validate_email_second_time_is_forbidden(client):
-    user = users_factories.UserFactory(isEmailValidated=False)
-    token = users_factories.TokenFactory(user=user, type=TokenType.EMAIL_VALIDATION)
-
-    response = client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
-
-    assert user.isEmailValidated
-    assert response.status_code == 200
-
-    response = client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
-    assert response.status_code == 400
-    assert response.json["token"] == ["Le token de validation d'email est invalide."]
-
-
-@freeze_time("2018-06-01")
-def test_validate_email_when_not_eligible(client):
-    user = users_factories.UserFactory(isEmailValidated=False, dateOfBirth=datetime(2000, 7, 1))
-    token = users_factories.TokenFactory(user=user, type=TokenType.EMAIL_VALIDATION)
-
-    assert not user.isEmailValidated
-
-    response = client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
-
-    assert user.isEmailValidated
-    assert response.status_code == 200
-
-    # assert we updated the external users
-    assert len(bash_testing.requests) == 2
-    assert len(sendinblue_testing.sendinblue_requests) == 1
-
-    # Ensure the access token is valid
-    access_token = response.json["accessToken"]
-    client.auth_header = {"Authorization": f"Bearer {access_token}"}
-    protected_response = client.get("/native/v1/me")
-    assert protected_response.status_code == 200
-
-    # Ensure the refresh token is valid
-    refresh_token = response.json["refreshToken"]
-    client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
-    refresh_response = client.post("/native/v1/refresh_access_token", json={})
-    assert refresh_response.status_code == 200
-
-
-@patch.object(api_dms.DMSGraphQLClient, "execute_query")
-def test_validate_email_dms_orphan(execute_query, client):
-    application_number = 1234
-    email = "dms_orphan@example.com"
-
-    user = users_factories.UserFactory(isEmailValidated=False, dateOfBirth=datetime(2000, 7, 1), email=email)
-    token = users_factories.TokenFactory(user=user, type=TokenType.EMAIL_VALIDATION)
-
-    assert not user.isEmailValidated
-
-    fraud_factories.OrphanDmsApplicationFactory(email=email, application_id=application_number)
-
-    execute_query.return_value = make_single_application(
-        application_number, dms_models.GraphQLApplicationStates.accepted, email=email
+    @pytest.mark.parametrize(
+        "token_init",
+        [(_initialize_token), (_initialize_old_token)],
     )
-    response = client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
+    def test_validate_email_second_time_is_forbidden(self, client, token_init):
+        user = users_factories.UserFactory(isEmailValidated=False)
+        token = token_init(self, user)
 
-    assert user.isEmailValidated
-    assert response.status_code == 200
+        response = client.post("/native/v1/validate_email", json={"email_validation_token": token})
 
-    fraud_check = subscription_api.get_relevant_identity_fraud_check(user, user.eligibility)
-    assert fraud_check is not None
+        assert user.isEmailValidated
+        assert response.status_code == 200
+
+        response = client.post("/native/v1/validate_email", json={"email_validation_token": token})
+        assert response.status_code == 400
+        assert response.json["token"] == ["Le token de validation d'email est invalide."]
+
+    @pytest.mark.parametrize(
+        "token_init",
+        [(_initialize_token), (_initialize_old_token)],
+    )
+    @freeze_time("2018-06-01")
+    def test_validate_email_when_not_eligible(self, client, token_init):
+        user = users_factories.UserFactory(isEmailValidated=False, dateOfBirth=datetime(2000, 7, 1))
+        token = token_init(self, user)
+
+        assert not user.isEmailValidated
+
+        response = client.post("/native/v1/validate_email", json={"email_validation_token": token})
+
+        assert user.isEmailValidated
+        assert response.status_code == 200
+
+        # assert we updated the external users
+        assert len(bash_testing.requests) == 2
+        assert len(sendinblue_testing.sendinblue_requests) == 1
+
+        # Ensure the access token is valid
+        access_token = response.json["accessToken"]
+        client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        protected_response = client.get("/native/v1/me")
+        assert protected_response.status_code == 200
+
+        # Ensure the refresh token is valid
+        refresh_token = response.json["refreshToken"]
+        client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
+        refresh_response = client.post("/native/v1/refresh_access_token", json={})
+        assert refresh_response.status_code == 200
+
+    @pytest.mark.parametrize(
+        "token_init",
+        [(_initialize_token), (_initialize_old_token)],
+    )
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    def test_validate_email_dms_orphan(self, execute_query, client, token_init):
+        application_number = 1234
+        email = "dms_orphan@example.com"
+
+        user = users_factories.UserFactory(isEmailValidated=False, dateOfBirth=datetime(2000, 7, 1), email=email)
+        token = token_init(self, user)
+
+        assert not user.isEmailValidated
+
+        fraud_factories.OrphanDmsApplicationFactory(email=email, application_id=application_number)
+
+        execute_query.return_value = make_single_application(
+            application_number, dms_models.GraphQLApplicationStates.accepted, email=email
+        )
+        response = client.post("/native/v1/validate_email", json={"email_validation_token": token})
+
+        assert user.isEmailValidated
+        assert response.status_code == 200
+
+        fraud_check = subscription_api.get_relevant_identity_fraud_check(user, user.eligibility)
+        assert fraud_check is not None
 
 
 @freeze_time("2020-03-15")
