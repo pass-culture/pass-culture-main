@@ -5,6 +5,7 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import { OffererMemberStatus } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
+import * as useAnalytics from 'hooks/useAnalytics'
 import AttachmentInvitations from 'pages/Offerers/Offerer/OffererDetails/AttachmentInvitations/AttachmentInvitations'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -14,6 +15,8 @@ vi.mock('apiClient/api', () => ({
     inviteMember: vi.fn(),
   },
 }))
+
+const mockLogEvent = vi.fn()
 
 const renderAttachmentInvitations = () => {
   renderWithProviders(
@@ -30,6 +33,11 @@ describe('AttachmentInvitations', () => {
     waitFor(() => {
       expect(api.getOffererMembers).toHaveBeenCalled()
     })
+
+    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
+      logEvent: mockLogEvent,
+      setLogEvent: null,
+    }))
   })
 
   it('The user should see a button to display the invite form', async () => {
@@ -119,5 +127,15 @@ describe('AttachmentInvitations', () => {
     expect(
       screen.getByRole('button', { name: 'Voir moins de collaborateurs' })
     ).toBeInTheDocument()
+  })
+
+  it('should trigger an event when clicking on "Ajouter un collaborateur"', async () => {
+    renderAttachmentInvitations()
+    await userEvent.click(screen.getByText('Ajouter un collaborateur'))
+
+    expect(mockLogEvent).toHaveBeenCalledWith('hasClickedAddCollaborator', {
+      offererId: 1,
+    })
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
   })
 })

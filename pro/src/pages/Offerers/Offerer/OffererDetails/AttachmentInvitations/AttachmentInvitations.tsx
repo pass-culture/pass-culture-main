@@ -8,6 +8,8 @@ import {
   OffererMemberStatus,
 } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout/FormLayout'
+import { OffererLinkEvents } from 'core/FirebaseEvents/constants'
+import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullDownIcon from 'icons/full-down.svg'
 import fullUpIcon from 'icons/full-up.svg'
@@ -27,6 +29,7 @@ const SUCCESS_MESSAGE = "L'invitation a bien été envoyée."
 const ERROR_MESSAGE = "Une erreur est survenue lors de l'envoi de l'invitation."
 
 const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
+  const { logEvent } = useAnalytics()
   const location = useLocation()
   const notify = useNotification()
   const [isLoading, setIsLoading] = useState(false)
@@ -123,7 +126,12 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
       {!showInvitationForm ? (
         <Button
           variant={ButtonVariant.SECONDARY}
-          onClick={() => setShowInvitationForm(true)}
+          onClick={() => {
+            logEvent?.(OffererLinkEvents.CLICKED_ADD_COLLABORATOR, {
+              offererId: offererId,
+            })
+            setShowInvitationForm(true)
+          }}
         >
           Ajouter un collaborateur
         </Button>
