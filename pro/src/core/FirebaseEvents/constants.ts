@@ -139,4 +139,5 @@ export enum SynchronizationEvents {
 
 export enum OffererLinkEvents {
   CLICKED_INVITE_COLLABORATOR = 'hasClickedInviteCollaborator',
+  CLICKED_ADD_COLLABORATOR = 'hasClickedAddCollaborator',
 }
