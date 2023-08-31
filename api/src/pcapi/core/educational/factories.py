@@ -179,7 +179,8 @@ class EducationalYearFactory(BaseFactory):
         lambda number: datetime.datetime(_get_current_educational_year(), 9, 1) + relativedelta(years=number)
     )
     expirationDate = factory.Sequence(
-        lambda number: datetime.datetime(_get_current_educational_year() + 1, 8, 31) + relativedelta(years=number)
+        lambda number: datetime.datetime(_get_current_educational_year() + 1, 8, 31, 23, 59)
+        + relativedelta(years=number),
     )
 
 
