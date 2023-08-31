@@ -4,6 +4,7 @@ import React from 'react'
 
 import {
   AdageFrontRoles,
+  AuthenticatedResponse,
   OfferAddressType,
   StudentLevels,
 } from 'apiClient/adage'
@@ -40,10 +41,12 @@ vi.mock('react-instantsearch-dom', () => {
   }
 })
 
-const user = {
+const user: AuthenticatedResponse = {
   role: AdageFrontRoles.REDACTOR,
   email: 'test@example.com',
   departmentCode: '75',
+  lat: null,
+  lon: null,
 }
 
 const renderOffers = (
@@ -345,6 +348,9 @@ describe('offer', () => {
     })
 
     it('should display distance when offer has coordinates and FF is active', async () => {
+      user.lat = 0
+      user.lon = 0
+
       renderOffers(
         {
           ...offerProps,
@@ -390,5 +396,20 @@ describe('offer', () => {
         screen.getByText('peut se déplacer dans votre département')
       ).toBeInTheDocument()
     })
+  })
+
+  it('should not display the distance to venue if the user does not have a valid geoloc', async () => {
+    user.lat = null
+    user.lon = null
+    renderOffers(
+      {
+        ...offerProps,
+      },
+      [{ nameKey: 'WIP_ENABLE_ADAGE_GEO_LOCATION', isActive: true }]
+    )
+
+    expect(
+      screen.queryByText('km de votre établissement')
+    ).not.toBeInTheDocument()
   })
 })

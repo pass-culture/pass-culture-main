@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 
+import { AuthenticatedResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
 import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import * as pcapi from 'pages/AdageIframe/repository/pcapi/pcapi'
@@ -40,14 +41,16 @@ const isGeolocationActive = {
 const renderOfferFilters = ({
   initialValues,
   localisationFilterState = LocalisationFilterStates.NONE,
+  adageUser = defaultAdageUser,
   storeOverrides = null,
 }: {
   initialValues: SearchFormValues
   localisationFilterState?: LocalisationFilterStates
+  adageUser?: AuthenticatedResponse
   storeOverrides?: unknown
 }) =>
   renderWithProviders(
-    <AdageUserContext.Provider value={{ adageUser: defaultAdageUser }}>
+    <AdageUserContext.Provider value={{ adageUser: adageUser }}>
       <Formik initialValues={initialValues} onSubmit={handleSubmit}>
         <OfferFilters
           localisationFilterState={localisationFilterState}
@@ -202,14 +205,37 @@ describe('OfferFilters', () => {
     renderOfferFilters({
       initialValues: initialValues,
       localisationFilterState: LocalisationFilterStates.NONE,
-      storeOverrides: isGeolocationActive,
+      adageUser: { ...defaultAdageUser },
     })
 
     expect(screen.getByText('Choisir un département')).toBeInTheDocument()
     expect(screen.getByText('Choisir une académie')).toBeInTheDocument()
+  })
+
+  it('should display geoloc button in localisation filter modal', async () => {
+    renderOfferFilters({
+      initialValues: initialValues,
+      localisationFilterState: LocalisationFilterStates.NONE,
+      adageUser: { ...defaultAdageUser, lat: 10, lon: 10 },
+      storeOverrides: isGeolocationActive,
+    })
+
     expect(
       screen.getByText('Autour de mon établissement scolaire')
     ).toBeInTheDocument()
+  })
+
+  it('should not display geoloc button in localisation filter modal if the user does not have a valid geoloc', async () => {
+    renderOfferFilters({
+      initialValues: initialValues,
+      localisationFilterState: LocalisationFilterStates.NONE,
+      adageUser: { ...defaultAdageUser, lat: 10, lon: null },
+      storeOverrides: isGeolocationActive,
+    })
+
+    expect(
+      screen.queryByText('Autour de mon établissement scolaire')
+    ).not.toBeInTheDocument()
   })
 
   it('should display departments options in localisation filter modal', async () => {
