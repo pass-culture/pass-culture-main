@@ -399,11 +399,9 @@ class AccountCreationTest:
         assert len(push_testing.requests) == 2
         assert len(users_testing.sendinblue_requests) == 1
 
-        email_validation_token = users_models.Token.query.filter_by(
-            user=user, type=users_models.TokenType.EMAIL_VALIDATION
-        ).one_or_none()
-        assert email_validation_token is not None
-        assert "performance-tests" not in email_validation_token.value
+        email_validation_token_exists = token_utils.Token.token_exists(token_utils.TokenType.EMAIL_VALIDATION, user.id)
+
+        assert email_validation_token_exists
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_too_young_account_creation(self, mocked_check_recaptcha_token_is_valid, client, app):
@@ -420,30 +418,6 @@ class AccountCreationTest:
         response = client.post("/native/v1/account", json=data)
         assert response.status_code == 400
         assert not push_testing.requests
-
-    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    @override_settings(IS_PERFORMANCE_TESTS=True)
-    def test_account_creation_performance_tests(self, mocked_check_recaptcha_token_is_valid, client):
-        assert users_models.User.query.first() is None
-        data = {
-            "email": "John.doe@example.com",
-            "password": "Aazflrifaoi6@",
-            "birthdate": "1960-12-31",
-            "firstName": "John",
-            "lastName": "Doe",
-            "notifications": True,
-            "token": "gnagna",
-            "marketingEmailSubscription": True,
-        }
-
-        response = client.post("/native/v1/account", json=data)
-        assert response.status_code == 204, response.json
-
-        user = users_models.User.query.first()
-        assert (
-            users_models.Token.query.filter_by(user=user).first().value
-            == f"performance-tests_email-validation_{user.id}"
-        )
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     @override_features(WIP_ENABLE_TRUSTED_DEVICE=True)
