@@ -115,15 +115,19 @@ export const OffersSearch = ({
 
     setFacetFilters(updatedFilters.queryFilters)
 
-    setGeoLocation(
-      localisationFilterState === LocalisationFilterStates.GEOLOCATION
-        ? {
-            radius: formik.values.geolocRadius * 1000,
-            //  TODO: get the adage user institution position from ADAGE
-            latLng: '48.864716, 2.349014',
-          }
-        : {}
-    )
+    const adageUserHasValidGeoloc =
+      (adageUser.lat || adageUser.lat === 0) &&
+      (adageUser.lon || adageUser.lon === 0)
+    if (adageUserHasValidGeoloc) {
+      setGeoLocation(
+        localisationFilterState === LocalisationFilterStates.GEOLOCATION
+          ? {
+              radius: formik.values.geolocRadius * 1000,
+              latLng: `${adageUser.lat}, ${adageUser.lon}`,
+            }
+          : {}
+      )
+    }
   }
 
   const resetForm = () => {
