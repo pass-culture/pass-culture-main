@@ -33,8 +33,8 @@ class Permissions(enum.Enum):
     READ_PUBLIC_ACCOUNT = "visualiser un compte bénéficiaire/grand public"
     MANAGE_PUBLIC_ACCOUNT = "gérer un compte bénéficiaire/grand public"
 
-    SUSPEND_USER = "suspendre un compte utilisateur"
-    UNSUSPEND_USER = "réactiver un compte utilisateur"
+    SUSPEND_USER = "suspendre un compte jeune"
+    UNSUSPEND_USER = "réactiver un compte jeune"
 
     READ_PRO_ENTITY = "visualiser une structure, un lieu ou un compte pro"
     MANAGE_PRO_ENTITY = "gérer une structure, un lieu ou un compte pro"

@@ -60,18 +60,18 @@ def has_current_user_permission(permission: perm_models.Permissions | str) -> bo
     return permission in current_user.backoffice_profile.permissions or settings.IS_TESTING
 
 
-def _check_permission(permission: perm_models.Permissions) -> None:
+def _check_any_permission_of(permissions: typing.Iterable[perm_models.Permissions]) -> None:
     if not current_user.is_authenticated:
         raise UnauthenticatedUserError()
 
     if not current_user.backoffice_profile:
         raise ApiErrors({"global": ["utilisateur inconnu"]}, status_code=403)
 
-    if not has_current_user_permission(permission):
+    if not any(has_current_user_permission(permission) for permission in permissions):
         logger.warning(
             "user %s missed permission %s while trying to access %s",
             current_user.email,
-            permission.name,
+            " or ".join(permission.name for permission in permissions),
             request.url,
         )
 
@@ -80,14 +80,30 @@ def _check_permission(permission: perm_models.Permissions) -> None:
 
 def permission_required(permission: perm_models.Permissions) -> typing.Callable:
     """
-    Ensure that the current user is connected and that it has the
-    expected permissions.
+    Ensure that the current user is connected and that it has the expected permission.
     """
 
     def wrapper(function: typing.Callable) -> typing.Callable:
         @wraps(function)
         def wrapped(*args: typing.Any, **kwargs: typing.Any) -> tuple[FlaskResponse, int] | typing.Callable:
-            _check_permission(permission)
+            _check_any_permission_of((permission,))
+
+            return function(*args, **kwargs)
+
+        return wrapped
+
+    return wrapper
+
+
+def permission_required_in(permissions: typing.Iterable[perm_models.Permissions]) -> typing.Callable:
+    """
+    Ensure that the current user is connected and that it has one of the expected permissions.
+    """
+
+    def wrapper(function: typing.Callable) -> typing.Callable:
+        @wraps(function)
+        def wrapped(*args: typing.Any, **kwargs: typing.Any) -> tuple[FlaskResponse, int] | typing.Callable:
+            _check_any_permission_of(permissions)
 
             return function(*args, **kwargs)
 
@@ -105,7 +121,7 @@ def child_backoffice_blueprint(
     @child_blueprint.before_request
     def check_permission() -> None:
         if permission:
-            _check_permission(permission)
+            _check_any_permission_of((permission,))
 
     return child_blueprint
 

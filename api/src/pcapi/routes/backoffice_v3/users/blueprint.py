@@ -8,6 +8,7 @@ from flask import url_for
 from flask_login import current_user
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import load_only
+from werkzeug.exceptions import Forbidden
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.permissions import models as perm_models
@@ -39,10 +40,20 @@ def _redirect_to_user_page(user: users_models.User) -> utils.BackofficeResponse:
     return redirect(url_for("backoffice_v3_web.public_accounts.get_public_account", user_id=user.id), code=303)
 
 
+def _check_user_role_vs_backoffice_permission(user: users_models.User) -> None:
+    if user.has_pro_role or user.has_non_attached_pro_role:
+        if not utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
+            raise Forbidden()
+    else:  # not pro
+        if not utils.has_current_user_permission(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS):
+            raise Forbidden()
+
+
 @users_blueprint.route("/<int:user_id>/suspend", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.SUSPEND_USER)
+@utils.permission_required_in([perm_models.Permissions.SUSPEND_USER, perm_models.Permissions.PRO_FRAUD_ACTIONS])
 def suspend_user(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
+    _check_user_role_vs_backoffice_permission(user)
 
     form = forms.SuspendUserForm()
     if form.validate():
@@ -57,9 +68,10 @@ def suspend_user(user_id: int) -> utils.BackofficeResponse:
 
 
 @users_blueprint.route("/<int:user_id>/unsuspend", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.UNSUSPEND_USER)
+@utils.permission_required_in([perm_models.Permissions.UNSUSPEND_USER, perm_models.Permissions.PRO_FRAUD_ACTIONS])
 def unsuspend_user(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
+    _check_user_role_vs_backoffice_permission(user)
 
     form = forms.UnsuspendUserForm()
     if form.validate():
@@ -85,7 +97,7 @@ def _render_batch_suspend_users_form(form: forms.BatchSuspendUsersForm) -> str:
 
 
 @users_blueprint.route("/batch-suspend-form", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.SUSPEND_USER)
+@utils.permission_required(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
 def get_batch_suspend_users_form() -> utils.BackofficeResponse:
     form = forms.BatchSuspendUsersForm(suspension_type=forms.SuspensionUserType.PUBLIC)
     return _render_batch_suspend_users_form(form)
@@ -121,7 +133,7 @@ def _check_users_to_suspend(ids_list: set[int]) -> tuple[list[users_models.User]
 
 
 @users_blueprint.route("/batch-suspend", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.SUSPEND_USER)
+@utils.permission_required(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
 def batch_suspend_users() -> utils.BackofficeResponse:
     form = forms.BatchSuspendUsersForm()
     if not form.validate():
@@ -151,7 +163,7 @@ def batch_suspend_users() -> utils.BackofficeResponse:
 
 
 @users_blueprint.route("/batch-suspend/confirm", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.SUSPEND_USER)
+@utils.permission_required(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS)
 def confirm_batch_suspend_users() -> utils.BackofficeResponse:
     form = forms.BatchSuspendUsersForm()
     if not form.validate():
