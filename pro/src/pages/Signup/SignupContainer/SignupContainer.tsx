@@ -51,7 +51,7 @@ const SignupContainer = (): JSX.Element => {
     initialValues: SIGNUP_FORM_DEFAULT_VALUES,
     onSubmit: onSubmit,
     validationSchema,
-    validateOnChange: false,
+    validateOnChange: true,
   })
 
   // Track the state of the form when the user gives up
