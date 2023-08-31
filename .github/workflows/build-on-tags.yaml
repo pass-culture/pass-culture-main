@@ -11,6 +11,8 @@ env:
 jobs:
   find-hotfix-tag-number:
     if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    outputs:
+      version: ${{ steps.find-hotfix-tag-number.outputs.version }}
     name: Find hotfix tag number
     runs-on: [self-hosted, linux, x64]
     steps:
