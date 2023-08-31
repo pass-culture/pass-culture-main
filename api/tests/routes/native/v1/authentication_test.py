@@ -12,6 +12,7 @@ import pytest
 from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import models as dms_models
+from pcapi.core import token as token_utils
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.history import factories as history_factories
 import pcapi.core.mails.testing as mails_testing
@@ -634,12 +635,7 @@ def test_validate_email_with_expired_token(client):
     assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 201
     assert mails_testing.outbox[0].sent_data["params"]["CONFIRMATION_LINK"]
 
-    assert (
-        Token.query.filter(
-            Token.userId == user.id, Token.type == TokenType.EMAIL_VALIDATION, Token.expirationDate > datetime.utcnow()
-        ).first()
-        is not None
-    )
+    assert token_utils.Token.token_exists(token_utils.TokenType.EMAIL_VALIDATION, user.id)
 
 
 @freeze_time("2018-06-01")

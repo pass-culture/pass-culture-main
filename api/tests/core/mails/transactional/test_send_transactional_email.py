@@ -4,11 +4,13 @@ from unittest.mock import patch
 import pytest
 from sib_api_v3_sdk.rest import ApiException
 
+from pcapi.core import token as token_utils
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.send_transactional_email import send_transactional_email
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.email_address_change_confirmation import send_email_confirmation_email
 from pcapi.core.testing import override_settings
+import pcapi.core.users.constants as users_constants
 import pcapi.core.users.factories as users_factories
 from pcapi.tasks.serialization.sendinblue_tasks import SendTransactionalEmailRequest
 from pcapi.utils import requests
@@ -128,7 +130,11 @@ class TransactionalEmailWithTemplateTest:
     @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_primary_task.delay")
     def test_to_dev_send_email_confirmation_email(self, mock_send_transactional_email_task, db_session):
         user = users_factories.UserFactory(email="john.stiles@gmail.com")
-        token = users_factories.EmailValidationTokenFactory.build(user=user)
+        token = token_utils.Token.create(
+            type_=token_utils.TokenType.EMAIL_VALIDATION,
+            ttl=users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
+            user_id=user.id,
+        )
         send_email_confirmation_email(user, token=token)
         mock_send_transactional_email_task.assert_called_once()
 

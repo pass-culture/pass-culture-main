@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 class TokenType(enum.Enum):
     EMAIL_CHANGE_CONFIRMATION = "update_email_confirmation"
     EMAIL_CHANGE_VALIDATION = "update_email_validation"
+    EMAIL_VALIDATION = "email_validation"
 
 
 @dataclasses.dataclass(frozen=True)
