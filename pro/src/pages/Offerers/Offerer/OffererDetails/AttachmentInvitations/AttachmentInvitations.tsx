@@ -48,6 +48,9 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
         status: OffererMemberStatus.PENDING,
       })
       formik.resetForm()
+      logEvent?.(OffererLinkEvents.CLICKED_SEND_INVITATION, {
+        offererId: offererId,
+      })
       notify.success(SUCCESS_MESSAGE)
     } catch {
       notify.error(ERROR_MESSAGE)

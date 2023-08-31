@@ -77,9 +77,15 @@ describe('AttachmentInvitations', () => {
     ).toBeInTheDocument()
   })
 
-  it('Should display add the email on success', async () => {
+  it('Should display add the email on success and trigger buttons event', async () => {
     renderAttachmentInvitations()
     await userEvent.click(screen.getByText('Ajouter un collaborateur'))
+
+    expect(mockLogEvent).toHaveBeenCalledWith('hasClickedAddCollaborator', {
+      offererId: 1,
+    })
+    expect(mockLogEvent).toHaveBeenCalledTimes(1)
+
     await userEvent.type(
       await screen.getByLabelText('Adresse email'),
       'test@test.fr'
@@ -91,6 +97,12 @@ describe('AttachmentInvitations', () => {
         screen.getByText(/L'invitation a bien été envoyée/)
       ).toBeInTheDocument()
     })
+
+    expect(mockLogEvent).toHaveBeenCalledWith('hasSentInvitation', {
+      offererId: 1,
+    })
+
+    expect(mockLogEvent).toHaveBeenCalledTimes(2)
 
     expect(screen.getByText('test@test.fr')).toBeInTheDocument()
   })
@@ -127,15 +139,5 @@ describe('AttachmentInvitations', () => {
     expect(
       screen.getByRole('button', { name: 'Voir moins de collaborateurs' })
     ).toBeInTheDocument()
-  })
-
-  it('should trigger an event when clicking on "Ajouter un collaborateur"', async () => {
-    renderAttachmentInvitations()
-    await userEvent.click(screen.getByText('Ajouter un collaborateur'))
-
-    expect(mockLogEvent).toHaveBeenCalledWith('hasClickedAddCollaborator', {
-      offererId: 1,
-    })
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
   })
 })
