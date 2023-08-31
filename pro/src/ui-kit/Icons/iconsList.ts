@@ -1,5 +1,3 @@
-import fullGoTop from 'icons/stroke-goTop.svg'
-
 import fullArrowRightIcon from 'icons/full-arrow-right.svg'
 import fullBackIcon from 'icons/full-back.svg'
 import fullClearIcon from 'icons/full-clear.svg'
@@ -11,6 +9,7 @@ import fullDownloadIcon from 'icons/full-download.svg'
 import fullDuplicateIcon from 'icons/full-duplicate.svg'
 import fullEditIcon from 'icons/full-edit.svg'
 import fullErrorIcon from 'icons/full-error.svg'
+import fullGoTop from 'icons/full-go-top.svg'
 import fullHelpIcon from 'icons/full-help.svg'
 import fullHideIcon from 'icons/full-hide.svg'
 import fullInfoIcon from 'icons/full-info.svg'
