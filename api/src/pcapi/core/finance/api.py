@@ -294,6 +294,10 @@ def price_bookings(
             )
         for booking in bookings:
             if isinstance(booking, bookings_models.Booking):
+                # Handle bookings that were used when we fetched them in `_get_bookings_to_price()`
+                # but have been marked as unused since then.
+                if not booking.dateUsed:
+                    continue
                 last_booking = booking
             else:
                 last_collective_booking = booking
@@ -590,10 +594,6 @@ def price_booking(
 ) -> models.Pricing | None:
     _check_price_events_is_disabled()
 
-    # Handle bookings that were used when we fetched them in `price_bookings()`
-    # but have been marked as unused since then.
-    if not booking.dateUsed:
-        return None
     pricing_point_id = _get_pricing_point_link(booking).pricingPointId
 
     is_booking_collective = isinstance(booking, educational_models.CollectiveBooking)
