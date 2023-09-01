@@ -37,21 +37,21 @@ class ExternalEventBookingRequest(pydantic_v1.BaseModel):
         user: users_models.User,
     ) -> "ExternalEventBookingRequest":
         return cls(
-            booking_confirmation_date=booking.cancellationLimitDate,
+            booking_confirmation_date=booking.cancellationLimitDate,  # type: ignore [arg-type]
             booking_creation_date=booking.dateCreated,
             booking_quantity=booking.quantity,
             offer_ean=stock.offer.extraData.get("ean") if stock.offer.extraData is not None else None,
             offer_id=stock.offer.id,
             offer_name=stock.offer.name,
             offer_price=finance_utils.to_eurocents(stock.priceCategory.price),
-            price_category_id=stock.priceCategoryId,
-            price_category_label=stock.priceCategory.label,
+            price_category_id=stock.priceCategoryId,  # type: ignore [arg-type]
+            price_category_label=stock.priceCategory.label,  # type: ignore [arg-type]
             stock_id=booking.stockId,
-            user_birth_date=user.birth_date,
+            user_birth_date=user.birth_date,  # type: ignore [arg-type]
             user_email=user.email,
-            user_first_name=user.firstName,
-            user_last_name=user.lastName,
-            user_phone=user.phoneNumber,
+            user_first_name=user.firstName,  # type: ignore [arg-type]
+            user_last_name=user.lastName,  # type: ignore [arg-type]
+            user_phone=user.phoneNumber,  # type: ignore [arg-type]
             venue_address=stock.offer.venue.address,
             venue_department_code=stock.offer.venue.departementCode,
             venue_id=stock.offer.venue.id,

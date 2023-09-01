@@ -32,7 +32,7 @@ class IndividualApiSpectree(ExtendedSpecTree):
             security_schemes=[
                 SecurityScheme(
                     name=users_authentifications.API_KEY_AUTH_NAME,
-                    data={"type": "http", "scheme": "bearer", "description": "Api key issued on passculture.pro"},
+                    data={"type": "http", "scheme": "bearer", "description": "Api key issued on passculture.pro"},  # type: ignore [arg-type]
                 )
             ],
             PATH=PATH,

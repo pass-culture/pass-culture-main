@@ -30,7 +30,7 @@ def get_venue(venue_id: int) -> serializers.VenueResponse:
         venueTypeCode=venue.venueTypeCode.name,
         description=venue.description,
         contact=venue.contact,
-        accessibility={
+        accessibility={  # type: ignore [arg-type]
             "audioDisability": venue.audioDisabilityCompliant,
             "mentalDisability": venue.mentalDisabilityCompliant,
             "motorDisability": venue.motorDisabilityCompliant,

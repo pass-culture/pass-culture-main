@@ -126,7 +126,7 @@ def _parse_jouve_date(date: str | None) -> datetime.datetime | None:
     # 1. the "classical" format such as "year/month/day" which is expressed when calling .dict()
     # 2. jouve format, when parsing incoming data
     try:
-        return pydantic_v1.datetime_parse.parse_datetime(date)  # type: ignore [attr-defined]
+        return pydantic_v1.datetime_parse.parse_datetime(date)
     except pydantic_v1.DateTimeError:
         pass
 
@@ -145,7 +145,7 @@ def _parse_jouve_datetime(date: str | None) -> datetime.datetime | None:
     if not date:
         return None
     try:
-        return pydantic_v1.datetime_parse.parse_datetime(date)  # type: ignore [attr-defined]
+        return pydantic_v1.datetime_parse.parse_datetime(date)
     except pydantic_v1.DateTimeError:
         pass
     try:
