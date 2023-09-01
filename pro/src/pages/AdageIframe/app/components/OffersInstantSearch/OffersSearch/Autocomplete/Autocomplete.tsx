@@ -191,6 +191,29 @@ const AutocompleteComponent = ({
       return undefined
     }
 
+    const { onTouchStart, onTouchMove, onMouseDown } = getEnvironmentProps({
+      formElement: formRef.current,
+      inputElement: inputRef.current,
+      panelElement: panelRef.current,
+    })
+
+    window.addEventListener('mousedown', onMouseDown)
+    window.addEventListener('touchstart', onTouchStart)
+    window.addEventListener('touchmove', onTouchMove)
+
+    return () => {
+      window.removeEventListener('mousedown', onMouseDown)
+      window.removeEventListener('touchstart', onTouchStart)
+      window.removeEventListener('touchmove', onTouchMove)
+    }
+  }, [getEnvironmentProps, instantSearchUiState.isOpen])
+
+  useEffect(() => {
+    /* istanbul ignore next: ref initialized to null but they are always present */
+    if (!formRef.current || !panelRef.current || !inputRef.current) {
+      return undefined
+    }
+
     // As long as you click on the items ref below, the panel remains open.
     const { onTouchStart, onTouchMove, onMouseDown } = getEnvironmentProps({
       formElement: formRef.current,
