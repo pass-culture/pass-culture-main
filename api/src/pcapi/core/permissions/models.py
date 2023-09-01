@@ -53,7 +53,7 @@ class Permissions(enum.Enum):
     VALIDATE_OFFERER = "gérer la validation des structures et des rattachements"
 
     MANAGE_OFFERER_TAG = "gérer les tags structure"
-    DELETE_OFFERER_TAG = "supprimer un tag (structure, offre, lieu)"
+    DELETE_OFFERER_TAG = "supprimer un tag (structure, offre, lieu) et créer des catégories"
 
     MANAGE_OFFERS_AND_VENUES_TAGS = "gérer les tags offres et lieux"
 
