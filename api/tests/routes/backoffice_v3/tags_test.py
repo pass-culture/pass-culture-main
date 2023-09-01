@@ -178,3 +178,28 @@ class ListTagsTest(GetEndpointHelper):
                     assert rows[index]["Description"] == tags.get(key).description
                     count += 1
                     break
+
+
+class CreateTagCategoryTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.tags.create_tag_category"
+    needed_permission = perm_models.Permissions.DELETE_OFFERER_TAG
+
+    def test_create_tag_category(self, authenticated_client):
+        form_data = {
+            "label": "Nouvelle catégorie",
+        }
+        response = self.post_to_endpoint(authenticated_client, form=form_data)
+
+        assert response.status_code == 303
+        assert response.location == url_for("backoffice_v3_web.tags.list_tags", active_tab="categories", _external=True)
+
+        assert criteria_models.CriterionCategory.query.filter_by(label=form_data["label"]).one_or_none()
+
+    def test_create_with_already_existing_category(self, authenticated_client):
+        criteria_factories.CriterionCategoryFactory(label="Duplicate")
+        response = self.post_to_endpoint(authenticated_client, form={"label": "Duplicate"})
+
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data) == "Cette catégorie existe déjà"
+        )
