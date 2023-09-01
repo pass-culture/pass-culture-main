@@ -31,6 +31,7 @@ from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.permissions.models as perm_models
+from pcapi.core.providers import models as providers_models
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.routes.backoffice_v3 import autocomplete
@@ -119,6 +120,10 @@ def get_venue(venue_id: int) -> offerers_models.Venue:
                 educational_models.CollectiveDmsApplication.depositDate,
                 educational_models.CollectiveDmsApplication.lastChangeDate,
             ),
+            sa.orm.joinedload(offerers_models.Venue.venueProviders)
+            .load_only(providers_models.VenueProvider.lastSyncDate)
+            .joinedload(providers_models.VenueProvider.provider)
+            .load_only(providers_models.Provider.name),
         )
         .one_or_none()
     )

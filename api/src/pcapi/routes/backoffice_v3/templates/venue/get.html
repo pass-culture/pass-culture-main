@@ -223,6 +223,16 @@
               {% endif %}
             </div>
             <div class="col-4">
+              {% for venue_provider in venue.venueProviders %}
+                <p class="mb-1">
+                  <span class="fw-bold">Provider :</span>
+                  {{ venue_provider.provider.name }}
+                </p>
+                <p class="mb-1">
+                  <span class="fw-bold">Dernière synchronisation :</span>
+                  {{ venue_provider.lastSyncDate | format_date_time }}
+                </p>
+              {% endfor %}
               {% if dms_stats %}
                 <p class="mb-1">
                   <span class="fw-bold">Statut DMS CB :</span>
