@@ -68,6 +68,7 @@ class SubscriptionStepDetailsResponse(BaseModel):
 class SubscriptionStepperResponse(BaseModel):
     subscription_steps_to_display: list[SubscriptionStepDetailsResponse]
     allowed_identity_check_methods: list[subscription_models.IdentityCheckMethod]
+    maintenance_page_type: subscription_models.MaintenancePageType | None
     title: str
     subtitle: str | None
     error_message: str | None

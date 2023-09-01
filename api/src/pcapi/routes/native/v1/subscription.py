@@ -76,6 +76,7 @@ def get_subscription_stepper(user: users_models.User) -> serializers.Subscriptio
             for step in subscription_steps_to_display
         ],
         allowed_identity_check_methods=subscription_api.get_allowed_identity_check_methods(user),
+        maintenance_page_type=subscription_api.get_maintenance_page_type(user),
         title=stepper_header.title,
         subtitle=stepper_header.subtitle,
         error_message=(
