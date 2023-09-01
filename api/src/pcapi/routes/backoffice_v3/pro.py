@@ -97,7 +97,7 @@ def search_pro() -> utils.BackofficeResponse:
     next_page = partial(
         url_for,
         ".search_pro",
-        pro_type=search_model.pro_type,
+        pro_type=search_model.pro_type.name,
         terms=search_model.terms,
         order_by=search_model.order_by,
         per_page=search_model.per_page,
