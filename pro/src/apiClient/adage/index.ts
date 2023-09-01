@@ -30,6 +30,7 @@ export type { Coordinates } from './models/Coordinates';
 export type { EducationalInstitutionResponseModel } from './models/EducationalInstitutionResponseModel';
 export type { EducationalInstitutionWithBudgetResponseModel } from './models/EducationalInstitutionWithBudgetResponseModel';
 export type { EducationalRedactorResponseModel } from './models/EducationalRedactorResponseModel';
+export type { FavoritesResponseModel } from './models/FavoritesResponseModel';
 export type { FeatureResponseModel } from './models/FeatureResponseModel';
 export type { GetRelativeVenuesQueryModel } from './models/GetRelativeVenuesQueryModel';
 export type { ListFeatureResponseModel } from './models/ListFeatureResponseModel';

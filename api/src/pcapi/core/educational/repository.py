@@ -1076,3 +1076,51 @@ def get_educational_institution_public(
             educational_models.EducationalInstitution.id == institution_id,
         ),
     ).one_or_none()
+
+
+def get_all_offer_by_redactor_id(redactor_id: int) -> list[educational_models.CollectiveOffer]:
+    return (
+        educational_models.CollectiveOffer.query.join(
+            educational_models.EducationalRedactor, educational_models.CollectiveOffer.educationalRedactorsFavorite
+        )
+        .options(
+            sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+                educational_models.CollectiveStock.collectiveBookings
+            ),
+        )
+        .options(
+            sa_orm.joinedload(educational_models.CollectiveOffer.nationalProgram),
+        )
+        .options(
+            sa_orm.joinedload(educational_models.CollectiveOffer.domains),
+        )
+        .options(
+            sa_orm.joinedload(educational_models.CollectiveOffer.teacher),
+        )
+        .options(
+            sa_orm.joinedload(educational_models.CollectiveOffer.venue).joinedload(
+                offerers_models.Venue.managingOfferer
+            ),
+        )
+        .filter(educational_models.EducationalRedactor.id == redactor_id)
+        .all()
+    )
+
+
+def get_all_offer_template_by_redactor_id(redactor_id: int) -> list[educational_models.CollectiveOfferTemplate]:
+    return (
+        educational_models.CollectiveOfferTemplate.query.join(
+            educational_models.EducationalRedactor,
+            educational_models.CollectiveOfferTemplate.educationalRedactorsFavorite,
+        )
+        .options(
+            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.venue).joinedload(
+                offerers_models.Venue.managingOfferer
+            ),
+        )
+        .options(
+            sa_orm.joinedload(educational_models.CollectiveOfferTemplate.domains),
+        )
+        .filter(educational_models.EducationalRedactor.id == redactor_id)
+        .all()
+    )
