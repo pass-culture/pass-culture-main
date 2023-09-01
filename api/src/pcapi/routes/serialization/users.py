@@ -81,8 +81,8 @@ class ProUserCreationBodyModel(BaseModel):
     email: pydantic_v1.EmailStr
     first_name: str
     last_name: str
-    latitude: float | None
-    longitude: float | None
+    latitude: float | None = None
+    longitude: float | None = None
     name: str
     password: str
     phone_number: str
@@ -91,6 +91,7 @@ class ProUserCreationBodyModel(BaseModel):
     contact_ok: bool
 
     @validator("password")
+    @classmethod
     def validate_password_strength(cls, password: str) -> str:
         check_password_strength("password", password)
         return password

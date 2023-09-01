@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
@@ -101,22 +102,22 @@ class AdageLoggerClient(AdageClient):
         logger.info("Adage has been called at %s", f"{self.base_url}/v1/etablissement-culturel/{siret}")
         if siret == "12345678200010":
             return venues_serialize.AdageCulturalPartner(
-                id="128028",
+                id=128028,
                 venueId=None,
                 siret=siret,
                 regionId=None,
                 academieId=None,
                 statutId=3,
                 labelId=None,
-                typeId="8",
+                typeId=8,
                 communeId="26324",
                 libelle="Fête du livre jeunesse de St Paul les trois Châteaux",
                 adresse="Place Charles Chausy",
                 siteWeb="http://www.fetedulivrejeunesse.fr/",
-                latitude="44.350457",
-                longitude="4.765918",
-                actif="1",
-                dateModification="2021-09-01 00:00:00",
+                latitude=44.350457,
+                longitude=4.765918,
+                actif=1,
+                dateModification=datetime.datetime(2021, 9, 1),
                 statutLibelle="Association",
                 labelLibelle=None,
                 typeIcone="town",
