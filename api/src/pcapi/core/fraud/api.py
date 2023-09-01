@@ -10,6 +10,7 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.fraud.utils as fraud_utils
 from pcapi.core.mails import models as mails_models
 import pcapi.core.mails.transactional as transaction_mails
+from pcapi.core.mails.transactional.users import fraud_emails
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import models as subscription_models
@@ -486,7 +487,7 @@ def _handle_duplicate(fraud_items: list[models.FraudItem], fraud_check: models.B
         actor=None,
         comment="Compte automatiquement suspendu pour suspicion de doublon",
     )
-    _send_duplicate_fraud_detection_mail(user, duplicate_beneficiary)
+    fraud_emails.send_duplicate_fraud_detection_mail(user, duplicate_beneficiary)
 
 
 def validate_frauds(
