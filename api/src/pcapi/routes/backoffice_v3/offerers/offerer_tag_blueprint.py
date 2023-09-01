@@ -49,7 +49,7 @@ def list_offerer_tags() -> utils.BackofficeResponse:
     create_tag_form.categories.choices = [(cat.id, cat.label or cat.name) for cat in categories]
     create_category_form = (
         offerer_forms.CreateOffererTagCategoryForm()
-        if utils.has_current_user_permission(perm_models.Permissions.DELETE_OFFERER_TAG)
+        if utils.has_current_user_permission(perm_models.Permissions.MANAGE_TAGS_N2)
         else None
     )
 
@@ -125,7 +125,7 @@ def update_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_tag_blueprint.route("/<int:offerer_tag_id>/delete", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.DELETE_OFFERER_TAG)
+@utils.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
 def delete_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
     offerer_tag_to_delete = offerers_models.OffererTag.query.get_or_404(offerer_tag_id)
 
@@ -140,7 +140,7 @@ def delete_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_tag_blueprint.route("/category", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.DELETE_OFFERER_TAG)
+@utils.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
 def create_offerer_tag_category() -> utils.BackofficeResponse:
     form = offerer_forms.CreateOffererTagCategoryForm()
 

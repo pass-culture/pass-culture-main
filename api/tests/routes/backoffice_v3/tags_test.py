@@ -62,7 +62,7 @@ class CreateTagTest(PostEndpointHelper):
 class DeleteTagTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.tags.delete_tag"
     endpoint_kwargs = {"tag_id": 1}
-    needed_permission = perm_models.Permissions.DELETE_OFFERER_TAG
+    needed_permission = perm_models.Permissions.MANAGE_TAGS_N2
 
     def test_delete_tag(self, authenticated_client):
         offer = offers_factories.OfferFactory()
@@ -182,7 +182,7 @@ class ListTagsTest(GetEndpointHelper):
 
 class CreateTagCategoryTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.tags.create_tag_category"
-    needed_permission = perm_models.Permissions.DELETE_OFFERER_TAG
+    needed_permission = perm_models.Permissions.MANAGE_TAGS_N2
 
     def test_create_tag_category(self, authenticated_client):
         form_data = {

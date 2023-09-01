@@ -73,7 +73,7 @@
                                data-bs-toggle="modal"
                                data-bs-target=".pc-edit-offerer-tag-modal-{{ offerer_tag.id }}">Modifier le tag structure</a>
                           </li>
-                          {% if has_permission("DELETE_OFFERER_TAG") %}
+                          {% if has_permission("MANAGE_TAGS_N2") %}
                             <li class="dropdown-item p-0">
                               <a class="btn btn-sm d-block w-100 text-start px-3"
                                  data-bs-toggle="modal"
@@ -107,7 +107,7 @@
                             </div>
                           </div>
                         </div>
-                        {% if has_permission("DELETE_OFFERER_TAG") %}
+                        {% if has_permission("MANAGE_TAGS_N2") %}
                           <div class="modal modal-lg fade pc-delete-offerer-tag-modal-{{ offerer_tag.id }}"
                                tabindex="-1"
                                aria-labelledby="{{ delete_offerer_tag_modal_label_id }}"
