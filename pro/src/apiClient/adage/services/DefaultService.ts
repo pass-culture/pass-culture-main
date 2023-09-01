@@ -102,6 +102,28 @@ export class DefaultService {
   }
 
   /**
+   * delete_favorite_for_collective_offer <DELETE>
+   * @param offerId
+   * @returns void
+   * @throws ApiError
+   */
+  public deleteFavoriteForCollectiveOffer(
+    offerId: number,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'DELETE',
+      url: '/adage-iframe/collective/offer/{offer_id}/favorites',
+      path: {
+        'offer_id': offerId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * get_collective_offer_template <GET>
    * @param offerId
    * @returns CollectiveOfferTemplateResponseModel OK
@@ -188,6 +210,28 @@ export class DefaultService {
       url: '/adage-iframe/collective/offers/{offer_id}/favorites',
       path: {
         'offer_id': offerId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * delete_favorite_for_collective_offer_template <DELETE>
+   * @param offerTemplateId
+   * @returns void
+   * @throws ApiError
+   */
+  public deleteFavoriteForCollectiveOfferTemplate(
+    offerTemplateId: number,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'DELETE',
+      url: '/adage-iframe/collective/template/{offer_template_id}/favorites',
+      path: {
+        'offer_template_id': offerTemplateId,
       },
       errors: {
         403: `Forbidden`,
