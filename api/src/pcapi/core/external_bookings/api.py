@@ -91,7 +91,10 @@ def book_event_ticket(
         provider.bookingExternalUrl, json=payload.json(), headers={"Content-Type": "application/json"}
     )
     _check_external_booking_response_is_ok(response)
-    parsed_response = pydantic.parse_obj_as(serialize.ExternalEventBookingResponse, response.json())
+    try:
+        parsed_response = pydantic.parse_obj_as(serialize.ExternalEventBookingResponse, response.json())
+    except pydantic.ValidationError as err:
+        raise exceptions.ExternalBookingException(f"External booking failed. Could not parse response: {err}")
     for ticket in parsed_response.tickets:
         add_to_queue(
             REDIS_EXTERNAL_BOOKINGS_NAME,
