@@ -1977,20 +1977,19 @@ def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
     if not offerer_invitations:
         return
     for offerer_invitation in offerer_invitations:
-        try:
-            inviter_email = offerer_invitation.user.email
-            user_offerer = grant_user_offerer_access(user=user, offerer=offerer_invitation.offerer)
-            user_offerer.user.add_pro_role()
-            db.session.add(user_offerer)
-            db.session.delete(offerer_invitation)
-
-            db.session.commit()
-        except Exception:  # pylint: disable=broad-except
-            db.session.rollback()
-            logger.info("User offferer already exists")
-            continue
-        transactional_mails.send_offerer_attachment_invitation_confirmed([user.email])
-        transactional_mails.send_offerer_attachment_invitation_accepted([inviter_email])
+        inviter_user = offerer_invitation.user
+        user_offerer = models.UserOfferer(
+            offerer=offerer_invitation.offerer, user=user, validationStatus=ValidationStatus.NEW
+        )
+        db.session.add(user_offerer)
+        db.session.delete(offerer_invitation)
+        db.session.commit()
+        external_attributes_api.update_external_pro(user.email)
+        zendesk_sell.create_offerer(user_offerer.offerer)
+        logger.info(
+            "UserOfferer created from invitation",
+            extra={"offerer": user_offerer.offerer, "invitedUserId": user.id, "inviterUserId": inviter_user.id},
+        )
 
 
 @dataclasses.dataclass

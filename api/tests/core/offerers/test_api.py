@@ -2418,3 +2418,21 @@ class InviteMembersTest:
             userId=attached_to_other_offerer_user.id, offererId=offerer.id
         ).one()
         assert user_offerer.validationStatus == ValidationStatus.NEW
+
+
+class AcceptOffererInvitationTest:
+    def test_accept_offerer_invitation_when_invitation_exist(self):
+        pro_user = users_factories.ProFactory(email="pro.user@example.com")
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offerers_factories.OffererInvitationFactory(offerer=offerer, user=pro_user, email="new.user@example.com")
+        user = users_factories.UserFactory(email="new.user@example.com")
+
+        offerers_api.accept_offerer_invitation_if_exists(user)
+
+        new_user_offerer = offerers_models.UserOfferer.query.filter_by(validationStatus=ValidationStatus.NEW).one()
+        offerer_invitations = offerers_models.OffererInvitation.query.all()
+
+        assert new_user_offerer.offererId == offerer.id
+        assert new_user_offerer.userId == user.id
+        assert len(offerer_invitations) == 0
