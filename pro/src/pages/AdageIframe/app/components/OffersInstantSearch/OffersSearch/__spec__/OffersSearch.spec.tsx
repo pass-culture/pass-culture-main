@@ -114,7 +114,7 @@ describe('offersSearch component', () => {
 
     // When
     const textInput = screen.getByPlaceholderText(
-      'Rechercher : nom de l’offre, partenaire culturel'
+      'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
     )
     await userEvent.type(textInput, 'Paris')
     await userEvent.click(launchSearchButton)
@@ -135,7 +135,7 @@ describe('offersSearch component', () => {
 
     // When
     const textInput = screen.getByPlaceholderText(
-      'Rechercher : nom de l’offre, partenaire culturel'
+      'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
     )
     await userEvent.type(textInput, 'Paris')
     await userEvent.click(launchSearchButton)

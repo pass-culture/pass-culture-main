@@ -24,6 +24,21 @@ describe('ButtonLink', () => {
     expect(onClick).toHaveBeenCalledTimes(1)
   })
 
+  it('should call callback action onblur when clicking outside the button', async () => {
+    const onBlur = vi.fn()
+    render(
+      <ButtonLink link={props} onBlur={onBlur}>
+        test
+      </ButtonLink>
+    )
+
+    const button = screen.getByRole('link', { name: 'test' })
+    await userEvent.click(button)
+    await userEvent.tab()
+
+    expect(onBlur).toHaveBeenCalledTimes(1)
+  })
+
   it('should enforce absolute links', async () => {
     renderWithProviders(
       <Routes>
