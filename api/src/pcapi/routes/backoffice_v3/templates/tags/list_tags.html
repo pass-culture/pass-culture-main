@@ -64,7 +64,7 @@
                                data-bs-toggle="modal"
                                data-bs-target="#update-offer-venue-tag-{{ tag.id }}">Modifier le tag</a>
                           </li>
-                          {% if has_permission("DELETE_OFFERER_TAG") %}
+                          {% if has_permission("MANAGE_TAGS_N2") %}
                             <li class="dropdown-item p-0">
                               <a class="btn btn-sm d-block w-100 text-start px-3"
                                  data-bs-toggle="modal"
@@ -73,7 +73,7 @@
                           {% endif %}
                         </ul>
                         {{ build_lazy_modal(url_for("backoffice_v3_web.tags.get_update_tag_form", tag_id=tag.id), "update-offer-venue-tag-" + tag.id | string) }}
-                        {% if has_permission("DELETE_OFFERER_TAG") %}
+                        {% if has_permission("MANAGE_TAGS_N2") %}
                           {{ build_lazy_modal(url_for("backoffice_v3_web.tags.get_delete_tag_form", tag_id=tag.id), "delete-offer-venue-tag-" + tag.id | string) }}
                         {% endif %}
                       </div>
