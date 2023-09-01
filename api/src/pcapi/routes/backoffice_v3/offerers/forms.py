@@ -218,7 +218,7 @@ class AddProUserForm(FlaskForm):
         return pro_user_id
 
 
-class EditOffererTagForm(FlaskForm):
+class OffererTagBaseForm(FlaskForm):
     name = fields.PCStringField(
         "Nom",
         validators=(
@@ -230,9 +230,16 @@ class EditOffererTagForm(FlaskForm):
     label = fields.PCOptStringField(
         "Libellé", validators=(wtforms.validators.Length(max=140, message="Doit contenir moins de %(max)d caractères"),)
     )
+
+
+class EditOffererTagForm(OffererTagBaseForm):
     description = fields.PCOptStringField(
         "Description",
         validators=(wtforms.validators.Length(max=1024, message="Doit contenir moins de %(max)d caractères"),),
     )
     # choices added later so as to query the categories only once
     categories = fields.PCSelectMultipleField("Catégories", coerce=int)
+
+
+class CreateOffererTagCategoryForm(OffererTagBaseForm):
+    pass
