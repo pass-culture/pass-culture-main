@@ -2,6 +2,7 @@ from flask import escape
 from flask import flash
 from flask import redirect
 from flask import render_template
+from flask import request
 from flask import url_for
 import sqlalchemy as sa
 
@@ -12,7 +13,7 @@ from pcapi.routes.backoffice_v3 import utils
 from pcapi.routes.backoffice_v3.forms import empty as empty_forms
 from pcapi.utils.clean_accents import clean_accents
 
-from . import form as tags_forms
+from . import form as criteria_forms
 
 
 tags_blueprint = utils.child_backoffice_blueprint(
@@ -29,30 +30,48 @@ def get_tags_categories() -> list[criteria_models.CriterionCategory]:
 
 @tags_blueprint.route("", methods=["GET"])
 def list_tags() -> utils.BackofficeResponse:
-    form = tags_forms.SearchTagForm(formdata=utils.get_query_params())
+    form = criteria_forms.SearchTagForm(formdata=utils.get_query_params())
+    create_category_form = (
+        criteria_forms.CreateCriterionCategoryForm()
+        if utils.has_current_user_permission(perm_models.Permissions.DELETE_OFFERER_TAG)
+        else None
+    )
 
     base_query = criteria_models.Criterion.query
 
     if not form.validate():
-        return render_template("tags/list_tags.html", rows=base_query.all(), form=form, dst=url_for(".list_tags")), 400
+        tags = base_query.all()
+        code = 400
+    else:
+        if form.is_empty():
+            tags = base_query.all()
+        else:
+            query = clean_accents(form.q.data.replace(" ", "%").replace("-", "%"))
+            tags = base_query.filter(
+                sa.or_(
+                    sa.func.unaccent(criteria_models.Criterion.name).ilike(f"%{query}%"),
+                    sa.func.unaccent(criteria_models.Criterion.description).ilike(f"%{query}%"),
+                )
+            ).distinct()
+        code = 200
 
-    if form.is_empty():
-        return render_template("tags/list_tags.html", rows=base_query.all(), form=form, dst=url_for(".list_tags"))
-
-    query = clean_accents(form.q.data.replace(" ", "%").replace("-", "%"))
-    tags = base_query.filter(
-        sa.or_(
-            sa.func.unaccent(criteria_models.Criterion.name).ilike(f"%{query}%"),
-            sa.func.unaccent(criteria_models.Criterion.description).ilike(f"%{query}%"),
-        )
-    ).distinct()
-
-    return render_template("tags/list_tags.html", rows=tags, form=form, dst=url_for(".list_tags"))
+    return (
+        render_template(
+            "tags/list_tags.html",
+            rows=tags,
+            form=form,
+            dst=url_for(".list_tags"),
+            category_rows=get_tags_categories(),
+            create_category_form=create_category_form,
+            active_tab=request.args.get("active_tab", "tags"),
+        ),
+        code,
+    )
 
 
 @tags_blueprint.route("/create", methods=["POST"])
 def create_tag() -> utils.BackofficeResponse:
-    form = tags_forms.EditTagForm()
+    form = criteria_forms.EditCriterionForm()
     form.categories.choices = [(cat.id, cat.label) for cat in get_tags_categories()]
 
     if not form.validate():
@@ -82,7 +101,7 @@ def create_tag() -> utils.BackofficeResponse:
 
 @tags_blueprint.route("/tags/new", methods=["GET"])
 def get_create_tag_form() -> utils.BackofficeResponse:
-    form = tags_forms.EditTagForm()
+    form = criteria_forms.EditCriterionForm()
     form.categories.choices = [(cat.id, cat.label) for cat in get_tags_categories()]
 
     return render_template(
@@ -98,7 +117,7 @@ def get_create_tag_form() -> utils.BackofficeResponse:
 @tags_blueprint.route("/<int:tag_id>/update", methods=["POST"])
 def update_tag(tag_id: int) -> utils.BackofficeResponse:
     tag = criteria_models.Criterion.query.get_or_404(tag_id)
-    form = tags_forms.EditTagForm()
+    form = criteria_forms.EditCriterionForm()
     form.categories.choices = [(cat.id, cat.label) for cat in get_tags_categories()]
 
     if not form.validate():
@@ -128,7 +147,7 @@ def update_tag(tag_id: int) -> utils.BackofficeResponse:
 def get_update_tag_form(tag_id: int) -> utils.BackofficeResponse:
     tag = criteria_models.Criterion.query.get_or_404(tag_id)
 
-    form = tags_forms.EditTagForm(
+    form = criteria_forms.EditCriterionForm(
         name=tag.name,
         description=tag.description,
         start_date=tag.startDateTime.date() if tag.startDateTime else None,
@@ -184,3 +203,23 @@ auxquels il est associé. Veuillez confirmer ce choix.
         button_text="Confirmer",
         information=information,
     )
+
+
+@tags_blueprint.route("/tags/category", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.DELETE_OFFERER_TAG)
+def create_tag_category() -> utils.BackofficeResponse:
+    form = criteria_forms.CreateCriterionCategoryForm()
+
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(url_for("backoffice_v3_web.tags.list_tags", active_tab="categories"), code=303)
+
+    try:
+        db.session.add(criteria_models.CriterionCategory(label=form.label.data))
+        db.session.commit()
+        flash("La catégorie a été créée", "success")
+    except sa.exc.IntegrityError:
+        db.session.rollback()
+        flash("Cette catégorie existe déjà", "warning")
+
+    return redirect(url_for("backoffice_v3_web.tags.list_tags", active_tab="categories"), code=303)

@@ -4,7 +4,7 @@ import wtforms
 from pcapi.routes.backoffice_v3.forms import fields
 
 
-class EditTagForm(FlaskForm):
+class EditCriterionForm(FlaskForm):
     name = fields.PCStringField(
         "Nom",
         validators=(
@@ -31,6 +31,12 @@ class EditTagForm(FlaskForm):
             raise wtforms.ValidationError("ne peut pas être postérieure à celle de fin")
 
         return start_date
+
+
+class CreateCriterionCategoryForm(FlaskForm):
+    label = fields.PCOptStringField(
+        "Libellé", validators=(wtforms.validators.Length(max=140, message="Doit contenir moins de %(max)d caractères"),)
+    )
 
 
 class SearchTagForm(FlaskForm):
