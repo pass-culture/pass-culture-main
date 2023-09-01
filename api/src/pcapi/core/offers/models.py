@@ -234,16 +234,9 @@ class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):
         subcategories.ABO_MEDIATHEQUE.id,
     ]
 
-    @hybrid_property
+    @property
     def is_automatically_used(self) -> bool:
         return self.offer.subcategoryId in self.AUTOMATICALLY_USED_SUBCATEGORIES and not self.price
-
-    @is_automatically_used.expression  # type: ignore [no-redef]
-    def is_automatically_used(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
-        return sa.and_(
-            Offer.subcategoryId.in_(cls.AUTOMATICALLY_USED_SUBCATEGORIES),
-            cls.price == 0,
-        )
 
     @hybrid_property
     def isEventExpired(self) -> bool:
