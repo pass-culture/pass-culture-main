@@ -843,9 +843,7 @@ def archive_old_bookings() -> None:
         .union(
             Booking.query.join(Booking.stock, Stock.offer)
             .filter(date_condition)
-            .filter(
-                offers_models.Stock.is_automatically_used,
-            )
+            .filter(Booking.display_even_if_used)
             .with_entities(Booking.id)
         )
     )
