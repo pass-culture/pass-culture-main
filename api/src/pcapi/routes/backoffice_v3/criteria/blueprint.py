@@ -33,7 +33,7 @@ def list_tags() -> utils.BackofficeResponse:
     form = criteria_forms.SearchTagForm(formdata=utils.get_query_params())
     create_category_form = (
         criteria_forms.CreateCriterionCategoryForm()
-        if utils.has_current_user_permission(perm_models.Permissions.DELETE_OFFERER_TAG)
+        if utils.has_current_user_permission(perm_models.Permissions.MANAGE_TAGS_N2)
         else None
     )
 
@@ -167,7 +167,7 @@ def get_update_tag_form(tag_id: int) -> utils.BackofficeResponse:
 
 
 @tags_blueprint.route("/<int:tag_id>/delete", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.DELETE_OFFERER_TAG)
+@utils.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
 def delete_tag(tag_id: int) -> utils.BackofficeResponse:
     tag = criteria_models.Criterion.query.get_or_404(tag_id)
 
@@ -183,7 +183,7 @@ def delete_tag(tag_id: int) -> utils.BackofficeResponse:
 
 
 @tags_blueprint.route("/<int:tag_id>/delete", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.DELETE_OFFERER_TAG)
+@utils.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
 def get_delete_tag_form(tag_id: int) -> utils.BackofficeResponse:
     tag = criteria_models.Criterion.query.get_or_404(tag_id)
 
@@ -206,7 +206,7 @@ auxquels il est associé. Veuillez confirmer ce choix.
 
 
 @tags_blueprint.route("/tags/category", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.DELETE_OFFERER_TAG)
+@utils.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
 def create_tag_category() -> utils.BackofficeResponse:
     form = criteria_forms.CreateCriterionCategoryForm()
 

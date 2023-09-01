@@ -3010,7 +3010,7 @@ class CreateOffererTagTest(PostEndpointHelper):
 class DeleteOffererTagTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.offerer_tag.delete_offerer_tag"
     endpoint_kwargs = {"offerer_tag_id": 1}
-    needed_permission = perm_models.Permissions.DELETE_OFFERER_TAG
+    needed_permission = perm_models.Permissions.MANAGE_TAGS_N2
 
     def test_delete_offerer_tag(self, authenticated_client):
         tags = offerers_factories.OffererTagFactory.create_batch(3)
@@ -3033,7 +3033,7 @@ class DeleteOffererTagTest(PostEndpointHelper):
 
 class CreateOffererTagCategoryTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.offerer_tag.create_offerer_tag_category"
-    needed_permission = perm_models.Permissions.DELETE_OFFERER_TAG
+    needed_permission = perm_models.Permissions.MANAGE_TAGS_N2
 
     def test_create_offerer_tag_category(self, authenticated_client):
         form_data = {
