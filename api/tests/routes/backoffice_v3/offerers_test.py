@@ -2818,6 +2818,11 @@ class ListOffererTagsTest(GetEndpointHelper):
     endpoint = "backoffice_v3_web.offerer_tag.list_offerer_tags"
     needed_permission = perm_models.Permissions.MANAGE_OFFERER_TAG
 
+    # - fetch session (1 query)
+    # - fetch user (1 query)
+    # - fetch categories and tags (2 queries)
+    expected_num_queries = 4
+
     def test_list_offerer_tags(self, authenticated_client):
         # given
         category = offerers_factories.OffererTagCategoryFactory(label="indépendant")
@@ -2829,17 +2834,34 @@ class ListOffererTagsTest(GetEndpointHelper):
         )
 
         # when
-        with assert_no_duplicated_queries():
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint))
 
         # then
         assert response.status_code == 200
-        rows = html_parser.extract_table_rows(response.data)
+        rows = html_parser.extract_table_rows(response.data, parent_class="tags-tab-pane")
         assert len(rows) == 1
         assert rows[0]["Nom"] == offerer_tag.name
         assert rows[0]["Libellé"] == offerer_tag.label
         assert rows[0]["Description"] == offerer_tag.description
         assert rows[0]["Catégories"] == category.label
+
+    def test_list_offerer_tag_categories(self, authenticated_client, offerer_tags):
+        # given (fixture + second category)
+        offerers_factories.OffererTagCategoryFactory(name="comptage", label="Comptage partenaires")
+
+        # when
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint))
+
+        # then
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data, parent_class="categories-tab-pane")
+        assert len(rows) == 2
+        assert rows[0]["Nom"] == "comptage"
+        assert rows[0]["Libellé"] == "Comptage partenaires"
+        assert rows[1]["Nom"] == "homologation"
+        assert rows[1]["Libellé"] == "Homologation"
 
 
 class UpdateOffererTagTest(PostEndpointHelper):
@@ -2936,7 +2958,7 @@ class CreateOffererTagTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.offerer_tag.create_offerer_tag"
     needed_permission = perm_models.Permissions.MANAGE_OFFERER_TAG
 
-    def test_create_offerer(self, authenticated_client):
+    def test_create_offerer_tag(self, authenticated_client):
         category = offerers_factories.OffererTagCategoryFactory(label="La catégorie des sucreries")
 
         name = "tag-ada"
@@ -2952,19 +2974,13 @@ class CreateOffererTagTest(PostEndpointHelper):
         }
         response = self.post_to_endpoint(authenticated_client, form=base_form)
         assert response.status_code == 303
+        assert response.location == url_for("backoffice_v3_web.offerer_tag.list_offerer_tags", _external=True)
 
-        # Test redirection
-        expected_url = url_for("backoffice_v3_web.offerer_tag.list_offerer_tags", _external=True)
-        assert response.location == expected_url
-
-        response = authenticated_client.get(expected_url)
-
-        rows = html_parser.extract_table_rows(response.data)
-        assert html_parser.count_table_rows(response.data) == 1
-        assert rows[0]["Nom"] == name
-        assert rows[0]["Libellé"] == label
-        assert rows[0]["Description"] == description
-        assert rows[0]["Catégories"] == category.label
+        created_tag = offerers_models.OffererTag.query.one()
+        assert created_tag.name == name
+        assert created_tag.label == label
+        assert created_tag.description == description
+        assert created_tag.categories == [category]
 
     def test_create_with_wrong_data(self, authenticated_client):
         base_form = {
@@ -2973,12 +2989,10 @@ class CreateOffererTagTest(PostEndpointHelper):
         }
         response = self.post_to_endpoint(authenticated_client, form=base_form)
         assert response.status_code == 303
-
-        expected_url = url_for("backoffice_v3_web.offerer_tag.list_offerer_tags", _external=True)
-        response = authenticated_client.get(expected_url)
-
-        assert "Les données envoyées comportent des erreurs" in html_parser.extract_alert(response.data)
-        assert html_parser.count_table_rows(response.data) == 0
+        assert "Les données envoyées comportent des erreurs" in html_parser.extract_alert(
+            authenticated_client.get(response.location).data
+        )
+        assert offerers_models.OffererTag.query.count() == 0
 
     def test_create_with_already_existing_tag(self, authenticated_client):
         offerers_factories.OffererTagFactory(
@@ -2989,12 +3003,8 @@ class CreateOffererTagTest(PostEndpointHelper):
         }
         response = self.post_to_endpoint(authenticated_client, form=base_form)
         assert response.status_code == 303
-
-        expected_url = url_for("backoffice_v3_web.offerer_tag.list_offerer_tags", _external=True)
-        response = authenticated_client.get(expected_url)
-
-        assert html_parser.extract_alert(response.data) == "Ce tag existe déjà"
-        assert html_parser.count_table_rows(response.data) == 1
+        assert html_parser.extract_alert(authenticated_client.get(response.location).data) == "Ce tag existe déjà"
+        assert offerers_models.OffererTag.query.count() == 1
 
 
 class DeleteOffererTagTest(PostEndpointHelper):
@@ -3019,3 +3029,35 @@ class DeleteOffererTagTest(PostEndpointHelper):
 
         assert response.status_code == 404
         assert offerers_models.OffererTag.query.count() == 1
+
+
+class CreateOffererTagCategoryTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.offerer_tag.create_offerer_tag_category"
+    needed_permission = perm_models.Permissions.DELETE_OFFERER_TAG
+
+    def test_create_offerer_tag_category(self, authenticated_client):
+        form_data = {
+            "name": "nouvelle-categorie",
+            "label": "Nouvelle catégorie",
+        }
+        response = self.post_to_endpoint(authenticated_client, form=form_data)
+
+        assert response.status_code == 303
+        assert response.location == url_for(
+            "backoffice_v3_web.offerer_tag.list_offerer_tags", active_tab="categories", _external=True
+        )
+
+        created_category = offerers_models.OffererTagCategory.query.one()
+        assert created_category.name == form_data["name"]
+        assert created_category.label == form_data["label"]
+
+    def test_create_with_already_existing_category(self, authenticated_client, offerer_tags):
+        form_data = {"name": "homologation", "label": "Duplicate category"}
+        response = self.post_to_endpoint(authenticated_client, form=form_data)
+
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data) == "Cette catégorie existe déjà"
+        )
+
+        assert offerers_models.OffererTagCategory.query.count() == 1

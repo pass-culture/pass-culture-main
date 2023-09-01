@@ -1,6 +1,7 @@
 from flask import flash
 from flask import redirect
 from flask import render_template
+from flask import request
 from flask import url_for
 import sqlalchemy as sa
 
@@ -29,7 +30,11 @@ def get_offerer_tag_categories() -> list[offerers_models.OffererTagCategory]:
 @offerer_tag_blueprint.route("", methods=["GET"])
 def list_offerer_tags() -> utils.BackofficeResponse:
     categories = get_offerer_tag_categories()
-    offerer_tags = offerers_models.OffererTag.query.order_by(offerers_models.OffererTag.name).all()
+    offerer_tags = (
+        offerers_models.OffererTag.query.options(sa.orm.joinedload(offerers_models.OffererTag.categories))
+        .order_by(offerers_models.OffererTag.name)
+        .all()
+    )
     forms = {}
     for offerer_tag in offerer_tags:
         forms[offerer_tag.id] = offerer_forms.EditOffererTagForm(
@@ -42,6 +47,11 @@ def list_offerer_tags() -> utils.BackofficeResponse:
 
     create_tag_form = offerer_forms.EditOffererTagForm()
     create_tag_form.categories.choices = [(cat.id, cat.label or cat.name) for cat in categories]
+    create_category_form = (
+        offerer_forms.CreateOffererTagCategoryForm()
+        if utils.has_current_user_permission(perm_models.Permissions.DELETE_OFFERER_TAG)
+        else None
+    )
 
     return render_template(
         "offerer/offerer_tag.html",
@@ -49,6 +59,9 @@ def list_offerer_tags() -> utils.BackofficeResponse:
         forms=forms,
         create_tag_form=create_tag_form,
         delete_tag_form=empty_forms.EmptyForm(),
+        category_rows=categories,
+        create_category_form=create_category_form,
+        active_tab=request.args.get("active_tab", "tags"),
     )
 
 
@@ -124,3 +137,23 @@ def delete_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
         flash(f"Une erreur s'est produite : {str(exception)}", "warning")
 
     return redirect(url_for("backoffice_v3_web.offerer_tag.list_offerer_tags"), code=303)
+
+
+@offerer_tag_blueprint.route("/category", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.DELETE_OFFERER_TAG)
+def create_offerer_tag_category() -> utils.BackofficeResponse:
+    form = offerer_forms.CreateOffererTagCategoryForm()
+
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(url_for("backoffice_v3_web.offerer_tag.list_offerer_tags", active_tab="categories"), code=303)
+
+    try:
+        db.session.add(offerers_models.OffererTagCategory(name=form.name.data, label=form.label.data))
+        db.session.commit()
+        flash("La catégorie a été créée", "success")
+    except sa.exc.IntegrityError:
+        db.session.rollback()
+        flash("Cette catégorie existe déjà", "warning")
+
+    return redirect(url_for("backoffice_v3_web.offerer_tag.list_offerer_tags", active_tab="categories"), code=303)
