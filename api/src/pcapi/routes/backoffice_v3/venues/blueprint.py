@@ -311,7 +311,7 @@ def get_venue_bank_information(venue: offerers_models.Venue) -> serialization.Ve
         pricing_point_name = current_pricing_point.name
         pricing_point_url = url_for("backoffice_v3_web.venue.get", venue_id=current_pricing_point.id)
 
-    return serialization.VenueBankInformation(
+    return serialization.VenueBankInformation(  # type: ignore [call-arg]
         reimbursement_point_name=reimbursement_point_name,
         reimbursement_point_url=reimbursement_point_url,
         pricing_point_id=pricing_point_id,

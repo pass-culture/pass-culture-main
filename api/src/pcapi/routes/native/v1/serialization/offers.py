@@ -201,7 +201,7 @@ class OfferResponse(BaseModel):
                 result.extraData.isbn = result.extraData.ean
             result.extraData.durationMinutes = offer.durationMinutes
         else:
-            result.extraData = OfferExtraData(durationMinutes=offer.durationMinutes)
+            result.extraData = OfferExtraData(durationMinutes=offer.durationMinutes)  # type: ignore [call-arg]
 
         result.stocks = [OfferStockResponse.from_orm(stock) for stock in offer.activeStocks]
 
