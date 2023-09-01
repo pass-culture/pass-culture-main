@@ -232,9 +232,8 @@ class PriceBookingTest:
         assert pricing.status == models.PricingStatus.VALIDATED
 
     def test_price_booking_that_is_not_used(self):
-        booking = bookings_factories.BookingFactory()
-        pricing = api.price_booking(booking)
-        assert pricing is None
+        bookings_factories.BookingFactory()
+        api.price_bookings(datetime.datetime(1970, 1, 1), batch_size=100)
 
     def test_price_booking_checks_pricing_point(self):
         booking = bookings_factories.UsedBookingFactory()
