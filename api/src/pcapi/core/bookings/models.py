@@ -321,10 +321,17 @@ class Booking(PcObject, Base, Model):
         except (decimal.DivisionByZero, decimal.InvalidOperation):  # raised when both values are 0
             return None
 
-    @property
+    @hybrid_property
     def display_even_if_used(self) -> bool:
         return (
             self.stock.offer.subcategoryId in offers_models.Stock.AUTOMATICALLY_USED_SUBCATEGORIES and self.amount == 0
+        )
+
+    @display_even_if_used.expression  # type: ignore [no-redef]
+    def display_even_if_used(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument
+        return and_(
+            offers_models.Offer.subcategoryId.in_(offers_models.Stock.AUTOMATICALLY_USED_SUBCATEGORIES),
+            cls.amount == 0,
         )
 
 

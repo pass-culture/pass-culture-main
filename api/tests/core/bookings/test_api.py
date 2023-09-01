@@ -1535,6 +1535,38 @@ class ArchiveOldBookingsTest:
         assert not old_not_free_booking.displayAsEnded
         assert old_booking.displayAsEnded
 
+    @pytest.mark.parametrize(
+        "subcategoryId",
+        offers_models.Stock.AUTOMATICALLY_USED_SUBCATEGORIES,
+    )
+    def test_old_subcategories_bookings_are_archived_is_no_longer_free(self, db_session, subcategoryId, client):
+        # given
+        now = datetime.utcnow()
+        recent = now - timedelta(days=29, hours=23)
+        old = now - timedelta(days=30, hours=1)
+        offer = offers_factories.ThingOfferFactory(subcategoryId=subcategoryId)
+        stock_free = offers_factories.StockFactory(offer=offer, price=0)
+        offerer_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        recent_booking = bookings_factories.BookingFactory(stock=stock_free, dateCreated=recent)
+        old_booking = bookings_factories.BookingFactory(stock=stock_free, dateCreated=old)
+        stock_data = {
+            "price": 10,
+        }
+        client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+
+        # when
+        api.archive_old_bookings()
+
+        # then
+        db_session.refresh(recent_booking)
+        db_session.refresh(old_booking)
+        assert not recent_booking.displayAsEnded
+        assert old_booking.displayAsEnded
+
 
 @pytest.mark.usefixtures("db_session")
 class PopBarcodesFromQueueAndCancelWastedExternalBookingTest:
