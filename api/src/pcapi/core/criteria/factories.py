@@ -12,6 +12,13 @@ class CriterionFactory(BaseFactory):
     name = factory.Sequence("Criterion_{}".format)
 
 
+class CriterionCategoryFactory(BaseFactory):
+    class Meta:
+        model = models.CriterionCategory
+
+    label = factory.Sequence("Criterion category {}".format)
+
+
 class OfferCriterionFactory(BaseFactory):
     class Meta:
         model = models.OfferCriterion
