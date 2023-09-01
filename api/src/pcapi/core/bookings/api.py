@@ -375,41 +375,42 @@ def _cancel_booking(
 ) -> bool:
     """Cancel booking and update a user's credit information on Batch"""
     with transaction():
-        stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
-        db.session.refresh(booking)
-        try:
-            finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
-            booking.cancel_booking(reason, cancel_even_if_used)
-            cancelled_event = finance_api.cancel_latest_event(
-                booking,
-                finance_models.FinanceEventMotive.BOOKING_USED,
-            )
-            if cancelled_event:
-                finance_api.add_event(
+        with db.session.no_autoflush:
+            stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
+            db.session.refresh(booking)
+            try:
+                finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
+                booking.cancel_booking(reason, cancel_even_if_used)
+                cancelled_event = finance_api.cancel_latest_event(
                     booking,
-                    finance_models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE,
-                    commit=False,
+                    finance_models.FinanceEventMotive.BOOKING_USED,
                 )
-            _cancel_external_booking(booking, stock)
-        except (
-            BookingIsAlreadyUsed,
-            BookingIsAlreadyCancelled,
-            finance_exceptions.NonCancellablePricingError,
-        ) as e:
-            if raise_if_error:
-                raise
-            logger.info(
-                "%s: %s",
-                type(e).__name__,
-                str(e),
-                extra={
-                    "booking": booking.id,
-                    "reason": str(reason),
-                },
-            )
-            return False
-        stock.dnBookedQuantity -= booking.quantity
-        repository.save(booking, stock)
+                if cancelled_event:
+                    finance_api.add_event(
+                        booking,
+                        finance_models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE,
+                        commit=False,
+                    )
+                _cancel_external_booking(booking, stock)
+            except (
+                BookingIsAlreadyUsed,
+                BookingIsAlreadyCancelled,
+                finance_exceptions.NonCancellablePricingError,
+            ) as e:
+                if raise_if_error:
+                    raise
+                logger.info(
+                    "%s: %s",
+                    type(e).__name__,
+                    str(e),
+                    extra={
+                        "booking": booking.id,
+                        "reason": str(reason),
+                    },
+                )
+                return False
+            stock.dnBookedQuantity -= booking.quantity
+            repository.save(booking, stock)
 
     logger.info(
         "Booking has been cancelled",
