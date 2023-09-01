@@ -21,7 +21,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import VenueTypeCode
 import pcapi.core.permissions.models as perm_models
-from pcapi.core.testing import assert_no_duplicated_queries
+import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.backoffice import api as backoffice_api
@@ -259,10 +259,10 @@ class GetVenueTest(GetEndpointHelper):
         assert "Suspendu" not in badges
 
     def test_get_venue_with_adage_id(self, authenticated_client):
-        venue = offerers_factories.VenueFactory(adageId="7122022", contact=None)
+        venue_id = offerers_factories.VenueFactory(adageId="7122022", contact=None).id
 
-        with assert_no_duplicated_queries():
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
             assert response.status_code == 200
 
         response_text = html_parser.content_as_text(response.data)
@@ -270,11 +270,12 @@ class GetVenueTest(GetEndpointHelper):
         assert "ID Adage : 7122022" in response_text
 
     def test_get_venue_with_no_contact(self, authenticated_client, venue_with_no_contact):
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_with_no_contact.id))
+        venue_id = venue_with_no_contact.id
 
-        # then
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
         response_text = html_parser.content_as_text(response.data)
         assert f"Email : {venue_with_no_contact.bookingEmail}" in response_text
         assert "Numéro de téléphone :" not in response_text
@@ -282,33 +283,34 @@ class GetVenueTest(GetEndpointHelper):
     def test_get_venue_with_self_reimbursement_point(
         self, authenticated_client, venue_with_accepted_self_reimbursement_point
     ):
-        # when
-        response = authenticated_client.get(
-            url_for(self.endpoint, venue_id=venue_with_accepted_self_reimbursement_point.id)
-        )
+        venue_id = venue_with_accepted_self_reimbursement_point.id
 
-        # then
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
         assert "Relié à un point de remboursement : Oui" in html_parser.content_as_text(response.data)
 
     def test_get_venue_with_accepted_reimbursement_point(
         self, authenticated_client, venue_with_accepted_reimbursement_point
     ):
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_with_accepted_reimbursement_point.id))
+        venue_id = venue_with_accepted_reimbursement_point.id
 
-        # then
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
         assert "Relié à un point de remboursement : Oui" in html_parser.content_as_text(response.data)
 
     def test_get_venue_with_expired_reimbursement_point(
         self, authenticated_client, venue_with_expired_reimbursement_point
     ):
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_with_expired_reimbursement_point.id))
+        venue_id = venue_with_expired_reimbursement_point.id
 
-        # then
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
         assert "Relié à un point de remboursement : Non" in html_parser.content_as_text(response.data)
 
     def test_get_venue_dms_stats(self, authenticated_client, venue_with_draft_bank_info):
@@ -320,8 +322,11 @@ class GetVenueTest(GetEndpointHelper):
                     "dateDerniereModification": "2022-09-22T16:30:22+02:00",
                 }
             }
-            # when
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_with_draft_bank_info.id))
+            venue_id = venue_with_draft_bank_info.id
+
+            with assert_num_queries(self.expected_num_queries):
+                response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+                assert response.status_code == 200
 
         # then
         assert response.status_code == 200
@@ -340,11 +345,12 @@ class GetVenueTest(GetEndpointHelper):
                     "dateDerniereModification": "2022-09-23T16:30:22+02:00",
                 }
             }
-            # when
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_with_draft_bank_info.id))
+            venue_id = venue_with_draft_bank_info.id
 
-        # then
-        assert response.status_code == 200
+            with assert_num_queries(self.expected_num_queries):
+                response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+                assert response.status_code == 200
+
         response_text = html_parser.content_as_text(response.data)
         assert "Statut DMS CB : Accepté" in response_text
         assert "Date de validation du dossier DMS CB : 23/09/2022" in response_text
@@ -352,19 +358,21 @@ class GetVenueTest(GetEndpointHelper):
         assert "ACCÉDER AU DOSSIER DMS CB" in response_text
 
     def test_get_venue_none_dms_stats_when_no_application_id(self, authenticated_client, venue_with_accepted_bank_info):
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_with_accepted_bank_info.id))
+        venue_id = venue_with_accepted_bank_info.id
 
-        # then
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
         assert "Pas de dossier DMS CB" in html_parser.content_as_text(response.data)
 
     def test_get_venue_with_no_dms_adage_application(self, authenticated_client, random_venue):
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, venue_id=random_venue.id))
+        venue_id = random_venue.id
 
-        # then
-        assert response.status_code == 200
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
         content = html_parser.content_as_text(response.data)
         assert "Pas de dossier DMS Adage" in content
 
@@ -379,15 +387,29 @@ class GetVenueTest(GetEndpointHelper):
         collectiveDmsApplication = educational_factories.CollectiveDmsApplicationFactory(
             venue=random_venue, state=state
         )
+        venue_id = random_venue.id
 
-        # when
-        response = authenticated_client.get(url_for(self.endpoint, venue_id=random_venue.id))
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
 
-        # then
-        assert response.status_code == 200
         content = html_parser.content_as_text(response.data)
         assert f"Statut du dossier DMS Adage : {format_dms_status(state)}" in content
         assert f"{label} : " + (getattr(collectiveDmsApplication, dateKey)).strftime("%d/%m/%Y") in content
+
+    def test_get_venue_with_provider(self, authenticated_client, random_venue):
+        venue_provider = providers_factories.AllocineVenueProviderFactory(
+            venue=random_venue, lastSyncDate=datetime.utcnow() - timedelta(hours=5)
+        )
+        venue_id = random_venue.id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+        assert "Provider : Allociné" in content
+        assert f"Dernière synchronisation : {venue_provider.lastSyncDate.strftime('%d/%m/%Y à ')}" in content
 
     def test_get_virtual_venue(self, authenticated_client):
         venue = offerers_factories.VirtualVenueFactory()
