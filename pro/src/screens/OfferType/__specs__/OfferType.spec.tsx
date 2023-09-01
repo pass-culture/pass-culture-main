@@ -137,7 +137,7 @@ describe('screens:OfferIndividual::OfferType', () => {
     )
     await userEvent.click(
       screen.getByRole('radio', {
-        name: 'Une offre réservable Cette offre a une date et un prix. Vous pouvez choisir de la rendre visible par tous les établissements scolaires ou par un seul.',
+        name: 'Une offre réservable Cette offre a une date et un prix. Elle doit être associée à un établissement scolaire avec lequel vous avez préalablement échangé.',
       })
     )
     await userEvent.click(
@@ -313,7 +313,7 @@ describe('screens:OfferIndividual::OfferType', () => {
 
     await userEvent.click(
       screen.getByRole('radio', {
-        name: 'Une offre réservable Cette offre a une date et un prix. Vous pouvez choisir de la rendre visible par tous les établissements scolaires ou par un seul.',
+        name: 'Une offre réservable Cette offre a une date et un prix. Elle doit être associée à un établissement scolaire avec lequel vous avez préalablement échangé.',
       })
     )
 
@@ -356,7 +356,7 @@ describe('screens:OfferIndividual::OfferType', () => {
 
     await userEvent.click(
       screen.getByRole('radio', {
-        name: 'Une offre réservable Cette offre a une date et un prix. Vous pouvez choisir de la rendre visible par tous les établissements scolaires ou par un seul.',
+        name: 'Une offre réservable Cette offre a une date et un prix. Elle doit être associée à un établissement scolaire avec lequel vous avez préalablement échangé.',
       })
     )
 

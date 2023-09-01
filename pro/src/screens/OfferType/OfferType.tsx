@@ -233,7 +233,7 @@ const OfferType = (): JSX.Element => {
                         COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE
                       }
                       label="Une offre réservable"
-                      description="Cette offre a une date et un prix. Vous pouvez choisir de la rendre visible par tous les établissements scolaires ou par un seul."
+                      description="Cette offre a une date et un prix. Elle doit être associée à un établissement scolaire avec lequel vous avez préalablement échangé."
                       onChange={handleChange}
                       value={COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE}
                     />
