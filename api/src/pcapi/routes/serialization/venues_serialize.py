@@ -153,8 +153,8 @@ class GetVenueManagingOffererResponseModel(BaseModel):
 
 
 class BannerMetaModel(BaseModel):
-    image_credit: base.VenueImageCredit | None
-    original_image_url: str | None
+    image_credit: base.VenueImageCredit | None = None
+    original_image_url: str | None = None
     crop_params: CropParams = CropParams()
 
     @validator("crop_params", pre=True)
@@ -450,7 +450,7 @@ class VenueBannerContentModel(BaseModel):
         cls.validate_request(request)
 
         file = request.files["banner"]
-        return VenueBannerContentModel(  # type: ignore [call-arg]
+        return VenueBannerContentModel(
             content=file.read(VENUE_BANNER_MAX_SIZE),
             image_credit=request.args.get("image_credit"),
             x_crop_percent=request.args.get("x_crop_percent"),
