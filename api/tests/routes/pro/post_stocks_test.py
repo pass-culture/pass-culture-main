@@ -542,6 +542,33 @@ class Returns201Test:
         assert created_stock.price == 20
         assert created_stock.bookingLimitDatetime is None
 
+    @pytest.mark.parametrize("subcategoryId", offers_models.Stock.AUTOMATICALLY_USED_SUBCATEGORIES)
+    def should_show_as_ongoing_when_stock_is_no_longer_free_for_automatically_used_subcategories(
+        self, client, subcategoryId
+    ):
+        offer = offers_factories.ThingOfferFactory(subcategoryId=subcategoryId)
+        existing_stock = offers_factories.StockFactory(offer=offer, price=0)
+        booking = bookings_factories.UsedBookingFactory(stock=existing_stock)
+
+        offerers_factories.UserOffererFactory(
+            user__email="userofferer@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_data = {
+            "offerId": offer.id,
+            "stocks": [{"id": existing_stock.id, "price": 20}],
+        }
+
+        response = client.with_session_auth("userofferer@example.com").post("/stocks/bulk/", json=stock_data)
+        assert response.status_code == 201
+
+        response = client.with_token(booking.user.email).get("/native/v1/bookings")
+        assert response.status_code == 200
+        assert response.json["ongoing_bookings"][0]["id"] == booking.id
+        assert not response.json["ended_bookings"]
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:

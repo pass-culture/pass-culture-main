@@ -74,7 +74,7 @@ def _is_ended_booking(booking: Booking) -> bool:
         # consider future events as "ongoing" even if they are used
         return False
 
-    if (booking.stock.canHaveActivationCodes and booking.activationCode) or booking.stock.is_automatically_used:
+    if (booking.stock.canHaveActivationCodes and booking.activationCode) or booking.display_even_if_used:
         # consider digital bookings and free offer from defined subcategories as special: is_used should be true anyway so
         # let's use displayAsEnded
         return booking.displayAsEnded  # type: ignore [return-value]
