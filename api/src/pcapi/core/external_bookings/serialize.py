@@ -60,8 +60,8 @@ class ExternalEventBookingRequest(pydantic.BaseModel):
 
 
 class ExternalEventTicket(pydantic.BaseModel):
-    barcode: str
-    seat: str | None
+    barcode: str = pydantic.Field(max_length=100)
+    seat: str | None = pydantic.Field(max_length=100)
 
 
 class ExternalEventBookingResponse(pydantic.BaseModel):
