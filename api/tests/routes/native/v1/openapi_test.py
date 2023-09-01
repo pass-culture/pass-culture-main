@@ -1672,6 +1672,10 @@ def test_public_api(client):
                             "items": {"$ref": "#/components/schemas/IdentityCheckMethod"},
                             "type": "array",
                         },
+                        "maintenancePageType": {
+                            "anyOf": [{"$ref": "#/components/schemas/MaintenancePageType"}],
+                            "nullable": True,
+                        },
                         "errorMessage": {"nullable": True, "title": "Errormessage", "type": "string"},
                         "subscriptionStepsToDisplay": {
                             "items": {"$ref": "#/components/schemas/SubscriptionStepDetailsResponse"},

@@ -663,6 +663,63 @@ class StepperTest:
             self.get_step("honor_statement_step", SubscriptionStepCompletionState.DISABLED.value),
         ]
 
+    @override_features(
+        ENABLE_EDUCONNECT_AUTHENTICATION=False,
+        ENABLE_UBBLE=False,
+        ALLOW_IDCHECK_UNDERAGE_REGISTRATION=False,
+        ALLOW_IDCHECK_REGISTRATION=False,
+        ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18=False,
+        ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE=False,
+    )
+    @pytest.mark.parametrize("age", [15, 16, 17, 18])
+    def should_contain_maintenance_page_type_without_dms(self, client, age):
+        user = users_factories.BaseUserFactory(age=age)
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/subscription/stepper")
+
+        assert response.status_code == 200
+        assert response.json["allowedIdentityCheckMethods"] == []
+        assert response.json["maintenancePageType"] == "without-dms"
+
+    @override_features(
+        ENABLE_EDUCONNECT_AUTHENTICATION=False,
+        ENABLE_UBBLE=False,
+        ALLOW_IDCHECK_UNDERAGE_REGISTRATION=False,
+        ALLOW_IDCHECK_REGISTRATION=False,
+        ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18=True,
+        ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE=True,
+    )
+    @pytest.mark.parametrize("age", [15, 16, 17, 18])
+    def should_contain_maintenance_page_type_with_dms(self, client, age):
+        user = users_factories.BaseUserFactory(age=age)
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/subscription/stepper")
+
+        assert response.status_code == 200
+        assert response.json["allowedIdentityCheckMethods"] == []
+        assert response.json["maintenancePageType"] == "with-dms"
+
+    @override_features(
+        ENABLE_EDUCONNECT_AUTHENTICATION=False,
+        ENABLE_UBBLE=True,
+        ALLOW_IDCHECK_UNDERAGE_REGISTRATION=True,
+        ALLOW_IDCHECK_REGISTRATION=True,
+        ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18=False,
+        ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE=False,
+    )
+    @pytest.mark.parametrize("age", [15, 16, 17, 18])
+    def should_not_contain_maintenance_page_type(self, client, age):
+        user = users_factories.BaseUserFactory(age=age)
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/subscription/stepper")
+
+        assert response.status_code == 200
+        assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
+        assert response.json["maintenancePageType"] is None
+
     @pytest.mark.parametrize(
         "error_code,expected_subtitle",
         [
