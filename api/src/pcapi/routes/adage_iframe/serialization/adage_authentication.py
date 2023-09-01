@@ -29,14 +29,14 @@ class AuthenticatedInformation(BaseModel):
 
 class AuthenticatedResponse(BaseModel):
     role: AdageFrontRoles
-    uai: str | None
-    departmentCode: str | None
-    institutionName: str | None
-    institutionCity: str | None
-    email: str | None
-    preferences: RedactorPreferences | None
-    lat: float | None
-    lon: float | None
+    uai: str | None = None
+    departmentCode: str | None = None
+    institutionName: str | None = None
+    institutionCity: str | None = None
+    email: str | None = None
+    preferences: RedactorPreferences | None = None
+    lat: float | None = None
+    lon: float | None = None
 
     class Config:
         use_enum_values = True

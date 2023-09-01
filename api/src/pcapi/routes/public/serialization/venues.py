@@ -48,7 +48,7 @@ class VenueResponse(serialization.ConfiguredBaseModel):
 
     @classmethod
     def build_model(cls, venue: offerers_models.Venue) -> "VenueResponse":
-        return cls(
+        return cls(  # type: ignore [call-arg]
             comment=venue.comment,
             dateCreated=venue.dateCreated,
             id=venue.id,

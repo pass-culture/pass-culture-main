@@ -200,7 +200,7 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
                 raise ValueError(f"Barcode {barcode} contains one or more invalid char (only digit allowed)")
             barcodes_int.append(int(barcode))
 
-        cancel_body = cds_serializers.CancelBookingCDS(barcodes=barcodes_int, paiement_type_id=paiement_type_id)
+        cancel_body = cds_serializers.CancelBookingCDS(barcodes=barcodes_int, paiement_type_id=paiement_type_id)  # type: ignore [call-arg]
         api_response = put_resource(self.api_url, self.account_id, self.token, ResourceCDS.CANCEL_BOOKING, cancel_body)
 
         if api_response:
@@ -228,7 +228,7 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
         ticket_sale_collection = self._create_ticket_sale_dict(show, quantity, screen, show_voucher_type)
         payement_collection = self._create_transaction_payment(quantity, show_voucher_type)
 
-        create_transaction_body = cds_serializers.CreateTransactionBodyCDS(
+        create_transaction_body = cds_serializers.CreateTransactionBodyCDS(  # type: ignore [call-arg]
             cinema_id=self.cinema_id,
             is_cancelled=False,
             transaction_date=datetime.datetime.utcnow().strftime(CDS_DATE_FORMAT),
@@ -279,7 +279,7 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
 
         ticket_sale_list = []
         for i in range(booking_quantity):
-            ticket_sale = cds_serializers.TicketSaleCDS(
+            ticket_sale = cds_serializers.TicketSaleCDS(  # type: ignore [call-arg]
                 id=(i + 1) * -1,
                 cinema_id=self.cinema_id,
                 operation_date=datetime.datetime.utcnow().strftime(CDS_DATE_FORMAT),
@@ -304,7 +304,7 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
         assert show_voucher_type.tariff
         payement_collection = []
         for i in range(booking_quantity):
-            payment = cds_serializers.TransactionPayementCDS(
+            payment = cds_serializers.TransactionPayementCDS(  # type: ignore [call-arg]
                 id=(i + 1) * -1,
                 amount=show_voucher_type.tariff.price,
                 payement_type=cds_serializers.IdObjectCDS(id=payment_type.id),

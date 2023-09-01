@@ -364,13 +364,13 @@ def _create_profile_completion_fraud_check_from_dms(
         user,
         eligibility,
         fraud_models.ProfileCompletionContent(
-            activity=activity,
+            activity=activity,  # type: ignore [arg-type]
             address=address,
-            city=city,
+            city=city,  # type: ignore [arg-type]
             first_name=first_name,
             last_name=last_name,
             origin=f"Completed in DMS application {application_id}",
-            postal_code=postal_code,
+            postal_code=postal_code,  # type: ignore [arg-type]
             school_type=None,
         ),
     )

@@ -27,10 +27,10 @@ v2_prefixed_public_api_schema = ExtendedSpecTree(
     security_schemes=[
         spectree.SecurityScheme(
             name=users_authentifications.API_KEY_AUTH_NAME,
-            data={"type": "http", "scheme": "bearer", "description": "Api key issued by passculture"},
+            data={"type": "http", "scheme": "bearer", "description": "Api key issued by passculture"},  # type: ignore [arg-type]
         ),
         spectree.SecurityScheme(
-            name=users_authentifications.COOKIE_AUTH_NAME, data={"type": "apiKey", "in": "cookie", "name": "session"}
+            name=users_authentifications.COOKIE_AUTH_NAME, data={"type": "apiKey", "in": "cookie", "name": "session"}  # type: ignore [arg-type]
         ),
     ],
     humanize_operation_id=True,

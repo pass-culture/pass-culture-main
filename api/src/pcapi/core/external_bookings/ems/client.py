@@ -25,8 +25,8 @@ class EMSClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             num_cine=self.cinema_id,
             id_seance=str(show_id),
             qte_place=booking.quantity,
-            pass_culture_price=booking.amount,
-            total_price=booking.total_amount,
+            pass_culture_price=booking.amount,  # type: ignore [arg-type]
+            total_price=booking.total_amount,  # type: ignore [arg-type]
             email=beneficiary.email,
             num_pass_culture=str(beneficiary.id),
         )
