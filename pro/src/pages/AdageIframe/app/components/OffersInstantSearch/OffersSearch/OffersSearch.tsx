@@ -176,7 +176,9 @@ export const OffersSearch = ({
         )}
         <Autocomplete
           initialQuery={venueFilter?.publicName || venueFilter?.name || ''}
-          placeholder={'Rechercher : nom de l’offre, partenaire culturel'}
+          placeholder={
+            'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
+          }
         />
         <div ref={offerFilterRef}>
           <OfferFilters

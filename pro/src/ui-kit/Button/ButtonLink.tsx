@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { MouseEventHandler } from 'react'
+import React, { FocusEventHandler, MouseEventHandler } from 'react'
 import { Link } from 'react-router-dom'
 
 import fullRightIcon from 'icons/full-right.svg'
@@ -24,6 +24,7 @@ export interface ButtonLinkProps extends SharedButtonProps {
   className?: string
   isDisabled?: boolean
   onClick?: MouseEventHandler<HTMLAnchorElement>
+  onBlur?: FocusEventHandler<HTMLAnchorElement>
   svgAlt?: string
 }
 
@@ -37,6 +38,7 @@ const ButtonLink = ({
   link,
   iconPosition = IconPositionEnum.LEFT,
   svgAlt = '',
+  onBlur,
 }: ButtonLinkProps): JSX.Element => {
   const classNames = cn(
     styles['button'],
@@ -111,6 +113,7 @@ const ButtonLink = ({
       className={classNames}
       href={absoluteUrl}
       onClick={callback}
+      onBlur={e => onBlur?.(e)}
       {...disabled}
       {...linkProps}
     >
@@ -120,6 +123,7 @@ const ButtonLink = ({
     /* istanbul ignore next: graphic variation */ <Link
       className={classNames}
       onClick={callback}
+      onBlur={e => onBlur?.(e)}
       to={absoluteUrl}
       {...disabled}
       aria-label={linkProps['aria-label']}
