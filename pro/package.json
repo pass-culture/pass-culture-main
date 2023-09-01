@@ -32,7 +32,7 @@
   "dependencies": {
     "@algolia/autocomplete-js": "^1.11.0",
     "@firebase/analytics": "^0.10.0",
-    "@firebase/app": "^0.9.17",
+    "@firebase/app": "^0.9.18",
     "@firebase/remote-config": "0.4.4",
     "@reach/dialog": "^0.18.0",
     "@reach/menu-button": "^0.18.0",
