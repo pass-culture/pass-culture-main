@@ -33,6 +33,7 @@ from pcapi.core.bookings.constants import BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.bookings.constants import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.categories import subcategories
 import pcapi.core.finance.models as finance_models
+from pcapi.core.offers import models as offers_models
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
@@ -41,7 +42,6 @@ from pcapi.utils.human_ids import humanize
 
 if TYPE_CHECKING:
     from pcapi.core.offerers import models as offerers_models
-    from pcapi.core.offers import models as offers_models
     from pcapi.core.users import models as users_models
 
 
@@ -315,6 +315,12 @@ class Booking(PcObject, Base, Model):
             return float("{:.2f}".format((-self.pricing.amount / self.amount)))
         except (decimal.DivisionByZero, decimal.InvalidOperation):  # raised when both values are 0
             return None
+
+    @property
+    def display_even_if_used(self) -> bool:
+        return (
+            self.stock.offer.subcategoryId in offers_models.Stock.AUTOMATICALLY_USED_SUBCATEGORIES and self.amount == 0
+        )
 
 
 Booking.trig_ddl = f"""
