@@ -1,44 +1,155 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_forms.scss" as forms;
 @use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
 
-.aa-inputwrapper {
-  position: relative;
+.form {
   display: flex;
-  align-items: center;
   justify-content: center;
+
+  &-container {
+    width: 100%;
+    max-width: 53.5rem;
+    position: relative;
+
+    &-wrapper {
+      min-height: rem.torem(48px);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      padding: 0 rem.torem(16px);
+    }
+
+    &-input {
+      position: relative;
+      width: 100%;
+    }
+  }
+
+  &-input {
+    @include forms.input-theme;
+
+    position: relative;
+    min-height: rem.torem(48px);
+    border-radius: rem.torem(24px);
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    padding-left: rem.torem(36px);
+
+    &-span {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: rem.torem(48px);
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  &-search-button {
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+    min-height: rem.torem(48px);
+  }
 }
 
-.aa-input {
-  @include forms.input-theme;
-
-  position: relative;
-  min-height: rem.torem(48px);
-  border-radius: rem.torem(24px);
-  border-bottom-right-radius: 0;
-  border-top-right-radius: 0;
-  padding-left: rem.torem(36px);
-}
-
-.aa-span {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: rem.torem(48px);
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.aa-searchbutton {
-  border-bottom-left-radius: 0;
-  border-top-left-radius: 0;
-  min-height: rem.torem(48px);
-}
-
-.aa-inputcontainer {
-  position: relative;
+.dialog {
+  border: none;
   width: 100%;
-  max-width: 51.5rem;
+  background-color: white;
+  position: absolute;
+  top: rem.torem(-16px);
+  right: 0;
+  border-radius: rem.torem(8px);
+  z-index: 1;
+  bottom: rem.torem(64px);
+  padding-top: rem.torem(40px);
+
+  &-panel {
+    margin-top: rem.torem(24px);
+    padding: rem.torem(24px) rem.torem(40px);
+
+    &-hide {
+      display: none;
+    }
+
+    &-recent-search {
+      &-text {
+        @include fonts.caption;
+
+        color: colors.$grey-dark;
+        display: flex;
+        align-items: center;
+        margin-bottom: rem.torem(18px);
+      
+        &-clean {
+          @include fonts.caption;
+      
+          margin-left: rem.torem(8px);
+          text-decoration: none;
+        }
+      
+        svg {
+          width: rem.torem(16px) !important;
+          margin-right: rem.torem(4px) !important;
+        }
+      }
+
+      &-item {
+        @include fonts.body;
+  
+        display: flex;
+        gap: rem.torem(8px);
+        align-items: center;
+        cursor: pointer;
+        word-break: break-word;
+        width: 100%;
+        padding: rem.torem(8px);
+
+        &:hover, &:focus-within, &[aria-selected="true"] {
+          background-color: colors.$grey-light;
+        }
+      
+        svg {
+          width: rem.torem(16px) !important;
+        }
+      }
+    }
+  }
+}
+
+.backdrop {
+  z-index: 1;
+  position: fixed;
+  inset: 0;
+  background-color: rgb(22 22 23 / 16%);
+}
+
+.panel-footer {
+  @include fonts.caption;
+
+  padding: rem.torem(12px) rem.torem(16px);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  border-top: rem.torem(1px) solid colors.$border-grey-color;
+
+  &-link {
+    @include fonts.caption;
+
+    margin-left: rem.torem(8px);
+  }
+
+  svg {
+    max-width: rem.torem(16px);
+    margin-right: rem.torem(4px) !important
+  }
+
+  &-no-result {
+    margin-top: rem.torem(40px);
+  }
 }
