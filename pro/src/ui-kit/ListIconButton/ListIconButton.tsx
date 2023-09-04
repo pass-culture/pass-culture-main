@@ -1,10 +1,11 @@
 /* istanbul ignore file : no need to test styled html tag  */
 import cn from 'classnames'
-import React, { useId } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import Tooltip from 'ui-kit/Tooltip'
+import { useTooltipProps } from 'ui-kit/Tooltip/useTooltipProps'
 
 import styles from './ListIconButton.module.scss'
 
@@ -13,7 +14,6 @@ export interface ListIconButtonProps
   icon: string
   innerRef?: React.RefObject<HTMLButtonElement>
   className?: string
-  hasTooltip?: boolean
   onClick?: () => void
   url?: string
   isExternal?: boolean
@@ -26,13 +26,12 @@ const ListIconButton = ({
   className,
   icon,
   innerRef,
-  hasTooltip,
   onClick,
   url,
   isExternal = true,
   ...buttonAttrs
 }: ListIconButtonProps): JSX.Element => {
-  const tooltipId = useId()
+  const { isTooltipHidden, ...tooltipProps } = useTooltipProps(buttonAttrs)
 
   const svgicon = (
     <SvgIcon
@@ -42,14 +41,17 @@ const ListIconButton = ({
       width={LIST_ICON_SIZE}
     />
   )
-  const content =
-    hasTooltip && !buttonAttrs?.disabled ? (
-      <Tooltip id={tooltipId} content={children} className={styles['tooltip']}>
-        {svgicon}
-      </Tooltip>
-    ) : (
-      svgicon
-    )
+  const content = !buttonAttrs?.disabled ? (
+    <Tooltip
+      content={children}
+      className={styles['tooltip']}
+      visuallyHidden={isTooltipHidden}
+    >
+      {svgicon}
+    </Tooltip>
+  ) : (
+    svgicon
+  )
 
   const button = (
     <button
@@ -58,17 +60,28 @@ const ListIconButton = ({
       {...buttonAttrs}
       onClick={onClick}
       type="button"
+      {...tooltipProps}
     >
       {content}
     </button>
   )
 
   const link = isExternal ? (
-    <a className={cn(styles['button'], className)} href={url} onClick={onClick}>
+    <a
+      className={cn(styles['button'], className)}
+      href={url}
+      onClick={onClick}
+      {...tooltipProps}
+    >
       {content}
     </a>
   ) : (
-    <Link className={className} onClick={onClick} to={`${url}`}>
+    <Link
+      className={className}
+      onClick={onClick}
+      to={`${url}`}
+      {...tooltipProps}
+    >
       {content}
     </Link>
   )

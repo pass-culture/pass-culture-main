@@ -12,7 +12,7 @@ const EditStocksCell = ({
   offer: Offer
 }) => {
   return (
-    <ListIconButton url={editionStockLink} icon={fullStockIcon} hasTooltip>
+    <ListIconButton url={editionStockLink} icon={fullStockIcon}>
       {offer.isEvent ? `Dates et capacités` : `Stocks`}
     </ListIconButton>
   )
