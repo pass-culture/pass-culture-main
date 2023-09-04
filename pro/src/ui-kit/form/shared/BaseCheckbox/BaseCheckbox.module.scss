@@ -94,7 +94,7 @@
         border-color: colors.$primary;
       }
 
-      &:focus {
+      &:focus-visible {
         background-color: colors.$primary-dark;
         border-color: colors.$primary-dark;
       }
@@ -118,7 +118,7 @@
         border-color: colors.$primary;
       }
 
-      &:focus {
+      &:focus-visible {
         border-color: colors.$primary-dark;
       }
 
@@ -131,6 +131,12 @@
         border-color: forms.$input-border-color-error;
       }
     }
+  }
+
+  &:focus-within {
+    outline: rem.torem(1px) solid colors.$input-text-color;
+    outline-offset: rem.torem(4px);
+    border-radius: rem.torem(4px);
   }
 }
 
