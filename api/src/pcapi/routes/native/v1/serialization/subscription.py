@@ -147,7 +147,6 @@ class ActivityResponseModel(BaseModel):
     id: profile_options.ACTIVITY_ID_ENUM
     label: str
     description: str | None
-    associated_school_types_ids: list[profile_options.SCHOOL_TYPE_ID_ENUM] | None
 
     class Config:
         alias_generator = to_camel
