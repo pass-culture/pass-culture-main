@@ -425,6 +425,111 @@ class PostBookingTest:
         assert response.status_code == 400
         assert response.json["code"] == "PROVIDER_STOCK_SOLD_OUT"
 
+    @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
+    @freeze_time("2022-10-12 17:09:25")
+    def test_bookings_with_external_event_api_return_less_tickets_than_quantity(self, client, requests_mock):
+        external_booking_url = "https://book_my_offer.com/confirm"
+        cancel_booking_url = "https://book_my_offer.com/cancel"
+        users_factories.BeneficiaryGrant18Factory(
+            email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101", deposit__amount=500
+        )
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider",
+            localClass=None,
+            bookingExternalUrl=external_booking_url,
+            cancelExternalUrl=cancel_booking_url,
+        )
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = EventStockFactory(
+            lastProvider=provider,
+            offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
+            offer__lastProvider=provider,
+            offer__withdrawalType=offer_models.WithdrawalTypeEnum.IN_APP,
+            offer__isDuo=True,
+            dnBookedQuantity=12,
+            quantity=15,
+            idAtProviders="",
+        )
+
+        requests_mock.post(
+            external_booking_url,
+            json={"tickets": [{"barcode": "12123932898127", "seat": "A12"}], "remainingQuantity": 100},
+            status_code=201,
+        )
+
+        requests_mock.post(
+            cancel_booking_url,
+            json={"remainingQuantity": 50},
+            status_code=200,
+        )
+
+        response = client.with_token(self.identifier).post(
+            "/native/v1/bookings", json={"stockId": stock.id, "quantity": 2}
+        )
+
+        assert response.status_code == 400
+        assert response.json == {
+            "code": "EXTERNAL_EVENT_PROVIDER_BOOKING_FAILED",
+            "message": "External booking failed with status code 201 but only one ticket "
+            "was returned for duo reservation",
+        }
+        assert stock.quantity == 15
+        assert len(bookings_models.ExternalBooking.query.all()) == 0
+        assert len(bookings_models.Booking.query.all()) == 0
+
+    @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
+    @freeze_time("2022-10-12 17:09:25")
+    def test_bookings_with_external_event_api_return_more_tickets_than_quantity(self, client, requests_mock):
+        external_booking_url = "https://book_my_offer.com/confirm"
+        cancel_booking_url = "https://book_my_offer.com/cancel"
+        users_factories.BeneficiaryGrant18Factory(
+            email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101", deposit__amount=500
+        )
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider",
+            localClass=None,
+            bookingExternalUrl=external_booking_url,
+            cancelExternalUrl=cancel_booking_url,
+        )
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = EventStockFactory(
+            lastProvider=provider,
+            offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
+            offer__lastProvider=provider,
+            offer__withdrawalType=offer_models.WithdrawalTypeEnum.IN_APP,
+            dnBookedQuantity=10,
+            idAtProviders="",
+        )
+
+        requests_mock.post(
+            external_booking_url,
+            json={
+                "tickets": [{"barcode": "12123932898127", "seat": "A12"}, {"barcode": "12123932898117", "seat": "A13"}],
+                "remainingQuantity": 50,
+            },
+            status_code=201,
+        )
+
+        requests_mock.post(
+            cancel_booking_url,
+            json={"remainingQuantity": 50},
+            status_code=200,
+        )
+
+        response = client.with_token(self.identifier).post(
+            "/native/v1/bookings", json={"stockId": stock.id, "quantity": 1}
+        )
+
+        assert response.status_code == 200
+        external_bookings = bookings_models.ExternalBooking.query.one()
+        assert external_bookings.bookingId == response.json["bookingId"]
+        assert stock.quantity == 50 + 11  # remainingQuantity + dnBookedQuantity after new booking
+        assert stock.dnBookedQuantity == 11
+
+        # Fixme: the order is random which is why we use 'in' instead of ==
+        assert external_bookings.barcode in ["12123932898127", "12123932898117"]
+        assert external_bookings.seat in ["A12", "A13"]
+
 
 class GetBookingsTest:
     identifier = "pascal.ture@example.com"
