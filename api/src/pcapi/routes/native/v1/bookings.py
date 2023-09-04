@@ -82,13 +82,18 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
             extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
         )
         raise ApiErrors({"code": "CINEMA_PROVIDER_INACTIVE"})
-    except external_bookings_exceptions.ExternalBookingException as err:
+    except external_bookings_exceptions.ExternalBookingException as error:
+        if providers_repository.is_event_external_ticket_applicable(stock.offer):
+            logger.info(
+                "Could not book offer: Error when booking external ticket. Message: %s",
+                str(error),
+                extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
+            )
+            raise ApiErrors({"code": "EXTERNAL_EVENT_PROVIDER_BOOKING_FAILED", "message": str(error)})
         logger.info(
             "Could not book offer: Error when booking external ticket",
             extra={"offer_id": stock.offer.id, "provider_id": stock.offer.lastProviderId},
         )
-        if providers_repository.is_event_external_ticket_applicable(stock.offer):
-            raise ApiErrors({"code": "EXTERNAL_EVENT_PROVIDER_BOOKING_FAILED", "message": str(err)})
         raise ApiErrors({"code": "CINEMA_PROVIDER_BOOKING_FAILED"})
     except external_bookings_exceptions.ExternalBookingSoldOutError:
         offers_api.edit_stock(stock, quantity=stock.dnBookedQuantity, editing_provider=stock.offer.lastProvider)
