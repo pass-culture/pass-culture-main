@@ -11,6 +11,10 @@ interface SkipLinksProps {
 }
 
 const SkipLinks = ({ displayMenu = false }: SkipLinksProps): JSX.Element => {
+  const buttons: { anchor: string; label: string }[] = [
+    { anchor: '#content', label: 'Aller au contenu' },
+  ].concat(displayMenu ? { anchor: '#header-navigation', label: 'Menu' } : [])
+
   return (
     <>
       <a
@@ -19,9 +23,29 @@ const SkipLinks = ({ displayMenu = false }: SkipLinksProps): JSX.Element => {
         id="top-page"
         className={styles['input-focus-top-page']}
       />
-      <nav className={styles['skip-links']}>
-        <ul className={styles['skip-list']}>
-          <li>
+      <nav aria-label="Accès rapide" className={styles['skip-links']}>
+        {buttons.length > 1 ? (
+          <ul className={styles['skip-list']}>
+            {buttons.map(button => {
+              return (
+                <li key={button.anchor}>
+                  <ButtonLink
+                    link={{
+                      to: button.anchor,
+                      isExternal: true,
+                    }}
+                    icon={fullNextIcon}
+                    className={styles['skip-list-button']}
+                    variant={ButtonVariant.QUATERNARY}
+                  >
+                    {button.label}
+                  </ButtonLink>
+                </li>
+              )
+            })}
+          </ul>
+        ) : (
+          <div className={styles['skip-list']}>
             <ButtonLink
               link={{
                 to: '#content',
@@ -33,13 +57,8 @@ const SkipLinks = ({ displayMenu = false }: SkipLinksProps): JSX.Element => {
             >
               Aller au contenu
             </ButtonLink>
-          </li>
-          {displayMenu && (
-            <li>
-              <a href="#header-navigation">Menu</a>
-            </li>
-          )}
-        </ul>
+          </div>
+        )}
       </nav>
     </>
   )
