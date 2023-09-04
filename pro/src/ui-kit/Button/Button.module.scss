@@ -44,13 +44,17 @@
     }
   }
 
+  &:focus {
+    outline: rem.torem(1px) solid colors.$input-text-color;
+    outline-offset: rem.torem(2px);
+  }
+
   &-primary {
     color: colors.$white;
     background-color: colors.$primary;
     border-color: colors.$primary;
 
-    &:hover,
-    &:focus {
+    &:hover {
       background-color: colors.$primary-dark;
       border-color: colors.$primary-dark;
     }
@@ -71,8 +75,7 @@
     background-color: colors.$white;
     border-color: colors.$primary;
 
-    &:hover,
-    &:focus {
+    &:hover {
       color: colors.$white;
       background-color: colors.$primary-dark;
       border-color: colors.$primary-dark;
@@ -106,16 +109,16 @@
     @include fonts.button;
 
     color: colors.$black;
-    
+
     &-pink {
       color: colors.$primary;
     }
 
     background-color: transparent;
     border-color: transparent;
+    border-radius: rem.torem(4px);
     padding: 0;
     border: none;
-    border-radius: initial;
     height: auto;
 
     &:hover,
@@ -156,8 +159,6 @@
   &-quaternary {
     @include fonts.caption;
 
-    padding: 0 rem.torem(4px);
-    border-radius: rem.torem(4px);
     margin-top: rem.torem(6px);
     margin-bottom: rem.torem(6px);
     color: colors.$black;
@@ -181,8 +182,6 @@
     }
 
     &:focus {
-      outline: none;
-      border: rem.torem(1px) solid colors.$black;
       padding: rem.torem(2px) rem.torem(4px);
     }
   }
@@ -205,9 +204,7 @@
     &:focus,
     &:focus-visible {
       &:not(.button-disabled) {
-        outline: 0;
         position: relative;
-        border-color: colors.$black;
 
         &::before {
           display: block;
