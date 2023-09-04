@@ -1113,16 +1113,8 @@ class ProfileOptionsTypeTest:
         assert response.status_code == 200
         assert response.json == {
             "activities": [
-                {
-                    "id": "MIDDLE_SCHOOL_STUDENT",
-                    "label": "Collégien",
-                    "description": None,
-                },
-                {
-                    "id": "HIGH_SCHOOL_STUDENT",
-                    "label": "Lycéen",
-                    "description": None,
-                },
+                {"id": "MIDDLE_SCHOOL_STUDENT", "label": "Collégien", "description": None},
+                {"id": "HIGH_SCHOOL_STUDENT", "label": "Lycéen", "description": None},
                 {"id": "STUDENT", "label": "Étudiant", "description": None},
                 {"id": "EMPLOYEE", "label": "Employé", "description": None},
                 {"id": "APPRENTICE", "label": "Apprenti", "description": None},
@@ -1143,25 +1135,7 @@ class ProfileOptionsTypeTest:
                     "description": "En recherche d'emploi",
                 },
             ],
-            "school_types": [
-                {"id": "AGRICULTURAL_HIGH_SCHOOL", "description": None, "label": "Lycée agricole"},
-                {
-                    "id": "APPRENTICE_FORMATION_CENTER",
-                    "description": None,
-                    "label": "Centre de formation d'apprentis",
-                },
-                {"id": "MILITARY_HIGH_SCHOOL", "description": None, "label": "Lycée militaire"},
-                {
-                    "id": "HOME_OR_REMOTE_SCHOOLING",
-                    "description": "À domicile, CNED, institut de santé, etc.",
-                    "label": "Accompagnement spécialisé",
-                },
-                {"id": "NAVAL_HIGH_SCHOOL", "description": None, "label": "Lycée maritime"},
-                {"id": "PRIVATE_HIGH_SCHOOL", "description": None, "label": "Lycée privé"},
-                {"id": "PRIVATE_SECONDARY_SCHOOL", "description": None, "label": "Collège privé"},
-                {"id": "PUBLIC_HIGH_SCHOOL", "description": None, "label": "Lycée public"},
-                {"id": "PUBLIC_SECONDARY_SCHOOL", "description": None, "label": "Collège public"},
-            ],
+            "school_types": [],
         }
 
     @pytest.mark.parametrize("age", (15, 16, 17, 18))
