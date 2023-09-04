@@ -56,6 +56,7 @@
               <th scope="col">ID offre</th>
               <th scope="col">Montant</th>
               <th scope="col">Statut</th>
+              <th scope="col">Événement comptable</th>
               <th scope="col">Date de réservation</th>
               <th scope="col">Date de l'événement</th>
               <th scope="col">Structure</th>
@@ -167,6 +168,19 @@
                 <td>{{ collective_offer.id }}</td>
                 <td>{{ collective_booking.total_amount | format_amount }}</td>
                 <td>{{ collective_booking.status | format_booking_status(with_badge=True) | safe }}</td>
+                <td class="text-center">
+                  {% if True %}
+                    {% for booking_incident in collective_booking.incidents %}
+                      {% if booking_incident.incident.status.name == "VALIDATED" %}
+                        <a href="{{ url_for('backoffice_v3_web.finance_incident.get_incident', finance_incident_id=booking_incident.incident.id) }}"
+                           class=""><i class="bi bi-exclamation-triangle-fill text-danger fs-3"
+   data-bs-toggle="tooltip"
+   data-bs-placement="top"
+   data-bs-title="Visualiser l'incident"></i></a>
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                </td>
                 <td>{{ collective_booking.dateCreated | format_date_time }}</td>
                 <td>{{ collective_booking.collectiveStock.beginningDatetime | format_date_time }}</td>
                 <td>{{ links.build_offerer_name_to_details_link(collective_booking.offerer) }}</td>

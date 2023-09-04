@@ -102,6 +102,32 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         assert response.status_code == 200
         assert html_parser.count_table_rows(response.data) == 0
 
+    @pytest.mark.parametrize(
+        "incident_status, display_alert",
+        [
+            (finance_models.IncidentStatus.VALIDATED, True),
+            (finance_models.IncidentStatus.CREATED, False),
+            (finance_models.IncidentStatus.CANCELLED, False),
+        ],
+    )
+    def test_display_incident_alert(self, authenticated_client, incident_status, display_alert):
+        collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
+            incidents=[
+                finance_factories.CollectiveBookingFinanceIncidentFactory(
+                    incident=finance_factories.FinanceIncidentFactory(status=incident_status)
+                )
+            ]
+        )
+
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(url_for(self.endpoint, q=collective_booking.id))
+
+        assert response.status_code == 200
+        if display_alert:
+            assert "bi-exclamation-triangle-fill" in str(response.data)
+        else:
+            assert "bi-exclamation-triangle-fill" not in str(response.data)
+
     def test_list_bookings_by_id(self, authenticated_client, collective_bookings):
         # when
         searched_id = str(collective_bookings[1].id)
