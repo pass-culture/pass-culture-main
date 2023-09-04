@@ -67,7 +67,6 @@ const DeleteDraftCell = ({ offer, refreshOffers }: DeleteDraftOffersProps) => {
         onClick={() => setIsConfirmDialogOpen(true)}
         className={styles['button']}
         icon={fullTrashIcon}
-        hasTooltip
       >
         Supprimer
       </ListIconButton>

@@ -21,5 +21,4 @@ export const Default = Template.bind({})
 Default.args = {
   icon: fullTrashIcon,
   children: 'Duplicate',
-  hasTooltip: true,
 }

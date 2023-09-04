@@ -63,7 +63,6 @@ const DuplicateOfferCell = ({
         onClick={handleCreateOfferClick}
         icon={isShowcase ? fullPlusIcon : copyIcon}
         innerRef={buttonRef}
-        hasTooltip
       >
         {isShowcase ? 'Créer une offre réservable' : 'Dupliquer'}
       </ListIconButton>

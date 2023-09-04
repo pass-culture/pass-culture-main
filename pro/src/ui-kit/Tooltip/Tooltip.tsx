@@ -4,22 +4,29 @@ import React, { ReactNode } from 'react'
 import styles from './Tooltip.module.scss'
 
 export interface TooltipProps {
-  id: string // Mandatory, must be linked to the aria-describedby attribute of the child
   content: ReactNode
   children: ReactNode
   className?: string
+  visuallyHidden: boolean
 }
 
 const Tooltip = ({
-  id,
   children,
   content,
   className,
+  visuallyHidden,
 }: TooltipProps): JSX.Element => {
+  // Tooltip should implement onMouseOver onMouseOut onFocus onBlur onKeyDown
+  // on parent to be accessible
   return (
     <div className={cn(styles['tooltip-container'], className)}>
       {children}
-      <div className={styles.tooltip} role="tooltip" id={id}>
+      <div
+        className={cn(styles['tooltip'], {
+          ['visually-hidden']: visuallyHidden,
+        })}
+        role="tooltip"
+      >
         {content}
       </div>
     </div>

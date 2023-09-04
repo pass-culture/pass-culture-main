@@ -42,7 +42,6 @@ const BookingLinkCell = ({
           from: location.pathname,
         })
       }
-      hasTooltip
     >
       Voir la {bookingStatus == 'PENDING' ? 'préréservation' : 'réservation'}
     </ListIconButton>
