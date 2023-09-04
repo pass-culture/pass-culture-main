@@ -15,6 +15,12 @@
 
     a {
       color: colors.$black;
+
+      &:focus-visible {
+        outline: rem.torem(1px) solid colors.$input-text-color;
+        outline-offset: rem.torem(4px);
+        border-radius: rem.torem(4px);
+      }
     }
 
     &.active,
@@ -54,7 +60,7 @@
       margin-left: rem.torem(24px);
 
       a:hover,
-      a:focus {
+      a:focus-visible {
         color: colors.$primary;
       }
 

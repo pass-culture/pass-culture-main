@@ -100,7 +100,7 @@ $number-size: rem.torem(30px);
           .inner {
             box-shadow:
               inset $number-size $number-size $number-size
-              colors.$light-purple-with-transparency,
+                colors.$light-purple-with-transparency,
               0 0 0 rem.torem(4px) colors.$light-purple-with-transparency;
           }
         }
@@ -132,9 +132,9 @@ $number-size: rem.torem(30px);
       .label {
         .inner {
           span {
-            border: solid rem.torem(1px) colors.$accent;
-            border-radius: rem.torem(6px);
-            padding: 0 rem.torem(6px);
+            outline: rem.torem(1px) solid colors.$input-text-color;
+            outline-offset: rem.torem(4px);
+            border-radius: rem.torem(4px);
           }
         }
       }

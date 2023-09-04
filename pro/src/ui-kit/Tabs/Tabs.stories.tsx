@@ -35,3 +35,23 @@ Default.args = {
     },
   ],
 }
+
+export const DefaultWithButton = Template.bind({})
+
+DefaultWithButton.args = {
+  selectedKey: 'individual',
+  tabs: [
+    {
+      label: 'Offres individuelles',
+      onClick: () => {},
+      key: 'individual',
+      icon: strokeUserIcon,
+    },
+    {
+      label: 'Offres collectives',
+      onClick: () => {},
+      key: 'collective',
+      icon: strokeLibraryIcon,
+    },
+  ],
+}
