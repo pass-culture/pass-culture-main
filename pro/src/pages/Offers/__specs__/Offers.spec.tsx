@@ -133,7 +133,7 @@ describe('route Offers', () => {
           await renderOffers(store)
 
           const statusFiltersButton = screen.getByRole('button', {
-            name: 'Statut Afficher ou masquer le filtre par statut',
+            name: /Afficher ou masquer le filtre par statut/,
           })
           expect(statusFiltersButton).toHaveAttribute(
             'aria-controls',
@@ -283,7 +283,7 @@ describe('route Offers', () => {
             // Then
             expect(
               screen.getByRole('button', {
-                name: 'Statut Afficher ou masquer le filtre par statut',
+                name: /Afficher ou masquer le filtre par statut/,
               })
             ).not.toBeDisabled()
             expect(api.listOffers).toHaveBeenLastCalledWith(
@@ -345,7 +345,7 @@ describe('route Offers', () => {
             // Then
             expect(
               screen.getByRole('button', {
-                name: 'Statut Afficher ou masquer le filtre par statut',
+                name: /Afficher ou masquer le filtre par statut/,
               })
             ).not.toBeDisabled()
             expect(api.listOffers).toHaveBeenLastCalledWith(

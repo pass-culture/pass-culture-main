@@ -269,7 +269,7 @@ describe('route CollectiveOffers', () => {
             // Then
             expect(
               screen.getByRole('button', {
-                name: 'Statut Afficher ou masquer le filtre par statut',
+                name: /Afficher ou masquer le filtre par statut/,
               })
             ).not.toBeDisabled()
             expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
@@ -333,7 +333,7 @@ describe('route CollectiveOffers', () => {
             // Then
             expect(
               screen.getByRole('button', {
-                name: 'Statut Afficher ou masquer le filtre par statut',
+                name: /Afficher ou masquer le filtre par statut/,
               })
             ).not.toBeDisabled()
             expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
