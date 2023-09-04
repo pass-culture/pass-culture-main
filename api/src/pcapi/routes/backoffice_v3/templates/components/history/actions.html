@@ -56,6 +56,11 @@
                   </div>
                 {% endfor %}
               {% endif %}
+              {% set linked_incident_id = action.extraData.get('linked_incident_id') %}
+              {% if linked_incident_id and "/finance/incident/" not in request.path %}
+                {% set link = url_for('backoffice_v3_web.finance_incident.get_incident', finance_incident_id=linked_incident_id) %}
+                {% if request.url != link %}<a href="{{ link }}">Voir l'incident #{{ linked_incident_id }}</a>{% endif %}
+              {% endif %}
             {% endif %}
           </td>
           <td>{{ action.authorUser.full_name if action.authorUser else None | empty_string_if_null }}</td>

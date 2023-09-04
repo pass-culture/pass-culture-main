@@ -46,6 +46,8 @@ class ActionType(enum.Enum):
     REMOVE_BLACKLISTED_DOMAIN_NAME = "Suppression d'un nom de domaine banni"
     FINANCE_INCIDENT_CREATED = "Création de l'incident"
     FINANCE_INCIDENT_CANCELLED = "Annulation de l'incident"
+    FINANCE_INCIDENT_VALIDATED = "Validation de l'incident"
+    FINANCE_INCIDENT_USER_RECREDIT = "Compte re-crédité suite à un incident"
 
 
 class ActionHistory(PcObject, Base, Model):

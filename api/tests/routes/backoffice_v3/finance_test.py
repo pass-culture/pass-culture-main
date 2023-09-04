@@ -78,6 +78,24 @@ class GetIncidentCancellationFormTest(GetEndpointHelper):
         assert response.status_code == 200
 
 
+class GetIncidentValidationFormTest(GetEndpointHelper):
+    endpoint = "backoffice_v3_web.finance_incident.get_finance_incident_validation_form"
+    endpoint_kwargs = {"finance_incident_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
+
+    expected_num_queries = 2
+    expected_num_queries += 1  # get incident info
+
+    def test_get_incident_validation_form(self, legit_user, authenticated_client):
+        booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory()
+        url = url_for(self.endpoint, finance_incident_id=booking_incident.incident.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+
+        assert response.status_code == 200
+
+
 class CancelIncidentTest(PostEndpointHelper):
     endpoint = "backoffice_v3_web.finance_incident.cancel_finance_incident"
     endpoint_kwargs = {"finance_incident_id": 1}
@@ -127,6 +145,58 @@ class CancelIncidentTest(PostEndpointHelper):
 
         assert "Impossible d'annuler un incident déjà validé" in html_parser.extract_alert(response.data)
         assert history_models.ActionHistory.query.count() == 0
+
+
+class ValidateIncidentTest(PostEndpointHelper):
+    endpoint = "backoffice_v3_web.finance_incident.validate_finance_incident"
+    endpoint_kwargs = {"finance_incident_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
+
+    def test_validate_incident(self, authenticated_client):
+        booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+            booking__pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED)]
+        )
+
+        response = self.post_to_endpoint(authenticated_client, finance_incident_id=booking_incident.incident.id)
+
+        assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+        assert "L'incident a été validé avec succès." in content
+
+        updated_incident = finance_models.FinanceIncident.query.get(booking_incident.incidentId)
+        assert updated_incident.status == finance_models.IncidentStatus.VALIDATED
+
+        beneficiary_action = history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.user == booking_incident.beneficiary
+        ).first()
+        validation_action = history_models.ActionHistory.query.filter(
+            history_models.ActionHistory.financeIncident == updated_incident
+        ).first()
+
+        assert (
+            validation_action and validation_action.actionType == history_models.ActionType.FINANCE_INCIDENT_VALIDATED
+        )
+        assert (
+            beneficiary_action
+            and beneficiary_action.actionType == history_models.ActionType.FINANCE_INCIDENT_USER_RECREDIT
+        )
+
+    @pytest.mark.parametrize(
+        "initial_status", [finance_models.IncidentStatus.CANCELLED, finance_models.IncidentStatus.VALIDATED]
+    )
+    def test_not_validate_incident(self, authenticated_client, initial_status):
+        finance_incident = finance_factories.FinanceIncidentFactory(status=initial_status)
+
+        response = self.post_to_endpoint(authenticated_client, finance_incident_id=finance_incident.id)
+
+        assert response.status_code == 303
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "L'incident ne peut être validé que s'il est au statut 'créé'."
+        )
+        finance_incident = finance_models.FinanceIncident.query.get(finance_incident.id)
+        assert finance_incident.status == initial_status
 
 
 class GetIncidentTest(GetEndpointHelper):
@@ -284,7 +354,7 @@ class CreateIncidentTest(PostEndpointHelper):
             },
         )
 
-        assert response.status_code == 301
+        assert response.status_code == 303
         assert finance_models.FinanceIncident.query.count() == 1
         assert finance_models.BookingFinanceIncident.query.count() == 1
         booking_finance_incident = finance_models.BookingFinanceIncident.query.first()
@@ -312,7 +382,7 @@ class CreateIncidentTest(PostEndpointHelper):
             },
         )
 
-        assert response.status_code == 301
+        assert response.status_code == 303
         assert finance_models.FinanceIncident.query.count() == 1  # didn't create new incident
 
         assert history_models.ActionHistory.query.count() == 0
@@ -342,7 +412,7 @@ class CreateIncidentTest(PostEndpointHelper):
             },
         )
 
-        assert response.status_code == 301
+        assert response.status_code == 303
         assert finance_models.FinanceIncident.query.count() == 1
         finance_incident = finance_models.FinanceIncident.query.first()
         assert finance_incident.details["origin"] == "Origine de la demande"
@@ -370,7 +440,7 @@ class CreateIncidentOnCollectiveBookingTest(PostEndpointHelper):
             collective_booking_id=collective_booking.id,
         )
 
-        assert response.status_code == 301
+        assert response.status_code == 303
 
         finance_incidents = finance_models.FinanceIncident.query.all()
         assert len(finance_incidents) == 1
@@ -395,7 +465,7 @@ class CreateIncidentOnCollectiveBookingTest(PostEndpointHelper):
             collective_booking_id=collective_booking.id,
         )
 
-        assert response.status_code == 301
+        assert response.status_code == 303
         assert finance_models.FinanceIncident.query.count() == 0
 
     @pytest.mark.parametrize(
@@ -422,7 +492,7 @@ class CreateIncidentOnCollectiveBookingTest(PostEndpointHelper):
             collective_booking_id=collective_booking.id,
         )
 
-        assert response.status_code == 301
+        assert response.status_code == 303
         incident_expected_count = 2 if expect_incident_creation else 1
         assert finance_models.FinanceIncident.query.count() == incident_expected_count
 
