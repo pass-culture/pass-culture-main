@@ -29,6 +29,7 @@ class EMSContext(PivotContext):
     def get_edit_form(cls, pivot_id: int) -> forms.EditPivotForm:
         pivot: providers_models.EMSCinemaDetails = providers_models.EMSCinemaDetails.query.get_or_404(pivot_id)
 
+        # help mypy
         assert pivot.cinemaProviderPivot
         assert pivot.cinemaProviderPivot.venue
 
