@@ -2341,6 +2341,7 @@ class InviteMembersTest:
         assert offerer_invitation.email == "new.user@example.com"
         assert offerer_invitation.userId == pro_user.id
         assert offerer_invitation.offererId == offerer.id
+        assert offerer_invitation.status == offerers_models.InvitationStatus.PENDING
         assert len(mails_testing.outbox) == 1
         assert (
             mails_testing.outbox[0].sent_data["template"]["id_not_prod"]
@@ -2359,6 +2360,7 @@ class InviteMembersTest:
         assert offerer_invitation.email == "new.user@example.com"
         assert offerer_invitation.userId == pro_user.id
         assert offerer_invitation.offererId == offerer.id
+        assert offerer_invitation.status == offerers_models.InvitationStatus.PENDING
         assert len(mails_testing.outbox) == 1
         assert (
             mails_testing.outbox[0].sent_data["template"]["id_not_prod"]
@@ -2407,8 +2409,7 @@ class InviteMembersTest:
 
         offerers_api.invite_member(offerer=offerer, email="attached.user@example.com", current_user=pro_user)
 
-        offerer_invitations = offerers_models.OffererInvitation.query.all()
-        assert len(offerer_invitations) == 0
+        offerer_invitation = offerers_models.OffererInvitation.query.one()
         assert len(mails_testing.outbox) == 1
         assert (
             mails_testing.outbox[0].sent_data["template"]["id_not_prod"]
@@ -2418,6 +2419,10 @@ class InviteMembersTest:
             userId=attached_to_other_offerer_user.id, offererId=offerer.id
         ).one()
         assert user_offerer.validationStatus == ValidationStatus.NEW
+        assert offerer_invitation.email == "attached.user@example.com"
+        assert offerer_invitation.userId == pro_user.id
+        assert offerer_invitation.offererId == offerer.id
+        assert offerer_invitation.status == offerers_models.InvitationStatus.ACCEPTED
 
 
 class AcceptOffererInvitationTest:

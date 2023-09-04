@@ -296,3 +296,4 @@ class OffererInvitationFactory(BaseFactory):
     email = factory.Sequence("invited.pro{}@example.net".format)
     dateCreated = datetime.datetime.utcnow()
     user = factory.SubFactory(users_factories.ProFactory)
+    status = models.InvitationStatus.PENDING

@@ -1928,10 +1928,13 @@ def invite_member(offerer: models.Offerer, email: str, current_user: users_model
         raise exceptions.UserAlreadyAttachedToOffererException()
 
     if existing_user and existing_user.isEmailValidated:  # User exists but not attached to the offerer
+        offerer_invitation = models.OffererInvitation(
+            user=current_user, offerer=offerer, email=email, status=models.InvitationStatus.ACCEPTED
+        )
         new_user_offerer = models.UserOfferer(
             offerer=offerer, user=existing_user, validationStatus=ValidationStatus.NEW
         )
-        db.session.add(new_user_offerer)
+        db.session.add_all([offerer_invitation, new_user_offerer])
         db.session.commit()
         logger.info(
             "Existing user invited to join offerer",
@@ -1940,7 +1943,9 @@ def invite_member(offerer: models.Offerer, email: str, current_user: users_model
         external_attributes_api.update_external_pro(existing_user.email)
         zendesk_sell.create_offerer(offerer)
     else:  # User not exists or exists with not validated email yet
-        offerer_invitation = models.OffererInvitation(offerer=offerer, email=email, user=current_user)
+        offerer_invitation = models.OffererInvitation(
+            offerer=offerer, email=email, user=current_user, status=models.InvitationStatus.PENDING
+        )
         db.session.add(offerer_invitation)
         db.session.commit()
         logger.info(
