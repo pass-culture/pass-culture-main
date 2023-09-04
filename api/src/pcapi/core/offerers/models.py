@@ -227,6 +227,11 @@ class Target(enum.Enum):
     INDIVIDUAL = "INDIVIDUAL"
 
 
+class InvitationStatus(enum.Enum):
+    PENDING = "PENDING"
+    ACCEPTED = "ACCEPTED"
+
+
 class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, AccessibilityMixin):
     __tablename__ = "venue"
 
@@ -964,5 +969,6 @@ class OffererInvitation(PcObject, Base, Model):
     dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
     userId: int = Column(BigInteger, ForeignKey("user.id"), nullable=False, index=True)
     user: sa_orm.Mapped["users_models.User"] = relationship("User", foreign_keys=[userId], backref="OffererInvitations")
+    status: InvitationStatus = Column(db_utils.MagicEnum(InvitationStatus), nullable=False)
 
     __table_args__ = (UniqueConstraint("offererId", "email", name="unique_offerer_invitation"),)
