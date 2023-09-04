@@ -28,8 +28,18 @@ def send_duplicate_fraud_detection_mail(user: users_models.User, duplicate: user
     _send_fraud_mail(
         subject="Doublon détecté",
         header="Un doublon a été détecté",
-        body=f"""<p>L'utilisateur {user_backoffice_link} essaie d'obtenir son crédit 18 ans. 
-Or il semble être un doublon de l'utilisateur {duplicate_backoffice_link}.</p>
+        body=f"""<p>L'utilisateur {user_backoffice_link} essaie d'obtenir son crédit 18 ans.
+ Or il semble être un doublon de l'utilisateur {duplicate_backoffice_link}.</p>
 <p>Les deux ont déjà été crédités de leur crédit 15-17 ans{duplicate_got_grant_18}.</p>
 <p>Ces deux comptes ont donc été suspendus pour suspicion de fraude.</p>""",
+    )
+
+
+def send_mail_for_fraud_review(user: users_models.User) -> None:
+    user_backoffice_link = _get_backoffice_user_link(user.id)
+    _send_fraud_mail(
+        subject="Revue manuelle nécessaire",
+        header="Revue manuelle nécesasaire",
+        body=f"""<p>L'utilisateur {user_backoffice_link} a plus de 18 ans, son dossier DMS vient d'être validé.
+ Il requiert donc une revue manuelle pour que son crédit lui soit octroyé.</p>""",
     )
