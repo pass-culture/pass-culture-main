@@ -85,16 +85,18 @@ const LegalInfos = ({ title, className }: LegalInfoProps): JSX.Element => {
           target: '_blank',
         }}
       >
-        <div>
-          <SvgIcon
-            src={fullMailIcon}
-            alt="Mail à support-pro@passculture.app"
-            className={styles['icon-legal-infos']}
-            width="22"
-          />
-          Contacter notre support par mail à support-pro@passculture.app.
-        </div>
+        <SvgIcon
+          src={fullMailIcon}
+          alt="Mail à support-pro@passculture.app"
+          className={styles['icon-legal-infos']}
+          width="22"
+        />
+        Contacter notre support par mail à{' '}
+        <span className={styles['legal-infos-support-email']}>
+          support-pro@passculture.app
+        </span>
       </ButtonLink>
+      .
     </div>
   )
 }
