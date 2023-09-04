@@ -39,6 +39,7 @@ class CollectiveOffersPublicPostOfferTest:
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory()
+        national_program = educational_factories.NationalProgramFactory()
 
         venue = venue_provider.venue
         payload = {
@@ -62,6 +63,7 @@ class CollectiveOffersPublicPostOfferTest:
                 "otherAddress": "",
             },
             "isActive": True,
+            "nationalProgramId": national_program.id,
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
             "bookingLimitDatetime": "2022-09-15T11:00",
@@ -98,6 +100,7 @@ class CollectiveOffersPublicPostOfferTest:
         assert offer.providerId == venue_provider.providerId
         assert offer.hasImage is True
         assert offer.isPublicApi
+        assert offer.nationalProgramId == national_program.id
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
 
     @override_features(WIP_ADD_CLG_6_5_COLLECTIVE_OFFER=True)

@@ -25,6 +25,7 @@ export type PatchCollectiveOfferBodyModel = {
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name?: string | null;
+  nationalProgramId?: number | null;
   numberOfTickets?: number | null;
   offerVenue?: OfferVenueModel | null;
   students?: Array<string> | null;

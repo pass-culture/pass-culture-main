@@ -17,6 +17,7 @@ class CollectiveOffersPublicGetOfferTest:
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
+        national_program = educational_factories.NationalProgramFactory()
         domain = educational_factories.EducationalDomainFactory()
         institution = educational_factories.EducationalInstitutionFactory(institutionId="UAI123")
         booking = educational_factories.CollectiveBookingFactory(
@@ -25,6 +26,7 @@ class CollectiveOffersPublicGetOfferTest:
             collectiveStock__collectiveOffer__imageCredit="Pouet",
             collectiveStock__collectiveOffer__imageCrop={"data": 2},
             collectiveStock__collectiveOffer__institution=institution,
+            collectiveStock__collectiveOffer__nationalProgram=national_program,
         )
         offer = booking.collectiveStock.collectiveOffer
         # When
@@ -91,6 +93,7 @@ class CollectiveOffersPublicGetOfferTest:
         }
         assert response.json["imageCredit"] == offer.imageCredit
         assert response.json["imageUrl"] == offer.imageUrl
+        assert response.json["nationalProgram"] == {"id": national_program.id, "name": national_program.name}
         assert sorted(response.json["bookings"], key=itemgetter("id")) == bookings
 
     def test_offer_does_not_exists(self, client):
