@@ -18,6 +18,12 @@
       cursor: default;
     }
   }
+
+  &:focus-within {
+    outline: rem.torem(1px) solid colors.$input-text-color;
+    outline-offset: rem.torem(4px);
+    border-radius: rem.torem(4px);
+  }
 }
 
 .base-radio-input {
@@ -39,7 +45,7 @@
 
 .base-radio-primary-input {
   &:hover,
-  &:focus {
+  &:focus-visible {
     border-color: forms.$input-border-color-focus;
   }
 
@@ -96,7 +102,7 @@
 
   &:checked,
   &:hover:checked,
-  &:focus:checked {
+  &:focus-visible:checked {
     border-color: colors.$tertiary;
     background: radial-gradient(
       colors.$tertiary 0%,
@@ -107,9 +113,9 @@
   }
 
   &:hover:not(:checked, :disabled),
-  &:focus:not(:checked, :disabled),
+  &:focus-visible:not(:checked, :disabled),
   &:hover,
-  &:focus {
+  &:focus-visible {
     border-color: colors.$grey-dark;
   }
 
@@ -131,7 +137,7 @@
 
   &:focus-within {
     outline: rem.torem(1px) solid colors.$black;
-    outline-offset: rem.torem(2px);
+    outline-offset: rem.torem(4px);
   }
 
   &:hover {
