@@ -139,6 +139,22 @@ def get_profile_options() -> serializers.ProfileOptionsResponse:
     )
 
 
+@blueprint.native_v1.route("/subscription/activity_types", methods=["GET"])
+@spectree_serialize(
+    response_model=serializers.ActivityTypesResponse,
+    on_success_status=200,
+    api=blueprint.api,
+)
+@authenticated_and_active_user_required
+def get_activity_types(user: users_models.User) -> serializers.ActivityTypesResponse:
+    activities = [serializers.ActivityResponseModel.from_orm(activity) for activity in profile_options.ALL_ACTIVITIES]
+    middle_school = serializers.ActivityResponseModel.from_orm(profile_options.MIDDLE_SCHOOL_STUDENT)
+    if user.eligibility == users_models.EligibilityType.AGE18 and middle_school in activities:
+        activities.remove(middle_school)
+
+    return serializers.ActivityTypesResponse(activities=activities)
+
+
 @blueprint.native_v1.route("/subscription/honor_statement", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required

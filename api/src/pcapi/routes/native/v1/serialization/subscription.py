@@ -160,6 +160,10 @@ class ProfileOptionsResponse(BaseModel):
     school_types: list[SchoolTypeResponseModel]
 
 
+class ActivityTypesResponse(BaseModel):
+    activities: list[ActivityResponseModel]
+
+
 class IdentificationSessionResponse(BaseModel):
     identificationUrl: str
 
