@@ -18,7 +18,6 @@ const EditOfferCell = ({
       url={editionOfferLink}
       className={styles['button']}
       icon={penIcon}
-      hasTooltip
     >
       Modifier
     </ListIconButton>
