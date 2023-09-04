@@ -30,18 +30,15 @@ class Activity:
     id: str
     label: str
     description: str | None
-    associated_school_types_ids: list[SCHOOL_TYPE_ID_ENUM] | None
 
     def __init__(
         self,
         activity: users_models.ActivityEnum,
         description: str | None = None,
-        associated_school_types_ids: list[SCHOOL_TYPE_ID_ENUM] | None = None,
     ) -> None:
         self.id = activity.name
         self.label = activity.value
         self.description = description
-        self.associated_school_types_ids = associated_school_types_ids or []
         super().__init__()
 
 
@@ -70,26 +67,8 @@ ALL_SCHOOL_TYPES = [
 ]
 
 
-MIDDLE_SCHOOL_STUDENT = Activity(
-    users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT,
-    associated_school_types_ids=[
-        PUBLIC_SECONDARY_SCHOOL.id,  # type: ignore [list-item]
-        PRIVATE_SECONDARY_SCHOOL.id,  # type: ignore [list-item]
-        HOME_OR_REMOTE_SCHOOLING.id,  # type: ignore [list-item]
-    ],
-)
-HIGH_SCHOOL_STUDENT = Activity(
-    users_models.ActivityEnum.HIGH_SCHOOL_STUDENT,
-    associated_school_types_ids=[
-        PUBLIC_HIGH_SCHOOL.id,  # type: ignore [list-item]
-        PRIVATE_HIGH_SCHOOL.id,  # type: ignore [list-item]
-        AGRICULTURAL_HIGH_SCHOOL.id,  # type: ignore [list-item]
-        MILITARY_HIGH_SCHOOL.id,  # type: ignore [list-item]
-        NAVAL_HIGH_SCHOOL.id,  # type: ignore [list-item]
-        APPRENTICE_FORMATION_CENTER.id,  # type: ignore [list-item]
-        HOME_OR_REMOTE_SCHOOLING.id,  # type: ignore [list-item]
-    ],
-)
+MIDDLE_SCHOOL_STUDENT = Activity(users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT)
+HIGH_SCHOOL_STUDENT = Activity(users_models.ActivityEnum.HIGH_SCHOOL_STUDENT)
 STUDENT = Activity(users_models.ActivityEnum.STUDENT)
 EMPLOYEE = Activity(users_models.ActivityEnum.EMPLOYEE)
 APPRENTICE = Activity(users_models.ActivityEnum.APPRENTICE)

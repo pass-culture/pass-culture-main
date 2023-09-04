@@ -61,11 +61,6 @@ def test_public_api(client):
                 },
                 "ActivityResponseModel": {
                     "properties": {
-                        "associatedSchoolTypesIds": {
-                            "items": {"$ref": "#/components/schemas/SchoolTypesIdEnum"},
-                            "nullable": True,
-                            "type": "array",
-                        },
                         "description": {"nullable": True, "title": "Description", "type": "string"},
                         "id": {"$ref": "#/components/schemas/ActivityIdEnum"},
                         "label": {"title": "Label", "type": "string"},
