@@ -129,13 +129,10 @@ def complete_profile(user: users_models.User, body: serializers.ProfileUpdateReq
 )
 def get_profile_options() -> serializers.ProfileOptionsResponse:
     return serializers.ProfileOptionsResponse(
-        school_types=[
-            serializers.SchoolTypeResponseModel.from_orm(school_type)
-            for school_type in profile_options.ALL_SCHOOL_TYPES
-        ],
         activities=[
             serializers.ActivityResponseModel.from_orm(activity) for activity in profile_options.ALL_ACTIVITIES
         ],
+        school_types=[],
     )
 
 
