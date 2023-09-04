@@ -302,7 +302,11 @@ class RunIntegrationTest:
 
         get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(
-                application_number=123, state="accepte", email=user.email, birth_date=dms_validated_birth_date
+                application_number=123,
+                state="accepte",
+                email=user.email,
+                birth_date=dms_validated_birth_date,
+                construction_datetime=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
             ),
         ]
 
@@ -358,7 +362,13 @@ class RunIntegrationTest:
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
+            fixture.make_parsed_graphql_application(
+                application_number=123,
+                state="accepte",
+                email=user.email,
+                # For the user to be automatically credited, the DMS application must be created before user's 19th birthday
+                construction_datetime=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+            )
         ]
         import_all_updated_dms_applications(6712558)
 
@@ -469,6 +479,7 @@ class RunIntegrationTest:
                 application_number=123,
                 state="accepte",
                 email=user.email,
+                construction_datetime=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
             )
         ]
         import_all_updated_dms_applications(6712558)
@@ -587,6 +598,7 @@ class RunIntegrationTest:
                 application_number=123,
                 state="accepte",
                 city="Strasbourg",
+                construction_datetime=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
             )
         ]
         import_all_updated_dms_applications(6712558)
@@ -636,7 +648,12 @@ class GraphQLSourceProcessApplicationTest:
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(123, "accepte", email=user.email),
+            fixture.make_parsed_graphql_application(
+                123,
+                "accepte",
+                email=user.email,
+                construction_datetime=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+            ),
         ]
 
         import_all_updated_dms_applications(6712558)
@@ -661,7 +678,8 @@ class GraphQLSourceProcessApplicationTest:
                 "accepte",
                 email=user.email,
                 birth_date=user.dateOfBirth,
-                construction_datetime=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+                # For the user to be automatically credited, the DMS application must be created before user's 19th birthday
+                construction_datetime=(datetime.utcnow() - relativedelta(months=5)).strftime("%Y-%m-%dT%H:%M:%S+02:00"),
             ),
         ]
 
