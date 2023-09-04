@@ -15,6 +15,7 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users.email import update as email_update
+from pcapi.models import db
 from pcapi.routes.backoffice_v3 import utils
 from pcapi.routes.backoffice_v3.forms import empty as empty_forms
 from pcapi.routes.backoffice_v3.forms import search as search_forms
@@ -160,6 +161,7 @@ def delete(user_id: int) -> utils.BackofficeResponse:
     delete_user_attributes_task.delay(payload)
 
     users_models.User.query.filter(users_models.User.id == user_id).delete()
+    db.session.commit()
     flash("Le compte a bien été supprimé", "success")
     return redirect(url_for("backoffice_v3_web.search_pro"), code=303)
 
