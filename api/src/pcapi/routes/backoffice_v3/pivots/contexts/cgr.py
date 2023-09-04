@@ -102,7 +102,7 @@ class CGRContext(PivotContext):
         ).one_or_none()
 
         if venue_provider:
-            flash("Ce lieu est toujours synchronisé avec CDS, Vous ne pouvez pas supprimer ce pivot CGR", "danger")
+            flash("Ce lieu est toujours synchronisé avec CGR, Vous ne pouvez pas supprimer ce pivot CGR", "danger")
             return False
         db.session.delete(pivot)
         db.session.delete(cinema_provider_pivot)
@@ -112,7 +112,7 @@ class CGRContext(PivotContext):
     def check_if_api_call_is_ok(cls, pivot: providers_models.CGRCinemaDetails) -> int | None:
         try:
             response = cgr.get_seances_pass_culture(pivot)
-            flash("Connexion à l'API CGR OK.")
+            flash("Connexion à l'API CGR OK.", "success")
             return response.ObjetRetour.NumCine
         # it could be an unexpected XML parsing error
         except Exception as exc:  # pylint: disable=broad-except

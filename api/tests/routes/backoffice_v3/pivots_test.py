@@ -459,78 +459,64 @@ class GetUpdatePivotFormTest(GetEndpointHelper):
     endpoint_kwargs = {"name": "allocine", "pivot_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
+    # - fetch cinema details (1 query)
     # - fetch session (1 query)
     # - fetch user (1 query)
     # - fetch pivot (1 query)
+    # - fetch venue for form validate (1 query)
     # - fetch venue to fill autocomplete (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 6
 
     def test_get_update_pivot_form_allocine(self, authenticated_client):
         # given
+        # - fetch session (1 query)
+        # - fetch user (1 query)
+        # - fetch pivot (1 query)
+        # - fetch venue to fill autocomplete (1 query)
+        allocine_pivot_expected_num_queries = 4
+
         allocine_pivot = providers_factories.AllocinePivotFactory()
         pivot_id = allocine_pivot.id
 
         db.session.expire(allocine_pivot)
 
         # when
-        with assert_num_queries(self.expected_num_queries):
+        with assert_num_queries(allocine_pivot_expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, name="allocine", pivot_id=pivot_id))
             assert response.status_code == 200
 
     def test_get_update_pivot_form_boost(self, authenticated_client):
         # given
-        # - fetch boost cinema details (1 query)
-        # - fetch session (1 query)
-        # - fetch user (1 query)
-        # - fetch pivot (1 query)
-        # - fetch venue for form validate (1 query)
-        # - fetch venue to fill autocomplete (1 query)
-        expected_num_queries = 6
 
         boost_pivot = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="http://example.com/boost1")
 
         db.session.expire(boost_pivot)
 
         # when
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, name="boost", pivot_id=boost_pivot.id))
             assert response.status_code == 200
 
     def test_get_update_pivot_form_cgr(self, authenticated_client):
         # given
-        # - fetch cgr cinema details (1 query)
-        # - fetch session (1 query)
-        # - fetch user (1 query)
-        # - fetch pivot (1 query)
-        # - fetch venue for form validate (1 query)
-        # - fetch venue to fill autocomplete (1 query)
-        expected_num_queries = 6
-
         cgr_pivot = providers_factories.CGRCinemaDetailsFactory(cinemaUrl="http://example.com/another_web_service")
 
         db.session.expire(cgr_pivot)
 
         # when
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, name="cgr", pivot_id=cgr_pivot.id))
             assert response.status_code == 200
 
     def test_get_update_pivot_form_cineoffice(self, authenticated_client):
         # given
-        # - fetch cineoffice cinema details (1 query)
-        # - fetch session (1 query)
-        # - fetch user (1 query)
-        # - fetch pivot (1 query)
-        # - fetch venue for form validate (1 query)
-        # - fetch venue to fill autocomplete (1 query)
-        expected_num_queries = 6
 
         cineoffice_pivot = providers_factories.CDSCinemaDetailsFactory()
 
         db.session.expire(cineoffice_pivot)
 
         # when
-        with assert_num_queries(expected_num_queries):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, name="cineoffice", pivot_id=cineoffice_pivot.id))
             assert response.status_code == 200
 
