@@ -44,7 +44,7 @@
     }
   }
 
-  &:focus {
+  &:focus-visible {
     outline: rem.torem(1px) solid colors.$input-text-color;
     outline-offset: rem.torem(2px);
   }
@@ -122,7 +122,7 @@
     height: auto;
 
     &:hover,
-    &:focus {
+    &:focus-visible {
       text-decoration: underline;
     }
 
@@ -181,7 +181,7 @@
       }
     }
 
-    &:focus {
+    &:focus-visible {
       padding: rem.torem(2px) rem.torem(4px);
     }
   }
@@ -201,7 +201,6 @@
         colors.$grey-medium-shadow;
     }
 
-    &:focus,
     &:focus-visible {
       &:not(.button-disabled) {
         position: relative;
