@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import React from 'react'
 import { useSelector } from 'react-redux'
 
@@ -41,10 +40,7 @@ const OffersTableHead = ({
         <th className="th-checkbox">
           <BaseCheckbox
             checked={areAllOffersSelected || isAtLeastOneOfferChecked}
-            className={cn('select-offer-checkbox', {
-              ['partial-check']:
-                !areAllOffersSelected && isAtLeastOneOfferChecked,
-            })}
+            partialCheck={!areAllOffersSelected && isAtLeastOneOfferChecked}
             disabled={isAdminForbidden(savedSearchFilters) || !areOffersPresent}
             id="select-offer-checkbox"
             onChange={selectAllOffers}

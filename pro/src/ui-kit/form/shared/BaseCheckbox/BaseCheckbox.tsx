@@ -41,7 +41,7 @@ const BaseCheckbox = ({
         {...props}
         className={cn(styles['base-checkbox-input'], {
           [styles['has-error']]: hasError,
-          ['partial-check']: partialCheck,
+          [styles['partial-check']]: partialCheck,
         })}
       />
       {Boolean(icon) && (

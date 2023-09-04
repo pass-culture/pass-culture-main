@@ -53,7 +53,7 @@ $radio-size: rem.torem(16px);
 
   &:focus-within {
     outline: rem.torem(1px) solid colors.$black;
-    outline-offset: rem.torem(2px);
+    outline-offset: rem.torem(4px);
   }
 
   &.is-selected {
