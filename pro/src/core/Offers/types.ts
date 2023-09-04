@@ -9,14 +9,14 @@ import { CropParams } from 'components/ImageUploader'
 import { CollectiveOfferStatus } from 'core/OfferEducational'
 import { AccessibiltyFormValues } from 'core/shared'
 
-import { CATEGORY_STATUS } from './constants'
+import { ALL_STATUS, CATEGORY_STATUS } from './constants'
 
 export type SearchFiltersParams = {
   nameOrIsbn: string
   offererId: string
   venueId: string
   categoryId: string
-  status: OfferStatus | CollectiveOfferStatus | 'all'
+  status: OfferStatus | CollectiveOfferStatus | typeof ALL_STATUS
   creationMode: string
   collectiveOfferType: string
   periodBeginningDate: string
