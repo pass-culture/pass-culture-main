@@ -1116,6 +1116,18 @@ def test_public_api(client):
                     "title": "ProfileOptionsResponse",
                     "type": "object",
                 },
+                "ActivityTypesResponse": {
+                    "properties": {
+                        "activities": {
+                            "items": {"$ref": "#/components/schemas/ActivityResponseModel"},
+                            "title": "Activities",
+                            "type": "array",
+                        },
+                    },
+                    "required": ["activities"],
+                    "title": "ActivityTypesResponse",
+                    "type": "object",
+                },
                 "ProfileUpdateRequest": {
                     "properties": {
                         "activityId": {"$ref": "#/components/schemas/ActivityIdEnum"},
@@ -3364,6 +3376,31 @@ def test_public_api(client):
                         },
                     },
                     "summary": "get_profile_options <GET>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/subscription/activity_types": {
+                "get": {
+                    "description": "",
+                    "operationId": "get__native_v1_subscription_activity_types",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ActivityTypesResponse"}}
+                            },
+                            "description": "OK",
+                        },
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "get_activity_types <GET>",
                     "tags": [],
                 }
             },

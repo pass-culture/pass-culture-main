@@ -1238,6 +1238,69 @@ class ProfileOptionsTypeTest:
             ],
         }
 
+    @pytest.mark.parametrize("age", (15, 16, 17, 18))
+    def test_get_activity_types(self, client, age):
+        user = users_factories.BaseUserFactory(age=age)
+        client.with_token(user.email)
+        response = client.get("/native/v1/subscription/activity_types")
+
+        expected_response = {
+            "activities": [
+                {
+                    "id": "HIGH_SCHOOL_STUDENT",
+                    "label": "Lycéen",
+                    "description": None,
+                    "associatedSchoolTypesIds": [
+                        "PUBLIC_HIGH_SCHOOL",
+                        "PRIVATE_HIGH_SCHOOL",
+                        "AGRICULTURAL_HIGH_SCHOOL",
+                        "MILITARY_HIGH_SCHOOL",
+                        "NAVAL_HIGH_SCHOOL",
+                        "APPRENTICE_FORMATION_CENTER",
+                        "HOME_OR_REMOTE_SCHOOLING",
+                    ],
+                },
+                {"id": "STUDENT", "label": "Étudiant", "description": None, "associatedSchoolTypesIds": []},
+                {"id": "EMPLOYEE", "label": "Employé", "description": None, "associatedSchoolTypesIds": []},
+                {"id": "APPRENTICE", "label": "Apprenti", "description": None, "associatedSchoolTypesIds": []},
+                {"id": "APPRENTICE_STUDENT", "label": "Alternant", "description": None, "associatedSchoolTypesIds": []},
+                {
+                    "id": "VOLUNTEER",
+                    "label": "Volontaire",
+                    "description": "En service civique",
+                    "associatedSchoolTypesIds": [],
+                },
+                {
+                    "id": "INACTIVE",
+                    "label": "Inactif",
+                    "description": "En incapacité de travailler",
+                    "associatedSchoolTypesIds": [],
+                },
+                {
+                    "id": "UNEMPLOYED",
+                    "label": "Demandeur d'emploi",
+                    "description": "En recherche d'emploi",
+                    "associatedSchoolTypesIds": [],
+                },
+            ],
+        }
+        if age < 18:
+            expected_response["activities"].insert(
+                0,
+                {
+                    "id": "MIDDLE_SCHOOL_STUDENT",
+                    "label": "Collégien",
+                    "description": None,
+                    "associatedSchoolTypesIds": [
+                        "PUBLIC_SECONDARY_SCHOOL",
+                        "PRIVATE_SECONDARY_SCHOOL",
+                        "HOME_OR_REMOTE_SCHOOLING",
+                    ],
+                },
+            )
+        assert response.status_code == 200
+        assert response.json == expected_response
+
 
 class HonorStatementTest:
     @pytest.mark.parametrize(
