@@ -1,13 +1,15 @@
 import React, { useRef } from 'react'
 
-import { OfferStatus } from 'apiClient/v1'
-import { CollectiveOfferStatus } from 'core/OfferEducational'
-import { ALL_STATUS } from 'core/Offers/constants'
 import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import useOnClickOrFocusOutside from 'hooks/useOnClickOrFocusOutside'
 import { Button } from 'ui-kit'
 import { BaseRadio } from 'ui-kit/form/shared'
+
+import {
+  collectiveFilterStatus,
+  individualFilterStatus,
+} from '../OffersTableHead/StatusFiltersButton'
 
 import styles from './OffersStatusFiltersModal.module.scss'
 
@@ -42,38 +44,8 @@ export const OffersStatusFiltersModal = ({
   }
   const filters =
     audience === Audience.INDIVIDUAL
-      ? [
-          { label: 'Toutes', value: ALL_STATUS },
-          ...(audience === Audience.INDIVIDUAL
-            ? [{ label: 'Brouillon', value: OfferStatus.DRAFT }]
-            : []),
-          { label: 'Publiée', value: OfferStatus.ACTIVE },
-          { label: 'Désactivée', value: OfferStatus.INACTIVE },
-          { label: 'Épuisée', value: OfferStatus.SOLD_OUT },
-          { label: 'Expirée', value: OfferStatus.EXPIRED },
-          { label: 'Validation en attente', value: OfferStatus.PENDING },
-          { label: 'Refusée', value: OfferStatus.REJECTED },
-        ]
-      : [
-          { label: 'Toutes', value: ALL_STATUS },
-          { label: 'Désactivée', value: CollectiveOfferStatus.INACTIVE },
-          { label: 'Expirée', value: CollectiveOfferStatus.EXPIRED },
-          { label: 'Préréservée', value: CollectiveOfferStatus.PREBOOKED },
-          { label: 'Publiée sur ADAGE', value: CollectiveOfferStatus.ACTIVE },
-          {
-            label: 'Refusée',
-            value: CollectiveOfferStatus.REJECTED,
-          },
-          {
-            label: 'Réservée',
-            value: CollectiveOfferStatus.BOOKED,
-          },
-          { label: 'Terminée', value: CollectiveOfferStatus.ENDED },
-          {
-            label: 'Validation en attente',
-            value: CollectiveOfferStatus.PENDING,
-          },
-        ]
+      ? individualFilterStatus
+      : collectiveFilterStatus
   return (
     <div
       className={styles['offers-status-filters']}
