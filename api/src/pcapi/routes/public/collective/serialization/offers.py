@@ -16,6 +16,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import collective_offers_serialize
+from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import email as email_utils
 from pcapi.utils import phone_number
@@ -301,6 +302,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     imageCredit: str | None
     imageUrl: str | None
     bookings: Sequence[CollectiveBookingResponseModel]
+    nationalProgram: NationalProgramModel | None
 
     class Config:
         extra = "forbid"
@@ -308,6 +310,11 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
 
     @classmethod
     def from_orm(cls, offer: CollectiveOffer) -> "GetPublicCollectiveOfferResponseModel":
+        if offer.nationalProgram:
+            national_program = NationalProgramModel.from_orm(offer.nationalProgram)
+        else:
+            national_program = None
+
         bookings = [
             CollectiveBookingResponseModel.from_orm(booking) for booking in offer.collectiveStock.collectiveBookings
         ]
@@ -348,6 +355,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
             imageCredit=offer.imageCredit,
             imageUrl=offer.imageUrl,
             bookings=bookings,
+            nationalProgram=national_program,
         )
 
 
@@ -371,6 +379,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     isActive: bool
     image_file: str | None
     image_credit: str | None
+    nationalProgramId: int | None
     # stock part
     beginning_datetime: datetime
     booking_limit_datetime: datetime
@@ -455,6 +464,7 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     isActive: bool | None
     imageCredit: str | None
     imageFile: str | None
+    nationalProgramId: int | None
     # stock part
     beginningDatetime: datetime | None
     bookingLimitDatetime: datetime | None

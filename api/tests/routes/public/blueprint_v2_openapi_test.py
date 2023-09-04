@@ -43,7 +43,12 @@ def test_public_api(client, app):
                             "type": "string",
                         },
                         "dateCreated": {"format": "date-time", "title": "Datecreated", "type": "string"},
-                        "dateUsed": {"format": "date-time", "nullable": True, "title": "Dateused", "type": "string"},
+                        "dateUsed": {
+                            "format": "date-time",
+                            "nullable": True,
+                            "title": "Dateused",
+                            "type": "string",
+                        },
                         "id": {"title": "Id", "type": "integer"},
                         "reimbursementDate": {
                             "format": "date-time",
@@ -289,7 +294,11 @@ def test_public_api(client, app):
                         "id": {"title": "Id", "type": "integer"},
                         "imageCredit": {"nullable": True, "title": "Imagecredit", "type": "string"},
                         "imageUrl": {"nullable": True, "title": "Imageurl", "type": "string"},
-                        "interventionArea": {"items": {"type": "string"}, "title": "Interventionarea", "type": "array"},
+                        "interventionArea": {
+                            "items": {"type": "string"},
+                            "title": "Interventionarea",
+                            "type": "array",
+                        },
                         "isActive": {"nullable": True, "title": "Isactive", "type": "boolean"},
                         "isSoldOut": {"title": "Issoldout", "type": "boolean"},
                         "mentalDisabilityCompliant": {
@@ -303,6 +312,11 @@ def test_public_api(client, app):
                             "type": "boolean",
                         },
                         "name": {"title": "Name", "type": "string"},
+                        "nationalProgram": {
+                            "anyOf": [{"$ref": "#/components/schemas/NationalProgramModel"}],
+                            "nullable": True,
+                            "title": "NationalProgramModel",
+                        },
                         "numberOfTickets": {"title": "Numberoftickets", "type": "integer"},
                         "offerVenue": {"$ref": "#/components/schemas/OfferVenueModel"},
                         "status": {"title": "Status", "type": "string"},
@@ -485,6 +499,7 @@ def test_public_api(client, app):
                             "type": "boolean",
                         },
                         "name": {"nullable": True, "title": "Name", "type": "string"},
+                        "nationalProgramId": {"nullable": True, "title": "Nationalprogramid", "type": "integer"},
                         "numberOfTickets": {"nullable": True, "title": "Numberoftickets", "type": "integer"},
                         "offerVenue": {
                             "anyOf": [{"$ref": "#/components/schemas/OfferVenueModel"}],
@@ -517,7 +532,11 @@ def test_public_api(client, app):
                             "title": "Audiodisabilitycompliant",
                             "type": "boolean",
                         },
-                        "beginningDatetime": {"format": "date-time", "title": "Beginningdatetime", "type": "string"},
+                        "beginningDatetime": {
+                            "format": "date-time",
+                            "title": "Beginningdatetime",
+                            "type": "string",
+                        },
                         "bookingEmails": {"items": {"type": "string"}, "title": "Bookingemails", "type": "array"},
                         "bookingLimitDatetime": {
                             "format": "date-time",
@@ -558,6 +577,7 @@ def test_public_api(client, app):
                             "type": "boolean",
                         },
                         "name": {"title": "Name", "type": "string"},
+                        "nationalProgramId": {"nullable": True, "title": "Nationalprogramid", "type": "integer"},
                         "numberOfTickets": {"title": "Numberoftickets", "type": "integer"},
                         "offerVenue": {"$ref": "#/components/schemas/OfferVenueModel"},
                         "students": {"items": {"type": "string"}, "title": "Students", "type": "array"},
@@ -624,7 +644,12 @@ def test_public_api(client, app):
                             "type": "string",
                         },
                         "city": {"example": "Paris", "nullable": True, "title": "City", "type": "string"},
-                        "postalCode": {"example": "75008", "nullable": True, "title": "Postalcode", "type": "string"},
+                        "postalCode": {
+                            "example": "75008",
+                            "nullable": True,
+                            "title": "Postalcode",
+                            "type": "string",
+                        },
                         "type": {"default": "physical", "enum": ["physical"], "title": "Type", "type": "string"},
                     },
                     "title": "VenuePhysicalLocation",

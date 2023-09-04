@@ -24,6 +24,7 @@ export type PostCollectiveOfferBodyModel = {
   mentalDisabilityCompliant?: boolean;
   motorDisabilityCompliant?: boolean;
   name: string;
+  nationalProgramId?: number | null;
   numberOfTickets: number;
   offerVenue: OfferVenueModel;
   students: Array<string>;

@@ -41,14 +41,22 @@ class CollectiveOffersPublicPatchOfferTest:
         venue2 = offerers_factories.VenueFactory(venueProviders=[venue_provider])
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+
+        national_program = educational_factories.NationalProgramFactory()
+
         domain = educational_factories.EducationalDomainFactory()
         educational_institution = educational_factories.EducationalInstitutionFactory()
         offer = educational_factories.CollectiveOfferFactory(
-            imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
+            imageCredit="pouet",
+            imageId="123456789",
+            venue=venue,
+            provider=venue_provider.provider,
+            nationalProgramId=None,
         )
         stock = educational_factories.CollectiveStockFactory(
             collectiveOffer=offer,
         )
+
         payload = {
             "name": "Un nom en français ævœc des diàcrtîtïqués",
             "description": "une description d'offre",
@@ -71,6 +79,7 @@ class CollectiveOffersPublicPatchOfferTest:
             },
             "isActive": False,
             "imageCredit": "a great artist",
+            "nationalProgramId": national_program.id,
             # stock part
             "beginningDatetime": "2022-09-25T11:00",
             "bookingLimitDatetime": "2022-09-15T11:00",
@@ -114,6 +123,7 @@ class CollectiveOffersPublicPatchOfferTest:
         assert offer.isActive is False
         assert offer.hasImage is True
         assert offer.imageCredit == "a great artist"
+        assert offer.nationalProgramId == national_program.id
 
         assert offer.collectiveStock.beginningDatetime == datetime.fromisoformat(payload["beginningDatetime"])
         assert offer.collectiveStock.bookingLimitDatetime == datetime.fromisoformat(payload["bookingLimitDatetime"])

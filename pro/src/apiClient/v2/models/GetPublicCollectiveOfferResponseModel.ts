@@ -4,6 +4,7 @@
 /* eslint-disable */
 
 import type { CollectiveBookingResponseModel } from './CollectiveBookingResponseModel';
+import type { NationalProgramModel } from './NationalProgramModel';
 import type { OfferVenueModel } from './OfferVenueModel';
 
 export type GetPublicCollectiveOfferResponseModel = {
@@ -31,6 +32,7 @@ export type GetPublicCollectiveOfferResponseModel = {
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
+  nationalProgram?: NationalProgramModel | null;
   numberOfTickets: number;
   offerVenue: OfferVenueModel;
   status: string;
