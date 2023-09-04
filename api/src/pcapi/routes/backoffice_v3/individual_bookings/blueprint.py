@@ -88,6 +88,9 @@ def _get_individual_bookings(
             .load_only(finance_models.Cashflow.batchId)
             .joinedload(finance_models.Cashflow.batch)
             .load_only(finance_models.CashflowBatch.label),
+            sa.orm.joinedload(bookings_models.Booking.incidents)
+            .joinedload(finance_models.BookingFinanceIncident.incident)
+            .load_only(finance_models.FinanceIncident.id, finance_models.FinanceIncident.status),
         )
     )
 

@@ -52,6 +52,7 @@ class BookingCancellationReasons(enum.Enum):
     EXPIRED = "EXPIRED"
     FRAUD = "FRAUD"
     REFUSED_BY_INSTITUTE = "REFUSED_BY_INSTITUTE"
+    FINANCE_INCIDENT = "FINANCE_INCIDENT"
 
 
 class BookingStatus(enum.Enum):
@@ -162,10 +163,11 @@ class Booking(PcObject, Base, Model):
         self,
         reason: BookingCancellationReasons,
         cancel_even_if_used: bool = False,
+        cancel_even_if_reimbursed: bool = False,
     ) -> None:
         if self.status is BookingStatus.CANCELLED:
             raise exceptions.BookingIsAlreadyCancelled()
-        if self.status is BookingStatus.REIMBURSED:
+        if self.status is BookingStatus.REIMBURSED and not cancel_even_if_reimbursed:
             raise exceptions.BookingIsAlreadyUsed()
         if self.status is BookingStatus.USED and not cancel_even_if_used:
             raise exceptions.BookingIsAlreadyUsed()

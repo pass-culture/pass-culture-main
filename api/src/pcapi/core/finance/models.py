@@ -868,15 +868,14 @@ class BookingFinanceIncident(Base, Model):
 
     bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=True)
     booking: sqla_orm.Mapped["bookings_models.Booking | None"] = sqla_orm.relationship(
-        "Booking", foreign_keys=[bookingId]
+        "Booking", foreign_keys=[bookingId], backref="incidents"
     )
 
     collectiveBookingId = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("collective_booking.id"), index=True, nullable=True
     )
     collectiveBooking: sqla_orm.Mapped["educational_models.CollectiveBooking | None"] = sqla_orm.relationship(
-        "CollectiveBooking",
-        foreign_keys=[collectiveBookingId],
+        "CollectiveBooking", foreign_keys=[collectiveBookingId], backref="incidents"
     )
 
     incidentId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("finance_incident.id"), index=True, nullable=False)
@@ -891,7 +890,10 @@ class BookingFinanceIncident(Base, Model):
 
     newTotalAmount: int = sqla.Column(sqla.Integer, nullable=False)
 
-    # beneficiary must be set if incident concerns individual booking
     __table_args__ = (
-        sqla.CheckConstraint("bookingId IS NULL OR beneficiaryId IS NOT NULL", name="booking_beneficiary_check"),
+        sqla.CheckConstraint(
+            "(bookingId IS NOT NULL AND beneficiaryId IS NOT NULL AND collectiveBookingId IS NULL) "
+            "OR (collectiveBookingId IS NOT NULL AND bookingId IS NULL AND beneficiaryId IS NULL)",
+            name="booking_finance_incident_check",
+        ),
     )

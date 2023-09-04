@@ -130,6 +130,32 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         assert html_parser.extract_pagination_info(response.data) == (1, 1, 1)
 
     @pytest.mark.parametrize(
+        "incident_status, display_alert",
+        [
+            (finance_models.IncidentStatus.VALIDATED, True),
+            (finance_models.IncidentStatus.CREATED, False),
+            (finance_models.IncidentStatus.CANCELLED, False),
+        ],
+    )
+    def test_display_incident_alert(self, authenticated_client, incident_status, display_alert):
+        booking = bookings_factories.ReimbursedBookingFactory(
+            incidents=[
+                finance_factories.IndividualBookingFinanceIncidentFactory(
+                    incident=finance_factories.FinanceIncidentFactory(status=incident_status)
+                )
+            ]
+        )
+
+        with assert_no_duplicated_queries():
+            response = authenticated_client.get(url_for(self.endpoint, q=booking.id))
+
+        assert response.status_code == 200
+        if display_alert:
+            assert "bi-exclamation-triangle-fill" in str(response.data)
+        else:
+            assert "bi-exclamation-triangle-fill" not in str(response.data)
+
+    @pytest.mark.parametrize(
         "query_args",
         [
             {},
