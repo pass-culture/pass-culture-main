@@ -74,7 +74,6 @@ const ActivityForm = ({ venueTypes }: ActivityFormProps): JSX.Element => {
                   })}
                 >
                   <ListIconButton
-                    hasTooltip
                     icon={fullTrashIcon}
                     onClick={() => arrayHelpers.remove(index)}
                     disabled={values.socialUrls.length <= 1}
