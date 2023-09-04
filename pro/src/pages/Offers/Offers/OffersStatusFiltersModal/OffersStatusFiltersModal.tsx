@@ -14,7 +14,6 @@ import {
 import styles from './OffersStatusFiltersModal.module.scss'
 
 interface OfferStatusFiltersModalProps {
-  isVisible: boolean
   applyFilters: () => void
   status?: SearchFiltersParams['status']
   setIsVisible: (isVisible: boolean) => void
@@ -23,7 +22,6 @@ interface OfferStatusFiltersModalProps {
 }
 
 export const OffersStatusFiltersModal = ({
-  isVisible,
   applyFilters,
   status,
   setIsVisible,
@@ -39,9 +37,6 @@ export const OffersStatusFiltersModal = ({
     applyFilters()
   }
 
-  if (!isVisible) {
-    return null
-  }
   const filters =
     audience === Audience.INDIVIDUAL
       ? individualFilterStatus

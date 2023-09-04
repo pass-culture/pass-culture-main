@@ -107,14 +107,15 @@ const StatusFiltersButton = ({
           )}
         </span>
       </button>
-      <OffersStatusFiltersModal
-        applyFilters={applyFilters}
-        isVisible={isStatusFiltersVisible}
-        setIsVisible={setIsStatusFiltersVisible}
-        status={status}
-        updateStatusFilter={updateStatusFilter}
-        audience={audience}
-      />
+      {isStatusFiltersVisible && (
+        <OffersStatusFiltersModal
+          applyFilters={applyFilters}
+          setIsVisible={setIsStatusFiltersVisible}
+          status={status}
+          updateStatusFilter={updateStatusFilter}
+          audience={audience}
+        />
+      )}
     </Fragment>
   )
 }
