@@ -19,11 +19,7 @@ const FieldError = ({
   name,
   iconAlt = '',
 }: FieldErrorProps): JSX.Element => (
-  <div
-    className={cn(styles['field-error'], className)}
-    id={`error-${name}`}
-    role="alert"
-  >
+  <div className={cn(styles['field-error'], className)} id={`error-${name}`}>
     <SvgIcon src={strokeErrorIcon} alt={iconAlt} width="16" />
     <span className={styles['field-error-text']} data-testid={`error-${name}`}>
       {children}
