@@ -100,6 +100,9 @@ def book_event_ticket(
         parsed_response = pydantic_v1.parse_obj_as(serialize.ExternalEventBookingResponse, response.json())
     except pydantic_v1.ValidationError as err:
         raise exceptions.ExternalBookingException(f"External booking failed. Could not parse response: {err}")
+    parsed_response.tickets = _verify_and_return_tickets_with_same_quantity_as_booking(
+        parsed_response.tickets, booking, stock
+    )
     for ticket in parsed_response.tickets:
         add_to_queue(
             REDIS_EXTERNAL_BOOKINGS_NAME,
@@ -116,6 +119,35 @@ def book_event_ticket(
     return [
         Ticket(barcode=ticket.barcode, seat_number=ticket.seat) for ticket in parsed_response.tickets
     ], parsed_response.remainingQuantity
+
+
+def _verify_and_return_tickets_with_same_quantity_as_booking(
+    tickets: list[serialize.ExternalEventTicket], booking: bookings_models.Booking, stock: offers_models.Stock
+) -> list[serialize.ExternalEventTicket]:
+    if len(tickets) == booking.quantity:
+        return tickets
+    if len(tickets) == 2 and booking.quantity == 1:
+        add_to_queue(
+            REDIS_EXTERNAL_BOOKINGS_NAME,
+            {
+                "barcode": tickets[0].barcode,
+                "timestamp": datetime.datetime.utcnow().timestamp(),
+                "booking_type": RedisExternalBookingType.EVENT,
+                "cancel_event_info": {
+                    "provider_id": stock.offer.lastProvider.id,
+                    "stock_id": stock.id,
+                },
+            },
+        )
+        return [tickets[1]]
+    if len(tickets) == 1 and booking.quantity == 2:
+        cancel_event_ticket(stock.offer.lastProvider, stock, [tickets[0].barcode], False)
+        raise exceptions.ExternalBookingException(
+            "External booking failed with status code 201 but only one ticket was returned for duo reservation"
+        )
+    raise exceptions.ExternalBookingException(
+        f"External booking failed with status code 201 but {len(tickets)} tickets were returned instead of {booking.quantity}"
+    )
 
 
 def cancel_event_ticket(
