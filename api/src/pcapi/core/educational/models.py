@@ -1031,12 +1031,13 @@ class CollectiveBooking(PcObject, Base, Model):
         self,
         reason: CollectiveBookingCancellationReasons,
         cancel_even_if_used: bool = False,
+        cancel_even_if_reimbursed: bool = False,
     ) -> None:
         from pcapi.core.educational import exceptions
 
         if self.status is CollectiveBookingStatus.CANCELLED:
             raise exceptions.CollectiveBookingAlreadyCancelled()
-        if self.status is CollectiveBookingStatus.REIMBURSED:
+        if self.status is CollectiveBookingStatus.REIMBURSED and not cancel_even_if_reimbursed:
             raise exceptions.CollectiveBookingIsAlreadyUsed
         if self.status is CollectiveBookingStatus.USED and not cancel_even_if_used:
             raise exceptions.CollectiveBookingIsAlreadyUsed

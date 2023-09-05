@@ -19,6 +19,7 @@ import sqlalchemy.ext.mutable as sqla_mutable
 import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
+from pcapi.core.finance import utils as finance_utils
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.deactivable_mixin import DeactivableMixin
@@ -149,6 +150,9 @@ class FinanceEventMotive(enum.Enum):
     BOOKING_USED_AFTER_CANCELLATION = "booking-used-after-cancellation"
     BOOKING_UNUSED = "booking-unused"
     BOOKING_CANCELLED_AFTER_USE = "booking-cancelled-after-use"
+    INCIDENT_REVERSAL_OF_ORIGINAL_EVENT = "incident-reversal-of-original-event"
+    INCIDENT_NEW_PRICE = "incident-new-price"
+    INCIDENT_COMMERCIAL_GESTURE = "incident-commercial-gesture"
 
 
 class PricingStatus(enum.Enum):
@@ -168,6 +172,7 @@ class PricingLineCategory(enum.Enum):
     OFFERER_REVENUE = "offerer revenue"
     OFFERER_CONTRIBUTION = "offerer contribution"
     PASS_CULTURE_COMMISSION = "pass culture commission"
+    OFFERER_RETRIEVAL = "offerer retrieval"
 
 
 class PricingLogReason(enum.Enum):
@@ -265,6 +270,12 @@ class FinanceEvent(Base, Model):
     collectiveBooking: sqla_orm.Mapped["educational_models.CollectiveBooking | None"] = sqla_orm.relationship(
         "CollectiveBooking", foreign_keys=[collectiveBookingId]
     )
+    bookingFinanceIncidentId = sqla.Column(
+        sqla.BigInteger, sqla.ForeignKey("booking_finance_incident.id"), index=True, nullable=True
+    )
+    bookingFinanceIncident: sqla_orm.Mapped["BookingFinanceIncident | None"] = sqla_orm.relationship(
+        "BookingFinanceIncident", foreign_keys=[bookingFinanceIncidentId]
+    )
 
     # `venueId` is denormalized and comes from `booking.venueId`
     venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)
@@ -279,7 +290,7 @@ class FinanceEvent(Base, Model):
 
     __table_args__ = (
         # An event relates to an individual or a collective booking, never both.
-        sqla.CheckConstraint('num_nonnulls("bookingId", "collectiveBookingId") = 1'),
+        sqla.CheckConstraint('num_nonnulls("bookingId", "collectiveBookingId", "bookingFinanceIncidentId") = 1'),
         # There cannot be two pending or ready events for the same individual booking.
         sqla.Index(
             "idx_uniq_individual_booking_id",
@@ -291,6 +302,14 @@ class FinanceEvent(Base, Model):
         sqla.Index(
             "idx_uniq_collective_booking_id",
             collectiveBookingId,
+            postgresql_where=status.in_((FinanceEventStatus.PENDING, FinanceEventStatus.READY)),
+            unique=True,
+        ),
+        # Ditto for booking finance incidents.
+        sqla.Index(
+            "idx_uniq_booking_finance_incident_id",
+            bookingFinanceIncidentId,
+            motive,
             postgresql_where=status.in_((FinanceEventStatus.PENDING, FinanceEventStatus.READY)),
             unique=True,
         ),
@@ -480,8 +499,9 @@ class ReimbursementRule:
     def matches(self, booking: "bookings_models.Booking", cumulative_revenue: int) -> bool:
         return self.is_active(booking) and self.is_relevant(booking, cumulative_revenue)
 
-    def apply(self, booking: "bookings_models.Booking") -> decimal.Decimal:
-        return decimal.Decimal(booking.total_amount * self.rate)  # type: ignore [attr-defined]
+    def apply(self, booking: "bookings_models.Booking", custom_total_amount: int | None = None) -> decimal.Decimal:
+        custom_total_amount_euros = finance_utils.to_euros(custom_total_amount or 0)
+        return decimal.Decimal((custom_total_amount_euros or booking.total_amount) * self.rate)  # type: ignore [attr-defined]
 
     @property
     def group(self) -> RuleGroup:
@@ -563,10 +583,11 @@ class CustomReimbursementRule(ReimbursementRule, Base, Model):
             return True
         return False
 
-    def apply(self, booking: "bookings_models.Booking") -> decimal.Decimal:
+    def apply(self, booking: "bookings_models.Booking", custom_total_amount: int | None = None) -> decimal.Decimal:
         if self.amount is not None:
             return booking.quantity * self.amount
-        return booking.total_amount * self.rate
+        custom_total_amount_euros = finance_utils.to_euros(custom_total_amount or 0)
+        return (custom_total_amount_euros or booking.total_amount) * self.rate
 
     @property
     def description(self) -> str:
@@ -907,7 +928,7 @@ class BookingFinanceIncident(Base, Model):
     )
 
     incidentId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("finance_incident.id"), index=True, nullable=False)
-    incident: sqla_orm.Mapped["FinanceIncident | None"] = sqla_orm.relationship(
+    incident: sqla_orm.Mapped["FinanceIncident"] = sqla_orm.relationship(
         "FinanceIncident", foreign_keys=[incidentId], backref="booking_finance_incidents"
     )
 
@@ -925,3 +946,8 @@ class BookingFinanceIncident(Base, Model):
             name="booking_finance_incident_check",
         ),
     )
+
+    @property
+    def is_partial(self) -> bool:
+        booking = self.booking or self.collectiveBooking
+        return finance_utils.to_eurocents(booking.total_amount) != self.newTotalAmount

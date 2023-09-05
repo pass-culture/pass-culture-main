@@ -13,6 +13,7 @@ from werkzeug.exceptions import NotFound
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.educational import models as educational_models
+from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import api as history_api
@@ -391,7 +392,7 @@ def _initialize_additional_data(bookings: list[bookings_models.Booking]) -> dict
         additional_data["Nombre de réservations"] = len(bookings)
         additional_data[
             "Montant remboursé à l'acteur"
-        ] = f"{-sum(booking.pricing.amount for booking in bookings if booking.pricing)/100} €"
+        ] = f"{-sum(booking.pricing.amount for booking in bookings if booking.pricing) / 100} €"
 
     return additional_data
 
@@ -407,7 +408,7 @@ def _initialize_collective_booking_additional_data(collective_booking: education
     }
 
     if collective_booking.pricing:
-        additional_data["Montant remboursé à l'acteur"] = f"{-collective_booking.pricing.amount/100} €"
+        additional_data["Montant remboursé à l'acteur"] = f"{-collective_booking.pricing.amount / 100} €"
 
     return additional_data
 
@@ -496,23 +497,62 @@ def validate_finance_incident(finance_incident_id: int) -> utils.BackofficeRespo
     return render_finance_incident(finance_incident)
 
 
+def _create_finance_events_from_incident(
+    booking_finance_incident: finance_models.BookingFinanceIncident, save: bool = True
+) -> list[finance_models.FinanceEvent]:
+    finance_events = []
+    assert booking_finance_incident.incident
+    # In the case of commercial gesture, only one finance event will be created with the new price (incident amount)
+    if booking_finance_incident.incident.kind == finance_models.IncidentType.COMMERCIAL_GESTURE:
+        finance_events.append(
+            finance_api.add_event(
+                finance_models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE,
+                booking_incident=booking_finance_incident,
+                commit=False,
+            )
+        )
+    else:
+        # Retrieve initial amount of the booking
+        finance_events.append(
+            finance_api.add_event(
+                finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT,
+                booking_incident=booking_finance_incident,
+                commit=False,
+            )
+        )
+
+        if booking_finance_incident.is_partial:
+            # Declare new amount (equivalent to booking incident new total amount)
+            finance_events.append(
+                finance_api.add_event(
+                    finance_models.FinanceEventMotive.INCIDENT_NEW_PRICE,
+                    booking_incident=booking_finance_incident,
+                    commit=False,
+                )
+            )
+
+    if save:
+        repository.save(*finance_events)
+
+    return finance_events
+
+
 def _validate_finance_incident(finance_incident: finance_models.FinanceIncident) -> None:
-    # TODO (cmorel): create finance event(s) according to incident type
-    # TODO (cmorel): re-credit beneficiary
     # TODO (cmorel): send mail to beneficiary / educational redactor
 
+    finance_events = []
     for booking_incident in finance_incident.booking_finance_incidents:
-        if booking_incident.booking and -booking_incident.booking.pricing.amount == booking_incident.newTotalAmount:
-            booking_incident.booking.cancel_booking(
-                bookings_models.BookingCancellationReasons.FINANCE_INCIDENT, cancel_even_if_reimbursed=True
-            )
-        elif (
-            booking_incident.collectiveBooking
-            and -booking_incident.collectiveBooking.pricing.amount == booking_incident.newTotalAmount
-        ):
-            booking_incident.collectiveBooking.cancel_booking(
-                educational_models.CollectiveBookingCancellationReasons.FINANCE_INCIDENT, cancel_even_if_reimbursed=True
-            )
+        finance_events.extend(_create_finance_events_from_incident(booking_incident, save=False))
+        if not booking_incident.is_partial:
+            if booking_incident.booking:
+                booking_incident.booking.cancel_booking(
+                    bookings_models.BookingCancellationReasons.FINANCE_INCIDENT, cancel_even_if_reimbursed=True
+                )
+            elif booking_incident.collectiveBooking:
+                booking_incident.collectiveBooking.cancel_booking(
+                    educational_models.CollectiveBookingCancellationReasons.FINANCE_INCIDENT,
+                    cancel_even_if_reimbursed=True,
+                )
 
     beneficiaries_actions = []
     if not finance_incident.relates_to_collective_bookings:
@@ -541,7 +581,7 @@ def _validate_finance_incident(finance_incident: finance_models.FinanceIncident)
         linked_incident_id=finance_incident.id,
     )
 
-    repository.save(finance_incident, validation_action, *beneficiaries_actions)
+    repository.save(finance_incident, *finance_events, validation_action, *beneficiaries_actions)
 
 
 def _get_incident(finance_incident_id: int) -> finance_models.FinanceIncident:

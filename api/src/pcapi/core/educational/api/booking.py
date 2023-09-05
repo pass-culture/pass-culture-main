@@ -382,8 +382,8 @@ def cancel_collective_booking(
         )
         if cancelled_event:
             finance_api.add_event(
-                collective_booking,
                 finance_models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE,
+                booking=collective_booking,
                 commit=False,
             )
         finance_api.cancel_pricing(collective_booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
@@ -411,8 +411,7 @@ def uncancel_collective_booking(
         collective_booking.uncancel_booking()
         if collective_booking.status == educational_models.CollectiveBookingStatus.USED:
             finance_api.add_event(
-                collective_booking,
-                finance_models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION,
+                finance_models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION, booking=collective_booking
             )
         db.session.commit()
 

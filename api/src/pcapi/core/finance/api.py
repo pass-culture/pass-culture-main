@@ -108,7 +108,6 @@ _PRICE_BOOKINGS_ORDER_CLAUSE = (
     bookings_models.Booking.id,
 )
 
-
 PRICE_BOOKINGS_BATCH_SIZE = 100
 PRICE_EVENTS_BATCH_SIZE = 100
 CASHFLOW_BATCH_LABEL_PREFIX = "VIR"
@@ -130,13 +129,21 @@ def _get_pricing_ordering_date(
 
 
 def add_event(
-    booking: bookings_models.Booking | educational_models.CollectiveBooking,
     motive: models.FinanceEventMotive,
+    booking: bookings_models.Booking | educational_models.CollectiveBooking | None = None,
+    booking_incident: models.BookingFinanceIncident | None = None,
     commit: bool = True,
 ) -> models.FinanceEvent:
+    if booking_incident:
+        booking = booking_incident.booking or booking_incident.collectiveBooking
+
+    assert booking
     if motive in (
         models.FinanceEventMotive.BOOKING_USED,
         models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION,
+        models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT,
+        models.FinanceEventMotive.INCIDENT_NEW_PRICE,
+        models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE,
     ):
         value_date = booking.dateUsed
     elif motive == models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE:
@@ -168,8 +175,11 @@ def add_event(
             pricing_ordering_date = None
 
     event = models.FinanceEvent(
-        booking=booking if isinstance(booking, bookings_models.Booking) else None,  # type: ignore [arg-type]
-        collectiveBooking=booking if isinstance(booking, educational_models.CollectiveBooking) else None,  # type: ignore [arg-type]
+        booking=booking if isinstance(booking, bookings_models.Booking) and not booking_incident else None,  # type: ignore [arg-type]
+        collectiveBooking=booking  # type: ignore [arg-type]
+        if isinstance(booking, educational_models.CollectiveBooking) and not booking_incident
+        else None,
+        bookingFinanceIncident=booking_incident,  # type: ignore [arg-type]
         status=status,
         motive=motive,
         valueDate=value_date,
@@ -692,8 +702,18 @@ def price_event(event: models.FinanceEvent) -> models.Pricing | None:
                 )
                 .one()
             )
+        elif event.bookingFinanceIncidentId:
+            event = (
+                models.FinanceEvent.query.filter_by(id=event.id)
+                .options(
+                    sqla_orm.joinedload(models.FinanceEvent.bookingFinanceIncident, innerjoin=True),
+                )
+                .one()
+            )
         else:
-            raise ValueError("Finance event should be linked to an individual booking or a collectiveBooking")
+            raise ValueError(
+                "Finance event should be linked to an individual booking, a collectiveBooking or a booking finance incident."
+            )
 
         # Perhaps the event has been cancelled (because the booking
         # has been marked as unused) after we acquired the lock?
@@ -801,34 +821,73 @@ def _get_current_revenue(event: models.FinanceEvent) -> int:
 
 
 def _price_event(event: models.FinanceEvent) -> models.Pricing:
-    # FIXME (dbaty, 2023-04-12): calculation of revenue (and the
-    # condition below) need to be adapted when events can be linked to
-    # FinanceIncidentBooking's.
     new_revenue = _get_current_revenue(event)
-    booking = event.booking or event.collectiveBooking
-    if not event.collectiveBookingId:  # Collective bookings are not included in revenue
-        new_revenue += utils.to_eurocents(event.booking.total_amount)
+    is_incident_event = event.motive in (
+        models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT,
+        models.FinanceEventMotive.INCIDENT_NEW_PRICE,
+        models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE,
+    )
+    individual_booking = event.bookingFinanceIncident.booking if event.bookingFinanceIncident else event.booking
+    collective_booking = (
+        event.bookingFinanceIncident.collectiveBooking if event.bookingFinanceIncident else event.collectiveBooking
+    )
+    booking = individual_booking or collective_booking
+
+    if not collective_booking:  # Collective bookings are not included in revenue
+        if not is_incident_event:
+            new_revenue += utils.to_eurocents(individual_booking.total_amount)
+        elif event.motive in (
+            models.FinanceEventMotive.INCIDENT_NEW_PRICE,
+            models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE,
+        ):
+            new_revenue += event.bookingFinanceIncident.newTotalAmount
+
     rule_finder = reimbursement.CustomRuleFinder()
     rule = reimbursement.get_reimbursement_rule(booking, rule_finder, new_revenue)
-    amount = -utils.to_eurocents(rule.apply(booking))  # outgoing, thus negative
-    # `Pricing.amount` equals the sum of the amount of all lines.
-    is_booking_collective = isinstance(booking, educational_models.CollectiveBooking)
-    lines = [
-        models.PricingLine(
-            amount=-utils.to_eurocents(
-                booking.collectiveStock.price if is_booking_collective else booking.total_amount
-            ),
-            category=models.PricingLineCategory.OFFERER_REVENUE,
-        )
-    ]
-    lines.append(
-        models.PricingLine(
-            amount=amount - lines[0].amount,
-            category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
-        )
-    )
 
-    assert booking.dateUsed  # helps mypy when setting Pricing.valueDate below
+    if event.motive == models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT:
+        original_pricing = models.Pricing.query.filter_by(
+            status=models.PricingStatus.INVOICED,
+            booking=individual_booking,
+            collectiveBooking=collective_booking,
+        ).one()
+        amount = -original_pricing.amount  # inverse the original pricing amount (positive)
+        lines = [
+            models.PricingLine(
+                category=models.PricingLineCategory.OFFERER_RETRIEVAL,
+                amount=-original_line.amount,
+            )
+            for original_line in original_pricing.lines
+        ]
+    elif is_incident_event:
+        amount = -utils.to_eurocents(
+            rule.apply(booking, event.bookingFinanceIncident.newTotalAmount)
+        )  # outgoing, thus negative
+        lines = [
+            models.PricingLine(
+                amount=-amount,
+                category=models.PricingLineCategory.OFFERER_REVENUE,
+            )
+        ]
+    else:
+        is_booking_collective = isinstance(booking, educational_models.CollectiveBooking)
+        amount = -utils.to_eurocents(rule.apply(booking))  # outgoing, thus negative
+        lines = [
+            models.PricingLine(
+                amount=-utils.to_eurocents(
+                    booking.collectiveStock.price if is_booking_collective else booking.total_amount
+                ),
+                category=models.PricingLineCategory.OFFERER_REVENUE,
+            )
+        ]
+        lines.append(
+            models.PricingLine(
+                amount=amount - lines[0].amount,
+                category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
+            )
+        )
+
+    # `Pricing.amount` equals the sum of the amount of all lines.
     return models.Pricing(
         status=_get_initial_pricing_status(booking),
         pricingPointId=event.pricingPointId,
@@ -838,8 +897,8 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
         customRuleId=rule.id if isinstance(rule, models.CustomReimbursementRule) else None,
         revenue=new_revenue,
         lines=lines,
-        bookingId=event.bookingId,
-        collectiveBookingId=event.collectiveBookingId,
+        booking=individual_booking if not is_incident_event else None,
+        collectiveBooking=collective_booking if not is_incident_event else None,
         eventId=event.id,
         venueId=booking.venueId,  # denormalized for performance in `_generate_cashflows()`
     )

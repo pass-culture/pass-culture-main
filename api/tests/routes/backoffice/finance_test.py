@@ -17,6 +17,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.routes.backoffice.filters import format_booking_status
 from pcapi.routes.backoffice.filters import format_date_time
 from pcapi.routes.backoffice.finance.blueprint import _cancel_finance_incident
+from pcapi.routes.backoffice.finance.blueprint import _create_finance_events_from_incident
 
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
@@ -154,7 +155,11 @@ class ValidateIncidentTest(PostEndpointHelper):
 
     def test_validate_incident(self, authenticated_client):
         booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
-            booking__pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED)]
+            booking__pricings=[
+                finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-1000)
+            ],
+            booking__amount=10.10,
+            newTotalAmount=1010,
         )
 
         response = self.post_to_endpoint(authenticated_client, finance_incident_id=booking_incident.incident.id)
@@ -182,6 +187,10 @@ class ValidateIncidentTest(PostEndpointHelper):
             and beneficiary_action.actionType == history_models.ActionType.FINANCE_INCIDENT_USER_RECREDIT
         )
 
+        finance_events = finance_models.FinanceEvent.query.all()
+        assert len(finance_events) == 1
+        assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
+
     @pytest.mark.parametrize(
         "initial_status", [finance_models.IncidentStatus.CANCELLED, finance_models.IncidentStatus.VALIDATED]
     )
@@ -197,6 +206,159 @@ class ValidateIncidentTest(PostEndpointHelper):
         )
         finance_incident = finance_models.FinanceIncident.query.get(finance_incident.id)
         assert finance_incident.status == initial_status
+        assert finance_models.FinanceEvent.query.count() == 0
+
+
+class CreateIncidentFinanceEventTest:
+    @pytest.mark.parametrize(
+        "incident_type",
+        [
+            finance_models.IncidentType.OVERPAYMENT,
+            finance_models.IncidentType.OFFER_PRICE_REGULATION,
+            finance_models.IncidentType.FRAUD,
+        ],
+    )
+    def test_create_event_on_total_booking_incident(self, incident_type):
+        total_booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+            booking__pricings=[
+                finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-1000)
+            ],
+            booking__amount=10.10,
+            incident__kind=incident_type,
+            newTotalAmount=1010,
+        )
+
+        finance_events = _create_finance_events_from_incident(total_booking_incident)
+
+        assert len(finance_events) == 1
+        assert finance_events[0].bookingFinanceIncidentId == total_booking_incident.id
+        assert finance_events[0].status == finance_models.FinanceEventStatus.PENDING
+        assert finance_events[0].venue and finance_events[0].venue == total_booking_incident.booking.venue
+        assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
+
+    @pytest.mark.parametrize(
+        "incident_type",
+        [
+            finance_models.IncidentType.OVERPAYMENT,
+            finance_models.IncidentType.OFFER_PRICE_REGULATION,
+            finance_models.IncidentType.FRAUD,
+        ],
+    )
+    def test_create_event_on_total_collective_booking_incident(self, incident_type):
+        total_booking_incident = finance_factories.CollectiveBookingFinanceIncidentFactory(
+            collectiveBooking__pricings=[
+                finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-10000)
+            ],
+            incident__kind=incident_type,
+            newTotalAmount=10000,
+        )
+
+        finance_events = _create_finance_events_from_incident(total_booking_incident)
+
+        assert len(finance_events) == 1
+
+        assert finance_events[0].bookingFinanceIncidentId == total_booking_incident.id
+        assert finance_events[0].status == finance_models.FinanceEventStatus.PENDING
+        assert finance_events[0].venue and finance_events[0].venue == total_booking_incident.collectiveBooking.venue
+        assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
+
+    @pytest.mark.parametrize(
+        "incident_type",
+        [
+            finance_models.IncidentType.OVERPAYMENT,
+            finance_models.IncidentType.OFFER_PRICE_REGULATION,
+            finance_models.IncidentType.FRAUD,
+        ],
+    )
+    def test_create_event_on_partial_booking_incident(self, incident_type):
+        partial_booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+            booking__pricings=[
+                finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-1000)
+            ],
+            incident__kind=incident_type,
+            newTotalAmount=600,
+        )
+
+        finance_events = _create_finance_events_from_incident(partial_booking_incident)
+
+        assert len(finance_events) == 2
+
+        assert finance_events[0].bookingFinanceIncidentId == partial_booking_incident.id
+        assert finance_events[0].status == finance_models.FinanceEventStatus.PENDING
+        assert finance_events[0].venue and finance_events[0].venue == partial_booking_incident.booking.venue
+        assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
+
+        assert finance_events[1].bookingFinanceIncidentId == partial_booking_incident.id
+        assert finance_events[1].status == finance_models.FinanceEventStatus.PENDING
+        assert finance_events[1].venue and finance_events[0].venue == partial_booking_incident.booking.venue
+        assert finance_events[1].motive == finance_models.FinanceEventMotive.INCIDENT_NEW_PRICE
+
+    @pytest.mark.parametrize(
+        "incident_type",
+        [
+            finance_models.IncidentType.OVERPAYMENT,
+            finance_models.IncidentType.OFFER_PRICE_REGULATION,
+            finance_models.IncidentType.FRAUD,
+        ],
+    )
+    def test_create_event_on_partial_collective_booking_incident(self, incident_type):
+        partial_booking_incident = finance_factories.CollectiveBookingFinanceIncidentFactory(
+            collectiveBooking__pricings=[
+                finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-10000)
+            ],
+            incident__kind=incident_type,
+            newTotalAmount=5500,
+        )
+
+        finance_events = _create_finance_events_from_incident(partial_booking_incident)
+
+        assert len(finance_events) == 2
+
+        assert finance_events[0].bookingFinanceIncidentId == partial_booking_incident.id
+        assert finance_events[0].status == finance_models.FinanceEventStatus.PENDING
+        assert finance_events[0].venue and finance_events[0].venue == partial_booking_incident.collectiveBooking.venue
+        assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
+
+        assert finance_events[1].bookingFinanceIncidentId == partial_booking_incident.id
+        assert finance_events[1].status == finance_models.FinanceEventStatus.PENDING
+        assert finance_events[1].venue and finance_events[1].venue == partial_booking_incident.collectiveBooking.venue
+        assert finance_events[1].motive == finance_models.FinanceEventMotive.INCIDENT_NEW_PRICE
+
+    def test_create_commercial_gesture_event_on_booking(self):
+        booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
+            booking__pricings=[
+                finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-1000)
+            ],
+            incident__kind=finance_models.IncidentType.COMMERCIAL_GESTURE,
+            newTotalAmount=800,
+        )
+
+        finance_events = _create_finance_events_from_incident(booking_incident)
+
+        assert len(finance_events) == 1
+
+        assert finance_events[0].bookingFinanceIncidentId == booking_incident.id
+        assert finance_events[0].status == finance_models.FinanceEventStatus.PENDING
+        assert finance_events[0].venue and finance_events[0].venue == booking_incident.booking.venue
+        assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE
+
+    def test_create_commercial_gesture_event_on_collective_booking(self):
+        booking_incident = finance_factories.CollectiveBookingFinanceIncidentFactory(
+            collectiveBooking__pricings=[
+                finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-1000)
+            ],
+            incident__kind=finance_models.IncidentType.COMMERCIAL_GESTURE,
+            newTotalAmount=800,
+        )
+
+        finance_events = _create_finance_events_from_incident(booking_incident)
+
+        assert len(finance_events) == 1
+
+        assert finance_events[0].bookingFinanceIncidentId == booking_incident.id
+        assert finance_events[0].status == finance_models.FinanceEventStatus.PENDING
+        assert finance_events[0].venue and finance_events[0].venue == booking_incident.collectiveBooking.venue
+        assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE
 
 
 class GetIncidentTest(GetEndpointHelper):
