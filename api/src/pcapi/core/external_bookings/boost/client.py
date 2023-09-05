@@ -104,6 +104,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
                 "barcode": sale_confirmation_response.data.code,
                 "venue_id": booking.venueId,
                 "timestamp": datetime.datetime.utcnow().timestamp(),
+                "booking_type": bookings_constants.RedisExternalBookingType.CINEMA,
             },
         )
 

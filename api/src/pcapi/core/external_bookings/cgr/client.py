@@ -6,6 +6,7 @@ from pcapi.connectors.cgr.cgr import get_seances_pass_culture
 from pcapi.connectors.cgr.cgr import reservation_pass_culture
 from pcapi.connectors.serialization import cgr_serializers
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
+from pcapi.core.bookings.constants import RedisExternalBookingType
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.models as external_bookings_models
 from pcapi.core.providers.repository import get_cgr_cinema_details
@@ -52,6 +53,7 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
                 "barcode": response.QrCode,
                 "venue_id": booking.venueId,
                 "timestamp": datetime.datetime.utcnow().timestamp(),
+                "booking_type": RedisExternalBookingType.CINEMA,
             },
         )
         if booking.quantity == 2:
