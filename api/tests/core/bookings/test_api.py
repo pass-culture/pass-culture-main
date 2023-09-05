@@ -844,6 +844,34 @@ class CancelByBeneficiaryTest:
         assert booking.status is not BookingStatus.CANCELLED
         assert not booking.cancellationReason
 
+    def test_no_external_booking_error_when_trying_to_cancel_with_already_canceled_ticket(self, requests_mock):
+        external_url = "https://book_my_offer.com"
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider",
+            bookingExternalUrl=external_url + "/book",
+            cancelExternalUrl=external_url + "/cancel",
+        )
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = offers_factories.EventStockFactory(
+            lastProvider=provider,
+            offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
+            offer__lastProvider=provider,
+            idAtProviders="",
+        )
+        booking = bookings_factories.BookingFactory(stock=stock)
+        offerer_factories.ApiKeyFactory(offerer=booking.offerer)
+        external_bookings_factories.ExternalBookingFactory(booking=booking, barcode="1234567890123")
+        requests_mock.post(
+            external_url + "/cancel",
+            json={"error": "already_cancelled"},
+            status_code=409,
+        )
+
+        assert api.cancel_booking_by_beneficiary(booking.user, booking) is None
+
+        assert booking.status is BookingStatus.CANCELLED
+        assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
+
     @patch("pcapi.core.bookings.api.external_bookings_api.cancel_booking")
     @override_features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_cds_cancel_external_booking(self, mocked_cancel_booking):
