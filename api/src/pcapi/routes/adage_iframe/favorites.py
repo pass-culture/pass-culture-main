@@ -25,9 +25,6 @@ def post_collective_offer_favorites(
     except educational_exceptions.CollectiveOfferNotFound:
         raise ApiErrors({"offer": "l'offre est introuvable"}, status_code=404)
 
-    if authenticated_information.email is None:
-        raise ApiErrors({"message": "email is mandatory"}, status_code=400)
-
     redactor = find_redactor_by_email(authenticated_information.email)
     if redactor is None:
         raise ApiErrors({"message": "Redactor not found"}, status_code=403)
@@ -52,9 +49,6 @@ def post_collective_template_favorites(
     except educational_exceptions.CollectiveOfferTemplateNotFound:
         raise ApiErrors({"offer": ["Aucune offre trouvée pour cet id."]}, status_code=404)
 
-    if authenticated_information.email is None:
-        raise ApiErrors({"message": "email is mandatory"}, status_code=400)
-
     redactor = find_redactor_by_email(authenticated_information.email)
     if redactor is None:
         raise ApiErrors({"message": "Redactor not found"}, status_code=403)
@@ -71,9 +65,6 @@ def post_collective_template_favorites(
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @adage_jwt_required
 def delete_favorite_for_collective_offer(authenticated_information: AuthenticatedInformation, offer_id: int) -> None:
-    if authenticated_information.email is None:
-        raise ApiErrors({"message": "email is mandatory"}, status_code=400)
-
     redactor = find_redactor_by_email(authenticated_information.email)
     if redactor is None:
         raise ApiErrors({"message": "Redactor not found"}, status_code=403)
@@ -98,9 +89,6 @@ def delete_favorite_for_collective_offer(authenticated_information: Authenticate
 def delete_favorite_for_collective_offer_template(
     authenticated_information: AuthenticatedInformation, offer_template_id: int
 ) -> None:
-    if authenticated_information.email is None:
-        raise ApiErrors({"message": "email is mandatory"}, status_code=400)
-
     redactor = find_redactor_by_email(authenticated_information.email)
     if redactor is None:
         raise ApiErrors({"message": "Redactor not found"}, status_code=403)
@@ -125,9 +113,6 @@ def delete_favorite_for_collective_offer_template(
 def get_collective_favorites(
     authenticated_information: AuthenticatedInformation,
 ) -> FavoritesResponseModel:
-    if authenticated_information.email is None:
-        raise ApiErrors({"message": "email is mandatory"}, status_code=400)
-
     redactor = find_redactor_by_email(authenticated_information.email)
     if redactor is None:
         raise ApiErrors({"message": "Redactor not found"}, status_code=403)

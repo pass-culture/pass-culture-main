@@ -39,11 +39,16 @@ def adage_jwt_required(route_function):  # type: ignore [no-untyped-def]
                 logger.warning("Token does not contain an expiration date")
                 raise InvalidTokenError("No expiration date provided")
 
+            email = adage_jwt_decoded.get("mail")
+            if not email:
+                logger.warning("Token does not contain an email")
+                raise ForbiddenError({"Authorization": "Unrecognized token"})
+
             authenticated_information = AuthenticatedInformation(
                 civility=adage_jwt_decoded.get("civilite"),
                 lastname=adage_jwt_decoded.get("nom"),
                 firstname=adage_jwt_decoded.get("prenom"),
-                email=adage_jwt_decoded.get("mail"),
+                email=email,
                 uai=adage_jwt_decoded.get("uai"),
                 lat=adage_jwt_decoded.get("lat"),
                 lon=adage_jwt_decoded.get("lon"),

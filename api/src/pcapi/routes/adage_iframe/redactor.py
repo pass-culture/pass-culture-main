@@ -15,9 +15,6 @@ def save_redactor_preferences(
     body: serialization.redactor.RedactorPreferences,
     authenticated_information: AuthenticatedInformation,
 ) -> None:
-    if not authenticated_information.email:
-        raise ApiErrors({"message": "Missing authentication information"}, status_code=401)
-
     redactor = educational_repository.find_redactor_by_email(authenticated_information.email)
     if not redactor:
         raise ApiErrors({"message": "Redactor not found"}, status_code=403)
