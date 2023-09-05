@@ -2,7 +2,7 @@ from flask_login import current_user
 
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import exceptions
-from pcapi.core.bookings import repository as booking_repository
+from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import validation as bookings_validation
 import pcapi.core.external_bookings.exceptions as external_bookings_exceptions
 from pcapi.models import api_errors
@@ -33,6 +33,16 @@ BASE_CODE_DESCRIPTIONS = {
 }
 
 
+def _get_booking_by_token_or_404(token: str) -> bookings_models.Booking:
+    booking = bookings_models.Booking.query.filter_by(token=token.upper()).one_or_none()
+    if not booking:
+        errors = api_errors.ResourceNotFoundError()
+        errors.add_error("global", "Cette contremarque n'a pas été trouvée")
+        raise errors
+
+    return booking
+
+
 @blueprints.v2_prefixed_public_api.route("/bookings/token/<token>", methods=["GET"])
 @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
 @basic_auth_rate_limiter()
@@ -56,7 +66,7 @@ def get_booking_by_token_v2(token: str) -> serialization.GetBookingResponse:
     Le code “contremarque” ou "token" est une chaîne de caractères permettant d’identifier la réservation et qui sert de preuve de réservation.
     Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et lui est transmis à cette occasion.
     """
-    booking = booking_repository.find_by(token=token)
+    booking = _get_booking_by_token_or_404(token)
 
     if current_user.is_authenticated:
         # warning : current user is not none when user is not logged in
@@ -97,7 +107,7 @@ def patch_booking_use_by_token(token: str) -> None:
 
     Pour confirmer que la réservation a bien été utilisée par le jeune.
     """
-    booking = booking_repository.find_by(token=token)
+    booking = _get_booking_by_token_or_404(token)
 
     if current_user.is_authenticated:
         check_user_can_validate_bookings_v2(current_user, booking.offererId)
@@ -143,7 +153,7 @@ def patch_cancel_booking_by_token(token: str) -> None:
     cette API permet d’annuler la réservation d’un utilisateur si elle n’a pas encore été validé.
     """
     token = token.upper()
-    booking = booking_repository.find_by(token=token)
+    booking = _get_booking_by_token_or_404(token)
 
     if current_user.is_authenticated:
         check_user_has_access_to_offerer(current_user, booking.offererId)
@@ -190,7 +200,7 @@ def patch_cancel_booking_by_token(token: str) -> None:
 def patch_booking_keep_by_token(token: str) -> None:
     # in French, to be used by Swagger for the API documentation
     """Annulation de la validation d'une réservation."""
-    booking = booking_repository.find_by(token=token)
+    booking = _get_booking_by_token_or_404(token)
 
     if current_user.is_authenticated:
         check_user_can_validate_bookings_v2(current_user, booking.offererId)
