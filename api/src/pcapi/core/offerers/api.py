@@ -1978,7 +1978,11 @@ def get_offerer_members(offerer: models.Offerer) -> list[typing.Tuple[str, Offer
 
 
 def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
-    offerer_invitations = models.OffererInvitation.query.filter_by(email=user.email).all()
+    offerer_invitations = (
+        models.OffererInvitation.query.filter_by(email=user.email)
+        .filter_by(status=offerers_models.InvitationStatus.PENDING)
+        .all()
+    )
     if not offerer_invitations:
         return
     for offerer_invitation in offerer_invitations:
@@ -1986,8 +1990,8 @@ def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
         user_offerer = models.UserOfferer(
             offerer=offerer_invitation.offerer, user=user, validationStatus=ValidationStatus.NEW
         )
-        db.session.add(user_offerer)
-        db.session.delete(offerer_invitation)
+        offerer_invitation.status = offerers_models.InvitationStatus.ACCEPTED
+        db.session.add_all([user_offerer, offerer_invitation])
         db.session.commit()
         external_attributes_api.update_external_pro(user.email)
         zendesk_sell.create_offerer(user_offerer.offerer)
