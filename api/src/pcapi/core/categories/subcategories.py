@@ -420,6 +420,20 @@ SUPPORT_PHYSIQUE_MUSIQUE = Subcategory.from_new(
         "homepage_label_name": HomepageLabels.MUSIQUE.name,
     },
 )
+SUPPORT_PHYSIQUE_MUSIQUE_CD = Subcategory.from_new(
+    subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_CD,
+    {
+        "search_group_name": SearchGroups.MUSIQUE.name,
+        "homepage_label_name": HomepageLabels.MUSIQUE.name,
+    },
+)
+SUPPORT_PHYSIQUE_MUSIQUE_VINYLE = Subcategory.from_new(
+    subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE,
+    {
+        "search_group_name": SearchGroups.MUSIQUE.name,
+        "homepage_label_name": HomepageLabels.MUSIQUE.name,
+    },
+)
 TELECHARGEMENT_MUSIQUE = Subcategory.from_new(
     subcategories_v2.TELECHARGEMENT_MUSIQUE,
     {
@@ -693,6 +707,8 @@ ALL_SUBCATEGORIES = (
     SPECTACLE_VENTE_DISTANCE,
     SUPPORT_PHYSIQUE_FILM,
     SUPPORT_PHYSIQUE_MUSIQUE,
+    SUPPORT_PHYSIQUE_MUSIQUE_CD,
+    SUPPORT_PHYSIQUE_MUSIQUE_VINYLE,
     TELECHARGEMENT_LIVRE_AUDIO,
     TELECHARGEMENT_MUSIQUE,
     VISITE_GUIDEE,
