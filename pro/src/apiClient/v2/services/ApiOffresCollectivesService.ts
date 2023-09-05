@@ -9,6 +9,7 @@ import type { CollectiveOffersListResponseModel } from '../models/CollectiveOffe
 import type { CollectiveOffersListStudentLevelsResponseModel } from '../models/CollectiveOffersListStudentLevelsResponseModel';
 import type { CollectiveOffersListSubCategoriesResponseModel } from '../models/CollectiveOffersListSubCategoriesResponseModel';
 import type { CollectiveOffersListVenuesResponseModel } from '../models/CollectiveOffersListVenuesResponseModel';
+import type { GetOfferersVenuesResponse } from '../models/GetOfferersVenuesResponse';
 import type { GetPublicCollectiveOfferResponseModel } from '../models/GetPublicCollectiveOfferResponseModel';
 import type { ListNationalProgramsResponseModel } from '../models/ListNationalProgramsResponseModel';
 import type { OfferStatus } from '../models/OfferStatus';
@@ -129,6 +130,29 @@ export class ApiOffresCollectivesService {
       errors: {
         401: `Authentification nécessaire`,
         403: `Vous n'avez pas les droits nécessaires pour voir ces informations`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * Récupération des lieux associés au fournisseur authentifié par le jeton d'API; groupés par structures.
+   * Tous les lieux enregistrés, sont listés ici avec leurs coordonnées.
+   * @param siren
+   * @returns GetOfferersVenuesResponse La liste des lieux, groupés par structures
+   * @throws ApiError
+   */
+  public getOffererVenues(
+    siren?: string | null,
+  ): CancelablePromise<GetOfferersVenuesResponse> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/v2/collective/offerer_venues',
+      query: {
+        'siren': siren,
+      },
+      errors: {
+        401: `Authentification nécessaire`,
         422: `Unprocessable Entity`,
       },
     });

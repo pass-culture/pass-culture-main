@@ -4,6 +4,7 @@ import typing
 import pydantic.v1 as pydantic_v1
 
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers.api import OffererVenues
 from pcapi.routes import serialization
 from pcapi.utils import date as date_utils
 
@@ -64,3 +65,41 @@ class VenueResponse(serialization.ConfiguredBaseModel):
 
     class Config:
         json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
+
+
+class OffererResponse(serialization.ConfiguredBaseModel):
+    id: int
+    dateCreated: datetime.datetime = pydantic_v1.Field(..., alias="createdDatetime")
+    name: str = pydantic_v1.Field(example="Structure A")
+    siren: str | None = pydantic_v1.Field(example="123456789")
+
+
+class GetOffererVenuesResponse(serialization.ConfiguredBaseModel):
+    offerer: OffererResponse = pydantic_v1.Field(
+        ..., description="Offerer to which the venues belong. Entity linked to the api key used."
+    )
+    venues: typing.List[VenueResponse]
+
+
+class GetOfferersVenuesResponse(serialization.BaseModel):
+    __root__: typing.List[GetOffererVenuesResponse]
+
+    class Config:
+        json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
+
+    @classmethod
+    def _serialize_offerer_venues(cls, row: OffererVenues) -> GetOffererVenuesResponse:
+        venues = [VenueResponse.build_model(venue) for venue in row.venues]
+        return GetOffererVenuesResponse(offerer=row.offerer, venues=venues)
+
+    @classmethod
+    def serialize_offerers_venues(
+        cls,
+        rows: typing.Iterable[OffererVenues],
+    ) -> "GetOfferersVenuesResponse":
+        offerers_venues = [cls._serialize_offerer_venues(row) for row in rows]
+        return cls(__root__=offerers_venues)
+
+
+class GetOfferersVenuesQuery(serialization.ConfiguredBaseModel):
+    siren: str | None = pydantic_v1.Field(example="123456789", regex=r"^\d{9}$")
