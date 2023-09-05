@@ -766,6 +766,12 @@ class StepperTest:
                 ].retryable_action_hint,
             ),
             (
+                fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA,
+                ubble_models.UBBLE_CODE_ERROR_MAPPING[
+                    fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA
+                ].retryable_action_hint,
+            ),
+            (
                 fraud_models.FraudReasonCode.DOCUMENT_DAMAGED,
                 ubble_models.UBBLE_CODE_ERROR_MAPPING[
                     fraud_models.FraudReasonCode.DOCUMENT_DAMAGED
