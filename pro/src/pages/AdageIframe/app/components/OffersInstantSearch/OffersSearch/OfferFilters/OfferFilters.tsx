@@ -78,13 +78,16 @@ export const OfferFilters = ({
   const onReset = (
     modalName: string,
     value: string | string[] | number,
-    fieldName?: string
+    fieldName?: string,
+    closeModal: boolean = true
   ) => {
     clearFormikFieldValue(fieldName || modalName, value)
     if (modalName === 'localisation') {
       setLocalisationFilterState(LocalisationFilterStates.NONE)
     }
-    setModalOpenStatus(prevState => ({ ...prevState, [modalName]: false }))
+    if (closeModal) {
+      setModalOpenStatus(prevState => ({ ...prevState, [modalName]: false }))
+    }
   }
 
   const onSearch = (modalName: string) => {
@@ -247,7 +250,9 @@ export const OfferFilters = ({
                 {localisationFilterState ===
                   LocalisationFilterStates.DEPARTMENTS && (
                   <ModalFilterLayout
-                    onClean={() => onReset('localisation', [], 'departments')}
+                    onClean={() =>
+                      onReset('localisation', [], 'departments', false)
+                    }
                     onSearch={() => onSearch('localisation')}
                     title="Choisir un département"
                   >
@@ -263,7 +268,9 @@ export const OfferFilters = ({
                 {localisationFilterState ===
                   LocalisationFilterStates.ACADEMIES && (
                   <ModalFilterLayout
-                    onClean={() => onReset('localisation', [], 'academies')}
+                    onClean={() =>
+                      onReset('localisation', [], 'academies', false)
+                    }
                     onSearch={() => onSearch('localisation')}
                     title="Choisir une académie"
                   >
@@ -279,7 +286,9 @@ export const OfferFilters = ({
                 {localisationFilterState ===
                   LocalisationFilterStates.GEOLOCATION && (
                   <ModalFilterLayout
-                    onClean={() => onReset('localisation', 50, 'geolocRadius')}
+                    onClean={() =>
+                      onReset('localisation', 50, 'geolocRadius', false)
+                    }
                     onSearch={() => onSearch('localisation')}
                     title="Autour de mon établissement scolaire"
                   >
