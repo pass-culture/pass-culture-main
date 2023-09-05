@@ -13,7 +13,6 @@ import sqlalchemy as sa
 
 from pcapi import settings
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.categories import subcategories_v2
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.api import booking as educational_api_booking
@@ -22,8 +21,9 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.routes.backoffice_v3 import autocomplete
 from pcapi.routes.backoffice_v3 import utils
+from pcapi.routes.backoffice_v3.bookings import form as booking_forms
+from pcapi.routes.backoffice_v3.bookings import helpers as booking_helpers
 from pcapi.routes.backoffice_v3.forms import empty as empty_forms
-from pcapi.utils import date as date_utils
 
 from . import form as collective_booking_forms
 
@@ -91,67 +91,22 @@ def _get_collective_bookings(
         )
     )
 
-    if form.from_date.data:
-        from_datetime = date_utils.date_to_localized_datetime(form.from_date.data, datetime.datetime.min.time())
-        base_query = base_query.filter(educational_models.CollectiveBooking.dateCreated >= from_datetime)
-
-    if form.to_date.data:
-        to_datetime = date_utils.date_to_localized_datetime(form.to_date.data, datetime.datetime.max.time())
-        base_query = base_query.filter(educational_models.CollectiveBooking.dateCreated <= to_datetime)
-
-    if form.event_from_date.data:
-        event_from_datetime = date_utils.date_to_localized_datetime(
-            form.event_from_date.data, datetime.datetime.min.time()
-        )
-        base_query = base_query.filter(educational_models.CollectiveStock.beginningDatetime >= event_from_datetime)
-
-    if form.event_to_date.data:
-        event_to_datetime = date_utils.date_to_localized_datetime(form.event_to_date.data, datetime.datetime.max.time())
-        base_query = base_query.filter(educational_models.CollectiveStock.beginningDatetime <= event_to_datetime)
-
-    if form.offerer.data:
-        base_query = base_query.filter(educational_models.CollectiveBooking.offererId.in_(form.offerer.data))
-
-    if form.venue.data:
-        base_query = base_query.filter(educational_models.CollectiveBooking.venueId.in_(form.venue.data))
-
-    if form.category.data:
-        base_query = base_query.filter(
-            educational_models.CollectiveOffer.subcategoryId.in_(
-                subcategory.id
-                for subcategory in subcategories_v2.ALL_SUBCATEGORIES
-                if subcategory.category.id in form.category.data
-            )
-        )
-
-    if form.status.data:
-        base_query = base_query.filter(educational_models.CollectiveBooking.status.in_(form.status.data))
-
-    if form.cashflow_batches.data:
-        base_query = (
-            base_query.join(finance_models.Pricing).join(finance_models.CashflowPricing).join(finance_models.Cashflow)
-        )
-        base_query = base_query.filter(finance_models.Cashflow.batchId.in_(form.cashflow_batches.data))
-
-    if form.q.data:
-        search_query = form.q.data
-
-        if search_query.isnumeric():
-            # Performance is really better than .filter(sa.or_(...)) when searching for an id in different tables
-            query = base_query.filter(educational_models.CollectiveBooking.id == int(search_query)).union(
-                base_query.filter(educational_models.CollectiveOffer.id == int(search_query)),
-                base_query.filter(educational_models.EducationalInstitution.id == int(search_query)),
-            )
-        else:
-            name = "%{}%".format(search_query)
-            query = base_query.filter(
-                educational_models.EducationalInstitution.name.ilike(name),
-            ).union(base_query.filter(educational_models.CollectiveOffer.name.ilike(name)))
-    else:
-        query = base_query
-
-    # +1 to check if there are more results than requested
-    return query.limit(form.limit.data + 1).all()
+    return booking_helpers.get_bookings(
+        base_query=base_query,
+        form=form,
+        stock_class=educational_models.CollectiveStock,
+        booking_class=educational_models.CollectiveBooking,
+        offer_class=educational_models.CollectiveOffer,
+        id_filters=[
+            educational_models.CollectiveBooking.id,
+            educational_models.CollectiveOffer.id,
+            educational_models.EducationalInstitution.id,
+        ],
+        name_filters=[
+            educational_models.EducationalInstitution.name,
+            educational_models.CollectiveOffer.name,
+        ],
+    )
 
 
 @collective_bookings_blueprint.route("", methods=["GET"])
@@ -193,10 +148,10 @@ def _redirect_after_collective_booking_action(code: int = 303) -> utils.Backoffi
 
 @collective_bookings_blueprint.route("/download-csv", methods=["GET"])
 def get_collective_booking_csv_download() -> utils.BackofficeResponse:
-    form = collective_booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
+    form = booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
     export_data = educational_api_booking.get_collective_booking_report(
         user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
-        booking_period=(form.from_date.data, form.to_date.data),
+        booking_period=typing.cast(tuple[datetime.date, datetime.date], form.from_to_date.data),
         venue_id=form.venue.data,
         export_type=bookings_models.BookingExportType.CSV,
     )
@@ -206,10 +161,10 @@ def get_collective_booking_csv_download() -> utils.BackofficeResponse:
 
 @collective_bookings_blueprint.route("/download-xlsx", methods=["GET"])
 def get_collective_booking_xlsx_download() -> utils.BackofficeResponse:
-    form = collective_booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
+    form = booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
     export_data = educational_api_booking.get_collective_booking_report(
         user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
-        booking_period=(form.from_date.data, form.to_date.data),
+        booking_period=typing.cast(tuple[datetime.date, datetime.date], form.from_to_date.data),
         venue_id=form.venue.data,
         export_type=bookings_models.BookingExportType.EXCEL,
     )

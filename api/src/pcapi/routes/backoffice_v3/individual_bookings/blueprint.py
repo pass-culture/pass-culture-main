@@ -17,7 +17,6 @@ from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as booking_repository
-from pcapi.core.categories import subcategories_v2
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
@@ -25,10 +24,10 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import models as users_models
 from pcapi.routes.backoffice_v3 import autocomplete
 from pcapi.routes.backoffice_v3 import utils
+from pcapi.routes.backoffice_v3.bookings import form as booking_forms
+from pcapi.routes.backoffice_v3.bookings import helpers as booking_helpers
 from pcapi.routes.backoffice_v3.forms import empty as empty_forms
 from pcapi.routes.serialization.bookings_recap_serialize import OfferType
-from pcapi.utils import date as date_utils
-from pcapi.utils import email as email_utils
 
 from . import form as individual_booking_forms
 
@@ -94,49 +93,9 @@ def _get_individual_bookings(
         )
     )
 
-    if form.from_to_date.data:
-        from_datetime = date_utils.date_to_localized_datetime(form.from_to_date.from_date, datetime.datetime.min.time())
-        base_query = base_query.filter(bookings_models.Booking.dateCreated >= from_datetime)
-        to_datetime = date_utils.date_to_localized_datetime(form.from_to_date.to_date, datetime.datetime.max.time())
-        base_query = base_query.filter(bookings_models.Booking.dateCreated <= to_datetime)
-
-    if form.event_from_date.data:
-        event_from_datetime = date_utils.date_to_localized_datetime(
-            form.event_from_date.data, datetime.datetime.min.time()
-        )
-        base_query = base_query.filter(offers_models.Stock.beginningDatetime >= event_from_datetime)
-
-    if form.event_to_date.data:
-        event_to_datetime = date_utils.date_to_localized_datetime(form.event_to_date.data, datetime.datetime.max.time())
-        base_query = base_query.filter(offers_models.Stock.beginningDatetime <= event_to_datetime)
-
-    if form.offerer.data:
-        base_query = base_query.filter(bookings_models.Booking.offererId.in_(form.offerer.data))
-
-    if form.venue.data:
-        base_query = base_query.filter(bookings_models.Booking.venueId.in_(form.venue.data))
-
-    if form.category.data:
-        base_query = base_query.filter(
-            offers_models.Offer.subcategoryId.in_(
-                subcategory.id
-                for subcategory in subcategories_v2.ALL_SUBCATEGORIES
-                if subcategory.category.id in form.category.data
-            )
-        )
-
-    if form.status.data:
-        base_query = base_query.filter(bookings_models.Booking.status.in_(form.status.data))
-
-    if form.cashflow_batches.data:
-        base_query = (
-            base_query.join(finance_models.Pricing).join(finance_models.CashflowPricing).join(finance_models.Cashflow)
-        )
-        base_query = base_query.filter(finance_models.Cashflow.batchId.in_(form.cashflow_batches.data))
-
+    or_filters = []
     if form.q.data:
         search_query = form.q.data
-        or_filters = []
 
         if BOOKING_TOKEN_RE.match(search_query):
             or_filters.append(bookings_models.Booking.token == search_query.upper())
@@ -149,32 +108,24 @@ def _get_individual_bookings(
                     "info",
                 )
 
-        if search_query.isnumeric():
-            or_filters.append(offers_models.Offer.id == int(search_query))
-            or_filters.append(users_models.User.id == int(search_query))
-            or_filters.append(bookings_models.Booking.id == int(search_query))
-        else:
-            sanitized_email = email_utils.sanitize_email(search_query)
-            if email_utils.is_valid_email(sanitized_email):
-                or_filters.append(users_models.User.email == sanitized_email)
-
-        if not or_filters:
-            name = "%{}%".format(search_query)
-            or_filters.append(
-                sa.func.concat(users_models.User.firstName, " ", users_models.User.lastName).ilike(name),
-            )
-            or_filters.append(offers_models.Offer.name.ilike(name))
-
-        query = base_query.filter(or_filters[0])
-
-        if len(or_filters) > 1:
-            # Performance is really better than .filter(sa.or_(...)) when searching for a numeric id
-            # On staging: or_ takes 19 minutes, union takes 0.15 second!
-            query = query.union(*(base_query.filter(f) for f in or_filters[1:]))
-    else:
-        query = base_query
-    # +1 to check if there are more results than requested
-    return query.limit(form.limit.data + 1).all()
+    return booking_helpers.get_bookings(
+        base_query=base_query,
+        form=form,
+        stock_class=offers_models.Stock,
+        booking_class=bookings_models.Booking,
+        offer_class=offers_models.Offer,
+        search_by_email=True,
+        id_filters=[
+            bookings_models.Booking.id,
+            offers_models.Offer.id,
+            users_models.User.id,
+        ],
+        name_filters=[
+            sa.func.concat(users_models.User.firstName, " ", users_models.User.lastName),
+            offers_models.Offer.name,
+        ],
+        or_filters=or_filters,
+    )
 
 
 @individual_bookings_blueprint.route("", methods=["GET"])
@@ -216,7 +167,7 @@ def _redirect_after_individual_booking_action() -> utils.BackofficeResponse:
 
 @individual_bookings_blueprint.route("/download-csv", methods=["GET"])
 def get_individual_booking_csv_download() -> utils.BackofficeResponse:
-    form = individual_booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
+    form = booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
     export_data = booking_repository.get_export(
         user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
         booking_period=typing.cast(tuple[datetime.date, datetime.date], form.from_to_date.data),
@@ -230,7 +181,7 @@ def get_individual_booking_csv_download() -> utils.BackofficeResponse:
 
 @individual_bookings_blueprint.route("/download-xlsx", methods=["GET"])
 def get_individual_booking_xlsx_download() -> utils.BackofficeResponse:
-    form = individual_booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
+    form = booking_forms.GetDownloadBookingsForm(formdata=utils.get_query_params())
     export_data = booking_repository.get_export(
         user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
         booking_period=typing.cast(tuple[datetime.date, datetime.date], form.from_to_date.data),
