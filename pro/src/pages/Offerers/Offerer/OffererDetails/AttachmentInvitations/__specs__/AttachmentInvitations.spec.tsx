@@ -3,7 +3,9 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { OffererMemberStatus } from 'apiClient/v1'
+import { ApiError, OffererMemberStatus } from 'apiClient/v1'
+import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import Notification from 'components/Notification/Notification'
 import * as useAnalytics from 'hooks/useAnalytics'
 import AttachmentInvitations from 'pages/Offerers/Offerer/OffererDetails/AttachmentInvitations/AttachmentInvitations'
@@ -105,6 +107,37 @@ describe('AttachmentInvitations', () => {
     expect(mockLogEvent).toHaveBeenCalledTimes(2)
 
     expect(screen.getByText('test@test.fr')).toBeInTheDocument()
+  })
+
+  it('Should display error message', async () => {
+    renderAttachmentInvitations()
+    await userEvent.click(screen.getByText('Ajouter un collaborateur'))
+
+    await userEvent.type(
+      await screen.getByLabelText('Adresse email'),
+      'test@test.fr'
+    )
+
+    vi.spyOn(api, 'inviteMember').mockRejectedValue(
+      new ApiError(
+        { method: 'POST' } as ApiRequestOptions,
+        {
+          status: 400,
+          body: {
+            email: 'Une invitation a déjà été envoyée à ce collaborateur',
+          },
+        } as ApiResult,
+        ''
+      )
+    )
+
+    await userEvent.click(screen.getByText('Inviter'))
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Une invitation a déjà été envoyée à ce collaborateur/)
+      ).toBeInTheDocument()
+    })
   })
 
   it('should display button to show all members', async () => {
