@@ -46,7 +46,7 @@ const EmailChangeValidation = ({
                 variant={ButtonVariant.PRIMARY}
                 link={{ to: '/', isExternal: false }}
               >
-                Se connecter
+                Revenir à l'accueil
               </ButtonLink>
             </section>
           )}
