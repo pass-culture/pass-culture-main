@@ -49,9 +49,7 @@ from pcapi.domain.booking_recap import utils as booking_recap_utils
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
 from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from pcapi.models import db
-from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.routes.serialization.bookings_recap_serialize import OfferType
-from pcapi.utils.email import sanitize_email
 from pcapi.utils.token import random_token
 
 
@@ -91,27 +89,6 @@ BOOKING_EXPORT_HEADER = [
     "Code postal du bénéficiaire",
     "Duo",
 ]
-
-
-def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
-    query = Booking.query.filter_by(token=token.upper())
-
-    if email:
-        # FIXME (dbaty, 2021-05-02): remove call to `func.lower()` once
-        # all emails have been sanitized in the database.
-        query = query.join(Booking.user).filter(func.lower(User.email) == sanitize_email(email))
-
-    if offer_id is not None:
-        query = query.join(Stock).join(Offer).filter(Offer.id == offer_id)
-
-    booking = query.one_or_none()
-
-    if booking is None:
-        errors = ResourceNotFoundError()
-        errors.add_error("global", "Cette contremarque n'a pas été trouvée")
-        raise errors
-
-    return booking
 
 
 def find_by_pro_user(

@@ -28,7 +28,6 @@ import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import EligibilityType
 from pcapi.domain.booking_recap import booking_recap_history
 from pcapi.models import db
-from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.routes.serialization.bookings_recap_serialize import OfferType
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
@@ -73,116 +72,6 @@ def test_find_not_cancelled_bookings_by_stock(app):
 
     # Then
     assert set(all_not_cancelled_bookings) == {used_booking, not_cancelled_booking}
-
-
-class FindByTest:
-    class ByTokenTest:
-        def test_returns_booking_if_token_is_known(self, app: fixture):
-            # given
-            pro = users_factories.ProFactory()
-            offerer = offerers_factories.OffererFactory()
-            offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-
-            beneficiary = users_factories.BeneficiaryGrant18Factory()
-            stock = offers_factories.ThingStockFactory(price=0)
-            booking = bookings_factories.BookingFactory(user=beneficiary, stock=stock)
-
-            # when
-            result = booking_repository.find_by(booking.token)
-
-            # then
-            assert result.id == booking.id
-
-        def test_raises_an_exception_if_token_is_unknown(self, app: fixture):
-            # given
-            pro = users_factories.ProFactory()
-            offerer = offerers_factories.OffererFactory()
-            offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-
-            beneficiary = users_factories.BeneficiaryGrant18Factory()
-            stock = offers_factories.ThingStockFactory(price=0)
-            bookings_factories.BookingFactory(user=beneficiary, stock=stock)
-
-            # when
-            with pytest.raises(ResourceNotFoundError) as resource_not_found_error:
-                booking_repository.find_by("UNKNOWN")
-
-            # then
-            assert resource_not_found_error.value.errors["global"] == ["Cette contremarque n'a pas été trouvée"]
-
-    class ByTokenAndEmailTest:
-        def test_returns_booking_if_token_and_email_are_known(self, app: fixture):
-            # given
-            booking = bookings_factories.BookingFactory()
-
-            # when
-            result = booking_repository.find_by(booking.token, email=booking.user.email)
-
-            # then
-            assert result.id == booking.id
-
-        def test_returns_booking_if_token_is_known_and_email_is_known_case_insensitively(self, app: fixture):
-            # given
-            booking = bookings_factories.BookingFactory(user__email="jeanne.doux@example.com")
-
-            # when
-            result = booking_repository.find_by(booking.token, email="JeaNNe.DouX@exAMple.cOm")
-
-            # then
-            assert result.id == booking.id
-
-        def test_returns_booking_if_token_is_known_and_email_is_known_with_trailing_spaces(self, app: fixture):
-            # given
-            booking = bookings_factories.BookingFactory(user__email="user@example.com")
-
-            # when
-            result = booking_repository.find_by(booking.token, email="   user@example.com  ")
-
-            # then
-            assert result.id == booking.id
-
-        def test_raises_an_exception_if_token_is_known_but_email_is_unknown(self, app: fixture):
-            # given
-            booking = bookings_factories.BookingFactory()
-
-            # when
-            with pytest.raises(ResourceNotFoundError) as resource_not_found_error:
-                booking_repository.find_by(booking.token, email="other.user@example.com")
-
-            # then
-            assert resource_not_found_error.value.errors["global"] == ["Cette contremarque n'a pas été trouvée"]
-
-    class ByTokenAndEmailAndOfferIdTest:
-        def test_returns_booking_if_token_and_email_and_offer_id_for_thing_are_known(self, app: fixture):
-            # given
-            booking = bookings_factories.BookingFactory(stock=offers_factories.ThingStockFactory())
-
-            # when
-            result = booking_repository.find_by(booking.token, email=booking.email, offer_id=booking.stock.offer.id)
-
-            # then
-            assert result.id == booking.id
-
-        def test_returns_booking_if_token_and_email_and_offer_id_for_event_are_known(self, app: fixture):
-            # given
-            booking = bookings_factories.BookingFactory(stock=offers_factories.EventStockFactory())
-
-            # when
-            result = booking_repository.find_by(booking.token, email=booking.email, offer_id=booking.stock.offer.id)
-
-            # then
-            assert result.id == booking.id
-
-        def test_returns_booking_if_token_and_email_are_known_but_offer_id_is_unknown(self, app: fixture):
-            # given
-            booking = bookings_factories.BookingFactory()
-
-            # when
-            with pytest.raises(ResourceNotFoundError) as resource_not_found_error:
-                booking_repository.find_by(booking.token, email=booking.email, offer_id=1234)
-
-            # then
-            assert resource_not_found_error.value.errors["global"] == ["Cette contremarque n'a pas été trouvée"]
 
 
 default_booking_date = date.today()
