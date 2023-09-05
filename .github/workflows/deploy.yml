@@ -96,8 +96,7 @@ jobs:
         uses: teleport-actions/setup@v1
         with:
           version: ${{ inputs.teleport_version }}
-      - id: teleport-auth
-        name: "Teleport Authentication"
+      - name: "Teleport Authentication"
         uses: teleport-actions/auth-k8s@v1
         with:
           proxy: ${{ inputs.teleport_proxy }}
