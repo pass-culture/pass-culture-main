@@ -104,6 +104,14 @@ UBBLE_CODE_ERROR_MAPPING = {
         retryable_user_message="Nous n'arrivons pas à lire ton document. Réessaie la vérification d’identité en t’assurant de filmer ton document avec une bonne luminosité.",
         priority=30,
     ),
+    fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA: UbbleError(
+        detail_message="Ubble n'a pas réussi à lire le document",
+        not_retryable_user_message="Nous n'arrivons pas à lire ton document. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande.",
+        retryable_action_hint="Réessaie avec ta pièce d'identité en t'assurant qu'elle soit lisible",
+        retryable_message_summary="Le document que tu as présenté est illisible.",
+        retryable_user_message="Nous n'arrivons pas à lire ton document. Réessaie avec un passeport ou une carte d'identité française en cours de validité dans un lieu bien éclairé.",
+        priority=30,
+    ),
     fraud_models.FraudReasonCode.NETWORK_CONNECTION_ISSUE: UbbleError(
         detail_message="Problème de connexion réseau",
         not_retryable_user_message="Nous n’avons pas vu valider ton document. Rends-toi sur le site demarches-simplifiees.fr pour renouveler ta demande.",
