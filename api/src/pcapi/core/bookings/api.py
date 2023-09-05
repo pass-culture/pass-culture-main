@@ -264,6 +264,15 @@ def book_offer(
         if providers_repository.is_event_external_ticket_applicable(stock.offer):
             remaining_quantity = _book_event_external_ticket(booking, stock, beneficiary)
 
+        logger.info(
+            "Updating dnBookedQuantity after a successful booking",
+            extra={
+                "booking_id": booking.id,
+                "booking_quantity": booking.quantity,
+                "stock_dnBookedQuantity": stock.dnBookedQuantity,
+            },
+        )
+
         stock.dnBookedQuantity += booking.quantity
 
         # If a partner have implemented our external ticket api (charlie api),
