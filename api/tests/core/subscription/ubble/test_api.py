@@ -18,6 +18,7 @@ from pcapi.core.fraud.models import BeneficiaryFraudCheck
 from pcapi.core.fraud.models import FraudCheckStatus
 from pcapi.core.fraud.models import FraudCheckType
 from pcapi.core.fraud.models import UbbleContent
+from pcapi.core.fraud.ubble import constants as ubble_constants
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
@@ -28,11 +29,13 @@ from pcapi.core.subscription.ubble import models as ubble_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.notifications import push as push_notifications
 import pcapi.notifications.push.testing as push_testing
 from pcapi.utils import requests as requests_utils
 from pcapi.utils.string import u_nbsp
 
 import tests
+from tests.core.subscription import test_factories
 from tests.core.subscription.test_factories import IdentificationState
 from tests.core.subscription.test_factories import UbbleIdentificationIncludedDocumentsFactory
 from tests.core.subscription.test_factories import UbbleIdentificationIncludedReferenceDataChecksFactory
@@ -493,6 +496,35 @@ class UbbleWorkflowTest:
             fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA.value
             in amplitude_testing.requests[0]["event_properties"]["error_codes"]
         )
+
+    @pytest.mark.parametrize("reason_code", ubble_constants.REASON_CODE_REQUIRING_IMMEDIATE_NOTIFICATION_REMINDER)
+    @patch("pcapi.core.fraud.ubble.api._ubble_result_fraud_item")
+    def should_send_push_notification(self, ubble_fraud_item, reason_code, ubble_mocker):
+        ubble_fraud_item.return_value = fraud_models.FraudItem(
+            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+            detail="",
+            reason_codes=[reason_code],
+        )
+        user: users_models.User = users_factories.ProfileCompletedUserFactory(age=18)
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.PENDING, user=user
+        )
+        ubble_response = test_factories.UbbleIdentificationResponseFactory(
+            identification_state=test_factories.IdentificationState.UNPROCESSABLE,
+        )
+
+        with ubble_mocker(
+            fraud_check.thirdPartyId,
+            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        ):
+            ubble_subscription_api.update_ubble_workflow(fraud_check)
+
+        assert push_testing.requests[0] == {
+            "can_be_asynchronously_retried": True,
+            "user_id": user.id,
+            "event_name": push_notifications.BatchEvent.HAS_UBBLE_KO_STATUS.value,
+            "event_payload": {"error_code": reason_code.value},
+        }
 
 
 class DownloadUbbleDocumentPictureTest:

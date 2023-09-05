@@ -14,6 +14,7 @@ from pcapi.connectors.beneficiaries import outscale
 from pcapi.connectors.beneficiaries import ubble
 from pcapi.core.external.attributes import api as external_attributes_api
 import pcapi.core.external.batch as batch_notification
+from pcapi.core.external.batch import track_ubble_ko_event
 from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
@@ -128,24 +129,36 @@ def get_most_relevant_ubble_error(
     )
 
 
+def _requires_reminder(error_code: fraud_models.FraudReasonCode | None) -> bool:
+    return (
+        error_code in ubble_fraud_constants.REASON_CODE_REQUIRING_IMMEDIATE_NOTIFICATION_REMINDER
+        or error_code in ubble_fraud_constants.REASON_CODE_REQUIRING_IMMEDIATE_EMAIL_REMINDER
+    )
+
+
+def _dispatch_reminder(user: users_models.User, error_code: fraud_models.FraudReasonCode | None) -> None:
+    if error_code in ubble_fraud_constants.REASON_CODE_REQUIRING_IMMEDIATE_EMAIL_REMINDER:
+        transactional_mails.send_subscription_document_error_email(user.email, error_code)
+    if error_code in ubble_fraud_constants.REASON_CODE_REQUIRING_IMMEDIATE_NOTIFICATION_REMINDER:
+        track_ubble_ko_event(user.id, error_code)
+
+
 def handle_validation_errors(
     user: users_models.User,
     fraud_check: fraud_models.BeneficiaryFraudCheck,
 ) -> None:
     error_codes = fraud_check.reasonCodes or []
     relevant_error_code = get_most_relevant_ubble_error(error_codes)
-    if relevant_error_code in ubble_fraud_constants.REASON_CODE_REQUIRING_EMAIL_UPDATE:
-        transactional_mails.send_subscription_document_error_email(user.email, relevant_error_code)
-    else:
-        if fraud_models.FraudReasonCode.DUPLICATE_USER in error_codes:
-            transactional_mails.send_duplicate_beneficiary_email(
-                user, fraud_check.source_data(), fraud_models.FraudReasonCode.DUPLICATE_USER
-            )
-
-        elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in error_codes:
-            transactional_mails.send_duplicate_beneficiary_email(
-                user, fraud_check.source_data(), fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER
-            )
+    if _requires_reminder(relevant_error_code):
+        _dispatch_reminder(user, relevant_error_code)
+    elif fraud_models.FraudReasonCode.DUPLICATE_USER in error_codes:
+        transactional_mails.send_duplicate_beneficiary_email(
+            user, fraud_check.source_data(), fraud_models.FraudReasonCode.DUPLICATE_USER
+        )
+    elif fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER in error_codes:
+        transactional_mails.send_duplicate_beneficiary_email(
+            user, fraud_check.source_data(), fraud_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER
+        )
 
 
 def archive_ubble_user_id_pictures(identification_id: str) -> None:
