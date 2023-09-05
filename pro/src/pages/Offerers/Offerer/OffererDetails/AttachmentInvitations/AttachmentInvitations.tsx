@@ -17,16 +17,14 @@ import { Button, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import EmailSpellCheckInput from 'ui-kit/form/EmailSpellCheckInput/EmailSpellCheckInput'
 
+import postInviteMemberAdapter from './adapters/postInviteMemberAdapter'
 import styles from './AttachmentInvitations.module.scss'
 import { validationSchema } from './validationSchema'
-
 interface AttachmentInvitationsProps {
   offererId: number
 }
 
 const SECTION_ID = '#attachment-invitations-section'
-const SUCCESS_MESSAGE = "L'invitation a bien été envoyée."
-const ERROR_MESSAGE = "Une erreur est survenue lors de l'envoi de l'invitation."
 
 const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
   const { logEvent } = useAnalytics()
@@ -39,25 +37,28 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
   )
   const [showInvitationForm, setShowInvitationForm] = useState(false)
   const onSubmit = async ({ email }: { email: string }) => {
-    try {
-      setIsLoading(true)
-      await api.inviteMember(offererId, { email: email })
+    setIsLoading(true)
+    const { isOk, message } = await postInviteMemberAdapter({
+      offererId,
+      email,
+    })
+
+    if (isOk) {
       members.push({
         email,
-        // TODO: replace by default status when api code is changed.
         status: OffererMemberStatus.PENDING,
       })
       formik.resetForm()
       logEvent?.(OffererLinkEvents.CLICKED_SEND_INVITATION, {
         offererId: offererId,
       })
-      notify.success(SUCCESS_MESSAGE)
-    } catch {
-      notify.error(ERROR_MESSAGE)
-    } finally {
-      setIsLoading(false)
+      notify.success(message)
+    } else {
+      notify.error(message)
     }
+    setIsLoading(false)
   }
+
   const formik = useFormik({
     initialValues: { email: '' },
     onSubmit,
