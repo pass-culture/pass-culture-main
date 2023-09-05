@@ -17,6 +17,10 @@ interface AdageMultiselectProps {
   name: string
   label: string
   isOpen: boolean
+  sortOptions?: (
+    items: ItemProps[],
+    selectedItems: Set<ItemProps['value']>
+  ) => ItemProps[]
 }
 
 const filterItems = (items: ItemProps[], inputValue: string) => {
@@ -24,7 +28,7 @@ const filterItems = (items: ItemProps[], inputValue: string) => {
   return items.filter(item => item.label.match(regExp))
 }
 
-const sortItems = (
+const defaultSortOptions = (
   items: ItemProps[],
   selectedItems: Set<ItemProps['value']>
 ) => {
@@ -62,6 +66,7 @@ const AdageMultiselect = ({
   name,
   label,
   isOpen,
+  sortOptions,
 }: AdageMultiselectProps) => {
   // We need to maintain the input value in state so that we can use it in itemToString
   const [inputValue, setInputValue] = useState('')
@@ -116,7 +121,9 @@ const AdageMultiselect = ({
   useEffect(() => {
     setInputValue('')
     setDownshiftInputValue('')
-    setSortedOptions(sortItems(options, new Set(field.value)))
+    setSortedOptions(
+      (sortOptions ?? defaultSortOptions)(options, new Set(field.value))
+    )
   }, [isOpen])
 
   return (
@@ -142,7 +149,7 @@ const AdageMultiselect = ({
           'aria-activedescendant': getInputProps()['aria-activedescendant'],
         })}
       >
-        {filterItems(options, inputValue).map((item, index) => {
+        {filterItems(sortedOptions, inputValue).map((item, index) => {
           // we cannot pass down the ref to basecheckbox as it is a function component
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { ref, ...itemProps } = getItemProps({ item, index })

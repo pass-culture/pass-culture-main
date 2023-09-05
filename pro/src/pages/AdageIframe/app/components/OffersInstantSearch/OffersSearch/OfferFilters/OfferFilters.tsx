@@ -362,6 +362,15 @@ export const OfferFilters = ({
                     label="Niveau scolaire"
                     options={studentsOptions}
                     isOpen={modalOpenStatus['students']}
+                    sortOptions={(options, selectedOptions) =>
+                      //  Implement custom sort to not sort results alphabetically
+                      [...options].sort((option1, option2) => {
+                        return selectedOptions.has(option1.value) &&
+                          !selectedOptions.has(option2.value)
+                          ? -1
+                          : 1
+                      })
+                    }
                   />
                 </ModalFilterLayout>
               </AdageButtonFilter>
