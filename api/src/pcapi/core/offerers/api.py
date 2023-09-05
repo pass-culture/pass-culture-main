@@ -828,6 +828,15 @@ def validate_offerer_attachment(
             "Could not send attachment validation email to offerer",
             extra={"user_offerer": user_offerer.id},
         )
+    offerer_invitation = (
+        models.OffererInvitation.query.filter_by(offererId=user_offerer.offererId)
+        .filter_by(email=user_offerer.user.email)
+        .one_or_none()
+    )
+    if offerer_invitation:
+        transactional_mails.send_offerer_attachment_invitation_accepted(
+            user_offerer.user, offerer_invitation.user.email
+        )
 
 
 def set_offerer_attachment_pending(

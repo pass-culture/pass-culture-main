@@ -1383,6 +1383,23 @@ class ValidateOffererAttachmentTest:
         # Then
         mocked_send_validation_confirmation_email_to_pro.assert_called_once_with(user_offerer)
 
+    @patch("pcapi.core.mails.transactional.send_offerer_attachment_invitation_accepted")
+    def test_send_offerer_attachment_invitation_accepted_email(
+        self, mocked_send_offerer_attachment_invitation_accepted
+    ):
+        admin = users_factories.AdminFactory()
+        invited_user = users_factories.UserFactory()
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=invited_user)
+        offerer_invitation = offerers_factories.OffererInvitationFactory(
+            offerer=user_offerer.offerer, email=invited_user.email
+        )
+
+        offerers_api.validate_offerer_attachment(user_offerer, admin)
+
+        mocked_send_offerer_attachment_invitation_accepted.assert_called_once_with(
+            invited_user, offerer_invitation.user.email
+        )
+
 
 @freeze_time("2020-10-15 00:00:00")
 class RejectOffererAttachementTest:
