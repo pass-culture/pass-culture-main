@@ -367,4 +367,26 @@ describe('OfferFilters', () => {
 
     expect(screen.getByText('Cinéma')).toBeInTheDocument()
   })
+
+  it('should sort students options with selected first but keep initial order otherwise', async () => {
+    renderOfferFilters({
+      initialValues: {
+        ...initialValues,
+        students: ['Collège - 5e'],
+      },
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Niveau scolaire (1)' })
+    )
+
+    const options = screen.getAllByRole('option')
+
+    //  Verify that the selected option comes first
+    expect(options[0]).toHaveAccessibleName('Collège - 5e')
+
+    //  Verify that non-selected options aren't sorted alphabetically
+    expect(options[1]).toHaveAccessibleName('Collège - 6e')
+    expect(options[options.length - 1]).toHaveAccessibleName('CAP - 2e année')
+  })
 })
