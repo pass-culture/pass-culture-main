@@ -6,18 +6,15 @@ from dateutil.relativedelta import relativedelta
 import sqlalchemy as sqla
 
 from pcapi import settings
-from pcapi.core import mails
 from pcapi.core.external.batch import bulk_track_ubble_ko_events
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.ubble.constants as ubble_constants
-import pcapi.core.mails.models as mails_models
+from pcapi.core.mails.transactional import send_subscription_document_error_email
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.models as subscription_models
 import pcapi.core.subscription.ubble.api as ubble_subscription
 import pcapi.core.users.api as users_api
 import pcapi.core.users.models as users_models
-
-from . import constants
 
 
 logger = logging.getLogger(__name__)
@@ -35,8 +32,7 @@ def send_reminders() -> None:
 
     users_to_notify_per_code = collections.defaultdict(list)
 
-    for user, fraud_check_reason_codes in users_with_quick_actions + users_with_long_actions:
-        relevant_reason_code = ubble_subscription.get_most_relevant_ubble_error(fraud_check_reason_codes)
+    for user, relevant_reason_code in users_with_quick_actions + users_with_long_actions:
         if not relevant_reason_code:
             logger.error(
                 "Could not find reason code for a user who failed ubble check, to send reminder email",
@@ -44,32 +40,15 @@ def send_reminders() -> None:
             )
             continue
 
-        email_data = _get_reminder_email_data(relevant_reason_code)
-        if not email_data:
-            logger.error("Could not find reminder email template for reason code %s", relevant_reason_code)
-            continue
-
         users_to_notify_per_code[relevant_reason_code].append(user.id)
-        mails.send(recipients=[user.email], data=email_data)
+        send_subscription_document_error_email(user.email, relevant_reason_code, is_reminder=True)
 
     bulk_track_ubble_ko_events(users_to_notify_per_code)
 
 
-def _get_reminder_email_data(code: fraud_models.FraudReasonCode) -> mails_models.TransactionalEmailData | None:
-    mapping = constants.ubble_error_to_email_mapping.get(code.value)
-    if not mapping:
-        return None
-
-    template = mapping.reminder_template
-    if not template:
-        return None
-
-    return mails_models.TransactionalEmailData(template=template.value)
-
-
 def _find_users_to_remind(
     days_ago: int, reason_codes_filter: list[fraud_models.FraudReasonCode]
-) -> list[tuple[users_models.User, list[fraud_models.FraudReasonCode]]]:
+) -> list[tuple[users_models.User, fraud_models.FraudReasonCode]]:
     users: list[users_models.User] = (
         users_models.User.query.join(users_models.User.beneficiaryFraudChecks)
         .filter(
@@ -85,7 +64,7 @@ def _find_users_to_remind(
         .all()
     )
 
-    users_with_reasons: list[tuple[users_models.User, list[fraud_models.FraudReasonCode]]] = []
+    users_with_reasons: list[tuple[users_models.User, fraud_models.FraudReasonCode]] = []
     for user in users:
         if not (
             users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility)
@@ -95,8 +74,9 @@ def _find_users_to_remind(
             continue
         latest_fraud_check_reason_codes = _get_latest_failed_ubble_fraud_check(user).reasonCodes or []
 
-        if set(latest_fraud_check_reason_codes) & set(reason_codes_filter):
-            users_with_reasons.append((user, latest_fraud_check_reason_codes))
+        relevant_reason_code = ubble_subscription.get_most_relevant_ubble_error(latest_fraud_check_reason_codes)
+        if relevant_reason_code in reason_codes_filter:
+            users_with_reasons.append((user, relevant_reason_code))
 
     return users_with_reasons
 
