@@ -1151,7 +1151,15 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
             except sqla_exc.InternalError:
                 # The SQLAlchemy session is invalidated as soon as an InternalError is raised
                 db.session.rollback()
+                logger.info(
+                    "Recompute dnBookedQuantity of a stock",
+                    extra={"stock_id": stock.id, "stock_dnBookedQuantity": stock.dnBookedQuantity},
+                )
                 bookings_api.recompute_dnBookedQuantity([stock.id])
+                logger.info(
+                    "New value for dnBookedQuantity of a stock",
+                    extra={"stock_id": stock.id, "stock_dnBookedQuantity": stock.dnBookedQuantity},
+                )
                 offers_repository.update_stock_quantity_to_dn_booked_quantity(stock.id)
             offer_has_new_sold_out_stock = True
         # to prevent a duo booking to fail
