@@ -23,7 +23,7 @@ from . import constants
 logger = logging.getLogger(__name__)
 
 
-def send_reminder_emails() -> None:
+def send_reminders() -> None:
     users_with_quick_actions = _find_users_to_remind(
         days_ago=settings.DAYS_BEFORE_UBBLE_QUICK_ACTION_REMINDER,
         reason_codes_filter=list(ubble_constants.REASON_CODES_FOR_QUICK_ACTION_REMINDERS),
