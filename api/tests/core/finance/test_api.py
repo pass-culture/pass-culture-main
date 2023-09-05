@@ -283,7 +283,7 @@ class PriceCollectiveBookingTest:
 
     def test_link_to_finance_event(self):
         booking = UsedCollectiveBookingFactory(collectiveStock=collective_stock_factory())
-        api.add_event(booking, models.FinanceEventMotive.BOOKING_USED)
+        api.add_event(models.FinanceEventMotive.BOOKING_USED, booking=booking)
         pricing = api.price_booking(booking)
         assert pricing.event is not None
         assert pricing.event.collectiveBooking == booking
@@ -354,8 +354,24 @@ class PriceEventTest:
                 stock_kwargs["collectiveOffer__venue"] = venue
             booking_kwargs["collectiveStock"] = collective_stock_factory(**stock_kwargs)
         booking = educational_factories.UsedCollectiveBookingFactory(**booking_kwargs)
-        api.add_event(booking, models.FinanceEventMotive.BOOKING_USED)
+        api.add_event(models.FinanceEventMotive.BOOKING_USED, booking=booking)
         return models.FinanceEvent.query.filter_by(collectiveBooking=booking).one()
+
+    def _make_incident_event(self, incident_motive: models.FinanceEventMotive) -> models.FinanceEvent:
+        pricing_point = offerers_factories.VenueFactory()
+        booking_incident = factories.IndividualBookingFinanceIncidentFactory(
+            incident__venue__pricing_point=pricing_point,
+            booking__stock__offer__venue__pricing_point=pricing_point,
+            newTotalAmount=800,
+        )
+        factories.PricingFactory(
+            status=models.PricingStatus.INVOICED,
+            booking=booking_incident.booking,
+            amount=-1000,
+            lines=[factories.PricingLineFactory(amount=1000)],
+        )
+
+        return api.add_event(incident_motive, booking_incident=booking_incident)
 
     def test_pricing_individual(self):
         user = users_factories.RichBeneficiaryFactory()
@@ -424,6 +440,49 @@ class PriceEventTest:
         assert pricing2.lines[0].amount == -(100 * 100)
         assert pricing2.lines[1].category == models.PricingLineCategory.OFFERER_CONTRIBUTION
         assert pricing2.lines[1].amount == 0
+
+    def test_pricing_incident_reversal_of_original_event(self):
+        finance_event = self._make_incident_event(models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT)
+        booking = finance_event.bookingFinanceIncident.booking
+        api.price_event(finance_event)
+
+        pricings = models.Pricing.query.order_by(models.Pricing.id.desc()).all()
+        created_pricing = pricings[0]
+        original_pricing = pricings[1]
+        assert created_pricing.eventId == finance_event.id
+        assert created_pricing.status == models.PricingStatus.VALIDATED
+        assert created_pricing.amount == 1000
+        assert created_pricing.valueDate == booking.dateUsed
+        assert created_pricing.revenue == original_pricing.revenue
+
+        assert len(created_pricing.lines) == 1
+        assert created_pricing.lines[0].amount == -1000
+        assert created_pricing.lines[0].category == models.PricingLineCategory.OFFERER_RETRIEVAL
+
+    @pytest.mark.parametrize(
+        "event_motive",
+        [
+            models.FinanceEventMotive.INCIDENT_NEW_PRICE,
+            models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE,
+        ],
+    )
+    def test_pricing_new_price_event(self, event_motive):
+        finance_event = self._make_incident_event(event_motive)
+        booking = finance_event.bookingFinanceIncident.booking
+        api.price_event(finance_event)
+
+        pricings = models.Pricing.query.order_by(models.Pricing.id.desc()).all()
+        created_pricing = pricings[0]
+        original_pricing = pricings[1]
+        assert created_pricing.eventId == finance_event.id
+        assert created_pricing.status == models.PricingStatus.VALIDATED
+        assert created_pricing.amount == -800
+        assert created_pricing.valueDate == booking.dateUsed
+        assert created_pricing.revenue == original_pricing.revenue + 800
+
+        assert len(created_pricing.lines) == 1
+        assert created_pricing.lines[0].amount == 800
+        assert created_pricing.lines[0].category == models.PricingLineCategory.OFFERER_REVENUE
 
     def test_price_free_booking(self):
         event = self._make_individual_event(price=0)
@@ -541,7 +600,7 @@ class AddEventTest:
             stock__offer__venue__pricing_point=pricing_point,
         )
 
-        event = api.add_event(booking, motive=motive)
+        event = api.add_event(motive=motive, booking=booking)
 
         assert event.booking == booking
         assert event.status == models.FinanceEventStatus.READY
@@ -558,7 +617,7 @@ class AddEventTest:
             stock__offer__venue__pricing_point=pricing_point,
         )
 
-        event = api.add_event(booking, motive=motive)
+        event = api.add_event(motive=motive, booking=booking)
 
         assert event.booking == booking
         assert event.status == models.FinanceEventStatus.READY
@@ -573,7 +632,7 @@ class AddEventTest:
             stock__offer__venue__pricing_point=pricing_point,
         )
 
-        event = api.add_event(booking, motive=motive)
+        event = api.add_event(motive=motive, booking=booking)
 
         assert event.booking == booking
         assert event.status == models.FinanceEventStatus.NOT_TO_BE_PRICED
@@ -583,11 +642,31 @@ class AddEventTest:
         motive = models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE
         booking = bookings_factories.CancelledBookingFactory()
 
-        event = api.add_event(booking, motive=motive)
+        event = api.add_event(motive=motive, booking=booking)
 
         assert event.booking == booking
         assert event.status == models.FinanceEventStatus.NOT_TO_BE_PRICED
         assert event.motive == motive
+
+    @pytest.mark.parametrize(
+        "incident_motive",
+        [
+            models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT,
+            models.FinanceEventMotive.INCIDENT_NEW_PRICE,
+            models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE,
+        ],
+    )
+    def test_create_incident_event(self, incident_motive):
+        pricing_point = offerers_factories.VenueFactory()
+        booking_incident = factories.IndividualBookingFinanceIncidentFactory(
+            booking__stock__offer__venue__pricing_point=pricing_point, incident__venue__pricing_point=pricing_point
+        )
+
+        event = api.add_event(incident_motive, booking_incident=booking_incident)
+
+        assert event.bookingFinanceIncident == booking_incident
+        assert event.status == models.FinanceEventStatus.READY
+        assert event.motive == incident_motive
 
 
 class CancelLatestEventTest:
