@@ -19,7 +19,7 @@ class PatchProductTest:
             venue=venue,
             isActive=True,
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -42,7 +42,7 @@ class PatchProductTest:
             withdrawalDetails="Des conditions de retrait sur la sellette",
             bookingEmail="notify@example.com",
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -65,7 +65,7 @@ class PatchProductTest:
             venue=venue,
             bookingEmail="notify@example.com",
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -89,7 +89,7 @@ class PatchProductTest:
             motorDisabilityCompliant=True,
             visualDisabilityCompliant=True,
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -117,7 +117,7 @@ class PatchProductTest:
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
-            subcategoryId="SUPPORT_PHYSIQUE_MUSIQUE",
+            subcategoryId="SUPPORT_PHYSIQUE_MUSIQUE_CD",
             extraData={
                 "author": "Maurice",
                 "musicType": "501",
@@ -134,7 +134,7 @@ class PatchProductTest:
                     {
                         "offer_id": product_offer.id,
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
                             "musicType": "JAZZ-ACID_JAZZ",
                         },
                     },
@@ -145,7 +145,7 @@ class PatchProductTest:
         assert response.json["productOffers"][0]["categoryRelatedFields"] == {
             "author": "Maurice",
             "ean": None,
-            "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
             "musicType": "JAZZ-ACID_JAZZ",
             "performer": "Pink Pâtisserie",
         }
@@ -161,7 +161,7 @@ class PatchProductTest:
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -188,7 +188,7 @@ class PatchProductTest:
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         )
         stock = offers_factories.StockFactory(offer=product_offer, quantity=30, price=10)
 
@@ -216,13 +216,13 @@ class PatchProductTest:
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         )
         stock = offers_factories.StockFactory(offer=product_offer, quantity=30, price=10)
 
         product_offer_2 = offers_factories.ThingOfferFactory(
             venue=venue,
-            subcategoryId="SUPPORT_PHYSIQUE_MUSIQUE",
+            subcategoryId="SUPPORT_PHYSIQUE_MUSIQUE_CD",
             extraData={
                 "author": "Maurice",
                 "musicType": "501",
@@ -235,7 +235,7 @@ class PatchProductTest:
         product_offer_3 = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         )
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
@@ -248,7 +248,7 @@ class PatchProductTest:
                         "accessibility": {"audioDisabilityCompliant": False},
                         "categoryRelatedFields": {
                             "musicType": "JAZZ-ACID_JAZZ",
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
                         },
                     },
                     {"offer_id": product_offer_3.id, "stock": {"price": 1000, "quantity": 1}},
@@ -279,7 +279,7 @@ class PatchProductTest:
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         )
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             "/public/offers/v1/products",
@@ -299,7 +299,7 @@ class PatchProductTest:
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         )
         stock = offers_factories.StockFactory(offer=product_offer, bookingLimitDatetime="2021-01-15T00:00:00Z")
 
@@ -323,7 +323,7 @@ class PatchProductTest:
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         )
         stock = offers_factories.StockFactory(offer=product_offer, bookingLimitDatetime=None)
 
@@ -347,7 +347,7 @@ class PatchProductTest:
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
             lastProvider=api_key.provider,
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         )
         stock = offers_factories.StockFactory(offer=product_offer, bookingLimitDatetime=None)
         confirmed_booking = bookings_factories.BookingFactory(
@@ -394,7 +394,8 @@ class PatchProductTest:
         assert response.status_code == 400
         assert response.json == {
             "productOffers.0.categoryRelatedFields.category": [
-                "unexpected value; permitted: 'SUPPORT_PHYSIQUE_MUSIQUE'"
+                "unexpected value; permitted: 'SUPPORT_PHYSIQUE_MUSIQUE_CD'",
+                "unexpected value; permitted: 'SUPPORT_PHYSIQUE_MUSIQUE_VINYLE'",
             ]
         }
 
@@ -416,4 +417,8 @@ class PatchProductTest:
         )
 
         assert response.status_code == 400
-        assert response.json == {"product.subcategory": ["Only SUPPORT_PHYSIQUE_MUSIQUE products can be edited"]}
+        assert response.json == {
+            "product.subcategory": [
+                "Only SUPPORT_PHYSIQUE_MUSIQUE_CD, SUPPORT_PHYSIQUE_MUSIQUE_VINYLE products can be edited"
+            ]
+        }

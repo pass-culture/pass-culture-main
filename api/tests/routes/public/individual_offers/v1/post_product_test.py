@@ -33,7 +33,7 @@ class PostProductTest:
                 "product_offers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
@@ -48,7 +48,7 @@ class PostProductTest:
         created_offer = offers_models.Offer.query.one()
         assert created_offer.name == "Le champ des possibles"
         assert created_offer.venue == venue
-        assert created_offer.subcategoryId == "SUPPORT_PHYSIQUE_MUSIQUE"
+        assert created_offer.subcategoryId == "SUPPORT_PHYSIQUE_MUSIQUE_CD"
         assert created_offer.audioDisabilityCompliant is True
         assert created_offer.lastProvider.name == "Technical provider"
         assert created_offer.mentalDisabilityCompliant is True
@@ -67,7 +67,7 @@ class PostProductTest:
                     "bookingEmail": None,
                     "categoryRelatedFields": {
                         "author": None,
-                        "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                        "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
                         "ean": "1234567891234",
                         "musicType": "ROCK-LO_FI",
                         "performer": None,
@@ -103,7 +103,7 @@ class PostProductTest:
                 "product_offers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
@@ -112,7 +112,7 @@ class PostProductTest:
                     },
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
                             "ean": "1234567890987",
                             "musicType": "HIP_HOP_RAP-RAP_OLD_SCHOOL",
                         },
@@ -131,8 +131,8 @@ class PostProductTest:
         assert first_created_offer.name == "Le champ des possibles"
         assert second_created_offer.venue == venue
         assert first_created_offer.venue == venue
-        assert second_created_offer.subcategoryId == "SUPPORT_PHYSIQUE_MUSIQUE"
-        assert first_created_offer.subcategoryId == "SUPPORT_PHYSIQUE_MUSIQUE"
+        assert second_created_offer.subcategoryId == "SUPPORT_PHYSIQUE_MUSIQUE_CD"
+        assert first_created_offer.subcategoryId == "SUPPORT_PHYSIQUE_MUSIQUE_CD"
         assert second_created_offer.audioDisabilityCompliant is True
         assert first_created_offer.audioDisabilityCompliant is True
         assert second_created_offer.lastProvider.name == "Technical provider"
@@ -155,7 +155,7 @@ class PostProductTest:
             "bookingEmail": None,
             "categoryRelatedFields": {
                 "author": None,
-                "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
                 "ean": "1234567891234",
                 "musicType": "ROCK-LO_FI",
                 "performer": None,
@@ -185,7 +185,7 @@ class PostProductTest:
             "bookingEmail": None,
             "categoryRelatedFields": {
                 "author": None,
-                "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
                 "ean": "1234567890987",
                 "musicType": "HIP_HOP_RAP-RAP_OLD_SCHOOL",
                 "performer": None,
@@ -224,7 +224,7 @@ class PostProductTest:
                         "bookingEmail": "spam@example.com",
                         "categoryRelatedFields": {
                             "author": "Maurice",
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
                             "ean": "1234567891234",
                             "musicType": "JAZZ-FUSION",
                             "performer": "Pink Pâtisserie",
@@ -258,7 +258,7 @@ class PostProductTest:
         created_offer = offers_models.Offer.query.one()
         assert created_offer.name == "Le champ des possibles"
         assert created_offer.venue == venue
-        assert created_offer.subcategoryId == "SUPPORT_PHYSIQUE_MUSIQUE"
+        assert created_offer.subcategoryId == "SUPPORT_PHYSIQUE_MUSIQUE_CD"
         assert created_offer.audioDisabilityCompliant is True
         assert created_offer.lastProvider.name == "Technical provider"
         assert created_offer.mentalDisabilityCompliant is True
@@ -300,7 +300,7 @@ class PostProductTest:
                     "categoryRelatedFields": {
                         "author": "Maurice",
                         "ean": "1234567891234",
-                        "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                        "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
                         "musicType": "JAZZ-FUSION",
                         "performer": "Pink Pâtisserie",
                     },
@@ -343,7 +343,7 @@ class PostProductTest:
                 "productOffers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
@@ -380,7 +380,7 @@ class PostProductTest:
                 "productOffers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
@@ -409,7 +409,7 @@ class PostProductTest:
                 "productOffers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
@@ -438,7 +438,7 @@ class PostProductTest:
                 "productOffers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
@@ -468,7 +468,7 @@ class PostProductTest:
                     {
                         "enableDoubleBookings": True,
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
@@ -516,7 +516,7 @@ class PostProductTest:
                 "productOffers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                             "performer": "Ichika Nito",
@@ -540,7 +540,7 @@ class PostProductTest:
 
         assert response.json["productOffers"][0]["categoryRelatedFields"] == {
             "author": None,
-            "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
             "ean": "1234567891234",
             "musicType": "ROCK-LO_FI",
             "performer": "Ichika Nito",
@@ -557,7 +557,7 @@ class PostProductTest:
                 "productOffers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
                             "ean": "1234567891234",
                             "musicType": "CHANSON_VARIETE-OTHER",
                         },
@@ -606,7 +606,7 @@ class PostProductTest:
                 "productOffers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
@@ -634,7 +634,7 @@ class PostProductTest:
                 "product_offers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
@@ -664,7 +664,7 @@ class PostProductTest:
                 "product_offers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
@@ -697,7 +697,7 @@ class PostProductTest:
                 "product_offers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
@@ -727,7 +727,7 @@ class PostProductTest:
                 "product_offers": [
                     {
                         "categoryRelatedFields": {
-                            "category": "SUPPORT_PHYSIQUE_MUSIQUE",
+                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
                             "ean": "1234567891234",
                             "musicType": "ROCK-LO_FI",
                         },
@@ -766,7 +766,7 @@ class PostProductTest:
 
         assert response.status_code == 400
         assert "productOffers.0.categoryRelatedFields.category" in response.json
-        assert "SUPPORT_PHYSIQUE_MUSIQUE" in response.json["productOffers.0.categoryRelatedFields.category"][0]
+        assert "SUPPORT_PHYSIQUE_MUSIQUE_CD" in response.json["productOffers.0.categoryRelatedFields.category"][0]
         assert offers_models.Offer.query.first() is None
 
     @pytest.mark.usefixtures("db_session")
