@@ -437,6 +437,8 @@ def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
         except external_bookings_exceptions.ExternalBookingException:
             logger.exception("Could not cancel external ticket")
             raise external_bookings_exceptions.ExternalBookingException
+        except external_bookings_exceptions.ExternalBookingAlreadyCancelledError as error:
+            logger.info("External ticket already cancelled for booking: %s. Error %s", booking.id, str(error))
         return None
 
     venue_provider_name = external_bookings_api.get_active_cinema_venue_provider(offer.venueId).provider.localClass

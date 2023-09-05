@@ -6,6 +6,10 @@ class ExternalBookingSoldOutError(Exception):
     pass
 
 
+class ExternalBookingAlreadyCancelledError(Exception):
+    pass
+
+
 class ExternalBookingNotEnoughSeatsError(Exception):
     def __init__(self, remainingQuantity: int) -> None:
         self.remainingQuantity = remainingQuantity

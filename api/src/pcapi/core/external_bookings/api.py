@@ -121,10 +121,7 @@ def cancel_event_ticket(
     payload = serialize.ExternalEventCancelBookingRequest.build_external_cancel_booking(barcodes)
     headers = {"Content-Type": "application/json"}
     response = requests.post(provider.cancelExternalUrl, json=payload.json(), headers=headers)
-    if response.status_code != 200:
-        raise exceptions.ExternalBookingException(
-            f"External booking failed with status code {response.status_code} and message {response.text}"
-        )
+    _check_external_booking_response_is_ok(response)
     try:
         parsed_response = pydantic.parse_obj_as(serialize.ExternalEventCancelBookingResponse, response.json())
         if parsed_response.remainingQuantity:
@@ -148,7 +145,11 @@ def _check_external_booking_response_is_ok(response: requests.Response) -> None:
             raise exceptions.ExternalBookingSoldOutError()
         if error_response.error == "not_enough_seats" and error_response.remainingQuantity:
             raise exceptions.ExternalBookingNotEnoughSeatsError(remainingQuantity=error_response.remainingQuantity)
-    if response.status_code != 201:
+        if error_response.error == "already_cancelled":
+            raise exceptions.ExternalBookingAlreadyCancelledError(
+                f"External booking failed with status code {response.status_code} and message {response.text}"
+            )
+    if not response.ok:
         raise exceptions.ExternalBookingException(
             f"External booking failed with status code {response.status_code} and message {response.text}"
         )
