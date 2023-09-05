@@ -1,6 +1,5 @@
 import copy
 import datetime
-import itertools
 import logging
 
 import sqlalchemy as sqla
@@ -9,6 +8,7 @@ from pcapi import repository
 from pcapi.core import search
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import utils as finance_utils
+from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
@@ -40,12 +40,12 @@ logger = logging.getLogger(__name__)
 @spectree_serialize(
     api=blueprint.v1_product_schema,
     tags=[constants.OFFERER_VENUES_TAG],
-    response_model=serialization.GetOfferersVenuesResponse,
+    response_model=venues_serialization.GetOfferersVenuesResponse,
     resp=SpectreeResponse(
         **(
             constants.BASE_CODE_DESCRIPTIONS
             | {
-                "HTTP_200": (serialization.GetOfferersVenuesResponse, "The offerer and its venues"),
+                "HTTP_200": (venues_serialization.GetOfferersVenuesResponse, "The offerer and its venues"),
             }
         )
     ),
@@ -53,31 +53,13 @@ logger = logging.getLogger(__name__)
 @api_key_required
 @rate_limiting.api_key_rate_limiter()
 def get_offerer_venues(
-    query: serialization.GetOfferersVenuesQuery,
-) -> serialization.GetOfferersVenuesResponse:
+    query: venues_serialization.GetOfferersVenuesQuery,
+) -> venues_serialization.GetOfferersVenuesResponse:
     """
     Get offerer attached the API key used and its venues.
     """
-    offerers_query = (
-        db.session.query(offerers_models.Offerer, offerers_models.Venue)
-        .join(offerers_models.Venue, offerers_models.Offerer.managedVenues)
-        .join(providers_models.VenueProvider, offerers_models.Venue.venueProviders)
-        .filter(providers_models.VenueProvider.provider == current_api_key.provider)
-        .order_by(offerers_models.Offerer.id, offerers_models.Venue.id)
-    )
-
-    if query.siren:
-        offerers_query = offerers_query.filter(offerers_models.Offerer.siren == query.siren)
-
-    accessible_venues_and_offerer = []
-    for offerer, group in itertools.groupby(offerers_query, lambda row: row.Offerer):
-        accessible_venues_and_offerer.append(
-            {
-                "offerer": offerer,
-                "venues": [venues_serialization.VenueResponse.build_model(row.Venue) for row in group],
-            }
-        )
-    return serialization.GetOfferersVenuesResponse(__root__=accessible_venues_and_offerer)  # type: ignore [arg-type]
+    rows = offerers_api.get_providers_offerer_and_venues(current_api_key.provider, query.siren)
+    return venues_serialization.GetOfferersVenuesResponse.serialize_offerers_venues(rows)
 
 
 def _retrieve_offer_by_eans_query(eans: list[str], venueId: int) -> sqla.orm.Query:

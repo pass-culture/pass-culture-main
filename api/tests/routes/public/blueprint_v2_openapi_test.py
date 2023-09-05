@@ -247,6 +247,41 @@ def test_public_api(client, app):
                     "title": "GetListEducationalInstitutionsQueryModel",
                     "type": "object",
                 },
+                "GetOffererVenuesResponse": {
+                    "properties": {
+                        "offerer": {
+                            "allOf": [{"$ref": "#/components/schemas/OffererResponse"}],
+                            "description": "Offerer to which the venues belong. Entity linked to the api key used.",
+                            "title": "Offerer",
+                        },
+                        "venues": {
+                            "items": {"$ref": "#/components/schemas/VenueResponse"},
+                            "title": "Venues",
+                            "type": "array",
+                        },
+                    },
+                    "required": ["offerer", "venues"],
+                    "title": "GetOffererVenuesResponse",
+                    "type": "object",
+                },
+                "GetOfferersVenuesQuery": {
+                    "properties": {
+                        "siren": {
+                            "example": "123456789",
+                            "nullable": True,
+                            "pattern": "^\\d{9}$",
+                            "title": "Siren",
+                            "type": "string",
+                        }
+                    },
+                    "title": "GetOfferersVenuesQuery",
+                    "type": "object",
+                },
+                "GetOfferersVenuesResponse": {
+                    "items": {"$ref": "#/components/schemas/GetOffererVenuesResponse"},
+                    "title": "GetOfferersVenuesResponse",
+                    "type": "array",
+                },
                 "GetPublicCollectiveOfferResponseModel": {
                     "additionalProperties": False,
                     "properties": {
@@ -401,6 +436,17 @@ def test_public_api(client, app):
                     },
                     "required": ["addressType"],
                     "title": "OfferVenueModel",
+                    "type": "object",
+                },
+                "OffererResponse": {
+                    "properties": {
+                        "createdDatetime": {"format": "date-time", "title": "Createddatetime", "type": "string"},
+                        "id": {"title": "Id", "type": "integer"},
+                        "name": {"example": "Structure A", "title": "Name", "type": "string"},
+                        "siren": {"example": "123456789", "nullable": True, "title": "Siren", "type": "string"},
+                    },
+                    "required": ["id", "createdDatetime", "name"],
+                    "title": "OffererResponse",
                     "type": "object",
                 },
                 "PartialAccessibility": {
@@ -1111,6 +1157,52 @@ def test_public_api(client, app):
                     },
                     "security": [{"ApiKeyAuth": []}],
                     "summary": "Liste de tous les dispositifs nationaux connus",
+                    "tags": ["API offres collectives"],
+                }
+            },
+            "/v2/collective/offerer_venues": {
+                "get": {
+                    "description": "Tous les lieux enregistrés, sont listés ici avec leurs coordonnées.",
+                    "operationId": "GetOffererVenues",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "siren",
+                            "required": False,
+                            "schema": {
+                                "example": "123456789",
+                                "nullable": True,
+                                "pattern": "^\\d{9}$",
+                                "title": "Siren",
+                                "type": "string",
+                            },
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/GetOfferersVenuesResponse"}
+                                }
+                            },
+                            "description": "La liste des lieux, groupés par structures",
+                        },
+                        "401": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
+                            },
+                            "description": "Authentification nécessaire",
+                        },
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"ApiKeyAuth": []}],
+                    "summary": "Récupération des lieux associés au fournisseur authentifié par le jeton d'API; groupés par structures.",
                     "tags": ["API offres collectives"],
                 }
             },

@@ -31,11 +31,15 @@ export type { CollectiveOffersSubCategoryResponseModel } from './models/Collecti
 export type { ErrorResponseModel } from './models/ErrorResponseModel';
 export type { GetBookingResponse } from './models/GetBookingResponse';
 export type { GetListEducationalInstitutionsQueryModel } from './models/GetListEducationalInstitutionsQueryModel';
+export type { GetOfferersVenuesQuery } from './models/GetOfferersVenuesQuery';
+export type { GetOfferersVenuesResponse } from './models/GetOfferersVenuesResponse';
+export type { GetOffererVenuesResponse } from './models/GetOffererVenuesResponse';
 export type { GetPublicCollectiveOfferResponseModel } from './models/GetPublicCollectiveOfferResponseModel';
 export type { ListCollectiveOffersQueryModel } from './models/ListCollectiveOffersQueryModel';
 export type { ListNationalProgramsResponseModel } from './models/ListNationalProgramsResponseModel';
 export type { NationalProgramModel } from './models/NationalProgramModel';
 export { OfferAddressType } from './models/OfferAddressType';
+export type { OffererResponse } from './models/OffererResponse';
 export { OfferStatus } from './models/OfferStatus';
 export type { OfferVenueModel } from './models/OfferVenueModel';
 export type { PartialAccessibility } from './models/PartialAccessibility';

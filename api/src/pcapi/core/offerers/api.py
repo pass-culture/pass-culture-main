@@ -1,6 +1,7 @@
 import dataclasses
 from datetime import datetime
 import enum
+import itertools
 import logging
 import re
 import secrets
@@ -1978,3 +1979,27 @@ def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
             continue
         transactional_mails.send_offerer_attachment_invitation_confirmed([user.email])
         transactional_mails.send_offerer_attachment_invitation_accepted([inviter_email])
+
+
+@dataclasses.dataclass
+class OffererVenues:
+    offerer: offerers_models.Offerer
+    venues: typing.Sequence[offerers_models.Venue]
+
+
+def get_providers_offerer_and_venues(
+    provider: providers_models.Provider, siren: str = None
+) -> typing.Generator[OffererVenues, None, None]:
+    offerers_query = (
+        db.session.query(offerers_models.Offerer, offerers_models.Venue)
+        .join(offerers_models.Venue, offerers_models.Offerer.managedVenues)
+        .join(providers_models.VenueProvider, offerers_models.Venue.venueProviders)
+        .filter(providers_models.VenueProvider.provider == provider)
+        .order_by(offerers_models.Offerer.id, offerers_models.Venue.id)
+    )
+
+    if siren:
+        offerers_query = offerers_query.filter(offerers_models.Offerer.siren == siren)
+
+    for offerer, group in itertools.groupby(offerers_query, lambda row: row.Offerer):
+        yield OffererVenues(offerer=offerer, venues=[row.Venue for row in group])
