@@ -12,4 +12,4 @@ logger = logging.getLogger(__name__)
 @blueprint.cli.command("send_beneficiary_subscription_reminders")
 @log_cron_with_transaction
 def send_beneficiary_subscription_reminders() -> None:
-    reminder_emails.send_reminder_emails()
+    reminder_emails.send_reminders()

@@ -9,7 +9,8 @@ import pcapi.core.fraud.ubble.constants as ubble_constants
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.mails.transactional.sendinblue_template_ids as sendinblue_template
 from pcapi.core.mails.transactional.users.ubble.reminder_emails import _find_users_to_remind
-from pcapi.core.mails.transactional.users.ubble.reminder_emails import send_reminder_emails
+from pcapi.core.mails.transactional.users.ubble.reminder_emails import send_reminders
+from pcapi.core.subscription.ubble import models as ubble_models
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
@@ -190,7 +191,7 @@ class SendUbbleKoReminderEmailTest:
         )
 
         # When
-        send_reminder_emails()
+        send_reminders()
 
         # Then
         assert len(mails_testing.outbox) == 2
@@ -215,7 +216,7 @@ class SendUbbleKoReminderEmailTest:
             reasonCodes=[fraud_models.FraudReasonCode.ID_CHECK_EXPIRED], ubble_date_created=twenty_one_days_ago
         )
 
-        send_reminder_emails()
+        send_reminders()
 
         assert len(mails_testing.outbox) == 2
 
@@ -258,7 +259,7 @@ class SendUbbleKoReminderEmailTest:
             "user_ids": [user2.id],
         }
 
-        send_reminder_emails()
+        send_reminders()
 
         assert len(push_testing.requests) == 2
         assert request1 in push_testing.requests
