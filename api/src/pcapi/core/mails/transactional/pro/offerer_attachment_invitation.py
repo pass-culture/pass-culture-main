@@ -35,12 +35,10 @@ def retrieve_data_for_offerer_attachment_invitation_existing_user_with_not_valid
     )
 
 
-def retrieve_data_for_offerer_attachment_invitation_accepted() -> models.TransactionalEmailData:
-    return models.TransactionalEmailData(template=TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_ACCEPTED.value)
-
-
-def retrieve_data_for_offerer_attachment_invitation_confirmed() -> models.TransactionalEmailData:
-    return models.TransactionalEmailData(template=TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_CONFIRMED.value)
+def retrieve_data_for_offerer_attachment_invitation_accepted(user: users_models.User) -> models.TransactionalEmailData:
+    return models.TransactionalEmailData(
+        template=TransactionalEmail.OFFERER_ATTACHMENT_INVITATION_ACCEPTED.value, params={"USER_NAME": user.full_name}
+    )
 
 
 def send_offerer_attachment_invitation(
@@ -55,11 +53,6 @@ def send_offerer_attachment_invitation(
     return mails.send(recipients=recipient_emails, data=data)
 
 
-def send_offerer_attachment_invitation_accepted(receipient_emails: list[str]) -> bool:
-    offerer_attachment_invitation_accepted_data = retrieve_data_for_offerer_attachment_invitation_accepted()
-    return mails.send(recipients=receipient_emails, data=offerer_attachment_invitation_accepted_data)
-
-
-def send_offerer_attachment_invitation_confirmed(recipient_emails: list[str]) -> bool:
-    offerer_attachment_invitation_confirmed = retrieve_data_for_offerer_attachment_invitation_confirmed()
-    return mails.send(recipients=recipient_emails, data=offerer_attachment_invitation_confirmed)
+def send_offerer_attachment_invitation_accepted(invited_user: users_models.User, receipient_email: str) -> bool:
+    offerer_attachment_invitation_accepted_data = retrieve_data_for_offerer_attachment_invitation_accepted(invited_user)
+    return mails.send(recipients=[receipient_email], data=offerer_attachment_invitation_accepted_data)
