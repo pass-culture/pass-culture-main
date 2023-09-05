@@ -31,12 +31,13 @@
           <div>
             <p class="lead num-results d-inline">{{ rows|length }} résultat{{ "s" if rows|length > 1 else "" }}</p>
             <span class="mx-2 fs-3">
-              <a href="{{ url_for("backoffice_v3_web.collective_bookings.get_collective_booking_csv_download", venue=form.venue.data[0], from_date=form.from_date.data, to_date=form.to_date.data) }}"
+              {% set from_to_date_formatted = (form.from_to_date.data[0].strftime("%d/%m/%Y") + ' - ' + form.from_to_date.data[1].strftime("%d/%m/%Y")) if form.from_to_date.data else None %}
+              <a href="{{ url_for("backoffice_v3_web.collective_bookings.get_collective_booking_csv_download", venue=form.venue.data[0], from_to_date=from_to_date_formatted) }}"
                  class="mx-2"><i class="bi bi-filetype-csv"
    data-bs-toggle="tooltip"
    data-bs-placement="top"
    data-bs-title="Télécharger en CSV."></i></a>
-              <a href="{{ url_for("backoffice_v3_web.collective_bookings.get_collective_booking_xlsx_download", venue=form.venue.data[0], from_date=form.from_date.data, to_date=form.to_date.data) }}"
+              <a href="{{ url_for("backoffice_v3_web.collective_bookings.get_collective_booking_xlsx_download", venue=form.venue.data[0], from_to_date=from_to_date_formatted) }}"
                  class="mx-2"><i class="bi bi-filetype-xlsx"
    data-bs-toggle="tooltip"
    data-bs-placement="top"
