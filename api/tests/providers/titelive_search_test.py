@@ -16,6 +16,7 @@ import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
 from pcapi.core.providers.titelive_music_search import TiteliveMusicSearch
 from pcapi.core.testing import override_settings
+from pcapi.domain import music_types
 from pcapi.domain.titelive import read_things_date
 from pcapi.utils.requests import ExternalAPIException
 
@@ -62,8 +63,12 @@ class TiteliveSearchTest:
         assert cd_product.extraData["music_label"] == "PLAY TWO"
         assert cd_product.extraData["nb_galettes"] == "1"
         assert cd_product.extraData["performer"] == "Gims"
-        assert cd_product.extraData["musicType"] == "-1"
-        assert cd_product.extraData["musicSubType"] == "-1"
+        assert cd_product.extraData["musicType"] == str(
+            music_types.MUSIC_TYPES_BY_SLUG["HIP_HOP_RAP-RAP_FRANCAIS"].code
+        )
+        assert cd_product.extraData["musicSubType"] == str(
+            music_types.MUSIC_SUB_TYPES_BY_SLUG["HIP_HOP_RAP-RAP_FRANCAIS"].code
+        )
 
         shared_gtl_product = offers_models.Product.query.filter(
             offers_models.Product.idAtProviders == "3700187679324",
@@ -86,8 +91,12 @@ class TiteliveSearchTest:
         assert shared_gtl_product.extraData["music_label"] == "PLAY TWO"
         assert shared_gtl_product.extraData["nb_galettes"] == "1"
         assert shared_gtl_product.extraData["performer"] == "Gims"
-        assert shared_gtl_product.extraData["musicType"] == "-1"
-        assert shared_gtl_product.extraData["musicSubType"] == "-1"
+        assert shared_gtl_product.extraData["musicType"] == str(
+            music_types.MUSIC_TYPES_BY_SLUG["HIP_HOP_RAP-RAP_FRANCAIS"].code
+        )
+        assert shared_gtl_product.extraData["musicSubType"] == str(
+            music_types.MUSIC_SUB_TYPES_BY_SLUG["HIP_HOP_RAP-RAP_FRANCAIS"].code
+        )
 
         vinyle_product = offers_models.Product.query.filter(
             offers_models.Product.idAtProviders == "5054197199738",
@@ -110,8 +119,8 @@ class TiteliveSearchTest:
         assert vinyle_product.extraData["music_label"] == "WARNER MUSIC UK"
         assert vinyle_product.extraData["nb_galettes"] == "1"
         assert vinyle_product.extraData["performer"] == "Gorillaz"
-        assert shared_gtl_product.extraData["musicType"] == "-1"
-        assert shared_gtl_product.extraData["musicSubType"] == "-1"
+        assert vinyle_product.extraData["musicType"] == str(music_types.MUSIC_TYPES_BY_SLUG["POP-BRITPOP"].code)
+        assert vinyle_product.extraData["musicSubType"] == str(music_types.MUSIC_SUB_TYPES_BY_SLUG["POP-BRITPOP"].code)
 
     @freezegun.freeze_time("2023-01-01")
     def test_titelive_sync_event(self, requests_mock):

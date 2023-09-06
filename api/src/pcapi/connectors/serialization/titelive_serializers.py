@@ -10,8 +10,16 @@ from pcapi.utils import date as date_utils
 
 
 class GenreTitelive(BaseModel):
-    code: str
+    if typing.TYPE_CHECKING:
+        code: str
+    else:
+        code: pydantic_v1.constr(min_length=8, max_length=8)
     libelle: str
+
+    @pydantic_v1.validator("code", pre=True)
+    def validate_code(cls, code: str) -> str:
+        # '50300' -> '05030000'; '110400' -> '11040000'
+        return code.zfill(6).ljust(8, "0")
 
 
 class TiteliveGtl(BaseModel):
