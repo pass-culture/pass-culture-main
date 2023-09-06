@@ -4,11 +4,6 @@ import string
 
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
-from pcapi.utils import crypto
-
-
-def random_hashed_password() -> bytes:
-    return crypto.hash_password(random_password())
 
 
 def random_password() -> str:
