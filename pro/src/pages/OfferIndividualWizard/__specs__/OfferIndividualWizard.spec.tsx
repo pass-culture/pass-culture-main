@@ -161,7 +161,9 @@ describe('test OfferIndividualWisard', () => {
     await waitForElementToBeRemoved(() =>
       screen.getByText(/Chargement en cours/)
     )
-    expect(await screen.findByText(GET_DATA_ERROR_MESSAGE)).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText(GET_DATA_ERROR_MESSAGE)).toBeInTheDocument()
+    })
   })
 
   it('should initialize context with api', async () => {
