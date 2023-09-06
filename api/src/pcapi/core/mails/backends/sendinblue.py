@@ -6,6 +6,7 @@ import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException as SendinblueApiException
 
 from pcapi import settings
+from pcapi.core.users import testing as users_testing
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_primary_task
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_secondary_task
@@ -32,6 +33,7 @@ class SendinblueBackend(BaseBackend):
         data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
         bcc_recipients: Iterable[str] = None,
     ) -> models.MailResult:
+        print("send_mail_with_data", data)
         if isinstance(data, models.TransactionalEmailData):
             payload = serializers.SendTransactionalEmailRequest(
                 recipients=list(recipients),
@@ -141,6 +143,7 @@ class ToDevSendinblueBackend(SendinblueBackend):
         data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
         bcc_recipients: Iterable[str] = None,
     ) -> models.MailResult:
+        print("sending email")
         whitelisted_recipients = self._get_whitelisted_recipients(recipients)
         whitelisted_bcc_recipients = self._get_whitelisted_recipients(bcc_recipients) if bcc_recipients else []
 
@@ -187,3 +190,14 @@ class E2eSendinblueBackend(ToDevSendinblueBackend):
             payload.emailBlacklisted,
         )
         return
+
+    def send_mail(
+        self,
+        recipients: Iterable,
+        data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
+        bcc_recipients: Iterable[str] = None,
+    ) -> models.MailResult:
+        return super().send_mail(recipients, data, bcc_recipients)
+
+    def _get_whitelisted_recipients(self, recipient_list: Iterable) -> list:
+        return super()._get_whitelisted_recipients(recipient_list)
