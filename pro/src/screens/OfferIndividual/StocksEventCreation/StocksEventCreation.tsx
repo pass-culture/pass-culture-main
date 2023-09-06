@@ -74,6 +74,7 @@ export const StocksEventCreation = ({
   const mode = useOfferWizardMode()
   const { setOffer } = useOfferIndividualContext()
   const notify = useNotification()
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
   const onCancel = () => setIsRecurrenceModalOpen(false)
@@ -136,6 +137,7 @@ export const StocksEventCreation = ({
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
     async () => {
+      setIsSubmitting(true)
       setIsClickingFromActionBar(true)
       if (stocksToDelete.length > 0) {
         await Promise.all(stocksToDelete.map(s => api.deleteStock(s.id)))
@@ -148,10 +150,12 @@ export const StocksEventCreation = ({
         } else {
           notify.error('Veuillez renseigner au moins une date')
         }
+        setIsSubmitting(false)
         return
       }
       if (stocks.length > MAX_STOCKS_PER_OFFER) {
         notify.error('Veuillez créer moins de 10 000 occurrences par offre.')
+        setIsSubmitting(false)
         return
       }
 
@@ -161,6 +165,7 @@ export const StocksEventCreation = ({
           offerId: offer.id,
           stocks: stocksToCreate,
         })
+        setIsSubmitting(false)
 
         if (isOk) {
           const response = await getOfferIndividualAdapter(offer.id)
@@ -250,7 +255,7 @@ export const StocksEventCreation = ({
       )}
 
       <ActionBar
-        isDisabled={isOfferDisabled(offer.status)}
+        isDisabled={isOfferDisabled(offer.status) || isSubmitting}
         onClickNext={handleNextStep()}
         onClickPrevious={handlePreviousStep}
         onClickSaveDraft={handleNextStep({ saveDraft: true })}
