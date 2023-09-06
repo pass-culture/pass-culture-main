@@ -1178,22 +1178,16 @@ def get_educational_offerers(offerer_id: int | None, current_user: users_models.
     return offerers
 
 
-def get_eligible_for_search_venues(
+def get_venues_by_batch(
     max_venues: int | None = None,
 ) -> typing.Generator[models.Venue, None, None]:
-    query = models.Venue.query.options(
-        # needed by is_eligible_for_search
-        sa.orm.joinedload(models.Venue.managingOfferer).load_only(
-            models.Offerer.isActive,
-        )
-    ).order_by(models.Venue.id)
+    query = models.Venue.query.order_by(models.Venue.id)
 
     if max_venues:
         query = query.limit(max_venues)
 
     for venue in query.yield_per(1_000):
-        if venue.is_eligible_for_search:
-            yield venue
+        yield venue
 
 
 def get_offerer_by_collective_offer_id(collective_offer_id: int) -> models.Offerer:

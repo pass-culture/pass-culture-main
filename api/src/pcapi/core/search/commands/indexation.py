@@ -217,11 +217,11 @@ def partially_index_collective_offer_templates(
 def partially_index_venues(clear: bool, batch_size: int, max_venues: int) -> None:
     if clear:
         search.unindex_all_venues()
-    _reindex_all_eligible_venues(batch_size, max_venues)
+    _reindex_all_venues(batch_size, max_venues)
 
 
-def _reindex_all_eligible_venues(algolia_batch_size: int, max_venues: int) -> None:
-    venues = offerers_api.get_eligible_for_search_venues(max_venues)
+def _reindex_all_venues(algolia_batch_size: int, max_venues: int) -> None:
+    venues = offerers_api.get_venues_by_batch(max_venues)
     for page, venue_chunk in enumerate(get_chunks(venues, algolia_batch_size), start=1):
         venue_ids = [venue.id for venue in venue_chunk]
         search.reindex_venue_ids(venue_ids)
