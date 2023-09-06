@@ -1,12 +1,12 @@
-""" Update Role names with new names defined in Roles enum
+"""Update Role names with new names defined in Roles enum
 """
 from alembic import op
 
 
-# pre/post deployment: post
+# pre/post deployment: pre
 # revision identifiers, used by Alembic.
-revision = "3ce98448ac72"
-down_revision = "9d1128058b6d"
+revision = "f2f67d2fb7f3"
+down_revision = "b136b1c8fb2c"
 branch_labels = None
 depends_on = None
 
