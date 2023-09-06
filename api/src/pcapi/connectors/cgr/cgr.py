@@ -34,8 +34,7 @@ def get_seances_pass_culture(
     """
     user = settings.CGR_API_USER
     password = cinema_details.password
-    # FIXME(fseguin, 2023-01-26): remove default from settings when FA page and pc pro pages are built
-    cinema_url = cinema_details.cinemaUrl or settings.CGR_API_URL
+    cinema_url = cinema_details.cinemaUrl
     service = get_cgr_service_proxy(cinema_url)
     response = service.GetSeancesPassCulture(User=user, mdp=password, IDFilmAllocine=str(allocine_film_id))
     response = json.loads(response)
