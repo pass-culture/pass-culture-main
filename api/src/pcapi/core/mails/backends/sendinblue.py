@@ -176,3 +176,14 @@ class ToDevSendinblueBackend(SendinblueBackend):
     def create_contact(self, payload) -> None:
         print("enfiiiin")
         return super().create_contact(payload)
+
+
+class E2eSendinblueBackend(ToDevSendinblueBackend):
+    def create_contact(self, payload: serializers.UpdateSendinblueContactRequest) -> None:
+        logger.info(
+            "A request to Sendinblue Contact API would be sent for user %s with attributes %s emailBlacklisted: %s",
+            payload.email,
+            payload.attributes,
+            payload.emailBlacklisted,
+        )
+        return
