@@ -1,0 +1,96 @@
+{% from "components/forms.html" import build_filters_form with context %}
+{% import "components/links.html" as links %}
+{% from "components/turbo/lazy_modal.html" import build_lazy_modal with context %}
+{% extends "layouts/connected.html" %}
+{% set can_edit = has_permission("MANAGE_PRO_ENTITY") %}
+{% block page %}
+  <div class="pt-3 px-5">
+    <h2 class="fw-light">Actions sur les lieux</h2>
+    {{ build_filters_form(form, dst) }}
+    <div>
+      {% if rows %}
+        <div class="d-flex justify-content-between">
+          <p class="lead num-results">
+            {{ rows | length }}{{ "+" if rows | length > 100 else "" }}
+            résultat{{ "s" if rows | length > 1 else "" }}
+          </p>
+          {% if can_edit %}
+            <div class="btn-group btn-group-sm"
+                 data-toggle="pc-batch-confirm-btn-group"
+                 data-toggle-id="table-container-venues-edit-btn-group"
+                 data-pc-table-multi-select-id="table-venues-multiselect"
+                 data-input-ids-name="object_ids">
+              <button disabled
+                      type="button"
+                      class="btn btn-outline-primary"
+                      data-modal-selector="#batch-edit-venues-modal"
+                      data-mode="fetch"
+                      data-fetch-url="{{ url_for('backoffice_web.venue.get_batch_edit_venues_form') }}"
+                      data-use-confirmation-modal="true">Éditer les lieux</button>
+            </div>
+          {% endif %}
+        </div>
+        <table class="table mb-4"
+               data-table-multi-select-id="table-venues-multiselect">
+          <thead>
+            <tr>
+              {% if can_edit %}
+                <th scope="col">
+                  <input type="checkbox"
+                         class="form-check-input"
+                         name="pc-table-multi-select-check-all" />
+                </th>
+              {% endif %}
+              <th scope="col">ID</th>
+              <th scope="col">Nom</th>
+              <th scope="col">Nom d'usage</th>
+              <th scope="col">Structure</th>
+              <th scope="col">Lieu permanent</th>
+              <th scope="col">Label</th>
+              <th scope="col">Tags</th>
+              <th scope="col">
+                {% if date_created_sort_url %}
+                  <a href="{{ date_created_sort_url }}"
+                     class="text-decoration-none"
+                     title="Changer pour un tri {{ 'croissant' if request.args.get('order') == 'desc' else 'décroissant' }}">
+                    Date de création
+                    <i class="bi bi-sort-{{ 'down' if request.args.get('order') == 'desc' else 'up' }}-alt"></i>
+                  </a>
+                {% else %}
+                  Date de création
+                {% endif %}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for venue in rows %}
+              <tr>
+                {% if can_edit %}
+                  <td>
+                    <input type="checkbox"
+                           class="form-check-input"
+                           name="pc-table-multi-select-check-{{ venue.id }}"
+                           data-id="{{ venue.id }}" />
+                  </td>
+                {% endif %}
+                <td>{{ venue.id }}</td>
+                <td>{{ links.build_venue_name_to_details_link(venue) }}</td>
+                <td>{{ venue.publicName | empty_string_if_null }}</td>
+                <td>{{ links.build_offerer_name_to_details_link(venue.managingOfferer) }}</td>
+                <td>
+                  {% if venue.isPermanent %}<span class="visually-hidden">Lieu permanent</span><i class="bi bi-check-circle-fill"></i>{% endif %}
+                </td>
+                <td>{{ venue.venueLabel.label }}</td>
+                <td>{{ venue.criteria | format_criteria | safe }}</td>
+                <td>{{ venue.dateCreated | format_date }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if can_edit %}
+          {{ build_lazy_modal(url_for('backoffice_web.venue.get_batch_edit_venues_form'), "batch-edit-venues-modal", "true") }}
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+{% endblock page %}

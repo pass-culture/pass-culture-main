@@ -96,7 +96,7 @@ Liste des fichiers
 | reusable--build-and-tag.yml           | Helper   | Automatically |                                                                                                       |
 | storybook.yml                         | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/storybook.yml)             |
 | tests-api.yml                         | Helper   | Automatically |                                                                                                       |
-| tests-backoffice-v3.yml               | Helper   | Automatically |                                                                                                       |
+| tests-backoffice.yml                  | Helper   | Automatically |                                                                                                       |
 | tests-main.yml                        | Workflow | Automatically | [runs](https://github.com/pass-culture/pass-culture-main/actions/workflows/tests-main.yml)            |
 | tests-pro.yml                         | Helper   | Automatically |                                                                                                       |
 | update-api-client-template.yml        | Helper   | Automatically |                                                                                                       |
