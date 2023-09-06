@@ -2,6 +2,7 @@ import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.search.testing as search_testing
+from pcapi.repository import repository
 
 from tests.conftest import clean_database
 
@@ -107,6 +108,43 @@ def test_partially_index_venues(app):
         app,
         "partially_index_venues",
         "--max-venues", 2,
+    )
+    # fmt: on
+
+    assert set(search_testing.search_store["venues"].keys()) == expected_to_be_reindexed
+
+
+@clean_database
+def test_partially_index_venues_removes_non_eligible_venues(app):
+    future_not_indexable_venue = offerers_factories.VenueFactory(isPermanent=True)
+    indexable_venue1 = offerers_factories.VenueFactory(isPermanent=True)
+
+    expected_to_be_reindexed = {
+        future_not_indexable_venue.id,
+        indexable_venue1.id,
+    }
+
+    # fmt: off
+    run_command(
+        app,
+        "partially_index_venues",
+    )
+    # fmt: on
+
+    assert set(search_testing.search_store["venues"].keys()) == expected_to_be_reindexed
+
+    ### This is the actual test: the venue is no longer eligible for search ###
+    future_not_indexable_venue.isPermanent = False
+    repository.save(future_not_indexable_venue)
+
+    expected_to_be_reindexed = {
+        indexable_venue1.id,
+    }
+
+    # fmt: off
+    run_command(
+        app,
+        "partially_index_venues",
     )
     # fmt: on
 
