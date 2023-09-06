@@ -137,7 +137,13 @@ jobs:
           PCAPI_VALUES_FILE=./pass-culture-deployment/helm/pcapi/values.${{ inputs.environment }}.yaml \
           PCAPI_SECRETS_FILE=<(echo '${{ needs.generate-pcapi-helm-secrets-file.outputs.pcapi_helm_secrets_file_base64 }}' | base64 -d) \
           helmfile -e ${{ inputs.environment }} sync --set image.tag=${{ inputs.app_version }}
-
+      - name: Play post-migrations
+        continue-on-error: true
+        run: |
+          POD_NAME=$(./kubectl -n ${{ inputs.environment }} get po -l role=api -o jsonpath='{.items[0].metadata.name}')
+          ./kubectl exec -it -n ${{ inputs.environment }} ${POD_NAME} -- bash <<EOF
+          alembic upgrade post@head
+          EOF
   deploy-pro-on-testing-on-firebase:
     name: Deploy pro on testing live channel
     needs: deploy-api
