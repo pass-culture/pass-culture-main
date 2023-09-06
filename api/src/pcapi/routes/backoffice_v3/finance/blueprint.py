@@ -130,7 +130,7 @@ def _cancel_finance_incident(incident: finance_models.FinanceIncident, comment: 
 @finance_incident_blueprint.route("/incident/<int:finance_incident_id>/cancel", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeResponse:
-    incident: finance_models.FinanceIncident = finance_models.FinanceIncident.query.get_or_404(finance_incident_id)
+    incident: finance_models.FinanceIncident = _get_incident(finance_incident_id)
 
     form = offerer_forms.CommentForm()
     if not form.validate():
