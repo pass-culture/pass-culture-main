@@ -35,15 +35,15 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.PRO_FRAUD_ACTIONS,
         perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS,
     ],
-    "support-N1": [
+    "support_n1": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
     ],
-    "support-N2": [
+    "support_n2": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT,
         perm_models.Permissions.SUSPEND_USER,
     ],
-    "support-PRO": [
+    "support_pro": [
         perm_models.Permissions.READ_PRO_ENTITY,
         perm_models.Permissions.MANAGE_PRO_ENTITY,
         perm_models.Permissions.DELETE_PRO_ENTITY,
@@ -54,11 +54,11 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_INCIDENTS,
         perm_models.Permissions.MANAGE_INCIDENTS,
     ],
-    "support-PRO-N2": [
+    "support_pro_n2": [
         perm_models.Permissions.MOVE_SIRET,
         perm_models.Permissions.ADVANCED_PRO_SUPPORT,
     ],
-    "fraude-conformite": [
+    "fraude_conformite": [
         perm_models.Permissions.PRO_FRAUD_ACTIONS,
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.READ_PRO_ENTITY,
@@ -69,7 +69,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_OFFERS,
         perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS,
     ],
-    "fraude-jeunes": [
+    "fraude_jeunes": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.SUSPEND_USER,
         perm_models.Permissions.UNSUSPEND_USER,
@@ -81,12 +81,12 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_REIMBURSEMENT_RULES,
         perm_models.Permissions.READ_INCIDENTS,
     ],
-    "responsable-daf": [
+    "responsable_daf": [
         perm_models.Permissions.READ_REIMBURSEMENT_RULES,
         perm_models.Permissions.CREATE_REIMBURSEMENT_RULES,
     ],
-    "bizdev": [],
-    "programmation": [
+    "partenaire_technique": [],
+    "programmation_market": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.READ_PRO_ENTITY,
         perm_models.Permissions.MANAGE_PRO_ENTITY,
@@ -96,16 +96,16 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS,
     ],
     "homologation": [],
-    "product-management": [perm_models.Permissions.FEATURE_FLIPPING],
-    "charge-developpement": [],
-    "lecture-seule": [
+    "product_management": [perm_models.Permissions.FEATURE_FLIPPING],
+    "charge_developpement": [],
+    "lecture_seule": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.READ_PRO_ENTITY,
         perm_models.Permissions.READ_BOOKINGS,
         perm_models.Permissions.READ_OFFERS,
     ],
     "qa": [],
-    "global-access": [
+    "global_access": [
         perm_models.Permissions.MANAGE_PERMISSIONS,
         perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS,
         perm_models.Permissions.FEATURE_FLIPPING,
