@@ -33,7 +33,7 @@ def get_seances_pass_culture(
     if allocine_film_id is not 0 CGR API wil return only shows for concerned movie
     """
     user = settings.CGR_API_USER
-    password = cinema_details.password or settings.CGR_API_PASSWORD
+    password = cinema_details.password
     # FIXME(fseguin, 2023-01-26): remove default from settings when FA page and pc pro pages are built
     cinema_url = cinema_details.cinemaUrl or settings.CGR_API_URL
     service = get_cgr_service_proxy(cinema_url)
@@ -47,7 +47,7 @@ def reservation_pass_culture(
     cinema_details: providers_models.CGRCinemaDetails, body: cgr_serializers.ReservationPassCultureBody
 ) -> cgr_serializers.ReservationPassCultureResponse:
     user = settings.CGR_API_USER
-    password = settings.CGR_API_PASSWORD
+    password = cinema_details.password
     cinema_url = cinema_details.cinemaUrl
     service = get_cgr_service_proxy(cinema_url)
     response = service.ReservationPassCulture(
@@ -70,7 +70,7 @@ def reservation_pass_culture(
 
 def annulation_pass_culture(cinema_details: providers_models.CGRCinemaDetails, qr_code: str) -> None:
     user = settings.CGR_API_USER
-    password = settings.CGR_API_PASSWORD
+    password = cinema_details.password
     cinema_url = cinema_details.cinemaUrl
     service = get_cgr_service_proxy(cinema_url)
     response = service.AnnulationPassCulture(User=user, mdp=password, pQrCode=qr_code)
