@@ -292,6 +292,8 @@ def book_offer(
             "stock": stock.id,
             "booking": booking.id,
             "used": booking.is_used_or_reimbursed,
+            "booking_token": booking.token,
+            "barcodes": [external_booking.barcode for external_booking in booking.externalBookings],
         },
     )
     amplitude_events.track_book_offer_event(booking)
@@ -361,6 +363,14 @@ def _book_cinema_external_ticket(booking: Booking, stock: Stock, beneficiary: Us
         )
         for ticket in tickets
     ]
+    logger.info(
+        "Successfully booked an offer",
+        extra={
+            "booking_id": booking.id,
+            "booking_token": booking.token,
+            "barcodes": [external_booking.barcode for external_booking in booking.externalBookings],
+        },
+    )
 
 
 def _book_event_external_ticket(booking: Booking, stock: Stock, beneficiary: User) -> int:
@@ -423,7 +433,12 @@ def _cancel_booking(
 
     logger.info(
         "Booking has been cancelled",
-        extra={"booking_id": booking.id, "reason": str(reason)},
+        extra={
+            "booking_id": booking.id,
+            "reason": str(reason),
+            "booking_token": booking.token,
+            "barcodes": [external_booking.barcode for external_booking in booking.externalBookings],
+        },
         technical_message_id="booking.cancelled",
     )
     amplitude_events.track_cancel_booking_event(booking, reason)
