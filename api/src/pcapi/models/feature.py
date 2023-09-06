@@ -119,7 +119,6 @@ class FeatureToggle(enum.Enum):
     WIP_MANDATORY_BOOKING_CONTACT = "Rend obligatoire offer.bookingContact pour les offres retirables"
     WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING = "Active les réservations externe boost avec préfix"
     WIP_ENABLE_NEW_USER_OFFERER_LINK = "Activer le nouvel ajout des collaborateurs"
-    WIP_ENABLE_NATIONAL_SYSTEM = "Activer le dispositif national dans les offres collectives"
     WIP_ENABLE_DIFFUSE_HELP = "Activer l'affichage de l'aide diffuse adage"
     WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API = "Activer la création événements avec tickets dans l'API publique"
     WIP_OFFER_TO_INSTITUTION = "Activer le fléchage d'une offre à un établissement"
@@ -195,7 +194,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_ADAGE_FILTERS,
     FeatureToggle.WIP_ENABLE_BOOST_PREFIXED_EXTERNAL_BOOKING,
     FeatureToggle.WIP_ENABLE_NEW_USER_OFFERER_LINK,
-    FeatureToggle.WIP_ENABLE_NATIONAL_SYSTEM,
     FeatureToggle.WIP_ENABLE_DIFFUSE_HELP,
     FeatureToggle.WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API,
     FeatureToggle.WIP_OFFER_TO_INSTITUTION,
