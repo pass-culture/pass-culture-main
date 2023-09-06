@@ -8,7 +8,7 @@ from urllib3 import exceptions as urllib3_exceptions
 
 from pcapi import settings
 from pcapi.core import logging as core_logging
-from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.offers import exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
 from pcapi.domain.titelive import read_things_date

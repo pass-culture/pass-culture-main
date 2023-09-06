@@ -307,7 +307,12 @@ MUSIC_SEARCH_FIXTURE = {
                     "code_tva": "3",
                     "nboccasions": 0,
                     "stock": 0,
-                    "gtl": [],
+                    "gtl": {
+                        "first": {
+                            "1": {"code": "110000", "libelle": "Rap / Hip Hop"},
+                            "2": {"code": "110400", "libelle": "Rap / Hip Hop francophone"},
+                        }
+                    },
                     "gtlvideo": [],
                     "operations": [],
                     "tracks": [],
@@ -581,7 +586,12 @@ MUSIC_SEARCH_FIXTURE = {
                     "code_tva": "3",
                     "nboccasions": 0,
                     "stock": 0,
-                    "gtl": [],
+                    "gtl": {
+                        "first": {
+                            "1": {"code": "50000", "libelle": "Pop"},
+                            "2": {"code": "50300", "libelle": "Brit Pop"},
+                        }
+                    },
                     "gtlvideo": [],
                     "operations": [],
                     "tracks": [],
