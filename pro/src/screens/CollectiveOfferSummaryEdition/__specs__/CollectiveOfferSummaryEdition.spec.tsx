@@ -104,6 +104,7 @@ describe('CollectiveOfferSummary', () => {
     })
 
     vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
+    vi.spyOn(api, 'getNationalPrograms').mockResolvedValue([])
 
     vi.spyOn(api, 'createCollectiveOffer').mockResolvedValue(
       {} as CollectiveOfferResponseIdModel

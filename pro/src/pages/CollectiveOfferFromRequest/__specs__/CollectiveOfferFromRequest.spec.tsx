@@ -20,6 +20,7 @@ vi.mock('apiClient/api', () => ({
     getCategories: vi.fn(),
     listEducationalDomains: vi.fn(),
     listEducationalOfferers: vi.fn(),
+    getNationalPrograms: vi.fn(),
     createCollectiveOffer: vi.fn(),
   },
 }))
@@ -63,6 +64,7 @@ describe('CollectiveOfferFromRequest', () => {
       educationalOfferers: [],
     })
     vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([])
+    vi.spyOn(api, 'getNationalPrograms').mockResolvedValue([])
     vi.spyOn(api, 'createCollectiveOffer').mockResolvedValue({ id: 1 })
   })
 

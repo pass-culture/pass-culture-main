@@ -19,11 +19,9 @@ type OfferEducationalFormData = {
 
 const useOfferEducationalFormData = (
   offererId: number | null,
-  isNationalSystemActive: boolean,
   offer?: CollectiveOffer | CollectiveOfferTemplate
 ): OfferEducationalFormData & {
   isReady: boolean
-  isNationalSystemActive: boolean
 } => {
   const [isReady, setIsReady] = useState<boolean>(false)
   const defaultReturnValue: OfferEducationalFormData = {
@@ -40,7 +38,6 @@ const useOfferEducationalFormData = (
       const result = await getCollectiveOfferFormDataApdater({
         offererId,
         offer: offerResponse,
-        isNationalSystemActive,
       })
 
       if (!result.isOk) {
@@ -69,7 +66,6 @@ const useOfferEducationalFormData = (
 
   return {
     isReady,
-    isNationalSystemActive,
     ...data,
   }
 }
