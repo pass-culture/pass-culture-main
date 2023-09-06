@@ -62,6 +62,7 @@ def create_venue_provider(
     ):
         venue.isPermanent = True
         repository.save(venue)
+        search.async_index_venue_ids([venue.id])
 
     logger.info(
         "La synchronisation d'offre a été activée",
