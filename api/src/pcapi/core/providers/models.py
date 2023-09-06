@@ -354,9 +354,7 @@ class CGRCinemaDetails(PcObject, Base, Model):
     )
     cinemaUrl: str = Column(Text, nullable=False)
     numCinema: int = Column(Integer, nullable=True)
-    password: str = Column(
-        Text, nullable=True
-    )  # FIXME (yacine-pc) since we already have a row in production, make this column not nullable later
+    password: str = Column(Text, nullable=False)
 
 
 class EMSCinemaDetails(PcObject, Base, Model):
