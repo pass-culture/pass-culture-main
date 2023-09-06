@@ -52,13 +52,7 @@ class CreateVenueProviderTest:
         "pcapi.infrastructure.repository.stock_provider.provider_api.ProviderAPI.is_siret_registered",
         return_value=True,
     )
-    def test_permanent_venue_marking(
-        self,
-        _unused_mock,
-        venue_type,
-        is_permanent,
-        db_session,
-    ):
+    def test_permanent_venue_marking(self, _unused_mock, venue_type, is_permanent, db_session, app):
         # Given
         venue = offerers_factories.VenueFactory(venueTypeCode=venue_type)
         provider = providers_factories.ProviderFactory(
@@ -74,6 +68,9 @@ class CreateVenueProviderTest:
         # Then
         db_session.refresh(venue)
         assert venue.isPermanent == is_permanent
+        if is_permanent:
+            # Assert the venue is added to the algolia index
+            assert app.redis_client.smembers("search:algolia:venue-ids-to-index") == {str(venue.id)}
 
 
 def create_product(ean, **kwargs):
