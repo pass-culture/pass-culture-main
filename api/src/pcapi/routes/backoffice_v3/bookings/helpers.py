@@ -43,7 +43,7 @@ def get_bookings(
         base_query = base_query.filter(stock_class.beginningDatetime >= event_from_datetime)  # type: ignore [operator]
 
     event_to_datetime = date_utils.date_to_localized_datetime(form.event_to_date.data, datetime.datetime.max.time())
-    if event_from_datetime:
+    if event_to_datetime:
         base_query = base_query.filter(stock_class.beginningDatetime <= event_to_datetime)  # type: ignore [operator]
 
     if form.offerer.data:
