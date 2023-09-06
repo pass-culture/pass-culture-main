@@ -43,7 +43,7 @@ jobs:
         with:
           from: commits
 
-      # set the output with the issue number, only if the issue type is not equal to "OPS Task"
+      # set the output with the issue number, only if the issue type is not equal to "OPS Task" or "Infra Task"
       - id: issue-check
         name: issue check
         if: ${{ steps.get_jira_key.outputs.issue != null }}
@@ -51,7 +51,7 @@ jobs:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
         run: |
           issue_type=$(jira view ${{ steps.get_jira_key.outputs.issue }} --template viewTicketType)
-          if [[ $issue_type != "OPS Task" ]]; then 
+          if [[ $issue_type != "OPS Task" && "$issue_type" != "Infra Task" ]]; then 
             echo "status=${{ steps.get_jira_key.outputs.issue }}" >> $GITHUB_OUTPUT
           fi
 
