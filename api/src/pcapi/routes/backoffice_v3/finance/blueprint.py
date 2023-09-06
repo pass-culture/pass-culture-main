@@ -78,11 +78,13 @@ def render_finance_incident(incident: finance_models.FinanceIncident) -> utils.B
             for booking_incident in booking_incidents
         )
     )
+    total_amount_of_incident = sum(booking_incident.newTotalAmount for booking_incident in booking_incidents)
 
     return render_template(
         "finance/incident/get.html",
         booking_finance_incidents=incident.booking_finance_incidents,
         total_amount=total_amount,
+        total_amount_of_incident=total_amount_of_incident,
         incident=incident,
         reimbursement_point=current_reimbursement_point,
         reimbursement_point_humanized_id=humanize(current_reimbursement_point.id),
