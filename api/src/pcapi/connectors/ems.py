@@ -1,13 +1,13 @@
 """
 EMS connectors that handle schedule & booking APIs from this provider.
 """
-
 import hmac
 import json
 
 from pydantic import parse_obj_as
 from requests import Response
 from requests.auth import HTTPBasicAuth
+import sentry_sdk
 
 from pcapi import settings
 from pcapi.connectors.serialization import ems_serializers
@@ -81,6 +81,8 @@ class EMSBookingConnector:
         Perform the actual request, using mandatory headers
         and hashed payload.
         """
+        sentry_sdk.set_tag("ems_http_call", endpoint)
+
         headers = self._build_headers()
         url = self._build_url(endpoint, payload)
         return requests.post(url, headers=headers, json=payload)
