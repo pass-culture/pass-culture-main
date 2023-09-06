@@ -216,7 +216,7 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
             )
     for offer in offers_to_update:
         try:
-            offer.lastProvider = current_api_key.provider
+            offer.lastProvider = provider
             offer.isActive = True
 
             ean = offer.extraData["ean"]  # type: ignore [index]
