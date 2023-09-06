@@ -45,7 +45,15 @@ class CGRClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             pDateLimiteAnnul=booking.cancellationLimitDate.isoformat(),
         )
         response = reservation_pass_culture(self.cgr_cinema_details, book_show_body)
-        logger.info("Booked CGR Ticket", extra={"barcode": response.QrCode, "seat_number": response.Placement})
+        logger.info(
+            "Booked CGR Ticket",
+            extra={
+                "barcode": response.QrCode,
+                "seat_number": response.Placement,
+                "booking_id": booking.id,
+                "booking_token": booking.token,
+            },
+        )
         add_to_queue(
             REDIS_EXTERNAL_BOOKINGS_NAME,
             {
