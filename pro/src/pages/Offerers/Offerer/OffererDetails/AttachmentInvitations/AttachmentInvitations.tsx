@@ -44,7 +44,7 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
     })
 
     if (isOk) {
-      members.push({
+      members.unshift({
         email,
         status: OffererMemberStatus.PENDING,
       })
