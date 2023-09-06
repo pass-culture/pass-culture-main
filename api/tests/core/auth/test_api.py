@@ -22,7 +22,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 @override_settings(ENV="staging")
 def test_can_extract_roles_from_google_workspace_groups():
     # given
-    backoffice_groups = ["backoffice-staging-admin", "backoffice-testing-pro-support"]
+    backoffice_groups = ["backoffice-staging-admin", "backoffice-testing-pro_support"]
     other_groups = ["random-group", "dummy-group"]
     api_response_json = GoogleWorkspaceGroupList(
         groups=[GoogleWorkspaceGroup(name=group) for group in backoffice_groups + other_groups]
@@ -33,21 +33,6 @@ def test_can_extract_roles_from_google_workspace_groups():
 
     # then
     assert extracted_roles == {"admin"}
-
-
-def test_can_extract_roles_from_legacy_google_workspace_groups():
-    # given
-    backoffice_groups = ["backoffice-admin", "backoffice-public-support", "backoffice-pro-support"]
-    other_groups = ["random-group", "dummy-group"]
-    api_response_json = GoogleWorkspaceGroupList(
-        groups=[GoogleWorkspaceGroup(name=group) for group in backoffice_groups + other_groups]
-    )
-
-    # when
-    extracted_roles = extract_roles_from_google_workspace_groups(api_response_json)
-
-    # then
-    assert extracted_roles == {"admin", "pro-support", "public-support"}
 
 
 def test_get_token_with_permission_from_google_token_id():
@@ -65,7 +50,7 @@ def test_get_token_with_permission_from_google_token_id():
         user_from_google_id_mock.return_value = user
         with mock.patch("pcapi.core.auth.api.get_groups_from_google_workspace") as groups_from_workspace_mock:
             groups_from_workspace_mock.return_value = GoogleWorkspaceGroupList(
-                groups=[GoogleWorkspaceGroup(name=f"backoffice-{r.name}") for r in (role_1, role_2)]
+                groups=[GoogleWorkspaceGroup(name=f"backoffice-development-{r.name}") for r in (role_1, role_2)]
             )
 
             # when
