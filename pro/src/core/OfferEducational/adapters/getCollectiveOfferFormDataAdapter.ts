@@ -24,7 +24,6 @@ type Payload = {
 type Param = {
   offererId: number | null
   offer?: CollectiveOffer | CollectiveOfferTemplate
-  isNationalSystemActive: boolean
 }
 
 type GetCollectiveOfferFormDataApdater = Adapter<Param, Payload, Payload>
@@ -44,25 +43,20 @@ const ERROR_RESPONSE = {
 }
 
 const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdater =
-  async ({ offererId, offer, isNationalSystemActive }) => {
+  async ({ offererId, offer }) => {
     try {
       const targetOffererId = offer?.venue.managingOfferer.id || offererId
       const responses = await Promise.all([
         getEducationalCategoriesAdapter(),
         getEducationalDomainsAdapter(),
         getOfferersAdapter(targetOffererId),
+        getNationalProgramsAdapter(),
       ])
-      let nationalPrograms: SelectOption[] = []
-      if (isNationalSystemActive) {
-        const nationalProgramsResponse = await getNationalProgramsAdapter()
-        if (nationalProgramsResponse.isOk) {
-          nationalPrograms = nationalProgramsResponse.payload
-        }
-      }
+
       if (responses.some(response => response && !response.isOk)) {
         return ERROR_RESPONSE
       }
-      const [categories, domains, offerers] = responses
+      const [categories, domains, offerers, nationalPrograms] = responses
 
       const offerersOptions = getUserOfferersFromOffer(offerers.payload, offer)
 
@@ -73,7 +67,7 @@ const getCollectiveOfferFormDataApdater: GetCollectiveOfferFormDataApdater =
           categories: categories.payload,
           domains: domains.payload,
           offerers: offerersOptions,
-          nationalPrograms: nationalPrograms,
+          nationalPrograms: nationalPrograms.payload,
         },
       }
     } catch (e) {

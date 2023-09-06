@@ -190,6 +190,7 @@ describe('DuplicateOfferCell', () => {
         categories: [],
         subcategories: [],
       })
+      vi.spyOn(api, 'getNationalPrograms').mockResolvedValue([])
 
       vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
         educationalOfferers: [],

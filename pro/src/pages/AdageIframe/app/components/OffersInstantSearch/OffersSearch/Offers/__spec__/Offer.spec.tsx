@@ -207,12 +207,7 @@ describe('offer', () => {
 
     it('should show all offer informations if user click on "en savoir plus"', async () => {
       // When
-      renderOffers({ ...offerProps, offer: offerInCayenne }, [
-        {
-          isActive: true,
-          nameKey: 'WIP_ENABLE_NATIONAL_SYSTEM',
-        },
-      ])
+      renderOffers({ ...offerProps, offer: offerInCayenne })
 
       const offerName = await screen.findByText(offerInCayenne.name)
       expect(offerName).toBeInTheDocument()

@@ -10,7 +10,6 @@ import {
   createOfferFromTemplate,
 } from 'core/OfferEducational'
 import getCollectiveOfferTemplateAdapter from 'core/OfferEducational/adapters/getCollectiveOfferTemplateAdapter'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import { Button, Title } from 'ui-kit'
@@ -34,7 +33,6 @@ const CollectiveOfferFromRequest = (): JSX.Element => {
     offerId: string
     requestId: string
   }>()
-  const isNationalSystemActive = useActiveFeature('WIP_ENABLE_NATIONAL_SYSTEM')
 
   const handleButtonClick = () => {
     logEvent?.(Events.CLICKED_CREATE_OFFER_FROM_REQUEST, {
@@ -42,13 +40,7 @@ const CollectiveOfferFromRequest = (): JSX.Element => {
       requestId,
       templateOfferId: offerId,
     })
-    createOfferFromTemplate(
-      navigate,
-      notify,
-      Number(offerId),
-      isNationalSystemActive,
-      requestId
-    )
+    createOfferFromTemplate(navigate, notify, Number(offerId), requestId)
   }
 
   const fetchOfferTemplateDetails = async () => {
