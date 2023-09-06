@@ -35,7 +35,6 @@ import pcapi.core.users.constants as users_constants
 import pcapi.core.users.models as users_models
 import pcapi.core.users.repository as users_repository
 import pcapi.core.users.utils as users_utils
-from pcapi.domain.password import random_hashed_password
 from pcapi.domain.password import random_password
 from pcapi.models import db
 from pcapi.models import feature
@@ -296,10 +295,6 @@ def handle_create_account_with_existing_email(user: models.User) -> None:
     if not is_email_sent:
         logger.error("Email service failure when user email already exists in database '%s'", user.email)
         raise exceptions.EmailNotSent()
-
-
-def _generate_random_password(user):  # type: ignore [no-untyped-def]
-    user.password = random_hashed_password()
 
 
 def check_can_unsuspend(user: models.User) -> None:
