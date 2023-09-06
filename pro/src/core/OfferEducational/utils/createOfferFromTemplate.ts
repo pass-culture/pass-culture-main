@@ -13,7 +13,6 @@ export const createOfferFromTemplate = async (
   navigate: ReturnType<typeof useNavigate>,
   notify: ReturnType<typeof useNotification>,
   templateOfferId: number,
-  isNationalSystemActive: boolean,
   requestId?: string
 ) => {
   const offerTemplateResponse = await getCollectiveOfferTemplateAdapter(
@@ -27,7 +26,6 @@ export const createOfferFromTemplate = async (
   const result = await getCollectiveOfferFormDataApdater({
     offererId: offererId,
     offer: offerTemplateResponse.payload,
-    isNationalSystemActive,
   })
 
   if (!result.isOk) {

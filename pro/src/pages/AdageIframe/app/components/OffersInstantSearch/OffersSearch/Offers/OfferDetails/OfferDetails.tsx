@@ -6,7 +6,6 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
-import useActiveFeature from 'hooks/useActiveFeature'
 
 import OfferInterventionArea from './OfferInterventionArea'
 import OfferSection from './OfferSection'
@@ -78,8 +77,6 @@ const OfferDetails = ({
     visualDisabilityCompliant
   )
 
-  const isNationalProgramActive = useActiveFeature('WIP_ENABLE_NATIONAL_SYSTEM')
-
   return (
     <div className="offer-details">
       {durationString && (
@@ -92,13 +89,11 @@ const OfferDetails = ({
           </ul>
         </OfferSection>
       )}
-
-      {isNationalProgramActive && nationalProgram?.name && (
+      {nationalProgram?.name && (
         <OfferSection title="Dispositif National">
           {nationalProgram.name}
         </OfferSection>
       )}
-
       {educationalPriceDetail && (
         <OfferSection title="Détails">{educationalPriceDetail}</OfferSection>
       )}
