@@ -109,8 +109,8 @@ while read line; do
   fi
   TYPE_ISSUE=$(Get_type_from_issue $PC_NUMBER)
   echo "TYPE_ISSUE: $TYPE_ISSUE"
-  if [[ "$TYPE_ISSUE" == "OPS Task" ]]; then
-    echo "Ticket de type OPS Task -> skip"
+  if [[ "$TYPE_ISSUE" == "OPS Task" || "$TYPE_ISSUE" == "Infra Task" ]]; then
+    echo "Ticket de type Infra Task -> skip"
     continue
   fi
   PREV_COMMIT_NUMBER=$(Get_jira_previous_commit_number $PC_NUMBER)
