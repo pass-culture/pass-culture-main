@@ -1,0 +1,68 @@
+{% extends "layouts/connected.html" %}
+{% from "components/badges.html" import build_venue_badges %}
+{% macro build_venue_card(venue, yearly_revenue) %}
+  <div class="card">
+    <div class="card-body">
+      <h5 class="mb-3">{{ build_venue_badges(venue) }}</h5>
+      <h5 class="card-title">{{ venue.name | upper }}</h5>
+      <h6 class="card-subtitle mt-4 mb-3 text-muted">Venue ID : {{ venue.id }}</h6>
+      <h6 class="card-subtitle mb-4 text-muted">SIRET : {{ venue.siret | empty_string_if_null }}</h6>
+      <div class="row pt3">
+        {% if venue.publicName and venue.publicName != venue.name %}
+          <p>
+            <span class="fw-bold">Nom d'usage :</span> {{ venue.publicName }}
+          </p>
+        {% endif %}
+        <p>
+          <span class="fw-bold">Structure :</span> {{ venue.managingOfferer.name }}
+        </p>
+        <p>
+          {% if yearly_revenue is not false %}
+            <span class="fw-bold">Revenu de l'année :</span>
+            {{ yearly_revenue | format_amount }}
+          {% else %}
+            &nbsp;
+          {% endif %}
+        </p>
+      </div>
+      <a href="{{ url_for("backoffice_web.venue.get", venue_id=venue.id) }}"
+         target="_blank"
+         class="card-link">
+        <button class="btn lead px-0 fw-bold mt-1">CONSULTER LE PROFIL</button>
+      </a>
+    </div>
+  </div>
+{% endmacro %}
+{% block page %}
+  <div class="pt-3 px-5">
+    <h2 class="fw-light">Déplacer un SIRET d’un lieu à un autre</h2>
+    <div class="row mt-4">
+      <div class="col-6">
+        <p class="fw-bold">Source :</p>
+        {{ build_venue_card(source_venue, False) }}
+      </div>
+      <div class="col-6">
+        <p class="fw-bold">Cible :</p>
+        {{ build_venue_card(target_venue, target_yearly_revenue) }}
+      </div>
+    </div>
+    <div class="d-flex justify-content-end py-4">
+      <a href="{{ url_for(".move_siret") }}"
+         class="btn btn-outline-primary mx-4"
+         role="button">Annuler</a>
+      <div>
+        <form action="{{ dst }}"
+              name="{{ dst | action_to_name }}"
+              method="post">
+          {% for form_field in form %}
+            <input type="hidden"
+                   name="{{ form_field.name }}"
+                   value="{{ form_field.data }}" />
+          {% endfor %}
+          <button type="submit"
+                  class="btn btn-primary">Confirmer</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock page %}

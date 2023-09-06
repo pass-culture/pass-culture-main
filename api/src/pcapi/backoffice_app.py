@@ -12,7 +12,7 @@ from sentry_sdk import set_tag
 from pcapi import settings
 from pcapi.flask_app import app
 from pcapi.flask_app import setup_metrics
-from pcapi.routes.backoffice_v3.scss import preprocess_scss
+from pcapi.routes.backoffice.scss import preprocess_scss
 
 
 app.config["SESSION_COOKIE_HTTPONLY"] = True
@@ -44,14 +44,14 @@ def generate_error_response(errors: dict, backoffice_template_name: str = "error
 with app.app_context():
     # pylint: disable=unused-import
     from pcapi.routes import error_handlers  # pylint: disable=unused-import
-    from pcapi.routes.backoffice_v3 import install_routes
-    from pcapi.routes.backoffice_v3.blueprint import backoffice_v3_web
-    import pcapi.routes.backoffice_v3.error_handlers  # pylint: disable=unused-import
+    from pcapi.routes.backoffice import install_routes
+    from pcapi.routes.backoffice.blueprint import backoffice_web
+    import pcapi.routes.backoffice.error_handlers  # pylint: disable=unused-import
     import pcapi.utils.login_manager
 
     preprocess_scss(settings.IS_DEV)
     install_routes(app)
-    app.register_blueprint(backoffice_v3_web, url_prefix="/")
+    app.register_blueprint(backoffice_web, url_prefix="/")
 
     app.generate_error_response = generate_error_response  # type: ignore [attr-defined]
 
