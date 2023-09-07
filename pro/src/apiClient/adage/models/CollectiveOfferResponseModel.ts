@@ -13,7 +13,7 @@ import type { OfferVenueResponse } from './OfferVenueResponse';
 import type { StudentLevels } from './StudentLevels';
 
 export type CollectiveOfferResponseModel = {
-  audioDisabilityCompliant: boolean;
+  audioDisabilityCompliant?: boolean | null;
   contactEmail: string;
   contactPhone?: string | null;
   description?: string | null;
@@ -26,18 +26,19 @@ export type CollectiveOfferResponseModel = {
   imageUrl?: string | null;
   interventionArea: Array<string>;
   isExpired: boolean;
+  isFavorite?: boolean | null;
   isSoldOut: boolean;
-  mentalDisabilityCompliant: boolean;
-  motorDisabilityCompliant: boolean;
+  mentalDisabilityCompliant?: boolean | null;
+  motorDisabilityCompliant?: boolean | null;
   name: string;
   nationalProgram?: NationalProgramModel | null;
-  offerId?: string | null;
+  offerId?: number | null;
   offerVenue: CollectiveOfferOfferVenue;
   stock: OfferStockResponse;
   students: Array<StudentLevels>;
   subcategoryLabel: string;
   teacher?: EducationalRedactorResponseModel | null;
   venue: OfferVenueResponse;
-  visualDisabilityCompliant: boolean;
+  visualDisabilityCompliant?: boolean | null;
 };
 
