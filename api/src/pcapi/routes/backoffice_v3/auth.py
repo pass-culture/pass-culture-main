@@ -123,7 +123,14 @@ def user_not_found() -> utils.BackofficeResponse:
 def fetch_user_roles_from_google_workspace(user_email: str) -> list[perm_models.Roles]:
     groups = auth_api.get_groups_from_google_workspace(user_email)
     role_names = auth_api.extract_roles_from_google_workspace_groups(groups)
-    return [perm_models.Roles(name) for name in role_names]
+    user_roles = []
+    for name in role_names:
+        try:
+            role = perm_models.Roles(name)
+            user_roles.append(role)
+        except ValueError:
+            continue
+    return user_roles
 
 
 def create_local_admin_user(email: str, first_name: str, last_name: str) -> users_models.User:
