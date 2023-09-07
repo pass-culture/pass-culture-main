@@ -183,6 +183,13 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
         created_offers = []
         existing_products = _get_existing_products(ean_list_to_create)
         product_by_ean = {product.extraData["ean"]: product for product in existing_products}  # type: ignore [index]
+        not_found_eans = [ean for ean in ean_list_to_create if ean not in product_by_ean.keys()]
+        if not_found_eans:
+            logger.warning(
+                "Some provided eans were not found",
+                extra={"eans": not_found_eans, "venue": venue_id},
+                technical_message_id="ean.not_found",
+            )
         for product in existing_products:
             try:
                 ean = product.extraData["ean"]  # type: ignore [index]
