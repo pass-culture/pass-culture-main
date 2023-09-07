@@ -22,6 +22,7 @@ import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import VenueTypeCode
 import pcapi.core.permissions.models as perm_models
 import pcapi.core.providers.factories as providers_factories
+import pcapi.core.providers.models as providers_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.backoffice import api as backoffice_api
@@ -410,6 +411,15 @@ class GetVenueTest(GetEndpointHelper):
         content = html_parser.content_as_text(response.data)
         assert "Provider : Allociné" in content
         assert f"Dernière synchronisation : {venue_provider.lastSyncDate.strftime('%d/%m/%Y à ')}" in content
+        assert f"/pro/venue/{venue_id}/delete/{venue_provider.provider.id}".encode() not in response.data
+
+    def test_get_venue_with_provider_not_allocine(self, authenticated_client, random_venue):
+        venue_provider = providers_factories.VenueProviderFactory(venue=random_venue)
+        venue_id = random_venue.id
+
+        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+        assert response.status_code == 200
+        assert f"/pro/venue/{venue_id}/provider/{venue_provider.provider.id}/delete".encode() in response.data
 
     def test_get_virtual_venue(self, authenticated_client):
         venue = offerers_factories.VirtualVenueFactory()
@@ -1595,3 +1605,65 @@ class RemovePricingPointTest(PostEndpointHelper):
         assert response.status_code == 303
         assert venue_with_no_siret.current_pricing_point is None
         assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= datetime.utcnow()
+
+
+class PostDeleteVenueProviderTest(PostEndpointHelper):
+    endpoint = "backoffice_web.venue.delete_venue_provider"
+    endpoint_kwargs = {"venue_id": 1, "provider_id": 1}
+    needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
+
+    def test_delete_venue_provider(self, authenticated_client):
+        venue_provider = providers_factories.VenueProviderFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue_provider.venue.id,
+            provider_id=venue_provider.provider.id,
+        )
+        assert response.status_code == 303
+        assert not providers_models.VenueProvider.query.filter(
+            providers_models.VenueProvider.id == venue_provider.id
+        ).all()
+        assert response.location == url_for(
+            "backoffice_web.venue.get", venue_id=venue_provider.venue.id, _external=True
+        )
+
+        response = authenticated_client.get(response.location)
+        assert "Le lien entre le lieu et le provider a bien été effacé." in html_parser.extract_alert(response.data)
+
+    def test_delete_venue_wrong_provider(self, authenticated_client):
+        venue_provider = providers_factories.VenueProviderFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue_provider.venue.id,
+            provider_id=0,
+        )
+        assert response.status_code == 303
+        assert providers_models.VenueProvider.query.filter(providers_models.VenueProvider.id == venue_provider.id).all()
+        assert response.location == url_for(
+            "backoffice_web.venue.get", venue_id=venue_provider.venue.id, _external=True
+        )
+
+        response = authenticated_client.get(response.location)
+        assert (
+            "Impossible d'effacer le lien entre le lieu et le provider. Aucun lien trouvé."
+            in html_parser.extract_alert(response.data)
+        )
+
+    def test_delete_venue_allocine_provider(self, authenticated_client):
+        venue_provider = providers_factories.AllocineVenueProviderFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue_provider.venue.id,
+            provider_id=venue_provider.provider.id,
+        )
+        assert response.status_code == 303
+        assert providers_models.VenueProvider.query.filter(providers_models.VenueProvider.id == venue_provider.id).all()
+        assert response.location == url_for(
+            "backoffice_web.venue.get", venue_id=venue_provider.venue.id, _external=True
+        )
+
+        response = authenticated_client.get(response.location)
+        assert "Impossible d'effacer le lien entre le lieu et Allociné." in html_parser.extract_alert(response.data)
