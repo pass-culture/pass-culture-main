@@ -33,3 +33,6 @@
 
 # Fix eslint
 f86a69ee7190c96f46af70251313bcf29d1e0ec2
+
+# Rename backoffice_v3 to backoffice
+ccf11e339eec505edd959d650dd812b0afdcd2e6
