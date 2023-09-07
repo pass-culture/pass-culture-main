@@ -38,129 +38,122 @@ from tests.scripts.beneficiary.fixture import make_single_application
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-def test_account_is_active_account_state(client, caplog):
-    data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
-    users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=True)
+class SigninTest:
+    def test_account_is_active_account_state(self, client, caplog):
+        data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+        users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=True)
 
-    with caplog.at_level(logging.INFO):
+        with caplog.at_level(logging.INFO):
+            response = client.post("/native/v1/signin", json=data)
+        assert response.status_code == 200
+        assert response.json["accountState"] == AccountState.ACTIVE.value
+        assert "Successful authentication attempt" in caplog.messages
+
+    def test_account_suspended_upon_user_request_account_state(self, client):
+        data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+        user = users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=False)
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
+        )
+
         response = client.post("/native/v1/signin", json=data)
-    assert response.status_code == 200
-    assert response.json["accountState"] == AccountState.ACTIVE.value
-    assert "Successful authentication attempt" in caplog.messages
+        assert response.status_code == 200
+        assert response.json["accountState"] == AccountState.SUSPENDED_UPON_USER_REQUEST.value
 
+    def test_account_suspended_by_user_for_suspicious_login_account_state(self, client):
+        data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+        user = users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=False)
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, reason=users_constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER
+        )
 
-def test_account_suspended_upon_user_request_account_state(client):
-    data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
-    user = users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=False)
-    history_factories.SuspendedUserActionHistoryFactory(
-        user=user, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
-    )
-
-    response = client.post("/native/v1/signin", json=data)
-    assert response.status_code == 200
-    assert response.json["accountState"] == AccountState.SUSPENDED_UPON_USER_REQUEST.value
-
-
-def test_account_suspended_by_user_for_suspicious_login_account_state(client):
-    data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
-    user = users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=False)
-    history_factories.SuspendedUserActionHistoryFactory(
-        user=user, reason=users_constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER
-    )
-
-    response = client.post("/native/v1/signin", json=data)
-    assert response.status_code == 200
-    assert response.json["accountState"] == AccountState.SUSPICIOUS_LOGIN_REPORTED_BY_USER.value
-
-
-def test_account_deleted_account_state(client):
-    data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
-    user = users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=False)
-    history_factories.SuspendedUserActionHistoryFactory(user=user, reason=users_constants.SuspensionReason.DELETED)
-
-    response = client.post("/native/v1/signin", json=data)
-    assert response.status_code == 400
-    assert response.json["code"] == "ACCOUNT_DELETED"
-
-
-def test_allow_inactive_user_sign(client):
-    data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
-    users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=False)
-
-    response = client.post("/native/v1/signin", json=data)
-    assert response.status_code == 200
-
-
-def test_user_logs_in_and_refreshes_token(client):
-    data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
-    user = users_factories.UserFactory(email=data["identifier"], password=data["password"])
-
-    # Get the refresh and access token
-    response = client.post("/native/v1/signin", json=data)
-    assert response.status_code == 200
-    assert response.json["refreshToken"]
-    assert response.json["accessToken"]
-
-    refresh_token = response.json["refreshToken"]
-    access_token = response.json["accessToken"]
-
-    # Ensure the access token is valid
-    client.auth_header = {"Authorization": f"Bearer {access_token}"}
-    response = client.get("/native/v1/me")
-    assert response.status_code == 200
-
-    # Ensure the access token contains user.id
-    decoded = decode_token(access_token)
-    assert decoded["user_claims"]["user_id"] == user.id
-
-    # Ensure the refresh token can generate a new access token
-    client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
-    response = client.post("/native/v1/refresh_access_token", json={})
-    assert response.status_code == 200, response.json
-    assert response.json["accessToken"]
-    access_token = response.json["accessToken"]
-
-    # Ensure the new access token is valid
-    client.auth_header = {"Authorization": f"Bearer {access_token}"}
-    response = client.get("/native/v1/me")
-    assert response.status_code == 200
-
-    # Ensure the new access token contains user.id
-    decoded = decode_token(access_token)
-    assert decoded["user_claims"]["user_id"] == user.id
-
-
-def test_user_logs_in_with_wrong_password(client, caplog):
-    data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
-    users_factories.UserFactory(email=data["identifier"], password=data["password"])
-
-    # signin with invalid password and ensures the result messsage is generic
-    data["password"] = data["password"][:-2]
-    with caplog.at_level(logging.INFO):
         response = client.post("/native/v1/signin", json=data)
-    assert response.status_code == 400
-    assert response.json == {"general": ["Identifiant ou Mot de passe incorrect"]}
-    assert "Failed authentication attempt" in caplog.messages
+        assert response.status_code == 200
+        assert response.json["accountState"] == AccountState.SUSPICIOUS_LOGIN_REPORTED_BY_USER.value
 
+    def test_account_deleted_account_state(self, client):
+        data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+        user = users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=False)
+        history_factories.SuspendedUserActionHistoryFactory(user=user, reason=users_constants.SuspensionReason.DELETED)
 
-def test_unknown_user_logs_in(client, caplog):
-    data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
-
-    # signin with invalid password and ensures the result messsage is generic
-    with caplog.at_level(logging.INFO):
         response = client.post("/native/v1/signin", json=data)
-    assert response.status_code == 400
-    assert response.json == {"general": ["Identifiant ou Mot de passe incorrect"]}
-    assert "Failed authentication attempt" in caplog.messages
+        assert response.status_code == 400
+        assert response.json["code"] == "ACCOUNT_DELETED"
 
+    def test_allow_inactive_user_sign(self, client):
+        data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+        users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=False)
 
-def test_user_logs_in_with_missing_fields(client):
-    response = client.post("/native/v1/signin", json={})
-    assert response.status_code == 400
-    assert response.json == {
-        "identifier": ["Ce champ est obligatoire"],
-        "password": ["Ce champ est obligatoire"],
-    }
+        response = client.post("/native/v1/signin", json=data)
+        assert response.status_code == 200
+
+    def test_user_logs_in_and_refreshes_token(self, client):
+        data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+        user = users_factories.UserFactory(email=data["identifier"], password=data["password"])
+
+        # Get the refresh and access token
+        response = client.post("/native/v1/signin", json=data)
+        assert response.status_code == 200
+        assert response.json["refreshToken"]
+        assert response.json["accessToken"]
+
+        refresh_token = response.json["refreshToken"]
+        access_token = response.json["accessToken"]
+
+        # Ensure the access token is valid
+        client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        response = client.get("/native/v1/me")
+        assert response.status_code == 200
+
+        # Ensure the access token contains user.id
+        decoded = decode_token(access_token)
+        assert decoded["user_claims"]["user_id"] == user.id
+
+        # Ensure the refresh token can generate a new access token
+        client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
+        response = client.post("/native/v1/refresh_access_token", json={})
+        assert response.status_code == 200, response.json
+        assert response.json["accessToken"]
+        access_token = response.json["accessToken"]
+
+        # Ensure the new access token is valid
+        client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        response = client.get("/native/v1/me")
+        assert response.status_code == 200
+
+        # Ensure the new access token contains user.id
+        decoded = decode_token(access_token)
+        assert decoded["user_claims"]["user_id"] == user.id
+
+    def test_user_logs_in_with_wrong_password(self, client, caplog):
+        data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+        users_factories.UserFactory(email=data["identifier"], password=data["password"])
+
+        # signin with invalid password and ensures the result messsage is generic
+        data["password"] = data["password"][:-2]
+        with caplog.at_level(logging.INFO):
+            response = client.post("/native/v1/signin", json=data)
+        assert response.status_code == 400
+        assert response.json == {"general": ["Identifiant ou Mot de passe incorrect"]}
+        assert "Failed authentication attempt" in caplog.messages
+
+    def test_unknown_user_logs_in(self, client, caplog):
+        data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+
+        # signin with invalid password and ensures the result messsage is generic
+        with caplog.at_level(logging.INFO):
+            response = client.post("/native/v1/signin", json=data)
+        assert response.status_code == 400
+        assert response.json == {"general": ["Identifiant ou Mot de passe incorrect"]}
+        assert "Failed authentication attempt" in caplog.messages
+
+    def test_user_logs_in_with_missing_fields(self, client):
+        response = client.post("/native/v1/signin", json={})
+        assert response.status_code == 400
+        assert response.json == {
+            "identifier": ["Ce champ est obligatoire"],
+            "password": ["Ce champ est obligatoire"],
+        }
 
 
 class TrustedDeviceFeatureTest:
