@@ -36,6 +36,7 @@ import pcapi.core.users.models as users_models
 import pcapi.core.users.repository as users_repository
 import pcapi.core.users.utils as users_utils
 from pcapi.domain.password import random_hashed_password
+from pcapi.domain.password import random_password
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
@@ -367,6 +368,8 @@ def suspend_account(
             for booking in bookings:
                 bookings_api.cancel_booking_for_fraud(booking)
                 n_bookings += 1
+    elif reason == constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER:
+        update_user_password(user, random_password())
 
     n_bookings += _cancel_bookings_of_user_on_requested_account_suspension(user, reason)
 
