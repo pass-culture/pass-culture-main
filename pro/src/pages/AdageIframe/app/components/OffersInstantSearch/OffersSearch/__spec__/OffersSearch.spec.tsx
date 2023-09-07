@@ -326,4 +326,41 @@ describe('offersSearch component', () => {
       screen.getByText('Dans quelle zone géographique')
     ).toBeInTheDocument()
   })
+
+  it('should go back to the localisation main menu when reopening the localisation multiselect after having submitted it with no values selected', async () => {
+    renderOffersSearchComponent(props, user)
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Réinitialiser les filtres' })
+    )
+
+    const localisationFilter = screen.getByRole('button', {
+      name: 'Localisation des partenaires',
+    })
+    await userEvent.click(localisationFilter)
+
+    expect(
+      screen.getByText('Dans quelle zone géographique')
+    ).toBeInTheDocument()
+
+    //  Open the departments submenu, thus set the localisation menu to department
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Choisir un département' })
+    )
+
+    //  Submit without having selected anything
+    await userEvent.click(
+      screen.getAllByRole('button', {
+        name: 'Rechercher',
+      })[1]
+    )
+
+    //  Reopen localisation filter
+    await userEvent.click(localisationFilter)
+
+    //  We see the location menu and not the departments list
+    expect(
+      screen.getByText('Dans quelle zone géographique')
+    ).toBeInTheDocument()
+  })
 })
