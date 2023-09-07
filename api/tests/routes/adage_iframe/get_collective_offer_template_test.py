@@ -1,15 +1,14 @@
 from datetime import datetime
 
+from flask import url_for
 from freezegun.api import freeze_time
 import pytest
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.testing import assert_no_duplicated_queries
+from pcapi.core.testing import assert_num_queries
 from pcapi.models import offer_mixin
-
-from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -18,77 +17,23 @@ stock_date = datetime(2021, 5, 15)
 educational_year_dates = {"start": datetime(2020, 9, 1), "end": datetime(2021, 8, 31)}
 
 
+EMAIL = "toto@mail.com"
+
+
+@pytest.fixture(name="eac_client")
+def eac_token_fixture(client):
+    return client.with_adage_token(email=EMAIL, uai="1234UAI")
+
+
+@pytest.fixture(name="redactor")
+def redactor_fixture():
+    return educational_factories.EducationalRedactorFactory(email=EMAIL)
+
+
 @freeze_time("2020-11-17 15:00:00")
 class CollectiveOfferTemplateTest:
-    def test_get_collective_offer_template(self, client):
-        # Given
-        national_program = educational_factories.NationalProgramFactory()
-        offer = educational_factories.CollectiveOfferTemplateFactory(
-            name="offer name",
-            description="offer description",
-            priceDetail="détail du prix",
-            students=[StudentLevels.GENERAL2],
-            nationalProgramId=national_program.id,
-        )
-        offer_id = offer.id
-
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="toto@mail.com", uai="12890AI")
-        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
-
-        # When
-        with assert_no_duplicated_queries():
-            response = client.get(f"/adage-iframe/collective/offers-template/{offer_id}")
-
-        # Then
-        assert response.status_code == 200
-        assert response.json == {
-            "description": "offer description",
-            "id": offer.id,
-            "isExpired": False,
-            "isSoldOut": False,
-            "name": "offer name",
-            "subcategoryLabel": offer.subcategory.app_label,
-            "venue": {
-                "address": "1 boulevard Poissonnière",
-                "city": "Paris",
-                "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
-                "id": offer.venue.id,
-                "name": offer.venue.name,
-                "postalCode": "75000",
-                "publicName": offer.venue.publicName,
-                "managingOfferer": {"name": offer.venue.managingOfferer.name},
-            },
-            "interventionArea": offer.interventionArea,
-            "audioDisabilityCompliant": False,
-            "mentalDisabilityCompliant": False,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "durationMinutes": None,
-            "contactEmail": offer.contactEmail,
-            "contactPhone": offer.contactPhone,
-            "offerVenue": {
-                "addressType": "other",
-                "address": None,
-                "city": None,
-                "name": None,
-                "otherAddress": offer.offerVenue["otherAddress"],
-                "postalCode": None,
-                "publicName": None,
-                "venueId": offer.offerVenue["venueId"],
-            },
-            "students": ["Lycée - Seconde"],
-            "offerId": None,
-            "educationalPriceDetail": "détail du prix",
-            "domains": [{"id": offer.domains[0].id, "name": offer.domains[0].name}],
-            "imageUrl": None,
-            "imageCredit": None,
-            "nationalProgram": {"id": national_program.id, "name": national_program.name},
-        }
-
-    def test_get_collective_offer_template_with_offer_venue(self, client):
-        # Given
+    def test_get_collective_offer_template(self, eac_client, redactor):
         venue = offerers_factories.VenueFactory()
-        national_program = educational_factories.NationalProgramFactory()
         offer = educational_factories.CollectiveOfferTemplateFactory(
             name="offer name",
             description="offer description",
@@ -99,18 +44,18 @@ class CollectiveOfferTemplateTest:
                 "addressType": "offererVenue",
                 "otherAddress": "",
             },
-            nationalProgramId=national_program.id,
+            nationalProgramId=educational_factories.NationalProgramFactory().id,
         )
-        offer_id = offer.id
 
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="toto@mail.com", uai="12890AI")
-        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
+        url = url_for("adage_iframe.get_collective_offer_template", offer_id=offer.id)
 
-        # When
-        with assert_no_duplicated_queries():
-            response = client.get(f"/adage-iframe/collective/offers-template/{offer_id}")
+        # 1. fetch redactor
+        # 2. fetch collective offer and related data
+        # 3. fetch the offerVenue's details (Venue)
+        # 4. find out if its a redactor's favorite
+        with assert_num_queries(4):
+            response = eac_client.get(url)
 
-        # Then
         assert response.status_code == 200
         assert response.json == {
             "description": "offer description",
@@ -153,18 +98,30 @@ class CollectiveOfferTemplateTest:
             "domains": [{"id": offer.domains[0].id, "name": offer.domains[0].name}],
             "imageUrl": None,
             "imageCredit": None,
-            "nationalProgram": {"id": national_program.id, "name": national_program.name},
+            "nationalProgram": {"id": offer.nationalProgramId, "name": offer.nationalProgram.name},
+            "isFavorite": False,
         }
 
-    def test_should_return_404_when_no_collective_offer_template(self, client):
-        # Given
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="toto@mail.com", uai="12890AI")
-        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
+    def test_is_a_redactors_favorite(self, eac_client):
+        """Ensure that the isFavorite field is true only if the
+        redactor added it to its favorites.
+        """
+        offer = educational_factories.CollectiveOfferTemplateFactory()
+        educational_factories.EducationalRedactorFactory(email=EMAIL, favoriteCollectiveOfferTemplates=[offer])
 
-        # When
-        response = client.get("/adage-iframe/collective/offers-template/0")
+        dst = url_for("adage_iframe.get_collective_offer_template", offer_id=offer.id)
 
-        # Then
+        # 1. fetch redactor
+        # 2. fetch collective offer template and related data
+        # 3. find out if its a redactor's favorite
+        with assert_num_queries(3):
+            response = eac_client.get(dst)
+
+        assert response.status_code == 200
+        assert response.json["isFavorite"]
+
+    def test_should_return_404_when_no_collective_offer_template(self, eac_client, redactor):
+        response = eac_client.get("/adage-iframe/collective/offers-template/0")
         assert response.status_code == 404
 
     @pytest.mark.parametrize(
@@ -175,15 +132,7 @@ class CollectiveOfferTemplateTest:
             offer_mixin.OfferValidationStatus.REJECTED,
         ],
     )
-    def test_should_return_404_when_collective_offer_template_is_not_approved(self, client, validation):
-        # Given
+    def test_should_return_404_when_collective_offer_template_is_not_approved(self, eac_client, redactor, validation):
         offer = educational_factories.CollectiveOfferTemplateFactory(validation=validation)
-
-        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="toto@mail.com", uai="12890AI")
-        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
-
-        # When
-        response = client.get(f"/adage-iframe/collective/offers-template/{offer.id}")
-
-        # Then
+        response = eac_client.get(f"/adage-iframe/collective/offers-template/{offer.id}")
         assert response.status_code == 404

@@ -834,21 +834,26 @@ def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.Co
             educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
         )
         .options(
+            sa.orm.joinedload(educational_models.CollectiveOffer.nationalProgram),
+            sa.orm.joinedload(educational_models.CollectiveOffer.teacher).load_only(
+                educational_models.EducationalRedactor.email,
+                educational_models.EducationalRedactor.firstName,
+                educational_models.EducationalRedactor.lastName,
+                educational_models.EducationalRedactor.civility,
+            ),
             sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
                 educational_models.CollectiveStock.collectiveBookings
-            )
-        )
-        .options(sa.orm.joinedload(educational_models.CollectiveOffer.institution))
-        .options(
+            ),
+            sa.orm.joinedload(educational_models.CollectiveOffer.institution),
             sa.orm.joinedload(educational_models.CollectiveOffer.venue)
             .joinedload(offerers_models.Venue.managingOfferer)
             .load_only(
                 offerers_models.Offerer.name,
                 offerers_models.Offerer.validationStatus,
                 offerers_models.Offerer.isActive,
-            )
+            ),
+            sa.orm.joinedload(educational_models.CollectiveOffer.domains),
         )
-        .options(sa.orm.joinedload(educational_models.CollectiveOffer.domains))
         .one()
     )
 
@@ -860,15 +865,16 @@ def get_collective_offer_template_by_id_for_adage(offer_id: int) -> educational_
             educational_models.CollectiveOfferTemplate.validation == offer_mixin.OfferValidationStatus.APPROVED,
         )
         .options(
+            sa.orm.joinedload(educational_models.CollectiveOfferTemplate.nationalProgram),
             sa.orm.joinedload(educational_models.CollectiveOfferTemplate.venue)
             .joinedload(offerers_models.Venue.managingOfferer)
             .load_only(
                 offerers_models.Offerer.name,
                 offerers_models.Offerer.validationStatus,
                 offerers_models.Offerer.isActive,
-            )
+            ),
+            sa.orm.joinedload(educational_models.CollectiveOfferTemplate.domains),
         )
-        .options(sa.orm.joinedload(educational_models.CollectiveOfferTemplate.domains))
         .one()
     )
 

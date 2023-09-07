@@ -26,10 +26,10 @@ const computeDurationString = (durationMinutes?: number | null) => {
 }
 
 const computeDisabilityString = (
-  audioDisabilityCompliant: boolean,
-  mentalDisabilityCompliant: boolean,
-  motorDisabilityCompliant: boolean,
-  visualDisabilityCompliant: boolean
+  audioDisabilityCompliant?: boolean | null,
+  mentalDisabilityCompliant?: boolean | null,
+  motorDisabilityCompliant?: boolean | null,
+  visualDisabilityCompliant?: boolean | null
 ): string => {
   const disabilityCompliance: string[] = []
   if (audioDisabilityCompliant) {

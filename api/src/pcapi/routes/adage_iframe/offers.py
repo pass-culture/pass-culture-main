@@ -2,7 +2,9 @@ import logging
 
 from sqlalchemy.orm import exc as orm_exc
 
+from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational.api import favorite as educational_api_favorite
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.educational.api.categories import get_educational_categories
 import pcapi.core.educational.utils as educational_utils
@@ -48,6 +50,15 @@ def get_collective_offer(
     authenticated_information: AuthenticatedInformation, offer_id: int
 ) -> serializers.CollectiveOfferResponseModel:
     try:
+        redactor_informations = get_redactor_information_from_adage_authentication(authenticated_information)
+    except educational_exceptions.MissingRequiredRedactorInformation:
+        raise ApiErrors({"auth": "Missing redactor"}, status_code=403)
+
+    redactor = educational_repository.find_redactor_by_email(redactor_informations.email)
+    if not redactor:
+        raise ApiErrors({"auth": "Missing redactor"}, status_code=403)
+
+    try:
         offer = educational_api_offer.get_collective_offer_by_id_for_adage(offer_id)
     except orm_exc.NoResultFound:
         raise ApiErrors({"code": "COLLECTIVE_OFFER_NOT_FOUND"}, status_code=404)
@@ -58,10 +69,11 @@ def get_collective_offer(
     else:
         offer_venue = None
 
-    return serializers.CollectiveOfferResponseModel.from_orm(
+    is_favorite = educational_api_favorite.is_offer_a_redactor_favorite(offer.id, redactor.id)
+    return serializers.CollectiveOfferResponseModel.build(
         offer=offer,
         offerVenue=offer_venue,
-        uai=authenticated_information.uai,
+        is_favorite=is_favorite,
     )
 
 
@@ -74,6 +86,15 @@ def get_collective_offer_template(
     authenticated_information: AuthenticatedInformation, offer_id: int
 ) -> serializers.CollectiveOfferTemplateResponseModel:
     try:
+        redactor_informations = get_redactor_information_from_adage_authentication(authenticated_information)
+    except educational_exceptions.MissingRequiredRedactorInformation:
+        raise ApiErrors({"auth": "Missing redactor"}, status_code=403)
+
+    redactor = educational_repository.find_redactor_by_email(redactor_informations.email)
+    if not redactor:
+        raise ApiErrors({"auth": "Missing redactor"}, status_code=403)
+
+    try:
         offer = educational_api_offer.get_collective_offer_template_by_id_for_adage(offer_id)
     except orm_exc.NoResultFound:
         raise ApiErrors({"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}, status_code=404)
@@ -84,7 +105,10 @@ def get_collective_offer_template(
     else:
         offer_venue = None
 
-    return serializers.CollectiveOfferTemplateResponseModel.from_orm(offer, offer_venue)
+    is_favorite = educational_api_favorite.is_offer_template_a_redactor_favorite(offer.id, redactor.id)
+    return serializers.CollectiveOfferTemplateResponseModel.build(
+        offer=offer, is_favorite=is_favorite, offerVenue=offer_venue
+    )
 
 
 @blueprint.adage_iframe.route("/collective/offers-template/<int:offer_id>/request", methods=["POST"])

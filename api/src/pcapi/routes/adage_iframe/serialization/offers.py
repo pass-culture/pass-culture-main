@@ -2,6 +2,7 @@ from datetime import date
 from datetime import datetime
 import enum
 import logging
+import typing
 
 from pydantic.v1 import Field
 from pydantic.v1.class_validators import validator
@@ -144,7 +145,7 @@ class EducationalRedactorResponseModel(BaseModel):
         orm_mode = True
 
 
-class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplianceStrictMixin):
+class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplianceMixin):
     id: int
     subcategoryLabel: str
     description: str | None
@@ -158,39 +159,60 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
     contactEmail: str
     contactPhone: str | None
     durationMinutes: int | None
-    offerId: str | None
+    offerId: int | None
     educationalPriceDetail: str | None
-    domains: list[OfferDomain]
+    domains: typing.Sequence[OfferDomain]
     institution: EducationalInstitutionResponseModel | None = Field(alias="educationalInstitution")
     interventionArea: list[str]
     imageCredit: str | None
     imageUrl: str | None
     teacher: EducationalRedactorResponseModel | None
     nationalProgram: NationalProgramModel | None
+    isFavorite: bool | None
 
     @classmethod
-    def from_orm(
+    def build(
         cls,
         offer: educational_models.CollectiveOffer,
+        is_favorite: bool,
         offerVenue: offerers_models.Venue | None = None,
-        uai: str | None = None,
     ) -> "CollectiveOfferResponseModel":
-        offer.subcategoryLabel = offer.subcategory.app_label
-        offer.isExpired = offer.hasBookingLimitDatetimesPassed
-
-        result = super().from_orm(offer)
-
-        result.isSoldOut = offer.collectiveStock.isSoldOut
-        result.educationalPriceDetail = offer.collectiveStock.priceDetail
-        result.offerVenue = CollectiveOfferOfferVenue(
-            name=offerVenue.name if offerVenue else None,
-            publicName=offerVenue.publicName if offerVenue else None,
-            address=offerVenue.address if offerVenue else None,
-            postalCode=offerVenue.postalCode if offerVenue else None,
-            city=offerVenue.city if offerVenue else None,
-            **offer.offerVenue,
+        return cls(
+            id=offer.id,
+            subcategoryLabel=offer.subcategory.app_label,
+            description=offer.description,
+            isExpired=offer.hasBookingLimitDatetimesPassed,  # type: ignore[arg-type]
+            isSoldOut=offer.collectiveStock.isSoldOut,
+            name=offer.name,
+            collectiveStock=offer.collectiveStock,  # type: ignore[call-arg]
+            venue=offer.venue,
+            students=offer.students,
+            offerVenue=CollectiveOfferOfferVenue(
+                name=offerVenue.name if offerVenue else None,
+                publicName=offerVenue.publicName if offerVenue else None,
+                address=offerVenue.address if offerVenue else None,
+                postalCode=offerVenue.postalCode if offerVenue else None,
+                city=offerVenue.city if offerVenue else None,
+                **offer.offerVenue,
+            ),
+            contactEmail=offer.contactEmail,
+            contactPhone=offer.contactPhone,
+            durationMinutes=offer.durationMinutes,
+            offerId=offer.offerId,
+            educationalPriceDetail=offer.collectiveStock.priceDetail,
+            domains=offer.domains,
+            institution=offer.institution,
+            interventionArea=offer.interventionArea,
+            imageCredit=offer.imageCredit,
+            imageUrl=offer.imageUrl,
+            teacher=offer.teacher,
+            nationalProgram=offer.nationalProgram,
+            isFavorite=is_favorite,
+            audioDisabilityCompliant=offer.audioDisabilityCompliant,
+            mentalDisabilityCompliant=offer.mentalDisabilityCompliant,
+            motorDisabilityCompliant=offer.motorDisabilityCompliant,
+            visualDisabilityCompliant=offer.visualDisabilityCompliant,
         )
-        return result
 
     class Config:
         alias_generator = to_camel
@@ -201,7 +223,7 @@ class CollectiveOfferResponseModel(BaseModel, common_models.AccessibilityComplia
         extra = "forbid"
 
 
-class CollectiveOfferTemplateResponseModel(BaseModel, common_models.AccessibilityComplianceStrictMixin):
+class CollectiveOfferTemplateResponseModel(BaseModel, common_models.AccessibilityComplianceMixin):
     id: int
     subcategoryLabel: str
     description: str | None
@@ -215,33 +237,54 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
     contactPhone: str | None
     durationMinutes: int | None
     educationalPriceDetail: str | None
-    offerId: str | None
-    domains: list[OfferDomain]
+    offerId: int | None
+    domains: typing.Sequence[OfferDomain]
     interventionArea: list[str]
     imageCredit: str | None
     imageUrl: str | None
     nationalProgram: NationalProgramModel | None
+    isFavorite: bool | None
 
     @classmethod
-    def from_orm(
-        cls, offer: educational_models.CollectiveOfferTemplate, offerVenue: offerers_models.Venue | None = None
+    def build(
+        cls,
+        offer: educational_models.CollectiveOfferTemplate,
+        is_favorite: bool,
+        offerVenue: offerers_models.Venue | None = None,
     ) -> "CollectiveOfferTemplateResponseModel":
-        offer.subcategoryLabel = offer.subcategory.app_label
-        offer.isExpired = offer.hasBookingLimitDatetimesPassed
-
-        result = super().from_orm(offer)
-
-        result.isSoldOut = False
-        result.educationalPriceDetail = offer.priceDetail
-        result.offerVenue = CollectiveOfferOfferVenue(
-            name=offerVenue.name if offerVenue else None,
-            publicName=offerVenue.publicName if offerVenue else None,
-            address=offerVenue.address if offerVenue else None,
-            postalCode=offerVenue.postalCode if offerVenue else None,
-            city=offerVenue.city if offerVenue else None,
-            **offer.offerVenue,
+        return cls(
+            id=offer.id,
+            subcategoryLabel=offer.subcategory.app_label,
+            description=offer.description,
+            isExpired=offer.hasBookingLimitDatetimesPassed,  # type: ignore[arg-type]
+            isSoldOut=False,
+            name=offer.name,
+            venue=offer.venue,
+            students=offer.students,
+            offerVenue=CollectiveOfferOfferVenue(
+                name=offerVenue.name if offerVenue else None,
+                publicName=offerVenue.publicName if offerVenue else None,
+                address=offerVenue.address if offerVenue else None,
+                postalCode=offerVenue.postalCode if offerVenue else None,
+                city=offerVenue.city if offerVenue else None,
+                **offer.offerVenue,
+            ),
+            contactEmail=offer.contactEmail,
+            contactPhone=offer.contactPhone,
+            durationMinutes=offer.durationMinutes,
+            offerId=offer.offerId,
+            educationalPriceDetail=offer.priceDetail,
+            domains=offer.domains,
+            interventionArea=offer.interventionArea,
+            imageCredit=offer.imageCredit,
+            imageUrl=offer.imageUrl,
+            nationalProgram=offer.nationalProgram,
+            isFavorite=is_favorite,
+            audioDisabilityCompliant=offer.audioDisabilityCompliant,
+            mentalDisabilityCompliant=offer.mentalDisabilityCompliant,
+            motorDisabilityCompliant=offer.motorDisabilityCompliant,
+            visualDisabilityCompliant=offer.visualDisabilityCompliant,
         )
-        return result
 
     class Config:
         alias_generator = to_camel

@@ -357,9 +357,7 @@ def get_collective_offer_template_by_id(
     return educational_repository.get_collective_offer_template_by_id(offer_id)
 
 
-def get_collective_offer_by_id_for_adage(
-    offer_id: int,
-) -> educational_models.CollectiveOffer:
+def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.CollectiveOffer:
     return educational_repository.get_collective_offer_by_id_for_adage(offer_id)
 
 

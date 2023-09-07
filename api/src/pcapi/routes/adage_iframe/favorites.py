@@ -138,14 +138,16 @@ def get_collective_favorites(
 
     if authenticated_information.uai is None:
         raise ApiErrors({"message": "institutionId is mandatory"}, status_code=400)
-    serialized_list_favorite_offer = [
-        serialize_favorites.serialize_collective_offer_response_model(offer=offer, uai=authenticated_information.uai)
-        for offer in offers
+
+    serialized_favorite_offers = [
+        serialize_favorites.serialize_collective_offer(offer=offer, is_favorite=True) for offer in offers
     ]
-    serialized_list_favorite_template = [
-        serialize_favorites.serialize_collective_offer_template_response_model(offer=template) for template in templates
+
+    serialized_favorite_templates = [
+        serialize_favorites.serialize_collective_offer_template(offer=template, is_favorite=True)
+        for template in templates
     ]
 
     return FavoritesResponseModel(
-        favoritesOffer=serialized_list_favorite_offer, favoritesTemplate=serialized_list_favorite_template
+        favoritesOffer=serialized_favorite_offers, favoritesTemplate=serialized_favorite_templates
     )
