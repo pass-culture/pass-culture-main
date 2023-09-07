@@ -86,7 +86,7 @@ const FormVenue = ({
         <Banner
           links={[
             {
-              href: 'https://passculture.typeform.com/to/VtKospEg',
+              href: 'https://www.demarches-simplifiees.fr/commencer/demande-de-referencement-sur-adage',
               linkTitle: 'Faire une demande de référencement',
             },
             {
