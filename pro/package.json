@@ -45,7 +45,7 @@
     "date-fns": "^2.30.0",
     "date-fns-tz": "^2.0.0",
     "downshift": "^8.1.0",
-    "formik": "^2.4.3",
+    "formik": "^2.4.4",
     "hi-base32": "^0.5.1",
     "libphonenumber-js": "1.10.38",
     "lodash.debounce": "^4.0.8",
