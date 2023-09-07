@@ -56,6 +56,9 @@ export const OffersInstantSearch = ({
         attributesToRetrieve={attributesToRetrieve}
         clickAnalytics
         facetFilters={facetFilters}
+        filters={
+          'offer.eventAddressType:offererVenue<score=3> OR offer.eventAddressType:school<score=2> OR offer.eventAddressType:other<score=1>'
+        }
         hitsPerPage={8}
         aroundLatLng={geoLocation.latLng}
         aroundRadius={geoLocation.radius}
