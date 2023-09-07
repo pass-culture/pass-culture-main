@@ -413,6 +413,38 @@ class UnsuspendAccountTest:
             history[0], user, author, history_models.ActionType.USER_UNSUSPENDED, reason=None, comment=comment
         )
 
+    def should_send_reset_password_email_when_user_is_suspended_for_suspicious_login(self):
+        user = users_factories.UserFactory(isActive=False)
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, reason=users_constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER
+        )
+        author = users_factories.AdminFactory()
+
+        users_api.unsuspend_account(user, author)
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["params"]["RESET_PASSWORD_LINK"]
+
+    @pytest.mark.parametrize(
+        "reason",
+        [
+            users_constants.SuspensionReason.FRAUD_SUSPICION,
+            users_constants.SuspensionReason.UPON_USER_REQUEST,
+            users_constants.SuspensionReason.SUSPENSION_FOR_INVESTIGATION_TEMP,
+            users_constants.SuspensionReason.FRAUD_FAKE_DOCUMENT,
+        ],
+    )
+    def should_not_send_reset_password_email_when_user_is_suspended_for_reason_other_than_suspicious_login(
+        self, reason
+    ):
+        user = users_factories.UserFactory(isActive=False)
+        history_factories.SuspendedUserActionHistoryFactory(user=user, reason=reason)
+        author = users_factories.AdminFactory()
+
+        users_api.unsuspend_account(user, author)
+
+        assert len(mails_testing.outbox) == 0
+
 
 @pytest.mark.usefixtures("db_session")
 class ChangeUserEmailTest:
