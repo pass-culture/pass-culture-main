@@ -98,6 +98,12 @@ SET "authToken" = 'anonymized, you may have to set it if you want to use this pr
 WHERE "authToken" IS NOT NULL
 ;
 
+UPDATE provider
+SET 
+    "bookingExternalUrl" = 'http://mock-api-billeterie.mock-api-billeterie.svc.cluster.local:5003/tickets/create',
+    "cancelExternalUrl" = 'http://mock-api-billeterie.mock-api-billeterie.svc.cluster.local:5003/tickets/cancel'
+WHERE "bookingExternalUrl" IS NOT NULL and "cancelExternalUrl" IS NOT NULL;
+
 UPDATE boost_cinema_details
 SET
   password = '',
