@@ -369,6 +369,31 @@ class SuspendAccountTest:
             history[0], pro, author, history_models.ActionType.USER_SUSPENDED, reason
         )
 
+    def should_change_password_when_user_is_suspended_for_suspicious_login(self):
+        user = users_factories.UserFactory()
+        old_password_hash = user.password
+
+        users_api.suspend_account(user, users_constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER, user)
+
+        assert user.password != old_password_hash
+
+    @pytest.mark.parametrize(
+        "reason",
+        [
+            users_constants.SuspensionReason.FRAUD_SUSPICION,
+            users_constants.SuspensionReason.UPON_USER_REQUEST,
+            users_constants.SuspensionReason.SUSPENSION_FOR_INVESTIGATION_TEMP,
+            users_constants.SuspensionReason.FRAUD_USURPATION,
+        ],
+    )
+    def should_not_change_password_when_user_is_suspended_for_reason_other_than_suspicious_login(self, reason):
+        user = users_factories.UserFactory()
+        old_password_hash = user.password
+
+        users_api.suspend_account(user, reason, user)
+
+        assert user.password == old_password_hash
+
 
 class UnsuspendAccountTest:
     def test_unsuspend_account(self):
