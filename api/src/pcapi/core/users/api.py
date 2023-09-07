@@ -414,6 +414,7 @@ def _cancel_bookings_of_user_on_requested_account_suspension(
 def unsuspend_account(
     user: models.User, actor: models.User, comment: str | None = None, send_email: bool = False
 ) -> None:
+    suspension_reason = user.suspension_reason
     user.isActive = True
     action = history_api.log_action(
         history_models.ActionType.USER_UNSUSPENDED, author=actor, user=user, comment=comment, save=False
@@ -432,6 +433,9 @@ def unsuspend_account(
 
     if send_email:
         transactional_mails.send_unsuspension_email(user)
+
+    if suspension_reason == constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER:
+        request_password_reset(user)
 
 
 def change_email(
