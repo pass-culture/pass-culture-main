@@ -8597,10 +8597,10 @@ react-table@^7.7.0:
   resolved "https://registry.yarnpkg.com/react-table/-/react-table-7.8.0.tgz#07858c01c1718c09f7f1aed7034fcfd7bda907d2"
   integrity sha512-hNaz4ygkZO4bESeFfnfOft73iBUj8K5oKi1EcSHPAibEydfsX2MyU6Z8KCr3mv3C9Kqqh71U+DhZkFvibbnPbA==
 
-react-tooltip@^5.21.1:
-  version "5.21.1"
-  resolved "https://registry.yarnpkg.com/react-tooltip/-/react-tooltip-5.21.1.tgz#bc49d9662a4b90ed1ed4417b7de535cb5bee1d01"
-  integrity sha512-wJqF/yzK1wuJuy5/zAkVErFA609fVv1ZukhGjw44PcMvg9wL0jomnpQyz3qH1H7TWjz/wqO/OMc3ipQNjZ8zYg==
+react-tooltip@^5.21.3:
+  version "5.21.3"
+  resolved "https://registry.yarnpkg.com/react-tooltip/-/react-tooltip-5.21.3.tgz#131d578c7ea69f96c65dbd09f071880c34b4f83d"
+  integrity sha512-z3Q+Uka4D6uYxfsssPqfx1W8vw7NIHyC2ZMq+NJkWg4EpUD3w7Fwz/o+dezyUQMCHL7nO/2sFbtWIrkyxktq2Q==
   dependencies:
     "@floating-ui/dom" "^1.0.0"
     classnames "^2.3.0"
