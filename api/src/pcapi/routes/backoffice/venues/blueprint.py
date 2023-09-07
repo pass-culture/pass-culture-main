@@ -32,6 +32,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.providers import models as providers_models
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.routes.backoffice import autocomplete
@@ -121,9 +122,16 @@ def get_venue(venue_id: int) -> offerers_models.Venue:
                 educational_models.CollectiveDmsApplication.lastChangeDate,
             ),
             sa.orm.joinedload(offerers_models.Venue.venueProviders)
-            .load_only(providers_models.VenueProvider.lastSyncDate)
+            .load_only(
+                providers_models.VenueProvider.id,
+                providers_models.VenueProvider.lastSyncDate,
+            )
             .joinedload(providers_models.VenueProvider.provider)
-            .load_only(providers_models.Provider.name),
+            .load_only(
+                providers_models.Provider.id,
+                providers_models.Provider.name,
+                providers_models.Provider.localClass,
+            ),
         )
         .one_or_none()
     )
@@ -196,7 +204,7 @@ def render_venue_details(
             edit_venue_form.siret.flags.disabled = not _can_edit_siret()
         edit_venue_form.tags.choices = [(criterion.id, criterion.name) for criterion in venue.criteria]
 
-    delete_venue_form = empty_forms.EmptyForm()
+    delete_form = empty_forms.EmptyForm()
 
     return render_template(
         "venue/get.html",
@@ -207,7 +215,7 @@ def render_venue_details(
         region=region,
         has_reimbursement_point=bool(venue.current_reimbursement_point),
         dms_stats=dms_stats,
-        delete_venue_form=delete_venue_form,
+        delete_form=delete_form,
         active_tab=request.args.get("active_tab", "history"),
     )
 
@@ -350,6 +358,28 @@ def get_stats(venue_id: int) -> utils.BackofficeResponse:
         stats=data,
         bank_information=bank_information,
     )
+
+
+@venue_blueprint.route("/<int:venue_id>/provider/<int:provider_id>/delete", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def delete_venue_provider(venue_id: int, provider_id: int) -> utils.BackofficeResponse:
+    provider = providers_models.Provider.query.filter_by(id=provider_id).one_or_none()
+
+    if provider and provider.localClass == "AllocineStocks":
+        flash("Impossible d'effacer le lien entre le lieu et Allociné.", "warning")
+        return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
+
+    result = providers_models.VenueProvider.query.filter(
+        providers_models.VenueProvider.providerId == provider_id,
+        providers_models.VenueProvider.venueId == venue_id,
+    ).delete()
+
+    if result:
+        db.session.commit()
+        flash("Le lien entre le lieu et le provider a bien été effacé.", "info")
+    else:
+        flash("Impossible d'effacer le lien entre le lieu et le provider. Aucun lien trouvé.", "warning")
+    return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
 
 
 def get_venue_with_history(venue_id: int) -> offerers_models.Venue:
