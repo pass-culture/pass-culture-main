@@ -67,6 +67,18 @@ export const OfferFilters = ({
     }
     return 0
   }
+
+  const resetLocalisationFilterState = () => {
+    if (
+      (localisationFilterState === LocalisationFilterStates.DEPARTMENTS &&
+        formik.values.departments.length === 0) ||
+      (localisationFilterState === LocalisationFilterStates.ACADEMIES &&
+        formik.values.academies.length === 0)
+    ) {
+      setLocalisationFilterState(LocalisationFilterStates.NONE)
+    }
+  }
+
   const activeLocalisationFilterCount = getActiveLocalisationFilterCount()
 
   const [domainsOptions, setDomainsOptions] = useState<Option<number>[]>([])
@@ -93,6 +105,8 @@ export const OfferFilters = ({
   const onSearch = (modalName: string) => {
     formik.handleSubmit()
     setModalOpenStatus(prevState => ({ ...prevState, [modalName]: false }))
+
+    resetLocalisationFilterState()
   }
   useEffect(() => {
     const loadFiltersOptions = async () => {
@@ -192,7 +206,10 @@ export const OfferFilters = ({
                 isOpen={modalOpenStatus['localisation']}
                 setIsOpen={setModalOpenStatus}
                 filterName="localisation"
-                handleSubmit={formik.handleSubmit}
+                handleSubmit={() => {
+                  resetLocalisationFilterState()
+                  formik.handleSubmit()
+                }}
               >
                 {localisationFilterState === LocalisationFilterStates.NONE && (
                   <ModalFilterLayout
@@ -371,15 +388,18 @@ export const OfferFilters = ({
                     label="Niveau scolaire"
                     options={studentsOptions}
                     isOpen={modalOpenStatus['students']}
-                    sortOptions={(options, selectedOptions) =>
+                    sortOptions={(options, selectedOptions) => {
                       //  Implement custom sort to not sort results alphabetically
-                      [...options].sort((option1, option2) => {
-                        return selectedOptions.has(option1.value) &&
-                          !selectedOptions.has(option2.value)
+                      return options.sort((option1, option2) => {
+                        const isSelected1 = selectedOptions.has(option1.value)
+                        const isSelected2 = selectedOptions.has(option2.value)
+                        return isSelected1 === isSelected2
+                          ? 0
+                          : isSelected1 && !isSelected2
                           ? -1
                           : 1
                       })
-                    }
+                    }}
                   />
                 </ModalFilterLayout>
               </AdageButtonFilter>
