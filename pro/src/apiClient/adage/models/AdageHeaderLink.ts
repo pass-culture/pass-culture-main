@@ -10,4 +10,5 @@ export enum AdageHeaderLink {
   SEARCH = 'search',
   MY_INSTITUTION_OFFERS = 'my_institution_offers',
   ADAGE_LINK = 'adage_link',
+  MY_FAVORITES = 'my_favorites',
 }
