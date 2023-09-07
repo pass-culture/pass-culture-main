@@ -210,10 +210,10 @@ TITELIVE_EPAGINE_API_PASSWORD = secrets_utils.get("TITELIVE_EPAGINE_API_PASSWORD
 
 # CHARLIE URLS
 CHARLIE_BOOKING_URL = os.environ.get(
-    "CHARLIE_API_URL", "https://pass-culture-external-api-mpedokshja-od.a.run.app/tickets/create"
+    "CHARLIE_API_URL", "http://mock-api-billeterie.mock-api-billeterie.svc.cluster.local:5003/tickets/create"
 )
 CHARLIE_CANCEL_BOOKING_URL = os.environ.get(
-    "CHARLIE_CANCEL_BOOKING_URL", "https://pass-culture-external-api-mpedokshja-od.a.run.app/tickets/cancel"
+    "CHARLIE_CANCEL_BOOKING_URL", "http://mock-api-billeterie.mock-api-billeterie.svc.cluster.local:5003/tickets/cancel"
 )
 
 # UBBLE
