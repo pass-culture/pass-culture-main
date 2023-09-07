@@ -77,7 +77,7 @@
                             Le lieu <strong>{{ venue.name }} ({{ venue.id }})</strong> sera définitivement supprimé
                             de la base de données. Veuillez confirmer ce choix.
                           </p>
-                          {{ build_form_fields_group(delete_venue_form) }}
+                          {{ build_form_fields_group(delete_form) }}
                         </div>
                         <div class="modal-footer">
                           <button type="button"
@@ -227,6 +227,45 @@
                 <p class="mb-1">
                   <span class="fw-bold">Provider :</span>
                   {{ venue_provider.provider.name }}
+                  {% if venue_provider.provider.localClass != 'AllocineStocks' %}
+                    <i class="bi bi-trash3"
+                       data-bs-toggle="modal"
+                       data-bs-target=".pc-delete-venue-provider-modal-{{ venue_provider.provider.id }}"
+                       data-bs-title="Effacer le lien entre {{ venue.name }} et {{ venue_provider.provider.name }}">
+                    </i>
+                    <div class="modal modal-lg fade pc-delete-venue-provider-modal-{{ venue_provider.provider.id }}"
+                         tabindex="-1"
+                         aria-describedby="{{ delete_venue_modal_label_id }}"
+                         aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                          <form action="{{ url_for('backoffice_web.venue.delete_venue_provider', venue_id=venue.id, provider_id=venue_provider.provider.id) }}"
+                                name="{{ url_for('backoffice_web.venue.delete_venue_provider', venue_id=venue.id, provider_id=venue_provider.provider.id) | action_to_name }}"
+                                method="POST"
+                                data-turbo="false">
+                            <div class="modal-header"
+                                 id="delete-venue-provider-modal-label">
+                              <h5 class="modal-title">Supprimer le lien entre le lieu {{ venue.name }} et le provider {{ venue_provider.provider.name }}</h5>
+                            </div>
+                            <div class="modal-body row">
+                              <p>
+                                Le lieu lien entre <strong>{{ venue.name }}</strong> et <strong>{{ venue_provider.provider.name }}</strong> sera définitivement supprimé
+                                de la base de données. Veuillez confirmer ce choix.
+                              </p>
+                              {{ build_form_fields_group(delete_form) }}
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button"
+                                      class="btn btn-outline-primary"
+                                      data-bs-dismiss="modal">Annuler</button>
+                              <button type="submit"
+                                      class="btn btn-primary">Confirmer</button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  {% endif %}
                 </p>
                 <p class="mb-1">
                   <span class="fw-bold">Dernière synchronisation :</span>
