@@ -47,6 +47,11 @@
     align-items: center;
     margin-bottom: rem.torem(32px);
     gap: rem.torem(10px);
+
+    &-icon {
+      color: colors.$green-valid;
+      width: rem.torem(20px);
+    }
   }
 
   &-step-description {

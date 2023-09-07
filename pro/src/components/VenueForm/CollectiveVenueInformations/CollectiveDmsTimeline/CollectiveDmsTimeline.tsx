@@ -358,7 +358,12 @@ const CollectiveDmsTimeline = ({
   ) {
     return (
       <div className={styles['timeline-added-in-adage']}>
-        <SvgIcon src={strokeValidIcon} alt="" />
+        <SvgIcon
+          className={styles['timeline-added-in-adage-icon']}
+          src={strokeValidIcon}
+          alt=""
+          width="20"
+        />
         <span>Ce lieu est référencé sur ADAGE</span>
       </div>
     )
@@ -416,7 +421,12 @@ const CollectiveDmsTimeline = ({
 
       return (
         <div className={styles['timeline-added-in-adage']}>
-          <SvgIcon src={strokeValidIcon} alt="" />
+          <SvgIcon
+            className={styles['timeline-added-in-adage-icon']}
+            src={strokeValidIcon}
+            alt=""
+            width="20"
+          />
           <span>Ce lieu est référencé sur ADAGE</span>
         </div>
       )
