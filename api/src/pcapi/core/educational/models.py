@@ -886,19 +886,25 @@ class EducationalDeposit(PcObject, Base, Model):
         nullable=True,
     )
 
-    def get_amount(self) -> Decimal:
-        return round(self.amount * Decimal(self.TEMPORARY_FUND_AVAILABLE_RATIO), 2) if not self.isFinal else self.amount
-
     def check_has_enough_fund(self, total_amount_after_booking: Decimal) -> None:
+        """Check that the total amount of bookings won't exceed the
+        deposit's amount.
+
+        Note:
+          if the deposit is not the final one, only a part of it can
+          be consumed (eg. only 80% can be used).
+        """
         from pcapi.core.educational import exceptions
 
-        if self.amount < total_amount_after_booking:
-            raise exceptions.InsufficientFund()
+        if self.isFinal:
+            if self.amount < total_amount_after_booking:
+                raise exceptions.InsufficientFund()
+        else:
+            ratio = Decimal(self.TEMPORARY_FUND_AVAILABLE_RATIO)
+            temporary_fund = round(self.amount * ratio, 2)
 
-        if self.get_amount() < total_amount_after_booking and not self.isFinal:
-            raise exceptions.InsufficientTemporaryFund()
-
-        return
+            if temporary_fund < total_amount_after_booking:
+                raise exceptions.InsufficientTemporaryFund()
 
 
 class EducationalRedactor(PcObject, Base, Model):
