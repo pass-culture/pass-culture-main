@@ -62,6 +62,9 @@ class Token:
             return None
         return datetime.utcnow() + timedelta(seconds=ttl)
 
+    def get_expiration_date_from_token(self) -> datetime | None:
+        return self.get_expiration_date(self.type_, self.user_id)
+
     def check(self, type_: TokenType, user_id: int | None = None) -> None:
         redis_key = Token._get_redis_key(self.type_, self.user_id)
         if (
