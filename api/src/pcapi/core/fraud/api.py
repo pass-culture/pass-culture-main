@@ -4,11 +4,9 @@ import logging
 import re
 
 from pcapi import settings
-from pcapi.core import mails
 import pcapi.core.finance.exceptions as finance_exceptions
 import pcapi.core.finance.models as finance_models
 import pcapi.core.fraud.utils as fraud_utils
-from pcapi.core.mails import models as mails_models
 import pcapi.core.mails.transactional as transaction_mails
 from pcapi.core.mails.transactional.users import fraud_emails
 from pcapi.core.subscription import api as subscription_api
