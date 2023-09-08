@@ -293,10 +293,6 @@ def validate_phone_number(user: users_models.User, body: serializers.ValidatePho
                 {"message": "Le nombre de tentatives maximal est dépassé", "code": "TOO_MANY_VALIDATION_ATTEMPTS"},
                 status_code=400,
             )
-        except phone_validation_exceptions.ExpiredCode:
-            raise api_errors.ApiErrors(
-                {"message": "Le code saisi a expiré", "code": "EXPIRED_VALIDATION_CODE"}, status_code=400
-            )
         except phone_validation_exceptions.NotValidCode as error:
             if error.remaining_attempts == 0:
                 raise api_errors.ApiErrors(

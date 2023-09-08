@@ -27,7 +27,11 @@ class EnsurePhoneNumberUnicityTest:
 
         assert users_models.Token.query.count() == 0
 
-    def test_send_phone_code_success_if_validated_by_not_beneficiary(self):
+    @patch(
+        "pcapi.notifications.sms.backends.sendinblue.sib_api_v3_sdk.TransactionalSMSApi.send_transac_sms",
+    )
+    @override_settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
+    def test_send_phone_code_success_if_validated_by_not_beneficiary(self, send_sms_mock):
         already_validated_user = users_factories.EligibleUnderageFactory(
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             phoneNumber="+33607080900",
@@ -38,12 +42,11 @@ class EnsurePhoneNumberUnicityTest:
         # 1. send_phone_validation_code is authorized and does not change owner
         phone_validation_api.send_phone_validation_code(in_validation_user, "+33607080900")
 
-        token = users_models.Token.query.filter(users_models.Token.user == in_validation_user).one()
-        assert token.type == users_models.TokenType.PHONE_VALIDATION
+        token = send_sms_mock.call_args[0][0].content[:6]
         assert already_validated_user.phoneValidationStatus == users_models.PhoneValidationStatusType.VALIDATED
 
         # 2. validate_phone_number is authorized and changes owner
-        phone_validation_api.validate_phone_number(in_validation_user, token.value)
+        phone_validation_api.validate_phone_number(in_validation_user, token)
         assert already_validated_user.phoneValidationStatus == users_models.PhoneValidationStatusType.UNVALIDATED
         assert in_validation_user.phoneValidationStatus == users_models.PhoneValidationStatusType.VALIDATED
 
@@ -94,11 +97,11 @@ class SendSMSTest:
     @patch(
         "pcapi.notifications.sms.backends.sendinblue.sib_api_v3_sdk.TransactionalSMSApi.send_transac_sms",
     )
-    @patch("pcapi.core.users.api.secrets")
+    @patch("secrets.randbelow")
     @override_settings(SMS_NOTIFICATION_BACKEND="pcapi.notifications.sms.backends.sendinblue.SendinblueBackend")
-    def test_send_sms_phone_number_with_space(self, secrets_mock, send_sms_mock):
+    def test_send_sms_phone_number_with_space(self, randbelow_mock, send_sms_mock):
         user = users_factories.UserFactory()
-        secrets_mock.randbelow.return_value = "123456"
+        randbelow_mock.return_value = "123456"
 
         phone_validation_api.send_phone_validation_code(user, "+33 6 00 00 00 00")
 
