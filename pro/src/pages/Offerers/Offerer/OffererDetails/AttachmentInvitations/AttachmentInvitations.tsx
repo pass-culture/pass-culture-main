@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
 import {
   GetOffererMemberResponseModel,
   OffererMemberStatus,
@@ -17,7 +18,6 @@ import { Button, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import EmailSpellCheckInput from 'ui-kit/form/EmailSpellCheckInput/EmailSpellCheckInput'
 
-import postInviteMemberAdapter from './adapters/postInviteMemberAdapter'
 import styles from './AttachmentInvitations.module.scss'
 import { validationSchema } from './validationSchema'
 interface AttachmentInvitationsProps {
@@ -25,6 +25,8 @@ interface AttachmentInvitationsProps {
 }
 
 const SECTION_ID = '#attachment-invitations-section'
+const SUCCESS_MESSAGE = "L'invitation a bien été envoyée."
+const ERROR_MESSAGE = "Une erreur est survenue lors de l'envoi de l'invitation."
 
 const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
   const { logEvent } = useAnalytics()
@@ -36,14 +38,11 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
     []
   )
   const [showInvitationForm, setShowInvitationForm] = useState(false)
-  const onSubmit = async ({ email }: { email: string }) => {
-    setIsLoading(true)
-    const { isOk, message } = await postInviteMemberAdapter({
-      offererId,
-      email,
-    })
 
-    if (isOk) {
+  const onSubmit = async ({ email }: { email: string }) => {
+    try {
+      setIsLoading(true)
+      await api.inviteMember(offererId, { email: email })
       members.unshift({
         email,
         status: OffererMemberStatus.PENDING,
@@ -52,11 +51,16 @@ const AttachmentInvitations = ({ offererId }: AttachmentInvitationsProps) => {
       logEvent?.(OffererLinkEvents.CLICKED_SEND_INVITATION, {
         offererId: offererId,
       })
-      notify.success(message)
-    } else {
-      notify.error(message)
+      notify.success(SUCCESS_MESSAGE)
+    } catch (error) {
+      if (isErrorAPIError(error) && error.status === 400 && error.body.email) {
+        formik.setFieldError('email', error.body.email)
+      } else {
+        notify.error(ERROR_MESSAGE)
+      }
+    } finally {
+      setIsLoading(false)
     }
-    setIsLoading(false)
   }
 
   const formik = useFormik({

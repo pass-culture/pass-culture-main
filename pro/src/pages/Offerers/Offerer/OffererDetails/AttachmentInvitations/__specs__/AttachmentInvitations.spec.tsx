@@ -109,7 +109,7 @@ describe('AttachmentInvitations', () => {
     expect(screen.getByText('test@test.fr')).toBeInTheDocument()
   })
 
-  it('Should display error message', async () => {
+  it('Should display email error message if user is already invited', async () => {
     renderAttachmentInvitations()
     await userEvent.click(screen.getByText('Ajouter un collaborateur'))
 
@@ -136,6 +136,28 @@ describe('AttachmentInvitations', () => {
     await waitFor(() => {
       expect(
         screen.getByText(/Une invitation a déjà été envoyée à ce collaborateur/)
+      ).toBeInTheDocument()
+    })
+  })
+
+  it('Should display default error message if error with server', async () => {
+    renderAttachmentInvitations()
+    await userEvent.click(screen.getByText('Ajouter un collaborateur'))
+
+    await userEvent.type(
+      await screen.getByLabelText('Adresse email'),
+      'test@test.fr'
+    )
+
+    vi.spyOn(api, 'inviteMember').mockRejectedValue({})
+
+    await userEvent.click(screen.getByText('Inviter'))
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Une erreur est survenue lors de l'envoi de l'invitation."
+        )
       ).toBeInTheDocument()
     })
   })
