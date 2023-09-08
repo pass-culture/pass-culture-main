@@ -296,3 +296,74 @@ def test_unindex_all_offers():
     search.unindex_all_offers()
 
     assert search_testing.search_store["offers"] == {}
+
+
+class GetLastXDaysBookingsTest:
+    def test_get_last_x_days_bookings_count(self):
+        ean_1 = "1234567890123"
+        offer_with_ean = offers_factories.OfferFactory(extraData={"ean": ean_1})
+        other_offer_with_ean = offers_factories.OfferFactory(extraData={"ean": ean_1})
+        offer_with_no_ean = offers_factories.OfferFactory()
+        _offer_with_no_ean_not_booked = offers_factories.OfferFactory()
+        _offer_not_booked_with_same_ean_in_offer = offers_factories.OfferFactory(extraData={"ean": ean_1})
+
+        bookings_factories.BookingFactory(stock=offers_factories.StockFactory(offer=offer_with_ean))
+        bookings_factories.BookingFactory(stock=offers_factories.StockFactory(offer=other_offer_with_ean))
+        bookings_factories.BookingFactory(stock=offers_factories.StockFactory(offer=offer_with_no_ean))
+
+        bookings_count = search.get_last_x_days_bookings_count(
+            offers=[offer_with_ean, offer_with_no_ean], days=30, get_related_eans=True
+        )
+
+        assert bookings_count.booking_count_by_ean == {ean_1: 2}
+        assert bookings_count.booking_count_by_offer_id == {
+            offer_with_ean.id: 1,
+            offer_with_no_ean.id: 1,
+        }
+
+    def test_get_offer_last_x_days_bookings_is_calculated_by_ean(self):
+        # given
+        ean_1 = "1234567890123"
+        offer_with_ean = offers_factories.OfferFactory(extraData={"ean": ean_1})
+        other_offer_with_ean = offers_factories.OfferFactory(extraData={"ean": ean_1})
+
+        bookings_factories.BookingFactory(stock=offers_factories.StockFactory(offer=offer_with_ean))
+        bookings_factories.BookingFactory(stock=offers_factories.StockFactory(offer=other_offer_with_ean))
+
+        bookings_count = search.get_last_x_days_bookings_count(
+            offers=[offer_with_ean, other_offer_with_ean], days=30, get_related_eans=True
+        )
+
+        # when
+        result_1 = search._get_offer_bookings_count(offer_with_ean, bookings_count)
+        result_2 = search._get_offer_bookings_count(other_offer_with_ean, bookings_count)
+
+        # then
+        assert result_1 == 2
+        assert result_2 == 2
+
+    def test_get_offer_last_x_days_bookings_is_calculated_for_all_bookings(self):
+        ean_1 = "1234567890123"
+        offer_with_ean = offers_factories.OfferFactory(extraData={"ean": ean_1})
+        other_offer_with_ean = offers_factories.OfferFactory(extraData={"ean": ean_1})
+
+        bookings_factories.BookingFactory(stock=offers_factories.StockFactory(offer=offer_with_ean))
+        bookings_factories.BookingFactory(stock=offers_factories.StockFactory(offer=other_offer_with_ean))
+
+        bookings_count = search.get_last_x_days_bookings_count(offers=[offer_with_ean], days=30, get_related_eans=True)
+
+        assert search._get_offer_bookings_count(offer_with_ean, bookings_count) == 2
+
+    def test_get_offer_last_x_days_bookings_ignores_bookings_too_old(self):
+        ean_1 = "1234567890123"
+        offer_with_ean = offers_factories.OfferFactory(extraData={"ean": ean_1})
+        other_offer_with_ean = offers_factories.OfferFactory(extraData={"ean": ean_1})
+
+        forty_days_ago = datetime.datetime.utcnow() - datetime.timedelta(days=40)
+        bookings_factories.BookingFactory(
+            stock=offers_factories.StockFactory(offer=offer_with_ean), dateCreated=forty_days_ago
+        )
+        bookings_factories.BookingFactory(stock=offers_factories.StockFactory(offer=other_offer_with_ean))
+        bookings_count = search.get_last_x_days_bookings_count(offers=[offer_with_ean], days=30, get_related_eans=True)
+
+        assert search._get_offer_bookings_count(offer_with_ean, bookings_count) == 1
