@@ -149,7 +149,7 @@ def test_serialize_offer_extra_data(
 
 @override_settings(ALGOLIA_LAST_30_DAYS_BOOKINGS_RANGE_THRESHOLDS=[1, 2, 3, 4])
 @pytest.mark.parametrize(
-    "bookings_number, expected_range",
+    "bookings_count, expected_range",
     (
         (0, algolia.Last30DaysBookingsRange.VERY_LOW.value),
         (1, algolia.Last30DaysBookingsRange.LOW.value),
@@ -159,15 +159,15 @@ def test_serialize_offer_extra_data(
         (5, algolia.Last30DaysBookingsRange.VERY_HIGH.value),
     ),
 )
-def test_index_last_30_days_bookings(app, bookings_number, expected_range):
+def test_index_last_30_days_bookings(app, bookings_count, expected_range):
     # given
     offer = offers_factories.StockFactory().offer
 
     # when
-    serialized = algolia.AlgoliaBackend().serialize_offer(offer, bookings_number)
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer, bookings_count)
 
     # then
-    assert serialized["offer"]["last30DaysBookings"] == bookings_number
+    assert serialized["offer"]["last30DaysBookings"] == bookings_count
     assert serialized["offer"]["last30DaysBookingsRange"] == expected_range
 
 
