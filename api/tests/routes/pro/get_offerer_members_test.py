@@ -1,6 +1,7 @@
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models.validation_status_mixin import ValidationStatus
@@ -23,6 +24,9 @@ class Returns200Test:
             offerer=offerer, validationStatus=ValidationStatus.REJECTED, user__email="rejected.pro@example.com"
         )
         offerers_factories.OffererInvitationFactory(email="invited.pro@example.com", user=pro, offerer=offerer)
+        offerers_factories.OffererInvitationFactory(
+            email="member.pro@example.com", user=pro, offerer=offerer, status=offerers_models.InvitationStatus.ACCEPTED
+        )
 
         client = TestClient(app.test_client()).with_session_auth(email=pro.email)
         response = client.get(f"/offerers/{offerer.id}/members")

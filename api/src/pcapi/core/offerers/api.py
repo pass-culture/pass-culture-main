@@ -1973,7 +1973,11 @@ def get_offerer_members(offerer: models.Offerer) -> list[typing.Tuple[str, Offer
         .options(sa.orm.joinedload(models.UserOfferer.user).load_only(users_models.User.email))
         .all()
     )
-    invited_members = models.OffererInvitation.query.filter_by(offererId=offerer.id).all()
+    invited_members = (
+        models.OffererInvitation.query.filter_by(offererId=offerer.id)
+        .filter_by(status=models.InvitationStatus.PENDING)
+        .all()
+    )
     members = [
         (
             user_offerer.user.email,
