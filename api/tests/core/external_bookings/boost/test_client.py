@@ -75,11 +75,11 @@ class GetShowtimesTest:
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?page=1&per_page=2",
+            "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=2",
             json=fixtures.ShowtimesEndpointResponse.PAGE_1_JSON_DATA,
         )
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?page=2&per_page=2",
+            "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?paymentMethod=external:credit:passculture&hideFullReservation=1&page=2&per_page=2",
             json=fixtures.ShowtimesEndpointResponse.PAGE_2_JSON_DATA,
         )
         boost = boost_client.BoostClientAPI(cinema_str_id)
@@ -94,7 +94,7 @@ class GetShowtimesTest:
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?film=207&page=1&per_page=2",
+            "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?paymentMethod=external:credit:passculture&hideFullReservation=1&film=207&page=1&per_page=2",
             json=fixtures.ShowtimesWithFilmIdEndpointResponse.PAGE_1_JSON_DATA,
         )
         boost = boost_client.BoostClientAPI(cinema_str_id)
