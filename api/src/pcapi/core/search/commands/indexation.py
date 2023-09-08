@@ -1,3 +1,4 @@
+import datetime
 import logging
 import typing
 
@@ -112,6 +113,7 @@ def _partially_index(
     batch_size: int = 10000,
     starting_page: int = 1,
     last_page: int | None = None,
+    indexation_callback_kwargs: dict | None = None,
 ) -> None:
     backend = search._get_backend()
     page = starting_page
@@ -124,7 +126,9 @@ def _partially_index(
         indexation_callback_arguments = [ids]
         if "backend" in indexation_callback.__annotations__:
             indexation_callback_arguments.insert(0, backend)
-        indexation_callback(*indexation_callback_arguments)
+        if indexation_callback_kwargs is None:
+            indexation_callback_kwargs = {}
+        indexation_callback(*indexation_callback_arguments, **indexation_callback_kwargs)
         logger.info("Indexed %d %s from page %d", len(ids), what, page)
         page += 1
 
@@ -226,3 +230,28 @@ def _reindex_all_venues(algolia_batch_size: int, max_venues: int) -> None:
         venue_ids = [venue.id for venue in venue_chunk]
         search.reindex_venue_ids(venue_ids)
         logger.info("Reindex %d eligible venues from page %d", len(venue_ids), page)
+
+
+@blueprint.cli.command("reindex_offers_if_ean_booked_recently")
+@click.option("--since", help="Number of hours since last booking to reindex", type=int, default=24)
+@click.option("--batch-size", help="Batch size (Algolia)", type=int, default=10_000)
+@click.option("--max-offers", help="Max number of offers (total)", type=int, default=10_000)
+def reindex_offers_if_ean_booked_recently(since: int, batch_size: int, max_offers: int) -> None:
+    """
+    Reindex offers that have been booked recently (24 hours by default, because this
+    command is run by a cron every day).
+
+    This command is needed to reindex offers that have the same EAN than every offer
+    that has been booked in the last 24 hours, so that each of them have an up-to-date
+    total number of bookings (per EAN) in the last 30 days (see `last30DaysBookings`
+    in Algolia serialization).
+    """
+    _partially_index(
+        what="offers",
+        getter=offers_repository.get_paginated_active_offer_ids,
+        indexation_callback=search.reindex_offers_if_ean_booked_since,
+        batch_size=batch_size,
+        starting_page=1,
+        last_page=max_offers // batch_size,
+        indexation_callback_kwargs={"since": datetime.datetime.utcnow() - datetime.timedelta(hours=since)},
+    )
