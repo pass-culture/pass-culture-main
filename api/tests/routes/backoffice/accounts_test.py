@@ -1153,7 +1153,7 @@ class SendValidationCodeTest(PostEndpointHelper):
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
-    def test_send_validation_code(self, authenticated_client):
+    def test_send_validation_code(self, authenticated_client, app):
         user = users_factories.UserFactory(
             phoneValidationStatus=None, phoneNumber="+33601020304", isEmailValidated=True
         )
@@ -1164,13 +1164,8 @@ class SendValidationCodeTest(PostEndpointHelper):
         assert len(sms_testing.requests) == 1
         assert sms_testing.requests[0]["recipient"] == user.phoneNumber
 
-        phone_validation_codes = users_models.Token.query.filter(
-            users_models.Token.user == user,
-            users_models.Token.type == users_models.TokenType.PHONE_VALIDATION,
-        ).all()
-        assert len(phone_validation_codes) == 1
-        assert phone_validation_codes[0].expirationDate is None
-        assert phone_validation_codes[0].isUsed is False
+        assert token_utils.Token.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
+        assert token_utils.SixDigitsToken.get_expiration_date(token_utils.TokenType.PHONE_VALIDATION, user.id) is None
 
     def test_phone_validation_code_sending_ignores_limit(self, authenticated_client):
         # given
@@ -1184,7 +1179,7 @@ class SendValidationCodeTest(PostEndpointHelper):
         # then
         assert limit_mock.call_count == 0
         assert response.status_code == 303
-        assert users_models.Token.query.count() == 1
+        assert token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
 
     def test_nothing_sent_use_cases(self, authenticated_client):
         other_user = users_factories.BeneficiaryGrant18Factory(

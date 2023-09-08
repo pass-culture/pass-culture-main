@@ -1301,20 +1301,25 @@ class SendPhoneValidationCodeTest:
 
         assert int(app.redis_client.get(f"sent_SMS_counter_user_{user.id}")) == 1
 
-        token = users_models.Token.query.filter_by(userId=user.id, type=users_models.TokenType.PHONE_VALIDATION).first()
-
-        assert token.expirationDate >= datetime.utcnow() + timedelta(hours=10)
-        assert token.expirationDate < datetime.utcnow() + timedelta(hours=13)
+        encoded_token = app.redis_client.get(
+            token_utils.SixDigitsToken._get_redis_key(token_utils.TokenType.PHONE_VALIDATION, user.id)
+        )
+        assert encoded_token is not None
+        token = token_utils.SixDigitsToken.load_without_checking(
+            encoded_token, token_utils.TokenType.PHONE_VALIDATION, user.id
+        )
+        assert token.get_expiration_date_from_token() >= datetime.utcnow() + timedelta(hours=10)
+        assert token.get_expiration_date_from_token() < datetime.utcnow() + timedelta(hours=13)
 
         assert sms_testing.requests == [
-            {"recipient": "+33601020304", "content": f"{token.value} est ton code de confirmation pass Culture"}
+            {"recipient": "+33601020304", "content": f"{token.encoded_token} est ton code de confirmation pass Culture"}
         ]
-        assert len(token.value) == 6
-        assert 0 <= int(token.value) < 1000000
-        assert token.extraData["phone_number"] == "+33601020304"
+        assert len(token.encoded_token) == 6
+        assert 0 <= int(token.encoded_token) < 1000000
+        assert token.data["phone_number"] == "+33601020304"
 
         # validate phone number with generated code
-        response = client.post("/native/v1/validate_phone_number", json={"code": token.value})
+        response = client.post("/native/v1/validate_phone_number", json={"code": token.encoded_token})
 
         assert response.status_code == 204
         user = users_models.User.query.get(user.id)
@@ -1359,7 +1364,7 @@ class SendPhoneValidationCodeTest:
 
         assert response.status_code == 400
 
-        assert not users_models.Token.query.filter_by(userId=user.id).first()
+        assert not token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
 
     def test_send_phone_validation_code_for_new_phone_with_already_beneficiary(self, client, app):
         user = users_factories.BeneficiaryGrant18Factory(
@@ -1371,7 +1376,7 @@ class SendPhoneValidationCodeTest:
 
         assert response.status_code == 400
 
-        assert not users_models.Token.query.filter_by(userId=user.id).first()
+        assert not token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
         db.session.refresh(user)
         assert user.phoneNumber == "+33601020304"
 
@@ -1383,7 +1388,6 @@ class SendPhoneValidationCodeTest:
 
         assert response.status_code == 204
 
-        assert users_models.Token.query.filter_by(userId=user.id).first()
         db.session.refresh(user)
         assert user.phoneNumber == "+33102030405"
 
@@ -1417,7 +1421,7 @@ class SendPhoneValidationCodeTest:
 
         assert response.status_code == 400
 
-        assert not users_models.Token.query.filter_by(userId=user.id).first()
+        assert not token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
         db.session.refresh(user)
         assert user.phoneNumber == "+33601020304"
         assert response.json == {
@@ -1455,7 +1459,7 @@ class SendPhoneValidationCodeTest:
 
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_PHONE_NUMBER"
-        assert not users_models.Token.query.filter_by(userId=user.id).first()
+        assert not token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
 
     def test_send_phone_validation_code_with_non_french_number(self, client):
         user = users_factories.UserFactory(isEmailValidated=True)
@@ -1466,7 +1470,7 @@ class SendPhoneValidationCodeTest:
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_COUNTRY_CODE"
         assert response.json["message"] == "L'indicatif téléphonique n'est pas accepté"
-        assert not users_models.Token.query.filter_by(userId=user.id).first()
+        assert not token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.INVALID_PHONE_COUNTRY_CODE]
@@ -1484,7 +1488,7 @@ class SendPhoneValidationCodeTest:
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_PHONE_NUMBER"
 
-        assert not users_models.Token.query.filter_by(userId=user.id).first()
+        assert not token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
         db.session.refresh(user)
         assert user.phoneNumber is None
 
@@ -1505,6 +1509,8 @@ class SendPhoneValidationCodeTest:
 
 
 class ValidatePhoneNumberTest:
+    mock_redis_client = fakeredis.FakeStrictRedis()
+
     def test_validate_phone_number(self, client, app):
         user = users_factories.UserFactory(
             phoneNumber="+33607080900", dateOfBirth=datetime.utcnow() - relativedelta(years=18)
@@ -1516,7 +1522,7 @@ class ValidatePhoneNumberTest:
 
         # try one attempt with wrong code
         client.post("/native/v1/validate_phone_number", {"code": "wrong code"})
-        response = client.post("/native/v1/validate_phone_number", {"code": token.value})
+        response = client.post("/native/v1/validate_phone_number", {"code": token.encoded_token})
 
         assert response.status_code == 204
         user = users_models.User.query.get(user.id)
@@ -1529,13 +1535,11 @@ class ValidatePhoneNumberTest:
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
         assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
 
-        token = users_models.Token.query.filter_by(userId=user.id, type=users_models.TokenType.PHONE_VALIDATION).first()
-
-        assert not token
+        assert not token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
 
         assert int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}")) == 2
 
-    def test_validate_phone_number_with_first_sent_code(self, client, app):
+    def test_can_not_validate_phone_number_with_first_sent_code(self, client, app):
         first_number = "+33611111111"
         second_number = "+33622222222"
         user = users_factories.UserFactory(phoneNumber=second_number)
@@ -1543,12 +1547,11 @@ class ValidatePhoneNumberTest:
         first_token = create_phone_validation_token(user, first_number)
         create_phone_validation_token(user, second_number)
 
-        response = client.post("/native/v1/validate_phone_number", {"code": first_token.value})
+        response = client.post("/native/v1/validate_phone_number", {"code": first_token.encoded_token})
 
-        assert response.status_code == 204
+        assert response.status_code == 400
         user = users_models.User.query.get(user.id)
-        assert user.is_phone_validated
-        assert user.phoneNumber == first_number
+        assert not user.is_phone_validated
 
         assert int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}")) == 1
 
@@ -1572,7 +1575,7 @@ class ValidatePhoneNumberTest:
             user, "+33607080900", expiration=datetime.utcnow() + users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME
         )
 
-        response = client.post("/native/v1/validate_phone_number", {"code": token.value})
+        response = client.post("/native/v1/validate_phone_number", {"code": token.encoded_token})
 
         assert response.status_code == 204
         user = users_models.User.query.get(user.id)
@@ -1591,7 +1594,7 @@ class ValidatePhoneNumberTest:
         )
 
         response = client.post("/native/v1/validate_phone_number", {"code": "wrong code"})
-        response = client.post("/native/v1/validate_phone_number", {"code": token.value})
+        response = client.post("/native/v1/validate_phone_number", {"code": token.encoded_token})
 
         assert response.status_code == 400
         assert response.json["message"] == "Le nombre de tentatives maximal est dépassé"
@@ -1669,23 +1672,24 @@ class ValidatePhoneNumberTest:
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED]
 
         assert not users_models.User.query.get(user.id).is_phone_validated
-        assert users_models.Token.query.filter_by(userId=user.id, type=users_models.TokenType.PHONE_VALIDATION).first()
+        assert token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
 
     def test_expired_code(self, client):
-        user = users_factories.UserFactory(phoneNumber="+33607080900")
-        token = create_phone_validation_token(
-            user, "+33607080900", expiration=datetime.utcnow() + users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME
-        )
+        with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
+            user = users_factories.UserFactory(phoneNumber="+33607080900")
+            token = create_phone_validation_token(
+                user, "+33607080900", expiration=datetime.utcnow() + users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME
+            )
 
-        with freeze_time(datetime.utcnow() + timedelta(hours=15)):
-            client.with_token(email=user.email)
-            response = client.post("/native/v1/validate_phone_number", {"code": token.value})
+            with freeze_time(datetime.utcnow() + timedelta(hours=15)):
+                client.with_token(email=user.email)
+                response = client.post("/native/v1/validate_phone_number", {"code": token.encoded_token})
 
-        assert response.status_code == 400
-        assert response.json["code"] == "EXPIRED_VALIDATION_CODE"
+            assert response.status_code == 400
+            assert response.json["code"] == "INVALID_VALIDATION_CODE"
 
-        assert not users_models.User.query.get(user.id).is_phone_validated
-        assert users_models.Token.query.filter_by(userId=user.id, type=users_models.TokenType.PHONE_VALIDATION).first()
+            assert not users_models.User.query.get(user.id).is_phone_validated
+            assert token_utils.SixDigitsToken.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
 
     def test_validate_phone_number_with_already_validated_phone(self, client):
         users_factories.UserFactory(
@@ -1700,7 +1704,7 @@ class ValidatePhoneNumberTest:
         )
 
         # try one attempt with wrong code
-        response = client.post("/native/v1/validate_phone_number", {"code": token.value})
+        response = client.post("/native/v1/validate_phone_number", {"code": token.encoded_token})
 
         assert response.status_code == 400
         user = users_models.User.query.get(user.id)

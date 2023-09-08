@@ -82,14 +82,13 @@ def create_phone_validation_token(
     user: models.User,
     phone_number: str,
     expiration: datetime.datetime | None = None,
-) -> models.Token | None:
-    secret_code = "{:06}".format(secrets.randbelow(1_000_000))  # 6 digits
-    return generate_and_save_token(
-        user,
-        token_type=models.TokenType.PHONE_VALIDATION,
-        expiration=expiration,
-        token_value=secret_code,
-        extra_data=models.TokenExtraData(phone_number=phone_number),
+) -> token_utils.SixDigitsToken:
+    if expiration:
+        ttl = expiration - datetime.datetime.utcnow()
+    else:
+        ttl = None
+    return token_utils.SixDigitsToken.create(
+        type_=token_utils.TokenType.PHONE_VALIDATION, user_id=user.id, ttl=ttl, data={"phone_number": phone_number}
     )
 
 
