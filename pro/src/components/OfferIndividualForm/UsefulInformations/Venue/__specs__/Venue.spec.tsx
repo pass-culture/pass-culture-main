@@ -5,7 +5,6 @@ import React from 'react'
 import * as yup from 'yup'
 
 import {
-  FORM_DEFAULT_VALUES,
   OfferIndividualFormValues,
   setDefaultInitialFormValues,
 } from 'components/OfferIndividualForm'
@@ -128,7 +127,6 @@ describe('OfferIndividual section: venue', () => {
     ]
 
     initialValues = setDefaultInitialFormValues(
-      FORM_DEFAULT_VALUES,
       offererNames,
       null,
       null,
@@ -174,7 +172,6 @@ describe('OfferIndividual section: venue', () => {
       venueList: [props.venueList[0]],
     }
     initialValues = setDefaultInitialFormValues(
-      FORM_DEFAULT_VALUES,
       props.offererNames,
       null,
       null,

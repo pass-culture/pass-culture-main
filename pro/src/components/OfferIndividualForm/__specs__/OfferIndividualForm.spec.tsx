@@ -23,7 +23,6 @@ import { SubmitButton } from 'ui-kit'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
-  FORM_DEFAULT_VALUES,
   OfferIndividualFormValues,
   setDefaultInitialFormValues,
   validationSchema,
@@ -55,6 +54,7 @@ const renderOfferIndividualForm = ({
     subCategories: [],
     setOffer: () => {},
     setShouldTrack: () => {},
+    setSubcategory: () => {},
     shouldTrack: true,
     showVenuePopin: {},
     ...contextOverride,
@@ -185,7 +185,6 @@ describe('OfferIndividualForm', () => {
       offerSubtype: INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD,
     }
     initialValues = setDefaultInitialFormValues(
-      FORM_DEFAULT_VALUES,
       offererNames,
       null,
       null,
@@ -227,7 +226,6 @@ describe('OfferIndividualForm', () => {
 
   it('should submit minimal physical offer', async () => {
     initialValues = setDefaultInitialFormValues(
-      FORM_DEFAULT_VALUES,
       offererNames,
       null,
       physicalVenueId.toString(),
@@ -282,7 +280,7 @@ describe('OfferIndividualForm', () => {
         subCategoryFields: ['isDuo'],
         subcategoryId: 'physical',
         url: '',
-        venueId: physicalVenueId,
+        venueId: physicalVenueId.toString(),
         visa: '',
         withdrawalDelay: undefined,
         withdrawalDetails: '',
@@ -294,7 +292,6 @@ describe('OfferIndividualForm', () => {
 
   it('should submit minimal virtual offer', async () => {
     initialValues = setDefaultInitialFormValues(
-      FORM_DEFAULT_VALUES,
       offererNames,
       null,
       virtualVenueId.toString(),
@@ -352,7 +349,7 @@ describe('OfferIndividualForm', () => {
         subCategoryFields: [],
         subcategoryId: 'virtual',
         url: 'https://example.com/',
-        venueId: virtualVenueId,
+        venueId: virtualVenueId.toString(),
         visa: '',
         withdrawalDelay: undefined,
         withdrawalDetails: '',

@@ -1,19 +1,20 @@
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { OfferSubCategory } from 'core/Offers/types'
-import { OfferIndividualVenue } from 'core/Venue/types'
 
-import { getFilteredVenueList } from '../getFilteredVenueList'
+import {
+  getFilteredVenueListByCategoryStatus,
+  getFilteredVenueListBySubcategory,
+} from '../getFilteredVenueList'
 
 describe('getFilteredVenueList', () => {
-  let virtualVenue: OfferIndividualVenue
-  const firstVenueId = 1
+  const virtualVenueId = 1
   const secondVenueId = 2
   const thirdVenueId = 3
 
   const subCategories: OfferSubCategory[] = [
     {
-      id: 'A-A',
+      id: 'ONLINE_ONLY',
       categoryId: 'A',
       proLabel: 'Sous catégorie online de A',
       isEvent: false,
@@ -26,7 +27,7 @@ describe('getFilteredVenueList', () => {
       isSelectable: true,
     },
     {
-      id: 'A-B',
+      id: 'OFFLINE_ONLY',
       categoryId: 'A',
       proLabel: 'Sous catégorie offline de A',
       isEvent: false,
@@ -39,7 +40,7 @@ describe('getFilteredVenueList', () => {
       isSelectable: true,
     },
     {
-      id: 'A-C',
+      id: 'ONLINE_OR_OFFLINE',
       categoryId: 'A',
       proLabel: 'Sous catégorie online or offline de A',
       isEvent: false,
@@ -52,6 +53,23 @@ describe('getFilteredVenueList', () => {
       isSelectable: true,
     },
   ]
+
+  const virtualVenue = {
+    id: virtualVenueId,
+    name: 'Lieu online CC',
+    managingOffererId: 1,
+    isVirtual: true,
+    withdrawalDetails: '',
+    accessibility: {
+      visual: false,
+      mental: false,
+      audio: false,
+      motor: false,
+      none: true,
+    },
+    hasMissingReimbursementPoint: false,
+    hasCreatedOffer: true,
+  }
 
   const venueList = [
     {
@@ -88,63 +106,67 @@ describe('getFilteredVenueList', () => {
     },
   ]
 
-  beforeEach(() => {
-    virtualVenue = {
-      id: firstVenueId,
-      name: 'Lieu online CC',
-      managingOffererId: 1,
-      isVirtual: true,
-      withdrawalDetails: '',
-      accessibility: {
-        visual: false,
-        mental: false,
-        audio: false,
-        motor: false,
-        none: true,
-      },
-      hasMissingReimbursementPoint: false,
-      hasCreatedOffer: true,
-    }
+  describe('getFilteredVenueListBySubcategory', () => {
+    it('should return all venues when subCatagory is ONLINE or OFFLINE', async () => {
+      const result = getFilteredVenueListBySubcategory(
+        [...venueList, virtualVenue],
+        subCategories.find(s => s.id === 'ONLINE_OR_OFFLINE')
+      )
+      expect(result.length).toEqual(3)
+      expect(result[0].id).toEqual(secondVenueId)
+      expect(result[1].id).toEqual(thirdVenueId)
+      expect(result[2].id).toEqual(virtualVenueId)
+    })
+
+    it('should return virtual venues when subCatagory is ONLINE only', async () => {
+      const result = getFilteredVenueListBySubcategory(
+        [...venueList, virtualVenue],
+        subCategories.find(s => s.id === 'ONLINE_ONLY')
+      )
+      expect(result.length).toEqual(1)
+      expect(result[0].id).toEqual(virtualVenueId)
+    })
+
+    it('should return not virtual when subCatagory is OFFLINE only', async () => {
+      const result = getFilteredVenueListBySubcategory(
+        [...venueList, virtualVenue],
+        subCategories.find(s => s.id === 'OFFLINE_ONLY')
+      )
+      expect(result.length).toEqual(2)
+      expect(result[0].id).toEqual(secondVenueId)
+      expect(result[1].id).toEqual(thirdVenueId)
+    })
   })
 
-  it('should not filter venue on isVirtual when subCatagory is not selected', async () => {
-    const result = getFilteredVenueList('', subCategories, [
-      ...venueList,
-      virtualVenue,
-    ])
-    expect(result.length).toEqual(3)
-    expect(result[0].id).toEqual(secondVenueId)
-    expect(result[1].id).toEqual(thirdVenueId)
-    expect(result[2].id).toEqual(firstVenueId)
-  })
+  describe('getFilteredVenueListBySubcategory', () => {
+    it('should return all venues when categoryStatus is ONLINE or OFFLINE', async () => {
+      const result = getFilteredVenueListByCategoryStatus(
+        [...venueList, virtualVenue],
+        CATEGORY_STATUS.ONLINE_OR_OFFLINE
+      )
+      expect(result.length).toEqual(3)
+      expect(result[0].id).toEqual(secondVenueId)
+      expect(result[1].id).toEqual(thirdVenueId)
+      expect(result[2].id).toEqual(virtualVenueId)
+    })
 
-  it('should not filter venue on isVirtual when subCatagory is ONLINE or OFFLINE', async () => {
-    const result = getFilteredVenueList('A-C', subCategories, [
-      ...venueList,
-      virtualVenue,
-    ])
-    expect(result.length).toEqual(3)
-    expect(result[0].id).toEqual(secondVenueId)
-    expect(result[1].id).toEqual(thirdVenueId)
-    expect(result[2].id).toEqual(firstVenueId)
-  })
+    it('should return vitual venues when categoryStatus is ONLINE only', async () => {
+      const result = getFilteredVenueListByCategoryStatus(
+        [...venueList, virtualVenue],
+        CATEGORY_STATUS.ONLINE
+      )
+      expect(result.length).toEqual(1)
+      expect(result[0].id).toEqual(virtualVenueId)
+    })
 
-  it('should filter venue on isVirtual when subCatagory is ONLINE only', async () => {
-    const result = getFilteredVenueList('A-A', subCategories, [
-      ...venueList,
-      virtualVenue,
-    ])
-    expect(result.length).toEqual(1)
-    expect(result[0].id).toEqual(firstVenueId)
-  })
-
-  it('should filter venue on not isVirtual when subCatagory is OFFLINE only', async () => {
-    const result = getFilteredVenueList('A-B', subCategories, [
-      ...venueList,
-      virtualVenue,
-    ])
-    expect(result.length).toEqual(2)
-    expect(result[0].id).toEqual(secondVenueId)
-    expect(result[1].id).toEqual(thirdVenueId)
+    it('should return not virtual when categoryStatus is OFFLINE only', async () => {
+      const result = getFilteredVenueListByCategoryStatus(
+        [...venueList, virtualVenue],
+        CATEGORY_STATUS.OFFLINE
+      )
+      expect(result.length).toEqual(2)
+      expect(result[0].id).toEqual(secondVenueId)
+      expect(result[1].id).toEqual(thirdVenueId)
+    })
   })
 })

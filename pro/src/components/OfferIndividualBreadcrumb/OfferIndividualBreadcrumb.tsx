@@ -17,7 +17,7 @@ import { useOfferWizardMode } from 'hooks'
 import useActiveStep from 'hooks/useActiveStep'
 import useAnalytics from 'hooks/useAnalytics'
 import {
-  getOfferSubtypeFromParamsOrOffer,
+  getOfferSubtypeFromParam,
   isOfferSubtypeEvent,
 } from 'screens/OfferIndividual/Informations/utils/filterCategories/filterCategories'
 
@@ -31,7 +31,7 @@ interface OfferIndividualBreadcrumbProps {
 const OfferIndividualBreadcrumb = ({
   shouldTrack = true,
 }: OfferIndividualBreadcrumbProps) => {
-  const { offer } = useOfferIndividualContext()
+  const { offer, subcategory } = useOfferIndividualContext()
   const activeStep = useActiveStep(Object.values(OFFER_WIZARD_STEP_IDS))
   const { logEvent } = useAnalytics()
   const mode = useOfferWizardMode()
@@ -41,9 +41,12 @@ const OfferIndividualBreadcrumb = ({
   )
   const hasStock = offer !== null && offer.stocks.length > 0
   const { search } = useLocation()
-  const offerSubtype = getOfferSubtypeFromParamsOrOffer(search, offer)
+  const queryParams = new URLSearchParams(search)
+  const queryOfferType = queryParams.get('offer-type')
 
-  const isEvent = offer?.isEvent || isOfferSubtypeEvent(offerSubtype)
+  const offerSubtype = getOfferSubtypeFromParam(queryOfferType)
+  const isEvent =
+    offer?.isEvent || subcategory?.isEvent || isOfferSubtypeEvent(offerSubtype)
 
   const stepPatternList: StepPattern[] = [
     {

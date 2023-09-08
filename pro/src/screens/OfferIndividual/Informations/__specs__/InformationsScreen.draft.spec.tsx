@@ -68,6 +68,7 @@ const renderInformationsScreen = (
     setShouldTrack: () => {},
     shouldTrack: true,
     showVenuePopin: {},
+    setSubcategory: () => {},
     ...contextOverride,
   }
   return renderWithProviders(

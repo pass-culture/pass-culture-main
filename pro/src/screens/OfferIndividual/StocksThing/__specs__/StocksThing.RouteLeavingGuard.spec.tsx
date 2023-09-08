@@ -127,6 +127,7 @@ describe('screens:StocksThing', () => {
       subCategories: [],
       setOffer: () => {},
       setShouldTrack: () => {},
+      setSubcategory: () => {},
       shouldTrack: false,
       showVenuePopin: {},
     }

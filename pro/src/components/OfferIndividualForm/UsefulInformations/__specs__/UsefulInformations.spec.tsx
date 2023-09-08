@@ -6,7 +6,6 @@ import * as yup from 'yup'
 
 import { WithdrawalTypeEnum } from 'apiClient/v1'
 import {
-  FORM_DEFAULT_VALUES,
   OfferIndividualFormValues,
   setDefaultInitialFormValues,
 } from 'components/OfferIndividualForm'
@@ -112,7 +111,6 @@ describe('OfferIndividual section: UsefulInformations', () => {
       },
     ]
     initialValues = setDefaultInitialFormValues(
-      FORM_DEFAULT_VALUES,
       offererNames,
       null,
       null,

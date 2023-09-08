@@ -116,6 +116,7 @@ describe('screens:OfferIndividual::Informations', () => {
       setShouldTrack: () => {},
       shouldTrack: true,
       showVenuePopin: {},
+      setSubcategory: () => {},
     }
 
     vi.spyOn(utils, 'filterCategories')

@@ -3,16 +3,15 @@ import {
   OfferIndividualFormValues,
 } from 'components/OfferIndividualForm'
 import { OffererName } from 'core/Offerers/types'
+import { OfferSubCategory } from 'core/Offers/types'
 import { OfferIndividualVenue } from 'core/Venue/types'
 
-import { buildVenueOptions } from '../UsefulInformations/Venue/utils'
-
 const setDefaultInitialFormValues = (
-  values: OfferIndividualFormValues,
   offererNames: OffererName[],
   offererId: string | null,
   venueId: string | null,
-  venueList: OfferIndividualVenue[]
+  venueList: OfferIndividualVenue[],
+  subcategory?: OfferSubCategory
 ): OfferIndividualFormValues => {
   let initialOffererId = FORM_DEFAULT_VALUES.offererId
 
@@ -25,23 +24,17 @@ const setDefaultInitialFormValues = (
     initialOffererId = offererId
   }
 
-  const { venueOptions } = buildVenueOptions(initialOffererId, venueList)
-
-  const initialVenueId =
-    venueId ??
-    (venueOptions.length === 1
-      ? venueOptions[0].value
-      : FORM_DEFAULT_VALUES.venueId)
-
   let initialWithdrawalDetails = FORM_DEFAULT_VALUES.withdrawalDetails
   let initialAccessibility = FORM_DEFAULT_VALUES.accessibility
-  let initialIsVenueVirtual
+  const initialIsVenueVirtual = venueList.every(v => v.isVirtual)
 
-  const venue = venueList.find(venue => venue.id.toString() === initialVenueId)
+  const venue =
+    venueList.length === 1
+      ? venueList[0]
+      : venueList.find(venue => venue.id.toString() === venueId)
 
-  if (initialVenueId && venue) {
+  if (venue) {
     initialAccessibility = venue.accessibility
-    initialIsVenueVirtual = venue.isVirtual
 
     if (venue.withdrawalDetails) {
       initialWithdrawalDetails = venue.withdrawalDetails
@@ -49,9 +42,14 @@ const setDefaultInitialFormValues = (
   }
 
   return {
-    ...values,
+    ...FORM_DEFAULT_VALUES,
+    isDuo: subcategory?.canBeDuo ?? FORM_DEFAULT_VALUES.isDuo,
+    categoryId: subcategory?.categoryId ?? FORM_DEFAULT_VALUES.categoryId,
+    subcategoryId: subcategory?.id ?? FORM_DEFAULT_VALUES.subcategoryId,
+    subCategoryFields:
+      subcategory?.conditionalFields ?? FORM_DEFAULT_VALUES.subCategoryFields,
     offererId: initialOffererId,
-    venueId: String(initialVenueId),
+    venueId: venue?.id ? String(venue?.id) : FORM_DEFAULT_VALUES.venueId,
     withdrawalDetails: initialWithdrawalDetails,
     accessibility: initialAccessibility,
     isVenueVirtual: initialIsVenueVirtual,
