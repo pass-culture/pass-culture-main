@@ -1,8 +1,12 @@
+import abc
 import dataclasses
 from datetime import datetime
 from datetime import timedelta
 import enum
+import json
 import logging
+import secrets
+import typing
 from typing import Type
 from typing import TypeVar
 
@@ -20,10 +24,11 @@ class TokenType(enum.Enum):
     EMAIL_CHANGE_CONFIRMATION = "update_email_confirmation"
     EMAIL_CHANGE_VALIDATION = "update_email_validation"
     EMAIL_VALIDATION = "email_validation"
+    PHONE_VALIDATION = "phone_validation"
 
 
 @dataclasses.dataclass(frozen=True)
-class Token:
+class AbstractToken(abc.ABC):
     type_: TokenType
     user_id: int
     encoded_token: str
@@ -36,18 +41,25 @@ class Token:
         CREATE = "create"
 
     @classmethod
-    def load_without_checking(cls, encoded_token: str) -> "Token":
-        try:
-            payload = utils.decode_jwt_token(encoded_token)
-        except jwt.PyJWTError:
-            raise InvalidToken()
-        try:
-            data = payload["data"] if payload["data"] is not None else {}
-            type_ = TokenType(payload["token_type"])
-            user_id = payload["user_id"]
-            return cls(type_, user_id, encoded_token, data)
-        except (KeyError, ValueError):
-            raise InvalidToken()
+    @abc.abstractmethod
+    def load_without_checking(cls, encoded_token: str, *args: typing.Any, **kwargs: typing.Any) -> "AbstractToken":
+        raise NotImplementedError()
+
+    @classmethod
+    def load_and_check(
+        cls,
+        encoded_token: str,
+        type_: TokenType,
+        user_id: int | None = None,
+    ) -> "AbstractToken":
+        token = cls.load_without_checking(encoded_token, type_=type_, user_id=user_id)
+        token.check(type_, user_id)
+        return token
+
+    @classmethod
+    @abc.abstractmethod
+    def create(cls, type_: TokenType, ttl: timedelta | None, user_id: int, data: dict | None = None) -> "AbstractToken":
+        raise NotImplementedError()
 
     @classmethod
     def _get_redis_key(cls, type_: TokenType, user_id: int) -> str:
@@ -81,10 +93,27 @@ class Token:
         self._log(self._TokenAction.EXPIRE)
 
     @classmethod
-    def load_and_check(cls, encoded_token: str, type_: TokenType, user_id: int | None = None) -> "Token":
-        token = Token.load_without_checking(encoded_token)
-        token.check(type_, user_id)
-        return token
+    def token_exists(cls, type_: TokenType, user_id: int) -> bool:
+        return app.redis_client.exists(cls._get_redis_key(type_, user_id))  # type: ignore [attr-defined]
+
+    def _log(self, action: _TokenAction) -> None:
+        logger.info("[TOKEN](%s){%i, %s, %s}", action.value, self.user_id, self.type_.value, self.encoded_token)
+
+
+class Token(AbstractToken):
+    @classmethod
+    def load_without_checking(cls, encoded_token: str, *args: typing.Any, **kwargs: typing.Any) -> "Token":
+        try:
+            payload = utils.decode_jwt_token(encoded_token)
+        except jwt.PyJWTError:
+            raise InvalidToken()
+        try:
+            data = payload["data"] if payload["data"] is not None else {}
+            type_ = TokenType(payload["token_type"])
+            user_id = payload["user_id"]
+            return cls(type_, user_id, encoded_token, data)
+        except (KeyError, ValueError):
+            raise InvalidToken()
 
     @classmethod
     def create(cls, type_: TokenType, ttl: timedelta | None, user_id: int, data: dict | None = None) -> "Token":
@@ -94,9 +123,49 @@ class Token:
         token._log(cls._TokenAction.CREATE)
         return token
 
-    @classmethod
-    def token_exists(cls, type_: TokenType, user_id: int) -> bool:
-        return app.redis_client.exists(cls._get_redis_key(type_, user_id))  # type: ignore [attr-defined]
 
-    def _log(self, action: _TokenAction) -> None:
-        logger.info("[TOKEN](%s){%i, %s, %s}", action.value, self.user_id, self.type_.value, self.encoded_token)
+@dataclasses.dataclass(frozen=True)
+class SixDigitsToken(AbstractToken):
+    @classmethod
+    def _get_redis_extra_data_key(cls, type_: TokenType, user_id: int) -> str:
+        return f"pcapi:token:data:{type_.value}_{user_id}"
+
+    @classmethod
+    def load_without_checking(  # type: ignore [override]
+        cls,
+        encoded_token: str,
+        type_: TokenType,
+        user_id: int,
+        *args: typing.Any,
+        **kwargs: typing.Any,
+    ) -> "SixDigitsToken":
+        try:
+            data_json = app.redis_client.get(cls._get_redis_extra_data_key(type_=type_, user_id=user_id))  # type: ignore [attr-defined]
+            if data_json is None:
+                raise InvalidToken()
+            data = json.loads(data_json)
+        except json.JSONDecodeError:
+            raise InvalidToken()
+        return cls(type_, user_id, encoded_token, data)
+
+    @classmethod
+    def load_and_check(cls, encoded_token: str, type_: TokenType, user_id: int | None = None) -> "AbstractToken":
+        if user_id is None:
+            raise ValueError("user_id is required for SixDigitsToken")
+        return super().load_and_check(encoded_token, type_, user_id)
+
+    @classmethod
+    def create(
+        cls, type_: TokenType, ttl: timedelta | None, user_id: int, data: dict | None = None
+    ) -> "SixDigitsToken":
+        encoded_token = "{:06}".format(secrets.randbelow(1_000_000))  # 6 digits
+        app.redis_client.set(cls._get_redis_key(type_, user_id), encoded_token, ex=ttl)  # type: ignore [attr-defined]
+        json_data = json.dumps(data or {})
+        app.redis_client.set(cls._get_redis_extra_data_key(type_, user_id), json_data, ex=ttl)  # type: ignore [attr-defined]
+        token = cls.load_without_checking(encoded_token, type_, user_id)
+        token._log(cls._TokenAction.CREATE)
+        return token
+
+    def expire(self) -> None:
+        super().expire()
+        app.redis_client.delete(self._get_redis_extra_data_key(self.type_, self.user_id))  # type: ignore [attr-defined]
