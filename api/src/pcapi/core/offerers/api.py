@@ -1931,7 +1931,7 @@ def get_offerer_members(offerer: models.Offerer) -> list[typing.Tuple[str, Offer
         for user_offerer in users_offerers
     ]
     members = members + [(invited_member.email, OffererMemberStatus.PENDING) for invited_member in invited_members]
-
+    members.sort(key=lambda member: (member[1].value, member[0]))
     return members
 
 
