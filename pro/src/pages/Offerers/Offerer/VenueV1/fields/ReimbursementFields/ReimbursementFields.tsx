@@ -42,7 +42,13 @@ const ReimbursementFields = ({
   return (
     <>
       <div ref={scrollToReimbursementSection} id="reimbursement-section">
-        <FormLayout.Section title="Remboursement">
+        <FormLayout.Section
+          title={
+            isNewBankDetailsJourneyEnable
+              ? 'Barème de remboursement'
+              : 'Remboursement'
+          }
+        >
           {!venueHaveSiret && !offererHaveVenueWithSiret ? (
             <Banner
               links={[
