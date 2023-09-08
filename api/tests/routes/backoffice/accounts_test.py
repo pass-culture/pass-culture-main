@@ -158,6 +158,25 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         assert len(cards_text) == 1
         assert_user_equals(cards_text[0], underage)
 
+    def test_can_search_public_account_by_small_id(self, authenticated_client):
+        # when
+        response = authenticated_client.get(url_for(self.endpoint, terms="2"))
+
+        # then
+        assert response.status_code == 200
+        assert b"Attention, la recherche doit contenir au moins 3 lettres." not in response.data
+
+    @pytest.mark.parametrize("query", ["'", '""', "v", "xx"])
+    def test_can_search_public_account_by_short_name(self, authenticated_client, query):
+        # when
+        response = authenticated_client.get(url_for(self.endpoint, terms="v"))
+
+        # then
+        assert response.status_code == 400
+        assert "Attention, la recherche doit contenir au moins 3 lettres." in html_parser.extract_warnings(
+            response.data
+        )
+
     @override_features(WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT=True)
     def test_can_search_public_account_by_id_redirected(self, authenticated_client):
         # given
@@ -337,7 +356,7 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
         # then
         assert response.status_code == 400
 
-    @pytest.mark.parametrize("query", ["'", '""', "Ge*", "([{#/="])
+    @pytest.mark.parametrize("query", ["Ge*", "([{#/="])
     def test_can_search_public_account_unexpected(self, authenticated_client, query):
         # given
         create_bunch_of_accounts()

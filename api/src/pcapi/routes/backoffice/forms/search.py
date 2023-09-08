@@ -48,6 +48,14 @@ class SearchForm(FlaskForm):
         return terms
 
 
+class AccountSearchForm(SearchForm):
+    def validate_terms(self, terms: fields.PCOptSearchField) -> fields.PCOptSearchField:
+        terms = super().validate_terms(terms)
+        if len(terms.data) < 3 and not str(terms.data).isnumeric():
+            raise wtforms.validators.ValidationError("Attention, la recherche doit contenir au moins 3 lettres.")
+        return terms
+
+
 class ProSearchForm(SearchForm):
     pro_type = fields.PCSelectField(
         "Type",
