@@ -28,11 +28,11 @@ class Returns200Test:
         response = client.get(f"/offerers/{offerer.id}/members")
 
         assert response.status_code == 200
-        assert sorted(response.json["members"], key=lambda member: member["email"]) == [
+        assert response.json["members"] == [
             {"email": "invited.pro@example.com", "status": "pending"},
+            {"email": "pending.pro@example.com", "status": "pending"},
             {"email": "member.pro@example.com", "status": "validated"},
             {"email": "offerer@example.com", "status": "validated"},
-            {"email": "pending.pro@example.com", "status": "pending"},
         ]
 
 
