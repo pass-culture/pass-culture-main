@@ -106,6 +106,8 @@ def check_date_in_future_and_remove_timezone(value: datetime.datetime | None) ->
     no_tz_value = as_utc_without_timezone(value)
     if no_tz_value < datetime.datetime.utcnow():
         raise ValueError("The datetime must be in the future.")
+    if no_tz_value > datetime.datetime.utcnow() + datetime.timedelta(days=360):
+        raise ValueError("The datetime must be less than 360 days in the future.")
     return no_tz_value
 
 

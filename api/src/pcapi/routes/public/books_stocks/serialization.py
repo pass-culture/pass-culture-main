@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import timedelta
 import decimal
 import logging
 import typing
@@ -67,6 +68,12 @@ class StockCreationBodyModel(BaseModel):
     price_category_id: int | None
     quantity: int | None = Field(None, ge=0, le=models.Stock.MAX_STOCK_QUANTITY)
 
+    @pydantic_v1.validator("beginning_datetime")
+    def validate_beginning_datetime(cls, begining_datetime: datetime | None) -> datetime | None:
+        if begining_datetime and begining_datetime.timestamp() > (datetime.utcnow() + timedelta(days=360)).timestamp():
+            raise ValueError("Beginning datetime must be less than 360 days in the future")
+        return begining_datetime
+
     class Config:
         alias_generator = to_camel
         extra = "forbid"
@@ -79,6 +86,12 @@ class StockEditionBodyModel(BaseModel):
     price: decimal.Decimal | None
     price_category_id: int | None
     quantity: int | None = Field(None, ge=0, le=models.Stock.MAX_STOCK_QUANTITY)
+
+    @pydantic_v1.validator("beginning_datetime")
+    def validate_beginning_datetime(cls, begining_datetime: datetime | None) -> datetime | None:
+        if begining_datetime and begining_datetime.timestamp() > (datetime.utcnow() + timedelta(days=360)).timestamp():
+            raise ValueError("Beginning datetime must be less than 360 days in the future")
+        return begining_datetime
 
     class Config:
         alias_generator = to_camel

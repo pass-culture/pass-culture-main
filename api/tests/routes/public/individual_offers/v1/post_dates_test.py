@@ -205,3 +205,28 @@ class PostDatesTest:
             "dates.0.beginningDatetime": ["The datetime must be in the future."],
             "dates.0.bookingLimitDatetime": ["The datetime must be in the future."],
         }
+
+    @freezegun.freeze_time("2022-01-01 12:00:00")
+    def test_400_for_dates_in_more_than_360_days_in_future(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        product_offer = offers_factories.ThingOfferFactory(venue=venue)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            f"/public/offers/v1/events/{product_offer.id}/dates",
+            json={
+                "dates": [
+                    {
+                        "beginningDatetime": "2023-02-01T12:00:00+02:00",
+                        "bookingLimitDatetime": "2023-01-15T13:00:00Z",
+                        "priceCategoryId": 0,
+                        "quantity": 10,
+                    },
+                ],
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json == {
+            "dates.0.beginningDatetime": ["The datetime must be less than 360 days in the future."],
+            "dates.0.bookingLimitDatetime": ["The datetime must be less than 360 days in the future."],
+        }

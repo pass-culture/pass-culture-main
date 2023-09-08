@@ -904,6 +904,83 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["price_category_id"] == [f"Le tarif avec l'id {price_category.id + 1} n'existe pas"]
 
+    def test_cannot_create_event_with_begining_datetome_more_than_360_days_in_future(self, client):
+        # Given
+        offer = offers_factories.EventOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        first_price_cat = offers_factories.PriceCategoryFactory(offer=offer, price=20)
+        beginning = datetime.datetime.utcnow() + datetime.timedelta(days=361)
+
+        # When
+        stock_data = {
+            "offerId": offer.id,
+            "stocks": [
+                {
+                    "priceCategoryId": first_price_cat.id,
+                    "beginningDatetime": serialize(beginning),
+                    "bookingLimitDatetime": serialize(beginning),
+                },
+            ],
+        }
+
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        assert response.status_code == 400
+        assert response.json == {
+            "stocks.0.beginningDatetime": [
+                "Beginning datetime must be less than 360 days in the future",
+                "Beginning datetime must be less than 360 days in the future",
+            ],
+            "stocks.0.id": ["Ce champ est obligatoire"],
+        }
+
+    def test_cannot_edit_event_stock_with_begining_datetime_more_than_360_days_in_future(self, client):
+        venue = offerers_factories.VenueFactory()
+        offer = offers_factories.EventOfferFactory(
+            isActive=False,
+            validation=OfferValidationStatus.DRAFT,
+            priceCategories=[],
+            venue=venue,
+        )
+        price_category = offers_factories.PriceCategoryFactory(offer=offer, priceCategoryLabel__venue=venue)
+        existing_stock = offers_factories.StockFactory(offer=offer, price=10, priceCategory=None)
+        existing_stock_2 = offers_factories.StockFactory(offer=offer, price=15, priceCategory=None)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        beginning = datetime.datetime.utcnow() + datetime.timedelta(days=10)
+
+        stock_data = {
+            "offerId": offer.id,
+            "stocks": [
+                {
+                    "id": existing_stock.id,
+                    "beginningDatetime": serialize(beginning),
+                    "bookingLimitDatetime": serialize(beginning),
+                    "priceCategoryId": price_category.id,
+                },
+                {
+                    "id": existing_stock_2.id,
+                    "beginningDatetime": serialize(beginning + datetime.timedelta(days=400)),
+                    "bookingLimitDatetime": serialize(beginning),
+                    "priceCategoryId": price_category.id,
+                },
+            ],
+        }
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+
+        assert response.status_code == 400
+        assert response.json == {
+            "stocks.1.beginningDatetime": [
+                "Beginning datetime must be less than 360 days in the future",
+                "Beginning datetime must be less than 360 days in the future",
+            ],
+            "stocks.1.id": ["Vous ne pouvez pas changer cette information"],
+        }
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
