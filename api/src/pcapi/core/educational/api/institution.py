@@ -174,6 +174,11 @@ def import_deposit_institution_data(
 
 
 def get_current_year_remaining_credit(institution: educational_models.EducationalInstitution) -> Decimal:
+    """Return the institution's remaining credit for the current year.
+    The computation stays the same whether the deposit is final or not:
+
+      current year deposit amount - sum of confirmed bookings amounts
+    """
     educational_year = educational_repository.find_educational_year_by_date(datetime.utcnow())
     assert educational_year is not None
 
@@ -186,7 +191,8 @@ def get_current_year_remaining_credit(institution: educational_models.Educationa
     spent_amount = educational_repository.get_confirmed_collective_bookings_amount(
         institution.id, educational_year.adageId
     )
-    return deposit.get_amount() - spent_amount
+
+    return deposit.amount - spent_amount
 
 
 def create_missing_educational_institution_from_adage(destination_uai: str) -> EducationalInstitution:

@@ -32,7 +32,7 @@ class EducationalInstitutionTest:
         assert response.json["postalCode"] == "75000"
         assert response.json["city"] == "PARIS"
         assert response.json["phoneNumber"] == "0600000000"
-        assert response.json["budget"] == deposit.get_amount()
+        assert response.json["budget"] == deposit.amount
 
     def test_current_deposit_is_used(self, client):
         year1 = _build_educational_year(relativedelta(years=2))
@@ -68,7 +68,7 @@ class EducationalInstitutionTest:
         response = test_client.get(url_for(self.endpoint))
 
         assert response.status_code == 200
-        assert response.json["budget"] == deposit.get_amount() - used_booking.collectiveStock.price
+        assert response.json["budget"] == deposit.amount - used_booking.collectiveStock.price
 
 
 def _build_educational_year(delta: relativedelta | None = None):
