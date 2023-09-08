@@ -9,7 +9,6 @@ import pytz
 from pcapi.core import search
 import pcapi.core.offers.models as offers_models
 from pcapi.core.search.backends import algolia
-from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils.blueprint import Blueprint
 
@@ -97,21 +96,14 @@ def full_index_offers(start, end):  # type: ignore [no-untyped-def]
             .order_by(offers_models.Offer.id)
         )
         if FeatureToggle.ALGOLIA_BOOKINGS_NUMBER_COMPUTATION.is_active():
-            last_30_days_bookings = {
-                row.offer_id: row.bookings_number
-                for row in db.session.execute(
-                    search.get_base_query_for_last_30_days_bookings().filter(
-                        offers_models.Offer.isActive.is_(True),
-                        offers_models.Offer.id.between(start, min(start + BATCH_SIZE, end)),
-                    )
-                ).all()
-            }
+            last_x_days_bookings = search.get_offers_with_last_x_days_bookings(offers)
+
         else:
-            last_30_days_bookings = {}
+            last_x_days_bookings = {}
 
         for offer in offers:
             if offer.is_eligible_for_search:
-                enqueue_or_index(queue, offer, last_30_days_bookings)
+                enqueue_or_index(queue, offer, last_x_days_bookings)
         elapsed_per_batch.append(int(time.perf_counter() - start_time))
         start = start + BATCH_SIZE
         eta = _get_eta(end, start, elapsed_per_batch)

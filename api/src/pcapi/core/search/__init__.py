@@ -1,4 +1,5 @@
 from collections.abc import Collection
+import dataclasses
 import datetime
 import logging
 from typing import Iterable
@@ -416,23 +417,70 @@ def get_base_query_for_offer_indexation() -> BaseQuery:
     )
 
 
-def get_base_query_for_last_30_days_bookings() -> BaseQuery:
-    return (
-        sa.select(
-            offers_models.Offer.id.label("offer_id"), sa.func.count(bookings_models.Booking.id).label("bookings_number")
-        )
-        .select_from(offers_models.Offer)
-        .join(offers_models.Offer.stocks)
+DEFAULT_DAYS_FOR_LAST_BOOKINGS = 30
+
+
+@dataclasses.dataclass
+class BookingsCount:
+    booking_count_by_offer_id: dict[int, int]
+    booking_count_by_ean: dict[str, int]
+
+
+def get_last_x_days_bookings_count(
+    offers: Iterable[offers_models.Offer], days: int = DEFAULT_DAYS_FOR_LAST_BOOKINGS, get_related_eans: bool = False
+) -> BookingsCount:
+    if not FeatureToggle.ALGOLIA_BOOKINGS_NUMBER_COMPUTATION.is_active():
+        return BookingsCount(booking_count_by_offer_id={}, booking_count_by_ean={})
+
+    eans = set()
+    for offer in offers:
+        ean = (offer.extraData or {}).get("ean")
+        if ean is not None:
+            eans.add(ean)
+
+    offer_booked_since_x_days = (
+        offers_models.Offer.query.join(offers_models.Offer.stocks)
+        .join(offers_models.Offer.product)
         .join(offers_models.Stock.bookings)
-        .where(
-            bookings_models.Booking.dateCreated >= datetime.datetime.utcnow() - datetime.timedelta(days=30),
+        .filter(
+            bookings_models.Booking.dateCreated >= datetime.datetime.utcnow() - datetime.timedelta(days=days),
             bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
+            offers_models.Offer.isActive.is_(True),
         )
+    )
+
+    booking_count_by_offer_id = {
+        row[0]: row[1]
+        for row in offer_booked_since_x_days.filter(offers_models.Offer.id.in_(offer.id for offer in offers))
         .group_by(offers_models.Offer.id)
+        .with_entities(offers_models.Offer.id, sa.func.count(bookings_models.Booking.id))
+    }
+
+    if get_related_eans:
+        booking_count_by_ean = {
+            row[0]: row[1]
+            for row in offer_booked_since_x_days.filter(offers_models.Offer.extraData["ean"].astext.in_(eans))
+            .group_by(offers_models.Offer.extraData["ean"])
+            .with_entities(offers_models.Offer.extraData["ean"], sa.func.count(bookings_models.Booking.id))
+        }
+
+    return BookingsCount(
+        booking_count_by_offer_id=booking_count_by_offer_id,
+        booking_count_by_ean=booking_count_by_ean if get_related_eans else {},
     )
 
 
-def reindex_offer_ids(offer_ids: Iterable[int]) -> None:
+def _get_offer_bookings_count(offer: offers_models.Offer, last_x_days_bookings_count: BookingsCount) -> int:
+    booking_count_by_offer_id = last_x_days_bookings_count.booking_count_by_offer_id
+    booking_count_by_ean = last_x_days_bookings_count.booking_count_by_ean
+
+    ean = (offer.extraData or {}).get("ean")
+    if ean is not None:
+        return booking_count_by_ean.get(ean, 0)
+    return booking_count_by_offer_id.get(offer.id, 0)
+
+
+def reindex_offer_ids(offer_ids: Iterable[int], use_national_booking_count: bool = False) -> None:
     """Given a list of `Offer.id`, reindex or unindex each offer
     (i.e. request the external indexation service an update or a
     removal).
@@ -445,20 +493,18 @@ def reindex_offer_ids(offer_ids: Iterable[int]) -> None:
 
     to_add = []
     to_delete_ids = []
-    offers = get_base_query_for_offer_indexation().filter(offers_models.Offer.id.in_(offer_ids))
 
-    last_30_days_bookings_query = get_base_query_for_last_30_days_bookings().filter(
-        offers_models.Offer.id.in_(offer_ids)
-    )
-    if FeatureToggle.ALGOLIA_BOOKINGS_NUMBER_COMPUTATION.is_active():
-        last_30_days_bookings = {
-            row.offer_id: row.bookings_number for row in db.session.execute(last_30_days_bookings_query).all()
-        }
-    else:
-        last_30_days_bookings = {}
+    # Yes, I choose to load all offers in memory.
+    # I think it's better, the default chunk size is 10_000, it is handleable
+    # This avoids to make a duplicated query to the database for the offers
+    offers = get_base_query_for_offer_indexation().filter(offers_models.Offer.id.in_(offer_ids)).all()
+
+    last_x_days_bookings_count = get_last_x_days_bookings_count(offers, get_related_eans=use_national_booking_count)
+    last_x_days_bookings_count_by_offer = {}
 
     for offer in offers:
         if offer and offer.is_eligible_for_search:
+            last_x_days_bookings_count_by_offer[offer.id] = _get_offer_bookings_count(offer, last_x_days_bookings_count)
             to_add.append(offer)
         elif backend.check_offer_is_indexed(offer):
             to_delete_ids.append(offer.id)
@@ -473,7 +519,7 @@ def reindex_offer_ids(offer_ids: Iterable[int]) -> None:
 
     # Handle new or updated available offers
     try:
-        backend.index_offers(to_add, last_30_days_bookings)
+        backend.index_offers(to_add, last_x_days_bookings_count_by_offer)
     except Exception as exc:  # pylint: disable=broad-except
         if settings.IS_RUNNING_TESTS:
             raise
