@@ -138,6 +138,7 @@ describe('screens:StocksThing', () => {
       subCategories: [{ id: 'CANBEDUO', canBeDuo: true } as OfferSubCategory],
       setOffer: () => {},
       setShouldTrack: () => {},
+      setSubcategory: () => {},
       shouldTrack: true,
       showVenuePopin: {},
     }

@@ -4,12 +4,14 @@ import {
   INDIVIDUAL_OFFER_SUBTYPE,
 } from 'core/Offers/constants'
 import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
-import { GetIndividualOfferFactory } from 'utils/apiFactories'
 
 import { filterCategories } from '..'
-import { getOfferSubtypeFromParamsOrOffer } from '../filterCategories'
+import {
+  getOfferSubtypeFromParam,
+  getCategoryStatusFromOfferSubtype,
+} from '../filterCategories'
 
-describe('getOfferSubtypeFromParamsOrOffer', () => {
+describe('getOfferSubtypeFromParam', () => {
   const cases = [
     INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT,
     INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD,
@@ -20,15 +22,51 @@ describe('getOfferSubtypeFromParamsOrOffer', () => {
   it.each(cases)(
     'should deduce the offer subtype %s from the query param',
     offerSubtype => {
-      expect(
-        getOfferSubtypeFromParamsOrOffer(
-          `offer-type=${offerSubtype}`,
-          // @ts-expect-error we need to fix the Offer types and factories by having only one type/factory
-          GetIndividualOfferFactory()
-        )
-      ).toBe(offerSubtype)
+      expect(getOfferSubtypeFromParam(offerSubtype)).toBe(offerSubtype)
     }
   )
+
+  it('should return null if the query param is not a valid offer subtype', () => {
+    expect(getOfferSubtypeFromParam('Not a valid offer subtype')).toBe(null)
+  })
+
+  it('should return null if the query param is null', () => {
+    expect(getOfferSubtypeFromParam(null)).toBe(null)
+  })
+})
+
+describe('getCategoryStatusFromOfferSubtype', () => {
+  const physicalCases = [
+    INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT,
+    INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD,
+  ]
+
+  it.each(physicalCases)(
+    'should return category offline for physical cases',
+    offerSubtype => {
+      expect(getCategoryStatusFromOfferSubtype(offerSubtype)).toBe(
+        CATEGORY_STATUS.OFFLINE
+      )
+    }
+  )
+  const virtualCases = [
+    INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT,
+    INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD,
+  ]
+
+  it.each(virtualCases)(
+    'should return category online for virtual cases',
+    offerSubtype => {
+      expect(getCategoryStatusFromOfferSubtype(offerSubtype)).toBe(
+        CATEGORY_STATUS.ONLINE
+      )
+    }
+  )
+  it('should return both category when subtype is not defined', () => {
+    expect(getCategoryStatusFromOfferSubtype(null)).toBe(
+      CATEGORY_STATUS.ONLINE_OR_OFFLINE
+    )
+  })
 })
 
 describe('filterCategories', () => {

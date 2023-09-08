@@ -88,6 +88,7 @@ describe('screens:StocksThing', () => {
       subCategories: [],
       setOffer: () => {},
       setShouldTrack: () => {},
+      setSubcategory: () => {},
       shouldTrack: true,
       showVenuePopin: {},
     }

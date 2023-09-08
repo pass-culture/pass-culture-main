@@ -7,6 +7,7 @@ import {
   FORM_DEFAULT_VALUES,
   OfferIndividualFormValues,
 } from 'components/OfferIndividualForm'
+import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
 import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
 import { OfferIndividualVenue } from 'core/Venue/types'
@@ -17,7 +18,7 @@ import { Banner, InfoBox, Select } from 'ui-kit'
 import styles from '../OfferIndividualForm.module.scss'
 import { onVenueChange } from '../UsefulInformations/Venue/Venue'
 import buildSubCategoryFields from '../utils/buildSubCategoryFields'
-import { getFilteredVenueList } from '../utils/getFilteredVenueList'
+import { getFilteredVenueListBySubcategory } from '../utils/getFilteredVenueList'
 
 import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from './constants'
 import { MusicTypes } from './MusicTypes'
@@ -63,16 +64,17 @@ const Categories = ({
     values: { categoryId, subCategoryFields, offererId },
     setFieldValue,
   } = useFormikContext<OfferIndividualFormValues>()
+  const { setSubcategory } = useOfferIndividualContext()
   const isBookingContactEnabled = useActiveFeature(
     'WIP_MANDATORY_BOOKING_CONTACT'
   )
   const categoryOptions = buildCategoryOptions(categories)
   const subcategoryOptions = buildSubcategoryOptions(subCategories, categoryId)
 
-  const onSubCategoryChange = (newSubCategory: string) => {
+  const onSubCategoryChange = (newSubCategoryId: string) => {
     const { subCategoryFields: newSubCategoryFields, isEvent } =
       buildSubCategoryFields(
-        newSubCategory,
+        newSubCategoryId,
         subCategories,
         isBookingContactEnabled
       )
@@ -80,7 +82,10 @@ const Categories = ({
     setFieldValue('isEvent', isEvent)
     setFieldValue(
       'isDuo',
-      Boolean(subCategories.find(s => s.id == newSubCategory)?.canBeDuo)
+      Boolean(subCategories.find(s => s.id == newSubCategoryId)?.canBeDuo)
+    )
+    setSubcategory(
+      subCategories.find(subcategory => subcategory.id === newSubCategoryId)
     )
     if (newSubCategoryFields === subCategoryFields) {
       return
@@ -100,15 +105,29 @@ const Categories = ({
       }
     })
 
-    const venues = getFilteredVenueList(
-      newSubCategory,
-      subCategories,
-      venueList
+    // If there is only one venue available for this subcategory, we select it automatically
+    const filteredVenueList = getFilteredVenueListBySubcategory(
+      venueList,
+      subCategories.find(subcategory => subcategory.id === newSubCategoryId)
     )
-    if (venues.length === 1) {
-      setFieldValue('venueId', venues[0].id)
-      onVenueChange(setFieldValue, venueList, venues[0].id.toString())
+    if (filteredVenueList.length === 1) {
+      setFieldValue('venueId', filteredVenueList[0].id.toString())
+      onVenueChange(
+        setFieldValue,
+        filteredVenueList,
+        filteredVenueList[0].id.toString()
+      )
+    } else if (filteredVenueList.length > 1) {
+      // If there are several venues available for this subcategory,
+      // we still need to update the isVenueVirtual field
+      // because it is used for form validation
+      setFieldValue(
+        'isVenueVirtual',
+        filteredVenueList.every(v => v.isVirtual)
+      )
     }
+    // If there is no venue no need to update the isVenueVirtual field,
+    // the form is not displayed
   }
 
   const onCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {

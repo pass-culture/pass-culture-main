@@ -2,25 +2,37 @@ import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { OfferSubCategory } from 'core/Offers/types'
 import { OfferIndividualVenue } from 'core/Venue/types'
 
-export const getFilteredVenueList = (
-  subcategoryId: string,
-  subCategories: OfferSubCategory[],
-  venueList: OfferIndividualVenue[]
+export const getFilteredVenueListBySubcategory = (
+  venueList: OfferIndividualVenue[],
+  subcategory?: OfferSubCategory
 ): OfferIndividualVenue[] => {
-  if (!subcategoryId) {
+  if (!subcategory) {
     return venueList
   }
 
-  const subCategory = subCategories.find(s => s.id === subcategoryId)
   if (
-    !subCategory ||
-    subCategory.onlineOfflinePlatform === CATEGORY_STATUS.ONLINE_OR_OFFLINE
+    subcategory?.onlineOfflinePlatform === CATEGORY_STATUS.ONLINE_OR_OFFLINE
   ) {
     return venueList
   }
 
   return venueList.filter(venue =>
-    subCategory.onlineOfflinePlatform === CATEGORY_STATUS.ONLINE
+    subcategory.onlineOfflinePlatform === CATEGORY_STATUS.ONLINE
+      ? venue.isVirtual
+      : !venue.isVirtual
+  )
+}
+
+export const getFilteredVenueListByCategoryStatus = (
+  venueList: OfferIndividualVenue[],
+  categoryStatus: CATEGORY_STATUS
+): OfferIndividualVenue[] => {
+  if (categoryStatus === CATEGORY_STATUS.ONLINE_OR_OFFLINE) {
+    return venueList
+  }
+
+  return venueList.filter(venue =>
+    categoryStatus === CATEGORY_STATUS.ONLINE
       ? venue.isVirtual
       : !venue.isVirtual
   )

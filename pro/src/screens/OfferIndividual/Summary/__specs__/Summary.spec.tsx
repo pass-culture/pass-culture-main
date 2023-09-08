@@ -57,6 +57,7 @@ const renderSummary = (
     subCategories: [],
     setOffer: () => {},
     setShouldTrack: () => {},
+    setSubcategory: () => {},
     shouldTrack: true,
     showVenuePopin: {},
     ...customContext,
