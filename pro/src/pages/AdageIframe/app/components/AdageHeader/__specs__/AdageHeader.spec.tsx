@@ -25,13 +25,27 @@ interface HeaderLinkProps {
 
 const renderAdageHeader = (
   hits: Hit<ResultType>[] = [],
-  user: AuthenticatedResponse
+  user: AuthenticatedResponse,
+  storeOverrides?: any
 ) => {
   renderWithProviders(
     <AdageUserContext.Provider value={{ adageUser: user }}>
       <AdageHeaderComponent hits={hits} />
-    </AdageUserContext.Provider>
+    </AdageUserContext.Provider>,
+    { storeOverrides }
   )
+}
+
+const isFavoritesActive = {
+  features: {
+    list: [
+      {
+        nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE',
+        isActive: true,
+      },
+    ],
+    initialized: true,
+  },
 }
 
 vi.mock('apiClient/api', () => ({
@@ -162,5 +176,25 @@ describe('AdageHeader', () => {
     expect(
       screen.queryByRole('link', { name: "Télécharger l'aide" })
     ).not.toBeInTheDocument()
+  })
+
+  it('should not display favorites tab if the feature flag is disabled', async () => {
+    vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
+
+    renderAdageHeader([], user)
+
+    expect(
+      screen.queryByRole('link', { name: /Mes Favoris/ })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should display favorites tab if the feature flag is enabled', async () => {
+    vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
+
+    renderAdageHeader([], user, isFavoritesActive)
+
+    expect(
+      screen.queryByRole('link', { name: /Mes Favoris/ })
+    ).toBeInTheDocument()
   })
 })
