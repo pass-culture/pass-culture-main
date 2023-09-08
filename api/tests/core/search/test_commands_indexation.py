@@ -1,3 +1,4 @@
+import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
@@ -33,6 +34,53 @@ def test_partially_index_offers(app):
         "partially_index_offers",
         "--batch-size", 1,
         "--last-page", 2,
+    )
+    # fmt: on
+
+    assert set(search_testing.search_store["offers"].keys()) == expected_to_be_reindexed
+
+
+@clean_database
+def test_reindex_offers_if_ean_booked_recently(app):
+    offer_with_ean = offers_factories.OfferFactory(extraData={"ean": "1234567890123"})
+    offer_with_no_ean = offers_factories.OfferFactory(extraData={})
+
+    bookings_factories.BookingFactory(stock=offers_factories.StockFactory(offer=offer_with_ean))
+    bookings_factories.BookingFactory(stock=offers_factories.StockFactory(offer=offer_with_no_ean))
+
+    expected_to_be_reindexed = {
+        offer_with_ean.id,
+    }
+
+    run_command(app, "reindex_offers_if_ean_booked_recently")
+
+    assert set(search_testing.search_store["offers"].keys()) == expected_to_be_reindexed
+
+
+@clean_database
+def test_reindex_offers_if_same_ean_booked_recently(app):
+    ean_1 = "1234567890123"
+    ean_2 = "9876543219876"
+    offer_with_ean = offers_factories.OfferFactory(extraData={"ean": ean_1})
+    offer_not_booked_with_same_ean_in_offer = offers_factories.OfferFactory(extraData={"ean": ean_1})
+    offer_with_different_ean = offers_factories.OfferFactory(extraData={"ean": ean_2})
+
+    # 2 offers are booked
+    bookings_factories.BookingFactory(stock=offers_factories.StockFactory(offer=offer_with_ean))
+
+    # The 3 other offers are not booked, but bookable : we add stocks
+    offers_factories.StockFactory(offer=offer_not_booked_with_same_ean_in_offer)
+    offers_factories.StockFactory(offer=offer_with_different_ean)
+
+    expected_to_be_reindexed = {
+        offer_with_ean.id,
+        offer_not_booked_with_same_ean_in_offer.id,
+    }
+
+    # fmt: off
+    run_command(
+        app,
+        "reindex_offers_if_ean_booked_recently",
     )
     # fmt: on
 
