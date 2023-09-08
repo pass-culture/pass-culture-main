@@ -14,8 +14,7 @@ def get_email_confirmation_email_data(
     user: users_models.User, token: token_utils.Token
 ) -> models.TransactionalEmailData:
     expiration_date = (
-        token.get_expiration_date(token_utils.TokenType.EMAIL_VALIDATION, user.id)
-        or datetime.utcnow() + constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME
+        token.get_expiration_date_from_token() or datetime.utcnow() + constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME
     )
     expiration_timestamp = int(expiration_date.timestamp())
     email_confirmation_link = generate_firebase_dynamic_link(
