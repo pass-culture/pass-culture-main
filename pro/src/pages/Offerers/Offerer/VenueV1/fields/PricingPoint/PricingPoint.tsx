@@ -6,6 +6,7 @@ import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { Venue } from 'core/Venue/types'
+import useActiveFeature from 'hooks/useActiveFeature'
 import fullLinkIcon from 'icons/full-link.svg'
 import strokeValidIcon from 'icons/stroke-valid.svg'
 import { ButtonLink } from 'ui-kit/Button'
@@ -35,6 +36,10 @@ const PricingPoint = ({
     useState(false)
   const [isBannerVisible, setIsBannerVisible] = useState(true)
   const [pricingPointSelectField] = useField({ name: 'venueSiret' })
+
+  const isNewBankDetailsJourneyEnable = useActiveFeature(
+    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
+  )
 
   useEffect(() => {
     setCanSubmit(!pricingPointSelectField.value)
@@ -70,11 +75,14 @@ const PricingPoint = ({
 
   return (
     <>
-      <div className="main-list-title">
-        <Title as="h3" className="sub-title" level={4}>
-          Barème de remboursement
-        </Title>
-      </div>
+      {!isNewBankDetailsJourneyEnable && (
+        <div className="main-list-title">
+          <Title as="h3" className="sub-title" level={4}>
+            Barème de remboursement
+          </Title>
+        </div>
+      )}
+
       {!readOnly && !venue.pricingPoint && isBannerVisible && (
         <Banner
           links={[
