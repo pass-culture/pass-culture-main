@@ -1347,6 +1347,7 @@ def test_public_api(client):
                         },
                         "identifier": {"title": "Identifier", "type": "string"},
                         "password": {"title": "Password", "type": "string"},
+                        "token": {"nullable": True, "title": "Token", "type": "string"},
                     },
                     "required": ["identifier", "password"],
                     "title": "SigninRequest",
@@ -3195,6 +3196,8 @@ def test_public_api(client):
                             },
                             "description": "OK",
                         },
+                        "400": {"description": "Bad Request"},
+                        "401": {"description": "Unauthorized"},
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {

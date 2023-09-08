@@ -15,6 +15,7 @@ from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain.password import check_password_strength
+from pcapi.models import api_errors
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.feature import FeatureToggle
@@ -41,11 +42,18 @@ logger = logging.getLogger(__name__)
 @spectree_serialize(
     response_model=authentication.SigninResponse,
     on_success_status=200,
+    on_error_statuses=[400, 401],
     api=blueprint.api,
 )
 @email_rate_limiter()
 @ip_rate_limiter()
 def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
+    # TODO(aliraiki, PC-24336): Make recaptcha token mandatory
+    if FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active() and body.token:
+        try:
+            api_recaptcha.check_native_app_recaptcha_token(body.token)
+        except (api_recaptcha.ReCaptchaException, api_recaptcha.InvalidRecaptchaTokenException):
+            raise api_errors.ApiErrors({"token": "Le token est invalide"}, 401)
     try:
         user = users_repo.get_user_with_credentials(body.identifier, body.password, allow_inactive=True)
     except users_exceptions.UnvalidatedAccount as exc:

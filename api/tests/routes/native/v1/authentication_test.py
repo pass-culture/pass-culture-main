@@ -19,6 +19,7 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.testing import override_features
+from pcapi.core.testing import override_settings
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
@@ -154,6 +155,53 @@ class SigninTest:
             "identifier": ["Ce champ est obligatoire"],
             "password": ["Ce champ est obligatoire"],
         }
+
+    @override_features(ENABLE_NATIVE_APP_RECAPTCHA=False)
+    @override_settings(RECAPTCHA_IGNORE_VALIDATION=0)
+    @patch("pcapi.connectors.api_recaptcha.get_token_validation_and_score")
+    def should_not_check_recaptcha_when_feature_flag_is_disabled(self, mocked_recaptcha_validation, client):
+        mocked_recaptcha_validation.return_value = {"success": False, "error-codes": []}
+        data = {
+            "identifier": "user@test.com",
+            "password": settings.TEST_DEFAULT_PASSWORD,
+            "token": "invalid_token",
+        }
+        users_factories.UserFactory(email=data["identifier"], password=data["password"])
+
+        response = client.post("/native/v1/signin", json=data)
+
+        assert response.status_code == 200
+
+    @override_settings(RECAPTCHA_IGNORE_VALIDATION=0)
+    @patch("pcapi.connectors.api_recaptcha.get_token_validation_and_score")
+    @pytest.mark.parametrize("error", ["invalid-input-response", "timeout-or-duplicate"])
+    def test_fail_when_recaptcha_token_is_invalid(self, mocked_recaptcha_validation, error, client):
+        mocked_recaptcha_validation.return_value = {"success": False, "error-codes": [error]}
+        data = {
+            "identifier": "user@test.com",
+            "password": settings.TEST_DEFAULT_PASSWORD,
+            "token": "invalid_token",
+        }
+        users_factories.UserFactory(email=data["identifier"], password=data["password"])
+
+        response = client.post("/native/v1/signin", json=data)
+
+        assert response.status_code == 401
+        assert response.json == {"token": "Le token est invalide"}
+
+    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
+    def test_success_when_recaptcha_token_is_valid(self, mocked_check_recaptcha_token_is_valid, client):
+        data = {
+            "identifier": "user@test.com",
+            "password": settings.TEST_DEFAULT_PASSWORD,
+            "token": "valid_token",
+        }
+        users_factories.UserFactory(email=data["identifier"], password=data["password"])
+
+        response = client.post("/native/v1/signin", json=data)
+
+        mocked_check_recaptcha_token_is_valid.assert_called()
+        assert response.status_code == 200
 
 
 class TrustedDeviceFeatureTest:
