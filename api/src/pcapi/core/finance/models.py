@@ -21,6 +21,7 @@ import sqlalchemy.orm as sqla_orm
 from pcapi import settings
 from pcapi.models import Base
 from pcapi.models import Model
+from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
 import pcapi.utils.db as db_utils
 
@@ -197,6 +198,14 @@ class BankInformationStatus(enum.Enum):
     ACCEPTED = "ACCEPTED"
 
 
+class BankAccountApplicationStatus(enum.Enum):
+    DRAFT = "en_construction"
+    ON_GOING = "en_instruction"
+    ACCEPTED = "accepte"
+    REFUSED = "refuse"
+    WITHOUT_CONTINUATION = "sans_suite"
+
+
 class BankInformation(PcObject, Base, Model):
     offererId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("offerer.id"), index=True, nullable=True, unique=True)
     offerer: sqla_orm.Mapped["offerers_models.Offerer | None"] = sqla_orm.relationship(
@@ -211,6 +220,22 @@ class BankInformation(PcObject, Base, Model):
     applicationId = sqla.Column(sqla.Integer, nullable=True, index=True, unique=True)
     status: BankInformationStatus = sqla.Column(sqla.Enum(BankInformationStatus), nullable=False)
     dateModified = sqla.Column(sqla.DateTime, nullable=True)
+
+
+class BankAccount(PcObject, Base, Model, DeactivableMixin):
+    label: str = sqla.Column(sqla.String(100), nullable=False)
+    offererId: int = sqla.Column(
+        sqla.BigInteger, sqla.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    offerer: sqla_orm.Mapped["offerers_models.Offerer"] = sqla_orm.relationship(
+        "Offerer", foreign_keys=[offererId], back_populates="bankAccounts"
+    )
+    iban: str = sqla.Column(sqla.String(27), nullable=False)
+    bic: str = sqla.Column(sqla.String(11), nullable=False)
+    dsApplicationId: int = sqla.Column(sqla.BigInteger, nullable=True, unique=True)
+    status: BankAccountApplicationStatus = sqla.Column(sqla.Enum(BankAccountApplicationStatus), nullable=False)
+    dateCreated: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
+    dateLastStatusUpdate: datetime.datetime = sqla.Column(sqla.DateTime)
 
 
 class FinanceEvent(Base, Model):
