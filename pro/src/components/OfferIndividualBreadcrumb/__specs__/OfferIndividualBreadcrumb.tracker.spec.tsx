@@ -36,6 +36,7 @@ const renderOfferIndividualBreadcrumb = (
     subCategories: [],
     setOffer: () => {},
     setShouldTrack: () => {},
+    setSubcategory: () => {},
     shouldTrack: true,
     showVenuePopin: {},
     ...contextOverride,

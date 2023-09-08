@@ -42,6 +42,7 @@ const renderOffer = (
     subCategories: [],
     setOffer: () => {},
     setShouldTrack: () => {},
+    setSubcategory: () => {},
     shouldTrack: true,
     showVenuePopin: {},
     ...contextOverride,

@@ -21,6 +21,8 @@ export interface OfferIndividualContextValues {
   setOffer: ((offer: OfferIndividual | null) => void) | null
   categories: OfferCategory[]
   subCategories: OfferSubCategory[]
+  subcategory?: OfferSubCategory
+  setSubcategory: (p?: OfferSubCategory) => void
   offererNames: OffererName[]
   venueList: OfferIndividualVenue[]
   shouldTrack: boolean
@@ -42,6 +44,7 @@ export const OfferIndividualContext =
     shouldTrack: true,
     setShouldTrack: () => {},
     showVenuePopin: {},
+    setSubcategory: () => {},
   })
 
 export const useOfferIndividualContext = () => {
@@ -53,6 +56,7 @@ interface OfferIndividualContextProviderProps {
   isUserAdmin: boolean
   offerId?: string
   queryOffererId?: string
+  querySubcategoryId?: string
 }
 
 export function OfferIndividualContextProvider({
@@ -60,6 +64,7 @@ export function OfferIndividualContextProvider({
   isUserAdmin,
   offerId,
   queryOffererId,
+  querySubcategoryId,
 }: OfferIndividualContextProviderProps) {
   const homePath = '/accueil'
   const notify = useNotification()
@@ -73,6 +78,7 @@ export function OfferIndividualContextProvider({
   const [offer, setOfferState] = useState<OfferIndividual | null>(null)
   const [categories, setCategories] = useState<OfferCategory[]>([])
   const [subCategories, setSubCategories] = useState<OfferSubCategory[]>([])
+  const [subcategory, setSubcategory] = useState<OfferSubCategory>()
   const [offererNames, setOffererNames] = useState<OffererName[]>([])
   const [venueList, setVenueList] = useState<OfferIndividualVenue[]>([])
   const [showVenuePopin, setShowVenuePopin] = useState<Record<string, boolean>>(
@@ -126,6 +132,11 @@ export function OfferIndividualContextProvider({
             !v.hasCreatedOffer && v.hasMissingReimbursementPoint
         })
         setShowVenuePopin(venuesPopinDisplaying)
+        setSubcategory(
+          response.payload.categoriesData.subCategories.find(
+            s => s.id === querySubcategoryId
+          )
+        )
       } else {
         setCategories([])
         setSubCategories([])
@@ -160,6 +171,8 @@ export function OfferIndividualContextProvider({
         venueId,
         offerOfferer,
         showVenuePopin: showVenuePopin,
+        subcategory,
+        setSubcategory,
       }}
     >
       {children}

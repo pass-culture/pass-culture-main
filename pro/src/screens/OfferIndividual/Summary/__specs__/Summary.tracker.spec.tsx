@@ -33,6 +33,7 @@ const defaultContext: OfferIndividualContextValues = {
   subCategories: [],
   setOffer: () => {},
   setShouldTrack: () => {},
+  setSubcategory: () => {},
   shouldTrack: true,
   showVenuePopin: {},
 }

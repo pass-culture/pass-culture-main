@@ -40,8 +40,6 @@ const getWizardData: GetOfferIndividualAdapter = async ({
   queryOffererId,
   isAdmin,
 }) => {
-  const offererId = isAdmin && offerer ? offerer.id : queryOffererId
-
   const successPayload: OfferWizardData = {
     offererNames: [],
     venueList: [],
@@ -66,21 +64,23 @@ const getWizardData: GetOfferIndividualAdapter = async ({
     return Promise.resolve(FAILING_RESPONSE)
   }
 
+  const offererId = isAdmin && offerer ? offerer.id : queryOffererId
+
+  // when calling with undefined offererId, we get all venues
   const venuesResponse = await getOfferIndividualVenuesAdapter({
-    offererId: offererId ? Number(offererId) : undefined,
+    offererId: isAdmin && offererId ? Number(offererId) : undefined,
   })
-  /* istanbul ignore next: DEBT, TO FIX */
+
   if (venuesResponse.isOk) {
     successPayload.venueList = venuesResponse.payload
   } else {
-    /* istanbul ignore next: DEBT, TO FIX */
     return Promise.resolve(FAILING_RESPONSE)
   }
 
   if (isAdmin && offerer) {
     successPayload.offererNames = [
       {
-        id: 1,
+        id: offerer.id,
         name: offerer.name,
       },
     ]
@@ -88,11 +88,9 @@ const getWizardData: GetOfferIndividualAdapter = async ({
     const offererResponse = await getOffererNamesAdapter({
       offererId: isAdmin ? Number(offererId) : undefined,
     })
-    /* istanbul ignore next: DEBT, TO FIX */
     if (offererResponse.isOk) {
       successPayload.offererNames = offererResponse.payload
     } else {
-      /* istanbul ignore next: DEBT, TO FIX */
       return Promise.resolve(FAILING_RESPONSE)
     }
   }

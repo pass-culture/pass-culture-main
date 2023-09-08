@@ -6,7 +6,6 @@ import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
 import {
-  FORM_DEFAULT_VALUES,
   OfferIndividualFormValues,
   OfferIndividualForm,
   setDefaultInitialFormValues,
@@ -14,6 +13,10 @@ import {
   setInitialFormValues,
   validationSchema,
 } from 'components/OfferIndividualForm'
+import {
+  getFilteredVenueListByCategoryStatus,
+  getFilteredVenueListBySubcategory,
+} from 'components/OfferIndividualForm/utils/getFilteredVenueList'
 import { RouteLeavingGuardOfferIndividual } from 'components/RouteLeavingGuardOfferIndividual'
 import { useOfferIndividualContext } from 'context/OfferIndividualContext'
 import {
@@ -47,7 +50,7 @@ import { filterCategories } from './utils'
 import { computeNextStep } from './utils/computeNextStep'
 import {
   getCategoryStatusFromOfferSubtype,
-  getOfferSubtypeFromParamsOrOffer,
+  getOfferSubtypeFromParam,
   isOfferSubtypeEvent,
 } from './utils/filterCategories/filterCategories'
 
@@ -86,26 +89,44 @@ const Informations = ({
   const [isSubmittingDraft, setIsSubmittingDraft] = useState<boolean>(false)
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
     useState<boolean>(false)
-  const { search } = useLocation()
-  const offerSubtype = getOfferSubtypeFromParamsOrOffer(search, offer)
-  const categoryStatus = getCategoryStatusFromOfferSubtype(offerSubtype)
-  const initialValues: OfferIndividualFormValues =
-    offer === null
-      ? setDefaultInitialFormValues(
-          FORM_DEFAULT_VALUES,
-          offererNames,
-          offererId,
-          venueId,
-          venueList
-        )
-      : setInitialFormValues(offer, subCategories, isBookingContactEnabled)
 
+  const queryParams = new URLSearchParams(location.search)
+  const querySubcategoryId = queryParams.get('sous-categorie')
+  const queryOfferType = queryParams.get('offer-type')
+  const querySubcategory = subCategories.find(
+    subcategory => subcategory.id === querySubcategoryId
+  )
+
+  // querySubcategoryId & queryOfferType are mutually exclusive
+  // but since it's on url, the user still could enter both
+  // if it happens, we don't filter subcategories
+  // so the user can always choose among all subcategories
+  const offerSubtype = getOfferSubtypeFromParam(
+    querySubcategoryId ? null : queryOfferType
+  )
+  const categoryStatus = getCategoryStatusFromOfferSubtype(offerSubtype)
   const [filteredCategories, filteredSubCategories] = filterCategories(
     categories,
     subCategories,
     categoryStatus,
     isOfferSubtypeEvent(offerSubtype)
   )
+
+  const filteredVenueList = querySubcategory
+    ? getFilteredVenueListBySubcategory(venueList, querySubcategory)
+    : getFilteredVenueListByCategoryStatus(venueList, categoryStatus)
+
+  // offer is null when we are creating a new offer
+  const initialValues: OfferIndividualFormValues =
+    offer === null
+      ? setDefaultInitialFormValues(
+          offererNames,
+          offererId,
+          venueId,
+          filteredVenueList,
+          querySubcategory
+        )
+      : setInitialFormValues(offer, subCategories, isBookingContactEnabled)
 
   const [isWithdrawalDialogOpen, setIsWithdrawalDialogOpen] =
     useState<boolean>(false)
@@ -124,7 +145,7 @@ const Informations = ({
       if (
         valueMeta &&
         valueMeta.touched &&
-        valueMeta.value != valueMeta.initialValue
+        valueMeta.value !== valueMeta.initialValue
       ) {
         return true
       }
@@ -204,7 +225,11 @@ const Informations = ({
     const nextStep = computeNextStep(
       mode,
       isSubmittingDraft,
-      Boolean(isOfferSubtypeEvent(offerSubtype))
+      Boolean(
+        subCategories.find(
+          subcategory => subcategory.id === formik.values.subcategoryId
+        )?.isEvent
+      )
     )
     if (isOk) {
       const receivedOfferId = payload.id
