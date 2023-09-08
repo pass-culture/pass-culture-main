@@ -73,7 +73,7 @@ def search_public_accounts() -> utils.BackofficeResponse:
     if not request.args:
         return render_search_template()
 
-    form = search_forms.SearchForm(request.args)
+    form = search_forms.AccountSearchForm(request.args)
     if not form.validate():
         return render_search_template(form), 400
 
