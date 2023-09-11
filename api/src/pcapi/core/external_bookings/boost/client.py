@@ -186,3 +186,11 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
 
     def get_movie_poster(self, image_url: str) -> bytes:
         return boost.get_movie_poster_from_api(image_url)
+
+    def get_cinemas_attributs(self) -> list[boost_serializers.CinemaAttribut]:
+        json_data = boost.get_resource(
+            self.cinema_str_id,
+            boost.ResourceBoost.CINEMAS_ATTRIBUTS,
+        )
+        attributs = parse_obj_as(boost_serializers.CinemaAttributCollection, json_data)
+        return attributs.data
