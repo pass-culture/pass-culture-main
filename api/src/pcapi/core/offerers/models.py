@@ -386,6 +386,10 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
         "VenueRegistration", back_populates="venue", uselist=False
     )
 
+    bankAccountLinks: sa_orm.Mapped["VenueBankAccountLink | None"] = relationship(
+        "VenueBankAccountLink", back_populates="venue"
+    )
+
     def _get_type_banner_url(self) -> str | None:
         elligible_banners: tuple[str, ...] = VENUE_TYPE_DEFAULT_BANNERS.get(self.venueTypeCode, tuple())
         try:
@@ -727,6 +731,34 @@ class VenueReimbursementPointLink(Base, Model):
         # A venue cannot be linked to multiple reimbursement points at
         # the same time.
         sa_psql.ExcludeConstraint(("venueId", "="), ("timespan", "&&")),
+    )
+
+    def __init__(self, **kwargs: typing.Any) -> None:
+        kwargs["timespan"] = db_utils.make_timerange(*kwargs["timespan"])
+        super().__init__(**kwargs)
+
+
+class VenueBankAccountLink(PcObject, Base, Model):
+    """
+    Professionnal users can link as many venues as they want to a given bank account.
+    However, we want to keep tracks of the history, hence that table.
+    """
+
+    venueId: int = Column(BigInteger, ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False)
+    venue: sa_orm.Mapped[Venue] = relationship("Venue", foreign_keys=[venueId], back_populates="bankAccountLinks")
+
+    bankAccountId: int = Column(
+        BigInteger, ForeignKey("bank_account.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    bankAccount: sa_orm.Mapped[finance_models.BankAccount] = relationship(
+        "BankAccount", foreign_keys=[bankAccountId], back_populates="venueLinks"
+    )
+
+    timespan: psycopg2.extras.DateTimeRange = Column(sa_psql.TSRANGE, nullable=False)
+
+    __table_args__ = (
+        # For a given venue, there can only be one bank account at a time.
+        sa_psql.ExcludeConstraint(("venueId", "="), ("bankAccountId", "="), ("timespan", "&&")),
     )
 
     def __init__(self, **kwargs: typing.Any) -> None:
