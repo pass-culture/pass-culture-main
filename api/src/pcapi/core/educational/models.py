@@ -1397,6 +1397,9 @@ class CollectiveOfferEducationalRedactor(PcObject, Base, Model):
 
     educationalRedactorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("educational_redactor.id"), nullable=False)
     collectiveOfferId: int = sa.Column(sa.BigInteger, sa.ForeignKey("collective_offer.id"), nullable=False)
+    collectiveOffer: sa_orm.Mapped["CollectiveOffer"] = sa.orm.relationship(
+        "CollectiveOffer", foreign_keys=[collectiveOfferId], viewonly=True
+    )
     __table_args__ = (UniqueConstraint("educationalRedactorId", "collectiveOfferId", name="unique_redactorId_offer"),)
 
 
@@ -1408,6 +1411,9 @@ class CollectiveOfferTemplateEducationalRedactor(PcObject, Base, Model):
     educationalRedactorId: int = sa.Column(sa.BigInteger, sa.ForeignKey("educational_redactor.id"), nullable=False)
     collectiveOfferTemplateId: int = sa.Column(
         sa.BigInteger, sa.ForeignKey("collective_offer_template.id"), nullable=False
+    )
+    collectiveOfferTemplate: sa_orm.Mapped["CollectiveOfferTemplate"] = sa.orm.relationship(
+        "CollectiveOfferTemplate", foreign_keys=[collectiveOfferTemplateId], viewonly=True
     )
     __table_args__ = (
         UniqueConstraint("educationalRedactorId", "collectiveOfferTemplateId", name="unique_redactorId_template"),

@@ -9,6 +9,7 @@ import type { RedactorPreferences } from './RedactorPreferences';
 export type AuthenticatedResponse = {
   departmentCode?: string | null;
   email?: string | null;
+  favoritesCount?: number;
   institutionCity?: string | null;
   institutionName?: string | null;
   lat?: number | null;
