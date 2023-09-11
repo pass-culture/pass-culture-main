@@ -87,7 +87,7 @@ def build_music_extra_data(article: TiteliveMusicArticle, genre: GenreTitelive |
         author=article.compositeur,
         comment=article.commentaire,
         date_parution=article.dateparution.isoformat() if article.dateparution else None,
-        disponibility=article.libelledispo,
+        dispo=article.dispo,
         distributeur=article.distributeur,
         ean=article.gencod,
         editeur=article.editeur,

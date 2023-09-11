@@ -44,7 +44,7 @@ class TiteliveArticle(BaseModel):
     gtl: TiteliveGtl | None
     image: str
     imagesUrl: TiteliveImage
-    libelledispo: str
+    dispo: str
     prix: decimal.Decimal
     resume: str | None
 
