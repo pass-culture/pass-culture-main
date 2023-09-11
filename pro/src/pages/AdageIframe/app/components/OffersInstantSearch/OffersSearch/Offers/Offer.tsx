@@ -36,6 +36,9 @@ export interface OfferProps {
   offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
   queryId: string
   position: number
+
+  //  TODO : call this function whenever the favorite status change
+  afterFavoriteChange?: (isFavorite: boolean) => void
 }
 
 const Offer = ({ offer, queryId, position }: OfferProps): JSX.Element => {

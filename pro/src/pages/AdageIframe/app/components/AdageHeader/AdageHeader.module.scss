@@ -2,21 +2,22 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.adage-header-container {
+.adage-header {
   display: flex;
   flex-direction: column;
-  margin-bottom: rem.torem(48px);
+  margin-bottom: rem.torem(32px);
 
-  .adage-header-help {
+  &-help {
     display: flex;
-    box-shadow: inset 0 5px 3px -3px rgb(0 0 0 / 25%);
+    box-shadow: inset 0 rem.torem(5px) rem.torem(3px) rem.torem(-3px)
+      rgb(0 0 0 / 25%);
     background-color: colors.$grey-light;
     justify-content: center;
     padding: rem.torem(16px) 0;
     gap: rem.torem(16px);
   }
 
-  .adage-header {
+  &-nav {
     display: flex;
     gap: rem.torem(10px);
     background: colors.$white;
@@ -30,7 +31,7 @@
       color: colors.$logo-purple;
     }
 
-    .adage-header-menu-budget {
+    &-menu-budget {
       @include fonts.caption;
 
       position: relative;

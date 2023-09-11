@@ -44,9 +44,9 @@ export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
   }, [adageUser.role])
 
   return (
-    <div className={styles['adage-header-container']}>
-      <nav className={styles['adage-header']}>
-        <div className={styles['adage-header-brand']}>
+    <div className={styles['adage-header']}>
+      <nav className={styles['adage-header-nav']}>
+        <div className={styles['adage-header-nav-brand']}>
           <SvgIcon
             src={logoPassCultureIcon}
             alt="Logo du pass Culture"
@@ -59,7 +59,7 @@ export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
           institutionsOfferCount={hits.length}
         ></AdageHeaderMenu>
         {!isLoading && (
-          <div className={styles['adage-header-menu-budget']}>
+          <div className={styles['adage-header-nav-menu-budget']}>
             <div className={styles['adage-header-separator']}></div>
             <div className={styles['adage-budget-text']}>
               Solde prévisionnel
