@@ -1,4 +1,6 @@
+from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational.api import favorites as educational_api_favorite
 from pcapi.core.educational.api.institution import get_educational_institution_department_code
 from pcapi.core.educational.exceptions import MissingRequiredRedactorInformation
 from pcapi.core.educational.repository import find_educational_institution_by_uai_code
@@ -14,6 +16,9 @@ from pcapi.routes.adage_iframe.serialization.redactor import RedactorPreferences
 from pcapi.serialization.decorator import spectree_serialize
 
 
+OptionalRedactor = educational_models.EducationalRedactor | None
+
+
 @blueprint.adage_iframe.route("/authenticate", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=AuthenticatedResponse)
 @adage_jwt_required
@@ -23,13 +28,9 @@ def authenticate(authenticated_information: AuthenticatedInformation) -> Authent
         department_code = get_educational_institution_department_code(institution) if institution else None
         institution_full_name = f"{institution.institutionType} {institution.name}".strip() if institution else None
 
-        try:
-            redactor_informations = get_redactor_information_from_adage_authentication(authenticated_information)
-        except MissingRequiredRedactorInformation:
-            preferences = None
-        else:
-            redactor = educational_repository.find_or_create_redactor(redactor_informations)
-            preferences = RedactorPreferences(**redactor.preferences)
+        redactor = _get_redactor(authenticated_information)
+        preferences = _get_preferences(redactor)
+        favorites_count = _get_favorites_count(redactor)
 
         return AuthenticatedResponse(
             role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
@@ -41,5 +42,26 @@ def authenticate(authenticated_information: AuthenticatedInformation) -> Authent
             preferences=preferences,
             lat=authenticated_information.lat,
             lon=authenticated_information.lon,
+            favoritesCount=favorites_count,
         )
     return AuthenticatedResponse(role=AdageFrontRoles.READONLY)
+
+
+def _get_redactor(authenticated_information: AuthenticatedInformation) -> OptionalRedactor:
+    try:
+        redactor_informations = get_redactor_information_from_adage_authentication(authenticated_information)
+    except MissingRequiredRedactorInformation:
+        return None
+    return educational_repository.find_or_create_redactor(redactor_informations)
+
+
+def _get_preferences(redactor: OptionalRedactor) -> RedactorPreferences | None:
+    if redactor:
+        return RedactorPreferences(**redactor.preferences)
+    return None
+
+
+def _get_favorites_count(redactor: OptionalRedactor) -> int:
+    if redactor:
+        return educational_api_favorite.get_redactor_all_favorites_count(redactor.id)
+    return 0

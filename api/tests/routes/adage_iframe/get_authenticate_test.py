@@ -2,10 +2,14 @@ import datetime
 from typing import ByteString
 from typing import Optional
 
+from flask import url_for
 import pytest
 
+from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
+from pcapi.core.educational.factories import CollectiveStockFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalRedactorFactory
+from pcapi.core.testing import assert_num_queries
 
 from tests.conftest import TestClient
 from tests.routes.adage_iframe.utils_create_test_token import DEFAULT_LAT
@@ -66,7 +70,25 @@ class AuthenticateTest:
             },
             "lat": DEFAULT_LAT,
             "lon": DEFAULT_LON,
+            "favoritesCount": 0,
         }
+
+    def test_favorites_count(self, client) -> None:
+        redactor = EducationalRedactorFactory(
+            favoriteCollectiveOffers=[CollectiveStockFactory().collectiveOffer],
+            favoriteCollectiveOfferTemplates=[CollectiveOfferTemplateFactory()],
+        )
+
+        client = client.with_adage_token(email=redactor.email, uai="someuai")
+
+        # fetch the institution
+        # fetch the redactor
+        # count the redactor's favorites (2 requests: offers and templates)
+        with assert_num_queries(4):
+            response = client.get(url_for("adage_iframe.authenticate"))
+
+        assert response.status_code == 200
+        assert response.json["favoritesCount"] == 2
 
     def test_preferences_are_correctly_serialized(self, client) -> None:
         educational_institution = EducationalInstitutionFactory()
@@ -103,6 +125,7 @@ class AuthenticateTest:
             "preferences": None,
             "lat": None,
             "lon": None,
+            "favoritesCount": 0,
         }
 
     valid_user = {

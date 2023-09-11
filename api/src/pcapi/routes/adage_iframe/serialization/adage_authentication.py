@@ -37,6 +37,7 @@ class AuthenticatedResponse(BaseModel):
     preferences: RedactorPreferences | None = None
     lat: float | None = None
     lon: float | None = None
+    favoritesCount: int = 0
 
     class Config:
         use_enum_values = True
