@@ -357,6 +357,34 @@ class OffererFirstUserPropertyTest:
 
         assert offerer.first_user == first.user
 
+    def test_first_user_when_only_user_is_rejected(self):
+        offerer = factories.OffererFactory()
+        factories.RejectedUserOffererFactory(offerer=offerer)
+
+        assert offerer.first_user is None
+
+    def test_first_user_when_only_user_is_deleted(self):
+        offerer = factories.OffererFactory()
+        factories.DeletedUserOffererFactory(offerer=offerer)
+
+        assert offerer.first_user is None
+
+    def test_first_user_when_first_user_is_rejected_and_other_users(self):
+        offerer = factories.OffererFactory()
+        rejected_user_offerer = factories.RejectedUserOffererFactory(offerer=offerer)
+        factories.UserOffererFactory.create_batch(3, offerer=offerer)
+
+        assert offerer.first_user is not None
+        assert offerer.first_user != rejected_user_offerer.user
+
+    def test_first_user_when_first_user_is_deleted_and_other_users(self):
+        offerer = factories.OffererFactory()
+        deleted_user_offerer = factories.DeletedUserOffererFactory(offerer=offerer)
+        factories.UserOffererFactory.create_batch(3, offerer=offerer)
+
+        assert offerer.first_user is not None
+        assert offerer.first_user != deleted_user_offerer.user
+
 
 class VenueDmsAdageStatusTest:
     def test_dms_adage_status_when_no_dms_application(self):
