@@ -134,6 +134,24 @@ describe('venues', () => {
         `/structures/${offererId}/lieux/${venueId}?modification#remboursement`
       )
     })
+
+    it('should not display add bank information when for the new bank details journey is enabled', () => {
+      // Given
+      props.hasMissingReimbursementPoint = true
+      props.hasCreatedOffer = true
+
+      // When
+      renderVenue(props, {
+        list: [
+          { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
+        ],
+      })
+
+      // Then
+      expect(
+        screen.queryByRole('link', { name: 'Ajouter un RIB' })
+      ).not.toBeInTheDocument()
+    })
   })
 
   it('should not display dms timeline link if venue has no dms application', async () => {
