@@ -8,7 +8,7 @@ import {
   AlgoliaQueryContextProvider,
   FiltersContextProvider,
 } from 'pages/AdageIframe/app/providers'
-import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import * as adagePcapi from 'pages/AdageIframe/repository/pcapi/pcapi'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -31,13 +31,13 @@ const renderOffersSearchComponent = (
   user: AuthenticatedResponse
 ) => {
   renderWithProviders(
-    <AdageUserContext.Provider value={{ adageUser: user }}>
+    <AdageUserContextProvider adageUser={user}>
       <FiltersContextProvider>
         <AlgoliaQueryContextProvider>
           <OldOffersSearchComponent {...props} />
         </AlgoliaQueryContextProvider>
       </FiltersContextProvider>
-    </AdageUserContext.Provider>
+    </AdageUserContextProvider>
   )
 }
 

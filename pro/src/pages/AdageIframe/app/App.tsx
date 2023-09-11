@@ -26,7 +26,7 @@ import {
   FacetFiltersContextProvider,
   FiltersContextProvider,
 } from './providers'
-import { AdageUserContext } from './providers/AdageUserContext'
+import { AdageUserContextProvider } from './providers/AdageUserContext'
 
 export const App = (): JSX.Element => {
   const [user, setUser] = useState<AuthenticatedResponse | null>()
@@ -102,7 +102,7 @@ export const App = (): JSX.Element => {
   }
 
   return (
-    <AdageUserContext.Provider value={{ adageUser: user }}>
+    <AdageUserContextProvider adageUser={user}>
       <FiltersContextProvider venueFilter={venueFilter}>
         <FacetFiltersContextProvider
           departmentCode={user?.departmentCode}
@@ -132,6 +132,6 @@ export const App = (): JSX.Element => {
           )}
         </FacetFiltersContextProvider>
       </FiltersContextProvider>
-    </AdageUserContext.Provider>
+    </AdageUserContextProvider>
   )
 }

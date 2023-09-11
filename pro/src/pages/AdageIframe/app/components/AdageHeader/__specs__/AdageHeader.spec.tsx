@@ -7,7 +7,7 @@ import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import { AdageHeaderLink } from 'apiClient/adage/models/AdageHeaderLink'
 import { apiAdage } from 'apiClient/api'
 import * as useNotification from 'hooks/useNotification'
-import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import {
   defaultAlgoliaHits,
   defaultEducationalInstitution,
@@ -29,9 +29,9 @@ const renderAdageHeader = (
   storeOverrides?: any
 ) => {
   renderWithProviders(
-    <AdageUserContext.Provider value={{ adageUser: user }}>
+    <AdageUserContextProvider adageUser={user}>
       <AdageHeaderComponent hits={hits} />
-    </AdageUserContext.Provider>,
+    </AdageUserContextProvider>,
     { storeOverrides }
   )
 }

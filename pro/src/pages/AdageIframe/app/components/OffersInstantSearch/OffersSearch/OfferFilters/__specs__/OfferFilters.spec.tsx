@@ -5,7 +5,7 @@ import React from 'react'
 
 import { AuthenticatedResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import * as pcapi from 'pages/AdageIframe/repository/pcapi/pcapi'
 import { defaultAdageUser } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -50,7 +50,7 @@ const renderOfferFilters = ({
   storeOverrides?: unknown
 }) =>
   renderWithProviders(
-    <AdageUserContext.Provider value={{ adageUser: adageUser }}>
+    <AdageUserContextProvider adageUser={adageUser}>
       <Formik initialValues={initialValues} onSubmit={handleSubmit}>
         <OfferFilters
           localisationFilterState={localisationFilterState}
@@ -58,7 +58,7 @@ const renderOfferFilters = ({
           resetForm={resetFormMock}
         />
       </Formik>
-    </AdageUserContext.Provider>,
+    </AdageUserContextProvider>,
     { storeOverrides: storeOverrides }
   )
 

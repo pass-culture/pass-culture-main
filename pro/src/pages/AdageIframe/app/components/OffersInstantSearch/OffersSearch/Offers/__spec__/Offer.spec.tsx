@@ -8,7 +8,7 @@ import {
   OfferAddressType,
   StudentLevels,
 } from 'apiClient/adage'
-import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { HydratedCollectiveOffer } from 'pages/AdageIframe/app/types/offers'
 import { defaultCollectiveTemplateOffer } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -54,9 +54,9 @@ const renderOffers = (
   featuresOverride?: { nameKey: string; isActive: boolean }[]
 ) => {
   renderWithProviders(
-    <AdageUserContext.Provider value={{ adageUser: user }}>
+    <AdageUserContextProvider adageUser={user}>
       <Offer {...props} />
-    </AdageUserContext.Provider>,
+    </AdageUserContextProvider>,
     {
       storeOverrides: {
         features: {
