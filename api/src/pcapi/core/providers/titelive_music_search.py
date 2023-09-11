@@ -92,11 +92,12 @@ def build_music_extra_data(article: TiteliveMusicArticle, genre: GenreTitelive |
         ean=article.gencod,
         editeur=article.editeur,
         gtl_id=gtl_id,
-        music_label=article.label,
         musicSubType=str(music_subtype.code),
         musicType=str(music_type.code),
+        music_label=article.label,
         nb_galettes=article.nb_galettes,
         performer=article.interprete,
+        prix_musique=str(article.prix),
     )
 
 
