@@ -662,7 +662,16 @@ def create_offerer(
     if offerer is not None:
         # The user can have his attachment rejected or deleted to the structure,
         # in this case it is passed to NEW if the structure is not rejected
-        user_offerer = offerers_models.UserOfferer.query.filter_by(userId=user.id, offererId=offerer.id).first()
+        user_offerer = (
+            offerers_models.UserOfferer.query.filter_by(userId=user.id, offererId=offerer.id)
+            .filter(
+                sa.or_(
+                    offerers_models.UserOfferer.validationStatus == ValidationStatus.REJECTED,
+                    offerers_models.UserOfferer.validationStatus == ValidationStatus.DELETED,
+                )
+            )
+            .first()
+        )
         if user_offerer:
             user_offerer.validationStatus = ValidationStatus.VALIDATED
         else:
@@ -1051,7 +1060,9 @@ def rm_previous_venue_thumbs(venue: models.Venue) -> None:
         return
 
     # handle old banner urls that did not have a timestamp
-    timestamp = get_timestamp_from_url(venue.bannerUrl) if "_" in venue.bannerUrl else ""  # type: ignore [arg-type, operator]
+    timestamp = (
+        get_timestamp_from_url(venue.bannerUrl) if "_" in venue.bannerUrl else ""
+    )  # type: ignore [arg-type, operator]
     storage.remove_thumb(venue, storage_id_suffix=str(timestamp), ignore_thumb_count=True)
 
     # some older venues might have a banner but not the original file

@@ -52,6 +52,7 @@ from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
+from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.models.validation_status_mixin import ValidationStatusMixin
 from pcapi.utils import crypto
 from pcapi.utils.date import METROPOLE_TIMEZONE
@@ -843,9 +844,17 @@ class Offerer(
     def first_user(self) -> "users_models.User | None":
         # Currently there is no way to mark a UserOfferer as the owner/creator, so we consider that this first user
         # is the oldest entry in the table. When creator leaves the offerer, next registered user becomes the "first".
+        # The relation being preserved during a rejection or deletion, we always keep an active user
         if not self.UserOfferers:
             return None
-        return self.UserOfferers[0].user
+        not_inactive_user_offerers = [
+            u
+            for u in self.UserOfferers
+            if u.validationStatus != ValidationStatus.REJECTED and u.validationStatus != ValidationStatus.DELETED
+        ]
+        if not not_inactive_user_offerers:
+            return None
+        return not_inactive_user_offerers[0].user
 
 
 class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):
