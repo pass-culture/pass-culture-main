@@ -9769,10 +9769,10 @@ ts-dedent@^2.0.0:
   resolved "https://registry.yarnpkg.com/ts-dedent/-/ts-dedent-2.2.0.tgz#39e4bd297cd036292ae2394eb3412be63f563bb5"
   integrity sha512-q5W7tVM71e2xjHZTlgfTDoPF/SmqKG5hddq9SzR49CH2hayqRKJtQ4mtRlSxKaJlR/+9rEM+mnBHf7I2/BQcpQ==
 
-ts-unused-exports@^9.0.5:
-  version "9.0.5"
-  resolved "https://registry.yarnpkg.com/ts-unused-exports/-/ts-unused-exports-9.0.5.tgz#b823577fd25c7cc08433c648a6db55685d02b7e8"
-  integrity sha512-1XAXaH2i4Al/aZO06pWDn9MUgTN0KQi+fvWudiWfHUTHAav45gzrx7Xq6JAsu6+LoMlVoyGvNvZSPW3KTjDncA==
+ts-unused-exports@^10.0.1:
+  version "10.0.1"
+  resolved "https://registry.yarnpkg.com/ts-unused-exports/-/ts-unused-exports-10.0.1.tgz#df7afc39ca7a8baa99f802ef89e95a62677635f1"
+  integrity sha512-nWG8Y96pKem01Hw4j4+Mwuy+L0/9sKT7D61Q+OS3cii9ocQACuV6lu00B9qpiPhF4ReVWw3QYHDqV8+to2wbsg==
   dependencies:
     chalk "^4.0.0"
     tsconfig-paths "^3.9.0"
