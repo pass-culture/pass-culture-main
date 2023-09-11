@@ -252,6 +252,8 @@ def format_validation_status(status: validation_status_mixin.ValidationStatus) -
             return "Validé"
         case validation_status_mixin.ValidationStatus.REJECTED:
             return "Rejeté"
+        case validation_status_mixin.ValidationStatus.DELETED:
+            return "Supprimé"
         case _:
             return status.value
 
