@@ -3,11 +3,7 @@ describe('Create an individual offer', () => {
     cy.login('pctest.admin93.0@example.com', 'user@AZERTY123')
 
     // Go to offer creation page
-    cy.intercept({ method: 'GET', url: '/offerers/*/eac-eligibility' }).as(
-      'getEacEligibility'
-    )
     cy.contains('Créer une offre').click()
-    cy.wait('@getEacEligibility')
 
     // Select an offer type
     cy.contains('Au grand public').click()
