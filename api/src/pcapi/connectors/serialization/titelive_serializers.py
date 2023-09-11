@@ -33,9 +33,8 @@ class TiteliveImage(BaseModel):
 class TiteliveArticle(BaseModel):
     codesupport: str
     commentaire: str | None
-    datemodification: datetime.date
     dateparution: datetime.date | None
-    distributeur: str
+    distributeur: str | None
     editeur: str
     if typing.TYPE_CHECKING:
         gencod: str
@@ -48,9 +47,6 @@ class TiteliveArticle(BaseModel):
     prix: decimal.Decimal
     resume: str | None
 
-    _convert_datemodification = pydantic_v1.validator("datemodification", pre=True, allow_reuse=True)(
-        date_utils.parse_french_date
-    )
     _convert_dateparution = pydantic_v1.validator("dateparution", pre=True, allow_reuse=True)(
         date_utils.parse_french_date
     )
@@ -63,10 +59,10 @@ class TiteliveArticle(BaseModel):
 
 
 class TiteliveMusicArticle(TiteliveArticle):
-    artiste: str
-    compositeur: str
-    interprete: str
-    label: str
+    artiste: str | None
+    compositeur: str | None
+    interprete: str | None
+    label: str | None
     nb_galettes: str
 
 

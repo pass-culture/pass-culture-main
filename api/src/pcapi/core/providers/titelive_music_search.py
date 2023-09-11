@@ -21,6 +21,13 @@ from .titelive_api import TiteliveSearch
 logger = logging.getLogger(__name__)
 
 
+class CommonMusicArticleFields(typing.TypedDict):
+    titre: str
+    genre: GenreTitelive | None
+    artiste: str | None
+    label: str | None
+
+
 class TiteliveMusicSearch(TiteliveSearch[TiteliveMusicOeuvre]):
     titelive_base = TiteliveBase.MUSIC
 
@@ -36,65 +43,101 @@ class TiteliveMusicSearch(TiteliveSearch[TiteliveMusicOeuvre]):
             oeuvre.article = [
                 article for article in oeuvre.article if is_music_codesupport_allowed(article.codesupport)
             ]
+        titelive_product_page.result = [oeuvre for oeuvre in titelive_product_page.result if oeuvre.article]
         return titelive_product_page
 
     def upsert_titelive_result_in_dict(
         self, titelive_search_result: TiteliveMusicOeuvre, products_by_ean: dict[str, offers_models.Product]
     ) -> dict[str, offers_models.Product]:
-        title = titelive_search_result.titre
-        genre_titelive = get_genre_titelive(titelive_search_result)
+        common_article_fields = get_common_article_fields(titelive_search_result)
         for article in titelive_search_result.article:
             ean = article.gencod
             product = products_by_ean.get(ean)
             if product is None:
-                products_by_ean[ean] = self.create_product(article, title, genre_titelive)
+                products_by_ean[ean] = self.create_product(article, common_article_fields)
             else:
-                products_by_ean[ean] = self.update_product(article, title, genre_titelive, product)
+                products_by_ean[ean] = self.update_product(article, common_article_fields, product)
 
         return products_by_ean
 
     def create_product(
-        self, article: TiteliveMusicArticle, title: str, genre: GenreTitelive | None
+        self, article: TiteliveMusicArticle, common_article_fields: CommonMusicArticleFields
     ) -> offers_models.Product:
         return offers_models.Product(
             description=article.resume,
-            extraData=build_music_extra_data(article, genre),
+            extraData=build_music_extra_data(article, common_article_fields),
             idAtProviders=article.gencod,
             lastProvider=self.provider,
-            name=title,
+            name=common_article_fields["titre"],
             subcategoryId=parse_titelive_music_codesupport(article.codesupport).id,
         )
 
     def update_product(
-        self, article: TiteliveMusicArticle, title: str, genre: GenreTitelive | None, product: offers_models.Product
+        self,
+        article: TiteliveMusicArticle,
+        common_article_fields: CommonMusicArticleFields,
+        product: offers_models.Product,
     ) -> offers_models.Product:
         product.description = article.resume
         if product.extraData is None:
             product.extraData = offers_models.OfferExtraData()
-        product.extraData.update(build_music_extra_data(article, genre))
+        product.extraData.update(build_music_extra_data(article, common_article_fields))
         product.idAtProviders = article.gencod
-        product.name = title
+        product.name = common_article_fields["titre"]
         product.subcategoryId = parse_titelive_music_codesupport(article.codesupport).id
 
         return product
 
 
-def get_genre_titelive(titelive_search_result: TiteliveMusicOeuvre) -> GenreTitelive | None:
-    titelive_gtl = next((article.gtl for article in titelive_search_result.article if article.gtl is not None), None)
-    if not titelive_gtl:
-        logger.warning("Genre Titelive not found for music %s", titelive_search_result.titre)
-        return None
+def get_common_article_fields(titelive_search_result: TiteliveMusicOeuvre) -> CommonMusicArticleFields:
+    titre = titelive_search_result.titre
+    titelive_gtl = None
+    artiste = None
+    label = None
+    for article in titelive_search_result.article:
+        if titelive_gtl is None and article.gtl is not None:
+            most_precise_genre = max(article.gtl.first.values(), key=lambda gtl: gtl.code)
+            titelive_gtl = most_precise_genre
 
-    most_precise_genre = max(titelive_gtl.first.values(), key=lambda g: g.code)
-    return most_precise_genre
+        if artiste is None and article.artiste is not None:
+            artiste = article.artiste
+
+        if label is None and article.label is not None:
+            label = article.label
+
+        if titelive_gtl is not None and artiste is not None and label is not None:
+            break
+
+    if titelive_gtl is None:
+        logger.warning(
+            "Genre not found for music %s, with EANs %s",
+            titre,
+            ", ".join(article.gencod for article in titelive_search_result.article),
+        )
+    if artiste is None:
+        logger.warning(
+            "Artist not found for music %s, with EANs %s",
+            titre,
+            ", ".join(article.gencod for article in titelive_search_result.article),
+        )
+    if label is None:
+        logger.warning(
+            "Label not found for music %s, with EANs %s",
+            titre,
+            ", ".join(article.gencod for article in titelive_search_result.article),
+        )
+
+    return CommonMusicArticleFields(titre=titre, genre=titelive_gtl, artiste=artiste, label=label)
 
 
-def build_music_extra_data(article: TiteliveMusicArticle, genre: GenreTitelive | None) -> offers_models.OfferExtraData:
-    gtl_id = genre.code if genre else None
+def build_music_extra_data(
+    article: TiteliveMusicArticle, common_article_fields: CommonMusicArticleFields
+) -> offers_models.OfferExtraData:
+    gtl_id = common_article_fields["genre"].code if common_article_fields["genre"] else None
     music_type, music_subtype = parse_titelive_music_genre(gtl_id)
 
     return offers_models.OfferExtraData(
-        artist=article.artiste,
+        artist=common_article_fields["artiste"],
         author=article.compositeur,
         comment=article.commentaire,
         date_parution=article.dateparution.isoformat() if article.dateparution else None,
@@ -105,7 +148,7 @@ def build_music_extra_data(article: TiteliveMusicArticle, genre: GenreTitelive |
         gtl_id=gtl_id,
         musicSubType=str(music_subtype.code),
         musicType=str(music_type.code),
-        music_label=article.label,
+        music_label=common_article_fields["label"],
         nb_galettes=article.nb_galettes,
         performer=article.interprete,
         prix_musique=str(article.prix),
