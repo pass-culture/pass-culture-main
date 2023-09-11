@@ -48,7 +48,10 @@ def get_all_offerers_for_user(
     query = models.Offerer.query.filter(models.Offerer.isActive.is_(True))
 
     if not user.has_admin_role:
-        user_offerer_filters = [models.UserOfferer.userId == user.id]
+        user_offerer_filters = [
+            models.UserOfferer.userId == user.id,
+            sqla.not_(models.UserOfferer.isRejected) & sqla.not_(models.UserOfferer.isDeleted),
+        ]
         if not include_non_validated_user_offerers:
             user_offerer_filters.append(models.UserOfferer.isValidated)
         query = query.join(models.Offerer.UserOfferers).filter(*user_offerer_filters)
