@@ -175,6 +175,13 @@ class VenueReimbursementPointLinkFactory(BaseFactory):
     )
 
 
+class VenueBankAccountLinkFactory(BaseFactory):
+    class Meta:
+        model = models.VenueBankAccountLink
+
+    timespan = factory.LazyFunction(lambda: [datetime.datetime.utcnow() - datetime.timedelta(days=365), None])
+
+
 class UserOffererFactory(BaseFactory):
     class Meta:
         model = models.UserOfferer

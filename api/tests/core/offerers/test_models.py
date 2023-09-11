@@ -495,3 +495,13 @@ class CurrentReimbursementPointTest:
         with assert_num_queries(0):
             assert venue_with_joinedload.current_reimbursement_point is not None
             assert venue_with_joinedload.current_reimbursement_point.name == "current"
+
+
+class VenueBankAccountLinkTest:
+    def test_venue_and_bank_account_cant_overlap(self):
+        venue = factories.VenueFactory()
+        bank_account = finance_factories.BankAccountFactory()
+
+        with pytest.raises(IntegrityError):
+            factories.VenueBankAccountLinkFactory(venueId=venue.id, bankAccountId=bank_account.id)
+            factories.VenueBankAccountLinkFactory(venueId=venue.id, bankAccountId=bank_account.id)

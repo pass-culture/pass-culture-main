@@ -40,6 +40,20 @@ class BankInformationFactory(BaseFactory):
     status = models.BankInformationStatus.ACCEPTED
 
 
+class BankAccountFactory(BaseFactory):
+    class Meta:
+        model = models.BankAccount
+
+    offerer = factory.SubFactory(offerers_factories.OffererFactory)
+    label = factory.Sequence(lambda n: f"Libellé des coordonnées bancaires n°{n}")
+    bic = "BDFEFRPP"
+    iban = factory.LazyAttributeSequence(
+        lambda o, n: schwifty.IBAN.generate("FR", bank_code="10010", account_code=f"{n:010}").compact
+    )
+    status = models.BankAccountApplicationStatus.ACCEPTED
+    dsApplicationId = factory.Sequence(lambda n: n)
+
+
 class _BaseFinanceEventFactory(BaseFactory):
     class Meta:
         model = models.FinanceEvent
