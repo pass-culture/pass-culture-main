@@ -4,6 +4,7 @@ from decimal import Decimal
 
 import pytest
 import pytz
+from sqlalchemy.exc import IntegrityError
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.finance import factories
@@ -142,3 +143,11 @@ class DepositSpecificCapsTest:
 
         assert specific_caps.DIGITAL_CAP == Decimal(200)
         assert specific_caps.PHYSICAL_CAP is None
+
+
+class BankAccountRulesTest:
+    def test_we_cant_have_the_two_bank_account_with_same_dsapplicationid(self):
+        factories.BankAccountFactory(dsApplicationId=42)
+
+        with pytest.raises(IntegrityError):
+            factories.BankAccountFactory(dsApplicationId=42)
