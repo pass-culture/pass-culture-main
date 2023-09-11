@@ -11,6 +11,7 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import strokeVenueIcon from 'icons/stroke-venue.svg'
+import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
@@ -27,6 +28,8 @@ export const AdageHeaderMenu = ({
 }: AdageHeaderMenuProps) => {
   const params = new URLSearchParams(location.search)
   const adageAuthToken = params.get('token')
+
+  const { favoriteCount } = useAdageUser()
 
   const areFavoritesActive = useActiveFeature('WIP_ENABLE_LIKE_IN_ADAGE')
 
@@ -97,7 +100,9 @@ export const AdageHeaderMenu = ({
                   className={styles['adage-header-item-icon']}
                 />
                 Mes Favoris
-                <div className={styles['adage-header-nb-hits']}>0</div>
+                <div className={styles['adage-header-nb-hits']}>
+                  {favoriteCount}
+                </div>
               </NavLink>
             </li>
           )}
