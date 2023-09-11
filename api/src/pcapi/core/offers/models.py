@@ -94,7 +94,7 @@ class OfferExtraData(typing.TypedDict, total=False):
     comment: str | None
     date_parution: str | None
     dewey: str | None
-    disponibility: str | None
+    dispo: str | None
     distributeur: str | None
     editeur: str | None
     music_label: str | None
