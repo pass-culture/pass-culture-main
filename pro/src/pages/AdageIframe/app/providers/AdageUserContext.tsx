@@ -4,15 +4,14 @@ import {
   SetStateAction,
   createContext,
   useEffect,
-  useMemo,
   useState,
 } from 'react'
 
 import { AuthenticatedResponse } from 'apiClient/adage'
 
 type AdageUserContextType = {
-  adageUser: (AuthenticatedResponse & { favoriteCount?: number }) | null
-  favoriteCount?: number
+  adageUser: AuthenticatedResponse | null
+  favoritesCount?: number
   setFavoriteCount?: Dispatch<SetStateAction<number>>
 }
 
@@ -27,23 +26,20 @@ export const AdageUserContextProvider = ({
   children: ReactNode
   adageUser: AdageUserContextType['adageUser']
 }): JSX.Element => {
-  const [favoriteCount, setFavoriteCount] = useState<number>(0)
+  const [favoritesCount, setFavoriteCount] = useState<number>(0)
 
   useEffect(() => {
-    setFavoriteCount(adageUser?.favoriteCount ?? 0)
+    setFavoriteCount(adageUser?.favoritesCount ?? 0)
   }, [adageUser])
 
-  const value = useMemo(
-    () => ({
-      adageUser,
-      favoriteCount,
-      setFavoriteCount,
-    }),
-    [adageUser, favoriteCount]
-  )
-
   return (
-    <AdageUserContext.Provider value={value}>
+    <AdageUserContext.Provider
+      value={{
+        adageUser,
+        favoritesCount,
+        setFavoriteCount,
+      }}
+    >
       {children}
     </AdageUserContext.Provider>
   )

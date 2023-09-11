@@ -197,4 +197,18 @@ describe('AdageHeader', () => {
       screen.queryByRole('link', { name: /Mes Favoris/ })
     ).toBeInTheDocument()
   })
+
+  it('should display the user favorite count after the favorite tab name', async () => {
+    vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
+
+    renderAdageHeader(
+      [],
+      { ...user, favoritesCount: 10 } as AuthenticatedResponse,
+      isFavoritesActive
+    )
+
+    expect(
+      screen.queryByRole('link', { name: /Mes Favoris (10)/ })
+    ).toBeInTheDocument()
+  })
 })

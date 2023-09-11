@@ -10,10 +10,10 @@
   justify-content: center;
   flex: 1;
 
-  & > li {
+  &-item {
     height: 100%;
 
-    .adage-header-item {
+    .adage-header-link {
       @include fonts.button;
 
       height: 100%;
