@@ -16,6 +16,9 @@ jobs:
     with:
       tag: ${{ github.sha }}
       tests: true
+      # Extra builds when tests are run on master before deployment on testing
+      pcapi: ${{ github.ref == 'refs/heads/master' }}
+      console: ${{ github.ref == 'refs/heads/master' }}
     secrets: inherit
 
   quality-checks:
