@@ -12,7 +12,6 @@ from pcapi.core.offers.api import deactivate_permanently_unavailable_products
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
-from pcapi.core.providers.titelive_gtl import get_gtl
 from pcapi.domain.titelive import get_date_from_filename
 from pcapi.domain.titelive import read_things_date
 from pcapi.local_providers.local_provider import LocalProvider
@@ -299,7 +298,9 @@ class TiteLiveThings(LocalProvider):
         return [providable_info]
 
     def get_ineligibility_reason(self) -> str | None:
-        gtl = get_gtl(self.product_infos[INFO_KEYS["GTL_ID"]])
+        gtl_id = self.product_infos[INFO_KEYS["GTL_ID"]].zfill(8)
+        gtl_level_01_code = gtl_id[:2]
+        gtl_level_02_code = gtl_id[2:4]
         title = self.product_infos.get(INFO_KEYS["TITRE"], "").lower()
 
         # Ouvrage avec pierres ou encens, jeux de société ou escape game en coffrets,
@@ -308,12 +309,12 @@ class TiteLiveThings(LocalProvider):
             return "vat-20"
 
         # ouvrage du rayon scolaire
-        if gtl and gtl["level_01_code"] == GTL_LEVEL_01_SCHOOL:
+        if gtl_level_01_code == GTL_LEVEL_01_SCHOOL:
             return "school"
 
         # ouvrage du rayon parascolaire,
         # code de la route (méthode d'apprentissage + codes basiques), code nautique, code aviation, etc...
-        if gtl and gtl["level_01_code"] == GTL_LEVEL_01_EXTRACURRICULAR:
+        if gtl_level_01_code == GTL_LEVEL_01_EXTRACURRICULAR:
             return "extracurricular"
 
         if self.product_infos[INFO_KEYS["CODE_SUPPORT"]] == CALENDAR_SUPPORT_CODE:
@@ -341,15 +342,10 @@ class TiteLiveThings(LocalProvider):
             return "pornography-or-violence"
 
         # Petite jeunesse (livres pour le bains, peluches, puzzles, etc...)
-        if (
-            gtl
-            and gtl["level_01_code"] == GTL_LEVEL_01_YOUNG
-            and gtl["level_02_code"]
-            in [
-                GTL_LEVEL_02_BEFORE_3,
-                GTL_LEVEL_02_AFTER_3_AND_BEFORE_6,
-            ]
-        ):
+        if gtl_level_01_code == GTL_LEVEL_01_YOUNG and gtl_level_02_code in [
+            GTL_LEVEL_02_BEFORE_3,
+            GTL_LEVEL_02_AFTER_3_AND_BEFORE_6,
+        ]:
             return "small-young"
 
         # Toeic or toefl

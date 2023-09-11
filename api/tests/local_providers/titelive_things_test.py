@@ -510,6 +510,50 @@ class TiteliveThingsTest:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
+    def test_should_reject_product_when_gtl_changes_to_extracurricular_related_product_and_unknown_gtl(
+        self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
+    ):
+        # Given
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
+
+        DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
+        DATA_LINE_PARTS[COLUMN_INDICES["genre_tite_live"]] = f"{GTL_LEVEL_01_EXTRACURRICULAR}666666"
+        data_line = "~".join(DATA_LINE_PARTS)
+        get_lines_from_thing_file.return_value = iter([data_line])
+
+        titelive_provider = providers_factories.TiteLiveThingsProviderFactory()
+        product = offers_factories.ProductFactory(
+            idAtProviders=EAN_TEST,
+            dateModifiedAtLastProvider=datetime(2001, 1, 1),
+            lastProviderId=titelive_provider.id,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            extraData={
+                "ean": EAN_TEST,
+            },
+        )
+        offer = offers_factories.OfferFactory(product=product)
+        users_factories.FavoriteFactory(offer=offer)
+
+        assert product.isGcuCompatible is True
+        assert users_models.Favorite.query.count() == 1
+        assert offer.validation != offers_models.OfferValidationStatus.REJECTED
+
+        titelive_things = TiteLiveThings()
+
+        # When
+        titelive_things.updateObjects()
+
+        # Then
+        product = offers_models.Product.query.one()
+        offer = offers_models.Offer.query.one()
+        assert product.isGcuCompatible is False
+        assert users_models.Favorite.query.count() == 0
+        assert offer.validation == offers_models.OfferValidationStatus.REJECTED
+        assert offer.lastValidationType == offer_mixin.OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
+
+    @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
     def test_should_reject_product_when_non_valid_product_type(
         self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
     ):
