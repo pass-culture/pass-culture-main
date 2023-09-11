@@ -5,7 +5,7 @@ import {
   AlgoliaQueryContextProvider,
   FiltersContextProvider,
 } from 'pages/AdageIframe/app/providers'
-import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { defaultAdageUser } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -55,13 +55,13 @@ vi.mock('pages/AdageIframe/repository/pcapi/pcapi', () => ({
 
 const renderAppLayout = (initialRoute = '/') => {
   renderWithProviders(
-    <AdageUserContext.Provider value={{ adageUser: defaultAdageUser }}>
+    <AdageUserContextProvider adageUser={defaultAdageUser}>
       <FiltersContextProvider>
         <AlgoliaQueryContextProvider>
           <AppLayout removeVenueFilter={vi.fn()} venueFilter={null} />
         </AlgoliaQueryContextProvider>
       </FiltersContextProvider>
-    </AdageUserContext.Provider>,
+    </AdageUserContextProvider>,
 
     { initialRouterEntries: [initialRoute] }
   )

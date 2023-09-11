@@ -2,7 +2,7 @@ import React from 'react'
 import { Configure } from 'react-instantsearch-dom'
 
 import { AlgoliaQueryContextProvider } from 'pages/AdageIframe/app/providers'
-import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { defaultAdageUser } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -42,14 +42,14 @@ vi.mock('react-instantsearch-dom', async () => {
 
 const renderOffersForMyInstitution = () => {
   renderWithProviders(
-    <AdageUserContext.Provider value={{ adageUser: defaultAdageUser }}>
+    <AdageUserContextProvider adageUser={defaultAdageUser}>
       <AlgoliaQueryContextProvider>
         <OffersForMyInstitution
           removeVenueFilter={() => {}}
           venueFilter={null}
         />
       </AlgoliaQueryContextProvider>
-    </AdageUserContext.Provider>
+    </AdageUserContextProvider>
   )
 }
 

@@ -21,7 +21,7 @@ import {
   AlgoliaQueryContextProvider,
   FacetFiltersContextProvider,
 } from 'pages/AdageIframe/app/providers'
-import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { renderWithProviders } from 'utils/renderWithProviders'
 import { ResultType } from 'utils/types'
 
@@ -74,11 +74,7 @@ const renderOffers = (
   storeOverrides = {}
 ) => {
   return renderWithProviders(
-    <AdageUserContext.Provider
-      value={{
-        adageUser: adageUser,
-      }}
-    >
+    <AdageUserContextProvider adageUser={adageUser}>
       <AlgoliaQueryContextProvider>
         <FacetFiltersContextProvider>
           <Formik onSubmit={() => {}} initialValues={{}}>
@@ -86,7 +82,7 @@ const renderOffers = (
           </Formik>
         </FacetFiltersContextProvider>
       </AlgoliaQueryContextProvider>
-    </AdageUserContext.Provider>,
+    </AdageUserContextProvider>,
     {
       storeOverrides,
     }
@@ -296,13 +292,9 @@ describe('offers', () => {
     // When
     offersProps = { ...offersProps, hits: [otherSearchResult] }
     rerender(
-      <AdageUserContext.Provider
-        value={{
-          adageUser,
-        }}
-      >
+      <AdageUserContextProvider adageUser={adageUser}>
         <OffersComponent {...offersProps} />
-      </AdageUserContext.Provider>
+      </AdageUserContextProvider>
     )
 
     // Then
@@ -347,13 +339,9 @@ describe('offers', () => {
     // When
     offersProps = { ...offersProps, hits: [otherSearchResult] }
     rerender(
-      <AdageUserContext.Provider
-        value={{
-          adageUser,
-        }}
-      >
+      <AdageUserContextProvider adageUser={adageUser}>
         <OffersComponent {...offersProps} />
-      </AdageUserContext.Provider>
+      </AdageUserContextProvider>
     )
 
     // Then
