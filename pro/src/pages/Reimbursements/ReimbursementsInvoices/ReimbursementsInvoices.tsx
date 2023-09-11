@@ -3,7 +3,9 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { api } from 'apiClient/api'
 import { InvoiceResponseModel } from 'apiClient/v1'
+import { BannerReimbursementsInfo } from 'components/Banner'
 import { SelectOption } from 'custom_types/form'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useCurrentUser from 'hooks/useCurrentUser'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
 import { Button } from 'ui-kit'
@@ -23,6 +25,9 @@ import { InvoiceTable } from './InvoiceTable'
 import NoInvoicesYet from './NoInvoicesYet'
 
 const ReimbursementsInvoices = (): JSX.Element => {
+  const isNewBankDetailsJourneyEnable = useActiveFeature(
+    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
+  )
   const ALL_REIMBURSEMENT_POINT_OPTION_ID = 'all'
   const { currentUser } = useCurrentUser()
   const INITIAL_FILTERS = useMemo(() => {
@@ -154,6 +159,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
   if (reimbursementPointsOptions.length === 0) {
     return (
       <div className="no-refunds">
+        {isNewBankDetailsJourneyEnable && <BannerReimbursementsInfo />}
         <SvgIcon
           src={strokeNoBookingIcon}
           alt=""
@@ -167,6 +173,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
   }
   return (
     <>
+      {isNewBankDetailsJourneyEnable && <BannerReimbursementsInfo />}
       <InvoicesFilters
         areFiltersDefault={areFiltersDefault}
         filters={filters}
