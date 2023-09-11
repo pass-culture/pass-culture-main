@@ -101,6 +101,7 @@ class OfferExtraData(typing.TypedDict, total=False):
     nb_galettes: str | None
     num_in_collection: str | None
     prix_livre: str | None
+    prix_musique: str | None
     rayon: str | None  # this is csr_label, it should be stored as csr_id as titelive can update them
     top: str | None
     schoolbook: bool | None

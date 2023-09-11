@@ -69,6 +69,7 @@ class TiteliveSearchTest:
         assert cd_product.extraData["music_label"] == "PLAY TWO"
         assert cd_product.extraData["nb_galettes"] == "1"
         assert cd_product.extraData["performer"] == "Gims"
+        assert cd_product.extraData["prix_musique"] == "14.99"
         assert cd_product.extraData["musicType"] == str(
             music_types.MUSIC_TYPES_BY_SLUG["HIP_HOP_RAP-RAP_FRANCAIS"].code
         )
@@ -97,6 +98,7 @@ class TiteliveSearchTest:
         assert shared_gtl_product.extraData["music_label"] == "PLAY TWO"
         assert shared_gtl_product.extraData["nb_galettes"] == "1"
         assert shared_gtl_product.extraData["performer"] == "Gims"
+        assert shared_gtl_product.extraData["prix_musique"] == "14.99"
         assert shared_gtl_product.extraData["musicType"] == str(
             music_types.MUSIC_TYPES_BY_SLUG["HIP_HOP_RAP-RAP_FRANCAIS"].code
         )
@@ -125,6 +127,7 @@ class TiteliveSearchTest:
         assert vinyle_product.extraData["music_label"] == "WARNER MUSIC UK"
         assert vinyle_product.extraData["nb_galettes"] == "1"
         assert vinyle_product.extraData["performer"] == "Gorillaz"
+        assert vinyle_product.extraData["prix_musique"] == "19.98"
         assert vinyle_product.extraData["musicType"] == str(music_types.MUSIC_TYPES_BY_SLUG["POP-BRITPOP"].code)
         assert vinyle_product.extraData["musicSubType"] == str(music_types.MUSIC_SUB_TYPES_BY_SLUG["POP-BRITPOP"].code)
 
