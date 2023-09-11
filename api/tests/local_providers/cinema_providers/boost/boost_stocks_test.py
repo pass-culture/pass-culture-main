@@ -41,6 +41,10 @@ class BoostStocksTest:
         BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
 
         requests_mock.get(
+            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
+        )
+
+        requests_mock.get(
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.PAGE_1_JSON_DATA,
         )
@@ -89,6 +93,9 @@ class BoostStocksTest:
         )
         BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
 
+        requests_mock.get(
+            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
+        )
         requests_mock.get(
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.PAGE_1_JSON_DATA,
@@ -144,7 +151,7 @@ class BoostStocksTest:
         assert created_stocks[0].offer == created_offers[0]
         assert created_stocks[0].bookingLimitDatetime == datetime.datetime(2022, 11, 28, 8)
         assert created_stocks[0].beginningDatetime == datetime.datetime(2022, 11, 28, 8)
-        assert created_stocks[0].features == ["VF"]
+        assert created_stocks[0].features == ["VF", "ICE"]
 
         assert created_offers[1].name == "CHARLOTTE"
         assert created_offers[1].product == created_products[1]
@@ -185,6 +192,10 @@ class BoostStocksTest:
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+
+        requests_mock.get(
+            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
+        )
 
         requests_mock.get(
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
@@ -260,6 +271,10 @@ class BoostStocksTest:
         BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
 
         requests_mock.get(
+            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
+        )
+
+        requests_mock.get(
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
         )
@@ -283,6 +298,10 @@ class BoostStocksTest:
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+
+        requests_mock.get(
+            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
+        )
 
         requests_mock.get(
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
@@ -310,6 +329,10 @@ class BoostStocksTest:
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+
+        requests_mock.get(
+            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
+        )
 
         requests_mock.get(
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
@@ -353,6 +376,9 @@ class BoostStocksTest:
         )
         BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
         requests_mock.get(
+            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
+        )
+        requests_mock.get(
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
         )
@@ -388,6 +414,9 @@ class BoostStocksTest:
             venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
         )
         BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+        requests_mock.get(
+            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
+        )
         requests_mock.get(
             f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,

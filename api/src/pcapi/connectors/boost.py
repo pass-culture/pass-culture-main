@@ -45,6 +45,7 @@ class ResourceBoost(enum.Enum):
     SHOWTIME = "api/showtimes/{id}"
     COMPLETE_SALE = "api/sale/complete"
     CANCEL_ORDER_SALE = "api/sale/orderCancel"
+    CINEMAS_ATTRIBUTS = "api/cinemas/attributs"
 
 
 LOGIN_ENDPOINT = "api/vendors/login"

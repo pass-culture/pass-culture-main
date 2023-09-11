@@ -82,6 +82,7 @@ class ShowTime(BaseModel):
     version: dict
     screen: dict
     showtimePricing: list[ShowtimePricing]
+    attributs: list[int]
 
     @pydantic_v1.validator("showDate", "showEndDate")
     def normalize_datetime(cls, value: datetime.datetime) -> datetime.datetime:
@@ -138,3 +139,12 @@ class SaleCancelItem(BaseModel):
 
 class SaleCancel(BaseModel):
     sales: list[SaleCancelItem]
+
+
+class CinemaAttribut(BaseModel):
+    id: int
+    title: str
+
+
+class CinemaAttributCollection(BaseModel):
+    data: list[CinemaAttribut]

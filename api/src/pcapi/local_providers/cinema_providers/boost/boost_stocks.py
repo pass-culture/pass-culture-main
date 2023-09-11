@@ -24,6 +24,8 @@ ACCEPTED_VERSIONS_MAPPING = {
 
 ACCEPTED_FORMATS_MAPPING = {"3D": ShowtimeFeatures.THREE_D.value}
 
+CINEMA_ATTRIBUT_WORDING = {ShowtimeFeatures.ICE: "ICE Immersive"}
+
 
 class BoostStocks(LocalProvider):
     name = "Boost"
@@ -34,6 +36,7 @@ class BoostStocks(LocalProvider):
         self.venue = venue_provider.venue
         self.cinema_id = venue_provider.venueIdAtOfferProvider
         self.isDuo = venue_provider.isDuoOffers if venue_provider.isDuoOffers else False
+        self.ice_attribut: int | None = self._get_cinema_attribut(CINEMA_ATTRIBUT_WORDING[ShowtimeFeatures.ICE])
         self.showtimes: Iterator[boost_serializers.ShowTime4] = iter(self._get_showtimes())
         self.price_category_labels: list[
             offers_models.PriceCategoryLabel
@@ -135,6 +138,9 @@ class BoostStocks(LocalProvider):
         )
         if self.showtime_details.format["title"] in ACCEPTED_FORMATS_MAPPING:
             features.append(ACCEPTED_FORMATS_MAPPING.get(self.showtime_details.format["title"]))
+
+        if self.ice_attribut in self.showtime_details.attributs:
+            features.append(ShowtimeFeatures.ICE.value)
         stock.features = features
 
         if "price" not in stock.fieldsUpdated:
@@ -206,6 +212,13 @@ class BoostStocks(LocalProvider):
     def _get_boost_movie_poster(self, image_url: str) -> bytes:
         client_boost = BoostClientAPI(self.cinema_id)
         return client_boost.get_movie_poster(image_url)
+
+    def _get_cinema_attribut(self, attribut: str) -> int | None:
+        client_boost = BoostClientAPI(self.cinema_id)
+        attributs: dict[str, boost_serializers.CinemaAttribut] = client_boost.get_cinemas_attributs()
+        if attributs.get(attribut):
+            return attributs[attribut].id
+        return None
 
 
 def _find_showtimes_by_movie_id(showtimes_information: list[dict], movie_id: int) -> list[dict]:
