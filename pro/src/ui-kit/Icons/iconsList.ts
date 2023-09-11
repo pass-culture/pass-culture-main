@@ -48,6 +48,7 @@ import strokeAccessibilityEarIcon from 'icons/stroke-accessibility-ear.svg'
 import strokeAccessibilityEyeIcon from 'icons/stroke-accessibility-eye.svg'
 import strokeAccessibilityLegIcon from 'icons/stroke-accessibility-leg.svg'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
+import strokeBookmarkIcon from 'icons/stroke-bookmark.svg'
 import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeCalendarIcon from 'icons/stroke-calendar.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'
@@ -215,6 +216,7 @@ export const strokeIcons: IconListItem[] = [
   { src: strokePassIcon },
   { src: strokeLibraryIcon },
   { src: strokeVenueIcon },
+  { src: strokeBookmarkIcon },
   { src: strokeWipIcon, viewBox: '0 0 200 156' }, // TODO standardize viewbox
   { src: strokeNoBookingIcon, viewBox: '0 0 200 156' }, // TODO standardize viewbox
   { src: stroke404Icon, viewBox: '0 0 308 194' }, // TODO standardize viewbox

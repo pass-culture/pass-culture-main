@@ -9,6 +9,7 @@ import {
 import { apiAdage } from 'apiClient/api'
 import useActiveFeature from 'hooks/useActiveFeature'
 import strokeBookedIcon from 'icons/stroke-booked.svg'
+import strokeBookmarkIcon from 'icons/stroke-bookmark.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import strokeVenueIcon from 'icons/stroke-venue.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
@@ -29,7 +30,7 @@ export const AdageHeaderMenu = ({
   const params = new URLSearchParams(location.search)
   const adageAuthToken = params.get('token')
 
-  const { favoriteCount } = useAdageUser()
+  const { favoritesCount } = useAdageUser()
 
   const areFavoritesActive = useActiveFeature('WIP_ENABLE_LIKE_IN_ADAGE')
 
@@ -44,13 +45,13 @@ export const AdageHeaderMenu = ({
     <ul className={styles['adage-header-menu']}>
       {adageUser.role !== AdageFrontRoles.READONLY && (
         <>
-          <li>
+          <li className={styles['adage-header-menu-item']}>
             <NavLink
               to={`/adage-iframe?token=${adageAuthToken}`}
               end
               className={({ isActive }) => {
-                return cn(styles['adage-header-item'], {
-                  [styles['adage-header-item-active']]: isActive,
+                return cn(styles['adage-header-link'], {
+                  [styles['adage-header-link-active']]: isActive,
                 })
               }}
               onClick={() => logAdageLinkClick(AdageHeaderLink.SEARCH)}
@@ -59,12 +60,12 @@ export const AdageHeaderMenu = ({
               Rechercher
             </NavLink>
           </li>
-          <li>
+          <li className={styles['adage-header-menu-item']}>
             <NavLink
               to={`/adage-iframe/mon-etablissement?token=${adageAuthToken}`}
               className={({ isActive }) => {
-                return cn(styles['adage-header-item'], {
-                  [styles['adage-header-item-active']]: isActive,
+                return cn(styles['adage-header-link'], {
+                  [styles['adage-header-link-active']]: isActive,
                 })
               }}
               onClick={() =>
@@ -74,7 +75,7 @@ export const AdageHeaderMenu = ({
               <SvgIcon
                 src={strokeVenueIcon}
                 alt=""
-                className={styles['adage-header-item-icon']}
+                className={styles['adage-header-link-icon']}
               />
               Pour mon établissement
               <div className={styles['adage-header-nb-hits']}>
@@ -84,40 +85,40 @@ export const AdageHeaderMenu = ({
           </li>
 
           {areFavoritesActive && (
-            <li>
+            <li className={styles['adage-header-menu-item']}>
               <NavLink
                 to={`/adage-iframe/mes-favoris?token=${adageAuthToken}`}
                 className={({ isActive }) => {
-                  return cn(styles['adage-header-item'], {
-                    [styles['adage-header-item-active']]: isActive,
+                  return cn(styles['adage-header-link'], {
+                    [styles['adage-header-link-active']]: isActive,
                   })
                 }}
                 onClick={() => logAdageLinkClick(AdageHeaderLink.MY_FAVORITES)}
               >
                 <SvgIcon
-                  src={strokeVenueIcon}
+                  src={strokeBookmarkIcon}
                   alt=""
-                  className={styles['adage-header-item-icon']}
+                  className={styles['adage-header-link-icon']}
                 />
                 Mes Favoris
                 <div className={styles['adage-header-nb-hits']}>
-                  {favoriteCount}
+                  {favoritesCount ?? 0}
                 </div>
               </NavLink>
             </li>
           )}
 
-          <li>
+          <li className={styles['adage-header-menu-item']}>
             <a
               href={`${document.referrer}adage/passculture/index`}
-              className={styles['adage-header-item']}
+              className={styles['adage-header-link']}
               target="_parent"
               onClick={() => logAdageLinkClick(AdageHeaderLink.ADAGE_LINK)}
             >
               <SvgIcon
                 alt=""
                 src={strokeBookedIcon}
-                className={styles['adage-header-item-icon']}
+                className={styles['adage-header-link-icon']}
               />
               Suivi
             </a>
