@@ -62,19 +62,6 @@ jobs:
     uses: ./.github/workflows/tests-pro.yml
     secrets: inherit
 
-  build-api:
-    name: Build api docker image on master branch
-    needs: test-deploy-variable
-    if: |
-      github.ref == 'refs/heads/master' &&
-      needs.test-deploy-variable.outputs.deploy == 'true'
-    uses: ./.github/workflows/build-and-push-docker-images.yml
-    with:
-      tag: ${{ github.sha }}
-      pcapi: true
-      console: true
-    secrets: inherit
-
   dependabot-auto-merge:
     needs:
       - test-pro
@@ -88,12 +75,12 @@ jobs:
     name: Deploy to testing
     needs:
       - test-deploy-variable
-      - build-api
+      - test-api
       - test-pro
     if: |
       always() &&
       github.ref == 'refs/heads/master' &&
-      (needs.build-api.result == 'success' || needs.build-api.result == 'skipped') &&
+      (needs.test-api.result == 'success' || needs.test-api.result == 'skipped') &&
       (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped')
     uses: ./.github/workflows/deploy.yml
     with:
@@ -102,8 +89,8 @@ jobs:
       teleport_version: 11.1.1
       teleport_proxy: teleport.ehp.passculture.team:443
       teleport_kubernetes_cluster: passculture-metier-ehp
-      deploy_api: ${{ needs.test-deploy-variable.outputs.deploy == 'true' }}
-      deploy_pro: ${{ needs.test-deploy-variable.outputs.deploy == 'true' }}
+      deploy_api: ${{ needs.test-api.result == 'success' }}
+      deploy_pro: ${{ needs.test-pro.result == 'success' }}
     secrets: inherit
 
   notification:
