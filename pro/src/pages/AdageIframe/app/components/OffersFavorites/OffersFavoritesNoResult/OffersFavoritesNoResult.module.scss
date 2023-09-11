@@ -1,0 +1,18 @@
+@use "styles/variables/_colorsAdageIframe.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
+
+.no-results {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  margin-top: rem.torem(45px);
+  color: colors.$black;
+
+  &-text {
+    margin: rem.torem(16px) 0;
+  }
+
+  &-icon {
+    color: colors.$grey-medium;
+  }
+}
