@@ -822,7 +822,8 @@ class Offerer(
     dsToken: str = Column(Text, nullable=True, unique=True)
 
     bankAccounts: list[finance_models.BankAccount] = sa.orm.relationship(
-        finance_models.BankAccount, back_populates="offerer"
+        finance_models.BankAccount,
+        back_populates="offerer",
     )
 
     @property

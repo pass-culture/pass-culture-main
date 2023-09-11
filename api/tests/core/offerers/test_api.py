@@ -367,6 +367,21 @@ class DeleteVenueTest:
         assert educational_models.CollectiveOfferTemplate.query.count() == 0
         assert offer.template is None
 
+    def test_delete_cascade_venue_should_remove_links(self):
+        # Given
+        bank_account = finance_factories.BankAccountFactory()
+        venue_to_delete = offerers_factories.VenueFactory()
+        offerers_factories.VenueBankAccountLinkFactory(venueId=venue_to_delete.id, bankAccountId=bank_account.id)
+        bank_account_id = bank_account.id
+
+        # When
+        offerers_api.delete_venue(venue_to_delete.id)
+
+        # Then
+        assert offerers_models.Venue.query.count() == 0
+        assert offerers_models.VenueBankAccountLink.query.count() == 0
+        assert finance_models.BankAccount.query.filter(finance_models.BankAccount.id == bank_account_id).one_or_none()
+
 
 class EditVenueTest:
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
@@ -1329,6 +1344,18 @@ class DeleteOffererTest:
         assert providers_models.AllocineVenueProviderPriceRule.query.count() == 1
         assert providers_models.AllocinePivot.query.count() == 1
         assert providers_models.Provider.query.count() > 0
+
+    def test_delete_cascade_offerer_should_remove_related_bank_account(self):
+        # Given
+        bank_account = finance_factories.BankAccountFactory()
+        offerer_to_delete = bank_account.offerer
+
+        # When
+        offerers_api.delete_offerer(offerer_to_delete.id)
+
+        # Then
+        assert offerers_models.Offerer.query.count() == 0
+        assert finance_models.BankAccount.query.count() == 0
 
 
 class SearchOffererTest:
