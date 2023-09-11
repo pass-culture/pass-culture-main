@@ -236,6 +236,9 @@ class BankAccount(PcObject, Base, Model, DeactivableMixin):
     status: BankAccountApplicationStatus = sqla.Column(sqla.Enum(BankAccountApplicationStatus), nullable=False)
     dateCreated: datetime.datetime = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     dateLastStatusUpdate: datetime.datetime = sqla.Column(sqla.DateTime)
+    venueLinks: sqla_orm.Mapped[list["offerers_models.VenueBankAccountLink"]] = sqla_orm.relationship(
+        "VenueBankAccountLink", back_populates="bankAccount"
+    )
 
 
 class FinanceEvent(Base, Model):
