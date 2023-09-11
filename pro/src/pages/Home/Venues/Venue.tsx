@@ -12,6 +12,7 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
   VenueEvents,
 } from 'core/FirebaseEvents/constants'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullDisclosureClose from 'icons/full-disclosure-close.svg'
 import fullDisclosureOpen from 'icons/full-disclosure-open.svg'
@@ -102,6 +103,9 @@ const Venue = ({
   }
   const [stats, setStats] = useState(INITIAL_STATS_VALUE)
   const { logEvent } = useAnalytics()
+  const isNewBankDetailsJourneyEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
+  )
 
   const venueIdTrackParam = {
     venue_id: venueId,
@@ -270,7 +274,9 @@ const Venue = ({
               )}
             </h3>
             <div className="button-group">
-              {hasMissingReimbursementPoint &&
+              {/*Delete when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is deleted*/}
+              {!isNewBankDetailsJourneyEnabled &&
+                hasMissingReimbursementPoint &&
                 !isVirtual &&
                 hasCreatedOffer && (
                   <>
