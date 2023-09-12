@@ -1,10 +1,10 @@
-import cn from 'classnames'
 import React from 'react'
 
 import { AppPreviewOffer } from 'components/ImageUploader/AppPreviewOffer'
 import { AppPreviewVenue } from 'components/ImageUploader/AppPreviewVenue'
 import { UploaderModeEnum } from 'components/ImageUploader/types'
-import { SubmitButton } from 'ui-kit'
+import { Button, SubmitButton } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import style from './ModalImageUploadConfirm.module.scss'
 
@@ -41,14 +41,15 @@ const ModalImageUploadConfirm = ({
       <AppPreview imageUrl={imageUrl} />
 
       <div className={style['actions']}>
-        <button
-          className={cn('secondary-button', style['button'])}
+        <Button
+          className={style['button']}
           onClick={onGoBack}
           title="Retour"
           type="button"
+          variant={ButtonVariant.SECONDARY}
         >
           Retour
-        </button>
+        </Button>
         <SubmitButton
           className={style['button']}
           disabled={false}
