@@ -1,6 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { GetCollectiveVenueResponseModel, StudentLevels } from 'apiClient/v1'
 import FormLayout from 'components/FormLayout'
@@ -13,12 +13,14 @@ import { venueInterventionOptions } from 'core/shared/interventionOptions'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
 import {
+  ButtonLink,
   MultiSelectAutocomplete,
   Select,
   SubmitButton,
   TextArea,
   TextInput,
 } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import PhoneNumberInput from 'ui-kit/form/PhoneNumberInput'
 
 import editVenueCollectiveDataAdapter from '../adapters/editVenueCollectiveDataAdapter'
@@ -320,13 +322,15 @@ const CollectiveDataForm = ({
             </FormLayout.Row>
           </div>
           <FormLayout.Actions>
-            <Link
-              className="secondary-link"
-              state={{ scrollToElementId: 'venue-collective-data' }}
-              to={`/structures/${offererId}/lieux/${venueId}`}
+            <ButtonLink
+              variant={ButtonVariant.SECONDARY}
+              link={{
+                isExternal: false,
+                to: `/structures/${offererId}/lieux/${venueId}`,
+              }}
             >
               Annuler et quitter
-            </Link>
+            </ButtonLink>
             <SubmitButton isLoading={isLoading}>Enregistrer</SubmitButton>
           </FormLayout.Actions>
         </form>
