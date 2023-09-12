@@ -38,6 +38,7 @@ export const AppLayout = ({
             `offer.educationalInstitutionUAICode:${adageUser.uai}`,
           ]}
           hitsPerPage={8}
+          distinct={false}
         />
         <AdageHeader />
       </InstantSearch>
