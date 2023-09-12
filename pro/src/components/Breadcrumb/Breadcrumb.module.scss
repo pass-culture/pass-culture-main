@@ -14,6 +14,7 @@
     align-items: center;
 
     a {
+      display: inline-flex;
       color: colors.$black;
 
       &:focus-visible {
@@ -48,6 +49,11 @@
         width: rem.torem(18px);
         color: colors.$grey-medium;
       }
+    }
+
+    .error-icon {
+      margin-left: rem.torem(8px);
+      color: colors.$primary;
     }
   }
 
