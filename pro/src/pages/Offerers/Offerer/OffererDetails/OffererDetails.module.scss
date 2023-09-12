@@ -17,10 +17,6 @@
     text-align: center;
   }
 
-  .field-group {
-    min-height: rem.torem(160px);
-  }
-
   .op-detail {
     margin: rem.torem(8px) 0;
 
@@ -30,40 +26,13 @@
     }
   }
 
-  .field-siren {
-    display: flex;
-    margin: rem.torem(8px) 0;
-
-    > :first-child {
-      @include fonts.body;
-
-      color: colors.$black;
-      margin-right: rem.torem(5px);
-    }
-  }
-
-  .field-siren-label {
-    flex: 0;
-    margin: rem.torem(6px) 0 0;
-    padding-bottom: 0;
-  }
-
-  .field-siren-control {
-    flex: 1;
-    margin-bottom: rem.torem(20px);
-  }
-
-  .field-siren-error {
-    position: absolute;
-  }
-
   .op-subtitle {
     @include fonts.body;
   }
 
   .offerer-page-go-back-link {
     margin-bottom: rem.torem(30px);
-    color: colors.$primary
+    color: colors.$primary;
   }
 }
 
