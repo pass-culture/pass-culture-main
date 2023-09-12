@@ -64,8 +64,9 @@ const OffersRoute = (): JSX.Element => {
         ...DEFAULT_SEARCH_FILTERS,
         ...filters,
       }
-      const { isOk, message, payload } =
-        await getFilteredOffersAdapter(apiFilters)
+      const { isOk, message, payload } = await getFilteredOffersAdapter(
+        apiFilters
+      )
 
       if (!isOk) {
         setIsLoading(false)

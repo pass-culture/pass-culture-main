@@ -112,8 +112,9 @@ export const OfferFilters = ({
     const loadFiltersOptions = async () => {
       const domainsResponse = await getEducationalDomainsOptionsAdapter()
       const academiesResponse = await getAcademiesOptionsAdapter()
-      const categoriesResponse =
-        await getEducationalCategoriesOptionsAdapter(null)
+      const categoriesResponse = await getEducationalCategoriesOptionsAdapter(
+        null
+      )
 
       if (categoriesResponse.isOk) {
         setCategoriesOptions(categoriesResponse.payload.educationalCategories)

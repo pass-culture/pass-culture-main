@@ -7,7 +7,14 @@ import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserConte
 import { defaultAdageUser } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { Autocomplete, SuggestionItem } from '../Autocomplete'
+import { Autocomplete } from '../Autocomplete'
+
+interface getItems {
+  objectID: string
+  query: string
+  popularity: number
+  nb_words: number
+}
 
 const refineMock = vi.fn()
 const mockVenueSuggestions = [
@@ -41,22 +48,42 @@ const mockVenueSuggestions = [
   },
 ]
 
-const mockGetItems = vi.fn(() => mockVenueSuggestions)
+const mockKeywordSuggestions = [
+  {
+    objectID: 'mock keyword 1',
+    query: 'mock keyword 1',
+    popularity: 1,
+    nb_words: 1,
+    'offer.subcategoryId': ['FESTIVAL_SPECTACLE'],
+    querySuggestionName: {
+      exact_nb_hits: 10,
+    },
+  },
+  {
+    objectID: 'mock keyword 2',
+    query: 'mock keyword 2',
+    popularity: 2,
+    nb_words: 1,
+    'offer.subcategoryId': ['RENCONTRE'],
+    querySuggestionName: {
+      exact_nb_hits: 5,
+    },
+  },
+]
+
+let mockGetItems = vi.fn((): Array<getItems> => mockVenueSuggestions)
+let mockSourceId = 'VenueSuggestionsSource'
 
 vi.mock('@algolia/autocomplete-plugin-query-suggestions', () => {
   return {
     ...vi.importActual('@algolia/autocomplete-plugin-query-suggestions'),
     createQuerySuggestionsPlugin: vi.fn(() => {
       return {
-        name: 'Venue Suggestions plugin',
+        name: 'querySuggestionName',
         getSources: () => [
           {
-            sourceId: 'VenueSuggestionsSource',
+            sourceId: mockSourceId,
             getItems: mockGetItems,
-            templates: {
-              item: (item: SuggestionItem) =>
-                item.venue.publicName || item.venue.name,
-            },
           },
         ],
       }
@@ -76,20 +103,7 @@ vi.mock('react-instantsearch-dom', async () => {
   }
 })
 
-const renderAutocomplete = ({
-  initialQuery,
-  featuresOverride = null,
-}: {
-  initialQuery: string
-  featuresOverride?: { nameKey: string; isActive: boolean }[] | null
-}) => {
-  const storeOverrides = {
-    features: {
-      list: featuresOverride,
-      initialized: true,
-    },
-  }
-
+const renderAutocomplete = ({ initialQuery }: { initialQuery: string }) => {
   return renderWithProviders(
     <AdageUserContext.Provider value={{ adageUser: defaultAdageUser }}>
       <div>
@@ -103,8 +117,7 @@ const renderAutocomplete = ({
         />
         <a href="#">Second element</a>
       </div>
-    </AdageUserContext.Provider>,
-    { storeOverrides }
+    </AdageUserContext.Provider>
   )
 }
 
@@ -122,13 +135,7 @@ describe('Autocomplete', () => {
   })
 
   it('should close autocomplete panel when escape key pressed  ', async () => {
-    const featuresOverride = [
-      {
-        nameKey: 'WIP_ENABLE_SEARCH_HISTORY_ADAGE',
-        isActive: true,
-      },
-    ]
-    renderAutocomplete({ initialQuery: '', featuresOverride })
+    renderAutocomplete({ initialQuery: '' })
 
     const inputElement = screen.getByPlaceholderText(
       'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
@@ -148,13 +155,7 @@ describe('Autocomplete', () => {
   })
 
   it('should close autocomplete panel when focus outside form ', async () => {
-    const featuresOverride = [
-      {
-        nameKey: 'WIP_ENABLE_SEARCH_HISTORY_ADAGE',
-        isActive: true,
-      },
-    ]
-    renderAutocomplete({ initialQuery: '', featuresOverride })
+    renderAutocomplete({ initialQuery: '' })
 
     const inputElement = screen.getByPlaceholderText(
       'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
@@ -211,16 +212,8 @@ describe('Autocomplete', () => {
   })
 
   it('should clear recent search when clear button is clicked', async () => {
-    const featuresOverride = [
-      {
-        nameKey: 'WIP_ENABLE_SEARCH_HISTORY_ADAGE',
-        isActive: true,
-      },
-    ]
-
     renderAutocomplete({
       initialQuery: '',
-      featuresOverride,
     })
 
     const inputElement = screen.getByPlaceholderText(
@@ -240,16 +233,8 @@ describe('Autocomplete', () => {
   })
 
   it('should display venue suggestion when user start to type', async () => {
-    const featuresOverride = [
-      {
-        nameKey: 'WIP_ENABLE_SEARCH_HISTORY_ADAGE',
-        isActive: true,
-      },
-    ]
-
     renderAutocomplete({
       initialQuery: '',
-      featuresOverride,
     })
 
     const inputElement = screen.getByPlaceholderText(
@@ -258,8 +243,27 @@ describe('Autocomplete', () => {
 
     await userEvent.type(inputElement, 'M')
 
-    const venueSuggestion = screen.getByText('Mock Venue 1')
+    const venueSuggestion = screen.getAllByText('Mock Venue 1')[0]
 
     expect(venueSuggestion).toBeInTheDocument()
+  })
+
+  it('should display word suggestion when user start to type', async () => {
+    mockGetItems = vi.fn(() => mockKeywordSuggestions)
+    mockSourceId = 'KeywordQuerySuggestionsSource'
+
+    renderAutocomplete({
+      initialQuery: '',
+    })
+
+    const inputElement = screen.getByPlaceholderText(
+      'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
+    )
+
+    await userEvent.type(inputElement, 'mock')
+
+    const keywordSuggestion = screen.getAllByText(/mock keyword 1/)[0]
+
+    expect(keywordSuggestion).toBeInTheDocument()
   })
 })
