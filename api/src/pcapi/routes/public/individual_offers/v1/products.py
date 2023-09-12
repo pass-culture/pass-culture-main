@@ -20,6 +20,7 @@ from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.public.serialization import venues as venues_serialization
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils import rate_limiting
 from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
@@ -40,6 +41,14 @@ logger = logging.getLogger(__name__)
     api=blueprint.v1_product_schema,
     tags=[constants.OFFERER_VENUES_TAG],
     response_model=serialization.GetOfferersVenuesResponse,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_200": (serialization.GetOfferersVenuesResponse, "The offerer and its venues"),
+            }
+        )
+    ),
 )
 @api_key_required
 @rate_limiting.api_key_rate_limiter()
@@ -87,6 +96,19 @@ def _retrieve_offer_by_eans_query(eans: list[str], venueId: int) -> sqla.orm.Que
     api=blueprint.v1_product_schema,
     tags=[constants.PRODUCT_OFFER_TAG],
     response_model=serialization.BatchProductOfferResponse,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_404": (None, "No venue found for the used api key"),
+                "HTTP_400": (None, "The product offers could not be created"),
+                "HTTP_201": (
+                    serialization.BatchProductOfferResponse,
+                    "The product offers have been created successfully",
+                ),
+            }
+        )
+    ),
 )
 @api_key_required
 @rate_limiting.api_key_rate_limiter()
@@ -147,6 +169,16 @@ def post_product_offer(body: serialization.BatchProductOfferCreation) -> seriali
     api=blueprint.v1_product_schema,
     tags=[constants.PRODUCT_EAN_OFFER_TAG],
     on_success_status=204,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_404": (None, "No venue found for the used api key"),
+                "HTTP_400": (None, "The product offers could not be created"),
+                "HTTP_204": (None, "The product offers have been created successfully"),
+            }
+        )
+    ),
 )
 @api_key_required
 @rate_limiting.api_key_rate_limiter()
@@ -337,6 +369,15 @@ def _create_offer_from_product(
     api=blueprint.v1_product_schema,
     tags=[constants.PRODUCT_OFFER_TAG],
     response_model=serialization.ProductOfferResponse,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_404": (None, "The product offer could not be found"),
+                "HTTP_200": (serialization.ProductOfferResponse, "The product offer"),
+            }
+        )
+    ),
 )
 @api_key_required
 @rate_limiting.api_key_rate_limiter()
@@ -360,6 +401,14 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
     api=blueprint.v1_product_schema,
     tags=[constants.PRODUCT_EAN_OFFER_TAG],
     response_model=serialization.ProductOffersByEanResponse,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_200": (serialization.ProductOffersByEanResponse, "The product offers"),
+            }
+        )
+    ),
 )
 @api_key_required
 @rate_limiting.api_key_rate_limiter()
@@ -388,6 +437,15 @@ def get_product_by_ean(
     api=blueprint.v1_product_schema,
     tags=[constants.PRODUCT_OFFER_TAG],
     response_model=serialization.ProductOffersResponse,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_404": (None, "No venue found for the used api key"),
+                "HTTP_200": (serialization.ProductOffersResponse, "The product offers"),
+            }
+        )
+    ),
 )
 @api_key_required
 @rate_limiting.api_key_rate_limiter()
@@ -426,6 +484,19 @@ def _check_offer_can_be_edited(offer: offers_models.Offer) -> None:
     api=blueprint.v1_product_schema,
     tags=[constants.PRODUCT_OFFER_TAG],
     response_model=serialization.BatchProductOfferResponse,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_404": (None, "The product offers could not be found"),
+                "HTTP_400": (None, "The product offers could not be edited"),
+                "HTTP_200": (
+                    serialization.BatchProductOfferResponse,
+                    "The product offers have been edited successfully",
+                ),
+            }
+        )
+    ),
 )
 @api_key_required
 @rate_limiting.api_key_rate_limiter()
