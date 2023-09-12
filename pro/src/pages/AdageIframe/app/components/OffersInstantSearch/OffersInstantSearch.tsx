@@ -62,6 +62,7 @@ export const OffersInstantSearch = ({
         hitsPerPage={8}
         aroundLatLng={geoLocation.latLng}
         aroundRadius={geoLocation.radius}
+        distinct={false}
       />
       <AnalyticsContextProvider>
         {

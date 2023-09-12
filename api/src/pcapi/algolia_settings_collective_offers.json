@@ -7,7 +7,7 @@
   "attributesToRetrieve": null,
   "ignorePlurals": ["fr"],
   "removeStopWords": ["fr"],
-  "distinct": true,
+  "distinct": false,
   "unretrievableAttributes": null,
   "optionalWords": null,
   "queryLanguages": ["fr"],
@@ -26,7 +26,7 @@
   "attributesToSnippet": null,
   "attributesToHighlight": null,
   "paginationLimitedTo": 50000,
-  "attributeForDistinct": "distinct",
+  "attributeForDistinct": "venue.name",
   "exactOnSingleWordQuery": "attribute",
   "disableTypoToleranceOnAttributes": ["distinct"],
   "ranking": [
