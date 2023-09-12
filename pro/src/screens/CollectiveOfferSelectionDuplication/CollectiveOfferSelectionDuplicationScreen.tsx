@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import { createOfferFromTemplate } from 'core/OfferEducational'
@@ -11,7 +11,15 @@ import { computeOffersUrl } from 'core/Offers/utils'
 import useNotification from 'hooks/useNotification'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import { getFilteredCollectiveOffersAdapter } from 'pages/CollectiveOffers/adapters'
-import { RadioButton, SubmitButton, TextInput, Thumb, Title } from 'ui-kit'
+import {
+  ButtonLink,
+  RadioButton,
+  SubmitButton,
+  TextInput,
+  Thumb,
+  Title,
+} from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import Titles from 'ui-kit/Titles/Titles'
 import { pluralize } from 'utils/pluralize'
@@ -155,14 +163,15 @@ const CollectiveOfferSelectionDuplication = (): JSX.Element => {
             )}
             <ActionsBarSticky>
               <ActionsBarSticky.Left>
-                <Link className="secondary-link" to={computeOffersUrl({})}>
+                <ButtonLink
+                  variant={ButtonVariant.SECONDARY}
+                  link={{ isExternal: false, to: computeOffersUrl({}) }}
+                >
                   Annuler et quitter
-                </Link>
+                </ButtonLink>
               </ActionsBarSticky.Left>
               <ActionsBarSticky.Right>
-                <SubmitButton className="primary-button" disabled={false}>
-                  Étape suivante
-                </SubmitButton>
+                <SubmitButton disabled={false}>Étape suivante</SubmitButton>
               </ActionsBarSticky.Right>
             </ActionsBarSticky>
           </Form>
