@@ -73,6 +73,7 @@ describe('OffersInstitutionList', () => {
         clickAnalytics: true,
         facetFilters: ['offer.educationalInstitutionUAICode:1234567A'],
         hitsPerPage: 8,
+        distinct: false,
       },
       {}
     )

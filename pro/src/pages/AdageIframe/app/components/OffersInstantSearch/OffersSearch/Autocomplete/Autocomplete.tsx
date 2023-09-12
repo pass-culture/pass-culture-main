@@ -2,7 +2,10 @@ import {
   createAutocomplete,
   AutocompleteState,
 } from '@algolia/autocomplete-core'
+import { createQuerySuggestionsPlugin } from '@algolia/autocomplete-plugin-query-suggestions'
+import { AutocompleteQuerySuggestionsHit } from '@algolia/autocomplete-plugin-query-suggestions/dist/esm/types'
 import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-plugin-recent-searches'
+import algoliasearch from 'algoliasearch/lite'
 import cn from 'classnames'
 import React, {
   useState,
@@ -19,24 +22,40 @@ import { connectSearchBox } from 'react-instantsearch-dom'
 import useActiveFeature from 'hooks/useActiveFeature'
 import fullClearIcon from 'icons/full-clear.svg'
 import fullLinkIcon from 'icons/full-link.svg'
+import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeClockIcon from 'icons/stroke-clock.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
+import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import {
+  ALGOLIA_API_KEY,
+  ALGOLIA_APP_ID,
+  ALGOLIA_COLLECTIVE_OFFERS_INDEX,
+} from 'utils/config'
 
 import styles from './Autocomplete.module.scss'
-
-type AutocompleteItem = {
-  label: string
-}
 
 type AutocompleteProps = SearchBoxProvided & {
   initialQuery: string
   placeholder: string
 }
 
-const ALGOLIA_NUMBER_SEARCHES = 5
+type SuggestionItem = AutocompleteQuerySuggestionsHit & {
+  label: string
+  venue: {
+    name: string
+    publicName: string
+  }
+  offerer: {
+    name: string
+  }
+}
+
+const ALGOLIA_NUMBER_RECENT_SEARCHES = 5
+const ALGOLIA_NUMBER_VENUES_SUGGESTIONS = 6
+const DEFAULT_GEO_RADIUS = 30000000 // 30 000 km ensure that we get all the results
 
 const AutocompleteComponent = ({
   refine,
@@ -44,7 +63,7 @@ const AutocompleteComponent = ({
   placeholder,
 }: AutocompleteProps) => {
   const [instantSearchUiState, setInstantSearchUiState] = useState<
-    AutocompleteState<AutocompleteItem>
+    AutocompleteState<SuggestionItem>
   >({
     collections: [],
     completion: null,
@@ -61,16 +80,74 @@ const AutocompleteComponent = ({
   const isRecentSearchEnabled = useActiveFeature(
     'WIP_ENABLE_SEARCH_HISTORY_ADAGE'
   )
+  const RECENT_SEARCH_SOURCE_ID = 'RecentSearchSource'
+  const VENUE_SUGGESTIONS_SOURCE_ID = 'VenueSuggestionsSource'
+  const adageUser = useAdageUser()
 
   const recentSearchesPlugin = createLocalStorageRecentSearchesPlugin({
     key: 'RECENT_SEARCH',
-    limit: ALGOLIA_NUMBER_SEARCHES,
+    limit: ALGOLIA_NUMBER_RECENT_SEARCHES,
+    transformSource({ source }) {
+      return {
+        ...source,
+        sourceId: RECENT_SEARCH_SOURCE_ID,
+        onSelect({ item }) {
+          refine(item.label)
+        },
+      }
+    },
+  })
+
+  const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_API_KEY)
+  const venuesSuggestionsPlugin = createQuerySuggestionsPlugin<SuggestionItem>({
+    searchClient: searchClient,
+    indexName: ALGOLIA_COLLECTIVE_OFFERS_INDEX,
+    getSearchParams() {
+      return {
+        restrictSearchableAttributes: [
+          'venue.name',
+          'venue.publicName',
+          'offerer.name',
+        ],
+        distinct: true,
+        hitsPerPage: ALGOLIA_NUMBER_VENUES_SUGGESTIONS,
+        clickAnalytics: false,
+        aroundLatLng:
+          adageUser.lat && adageUser.lon
+            ? `${adageUser.lat}, ${adageUser.lon}`
+            : '',
+
+        aroundRadius: DEFAULT_GEO_RADIUS,
+      }
+    },
+    transformSource({ source }) {
+      return {
+        ...source,
+        sourceId: VENUE_SUGGESTIONS_SOURCE_ID,
+        onSelect({ item }) {
+          autocomplete.setQuery(item.venue.publicName || item.venue.name)
+          refine(item.venue.publicName || item.venue.name)
+        },
+        getItems(params) {
+          if (!params.state.query) {
+            return []
+          }
+
+          return source.getItems(params)
+        },
+        templates: {
+          item({ item }) {
+            return item.venue.publicName || item.venue.name
+          },
+        },
+      }
+    },
   })
 
   const autocomplete = useMemo(
     () =>
       createAutocomplete<
-        AutocompleteItem,
+        SuggestionItem,
         BaseSyntheticEvent,
         MouseEvent,
         KeyboardEvent
@@ -85,7 +162,9 @@ const AutocompleteComponent = ({
           refine(state.query)
         },
         placeholder,
-        plugins: isRecentSearchEnabled ? [recentSearchesPlugin] : [],
+        plugins: isRecentSearchEnabled
+          ? [recentSearchesPlugin, venuesSuggestionsPlugin]
+          : [],
       }),
     [placeholder, refine]
   )
@@ -120,7 +199,26 @@ const AutocompleteComponent = ({
       window.removeEventListener('touchmove', onTouchMove)
     }
   }, [getEnvironmentProps, instantSearchUiState.isOpen])
-
+  const { source: recentSearchesSource, items: recentSearchesItems } =
+    instantSearchUiState.collections.find(
+      x => x.source.sourceId === RECENT_SEARCH_SOURCE_ID
+    ) || {
+      source: null,
+      items: [],
+    }
+  const { source: venuesSuggestionsSource, items: venuesSuggestionsItems } =
+    instantSearchUiState.collections.find(
+      x => x.source.sourceId === VENUE_SUGGESTIONS_SOURCE_ID
+    ) || {
+      source: null,
+      items: [],
+    }
+  const shouldDisplayVenueSuggestions =
+    isRecentSearchEnabled &&
+    venuesSuggestionsSource &&
+    venuesSuggestionsItems &&
+    venuesSuggestionsItems.length > 0 &&
+    !!instantSearchUiState.query
   return (
     <div>
       {instantSearchUiState.isOpen && (
@@ -183,50 +281,48 @@ const AutocompleteComponent = ({
                 })}
                 {...autocomplete.getPanelProps({})}
               >
-                {instantSearchUiState.collections.map((collection, index) => {
-                  const { source, items } = collection
-                  return (
-                    isRecentSearchEnabled && (
-                      <div
-                        key={`recent-search-${index}`}
-                        className={styles['dialog-panel-recent-search']}
+                {isRecentSearchEnabled &&
+                  recentSearchesSource &&
+                  !instantSearchUiState.query && (
+                    <div
+                      key={`recent-search`}
+                      className={styles['dialog-panel-autocomplete']}
+                    >
+                      <span
+                        className={styles['dialog-panel-autocomplete-text']}
                       >
-                        <span
-                          className={styles['dialog-panel-recent-search-text']}
+                        Recherches récentes
+                        <Button
+                          className={
+                            styles['dialog-panel-autocomplete-text-clean']
+                          }
+                          variant={ButtonVariant.QUATERNARYPINK}
+                          icon={fullClearIcon}
+                          onClick={() => {
+                            localStorage.removeItem(
+                              'AUTOCOMPLETE_RECENT_SEARCHES:RECENT_SEARCH'
+                            )
+                            autocomplete.refresh()
+                          }}
                         >
-                          Recherches récentes
-                          <Button
-                            className={
-                              styles['dialog-panel-recent-search-text-clean']
-                            }
-                            variant={ButtonVariant.QUATERNARYPINK}
-                            icon={fullClearIcon}
-                            onClick={() => {
-                              localStorage.removeItem(
-                                'AUTOCOMPLETE_RECENT_SEARCHES:RECENT_SEARCH'
-                              )
-                              autocomplete.refresh()
-                            }}
-                          >
-                            Effacer
-                          </Button>
-                        </span>
-                        {items && items.length > 0 && (
+                          Effacer
+                        </Button>
+                      </span>
+                      {recentSearchesItems &&
+                        recentSearchesItems.length > 0 && (
                           <ul
-                            className={
-                              styles['dialog-panel-recent-search-list']
-                            }
+                            className={styles['dialog-panel-autocomplete-list']}
                             {...autocomplete.getListProps()}
                           >
-                            {items.map((item, index) => (
+                            {recentSearchesItems.map((item, index) => (
                               <li
                                 key={`item-${index}`}
                                 className={
-                                  styles['dialog-panel-recent-search-item']
+                                  styles['dialog-panel-autocomplete-item']
                                 }
                                 {...autocomplete.getItemProps({
                                   item,
-                                  source,
+                                  source: recentSearchesSource,
                                 })}
                               >
                                 <SvgIcon
@@ -238,10 +334,49 @@ const AutocompleteComponent = ({
                             ))}
                           </ul>
                         )}
-                      </div>
-                    )
-                  )
-                })}
+                    </div>
+                  )}
+                {shouldDisplayVenueSuggestions && (
+                  <div
+                    key={`venue-suggestions`}
+                    className={styles['dialog-panel-autocomplete']}
+                  >
+                    <span className={styles['dialog-panel-autocomplete-text']}>
+                      Partenaire culturels
+                    </span>
+
+                    <ul
+                      className={styles['dialog-panel-autocomplete-list']}
+                      {...autocomplete.getListProps()}
+                    >
+                      {venuesSuggestionsItems
+                        .sort((a, b) =>
+                          (a.venue.publicName || a.venue.name).localeCompare(
+                            b.venue.publicName || b.venue.name
+                          )
+                        )
+                        .map((item, index) => (
+                          <li
+                            key={`item-${index}`}
+                            className={styles['dialog-panel-autocomplete-item']}
+                            {...autocomplete.getItemProps({
+                              item,
+                              source: venuesSuggestionsSource,
+                            })}
+                          >
+                            <SvgIcon
+                              src={strokeBuildingIcon}
+                              alt=""
+                              className={
+                                styles['dialog-panel-autocomplete-item-icon']
+                              }
+                            />
+                            {item.venue.publicName || item.venue.name}
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
+                )}
               </div>
               <div
                 className={cn(styles['panel-footer'], {

@@ -38,6 +38,16 @@
   dependencies:
     "@algolia/autocomplete-shared" "1.11.0"
 
+"@algolia/autocomplete-plugin-query-suggestions@^1.11.0":
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/@algolia/autocomplete-plugin-query-suggestions/-/autocomplete-plugin-query-suggestions-1.11.0.tgz#9881c7c31481a03a6f6e318d6723d494deadd205"
+  integrity sha512-awczuqV8hydlTMeuiDFhHzx+5HLD+pSVxySb4LgT60mUuT8cmivAnxm2NrgEulamDeFj7LKFR9fXHpkIs5LTnA==
+  dependencies:
+    "@algolia/autocomplete-core" "1.11.0"
+    "@algolia/autocomplete-js" "1.11.0"
+    "@algolia/autocomplete-preset-algolia" "1.11.0"
+    "@algolia/autocomplete-shared" "1.11.0"
+
 "@algolia/autocomplete-plugin-recent-searches@^1.11.0":
   version "1.11.0"
   resolved "https://registry.yarnpkg.com/@algolia/autocomplete-plugin-recent-searches/-/autocomplete-plugin-recent-searches-1.11.0.tgz#04797198f37dd322e643a51931103c6300f8a38a"

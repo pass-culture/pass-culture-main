@@ -46,6 +46,7 @@ const OffersForMyInstitution = ({
         clickAnalytics
         facetFilters={[`offer.educationalInstitutionUAICode:${adageUser.uai}`]}
         hitsPerPage={8}
+        distinct={false}
       />
       <AnalyticsContextProvider>
         <OffersInstitutionList
