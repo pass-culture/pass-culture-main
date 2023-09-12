@@ -73,6 +73,7 @@ def create_provider() -> utils.BackofficeResponse:
             isActive=form.is_active.data,
             bookingExternalUrl=form.booking_external_url.data,
             cancelExternalUrl=form.cancel_external_url.data,
+            notificationExternalUrl=form.notification_external_url.data,
         )
         offerer, is_offerer_new = _get_or_create_offerer(form)
         offerer_provider = offerers_models.OffererProvider(offerer=offerer, provider=provider)
@@ -125,6 +126,7 @@ def get_update_provider_form(provider_id: int) -> utils.BackofficeResponse:
         is_active=provider.isActive,
         booking_external_url=provider.bookingExternalUrl,
         cancel_external_url=provider.cancelExternalUrl,
+        notification_external_url=provider.notificationExternalUrl,
     )
 
     return render_template(
@@ -153,6 +155,7 @@ def update_provider(provider_id: int) -> utils.BackofficeResponse:
     provider.isActive = form.is_active.data
     provider.bookingExternalUrl = form.booking_external_url.data
     provider.cancelExternalUrl = form.cancel_external_url.data
+    provider.notificationExternalUrl = form.notification_external_url.data
 
     try:
         db.session.add(provider)
