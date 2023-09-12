@@ -122,10 +122,15 @@
                 </div>
                 <hr />
               {% endif %}
-              {% if has_permission("READ_INCIDENTS") %}
+              {% if has_permission("READ_INCIDENTS") or has_permission("GENERATE_INVOICES") %}
                 <div class="nav nav-pills flex-column">
                   {% call menu_section("Finance") %}
-                    {{ menu_section_item("Gestion des incidents", "backoffice_web.finance_incident.list_incidents") }}
+                    {% if has_permission("READ_INCIDENTS") %}
+                      {{ menu_section_item("Gestion des incidents", "backoffice_web.finance_incidents.list_incidents") }}
+                    {% endif %}
+                    {% if has_permission("GENERATE_INVOICES") %}
+                      {{ menu_section_item("Justificatifs de remboursement", "backoffice_web.finance_invoices.get_finance_invoices") }}
+                    {% endif %}
                   {% endcall %}
                 </div>
                 <hr />

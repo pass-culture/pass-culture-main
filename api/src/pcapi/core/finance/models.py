@@ -627,7 +627,7 @@ class Cashflow(Base, Model):
     )
 
     batchId: int = sqla.Column(sqla.BigInteger, sqla.ForeignKey("cashflow_batch.id"), index=True, nullable=False)
-    batch: "CashflowBatch" = sqla_orm.relationship("CashflowBatch", foreign_keys=[batchId])
+    batch: "CashflowBatch" = sqla_orm.relationship("CashflowBatch", foreign_keys=[batchId], backref="cashflows")
 
     # See the note about `amount` at the beginning of this module.
     # The amount cannot be zero.
