@@ -13,6 +13,8 @@ from pcapi.core.offers import models as offers_models
 from pcapi.domain import music_types
 
 from .constants import MUSIC_SLUG_BY_GTL_ID
+from .constants import NOT_CD_LIBELLES
+from .constants import TITELIVE_MUSIC_SUPPORTS_BY_CODE
 from .titelive_api import TiteliveSearch
 
 
@@ -26,6 +28,15 @@ class TiteliveMusicSearch(TiteliveSearch[TiteliveMusicOeuvre]):
         self, titelive_json_response: dict[str, typing.Any]
     ) -> TiteliveProductSearchResponse[TiteliveMusicOeuvre]:
         return pydantic.parse_obj_as(TiteliveProductSearchResponse[TiteliveMusicOeuvre], titelive_json_response)
+
+    def filter_allowed_products(
+        self, titelive_product_page: TiteliveProductSearchResponse[TiteliveMusicOeuvre]
+    ) -> TiteliveProductSearchResponse[TiteliveMusicOeuvre]:
+        for oeuvre in titelive_product_page.result:
+            oeuvre.article = [
+                article for article in oeuvre.article if is_music_codesupport_allowed(article.codesupport)
+            ]
+        return titelive_product_page
 
     def upsert_titelive_result_in_dict(
         self, titelive_search_result: TiteliveMusicOeuvre, products_by_ean: dict[str, offers_models.Product]
@@ -51,7 +62,7 @@ class TiteliveMusicSearch(TiteliveSearch[TiteliveMusicOeuvre]):
             idAtProviders=article.gencod,
             lastProvider=self.provider,
             name=title,
-            subcategoryId=parse_titelive_product_format(article.codesupport),
+            subcategoryId=parse_titelive_music_codesupport(article.codesupport).id,
         )
 
     def update_product(
@@ -63,7 +74,7 @@ class TiteliveMusicSearch(TiteliveSearch[TiteliveMusicOeuvre]):
         product.extraData.update(build_music_extra_data(article, genre))
         product.idAtProviders = article.gencod
         product.name = title
-        product.subcategoryId = parse_titelive_product_format(article.codesupport)
+        product.subcategoryId = parse_titelive_music_codesupport(article.codesupport).id
 
         return product
 
@@ -113,5 +124,20 @@ def parse_titelive_music_genre(gtl_id: str | None) -> tuple[music_types.MusicTyp
     )
 
 
-def parse_titelive_product_format(codesupport: str) -> str:
-    return subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id
+def is_music_codesupport_allowed(codesupport: str) -> bool:
+    support = TITELIVE_MUSIC_SUPPORTS_BY_CODE.get(codesupport)
+    if support is None:
+        logger.warning("received unexpected titelive codesupport %s", codesupport)
+        return False
+
+    return support["is_allowed"]
+
+
+def parse_titelive_music_codesupport(codesupport: str) -> subcategories.Subcategory:
+    support = TITELIVE_MUSIC_SUPPORTS_BY_CODE.get(codesupport)
+    assert support, "unexpected codesupport %s was not filtered" % codesupport
+
+    is_vinyl = any(not_cd_libelle in support["libelle"] for not_cd_libelle in NOT_CD_LIBELLES)
+    if is_vinyl:
+        return subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE
+    return subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD
