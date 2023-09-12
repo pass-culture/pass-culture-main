@@ -387,7 +387,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
     )
 
     bankAccountLinks: sa_orm.Mapped["VenueBankAccountLink | None"] = relationship(
-        "VenueBankAccountLink", back_populates="venue"
+        "VenueBankAccountLink", back_populates="venue", passive_deletes=True
     )
 
     def _get_type_banner_url(self) -> str | None:
@@ -824,6 +824,7 @@ class Offerer(
     bankAccounts: list[finance_models.BankAccount] = sa.orm.relationship(
         finance_models.BankAccount,
         back_populates="offerer",
+        passive_deletes=True,
     )
 
     @property
