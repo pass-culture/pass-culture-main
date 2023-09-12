@@ -2318,21 +2318,21 @@
     lodash "^4.17.21"
     react-resize-detector "^7.1.2"
 
-"@storybook/addon-controls@^7.4.0":
-  version "7.4.0"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-controls/-/addon-controls-7.4.0.tgz#b212d60fd74d69f6b63c53e4d52ab6c77ee51247"
-  integrity sha512-tYDfqpTR+c9y4kElmr3aWNHPot6kYd+nruYb697LpkCdy4lFErqSo0mhvPyZfMZp2KEajfp6YJAurhQWbvbj/A==
+"@storybook/addon-controls@^7.4.1":
+  version "7.4.1"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-controls/-/addon-controls-7.4.1.tgz#5bbfdf03a0aec28fe08eb79b8d2dea50465ce52c"
+  integrity sha512-KlCYprhBerAKItVQKpexR1oParTbNDOZpJbonG+uldZ12FV7kkrTEGD1vwoLtYTLy+QXIGg4MI1cmUpd39LrLg==
   dependencies:
-    "@storybook/blocks" "7.4.0"
-    "@storybook/client-logger" "7.4.0"
-    "@storybook/components" "7.4.0"
-    "@storybook/core-common" "7.4.0"
-    "@storybook/core-events" "7.4.0"
-    "@storybook/manager-api" "7.4.0"
-    "@storybook/node-logger" "7.4.0"
-    "@storybook/preview-api" "7.4.0"
-    "@storybook/theming" "7.4.0"
-    "@storybook/types" "7.4.0"
+    "@storybook/blocks" "7.4.1"
+    "@storybook/client-logger" "7.4.1"
+    "@storybook/components" "7.4.1"
+    "@storybook/core-common" "7.4.1"
+    "@storybook/core-events" "7.4.1"
+    "@storybook/manager-api" "7.4.1"
+    "@storybook/node-logger" "7.4.1"
+    "@storybook/preview-api" "7.4.1"
+    "@storybook/theming" "7.4.1"
+    "@storybook/types" "7.4.1"
     lodash "^4.17.21"
     ts-dedent "^2.0.0"
 
@@ -2345,22 +2345,22 @@
     "@storybook/global" "^5.0.0"
     "@storybook/preview-api" "7.4.1"
 
-"@storybook/blocks@7.4.0":
-  version "7.4.0"
-  resolved "https://registry.yarnpkg.com/@storybook/blocks/-/blocks-7.4.0.tgz#6a9240e2b58bac99a998c559d719be7ff4e19dcc"
-  integrity sha512-YQznNjJm+l32fCfPxrZso9+MbcyG0pWZSpx3RKI1+pxDMsAs4mbXsIw4//jKfjoDP/6/Cz/FJcSx8LT7i4BJ2w==
+"@storybook/blocks@7.4.1":
+  version "7.4.1"
+  resolved "https://registry.yarnpkg.com/@storybook/blocks/-/blocks-7.4.1.tgz#42a20ed78f9fbf7e698beb184ea0fee3602bb75d"
+  integrity sha512-allNTTuFcFK/DzGGQqFGPu/bH53wjM7lO9m/yHBtJv8Mi1aP745JqW0ucJMVb/aO2Y8vjkTIVa+meVIl02bfrg==
   dependencies:
-    "@storybook/channels" "7.4.0"
-    "@storybook/client-logger" "7.4.0"
-    "@storybook/components" "7.4.0"
-    "@storybook/core-events" "7.4.0"
+    "@storybook/channels" "7.4.1"
+    "@storybook/client-logger" "7.4.1"
+    "@storybook/components" "7.4.1"
+    "@storybook/core-events" "7.4.1"
     "@storybook/csf" "^0.1.0"
-    "@storybook/docs-tools" "7.4.0"
+    "@storybook/docs-tools" "7.4.1"
     "@storybook/global" "^5.0.0"
-    "@storybook/manager-api" "7.4.0"
-    "@storybook/preview-api" "7.4.0"
-    "@storybook/theming" "7.4.0"
-    "@storybook/types" "7.4.0"
+    "@storybook/manager-api" "7.4.1"
+    "@storybook/preview-api" "7.4.1"
+    "@storybook/theming" "7.4.1"
+    "@storybook/types" "7.4.1"
     "@types/lodash" "^4.14.167"
     color-convert "^2.0.1"
     dequal "^2.0.2"
@@ -2524,22 +2524,6 @@
     lodash "^4.17.21"
     prettier "^2.8.0"
     recast "^0.23.1"
-
-"@storybook/components@7.4.0":
-  version "7.4.0"
-  resolved "https://registry.yarnpkg.com/@storybook/components/-/components-7.4.0.tgz#0cc83ff89dd9cdcde3eaeeb7b3fbcf2036ba6fb8"
-  integrity sha512-GGnQrI4NXwri/PqNjhO1vNv4tC7RBjY87ce9WHBq1ueat3kBakdqV97NzScoldXarkkKK6grBqmhw9jE5PfzhQ==
-  dependencies:
-    "@radix-ui/react-select" "^1.2.2"
-    "@radix-ui/react-toolbar" "^1.0.4"
-    "@storybook/client-logger" "7.4.0"
-    "@storybook/csf" "^0.1.0"
-    "@storybook/global" "^5.0.0"
-    "@storybook/theming" "7.4.0"
-    "@storybook/types" "7.4.0"
-    memoizerific "^1.11.3"
-    use-resize-observer "^9.1.0"
-    util-deprecate "^1.0.2"
 
 "@storybook/components@7.4.1":
   version "7.4.1"
@@ -2756,27 +2740,6 @@
   resolved "https://registry.yarnpkg.com/@storybook/global/-/global-5.0.0.tgz#b793d34b94f572c1d7d9e0f44fac4e0dbc9572ed"
   integrity sha512-FcOqPAXACP0I3oJ/ws6/rrPT9WGhu915Cg8D02a9YxLo0DE9zI+a9A5gRGvmQ09fiWPukqI8ZAEoQEdWUKMQdQ==
 
-"@storybook/manager-api@7.4.0":
-  version "7.4.0"
-  resolved "https://registry.yarnpkg.com/@storybook/manager-api/-/manager-api-7.4.0.tgz#aee0153df1583459b7e1e64e1d8c46fb49a584c8"
-  integrity sha512-sBfkkt0eZGTozeKrbzMtWLEOQrgqdk24OUJlkc2IDaucR1CBNjoCMjNeYg7cLDw0rXE8W3W3AdWtJnfsUbLMAQ==
-  dependencies:
-    "@storybook/channels" "7.4.0"
-    "@storybook/client-logger" "7.4.0"
-    "@storybook/core-events" "7.4.0"
-    "@storybook/csf" "^0.1.0"
-    "@storybook/global" "^5.0.0"
-    "@storybook/router" "7.4.0"
-    "@storybook/theming" "7.4.0"
-    "@storybook/types" "7.4.0"
-    dequal "^2.0.2"
-    lodash "^4.17.21"
-    memoizerific "^1.11.3"
-    semver "^7.3.7"
-    store2 "^2.14.2"
-    telejson "^7.2.0"
-    ts-dedent "^2.0.0"
-
 "@storybook/manager-api@7.4.1":
   version "7.4.1"
   resolved "https://registry.yarnpkg.com/@storybook/manager-api/-/manager-api-7.4.1.tgz#587be19fcaf54d577dce6895f5383f890a8fb511"
@@ -2946,15 +2909,6 @@
     type-fest "~2.19"
     util-deprecate "^1.0.2"
 
-"@storybook/router@7.4.0":
-  version "7.4.0"
-  resolved "https://registry.yarnpkg.com/@storybook/router/-/router-7.4.0.tgz#627f824bfd9cc4653ee84581fc09373ab1463336"
-  integrity sha512-IATdtFL5C3ryjNQSwaQfrmiOZiVFoVNMevMoBGDC++g0laSW40TGiNK6fUjUDBKuOgbuDt4Svfbl29k21GefEg==
-  dependencies:
-    "@storybook/client-logger" "7.4.0"
-    memoizerific "^1.11.3"
-    qs "^6.10.0"
-
 "@storybook/router@7.4.1":
   version "7.4.1"
   resolved "https://registry.yarnpkg.com/@storybook/router/-/router-7.4.1.tgz#26d30d9c8c1134a29aa42e8d457dd193565e8e5f"
@@ -2977,16 +2931,6 @@
     fetch-retry "^5.0.2"
     fs-extra "^11.1.0"
     read-pkg-up "^7.0.1"
-
-"@storybook/theming@7.4.0":
-  version "7.4.0"
-  resolved "https://registry.yarnpkg.com/@storybook/theming/-/theming-7.4.0.tgz#f5d9f8f55c41e08c0f50b57d9fb0e159ed595274"
-  integrity sha512-eLjEf6G3cqlegfutF/iUrec9LrUjKDj7K4ZhGdACWrf7bQcODs99EK62e9/d8GNKr4b+QMSEuM6XNGaqdPnuzQ==
-  dependencies:
-    "@emotion/use-insertion-effect-with-fallbacks" "^1.0.0"
-    "@storybook/client-logger" "7.4.0"
-    "@storybook/global" "^5.0.0"
-    memoizerific "^1.11.3"
 
 "@storybook/theming@7.4.1":
   version "7.4.1"
