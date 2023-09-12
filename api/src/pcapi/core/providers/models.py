@@ -67,6 +67,7 @@ class Provider(PcObject, Base, Model, DeactivableMixin):
     logoUrl: str = Column(Text(), nullable=True)
     bookingExternalUrl: str = Column(Text(), nullable=True)
     cancelExternalUrl: str = Column(Text(), nullable=True)
+    notificationExternalUrl: str = Column(Text(), nullable=True)
     pricesInCents: bool = Column(Boolean, nullable=False, default=False, server_default=expression.false())
 
     collectiveOffers: sa_orm.Mapped["CollectiveOffer"] = relationship("CollectiveOffer", back_populates="provider")

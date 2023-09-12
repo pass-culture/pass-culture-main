@@ -48,6 +48,13 @@ class CreateProviderForm(FlaskForm):
             wtforms.validators.Length(max=1024, message="Doit contenir moins de %(max)d caractères"),
         ),
     )
+    notification_external_url = fields.PCOptStringField(
+        "URL de la route de notification de nouvelles réservations ou d'annulation de réservations",
+        validators=(
+            wtforms.validators.URL("Doit être une URL valide"),
+            wtforms.validators.Length(max=1024, message="Doit contenir moins de %(max)d caractères"),
+        ),
+    )
     enabled_for_pro = fields.PCSwitchBooleanField("Actif pour les pros", default="checked")
     is_active = fields.PCSwitchBooleanField("Actif", default="checked")
 
