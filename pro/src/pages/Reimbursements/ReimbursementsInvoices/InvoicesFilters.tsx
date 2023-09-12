@@ -2,11 +2,14 @@ import React, { Dispatch, SetStateAction } from 'react'
 
 import FormLayout from 'components/FormLayout/FormLayout'
 import { SelectOption } from 'custom_types/form'
+import { Button } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import PeriodSelector from 'ui-kit/form/PeriodSelector/PeriodSelector'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 import { FieldLayout } from 'ui-kit/form/shared'
 import { getToday } from 'utils/date'
 
+import styles from './InvoicesFilters.module.scss'
 import { FiltersType } from './types'
 
 interface ReimbursementsSectionHeaderProps {
@@ -77,14 +80,15 @@ const InvoicesFilters = ({
         <h2 className="header-title">
           Affichage des justificatifs de remboursement
         </h2>
-        <button
-          className="tertiary-button reset-filters"
+        <Button
+          className={styles['reset-filters']}
           disabled={areFiltersDefault}
           onClick={resetFilters}
           type="button"
+          variant={ButtonVariant.TERNARYPINK}
         >
           Réinitialiser les filtres
-        </button>
+        </Button>
       </div>
 
       <FormLayout.Row inline>

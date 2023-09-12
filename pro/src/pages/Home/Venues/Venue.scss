@@ -19,11 +19,6 @@
     flex-wrap: nowrap;
     align-items: center;
 
-    .tertiary-button {
-      display: inline-flex;
-      align-items: center;
-    }
-
     // Delete when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is deleted
     &-separator {
       height: rem.torem(20px);
