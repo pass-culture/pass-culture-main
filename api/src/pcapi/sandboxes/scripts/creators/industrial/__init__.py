@@ -117,6 +117,8 @@ def save_industrial_sandbox() -> None:
 
     create_specific_invoice()
 
+    create_specific_cashflow_batch_without_invoice()
+
     create_industrial_pro_users_api_keys(offerers_by_name)
 
     create_industrial_activation_offers()

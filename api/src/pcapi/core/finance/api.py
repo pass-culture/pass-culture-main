@@ -65,6 +65,7 @@ from pcapi.domain import reimbursement
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.repository import transaction
+from pcapi.tasks import finance_tasks
 from pcapi.utils import human_ids
 import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
@@ -1865,9 +1866,7 @@ def _filter_invoiceable_cashflows(query: BaseQuery) -> BaseQuery:
     )
 
 
-def generate_invoices(batch: models.CashflowBatch) -> None:
-    """Generate (and store) all invoices."""
-
+def _get_cashflows_by_reimbursement_points(batch: models.CashflowBatch) -> list:
     rows = (
         _filter_invoiceable_cashflows(
             db.session.query(
@@ -1882,6 +1881,14 @@ def generate_invoices(batch: models.CashflowBatch) -> None:
     if not rows:
         # Probably a mistake in the batch id input
         raise exceptions.NoInvoiceToGenerate()
+
+    return rows
+
+
+def generate_invoices(batch: models.CashflowBatch) -> None:
+    """Generate (and store) all invoices."""
+
+    rows = _get_cashflows_by_reimbursement_points(batch)
 
     for row in rows:
         try:
@@ -1908,6 +1915,18 @@ def generate_invoices(batch: models.CashflowBatch) -> None:
     drive_folder_name = _get_drive_folder_name(batch)
     with log_elapsed(logger, "Uploaded CSV invoices file to Google Drive"):
         _upload_files_to_google_drive(drive_folder_name, [path])
+
+
+def async_generate_invoices(batch: models.CashflowBatch) -> None:
+    rows = _get_cashflows_by_reimbursement_points(batch)
+
+    app.redis_client.set(conf.REDIS_INVOICES_LEFT_TO_GENERATE, len(rows), ttl=conf.REDIS_GENERATE_INVOICES_COUNTER_TIMEOUT)  # type: ignore [attr-defined]
+    app.redis_client.set(conf.REDIS_GENERATE_INVOICES_LENGTH, len(rows), ttl=conf.REDIS_GENERATE_INVOICES_LENGTH_TIMEOUT)  # type: ignore [attr-defined]
+    for row in rows:
+        row_payload = finance_tasks.GenerateInvoicePayload(
+            reimbursement_point_id=row.reimbursement_point_id, cashflow_ids=row.cashflow_ids, batch_id=batch.id
+        )
+        finance_tasks.generate_and_store_invoice_task.delay(row_payload)
 
 
 def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:

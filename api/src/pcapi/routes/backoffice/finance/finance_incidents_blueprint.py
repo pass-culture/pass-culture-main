@@ -33,10 +33,10 @@ from pcapi.routes.backoffice.offerers import forms as offerer_forms
 from pcapi.utils.human_ids import humanize
 
 
-finance_incident_blueprint = utils.child_backoffice_blueprint(
-    "finance_incident",
+finance_incidents_blueprint = utils.child_backoffice_blueprint(
+    "finance_incidents",
     __name__,
-    url_prefix="/finance",
+    url_prefix="/finance/incidents",
     permission=perm_models.Permissions.READ_INCIDENTS,
 )
 
@@ -58,10 +58,10 @@ def _get_incidents() -> list[finance_models.FinanceIncident]:
     return query.order_by(sa.desc(finance_models.FinanceIncident.id)).all()
 
 
-@finance_incident_blueprint.route("/incidents", methods=["GET"])
+@finance_incidents_blueprint.route("", methods=["GET"])
 def list_incidents() -> utils.BackofficeResponse:
     incidents = _get_incidents()
-    return render_template("finance/incident/list.html", rows=incidents)
+    return render_template("finance/incidents/list.html", rows=incidents)
 
 
 def render_finance_incident(incident: finance_models.FinanceIncident) -> utils.BackofficeResponse:
@@ -82,7 +82,7 @@ def render_finance_incident(incident: finance_models.FinanceIncident) -> utils.B
     )
 
     return render_template(
-        "finance/incident/get.html",
+        "finance/incidents/get.html",
         booking_finance_incidents=incident.booking_finance_incidents,
         total_amount=total_amount,
         incident=incident,
@@ -92,14 +92,16 @@ def render_finance_incident(incident: finance_models.FinanceIncident) -> utils.B
     )
 
 
-@finance_incident_blueprint.route("/incident/<int:finance_incident_id>/cancel", methods=["GET"])
+@finance_incidents_blueprint.route("/<int:finance_incident_id>/cancel", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_finance_incident_cancellation_form(finance_incident_id: int) -> utils.BackofficeResponse:
     form = offerer_forms.CommentForm()
     return render_template(
         "components/turbo/modal_form.html",
         form=form,
-        dst=url_for("backoffice_web.finance_incident.cancel_finance_incident", finance_incident_id=finance_incident_id),
+        dst=url_for(
+            "backoffice_web.finance_incidents.cancel_finance_incident", finance_incident_id=finance_incident_id
+        ),
         div_id=f"reject-finance-incident-modal-{finance_incident_id}",
         title="Annuler l'incident",
         button_text="Confirmer l'annulation",
@@ -125,7 +127,7 @@ def _cancel_finance_incident(incident: finance_models.FinanceIncident, comment: 
     repository.save(incident, action)
 
 
-@finance_incident_blueprint.route("/incident/<int:finance_incident_id>/cancel", methods=["POST"])
+@finance_incidents_blueprint.route("/<int:finance_incident_id>/cancel", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeResponse:
     incident: finance_models.FinanceIncident = _get_incident(finance_incident_id)
@@ -148,14 +150,14 @@ def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeRespons
     return render_finance_incident(incident)
 
 
-@finance_incident_blueprint.route("/incident/<int:finance_incident_id>", methods=["GET"])
+@finance_incidents_blueprint.route("/<int:finance_incident_id>", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_INCIDENTS)
 def get_incident(finance_incident_id: int) -> utils.BackofficeResponse:
     incident = _get_incident(finance_incident_id)
     return render_finance_incident(incident)
 
 
-@finance_incident_blueprint.route("/incident/<int:finance_incident_id>/history", methods=["GET"])
+@finance_incidents_blueprint.route("/<int:finance_incident_id>/history", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.READ_INCIDENTS)
 def get_history(finance_incident_id: int) -> utils.BackofficeResponse:
     actions = (
@@ -173,14 +175,14 @@ def get_history(finance_incident_id: int) -> utils.BackofficeResponse:
     )
 
     return render_template(
-        "finance/incident/get/details/history.html",
+        "finance/incidents/get/details/history.html",
         actions=actions,
         form=offerer_forms.CommentForm(),
-        dst=url_for("backoffice_web.finance_incident.comment_incident", finance_incident_id=finance_incident_id),
+        dst=url_for("backoffice_web.finance_incidents.comment_incident", finance_incident_id=finance_incident_id),
     )
 
 
-@finance_incident_blueprint.route("get-incident-creation-form", methods=["GET", "POST"])
+@finance_incidents_blueprint.route("get-incident-creation-form", methods=["GET", "POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_incident_creation_form() -> utils.BackofficeResponse:
     form = forms.BookingIncidentForm(kind=finance_models.IncidentType.OVERPAYMENT.name)
@@ -220,7 +222,7 @@ def get_incident_creation_form() -> utils.BackofficeResponse:
     return render_template(
         "components/turbo/modal_form.html",
         form=form,
-        dst=url_for("backoffice_web.finance_incident.create_individual_booking_incident"),
+        dst=url_for("backoffice_web.finance_incidents.create_individual_booking_incident"),
         div_id="incident-creation-modal",
         title="Création d'un incident",
         button_text="Créer l'incident",
@@ -229,7 +231,7 @@ def get_incident_creation_form() -> utils.BackofficeResponse:
     )
 
 
-@finance_incident_blueprint.route(
+@finance_incidents_blueprint.route(
     "collective-booking-incident-creation-form/<int:collective_booking_id>/", methods=["GET", "POST"]
 )
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
@@ -255,7 +257,7 @@ def get_collective_booking_incident_creation_form(collective_booking_id: int) ->
         "components/turbo/modal_form.html",
         form=form,
         dst=url_for(
-            "backoffice_web.finance_incident.create_collective_booking_incident",
+            "backoffice_web.finance_incidents.create_collective_booking_incident",
             collective_booking_id=collective_booking.id,
         ),
         div_id=f"create-incident-modal-{collective_booking.id}",
@@ -265,7 +267,7 @@ def get_collective_booking_incident_creation_form(collective_booking_id: int) ->
     )
 
 
-@finance_incident_blueprint.route("/incident/create-from-individual-booking", methods=["POST"])
+@finance_incidents_blueprint.route("/create-from-individual-booking", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def create_individual_booking_incident() -> utils.BackofficeResponse:
     form = forms.BookingIncidentForm()
@@ -319,9 +321,7 @@ def create_individual_booking_incident() -> utils.BackofficeResponse:
     return redirect(request.referrer or url_for("backoffice_web.individual_bookings.list_individual_bookings"), 303)
 
 
-@finance_incident_blueprint.route(
-    "/incident/create-from-collective-booking/<int:collective_booking_id>/", methods=["POST"]
-)
+@finance_incidents_blueprint.route("/create-from-collective-booking/<int:collective_booking_id>/", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def create_collective_booking_incident(collective_booking_id: int) -> utils.BackofficeResponse:
     form = forms.IncidentCreationForm()
@@ -422,7 +422,7 @@ def _initialize_collective_booking_additional_data(collective_booking: education
     return additional_data
 
 
-@finance_incident_blueprint.route("/incident/<int:finance_incident_id>/comment", methods=["POST"])
+@finance_incidents_blueprint.route("/<int:finance_incident_id>/comment", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def comment_incident(finance_incident_id: int) -> utils.BackofficeResponse:
     incident = finance_models.FinanceIncident.query.get_or_404(finance_incident_id)
@@ -442,11 +442,11 @@ def comment_incident(finance_incident_id: int) -> utils.BackofficeResponse:
         flash("Commentaire enregistré", "success")
 
     return redirect(
-        url_for("backoffice_web.finance_incident.get_incident", finance_incident_id=incident.id, active_tab="history")
+        url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=incident.id, active_tab="history")
     )
 
 
-@finance_incident_blueprint.route("/incident/<int:finance_incident_id>/validate", methods=["GET"])
+@finance_incidents_blueprint.route("/<int:finance_incident_id>/validate", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def get_finance_incident_validation_form(finance_incident_id: int) -> utils.BackofficeResponse:
     finance_incident = (
@@ -482,7 +482,7 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
         "components/turbo/modal_form.html",
         form=forms.IncidentValidationForm(),
         dst=url_for(
-            "backoffice_web.finance_incident.validate_finance_incident", finance_incident_id=finance_incident_id
+            "backoffice_web.finance_incidents.validate_finance_incident", finance_incident_id=finance_incident_id
         ),
         div_id=f"finance-incident-validation-modal-{finance_incident_id}",
         title="Valider l'incident",
@@ -492,7 +492,7 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
     )
 
 
-@finance_incident_blueprint.route("/incident/<int:finance_incident_id>/validate", methods=["POST"])
+@finance_incidents_blueprint.route("/<int:finance_incident_id>/validate", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_INCIDENTS)
 def validate_finance_incident(finance_incident_id: int) -> utils.BackofficeResponse:
     finance_incident = _get_incident(finance_incident_id)
@@ -506,7 +506,7 @@ def validate_finance_incident(finance_incident_id: int) -> utils.BackofficeRespo
         flash("L'incident ne peut être validé que s'il est au statut 'créé'.", "warning")
         return redirect(
             request.referrer
-            or url_for("backoffice_web.finance_incident.get_incident", finance_incident_id=finance_incident.id),
+            or url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident.id),
             303,
         )
 

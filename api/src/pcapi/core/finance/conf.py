@@ -9,6 +9,11 @@ from . import models
 REDIS_GENERATE_CASHFLOW_LOCK = "pc:finance:generate_cashflow_lock"
 REDIS_GENERATE_CASHFLOW_LOCK_TIMEOUT = 60 * 60 * 24  # 24h
 
+REDIS_INVOICES_LEFT_TO_GENERATE = "pcapi:finance:generate_invoices:counter"
+REDIS_GENERATE_INVOICES_COUNTER_TIMEOUT = 60 * 60 * 12  # 12h
+REDIS_GENERATE_INVOICES_LENGTH = "pcapi:finance:generate_invoices:length"
+REDIS_GENERATE_INVOICES_LENGTH_TIMEOUT = 60 * 60 * 12  # 12h
+
 GRANT_18_VALIDITY_IN_YEARS = 2
 
 GRANTED_DEPOSIT_AMOUNT_15 = decimal.Decimal(20)
