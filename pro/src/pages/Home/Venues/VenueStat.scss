@@ -34,13 +34,5 @@
     .venue-stat-count {
       @include fonts.title3;
     }
-
-    a {
-      color: colors.$primary;
-
-      svg .ico-plus {
-        fill: colors.$primary;
-      }
-    }
   }
 }

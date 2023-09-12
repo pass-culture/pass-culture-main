@@ -28,8 +28,7 @@ const VenueStat = ({ count, label, link, onClick }: VenueStatProps) => (
     }
     <div>{label}</div>
     <ButtonLink
-      className="tertiary-link"
-      variant={ButtonVariant.TERNARY}
+      variant={ButtonVariant.TERNARYPINK}
       link={{
         to: `${link.pathname}`,
         isExternal: false,

@@ -19,18 +19,9 @@
     flex-wrap: nowrap;
     align-items: center;
 
-    .tertiary-button,
-    .tertiary-link {
+    .tertiary-button {
       display: inline-flex;
       align-items: center;
-    }
-
-    .tertiary-link.add-rib-link {
-      color: colors.$primary;
-
-      & svg {
-        color: colors.$primary;
-      }
     }
 
     // Delete when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is deleted
