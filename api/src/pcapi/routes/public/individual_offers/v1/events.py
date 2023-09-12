@@ -13,6 +13,7 @@ from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models import feature
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils import rate_limiting
 from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
@@ -58,6 +59,18 @@ def _deserialize_ticket_collection(
     api=blueprint.v1_event_schema,
     tags=[constants.EVENT_OFFER_INFO_TAG],
     response_model=serialization.EventOfferResponse,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_400": (
+                    None,
+                    "The request is invalid. The response body contains a list of errors.",
+                ),
+                "HTTP_200": (serialization.EventOfferResponse, "The event offer has been created successfully"),
+            }
+        )
+    ),
 )
 @api_key_required
 @rate_limiting.api_key_rate_limiter()
@@ -116,6 +129,18 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
     api=blueprint.v1_event_schema,
     tags=[constants.EVENT_OFFER_INFO_TAG],
     response_model=serialization.EventOfferResponse,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_404": (
+                    None,
+                    "The event offer could not be found.",
+                ),
+                "HTTP_200": (serialization.EventOfferResponse, "The event offer has been returned"),
+            }
+        )
+    ),
 )
 @api_key_required
 @rate_limiting.api_key_rate_limiter()
@@ -139,6 +164,18 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
     api=blueprint.v1_event_schema,
     tags=[constants.EVENT_OFFER_INFO_TAG],
     response_model=serialization.EventOffersResponse,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_404": (
+                    None,
+                    "The venue could not be found.",
+                ),
+                "HTTP_200": (serialization.EventOffersResponse, "The event offers has been returned"),
+            }
+        )
+    ),
 )
 @api_key_required
 @rate_limiting.api_key_rate_limiter()
@@ -161,6 +198,22 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
     api=blueprint.v1_event_schema,
     tags=[constants.EVENT_OFFER_INFO_TAG],
     response_model=serialization.EventOfferResponse,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_404": (
+                    None,
+                    "The event offer could not be found.",
+                ),
+                "HTTP_400": (
+                    None,
+                    "The request is invalid. The response body contains a list of errors.",
+                ),
+                "HTTP_200": (serialization.EventOfferResponse, "The event offer has been returned"),
+            }
+        )
+    ),
 )
 @api_key_required
 @rate_limiting.api_key_rate_limiter()
@@ -218,6 +271,22 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
     api=blueprint.v1_event_schema,
     tags=[constants.EVENT_OFFER_PRICES_TAG],
     response_model=serialization.PriceCategoriesResponse,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_404": (
+                    None,
+                    "The event offer could not be found.",
+                ),
+                "HTTP_400": (
+                    None,
+                    "The request is invalid. The response body contains a list of errors. Or one of the price categories already exists.",
+                ),
+                "HTTP_200": (serialization.PriceCategoriesResponse, "The price category has been created successfully"),
+            }
+        )
+    ),
 )
 @api_key_required
 @rate_limiting.api_key_rate_limiter()
@@ -249,6 +318,22 @@ def post_event_price_categories(
     api=blueprint.v1_event_schema,
     tags=[constants.EVENT_OFFER_PRICES_TAG],
     response_model=serialization.PriceCategoryResponse,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_404": (
+                    None,
+                    "The event offer or the price category could not be found.",
+                ),
+                "HTTP_400": (
+                    None,
+                    "The request is invalid. The response body contains a list of errors.",
+                ),
+                "HTTP_200": (serialization.PriceCategoryResponse, "The price category has been modified successfully"),
+            }
+        )
+    ),
 )
 @api_key_required
 @rate_limiting.api_key_rate_limiter()
@@ -302,6 +387,22 @@ def patch_event_price_categories(
     api=blueprint.v1_event_schema,
     tags=[constants.EVENT_OFFER_DATES_TAG],
     response_model=serialization.PostDatesResponse,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_404": (
+                    None,
+                    "The event offer or the price category could not be found.",
+                ),
+                "HTTP_400": (
+                    None,
+                    "The request is invalid. The response body contains a list of errors.",
+                ),
+                "HTTP_200": (serialization.PostDatesResponse, "The event dates has been created successfully"),
+            }
+        )
+    ),
 )
 @api_key_required
 @rate_limiting.api_key_rate_limiter()
@@ -349,7 +450,25 @@ def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serial
 
 @blueprint.v1_blueprint.route("/events/<int:event_id>/dates", methods=["GET"])
 @spectree_serialize(
-    api=blueprint.v1_event_schema, tags=[constants.EVENT_OFFER_DATES_TAG], response_model=serialization.GetDatesResponse
+    api=blueprint.v1_event_schema,
+    tags=[constants.EVENT_OFFER_DATES_TAG],
+    response_model=serialization.GetDatesResponse,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_404": (
+                    None,
+                    "The event offer or the price category could not be found.",
+                ),
+                "HTTP_400": (
+                    None,
+                    "The request is invalid. The response body contains a list of errors.",
+                ),
+                "HTTP_200": (serialization.GetDatesResponse, "The event dates has been returned"),
+            }
+        )
+    ),
 )
 @api_key_required
 @rate_limiting.api_key_rate_limiter()
@@ -385,7 +504,27 @@ def get_event_dates(event_id: int, query: serialization.GetDatesQueryParams) -> 
 
 
 @blueprint.v1_blueprint.route("/events/<int:event_id>/dates/<int:date_id>", methods=["DELETE"])
-@spectree_serialize(api=blueprint.v1_event_schema, tags=[constants.EVENT_OFFER_DATES_TAG], on_success_status=204)
+@spectree_serialize(
+    api=blueprint.v1_event_schema,
+    tags=[constants.EVENT_OFFER_DATES_TAG],
+    on_success_status=204,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_404": (
+                    None,
+                    "The event offer or the price category could not be found.",
+                ),
+                "HTTP_400": (
+                    None,
+                    "The request is invalid. The response body contains a list of errors.",
+                ),
+                "HTTP_204": (None, "The event date has been deleted successfully"),
+            }
+        )
+    ),
+)
 @api_key_required
 @rate_limiting.api_key_rate_limiter()
 def delete_event_date(event_id: int, date_id: int) -> None:
@@ -411,7 +550,25 @@ def delete_event_date(event_id: int, date_id: int) -> None:
 
 @blueprint.v1_blueprint.route("/events/<int:event_id>/dates/<int:date_id>", methods=["PATCH"])
 @spectree_serialize(
-    api=blueprint.v1_event_schema, tags=[constants.EVENT_OFFER_DATES_TAG], response_model=serialization.DateResponse
+    api=blueprint.v1_event_schema,
+    tags=[constants.EVENT_OFFER_DATES_TAG],
+    response_model=serialization.DateResponse,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_404": (
+                    None,
+                    "The event offer or the price category could not be found.",
+                ),
+                "HTTP_400": (
+                    None,
+                    "The request is invalid. The response body contains a list of errors.",
+                ),
+                "HTTP_200": (serialization.DateResponse, "The event date has been modified successfully"),
+            }
+        )
+    ),
 )
 @api_key_required
 @rate_limiting.api_key_rate_limiter()
