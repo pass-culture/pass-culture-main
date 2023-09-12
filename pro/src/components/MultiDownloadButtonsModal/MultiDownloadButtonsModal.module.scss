@@ -10,13 +10,6 @@
   .download-modal-button > button {
     padding-left: rem.torem(60px);
 
-    &::after {
-      border-right: rem.torem(1px) solid white;
-      content: "";
-      left: rem.torem(-30px);
-      position: relative;
-    }
-
     .drop-icon {
       margin-left: rem.torem(80px);
       width: rem.torem(16px);
