@@ -20,9 +20,7 @@ from . import blueprint
 from . import bookings_serialization as serialization
 
 
-BASE_CODE_DESCRIPTIONS = {
-    "HTTP_401": (None, "Authentication is necessary to use this API"),
-    "HTTP_403": (None, "You do not have the necessary rights to use this API"),
+BOOKINGS_API_BASE_CODE_DESCRIPTIONS = constants.BASE_CODE_DESCRIPTIONS | {
     "HTTP_404": (None, "This booking cannot be found"),
     "HTTP_410": (
         None,
@@ -124,7 +122,7 @@ def _get_booking_by_token(token: str) -> booking_models.Booking | None:
     tags=[constants.BOOKING_TAG],
     resp=SpectreeResponse(
         **(
-            BASE_CODE_DESCRIPTIONS
+            BOOKINGS_API_BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_200": (serialization.GetBookingResponse, "The booking has been found successfully"),
             }
@@ -164,7 +162,7 @@ def get_booking_by_token(token: str) -> serialization.GetBookingResponse:
     tags=[constants.BOOKING_TAG],
     resp=SpectreeResponse(
         **(
-            BASE_CODE_DESCRIPTIONS
+            BOOKINGS_API_BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_204": (None, "This countermark has been validated successfully"),
             }
@@ -203,7 +201,7 @@ def validate_booking_by_token(token: str) -> None:
     tags=[constants.BOOKING_TAG],
     resp=SpectreeResponse(
         **(
-            BASE_CODE_DESCRIPTIONS
+            BOOKINGS_API_BASE_CODE_DESCRIPTIONS
             | {
                 "HTTP_204": (None, "The booking has been canceled successfully"),
                 "HTTP_403": (

@@ -22,3 +22,8 @@ MAX_IMAGE_WIDTH = 800
 MIN_IMAGE_HEIGHT = 600
 MAX_IMAGE_HEIGHT = 1200
 ASPECT_RATIO = image_conversion.ImageRatio.PORTRAIT
+
+BASE_CODE_DESCRIPTIONS = {
+    "HTTP_401": (None, "Authentication is necessary to use this API"),
+    "HTTP_403": (None, "You do not have the necessary rights to use this API"),
+}
