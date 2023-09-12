@@ -1,6 +1,5 @@
 from datetime import datetime
 from decimal import Decimal
-import typing
 
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions as educational_exceptions
@@ -14,18 +13,6 @@ from pcapi.core.educational.repository import find_educational_year_by_date
 from pcapi.models import db
 from pcapi.repository import repository
 import pcapi.utils.postal_code as postal_code_utils
-
-
-def create_educational_institution(
-    institution_id: str,
-    institution_data: dict[str, typing.Any],
-) -> educational_models.EducationalInstitution:
-    educational_institution = educational_models.EducationalInstitution(
-        institutionId=institution_id, **institution_data
-    )
-    repository.save(educational_institution)
-
-    return educational_institution
 
 
 def get_all_educational_institutions(page: int, per_page_limit: int) -> tuple[tuple, int]:
@@ -58,17 +45,6 @@ def search_educational_institution(
         limit=limit,
         uai=uai,
     )
-
-
-def update_educational_institution_data(
-    institution_id: str, institution_data: dict[str, typing.Any]
-) -> educational_models.EducationalInstitution:
-    educational_institution = educational_models.EducationalInstitution.query.filter_by(
-        institutionId=institution_id
-    ).one()
-    for key, value in institution_data.items():
-        setattr(educational_institution, key, value)
-    return educational_institution
 
 
 def compare_adage_and_institution(ansco: str) -> None:
