@@ -1,3 +1,4 @@
+import copy
 import datetime
 import html
 import pathlib
@@ -58,7 +59,7 @@ class TiteliveSearchTest:
         assert cd_product is not None
         assert cd_product.name == "Les dernières volontés de Mozart (symphony)"
         assert cd_product.description == 'GIMS revient avec " Les dernières volontés de Mozart ", un album de tubes.'
-        assert cd_product.subcategoryId == subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id
+        assert cd_product.subcategoryId == subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id
         assert cd_product.extraData["artist"] == "Gims"
         assert cd_product.extraData["author"] == "Gims"
         assert cd_product.extraData["date_parution"] == "2022-12-02"
@@ -87,7 +88,7 @@ class TiteliveSearchTest:
             shared_gtl_product.description
             == 'GIMS revient avec " Les dernières volontés de Mozart ", un album de tubes.'
         )
-        assert shared_gtl_product.subcategoryId == subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id
+        assert shared_gtl_product.subcategoryId == subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id
         assert shared_gtl_product.extraData["artist"] == "Gims"
         assert shared_gtl_product.extraData["author"] == "Gims"
         assert shared_gtl_product.extraData["date_parution"] == "2022-12-02"
@@ -116,7 +117,7 @@ class TiteliveSearchTest:
             vinyle_product.description
             == "Ce huitième album studio de Gorillaz est une collection énergique, optimiste et riche en genres de 10 titres mettant en vedette un line-up stellaire de collaborateurs : Thundercat, Tame Impala, Bad Bunny, Stevie Nicks, Adeleye Omotayo, Bootie Brown et Beck."
         )
-        assert vinyle_product.subcategoryId == subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id
+        assert vinyle_product.subcategoryId == subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id
         assert vinyle_product.extraData["artist"] == "Gorillaz"
         assert vinyle_product.extraData["author"] == "Gorillaz"
         assert vinyle_product.extraData["date_parution"] == "2023-02-24"
@@ -236,3 +237,15 @@ class TiteliveSearchTest:
         )
         assert no_thumbnail_product is not None
         assert no_thumbnail_product.thumbUrl is None
+
+    def test_sync_skips_unallowed_format(self, requests_mock):
+        self._configure_login_and_images(requests_mock)
+        not_fully_allowed_response = copy.deepcopy(fixtures.MUSIC_SEARCH_FIXTURE)
+        not_fully_allowed_response["result"][-1]["article"]["1"]["codesupport"] = 35
+        requests_mock.get("https://catsearch.epagine.fr/v1/search", json=not_fully_allowed_response)
+
+        TiteliveMusicSearch().synchronize_products(datetime.date(2022, 12, 1))
+
+        synced_products = offers_models.Product.query.all()
+        assert len(synced_products) == 2
+        assert all(synced_product.idAtProviders != "5054197199738" for synced_product in synced_products)
