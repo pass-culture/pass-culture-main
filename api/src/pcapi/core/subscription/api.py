@@ -183,11 +183,6 @@ def get_phone_validation_subscription_item(
     return models.SubscriptionItem(type=models.SubscriptionStep.PHONE_VALIDATION, status=status)
 
 
-def _should_validate_phone(user: users_models.User, eligibility: users_models.EligibilityType | None) -> bool:
-    phone_subscription_item = get_phone_validation_subscription_item(user, eligibility)
-    return phone_subscription_item.status in (models.SubscriptionItemStatus.TODO, models.SubscriptionItemStatus.KO)
-
-
 def get_profile_completion_subscription_item(
     user: users_models.User, eligibility: users_models.EligibilityType
 ) -> models.SubscriptionItem:

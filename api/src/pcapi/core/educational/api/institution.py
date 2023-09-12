@@ -47,35 +47,6 @@ def search_educational_institution(
     )
 
 
-def compare_adage_and_institution(ansco: str) -> None:
-    institutions = educational_models.EducationalInstitution.query.all()
-    adage_institutions = adage_client.get_adage_educational_institutions(ansco=ansco)
-
-    synchronise_adage_and_institution(institutions=institutions, adage_institutions=adage_institutions)
-
-
-def synchronise_adage_and_institution(
-    institutions: list[EducationalInstitution], adage_institutions: list[AdageEducationalInstitution]
-) -> None:
-    adage_institution_dict = {adage_institution.uai: adage_institution for adage_institution in adage_institutions}
-
-    for institution in institutions:
-        if institution.institutionId in adage_institution_dict:
-            institution.isActive = True
-            adage_institution = adage_institution_dict[institution.institutionId]
-
-            institution.name = adage_institution.libelle
-            institution.city = adage_institution.communeLibelle
-            institution.postalCode = adage_institution.codePostal
-            institution.email = adage_institution.courriel
-            institution.phoneNumber = adage_institution.telephone or ""
-            institution.institutionType = INSTITUTION_TYPES.get(adage_institution.sigle, institution.institutionType)
-        else:
-            institution.isActive = False
-        repository.save(institution)
-    db.session.commit()
-
-
 def import_deposit_institution_data(
     data: dict[str, Decimal],
     educational_year: educational_models.EducationalYear,

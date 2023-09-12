@@ -1169,58 +1169,6 @@ class GetFirstRegistrationDateTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class ShouldValidatePhoneTest:
-    def test_eligible_15_17(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=17))
-        assert not subscription_api._should_validate_phone(user, user.eligibility)
-
-    def test_eligible_18(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
-        assert subscription_api._should_validate_phone(user, user.eligibility)
-
-    def test_already_validated(self):
-        user = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-        )
-        assert not subscription_api._should_validate_phone(user, user.eligibility)
-
-    def test_when_has_failed(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18))
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-            status=fraud_models.FraudCheckStatus.KO,
-            eligibilityType=users_models.EligibilityType.AGE18,
-        )
-
-        assert subscription_api._should_validate_phone(user, user.eligibility)
-
-    @override_features(ENABLE_PHONE_VALIDATION=False)
-    def test_when_flag_off(self):
-        user = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
-        )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-            status=fraud_models.FraudCheckStatus.KO,
-            eligibilityType=users_models.EligibilityType.AGE18,
-        )
-
-        assert not subscription_api._should_validate_phone(user, user.eligibility)
-
-    def test_when_skipped_by_support(self):
-        user = users_factories.UserFactory(
-            dateOfBirth=datetime.utcnow() - relativedelta(years=18),
-            phoneValidationStatus=users_models.PhoneValidationStatusType.SKIPPED_BY_SUPPORT,
-        )
-
-        assert not subscription_api._should_validate_phone(user, user.eligibility)
-
-
-@pytest.mark.usefixtures("db_session")
 class CompleteProfileTest:
     def test_when_profile_was_proviously_cancelled(self):
         """

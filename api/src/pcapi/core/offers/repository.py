@@ -418,10 +418,6 @@ def _filter_by_status(query: flask_sqlalchemy.BaseQuery, status: str) -> flask_s
     return query.filter(models.Offer.status == offer_mixin.OfferStatus[status].name)
 
 
-def get_stocks_for_offers(offer_ids: list[int]) -> list[models.Stock]:
-    return models.Stock.query.filter(models.Stock.offerId.in_(offer_ids)).all()
-
-
 def get_products_map_by_provider_reference(id_at_providers: list[str]) -> dict[str, models.Product]:
     products = (
         models.Product.query.filter(models.Product.can_be_synchronized)

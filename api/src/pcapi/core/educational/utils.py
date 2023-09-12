@@ -6,7 +6,6 @@ import logging
 import jwt
 
 from pcapi.core.educational import exceptions as educational_exceptions
-from pcapi.core.educational.constants import INSTITUTION_TYPES
 from pcapi.core.users.utils import ALGORITHM_RS_256
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AdageFrontRoles
 from pcapi.utils import requests
@@ -19,18 +18,6 @@ def compute_educational_booking_cancellation_limit_date(
     event_beginning: datetime, booking_creation_date: datetime
 ) -> datetime:
     return max(event_beginning - timedelta(days=30), booking_creation_date)
-
-
-def get_institution_type_and_name(institution_title: str) -> tuple[str, str]:
-    short_type = ""
-    for index in INSTITUTION_TYPES:
-        if institution_title.strip().startswith(f"{index} ") or institution_title == index:
-            short_type = index
-            break
-
-    name = institution_title.replace(index, "", 1).strip()
-    long_type = INSTITUTION_TYPES.get(short_type, "").strip()
-    return long_type, name
 
 
 def get_hashed_user_id(email: str) -> str:

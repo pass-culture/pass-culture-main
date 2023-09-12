@@ -49,10 +49,6 @@ def humanize(integer: int | None) -> str | None:
     return b32.decode("ascii").replace("O", "8").replace("I", "9").rstrip("=")
 
 
-def dehumanize_ids_list(humanized_list: list[str | None]) -> list[int | None]:
-    return list(map(dehumanize, humanized_list)) if humanized_list else []
-
-
 def int_to_bytes(x: int) -> bytes:
     return x.to_bytes((x.bit_length() + 7) // 8, "big")
 

@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 import datetime
 from decimal import Decimal
 
@@ -196,13 +195,6 @@ assert [r.description for r in REGULAR_RULES] == [
     "Remboursement à 100% jusqu'à 20 000 € pour les livres",
     "Remboursement à 95% au dessus de 20 000 € pour les livres",
 ]
-
-
-@dataclass
-class BookingReimbursement:
-    booking: Booking
-    rule: finance_models.ReimbursementRule
-    reimbursed_amount: Decimal
 
 
 class CustomRuleFinder:

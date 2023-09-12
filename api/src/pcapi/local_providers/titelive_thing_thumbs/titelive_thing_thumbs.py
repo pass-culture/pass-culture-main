@@ -85,10 +85,3 @@ class TiteLiveThingThumbs(LocalProvider):
 
     def fill_object_attributes(self, obj):  # type: ignore [no-untyped-def]
         pass
-
-
-def extract_thumb_index(filename: str) -> int:
-    split_filename = filename.split("_")
-    if len(split_filename) > 2:
-        return int(split_filename[-2])
-    return -1

@@ -11,10 +11,6 @@ class NonCancellablePricingError(FinanceError):
     pass
 
 
-class InvalidSiret(Exception):
-    pass
-
-
 class ReimbursementRuleValidationError(Exception):
     pass
 

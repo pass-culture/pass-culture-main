@@ -179,10 +179,6 @@ def find_educational_institution_by_uai_code(uai_code: str) -> educational_model
     return educational_models.EducationalInstitution.query.filter_by(institutionId=uai_code).one_or_none()
 
 
-def find_all_educational_institution() -> list[educational_models.EducationalInstitution]:
-    return educational_models.EducationalInstitution.query.filter_by(isActive=True).all()
-
-
 def find_educational_deposit_by_institution_id_and_year(
     educational_institution_id: int,
     educational_year_id: str,
@@ -829,10 +825,6 @@ def user_has_bookings(user: User) -> bool:
         offerers_models.Offerer.UserOfferers
     )
     return db.session.query(bookings_query.filter(offerers_models.UserOfferer.userId == user.id).exists()).scalar()
-
-
-def get_collective_offer_by_offer_id(offer_id: int) -> educational_models.CollectiveOffer:
-    return educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.offerId == offer_id).one()
 
 
 def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.CollectiveOffer:
