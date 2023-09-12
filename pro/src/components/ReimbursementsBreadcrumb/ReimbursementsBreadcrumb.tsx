@@ -9,6 +9,7 @@ import {
   STEP_NAMES,
   OLD_STEP_LIST,
   OLD_STEP_NAMES,
+  STEP_ID_BANK_INFORMATIONS,
 } from './constants'
 
 const ReimbursementsBreadcrumb = () => {
@@ -18,10 +19,24 @@ const ReimbursementsBreadcrumb = () => {
   const activeStep = useActiveStep(
     isNewBankDetailsJourneyEnable ? STEP_NAMES : OLD_STEP_NAMES
   )
+
+  const getSteps = () => {
+    // TODO: add condition
+    const hasBannerError = true
+    if (hasBannerError) {
+      const indexBankInformationStep = STEP_LIST.findIndex(
+        value => value.id === STEP_ID_BANK_INFORMATIONS
+      )
+
+      STEP_LIST[indexBankInformationStep].hasWarning = true
+    }
+    return STEP_LIST
+  }
+
   return (
     <Breadcrumb
       activeStep={activeStep}
-      steps={isNewBankDetailsJourneyEnable ? STEP_LIST : OLD_STEP_LIST}
+      steps={isNewBankDetailsJourneyEnable ? getSteps() : OLD_STEP_LIST}
       styleType={BreadcrumbStyle.TAB}
     />
   )
