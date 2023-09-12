@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 
 import Stepper from 'components/Stepper'
 import fullArrowRightIcon from 'icons/full-arrow-right.svg'
+import fullErrorIcon from 'icons/full-error.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Breadcrumb.module.scss'
@@ -68,6 +69,14 @@ const Breadcrumb = ({
                   to={step.url}
                 >
                   {step.label}
+                  {step.hasWarning && (
+                    <SvgIcon
+                      src={fullErrorIcon}
+                      alt=""
+                      width="20"
+                      className={styles['error-icon']}
+                    />
+                  )}
                 </Link>
               ) : step.hash ? (
                 <a
@@ -75,9 +84,27 @@ const Breadcrumb = ({
                   onClick={step.onClick ? step.onClick : undefined}
                 >
                   {step.label}
+                  {step.hasWarning && (
+                    <SvgIcon
+                      src={fullErrorIcon}
+                      alt=""
+                      width="20"
+                      className={styles['error-icon']}
+                    />
+                  )}
                 </a>
               ) : (
-                step.label
+                <span>
+                  step.label
+                  {step.hasWarning && (
+                    <SvgIcon
+                      src={fullErrorIcon}
+                      alt=""
+                      width="20"
+                      className={styles['error-icon']}
+                    />
+                  )}
+                </span>
               )}
             </span>
 
