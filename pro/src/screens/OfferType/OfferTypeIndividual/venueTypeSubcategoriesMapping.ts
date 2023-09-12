@@ -20,10 +20,10 @@ export const venueTypeSubcategoriesMapping: Record<
   ],
   ['BOOKSTORE']: [
     SubcategoryIdEnum.LIVRE_PAPIER,
-    SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE,
+    SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_CD,
+    SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE,
     SubcategoryIdEnum.MATERIEL_ART_CREATIF,
     SubcategoryIdEnum.SUPPORT_PHYSIQUE_FILM,
-    SubcategoryIdEnum.ACHAT_INSTRUMENT,
   ],
   ['CONCERT_HALL']: [
     SubcategoryIdEnum.CONCERT,
@@ -42,7 +42,8 @@ export const venueTypeSubcategoriesMapping: Record<
     SubcategoryIdEnum.LIVRE_PAPIER,
     SubcategoryIdEnum.SEANCE_CINE,
     SubcategoryIdEnum.SPECTACLE_REPRESENTATION,
-    SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE,
+    SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_CD,
+    SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE,
     SubcategoryIdEnum.CONCERT,
   ],
   ['DIGITAL']: [
@@ -54,7 +55,8 @@ export const venueTypeSubcategoriesMapping: Record<
   ],
   ['DISTRIBUTION_STORE']: [
     SubcategoryIdEnum.LIVRE_PAPIER,
-    SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE,
+    SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_CD,
+    SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE,
     SubcategoryIdEnum.SUPPORT_PHYSIQUE_FILM,
     SubcategoryIdEnum.MATERIEL_ART_CREATIF,
   ],
@@ -97,8 +99,8 @@ export const venueTypeSubcategoriesMapping: Record<
     SubcategoryIdEnum.ACHAT_INSTRUMENT,
     SubcategoryIdEnum.LIVRE_PAPIER,
     SubcategoryIdEnum.PARTITION,
-    SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE,
-    SubcategoryIdEnum.ABO_PRATIQUE_ART,
+    SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_CD,
+    SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE,
   ],
   ['OTHER']: [
     SubcategoryIdEnum.LIVRE_PAPIER,
@@ -122,11 +124,11 @@ export const venueTypeSubcategoriesMapping: Record<
     SubcategoryIdEnum.ATELIER_PRATIQUE_ART,
   ],
   ['RECORD_STORE']: [
-    SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE,
+    SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_CD,
+    SubcategoryIdEnum.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE,
     SubcategoryIdEnum.LIVRE_PAPIER,
     SubcategoryIdEnum.ACHAT_INSTRUMENT,
     SubcategoryIdEnum.CONCERT,
-    SubcategoryIdEnum.MATERIEL_ART_CREATIF,
   ],
   ['SCIENTIFIC_CULTURE']: [
     SubcategoryIdEnum.VISITE,
