@@ -142,7 +142,7 @@ const PricingPoint = ({
       )}
 
       <div className={styles['dropdown-container']}>
-        <div className={`${styles['select']}`}>
+        <div className={styles['select']}>
           <Select
             disabled={
               venue.pricingPoint?.id ? true : isInputDisabled || readOnly
