@@ -1,4 +1,5 @@
 import datetime
+from unittest import mock
 
 from flask import url_for
 import pytest
@@ -19,8 +20,8 @@ from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.filters import format_booking_status
 from pcapi.routes.backoffice.filters import format_date_time
 from pcapi.routes.backoffice.finance import forms as finance_forms
-from pcapi.routes.backoffice.finance.blueprint import _cancel_finance_incident
-from pcapi.routes.backoffice.finance.blueprint import _create_finance_events_from_incident
+from pcapi.routes.backoffice.finance.finance_incidents_blueprint import _cancel_finance_incident
+from pcapi.routes.backoffice.finance.finance_incidents_blueprint import _create_finance_events_from_incident
 
 from .helpers import html_parser
 from .helpers.get import GetEndpointHelper
@@ -44,7 +45,7 @@ def invoiced_collective_pricing_fixture() -> list:
 
 
 class ListIncidentsTest(GetEndpointHelper):
-    endpoint = "backoffice_web.finance_incident.list_incidents"
+    endpoint = "backoffice_web.finance_incidents.list_incidents"
     needed_permission = perm_models.Permissions.READ_INCIDENTS
 
     expected_num_queries = 0
@@ -70,7 +71,7 @@ class ListIncidentsTest(GetEndpointHelper):
 
 
 class GetIncidentCancellationFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.finance_incident.get_finance_incident_cancellation_form"
+    endpoint = "backoffice_web.finance_incidents.get_finance_incident_cancellation_form"
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
@@ -83,7 +84,7 @@ class GetIncidentCancellationFormTest(GetEndpointHelper):
 
 
 class GetIncidentValidationFormTest(GetEndpointHelper):
-    endpoint = "backoffice_web.finance_incident.get_finance_incident_validation_form"
+    endpoint = "backoffice_web.finance_incidents.get_finance_incident_validation_form"
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
@@ -107,7 +108,7 @@ class GetIncidentValidationFormTest(GetEndpointHelper):
 
 
 class CancelIncidentTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incident.cancel_finance_incident"
+    endpoint = "backoffice_web.finance_incidents.cancel_finance_incident"
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
@@ -158,7 +159,7 @@ class CancelIncidentTest(PostEndpointHelper):
 
 
 class ValidateIncidentTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incident.validate_finance_incident"
+    endpoint = "backoffice_web.finance_incidents.validate_finance_incident"
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
@@ -403,7 +404,7 @@ class CreateIncidentFinanceEventTest:
 
 
 class GetIncidentTest(GetEndpointHelper):
-    endpoint = "backoffice_web.finance_incident.get_incident"
+    endpoint = "backoffice_web.finance_incidents.get_incident"
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.READ_INCIDENTS
     expected_num_queries = 0
@@ -443,7 +444,7 @@ class GetIncidentTest(GetEndpointHelper):
 
 
 class GetIncidentCreationFormTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incident.get_incident_creation_form"
+    endpoint = "backoffice_web.finance_incidents.get_incident_creation_form"
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
     error_message = "Seules les réservations ayant le statut 'remboursée' et correspondant au même lieu peuvent faire l'objet d'un incident"
@@ -530,7 +531,7 @@ class GetIncidentCreationFormTest(PostEndpointHelper):
 
 
 class GetCollectiveBookingIncidentFormTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incident.get_collective_booking_incident_creation_form"
+    endpoint = "backoffice_web.finance_incidents.get_collective_booking_incident_creation_form"
     endpoint_kwargs = {"collective_booking_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
@@ -567,7 +568,7 @@ class GetCollectiveBookingIncidentFormTest(PostEndpointHelper):
 
 
 class CreateIncidentTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incident.create_individual_booking_incident"
+    endpoint = "backoffice_web.finance_incidents.create_individual_booking_incident"
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
     def test_create_incident_from_one_booking(self, legit_user, authenticated_client, invoiced_pricing):
@@ -654,7 +655,7 @@ class CreateIncidentTest(PostEndpointHelper):
 
 
 class CreateIncidentOnCollectiveBookingTest(PostEndpointHelper):
-    endpoint = "backoffice_web.finance_incident.create_collective_booking_incident"
+    endpoint = "backoffice_web.finance_incidents.create_collective_booking_incident"
     endpoint_kwargs = {"collective_booking_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
@@ -728,7 +729,7 @@ class CreateIncidentOnCollectiveBookingTest(PostEndpointHelper):
 
 
 class GetIncidentHistoryTest(GetEndpointHelper):
-    endpoint = "backoffice_web.finance_incident.get_history"
+    endpoint = "backoffice_web.finance_incidents.get_history"
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.READ_INCIDENTS
 
@@ -754,3 +755,156 @@ class GetIncidentHistoryTest(GetEndpointHelper):
         assert creation_action["Date/Heure"].startswith(action.actionDate.strftime("Le %d/%m/%Y à "))
         assert creation_action["Commentaire"] == action.comment
         assert creation_action["Auteur"] == action.authorUser.full_name
+
+
+class GetInvoiceGenerationTest(GetEndpointHelper):
+    endpoint = "backoffice_web.finance_invoices.get_finance_invoices"
+    needed_permission = perm_models.Permissions.GENERATE_INVOICES
+    # Fetch Session
+    # Fetch User
+    # Fetch CashflowBatches
+    expected_num_queries = 3
+
+    @pytest.mark.parametrize(
+        "last_cashflow_status,is_queue_empty,expected_texts,unexpected_texts",
+        [
+            (
+                finance_models.CashflowStatus.UNDER_REVIEW,
+                True,
+                [
+                    "Derniers justificatifs créés",
+                    "VIR1",
+                    "entre le 01/01/2023 et le 15/01/2023",
+                    "Prochains justificatifs générés",
+                    "VIR2",
+                    "entre le 16/01/2023 et le 31/01/2023 ",
+                    "Générer les justificatifs",
+                ],
+                ["Il reste 11 justificatifs sur 40 à générer"],
+            ),
+            (
+                finance_models.CashflowStatus.UNDER_REVIEW,
+                False,
+                [
+                    "Derniers justificatifs créés",
+                    "VIR1",
+                    "entre le 01/01/2023 et le 15/01/2023",
+                    "Justificatifs en cours de génération",
+                    "VIR2",
+                    "entre le 16/01/2023 et le 31/01/2023 ",
+                    "Il reste 11 justificatifs sur 40 à générer",
+                    "Une tâche est déjà en cours pour générer les justificatifs",
+                ],
+                [],
+            ),
+            (
+                finance_models.CashflowStatus.ACCEPTED,
+                True,
+                [
+                    "Derniers justificatifs créés",
+                    "VIR2",
+                    "entre le 16/01/2023 et le 31/01/2023",
+                    "Il n'y a pas de justificatifs à générer pour le moment",
+                ],
+                ["VIR1", "entre le 01/01/2023 et le 15/01/2023", "Il reste 11 justificatifs sur 40 à générer"],
+            ),
+        ],
+    )
+    # with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
+    def test_get_invoices_generation(
+        self, authenticated_client, last_cashflow_status, is_queue_empty, expected_texts, unexpected_texts
+    ):
+        user_offerer = offerers_factories.UserOffererFactory()
+        pro_reimbursement_point1 = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, reimbursement_point="self"
+        )
+        finance_factories.BankInformationFactory(venue=pro_reimbursement_point1)
+        finance_factories.CashflowFactory(
+            status=finance_models.CashflowStatus.ACCEPTED,
+            reimbursementPoint=pro_reimbursement_point1,
+            bankAccount=pro_reimbursement_point1.bankInformation,
+            amount=-2500,
+            batch=finance_factories.CashflowBatchFactory(label="VIR1", cutoff=datetime.datetime(2023, 1, 15)),
+        )
+
+        user_offerer = offerers_factories.UserOffererFactory()
+        pro_reimbursement_point1 = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, reimbursement_point="self"
+        )
+        finance_factories.BankInformationFactory(venue=pro_reimbursement_point1)
+        finance_factories.CashflowFactory(
+            status=last_cashflow_status,
+            reimbursementPoint=pro_reimbursement_point1,
+            bankAccount=pro_reimbursement_point1.bankInformation,
+            amount=-1500,
+            batch=finance_factories.CashflowBatchFactory(label="VIR2", cutoff=datetime.datetime(2023, 1, 31)),
+        )
+
+        with mock.patch("pcapi.tasks.finance_tasks.is_generate_invoices_queue_empty") as queue_empty_mock, mock.patch(
+            "flask.current_app.redis_client.get"
+        ) as redis_client_get_mock:
+            queue_empty_mock.return_value = is_queue_empty
+            redis_client_get_mock.side_effect = [40, 11] if not is_queue_empty else [None, None]
+
+            with assert_num_queries(self.expected_num_queries):
+                response = authenticated_client.get(url_for(self.endpoint))
+                assert response.status_code == 200
+
+        card_text = html_parser.extract_cards_text(response.data)[0]
+
+        for text in expected_texts:
+            assert text in card_text
+        for text in unexpected_texts:
+            assert text not in card_text
+
+
+class GetIncidentGenerationFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.finance_invoices.get_finance_invoices_generation_form"
+    needed_permission = perm_models.Permissions.GENERATE_INVOICES
+
+    # Fetch Session
+    # Fetch User
+    # Fetch CashflowBatches
+    expected_num_queries = 3
+
+    def test_get_incident_validation_form(self, authenticated_client):
+        finance_factories.CashflowBatchFactory()
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint))
+
+        assert response.status_code == 200
+
+
+class GenerateInvoicesTest(PostEndpointHelper):
+    endpoint = "backoffice_web.finance_invoices.generate_invoices"
+    needed_permission = perm_models.Permissions.GENERATE_INVOICES
+
+    def test_generate_invoices(self, authenticated_client):
+        finance_factories.CashflowBatchFactory()
+        should_be_called_batch = finance_factories.CashflowBatchFactory()
+        with mock.patch("pcapi.tasks.finance_tasks.is_generate_invoices_queue_empty") as queue_empty_mock:
+            queue_empty_mock.return_value = True
+
+            with mock.patch(
+                "pcapi.core.finance.api.async_generate_invoices"
+            ) as generate_invoices_mock:  # so as not to generate all the necessary data
+                generate_invoices_mock.return_value = None
+                response = self.post_to_endpoint(authenticated_client)
+                generate_invoices_mock.assert_called_with(should_be_called_batch)
+                assert response.status_code == 302
+                assert (
+                    html_parser.extract_alert(authenticated_client.get(response.location).data)
+                    == "La tâche de génération des justificatifs a été lancée"
+                )
+
+    def test_generate_invoices_when_task_already_running(self, authenticated_client):
+        finance_factories.CashflowBatchFactory.create_batch(2)
+        with mock.patch("pcapi.tasks.finance_tasks.is_generate_invoices_queue_empty") as queue_empty_mock:
+            queue_empty_mock.return_value = False
+
+            response = self.post_to_endpoint(authenticated_client)
+            assert response.status_code == 302
+            assert (
+                html_parser.extract_alert(authenticated_client.get(response.location).data)
+                == "La tâche de génération des justificatifs est déjà en cours"
+            )

@@ -19,6 +19,7 @@ from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories_v2
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
+from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.fraud import models as fraud_models
@@ -95,6 +96,11 @@ def format_date_time(data: datetime.date | datetime.datetime) -> str:
 
 def format_string_to_date_time(data: str) -> str:
     return format_date(datetime.datetime.fromisoformat(data), strformat="%d/%m/%Y à %Hh%M")
+
+
+def format_cutoff_date(cutoff: datetime.datetime, strformat: str = "%d/%m/%Y") -> str:
+    start_period, end_period = finance_api.get_invoice_period(cutoff)
+    return f"Réservations validées entre le {start_period.strftime(strformat)} et le {end_period.strftime(strformat)}"
 
 
 def format_timespan(timespan: psycopg2.extras.DateTimeRange) -> str:
@@ -847,6 +853,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_date"] = format_date
     app.jinja_env.filters["format_date_time"] = format_date_time
     app.jinja_env.filters["format_string_to_date_time"] = format_string_to_date_time
+    app.jinja_env.filters["format_cutoff_date"] = format_cutoff_date
     app.jinja_env.filters["format_timespan"] = format_timespan
     app.jinja_env.filters["format_deposit_type"] = format_deposit_type
     app.jinja_env.filters["format_validation_status"] = format_validation_status

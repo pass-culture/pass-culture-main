@@ -62,7 +62,9 @@ class Permissions(enum.Enum):
     CREATE_REIMBURSEMENT_RULES = "créer un tarif dérogatoire"
 
     READ_INCIDENTS = "visualiser les incidents"
-    MANAGE_INCIDENTS = "Gérer les incidents"
+    MANAGE_INCIDENTS = "gérer les incidents"
+
+    GENERATE_INVOICES = "générer les justificatifs de remboursement"
 
     MANAGE_TECH_PARTNERS = "gérer les partenaires techniques"
 

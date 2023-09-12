@@ -128,3 +128,18 @@ def _call_internal_api_endpoint(queue: str, url: str, payload: typing.Any) -> No
         },
         json=payload,
     )
+
+
+def list_tasks(queue: str) -> list[tasks_v2.Task]:
+    if settings.IS_DEV:
+        return []
+
+    client = get_client()
+    parent = client.queue_path(settings.GCP_PROJECT, settings.GCP_REGION_CLOUD_TASK, queue)
+    request = tasks_v2.ListTasksRequest(
+        parent=parent,
+    )
+
+    page_result = client.list_tasks(request=request)
+
+    return page_result.tasks
