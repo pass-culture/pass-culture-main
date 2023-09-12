@@ -22,6 +22,17 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferTypeIndiviual from '../OfferTypeIndividual'
 
+vi.mock('hooks/useRemoteConfig', () => ({
+  __esModule: true,
+  default: () => ({
+    remoteConfig: {},
+  }),
+}))
+
+vi.mock('@firebase/remote-config', () => ({
+  getValue: () => ({ asBoolean: () => true }),
+}))
+
 const TestForm = (): JSX.Element => {
   const initialValues: OfferTypeFormValues = {
     offerType: OFFER_TYPES.INDIVIDUAL_OR_DUO,
@@ -95,7 +106,7 @@ describe('OfferTypeIndividual', () => {
     expect(screen.queryByText('Votre offre est :')).not.toBeInTheDocument()
   })
 
-  it('should also display macro choices when clicking on "Autre"', async () => {
+  it('should display macro choices when clicking on "Autre"', async () => {
     renderOfferTypeIndividual(true, '123')
 
     expect(
