@@ -65,10 +65,6 @@ class UserOffererAlreadyValidatedException(Exception):
     pass
 
 
-class InvalidSiren(Exception):
-    pass
-
-
 class OffererTagNotFoundException(Exception):
     pass
 

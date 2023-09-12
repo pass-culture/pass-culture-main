@@ -1135,14 +1135,6 @@ def search_backoffice_accounts(search_query: str, order_by: list[str] | None = N
     return _filter_user_accounts(bo_accounts, search_query, order_by=order_by)
 
 
-def skip_phone_validation_step(user: models.User) -> None:
-    if user.phoneValidationStatus == models.PhoneValidationStatusType.VALIDATED:
-        raise phone_validation_exceptions.UserPhoneNumberAlreadyValidated()
-
-    user.phoneValidationStatus = models.PhoneValidationStatusType.SKIPPED_BY_SUPPORT.name
-    repository.save(user)
-
-
 def validate_pro_user_email(user: users_models.User, author_user: users_models.User | None = None) -> None:
     user.validationToken = None
     user.isEmailValidated = True

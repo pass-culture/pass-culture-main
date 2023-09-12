@@ -1045,18 +1045,6 @@ def add_comment_to_venue(venue: offerers_models.Venue, author_user: users_models
     history_api.log_action(history_models.ActionType.COMMENT, author_user, venue=venue, comment=comment)
 
 
-def add_comment_to_offerer_attachment(
-    user_offerer: offerers_models.UserOfferer, author_user: users_models.User, comment: str
-) -> None:
-    history_api.log_action(
-        history_models.ActionType.COMMENT,
-        author_user,
-        user=user_offerer.user,
-        offerer=user_offerer.offerer,
-        comment=comment,
-    )
-
-
 def get_timestamp_from_url(image_url: str) -> str:
     return image_url.split("_")[-1]
 
@@ -1532,43 +1520,6 @@ def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
         "collective_offer": _get_stats_for_offer_type(educational_models.CollectiveOffer),
         "collective_offer_template": _get_stats_for_offer_type(educational_models.CollectiveOfferTemplate),
     }
-
-
-def get_venue_basic_info(venue_id: int) -> sa.engine.Row:
-    dms_application_id_query = sa.select(finance_models.BankInformation.applicationId).filter(
-        finance_models.BankInformation.venueId == venue_id
-    )
-    has_reimbursement_point_query = sa.select(sa.func.count(offerers_models.VenueReimbursementPointLink.id)).filter(
-        offerers_models.VenueReimbursementPointLink.venueId == venue_id,
-        offerers_models.VenueReimbursementPointLink.timespan.contains(datetime.utcnow()),
-    )
-    venue_query = (
-        sa.select(
-            offerers_models.Venue.id,
-            offerers_models.Venue.common_name.label("name"),  # type: ignore[attr-defined]
-            offerers_models.Venue.siret,
-            sa.func.coalesce(
-                offerers_models.VenueContact.email,
-                offerers_models.Venue.bookingEmail,
-            ).label("email"),
-            offerers_models.VenueContact.phone_number,
-            offerers_models.Venue.postalCode,
-            offerers_models.Venue.dmsToken,
-            offerers_models.Venue.venueEducationalStatusId,
-            dms_application_id_query.scalar_subquery().label("dms_application_id"),
-            has_reimbursement_point_query.scalar_subquery().label("has_reimbursement_point"),
-        )
-        .outerjoin(
-            offerers_models.VenueContact,
-        )
-        .filter(
-            offerers_models.Venue.id == venue_id,
-        )
-    )
-
-    venue = db.session.execute(venue_query).one_or_none()
-
-    return venue
 
 
 def get_venue_total_revenue(venue_id: int) -> float:
