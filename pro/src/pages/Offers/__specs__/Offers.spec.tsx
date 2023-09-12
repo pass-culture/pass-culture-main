@@ -933,7 +933,7 @@ describe('route Offers', () => {
 
       screen.getByText('Aucune offre trouvée pour votre recherche')
 
-      await userEvent.click(screen.getByText('afficher toutes les offres'))
+      await userEvent.click(screen.getByText('Afficher toutes les offres'))
 
       expect(api.listOffers).toHaveBeenCalledTimes(2)
       expect(api.listOffers).toHaveBeenNthCalledWith(

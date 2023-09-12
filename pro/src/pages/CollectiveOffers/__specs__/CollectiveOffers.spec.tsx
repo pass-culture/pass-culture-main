@@ -666,7 +666,7 @@ describe('route CollectiveOffers', () => {
 
       screen.getByText('Aucune offre trouvée pour votre recherche')
 
-      await userEvent.click(screen.getByText('afficher toutes les offres'))
+      await userEvent.click(screen.getByText('Afficher toutes les offres'))
 
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(3)
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
