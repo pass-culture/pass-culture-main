@@ -9,7 +9,7 @@ import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
 import { OfferSubCategory } from 'core/Offers/types'
 import { getVenueAdapter } from 'core/Venue/adapters/getVenueAdapter'
 import { Venue } from 'core/Venue/types'
-import useActiveFeature from 'hooks/useActiveFeature'
+import useNewIndividualOfferType from 'hooks/useNewIndividualOfferType'
 import strokeDateIcon from 'icons/stroke-date.svg'
 import thingStrokeIcon from 'icons/stroke-thing.svg'
 import strokeVirtualEventIcon from 'icons/stroke-virtual-event.svg'
@@ -30,7 +30,7 @@ const OfferTypeIndividual = (): JSX.Element | null => {
   const [venue, setVenue] = useState<Venue | null>(null)
   const queryParams = new URLSearchParams(location.search)
   const queryVenueId = queryParams.get('lieu')
-  const isCategorySelectionActive = useActiveFeature('WIP_CATEGORY_SELECTION')
+  const isCategorySelectionActive = useNewIndividualOfferType()
 
   useEffect(() => {
     async function loadData() {
