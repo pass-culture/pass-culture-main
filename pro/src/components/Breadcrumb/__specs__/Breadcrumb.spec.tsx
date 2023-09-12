@@ -76,6 +76,12 @@ describe('Breadcrumb', () => {
       expect(
         await listItems[3].getElementsByClassName('separator')
       ).toHaveLength(0)
+
+      expect(
+        screen.queryByRole('img', {
+          name: 'Une action est requise dans cet onglet',
+        })
+      ).not.toBeInTheDocument()
     })
 
     it('should render link or hash when needed', async () => {
@@ -120,6 +126,21 @@ describe('Breadcrumb', () => {
       informationLink && (await userEvent.click(informationLink))
 
       expect(onClick).toHaveBeenCalledTimes(1)
+    })
+
+    it('should render error icon if step has warning', async () => {
+      props.steps.push({
+        id: '5',
+        label: 'Informations bancaires',
+        hasWarning: true,
+      })
+      renderBreadcrumb(props)
+      expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
+      expect(
+        screen.getByRole('img', {
+          name: 'Une action est requise dans cet onglet',
+        })
+      ).toBeInTheDocument()
     })
   })
 
