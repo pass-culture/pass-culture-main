@@ -70,6 +70,8 @@ class Returns200Test:
                 "allocine_room_id": 987,
             },
             "userName": "Jeanne Doux",
+            "firstName": "Jeanne",
+            "lastName": "Doux",
             "venueAddress": "1 boulevard Poissonnière",
             "venueDepartmentCode": "75",
             "venueName": "Le Petit Rintintin",
