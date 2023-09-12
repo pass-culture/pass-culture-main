@@ -187,8 +187,9 @@ describe('screens | OfferEducational : creation offer type step', () => {
       renderWithProviders(<OfferEducational {...overridedProps} />, {
         storeOverrides: store,
       })
-      const nationalProgramsSelect =
-        await screen.findByLabelText(/Dispositif national/)
+      const nationalProgramsSelect = await screen.findByLabelText(
+        /Dispositif national/
+      )
       await userEvent.click(nationalProgramsSelect)
       await userEvent.selectOptions(nationalProgramsSelect, '2')
       await userEvent.tab()
