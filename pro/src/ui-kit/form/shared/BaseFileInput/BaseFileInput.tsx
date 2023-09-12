@@ -1,8 +1,9 @@
 import cn from 'classnames'
 import React from 'react'
 
-import style from './BaseFileInput.module.scss'
+import buttonStyle from 'ui-kit/Button/Button.module.scss'
 
+import style from './BaseFileInput.module.scss'
 export interface BaseFileInputProps {
   label: string
   fileTypes: string[]
@@ -17,7 +18,13 @@ const BaseFileInput = ({
   fileTypes,
   onChange,
 }: BaseFileInputProps): JSX.Element => (
-  <label className={cn('primary-link ', style['base-file-input-container'])}>
+  <label
+    className={cn(
+      buttonStyle['button'],
+      buttonStyle['button-primary'],
+      style['base-file-input-container']
+    )}
+  >
     {label}
     <input
       accept={fileTypes.join()}

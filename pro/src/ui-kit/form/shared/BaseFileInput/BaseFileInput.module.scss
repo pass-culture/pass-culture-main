@@ -5,15 +5,17 @@
   cursor: pointer;
   margin-bottom: rem.torem(16px);
   padding: 0 rem.torem(32px);
-  text-align: center;
 
   &:focus-within {
-    background-color: colors.$primary-dark;
-    border: rem.torem(3px) solid colors.$primary-dark;
+    outline: rem.torem(1px) solid colors.$input-text-color;
+    outline-offset: rem.torem(2px);
   }
 }
 
 .file-input {
   height: 0;
   width: 0;
+  background-color: transparent;
+  border: none;
+  outline: none;
 }

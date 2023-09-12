@@ -1,5 +1,7 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+
+import { ButtonLink } from 'ui-kit/Button'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './Hero.module.scss'
 
@@ -15,9 +17,12 @@ const Hero = ({ title, text, linkLabel, linkTo }: HeroProps): JSX.Element => (
     <div className={styles['hero-body']}>
       <h1>{title}</h1>
       <h2>{text}</h2>
-      <Link className="primary-link" to={linkTo}>
+      <ButtonLink
+        variant={ButtonVariant.PRIMARY}
+        link={{ isExternal: false, to: linkTo }}
+      >
         {linkLabel}
-      </Link>
+      </ButtonLink>
     </div>
   </section>
 )
