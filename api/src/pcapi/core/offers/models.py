@@ -24,6 +24,7 @@ import pcapi.core.bookings.constants as bookings_constants
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
 from pcapi.core.categories import subcategories_v2
+from pcapi.core.providers.models import VenueProvider
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
@@ -714,6 +715,20 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
             ],
             else_=OfferStatus.ACTIVE.name,
         )
+
+    @property
+    def isActivable(self) -> bool:
+        if self.status == OfferStatus.REJECTED or not self.isBookable:
+            return False
+        if (
+            self.lastProviderId
+            and not VenueProvider.query.filter_by(
+                isActive=True,
+                providerId=self.lastProviderId,
+            ).one_or_none()
+        ):
+            return False
+        return True
 
 
 class ActivationCode(PcObject, Base, Model):

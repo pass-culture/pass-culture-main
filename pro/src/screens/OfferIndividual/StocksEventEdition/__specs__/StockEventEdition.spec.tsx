@@ -167,6 +167,7 @@ describe('screens:StocksEventEdition', () => {
       extraData: null,
       hasBookingLimitDatetimesPassed: true,
       isActive: true,
+      isActivable: true,
       isDigital: false,
       isDuo: false,
       isEditable: true,

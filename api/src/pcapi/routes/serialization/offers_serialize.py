@@ -343,6 +343,7 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     extraData: Any
     hasBookingLimitDatetimesPassed: bool
     isActive: bool
+    isActivable: bool
     isDigital: bool
     isDuo: bool
     isEditable: bool
