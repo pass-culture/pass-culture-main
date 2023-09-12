@@ -7,12 +7,6 @@ from pcapi.repository import repository
 AnyCollectiveOffer = models.CollectiveOffer | models.CollectiveOfferTemplate
 
 
-def create_national_program(name: str) -> models.NationalProgram:
-    program = models.NationalProgram(name=name)
-    repository.save(program)
-    return program
-
-
 def _link_offer(program: models.NationalProgram, offer: AnyCollectiveOffer, commit: bool) -> None:
     offer.nationalProgramId = program.id
 

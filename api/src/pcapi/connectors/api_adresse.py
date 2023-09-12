@@ -36,17 +36,6 @@ class InvalidFormatException(AdresseException):
     pass
 
 
-class _Properties(pydantic_v1.BaseModel):
-    id: str
-    score: float
-    label: str
-
-
-class _Geometry(pydantic_v1.BaseModel):
-    latitude: float
-    longitude: float
-
-
 class AddressInfo(pydantic_v1.BaseModel):
     id: str
     label: str

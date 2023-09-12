@@ -13,10 +13,6 @@ class ApiKeyDeletionDenied(Exception):
     pass
 
 
-class ValidationTokenNotFoundError(Exception):
-    pass
-
-
 class CannotFindOffererForOfferId(Exception):
     pass
 
@@ -62,10 +58,6 @@ class OffererAlreadyRejectedException(Exception):
 
 
 class UserOffererAlreadyValidatedException(Exception):
-    pass
-
-
-class OffererTagNotFoundException(Exception):
     pass
 
 

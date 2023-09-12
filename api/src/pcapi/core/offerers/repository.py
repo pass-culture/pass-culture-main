@@ -355,10 +355,6 @@ def venues_have_offers(*venues: models.Venue) -> bool:
     ).scalar()
 
 
-def find_venues_by_managing_offerer_id(offerer_id: int) -> list[models.Venue]:
-    return models.Venue.query.filter_by(managingOffererId=offerer_id).all()
-
-
 def offerer_has_venue_with_adage_id(offerer_id: int) -> bool:
     query = db.session.query(models.Venue.id)
     query = query.join(models.Offerer, models.Venue.managingOfferer)

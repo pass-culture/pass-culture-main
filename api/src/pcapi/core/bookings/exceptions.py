@@ -114,7 +114,3 @@ class ConfirmationLimitDateHasPassed(Exception):
 
 class BookingIsExpired(Exception):
     pass
-
-
-class BookingNotConfirmed(Exception):
-    pass

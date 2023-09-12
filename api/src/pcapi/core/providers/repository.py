@@ -50,10 +50,6 @@ def get_provider_by_name(name: str) -> models.Provider:
     return models.Provider.query.filter_by(name=name).one()
 
 
-def get_active_providers_query() -> BaseQuery:
-    return models.Provider.query.filter_by(isActive=True).order_by(models.Provider.name)
-
-
 def get_available_providers(venue: Venue) -> BaseQuery:
     from pcapi.local_providers import AllocineStocks
 

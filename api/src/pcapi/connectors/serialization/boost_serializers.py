@@ -7,9 +7,6 @@ import pcapi.core.external_bookings.models as external_bookings_models
 from pcapi.routes.serialization import BaseModel
 
 
-BOOST_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
-
-
 class LoginBoost(BaseModel):
     code: int | None
     message: str

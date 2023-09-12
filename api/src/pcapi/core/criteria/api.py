@@ -20,7 +20,6 @@ Mapper = models.OfferCriterion | models.VenueCriterion
 
 IterOfferCriterion = typing.Iterable[models.OfferCriterion]
 IterVenueCriterion = typing.Iterable[models.VenueCriterion]
-IterMapper = IterOfferCriterion | IterVenueCriterion
 
 BaseModel = typing.Union[typing.Type[offers_models.Offer], typing.Type[offerers_models.Venue]]
 MapperModel = typing.Union[typing.Type[models.OfferCriterion], typing.Type[models.VenueCriterion]]

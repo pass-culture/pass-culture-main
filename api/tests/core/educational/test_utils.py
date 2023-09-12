@@ -52,32 +52,6 @@ class ComputeEducationalBookingCancellationLimitDateTest:
         assert cancellation_limit_date == booking_datetime
 
 
-class GetInstitutionTypeAndNameTest:
-    def test_simple_cases(self) -> None:
-        # Given
-        test_cases = {
-            "LP pouet": ("LYCEE PROFESSIONNEL", "pouet"),
-            "E.R.P.D.PR taça": ("ECOLE REGIONALE DU PREMIER DEGRE PRIVEE", "taça"),
-        }
-        for given, expected in test_cases.items():
-            result = utils.get_institution_type_and_name(given)
-            assert result == expected
-
-    def test_institution_without_type(self) -> None:
-        result = utils.get_institution_type_and_name(" rien")
-        assert result == ("", "rien")
-
-    def test_conflitcual_cases(self) -> None:
-        # Given
-        test_cases = {
-            "LG PR pouet": ("LYCEE GENERAL PRIVE", "pouet"),
-            "LGTA taça": ("LYCEE GENERAL TECHNOLOGIQUE AGRICOLE", "taça"),
-        }
-        for given, expected in test_cases.items():
-            result = utils.get_institution_type_and_name(given)
-            assert result == expected
-
-
 class HashUserEmailTest:
     def test_should_hash_user_email(self) -> None:
         # Given
