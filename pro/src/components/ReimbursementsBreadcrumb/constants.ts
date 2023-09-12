@@ -1,6 +1,8 @@
+import { Step } from 'components/Breadcrumb'
+
 const STEP_ID_INVOICES = 'justificatifs'
 const STEP_ID_DETAILS = 'details'
-const STEP_ID_BANK_INFORMATIONS = 'informations-bancaires'
+export const STEP_ID_BANK_INFORMATIONS = 'informations-bancaires'
 
 // TODO: Remove after WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY deleted
 export const OLD_STEP_NAMES = [STEP_ID_INVOICES, STEP_ID_DETAILS]
@@ -25,7 +27,7 @@ export const OLD_STEP_LIST = [
   },
 ]
 
-export const STEP_LIST = [
+export const STEP_LIST: Step[] = [
   {
     id: STEP_ID_INVOICES,
     label: 'Justificatifs',
