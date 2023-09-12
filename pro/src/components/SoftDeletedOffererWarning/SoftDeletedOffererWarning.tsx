@@ -1,5 +1,7 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+
+import { ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import styles from './SoftDeletedOffererWarning.module.scss'
 
@@ -13,15 +15,21 @@ const SoftDeletedOffererWarning = (): JSX.Element => {
         </p>
 
         <div className="actions-container">
-          <Link className="primary-link" to="/structures/creation">
+          <ButtonLink
+            variant={ButtonVariant.PRIMARY}
+            link={{ isExternal: false, to: '/structures/creation' }}
+          >
             Ajouter une nouvelle structure
-          </Link>
-          <a
-            className="secondary-link"
-            href="mailto:support-pro@passculture.app"
+          </ButtonLink>
+          <ButtonLink
+            variant={ButtonVariant.SECONDARY}
+            link={{
+              isExternal: true,
+              to: 'mailto:support-pro@passculture.app',
+            }}
           >
             Contacter le support
-          </a>
+          </ButtonLink>
         </div>
       </div>
     </div>
