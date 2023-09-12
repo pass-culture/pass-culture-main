@@ -12,11 +12,13 @@ export type GetBookingResponse = {
   datetime: string;
   ean13?: string | null;
   email: string;
+  firstName?: string | null;
   /**
    * S'applique uniquement aux offres de catégorie Cinéma. Abonnement (ABO) ou place (PLACE).
    */
   formula?: BookingFormula | null;
   isUsed: boolean;
+  lastName?: string | null;
   offerId: number;
   offerName: string;
   offerType: BookingOfferType;

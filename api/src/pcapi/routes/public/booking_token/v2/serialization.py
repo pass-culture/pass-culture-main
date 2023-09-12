@@ -47,6 +47,8 @@ class GetBookingResponse(BaseModel):
         example={"film_id": "...", "salle_id": "..."},
     )
     userName: str
+    firstName: str | None
+    lastName: str | None
     venueAddress: str | None
     venueDepartmentCode: str | None
     venueName: str
@@ -86,6 +88,8 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         quantity=booking.quantity,
         theater=extra_data.get("theater", ""),
         userName=booking.userName,
+        firstName=booking.user.firstName,
+        lastName=booking.user.lastName,
         venueAddress=booking.venue.address,
         venueDepartmentCode=booking.venue.departementCode,
         venueName=booking.venue.name,
