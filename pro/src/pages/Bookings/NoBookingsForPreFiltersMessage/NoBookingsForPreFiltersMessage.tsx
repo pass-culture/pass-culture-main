@@ -2,6 +2,8 @@ import React from 'react'
 
 import './NoBookingsForPreFiltersMessage.scss'
 import strokeSearchIcon from 'icons/stroke-search.svg'
+import { Button } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 interface NoBookingsForPreFiltersMessageProps {
@@ -21,13 +23,14 @@ const NoBookingsForPreFiltersMessage = ({
     <p>Aucune réservation trouvée pour votre recherche</p>
     <p>
       {'Vous pouvez modifier vos filtres et lancer une nouvelle recherche ou '}
-      <button
-        className="tertiary-button reset-filters-link"
+      <Button
+        className="reset-filters-link"
         onClick={resetPreFilters}
         type="button"
+        variant={ButtonVariant.TERNARYPINK}
       >
         réinitialiser les filtres
-      </button>
+      </Button>
     </p>
   </div>
 )

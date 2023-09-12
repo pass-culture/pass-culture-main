@@ -17,28 +17,6 @@
     margin-top: rem.torem(36px);
   }
 
-  .reset-filters {
-    @include fonts.button;
-
-    color: colors.$primary;
-    line-height: rem.torem(22px);
-
-    &:hover,
-    &:focus {
-      text-decoration: underline;
-    }
-
-    &:disabled {
-      color: colors.$grey-dark;
-
-      &:hover,
-      &:focus {
-        cursor: auto;
-        text-decoration: none;
-      }
-    }
-  }
-
   .button-group {
     margin-bottom: rem.torem(16px);
     position: relative;
