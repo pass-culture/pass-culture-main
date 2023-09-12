@@ -16,17 +16,7 @@ vi.mock('utils/date', async () => ({
   getToday: vi.fn(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
-const renderReimbursementsInvoices = () => {
-  const storeOverrides = {
-    user: {
-      currentUser: {
-        isAdmin: false,
-        hasSeenProTutorials: true,
-      },
-      initialized: true,
-    },
-  }
-
+const renderReimbursementsInvoices = async (storeOverrides: any) => {
   renderWithProviders(<ReimbursementsInvoices />, {
     storeOverrides,
   })
@@ -73,7 +63,24 @@ const BASE_REIMBURSEMENT_POINTS = [
 ]
 
 describe('reimbursementsWithFilters', () => {
+  let store: any
+
   beforeEach(() => {
+    store = {
+      user: {
+        currentUser: {
+          isAdmin: false,
+          hasSeenProTutorials: true,
+        },
+        initialized: true,
+      },
+      features: {
+        list: [
+          { isActive: false, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
+        ],
+      },
+    }
+
     vi.spyOn(api, 'getInvoices').mockResolvedValue(BASE_INVOICES)
     vi.spyOn(api, 'getReimbursementPoints').mockResolvedValue(
       BASE_REIMBURSEMENT_POINTS
@@ -81,7 +88,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('shoud render a table with invoices', async () => {
-    renderReimbursementsInvoices()
+    renderReimbursementsInvoices(store)
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -131,7 +138,7 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should reorder invoices on order buttons click', async () => {
-    renderReimbursementsInvoices()
+    renderReimbursementsInvoices(store)
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -156,5 +163,28 @@ describe('reimbursementsWithFilters', () => {
     expect(reimbursementCells[3].innerHTML).toContain('VIR9, VIR12')
     expect(reimbursementCells[9].innerHTML).toContain('VIR4')
     expect(reimbursementCells[15].innerHTML).toContain('VIR7')
+  })
+
+  it('should not display invoice banner if FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is off', async () => {
+    renderReimbursementsInvoices(store)
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    expect(
+      screen.queryByText(
+        'Les remboursements s’effectuent tous les 15 jours, rétroactivement suite à la validation d’une contremarque dans le guichet ou à la validation automatique des contremarques d’évènements. Cette page est automatiquement mise à jour à chaque remboursement.'
+      )
+    ).not.toBeInTheDocument()
+  })
+
+  it('should display invoice banner if FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is enable', async () => {
+    store.features.list[0].isActive = true
+    renderReimbursementsInvoices(store)
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    expect(
+      screen.getByText(
+        'Les remboursements s’effectuent tous les 15 jours, rétroactivement suite à la validation d’une contremarque dans le guichet ou à la validation automatique des contremarques d’évènements. Cette page est automatiquement mise à jour à chaque remboursement.'
+      )
+    ).toBeInTheDocument()
   })
 })
