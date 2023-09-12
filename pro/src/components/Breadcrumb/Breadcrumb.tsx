@@ -72,7 +72,7 @@ const Breadcrumb = ({
                   {step.hasWarning && (
                     <SvgIcon
                       src={fullErrorIcon}
-                      alt=""
+                      alt="Une action est requise dans cet onglet"
                       width="20"
                       className={styles['error-icon']}
                     />
@@ -87,7 +87,7 @@ const Breadcrumb = ({
                   {step.hasWarning && (
                     <SvgIcon
                       src={fullErrorIcon}
-                      alt=""
+                      alt="Une action est requise dans cet onglet"
                       width="20"
                       className={styles['error-icon']}
                     />
@@ -95,11 +95,11 @@ const Breadcrumb = ({
                 </a>
               ) : (
                 <span>
-                  step.label
+                  {step.label}
                   {step.hasWarning && (
                     <SvgIcon
                       src={fullErrorIcon}
-                      alt=""
+                      alt="Une action est requise dans cet onglet"
                       width="20"
                       className={styles['error-icon']}
                     />
