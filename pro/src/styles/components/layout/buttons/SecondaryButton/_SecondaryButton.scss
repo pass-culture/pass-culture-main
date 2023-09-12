@@ -49,18 +49,6 @@
   }
 }
 
-.secondary-button {
-  @include secondary;
-
-  &:disabled {
-    background-color: colors.$white;
-    border: rem.torem(2px) solid colors.$primary-disabled;
-    color: colors.$primary-disabled;
-    cursor: not-allowed;
-    opacity: 1;
-  }
-}
-
 .secondary-link {
   @include secondary;
 
