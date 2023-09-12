@@ -39,9 +39,7 @@ const renderNotifications = ({
     >
       <Form>
         <Notifications {...props} venueBookingEmail={venueBookingEmail} />
-        <SubmitButton className="primary-button" isLoading={false}>
-          Submit
-        </SubmitButton>
+        <SubmitButton isLoading={false}>Submit</SubmitButton>
       </Form>
     </Formik>,
     { storeOverrides }

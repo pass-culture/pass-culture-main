@@ -57,10 +57,7 @@ const Template: Story<Props> = () => {
                     >
                       Annuler
                     </Button>
-                    <SubmitButton
-                      className="primary-button"
-                      isLoading={formik.isSubmitting}
-                    >
+                    <SubmitButton isLoading={formik.isSubmitting}>
                       Enregistrer
                     </SubmitButton>
                   </div>

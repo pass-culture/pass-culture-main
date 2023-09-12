@@ -42,8 +42,8 @@ const MultiDownloadButtonsModal = ({
   return (
     <div ref={containerRef} className={style['download-button-box']}>
       <div className={style['download-modal-button']}>
-        <button
-          className="primary-button"
+        <Button
+          variant={ButtonVariant.PRIMARY}
           disabled={isDownloading || isLocalLoading || isFiltersDisabled}
           onClick={() => {
             logEvent?.(Events.CLICKED_DOWNLOAD_BOOKINGS, {
@@ -59,7 +59,7 @@ const MultiDownloadButtonsModal = ({
           ) : (
             <SvgIcon src={fullDownIcon} alt="" className={style['drop-icon']} />
           )}
-        </button>
+        </Button>
       </div>
 
       {isDownloadModalOptionOpen && (

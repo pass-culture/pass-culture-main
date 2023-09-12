@@ -205,7 +205,6 @@ const OfferEducationalForm = ({
         </ActionsBarSticky.Left>
         <ActionsBarSticky.Right>
           <SubmitButton
-            className="primary-button"
             disabled={!isEligible || mode === Mode.READ_ONLY}
             isLoading={isLoading}
           >
