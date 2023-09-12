@@ -206,7 +206,7 @@ def get_incident_creation_form() -> utils.BackofficeResponse:
 
         if not bookings or len({booking.venueId for booking in bookings}) > 1:
             return Response(
-                """<div class="alert alert-info m-0">Seules les réservations ayant le statut 'remboursée' et 
+                """<div class="alert alert-info m-0">Seules les réservations ayant le statut 'remboursée' et
                 correspondant au même lieu peuvent faire l'objet d'un incident</div>"""
             )
 
@@ -380,14 +380,14 @@ def _initialize_additional_data(bookings: list[bookings_models.Booking]) -> dict
     if len(bookings) == 1:
         booking = bookings[0]
 
-        additional_data["ID de la réservation"] = booking.id
+        additional_data["ID de la réservation"] = booking.id  # type: ignore [assignment]
         additional_data["Statut de la réservation"] = filters.format_booking_status(booking.status)
         additional_data["Contremarque"] = booking.token
         additional_data["Nom de l'offre"] = booking.stock.offer.name
-        additional_data["Bénéficiaire"] = booking.user.full_name
+        additional_data["Bénéficiaire"] = booking.user.full_name  # type: ignore [assignment]
         additional_data["Montant remboursé à l'acteur"] = f"{-booking.pricing.amount/100 if booking.pricing else 0} €"
     else:
-        additional_data["Nombre de réservations"] = len(bookings)
+        additional_data["Nombre de réservations"] = len(bookings)  # type: ignore [assignment]
         additional_data[
             "Montant remboursé à l'acteur"
         ] = f"{-sum(booking.pricing.amount for booking in bookings if booking.pricing)/100} €"

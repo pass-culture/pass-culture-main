@@ -24,7 +24,7 @@ class OfferRecapVenue:
         is_virtual: bool,
         managing_offerer_id: int,
         name: str,
-        public_name: str,
+        public_name: str | None,
         offerer_name: str,
         venue_departement_code: str | None,
     ):
@@ -55,7 +55,7 @@ class OfferRecap:
         venue_managing_offerer_id: int,
         venue_name: str,
         venue_offerer_name: str,
-        venue_public_name: str,
+        venue_public_name: str | None,
         venue_departement_code: str | None,
         stocks: list[dict],
         status: str,

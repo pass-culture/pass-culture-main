@@ -74,6 +74,7 @@ export const GetIndividualOfferFactory = (
   return {
     name: `Le nom de l’offre ${currentOfferId}`,
     isActive: true,
+    isActivable: true,
     isEditable: true,
     isEvent: false,
     isThing: true,

@@ -171,6 +171,7 @@ class Returns200Test:
             "externalTicketOfficeUrl": "http://example.net",
             "hasBookingLimitDatetimesPassed": False,
             "isActive": True,
+            "isActivable": True,
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": False,
