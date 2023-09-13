@@ -96,6 +96,7 @@ class GetOffererResponseModel(BaseModel):
     postalCode: str
     # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
     siren: str | None
+    dsToken: str
 
     @classmethod
     def from_orm(cls, offerer: offerers_models.Offerer) -> "GetOffererResponseModel":

@@ -782,6 +782,8 @@ class Offerer(
     offererProviders: list["OffererProvider"] = sa.orm.relationship("OffererProvider", back_populates="offerer")
     thumb_path_component = "offerers"
 
+    dsToken: str = Column(Text, nullable=True, unique=True)
+
     @property
     def bic(self) -> str | None:
         return self.bankInformation.bic if self.bankInformation else None
