@@ -63,6 +63,8 @@ class Permissions(enum.Enum):
     READ_INCIDENTS = "visualiser les incidents"
     MANAGE_INCIDENTS = "Gérer les incidents"
 
+    MANAGE_TECH_PARTNERS = "gérer les partenaires techniques"
+
     @classmethod
     def exists(cls, name: str) -> bool:
         try:
