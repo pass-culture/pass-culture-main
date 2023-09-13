@@ -211,6 +211,7 @@ export const defautGetOffererResponseModel: GetOffererResponseModel = {
   name: 'Ma super structure',
   id: 0,
   postalCode: '00000',
+  dsToken: '',
 }
 
 export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =

@@ -100,6 +100,7 @@ describe('creationLinks', () => {
         siren: '222222222',
         managedVenues: [],
         hasAvailablePricingPoints: true,
+        dsToken: '',
       } as GetOffererResponseModel,
     ]
     baseOfferersNames = baseOfferers.map(offerer => ({
