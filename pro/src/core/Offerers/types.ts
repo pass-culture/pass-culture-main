@@ -25,4 +25,5 @@ export interface Offerer {
   id: number
   postalCode: string
   siren: string
+  dsToken: string
 }

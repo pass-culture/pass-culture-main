@@ -69,6 +69,7 @@ const Homepage = (): JSX.Element => {
             name: '',
             id: Number(offererId) ?? 0,
             postalCode: '',
+            dsToken: '',
           })
           setVenues(INITIAL_OFFERER_VENUES)
           setIsUserOffererValidated(false)

@@ -100,6 +100,7 @@ describe('homepage', () => {
             publicName: 'Le deuxième Sous-sol',
           } as GetOffererVenueResponseModel,
         ],
+        dsToken: '',
       },
       {
         address: 'RUE DE NIEUPORT',
@@ -119,6 +120,7 @@ describe('homepage', () => {
         managedVenues: [],
         hasAvailablePricingPoints: true,
         isActive: true,
+        dsToken: '',
       },
     ]
 
