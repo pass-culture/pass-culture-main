@@ -3,10 +3,7 @@ import logging
 from flask import Blueprint
 
 from pcapi import settings
-from pcapi.core.permissions.models import Permission
-from pcapi.core.permissions.models import Permissions
-from pcapi.core.permissions.models import Role
-from pcapi.core.permissions.models import RolePermission
+from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 
 
@@ -14,8 +11,8 @@ logger = logging.getLogger(__name__)
 blueprint = Blueprint("add_permissions_to_staging_specific_roles", __name__)
 
 
-def _purge_role_permissions(role: Role) -> None:
-    RolePermission.query.filter(RolePermission.roleId == role.id).delete()
+def _purge_role_permissions(role: perm_models.Role) -> None:
+    perm_models.RolePermission.query.filter(perm_models.RolePermission.roleId == role.id).delete()
 
 
 @blueprint.cli.command("add_permissions_to_staging_specific_roles")
@@ -26,15 +23,17 @@ def add_permissions_to_staging_specific_roles() -> None:
         logger.error("This function is not supposed to be run on production")
         return
 
-    qa_role = Role.query.filter(Role.name == "qa").one_or_none()
-    global_access_role = Role.query.filter(Role.name == "global-access").one_or_none()
+    qa_role = perm_models.Role.query.filter(perm_models.Role.name == perm_models.Roles.QA.value).one_or_none()
+    global_access_role = perm_models.Role.query.filter(
+        perm_models.Role.name == perm_models.Roles.GLOBAL_ACCESS.value
+    ).one_or_none()
 
     if not qa_role:
-        logger.error('"qa" role does not exist.')
+        logger.error("'%s' role does not exist.", perm_models.Roles.QA.value)
         return
 
     if not global_access_role:
-        logger.error('"global-access" role does not exist.')
+        logger.error("'%s' role does not exist.", perm_models.Roles.GLOBAL_ACCESS.value)
         return
 
     # avoid conflicts on RolePermission creations
@@ -43,10 +42,12 @@ def add_permissions_to_staging_specific_roles() -> None:
 
     role_permissions_to_create = []
 
-    for permission in Permission.query.all():
-        role_permissions_to_create.append(RolePermission(roleId=qa_role.id, permissionId=permission.id))
-        if permission.name != Permissions.MANAGE_PERMISSIONS.name:
-            role_permissions_to_create.append(RolePermission(roleId=global_access_role.id, permissionId=permission.id))
+    for permission in perm_models.Permission.query.all():
+        role_permissions_to_create.append(perm_models.RolePermission(roleId=qa_role.id, permissionId=permission.id))
+        if permission.name != perm_models.Permissions.MANAGE_PERMISSIONS.name:
+            role_permissions_to_create.append(
+                perm_models.RolePermission(roleId=global_access_role.id, permissionId=permission.id)
+            )
 
     db.session.bulk_save_objects(role_permissions_to_create)
     db.session.commit()
