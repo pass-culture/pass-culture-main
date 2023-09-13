@@ -14,6 +14,7 @@ export interface Offerer {
   siren: string
   id: number
   demarchesSimplifieesApplicationId: string
+  dsToken: string
 }
 
 export const transformOffererResponseModelToOfferer = (
@@ -31,6 +32,7 @@ export const transformOffererResponseModelToOfferer = (
   id: offerer.id || 0,
   demarchesSimplifieesApplicationId:
     offerer.demarchesSimplifieesApplicationId || '',
+  dsToken: offerer.dsToken,
 })
 
 export const formatSiren = (siren: string) => {

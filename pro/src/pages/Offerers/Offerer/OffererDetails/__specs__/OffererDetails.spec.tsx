@@ -50,7 +50,7 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
           venueTypeCode: VenueTypeCode.AUTRE,
         },
       ],
-      dsToken: '',
+      dsToken: '0123456789abcdef',
     })
   })
 
@@ -61,6 +61,9 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
 
       expect(screen.getByText('Lieux')).toBeInTheDocument()
       expect(screen.getByText('fake venue')).toBeInTheDocument()
+      expect(
+        screen.getByText('Identifiant du lieu : 0123456789abcdef')
+      ).toBeInTheDocument()
     })
 
     it("shouldn't render anything if venues won't load", async () => {
