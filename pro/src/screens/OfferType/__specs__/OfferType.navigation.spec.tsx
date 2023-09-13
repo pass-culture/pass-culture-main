@@ -78,7 +78,7 @@ describe('screens:OfferIndividual::OfferType', () => {
     renderOfferTypes('123')
 
     expect(
-      await screen.findByText('Quel est la catégorie de l’offre ?')
+      await screen.findByText('Quelle est la catégorie de l’offre ?')
     ).toBeInTheDocument()
     await userEvent.click(screen.getByText('autre'))
     await userEvent.click(screen.getByText('Un évènement physique daté'))
@@ -94,7 +94,7 @@ describe('screens:OfferIndividual::OfferType', () => {
     renderOfferTypes('123')
 
     expect(
-      await screen.findByText('Quel est la catégorie de l’offre ?')
+      await screen.findByText('Quelle est la catégorie de l’offre ?')
     ).toBeInTheDocument()
     await userEvent.click(screen.getByText('Ma sous-catégorie préférée'))
     await userEvent.click(screen.getByText('Étape suivante'))
