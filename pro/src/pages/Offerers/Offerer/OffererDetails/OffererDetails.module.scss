@@ -1,6 +1,33 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_a11y.scss" as a11y;
+
+.offerer-form-heading {
+  margin-bottom: rem.torem(32px);
+}
+
+.title-page {
+  display: flex;
+  justify-content: space-between;
+}
+
+.offerer-name {
+  margin-bottom: rem.torem(8px);
+}
+
+.description {
+  @include fonts.body;
+
+  margin-top: rem.torem(20px);
+}
+
+.identifier {
+  &-hidden {
+    @include a11y.visually-hidden;
+  }
+}
+
 
 .offerer-page-container {
   max-width: rem.torem(486px);
