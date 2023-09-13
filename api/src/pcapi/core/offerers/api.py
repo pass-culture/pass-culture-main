@@ -666,8 +666,8 @@ def create_offerer(
             offerers_models.UserOfferer.query.filter_by(userId=user.id, offererId=offerer.id)
             .filter(
                 sa.or_(
-                    offerers_models.UserOfferer.validationStatus == ValidationStatus.REJECTED,
-                    offerers_models.UserOfferer.validationStatus == ValidationStatus.DELETED,
+                    offerers_models.UserOfferer.isRejected,
+                    offerers_models.UserOfferer.isDeleted,
                 )
             )
             .first()
