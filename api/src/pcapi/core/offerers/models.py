@@ -70,6 +70,7 @@ if typing.TYPE_CHECKING:
     import pcapi.core.providers.models as providers_models
     import pcapi.core.users.models as users_models
 
+
 logger = logging.getLogger(__name__)
 
 CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS = """
@@ -214,6 +215,7 @@ VENUE_TYPE_DEFAULT_BANNERS: dict[VenueTypeCode, tuple[str, ...]] = {
         "darya-tryfanava-UCNaGWn4EfU-unsplash.jpg",
     ),
 }
+
 
 VenueTypeCodeKey = enum.Enum(  # type: ignore [misc]
     "VenueTypeCodeKey",
@@ -443,10 +445,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
     def last_collective_dms_application(self) -> educational_models.CollectiveDmsApplication | None:
         if self.collectiveDmsApplications:
             return sorted(
-                self.collectiveDmsApplications,
-                key=lambda application: application.lastChangeDate,
-                reverse=True
-                # type: ignore [return-value, arg-type]
+                self.collectiveDmsApplications, key=lambda application: application.lastChangeDate, reverse=True  # type: ignore [return-value, arg-type]
             )[0]
         return None
 
@@ -844,13 +843,9 @@ class Offerer(
     def first_user(self) -> "users_models.User | None":
         # Currently there is no way to mark a UserOfferer as the owner/creator, so we consider that this first user
         # is the oldest entry in the table. When creator leaves the offerer, next registered user becomes the "first".
-        # The relation being preserved during a rejection or deletion, we always keep an active user
         if not self.UserOfferers:
             return None
-        for user_offerer in self.UserOfferers:
-            if not (user_offerer.isRejected or user_offerer.isDeleted):
-                return user_offerer.user
-        return None
+        return self.UserOfferers[0].user
 
 
 class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):

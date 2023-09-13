@@ -5,7 +5,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
-from pcapi.core.users import factories as users_factories
+from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.models import User
 from pcapi.models.validation_status_mixin import ValidationStatus
 
@@ -100,7 +100,7 @@ class Returns204Test:
     def when_successful_and_existing_offerer_creates_editor_user_offerer_and_does_not_log_in(self, client):
         # Given
         offerer = offerers_factories.NotValidatedOffererFactory(siren="349974931")
-        pro = users_factories.ProFactory(email="bobby@test.com")
+        pro = ProFactory(email="bobby@test.com")
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         data = BASE_DATA_PRO.copy()

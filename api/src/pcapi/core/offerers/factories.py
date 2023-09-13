@@ -188,14 +188,6 @@ class NotValidatedUserOffererFactory(UserOffererFactory):
     validationStatus = ValidationStatus.NEW
 
 
-class RejectedUserOffererFactory(UserOffererFactory):
-    validationStatus = ValidationStatus.REJECTED
-
-
-class DeletedUserOffererFactory(UserOffererFactory):
-    validationStatus = ValidationStatus.DELETED
-
-
 class UserNotValidatedOffererFactory(BaseFactory):
     class Meta:
         model = models.UserOfferer

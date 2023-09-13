@@ -660,23 +660,7 @@ def create_offerer(
     is_new = False
 
     if offerer is not None:
-        # The user can have his attachment rejected or deleted to the structure,
-        # in this case it is passed to NEW if the structure is not rejected
-        user_offerer = (
-            offerers_models.UserOfferer.query.filter_by(userId=user.id, offererId=offerer.id)
-            .filter(
-                sa.or_(
-                    offerers_models.UserOfferer.isRejected,
-                    offerers_models.UserOfferer.isDeleted,
-                )
-            )
-            .first()
-        )
-        if user_offerer:
-            user_offerer.validationStatus = ValidationStatus.VALIDATED
-        else:
-            user_offerer = grant_user_offerer_access(offerer, user)
-
+        user_offerer = grant_user_offerer_access(offerer, user)
         objects_to_save = [user_offerer]
         if offerer.isRejected:
             # When offerer was rejected, it is considered as a new offerer in validation process;
@@ -687,7 +671,6 @@ def create_offerer(
             objects_to_save += [offerer]
         else:
             user_offerer.validationStatus = ValidationStatus.NEW
-            user_offerer.dateCreated = datetime.utcnow()
             extra_data = {}
             _add_new_onboarding_info_to_extra_data(new_onboarding_info, extra_data)
             objects_to_save += [
@@ -850,14 +833,8 @@ def set_offerer_attachment_pending(
 
 
 def reject_offerer_attachment(
-    user_offerer: offerers_models.UserOfferer,
-    author_user: users_models.User,
-    comment: str | None = None,
-    commit: bool = True,
+    user_offerer: offerers_models.UserOfferer, author_user: users_models.User, comment: str | None = None
 ) -> None:
-    user_offerer.validationStatus = ValidationStatus.REJECTED
-    db.session.add(user_offerer)
-
     db.session.add(
         history_api.log_action(
             history_models.ActionType.USER_OFFERER_REJECTED,
@@ -875,10 +852,9 @@ def reject_offerer_attachment(
             extra={"offerer": user_offerer.offerer.id},
         )
 
+    db.session.delete(user_offerer)
     remove_pro_role_and_add_non_attached_pro_role([user_offerer.user])
-
-    if commit:
-        db.session.commit()
+    db.session.commit()
 
 
 def delete_offerer_attachment(
@@ -886,9 +862,6 @@ def delete_offerer_attachment(
     author_user: users_models.User,
     comment: str | None = None,
 ) -> None:
-    user_offerer.validationStatus = ValidationStatus.DELETED
-    db.session.add(user_offerer)
-
     db.session.add(
         history_api.log_action(
             history_models.ActionType.USER_OFFERER_DELETED,
@@ -900,6 +873,7 @@ def delete_offerer_attachment(
         )
     )
 
+    db.session.delete(user_offerer)
     remove_pro_role_and_add_non_attached_pro_role([user_offerer.user])
     db.session.commit()
 
@@ -977,11 +951,8 @@ def reject_offerer(
                 extra={"offerer": offerer.id},
             )
 
-    users_offerer = offerers_models.UserOfferer.query.filter_by(offererId=offerer.id).all()
-    for user_offerer in users_offerer:
-        reject_offerer_attachment(
-            user_offerer, author_user, "Compte pro rejeté suite au rejet de la structure", commit=False
-        )
+    # Detach user from offerer after sending transactional email to applicant
+    models.UserOfferer.query.filter_by(offererId=offerer.id).delete()
 
     remove_pro_role_and_add_non_attached_pro_role(applicants)
 
@@ -1060,9 +1031,7 @@ def rm_previous_venue_thumbs(venue: models.Venue) -> None:
         return
 
     # handle old banner urls that did not have a timestamp
-    timestamp = (
-        get_timestamp_from_url(venue.bannerUrl) if "_" in venue.bannerUrl else ""
-    )  # type: ignore [arg-type, operator]
+    timestamp = get_timestamp_from_url(venue.bannerUrl) if "_" in venue.bannerUrl else ""  # type: ignore [arg-type, operator]
     storage.remove_thumb(venue, storage_id_suffix=str(timestamp), ignore_thumb_count=True)
 
     # some older venues might have a banner but not the original file

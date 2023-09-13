@@ -862,9 +862,7 @@ class DeleteOffererAttachmentTest(PostEndpointHelper):
         # then
         assert response.status_code == 303
 
-        users_offerers = offerers_models.UserOfferer.query.all()
-        assert len(users_offerers) == 1
-        assert users_offerers[0].validationStatus == ValidationStatus.DELETED
+        assert offerers_models.UserOfferer.query.count() == 0
 
         action = history_models.ActionHistory.query.one()
         assert action.actionType == history_models.ActionType.USER_OFFERER_DELETED
@@ -1647,7 +1645,7 @@ class RejectOffererTest(PostEndpointHelper):
         # given
         user = users_factories.NonAttachedProFactory()
         offerer = offerers_factories.NotValidatedOffererFactory()
-        user_offerer = offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)  # deleted when rejected
 
         # when
         response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id)
@@ -1657,26 +1655,14 @@ class RejectOffererTest(PostEndpointHelper):
 
         db.session.refresh(user)
         db.session.refresh(offerer)
-        db.session.refresh(user_offerer)
         assert not offerer.isValidated
         assert not offerer.isActive
         assert offerer.isRejected
         assert not user.has_pro_role
         assert user.has_non_attached_pro_role
-        assert user_offerer.validationStatus == ValidationStatus.REJECTED
 
-        action = history_models.ActionHistory.query.filter_by(
-            actionType=history_models.ActionType.OFFERER_REJECTED
-        ).one()
-        assert action.actionDate is not None
-        assert action.authorUserId == legit_user.id
-        assert action.userId == user.id
-        assert action.offererId == offerer.id
-        assert action.venueId is None
-
-        action = history_models.ActionHistory.query.filter_by(
-            actionType=history_models.ActionType.USER_OFFERER_REJECTED
-        ).one()
+        action = history_models.ActionHistory.query.one()
+        assert action.actionType == history_models.ActionType.OFFERER_REJECTED
         assert action.actionDate is not None
         assert action.authorUserId == legit_user.id
         assert action.userId == user.id
@@ -2342,8 +2328,7 @@ class RejectOffererAttachmentTest(PostEndpointHelper):
         assert response.status_code == 303
 
         users_offerers = offerers_models.UserOfferer.query.all()
-        assert len(users_offerers) == 1
-        assert users_offerers[0].validationStatus == ValidationStatus.REJECTED
+        assert len(users_offerers) == 0
 
         action = history_models.ActionHistory.query.one()
         assert action.actionType == history_models.ActionType.USER_OFFERER_REJECTED
@@ -2800,8 +2785,7 @@ class BatchOffererAttachmentRejectTest(PostEndpointHelper):
 
         assert response.status_code == 303
         users_offerers = offerers_models.UserOfferer.query.all()
-        assert len(users_offerers) == 10
-        assert all(user_offerer.validationStatus == ValidationStatus.REJECTED for user_offerer in users_offerers)
+        assert len(users_offerers) == 0
 
         for user_offerer in user_offerers:
             action = history_models.ActionHistory.query.filter(
@@ -2813,7 +2797,6 @@ class BatchOffererAttachmentRejectTest(PostEndpointHelper):
             assert action.authorUserId == legit_user.id
             assert action.userId == user_offerer.user.id
             assert action.offererId == user_offerer.offerer.id
-            assert action.comment == "test comment"
             assert action.venueId is None
 
         assert len(mails_testing.outbox) == len(user_offerers)
