@@ -37,7 +37,7 @@ from pcapi.utils.csr import get_closest_csr
 
 EAN_TEST = "9782809455069"
 EAN_TEST_TITLE = "Secret wars : marvel zombies n.1"
-GTL_ID_TEST = "3030400"
+GTL_ID_TEST = "03030400"
 CODE_CLIL_TEST = "4300"
 BASE_DATA_LINE_PARTS = [
     EAN_TEST,
@@ -116,6 +116,37 @@ class TiteliveThingsTest:
         get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         data_line = "~".join(BASE_DATA_LINE_PARTS)
+        get_lines_from_thing_file.return_value = iter([data_line])
+
+        providers_factories.TiteLiveThingsProviderFactory()
+        titelive_things = TiteLiveThings()
+
+        # When
+        titelive_things.updateObjects()
+
+        # Then
+        product = offers_models.Product.query.one()
+        assert product.extraData.get("bookFormat") == offers_models.BookFormat.BEAUX_LIVRES.value
+        assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
+        assert product.extraData.get("ean") == EAN_TEST
+        assert product.extraData.get("gtl_id") == GTL_ID_TEST
+        closest_csr = get_closest_csr(GTL_ID_TEST)
+        assert product.extraData.get("csr_id") == closest_csr.get("csr_id")
+        assert product.extraData.get("rayon") == closest_csr.get("label")
+        assert product.extraData.get("code_clil") == CODE_CLIL_TEST
+
+    @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
+    def test_create_1_thing_from_one_data_line_in_one_file_when_gtl_not_has_lpad_zero(
+        self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
+    ):
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
+
+        DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
+        DATA_LINE_PARTS[COLUMN_INDICES["genre_tite_live"]] = GTL_ID_TEST[1:]
+
+        data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
         providers_factories.TiteLiveThingsProviderFactory()
