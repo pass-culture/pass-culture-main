@@ -1,6 +1,7 @@
 from datetime import datetime
 from datetime import timedelta
 import json
+import re
 from unittest.mock import patch
 
 from freezegun import freeze_time
@@ -25,6 +26,7 @@ from pcapi.core.offers.factories import StockWithActivationCodesFactory
 from pcapi.core.providers.exceptions import InactiveProvider
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.repository as providers_api
+from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
@@ -336,6 +338,33 @@ class PostBookingTest:
             "code": "EXTERNAL_EVENT_PROVIDER_BOOKING_FAILED",
             "message": "External booking failed. Could not parse response: 2 validation errors for ParsingModel[ExternalEventBookingResponse]\n__root__ -> tickets -> 0 -> barcode\n  ensure this value has at most 100 characters (type=value_error.any_str.max_length; limit_value=100)\n__root__ -> tickets -> 0 -> seat\n  ensure this value has at most 100 characters (type=value_error.any_str.max_length; limit_value=100)",
         }
+
+    @override_features(ENABLE_EMS_INTEGRATION=True)
+    def test_handle_ems_empty_showtime_case(self, client, requests_mock):
+        users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        ems_provider = get_provider_by_local_class("EMSStocks")
+        venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider)
+        cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
+        offer = offers_factories.EventOfferFactory(
+            name="Film",
+            venue=venue_provider.venue,
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            lastProviderId=cinema_provider_pivot.provider.id,
+        )
+        stock = offers_factories.EventStockFactory(offer=offer, idAtProviders="1111%2222%EMS#3333")
+
+        requests_mock.post(
+            url=re.compile(r"https://fake_url.com/VENTE/*"),
+            json={"code_erreur": 104, "message_erreur": "Il n'y a plus de séance disponible pour ce film", "statut": 0},
+        )
+
+        response = client.with_token(self.identifier).post(
+            "/native/v1/bookings",
+            json={"stockId": stock.id, "quantity": 1},
+        )
+
+        assert response.status_code == 400
+        assert response.json["code"] == "PROVIDER_STOCK_SOLD_OUT"
 
 
 class GetBookingsTest:

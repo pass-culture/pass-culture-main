@@ -13,6 +13,7 @@ from pcapi import settings
 from pcapi.connectors.serialization import ems_serializers
 from pcapi.connectors.serialization.ems_serializers import ScheduleResponse
 from pcapi.core.external_bookings.ems.exceptions import EMSAPIException
+from pcapi.core.external_bookings.exceptions import ExternalBookingSoldOutError
 from pcapi.utils import requests
 
 
@@ -97,6 +98,8 @@ class EMSBookingConnector:
             return
 
         if content.get("statut") != 1:
+            if content["code_erreur"] == 104:
+                raise ExternalBookingSoldOutError
             raise EMSAPIException(f'Error on EMS API with {content["code_erreur"]} - {content["message_erreur"]}')
 
     def _build_headers(self) -> dict[str, str]:
