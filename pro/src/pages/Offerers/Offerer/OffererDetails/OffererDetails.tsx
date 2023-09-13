@@ -9,7 +9,6 @@ import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import Titles from 'ui-kit/Titles/Titles'
 import { hasProperty } from 'utils/types'
 
 import ApiKey from './ApiKey/ApiKey'
@@ -97,12 +96,23 @@ const OffererDetails = () => {
         Accueil
       </ButtonLink>
 
-      <Titles
-        title="Structure"
-        subtitle={offerer.name}
-        description="Détails de la structure rattachée, des collaborateurs, des lieux et des
-        fournisseurs de ses offres"
-      />
+      <div className={styles['offerer-form-heading']}>
+        <div className={styles['title-page']}>
+          <h1>Structure</h1>
+        </div>
+        <h2 className={styles['offerer-name']}>{offerer.name}</h2>
+        {/* For the screen reader to spell-out the id, we add a
+                visually hidden span with a space between each character.
+                The other span will be hidden from the screen reader. */}
+        <span className={styles['identifier-hidden']}>
+          Identifiant du lieu : {offerer.dsToken.split('').join(' ')}
+        </span>
+        <span aria-hidden="true">Identifiant du lieu : {offerer.dsToken}</span>
+        <div className={styles['description']}>
+          Détails de la structure rattachée, des collaborateurs, des lieux et
+          des fournisseurs de ses offres
+        </div>
+      </div>
 
       <div className={styles['offerer-page-container']}>
         <div className={styles['section']}>
