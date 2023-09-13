@@ -42,7 +42,7 @@ type AutocompleteProps = SearchBoxProvided & {
   placeholder: string
 }
 
-type SuggestionItem = AutocompleteQuerySuggestionsHit & {
+export type SuggestionItem = AutocompleteQuerySuggestionsHit & {
   label: string
   venue: {
     name: string
@@ -99,6 +99,7 @@ const AutocompleteComponent = ({
   })
 
   const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_API_KEY)
+  /* istanbul ignore next: We dont want to test algolia implementation */
   const venuesSuggestionsPlugin = createQuerySuggestionsPlugin<SuggestionItem>({
     searchClient: searchClient,
     indexName: ALGOLIA_COLLECTIVE_OFFERS_INDEX,
@@ -355,9 +356,9 @@ const AutocompleteComponent = ({
                             b.venue.publicName || b.venue.name
                           )
                         )
-                        .map((item, index) => (
+                        .map(item => (
                           <li
-                            key={`item-${index}`}
+                            key={`item-${item.objectID}`}
                             className={styles['dialog-panel-autocomplete-item']}
                             {...autocomplete.getItemProps({
                               item,
