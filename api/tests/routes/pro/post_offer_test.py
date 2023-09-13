@@ -241,7 +241,8 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
 
-    def test_fail_if_inactive_subcategory(self, client):
+    @pytest.mark.parametrize("subcategory_id", ["OEUVRE_ART", "BON_ACHAT_INSTRUMENT"])
+    def test_fail_if_inactive_subcategory(self, client, subcategory_id):
         # Given
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -251,7 +252,7 @@ class Returns400Test:
         data = {
             "venueId": venue.id,
             "name": "A cool offer name",
-            "subcategoryId": "OEUVRE_ART",
+            "subcategoryId": subcategory_id,
             "mentalDisabilityCompliant": False,
             "audioDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
