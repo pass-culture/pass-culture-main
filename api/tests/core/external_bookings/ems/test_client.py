@@ -6,9 +6,9 @@ from urllib.parse import urljoin
 import pytest
 
 from pcapi import settings
-from pcapi.connectors.ems import EMSAPIException
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.external_bookings.ems.client import EMSClientAPI
+from pcapi.core.external_bookings.exceptions import ExternalBookingSoldOutError
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
@@ -158,7 +158,6 @@ class EMSBookTicketTest:
         }
         url = self._build_url("VENTE/", payload_reservation)
 
-        #  TODO S’assurer que ce mock est conforme au retour API d’EMS, je n’ai pas réussi à "épuiser" de séances sur leur API de test
         expected_data = {
             "statut": 0,
             "code_erreur": 104,
@@ -169,7 +168,7 @@ class EMSBookTicketTest:
 
         client = EMSClientAPI(cinema_id=cinema_id)
 
-        with pytest.raises(EMSAPIException):
+        with pytest.raises(ExternalBookingSoldOutError):
             client.book_ticket(show_id="999700079979", booking=booking, beneficiary=beneficiary)
 
 
