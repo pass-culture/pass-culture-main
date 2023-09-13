@@ -52,7 +52,6 @@ from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
-from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.models.validation_status_mixin import ValidationStatusMixin
 from pcapi.utils import crypto
 from pcapi.utils.date import METROPOLE_TIMEZONE
@@ -70,7 +69,6 @@ if typing.TYPE_CHECKING:
     import pcapi.core.offers.models as offers_models
     import pcapi.core.providers.models as providers_models
     import pcapi.core.users.models as users_models
-
 
 logger = logging.getLogger(__name__)
 
@@ -216,7 +214,6 @@ VENUE_TYPE_DEFAULT_BANNERS: dict[VenueTypeCode, tuple[str, ...]] = {
         "darya-tryfanava-UCNaGWn4EfU-unsplash.jpg",
     ),
 }
-
 
 VenueTypeCodeKey = enum.Enum(  # type: ignore [misc]
     "VenueTypeCodeKey",
@@ -446,7 +443,10 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
     def last_collective_dms_application(self) -> educational_models.CollectiveDmsApplication | None:
         if self.collectiveDmsApplications:
             return sorted(
-                self.collectiveDmsApplications, key=lambda application: application.lastChangeDate, reverse=True  # type: ignore [return-value, arg-type]
+                self.collectiveDmsApplications,
+                key=lambda application: application.lastChangeDate,
+                reverse=True
+                # type: ignore [return-value, arg-type]
             )[0]
         return None
 
@@ -847,14 +847,10 @@ class Offerer(
         # The relation being preserved during a rejection or deletion, we always keep an active user
         if not self.UserOfferers:
             return None
-        not_inactive_user_offerers = [
-            u
-            for u in self.UserOfferers
-            if u.validationStatus != ValidationStatus.REJECTED and u.validationStatus != ValidationStatus.DELETED
-        ]
-        if not not_inactive_user_offerers:
-            return None
-        return not_inactive_user_offerers[0].user
+        for user_offerer in self.UserOfferers:
+            if not (user_offerer.isRejected or user_offerer.isDeleted):
+                return user_offerer.user
+        return None
 
 
 class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):
