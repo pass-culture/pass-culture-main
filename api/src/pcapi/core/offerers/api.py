@@ -1404,15 +1404,20 @@ def get_offerer_basic_info(offerer_id: int) -> sa.engine.Row:
         .subquery()
     )
 
-    offerer_query = sa.select(
-        offerers_models.Offerer.id,
-        offerers_models.Offerer.name,
-        offerers_models.Offerer.validationStatus,
-        offerers_models.Offerer.isActive,
-        offerers_models.Offerer.siren,
-        offerers_models.Offerer.postalCode,
-        bank_informations_query.scalar_subquery().label("bank_informations"),
-    ).filter(offerers_models.Offerer.id == offerer_id)
+    offerer_query = (
+        sa.select(
+            offerers_models.Offerer.id,
+            offerers_models.Offerer.name,
+            offerers_models.Offerer.validationStatus,
+            offerers_models.Offerer.isActive,
+            offerers_models.Offerer.siren,
+            offerers_models.Offerer.postalCode,
+            offerers_models.Offerer.individualSubscription,
+            bank_informations_query.scalar_subquery().label("bank_informations"),
+        )
+        .outerjoin(offerers_models.Offerer.individualSubscription)
+        .filter(offerers_models.Offerer.id == offerer_id)
+    )
 
     offerer = db.session.execute(offerer_query).one_or_none()
 
