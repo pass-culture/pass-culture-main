@@ -53,6 +53,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_REIMBURSEMENT_RULES,
         perm_models.Permissions.READ_INCIDENTS,
         perm_models.Permissions.MANAGE_INCIDENTS,
+        perm_models.Permissions.MANAGE_TECH_PARTNERS,
     ],
     "support_pro_n2": [
         perm_models.Permissions.MOVE_SIRET,
@@ -131,6 +132,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS,
         perm_models.Permissions.READ_REIMBURSEMENT_RULES,
         perm_models.Permissions.CREATE_REIMBURSEMENT_RULES,
+        perm_models.Permissions.MANAGE_TECH_PARTNERS,
     ],
 }
 
