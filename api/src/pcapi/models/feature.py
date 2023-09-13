@@ -86,6 +86,9 @@ class FeatureToggle(enum.Enum):
     SYNCHRONIZE_TITELIVE_PRODUCTS = "Permettre limport journalier du référentiel des livres"
     SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION = "Permettre limport journalier des résumés des livres"
     SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS = "Permettre limport journalier des couvertures de livres"
+    SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS = (
+        "Permettre l'import journalier du référentiel de la musique à travers l'API Titelive"
+    )
     UPDATE_BOOKING_USED = "Permettre la validation automatique des contremarques 48h après la fin de lévènement"
     ENABLE_VENUE_STRICT_SEARCH = (
         "Active le fait d'indiquer si un lieu a un moins une offre éligible lors de l'indexation (Algolia)"
@@ -98,9 +101,9 @@ class FeatureToggle(enum.Enum):
     ENABLE_BOOST_API_INTEGRATION = "Active la réservation de places de cinéma via l'API Boost"
     ENABLE_OFFERER_STATS = "Active l'affichage des statistiques d'une structure sur le portail pro"
     ENABLE_EMS_INTEGRATION = "Active la synchronisation de stocks et la réservation via EMS"
+    ENABLE_CGR_INTEGRATION = "Active la synchonisation de stocks et la réservation via CGR"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
     WIP_ENABLE_OFFER_CREATION_API_V1 = "Active la création d'offres via l'API v1"
-    ENABLE_CGR_INTEGRATION = "Active la synchonisation de stocks et la réservation via CGR"
     WIP_ADD_CLG_6_5_COLLECTIVE_OFFER = "Ouverture des offres collectives au 6ème et 5ème"
     WIP_ENABLE_LIKE_IN_ADAGE = "Active la possibilité de liker une offre sur adage"
     WIP_ENABLE_REMINDER_MARKETING_MAIL_METADATA_DISPLAY = "Changer le template d'email de confirmation de réservation"
@@ -201,6 +204,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_SEARCH_HISTORY_ADAGE,
     FeatureToggle.WIP_ENABLE_OFFER_RESERVATION_TAB,
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
+    FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
