@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferType } from './CollectiveOfferType';
 import type { OfferStatus } from './OfferStatus';
 
@@ -14,7 +15,7 @@ export type ListOffersQueryModel = {
   offererId?: number | null;
   periodBeginningDate?: string | null;
   periodEndingDate?: string | null;
-  status?: OfferStatus | null;
+  status?: (OfferStatus | CollectiveOfferDisplayedStatus) | null;
   venueId?: number | null;
 };
 

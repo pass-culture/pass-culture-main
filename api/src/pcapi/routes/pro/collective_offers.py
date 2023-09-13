@@ -44,7 +44,7 @@ def get_collective_offers(
         offerer_id=query.offerer_id,
         venue_id=query.venue_id,
         name_keywords=query.nameOrIsbn,
-        status=query.status,
+        status=query.status.value if query.status else None,
         period_beginning_date=query.period_beginning_date,
         period_ending_date=query.period_ending_date,
         offer_type=query.collective_offer_type,

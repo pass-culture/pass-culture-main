@@ -13,6 +13,7 @@ import type { ChangePasswordBodyModel } from '../models/ChangePasswordBodyModel'
 import type { ChangeProEmailBody } from '../models/ChangeProEmailBody';
 import type { CollectiveBookingByIdResponseModel } from '../models/CollectiveBookingByIdResponseModel';
 import type { CollectiveBookingStatusFilter } from '../models/CollectiveBookingStatusFilter';
+import type { CollectiveOfferDisplayedStatus } from '../models/CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferResponseIdModel } from '../models/CollectiveOfferResponseIdModel';
 import type { CollectiveOfferTemplateBodyModel } from '../models/CollectiveOfferTemplateBodyModel';
 import type { CollectiveOfferTemplateResponseIdModel } from '../models/CollectiveOfferTemplateResponseIdModel';
@@ -282,7 +283,7 @@ export class DefaultService {
   public getCollectiveOffers(
     nameOrIsbn?: string | null,
     offererId?: number | null,
-    status?: OfferStatus | null,
+    status?: CollectiveOfferDisplayedStatus | null,
     venueId?: number | null,
     categoryId?: string | null,
     creationMode?: string | null,
@@ -1306,7 +1307,7 @@ export class DefaultService {
   public listOffers(
     nameOrIsbn?: string | null,
     offererId?: number | null,
-    status?: OfferStatus | null,
+    status?: (OfferStatus | CollectiveOfferDisplayedStatus) | null,
     venueId?: number | null,
     categoryId?: string | null,
     creationMode?: string | null,
