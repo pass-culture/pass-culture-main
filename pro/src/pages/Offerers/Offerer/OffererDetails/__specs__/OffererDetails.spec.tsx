@@ -50,6 +50,7 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
           venueTypeCode: VenueTypeCode.AUTRE,
         },
       ],
+      dsToken: '',
     })
   })
 

@@ -131,6 +131,7 @@ describe('offererDetailsLegacy', () => {
           },
         ],
         hasAvailablePricingPoints: true,
+        dsToken: '',
       },
       {
         address: 'LA COULÉE D’OR',
@@ -154,6 +155,7 @@ describe('offererDetailsLegacy', () => {
           physicalVenueWithPublicName,
         ],
         hasAvailablePricingPoints: true,
+        dsToken: '',
       },
     ]
     firstOffererByAlphabeticalOrder = baseOfferers[1]

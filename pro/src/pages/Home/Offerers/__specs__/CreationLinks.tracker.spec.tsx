@@ -85,6 +85,7 @@ describe('trackers creationLinks', () => {
           physicalVenueWithPublicName,
         ],
         hasAvailablePricingPoints: true,
+        dsToken: '',
       },
       {
         address: 'RUE DE NIEUPORT',
@@ -104,6 +105,7 @@ describe('trackers creationLinks', () => {
         siren: '222222222',
         managedVenues: [],
         hasAvailablePricingPoints: true,
+        dsToken: '',
       },
     ]
     baseOfferersNames = baseOfferers.map(offerer => ({
