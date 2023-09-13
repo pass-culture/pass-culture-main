@@ -701,6 +701,7 @@ def create_offerer(
     else:
         is_new = True
         offerer = models.Offerer()
+        offerer.dsToken = generate_offerer_ds_token()
         _fill_in_offerer(offerer, offerer_informations)
         digital_venue = create_digital_venue(offerer)
         user_offerer = grant_user_offerer_access(offerer, user)
@@ -1250,6 +1251,17 @@ def generate_dms_token() -> str:
         if not offerers_repository.dms_token_exists(dms_token):
             return dms_token
     raise ValueError("Could not generate new dmsToken for Venue")
+
+
+def generate_offerer_ds_token() -> str:
+    """
+    Returns a 12-char hex str of 6 random bytes
+    """
+    for _i in range(10):
+        ds_token = secrets.token_hex(6)
+        if not offerers_repository.offerer_ds_token_exists(ds_token):
+            return ds_token
+    raise ValueError("Could not generate new dmsToken for Offerer")
 
 
 def get_venues_educational_statuses() -> list[offerers_models.VenueEducationalStatus]:
