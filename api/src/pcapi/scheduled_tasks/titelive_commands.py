@@ -1,3 +1,8 @@
+import datetime
+
+import click
+
+from pcapi.core.providers.titelive_music_search import TiteliveMusicSearch
 from pcapi.local_providers.provider_manager import synchronize_data_for_provider
 from pcapi.models.feature import FeatureToggle
 from pcapi.scheduled_tasks.decorators import cron_require_feature
@@ -30,3 +35,16 @@ def synchronize_titelive_thing_descriptions() -> None:
 def synchronize_titelive_thing_thumbs() -> None:
     """Launches Titelive thumbs synchronization through TiteLiveThingThumbs provider"""
     synchronize_data_for_provider("TiteLiveThingThumbs")
+
+
+@blueprint.cli.command("synchronize_titelive_music_products")
+@click.option(
+    "--from-date",
+    help="sync music products that were modified after from_date (YYYY-MM-DD)",
+    type=click.DateTime(),
+    default=None,
+)
+@log_cron_with_transaction
+@cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS)
+def synchronize_titelive_music_products(from_date: datetime.datetime | None) -> None:
+    TiteliveMusicSearch().synchronize_products(from_date.date() if from_date else None)
