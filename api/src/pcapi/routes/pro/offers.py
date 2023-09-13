@@ -47,7 +47,7 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
         offerer_id=query.offerer_id,
         venue_id=query.venue_id,
         name_keywords_or_ean=query.name_or_ean,
-        status=query.status,
+        status=query.status.value if query.status else None,
         creation_mode=query.creation_mode,
         period_beginning_date=query.period_beginning_date,
         period_ending_date=query.period_ending_date,

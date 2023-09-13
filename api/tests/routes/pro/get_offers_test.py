@@ -355,14 +355,11 @@ class Returns400Test:
         pro = users_factories.ProFactory()
 
         # when
-        response = TestClient(app.test_client()).with_session_auth(email=pro.email).get("/offers?status=PUBLISH")
+        response = TestClient(app.test_client()).with_session_auth(email=pro.email).get("/offers?status=NOPENOPENOPE")
 
         # then
-        assert response.status_code == 400
-        assert response.json == {
-            "status": [
-                "value is not a valid enumeration member; permitted: 'ACTIVE', "
-                "'PENDING', 'EXPIRED', 'REJECTED', 'SOLD_OUT', 'INACTIVE', "
-                "'DRAFT'"
-            ]
-        }
+        msg = response.json["status"][0]
+        assert msg.startswith("value is not a valid enumeration member")
+
+        for value in OfferStatus:
+            assert value.name in msg

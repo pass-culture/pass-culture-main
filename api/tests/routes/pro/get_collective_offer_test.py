@@ -8,12 +8,27 @@ import pytest
 from pcapi.core import testing
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
+from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
 
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
+    def test_filtering(self, client):
+        offer = educational_factories.PendingCollectiveBookingFactory().collectiveStock.collectiveOffer
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        client = client.with_session_auth(email="user@example.com")
+
+        dst = url_for("Private API.get_collective_offers", status=CollectiveOfferDisplayedStatus.PREBOOKED.value)
+        response = client.get(dst)
+
+        assert response.status_code == 200
+
+        assert len(response.json) == 1
+        assert response.json[0]["id"] == offer.id
+
     def test_basics(self, client):
         # Given
         template = educational_factories.CollectiveOfferTemplateFactory()

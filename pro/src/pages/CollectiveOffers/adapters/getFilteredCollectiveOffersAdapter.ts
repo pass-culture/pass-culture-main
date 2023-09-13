@@ -1,4 +1,5 @@
 import { api } from 'apiClient/api'
+import { CollectiveOfferDisplayedStatus } from 'apiClient/v1'
 import { Offer, SearchFiltersParams } from 'core/Offers/types'
 import { serializeApiFilters } from 'core/Offers/utils'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
@@ -41,7 +42,7 @@ const getFilteredCollectiveOffersAdapter: GetFilteredCollectiveOffersAdapter =
       const offers = await api.getCollectiveOffers(
         nameOrIsbn,
         offererId,
-        status,
+        status as CollectiveOfferDisplayedStatus,
         venueId,
         categoryId,
         creationMode,

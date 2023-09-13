@@ -3,8 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { CollectiveOfferDisplayedStatus } from './CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferType } from './CollectiveOfferType';
-import type { OfferStatus } from './OfferStatus';
 
 export type ListCollectiveOffersQueryModel = {
   categoryId?: string | null;
@@ -14,7 +14,7 @@ export type ListCollectiveOffersQueryModel = {
   offererId?: number | null;
   periodBeginningDate?: string | null;
   periodEndingDate?: string | null;
-  status?: OfferStatus | null;
+  status?: CollectiveOfferDisplayedStatus | null;
   venueId?: number | null;
 };
 
