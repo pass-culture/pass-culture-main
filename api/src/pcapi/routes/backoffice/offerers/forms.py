@@ -243,3 +243,18 @@ class EditOffererTagForm(OffererTagBaseForm):
 
 class CreateOffererTagCategoryForm(OffererTagBaseForm):
     pass
+
+
+class IndividualOffererSubscriptionForm(FlaskForm):
+    is_email_sent = fields.PCSwitchBooleanField("Mail envoyé à l'acteur", full_width=True)
+    date_email_sent = fields.PCOptDateField("Date d'envoi")
+    collective_offers = fields.PCSwitchBooleanField("Collectif", full_width=True)
+    individual_offers = fields.PCSwitchBooleanField("Individuel", full_width=True)
+    is_criminal_record_received = fields.PCSwitchBooleanField("Casier judiciaire reçu", full_width=True)
+    date_criminal_record_received = fields.PCOptDateField("Date de réception")
+    is_certificate_received = fields.PCSwitchBooleanField("Diplôme reçu", full_width=True)
+    certificate_details = fields.PCTextareaField("Type de diplôme / niveau")
+    is_experience_received = fields.PCSwitchBooleanField("Expérience reçue", full_width=True)
+    has_1yr_experience = fields.PCSwitchBooleanField("1 à 4 ans")
+    has_4yr_experience = fields.PCSwitchBooleanField("+ 5 ans")
+    is_certificate_valid = fields.PCSwitchBooleanField("Validité du diplôme", full_width=True)

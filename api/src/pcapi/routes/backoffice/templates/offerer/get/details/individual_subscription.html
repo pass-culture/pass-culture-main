@@ -1,0 +1,118 @@
+{% macro build_step(description, icon, status_icon, status_step) %}
+  <li>
+    <div class="steps d-flex flex-column flex-grow-1 justify-content-center align-items-center position-relative {{ status_step }}">
+      <span class="step-number d-flex justify-content-center align-items-center pe-none position-relative">
+        {% if icon == 'bi-person-vcard' %}
+          <svg xmlns="http://www.w3.org/2000/svg"
+               width="16"
+               height="16"
+               fill="currentColor"
+               class="bi bi-person-vcard"
+               viewBox="0 0 16 16">
+            <path d="M5 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm4-2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5ZM9 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 9 8Zm1 2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5Z" />
+            <path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2ZM1 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8.96c.026-.163.04-.33.04-.5C9 10.567 7.21 9 5 9c-2.086 0-3.8 1.398-3.984 3.181A1.006 1.006 0 0 1 1 12V4Z" />
+          </svg>
+        {% else %}
+          <i class="bi {{ icon }} pe-none"></i>
+        {% endif %}
+        <div class="icon-container position-absolute">
+          {% if status_icon %}<i class="bi {{ status_icon }} me-5 fs-4"></i>{% endif %}
+        </div>
+      </span>
+      <span class="step-text center-smallcontainer pe-none">{{ description }}</span>
+    </div>
+  </li>
+{% endmacro %}
+<turbo-frame id="offerer_subscription_frame">
+<div class="card my-1 border-0">
+  <div class="card-body">
+    <div class="card-body">
+      <div class="row py-1 steps-no-event"
+           data-registration-steps-id="individual-offerer">
+        <div class="col-12 position-relative">
+          <div class="progress position-absolute">
+            <div class="progress-bar"
+                 role="progressbar"
+                 aria-valuenow="100"
+                 aria-valuemin="0"
+                 aria-valuemax="100"
+                 style="width: {{ "100%" if individual_subscription else "0" }}"></div>
+          </div>
+          <ol class="breadcrumb-container position-relative d-flex p-0 justify-content-between">
+            {{ build_step("Mail envoyé", "bi-envelope-fill", "bi-check-circle-fill text-success" if individual_subscription.isEmailSent else ("bi-x-circle-fill text-danger" if individual_subscription), "step-success" if individual_subscription.isEmailSent) }}
+            {{ build_step("Casier judiciaire", "bi-person-vcard", "bi-check-circle-fill text-success" if individual_subscription.isCriminalRecordReceived else ("bi-exclamation-circle-fill text-warning" if individual_subscription), "step-success" if individual_subscription.isCriminalRecordReceived) }}
+            {{ build_step("Diplômes", "bi-mortarboard-fill", "bi-check-circle-fill text-success" if individual_subscription.isCertificateReceived else ("bi-exclamation-circle-fill text-warning" if individual_subscription), "step-success" if individual_subscription.isCertificateReceived) }}
+            {{ build_step("Certifications professionnelles", "bi-box-fill", "bi-check-circle-fill text-success" if individual_subscription.isExperienceReceived else ("bi-exclamation-circle-fill text-warning" if individual_subscription), "step-success" if individual_subscription.isExperienceReceived) }}
+            {% if individual_subscription.targetsCollectiveOffers %}
+              {% if adage_decision == "accepte" %}
+                {{ build_step("Référencement Adage", "bi-briefcase-fill", "bi-check-circle-fill text-success", "step-success") }}
+              {% elif adage_decision == "refuse" %}
+                {{ build_step("Référencement Adage", "bi-briefcase-fill", "bi-x-circle-fill text-danger", "step-error") }}
+              {% elif adage_decision == "en_instruction" %}
+                {{ build_step("Référencement Adage", "bi-briefcase-fill", "bi-hourglass-split text-info", null) }}
+              {% else %}
+                {{ build_step("Référencement Adage", "bi-briefcase-fill", "bi-exclamation-circle-fill text-warning" if individual_subscription, "") }}
+              {% endif %}
+            {% endif %}
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% if form %}
+  <form action="{{ dst }}"
+        name="{{ dst | action_to_name }}"
+        method="post"
+        class="row">
+    <div class="col-4">
+      <p class="fw-bold pt-2">Réception des documents</p>
+      <div class="px-3">
+        {{ form.is_email_sent }}
+        {{ form.date_email_sent }}
+      </div>
+      <p class="fw-bold pt-4">Activités</p>
+      <div class="px-3">
+        {{ form.collective_offers }}
+        {{ form.individual_offers }}
+      </div>
+      <div class="pt-5 pb-3 px-3">
+        {{ form.csrf_token }}
+        <button type="submit"
+                class="btn btn-primary">Enregistrer</button>
+      </div>
+    </div>
+    <div class="col-4">
+      <p class="fw-bold pt-2">Réception du casier judiciaire</p>
+      <div class="px-3">
+        {{ form.is_criminal_record_received }}
+        {{ form.date_criminal_record_received }}
+      </div>
+    </div>
+    <div class="col-4">
+      <p class="fw-bold pt-2">Diplômes</p>
+      <div class="px-3">
+        {{ form.is_certificate_received }}
+        {% set documents_link = get_setting("BACKOFFICE_OFFERERS_DOCUMENTS_LINK") %}
+        {% if documents_link %}
+          <small><a href="{{ documents_link }}"
+   target="_blank"
+   class="link-primary">Accéder aux documents</a></small>
+        {% endif %}
+        {{ form.certificate_details }}
+      </div>
+      <p class="fw-bold pt-2">Années d'expérience</p>
+      <div class="px-3">
+        {{ form.is_experience_received }}
+        <div class="px-5">
+          <div class="row">
+            {{ form.has_1yr_experience }}
+            {{ form.has_4yr_experience }}
+          </div>
+        </div>
+        {{ form.is_certificate_valid }}
+      </div>
+    </div>
+  </form>
+{% endif %}
+</turbo-frame>

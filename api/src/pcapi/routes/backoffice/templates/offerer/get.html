@@ -170,6 +170,9 @@
       <div class="mt-4">
         {% call build_details_tabs_wrapper() %}
           {{ build_details_tab("history", "Historique du compte", active_tab == 'history') }}
+          {% if show_subscription_tab %}
+            {{ build_details_tab("subscription", "Parcours auto-entrepreneur", active_tab == 'subscription') }}
+          {% endif %}
           {{ build_details_tab("pro-users", "Compte(s) pro rattaché(s)", active_tab == 'users') }}
           {{ build_details_tab("managed-venues", "Lieux associés", active_tab == 'managed_venues') }}
         {% endcall %}
@@ -179,6 +182,13 @@
             {{ build_loading_spinner() }}
             </turbo-frame>
           {% endcall %}
+          {% if show_subscription_tab %}
+            {% call build_details_tab_content("subscription", active_tab == 'subscription') %}
+              <turbo-frame data-turbo="false" id="offerer_subscription_frame" loading="lazy" src="{{ url_for("backoffice_web.offerer.get_individual_subscription", offerer_id=offerer.id) }}">
+              {{ build_loading_spinner() }}
+              </turbo-frame>
+            {% endcall %}
+          {% endif %}
           {% call build_details_tab_content("pro-users", active_tab == 'users') %}
             <turbo-frame data-turbo="false" id="offerer_users_frame" loading="lazy" src="{{ url_for("backoffice_web.offerer.get_pro_users", offerer_id=offerer.id) }}">
             {{ build_loading_spinner() }}

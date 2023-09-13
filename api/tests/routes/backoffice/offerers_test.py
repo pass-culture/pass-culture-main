@@ -1,5 +1,6 @@
 import datetime
 from operator import attrgetter
+import re
 
 from flask import url_for
 import pytest
@@ -154,6 +155,39 @@ class GetOffererTest(GetEndpointHelper):
         # then
         assert response.status_code == 200
         assert "Référencement Adage : 0/1" in html_parser.content_as_text(response.data)
+
+    def test_offerer_with_no_individual_subscription_tab(self, authenticated_client, offerer):
+        # when
+        response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer.id))
+
+        # then
+        assert response.status_code == 200
+        assert not html_parser.get_soup(response.data).find(class_="subscription-tab-pane")
+
+    def test_offerer_with_individual_subscription_tab_no_data(self, authenticated_client):
+        # given
+        tag = offerers_factories.OffererTagFactory(name="auto-entrepreneur")
+        offerer = offerers_factories.NotValidatedOffererFactory(tags=[tag])
+
+        # when
+        response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer.id))
+
+        # then
+        assert response.status_code == 200
+        assert html_parser.get_soup(response.data).find(class_="subscription-tab-pane")
+
+    def test_offerer_with_individual_subscription_data(self, authenticated_client):
+        # given
+        tag = offerers_factories.OffererTagFactory(name="auto-entrepreneur")
+        offerer = offerers_factories.NotValidatedOffererFactory(tags=[tag])
+        offerers_factories.IndividualOffererSubscription(offerer=offerer)
+
+        # when
+        response = authenticated_client.get(url_for(self.endpoint, offerer_id=offerer.id))
+
+        # then
+        assert response.status_code == 200
+        assert html_parser.get_soup(response.data).find(class_="subscription-tab-pane")
 
 
 class SuspendOffererTest(PostEndpointHelper):
@@ -3076,3 +3110,212 @@ class CreateOffererTagCategoryTest(PostEndpointHelper):
         )
 
         assert offerers_models.OffererTagCategory.query.count() == 1
+
+
+class GetIndividualOffererSubscriptionTest(GetEndpointHelper):
+    endpoint = "backoffice_web.offerer.get_individual_subscription"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+
+    # get session (1 query)
+    # get user with profile and permissions (1 query)
+    # get data (1 query)
+    expected_num_queries = 3
+
+    icon_class_re = re.compile(r"^(bi-|text-).*")
+
+    def _assert_steps(self, data, expected):
+        soup = html_parser.get_soup(data)
+        steps = soup.find_all("div", {"class": "steps"})
+
+        classes_by_step = {}
+
+        for step in steps:
+            step_label = step.text.strip()
+            i = step.select(".icon-container i")
+            if i:
+                assert len(i) == 1
+                classes_by_step[step_label] = [
+                    class_ for class_ in i[0].get("class") if self.icon_class_re.match(class_)
+                ]
+            else:
+                classes_by_step[step_label] = None
+
+        assert classes_by_step == expected
+
+    def test_without_subscription_data(self, authenticated_client):
+        offerer = offerers_factories.NotValidatedOffererFactory()
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        self._assert_steps(
+            response.data,
+            {
+                "Mail envoyé": None,
+                "Casier judiciaire": None,
+                "Diplômes": None,
+                "Certifications professionnelles": None,
+            },
+        )
+
+    def test_with_subscription_data(self, authenticated_client):
+        individual_subscription = offerers_factories.IndividualOffererSubscription(
+            isCriminalRecordReceived=True, isExperienceReceived=True
+        )
+        offerer = individual_subscription.offerer
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        self._assert_steps(
+            response.data,
+            {
+                "Mail envoyé": ["bi-check-circle-fill", "text-success"],
+                "Casier judiciaire": ["bi-check-circle-fill", "text-success"],
+                "Diplômes": ["bi-exclamation-circle-fill", "text-warning"],
+                "Certifications professionnelles": ["bi-check-circle-fill", "text-success"],
+            },
+        )
+
+    def test_with_adage_expected(self, authenticated_client):
+        individual_subscription = offerers_factories.IndividualOffererSubscription(
+            targetsCollectiveOffers=True, isCertificateReceived=True
+        )
+        offerer = individual_subscription.offerer
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        self._assert_steps(
+            response.data,
+            {
+                "Mail envoyé": ["bi-check-circle-fill", "text-success"],
+                "Casier judiciaire": ["bi-exclamation-circle-fill", "text-warning"],
+                "Diplômes": ["bi-check-circle-fill", "text-success"],
+                "Certifications professionnelles": ["bi-exclamation-circle-fill", "text-warning"],
+                "Référencement Adage": ["bi-exclamation-circle-fill", "text-warning"],
+            },
+        )
+
+    @pytest.mark.parametrize(
+        "state,expected_adage_classes",
+        [
+            ("en_construction", ["bi-exclamation-circle-fill", "text-warning"]),
+            ("en_instruction", ["bi-hourglass-split", "text-info"]),
+            ("accepte", ["bi-check-circle-fill", "text-success"]),
+            ("refuse", ["bi-x-circle-fill", "text-danger"]),
+        ],
+    )
+    def test_with_adage_application(self, authenticated_client, state, expected_adage_classes):
+        individual_subscription = offerers_factories.IndividualOffererSubscription(
+            targetsCollectiveOffers=True,
+            isCriminalRecordReceived=True,
+            isCertificateReceived=True,
+            isExperienceReceived=True,
+        )
+        offerer = individual_subscription.offerer
+        educational_factories.CollectiveDmsApplicationFactory(venue__managingOfferer=offerer, state=state)
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        self._assert_steps(
+            response.data,
+            {
+                "Mail envoyé": ["bi-check-circle-fill", "text-success"],
+                "Casier judiciaire": ["bi-check-circle-fill", "text-success"],
+                "Diplômes": ["bi-check-circle-fill", "text-success"],
+                "Certifications professionnelles": ["bi-check-circle-fill", "text-success"],
+                "Référencement Adage": expected_adage_classes,
+            },
+        )
+
+
+class UpdateIndividualOffererSubscriptionTest(PostEndpointHelper):
+    endpoint = "backoffice_web.offerer.update_individual_subscription"
+    endpoint_kwargs = {"offerer_id": 1}
+    needed_permission = perm_models.Permissions.VALIDATE_OFFERER
+
+    def _assert_data(self, individual_subscription: offerers_models.IndividualOffererSubscription, form_data: dict):
+        assert individual_subscription.isEmailSent is form_data["is_email_sent"]
+        assert individual_subscription.dateEmailSent == datetime.date.fromisoformat(form_data["date_email_sent"])
+        assert individual_subscription.targetsCollectiveOffers is form_data["collective_offers"]
+        assert individual_subscription.targetsIndividualOffers is form_data["individual_offers"]
+        assert individual_subscription.isCriminalRecordReceived is form_data["is_criminal_record_received"]
+        assert individual_subscription.dateCriminalRecordReceived == (
+            datetime.date.fromisoformat(form_data["date_criminal_record_received"])
+            if form_data["date_criminal_record_received"]
+            else None
+        )
+        assert individual_subscription.isCertificateReceived is form_data["is_certificate_received"]
+        assert individual_subscription.certificateDetails == (form_data["certificate_details"] or None)
+        assert individual_subscription.isExperienceReceived is form_data["is_experience_received"]
+        assert individual_subscription.has1yrExperience is form_data["has_1yr_experience"]
+        assert individual_subscription.has5yrExperience is form_data["has_4yr_experience"]
+        assert individual_subscription.isCertificateValid is form_data["is_certificate_valid"]
+
+    def test_create(self, authenticated_client):
+        offerer = offerers_factories.NotValidatedOffererFactory()
+
+        form_data = {
+            "is_email_sent": True,
+            "date_email_sent": (datetime.date.today() - datetime.timedelta(days=2)).isoformat(),
+            "collective_offers": False,
+            "individual_offers": True,
+            "is_criminal_record_received": False,
+            "date_criminal_record_received": None,
+            "is_certificate_received": False,
+            "certificate_details": "",
+            "is_experience_received": False,
+            "has_1yr_experience": False,
+            "has_4yr_experience": False,
+            "is_certificate_valid": False,
+        }
+
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form=form_data)
+
+        assert response.status_code == 303
+        assert response.location == url_for(
+            "backoffice_web.offerer.get", offerer_id=offerer.id, active_tab="subscription", _external=True
+        )
+
+        individual_subscription = offerers_models.IndividualOffererSubscription.query.filter_by(
+            offererId=offerer.id
+        ).one()
+        self._assert_data(individual_subscription, form_data)
+
+    def test_update(self, authenticated_client):
+        individual_subscription = offerers_factories.IndividualOffererSubscription()
+        offerer = individual_subscription.offerer
+
+        form_data = {
+            "is_email_sent": True,
+            "date_email_sent": (datetime.date.today() - datetime.timedelta(days=2)).isoformat(),
+            "collective_offers": True,
+            "individual_offers": False,
+            "is_criminal_record_received": True,
+            "date_criminal_record_received": datetime.date.today().isoformat(),
+            "is_certificate_received": True,
+            "certificate_details": "BAC+42",
+            "is_experience_received": True,
+            "has_1yr_experience": False,
+            "has_4yr_experience": True,
+            "is_certificate_valid": True,
+        }
+
+        response = self.post_to_endpoint(authenticated_client, offerer_id=offerer.id, form=form_data)
+
+        assert response.status_code == 303
+        assert response.location == url_for(
+            "backoffice_web.offerer.get", offerer_id=offerer.id, active_tab="subscription", _external=True
+        )
+        self._assert_data(individual_subscription, form_data)

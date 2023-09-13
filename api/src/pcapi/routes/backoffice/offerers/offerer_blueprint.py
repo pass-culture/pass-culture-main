@@ -10,6 +10,7 @@ from markupsafe import Markup
 import sqlalchemy as sa
 from werkzeug.exceptions import NotFound
 
+from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.core.educational import models as educational_models
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.history import api as history_api
@@ -76,6 +77,12 @@ def render_offerer_details(
             tags=offerer.tags,
         )
 
+    show_subscription_tab = (
+        utils.has_current_user_permission(perm_models.Permissions.VALIDATE_OFFERER)
+        and offerer.individualSubscription
+        or (not offerer.isValidated and "auto-entrepreneur" in {tag.name for tag in offerer.tags})
+    )
+
     return render_template(
         "offerer/get.html",
         search_form=search_forms.ProSearchForm(terms=request.args.get("terms"), pro_type=TypeOptions.OFFERER.name),
@@ -86,6 +93,7 @@ def render_offerer_details(
         edit_offerer_form=edit_offerer_form,
         suspension_form=offerer_forms.SuspendOffererForm(),
         delete_offerer_form=empty_forms.EmptyForm(),
+        show_subscription_tab=show_subscription_tab,
         active_tab=request.args.get("active_tab", "history"),
     )
 
@@ -492,3 +500,113 @@ def comment_offerer(offerer_id: int) -> utils.BackofficeResponse:
         flash("Commentaire enregistré", "success")
 
     return _self_redirect(offerer.id)
+
+
+@offerer_blueprint.route("/individual-subscription", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def get_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = (
+        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        .options(
+            sa.orm.load_only(offerers_models.Offerer.id),
+            sa.orm.joinedload(offerers_models.Offerer.individualSubscription),
+            sa.orm.joinedload(offerers_models.Offerer.managedVenues)
+            .load_only(offerers_models.Venue.id)
+            .joinedload(offerers_models.Venue.collectiveDmsApplications)
+            .load_only(
+                educational_models.CollectiveDmsApplication.state,
+                educational_models.CollectiveDmsApplication.lastChangeDate,
+            ),
+        )
+        .one_or_none()
+    )
+
+    if not offerer:
+        raise NotFound()
+
+    individual_subscription = offerer.individualSubscription
+    if individual_subscription:
+        form = offerer_forms.IndividualOffererSubscriptionForm(
+            is_email_sent=individual_subscription.isEmailSent,
+            date_email_sent=individual_subscription.dateEmailSent,
+            collective_offers=individual_subscription.targetsCollectiveOffers,
+            individual_offers=individual_subscription.targetsIndividualOffers,
+            is_criminal_record_received=individual_subscription.isCriminalRecordReceived,
+            date_criminal_record_received=individual_subscription.dateCriminalRecordReceived,
+            is_certificate_received=individual_subscription.isCertificateReceived,
+            certificate_details=individual_subscription.certificateDetails,
+            is_experience_received=individual_subscription.isExperienceReceived,
+            has_1yr_experience=individual_subscription.has1yrExperience,
+            has_4yr_experience=individual_subscription.has5yrExperience,
+            is_certificate_valid=individual_subscription.isCertificateValid,
+        )
+    else:
+        # Form with default empty values, which will be inserted in database when saved
+        form = offerer_forms.IndividualOffererSubscriptionForm()
+
+    adage_statuses = [venue.dms_adage_status for venue in offerer.managedVenues]
+    for value in (
+        GraphQLApplicationStates.accepted.value,
+        GraphQLApplicationStates.refused.value,
+        GraphQLApplicationStates.on_going.value,
+    ):
+        if value in adage_statuses:
+            adage_decision = value
+            break
+    else:
+        adage_decision = None
+
+    return render_template(
+        "offerer/get/details/individual_subscription.html",
+        individual_subscription=individual_subscription,
+        adage_decision=adage_decision,
+        form=form,
+        dst=url_for("backoffice_web.offerer.update_individual_subscription", offerer_id=offerer_id),
+    )
+
+
+@offerer_blueprint.route("/individual-subscription", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.VALIDATE_OFFERER)
+def update_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
+    offerer = (
+        offerers_models.Offerer.query.filter_by(id=offerer_id)
+        .options(
+            sa.orm.joinedload(offerers_models.Offerer.individualSubscription).load_only(
+                offerers_models.IndividualOffererSubscription.id
+            )
+        )
+        .one_or_none()
+    )
+
+    if not offerer:
+        raise NotFound()
+
+    form = offerer_forms.IndividualOffererSubscriptionForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return _self_redirect(offerer_id, active_tab="subscription")
+
+    data = {
+        "isEmailSent": form.is_email_sent.data,
+        "dateEmailSent": form.date_email_sent.data,
+        "targetsCollectiveOffers": form.collective_offers.data,
+        "targetsIndividualOffers": form.individual_offers.data,
+        "isCriminalRecordReceived": form.is_criminal_record_received.data,
+        "dateCriminalRecordReceived": form.date_criminal_record_received.data,
+        "isCertificateReceived": form.is_certificate_received.data,
+        "certificateDetails": form.certificate_details.data or None,
+        "isExperienceReceived": form.is_experience_received.data,
+        "has1yrExperience": form.has_1yr_experience.data,
+        "has5yrExperience": form.has_4yr_experience.data,
+        "isCertificateValid": form.is_certificate_valid.data,
+    }
+
+    if offerer.individualSubscription:
+        offerers_models.IndividualOffererSubscription.query.filter_by(offererId=offerer_id).update(
+            data, synchronize_session=False
+        )
+    else:
+        db.session.add(offerers_models.IndividualOffererSubscription(offererId=offerer_id, **data))
+    db.session.commit()
+
+    return _self_redirect(offerer_id, active_tab="subscription")
