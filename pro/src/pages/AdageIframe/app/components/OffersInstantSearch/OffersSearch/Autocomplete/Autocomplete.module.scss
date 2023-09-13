@@ -88,6 +88,7 @@
 
         &-clean {
           @include fonts.caption;
+
           margin-left: rem.torem(8px);
           text-decoration: none;
         }
@@ -100,6 +101,7 @@
 
       &-item {
         @include fonts.body;
+
         display: flex;
         gap: rem.torem(8px);
         align-items: center;
@@ -113,9 +115,11 @@
         &[aria-selected="true"] {
           background-color: colors.$grey-light;
         }
+
         &-icon {
           color: colors.$grey-dark;
         }
+
         svg {
           width: rem.torem(16px) !important;
         }
@@ -149,9 +153,5 @@
   svg {
     max-width: rem.torem(16px);
     margin-right: rem.torem(4px) !important;
-  }
-
-  &-no-result {
-    margin-top: rem.torem(40px);
   }
 }

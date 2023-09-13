@@ -3,11 +3,66 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 import type { SearchBoxProvided } from 'react-instantsearch-core'
 
+import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import { defaultAdageUser } from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { Autocomplete } from '../Autocomplete'
+import { Autocomplete, SuggestionItem } from '../Autocomplete'
 
 const refineMock = vi.fn()
+const mockVenueSuggestions = [
+  {
+    objectID: '1',
+    query: '',
+    popularity: 1,
+    nb_words: 1,
+    label: 'Mock Venue 1',
+    venue: {
+      name: 'Mock Venue 1',
+      publicName: 'Mock Venue 1',
+    },
+    offerer: {
+      name: 'Mock Offerer 1',
+    },
+  },
+  {
+    objectID: '2',
+    query: '',
+    popularity: 1,
+    nb_words: 1,
+    label: 'Mock Venue 2',
+    venue: {
+      name: 'Mock Venue 2',
+      publicName: 'Mock Venue 2',
+    },
+    offerer: {
+      name: 'Mock Offerer 2',
+    },
+  },
+]
+
+const mockGetItems = vi.fn(() => mockVenueSuggestions)
+
+vi.mock('@algolia/autocomplete-plugin-query-suggestions', () => {
+  return {
+    ...vi.importActual('@algolia/autocomplete-plugin-query-suggestions'),
+    createQuerySuggestionsPlugin: vi.fn(() => {
+      return {
+        name: 'Venue Suggestions plugin',
+        getSources: () => [
+          {
+            sourceId: 'VenueSuggestionsSource',
+            getItems: mockGetItems,
+            templates: {
+              item: (item: SuggestionItem) =>
+                item.venue.publicName || item.venue.name,
+            },
+          },
+        ],
+      }
+    }),
+  }
+})
 
 vi.mock('react-instantsearch-dom', async () => {
   return {
@@ -36,16 +91,18 @@ const renderAutocomplete = ({
   }
 
   return renderWithProviders(
-    <div>
-      <a href="#">First element</a>
-      <Autocomplete
-        initialQuery={initialQuery}
-        placeholder={
-          'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
-        }
-      />
-      <a href="#">Second element</a>
-    </div>,
+    <AdageUserContext.Provider value={{ adageUser: defaultAdageUser }}>
+      <div>
+        <a href="#">First element</a>
+        <Autocomplete
+          initialQuery={initialQuery}
+          placeholder={
+            'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
+          }
+        />
+        <a href="#">Second element</a>
+      </div>
+    </AdageUserContext.Provider>,
     { storeOverrides }
   )
 }
@@ -105,8 +162,6 @@ describe('Autocomplete', () => {
     const searchButton = screen.getByText('Rechercher')
     const dialogElement = screen.getByTestId('dialog')
     const footerButton = screen.getByText('Comment fonctionne la recherche ?')
-
-    await userEvent.type(inputElement, 'test')
 
     await userEvent.click(searchButton)
     await userEvent.click(inputElement)
@@ -171,10 +226,6 @@ describe('Autocomplete', () => {
     )
     const searchButton = screen.getByText('Rechercher')
 
-    const panelElement = screen.getByTestId('dialog-panel')
-
-    await userEvent.type(inputElement, 'test1')
-
     await userEvent.click(searchButton)
 
     await userEvent.click(inputElement)
@@ -184,7 +235,29 @@ describe('Autocomplete', () => {
     await userEvent.click(clearButton)
 
     await userEvent.click(inputElement)
+  })
 
-    expect(panelElement).toHaveClass('dialog-panel-hide')
+  it('should display venue suggestion when user start to type', async () => {
+    const featuresOverride = [
+      {
+        nameKey: 'WIP_ENABLE_SEARCH_HISTORY_ADAGE',
+        isActive: true,
+      },
+    ]
+
+    renderAutocomplete({
+      initialQuery: '',
+      featuresOverride,
+    })
+
+    const inputElement = screen.getByPlaceholderText(
+      'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
+    )
+
+    await userEvent.type(inputElement, 'M')
+
+    const venueSuggestion = screen.getByText('Mock Venue 1')
+
+    expect(venueSuggestion).toBeInTheDocument()
   })
 })
