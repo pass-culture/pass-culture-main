@@ -226,6 +226,12 @@ class PCDateField(wtforms.DateField):
                 return string
 
 
+class PCOptDateField(PCDateField):
+    validators = [
+        validators.Optional(""),
+    ]
+
+
 class PCDateRangeField(wtforms.StringField):
     separator = " - "
     date_range_dateformat = "%d/%m/%Y"

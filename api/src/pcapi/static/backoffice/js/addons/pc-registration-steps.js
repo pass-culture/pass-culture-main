@@ -8,6 +8,7 @@
 class PcRegistrationSteps extends PcAddOn {
 
     static REGISTRATION_STEPS_SELECTOR = '[data-registration-steps-id]'
+    static STEPS_NOEVENT_SELECTOR = '.steps-no-event'
     static STEPS_SELECTOR = '.steps'
     static STEP_ACTIVE_SELECTOR = 'div.step-active'
     static PROGRESS_BAR_SELECTOR = '.progress-bar'
@@ -22,6 +23,9 @@ class PcRegistrationSteps extends PcAddOn {
 
     bindEvents = () => {
         this.$registrationSteps.forEach(($registrationStep) => {
+            if ($registrationStep.classList.contains(PcRegistrationSteps.STEPS_NOEVENT_SELECTOR.slice(1))) {
+                return
+            }
             const { registrationStepsId } = $registrationStep.dataset
             const $steps = this.#getSteps($registrationStep)
             this.state[registrationStepsId] = {

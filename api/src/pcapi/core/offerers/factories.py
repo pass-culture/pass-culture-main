@@ -304,3 +304,12 @@ class OffererInvitationFactory(BaseFactory):
     dateCreated = datetime.datetime.utcnow()
     user = factory.SubFactory(users_factories.ProFactory)
     status = models.InvitationStatus.PENDING
+
+
+class IndividualOffererSubscription(BaseFactory):
+    class Meta:
+        model = models.IndividualOffererSubscription
+
+    offerer = factory.SubFactory(NotValidatedOffererFactory)
+    isEmailSent = True
+    dateEmailSent = factory.LazyFunction(lambda: datetime.date.today() - datetime.timedelta(days=3))

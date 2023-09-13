@@ -18,7 +18,7 @@ def create_industrial_offerer_tags() -> None:
         name="etablissement-public", label="Établissement public", categories=[comptage]
     )
     offerers_factories.OffererTagFactory(
-        name="entreprise-individuelle", label="Entreprise individuelle", categories=[comptage, homologation]
+        name="auto-entrepreneur", label="Auto-Entrepreneur", categories=[comptage, homologation]
     )
     offerers_factories.OffererTagFactory(name="festival", label="Festival", categories=[comptage])
     offerers_factories.OffererTagFactory(name="top-acteur", label="Top Acteur", categories=[homologation])

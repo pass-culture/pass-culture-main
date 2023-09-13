@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 import decimal
 import enum
@@ -827,6 +828,10 @@ class Offerer(
         passive_deletes=True,
     )
 
+    individualSubscription: Mapped["IndividualOffererSubscription | None"] = sa.orm.relationship(
+        "IndividualOffererSubscription", back_populates="offerer", uselist=False
+    )
+
     @property
     def bic(self) -> str | None:
         return self.bankInformation.bic if self.bankInformation else None
@@ -1010,3 +1015,44 @@ class OffererInvitation(PcObject, Base, Model):
     status: InvitationStatus = Column(db_utils.MagicEnum(InvitationStatus), nullable=False)
 
     __table_args__ = (UniqueConstraint("offererId", "email", name="unique_offerer_invitation"),)
+
+
+class IndividualOffererSubscription(PcObject, Base, Model):
+    __tablename__ = "individual_offerer_subscription"
+
+    offererId: int = Column(BigInteger, ForeignKey("offerer.id", ondelete="CASCADE"), unique=True, nullable=False)
+    offerer: Mapped[Offerer] = relationship(
+        "Offerer", foreign_keys=[offererId], back_populates="individualSubscription", uselist=False
+    )
+
+    isEmailSent: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False)
+    dateEmailSent: date | None = sa.Column(sa.Date, nullable=True)
+
+    targetsCollectiveOffers: bool = sa.Column(
+        sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
+    )
+    targetsIndividualOffers: bool = sa.Column(
+        sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
+    )
+
+    isCriminalRecordReceived: bool = sa.Column(
+        sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
+    )
+    dateCriminalRecordReceived: date | None = sa.Column(sa.Date, nullable=True)
+
+    isCertificateReceived: bool = sa.Column(
+        sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
+    )
+    certificateDetails: str | None = sa.Column(sa.Text, nullable=True)
+    isExperienceReceived: bool = sa.Column(
+        sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
+    )
+    has1yrExperience: bool = sa.Column(
+        sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
+    )
+    has5yrExperience: bool = sa.Column(
+        sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
+    )
+    isCertificateValid: bool = sa.Column(
+        sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
+    )
