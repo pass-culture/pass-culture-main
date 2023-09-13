@@ -12,6 +12,7 @@ from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
+from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.serialize import CollectiveOfferType
@@ -221,7 +222,7 @@ class ListOffersQueryModel(BaseModel):
     # is shared on the offer search page
     name_or_ean: str | None = Field(alias="nameOrIsbn")
     offerer_id: int | None
-    status: OfferStatus | None
+    status: OfferStatus | CollectiveOfferDisplayedStatus | None
     venue_id: int | None
     categoryId: str | None
     creation_mode: str | None

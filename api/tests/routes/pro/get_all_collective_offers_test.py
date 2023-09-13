@@ -5,6 +5,7 @@ import pytest
 
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.educational.models as educational_models
+from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 import pcapi.core.offerers.factories as offerer_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
@@ -362,14 +363,13 @@ class Return400Test:
 
         # When
         client = TestClient(app.test_client()).with_session_auth(email=user.email)
-        response = client.get("/collective/offers?status=PUBLISH")
+        response = client.get("/collective/offers?status=NOT_A_VALID_STATUS")
 
         # Then
         assert response.status_code == 400
-        assert response.json == {
-            "status": [
-                "value is not a valid enumeration member; permitted: 'ACTIVE', "
-                "'PENDING', 'EXPIRED', 'REJECTED', 'SOLD_OUT', 'INACTIVE', "
-                "'DRAFT'"
-            ]
-        }
+
+        msg = response.json["status"][0]
+        assert msg.startswith("value is not a valid enumeration member")
+
+        for value in CollectiveOfferDisplayedStatus:
+            assert value.name in msg

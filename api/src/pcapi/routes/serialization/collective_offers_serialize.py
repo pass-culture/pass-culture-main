@@ -14,6 +14,7 @@ from pcapi.core.categories.subcategories import SubcategoryIdEnum
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import StudentLevels
@@ -41,7 +42,7 @@ T_GetCollectiveOfferBaseResponseModel = typing.TypeVar(
 class ListCollectiveOffersQueryModel(BaseModel):
     nameOrIsbn: str | None
     offerer_id: int | None
-    status: OfferStatus | None
+    status: CollectiveOfferDisplayedStatus | None
     venue_id: int | None
     categoryId: str | None
     creation_mode: str | None

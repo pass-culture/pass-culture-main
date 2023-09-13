@@ -38,6 +38,7 @@ export type { CollectiveBookingEducationalRedactorResponseModel } from './models
 export type { CollectiveBookingResponseModel } from './models/CollectiveBookingResponseModel';
 export { CollectiveBookingStatus } from './models/CollectiveBookingStatus';
 export { CollectiveBookingStatusFilter } from './models/CollectiveBookingStatusFilter';
+export { CollectiveOfferDisplayedStatus } from './models/CollectiveOfferDisplayedStatus';
 export type { CollectiveOfferInstitutionModel } from './models/CollectiveOfferInstitutionModel';
 export type { CollectiveOfferOfferVenueResponseModel } from './models/CollectiveOfferOfferVenueResponseModel';
 export type { CollectiveOfferRedactorModel } from './models/CollectiveOfferRedactorModel';
