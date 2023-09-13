@@ -311,3 +311,19 @@ class EducationalRedactorWithFavoriteCollectiveOffer(EducationalRedactorFactory)
 
 class EducationalRedactorWithFavoriteCollectiveOfferTemplate(EducationalRedactorFactory):
     favoriteCollectiveOfferTemplates = factory.List([factory.SubFactory(CollectiveOfferTemplateFactory)])
+
+
+class CollectiveOfferEducationalRedactorFactory(BaseFactory):
+    class Meta:
+        model = models.CollectiveOfferEducationalRedactor
+
+    educationalRedactorId = int
+    collectiveOfferId = int
+
+
+class CollectiveOfferTemplateEducationalRedactorFactory(BaseFactory):
+    class Meta:
+        model = models.CollectiveOfferTemplateEducationalRedactor
+
+    educationalRedactorId = int
+    collectiveOfferTemplateId = int
