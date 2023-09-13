@@ -517,7 +517,7 @@ def get_extra_data_from_infos(infos: dict) -> offers_models.OfferExtraData:
     extra_data["ean"] = infos[INFO_KEYS["EAN13"]]
     if infos[INFO_KEYS["GTL_ID"]]:
         csr_label = get_closest_csr(infos[INFO_KEYS["GTL_ID"]])
-        extra_data["gtl_id"] = infos[INFO_KEYS["GTL_ID"]]
+        extra_data["gtl_id"] = infos[INFO_KEYS["GTL_ID"]].zfill(8)
         if csr_label is not None:
             extra_data["rayon"] = csr_label.get("label")
             extra_data["csr_id"] = csr_label.get("csr_id")
