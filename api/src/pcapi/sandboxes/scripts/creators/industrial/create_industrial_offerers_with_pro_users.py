@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import logging
 
 import pcapi.core.finance.factories as finance_factories
+from pcapi.core.offerers.api import generate_offerer_ds_token
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import VenueTypeCode
@@ -135,6 +136,7 @@ def create_industrial_offerers_with_pro_users() -> tuple[dict[str, Offerer], dic
             name=MOCK_NAMES[mock_index],
             postalCode=location.postalCode,
             siren=str(incremented_siren),
+            dsToken=generate_offerer_ds_token(),
         )
 
         if create_educational_offerer:

@@ -378,6 +378,10 @@ def dms_token_exists(dms_token: str) -> bool:
     return db.session.query(models.Venue.query.filter_by(dmsToken=dms_token).exists()).scalar()
 
 
+def offerer_ds_token_exists(ds_token: str) -> bool:
+    return db.session.query(models.Offerer.query.filter_by(dsToken=ds_token).exists()).scalar()
+
+
 def get_venues_educational_statuses() -> list[models.VenueEducationalStatus]:
     return db.session.query(models.VenueEducationalStatus).order_by(models.VenueEducationalStatus.name).all()
 
