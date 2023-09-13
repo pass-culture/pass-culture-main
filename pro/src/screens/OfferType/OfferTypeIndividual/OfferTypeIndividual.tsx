@@ -59,7 +59,7 @@ const OfferTypeIndividual = (): JSX.Element | null => {
     <>
       {isCategorySelectionActive && venueTypeMostUsedSubcategories && (
         <FormLayout.Section
-          title="Quel est la catégorie de l’offre ?"
+          title="Quelle est la catégorie de l’offre ?"
           description="Ces catégories sont suggérées d’après les catégories les plus fréquemment sélectionnées pour votre type de lieu."
           className={styles['subcategory-section']}
         >
@@ -88,7 +88,7 @@ const OfferTypeIndividual = (): JSX.Element | null => {
               className={styles['individual-radio-button-subcategory']}
               withBorder
               value="OTHER"
-              label="autre"
+              label="Autre"
               name="individualOfferSubcategory"
               variant={BaseRadioVariant.SECONDARY}
             />
