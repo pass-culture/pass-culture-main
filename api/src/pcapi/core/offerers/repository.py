@@ -1,4 +1,5 @@
 from datetime import date
+from datetime import datetime
 from datetime import timedelta
 from typing import Iterable
 
@@ -10,6 +11,7 @@ import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
+from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.models import BankInformation
 from pcapi.core.finance.models import BankInformationStatus
 from pcapi.core.offers.models import Offer
@@ -473,3 +475,45 @@ def find_venues_of_offerer_from_siret(siret: str) -> tuple[models.Offerer | None
         .all()
     )
     return offerer, venues
+
+
+def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
+    """
+    Return an Offerer with its accounting data and related venues:
+
+    - Existing bank accounts (possibly none and only active & not (refused or without confirmation) ones)
+    - Linked venues to its bank accounts (possibly none and only current ones)
+    - Managed venues by the offerer (possibly none)
+    """
+
+    return (
+        models.Offerer.query.filter_by(id=offerer_id)
+        .outerjoin(
+            finance_models.BankAccount,
+            sqla.and_(
+                finance_models.BankAccount.offererId == models.Offerer.id,
+                finance_models.BankAccount.isActive.is_(True),
+                finance_models.BankAccount.status.not_in(
+                    (
+                        finance_models.BankAccountApplicationStatus.WITHOUT_CONTINUATION,
+                        finance_models.BankAccountApplicationStatus.REFUSED,
+                    )
+                ),
+            ),
+        )
+        .outerjoin(models.Venue)
+        .outerjoin(
+            models.VenueBankAccountLink,
+            sqla.and_(
+                finance_models.BankAccount.id == models.VenueBankAccountLink.bankAccountId,
+                models.Venue.id == models.VenueBankAccountLink.venueId,
+                models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+            ),
+        )
+        .options(
+            sqla_orm.contains_eager(models.Offerer.bankAccounts).contains_eager(finance_models.BankAccount.venueLinks)
+        )
+        .options(sqla_orm.contains_eager(models.Offerer.managedVenues).contains_eager(models.Venue.bankAccountLinks))
+        .order_by(finance_models.BankAccount.dateCreated)
+        .one_or_none()
+    )

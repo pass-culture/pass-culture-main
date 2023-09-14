@@ -11,6 +11,7 @@ import pcapi.core.offerers.exceptions as offerers_exceptions
 import pcapi.core.offerers.models as offerers_models
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.repository import transaction
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offerers_serialize
@@ -215,3 +216,18 @@ def save_new_onboarding_data(
 ) -> offerers_serialize.PostOffererResponseModel:
     user_offerer = api.create_from_onboarding_data(current_user, body)
     return offerers_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)
+
+
+@private_api.route("/offerers/<int:offerer_id>/bank-accounts", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=offerers_serialize.GetOffererBankAccountsResponseModel, api=blueprint.pro_private_schema
+)
+def get_offerer_bank_accounts_and_attached_venues(
+    offerer_id: int,
+) -> offerers_serialize.GetOffererBankAccountsResponseModel:
+    check_user_has_access_to_offerer(current_user, offerer_id)
+    offerer_bank_accounts = repository.get_offerer_bank_accounts(offerer_id)
+    if not offerer_bank_accounts:
+        raise ResourceNotFoundError()
+    return offerers_serialize.GetOffererBankAccountsResponseModel.from_orm(offerer_bank_accounts)
