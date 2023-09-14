@@ -3013,6 +3013,7 @@ def test_public_api(client):
                     },
                     "responses": {
                         "204": {"description": "No Content"},
+                        "400": {"description": "Bad Request"},
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
@@ -3020,6 +3021,7 @@ def test_public_api(client):
                             },
                             "description": "Unprocessable Entity",
                         },
+                        "429": {"description": "Too Many Requests"},
                     },
                     "summary": "resend_email_validation <POST>",
                     "tags": [],

@@ -215,7 +215,7 @@ def create_account(body: serializers.AccountRequest) -> None:
 
 
 @blueprint.native_v1.route("/resend_email_validation", methods=["POST"])
-@spectree_serialize(on_success_status=204, api=blueprint.api)
+@spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400, 429])
 def resend_email_validation(body: serializers.ResendEmailValidationRequest) -> None:
     user = find_user_by_email(body.email)
     if not user or not user.isActive:
@@ -224,11 +224,18 @@ def resend_email_validation(body: serializers.ResendEmailValidationRequest) -> N
         if user.isEmailValidated:
             api.request_password_reset(user)
         else:
+            api.check_email_validation_resends_count(user)
+            api.increment_email_validation_resends_count(user)
             api.request_email_confirmation(user)
     except exceptions.EmailNotSent:
         raise api_errors.ApiErrors(
             {"code": "EMAIL_NOT_SENT", "general": ["L'email n'a pas pu être envoyé"]},
             status_code=400,
+        )
+    except exceptions.EmailValidationLimitReached:
+        raise api_errors.ApiErrors(
+            {"message": "Le nombre de tentatives maximal est dépassé.", "code": "TOO_MANY_EMAIL_VALIDATION_RESENDS"},
+            status_code=429,
         )
 
 
