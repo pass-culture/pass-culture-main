@@ -733,12 +733,9 @@ def update_user_birth_date_if_not_beneficiary(user: users_models.User, birth_dat
     so that the user is correctly redirected for the rest of the process.
     """
     if (
-        (
-            users_api.is_eligible_for_beneficiary_upgrade(user, fraud_api.decide_eligibility(user, birth_date, None))
-            or not user.validatedBirthDate
-        )
-        and birth_date
+        birth_date
         and user.validatedBirthDate != birth_date
+        and (users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility) or not user.validatedBirthDate)
     ):
         user.validatedBirthDate = birth_date
         pcapi_repository.repository.save(user)
