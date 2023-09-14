@@ -72,10 +72,13 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
 
             login_history = users_api.update_login_device_history(body.device_info, user)
 
-        if (
-            not users_api.is_login_device_a_trusted_device(body.device_info, user)
+        should_send_suspicious_login_email = (
+            (user.is_active or user.is_account_suspended_upon_user_request)
+            and not users_api.is_login_device_a_trusted_device(body.device_info, user)
             and FeatureToggle.WIP_ENABLE_SUSPICIOUS_EMAIL_SEND.is_active()
-        ):
+        )
+
+        if should_send_suspicious_login_email:
             account_suspension_token = users_api.create_suspicious_login_email_token(login_history, user.id)
             reset_password_token = users_api.create_reset_password_token(user)
             transactional_mails.send_suspicious_login_email(
