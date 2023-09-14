@@ -101,13 +101,22 @@ const OffererDetails = () => {
           <h1>Structure</h1>
         </div>
         <h2 className={styles['offerer-name']}>{offerer.name}</h2>
-        {/* For the screen reader to spell-out the id, we add a
+        {
+          /* For the screen reader to spell-out the id, we add a
                 visually hidden span with a space between each character.
-                The other span will be hidden from the screen reader. */}
-        <span className={styles['identifier-hidden']}>
-          Identifiant du lieu : {offerer.dsToken.split('').join(' ')}
-        </span>
-        <span aria-hidden="true">Identifiant du lieu : {offerer.dsToken}</span>
+                The other span will be hidden from the screen reader. */
+          offerer.dsToken && (
+            <>
+              <span className={styles['identifier-hidden']}>
+                Identifiant de structure :{' '}
+                {offerer.dsToken?.split('').join(' ')}
+              </span>
+              <span aria-hidden="true">
+                Identifiant de structure : {offerer.dsToken}
+              </span>
+            </>
+          )
+        }
         <div className={styles['description']}>
           Détails de la structure rattachée, des collaborateurs, des lieux et
           des fournisseurs de ses offres
