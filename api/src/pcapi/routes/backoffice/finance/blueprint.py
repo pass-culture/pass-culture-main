@@ -295,8 +295,11 @@ def create_individual_booking_incident() -> utils.BackofficeResponse:
         )
         .all()
     )
+    is_one_booking_incident = len(bookings) == 1
 
-    if not validation.check_incident_bookings(bookings):
+    if not validation.check_incident_bookings(bookings) or (
+        is_one_booking_incident and not validation.check_total_amount(form.total_amount.data, bookings)
+    ):
         return redirect(request.referrer or url_for("backoffice_web.individual_bookings.list_individual_bookings"), 303)
 
     incident = _create_incident_with_log(form.kind.data, bookings[0].venueId, form.origin.data)
@@ -308,7 +311,7 @@ def create_individual_booking_incident() -> utils.BackofficeResponse:
                 bookingId=booking.id,
                 incidentId=incident.id,
                 beneficiaryId=booking.userId,
-                newTotalAmount=-booking.pricing.amount if len(bookings) > 1 else int(form.total_amount.data * 100),
+                newTotalAmount=(booking.total_amount if len(bookings) > 1 else form.total_amount.data) * 100,
             )
         )
     db.session.add_all(booking_finance_incidents_to_create)

@@ -614,16 +614,17 @@ class CreateIncidentOnCollectiveBookingTest(PostEndpointHelper):
         assert booking_incidents[0].collectiveBookingId == collective_booking.id
         assert booking_incidents[0].newTotalAmount == 4000
 
-    def test_incident_amount_superior_to_pricing_amount(self, authenticated_client):
+    def test_incident_amount_superior_to_booking_amount(self, authenticated_client):
         collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
             pricings=[
                 finance_factories.CollectivePricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-4500)
-            ]
+            ],
+            collectiveStock__price=50,
         )
 
         response = self.post_to_endpoint(
             authenticated_client,
-            form={"total_amount": 50, "origin": "Demande E-mail", "kind": finance_models.IncidentType.OVERPAYMENT.name},
+            form={"total_amount": 55, "origin": "Demande E-mail", "kind": finance_models.IncidentType.OVERPAYMENT.name},
             collective_booking_id=collective_booking.id,
         )
 
