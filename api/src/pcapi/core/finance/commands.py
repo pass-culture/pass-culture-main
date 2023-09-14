@@ -7,6 +7,7 @@ import sqlalchemy.orm as sqla_orm
 
 from pcapi.core.finance import siret_api
 import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.utils as finance_utils
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
@@ -51,12 +52,19 @@ def generate_cashflows_and_payment_files(override_feature_flag: bool) -> None:
 
 
 @blueprint.cli.command("generate_invoices")
-def generate_invoices() -> None:
-    """Generate (and store) all invoices.
+@click.option("--batch-id", type=int, required=True)
+def generate_invoices(batch_id: int) -> None:
+    """Generate (and store) all invoices of a CashflowBatch.
 
     This command can be run multiple times.
     """
-    finance_api.generate_invoices()
+
+    batch = finance_models.CashflowBatch.query.get(batch_id)
+    if not batch:
+        print(f"Could not generate invoices for this batch, as it doesn't exist :{batch_id}")
+        return
+
+    finance_api.generate_invoices(batch)
 
 
 @blueprint.cli.command("add_custom_offer_reimbursement_rule")

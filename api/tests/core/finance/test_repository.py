@@ -407,8 +407,8 @@ class FindAllOffererPaymentsTest:
             standardRule="Remboursement à 95% au dessus de 20 000 € pour les livres",
             status=models.PricingStatus.VALIDATED,
         )
-        api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
-        api.generate_invoices()
+        batch = api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
+        api.generate_invoices(batch)
         cashflow = models.Cashflow.query.one()
         invoice = models.Invoice.query.one()
 
