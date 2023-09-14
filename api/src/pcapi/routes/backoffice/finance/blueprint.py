@@ -380,14 +380,14 @@ def _initialize_additional_data(bookings: list[bookings_models.Booking]) -> dict
     if len(bookings) == 1:
         booking = bookings[0]
 
-        additional_data["ID de la réservation"] = booking.id
+        additional_data["ID de la réservation"] = booking.id  # type: ignore [assignment]
         additional_data["Statut de la réservation"] = filters.format_booking_status(booking.status)
         additional_data["Contremarque"] = booking.token
         additional_data["Nom de l'offre"] = booking.stock.offer.name
-        additional_data["Bénéficiaire"] = booking.user.full_name
+        additional_data["Bénéficiaire"] = booking.user.full_name  # type: ignore [assignement]
         additional_data["Montant remboursé à l'acteur"] = f"{-booking.pricing.amount/100 if booking.pricing else 0} €"
     else:
-        additional_data["Nombre de réservations"] = len(bookings)
+        additional_data["Nombre de réservations"] = len(bookings)  # type: ignore [assignment]
         additional_data[
             "Montant remboursé à l'acteur"
         ] = f"{-sum(booking.pricing.amount for booking in bookings if booking.pricing)/100} €"

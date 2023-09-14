@@ -31,7 +31,7 @@ def _offer_recap_to_domain(offer: Offer) -> OfferRecap:
         venue_managing_offerer_id=offer.venue.managingOffererId,
         venue_name=offer.venue.name,
         venue_offerer_name=offer.venue.managingOfferer.name,
-        venue_public_name=offer.venue.publicName,
+        venue_public_name=offer.venue.publicName,  # type: ignore [attr-defined]
         venue_departement_code=offer.venue.departementCode,
         stocks=stocks,
         status=offer.status.name,  # type: ignore [attr-defined]
