@@ -76,9 +76,10 @@ class HomePageTest:
         tag = offerers_factories.OffererTagFactory(name="conformité", label="En attente de conformité")
         other_tag = offerers_factories.OffererTagFactory()
 
-        offerers_factories.NotValidatedOffererFactory(tags=[tag, other_tag])
+        offerers_factories.PendingOffererFactory(tags=[tag, other_tag])
 
         # others should not be counted
+        offerers_factories.NotValidatedOffererFactory(tags=[tag])
         offerers_factories.OffererFactory(tags=[tag])
         offerers_factories.NotValidatedOffererFactory(tags=[other_tag])
 

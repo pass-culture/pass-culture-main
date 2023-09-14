@@ -60,7 +60,7 @@ def _get_fraud_stats() -> dict[str, typing.Any]:
         sa.select(sa.func.count(offerers_models.Offerer.id))
         .select_from(offerers_models.Offerer)
         .join(offerers_models.Offerer.tags)
-        .filter(offerers_models.Offerer.isWaitingForValidation, offerers_models.OffererTag.name == CONFORMITE_TAG_NAME)
+        .filter(offerers_models.Offerer.isPending, offerers_models.OffererTag.name == CONFORMITE_TAG_NAME)
     )
     conformite_tag_id = (
         sa.select(offerers_models.OffererTag.id)
