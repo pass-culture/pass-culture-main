@@ -174,29 +174,19 @@ def change_password(user: User, body: ChangePasswordRequest) -> None:
 @blueprint.native_v1.route("/validate_email", methods=["POST"])
 @spectree_serialize(on_success_status=200, api=blueprint.api, response_model=ValidateEmailResponse)
 def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
-    is_new_token = False
     try:
         token = token_utils.Token.load_without_checking(body.email_validation_token)
-        user = User.query.get(token.user_id)
-        is_new_token = True
     except users_exceptions.InvalidToken:
-        # TODO(aliraiki, PC-22348): Remove support for old token model
-        try:
-            user = users_repo.get_user_with_valid_token(
-                body.email_validation_token, [TokenType.EMAIL_VALIDATION], use_token=True
-            )
-        except users_exceptions.InvalidToken as exception:
-            if isinstance(exception, users_exceptions.ExpiredToken):
-                users_api.request_email_confirmation(exception.user)
-            raise ApiErrors({"token": ["Le token de validation d'email est invalide."]})
+        raise ApiErrors({"token": ["Le token de validation d'email est invalide."]})
 
-    if is_new_token:
-        try:  # check if token is expired when using new token class
-            token.check(token_utils.TokenType.EMAIL_VALIDATION)
-            token.expire()
-        except users_exceptions.InvalidToken:
-            users_api.request_email_confirmation(user)
-            raise ApiErrors({"token": ["Le token de validation d'email est invalide."]})
+    user = User.query.get(token.user_id)
+
+    try:  # check if token is expired when using new token class
+        token.check(token_utils.TokenType.EMAIL_VALIDATION)
+        token.expire()
+    except users_exceptions.InvalidToken:
+        users_api.request_email_confirmation(user)
+        raise ApiErrors({"token": ["Le token de validation d'email est invalide."]})
 
     user.isEmailValidated = True
     repository.save(user)
