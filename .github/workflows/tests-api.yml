@@ -42,11 +42,11 @@ jobs:
         with:
           image: ${{ env.tests_docker_image }}
           run: isort . --check-only
-      - name: Check code is well formatted with black
+      - name: Check code is well formatted with ruff
         uses: addnab/docker-run-action@v3
         with:
           image: ${{ env.tests_docker_image }}
-          run: black . --check
+          run: ruff format --check .
       - name: Run mypy
         uses: addnab/docker-run-action@v3
         with:

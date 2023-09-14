@@ -1,18 +1,3 @@
-[tool.black]
-extend-exclude = '''
-(
-  /(
-    | \.mypy_cache
-    | \.pytest_cache
-    | \.venv
-  )/
-)
-'''
-include = '\.pyi?$'
-line-length = 120
-target-version = ['py310']
-
-
 [tool.coverage.report]
 omit = [
     "tests/*",
@@ -174,3 +159,7 @@ junit_family = "xunit1"
 markers = [
     "backoffice"
 ]
+
+
+[tool.ruff]
+line-length = 120
