@@ -20,7 +20,7 @@ import { AdageHeaderMenu } from './AdageHeaderMenu/AdageHeaderMenu'
 
 export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
   const notify = useNotification()
-  const adageUser = useAdageUser()
+  const { adageUser } = useAdageUser()
 
   const [isLoading, setIsLoading] = useState(true)
   const [institutionBudget, setInstitutionBudget] = useState(0)

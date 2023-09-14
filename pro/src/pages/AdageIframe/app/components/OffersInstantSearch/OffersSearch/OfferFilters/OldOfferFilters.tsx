@@ -85,7 +85,7 @@ export const OfferFilters = ({
     currentFilters.onlyInMySchool
   )
   const [onlyInMyDpt, setOnlyInMyDpt] = useState(currentFilters.onlyInMyDpt)
-  const user = useAdageUser()
+  const { adageUser: user } = useAdageUser()
 
   const userDepartmentOption = departmentOptions.find(
     departmentOption => departmentOption.value === user.departmentCode

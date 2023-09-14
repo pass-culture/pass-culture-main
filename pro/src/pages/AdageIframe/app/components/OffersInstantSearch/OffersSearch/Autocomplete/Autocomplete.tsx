@@ -83,7 +83,7 @@ const AutocompleteComponent = ({
   )
   const RECENT_SEARCH_SOURCE_ID = 'RecentSearchSource'
   const VENUE_SUGGESTIONS_SOURCE_ID = 'VenueSuggestionsSource'
-  const adageUser = useAdageUser()
+  const { adageUser } = useAdageUser()
 
   const recentSearchesPlugin = createLocalStorageRecentSearchesPlugin({
     key: 'RECENT_SEARCH',

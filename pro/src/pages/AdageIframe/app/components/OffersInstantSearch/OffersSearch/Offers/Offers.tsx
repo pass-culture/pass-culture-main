@@ -95,7 +95,7 @@ export const OffersComponent = ({
     }
   }, [])
 
-  const adageUser = useAdageUser()
+  const { adageUser } = useAdageUser()
 
   const showSurveySatisfaction =
     isSatisfactionSurveyActive && !adageUser.preferences?.feedback_form_closed
