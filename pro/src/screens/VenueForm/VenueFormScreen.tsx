@@ -21,6 +21,7 @@ import {
 import { Offerer } from 'core/Offerers/types'
 import { Providers, Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
+import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
@@ -74,6 +75,10 @@ const VenueFormScreen = ({
 
   const [isWithdrawalDialogOpen, setIsWithdrawalDialogOpen] =
     useState<boolean>(false)
+
+  const isNewBankDetailsEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
+  )
 
   const handleCancelWithdrawalDialog = async () => {
     setShouldSendMail(false)
@@ -242,7 +247,8 @@ const VenueFormScreen = ({
         </Title>
         {
           /* istanbul ignore next: DEBT, TO FIX */ !isCreatingVenue &&
-            venue && (
+            venue &&
+            !isNewBankDetailsEnabled && (
               <>
                 {/* For the screen reader to spell-out the id, we add a
                 visually hidden span with a space between each character.
