@@ -175,18 +175,12 @@ def change_password(user: User, body: ChangePasswordRequest) -> None:
 @spectree_serialize(on_success_status=200, api=blueprint.api, response_model=ValidateEmailResponse)
 def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
     try:
-        token = token_utils.Token.load_without_checking(body.email_validation_token)
+        token = token_utils.Token.load_and_check(body.email_validation_token, token_utils.TokenType.EMAIL_VALIDATION)
     except users_exceptions.InvalidToken:
         raise ApiErrors({"token": ["Le token de validation d'email est invalide."]})
 
+    token.expire()
     user = User.query.get(token.user_id)
-
-    try:  # check if token is expired when using new token class
-        token.check(token_utils.TokenType.EMAIL_VALIDATION)
-        token.expire()
-    except users_exceptions.InvalidToken:
-        users_api.request_email_confirmation(user)
-        raise ApiErrors({"token": ["Le token de validation d'email est invalide."]})
 
     user.isEmailValidated = True
     repository.save(user)
