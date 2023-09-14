@@ -62,6 +62,8 @@ def create_adage_jwt_fake_valid_token(readonly: bool) -> str:
         }
         if not readonly:
             authenticated_informations["uai"] = "0910620E"
+            authenticated_informations["lat"] = 48.8566  # Paris
+            authenticated_informations["lon"] = 2.3522  # Paris
 
         return jwt.encode(
             authenticated_informations,
