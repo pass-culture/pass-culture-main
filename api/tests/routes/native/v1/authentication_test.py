@@ -1,5 +1,4 @@
 from datetime import datetime
-from datetime import timedelta
 import logging
 from unittest.mock import patch
 
@@ -21,13 +20,11 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import constants as users_constants
-from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.models import AccountState
 from pcapi.core.users.models import LoginDeviceHistory
 from pcapi.core.users.models import Token
-from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import TrustedDevice
 from pcapi.models import db
 import pcapi.notifications.push.testing as bash_testing
@@ -386,11 +383,15 @@ class TrustedDeviceFeatureTest:
     def should_extend_refresh_token_lifetime_on_email_validation_when_device_is_trusted(self, client):
         user = users_factories.UserFactory(isEmailValidated=False)
         users_factories.TrustedDeviceFactory(user=user)
-        token = users_factories.TokenFactory(user=user, type=TokenType.EMAIL_VALIDATION)
+        token = token_utils.Token.create(
+            type_=token_utils.TokenType.EMAIL_VALIDATION,
+            ttl=users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
+            user_id=user.id,
+        ).encoded_token
 
         response = client.post(
             "/native/v1/validate_email",
-            json={"email_validation_token": token.value, "deviceInfo": self.data["deviceInfo"]},
+            json={"email_validation_token": token, "deviceInfo": self.data["deviceInfo"]},
         )
 
         decoded_refresh_token = decode_token(response.json["refreshToken"])
@@ -406,9 +407,13 @@ class TrustedDeviceFeatureTest:
     )
     def should_not_extend_refresh_token_lifetime_on_email_validation_when_device_is_unknown(self, client):
         user = users_factories.UserFactory(isEmailValidated=False)
-        token = users_factories.TokenFactory(user=user, type=TokenType.EMAIL_VALIDATION)
+        token = token_utils.Token.create(
+            type_=token_utils.TokenType.EMAIL_VALIDATION,
+            ttl=users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
+            user_id=user.id,
+        ).encoded_token
 
-        response = client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
+        response = client.post("/native/v1/validate_email", json={"email_validation_token": token})
 
         decoded_refresh_token = decode_token(response.json["refreshToken"])
         token_issue_date = decoded_refresh_token["iat"]
@@ -688,16 +693,7 @@ def test_change_password_failures(client):
 
 
 class EmailValidationTest:
-    def _initialize_old_token(self, user, is_expired=False):
-        return users_factories.TokenFactory(
-            user=user,
-            type=TokenType.EMAIL_VALIDATION,
-            expirationDate=datetime.utcnow() - timedelta(days=1)
-            if is_expired
-            else datetime.utcnow() + users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
-        ).value
-
-    def _initialize_token(self, user, is_expired=False):
+    def initialize_token(self, user, is_expired=False):
         token = token_utils.Token.create(
             type_=token_utils.TokenType.EMAIL_VALIDATION,
             ttl=users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
@@ -707,24 +703,9 @@ class EmailValidationTest:
             token.expire()
         return token.encoded_token
 
-    @patch("pcapi.core.users.repository.get_user_with_valid_token", side_effect=users_exceptions.InvalidToken)
-    def test_validate_email_with_invalid_token(self, mock_get_user_with_valid_token, client):
-        token = "email-validation-token"
-
-        response = client.post("/native/v1/validate_email", json={"email_validation_token": token})
-
-        mock_get_user_with_valid_token.assert_called_once_with(token, [TokenType.EMAIL_VALIDATION], use_token=True)
-
-        assert response.status_code == 400
-
-    @pytest.mark.parametrize(
-        "token_init",
-        [(_initialize_token), (_initialize_old_token)],
-    )
-    def test_validate_email_with_expired_token(self, client, token_init):
+    def test_validate_email_with_expired_token(self, client):
         user = users_factories.UserFactory(isEmailValidated=False)
-        token = token_init(
-            self,
+        token = self.initialize_token(
             user=user,
             is_expired=True,
         )
@@ -739,17 +720,13 @@ class EmailValidationTest:
 
         assert token_utils.Token.token_exists(token_utils.TokenType.EMAIL_VALIDATION, user.id)
 
-    @pytest.mark.parametrize(
-        "token_init",
-        [(_initialize_token), (_initialize_old_token)],
-    )
     @freeze_time("2018-06-01")
-    def test_validate_email_when_eligible(self, client, token_init):
+    def test_validate_email_when_eligible(self, client):
         user = users_factories.UserFactory(
             isEmailValidated=False,
             dateOfBirth=datetime(2000, 6, 1),
         )
-        token = token_init(self, user)
+        token = self.initialize_token(user)
 
         response = client.post("/native/v1/validate_email", json={"email_validation_token": token})
 
@@ -776,13 +753,9 @@ class EmailValidationTest:
         refresh_response = client.post("/native/v1/refresh_access_token", json={})
         assert refresh_response.status_code == 200
 
-    @pytest.mark.parametrize(
-        "token_init",
-        [(_initialize_token), (_initialize_old_token)],
-    )
-    def test_validate_email_second_time_is_forbidden(self, client, token_init):
+    def test_validate_email_second_time_is_forbidden(self, client):
         user = users_factories.UserFactory(isEmailValidated=False)
-        token = token_init(self, user)
+        token = self.initialize_token(user)
 
         response = client.post("/native/v1/validate_email", json={"email_validation_token": token})
 
@@ -793,14 +766,10 @@ class EmailValidationTest:
         assert response.status_code == 400
         assert response.json["token"] == ["Le token de validation d'email est invalide."]
 
-    @pytest.mark.parametrize(
-        "token_init",
-        [(_initialize_token), (_initialize_old_token)],
-    )
     @freeze_time("2018-06-01")
-    def test_validate_email_when_not_eligible(self, client, token_init):
+    def test_validate_email_when_not_eligible(self, client):
         user = users_factories.UserFactory(isEmailValidated=False, dateOfBirth=datetime(2000, 7, 1))
-        token = token_init(self, user)
+        token = self.initialize_token(user)
 
         assert not user.isEmailValidated
 
@@ -825,17 +794,13 @@ class EmailValidationTest:
         refresh_response = client.post("/native/v1/refresh_access_token", json={})
         assert refresh_response.status_code == 200
 
-    @pytest.mark.parametrize(
-        "token_init",
-        [(_initialize_token), (_initialize_old_token)],
-    )
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
-    def test_validate_email_dms_orphan(self, execute_query, client, token_init):
+    def test_validate_email_dms_orphan(self, execute_query, client):
         application_number = 1234
         email = "dms_orphan@example.com"
 
         user = users_factories.UserFactory(isEmailValidated=False, dateOfBirth=datetime(2000, 7, 1), email=email)
-        token = token_init(self, user)
+        token = self.initialize_token(user)
 
         assert not user.isEmailValidated
 
