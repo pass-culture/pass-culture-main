@@ -12,7 +12,7 @@ export type GetOffererResponseModel = {
   city: string;
   dateCreated: string;
   demarchesSimplifieesApplicationId?: string | null;
-  dsToken: string;
+  dsToken?: string | null;
   hasAvailablePricingPoints: boolean;
   hasDigitalVenueAtLeastOneOffer: boolean;
   id: number;
