@@ -70,7 +70,6 @@ if typing.TYPE_CHECKING:
     import pcapi.core.providers.models as providers_models
     import pcapi.core.users.models as users_models
 
-
 logger = logging.getLogger(__name__)
 
 CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS = """
@@ -216,7 +215,6 @@ VENUE_TYPE_DEFAULT_BANNERS: dict[VenueTypeCode, tuple[str, ...]] = {
     ),
 }
 
-
 VenueTypeCodeKey = enum.Enum(  # type: ignore [misc]
     "VenueTypeCodeKey",
     {code.name: code.name for code in VenueTypeCode},
@@ -227,6 +225,11 @@ class Target(enum.Enum):
     EDUCATIONAL = "EDUCATIONAL"
     INDIVIDUAL_AND_EDUCATIONAL = "INDIVIDUAL_AND_EDUCATIONAL"
     INDIVIDUAL = "INDIVIDUAL"
+
+
+class InvitationStatus(enum.Enum):
+    PENDING = "PENDING"
+    ACCEPTED = "ACCEPTED"
 
 
 class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, AccessibilityMixin):
@@ -784,6 +787,8 @@ class Offerer(
     offererProviders: list["OffererProvider"] = sa.orm.relationship("OffererProvider", back_populates="offerer")
     thumb_path_component = "offerers"
 
+    dsToken: str = Column(Text, nullable=True, unique=True)
+
     @property
     def bic(self) -> str | None:
         return self.bankInformation.bic if self.bankInformation else None
@@ -843,9 +848,13 @@ class Offerer(
     def first_user(self) -> "users_models.User | None":
         # Currently there is no way to mark a UserOfferer as the owner/creator, so we consider that this first user
         # is the oldest entry in the table. When creator leaves the offerer, next registered user becomes the "first".
+        # The relation being preserved during a rejection or deletion, we always keep an active user
         if not self.UserOfferers:
             return None
-        return self.UserOfferers[0].user
+        for user_offerer in self.UserOfferers:
+            if not (user_offerer.isRejected or user_offerer.isDeleted):
+                return user_offerer.user
+        return None
 
 
 class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):
@@ -960,5 +969,6 @@ class OffererInvitation(PcObject, Base, Model):
     dateCreated: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
     userId: int = Column(BigInteger, ForeignKey("user.id"), nullable=False, index=True)
     user: sa_orm.Mapped["users_models.User"] = relationship("User", foreign_keys=[userId], backref="OffererInvitations")
+    status: InvitationStatus = Column(db_utils.MagicEnum(InvitationStatus), nullable=False)
 
     __table_args__ = (UniqueConstraint("offererId", "email", name="unique_offerer_invitation"),)

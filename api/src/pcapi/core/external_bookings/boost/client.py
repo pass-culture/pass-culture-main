@@ -104,6 +104,7 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
                 "barcode": sale_confirmation_response.data.code,
                 "venue_id": booking.venueId,
                 "timestamp": datetime.datetime.utcnow().timestamp(),
+                "booking_type": bookings_constants.RedisExternalBookingType.CINEMA,
             },
         )
 
@@ -165,20 +166,24 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
             "dateStart": start_date.strftime("%Y-%m-%d"),
             "dateEnd": (start_date + datetime.timedelta(days=interval_days)).strftime("%Y-%m-%d"),
         }
+        params = {
+            "paymentMethod": constants.BOOST_PASS_CULTURE_PAYMENT_METHOD,
+            "hideFullReservation": constants.BOOST_HIDE_FULL_RESERVATION,
+            "film": film,
+        }
+
         return self.get_collection_items(
             resource=boost.ResourceBoost.SHOWTIMES,
             collection_class=boost_serializers.ShowTimeCollection,
             per_page=per_page,
             pattern_values=pattern_values,
-            params={"film": film} if film else None,
+            params=params,
         )
 
     def get_showtime(self, showtime_id: int) -> boost_serializers.ShowTime:
         json_data = boost.get_resource(
             self.cinema_str_id,
             boost.ResourceBoost.SHOWTIME,
-            # TODO(fseguin, 2022-02-06): filter again when BB API is ready
-            # params={"filter_payment_method": constants.BOOST_PASS_CULTURE_PAYMENT_METHOD},
             pattern_values={"id": showtime_id},
         )
         showtime_details = parse_obj_as(boost_serializers.ShowTimeDetails, json_data)
@@ -186,3 +191,11 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
 
     def get_movie_poster(self, image_url: str) -> bytes:
         return boost.get_movie_poster_from_api(image_url)
+
+    def get_cinemas_attributs(self) -> list[boost_serializers.CinemaAttribut]:
+        json_data = boost.get_resource(
+            self.cinema_str_id,
+            boost.ResourceBoost.CINEMAS_ATTRIBUTS,
+        )
+        attributs = parse_obj_as(boost_serializers.CinemaAttributCollection, json_data)
+        return attributs.data

@@ -37,7 +37,7 @@ from pcapi.utils.csr import get_closest_csr
 
 EAN_TEST = "9782809455069"
 EAN_TEST_TITLE = "Secret wars : marvel zombies n.1"
-GTL_ID_TEST = "3030400"
+GTL_ID_TEST = "03030400"
 CODE_CLIL_TEST = "4300"
 BASE_DATA_LINE_PARTS = [
     EAN_TEST,
@@ -116,6 +116,37 @@ class TiteliveThingsTest:
         get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
 
         data_line = "~".join(BASE_DATA_LINE_PARTS)
+        get_lines_from_thing_file.return_value = iter([data_line])
+
+        providers_factories.TiteLiveThingsProviderFactory()
+        titelive_things = TiteLiveThings()
+
+        # When
+        titelive_things.updateObjects()
+
+        # Then
+        product = offers_models.Product.query.one()
+        assert product.extraData.get("bookFormat") == offers_models.BookFormat.BEAUX_LIVRES.value
+        assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
+        assert product.extraData.get("ean") == EAN_TEST
+        assert product.extraData.get("gtl_id") == GTL_ID_TEST
+        closest_csr = get_closest_csr(GTL_ID_TEST)
+        assert product.extraData.get("csr_id") == closest_csr.get("csr_id")
+        assert product.extraData.get("rayon") == closest_csr.get("label")
+        assert product.extraData.get("code_clil") == CODE_CLIL_TEST
+
+    @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
+    def test_create_1_thing_from_one_data_line_in_one_file_when_gtl_not_has_lpad_zero(
+        self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
+    ):
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
+
+        DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
+        DATA_LINE_PARTS[COLUMN_INDICES["genre_tite_live"]] = GTL_ID_TEST[1:]
+
+        data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 
         providers_factories.TiteLiveThingsProviderFactory()
@@ -474,6 +505,50 @@ class TiteliveThingsTest:
         DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
         DATA_LINE_PARTS[COLUMN_INDICES["titre"]] = "livre scolaire"
         DATA_LINE_PARTS[COLUMN_INDICES["genre_tite_live"]] = f"{GTL_LEVEL_01_SCHOOL}000000"
+        data_line = "~".join(DATA_LINE_PARTS)
+        get_lines_from_thing_file.return_value = iter([data_line])
+
+        titelive_provider = providers_factories.TiteLiveThingsProviderFactory()
+        product = offers_factories.ProductFactory(
+            idAtProviders=EAN_TEST,
+            dateModifiedAtLastProvider=datetime(2001, 1, 1),
+            lastProviderId=titelive_provider.id,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            extraData={
+                "ean": EAN_TEST,
+            },
+        )
+        offer = offers_factories.OfferFactory(product=product)
+        users_factories.FavoriteFactory(offer=offer)
+
+        assert product.isGcuCompatible is True
+        assert users_models.Favorite.query.count() == 1
+        assert offer.validation != offers_models.OfferValidationStatus.REJECTED
+
+        titelive_things = TiteLiveThings()
+
+        # When
+        titelive_things.updateObjects()
+
+        # Then
+        product = offers_models.Product.query.one()
+        offer = offers_models.Offer.query.one()
+        assert product.isGcuCompatible is False
+        assert users_models.Favorite.query.count() == 0
+        assert offer.validation == offers_models.OfferValidationStatus.REJECTED
+        assert offer.lastValidationType == offer_mixin.OfferValidationType.CGU_INCOMPATIBLE_PRODUCT
+
+    @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
+    @patch("pcapi.local_providers.titelive_things.titelive_things.get_lines_from_thing_file")
+    def test_should_reject_product_when_gtl_changes_to_extracurricular_related_product_and_unknown_gtl(
+        self, get_lines_from_thing_file, get_files_to_process_from_titelive_ftp, app
+    ):
+        # Given
+        get_files_to_process_from_titelive_ftp.return_value = ["Quotidien30.tit"]
+
+        DATA_LINE_PARTS = BASE_DATA_LINE_PARTS[:]
+        DATA_LINE_PARTS[COLUMN_INDICES["genre_tite_live"]] = f"{GTL_LEVEL_01_EXTRACURRICULAR}666666"
         data_line = "~".join(DATA_LINE_PARTS)
         get_lines_from_thing_file.return_value = iter([data_line])
 

@@ -155,10 +155,7 @@ class TransactionalEmail(Enum):
         id_prod=1046, id_not_prod=142, tags=["pro_invitation_a_rejoindre_le_pass_email_existant_non_valide"]
     )
     OFFERER_ATTACHMENT_INVITATION_ACCEPTED = models.TemplatePro(
-        id_prod=0, id_not_prod=138, tags=["pro_invitation_rattachement_acceptee"]
-    )
-    OFFERER_ATTACHMENT_INVITATION_CONFIRMED = models.TemplatePro(
-        id_prod=0, id_not_prod=139, tags=["pro_invitation_rattachement_confirmee"]
+        id_prod=1048, id_not_prod=138, tags=["pro_invitation_rattachement_acceptee"]
     )
     OFFER_REJECTION_TO_PRO = models.TemplatePro(
         id_prod=375,

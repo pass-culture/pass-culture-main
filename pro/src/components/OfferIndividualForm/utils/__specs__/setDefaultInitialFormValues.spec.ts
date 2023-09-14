@@ -2,7 +2,9 @@ import {
   FORM_DEFAULT_VALUES,
   OfferIndividualFormValues,
 } from 'components/OfferIndividualForm'
+import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { OffererName } from 'core/Offerers/types'
+import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { OfferIndividualVenue } from 'core/Venue/types'
 
 import setDefaultInitialFormValues from '../setDefaultInitialFormValues'
@@ -19,7 +21,7 @@ describe('setDefaultInitialFormValues', () => {
       ...FORM_DEFAULT_VALUES,
       offererId: '1',
       venueId: '1',
-      isVenueVirtual: true,
+      isVenueVirtual: false,
       withdrawalDetails: 'détails de retrait',
       accessibility: { ...FORM_DEFAULT_VALUES.accessibility, none: true },
     }
@@ -51,7 +53,7 @@ describe('setDefaultInitialFormValues', () => {
         id: 2,
         managingOffererId: 1,
         name: 'Venue Name 2',
-        isVirtual: true,
+        isVirtual: false,
         withdrawalDetails: 'détails de retrait',
         accessibility: {
           visual: false,
@@ -67,74 +69,91 @@ describe('setDefaultInitialFormValues', () => {
   })
 
   it('should return initial values', () => {
-    // given / when
     const initialValues = setDefaultInitialFormValues(
-      FORM_DEFAULT_VALUES,
       offererNames,
       offererId,
       venueId,
       venueList
     )
 
-    // then
     expect(initialValues).toStrictEqual(expectedInitialValues)
   })
 
   it('should return initial values when there is only one offererName', () => {
-    // given
     offererNames = [{ name: 'offerer B', id: 2 }]
     offererId = '2'
-    // when
+
     const initialValues = setDefaultInitialFormValues(
-      FORM_DEFAULT_VALUES,
       offererNames,
       offererId,
       venueId,
       venueList
     )
 
-    // then
     expectedInitialValues.offererId = '2'
     expect(initialValues).toStrictEqual(expectedInitialValues)
   })
 
   it('should return venue when there is only one venue', () => {
-    // given
     const venueId = null
     venueList = [venueList[0]]
 
-    // when
     const initialValues = setDefaultInitialFormValues(
-      FORM_DEFAULT_VALUES,
       offererNames,
       offererId,
       venueId,
       venueList
     )
 
-    // then
+    expectedInitialValues.isVenueVirtual = true
     expect(initialValues).toStrictEqual(expectedInitialValues)
   })
 
   it('should return initial values when there is no venueId', () => {
-    // given
     const venueId = null
 
-    // when
     const initialValues = setDefaultInitialFormValues(
-      FORM_DEFAULT_VALUES,
       offererNames,
       offererId,
       venueId,
       venueList
     )
 
-    // then
     expectedInitialValues.venueId = FORM_DEFAULT_VALUES.venueId
-    expectedInitialValues.isVenueVirtual = undefined
+    expectedInitialValues.isVenueVirtual = false
     expectedInitialValues.accessibility = FORM_DEFAULT_VALUES.accessibility
     expectedInitialValues.withdrawalDetails =
       FORM_DEFAULT_VALUES.withdrawalDetails
     expect(initialValues).toStrictEqual(expectedInitialValues)
+  })
+
+  it('should return initial values with subcategory', () => {
+    const subcategory = {
+      id: 'subcategoryId',
+      categoryId: 'categoryId',
+      proLabel: 'Sous catégorie',
+      isEvent: false,
+      conditionalFields: ['lapin', 'moustache'],
+      canBeDuo: true,
+      canBeEducational: false,
+      canBeWithdrawable: false,
+      onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
+      reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
+      isSelectable: true,
+    }
+
+    const initialValues = setDefaultInitialFormValues(
+      offererNames,
+      offererId,
+      venueId,
+      venueList,
+      subcategory
+    )
+
+    expect(initialValues.subcategoryId).toStrictEqual(subcategory.id)
+    expect(initialValues.categoryId).toStrictEqual(subcategory.categoryId)
+    expect(initialValues.subCategoryFields).toStrictEqual(
+      subcategory.conditionalFields
+    )
   })
 })

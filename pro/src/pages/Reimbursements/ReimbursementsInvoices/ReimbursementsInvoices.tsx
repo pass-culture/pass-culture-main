@@ -6,6 +6,8 @@ import { InvoiceResponseModel } from 'apiClient/v1'
 import { SelectOption } from 'custom_types/form'
 import useCurrentUser from 'hooks/useCurrentUser'
 import strokeNoBookingIcon from 'icons/stroke-no-booking.svg'
+import { Button } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { FORMAT_ISO_DATE_ONLY, getToday } from 'utils/date'
@@ -175,8 +177,9 @@ const ReimbursementsInvoices = (): JSX.Element => {
         setAreFiltersDefault={setAreFiltersDefault}
         setFilters={setFilters}
       >
-        <button
-          className="primary-button search-button"
+        <Button
+          variant={ButtonVariant.PRIMARY}
+          className="search-button"
           disabled={shouldDisableButton}
           onClick={() => {
             setHasSearchedOnce(true)
@@ -185,7 +188,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
           type="button"
         >
           Lancer la recherche
-        </button>
+        </Button>
       </InvoicesFilters>
       {isLoading && <Spinner />}
       {hasError && <InvoicesServerError />}

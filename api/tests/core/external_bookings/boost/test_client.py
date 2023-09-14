@@ -75,35 +75,38 @@ class GetShowtimesTest:
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?page=1&per_page=2",
+            "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=2",
             json=fixtures.ShowtimesEndpointResponse.PAGE_1_JSON_DATA,
         )
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?page=2&per_page=2",
+            "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?paymentMethod=external:credit:passculture&hideFullReservation=1&page=2&per_page=2",
             json=fixtures.ShowtimesEndpointResponse.PAGE_2_JSON_DATA,
         )
         boost = boost_client.BoostClientAPI(cinema_str_id)
         showtimes = boost.get_showtimes(per_page=2, start_date=date.date(2022, 10, 10), interval_days=10)
-        assert showtimes == [
-            boost_serializers.ShowTime4(id=36683, numberSeatsRemaining=96),
-            boost_serializers.ShowTime4(id=36848, numberSeatsRemaining=177),
-            boost_serializers.ShowTime4(id=36932, numberSeatsRemaining=122),
-        ]
+        assert len(showtimes) == 3
+        assert showtimes[0].id == 36683
+        assert showtimes[0].numberSeatsRemaining == 96
+        assert showtimes[1].id == 36848
+        assert showtimes[1].numberSeatsRemaining == 177
+        assert showtimes[2].id == 36932
+        assert showtimes[2].numberSeatsRemaining == 122
 
     def test_should_return_a_movie_showtimes(self, requests_mock):
         cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
         cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
         requests_mock.get(
-            "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?film=207&page=1&per_page=2",
+            "https://cinema-0.example.com/api/showtimes/between/2022-10-10/2022-10-20?paymentMethod=external:credit:passculture&hideFullReservation=1&film=207&page=1&per_page=2",
             json=fixtures.ShowtimesWithFilmIdEndpointResponse.PAGE_1_JSON_DATA,
         )
         boost = boost_client.BoostClientAPI(cinema_str_id)
         showtimes = boost.get_showtimes(per_page=2, start_date=date.date(2022, 10, 10), interval_days=10, film=207)
 
-        assert showtimes == [
-            boost_serializers.ShowTime4(id=36683, numberSeatsRemaining=96),
-            boost_serializers.ShowTime4(id=36684, numberSeatsRemaining=0),
-        ]
+        assert len(showtimes) == 2
+        assert showtimes[0].id == 36683
+        assert showtimes[0].numberSeatsRemaining == 96
+        assert showtimes[1].id == 36684
+        assert showtimes[1].numberSeatsRemaining == 0
 
 
 class BookTicketTest:

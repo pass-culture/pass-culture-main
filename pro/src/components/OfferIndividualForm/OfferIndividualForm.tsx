@@ -25,7 +25,7 @@ import { ImageUploaderOffer } from './ImageUploaderOffer'
 import { Informations } from './Informations'
 import { Notifications } from './Notifications'
 import { UsefulInformations } from './UsefulInformations'
-import { getFilteredVenueList } from './utils/getFilteredVenueList'
+import { getFilteredVenueListBySubcategory } from './utils/getFilteredVenueList'
 
 export interface OfferIndividualFormProps {
   offererNames: OffererName[]
@@ -59,25 +59,25 @@ const OfferIndividualForm = ({
 
   useScrollToFirstErrorAfterSubmit()
 
-  const filteredVenueList = getFilteredVenueList(
-    subcategoryId,
-    subCategories,
-    venueList
+  const offerSubCategory = subCategories.find(s => s.id === subcategoryId)
+  const filteredVenueList = getFilteredVenueListBySubcategory(
+    venueList,
+    offerSubCategory
   )
 
   const showFullForm = subcategoryId.length > 0 && filteredVenueList.length > 0
 
-  const offerSubCategory = subCategories.find(s => s.id === subcategoryId)
+  const venue = filteredVenueList.find(v => v.id.toString() === venueId)
 
-  const venue = filteredVenueList.find(v => v.id.toString() == venueId)
-
+  // we use venue is virtual here because we cannot infer it from the offerSubCategory
+  // because of CATEGORY_STATUS.ONLINE_OR_OFFLINE who can be both virtual or not
   const isVenueVirtual = venue?.isVirtual || false
 
   const matchOffererId = (venue: OfferIndividualVenue) => {
-    return venue.managingOffererId.toString() == offererId
+    return venue.managingOffererId.toString() === offererId
   }
 
-  const areAllVenuesVirtual = venueList
+  const areAllVenuesVirtual = filteredVenueList
     .filter(matchOffererId)
     .every(v => v.isVirtual)
 
@@ -96,6 +96,8 @@ const OfferIndividualForm = ({
         readOnlyFields={readOnlyFields}
         showAddVenueBanner={showAddVenueBanner}
         offerSubtype={offerSubtype}
+        // subcategory change will recompute the venue list
+        // so we need to pass the full venue list here
         venueList={venueList}
       />
       {showFullForm && (

@@ -52,22 +52,36 @@ def _convert_to_utc_datetime(datetime_with_tz_offset: datetime.datetime) -> date
     return datetime_with_tz_offset.astimezone(tz=datetime.timezone.utc)
 
 
-class ShowTime4(BaseModel):
-    """We transcribe their API schema and keep their name convention"""
-
-    id: int
-    numberSeatsRemaining: int
-
-
-class ShowTimeCollection(Collection):
-    data: list[ShowTime4]
-
-
 class ShowtimePricing(BaseModel):
     id: int
     pricingCode: str
     amountTaxesIncluded: Decimal
     title: str
+
+
+class ShowTime4(BaseModel):
+    """We transcribe their API schema and keep their name convention"""
+
+    id: int
+    numberSeatsRemaining: int
+    showDate: datetime.datetime
+    showEndDate: datetime.datetime
+    soldOut: bool
+    authorizedAccess: bool
+    film: Film2
+    format: dict
+    version: dict
+    screen: dict
+    showtimePricing: list[ShowtimePricing]
+    attributs: list[int]
+
+    @pydantic_v1.validator("showDate", "showEndDate")
+    def normalize_datetime(cls, value: datetime.datetime) -> datetime.datetime:
+        return _convert_to_utc_datetime(value)
+
+
+class ShowTimeCollection(Collection):
+    data: list[ShowTime4]
 
 
 class ShowTime(BaseModel):
@@ -82,6 +96,7 @@ class ShowTime(BaseModel):
     version: dict
     screen: dict
     showtimePricing: list[ShowtimePricing]
+    attributs: list[int]
 
     @pydantic_v1.validator("showDate", "showEndDate")
     def normalize_datetime(cls, value: datetime.datetime) -> datetime.datetime:
@@ -138,3 +153,12 @@ class SaleCancelItem(BaseModel):
 
 class SaleCancel(BaseModel):
     sales: list[SaleCancelItem]
+
+
+class CinemaAttribut(BaseModel):
+    id: int
+    title: str
+
+
+class CinemaAttributCollection(BaseModel):
+    data: list[CinemaAttribut]

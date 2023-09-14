@@ -22,6 +22,17 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferTypeIndiviual from '../OfferTypeIndividual'
 
+vi.mock('hooks/useRemoteConfig', () => ({
+  __esModule: true,
+  default: () => ({
+    remoteConfig: {},
+  }),
+}))
+
+vi.mock('@firebase/remote-config', () => ({
+  getValue: () => ({ asBoolean: () => true }),
+}))
+
 const TestForm = (): JSX.Element => {
   const initialValues: OfferTypeFormValues = {
     offerType: OFFER_TYPES.INDIVIDUAL_OR_DUO,
@@ -89,20 +100,20 @@ describe('OfferTypeIndividual', () => {
     renderOfferTypeIndividual(true, '123')
 
     expect(
-      await screen.findByText('Quel est la catégorie de l’offre ?')
+      await screen.findByText('Quelle est la catégorie de l’offre ?')
     ).toBeInTheDocument()
     expect(screen.getByText('Ma sous-catégorie préférée')).toBeInTheDocument()
     expect(screen.queryByText('Votre offre est :')).not.toBeInTheDocument()
   })
 
-  it('should also display macro choices when clicking on "autre"', async () => {
+  it('should display macro choices when clicking on "Autre"', async () => {
     renderOfferTypeIndividual(true, '123')
 
     expect(
-      await screen.findByText('Quel est la catégorie de l’offre ?')
+      await screen.findByText('Quelle est la catégorie de l’offre ?')
     ).toBeInTheDocument()
 
-    await userEvent.click(screen.getByText('autre'))
+    await userEvent.click(screen.getByText('Autre'))
 
     expect(screen.getByText('Ma sous-catégorie préférée')).toBeInTheDocument()
     expect(screen.getByText('Votre offre est :')).toBeInTheDocument()
@@ -112,7 +123,7 @@ describe('OfferTypeIndividual', () => {
     renderOfferTypeIndividual(false, '123')
 
     expect(
-      screen.queryByText('Quel est la catégorie de l’offre ?')
+      screen.queryByText('Quelle est la catégorie de l’offre ?')
     ).not.toBeInTheDocument()
     expect(screen.getByText('Votre offre est :')).toBeInTheDocument()
   })
@@ -121,7 +132,7 @@ describe('OfferTypeIndividual', () => {
     renderOfferTypeIndividual(true, undefined)
 
     expect(
-      screen.queryByText('Quel est la catégorie de l’offre ?')
+      screen.queryByText('Quelle est la catégorie de l’offre ?')
     ).not.toBeInTheDocument()
     expect(screen.getByText('Votre offre est :')).toBeInTheDocument()
   })
@@ -132,7 +143,7 @@ describe('OfferTypeIndividual', () => {
     renderOfferTypeIndividual(true, '123')
 
     expect(
-      screen.queryByText('Quel est la catégorie de l’offre ?')
+      screen.queryByText('Quelle est la catégorie de l’offre ?')
     ).not.toBeInTheDocument()
     expect(screen.getByText('Votre offre est :')).toBeInTheDocument()
   })
@@ -143,7 +154,7 @@ describe('OfferTypeIndividual', () => {
     renderOfferTypeIndividual(true, '123')
 
     expect(
-      screen.queryByText('Quel est la catégorie de l’offre ?')
+      screen.queryByText('Quelle est la catégorie de l’offre ?')
     ).not.toBeInTheDocument()
     expect(screen.getByText('Votre offre est :')).toBeInTheDocument()
   })

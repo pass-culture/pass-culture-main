@@ -68,6 +68,7 @@ class CreateProviderTest(PostEndpointHelper):
             "logo_url": "https://example.org/image.png",
             "booking_external_url": "https://example.org/booking",
             "cancel_external_url": "https://example.org/cancel",
+            "notification_external_url": "https://example.org/notify",
             "enabled_for_pro": False,
             "is_active": True,
         }
@@ -87,6 +88,7 @@ class CreateProviderTest(PostEndpointHelper):
         assert created_provider.isActive == form_data["is_active"]
         assert created_provider.bookingExternalUrl == form_data["booking_external_url"]
         assert created_provider.cancelExternalUrl == form_data["cancel_external_url"]
+        assert created_provider.notificationExternalUrl == form_data["notification_external_url"]
 
         assert created_provider.offererProvider is not None
         created_offerer = created_provider.offererProvider.offerer
@@ -110,6 +112,7 @@ class CreateProviderTest(PostEndpointHelper):
             "logo_url": "https://example.org/image.png",
             "booking_external_url": "https://example.org/booking",
             "cancel_external_url": "https://example.org/cancel",
+            "notification_external_url": "https://example.org/notify",
             "enabled_for_pro": False,
             "is_active": True,
         }
@@ -129,6 +132,45 @@ class CreateProviderTest(PostEndpointHelper):
         assert created_provider.isActive == form_data["is_active"]
         assert created_provider.bookingExternalUrl == form_data["booking_external_url"]
         assert created_provider.cancelExternalUrl == form_data["cancel_external_url"]
+        assert created_provider.notificationExternalUrl == form_data["notification_external_url"]
+
+        assert offerers_models.Offerer.query.count() == 1
+        assert created_provider.offererProvider.offerer == offerer
+        assert offerer.name != form_data["name"]
+        assert offerer.city != form_data["city"]
+        assert offerer.postalCode != form_data["postal_code"]
+
+        created_api_key = created_provider.apiKeys[0]
+        assert created_api_key.offerer == offerer
+
+    def test_create_provider_with_least_data(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory()
+
+        form_data = {
+            "name": "Individual Offer API consumer",
+            "city": "Grenoble",
+            "postal_code": "38000",
+            "siren": offerer.siren,
+            "enabled_for_pro": False,
+            "is_active": True,
+        }
+        response = self.post_to_endpoint(authenticated_client, form_data)
+        assert response.status_code == 303
+        redirected_response = authenticated_client.get(response.headers["location"])
+
+        created_provider_alert = html_parser.extract_alert(redirected_response.data)
+        assert re.search(
+            rf"development{offerers_api.API_KEY_SEPARATOR}\w{{77}}", created_provider_alert
+        ), "clear api key secret not found"
+
+        created_provider = providers_models.Provider.query.order_by(providers_models.Provider.id.desc()).first()
+        assert created_provider.name == form_data["name"]
+        assert created_provider.logoUrl is None
+        assert created_provider.enabledForPro == form_data["enabled_for_pro"]
+        assert created_provider.isActive == form_data["is_active"]
+        assert created_provider.bookingExternalUrl is None
+        assert created_provider.cancelExternalUrl is None
+        assert created_provider.notificationExternalUrl is None
 
         assert offerers_models.Offerer.query.count() == 1
         assert created_provider.offererProvider.offerer == offerer
@@ -155,6 +197,7 @@ class UpdateProviderTest(PostEndpointHelper):
             "logo_url": "https://example.org/image.png",
             "booking_external_url": "https://example.org/booking",
             "cancel_external_url": "https://example.org/cancel",
+            "notification_external_url": "https://example.org/notify",
             "enabled_for_pro": False,
             "is_active": True,
         }
@@ -172,6 +215,36 @@ class UpdateProviderTest(PostEndpointHelper):
         assert updated_provider.isActive == form_data["is_active"]
         assert updated_provider.bookingExternalUrl == form_data["booking_external_url"]
         assert updated_provider.cancelExternalUrl == form_data["cancel_external_url"]
+        assert updated_provider.notificationExternalUrl == form_data["notification_external_url"]
+        assert not updated_provider.apiKeys
+
+        assert offerer.name != form_data["name"]
+
+    def test_update_provider_with_minimal_data(self, authenticated_client):
+        provider = providers_factories.ProviderFactory()
+        offerer = offerers_factories.OffererFactory()
+        providers_factories.OffererProviderFactory(offerer=offerer, provider=provider)
+
+        form_data = {
+            "name": "Individual Offer API consumer",
+            "enabled_for_pro": False,
+            "is_active": True,
+        }
+        response = self.post_to_endpoint(authenticated_client, form_data, provider_id=provider.id)
+        assert response.status_code == 303
+        redirected_response = authenticated_client.get(response.headers["location"])
+
+        created_provider_alert = html_parser.extract_alert(redirected_response.data)
+        assert created_provider_alert == f'Le partenaire {form_data["name"]} a été modifié.'
+
+        updated_provider = providers_models.Provider.query.get(provider.id)
+        assert updated_provider.name == form_data["name"]
+        assert updated_provider.logoUrl is None
+        assert updated_provider.enabledForPro == form_data["enabled_for_pro"]
+        assert updated_provider.isActive == form_data["is_active"]
+        assert updated_provider.bookingExternalUrl is None
+        assert updated_provider.cancelExternalUrl is None
+        assert updated_provider.notificationExternalUrl is None
         assert not updated_provider.apiKeys
 
         assert offerer.name != form_data["name"]

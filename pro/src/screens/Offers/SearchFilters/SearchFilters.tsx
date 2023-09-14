@@ -14,7 +14,7 @@ import { Audience } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
-import { ButtonLink } from 'ui-kit'
+import { ButtonLink, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import PeriodSelector from 'ui-kit/form/PeriodSelector/PeriodSelector'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
@@ -226,13 +226,9 @@ const SearchFilters = ({
         </div>
         <div className={styles['search-separator']}>
           <div className={styles['separator']} />
-          <button
-            className="primary-button"
-            disabled={disableAllFilters}
-            type="submit"
-          >
+          <SubmitButton disabled={disableAllFilters}>
             Lancer la recherche
-          </button>
+          </SubmitButton>
           <div className={styles['separator']} />
         </div>
       </form>

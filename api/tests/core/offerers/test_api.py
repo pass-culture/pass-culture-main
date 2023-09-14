@@ -879,6 +879,122 @@ class CreateOffererTest:
         assert actions_list[0].offerer == created_offerer
         assert actions_list[0].comment == "Nouvelle demande sur un SIREN précédemment rejeté"
 
+    def test_create_new_offerer_with_validation_token_if_siren_was_previously_rejected_on_user_rejected(self):
+        # Given
+        user = users_factories.UserFactory()
+        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+        )
+        offerer = offerers_factories.RejectedOffererFactory(
+            name="Rejected Offerer",
+            siren=offerer_informations.siren,
+        )
+        offerers_factories.RejectedUserOffererFactory(user=user, offerer=offerer)
+
+        # When
+        updated_user_offerer = offerers_api.create_offerer(user, offerer_informations)
+
+        # Then
+        assert offerer.validationStatus == ValidationStatus.NEW
+        assert updated_user_offerer.validationStatus == ValidationStatus.VALIDATED
+        assert updated_user_offerer.dateCreated is not None
+
+        assert not updated_user_offerer.user.has_pro_role
+
+        actions_list = history_models.ActionHistory.query.order_by(history_models.ActionHistory.actionType).all()
+        created_offerer = updated_user_offerer.offerer
+        assert len(actions_list) == 1
+        assert actions_list[0].actionType == history_models.ActionType.OFFERER_NEW
+        assert actions_list[0].authorUser == user
+        assert actions_list[0].user == user
+        assert actions_list[0].offerer == created_offerer
+        assert actions_list[0].comment == "Nouvelle demande sur un SIREN précédemment rejeté"
+
+    def test_create_new_offerer_with_validation_token_if_siren_was_previously_rejected_on_user_deleted(self):
+        # Given
+        user = users_factories.UserFactory()
+        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+        )
+        offerer = offerers_factories.RejectedOffererFactory(
+            name="Rejected Offerer",
+            siren=offerer_informations.siren,
+        )
+        offerers_factories.DeletedUserOffererFactory(user=user, offerer=offerer)
+
+        # When
+        updated_user_offerer = offerers_api.create_offerer(user, offerer_informations)
+
+        # Then
+        assert updated_user_offerer.offerer.validationStatus == ValidationStatus.NEW
+        assert updated_user_offerer.validationStatus == ValidationStatus.VALIDATED
+        assert updated_user_offerer.dateCreated is not None
+
+        assert not updated_user_offerer.user.has_pro_role
+
+        actions_list = history_models.ActionHistory.query.order_by(history_models.ActionHistory.actionType).all()
+        created_offerer = updated_user_offerer.offerer
+        assert len(actions_list) == 1
+        assert actions_list[0].actionType == history_models.ActionType.OFFERER_NEW
+        assert actions_list[0].authorUser == user
+        assert actions_list[0].user == user
+        assert actions_list[0].offerer == created_offerer
+        assert actions_list[0].comment == "Nouvelle demande sur un SIREN précédemment rejeté"
+
+    def test_create_offerer_on_known_offerer_by_user_rejected(self):
+        # Given
+        user = users_factories.UserFactory()
+        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+        )
+        offerer = offerers_factories.OffererFactory(siren=offerer_informations.siren)
+        offerers_factories.RejectedUserOffererFactory(user=user, offerer=offerer)
+
+        # When
+        updated_user_offerer = offerers_api.create_offerer(user, offerer_informations)
+
+        # Then
+        assert offerer.validationStatus == ValidationStatus.VALIDATED
+        assert updated_user_offerer.validationStatus == ValidationStatus.NEW
+        assert updated_user_offerer.dateCreated is not None
+
+        assert not updated_user_offerer.user.has_pro_role
+
+        actions_list = history_models.ActionHistory.query.order_by(history_models.ActionHistory.actionType).all()
+        created_offerer = updated_user_offerer.offerer
+        assert len(actions_list) == 1
+        assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
+        assert actions_list[0].authorUser == user
+        assert actions_list[0].user == user
+        assert actions_list[0].offerer == created_offerer
+
+    def test_create_new_offerer_on_known_offerer_by_user_deleted(self):
+        # Given
+        user = users_factories.UserFactory()
+        offerer_informations = offerers_serialize.CreateOffererQueryModel(
+            name="Test Offerer", siren="418166096", address="123 rue de Paris", postalCode="93100", city="Montreuil"
+        )
+        offerer = offerers_factories.OffererFactory(siren=offerer_informations.siren)
+        offerers_factories.DeletedUserOffererFactory(user=user, offerer=offerer)
+
+        # When
+        updated_user_offerer = offerers_api.create_offerer(user, offerer_informations)
+
+        # Then
+        assert offerer.validationStatus == ValidationStatus.VALIDATED
+        assert updated_user_offerer.validationStatus == ValidationStatus.NEW
+        assert updated_user_offerer.dateCreated is not None
+
+        assert not updated_user_offerer.user.has_pro_role
+
+        actions_list = history_models.ActionHistory.query.order_by(history_models.ActionHistory.actionType).all()
+        created_offerer = updated_user_offerer.offerer
+        assert len(actions_list) == 1
+        assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
+        assert actions_list[0].authorUser == user
+        assert actions_list[0].user == user
+        assert actions_list[0].offerer == created_offerer
+
     def test_create_offerer_auto_tagging_no_error_if_tag_not_in_db(self):
         # Given
         user = users_factories.UserFactory()
@@ -1267,6 +1383,23 @@ class ValidateOffererAttachmentTest:
         # Then
         mocked_send_validation_confirmation_email_to_pro.assert_called_once_with(user_offerer)
 
+    @patch("pcapi.core.mails.transactional.send_offerer_attachment_invitation_accepted")
+    def test_send_offerer_attachment_invitation_accepted_email(
+        self, mocked_send_offerer_attachment_invitation_accepted
+    ):
+        admin = users_factories.AdminFactory()
+        invited_user = users_factories.UserFactory()
+        user_offerer = offerers_factories.NotValidatedUserOffererFactory(user=invited_user)
+        offerer_invitation = offerers_factories.OffererInvitationFactory(
+            offerer=user_offerer.offerer, email=invited_user.email
+        )
+
+        offerers_api.validate_offerer_attachment(user_offerer, admin)
+
+        mocked_send_offerer_attachment_invitation_accepted.assert_called_once_with(
+            invited_user, offerer_invitation.user.email
+        )
+
 
 @freeze_time("2020-10-15 00:00:00")
 class RejectOffererAttachementTest:
@@ -1279,7 +1412,9 @@ class RejectOffererAttachementTest:
         offerers_api.reject_offerer_attachment(user_offerer, admin)
 
         # Then
-        assert offerers_models.UserOfferer.query.count() == 0
+        user_offerer_query = offerers_models.UserOfferer.query
+        assert user_offerer_query.count() == 1
+        assert user_offerer_query.one().validationStatus == ValidationStatus.REJECTED
 
     def test_pro_role_is_not_added_to_user(self):
         # Given
@@ -1349,7 +1484,9 @@ class DeleteOffererAttachementTest:
         offerers_api.delete_offerer_attachment(user_offerer, admin)
 
         # Then
-        assert offerers_models.UserOfferer.query.count() == 0
+        user_offerer_query = offerers_models.UserOfferer.query
+        assert user_offerer_query.count() == 1
+        assert user_offerer_query.one().validationStatus == ValidationStatus.DELETED
 
     def test_pro_role_is_not_added_to_user(self):
         # Given
@@ -1545,7 +1682,9 @@ class RejectOffererTest:
         offerers_api.reject_offerer(user_offerer.offerer, admin)
 
         # Then
-        assert offerers_models.UserOfferer.query.count() == 0
+        user_offerer_query = offerers_models.UserOfferer.query
+        assert user_offerer_query.count() == 1
+        assert user_offerer_query.one().validationStatus == ValidationStatus.REJECTED
 
     def test_api_key_has_been_removed(self):
         # Given
@@ -1557,7 +1696,9 @@ class RejectOffererTest:
         offerers_api.reject_offerer(user_offerer.offerer, admin)
 
         # Then
-        assert offerers_models.UserOfferer.query.count() == 0
+        user_offerer_query = offerers_models.UserOfferer.query
+        assert user_offerer_query.count() == 1
+        assert user_offerer_query.one().validationStatus == ValidationStatus.REJECTED
         assert offerers_models.ApiKey.query.count() == 0
 
     @patch("pcapi.core.mails.transactional.send_new_offerer_rejection_email_to_pro", return_value=True)
@@ -1578,7 +1719,7 @@ class RejectOffererTest:
         admin = users_factories.AdminFactory()
         user = users_factories.UserFactory()
         offerer = offerers_factories.NotValidatedOffererFactory()
-        offerers_factories.UserOffererFactory(user=user, offerer=offerer)  # removed in reject_offerer()
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
         offerers_factories.UserOffererFactory(
             offerer=offerer, validationStatus=ValidationStatus.NEW
         )  # another applicant
@@ -1587,13 +1728,24 @@ class RejectOffererTest:
         offerers_api.reject_offerer(offerer, admin)
 
         # Then
-        action = history_models.ActionHistory.query.one()
-        assert action.actionType == history_models.ActionType.OFFERER_REJECTED
+        action = history_models.ActionHistory.query.filter_by(
+            actionType=history_models.ActionType.OFFERER_REJECTED
+        ).one()
         assert action.actionDate is not None
         assert action.authorUserId == admin.id
         assert action.userId == user.id
         assert action.offererId == offerer.id
         assert action.venueId is None
+
+        action = history_models.ActionHistory.query.filter_by(
+            actionType=history_models.ActionType.USER_OFFERER_REJECTED, user=user
+        ).one()
+        assert action.actionDate is not None
+        assert action.authorUserId == admin.id
+        assert action.userId == user.id
+        assert action.offererId == offerer.id
+        assert action.venueId is None
+        assert action.comment == "Compte pro rejeté suite au rejet de la structure"
 
 
 def test_grant_user_offerer_access():
@@ -1940,7 +2092,7 @@ class CountOfferersByValidationStatusTest:
             stats = offerers_api.count_offerers_by_validation_status()
 
         # then
-        assert stats == {"NEW": 1, "PENDING": 2, "VALIDATED": 3, "REJECTED": 4}
+        assert stats == {"DELETED": 0, "NEW": 1, "PENDING": 2, "VALIDATED": 3, "REJECTED": 4}
 
     def test_get_offerer_stats_zero(self, client):
         # when
@@ -1948,7 +2100,7 @@ class CountOfferersByValidationStatusTest:
             stats = offerers_api.count_offerers_by_validation_status()
 
         # then
-        assert stats == {"NEW": 0, "PENDING": 0, "VALIDATED": 0, "REJECTED": 0}
+        assert stats == {"DELETED": 0, "NEW": 0, "PENDING": 0, "VALIDATED": 0, "REJECTED": 0}
 
 
 class UpdateOffererTagTest:
@@ -2206,6 +2358,7 @@ class InviteMembersTest:
         assert offerer_invitation.email == "new.user@example.com"
         assert offerer_invitation.userId == pro_user.id
         assert offerer_invitation.offererId == offerer.id
+        assert offerer_invitation.status == offerers_models.InvitationStatus.PENDING
         assert len(mails_testing.outbox) == 1
         assert (
             mails_testing.outbox[0].sent_data["template"]["id_not_prod"]
@@ -2224,6 +2377,7 @@ class InviteMembersTest:
         assert offerer_invitation.email == "new.user@example.com"
         assert offerer_invitation.userId == pro_user.id
         assert offerer_invitation.offererId == offerer.id
+        assert offerer_invitation.status == offerers_models.InvitationStatus.PENDING
         assert len(mails_testing.outbox) == 1
         assert (
             mails_testing.outbox[0].sent_data["template"]["id_not_prod"]
@@ -2272,8 +2426,7 @@ class InviteMembersTest:
 
         offerers_api.invite_member(offerer=offerer, email="attached.user@example.com", current_user=pro_user)
 
-        offerer_invitations = offerers_models.OffererInvitation.query.all()
-        assert len(offerer_invitations) == 0
+        offerer_invitation = offerers_models.OffererInvitation.query.one()
         assert len(mails_testing.outbox) == 1
         assert (
             mails_testing.outbox[0].sent_data["template"]["id_not_prod"]
@@ -2283,3 +2436,44 @@ class InviteMembersTest:
             userId=attached_to_other_offerer_user.id, offererId=offerer.id
         ).one()
         assert user_offerer.validationStatus == ValidationStatus.NEW
+        assert offerer_invitation.email == "attached.user@example.com"
+        assert offerer_invitation.userId == pro_user.id
+        assert offerer_invitation.offererId == offerer.id
+        assert offerer_invitation.status == offerers_models.InvitationStatus.ACCEPTED
+
+
+class AcceptOffererInvitationTest:
+    def test_accept_offerer_invitation_when_invitation_exist(self):
+        pro_user = users_factories.ProFactory(email="pro.user@example.com")
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offerers_factories.OffererInvitationFactory(offerer=offerer, user=pro_user, email="new.user@example.com")
+        user = users_factories.UserFactory(email="new.user@example.com")
+
+        offerers_api.accept_offerer_invitation_if_exists(user)
+
+        new_user_offerer = offerers_models.UserOfferer.query.filter_by(validationStatus=ValidationStatus.NEW).one()
+        offerer_invitation = offerers_models.OffererInvitation.query.one()
+
+        assert new_user_offerer.offererId == offerer.id
+        assert new_user_offerer.userId == user.id
+        assert offerer_invitation.status == offerers_models.InvitationStatus.ACCEPTED
+
+    def test_do_not_recreate_new_user_offerer_if_invitation_already_accepted(self):
+        pro_user = users_factories.ProFactory(email="pro.user@example.com")
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offerers_factories.OffererInvitationFactory(
+            offerer=offerer,
+            user=pro_user,
+            email="new.user@example.com",
+            status=offerers_models.InvitationStatus.ACCEPTED,
+        )
+        user = users_factories.UserFactory(email="new.user@example.com")
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        offerers_api.accept_offerer_invitation_if_exists(user)
+
+        user_offerers = offerers_models.UserOfferer.query.all()
+
+        assert len(user_offerers) == 2

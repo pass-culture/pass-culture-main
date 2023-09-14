@@ -204,7 +204,7 @@ const OfferEducationalStock = <
                 <TextArea
                   className={styles['price-details']}
                   countCharacters
-                  disabled={mode === Mode.READ_ONLY}
+                  disabled={disablePriceAndParticipantInputs}
                   label={DETAILS_PRICE_LABEL}
                   maxLength={MAX_DETAILS_LENGTH}
                   name="priceDetail"

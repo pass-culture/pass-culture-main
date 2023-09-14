@@ -1,6 +1,8 @@
 import React, { Dispatch, SetStateAction } from 'react'
 
 import strokeSearchIcon from 'icons/stroke-search.svg'
+import { Button } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { FiltersType } from './types'
@@ -40,14 +42,14 @@ const InvoicesNoResult = ({
       <p className="no-refunds-description">
         Vous pouvez modifier votre recherche ou
         <br />
-        <button
-          className="tertiary-button reset-filters"
+        <Button
           disabled={areFiltersDefault}
           onClick={resetFilters}
           type="button"
+          variant={ButtonVariant.TERNARYPINK}
         >
           Réinitialiser les filtres
-        </button>
+        </Button>
       </p>
     </div>
   )

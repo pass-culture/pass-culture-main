@@ -281,8 +281,7 @@ const Venue = ({
                 hasCreatedOffer && (
                   <>
                     <ButtonLink
-                      className="add-rib-link tertiary-link"
-                      variant={ButtonVariant.TERNARY}
+                      variant={ButtonVariant.TERNARYPINK}
                       link={{
                         to: reimbursementSectionLink,
                         isExternal: false,

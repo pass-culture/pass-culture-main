@@ -522,6 +522,7 @@ def create_collective_offer_public(
         interventionArea=[],
         institution=institution,
         providerId=requested_id,
+        nationalProgramId=body.nationalProgramId,
     )
 
     collective_offer.bookingEmails = body.booking_emails

@@ -218,7 +218,7 @@ describe('test OfferIndividualWisard', () => {
     expect(api.getVenues).toHaveBeenCalledWith(
       null, // validated
       true, // activeOfferersOnly,
-      offerer.id // offererId
+      undefined // offererId, undefinded because we need all the venues
     )
     expect(api.getCategories).toHaveBeenCalledWith()
     expect(api.getOffer).not.toHaveBeenCalled()
@@ -275,7 +275,7 @@ describe('test OfferIndividualWisard', () => {
     expect(api.getVenues).toHaveBeenCalledWith(
       null, // validated
       true, // activeOfferersOnly,
-      apiOffer.venue.managingOfferer.id // offererId
+      undefined // offererId, undefined because we need all the venues
     )
     expect(api.getCategories).toHaveBeenCalledWith()
     expect(api.getOffer).toHaveBeenCalledWith(offerId)

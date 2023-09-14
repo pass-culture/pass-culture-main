@@ -6,6 +6,7 @@ import pydantic.v1 as pydantic_v1
 
 from pcapi import settings
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
+from pcapi.core.bookings.constants import RedisExternalBookingType
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.external_bookings.boost.client import BoostClientAPI
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
@@ -104,8 +105,12 @@ def book_event_ticket(
             REDIS_EXTERNAL_BOOKINGS_NAME,
             {
                 "barcode": ticket.barcode,
-                "venue_id": booking.venueId,
                 "timestamp": datetime.datetime.utcnow().timestamp(),
+                "booking_type": RedisExternalBookingType.EVENT,
+                "cancel_event_info": {
+                    "provider_id": provider.id,
+                    "stock_id": stock.id,
+                },
             },
         )
     return [
@@ -117,18 +122,21 @@ def cancel_event_ticket(
     provider: providers_models.Provider,
     stock: offers_models.Stock,
     barcodes: list[str],
+    is_booking_saved: bool,
 ) -> None:
     payload = serialize.ExternalEventCancelBookingRequest.build_external_cancel_booking(barcodes)
     headers = {"Content-Type": "application/json"}
     response = requests.post(provider.cancelExternalUrl, json=payload.json(), headers=headers)
-    if response.status_code != 200:
-        raise exceptions.ExternalBookingException(
-            f"External booking failed with status code {response.status_code} and message {response.text}"
-        )
+    _check_external_booking_response_is_ok(response)
     try:
         parsed_response = pydantic_v1.parse_obj_as(serialize.ExternalEventCancelBookingResponse, response.json())
         if parsed_response.remainingQuantity:
-            stock.quantity = parsed_response.remainingQuantity + stock.dnBookedQuantity - len(barcodes)
+            new_quantity = (
+                parsed_response.remainingQuantity + stock.dnBookedQuantity - len(barcodes)
+                if is_booking_saved
+                else parsed_response.remainingQuantity + stock.dnBookedQuantity
+            )
+            stock.quantity = new_quantity
     except (ValueError, pydantic_v1.ValidationError):
         logger.exception(
             "Could not parse external booking cancel response",
@@ -148,7 +156,11 @@ def _check_external_booking_response_is_ok(response: requests.Response) -> None:
             raise exceptions.ExternalBookingSoldOutError()
         if error_response.error == "not_enough_seats" and error_response.remainingQuantity:
             raise exceptions.ExternalBookingNotEnoughSeatsError(remainingQuantity=error_response.remainingQuantity)
-    if response.status_code != 201:
+        if error_response.error == "already_cancelled":
+            raise exceptions.ExternalBookingAlreadyCancelledError(
+                f"External booking failed with status code {response.status_code} and message {response.text}"
+            )
+    if not response.ok:
         raise exceptions.ExternalBookingException(
             f"External booking failed with status code {response.status_code} and message {response.text}"
         )

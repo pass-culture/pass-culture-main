@@ -1,8 +1,10 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 
 import { Audience } from 'core/shared/types'
+import fullRefresh from 'icons/full-refresh.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
+import { ButtonLink } from 'ui-kit/Button'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './NoResults.module.scss'
@@ -24,16 +26,19 @@ const NoResults = ({ resetFilters, audience }: NoResultsProps): JSX.Element => (
       Aucune offre trouvée pour votre recherche
     </p>
     <p className={styles['search-no-results-text']}>
-      Vous pouvez modifer votre recherche ou
-      <br />
-      <Link
-        className="reset-filters-link"
-        onClick={resetFilters}
-        to={`/offres${audience === Audience.COLLECTIVE ? '/collectives' : ''}`}
-      >
-        afficher toutes les offres
-      </Link>
+      Vous pouvez modifier votre recherche ou
     </p>
+    <ButtonLink
+      variant={ButtonVariant.TERNARYPINK}
+      icon={fullRefresh}
+      link={{
+        to: `/offres${audience === Audience.COLLECTIVE ? '/collectives' : ''}`,
+        isExternal: false,
+      }}
+      onClick={resetFilters}
+    >
+      Afficher toutes les offres
+    </ButtonLink>
   </div>
 )
 

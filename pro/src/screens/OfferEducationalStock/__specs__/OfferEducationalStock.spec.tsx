@@ -1,12 +1,14 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { addDays, addMinutes, format } from 'date-fns'
+import { addDays, addMinutes, format, subDays } from 'date-fns'
 import React from 'react'
 import * as router from 'react-router-dom'
 
 import { StudentLevels } from 'apiClient/adage'
+import { CollectiveBookingStatus } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import {
+  CollectiveOffer,
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
   Mode,
@@ -83,21 +85,69 @@ describe('OfferEducationalStock', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not disable price and place when offer status is reimbursment', () => {
-    const offer = collectiveOfferFactory({ isPublicApi: false })
-    const testProps: OfferEducationalStockProps = {
-      ...defaultProps,
-      offer,
-      mode: Mode.READ_ONLY,
+  it.each([
+    collectiveOfferFactory({
+      lastBookingStatus: CollectiveBookingStatus.CONFIRMED,
+    }),
+    collectiveOfferFactory({
+      lastBookingStatus: CollectiveBookingStatus.USED,
+      collectiveStock: {
+        beginningDatetime: subDays(new Date(), 1).toDateString(),
+      } as CollectiveOffer['collectiveStock'],
+    }),
+  ])(
+    'should not disable description, price and places when offer is confirmed or used since less than 2 days',
+    offer => {
+      const testProps: OfferEducationalStockProps = {
+        ...defaultProps,
+        offer,
+        mode: Mode.READ_ONLY,
+      }
+      renderWithProviders(<OfferEducationalStock {...testProps} />)
+
+      const descriptionInput = screen.getByPlaceholderText(
+        'Détaillez ici des informations complémentaires'
+      )
+      const priceInput = screen.getByLabelText('Prix global TTC')
+      const placeInput = screen.getByLabelText('Nombre de places')
+
+      expect(descriptionInput).not.toBeDisabled()
+      expect(priceInput).not.toBeDisabled()
+      expect(placeInput).not.toBeDisabled()
     }
-    renderWithProviders(<OfferEducationalStock {...testProps} />)
+  )
 
-    const priceInput = screen.getByLabelText('Prix global TTC')
-    const placeInput = screen.getByLabelText('Nombre de places')
+  it.each([
+    collectiveOfferFactory({
+      lastBookingStatus: CollectiveBookingStatus.REIMBURSED,
+    }),
+    collectiveOfferFactory({
+      lastBookingStatus: CollectiveBookingStatus.USED,
+      collectiveStock: {
+        beginningDatetime: subDays(new Date(), 3).toDateString(),
+      } as CollectiveOffer['collectiveStock'],
+    }),
+  ])(
+    'should disable description, price and places when offer is reimbursed or is used since more than 2 days',
+    offer => {
+      const testProps: OfferEducationalStockProps = {
+        ...defaultProps,
+        offer,
+        mode: Mode.READ_ONLY,
+      }
+      renderWithProviders(<OfferEducationalStock {...testProps} />)
 
-    expect(priceInput).not.toBeDisabled()
-    expect(placeInput).not.toBeDisabled()
-  })
+      const descriptionInput = screen.getByPlaceholderText(
+        'Détaillez ici des informations complémentaires'
+      )
+      const priceInput = screen.getByLabelText('Prix global TTC')
+      const placeInput = screen.getByLabelText('Nombre de places')
+
+      expect(descriptionInput).toBeDisabled()
+      expect(priceInput).toBeDisabled()
+      expect(placeInput).toBeDisabled()
+    }
+  )
 
   it('should call submit callback when clicking next step with valid form data', async () => {
     const offer = collectiveOfferFactory({ isPublicApi: false })

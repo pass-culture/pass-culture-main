@@ -11,6 +11,7 @@ class ValidationStatus(enum.Enum):
     PENDING = "PENDING"
     VALIDATED = "VALIDATED"
     REJECTED = "REJECTED"
+    DELETED = "DELETED"
 
 
 @declarative_mixin
@@ -59,3 +60,12 @@ class ValidationStatusMixin:
     def isRejected(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
         # sqla.not_(isRejected) works only if we check None separately.
         return cls.validationStatus == ValidationStatus.REJECTED
+
+    @sqla_hybrid.hybrid_property
+    def isDeleted(self) -> bool:
+        return self.validationStatus == ValidationStatus.DELETED
+
+    @isDeleted.expression  # type: ignore [no-redef]
+    def isDeleted(cls) -> BinaryExpression:  # pylint: disable=no-self-argument
+        # sqla.not_(isDeleted) works only if we check None separately.
+        return cls.validationStatus == ValidationStatus.DELETED

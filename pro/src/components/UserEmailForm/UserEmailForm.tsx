@@ -79,10 +79,7 @@ const UserEmailForm = ({
               <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
                 Annuler
               </Button>
-              <SubmitButton
-                className="primary-button"
-                isLoading={formik.isSubmitting}
-              >
+              <SubmitButton isLoading={formik.isSubmitting}>
                 Enregistrer
               </SubmitButton>
             </div>

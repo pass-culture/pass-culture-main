@@ -43,7 +43,12 @@ def test_public_api(client, app):
                             "type": "string",
                         },
                         "dateCreated": {"format": "date-time", "title": "Datecreated", "type": "string"},
-                        "dateUsed": {"format": "date-time", "nullable": True, "title": "Dateused", "type": "string"},
+                        "dateUsed": {
+                            "format": "date-time",
+                            "nullable": True,
+                            "title": "Dateused",
+                            "type": "string",
+                        },
                         "id": {"title": "Id", "type": "integer"},
                         "reimbursementDate": {
                             "format": "date-time",
@@ -183,12 +188,14 @@ def test_public_api(client, app):
                         "datetime": {"title": "Datetime", "type": "string"},
                         "ean13": {"nullable": True, "title": "Ean13", "type": "string"},
                         "email": {"title": "Email", "type": "string"},
+                        "firstName": {"title": "Firstname", "type": "string", "nullable": True},
                         "formula": {
                             "allOf": [{"$ref": "#/components/schemas/BookingFormula"}],
                             "description": "S'applique uniquement aux offres de catégorie Cinéma. Abonnement (ABO) ou place (PLACE).",
                             "nullable": True,
                         },
                         "isUsed": {"title": "Isused", "type": "boolean"},
+                        "lastName": {"title": "Lastname", "type": "string", "nullable": True},
                         "offerId": {"title": "Offerid", "type": "integer"},
                         "offerName": {"title": "Offername", "type": "string"},
                         "offerType": {"$ref": "#/components/schemas/BookingOfferType"},
@@ -240,6 +247,41 @@ def test_public_api(client, app):
                     "title": "GetListEducationalInstitutionsQueryModel",
                     "type": "object",
                 },
+                "GetOffererVenuesResponse": {
+                    "properties": {
+                        "offerer": {
+                            "allOf": [{"$ref": "#/components/schemas/OffererResponse"}],
+                            "description": "Offerer to which the venues belong. Entity linked to the api key used.",
+                            "title": "Offerer",
+                        },
+                        "venues": {
+                            "items": {"$ref": "#/components/schemas/VenueResponse"},
+                            "title": "Venues",
+                            "type": "array",
+                        },
+                    },
+                    "required": ["offerer", "venues"],
+                    "title": "GetOffererVenuesResponse",
+                    "type": "object",
+                },
+                "GetOfferersVenuesQuery": {
+                    "properties": {
+                        "siren": {
+                            "example": "123456789",
+                            "nullable": True,
+                            "pattern": "^\\d{9}$",
+                            "title": "Siren",
+                            "type": "string",
+                        }
+                    },
+                    "title": "GetOfferersVenuesQuery",
+                    "type": "object",
+                },
+                "GetOfferersVenuesResponse": {
+                    "items": {"$ref": "#/components/schemas/GetOffererVenuesResponse"},
+                    "title": "GetOfferersVenuesResponse",
+                    "type": "array",
+                },
                 "GetPublicCollectiveOfferResponseModel": {
                     "additionalProperties": False,
                     "properties": {
@@ -289,7 +331,11 @@ def test_public_api(client, app):
                         "id": {"title": "Id", "type": "integer"},
                         "imageCredit": {"nullable": True, "title": "Imagecredit", "type": "string"},
                         "imageUrl": {"nullable": True, "title": "Imageurl", "type": "string"},
-                        "interventionArea": {"items": {"type": "string"}, "title": "Interventionarea", "type": "array"},
+                        "interventionArea": {
+                            "items": {"type": "string"},
+                            "title": "Interventionarea",
+                            "type": "array",
+                        },
                         "isActive": {"nullable": True, "title": "Isactive", "type": "boolean"},
                         "isSoldOut": {"title": "Issoldout", "type": "boolean"},
                         "mentalDisabilityCompliant": {
@@ -303,6 +349,11 @@ def test_public_api(client, app):
                             "type": "boolean",
                         },
                         "name": {"title": "Name", "type": "string"},
+                        "nationalProgram": {
+                            "anyOf": [{"$ref": "#/components/schemas/NationalProgramModel"}],
+                            "nullable": True,
+                            "title": "NationalProgramModel",
+                        },
                         "numberOfTickets": {"title": "Numberoftickets", "type": "integer"},
                         "offerVenue": {"$ref": "#/components/schemas/OfferVenueModel"},
                         "status": {"title": "Status", "type": "string"},
@@ -385,6 +436,17 @@ def test_public_api(client, app):
                     },
                     "required": ["addressType"],
                     "title": "OfferVenueModel",
+                    "type": "object",
+                },
+                "OffererResponse": {
+                    "properties": {
+                        "createdDatetime": {"format": "date-time", "title": "Createddatetime", "type": "string"},
+                        "id": {"title": "Id", "type": "integer"},
+                        "name": {"example": "Structure A", "title": "Name", "type": "string"},
+                        "siren": {"example": "123456789", "nullable": True, "title": "Siren", "type": "string"},
+                    },
+                    "required": ["id", "createdDatetime", "name"],
+                    "title": "OffererResponse",
                     "type": "object",
                 },
                 "PartialAccessibility": {
@@ -485,6 +547,7 @@ def test_public_api(client, app):
                             "type": "boolean",
                         },
                         "name": {"nullable": True, "title": "Name", "type": "string"},
+                        "nationalProgramId": {"nullable": True, "title": "Nationalprogramid", "type": "integer"},
                         "numberOfTickets": {"nullable": True, "title": "Numberoftickets", "type": "integer"},
                         "offerVenue": {
                             "anyOf": [{"$ref": "#/components/schemas/OfferVenueModel"}],
@@ -517,7 +580,11 @@ def test_public_api(client, app):
                             "title": "Audiodisabilitycompliant",
                             "type": "boolean",
                         },
-                        "beginningDatetime": {"format": "date-time", "title": "Beginningdatetime", "type": "string"},
+                        "beginningDatetime": {
+                            "format": "date-time",
+                            "title": "Beginningdatetime",
+                            "type": "string",
+                        },
                         "bookingEmails": {"items": {"type": "string"}, "title": "Bookingemails", "type": "array"},
                         "bookingLimitDatetime": {
                             "format": "date-time",
@@ -558,6 +625,7 @@ def test_public_api(client, app):
                             "type": "boolean",
                         },
                         "name": {"title": "Name", "type": "string"},
+                        "nationalProgramId": {"nullable": True, "title": "Nationalprogramid", "type": "integer"},
                         "numberOfTickets": {"title": "Numberoftickets", "type": "integer"},
                         "offerVenue": {"$ref": "#/components/schemas/OfferVenueModel"},
                         "students": {"items": {"type": "string"}, "title": "Students", "type": "array"},
@@ -624,7 +692,12 @@ def test_public_api(client, app):
                             "type": "string",
                         },
                         "city": {"example": "Paris", "nullable": True, "title": "City", "type": "string"},
-                        "postalCode": {"example": "75008", "nullable": True, "title": "Postalcode", "type": "string"},
+                        "postalCode": {
+                            "example": "75008",
+                            "nullable": True,
+                            "title": "Postalcode",
+                            "type": "string",
+                        },
                         "type": {"default": "physical", "enum": ["physical"], "title": "Type", "type": "string"},
                     },
                     "title": "VenuePhysicalLocation",
@@ -1084,6 +1157,52 @@ def test_public_api(client, app):
                     },
                     "security": [{"ApiKeyAuth": []}],
                     "summary": "Liste de tous les dispositifs nationaux connus",
+                    "tags": ["API offres collectives"],
+                }
+            },
+            "/v2/collective/offerer_venues": {
+                "get": {
+                    "description": "Tous les lieux enregistrés, sont listés ici avec leurs coordonnées.",
+                    "operationId": "GetOffererVenues",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "query",
+                            "name": "siren",
+                            "required": False,
+                            "schema": {
+                                "example": "123456789",
+                                "nullable": True,
+                                "pattern": "^\\d{9}$",
+                                "title": "Siren",
+                                "type": "string",
+                            },
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/GetOfferersVenuesResponse"}
+                                }
+                            },
+                            "description": "La liste des lieux, groupés par structures",
+                        },
+                        "401": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/AuthErrorResponseModel"}}
+                            },
+                            "description": "Authentification nécessaire",
+                        },
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"ApiKeyAuth": []}],
+                    "summary": "Récupération des lieux associés au fournisseur authentifié par le jeton d'API; groupés par structures.",
                     "tags": ["API offres collectives"],
                 }
             },

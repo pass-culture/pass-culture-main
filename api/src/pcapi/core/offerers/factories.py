@@ -23,6 +23,7 @@ class OffererFactory(BaseFactory):
     siren = factory.Sequence(lambda n: f"{n + 1:09}")
     isActive = True
     validationStatus = ValidationStatus.VALIDATED
+    dsToken = factory.LazyFunction(api.generate_offerer_ds_token)
 
 
 class NotValidatedOffererFactory(OffererFactory):
@@ -188,6 +189,14 @@ class NotValidatedUserOffererFactory(UserOffererFactory):
     validationStatus = ValidationStatus.NEW
 
 
+class RejectedUserOffererFactory(UserOffererFactory):
+    validationStatus = ValidationStatus.REJECTED
+
+
+class DeletedUserOffererFactory(UserOffererFactory):
+    validationStatus = ValidationStatus.DELETED
+
+
 class UserNotValidatedOffererFactory(BaseFactory):
     class Meta:
         model = models.UserOfferer
@@ -287,3 +296,4 @@ class OffererInvitationFactory(BaseFactory):
     email = factory.Sequence("invited.pro{}@example.net".format)
     dateCreated = datetime.datetime.utcnow()
     user = factory.SubFactory(users_factories.ProFactory)
+    status = models.InvitationStatus.PENDING

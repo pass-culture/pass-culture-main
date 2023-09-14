@@ -11,7 +11,6 @@ import { OfferIndividualVenue } from 'core/Venue/types'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
-  FORM_DEFAULT_VALUES,
   OfferIndividualFormValues,
   setDefaultInitialFormValues,
   validationSchema,
@@ -150,7 +149,6 @@ describe('OfferIndividualForm', () => {
       offerSubtype: null,
     }
     initialValues = setDefaultInitialFormValues(
-      FORM_DEFAULT_VALUES,
       offererNames,
       null,
       null,

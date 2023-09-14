@@ -100,6 +100,7 @@ describe('screens:StocksEventEdition', () => {
       subCategories: [],
       setOffer: () => {},
       setShouldTrack: () => {},
+      setSubcategory: () => {},
       shouldTrack: true,
       showVenuePopin: {},
     }

@@ -637,8 +637,6 @@ class CancelLatestEventTest:
 
         api.cancel_latest_event(event1.booking, motive=event1.motive)
 
-        db.session.refresh(event1)
-        db.session.refresh(event2)
         assert event1.status == models.FinanceEventStatus.CANCELLED
         assert event1.pricings[0].status == models.PricingStatus.CANCELLED
 
@@ -666,8 +664,6 @@ class CancelLatestEventTest:
             api.cancel_latest_event(event1.booking, motive=event1.motive)
 
         # No changes!
-        db.session.refresh(event1)
-        db.session.refresh(event2)
         assert event1.status == models.FinanceEventStatus.PRICED
         assert event1.pricings[0].status == models.PricingStatus.VALIDATED
         assert event2.status == models.FinanceEventStatus.PRICED
@@ -676,10 +672,8 @@ class CancelLatestEventTest:
         with override_settings(FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS=[ppoint.id]):
             api.cancel_latest_event(event1.booking, motive=event1.motive)
 
-        # This time, event1 and its pricing was cancelled. event2 and
+        # This time, event1 and its pricing were cancelled. event2 and
         # its pricing were left untouched.
-        db.session.refresh(event1)
-        db.session.refresh(event2)
         assert event1.status == models.FinanceEventStatus.CANCELLED
         assert event1.pricings[0].status == models.PricingStatus.CANCELLED
         assert event2.status == models.FinanceEventStatus.PRICED  # unchanged

@@ -48,7 +48,10 @@ def get_all_offerers_for_user(
     query = models.Offerer.query.filter(models.Offerer.isActive.is_(True))
 
     if not user.has_admin_role:
-        user_offerer_filters = [models.UserOfferer.userId == user.id]
+        user_offerer_filters = [
+            models.UserOfferer.userId == user.id,
+            sqla.not_(models.UserOfferer.isRejected) & sqla.not_(models.UserOfferer.isDeleted),
+        ]
         if not include_non_validated_user_offerers:
             user_offerer_filters.append(models.UserOfferer.isValidated)
         query = query.join(models.Offerer.UserOfferers).filter(*user_offerer_filters)
@@ -373,6 +376,10 @@ def offerer_has_venue_with_adage_id(offerer_id: int) -> bool:
 
 def dms_token_exists(dms_token: str) -> bool:
     return db.session.query(models.Venue.query.filter_by(dmsToken=dms_token).exists()).scalar()
+
+
+def offerer_ds_token_exists(ds_token: str) -> bool:
+    return db.session.query(models.Offerer.query.filter_by(dsToken=ds_token).exists()).scalar()
 
 
 def get_venues_educational_statuses() -> list[models.VenueEducationalStatus]:

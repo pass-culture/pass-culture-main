@@ -33,6 +33,7 @@ const renderImageUploaderOffer = (
     setOffer: () => {},
     shouldTrack: true,
     setShouldTrack: () => {},
+    setSubcategory: () => {},
     showVenuePopin: {},
     ...contextOverride,
   }

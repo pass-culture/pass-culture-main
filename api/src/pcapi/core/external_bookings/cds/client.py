@@ -12,6 +12,7 @@ from pcapi.connectors.cine_digital_service import post_resource
 from pcapi.connectors.cine_digital_service import put_resource
 import pcapi.connectors.serialization.cine_digital_service_serializers as cds_serializers
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
+from pcapi.core.bookings.constants import RedisExternalBookingType
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.external_bookings.cds.constants as cds_constants
 import pcapi.core.external_bookings.cds.exceptions as cds_exceptions
@@ -248,6 +249,7 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
                     "barcode": ticket.barcode,
                     "venue_id": booking.venueId,
                     "timestamp": datetime.datetime.utcnow().timestamp(),
+                    "booking_type": RedisExternalBookingType.CINEMA,
                 },
             )
 

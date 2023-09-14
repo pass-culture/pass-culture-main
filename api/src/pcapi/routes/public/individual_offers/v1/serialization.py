@@ -21,7 +21,6 @@ from pcapi.routes import serialization
 from pcapi.routes.public.individual_offers.v1.base_serialization import IndexPaginationQueryParams
 import pcapi.routes.public.serialization.accessibility as accessibility_serialization
 from pcapi.routes.public.serialization.utils import StrEnum
-import pcapi.routes.public.serialization.venues as venues_serialization
 from pcapi.serialization import utils as serialization_utils
 from pcapi.utils import date as date_utils
 
@@ -256,7 +255,10 @@ def deserialize_extra_data(
     return extra_data
 
 
-ALLOWED_PRODUCT_SUBCATEGORIES = [subcategories.SUPPORT_PHYSIQUE_MUSIQUE]
+ALLOWED_PRODUCT_SUBCATEGORIES = [
+    subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD,
+    subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE,
+]
 product_category_creation_models = {
     subcategory.id: compute_category_fields_model(subcategory, Method.create)
     for subcategory in ALLOWED_PRODUCT_SUBCATEGORIES
@@ -299,7 +301,7 @@ if typing.TYPE_CHECKING:
     product_category_edition_fields = CategoryRelatedFields
 else:
     product_category_creation_fields = typing_extensions.Annotated[
-        product_category_creation_models[subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id],
+        typing.Union[tuple(product_category_creation_models.values())],
         pydantic_v1.Field(description=CATEGORY_RELATED_FIELD_DESCRIPTION),
     ]
     product_category_reading_fields = typing_extensions.Annotated[
@@ -920,31 +922,6 @@ class GetDatesResponse(serialization.ConfiguredBaseModel):
 
     class Config:
         json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
-
-
-class OffererResponse(serialization.ConfiguredBaseModel):
-    id: int
-    dateCreated: datetime.datetime = pydantic_v1.Field(..., alias="createdDatetime")
-    name: str = pydantic_v1.Field(example="Structure A")
-    siren: str | None = pydantic_v1.Field(example="123456789")
-
-
-class GetOffererVenuesResponse(serialization.ConfiguredBaseModel):
-    offerer: OffererResponse = pydantic_v1.Field(
-        ..., description="Offerer to which the venues belong. Entity linked to the api key used."
-    )
-    venues: typing.List[venues_serialization.VenueResponse]
-
-
-class GetOfferersVenuesResponse(serialization.BaseModel):
-    __root__: typing.List[GetOffererVenuesResponse]
-
-    class Config:
-        json_encoders = {datetime.datetime: date_utils.format_into_utc_date}
-
-
-class GetOfferersVenuesQuery(serialization.ConfiguredBaseModel):
-    siren: str | None = pydantic_v1.Field(example="123456789", regex=r"^\d{9}$")
 
 
 class GetProductsListByEansQuery(serialization.ConfiguredBaseModel):

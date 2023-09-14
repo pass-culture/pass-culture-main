@@ -19,6 +19,7 @@ describe('transformOffererResponseModelToOfferer', () => {
       hasDigitalVenueAtLeastOneOffer: true,
       isValidated: true,
       isActive: true,
+      dsToken: '',
     }
 
     expect(transformOffererResponseModelToOfferer(properties)).toMatchObject({

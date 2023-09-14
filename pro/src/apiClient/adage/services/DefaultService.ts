@@ -15,6 +15,7 @@ import type { CollectiveOfferTemplateResponseModel } from '../models/CollectiveO
 import type { CollectiveRequestBody } from '../models/CollectiveRequestBody';
 import type { CollectiveRequestResponseModel } from '../models/CollectiveRequestResponseModel';
 import type { EducationalInstitutionWithBudgetResponseModel } from '../models/EducationalInstitutionWithBudgetResponseModel';
+import type { FavoritesResponseModel } from '../models/FavoritesResponseModel';
 import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
 import type { OfferIdBody } from '../models/OfferIdBody';
 import type { PostCollectiveRequestBodyModel } from '../models/PostCollectiveRequestBodyModel';
@@ -79,6 +80,22 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         400: `Bad Request`,
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_collective_favorites <GET>
+   * @returns FavoritesResponseModel OK
+   * @throws ApiError
+   */
+  public getCollectiveFavorites(): CancelablePromise<FavoritesResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/adage-iframe/collective/favorites',
+      errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
       },

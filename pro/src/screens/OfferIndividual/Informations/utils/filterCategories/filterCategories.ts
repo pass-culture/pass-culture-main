@@ -2,20 +2,12 @@ import {
   CATEGORY_STATUS,
   INDIVIDUAL_OFFER_SUBTYPE,
 } from 'core/Offers/constants'
-import {
-  OfferCategory,
-  OfferIndividual,
-  OfferSubCategory,
-} from 'core/Offers/types'
-import { parse } from 'utils/query-string'
+import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
 
-export const getOfferSubtypeFromParamsOrOffer = (
-  queryParams: string,
-  offer: OfferIndividual | null
+export const getOfferSubtypeFromParam = (
+  offerType: string | null
 ): INDIVIDUAL_OFFER_SUBTYPE | null => {
-  const params = parse(queryParams)
-
-  switch (params['offer-type']) {
+  switch (offerType) {
     // This is stupid but there is no simple way to cast string to enums
     // while checking that the values are valid (`as` is a bad solution)
     case INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD:
@@ -29,20 +21,8 @@ export const getOfferSubtypeFromParamsOrOffer = (
     default:
   }
 
-  // If the parameter is not set, try to guess the subtype from the offer object
-  if (offer === null) {
-    return null
-  }
-
-  if (offer.isDigital) {
-    return offer.isEvent
-      ? INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT
-      : INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD
-  } else {
-    return offer.isEvent
-      ? INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT
-      : INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD
-  }
+  // If the parameter is not set, we don't filter
+  return null
 }
 
 export const getCategoryStatusFromOfferSubtype = (

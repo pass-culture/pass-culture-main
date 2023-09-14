@@ -20,6 +20,7 @@ from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models
 from pcapi.core.bookings.api import cancel_unstored_external_bookings
+from pcapi.core.bookings.constants import RedisExternalBookingType
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
@@ -844,6 +845,34 @@ class CancelByBeneficiaryTest:
         assert booking.status is not BookingStatus.CANCELLED
         assert not booking.cancellationReason
 
+    def test_no_external_booking_error_when_trying_to_cancel_with_already_canceled_ticket(self, requests_mock):
+        external_url = "https://book_my_offer.com"
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider",
+            bookingExternalUrl=external_url + "/book",
+            cancelExternalUrl=external_url + "/cancel",
+        )
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = offers_factories.EventStockFactory(
+            lastProvider=provider,
+            offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
+            offer__lastProvider=provider,
+            idAtProviders="",
+        )
+        booking = bookings_factories.BookingFactory(stock=stock)
+        offerer_factories.ApiKeyFactory(offerer=booking.offerer)
+        external_bookings_factories.ExternalBookingFactory(booking=booking, barcode="1234567890123")
+        requests_mock.post(
+            external_url + "/cancel",
+            json={"error": "already_cancelled"},
+            status_code=409,
+        )
+
+        assert api.cancel_booking_by_beneficiary(booking.user, booking) is None
+
+        assert booking.status is BookingStatus.CANCELLED
+        assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
+
     @patch("pcapi.core.bookings.api.external_bookings_api.cancel_booking")
     @override_features(ENABLE_CDS_IMPLEMENTATION=True)
     def test_cds_cancel_external_booking(self, mocked_cancel_booking):
@@ -1047,6 +1076,35 @@ class CancelForFraudTest:
 
         assert booking.status is BookingStatus.CANCELLED
         assert booking.cancellationReason == BookingCancellationReasons.FRAUD
+
+
+@pytest.mark.usefixtures("db_session")
+class CancelBookingTest:
+    # Test `_cancel_booking()` internal function.
+
+    # FIXME (dbaty, 2023-09-11): the following test fails because
+    # `pytest_flask_sqlalchemy` introduces extra `SAVEPOINT` queries
+    # that change the behaviour of `ROLLBACK` queries. When run in
+    # tests, the `ROLLBACK` in `_cancel_booking()` does not roll back
+    # anything. When run outside tests, though, the `ROLLBACK` works
+    # well.
+    @pytest.mark.xfail
+    def test_cancel_already_used_no_override(self):
+        finance_event = finance_factories.UsedBookingFinanceEventFactory(
+            status=finance_models.FinanceEventStatus.PRICED,
+            booking__stock__offer__venue__pricing_point="self",
+        )
+        booking = finance_event.booking
+        pricing = finance_factories.PricingFactory(event=finance_event, booking=booking)
+
+        api._cancel_booking(
+            booking,
+            models.BookingCancellationReasons.BENEFICIARY,
+        )
+
+        assert booking.status == models.BookingStatus.USED
+        assert pricing.status == finance_models.PricingStatus.VALIDATED
+        assert finance_event.status == finance_models.FinanceEventStatus.PRICED
 
 
 @pytest.mark.usefixtures("db_session")
@@ -1573,31 +1631,84 @@ class PopBarcodesFromQueueAndCancelWastedExternalBookingTest:
     def test_should_not_pop_and_not_try_to_cancel_external_booking_if_minimum_age_not_reached(self, app):
         queue.add_to_queue(
             "api:external_bookings:barcodes",
-            {"barcode": "AAA-123456789", "venue_id": 12, "timestamp": datetime.utcnow().timestamp()},
+            {
+                "barcode": "AAA-123456789",
+                "venue_id": 12,
+                "timestamp": datetime.utcnow().timestamp(),
+                "booking_type": RedisExternalBookingType.CINEMA,
+            },
         )
 
         cancel_unstored_external_bookings()
 
         assert app.redis_client.llen("api:external_bookings:barcodes") == 1
 
+    @freeze_time("2032-11-17 15:00:00")
     @patch("pcapi.core.bookings.api.external_bookings_api.cancel_booking")
-    def test_should_pop_and_cancel_only_external_booking_reached_minimum_age(self, mocked_cancel_external_booking, app):
-        queue.add_to_queue(
-            "api:external_bookings:barcodes",
-            {"barcode": "BBB-123456789", "venue_id": 13, "timestamp": datetime.utcnow().timestamp() - 90},
+    def test_should_pop_and_cancel_only_external_booking_reached_minimum_age(
+        self, mocked_cancel_external_booking, app, requests_mock
+    ):
+        provider = providers_factories.ProviderFactory(
+            bookingExternalUrl="http://example.com/book", cancelExternalUrl="http://example.com/cancel"
+        )
+        stock = offers_factories.StockFactory(
+            offer__lastProvider=provider, idAtProviders="", dnBookedQuantity=10, quantity=50
         )
         queue.add_to_queue(
             "api:external_bookings:barcodes",
-            {"barcode": "CCC-123456789", "venue_id": 14, "timestamp": datetime.utcnow().timestamp() - 65},
+            {
+                "barcode": "DDD-123456789",
+                "venue_id": 15,
+                "timestamp": datetime.utcnow().timestamp() - 100,
+                "booking_type": RedisExternalBookingType.EVENT,
+                "cancel_event_info": {
+                    "stock_id": stock.id,
+                    "provider_id": provider.id,
+                },
+            },
         )
         queue.add_to_queue(
             "api:external_bookings:barcodes",
-            {"barcode": "AAA-123456789", "venue_id": 12, "timestamp": datetime.utcnow().timestamp()},
+            {
+                "barcode": "BBB-123456789",
+                "venue_id": 13,
+                "timestamp": datetime.utcnow().timestamp() - 90,
+                "booking_type": RedisExternalBookingType.CINEMA,
+            },
+        )
+        queue.add_to_queue(
+            "api:external_bookings:barcodes",
+            {
+                "barcode": "CCC-123456789",
+                "venue_id": 14,
+                "timestamp": datetime.utcnow().timestamp() - 65,
+                "booking_type": RedisExternalBookingType.CINEMA,
+            },
+        )
+        queue.add_to_queue(
+            "api:external_bookings:barcodes",
+            {
+                "barcode": "AAA-123456789",
+                "venue_id": 12,
+                "timestamp": datetime.utcnow().timestamp(),
+                "booking_type": RedisExternalBookingType.CINEMA,
+            },
+        )
+        queue.add_to_queue(
+            "api:external_bookings:barcodes",
+            {"barcode": "AAA-123456789", "venue_id": 12, "timestamp": datetime.utcnow().timestamp() + 10},
         )
         ExternalBookingFactory(barcode="BBB-123456789")
+
+        requests_mock.post(
+            "http://example.com/cancel",
+            json={"remainingQuantity": 16},
+            status_code=200,
+        )
 
         cancel_unstored_external_bookings()
 
         mocked_cancel_external_booking.assert_called_once_with(14, ["CCC-123456789"])
 
-        assert app.redis_client.llen("api:external_bookings:barcodes") == 1
+        assert app.redis_client.llen("api:external_bookings:barcodes") == 2
+        assert stock.quantity == 26

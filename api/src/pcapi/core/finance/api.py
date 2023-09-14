@@ -186,6 +186,7 @@ def add_event(
 def cancel_latest_event(
     booking: bookings_models.Booking | educational_models.CollectiveBooking,
     motive: models.FinanceEventMotive,
+    commit: bool = False,
 ) -> models.FinanceEvent | None:
     event = models.FinanceEvent.query.filter(
         (models.FinanceEvent.booking == booking)
@@ -195,10 +196,10 @@ def cancel_latest_event(
         models.FinanceEvent.status.in_(models.CANCELLABLE_FINANCE_EVENT_STATUSES),
     ).one_or_none()
     if not event:
-        # Once the feature flag is on, there MUST be an event. If no
+        # Once we have switched to event pricing, there MUST be an event. If no
         # event can be found, something is wrong somewhere (probably a
         # bug).
-        if feature.FeatureToggle.PRICE_FINANCE_EVENTS.is_active():
+        if not feature.FeatureToggle.PRICE_BOOKINGS.is_active():
             log = logger.error
         else:
             log = logger.info
@@ -207,9 +208,9 @@ def cancel_latest_event(
             extra={"booking": booking.id},
         )
         return None
-    pricing = _cancel_event_pricing(event, models.PricingLogReason.MARK_AS_UNUSED)
+    pricing = _cancel_event_pricing(event, models.PricingLogReason.MARK_AS_UNUSED, commit=commit)
     event.status = models.FinanceEventStatus.CANCELLED
-    db.session.add(event)
+    db.session.flush()
     logger.info(
         "Cancelled finance event and its pricing",
         extra={
@@ -919,7 +920,7 @@ def _cancel_event_pricing(
     if not event.pricingPointId:
         return None
 
-    with transaction():
+    try:
         lock_pricing_point(event.pricingPointId)
 
         pricing = models.Pricing.query.filter(
@@ -958,6 +959,13 @@ def _cancel_event_pricing(
             "Cancelled pricing",
             extra={"event": event.id, "pricing": pricing.id},
         )
+    except Exception:
+        db.session.rollback()
+        raise
+    if commit:
+        db.session.commit()
+    else:
+        db.session.flush()
     return pricing
 
 
@@ -1208,7 +1216,7 @@ def cancel_pricing(
     if not pricing:
         return None
 
-    with transaction():
+    try:
         lock_pricing_point(pricing.pricingPointId)
 
         pricing = models.Pricing.query.filter(
@@ -1240,8 +1248,14 @@ def cancel_pricing(
         )
         pricing.status = models.PricingStatus.CANCELLED
         db.session.add(pricing)
-        db.session.commit()
         logger.info("Cancelled pricing", extra={"pricing": pricing.id})
+    except Exception:
+        db.session.rollback()
+        raise
+    if commit:
+        db.session.commit()
+    else:
+        db.session.flush()
     return pricing
 
 

@@ -211,6 +211,7 @@ export const defautGetOffererResponseModel: GetOffererResponseModel = {
   name: 'Ma super structure',
   id: 0,
   postalCode: '00000',
+  dsToken: '',
 }
 
 export const defaultGetOffererVenueResponseModel: GetOffererVenueResponseModel =
@@ -244,6 +245,8 @@ export const defaultBookingResponse: GetBookingResponse = {
   price: 13,
   quantity: 1,
   userName: 'USER',
+  firstName: 'john',
+  lastName: 'doe',
   venueDepartmentCode: '75',
   priceCategoryLabel: 'price label',
 }

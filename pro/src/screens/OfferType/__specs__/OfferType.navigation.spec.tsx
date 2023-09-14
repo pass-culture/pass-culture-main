@@ -14,6 +14,17 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import OfferType from '../OfferType'
 
+vi.mock('hooks/useRemoteConfig', () => ({
+  __esModule: true,
+  default: () => ({
+    remoteConfig: {},
+  }),
+}))
+
+vi.mock('@firebase/remote-config', () => ({
+  getValue: () => ({ asBoolean: () => true }),
+}))
+
 vi.mock('react-router-dom', async () => ({
   ...((await vi.importActual('react-router-dom')) ?? {}),
   useNavigate: vi.fn(),
@@ -74,13 +85,13 @@ describe('screens:OfferIndividual::OfferType', () => {
     })
   })
 
-  it('should redirect with offer type when venue and type selected', async () => {
+  it('should redirect with the offer type when venue and type selected', async () => {
     renderOfferTypes('123')
 
     expect(
-      await screen.findByText('Quel est la catégorie de l’offre ?')
+      await screen.findByText('Quelle est la catégorie de l’offre ?')
     ).toBeInTheDocument()
-    await userEvent.click(screen.getByText('autre'))
+    await userEvent.click(screen.getByText('Autre'))
     await userEvent.click(screen.getByText('Un évènement physique daté'))
     await userEvent.click(screen.getByText('Étape suivante'))
 
@@ -94,7 +105,7 @@ describe('screens:OfferIndividual::OfferType', () => {
     renderOfferTypes('123')
 
     expect(
-      await screen.findByText('Quel est la catégorie de l’offre ?')
+      await screen.findByText('Quelle est la catégorie de l’offre ?')
     ).toBeInTheDocument()
     await userEvent.click(screen.getByText('Ma sous-catégorie préférée'))
     await userEvent.click(screen.getByText('Étape suivante'))

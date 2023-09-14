@@ -292,6 +292,8 @@ def book_offer(
             "stock": stock.id,
             "booking": booking.id,
             "used": booking.is_used_or_reimbursed,
+            "booking_token": booking.token,
+            "barcodes": [external_booking.barcode for external_booking in booking.externalBookings],
         },
     )
     amplitude_events.track_book_offer_event(booking)
@@ -361,6 +363,14 @@ def _book_cinema_external_ticket(booking: Booking, stock: Stock, beneficiary: Us
         )
         for ticket in tickets
     ]
+    logger.info(
+        "Successfully booked an offer",
+        extra={
+            "booking_id": booking.id,
+            "booking_token": booking.token,
+            "barcodes": [external_booking.barcode for external_booking in booking.externalBookings],
+        },
+    )
 
 
 def _book_event_external_ticket(booking: Booking, stock: Stock, beneficiary: User) -> int:
@@ -388,12 +398,13 @@ def _cancel_booking(
             stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
             db.session.refresh(booking)
             try:
-                finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
-                booking.cancel_booking(reason, cancel_even_if_used)
+                finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED, commit=False)
                 cancelled_event = finance_api.cancel_latest_event(
                     booking,
                     finance_models.FinanceEventMotive.BOOKING_USED,
+                    commit=False,
                 )
+                booking.cancel_booking(reason, cancel_even_if_used)
                 if cancelled_event:
                     finance_api.add_event(
                         booking,
@@ -408,6 +419,7 @@ def _cancel_booking(
             ) as e:
                 if raise_if_error:
                     raise
+                db.session.rollback()
                 logger.info(
                     "%s: %s",
                     type(e).__name__,
@@ -423,7 +435,12 @@ def _cancel_booking(
 
     logger.info(
         "Booking has been cancelled",
-        extra={"booking_id": booking.id, "reason": str(reason)},
+        extra={
+            "booking_id": booking.id,
+            "reason": str(reason),
+            "booking_token": booking.token,
+            "barcodes": [external_booking.barcode for external_booking in booking.externalBookings],
+        },
         technical_message_id="booking.cancelled",
     )
     amplitude_events.track_cancel_booking_event(booking, reason)
@@ -442,10 +459,12 @@ def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
     if offer.lastProvider and offer.lastProvider.hasProviderEnableCharlie:
         barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
         try:
-            external_bookings_api.cancel_event_ticket(offer.lastProvider, stock, barcodes)
+            external_bookings_api.cancel_event_ticket(offer.lastProvider, stock, barcodes, True)
         except external_bookings_exceptions.ExternalBookingException:
             logger.exception("Could not cancel external ticket")
             raise external_bookings_exceptions.ExternalBookingException
+        except external_bookings_exceptions.ExternalBookingAlreadyCancelledError as error:
+            logger.info("External ticket already cancelled for booking: %s. Error %s", booking.id, str(error))
         return None
 
     venue_provider_name = external_bookings_api.get_active_cinema_venue_provider(offer.venueId).provider.localClass
@@ -898,7 +917,31 @@ def cancel_unstored_external_bookings() -> None:
 
         external_bookings = ExternalBooking.query.filter_by(barcode=external_booking_info["barcode"]).all()
         if not external_bookings:
-            external_bookings_api.cancel_booking(
-                int(external_booking_info["venue_id"]),
-                [external_booking_info["barcode"]],
-            )
+            if (
+                external_booking_info.get("booking_type")
+                and external_booking_info["booking_type"] == constants.RedisExternalBookingType.EVENT
+            ):
+                provider = providers_repository.get_provider_enabled_for_pro_by_id(
+                    external_booking_info["cancel_event_info"]["provider_id"]
+                )
+                stock = offers_models.Stock.query.filter_by(
+                    id=external_booking_info["cancel_event_info"]["stock_id"]
+                ).one_or_none()
+
+                if not stock or not provider:
+                    logger.error("Couldn't find stock or provider for external booking", extra=external_booking_info)
+                    raise external_bookings_exceptions.ExternalBookingException(
+                        "Error while canceling unstored ticket. Barcode: ",
+                        str(external_booking_info["barcode"]),
+                    )
+                external_bookings_api.cancel_event_ticket(
+                    provider,
+                    stock,
+                    [external_booking_info["barcode"]],
+                    False,
+                )
+            else:
+                external_bookings_api.cancel_booking(
+                    int(external_booking_info["venue_id"]),
+                    [external_booking_info["barcode"]],
+                )

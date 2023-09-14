@@ -1,6 +1,7 @@
 import dataclasses
 from datetime import datetime
 import enum
+import itertools
 import logging
 import re
 import secrets
@@ -660,7 +661,18 @@ def create_offerer(
     is_new = False
 
     if offerer is not None:
-        user_offerer = grant_user_offerer_access(offerer, user)
+        # The user can have his attachment rejected or deleted to the structure,
+        # in this case it is passed to NEW if the structure is not rejected
+        user_offerer = (
+            offerers_models.UserOfferer.query.filter_by(userId=user.id, offererId=offerer.id)
+            .filter(sa.or_(offerers_models.UserOfferer.isRejected, offerers_models.UserOfferer.isDeleted))  # type: ignore [type-var]
+            .first()
+        )
+        if user_offerer:
+            user_offerer.validationStatus = ValidationStatus.VALIDATED
+        else:
+            user_offerer = grant_user_offerer_access(offerer, user)
+
         objects_to_save = [user_offerer]
         if offerer.isRejected:
             # When offerer was rejected, it is considered as a new offerer in validation process;
@@ -671,6 +683,7 @@ def create_offerer(
             objects_to_save += [offerer]
         else:
             user_offerer.validationStatus = ValidationStatus.NEW
+            user_offerer.dateCreated = datetime.utcnow()
             extra_data = {}
             _add_new_onboarding_info_to_extra_data(new_onboarding_info, extra_data)
             objects_to_save += [
@@ -688,6 +701,7 @@ def create_offerer(
     else:
         is_new = True
         offerer = models.Offerer()
+        offerer.dsToken = generate_offerer_ds_token()
         _fill_in_offerer(offerer, offerer_informations)
         digital_venue = create_digital_venue(offerer)
         user_offerer = grant_user_offerer_access(offerer, user)
@@ -814,6 +828,15 @@ def validate_offerer_attachment(
             "Could not send attachment validation email to offerer",
             extra={"user_offerer": user_offerer.id},
         )
+    offerer_invitation = (
+        models.OffererInvitation.query.filter_by(offererId=user_offerer.offererId)
+        .filter_by(email=user_offerer.user.email)
+        .one_or_none()
+    )
+    if offerer_invitation:
+        transactional_mails.send_offerer_attachment_invitation_accepted(
+            user_offerer.user, offerer_invitation.user.email
+        )
 
 
 def set_offerer_attachment_pending(
@@ -833,8 +856,14 @@ def set_offerer_attachment_pending(
 
 
 def reject_offerer_attachment(
-    user_offerer: offerers_models.UserOfferer, author_user: users_models.User, comment: str | None = None
+    user_offerer: offerers_models.UserOfferer,
+    author_user: users_models.User,
+    comment: str | None = None,
+    commit: bool = True,
 ) -> None:
+    user_offerer.validationStatus = ValidationStatus.REJECTED
+    db.session.add(user_offerer)
+
     db.session.add(
         history_api.log_action(
             history_models.ActionType.USER_OFFERER_REJECTED,
@@ -852,9 +881,10 @@ def reject_offerer_attachment(
             extra={"offerer": user_offerer.offerer.id},
         )
 
-    db.session.delete(user_offerer)
     remove_pro_role_and_add_non_attached_pro_role([user_offerer.user])
-    db.session.commit()
+
+    if commit:
+        db.session.commit()
 
 
 def delete_offerer_attachment(
@@ -862,6 +892,9 @@ def delete_offerer_attachment(
     author_user: users_models.User,
     comment: str | None = None,
 ) -> None:
+    user_offerer.validationStatus = ValidationStatus.DELETED
+    db.session.add(user_offerer)
+
     db.session.add(
         history_api.log_action(
             history_models.ActionType.USER_OFFERER_DELETED,
@@ -873,7 +906,6 @@ def delete_offerer_attachment(
         )
     )
 
-    db.session.delete(user_offerer)
     remove_pro_role_and_add_non_attached_pro_role([user_offerer.user])
     db.session.commit()
 
@@ -951,8 +983,11 @@ def reject_offerer(
                 extra={"offerer": offerer.id},
             )
 
-    # Detach user from offerer after sending transactional email to applicant
-    models.UserOfferer.query.filter_by(offererId=offerer.id).delete()
+    users_offerer = offerers_models.UserOfferer.query.filter_by(offererId=offerer.id).all()
+    for user_offerer in users_offerer:
+        reject_offerer_attachment(
+            user_offerer, author_user, "Compte pro rejeté suite au rejet de la structure", commit=False
+        )
 
     remove_pro_role_and_add_non_attached_pro_role(applicants)
 
@@ -1225,6 +1260,17 @@ def generate_dms_token() -> str:
         if not offerers_repository.dms_token_exists(dms_token):
             return dms_token
     raise ValueError("Could not generate new dmsToken for Venue")
+
+
+def generate_offerer_ds_token() -> str:
+    """
+    Returns a 12-char hex str of 6 random bytes
+    """
+    for _i in range(10):
+        ds_token = secrets.token_hex(6)
+        if not offerers_repository.offerer_ds_token_exists(ds_token):
+            return ds_token
+    raise ValueError("Could not generate new dmsToken for Offerer")
 
 
 def get_venues_educational_statuses() -> list[offerers_models.VenueEducationalStatus]:
@@ -1891,10 +1937,13 @@ def invite_member(offerer: models.Offerer, email: str, current_user: users_model
         raise exceptions.UserAlreadyAttachedToOffererException()
 
     if existing_user and existing_user.isEmailValidated:  # User exists but not attached to the offerer
+        offerer_invitation = models.OffererInvitation(
+            user=current_user, offerer=offerer, email=email, status=models.InvitationStatus.ACCEPTED
+        )
         new_user_offerer = models.UserOfferer(
             offerer=offerer, user=existing_user, validationStatus=ValidationStatus.NEW
         )
-        db.session.add(new_user_offerer)
+        db.session.add_all([offerer_invitation, new_user_offerer])
         db.session.commit()
         logger.info(
             "Existing user invited to join offerer",
@@ -1903,7 +1952,9 @@ def invite_member(offerer: models.Offerer, email: str, current_user: users_model
         external_attributes_api.update_external_pro(existing_user.email)
         zendesk_sell.create_offerer(offerer)
     else:  # User not exists or exists with not validated email yet
-        offerer_invitation = models.OffererInvitation(offerer=offerer, email=email, user=current_user)
+        offerer_invitation = models.OffererInvitation(
+            offerer=offerer, email=email, user=current_user, status=models.InvitationStatus.PENDING
+        )
         db.session.add(offerer_invitation)
         db.session.commit()
         logger.info(
@@ -1922,7 +1973,11 @@ def get_offerer_members(offerer: models.Offerer) -> list[typing.Tuple[str, Offer
         .options(sa.orm.joinedload(models.UserOfferer.user).load_only(users_models.User.email))
         .all()
     )
-    invited_members = models.OffererInvitation.query.filter_by(offererId=offerer.id).all()
+    invited_members = (
+        models.OffererInvitation.query.filter_by(offererId=offerer.id)
+        .filter_by(status=models.InvitationStatus.PENDING)
+        .all()
+    )
     members = [
         (
             user_offerer.user.email,
@@ -1936,21 +1991,48 @@ def get_offerer_members(offerer: models.Offerer) -> list[typing.Tuple[str, Offer
 
 
 def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
-    offerer_invitations = models.OffererInvitation.query.filter_by(email=user.email).all()
+    offerer_invitations = (
+        models.OffererInvitation.query.filter_by(email=user.email)
+        .filter_by(status=offerers_models.InvitationStatus.PENDING)
+        .all()
+    )
     if not offerer_invitations:
         return
     for offerer_invitation in offerer_invitations:
-        try:
-            inviter_email = offerer_invitation.user.email
-            user_offerer = grant_user_offerer_access(user=user, offerer=offerer_invitation.offerer)
-            user_offerer.user.add_pro_role()
-            db.session.add(user_offerer)
-            db.session.delete(offerer_invitation)
+        inviter_user = offerer_invitation.user
+        user_offerer = models.UserOfferer(
+            offerer=offerer_invitation.offerer, user=user, validationStatus=ValidationStatus.NEW
+        )
+        offerer_invitation.status = offerers_models.InvitationStatus.ACCEPTED
+        db.session.add_all([user_offerer, offerer_invitation])
+        db.session.commit()
+        external_attributes_api.update_external_pro(user.email)
+        zendesk_sell.create_offerer(user_offerer.offerer)
+        logger.info(
+            "UserOfferer created from invitation",
+            extra={"offerer": user_offerer.offerer, "invitedUserId": user.id, "inviterUserId": inviter_user.id},
+        )
 
-            db.session.commit()
-        except Exception:  # pylint: disable=broad-except
-            db.session.rollback()
-            logger.info("User offferer already exists")
-            continue
-        transactional_mails.send_offerer_attachment_invitation_confirmed([user.email])
-        transactional_mails.send_offerer_attachment_invitation_accepted([inviter_email])
+
+@dataclasses.dataclass
+class OffererVenues:
+    offerer: offerers_models.Offerer
+    venues: typing.Sequence[offerers_models.Venue]
+
+
+def get_providers_offerer_and_venues(
+    provider: providers_models.Provider, siren: str = None
+) -> typing.Generator[OffererVenues, None, None]:
+    offerers_query = (
+        db.session.query(offerers_models.Offerer, offerers_models.Venue)
+        .join(offerers_models.Venue, offerers_models.Offerer.managedVenues)
+        .join(providers_models.VenueProvider, offerers_models.Venue.venueProviders)
+        .filter(providers_models.VenueProvider.provider == provider)
+        .order_by(offerers_models.Offerer.id, offerers_models.Venue.id)
+    )
+
+    if siren:
+        offerers_query = offerers_query.filter(offerers_models.Offerer.siren == siren)
+
+    for offerer, group in itertools.groupby(offerers_query, lambda row: row.Offerer):
+        yield OffererVenues(offerer=offerer, venues=[row.Venue for row in group])
