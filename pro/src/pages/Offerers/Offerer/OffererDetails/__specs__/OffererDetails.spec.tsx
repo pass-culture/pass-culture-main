@@ -62,7 +62,7 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
       expect(screen.getByText('Lieux')).toBeInTheDocument()
       expect(screen.getByText('fake venue')).toBeInTheDocument()
       expect(
-        screen.getByText('Identifiant du lieu : 0123456789abcdef')
+        screen.getByText('Identifiant de structure : 0123456789abcdef')
       ).toBeInTheDocument()
     })
 
