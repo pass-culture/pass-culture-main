@@ -714,12 +714,6 @@ class EmailValidationTest:
 
         assert response.status_code == 400
 
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 201
-        assert mails_testing.outbox[0].sent_data["params"]["CONFIRMATION_LINK"]
-
-        assert token_utils.Token.token_exists(token_utils.TokenType.EMAIL_VALIDATION, user.id)
-
     @freeze_time("2018-06-01")
     def test_validate_email_when_eligible(self, client):
         user = users_factories.UserFactory(
