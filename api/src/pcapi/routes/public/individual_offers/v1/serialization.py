@@ -670,22 +670,11 @@ class BaseStockResponse(serialization.ConfiguredBaseModel):
         )
 
 
-# FIXME (cepehang, 2023-02-02): remove after price category generation script
-class PartialPriceCategoryResponse(serialization.ConfiguredBaseModel):
-    id: None = None
-    label: None = None
-    price: pydantic_v1.StrictInt = PRICE_FIELD
-
-    @classmethod
-    def build_partial_price_category(cls, price: decimal.Decimal) -> "PartialPriceCategoryResponse":
-        return cls(price=finance_utils.to_eurocents(price))
-
-
 class DateResponse(BaseStockResponse):
     id: int
     beginning_datetime: datetime.datetime = BEGINNING_DATETIME_FIELD
     booking_limit_datetime: datetime.datetime = BOOKING_LIMIT_DATETIME_FIELD
-    price_category: PriceCategoryResponse | PartialPriceCategoryResponse
+    price_category: PriceCategoryResponse
 
     @classmethod
     def build_date(cls, stock: offers_models.Stock) -> "DateResponse":
@@ -693,9 +682,7 @@ class DateResponse(BaseStockResponse):
         return cls(
             id=stock.id,
             beginning_datetime=stock.beginningDatetime,  # type: ignore [arg-type]
-            price_category=PriceCategoryResponse.from_orm(stock.priceCategory)
-            if stock.priceCategory
-            else PartialPriceCategoryResponse.build_partial_price_category(stock.price),
+            price_category=PriceCategoryResponse.from_orm(stock.priceCategory),
             **stock_response.dict(),
         )
 
