@@ -724,6 +724,61 @@ class CommonSubscritpionTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class UpdateBirthDateTest:
+    def test_update_birth_date_when_not_yet_underage_beneficiary(self):
+        user = users_factories.BaseUserFactory(age=15)
+        new_birth_date = user.dateOfBirth - relativedelta(months=2)
+
+        assert user.validatedBirthDate is None
+
+        subscription_api.update_user_birth_date_if_not_beneficiary(user, new_birth_date)
+
+        assert user.validatedBirthDate == new_birth_date.date()
+
+    def test_update_birth_date_when_eligible_to_upgrade_age18_based_on_user_birth_date(self):
+        with freeze_time(datetime.utcnow() - relativedelta(years=1)):
+            user = users_factories.BeneficiaryFactory(age=17)
+
+        assert user.validatedBirthDate == user.dateOfBirth.date()
+
+        new_birth_date = user.dateOfBirth - relativedelta(months=2)
+        subscription_api.update_user_birth_date_if_not_beneficiary(user, new_birth_date)
+
+        assert user.validatedBirthDate == new_birth_date.date()
+
+    def test_does_not_update_birth_date_when_eligible_to_upgrade_age18_based_on_identity_check_birth_date(self):
+        with freeze_time(datetime.utcnow() - relativedelta(months=11)):
+            user = users_factories.BeneficiaryFactory(age=17)
+
+        assert user.validatedBirthDate == user.dateOfBirth.date()
+
+        new_birth_date = user.dateOfBirth - relativedelta(months=2)
+        subscription_api.update_user_birth_date_if_not_beneficiary(user, new_birth_date)
+
+        assert user.validatedBirthDate == user.dateOfBirth.date()
+
+    def test_does_not_update_birth_date_when_not_upgrading(self):
+        user = users_factories.BeneficiaryFactory(age=17)
+
+        assert user.validatedBirthDate == user.dateOfBirth.date()
+
+        new_birth_date = user.dateOfBirth - relativedelta(months=2)
+        subscription_api.update_user_birth_date_if_not_beneficiary(user, new_birth_date)
+
+        assert user.validatedBirthDate == user.dateOfBirth.date()
+
+    def test_does_not_update_birth_date_when_already_age18(self):
+        user = users_factories.BeneficiaryFactory(age=18)
+
+        assert user.validatedBirthDate == user.dateOfBirth.date()
+
+        new_birth_date = user.dateOfBirth - relativedelta(months=2)
+        subscription_api.update_user_birth_date_if_not_beneficiary(user, new_birth_date)
+
+        assert user.validatedBirthDate == user.dateOfBirth.date()
+
+
+@pytest.mark.usefixtures("db_session")
 class SubscriptionItemTest:
     AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
 
