@@ -9,7 +9,9 @@ import {
   ALGOLIA_APP_ID,
   ALGOLIA_COLLECTIVE_OFFERS_INDEX,
 } from 'utils/config'
+import { isNumber } from 'utils/types'
 
+import useAdageUser from '../../hooks/useAdageUser'
 import { FacetFiltersContext } from '../../providers'
 import { AnalyticsContextProvider } from '../../providers/AnalyticsContextProvider'
 
@@ -28,10 +30,7 @@ const attributesToRetrieve = [
   'offer.interventionArea',
 ]
 
-export interface GeoLocation {
-  radius?: number
-  latLng?: string
-}
+export const DEFAULT_GEO_RADIUS = 30000000 // 30 000 km ensure we get all results in the world
 
 export const OffersInstantSearch = ({
   removeVenueFilter,
@@ -44,7 +43,8 @@ export const OffersInstantSearch = ({
 
   const newAdageFilters = useActiveFeature('WIP_ENABLE_NEW_ADAGE_FILTERS')
 
-  const [geoLocation, setGeoLocation] = useState<GeoLocation>({})
+  const [geoRadius, setGeoRadius] = useState<number | null>(null)
+  const adageUser = useAdageUser()
 
   return (
     <InstantSearch
@@ -60,8 +60,12 @@ export const OffersInstantSearch = ({
           'offer.eventAddressType:offererVenue<score=3> OR offer.eventAddressType:school<score=2> OR offer.eventAddressType:other<score=1>'
         }
         hitsPerPage={8}
-        aroundLatLng={geoLocation.latLng}
-        aroundRadius={geoLocation.radius}
+        aroundLatLng={
+          isNumber(adageUser.lat) && isNumber(adageUser.lon)
+            ? `${adageUser.lat}, ${adageUser.lon}`
+            : undefined
+        }
+        aroundRadius={geoRadius ?? DEFAULT_GEO_RADIUS}
         distinct={false}
       />
       <AnalyticsContextProvider>
@@ -70,7 +74,7 @@ export const OffersInstantSearch = ({
           newAdageFilters ? (
             <OffersSearch
               venueFilter={venueFilter}
-              setGeoLocation={setGeoLocation}
+              setGeoRadius={setGeoRadius}
             />
           ) : (
             <OldOffersSearch
