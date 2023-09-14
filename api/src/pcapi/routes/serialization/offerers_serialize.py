@@ -12,6 +12,7 @@ import pcapi.core.offerers.repository as offerers_repository
 from pcapi.domain.demarches_simplifiees import DMS_TOKEN_PRO_PREFIX
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import finance_serialize
 from pcapi.routes.serialization.venues_serialize import DMSApplicationForEAC
 import pcapi.utils.date as date_utils
 from pcapi.utils.email import sanitize_email
@@ -273,3 +274,12 @@ class InviteMemberQueryModel(BaseModel):
             return sanitize_email(email)
         except Exception as e:
             raise ValueError(email) from e
+
+
+class GetOffererBankAccountsResponseModel(BaseModel):
+    id: int
+    bankAccounts: list[finance_serialize.BankAccountResponseModel]
+    managedVenues: list[finance_serialize.ManagedVenues]
+
+    class Config:
+        orm_mode = True
