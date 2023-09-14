@@ -28,11 +28,12 @@ class GetEventDatesTest:
             bookingLimitDatetime=datetime.datetime(2023, 1, 15, 13, 0, 0),
             beginningDatetime=datetime.datetime(2023, 1, 15, 13, 0, 0),
         )
+        not_booked_price_category = offers_factories.PriceCategoryFactory(
+            offer=event_offer, price=299.99, priceCategoryLabel__label="ultra vip"
+        )
         stock_without_booking = offers_factories.EventStockFactory(
             offer=event_offer,
-            # FIXME (cepehang, 2023-02-02): remove price and None price category after price category generation script
-            price=12.34,
-            priceCategory=None,
+            priceCategory=not_booked_price_category,
             quantity=2,
             bookingLimitDatetime=datetime.datetime(2023, 1, 15, 13, 0, 0),
             beginningDatetime=datetime.datetime(2023, 1, 15, 13, 0, 0),
@@ -60,7 +61,11 @@ class GetEventDatesTest:
                 "bookedQuantity": 0,
                 "bookingLimitDatetime": "2023-01-15T13:00:00Z",
                 "id": stock_without_booking.id,
-                "priceCategory": {"id": None, "label": None, "price": 1234},
+                "priceCategory": {
+                    "id": not_booked_price_category.id,
+                    "label": not_booked_price_category.label,
+                    "price": not_booked_price_category.price * 100,
+                },
                 "quantity": 2,
             },
         ]
