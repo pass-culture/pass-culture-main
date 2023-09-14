@@ -48,6 +48,9 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository import transaction
 import pcapi.serialization.utils as serialization_utils
+import pcapi.tasks.external_api_booking_notification_tasks as external_api_booking_notification
+from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
+from pcapi.tasks.serialization.external_api_booking_notification_tasks import ExternalApiBookingNotificationRequest
 from pcapi.utils import queue
 import pcapi.utils.cinema_providers as cinema_providers_utils
 from pcapi.workers import push_notification_job
@@ -297,6 +300,18 @@ def book_offer(
         },
     )
     amplitude_events.track_book_offer_event(booking)
+
+    provider = providers_repository.get_provider_enabled_for_pro_by_id(stock.offer.lastProviderId)
+    if (
+        booking.stock.offer.withdrawalType != offers_models.WithdrawalTypeEnum.IN_APP
+        and provider
+        and provider.notificationExternalUrl
+    ):
+        external_api_notification_request = ExternalApiBookingNotificationRequest.build(booking, BookingAction.BOOK)
+        payload = external_api_booking_notification.ExternalApiBookingNotificationTaskPayload(
+            data=external_api_notification_request, notificationUrl=provider.notificationExternalUrl
+        )
+        external_api_booking_notification.external_api_booking_notification_task.delay(payload)
 
     if not transactional_mails.send_user_new_booking_to_pro_email(booking, first_venue_booking):
         logger.warning(

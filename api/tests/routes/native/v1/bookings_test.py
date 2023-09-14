@@ -31,6 +31,7 @@ from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
+from pcapi.tasks.serialization.external_api_booking_notification_tasks import BookingAction
 from pcapi.utils.human_ids import humanize
 
 
@@ -159,6 +160,64 @@ class PostBookingTest:
         assert response.json["bookingId"] == booking.id
         assert booking.status == BookingStatus.CONFIRMED
         assert not booking.dateUsed
+
+    @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
+    @freeze_time("2022-10-12 17:09:25")
+    @patch("pcapi.tasks.external_api_booking_notification_tasks.external_api_booking_notification_task.delay")
+    def test_bookings_send_notification_to_external_api_with_external_event_booking(self, mocked_task, client):
+        base_url = "https://book_my_offer.com"
+        external_notification_url = base_url + "/notify"
+        user = users_factories.BeneficiaryGrant18Factory(
+            email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101"
+        )
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider",
+            localClass=None,
+            notificationExternalUrl=external_notification_url,
+        )
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = EventStockFactory(
+            lastProvider=provider,
+            priceCategory__price=2,
+            offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
+            offer__lastProvider=provider,
+            offer__venue__address="1 boulevard Poissonniere",
+            offer__extraData={"ean": "1234567890123"},
+            idAtProviders="",
+            dnBookedQuantity=14,
+            quantity=20,
+        )
+
+        response = client.with_token(self.identifier).post(
+            "/native/v1/bookings",
+            json={"stockId": stock.id, "quantity": 1},
+        )
+
+        assert response.status_code == 200
+
+        booking = Booking.query.filter(Booking.stockId == stock.id).first()
+        assert booking.userId == user.id
+        assert response.json["bookingId"] == booking.id
+        assert booking.status == BookingStatus.CONFIRMED
+        assert not booking.dateUsed
+
+        assert mocked_task.call_count == 1
+        notification = mocked_task.call_args.args[0].data
+        assert notification.offer_ean == "1234567890123"
+        assert notification.offer_id == stock.offer.id
+        assert notification.offer_name == stock.offer.name
+        assert notification.offer_price == 200
+        assert notification.stock_id == stock.id
+        assert notification.booking_quantity == booking.quantity
+        assert notification.booking_creation_date == booking.dateCreated
+        assert notification.venue_address == "1 boulevard Poissonniere"
+        assert notification.user_email == user.email
+        assert notification.user_first_name == user.firstName
+        assert notification.user_last_name == user.lastName
+        assert notification.user_phone == user.phoneNumber
+        assert notification.action == BookingAction.BOOK
+
+        assert mocked_task.call_args.args[0].notificationUrl == external_notification_url
 
     @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
     @freeze_time("2022-10-12 17:09:25")

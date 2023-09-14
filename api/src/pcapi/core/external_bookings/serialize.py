@@ -4,6 +4,8 @@ import pydantic.v1 as pydantic_v1
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.finance.utils as finance_utils
+import pcapi.core.offers.models as offers_models
+import pcapi.core.users.models as users_models
 
 
 class ExternalEventBookingRequest(pydantic_v1.BaseModel):
@@ -30,10 +32,10 @@ class ExternalEventBookingRequest(pydantic_v1.BaseModel):
     @classmethod
     def build_external_booking(
         cls,
+        stock: offers_models.Stock,
         booking: bookings_models.Booking,
+        user: users_models.User,
     ) -> "ExternalEventBookingRequest":
-        stock = booking.stock
-        user = booking.user
         return cls(
             booking_confirmation_date=booking.cancellationLimitDate,  # type: ignore [arg-type]
             booking_creation_date=booking.dateCreated,
