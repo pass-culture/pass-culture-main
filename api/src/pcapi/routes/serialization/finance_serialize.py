@@ -1,8 +1,19 @@
 import datetime
+import logging
+from typing import TYPE_CHECKING
+
+import pydantic.v1 as pydantic_v1
 
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.utils as finance_utils
 from pcapi.routes.serialization import BaseModel
+
+
+logger = logging.getLogger(__name__)
+
+
+if TYPE_CHECKING:
+    import pcapi.core.offerers.models as offerers_models
 
 
 class FinanceReimbursementPointResponseModel(BaseModel):
@@ -53,3 +64,72 @@ class InvoiceResponseModel(BaseModel):
 
 class InvoiceListResponseModel(BaseModel):
     __root__: list[InvoiceResponseModel]
+
+
+class LinkedVenues(BaseModel):
+    """A venue that is already linked to a bank account."""
+
+    id: int
+    commonName: str
+
+    class Config:
+        orm_mode = True
+
+    @classmethod
+    def from_orm(cls, venue: "offerers_models.Venue") -> "LinkedVenues":
+        venue.commonName = venue.common_name
+        return super().from_orm(venue)
+
+
+class ManagedVenues(BaseModel):
+    id: int
+    commonName: str
+    siret: str
+    bankAccountId: int | None
+
+    class Config:
+        orm_mode = True
+
+    @classmethod
+    def from_orm(cls, venue: "offerers_models.Venue") -> "ManagedVenues":
+        """
+        For each managed venue, we only want to display the current bank account
+        that is linked to it, if any.
+        """
+        if len(venue.bankAccountLinks) > 1:
+            logger.error("There should be one or no current bank account.", extra={"venue_id": venue.id})
+
+        if venue.bankAccountLinks:
+            venue.bankAccountId = venue.bankAccountLinks[0].bankAccountId
+        venue.commonName = venue.common_name
+
+        return super().from_orm(venue)
+
+
+class BankAccountResponseModel(BaseModel):
+    id: int
+    isActive: bool
+    label: str
+    obfuscatedIban: str
+    bic: str
+    dsApplicationId: int
+    status: finance_models.BankAccountApplicationStatus
+    dateCreated: datetime.datetime
+    dateLastStatusUpdate: datetime.datetime | None
+    linkedVenues: list[LinkedVenues]
+
+    class Config:
+        orm_mode = True
+
+    @classmethod
+    def from_orm(cls, bank_account: finance_models.BankAccount) -> "BankAccountResponseModel":
+        bank_account.linkedVenues = pydantic_v1.parse_obj_as(
+            list[LinkedVenues], [link.venue for link in bank_account.venueLinks]
+        )
+        bank_account.obfuscatedIban = cls._obfuscate_iban(bank_account.iban)
+
+        return super().from_orm(bank_account)
+
+    @classmethod
+    def _obfuscate_iban(cls, iban: str) -> str:
+        return f"XXXX XXXX XXXX {iban[-4:]}"

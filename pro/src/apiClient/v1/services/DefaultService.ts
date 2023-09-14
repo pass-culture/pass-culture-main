@@ -38,6 +38,7 @@ import type { GetCollectiveOfferTemplateResponseModel } from '../models/GetColle
 import type { GetCollectiveVenueResponseModel } from '../models/GetCollectiveVenueResponseModel';
 import type { GetEducationalOfferersResponseModel } from '../models/GetEducationalOfferersResponseModel';
 import type { GetIndividualOfferResponseModel } from '../models/GetIndividualOfferResponseModel';
+import type { GetOffererBankAccountsResponseModel } from '../models/GetOffererBankAccountsResponseModel';
 import type { GetOffererMembersResponseModel } from '../models/GetOffererMembersResponseModel';
 import type { GetOffererResponseModel } from '../models/GetOffererResponseModel';
 import type { GetOfferersNamesResponseModel } from '../models/GetOfferersNamesResponseModel';
@@ -1143,6 +1144,28 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'POST',
       url: '/offerers/{offerer_id}/api_keys',
+      path: {
+        'offerer_id': offererId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_offerer_bank_accounts_and_attached_venues <GET>
+   * @param offererId
+   * @returns GetOffererBankAccountsResponseModel OK
+   * @throws ApiError
+   */
+  public getOffererBankAccountsAndAttachedVenues(
+    offererId: number,
+  ): CancelablePromise<GetOffererBankAccountsResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/offerers/{offerer_id}/bank-accounts',
       path: {
         'offerer_id': offererId,
       },
