@@ -34,7 +34,7 @@ const OffersForMyInstitution = ({
   venueFilter,
   removeVenueFilter,
 }: OffersForMyInstitutionProps): JSX.Element => {
-  const adageUser = useAdageUser()
+  const { adageUser } = useAdageUser()
   return (
     <InstantSearch
       indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}

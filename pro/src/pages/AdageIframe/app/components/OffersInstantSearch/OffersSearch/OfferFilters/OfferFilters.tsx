@@ -47,7 +47,7 @@ export const OfferFilters = ({
 
   const formik = useFormikContext<SearchFormValues>()
 
-  const adageUser = useAdageUser()
+  const { adageUser } = useAdageUser()
 
   const adageUserHasValidGeoloc =
     (adageUser.lat || adageUser.lat === 0) &&

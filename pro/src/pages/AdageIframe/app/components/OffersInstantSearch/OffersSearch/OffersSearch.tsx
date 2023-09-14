@@ -64,7 +64,7 @@ export const OffersSearch = ({
 
   const { dispatchCurrentFilters, currentFilters } = useContext(FiltersContext)
   const { setFacetFilters } = useContext(FacetFiltersContext)
-  const adageUser = useAdageUser()
+  const { adageUser } = useAdageUser()
   const userUAICode = adageUser.uai
   const uaiCodeAllInstitutionsTab = userUAICode ? ['all', userUAICode] : ['all']
   const uaiCodeShareWithMyInstitutionTab = userUAICode ? [userUAICode] : null

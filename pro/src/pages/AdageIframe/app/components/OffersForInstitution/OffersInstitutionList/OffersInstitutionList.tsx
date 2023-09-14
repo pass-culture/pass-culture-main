@@ -1,7 +1,6 @@
 import React from 'react'
 
 import { VenueResponse } from 'apiClient/adage'
-import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 
 import { Offers } from '../../OffersInstantSearch/OffersSearch/Offers/Offers'
 
@@ -14,7 +13,6 @@ const OffersInstitutionList = ({
   removeVenueFilter,
   venueFilter,
 }: OffersInstitutionListProps): JSX.Element => {
-  const adageUser = useAdageUser()
   return <Offers setIsLoading={() => {}} displayStats={false} />
 }
 export default OffersInstitutionList
