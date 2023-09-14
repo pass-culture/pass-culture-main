@@ -40,13 +40,17 @@ def _redirect_to_user_page(user: users_models.User) -> utils.BackofficeResponse:
     return redirect(url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id), code=303)
 
 
-def _check_user_role_vs_backoffice_permission(user: users_models.User) -> None:
+def _check_user_role_vs_backoffice_permission(user: users_models.User, unsuspend: bool = False) -> None:
     if user.has_pro_role or user.has_non_attached_pro_role:
         if not utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
             raise Forbidden()
     else:  # not pro
-        if not utils.has_current_user_permission(perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS):
-            raise Forbidden()
+        if unsuspend:
+            if not utils.has_current_user_permission(perm_models.Permissions.UNSUSPEND_USER):
+                raise Forbidden()
+        else:
+            if not utils.has_current_user_permission(perm_models.Permissions.SUSPEND_USER):
+                raise Forbidden()
 
 
 @users_blueprint.route("/<int:user_id>/suspend", methods=["POST"])
@@ -71,7 +75,7 @@ def suspend_user(user_id: int) -> utils.BackofficeResponse:
 @utils.permission_required_in([perm_models.Permissions.UNSUSPEND_USER, perm_models.Permissions.PRO_FRAUD_ACTIONS])
 def unsuspend_user(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
-    _check_user_role_vs_backoffice_permission(user)
+    _check_user_role_vs_backoffice_permission(user, unsuspend=True)
 
     form = forms.UnsuspendUserForm()
     if form.validate():

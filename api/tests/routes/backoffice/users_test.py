@@ -42,6 +42,24 @@ def pro_fraud_admin_fixture(roles_with_permissions: None) -> users_models.User:
     return user
 
 
+@pytest.fixture(scope="function", name="fraude_jeunes_admin")
+def fraude_jeunes_admin_fixture(roles_with_permissions: None) -> users_models.User:
+    user = users_factories.UserFactory(roles=["ADMIN"])
+    user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
+    backoffice_api.upsert_roles(user, {perm_models.Roles.FRAUDE_JEUNES})
+    db.session.commit()
+    return user
+
+
+@pytest.fixture(scope="function", name="support_n2_admin")
+def support_n2_fixture(roles_with_permissions: None) -> users_models.User:
+    user = users_factories.UserFactory(roles=["ADMIN"])
+    user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
+    backoffice_api.upsert_roles(user, {perm_models.Roles.SUPPORT_N2})
+    db.session.commit()
+    return user
+
+
 class SuspendUserTest(PostEndpointHelper):
     endpoint = "backoffice_web.users.suspend_user"
     endpoint_kwargs = {"user_id": 1}
@@ -98,6 +116,36 @@ class SuspendUserTest(PostEndpointHelper):
         assert user.action_history[0].venueId is None
         assert user.action_history[0].extraData["reason"] == users_constants.SuspensionReason.FRAUD_USURPATION_PRO.value
         assert user.action_history[0].comment is None
+
+    def test_suspend_beneficiary_user_as_beneficiary_fraud(self, client, fraude_jeunes_admin):
+        user = users_factories.BeneficiaryGrant18Factory()
+
+        response = self.post_to_endpoint(
+            client.with_bo_session_auth(fraude_jeunes_admin),
+            user_id=user.id,
+            form={
+                "reason": users_constants.SuspensionReason.FRAUD_HACK.name,
+                "comment": "",  # optional, keep empty
+            },
+        )
+
+        assert response.status_code == 303
+        assert not user.isActive
+
+    def test_suspend_beneficiary_user_as_support_n2(self, client, support_n2_admin):
+        user = users_factories.BeneficiaryGrant18Factory()
+
+        response = self.post_to_endpoint(
+            client.with_bo_session_auth(support_n2_admin),
+            user_id=user.id,
+            form={
+                "reason": users_constants.SuspensionReason.FRAUD_HACK.name,
+                "comment": "",  # optional, keep empty
+            },
+        )
+
+        assert response.status_code == 303
+        assert not user.isActive
 
     def test_suspend_beneficiary_user_as_pro_fraud(self, client, pro_fraud_admin):
         user = users_factories.BeneficiaryGrant18Factory()
@@ -187,6 +235,30 @@ class UnsuspendUserTest(PostEndpointHelper):
         assert user.action_history[0].offererId is None
         assert user.action_history[0].venueId is None
         assert user.action_history[0].comment == "Réactivé suite à contact avec l'AC"
+
+    def test_unsuspend_beneficiary_user_as_beneficiary_fraud(self, client, fraude_jeunes_admin):
+        user = users_factories.BeneficiaryGrant18Factory(isActive=False)
+
+        response = self.post_to_endpoint(
+            client.with_bo_session_auth(fraude_jeunes_admin),
+            user_id=user.id,
+            form={"comment": "Réactivé par la fraude jeunes"},
+        )
+
+        assert response.status_code == 303
+        assert user.isActive
+
+    def test_suspend_beneficiary_user_as_support_n2(self, client, support_n2_admin):
+        user = users_factories.BeneficiaryGrant18Factory(isActive=False)
+
+        response = self.post_to_endpoint(
+            client.with_bo_session_auth(support_n2_admin),
+            user_id=user.id,
+            form={"comment": "Réactivé par le support N2"},
+        )
+
+        assert response.status_code == 403
+        assert not user.isActive
 
 
 class GetBatchSuspendUsersFormTest(GetEndpointHelper):
