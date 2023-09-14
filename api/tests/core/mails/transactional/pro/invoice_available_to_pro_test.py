@@ -16,8 +16,9 @@ class SendinblueProAvailableInvoiceEmailDataTest:
     def test_send_email_in_first_half_of_month(self):
         reimbursement_point = offerers_factories.VenueFactory(bookingEmail="pro@example.com")
         invoice = factories.InvoiceFactory(reimbursementPoint=reimbursement_point, amount=-1000, date=date(2023, 3, 7))
+        batch = factories.CashflowBatchFactory(cutoff=date(2023, 2, 28))
 
-        send_invoice_available_to_pro_email(invoice)
+        send_invoice_available_to_pro_email(invoice, batch)
 
         assert len(mails_testing.outbox) == 1
         assert (
@@ -33,8 +34,9 @@ class SendinblueProAvailableInvoiceEmailDataTest:
     def test_send_email_in_second_half_of_month(self):
         reimbursement_point = offerers_factories.VenueFactory(bookingEmail="pro@example.com")
         invoice = factories.InvoiceFactory(reimbursementPoint=reimbursement_point, amount=-1000, date=date(2023, 7, 20))
+        batch = factories.CashflowBatchFactory(cutoff=date(2023, 7, 15))
 
-        send_invoice_available_to_pro_email(invoice)
+        send_invoice_available_to_pro_email(invoice, batch)
 
         assert len(mails_testing.outbox) == 1
         assert (
@@ -50,7 +52,8 @@ class SendinblueProAvailableInvoiceEmailDataTest:
     def test_fail_silently_if_no_booking_email(self):
         reimbursement_point = offerers_factories.VenueFactory(bookingEmail=None)
         invoice = factories.InvoiceFactory(reimbursementPoint=reimbursement_point, amount=-1000)
+        batch = factories.CashflowBatchFactory()
 
-        send_invoice_available_to_pro_email(invoice)
+        send_invoice_available_to_pro_email(invoice, batch)
 
         assert len(mails_testing.outbox) == 0

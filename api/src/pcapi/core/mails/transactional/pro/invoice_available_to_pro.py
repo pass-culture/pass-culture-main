@@ -6,8 +6,8 @@ from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 
 
-def send_invoice_available_to_pro_email(invoice: finance_models.Invoice) -> bool:
-    period_start, period_end = finance_api.get_invoice_period(invoice.date)
+def send_invoice_available_to_pro_email(invoice: finance_models.Invoice, batch: finance_models.CashflowBatch) -> bool:
+    period_start, period_end = finance_api.get_invoice_period(batch.cutoff)
     data = models.TransactionalEmailData(
         template=TransactionalEmail.INVOICE_AVAILABLE_TO_PRO.value,
         params={

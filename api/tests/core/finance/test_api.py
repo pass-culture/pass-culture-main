@@ -28,6 +28,7 @@ from pcapi.core.finance import api
 from pcapi.core.finance import exceptions
 from pcapi.core.finance import factories
 from pcapi.core.finance import models
+from pcapi.core.finance import utils
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.mails import testing as mails_testing
@@ -1400,11 +1401,11 @@ class GenerateCashflowsTest:
             booking__stock__offer__venue__reimbursement_point=reimbursement_point1,
         )
 
-        batch_id = api.generate_cashflows(cutoff)
+        batch = api.generate_cashflows(cutoff)
 
-        batch = models.CashflowBatch.query.one()
-        assert batch.id == batch_id
-        assert batch.cutoff == cutoff
+        queried_batch = models.CashflowBatch.query.one()
+        assert queried_batch.id == batch.id
+        assert queried_batch.cutoff == cutoff
         assert pricing11.status == models.PricingStatus.PROCESSED
         assert pricing12.status == models.PricingStatus.PROCESSED
         assert collective_pricing13.status == models.PricingStatus.PROCESSED
@@ -1570,9 +1571,7 @@ def test_generate_payment_files(mocked_gdrive_create_file):
         valueDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=1),
     )
     cutoff = datetime.datetime.utcnow()
-    batch_id = api.generate_cashflows(cutoff)
-
-    api.generate_payment_files(batch_id)
+    api.generate_cashflows_and_payment_files(cutoff)
 
     cashflow = models.Cashflow.query.one()
     assert cashflow.status == models.CashflowStatus.UNDER_REVIEW
@@ -1728,7 +1727,7 @@ def test_generate_payments_file():
     )
 
     cutoff = datetime.datetime.utcnow()
-    batch_id = api.generate_cashflows(cutoff)
+    batch_id = api.generate_cashflows(cutoff).id
 
     n_queries = 2  # select pricings for bookings + collective bookings
     with assert_num_queries(n_queries):
@@ -1811,7 +1810,7 @@ def test_generate_invoice_file():
         cashflows=[cashflow1],
     )
 
-    # The file should contains only cashflow from the current batch of invoice generation.
+    # The file should contain only cashflows from the selected batch.
     # This second invoice should not appear.
     second_siret = "12345673900"
     reimbursement_point2 = offerers_factories.VenueFactory(siret=second_siret)
@@ -1838,10 +1837,9 @@ def test_generate_invoice_file():
         date=datetime.datetime(2022, 1, 1),
     )
 
-    today = datetime.date.today()
     # Freeze time so that we can guess the timestamp of the CSV file.
     with freezegun.freeze_time(datetime.datetime(2023, 2, 1, 12, 34, 56)):
-        path = api.generate_invoice_file(today)
+        path = api.generate_invoice_file(cashflow1.batch)
     with zipfile.ZipFile(path) as zfile:
         with zfile.open("invoices_20230201_133456.csv") as csv_bytefile:
             csv_textfile = io.TextIOWrapper(csv_bytefile)
@@ -1920,27 +1918,15 @@ class GenerateInvoicesTest:
     def test_basics(self, _mocked1, _mocked2):
         booking1 = bookings_factories.UsedBookingFactory(stock=individual_stock_factory())
         booking2 = bookings_factories.UsedBookingFactory(stock=individual_stock_factory())
-        booking3 = bookings_factories.UsedBookingFactory(stock=booking1.stock)
-        booking4 = bookings_factories.UsedBookingFactory(stock=individual_stock_factory())
-        for booking in (booking1, booking2, booking3, booking4):
+        for booking in (booking1, booking2):
             factories.BankInformationFactory(venue=booking.venue)
 
         # Cashflows for booking1 and booking2 will be UNDER_REVIEW.
         api.price_booking(booking1)
         api.price_booking(booking2)
-        api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
+        batch = api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
 
-        # Another cashflow for booking3 that has the same
-        # reimbursement point as booking2.
-        api.price_booking(booking3)
-        api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
-
-        # Cashflow for booking4 will still be PENDING. No invoice
-        # should be generated.
-        api.price_booking(booking4)
-        api.generate_cashflows(datetime.datetime.utcnow())
-
-        api.generate_invoices()
+        api.generate_invoices(batch)
 
         invoices = models.Invoice.query.all()
         assert len(invoices) == 2
@@ -2003,8 +1989,8 @@ class GenerateInvoiceTest:
         booking2 = bookings_factories.UsedBookingFactory(stock=stock)
         api.price_booking(booking1)
         api.price_booking(booking2)
-        batch_id = api.generate_cashflows(datetime.datetime.utcnow())
-        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIEW
+        batch = api.generate_cashflows(datetime.datetime.utcnow())
+        api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
 
         reimbursement_point_id = reimbursement_point.id
@@ -2046,8 +2032,8 @@ class GenerateInvoiceTest:
         booking2 = bookings_factories.UsedBookingFactory(stock=stock2)
         api.price_booking(booking1)
         api.price_booking(booking2)
-        batch_id = api.generate_cashflows(datetime.datetime.utcnow())
-        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIEW
+        batch = api.generate_cashflows(datetime.datetime.utcnow())
+        api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
 
         reimbursement_point_id = reimbursement_point.id
@@ -2092,8 +2078,8 @@ class GenerateInvoiceTest:
         booking2 = bookings_factories.UsedBookingFactory(stock=stock)
         api.price_booking(booking1)
         api.price_booking(booking2)
-        batch_id = api.generate_cashflows(datetime.datetime.utcnow())
-        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIEW
+        batch = api.generate_cashflows(datetime.datetime.utcnow())
+        api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
 
         reimbursement_point_id = reimbursement_point.id
@@ -2125,12 +2111,12 @@ class GenerateInvoiceTest:
             bookings.append(booking)
         for booking in bookings[:3]:
             api.price_booking(booking)
-        batch_id = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
-        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIEW
+        batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         for booking in bookings[3:]:
             api.price_booking(booking)
-        batch_id = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
-        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIEW
+        batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
 
         reimbursement_point_id = reimbursement_point.id
@@ -2222,8 +2208,8 @@ class GenerateInvoiceTest:
         booking2 = bookings_factories.UsedBookingFactory(stock=stock2)
         api.price_booking(booking1)
         api.price_booking(booking2)
-        batch_id = api.generate_cashflows(datetime.datetime.utcnow())
-        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIEW
+        batch = api.generate_cashflows(datetime.datetime.utcnow())
+        api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
 
         reimbursement_point_id = reimbursement_point.id
@@ -2262,8 +2248,8 @@ class GenerateInvoiceTest:
         )
         for b in (booking1, booking2, collective_booking1, collective_booking2):
             api.price_booking(b)
-        batch_id = api.generate_cashflows(datetime.datetime.utcnow())
-        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIWE
+        batch = api.generate_cashflows(datetime.datetime.utcnow())
+        api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIWE
         cashflow_ids = {cf.id for cf in models.Cashflow.query.all()}
         booking2.status = bookings_models.BookingStatus.CANCELLED
         collective_booking2.status = educational_models.CollectiveBookingStatus.CANCELLED
@@ -2300,21 +2286,18 @@ class PrepareInvoiceContextTest:
                 user=user,
             )
             bookings.append(booking)
-        for booking in bookings[:3]:
+        for booking in bookings:
             api.price_booking(booking)
-        batch_id = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
-        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIEW
-        for booking in bookings[3:]:
-            api.price_booking(booking)
-        batch_id = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
-        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIEW
+        batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
         invoice = api._generate_invoice(
             reimbursement_point_id=reimbursement_point.id,
             cashflow_ids=cashflow_ids,
         )
+        batch = models.CashflowBatch.query.get(batch.id)
 
-        context = api._prepare_invoice_context(invoice)
+        context = api._prepare_invoice_context(invoice, batch)
 
         general, books, not_reimbursed, custom = tuple(g for g in context["groups"])
         assert general.used_bookings_subtotal == 2006130
@@ -2339,14 +2322,16 @@ class PrepareInvoiceContextTest:
         assert context["total_reimbursed_amount"] == -2015604
 
     def test_get_invoice_period_second_half(self):
-        start_period, end_period = api.get_invoice_period(datetime.datetime(2020, 3, 4))
-        assert start_period == datetime.datetime(2020, 2, 16)
-        assert end_period == datetime.datetime(2020, 2, 29)
+        cutoff = utils.get_cutoff_as_datetime(datetime.date(2020, 3, 31))
+        start_period, end_period = api.get_invoice_period(cutoff)
+        assert start_period == datetime.date(2020, 3, 16)
+        assert end_period == datetime.date(2020, 3, 31)
 
     def test_get_invoice_period_first_half(self):
-        start_period, end_period = api.get_invoice_period(datetime.datetime(2020, 3, 27))
-        assert start_period == datetime.datetime(2020, 3, 1)
-        assert end_period == datetime.datetime(2020, 3, 15)
+        cutoff = utils.get_cutoff_as_datetime(datetime.date(2020, 3, 15))
+        start_period, end_period = api.get_invoice_period(cutoff)
+        assert start_period == datetime.date(2020, 3, 1)
+        assert end_period == datetime.date(2020, 3, 15)
 
     def test_common_name_is_not_empty_public_name(self):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
@@ -2373,15 +2358,16 @@ class PrepareInvoiceContextTest:
             user=user,
         )
         api.price_booking(booking)
-        batch_id = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
-        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIEW
+        batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflow_ids = [c.id for c in models.Cashflow.query.all()]
         invoice = api._generate_invoice(
             reimbursement_point_id=venue.id,
             cashflow_ids=cashflow_ids,
         )
+        batch = models.CashflowBatch.query.get(batch.id)
 
-        context = api._prepare_invoice_context(invoice)
+        context = api._prepare_invoice_context(invoice, batch)
 
         reimbursements = list(context["reimbursements_by_venue"])
         assert len(reimbursements) == 1
@@ -2400,18 +2386,14 @@ class GenerateInvoiceHtmlTest:
                 user=user,
             )
             bookings.append(booking)
-        for booking in bookings[:3]:
-            api.price_booking(booking)
-        batch_id = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
-        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIEW
-        for booking in bookings[3:]:
+        for booking in bookings:
             api.price_booking(booking)
         duo_offer = offers_factories.OfferFactory(venue=venue, isDuo=True)
         duo_stock = offers_factories.StockFactory(offer=duo_offer, price=1)
         duo_booking = bookings_factories.UsedBookingFactory(stock=duo_stock, quantity=2)
         api.price_booking(duo_booking)
-        batch_id = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
-        api.generate_payment_files(batch_id)  # mark cashflows as UNDER_REVIEW
+        batch = api.generate_cashflows(cutoff=datetime.datetime.utcnow())
+        api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
         cashflows = models.Cashflow.query.order_by(models.Cashflow.id).all()
         cashflow_ids = [c.id for c in cashflows]
         invoice = api._generate_invoice(
@@ -2419,7 +2401,8 @@ class GenerateInvoiceHtmlTest:
             cashflow_ids=cashflow_ids,
         )
 
-        invoice_html = api._generate_invoice_html(invoice)
+        batch = models.CashflowBatch.query.get(batch.id)
+        invoice_html = api._generate_invoice_html(invoice, batch)
         expected_generated_file_name = "rendered_invoice.html"
 
         with open(self.TEST_FILES_PATH / "invoice" / expected_generated_file_name, "r", encoding="utf-8") as f:
@@ -2430,18 +2413,14 @@ class GenerateInvoiceHtmlTest:
             f'<td class="cashflow_batch_label">{cashflows[0].batch.label}</td>',
         )
         expected_invoice_html = expected_invoice_html.replace(
-            '<td class="cashflow_batch_label">2</td>',
-            f'<td class="cashflow_batch_label">{cashflows[1].batch.label}</td>',
-        )
-        expected_invoice_html = expected_invoice_html.replace(
             '<td class="cashflow_creation_date">21/12/2021</td>',
             f'<td class="cashflow_creation_date">{invoice.date.strftime("%d/%m/%Y")}</td>',
         )
         expected_invoice_html = expected_invoice_html.replace(
             'content: "Relevé n°F220000001 du 30/01/2022";',
-            f'content: "Relevé n°F{invoice.date.year % 100}0000001 du {invoice.date.strftime("%d/%m/%Y")}";',
+            f'content: "Relevé n°F{cashflows[0].batch.cutoff.year % 100}0000001 du {cashflows[0].batch.cutoff.strftime("%d/%m/%Y")}";',
         )
-        start_period, end_period = api.get_invoice_period(invoice.date)
+        start_period, end_period = api.get_invoice_period(cashflows[0].batch.cutoff)
         expected_invoice_html = expected_invoice_html.replace(
             "Remboursement des réservations validées entre le 01/01/22 et le 14/01/22, sauf cas exceptionnels.",
             f'Remboursement des réservations validées entre le {start_period.strftime("%d/%m/%y")} et le {end_period.strftime("%d/%m/%y")}, sauf cas exceptionnels.',
@@ -2618,7 +2597,7 @@ def test_merge_cashflow_batches():
 def test_get_drive_folder_name():
     cutoff = datetime.datetime(2022, 4, 30, 22, 0)
     batch = factories.CashflowBatchFactory(cutoff=cutoff)
-    name = api._get_drive_folder_name(batch.id)
+    name = api._get_drive_folder_name(batch)
     assert name == "2022-04 - jusqu'au 30 avril"
 
 

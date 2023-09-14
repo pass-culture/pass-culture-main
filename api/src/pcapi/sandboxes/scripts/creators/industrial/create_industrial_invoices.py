@@ -20,11 +20,11 @@ def create_industrial_invoices() -> None:
 
     finance_api.price_events()
 
-    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
+    batch = finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
     cashflows_created = finance_models.Cashflow.query.count()
     logger.info("Created %s Cashflows", cashflows_created)
 
-    finance_api.generate_invoices()
+    finance_api.generate_invoices(batch)
     logger.info("Created %s Invoices", finance_models.Invoice.query.count())
 
 
@@ -95,11 +95,7 @@ def create_specific_invoice() -> None:
         bookings.append(booking)
     for booking in bookings:
         finance_factories.UsedBookingFinanceEventFactory(booking=booking)
-    for booking in bookings[:3]:
-        event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
-        finance_api.price_event(event)
-    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
-    for booking in bookings[3:]:
+    for booking in bookings:
         event = finance_models.FinanceEvent.query.filter_by(booking=booking).one()
         finance_api.price_event(event)
     finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
