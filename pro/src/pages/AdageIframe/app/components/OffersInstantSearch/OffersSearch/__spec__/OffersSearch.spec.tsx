@@ -65,7 +65,7 @@ const renderOffersSearchComponent = (
 }
 
 const refineSearch = vi.fn()
-const refineGeoloc = vi.fn()
+const setGeoRadiusMock = vi.fn()
 
 describe('offersSearch component', () => {
   let props: SearchProps
@@ -83,7 +83,7 @@ describe('offersSearch component', () => {
   beforeEach(() => {
     props = {
       venueFilter: null,
-      setGeoLocation: refineGeoloc,
+      setGeoRadius: setGeoRadiusMock,
     }
     vi.spyOn(pcapi, 'getEducationalDomains').mockResolvedValue([])
     window.IntersectionObserver = vi.fn().mockImplementation(() => ({
@@ -256,7 +256,7 @@ describe('offersSearch component', () => {
     )
 
     // Then
-    expect(refineGeoloc).toHaveBeenCalled()
+    expect(setGeoRadiusMock).toHaveBeenCalled()
   })
 
   it('should not let user select the geoloc filter if they have an invalid location', async () => {
@@ -286,7 +286,7 @@ describe('offersSearch component', () => {
       })[1]
     )
 
-    expect(refineGeoloc).not.toHaveBeenCalled()
+    expect(setGeoRadiusMock).not.toHaveBeenCalled()
   })
 
   it('should filters department on venue filter if provided', async () => {
