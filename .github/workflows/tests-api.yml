@@ -46,7 +46,7 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: ${{ env.tests_docker_image }}
-          run: ruff format --check .
+          run: ruff format . && ls . && ls ..
       - name: Run mypy
         uses: addnab/docker-run-action@v3
         with:

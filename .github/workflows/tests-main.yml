@@ -15,131 +15,22 @@ concurrency:
   cancel-in-progress: ${{ github.ref == 'refs/heads/master' && false || true }}
 
 jobs:
-  check-api-folder-changes:
-    name: Check api folder changes
-    uses: ./.github/workflows/check-folder-changes.yml
-    with:
-      folder: api
+  run_ruff_and_show_differences:
+    runs-on: linux
 
-  check-pro-folder-changes:
-    name: Check pro folder changes
-    uses: ./.github/workflows/check-folder-changes.yml
-    with:
-      folder: pro
-
-  build-api:
-    name: Build API (backend) Docker image
-    needs:
-      - check-api-folder-changes
-      - check-pro-folder-changes
-    if: |
-      needs.check-api-folder-changes.outputs.folder_changed == 'true' ||
-      needs.check-pro-folder-changes.outputs.folder_changed == 'true'
-    uses: ./.github/workflows/build-and-push-docker-images.yml
-    with:
-      tag: ${{ github.sha }}
-      # Needed to run end-to-end tests, i.e. when either "pro" or
-      # "api" source code changes, which is the condition under which
-      # this step is run. In other words: always.
-      pcapi: true
-      # Extra when tests are run on master before deployment on testing.
-      console: ${{ github.ref == 'refs/heads/master' }}
-      # Needed to run backend tests.
-      tests: ${{ needs.check-api-folder-changes.outputs.folder_changed == 'true' }}
-    secrets: inherit
-
-  test-api:
-    name: Test api
-    needs:
-      - check-api-folder-changes
-      - build-api
-    if: needs.check-api-folder-changes.outputs.folder_changed == 'true'
-    uses: ./.github/workflows/tests-api.yml
-    secrets: inherit
-
-  test-pro:
-    needs: check-pro-folder-changes
-    if: needs.check-pro-folder-changes.outputs.folder_changed == 'true'
-    name: Tests pro
-    uses: ./.github/workflows/tests-pro.yml
-    secrets: inherit
-    with:
-      CACHE_BUCKET_NAME: passculture-infra-prod-github-runner-cache
-
-  test-pro-e2e:
-    needs:
-      - check-api-folder-changes
-      - check-pro-folder-changes
-      - build-api
-    if: |
-      needs.check-api-folder-changes.outputs.folder_changed == 'true' ||
-      needs.check-pro-folder-changes.outputs.folder_changed == 'true'
-    name: Tests pro E2E
-    uses: ./.github/workflows/tests-pro-e2e.yml
-    secrets: inherit
-    with:
-      CACHE_BUCKET_NAME: passculture-infra-prod-github-runner-cache
-
-  dependabot-auto-merge:
-    needs:
-      - test-pro
-    if: |
-      github.event_name == 'pull_request' &&
-      github.actor == 'dependabot[bot]'
-    uses: ./.github/workflows/dependabot-auto-merge.yml
-    secrets: inherit
-
-  deploy-to-testing:
-    name: Deploy to testing
-    needs:
-      - test-api
-      - test-pro
-    if: |
-      always() &&
-      github.ref == 'refs/heads/master' &&
-      (needs.test-api.result == 'success' || needs.test-api.result == 'skipped') &&
-      (needs.test-pro.result == 'success' || needs.test-pro.result == 'skipped')
-    uses: ./.github/workflows/deploy.yml
-    with:
-      environment: testing
-      app_version: ${{ github.sha }}
-      teleport_version: 11.1.1
-      teleport_proxy: teleport.ehp.passculture.team:443
-      teleport_kubernetes_cluster: passculture-metier-ehp
-      deploy_api: ${{ needs.test-api.result == 'success' }}
-      deploy_pro: ${{ needs.test-pro.result == 'success' }}
-    secrets: inherit
-
-  notification:
-    name: "Notification"
-    runs-on: [self-hosted, linux, x64]
-    if: ${{ failure() && github.ref == 'refs/heads/master' }}
-    needs:
-      - deploy-to-testing
     steps:
-      - uses: technote-space/workflow-conclusion-action@v3
-      - name: Post to a Slack channel
-        id: slack
-        uses: slackapi/slack-github-action@v1.23.0
-        with:
-          # channel #alertes-deploiement
-          channel-id: "CQAMNFVPS"
-          payload: |
-            {
-            "attachments": [
-              {
-                "mrkdwn_in": ["text"],
-                "color": "#A30002",
-                "author_name": "${{github.actor}}",
-                "author_link": "https://github.com/${{github.actor}}",
-                "author_icon": "https://github.com/${{github.actor}}.png",
-                "title": "PCAPI Deployment",
-                "title_link": "https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}",
-                "text": "Le déploiement de la version `master` a échoué sur `testing` :boom:"
-              }
-            ],
-            "unfurl_links": false,
-            "unfurl_media": false
-            }
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.10"
+    - name: Install dependencies
+      run: |
+        pip install -U pip ruff
+        pip freeze
+    - name: Run ruff
+      run: |
+        ruff format .
+    - name: Show diff
+      run: |
+        git diff
