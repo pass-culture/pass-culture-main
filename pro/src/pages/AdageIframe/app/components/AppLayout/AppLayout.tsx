@@ -23,7 +23,7 @@ export const AppLayout = ({
   removeVenueFilter: () => void
   venueFilter: VenueResponse | null
 }): JSX.Element => {
-  const adageUser = useAdageUser()
+  const { adageUser } = useAdageUser()
   return (
     <div>
       <InstantSearch
