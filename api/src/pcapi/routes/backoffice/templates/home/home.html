@@ -51,7 +51,7 @@
           pending_conformite_offerers_count,
           "structure en attente de conformité",
           "structures en attente de conformité",
-          url_for("backoffice_web.validation.list_offerers_to_validate", status=["NEW", "PENDING"], tags=conformite_tag_id, sort="dateCreated", order="desc")) }}
+          url_for("backoffice_web.validation.list_offerers_to_validate", status=["PENDING"], tags=conformite_tag_id, sort="dateCreated", order="desc")) }}
         {% endif %}
       </div>
     {% endif %}
