@@ -1262,6 +1262,32 @@ class ResendEmailValidationTest:
         assert response.status_code == 204
         assert not mails_testing.outbox
 
+    def test_resend_validation_email_too_many_attempts(self, client):
+        """
+        Test that a user cannot request more than
+        MAX_EMAIL_UPDATE_ATTEMPTS email update change within the last
+        N days.
+        """
+        user = users_factories.UserFactory(isEmailValidated=False)
+
+        response = client.post("/native/v1/resend_email_validation", json={"email": user.email})
+
+        assert response.status_code == 204
+
+        response = client.post("/native/v1/resend_email_validation", json={"email": user.email})
+
+        assert response.status_code == 204
+
+        response = client.post("/native/v1/resend_email_validation", json={"email": user.email})
+
+        assert response.status_code == 204
+
+        response = client.post("/native/v1/resend_email_validation", json={"email": user.email})
+
+        assert response.status_code == 429
+        assert response.json["code"] == "TOO_MANY_EMAIL_VALIDATION_RESENDS"
+        assert response.json["message"] == "Le nombre de tentatives maximal est dépassé."
+
 
 class ShowEligibleCardTest:
     @pytest.mark.parametrize("age,expected", [(17, False), (18, True), (19, False)])

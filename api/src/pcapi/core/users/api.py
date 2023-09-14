@@ -7,6 +7,7 @@ import secrets
 import typing
 
 from dateutil.relativedelta import relativedelta
+from flask import current_app as app
 from flask import request
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import create_refresh_token
@@ -271,6 +272,33 @@ def request_email_confirmation(user: models.User) -> None:
         user.id,
     )
     transactional_mails.send_email_confirmation_email(user, token=token)
+
+
+def _email_validation_resends_key(user: models.User) -> str:
+    return f"email_validation_resends_user_{user.id}"
+
+
+def check_email_validation_resends_count(user: models.User) -> None:
+    """
+    Check if the user has reached the maximum number of email validation resends.
+    If yes, raise an exception.
+    """
+    email_validation_resends = app.redis_client.get(_email_validation_resends_key(user))  # type: ignore [attr-defined]
+
+    if email_validation_resends and int(email_validation_resends) >= settings.MAX_EMAIL_VALIDATION_RESENDS:
+        raise exceptions.EmailValidationLimitReached()
+
+
+def increment_email_validation_resends_count(user: models.User) -> None:
+    """
+    Increment or initiate the number of resends of the email validation email
+    """
+    email_validation_resends_key = _email_validation_resends_key(user)
+    email_validation_resends = app.redis_client.incr(email_validation_resends_key)  # type: ignore [attr-defined]
+
+    if email_validation_resends == 1:
+        # If the key did not exist, set the expiration time
+        app.redis_client.expire(email_validation_resends_key, settings.EMAIL_VALIDATION_RESENDS_TTL)  # type: ignore [attr-defined]
 
 
 def request_password_reset(user: models.User | None) -> None:
