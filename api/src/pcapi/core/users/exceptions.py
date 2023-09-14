@@ -37,6 +37,10 @@ class InvalidUserRoleException(Exception):
     pass
 
 
+class EmailValidationLimitReached(Exception):
+    pass
+
+
 class EmailUpdateLimitReached(Exception):
     pass
 
