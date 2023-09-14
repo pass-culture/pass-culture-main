@@ -63,12 +63,16 @@ def check_incident_collective_booking(collective_booking: educational_models.Col
 
 
 def check_total_amount(
-    input_amount: decimal.Decimal, bookings: list[bookings_models.Booking | educational_models.CollectiveBooking]
+    input_amount: decimal.Decimal | None, bookings: list[bookings_models.Booking | educational_models.CollectiveBooking]
 ) -> bool:
-    max_incident_amount = -sum(booking.pricing.amount if booking.pricing else 0 for booking in bookings)
-    if input_amount * 100 > max_incident_amount:
+    # Temporary: The total_amount field is optional only for multiple bookings incident (no need for total overpayment)
+    if not input_amount:
+        flash("Le montant de l'incident est vide.", "warning")
+        return False
+    max_incident_amount = sum(booking.total_amount for booking in bookings)
+    if input_amount > max_incident_amount:
         flash(
-            "Le montant de l'incident ne peut pas être supérieur au montant remboursé à l'acteur pour cette réservation.",
+            "Le montant de l'incident ne peut pas être supérieur au montant total des réservations sélectionnées.",
             "warning",
         )
         return False
