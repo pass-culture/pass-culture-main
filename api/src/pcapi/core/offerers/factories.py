@@ -30,6 +30,10 @@ class NotValidatedOffererFactory(OffererFactory):
     validationStatus = ValidationStatus.NEW
 
 
+class PendingOffererFactory(OffererFactory):
+    validationStatus = ValidationStatus.PENDING
+
+
 class RejectedOffererFactory(OffererFactory):
     validationStatus = ValidationStatus.REJECTED
     isActive = False
