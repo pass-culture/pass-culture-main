@@ -37,6 +37,9 @@ const OffererDetails = () => {
   const isNewOffererLinkEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_USER_OFFERER_LINK'
   )
+  const isNewBankDetailsEnabled = useActiveFeature(
+    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
+  )
 
   const loadOfferer = useCallback(
     async (id: number) => {
@@ -105,7 +108,7 @@ const OffererDetails = () => {
           /* For the screen reader to spell-out the id, we add a
                 visually hidden span with a space between each character.
                 The other span will be hidden from the screen reader. */
-          offerer.dsToken && (
+          isNewBankDetailsEnabled && offerer.dsToken && (
             <>
               <span className={styles['identifier-hidden']}>
                 Identifiant de structure :{' '}
