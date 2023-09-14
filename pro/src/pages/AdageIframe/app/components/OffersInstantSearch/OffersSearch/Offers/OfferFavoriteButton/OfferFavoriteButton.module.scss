@@ -1,0 +1,19 @@
+@use "styles/variables/_colors.scss" as colors;
+
+.favorite-button {
+  color: colors.$grey-semi-dark;
+
+  svg {
+    margin-right: 0;
+    width: 32px;
+    height: 32px;
+  }
+
+  &-active {
+    color: colors.$primary;
+  }
+
+  &:hover:not(&-active) {
+    color: colors.$input-text-color;
+  }
+}

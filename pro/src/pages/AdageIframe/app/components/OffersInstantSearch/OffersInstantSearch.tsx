@@ -44,7 +44,7 @@ export const OffersInstantSearch = ({
   const newAdageFilters = useActiveFeature('WIP_ENABLE_NEW_ADAGE_FILTERS')
 
   const [geoRadius, setGeoRadius] = useState<number | null>(null)
-  const adageUser = useAdageUser()
+  const { adageUser } = useAdageUser()
 
   return (
     <InstantSearch
