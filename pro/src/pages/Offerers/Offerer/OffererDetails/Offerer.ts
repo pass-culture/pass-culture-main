@@ -14,7 +14,7 @@ export interface Offerer {
   siren: string
   id: number
   demarchesSimplifieesApplicationId: string
-  dsToken: string
+  dsToken: string | null | undefined
 }
 
 export const transformOffererResponseModelToOfferer = (
