@@ -312,6 +312,44 @@ class TrustedDeviceFeatureTest:
         WIP_ENABLE_TRUSTED_DEVICE=True,
         WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
     )
+    def should_send_suspicious_login_email_to_user_suspended_upon_request(self, client):
+        user = users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"])
+        history_factories.SuspendedUserActionHistoryFactory(
+            user=user, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
+        )
+
+        client.post("/native/v1/signin", json=self.data, headers=self.headers)
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
+
+    @override_features(
+        WIP_ENABLE_TRUSTED_DEVICE=True,
+        WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
+    )
+    @pytest.mark.parametrize(
+        "reason",
+        [
+            users_constants.SuspensionReason.FRAUD_SUSPICION,
+            users_constants.SuspensionReason.FRAUD_HACK,
+            users_constants.SuspensionReason.SUSPENSION_FOR_INVESTIGATION_TEMP,
+            users_constants.SuspensionReason.FRAUD_USURPATION,
+        ],
+    )
+    def should_not_send_suspicious_login_email_to_suspended_user(self, client, reason):
+        user = users_factories.UserFactory(
+            email=self.data["identifier"], password=self.data["password"], isActive=False
+        )
+        history_factories.SuspendedUserActionHistoryFactory(user=user, reason=reason)
+
+        client.post("/native/v1/signin", json=self.data, headers=self.headers)
+
+        assert len(mails_testing.outbox) == 0
+
+    @override_features(
+        WIP_ENABLE_TRUSTED_DEVICE=True,
+        WIP_ENABLE_SUSPICIOUS_EMAIL_SEND=True,
+    )
     def should_extend_refresh_token_lifetime_when_logging_in_with_a_trusted_device(self, client):
         user = users_factories.UserFactory(email=self.data["identifier"], password=self.data["password"], isActive=True)
         users_factories.TrustedDeviceFactory(user=user)
