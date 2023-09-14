@@ -1259,9 +1259,10 @@ def cancel_pricing(
     return pricing
 
 
-def generate_cashflows_and_payment_files(cutoff: datetime.datetime) -> None:
-    batch_id = generate_cashflows(cutoff)
-    generate_payment_files(batch_id)
+def generate_cashflows_and_payment_files(cutoff: datetime.datetime) -> models.CashflowBatch:
+    batch = generate_cashflows(cutoff)
+    generate_payment_files(batch)
+    return batch
 
 
 def _get_next_cashflow_batch_label() -> str:
@@ -1276,7 +1277,7 @@ def _get_next_cashflow_batch_label() -> str:
     return CASHFLOW_BATCH_LABEL_PREFIX + str(next_number)
 
 
-def generate_cashflows(cutoff: datetime.datetime) -> int:
+def generate_cashflows(cutoff: datetime.datetime) -> models.CashflowBatch:
     """Generate a new CashflowBatch and a new cashflow for each
     reimbursement point for which there is money to transfer.
     """
@@ -1284,13 +1285,10 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
     batch = models.CashflowBatch(cutoff=cutoff, label=_get_next_cashflow_batch_label())
     db.session.add(batch)
     db.session.commit()
-    # Store now otherwise SQLAlchemy will make a SELECT to fetch the
-    # id again after COMMITs in `_generate_cashflows()`.
-    batch_id = batch.id
     _generate_cashflows(batch)
     # if the script fail we want to keep the lock to forbid backoffice to modify the data
     app.redis_client.delete(conf.REDIS_GENERATE_CASHFLOW_LOCK)  # type: ignore [attr-defined]
-    return batch_id
+    return batch
 
 
 def _generate_cashflows(batch: models.CashflowBatch) -> None:
@@ -1461,18 +1459,18 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
             )
 
 
-def generate_payment_files(batch_id: int) -> None:
+def generate_payment_files(batch: models.CashflowBatch) -> None:
     """Generate all payment files that are related to the requested
     CashflowBatch and mark all related Cashflow as ``UNDER_REVIEW``.
     """
     logger.info("Generating payment files")
     not_pending_cashflows = models.Cashflow.query.filter(
-        models.Cashflow.batchId == batch_id,
+        models.Cashflow.batchId == batch.id,
         models.Cashflow.status != models.CashflowStatus.PENDING,
     ).count()
     if not_pending_cashflows:
         raise ValueError(
-            f"Refusing to generate payment files for {batch_id}, "
+            f"Refusing to generate payment files for {batch.id}, "
             f"because {not_pending_cashflows} cashflows are not pending",
         )
 
@@ -1480,12 +1478,12 @@ def generate_payment_files(batch_id: int) -> None:
     logger.info("Generating reimbursement points file")
     file_paths["reimbursement_points"] = _generate_reimbursement_points_file()
     logger.info("Generating payments file")
-    file_paths["payments"] = _generate_payments_file(batch_id)
+    file_paths["payments"] = _generate_payments_file(batch.id)
     logger.info(
         "Finance files have been generated",
         extra={"paths": [str(path) for path in file_paths.values()]},
     )
-    drive_folder_name = _get_drive_folder_name(batch_id)
+    drive_folder_name = _get_drive_folder_name(batch)
     _upload_files_to_google_drive(drive_folder_name, file_paths.values())
 
     logger.info("Updating cashflow status")
@@ -1502,7 +1500,7 @@ def generate_payment_files(batch_id: int) -> None:
             SELECT updated.cashflow_id, 'pending', 'under review' FROM updated
     """,
         params={
-            "batch_id": batch_id,
+            "batch_id": batch.id,
             "pending": models.CashflowStatus.PENDING.value,
             "under_review": models.CashflowStatus.UNDER_REVIEW.value,
         },
@@ -1511,13 +1509,12 @@ def generate_payment_files(batch_id: int) -> None:
     logger.info("Updated cashflow status")
 
 
-def _get_drive_folder_name(batch_id: int) -> str:
+def _get_drive_folder_name(batch: models.CashflowBatch) -> str:
     """Return the name of the directory (on Google Drive) that holds
     finance files for the requested cashflow batch.
 
     Looks like "2022-03 - jusqu'au 15 mars".
     """
-    batch = models.CashflowBatch.query.get(batch_id)
     last_day = pytz.utc.localize(batch.cutoff).astimezone(utils.ACCOUNTING_TIMEZONE).date() - datetime.timedelta(days=1)
     return "{year}-{month:02} - jusqu'au {day} {month_name}".format(
         year=last_day.year,
@@ -1795,14 +1792,23 @@ def _filter_invoiceable_cashflows(query: BaseQuery) -> BaseQuery:
     )
 
 
-def generate_invoices() -> None:
+def generate_invoices(batch: models.CashflowBatch) -> None:
     """Generate (and store) all invoices."""
-    rows = _filter_invoiceable_cashflows(
-        db.session.query(
-            models.Cashflow.reimbursementPointId.label("reimbursement_point_id"),
-            sqla_func.array_agg(models.Cashflow.id).label("cashflow_ids"),
+
+    rows = (
+        _filter_invoiceable_cashflows(
+            db.session.query(
+                models.Cashflow.reimbursementPointId.label("reimbursement_point_id"),
+                sqla_func.array_agg(models.Cashflow.id).label("cashflow_ids"),
+            )
         )
-    ).group_by(models.Cashflow.reimbursementPointId)
+        .filter(models.Cashflow.batchId == batch.id)
+        .group_by(models.Cashflow.reimbursementPointId)
+    ).all()
+
+    if not rows:
+        # Probably a mistake in the batch id input
+        raise exceptions.NoInvoiceToGenerate()
 
     for row in rows:
         try:
@@ -1825,14 +1831,13 @@ def generate_invoices() -> None:
                 },
             )
     with log_elapsed(logger, "Generated CSV invoices file"):
-        path = generate_invoice_file(datetime.date.today())
-    batch_id = models.CashflowBatch.query.order_by(models.CashflowBatch.cutoff.desc()).first().id
-    drive_folder_name = _get_drive_folder_name(batch_id)
+        path = generate_invoice_file(batch)
+    drive_folder_name = _get_drive_folder_name(batch)
     with log_elapsed(logger, "Uploaded CSV invoices file to Google Drive"):
         _upload_files_to_google_drive(drive_folder_name, [path])
 
 
-def generate_invoice_file(invoice_date: datetime.date) -> pathlib.Path:
+def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
     header = [
         "Identifiant du point de remboursement",
         "Date du justificatif",
@@ -1854,7 +1859,7 @@ def generate_invoice_file(invoice_date: datetime.date) -> pathlib.Path:
         .join(models.Invoice.cashflows)
         .join(models.Cashflow.pricings)
         .join(models.Pricing.lines)
-        .filter(sqla.cast(models.Invoice.date, sqla.Date) == invoice_date)
+        .filter(models.Cashflow.batchId == batch.id)
         .order_by(models.Invoice.id, models.Pricing.id, models.PricingLine.id)
     )
     row_formatter = lambda row: (
@@ -1887,12 +1892,21 @@ def generate_and_store_invoice(
         )
         if not invoice:
             return
+
+    # The cashflows all come from the same cashflow batch,
+    # so batch_id should be the same for every cashflow
+    batch = (
+        models.CashflowBatch.query.join(models.Cashflow.batch)
+        .join(models.Cashflow.invoices)
+        .filter(models.Invoice.id == invoice.id)
+    ).one()
+
     with log_elapsed(logger, "Generated invoice HTML", log_extra):
-        invoice_html = _generate_invoice_html(invoice)
+        invoice_html = _generate_invoice_html(invoice, batch)
     with log_elapsed(logger, "Generated and stored PDF invoice", log_extra):
         _store_invoice_pdf(invoice_storage_id=invoice.storage_object_id, invoice_html=invoice_html)
     with log_elapsed(logger, "Sent invoice", log_extra):
-        transactional_mails.send_invoice_available_to_pro_email(invoice)
+        transactional_mails.send_invoice_available_to_pro_email(invoice, batch)
 
 
 def _generate_invoice(
@@ -1902,7 +1916,8 @@ def _generate_invoice(
     # Acquire lock to avoid 2 simultaneous calls to this function (on
     # the same reimbursement point) generating 2 duplicate invoices.
     # This is also why we call `_filter_invoiceable_cashflows()` again
-    # below.
+    # below : the function will process the requested cashflows only
+    # in the first call
     lock_reimbursement_point(reimbursement_point_id)
     invoice = models.Invoice(
         reimbursementPointId=reimbursement_point_id,
@@ -2036,17 +2051,19 @@ def _generate_invoice(
     return invoice
 
 
-def get_invoice_period(invoice_date: datetime.datetime) -> typing.Tuple[datetime.datetime, datetime.datetime]:
-    if invoice_date.day > 15:
-        start_date = invoice_date.replace(day=1)
-        end_date = start_date.replace(day=15)
+def get_invoice_period(
+    batch_cutoff_date: datetime.datetime,
+) -> typing.Tuple[datetime.date, datetime.date]:
+    if batch_cutoff_date.day < 16:
+        start_date = batch_cutoff_date.replace(day=1)
     else:
-        end_date = invoice_date.replace(day=1) - datetime.timedelta(days=1)
-        start_date = end_date.replace(day=16)
-    return start_date, end_date
+        start_date = batch_cutoff_date.replace(day=16)
+    end_date = batch_cutoff_date
+
+    return start_date.date(), end_date.date()
 
 
-def _prepare_invoice_context(invoice: models.Invoice) -> dict:
+def _prepare_invoice_context(invoice: models.Invoice, batch: models.CashflowBatch) -> dict:
     # Easier to sort here and not in PostgreSQL, and not much slower
     # because there are very few cashflows (and usually only 1).
     cashflows = sorted(invoice.cashflows, key=lambda c: (c.creationDate, c.id))
@@ -2091,7 +2108,8 @@ def _prepare_invoice_context(invoice: models.Invoice) -> dict:
         offerers_repository.BankInformation.venueId == reimbursement_point.id
     ).one()
     reimbursement_point_iban = bank_information.iban if bank_information else None
-    period_start, period_end = get_invoice_period(invoice.date)
+
+    period_start, period_end = get_invoice_period(batch.cutoff)
 
     return dict(
         invoice=invoice,
@@ -2179,8 +2197,8 @@ def get_reimbursements_by_venue(
     return reimbursements_by_venue.values()
 
 
-def _generate_invoice_html(invoice: models.Invoice) -> str:
-    context = _prepare_invoice_context(invoice)
+def _generate_invoice_html(invoice: models.Invoice, batch: models.CashflowBatch) -> str:
+    context = _prepare_invoice_context(invoice, batch)
     return render_template("invoices/invoice.html", **context)
 
 

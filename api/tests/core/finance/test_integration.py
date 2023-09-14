@@ -42,14 +42,14 @@ def test_integration_full_workflow(css_font_http_request_mock):
         assert pricing.status == models.PricingStatus.VALIDATED
 
     cutoff = datetime.datetime.utcnow()
-    api.generate_cashflows_and_payment_files(cutoff)
+    batch = api.generate_cashflows_and_payment_files(cutoff)
     assert len(pricing.cashflows) == 1
     cashflow = pricing.cashflows[0]
     assert cashflow.status == models.CashflowStatus.UNDER_REVIEW
     db.session.refresh(pricing)
     assert pricing.status == models.PricingStatus.PROCESSED
 
-    api.generate_invoices()
+    api.generate_invoices(batch)
     db.session.refresh(cashflow)
     assert cashflow.status == models.CashflowStatus.ACCEPTED
     db.session.refresh(pricing)

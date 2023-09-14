@@ -52,3 +52,7 @@ class FinanceIncidentAlreadyCancelled(Exception):
 
 class FinanceIncidentAlreadyValidated(Exception):
     pass
+
+
+class NoInvoiceToGenerate(Exception):
+    pass
