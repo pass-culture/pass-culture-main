@@ -3,12 +3,9 @@ import React, { useState } from 'react'
 
 import { AdageFrontRoles, OfferAddressType } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import DialogBox from 'components/DialogBox/DialogBox'
 import useActiveFeature from 'hooks/useActiveFeature'
-import fullLikeIcon from 'icons/full-like.svg'
 import fullUpIcon from 'icons/full-up.svg'
 import strokeFranceIcon from 'icons/stroke-france.svg'
-import strokeLikeIcon from 'icons/stroke-like.svg'
 import strokeLocalisationIcon from 'icons/stroke-localisation.svg'
 import strokeOfferIcon from 'icons/stroke-offer.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
@@ -17,8 +14,7 @@ import {
   HydratedCollectiveOfferTemplate,
   isCollectiveOffer,
 } from 'pages/AdageIframe/app/types/offers'
-import { Button, Tag } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
+import { Tag } from 'ui-kit'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { LOGS_DATA } from 'utils/config'
 import { getDistance } from 'utils/getDistance'
@@ -27,6 +23,7 @@ import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 import ContactButton from './ContactButton'
 import style from './Offer.module.scss'
 import OfferDetails from './OfferDetails/OfferDetails'
+import OfferFavoriteButton from './OfferFavoriteButton/OfferFavoriteButton'
 import OfferSummary from './OfferSummary/OfferSummary'
 import PrebookingButton from './PrebookingButton/PrebookingButton'
 import { formatDescription } from './utils/formatDescription'
@@ -36,17 +33,19 @@ export interface OfferProps {
   offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
   queryId: string
   position: number
-
-  //  TODO : call this function whenever the favorite status change
   afterFavoriteChange?: (isFavorite: boolean) => void
 }
 
-const Offer = ({ offer, queryId, position }: OfferProps): JSX.Element => {
+const Offer = ({
+  offer,
+  queryId,
+  position,
+  afterFavoriteChange,
+}: OfferProps): JSX.Element => {
   const [displayDetails, setDisplayDetails] = useState(false)
-  const [isModalLikeOpen, setIsModalLikeOpen] = useState(false)
   const isLikeActive = useActiveFeature('WIP_ENABLE_LIKE_IN_ADAGE')
   const isGeolocationActive = useActiveFeature('WIP_ENABLE_ADAGE_GEO_LOCATION')
-  const adageUser = useAdageUser()
+  const { adageUser } = useAdageUser()
 
   const openOfferDetails = (
     offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
@@ -65,15 +64,6 @@ const Offer = ({ offer, queryId, position }: OfferProps): JSX.Element => {
           })
     }
     setDisplayDetails(!displayDetails)
-  }
-
-  const handleLikeClick = () => {
-    apiAdage.logFavOfferButtonClick({
-      iframeFrom: removeParamsFromUrl(location.pathname),
-      offerId: offer.id,
-      queryId: queryId,
-    })
-    setIsModalLikeOpen(true)
   }
 
   return (
@@ -136,54 +126,72 @@ const Offer = ({ offer, queryId, position }: OfferProps): JSX.Element => {
           )}
         </div>
         <div className={style['offer-details-container']}>
-          {offer.isTemplate ? (
-            <ContactButton
-              className={style['offer-prebooking-button']}
-              contactEmail={offer.contactEmail}
-              contactPhone={offer.contactPhone}
-              offerId={offer.id}
-              position={position}
-              queryId={queryId}
-              userEmail={adageUser.email}
-              userRole={adageUser.role}
-            />
-          ) : (
-            <PrebookingButton
-              canPrebookOffers={adageUser.role == AdageFrontRoles.REDACTOR}
-              className={style['offer-prebooking-button']}
-              offerId={offer.id}
-              queryId={queryId}
-              stock={offer.stock}
-            />
-          )}
           <div className={style['offer-header']}>
-            <h2 className={style['offer-header-title']}>{offer.name}</h2>
-            <div className={style['offer-header-subtitles']}>
-              <span className={style['offer-header-label']}>Proposée par </span>
-              <span>{getOfferVenueAndOffererName(offer.venue)}</span>
-            </div>
-
-            {isCollectiveOffer(offer) && offer.teacher && (
-              <div className={style['offer-header-subtitles']}>
-                <span className={style['offer-header-label']}>Destinée à </span>
-                <span>
-                  {offer.teacher.firstName} {offer.teacher.lastName}
-                </span>
+            <div className={style['offer-header-row']}>
+              <div>
+                <h2 className={style['offer-header-title']}>{offer.name}</h2>
+                <div className={style['offer-header-subtitles']}>
+                  <span className={style['offer-header-label']}>
+                    Proposée par{' '}
+                  </span>
+                  <span>{getOfferVenueAndOffererName(offer.venue)}</span>
+                </div>
+                {isCollectiveOffer(offer) && offer.teacher && (
+                  <div className={style['offer-header-teacher']}>
+                    <span className={style['offer-header-label']}>
+                      Destinée à{' '}
+                    </span>
+                    <span>
+                      {offer.teacher.firstName} {offer.teacher.lastName}
+                    </span>
+                  </div>
+                )}
+                <ul className={style['offer-domains-list']}>
+                  {offer?.domains?.map(domain => (
+                    <li
+                      className={style['offer-domains-list-item']}
+                      key={domain.id}
+                    >
+                      <Tag
+                        label={domain.name}
+                        className={style['offer-domains-tag']}
+                      />
+                    </li>
+                  ))}
+                </ul>
               </div>
-            )}
-            <ul className={style['offer-domains-list']}>
-              {offer?.domains?.map(domain => (
-                <li
-                  className={style['offer-domains-list-item']}
-                  key={domain.id}
-                >
-                  <Tag
-                    label={domain.name}
-                    className={style['offer-domains-tag']}
+              <div className={style['offer-details-actions']}>
+                {isLikeActive && (
+                  <OfferFavoriteButton
+                    //  TODO : remove the additional isFavorite when back model merged
+                    offer={offer as typeof offer & { isFavorite: boolean }}
+                    afterFavoriteChange={afterFavoriteChange}
+                  ></OfferFavoriteButton>
+                )}
+                {offer.isTemplate ? (
+                  <ContactButton
+                    className={style['offer-prebooking-button']}
+                    contactEmail={offer.contactEmail}
+                    contactPhone={offer.contactPhone}
+                    offerId={offer.id}
+                    position={position}
+                    queryId={queryId}
+                    userEmail={adageUser.email}
+                    userRole={adageUser.role}
                   />
-                </li>
-              ))}
-            </ul>
+                ) : (
+                  <PrebookingButton
+                    canPrebookOffers={
+                      adageUser.role == AdageFrontRoles.REDACTOR
+                    }
+                    className={style['offer-prebooking-button']}
+                    offerId={offer.id}
+                    queryId={queryId}
+                    stock={offer.stock}
+                  />
+                )}
+              </div>
+            </div>
           </div>
           <OfferSummary offer={offer} />
           <p className={style['offer-description']}>
@@ -205,41 +213,7 @@ const Offer = ({ offer, queryId, position }: OfferProps): JSX.Element => {
               />
               en savoir plus
             </button>
-            {isLikeActive && (
-              <Button
-                icon={strokeLikeIcon}
-                className={style['offer-like-button']}
-                title="bouton j'aime"
-                variant={ButtonVariant.TERNARY}
-                onClick={handleLikeClick}
-              />
-            )}
-            {isModalLikeOpen && (
-              <DialogBox
-                labelledBy="aimer une offre"
-                extraClassNames={style['offer-like-modal']}
-                hasCloseButton
-              >
-                <SvgIcon
-                  src={fullLikeIcon}
-                  alt=""
-                  width="88"
-                  className={style['full-like-icon']}
-                />
-                <p className={style['offer-like-modal-text']}>
-                  Lʼéquipe du pass Culture a bien noté votre intérêt pour cette
-                  fonctionnalité. Elle arrivera bientôt !
-                </p>
-                <Button
-                  onClick={() => setIsModalLikeOpen(false)}
-                  className={style['offer-like-modal-button']}
-                >
-                  Fermer
-                </Button>
-              </DialogBox>
-            )}
           </div>
-
           {displayDetails && <OfferDetails offer={offer} />}
         </div>
       </div>
