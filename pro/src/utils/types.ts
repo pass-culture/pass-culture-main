@@ -39,3 +39,7 @@ export const itShouldReturnFalseIfGivenUndefinedOrNull = (
     expect(functionToBeTested(null)).toBe(false)
   })
 }
+
+export const isNumber = (value: any) => {
+  return typeof value === 'number' && isFinite(value)
+}

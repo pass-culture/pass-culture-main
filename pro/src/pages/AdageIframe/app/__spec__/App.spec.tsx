@@ -8,6 +8,7 @@ import { apiAdage } from 'apiClient/api'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { App } from '../App'
+import { DEFAULT_GEO_RADIUS } from '../components/OffersInstantSearch/OffersInstantSearch'
 import {
   AlgoliaQueryContextProvider,
   FacetFiltersContextProvider,
@@ -436,6 +437,32 @@ describe('app', () => {
               'offer.educationalInstitutionUAICode:uai',
             ],
           ],
+        }),
+        {}
+      )
+    })
+
+    it('should add geo location filter when user has latitude and longitude', async () => {
+      vi.spyOn(apiAdage, 'authenticate').mockResolvedValueOnce({
+        role: AdageFrontRoles.REDACTOR,
+        uai: 'uai',
+        departmentCode: '30',
+        institutionName: 'COLLEGE BELLEVUE',
+        institutionCity: 'ALES',
+        lat: 48.856614,
+        lon: 2.3522219,
+      })
+      renderApp(null)
+
+      await screen.findByText('Rechercher une offre', {
+        selector: 'h2',
+      })
+
+      expect(Configure).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({
+          aroundLatLng: '48.856614, 2.3522219',
+          aroundRadius: DEFAULT_GEO_RADIUS,
         }),
         {}
       )

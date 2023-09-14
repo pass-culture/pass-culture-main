@@ -17,7 +17,6 @@ import {
 import Tabs from 'ui-kit/Tabs'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
-import { GeoLocation } from '../OffersInstantSearch'
 import {
   ADAGE_FILTERS_DEFAULT_VALUES,
   adageFiltersToFacetFilters,
@@ -38,7 +37,7 @@ export enum LocalisationFilterStates {
 
 export interface SearchProps {
   venueFilter: VenueResponse | null
-  setGeoLocation: (geoloc: GeoLocation) => void
+  setGeoRadius: (geoRadius: number | null) => void
 }
 
 export interface SearchFormValues {
@@ -58,7 +57,7 @@ enum OfferTab {
 
 export const OffersSearch = ({
   venueFilter,
-  setGeoLocation,
+  setGeoRadius,
 }: SearchProps): JSX.Element => {
   const [, setIsLoading] = useState<boolean>(false)
   const [activeTab, setActiveTab] = useState(OfferTab.ALL)
@@ -119,13 +118,10 @@ export const OffersSearch = ({
       (adageUser.lat || adageUser.lat === 0) &&
       (adageUser.lon || adageUser.lon === 0)
     if (adageUserHasValidGeoloc) {
-      setGeoLocation(
+      setGeoRadius(
         localisationFilterState === LocalisationFilterStates.GEOLOCATION
-          ? {
-              radius: formik.values.geolocRadius * 1000,
-              latLng: `${adageUser.lat}, ${adageUser.lon}`,
-            }
-          : {}
+          ? formik.values.geolocRadius * 1000
+          : null
       )
     }
   }
