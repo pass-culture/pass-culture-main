@@ -12,6 +12,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.models import db
+import pcapi.utils.date as utils_date
 from pcapi.validation.models import entity_validator
 
 
@@ -191,9 +192,11 @@ class EMSStocks:
             reverse=True,
         )
 
+        local_tz = utils_date.get_department_timezone(self.venue.departementCode)
         beginning_datetime = datetime.datetime.strptime(session.date, "%Y%m%d%H%M")
-        stock.beginningDatetime = beginning_datetime
-        stock.bookingLimitDatetime = beginning_datetime
+        beginning_datetime_in_utc = utils_date.local_datetime_to_default_timezone(beginning_datetime, local_tz)
+        stock.beginningDatetime = beginning_datetime_in_utc
+        stock.bookingLimitDatetime = beginning_datetime_in_utc
 
         show_price = decimal.Decimal(session.pass_culture_price)
         price_label = f"Tarif pass Culture {show_price}€"

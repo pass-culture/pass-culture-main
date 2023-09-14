@@ -236,8 +236,8 @@ class EMSStocksTest:
         assert not created_stocks[0].quantity
         assert created_stocks[0].price == Decimal("7.00")
         assert created_stocks[0].dateCreated is not None
-        assert created_stocks[0].bookingLimitDatetime == datetime.datetime(2023, 7, 27, 10)
-        assert created_stocks[0].beginningDatetime == datetime.datetime(2023, 7, 27, 10)
+        assert created_stocks[0].bookingLimitDatetime == datetime.datetime(2023, 7, 27, 8)
+        assert created_stocks[0].beginningDatetime == datetime.datetime(2023, 7, 27, 8)
         assert created_stocks[0].priceCategory.price == Decimal("7.00")
         assert created_stocks[0].priceCategory.label == "Tarif pass Culture 7€"
         assert created_stocks[0].features == ["VF"]
@@ -306,8 +306,8 @@ class EMSStocksTest:
         assert not created_stocks[0].quantity
         assert created_stocks[0].price == Decimal("7.15")
         assert created_stocks[0].dateCreated is not None
-        assert created_stocks[0].bookingLimitDatetime == datetime.datetime(2023, 7, 11, 10)
-        assert created_stocks[0].beginningDatetime == datetime.datetime(2023, 7, 11, 10)
+        assert created_stocks[0].bookingLimitDatetime == datetime.datetime(2023, 7, 11, 8)
+        assert created_stocks[0].beginningDatetime == datetime.datetime(2023, 7, 11, 8)
         assert created_stocks[0].priceCategory.price == Decimal("7.15")
         assert created_stocks[0].priceCategory.label == "Tarif pass Culture 7.15€"
         assert created_stocks[0].features == ["VF", "3D"]
@@ -315,8 +315,8 @@ class EMSStocksTest:
         assert not created_stocks[1].quantity
         assert created_stocks[1].price == Decimal("7.15")
         assert created_stocks[1].dateCreated
-        assert created_stocks[1].bookingLimitDatetime == datetime.datetime(2023, 7, 11, 12, 30)
-        assert created_stocks[1].beginningDatetime == datetime.datetime(2023, 7, 11, 12, 30)
+        assert created_stocks[1].bookingLimitDatetime == datetime.datetime(2023, 7, 11, 10, 30)
+        assert created_stocks[1].beginningDatetime == datetime.datetime(2023, 7, 11, 10, 30)
         assert created_stocks[1].priceCategory.price == Decimal("7.15")
         assert created_stocks[1].priceCategory.label == "Tarif pass Culture 7.15€"
         assert created_stocks[1].features == ["VF", "3D"]
@@ -345,8 +345,8 @@ class EMSStocksTest:
         assert not created_stocks[2].quantity
         assert created_stocks[2].price == Decimal("5.15")
         assert created_stocks[2].dateCreated
-        assert created_stocks[2].bookingLimitDatetime == datetime.datetime(2023, 7, 11, 10)
-        assert created_stocks[2].beginningDatetime == datetime.datetime(2023, 7, 11, 10)
+        assert created_stocks[2].bookingLimitDatetime == datetime.datetime(2023, 7, 11, 8)
+        assert created_stocks[2].beginningDatetime == datetime.datetime(2023, 7, 11, 8)
         assert created_stocks[2].priceCategory.price == Decimal("5.15")
         assert created_stocks[2].priceCategory.label == "Tarif pass Culture 5.15€"
         assert created_stocks[2].features == ["VF"]
@@ -415,8 +415,8 @@ class EMSStocksTest:
         assert not created_stocks[0].quantity
         assert created_stocks[0].price == Decimal("7.00")
         assert created_stocks[0].dateCreated is not None
-        assert created_stocks[0].bookingLimitDatetime == datetime.datetime(2023, 7, 27, 10)
-        assert created_stocks[0].beginningDatetime == datetime.datetime(2023, 7, 27, 10)
+        assert created_stocks[0].bookingLimitDatetime == datetime.datetime(2023, 7, 27, 8)
+        assert created_stocks[0].beginningDatetime == datetime.datetime(2023, 7, 27, 8)
         assert created_stocks[0].priceCategory.price == Decimal("7.00")
         assert created_stocks[0].priceCategory.label == "Tarif pass Culture 7€"
         assert created_stocks[0].features == ["VF"]
@@ -424,8 +424,8 @@ class EMSStocksTest:
         assert not created_stocks[1].quantity
         assert created_stocks[1].price == Decimal("7.00")
         assert created_stocks[1].dateCreated
-        assert created_stocks[1].bookingLimitDatetime == datetime.datetime(2023, 8, 14, 21)
-        assert created_stocks[1].beginningDatetime == datetime.datetime(2023, 8, 14, 21)
+        assert created_stocks[1].bookingLimitDatetime == datetime.datetime(2023, 8, 14, 19)
+        assert created_stocks[1].beginningDatetime == datetime.datetime(2023, 8, 14, 19)
         assert created_stocks[1].priceCategory.price == Decimal("7.00")
         assert created_stocks[1].priceCategory.label == "Tarif pass Culture 7€"
         assert created_stocks[1].features == ["VO"]
