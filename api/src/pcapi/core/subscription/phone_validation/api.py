@@ -13,7 +13,6 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.phone_validation import sending_limit
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
-from pcapi.models import db
 from pcapi.notifications import sms as sms_notifications
 from pcapi.repository import repository
 from pcapi.utils import phone_number as phone_number_utils
@@ -173,36 +172,17 @@ def validate_phone_number(user: users_models.User, code: str) -> None:
 
     try:
         token = token_utils.SixDigitsToken.load_and_check(code, token_utils.TokenType.PHONE_VALIDATION, user.id)
-        try:
-            phone_number = token.data["phone_number"]
-        except KeyError:
-            logger.exception("Phone number not found in token", extra={"token_type": token.type_, "user_id": user.id})
-            raise exceptions.PhoneNumberNotFoundInToken()
-        token.expire()
     except token_utils.InvalidToken:
-        # FIXME (abdelmoujibmegzari): Remove support for old token model https://passculture.atlassian.net/browse/PC-24187
-        old_token = users_models.Token.query.filter(
-            users_models.Token.user == user,
-            users_models.Token.value == code,
-            users_models.Token.type == users_models.TokenType.PHONE_VALIDATION,
-        ).one_or_none()
-
-        if not old_token:
-            code_validation_attempts = sending_limit.get_code_validation_attempts(app.redis_client, user)  # type: ignore [attr-defined]
-            if code_validation_attempts.remaining == 0:
-                fraud_api.handle_phone_validation_attempts_limit_reached(user, code_validation_attempts.attempts)
-            raise exceptions.NotValidCode(remaining_attempts=code_validation_attempts.remaining)
-
-        if old_token.expirationDate and old_token.expirationDate < datetime.datetime.utcnow():
-            raise exceptions.NotValidCode(remaining_attempts=code_validation_attempts.remaining)
-
-        if old_token.get_extra_data():
-            phone_number = old_token.get_extra_data().phone_number
-        else:
-            logger.error("Phone number not found in token", extra={"token_id": old_token.id, "user_id": user.id})
-            raise exceptions.PhoneNumberNotFoundInToken()
-
-        db.session.delete(old_token)
+        code_validation_attempts = sending_limit.get_code_validation_attempts(app.redis_client, user)  # type: ignore [attr-defined]
+        if code_validation_attempts.remaining == 0:
+            fraud_api.handle_phone_validation_attempts_limit_reached(user, code_validation_attempts.attempts)
+        raise exceptions.NotValidCode(remaining_attempts=code_validation_attempts.remaining)
+    try:
+        phone_number = token.data["phone_number"]
+    except KeyError:
+        logger.exception("Phone number not found in token", extra={"token_type": token.type_, "user_id": user.id})
+        raise exceptions.PhoneNumberNotFoundInToken()
+    token.expire()
 
     _ensure_phone_number_unicity(user, phone_number, change_owner=True)
 
