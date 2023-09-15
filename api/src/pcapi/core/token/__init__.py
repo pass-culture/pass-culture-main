@@ -99,6 +99,10 @@ class AbstractToken(abc.ABC):
     def _log(self, action: _TokenAction) -> None:
         logger.info("[TOKEN](%s){%i, %s, %s}", action.value, self.user_id, self.type_.value, self.encoded_token)
 
+    @classmethod
+    def delete(cls, type_: TokenType, user_id: int) -> None:
+        app.redis_client.delete(cls._get_redis_key(type_, user_id))  # type: ignore [attr-defined]
+
 
 class Token(AbstractToken):
     @classmethod
@@ -169,3 +173,8 @@ class SixDigitsToken(AbstractToken):
     def expire(self) -> None:
         super().expire()
         app.redis_client.delete(self._get_redis_extra_data_key(self.type_, self.user_id))  # type: ignore [attr-defined]
+
+    @classmethod
+    def delete(cls, type_: TokenType, user_id: int) -> None:
+        super().delete(type_, user_id)
+        app.redis_client.delete(cls._get_redis_extra_data_key(type_, user_id))  # type: ignore [attr-defined]
