@@ -131,15 +131,17 @@ export const OffersSearch = ({
     formik.setValues(ADAGE_FILTERS_DEFAULT_VALUES)
     formik.handleSubmit()
   }
-
-  const logFiltersOnSearch = (nbHits: number, queryId: string) => {
+  const [currentSearch, setCurrentSearch] = useState('')
+  const logFiltersOnSearch = (nbHits: number, queryId?: string) => {
     /* istanbul ignore next: TO FIX the current structure make it hard to test, we probably should not mock Offers in OfferSearch tests */
-    apiAdage.logTrackingFilter({
-      iframeFrom: removeParamsFromUrl(location.pathname),
-      resultNumber: nbHits,
-      queryId: queryId,
-      filterValues: formik ? formik.values : {},
-    })
+    if (formik.submitCount > 0 || currentSearch != '') {
+      apiAdage.logTrackingFilter({
+        iframeFrom: removeParamsFromUrl(location.pathname),
+        resultNumber: nbHits,
+        queryId: queryId ?? null,
+        filterValues: formik ? { ...formik.values, query: currentSearch } : {},
+      })
+    }
   }
 
   const formik = useFormik<SearchFormValues>({
@@ -175,6 +177,7 @@ export const OffersSearch = ({
           placeholder={
             'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
           }
+          setCurrentSearch={setCurrentSearch}
         />
         <div ref={offerFilterRef}>
           <OfferFilters
