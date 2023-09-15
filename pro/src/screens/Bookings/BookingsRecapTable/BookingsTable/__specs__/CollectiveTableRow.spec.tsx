@@ -1,20 +1,22 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
-import type { Row } from 'react-table'
 
 import { api } from 'apiClient/api'
 import {
   CancelablePromise,
   CollectiveBookingByIdResponseModel,
-  CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 import {
+  collectiveBookingCollectiveStockFactory,
   collectiveBookingDetailsFactory,
   collectiveBookingRecapFactory,
 } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import CollectiveTableRow, { TableBodyProps } from '../CollectiveTableRow'
+import {
+  CollectiveTableRow,
+  CollectiveTableRowProps,
+} from '../CollectiveTableRow'
 
 vi.mock('apiClient/api')
 vi.mock(
@@ -31,7 +33,7 @@ vi.mock('utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(),
 }))
 
-const renderCollectiveTableRow = (props: TableBodyProps) =>
+const renderCollectiveTableRow = (props: CollectiveTableRowProps) =>
   renderWithProviders(
     <table>
       <tbody>
@@ -52,18 +54,19 @@ describe('CollectiveTableRow', () => {
   })
 
   it('should not render booking details if row is not expanded', async () => {
-    const row = {
-      original: {
+    const props: CollectiveTableRowProps = {
+      booking: collectiveBookingRecapFactory({
         bookingIdentifier: 'A1',
-        stock: {
+        stock: collectiveBookingCollectiveStockFactory({
           offerIdentifier: 'A1',
-        },
+        }),
         bookingStatus: 'booked',
-      },
-      isExpanded: false,
-    } as Row<CollectiveBookingResponseModel>
+      }),
+      reloadBookings: vi.fn(),
+      defaultOpenedBookingId: '',
+    }
 
-    renderCollectiveTableRow({ row, reloadBookings: vi.fn(), bookingId: '' })
+    renderCollectiveTableRow(props)
 
     expect(
       screen.queryByText('Métier Alexandre Bérard')
@@ -71,16 +74,17 @@ describe('CollectiveTableRow', () => {
   })
 
   it('should render loader while fetching data', async () => {
-    const row = {
-      original: {
+    const props: CollectiveTableRowProps = {
+      booking: collectiveBookingRecapFactory({
         bookingIdentifier: 'A1',
-        stock: {
+        stock: collectiveBookingCollectiveStockFactory({
           offerIdentifier: 'A1',
-        },
+        }),
         bookingStatus: 'booked',
-      },
-      isExpanded: true,
-    } as Row<CollectiveBookingResponseModel>
+      }),
+      reloadBookings: vi.fn(),
+      defaultOpenedBookingId: '',
+    }
 
     vi.spyOn(api, 'getCollectiveBookingById').mockImplementationOnce(() => {
       return new CancelablePromise<CollectiveBookingByIdResponseModel>(
@@ -89,26 +93,20 @@ describe('CollectiveTableRow', () => {
       )
     })
 
-    renderCollectiveTableRow({ row, reloadBookings: vi.fn(), bookingId: '' })
+    renderCollectiveTableRow(props)
 
     expect(await screen.findByText('Chargement en cours')).toBeInTheDocument()
   })
 
   it('should display booking details if row is expanded', async () => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
-    const row = {
-      original: { ...collectiveBookingRecapFactory({ bookingId: '123' }) },
-      isExpanded: true,
-      toggleRowExpanded: () => {
-        vi.fn()
-      },
-    } as Row<CollectiveBookingResponseModel>
-
-    renderCollectiveTableRow({
-      row,
+    const props: CollectiveTableRowProps = {
+      booking: collectiveBookingRecapFactory({ bookingId: '123' }),
       reloadBookings: vi.fn(),
-      bookingId: '123',
-    })
+      defaultOpenedBookingId: '123',
+    }
+
+    renderCollectiveTableRow(props)
     expect(api.getCollectiveBookingById).toHaveBeenCalledTimes(1)
     expect(
       await screen.findByText('Contact de l’établissement scolaire')
