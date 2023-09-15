@@ -3,6 +3,7 @@ import {
   CategoryResponseModel,
   CollectiveBookingBankInformationStatus,
   CollectiveBookingByIdResponseModel,
+  CollectiveBookingCollectiveStockResponseModel,
   CollectiveBookingResponseModel,
   DMSApplicationForEAC,
   DMSApplicationstatus,
@@ -141,6 +142,20 @@ export const collectiveOfferOffererFactory = (
   }
 }
 
+export const collectiveBookingCollectiveStockFactory = (
+  customStock: Partial<CollectiveBookingCollectiveStockResponseModel> = {}
+): CollectiveBookingCollectiveStockResponseModel => ({
+  bookingLimitDatetime: new Date().toISOString(),
+  eventBeginningDatetime: new Date().toISOString(),
+  numberOfTickets: 1,
+  offerIdentifier: '1',
+  offerId: 1,
+  offerIsEducational: true,
+  offerIsbn: null,
+  offerName: 'ma super offre collective',
+  ...customStock,
+})
+
 export const collectiveBookingRecapFactory = (
   customBookingRecap: Partial<CollectiveBookingResponseModel> = {}
 ): CollectiveBookingResponseModel => {
@@ -168,16 +183,7 @@ export const collectiveBookingRecapFactory = (
       postalCode: '75001',
       phoneNumber: '0601020304',
     },
-    stock: {
-      bookingLimitDatetime: new Date().toISOString(),
-      eventBeginningDatetime: new Date().toISOString(),
-      numberOfTickets: 1,
-      offerIdentifier: '1',
-      offerId: 1,
-      offerIsEducational: true,
-      offerIsbn: null,
-      offerName: 'ma super offre collective',
-    },
+    stock: collectiveBookingCollectiveStockFactory(),
     ...customBookingRecap,
   }
 }
