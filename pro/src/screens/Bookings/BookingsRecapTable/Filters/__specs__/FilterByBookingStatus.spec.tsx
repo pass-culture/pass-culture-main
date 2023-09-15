@@ -76,10 +76,8 @@ describe('components | FilterByBookingStatus', () => {
   })
 
   it('should display a black filter icon', () => {
-    // when
     renderFilterByBookingStatus(props)
 
-    // then
     const filterIcon = screen.getByRole('img')
     expect(filterIcon).not.toHaveAttribute(
       'class',
@@ -89,22 +87,17 @@ describe('components | FilterByBookingStatus', () => {
   })
 
   it('should not display status filters', () => {
-    // when
     renderFilterByBookingStatus(props)
 
-    // then
     expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
   })
 
   describe('on focus on the filter icon', () => {
     it('should display a red filter icon', async () => {
-      // given
       renderFilterByBookingStatus(props)
 
-      // when
       await userEvent.click(screen.getByRole('button'))
 
-      // then
       const filterIcon = screen.getByRole('img')
       expect(filterIcon).toHaveAttribute(
         'class',
@@ -113,14 +106,12 @@ describe('components | FilterByBookingStatus', () => {
       expect(filterIcon).toHaveAttribute('aria-label', 'Filtrer par statut')
     })
 
-    it('should show filters with all available status in data', async () => {
-      // given
+    it('should show filters with all available statuses', async () => {
       renderFilterByBookingStatus(props)
       await userEvent.click(screen.getByRole('img'))
 
-      // then
       const checkbox = screen.getAllByRole('checkbox')
-      expect(checkbox).toHaveLength(2)
+      expect(checkbox).toHaveLength(6)
       expect(checkbox[0]).toHaveAttribute('checked')
       expect(checkbox[1]).toHaveAttribute('checked')
       expect(screen.getByText('Réservée')).toBeInTheDocument()
@@ -128,14 +119,11 @@ describe('components | FilterByBookingStatus', () => {
     })
 
     it('should add value to filters when unchecking on a checkbox', async () => {
-      // given
       renderFilterByBookingStatus(props)
       await userEvent.click(screen.getByRole('img'))
 
-      // when
-      await userEvent.click(screen.getAllByRole('checkbox')[1])
+      await userEvent.click(screen.getByLabelText('Validée'))
 
-      // then
       expect(props.updateGlobalFilters).toHaveBeenCalledWith({
         bookingStatus: ['validated'],
       })
@@ -146,28 +134,21 @@ describe('components | FilterByBookingStatus', () => {
       renderFilterByBookingStatus(props)
       await userEvent.click(screen.getByRole('img'))
 
-      // when
-      await userEvent.click(screen.getAllByRole('checkbox')[1])
+      await userEvent.click(screen.getByLabelText('Validée'))
 
-      // then
       expect(props.updateGlobalFilters).toHaveBeenCalledWith({
         bookingStatus: [],
       })
     })
 
     it('should add value to already filtered booking status when clicking on a checkbox', async () => {
-      // given
+      props.bookingStatuses = ['validated']
       renderFilterByBookingStatus(props)
       await userEvent.click(screen.getByRole('img'))
 
-      const validatedStatusCheckbox = screen.getAllByRole('checkbox')[1]
-      await userEvent.click(validatedStatusCheckbox)
-
-      // when
-      const bookedStatusCheckbox = screen.getAllByRole('checkbox')[0]
+      const bookedStatusCheckbox = screen.getByLabelText('Réservée')
       await userEvent.click(bookedStatusCheckbox)
 
-      // then
       expect(props.updateGlobalFilters).toHaveBeenCalledWith({
         bookingStatus: ['validated', 'booked'],
       })
