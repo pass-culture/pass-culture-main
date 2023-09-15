@@ -279,6 +279,24 @@ def _email_validation_resends_key(user: models.User) -> str:
     return f"email_validation_resends_user_{user.id}"
 
 
+def get_remaining_email_validation_resends(user: models.User) -> int:
+    email_validation_resends_count = app.redis_client.get(_email_validation_resends_key(user))  # type: ignore [attr-defined]
+
+    if email_validation_resends_count:
+        return max(settings.MAX_EMAIL_VALIDATION_RESENDS - int(email_validation_resends_count), 0)
+
+    return settings.MAX_EMAIL_VALIDATION_RESENDS
+
+
+def get_email_validation_resends_limitation_expiration_time(user: models.User) -> datetime.datetime | None:
+    ttl = app.redis_client.ttl(_email_validation_resends_key(user))  # type: ignore [attr-defined]
+
+    if ttl > 0:
+        return datetime.datetime.utcnow() + datetime.timedelta(seconds=ttl)
+
+    return None
+
+
 def check_email_validation_resends_count(user: models.User) -> None:
     """
     Check if the user has reached the maximum number of email validation resends.

@@ -262,6 +262,14 @@ class ResendEmailValidationRequest(BaseModel):
     email: str
 
 
+class EmailValidationRemainingResendsResponse(BaseModel):
+    remainingResends: int
+    counterResetDatetime: datetime.datetime | None
+
+    class Config:
+        json_encoders = {datetime.datetime: format_into_utc_date}
+
+
 class ValidatePhoneNumberRequest(BaseModel):
     code: str
 
