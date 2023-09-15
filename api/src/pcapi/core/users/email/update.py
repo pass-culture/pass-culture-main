@@ -31,11 +31,6 @@ class EmailChangeAction(enum.Enum):
     VALIDATION = "changement-email/validation"
 
 
-class TokenType(enum.Enum):
-    CONFIRMATION = "confirmation"
-    VALIDATION = "validation"
-
-
 def _build_link_for_email_change_action(
     action: EmailChangeAction, new_email: str, expiration_date: datetime, token: str
 ) -> str:
