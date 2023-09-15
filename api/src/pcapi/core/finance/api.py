@@ -2507,7 +2507,11 @@ def create_deposit(
 
 
 def _can_be_recredited(user: users_models.User) -> bool:
-    return _has_celebrated_birthday_since_registration(user) and not _has_been_recredited(user)
+    return (
+        user.age in conf.RECREDIT_TYPE_AGE_MAPPING
+        and _has_celebrated_birthday_since_registration(user)
+        and not _has_been_recredited(user)
+    )
 
 
 def _has_celebrated_birthday_since_registration(user: users_models.User) -> bool:
@@ -2524,13 +2528,16 @@ def _has_celebrated_birthday_since_registration(user: users_models.User) -> bool
 
 
 def _has_been_recredited(user: users_models.User) -> bool:
+    if user.age is None:  # helps mypy to use age as index for RECREDIT_TYPE_AGE_MAPPING
+        logger.error("Trying to check recredit for user that has no age", extra={"user_id": user.id})
+        return False
     if user.deposit is None:
         return False
     if len(user.deposit.recredits) == 0:
         return False
 
     sorted_recredits = sorted(user.deposit.recredits, key=lambda recredit: recredit.dateCreated)
-    return sorted_recredits[-1].recreditType == conf.RECREDIT_TYPE_AGE_MAPPING[user.age]  # type: ignore [index]
+    return sorted_recredits[-1].recreditType == conf.RECREDIT_TYPE_AGE_MAPPING[user.age]
 
 
 def recredit_underage_users() -> None:
