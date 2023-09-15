@@ -8,7 +8,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 import { BaseInput } from 'ui-kit/form/shared'
 
-import { BookingsFilters } from '../../../types'
+import { BookingsFilters } from '../../types'
 import { EMPTY_FILTER_VALUE } from '../_constants'
 
 import {
