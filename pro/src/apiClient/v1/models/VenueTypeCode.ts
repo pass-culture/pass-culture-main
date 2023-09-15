@@ -14,7 +14,7 @@ export enum VenueTypeCode {
   MAGASIN_ARTS_CR_ATIFS = 'Magasin arts créatifs',
   CENTRE_CULTUREL = 'Centre culturel',
   OFFRE_NUM_RIQUE = 'Offre numérique',
-  MAGASINS_DE_DISTRIBUTION_DE_PRODUITS_CULTURELS = 'Magasins de distribution de produits culturels',
+  MAGASIN_DE_DISTRIBUTION_DE_PRODUITS_CULTURELS = 'Magasin de distribution de produits culturels',
   FESTIVAL = 'Festival',
   JEUX_JEUX_VID_OS = 'Jeux / Jeux vidéos',
   BIBLIOTH_QUE_OU_M_DIATH_QUE = 'Bibliothèque ou médiathèque',

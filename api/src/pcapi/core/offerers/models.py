@@ -107,7 +107,7 @@ class VenueTypeCode(enum.Enum):
     CREATIVE_ARTS_STORE = "Magasin arts créatifs"
     CULTURAL_CENTRE = "Centre culturel"
     DIGITAL = "Offre numérique"
-    DISTRIBUTION_STORE = "Magasins de distribution de produits culturels"
+    DISTRIBUTION_STORE = "Magasin de distribution de produits culturels"
     FESTIVAL = "Festival"
     GAMES = "Jeux / Jeux vidéos"
     LIBRARY = "Bibliothèque ou médiathèque"
