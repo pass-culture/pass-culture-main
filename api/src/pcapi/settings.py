@@ -216,6 +216,10 @@ CHARLIE_CANCEL_BOOKING_URL = os.environ.get(
     "CHARLIE_CANCEL_BOOKING_URL", "http://mock-api-billeterie.mock-api-billeterie.svc.cluster.local:5003/tickets/cancel"
 )
 
+CHARLIE_NOTIFICATION_EXTERNAL_URL = os.environ.get(
+    "CHARLIE_NOTIFICATION_EXTERNAL_URL", "http://mock-api-billeterie.mock-api-billeterie.svc.cluster.local:5003/notify"
+)
+
 # UBBLE
 UBBLE_API_URL = os.environ.get("UBBLE_API_URL", "https://api.ubble.ai")
 UBBLE_CLIENT_ID = secrets_utils.get("UBBLE_CLIENT_ID", "")
