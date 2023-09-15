@@ -1,6 +1,5 @@
-import React, { Fragment, useEffect, useMemo, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import type { Column } from 'react-table'
 
 import {
   BookingRecapResponseModel,
@@ -8,21 +7,19 @@ import {
 } from 'apiClient/v1'
 import { Audience } from 'core/shared'
 
+import { CollectiveBookingsTable } from './BookingsTable/CollectiveBookingsTable'
+import { IndividualBookingsTable } from './BookingsTable/IndividualBookingsTable'
 import {
-  FilterByOmniSearch,
-  Header,
-  NoFilteredBookings,
+  EMPTY_FILTER_VALUE,
   ALL_BOOKING_STATUS,
   DEFAULT_OMNISEARCH_CRITERIA,
-  EMPTY_FILTER_VALUE,
-  TableWrapper,
-} from './components'
-import { bookingIdOmnisearchFilter } from './components/Filters/FilterByOmniSearch/constants'
-import { NB_BOOKINGS_PER_PAGE } from './constants'
+  FilterByOmniSearch,
+} from './Filters'
+import { bookingIdOmnisearchFilter } from './Filters/FilterByOmniSearch/constants'
+import Header from './Header'
+import NoFilteredBookings from './NoFilteredBookings'
 import { BookingsFilters } from './types'
-import { filterBookingsRecap, getColumnsByAudience } from './utils'
-
-const FIRST_PAGE_INDEX = 0
+import { filterBookingsRecap } from './utils/filterBookingsRecap'
 
 interface BookingsRecapTableProps<
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
@@ -48,7 +45,6 @@ const BookingsRecapTable = <
   resetBookings,
 }: BookingsRecapTableProps<T>) => {
   const [filteredBookings, setFilteredBookings] = useState(bookingsRecap)
-  const [currentPage, setCurrentPage] = useState(FIRST_PAGE_INDEX)
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
   const [defaultBookingId, setDefaultBookingId] = useState(
@@ -75,10 +71,6 @@ const BookingsRecapTable = <
     applyFilters()
   }, [bookingsRecap])
 
-  const updateCurrentPage = (currentPage: number) => {
-    setCurrentPage(currentPage)
-  }
-
   const updateGlobalFilters = (updatedFilters: Partial<BookingsFilters>) => {
     setFilters(filters => {
       const newFilters = { ...filters, ...updatedFilters }
@@ -94,7 +86,6 @@ const BookingsRecapTable = <
       filtersToApply
     )
     setFilteredBookings(bookingsRecapFiltered)
-    setCurrentPage(FIRST_PAGE_INDEX)
   }
 
   const resetAllFilters = () => {
@@ -138,19 +129,6 @@ const BookingsRecapTable = <
 
   const nbBookings = filteredBookings.length
 
-  const columns: (Column<T> & {
-    className?: string
-  })[] = useMemo(
-    () =>
-      getColumnsByAudience(
-        filters.bookingStatus,
-        bookingsRecap,
-        updateGlobalFilters,
-        audience
-      ),
-    []
-  )
-
   return (
     <div>
       <div className="filters-wrapper">
@@ -162,6 +140,7 @@ const BookingsRecapTable = <
           audience={audience}
         />
       </div>
+
       {nbBookings > 0 ? (
         <Fragment>
           <Header
@@ -170,17 +149,22 @@ const BookingsRecapTable = <
             queryBookingId={defaultBookingId}
             resetBookings={resetBookings}
           />
-          <TableWrapper
-            columns={columns}
-            currentPage={currentPage}
-            data={filteredBookings}
-            nbBookings={nbBookings}
-            nbBookingsPerPage={NB_BOOKINGS_PER_PAGE}
-            updateCurrentPage={updateCurrentPage}
-            audience={audience}
-            reloadBookings={reloadBookings}
-            bookingId={defaultBookingId}
-          />
+
+          {audience === Audience.INDIVIDUAL ? (
+            <IndividualBookingsTable
+              bookings={filteredBookings as BookingRecapResponseModel[]}
+              bookingStatuses={filters.bookingStatus}
+              updateGlobalFilters={updateGlobalFilters}
+            />
+          ) : (
+            <CollectiveBookingsTable
+              bookings={filteredBookings as CollectiveBookingResponseModel[]}
+              bookingStatuses={filters.bookingStatus}
+              updateGlobalFilters={updateGlobalFilters}
+              reloadBookings={reloadBookings}
+              defaultOpenedBookingId={defaultBookingId}
+            />
+          )}
         </Fragment>
       ) : (
         <NoFilteredBookings resetFilters={resetAllFilters} />
