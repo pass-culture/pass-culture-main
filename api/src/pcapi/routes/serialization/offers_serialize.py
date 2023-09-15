@@ -8,12 +8,10 @@ from pydantic.v1 import EmailStr
 from pydantic.v1 import Field
 from pydantic.v1 import HttpUrl
 from pydantic.v1 import constr
-from pydantic.v1 import root_validator
 from pydantic.v1 import validator
 from pydantic.v1.utils import GetterDict
 
 from pcapi.core.categories.subcategories import SubcategoryIdEnum
-from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.serialize import CollectiveOfferType
@@ -23,7 +21,6 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base as base_serializers
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
-from pcapi.validation.routes.offers import check_offer_ean_is_valid
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 
 
@@ -95,12 +92,6 @@ class PostOfferBodyModel(BaseModel):
     def validate_name(cls, name: str, values: dict) -> str:
         check_offer_name_length_is_valid(name)
         return name
-
-    @root_validator()
-    def validate_ean(cls, values: dict) -> dict:
-        if offers_api.should_retrieve_book_from_ean(values.get("subcategory_id", "")):
-            check_offer_ean_is_valid(values.get("extra_data", {}).get("ean"))
-        return values
 
     @validator("withdrawal_type")
     def validate_withdrawal_type(cls, value: offers_models.WithdrawalTypeEnum) -> offers_models.WithdrawalTypeEnum:

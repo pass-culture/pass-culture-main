@@ -169,20 +169,17 @@ def create_offer(
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
     validation.check_is_duo_compliance(is_duo, subcategory)
 
-    if should_retrieve_book_from_ean(subcategory.id):
-        product = _load_product_by_ean(formatted_extra_data.get("ean") if formatted_extra_data else None)
-        is_national = bool(is_national) if is_national is not None else product.isNational
-    else:
-        is_national = True if url else bool(is_national)
-        product = models.Product(
-            name=name,
-            description=description,
-            url=url,
-            durationMinutes=duration_minutes,
-            isNational=is_national,
-            owningOfferer=venue.managingOfferer,
-            subcategoryId=subcategory_id,
-        )
+    is_national = True if url else bool(is_national)
+
+    product = models.Product(
+        name=name,
+        description=description,
+        url=url,
+        durationMinutes=duration_minutes,
+        isNational=is_national,
+        owningOfferer=venue.managingOfferer,
+        subcategoryId=subcategory_id,
+    )
 
     offer = models.Offer(
         ageMin=product.ageMin,
@@ -224,13 +221,6 @@ def create_offer(
     update_external_pro(venue.bookingEmail)
 
     return offer
-
-
-def should_retrieve_book_from_ean(subcategory_id: str) -> bool:
-    return (
-        subcategory_id == subcategories.LIVRE_PAPIER.id
-        and FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION.is_active()  # TODO: rename feature flag when working on the feature
-    )
 
 
 def update_offer(
