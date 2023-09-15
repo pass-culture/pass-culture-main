@@ -390,7 +390,7 @@ class WithdrawalTypeEnum(enum.Enum):
 class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, AccessibilityMixin):
     __tablename__ = "offer"
 
-    MAX_STOCKS_PER_OFFER = 10_000
+    MAX_STOCKS_PER_OFFER = 2_500
 
     ageMin = sa.Column(sa.Integer, nullable=True)
     ageMax = sa.Column(sa.Integer, nullable=True)
