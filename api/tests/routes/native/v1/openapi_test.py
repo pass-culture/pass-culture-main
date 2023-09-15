@@ -602,6 +602,20 @@ def test_public_api(client):
                     "title": "EmailUpdateStatus",
                     "type": "object",
                 },
+                "EmailValidationRemainingResendsResponse": {
+                    "properties": {
+                        "counterResetDatetime": {
+                            "format": "date-time",
+                            "nullable": True,
+                            "title": "Counterresetdatetime",
+                            "type": "string",
+                        },
+                        "remainingResends": {"title": "Remainingresends", "type": "integer"},
+                    },
+                    "required": ["remainingResends"],
+                    "title": "EmailValidationRemainingResendsResponse",
+                    "type": "object",
+                },
                 "ExpenseDomain": {
                     "description": "An enumeration.",
                     "enum": ["all", "digital", "physical"],
@@ -2487,6 +2501,40 @@ def test_public_api(client):
                     },
                     "security": [{"JWTAuth": []}],
                     "summary": "get_cultural_survey_questions <GET>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/email_validation_remaining_resends/{email}": {
+                "get": {
+                    "description": "",
+                    "operationId": "get__native_v1_email_validation_remaining_resends_{email}",
+                    "parameters": [
+                        {
+                            "description": "",
+                            "in": "path",
+                            "name": "email",
+                            "required": True,
+                            "schema": {"type": "string"},
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/EmailValidationRemainingResendsResponse"}
+                                }
+                            },
+                            "description": "OK",
+                        },
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "summary": "email_validation_remaining_resends <GET>",
                     "tags": [],
                 }
             },
