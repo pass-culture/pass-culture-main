@@ -760,6 +760,7 @@ class CreateOfferTest:
                 name="A pretty good offer",
                 subcategory_id=subcategories.CONCERT.id,
                 booking_contact="booking@conta.ct",
+                withdrawal_type=models.WithdrawalTypeEnum.NO_TICKET,
                 audio_disability_compliant=True,
                 mental_disability_compliant=True,
                 motor_disability_compliant=True,
