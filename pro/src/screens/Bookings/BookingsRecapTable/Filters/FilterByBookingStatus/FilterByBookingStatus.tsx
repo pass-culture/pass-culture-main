@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
+import React, { ChangeEvent, useRef, useState } from 'react'
 
 import {
   BookingRecapResponseModel,
@@ -13,27 +13,21 @@ import fullSortIcon from 'icons/full-sort.svg'
 import { BaseCheckbox } from 'ui-kit/form/shared'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import { BookingsFilters } from '../../../types'
+import { BookingsFilters } from '../../types'
 import {
-  getBookingStatusDisplayInformations,
-  getCollectiveBookingStatusDisplayInformations,
-} from '../../../utils/bookingStatusConverter'
+  BOOKING_STATUS_DISPLAY_INFORMATIONS,
+  COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS,
+} from '../../utils/bookingStatusConverter'
 
-const getAvailableBookingStatuses = <
-  T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
->(
-  audience: Audience,
-  bookingsRecap: T[]
-) => {
-  const titleFormatter =
+const getAvailableBookingStatuses = (audience: Audience) => {
+  const statuses =
     audience === Audience.INDIVIDUAL
-      ? getBookingStatusDisplayInformations
-      : getCollectiveBookingStatusDisplayInformations
-  const presentBookingStatues = Array.from(
-    new Set(bookingsRecap.map(bookingRecap => bookingRecap.bookingStatus))
-  ).map(bookingStatus => ({
-    title: titleFormatter(bookingStatus)?.status ?? '',
-    value: bookingStatus,
+      ? BOOKING_STATUS_DISPLAY_INFORMATIONS
+      : COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS
+
+  const statusOptions = statuses.map(bookingStatus => ({
+    title: bookingStatus?.status ?? '',
+    value: bookingStatus.id,
   }))
 
   const byStatusTitle = (
@@ -45,7 +39,7 @@ const getAvailableBookingStatuses = <
     return titleA < titleB ? -1 : titleA > titleB ? 1 : 0
   }
 
-  return presentBookingStatues.sort(byStatusTitle)
+  return statusOptions.sort(byStatusTitle)
 }
 
 export interface FilterByBookingStatusProps<
@@ -61,52 +55,42 @@ const FilterByBookingStatus = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >({
   bookingStatuses,
-  bookingsRecap,
   updateGlobalFilters,
   audience,
 }: FilterByBookingStatusProps<T>) => {
-  const [bookingStatusFilters, setBookingStatusFilters] =
-    useState(bookingStatuses)
   const [isToolTipVisible, setIsToolTipVisible] = useState(false)
   const containerRef = useRef<HTMLDivElement | null>(null)
   const { logEvent } = useAnalytics()
 
-  function showFilter() {
+  const showFilter = () => {
     setIsToolTipVisible(true)
     logEvent?.(Events.CLICKED_SHOW_STATUS_FILTER, {
       from: location.pathname,
     })
   }
 
-  function hideFilters() {
+  const hideFilters = () => {
     setIsToolTipVisible(false)
   }
 
   useOnClickOrFocusOutside(containerRef, hideFilters)
 
-  function handleCheckboxChange(event: ChangeEvent<HTMLInputElement>) {
+  const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     const statusId = event.target.name
     const isSelected = event.target.checked
 
     if (!isSelected) {
-      setBookingStatusFilters(previousFilters => [...previousFilters, statusId])
+      updateGlobalFilters({
+        bookingStatus: [...bookingStatuses, statusId],
+      })
     } else {
-      setBookingStatusFilters(previousFilters =>
-        previousFilters.filter(el => el !== statusId)
-      )
+      updateGlobalFilters({
+        bookingStatus: bookingStatuses.filter(el => el !== statusId),
+      })
     }
   }
 
-  useEffect(() => {
-    updateGlobalFilters({
-      bookingStatus: bookingStatusFilters,
-    })
-  }, [bookingStatusFilters, updateGlobalFilters])
-
-  const filteredBookingStatuses = getAvailableBookingStatuses(
-    audience,
-    bookingsRecap
-  )
+  const bookingStatusOptions = getAvailableBookingStatuses(audience)
 
   return (
     <div ref={containerRef}>
@@ -123,14 +107,15 @@ const FilterByBookingStatus = <
             src={fullSortIcon}
             className={cn(
               'status-icon',
-              (bookingStatusFilters.length > 0 || isToolTipVisible) && 'active'
+              (bookingStatuses.length > 0 || isToolTipVisible) && 'active'
             )}
           />
-          {bookingStatusFilters.length > 0 && (
+          {bookingStatuses.length > 0 && (
             <span className="status-badge-icon"></span>
           )}
         </span>
       </button>
+
       <span className="bs-filter">
         {isToolTipVisible && (
           <div className="bs-filter-tooltip">
@@ -138,10 +123,11 @@ const FilterByBookingStatus = <
               <legend className="bs-filter-label">
                 Afficher les réservations
               </legend>
-              {filteredBookingStatuses.map(bookingStatus => (
+
+              {bookingStatusOptions.map(bookingStatus => (
                 <BaseCheckbox
                   key={bookingStatus.value}
-                  checked={!bookingStatusFilters.includes(bookingStatus.value)}
+                  checked={!bookingStatuses.includes(bookingStatus.value)}
                   id={`bs-${bookingStatus.value}`}
                   name={bookingStatus.value}
                   onChange={handleCheckboxChange}
