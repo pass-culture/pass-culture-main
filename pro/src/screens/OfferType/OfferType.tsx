@@ -50,6 +50,7 @@ const OfferType = (): JSX.Element => {
     if (values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         offerType: values.individualOfferSubtype,
+        subcategoryId: values.individualOfferSubcategory,
         to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         from: OFFER_FORM_HOMEPAGE,
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
