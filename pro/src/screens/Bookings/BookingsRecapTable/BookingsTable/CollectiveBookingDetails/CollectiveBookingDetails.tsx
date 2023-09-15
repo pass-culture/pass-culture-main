@@ -101,6 +101,7 @@ const CollectiveBookingDetails = ({
           </div>
         </div>
       </div>
+
       <CollectiveActionButtons
         bookingRecap={bookingRecap}
         reloadBookings={reloadBookings}
