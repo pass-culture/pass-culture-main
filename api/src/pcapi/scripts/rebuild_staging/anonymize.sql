@@ -104,6 +104,12 @@ SET
     "cancelExternalUrl" = 'http://mock-api-billeterie.mock-api-billeterie.svc.cluster.local:5003/tickets/cancel'
 WHERE "bookingExternalUrl" IS NOT NULL and "cancelExternalUrl" IS NOT NULL;
 
+UPDATE provider
+SET 
+    "notificationExternalUrl" = 'http://mock-api-billeterie.mock-api-billeterie.svc.cluster.local:5003/notify'
+WHERE "notificationExternalUrl" IS NOT NULL;
+
+
 UPDATE boost_cinema_details
 SET
   password = '',
