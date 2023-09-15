@@ -96,7 +96,7 @@ export const IndividualBookingsTable = ({
       <table className={styles['bookings-table']}>
         <thead className={styles['bookings-head']}>
           <tr>
-            <th className={styles['column-offer-name']}>
+            <th scope="col" className={styles['column-offer-name']}>
               <span>Nom de l’offre</span>
 
               <SortArrow
@@ -114,9 +114,9 @@ export const IndividualBookingsTable = ({
               />
             </th>
 
-            <th className={styles['column-booking-duo']}></th>
+            <th scope="col" className={styles['column-booking-duo']}></th>
 
-            <th className={styles['column-beneficiary']}>
+            <th scope="col" className={styles['column-beneficiary']}>
               <span>Bénéficiaire</span>
 
               <SortArrow
@@ -134,7 +134,7 @@ export const IndividualBookingsTable = ({
               />
             </th>
 
-            <th className={styles['column-booking-date']}>
+            <th scope="col" className={styles['column-booking-date']}>
               <span>Réservation</span>
 
               <SortArrow
@@ -152,9 +152,11 @@ export const IndividualBookingsTable = ({
               />
             </th>
 
-            <th className={styles['column-booking-token']}>Contremarque</th>
+            <th scope="col" className={styles['column-booking-token']}>
+              Contremarque
+            </th>
 
-            <th className={styles['column-booking-status']}>
+            <th scope="col" className={styles['column-booking-status']}>
               <FilterByBookingStatus
                 bookingStatuses={bookingStatuses}
                 bookingsRecap={bookings}
