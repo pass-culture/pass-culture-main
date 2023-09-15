@@ -1,6 +1,5 @@
 import cn from 'classnames'
 import React from 'react'
-import { Row } from 'react-table'
 
 import {
   BookingRecapResponseModel,
@@ -14,24 +13,22 @@ import {
 } from '../../utils/bookingStatusConverter'
 
 import styles from './BookingStatusCell.module.scss'
-import BookingStatusCellHistory from './BookingStatusCellHistory'
+import { BookingStatusCellHistory } from './BookingStatusCellHistory'
 
 export interface BookingStatusCellProps {
-  bookingRecapInfo:
-    | Row<BookingRecapResponseModel>
-    | Row<CollectiveBookingResponseModel>
+  booking: BookingRecapResponseModel | CollectiveBookingResponseModel
   isCollectiveStatus: boolean
 }
 
-const BookingStatusCell = ({
-  bookingRecapInfo,
+export const BookingStatusCell = ({
+  booking,
   isCollectiveStatus,
 }: BookingStatusCellProps) => {
   if (isCollectiveStatus) {
-    const lastBookingStatus =
-      bookingRecapInfo.original.bookingStatusHistory.slice(-1)[0].status
+    const lastBookingStatus = booking.bookingStatusHistory.slice(-1)[0].status
     const bookingDisplayInfo =
       getCollectiveBookingStatusDisplayInformations(lastBookingStatus)
+
     if (!bookingDisplayInfo) {
       return null
     }
@@ -55,12 +52,12 @@ const BookingStatusCell = ({
   }
 
   const bookingDisplayInfo = getBookingStatusDisplayInformations(
-    bookingRecapInfo.original.bookingStatus
+    booking.bookingStatus
   )
-  const offerName = bookingRecapInfo.original.stock.offerName
+  const offerName = booking.stock.offerName
 
   const statusName = bookingDisplayInfo?.status.toLowerCase()
-  const amount = computeBookingAmount(bookingRecapInfo.original.bookingAmount)
+  const amount = computeBookingAmount(booking.bookingAmount)
   function computeBookingAmount(amount: number) {
     const FREE_AMOUNT = 'Gratuit'
     const AMOUNT_SUFFIX = '\u00a0€'
@@ -91,11 +88,9 @@ const BookingStatusCell = ({
         </div>
         <div className={styles['bs-history-title']}>Historique</div>
         <BookingStatusCellHistory
-          bookingStatusHistory={bookingRecapInfo.original.bookingStatusHistory}
+          bookingStatusHistory={booking.bookingStatusHistory}
         />
       </div>
     </div>
   )
 }
-
-export default BookingStatusCell

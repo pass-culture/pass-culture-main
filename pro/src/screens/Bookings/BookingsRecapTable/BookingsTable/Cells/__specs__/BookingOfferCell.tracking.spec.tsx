@@ -1,15 +1,13 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Row } from 'react-table'
 
-import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { collectiveBookingRecapFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import BookingOfferCell, { BookingOfferCellProps } from '../BookingOfferCell'
+import { BookingOfferCell, BookingOfferCellProps } from '../BookingOfferCell'
 
 const mockLogEvent = vi.fn()
 
@@ -24,20 +22,17 @@ describe('BookingOfferCell', () => {
       logEvent: mockLogEvent,
       setLogEvent: null,
     }))
-    const props = {
-      offer: {
-        offerId: 1,
-        offerIdentifier: 'A1',
-        offerName: 'Guitare acoustique',
-        type: 'thing',
-        venueDepartmentCode: '93',
-        offerIsEducational: false,
-        eventBeginningDatetime: new Date().toISOString(),
-        numberOfTickets: 1,
-      },
-      bookingRecapInfo: {
-        original: collectiveBookingRecapFactory(),
-      } as Row<CollectiveBookingResponseModel>,
+    const props: BookingOfferCellProps = {
+      booking: collectiveBookingRecapFactory({
+        stock: {
+          offerId: 1,
+          offerIdentifier: 'A1',
+          offerName: 'Guitare acoustique',
+          offerIsEducational: false,
+          eventBeginningDatetime: new Date().toISOString(),
+          numberOfTickets: 1,
+        },
+      }),
       isCollective: false,
     }
 
