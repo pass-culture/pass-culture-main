@@ -88,9 +88,11 @@ export const CollectiveBookingsTable = ({
       <table className={styles['bookings-table']}>
         <thead className={styles['bookings-head']}>
           <tr>
-            <th className={styles['column-booking-id']}>Réservation</th>
+            <th scope="col" className={styles['column-booking-id']}>
+              Réservation
+            </th>
 
-            <th className={styles['column-offer-name']}>
+            <th scope="col" className={styles['column-offer-name']}>
               <span>Nom de l’offre</span>
 
               <SortArrow
@@ -108,7 +110,7 @@ export const CollectiveBookingsTable = ({
               />
             </th>
 
-            <th className={styles['column-institution']}>
+            <th scope="col" className={styles['column-institution']}>
               <span>Établissement</span>
 
               <SortArrow
@@ -126,9 +128,11 @@ export const CollectiveBookingsTable = ({
               />
             </th>
 
-            <th className={styles['column-price-and-price']}>Places et prix</th>
+            <th scope="col" className={styles['column-price-and-price']}>
+              Places et prix
+            </th>
 
-            <th className={styles['column-booking-status']}>
+            <th scope="col" className={styles['column-booking-status']}>
               <FilterByBookingStatus
                 bookingStatuses={bookingStatuses}
                 bookingsRecap={bookings}
@@ -137,7 +141,7 @@ export const CollectiveBookingsTable = ({
               />
             </th>
 
-            <th></th>
+            <th scope="col"></th>
           </tr>
         </thead>
 
