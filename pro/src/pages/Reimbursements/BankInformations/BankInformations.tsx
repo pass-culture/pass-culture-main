@@ -1,26 +1,60 @@
 import React, { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOffererBankAccountsResponseModel } from 'apiClient/v1'
 import { useReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
+import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullMoreIcon from 'icons/full-more.svg'
+import strokeMoneyIcon from 'icons/stroke-repayment.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import SelectInput from 'ui-kit/form/Select/SelectInput'
 import Spinner from 'ui-kit/Spinner/Spinner'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
+import { sortByLabel } from 'utils/strings'
 
 import styles from './BankInformations.module.scss'
 
 const BankInformations = (): JSX.Element => {
   const notify = useNotification()
 
-  const { selectedOfferer } = useReimbursementContext()
+  const { offerers, selectedOfferer } = useReimbursementContext()
 
   const [isOffererBankAccountsLoading, setIsOffererBankAccountsLoading] =
     useState<boolean>(false)
   const [, setSelectedOffererBankAccounts] =
     useState<GetOffererBankAccountsResponseModel | null>(null)
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const { structure: offererId } = Object.fromEntries(searchParams)
+
+  if (searchParams.has('structure')) {
+    searchParams.delete('structure')
+    setSearchParams(searchParams)
+  }
+  const [offererOptions, setOffererOptions] = useState<SelectOption[]>([])
+  const selectedOffererId = selectedOfferer?.id.toString() ?? ''
+
+  useEffect(() => {
+    if (offerers && offerers.length > 1) {
+      const initialOffererOptions = sortByLabel(
+        offerers.map(item => ({
+          value: item['id'].toString(),
+          label: item['name'],
+        }))
+      )
+      setOffererOptions([
+        {
+          label: 'Sélectionnez une structure',
+          value: '',
+        },
+        ...initialOffererOptions,
+      ])
+    }
+  }, [offerers])
 
   useEffect(() => {
     const getSelectedOffererBankAccounts = async (
@@ -65,6 +99,7 @@ const BankInformations = (): JSX.Element => {
           link={{
             to: '', // TODO: le liens manque
             isExternal: true,
+            target: '_blank',
           }}
           icon={fullLinkIcon}
           className={styles['information-link-button']}
@@ -84,6 +119,56 @@ const BankInformations = (): JSX.Element => {
       >
         Ajouter un compte bancaire
       </Button>
+      {offerers && offerers.length > 1 && (
+        <div className={styles['select-offerer-section']}>
+          <div className={styles['select-offerer-input']}>
+            <div className={styles['select-offerer-input-label']}>
+              <label htmlFor="selected-offerer">Structure</label>
+            </div>
+            <SelectInput
+              onChange={e => {
+                /*TODO: set correct offerer*/
+                console.log(e)
+                // setSelectedOfferer(e.target.value)
+              }}
+              id="selected-offerer"
+              data-testid="select-input-offerer"
+              name="offererId"
+              options={offererOptions}
+              value={selectedOffererId}
+            />
+          </div>
+          {selectedOffererId === '' && (
+            <div className={styles['no-offerer-selected']}>
+              <SvgIcon
+                src={strokeMoneyIcon}
+                alt={''}
+                width="88"
+                className={styles['repayment-icon']}
+              />
+              <span className={styles['no-offerer-selected-text']}>
+                Sélectionnez une structure pour faire apparaitre tous les
+                comptes bancaires associés
+              </span>
+            </div>
+          )}
+        </div>
+      )}
+      {!(offerers && offerers?.length > 1 && selectedOffererId === '') && (
+        <Button
+          icon={fullMoreIcon}
+          className={styles['add-bank-account-button']}
+          variant={
+            selectedOfferer &&
+            selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts.length >
+              0
+              ? ButtonVariant.SECONDARY
+              : ButtonVariant.PRIMARY
+          }
+        >
+          Ajouter un compte bancaire
+        </Button>
+      )}
     </>
   )
 }
