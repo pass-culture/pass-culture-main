@@ -8,7 +8,7 @@ export interface BeneficiaryCellProps {
   beneficiaryInfos: BookingRecapResponseBeneficiaryModel
 }
 
-const BeneficiaryCell = ({ beneficiaryInfos }: BeneficiaryCellProps) => {
+export const BeneficiaryCell = ({ beneficiaryInfos }: BeneficiaryCellProps) => {
   const beneficiaryName = [
     beneficiaryInfos.lastname,
     beneficiaryInfos.firstname,
@@ -36,5 +36,3 @@ const BeneficiaryCell = ({ beneficiaryInfos }: BeneficiaryCellProps) => {
     </div>
   )
 }
-
-export default BeneficiaryCell

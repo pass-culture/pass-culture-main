@@ -4,11 +4,11 @@ import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 
 import styles from './CellFormatter.module.scss'
 
-const InstitutionCell = ({
-  institution,
-}: {
+interface InstitutionCellProps {
   institution: EducationalInstitutionResponseModel
-}) => {
+}
+
+export const InstitutionCell = ({ institution }: InstitutionCellProps) => {
   const institutionName =
     `${institution.institutionType} ${institution.name}`.trim()
   const institutionAddress =
@@ -26,5 +26,3 @@ const InstitutionCell = ({
     </div>
   )
 }
-
-export default InstitutionCell

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import BeneficiaryCell, { BeneficiaryCellProps } from '../BeneficiaryCell'
+import { BeneficiaryCell, BeneficiaryCellProps } from '../BeneficiaryCell'
 
 const renderBeneficiaryCell = (props: BeneficiaryCellProps) =>
   render(<BeneficiaryCell {...props} />)

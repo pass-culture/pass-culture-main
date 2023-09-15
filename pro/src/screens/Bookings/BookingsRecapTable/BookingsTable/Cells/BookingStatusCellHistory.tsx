@@ -18,7 +18,7 @@ export interface BookingStatusCellHistoryProps {
     | BookingStatusHistoryResponseModel[]
 }
 
-const BookingStatusCellHistory = ({
+export const BookingStatusCellHistory = ({
   bookingStatusHistory,
 }: BookingStatusCellHistoryProps) => {
   const bookingsStatusHistoryItems = bookingStatusHistory.map(item => {
@@ -63,5 +63,3 @@ const BookingStatusCellHistory = ({
     </div>
   )
 }
-
-export default BookingStatusCellHistory

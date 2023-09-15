@@ -3,7 +3,8 @@ import React from 'react'
 
 import { BookingRecapStatus } from 'apiClient/v1'
 
-import BookingStatusCellHistory, {
+import {
+  BookingStatusCellHistory,
   BookingStatusCellHistoryProps,
 } from '../BookingStatusCellHistory'
 
