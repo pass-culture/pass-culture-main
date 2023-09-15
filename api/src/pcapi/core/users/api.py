@@ -126,12 +126,12 @@ def delete_expired_tokens() -> None:
 
 def delete_all_users_tokens(user: models.User) -> None:
     models.Token.query.filter(models.Token.user == user).delete()
+    for token_type in token_utils.TokenType:
+        token_utils.Token.delete(token_type, user.id)
 
 
 def delete_all_users_phone_validation_tokens(user: models.User) -> None:
-    models.Token.query.filter(
-        models.Token.user == user, users_models.Token.type == users_models.TokenType.PHONE_VALIDATION
-    ).delete()
+    token_utils.Token.delete(token_utils.TokenType.PHONE_VALIDATION, user.id)
 
 
 def create_account(
