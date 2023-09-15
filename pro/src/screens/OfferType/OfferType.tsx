@@ -10,7 +10,6 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 import {
-  INDIVIDUAL_OFFER_SUBTYPE,
   COLLECTIVE_OFFER_SUBTYPE,
   OFFER_TYPES,
   OFFER_WIZARD_MODE,
@@ -39,7 +38,7 @@ const OfferType = (): JSX.Element => {
     collectiveOfferSubtype: COLLECTIVE_OFFER_SUBTYPE.COLLECTIVE,
     collectiveOfferSubtypeDuplicate:
       COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.NEW_OFFER,
-    individualOfferSubtype: INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD,
+    individualOfferSubtype: '',
     individualOfferSubcategory: '',
   }
 

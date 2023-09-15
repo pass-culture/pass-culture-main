@@ -10,6 +10,6 @@ export interface OfferTypeFormValues {
   offerType: OFFER_TYPES
   collectiveOfferSubtype: COLLECTIVE_OFFER_SUBTYPE
   collectiveOfferSubtypeDuplicate: COLLECTIVE_OFFER_SUBTYPE_DUPLICATE
-  individualOfferSubtype: INDIVIDUAL_OFFER_SUBTYPE
+  individualOfferSubtype: INDIVIDUAL_OFFER_SUBTYPE | ''
   individualOfferSubcategory: SubcategoryIdEnum | 'OTHER' | ''
 }
