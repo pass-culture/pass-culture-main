@@ -9,10 +9,9 @@ import {
   ReimbursementContext,
   ReimbursementContextValues,
 } from 'context/ReimbursementContext/ReimbursementContext'
+import BankInformations from 'pages/Reimbursements/BankInformations/BankInformations'
 import { defautGetOffererResponseModel } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
-
-import BankInformations from '../BankInformations'
 
 const renderBankInformations = (
   customContext: Partial<ReimbursementContextValues> = {},
@@ -95,6 +94,7 @@ describe('BankInformations page', () => {
     ).toBeInTheDocument()
     expect(screen.getByText('Ajouter un compte bancaire')).toBeInTheDocument()
     expect(screen.getByText('En savoir plus')).toBeInTheDocument()
+    expect(screen.queryByLabelText('Structure')).not.toBeInTheDocument()
   })
 
   it('should render message when the user has a valid bank account and no pending one', async () => {
@@ -195,6 +195,68 @@ describe('BankInformations page', () => {
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(api.getOffererBankAccountsAndAttachedVenues).toHaveBeenCalledTimes(1)
+    expect(screen.getByText('second offerer')).toBeInTheDocument()
+  })
+
+  it('should render with default offerer select and update render on select element', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [
+        {
+          id: 1,
+          name: 'first offerer',
+        },
+        {
+          id: 2,
+          name: 'second offerer',
+        },
+      ],
+    })
+    renderBankInformations(customContext, store)
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    const selectInput = screen.getByTestId('select-input-offerer')
+    expect(
+      screen.getByDisplayValue('Sélectionnez une structure')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Sélectionnez une structure pour faire apparaitre tous les comptes bancaires associés'
+      )
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText('Ajouter un compte bancaire')
+    ).not.toBeInTheDocument()
+
+    await userEvent.selectOptions(selectInput, 'second offerer')
+
+    expect(screen.getByText('second offerer')).toBeInTheDocument()
+
+    expect(
+      screen.queryByText(
+        'Sélectionnez une structure pour faire apparaitre tous les comptes bancaires associés'
+      )
+    ).not.toBeInTheDocument()
+    expect(screen.getByText('Ajouter un compte bancaire')).toBeInTheDocument()
+  })
+
+  it('should render select input with correct offerer if url has offerer parameter', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [
+        {
+          id: 1,
+          name: 'first offerer',
+        },
+        {
+          id: 2,
+          name: 'second offerer',
+        },
+      ],
+    })
+    renderBankInformations(
+      store,
+      '/remboursements/informations-bancaires?struture=2'
+    )
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
     expect(screen.getByText('second offerer')).toBeInTheDocument()
   })
 })

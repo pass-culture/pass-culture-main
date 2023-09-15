@@ -8,10 +8,12 @@ import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullMoreIcon from 'icons/full-more.svg'
+import strokeMoneyIcon from 'icons/stroke-repayment.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 import Spinner from 'ui-kit/Spinner/Spinner'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { sortByLabel } from 'utils/strings'
 
 import styles from './BankInformations.module.scss'
@@ -30,9 +32,7 @@ const BankInformations = (): JSX.Element => {
     useState<GetOffererBankAccountsResponseModel | null>(null)
   const [searchParams, setSearchParams] = useSearchParams()
   const [isOffererLoading, setIsOffererLoading] = useState<boolean>(false)
-
   const { structure: offererId } = Object.fromEntries(searchParams)
-
   const [offererOptions, setOffererOptions] = useState<SelectOption[]>([])
 
   const updateOfferer = async (newOffererId: string) => {
@@ -57,6 +57,8 @@ const BankInformations = (): JSX.Element => {
     searchParams.delete('structure')
     setSearchParams(searchParams)
   }
+
+  const selectedOffererId = selectedOfferer?.id.toString() ?? ''
 
   useEffect(() => {
     if (offerers && offerers.length > 1) {
@@ -150,6 +152,56 @@ const BankInformations = (): JSX.Element => {
       >
         Ajouter un compte bancaire
       </Button>
+      {offerers && offerers.length > 1 && (
+        <div className={styles['select-offerer-section']}>
+          <div className={styles['select-offerer-input']}>
+            <div className={styles['select-offerer-input-label']}>
+              <label htmlFor="selected-offerer">Structure</label>
+            </div>
+            <SelectInput
+              onChange={e => {
+                /*TODO: set correct offerer*/
+                console.log(e)
+                // setSelectedOfferer(e.target.value)
+              }}
+              id="selected-offerer"
+              data-testid="select-input-offerer"
+              name="offererId"
+              options={offererOptions}
+              value={selectedOffererId}
+            />
+          </div>
+          {selectedOffererId === '' && (
+            <div className={styles['no-offerer-selected']}>
+              <SvgIcon
+                src={strokeMoneyIcon}
+                alt={''}
+                width="88"
+                className={styles['repayment-icon']}
+              />
+              <span className={styles['no-offerer-selected-text']}>
+                Sélectionnez une structure pour faire apparaitre tous les
+                comptes bancaires associés
+              </span>
+            </div>
+          )}
+        </div>
+      )}
+      {!(offerers && offerers?.length > 1 && selectedOffererId === '') && (
+        <Button
+          icon={fullMoreIcon}
+          className={styles['add-bank-account-button']}
+          variant={
+            selectedOfferer &&
+            selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts.length >
+              0
+              ? ButtonVariant.SECONDARY
+              : ButtonVariant.PRIMARY
+          }
+        >
+          Ajouter un compte bancaire
+        </Button>
+      )}
     </>
   )
 }
