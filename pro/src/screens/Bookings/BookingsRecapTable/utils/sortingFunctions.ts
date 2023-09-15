@@ -1,5 +1,3 @@
-import { Row } from 'react-table'
-
 import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
@@ -8,20 +6,20 @@ import {
 export const sortByOfferName = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >(
-  firstRow: Row<T>,
-  secondRow: Row<T>
+  bookingA: T,
+  bookingB: T
 ) => {
-  const offerNameOne = firstRow.original.stock.offerName
-  const offerNameTwo = secondRow.original.stock.offerName
+  const offerNameOne = bookingA.stock.offerName
+  const offerNameTwo = bookingB.stock.offerName
   return offerNameOne.localeCompare(offerNameTwo, 'fr', { sensitivity: 'base' })
 }
 
 export const sortByBeneficiaryName = (
-  firstRow: Row<BookingRecapResponseModel>,
-  secondRow: Row<BookingRecapResponseModel>
+  bookingA: BookingRecapResponseModel,
+  bookingB: BookingRecapResponseModel
 ) => {
-  let beneficiaryOne = firstRow.original.beneficiary.lastname
-  let beneficiaryTwo = secondRow.original.beneficiary.lastname
+  let beneficiaryOne = bookingA.beneficiary.lastname
+  let beneficiaryTwo = bookingB.beneficiary.lastname
 
   const lastNamesAreTheSame = Boolean(
     (beneficiaryOne ?? '').localeCompare(beneficiaryTwo ?? '', 'fr', {
@@ -29,8 +27,8 @@ export const sortByBeneficiaryName = (
     }) === 0
   )
   if (lastNamesAreTheSame) {
-    beneficiaryOne = firstRow.original.beneficiary.firstname
-    beneficiaryTwo = secondRow.original.beneficiary.firstname
+    beneficiaryOne = bookingA.beneficiary.firstname
+    beneficiaryTwo = bookingB.beneficiary.firstname
   }
   return (beneficiaryOne ?? '').localeCompare(beneficiaryTwo ?? '', 'fr', {
     sensitivity: 'base',
@@ -38,11 +36,11 @@ export const sortByBeneficiaryName = (
 }
 
 export const sortByInstitutionName = (
-  firstRow: Row<CollectiveBookingResponseModel>,
-  secondRow: Row<CollectiveBookingResponseModel>
+  bookingA: CollectiveBookingResponseModel,
+  bookingB: CollectiveBookingResponseModel
 ) => {
-  const institutionOne = firstRow.original.institution
-  const institutionTwo = secondRow.original.institution
+  const institutionOne = bookingA.institution
+  const institutionTwo = bookingB.institution
   const institutionOneName =
     `${institutionOne.institutionType} ${institutionOne.name}`.trim()
   const institutionTwoName =
@@ -56,11 +54,11 @@ export const sortByInstitutionName = (
 export const sortByBookingDate = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >(
-  firstRow: Row<T>,
-  secondRow: Row<T>
+  bookingA: T,
+  bookingB: T
 ) => {
-  const bookingDateOne = new Date(firstRow.original.bookingDate)
-  const bookingDateTwo = new Date(secondRow.original.bookingDate)
+  const bookingDateOne = new Date(bookingA.bookingDate)
+  const bookingDateTwo = new Date(bookingB.bookingDate)
   if (bookingDateOne > bookingDateTwo) {
     return 1
   } else if (bookingDateOne < bookingDateTwo) {
