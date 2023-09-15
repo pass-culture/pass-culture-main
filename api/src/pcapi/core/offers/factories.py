@@ -57,10 +57,9 @@ class OfferFactory(BaseFactory):
 
     product = factory.SubFactory(ThingProductFactory)
     venue = factory.SubFactory(offerers_factories.VenueFactory)
-    subcategoryId = factory.SelfAttribute("product.subcategoryId")
-    name = factory.SelfAttribute("product.name")
-    description = factory.SelfAttribute("product.description")
-    url = factory.SelfAttribute("product.url")
+    subcategoryId = subcategories.SUPPORT_PHYSIQUE_FILM.id
+    name = factory.Sequence("Product {}".format)
+    description = factory.Sequence("A passionate description of product {}".format)
     audioDisabilityCompliant = False
     mentalDisabilityCompliant = False
     motorDisabilityCompliant = False
@@ -89,15 +88,18 @@ class OfferFactory(BaseFactory):
 
 
 class EventOfferFactory(OfferFactory):
-    product = factory.SubFactory(EventProductFactory)
+    subcategoryId = subcategories.SEANCE_CINE.id
 
 
 class ThingOfferFactory(OfferFactory):
-    product = factory.SubFactory(ThingProductFactory)
+    subcategoryId = subcategories.SUPPORT_PHYSIQUE_FILM.id
 
 
 class DigitalOfferFactory(OfferFactory):
-    product = factory.SubFactory(DigitalProductFactory)
+    subcategoryId = subcategories.VOD.id
+    name = factory.Sequence("Digital product {}".format)
+    url = factory.Sequence("http://example.com/product/{}".format)
+    isNational = True
     venue = factory.SubFactory(offerers_factories.VirtualVenueFactory)
 
 
