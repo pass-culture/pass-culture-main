@@ -500,6 +500,7 @@ describe('screens:OfferIndividual::Informations:edition', () => {
         isDraft: false,
         isEdition: true,
         offerId: offer.id,
+        subcategoryId: 'SCID physical',
         to: 'recapitulatif',
         used: 'StickyButtons',
       }

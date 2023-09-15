@@ -342,6 +342,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
         isDraft: true,
         isEdition: true,
         offerId: offerId,
+        subcategoryId: 'SCID physical',
         to: 'stocks',
         used: 'StickyButtons',
       }
@@ -361,6 +362,7 @@ describe('screens:OfferIndividual::Informations:draft', () => {
         isDraft: true,
         isEdition: true,
         offerId: offerId,
+        subcategoryId: 'SCID physical',
         to: 'informations',
         used: 'DraftButtons',
       }

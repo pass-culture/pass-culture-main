@@ -267,6 +267,7 @@ const Informations = ({
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
         isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
         offerId: receivedOfferId,
+        subcategoryId: formik.values.subcategoryId,
       })
 
       if (isSubmittingDraft) {

@@ -428,6 +428,7 @@ describe('screens:OfferIndividual::Informations::creation', () => {
         isDraft: true,
         isEdition: false,
         offerId: offerId,
+        subcategoryId: 'physical',
         to: 'informations',
         used: 'DraftButtons',
       }
