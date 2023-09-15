@@ -1,3 +1,8 @@
+// stupid troubleshotting: it doesn't work :
+// - if you don't accept firebase cookies
+// - enable the feature
+// - set the parameter in the right firebase project
+
 import { getValue } from '@firebase/remote-config'
 
 import useActiveFeature from './useActiveFeature'

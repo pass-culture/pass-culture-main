@@ -49,7 +49,7 @@ const OfferTypeIndividual = (): JSX.Element | null => {
       }
     }
     loadData()
-  }, [queryVenueId])
+  }, [queryVenueId, isCategorySelectionActive])
 
   const venueType = venue?.venueType
   const venueTypeMostUsedSubcategories =
