@@ -86,7 +86,7 @@ const OfferNameCell = ({
   const shouldShowCollectiveWarning =
     audience === Audience.COLLECTIVE &&
     offer.educationalBooking?.booking_status === OFFER_STATUS_PENDING &&
-    shouldDisplayWarning(offer.stocks)
+    shouldDisplayWarning(offer.stocks[0])
 
   return (
     <td className={styles['title-column']}>
@@ -134,10 +134,10 @@ const OfferNameCell = ({
                 La date limite de réservation par le chef d'établissement est
                 dans{' '}
                 {`${
-                  getRemainingTime(offer.stocks) >= 1
-                    ? pluralize(getRemainingTime(offer.stocks), 'jour')
+                  getRemainingTime(offer.stocks[0]) >= 1
+                    ? pluralize(getRemainingTime(offer.stocks[0]), 'jour')
                     : "moins d'un jour"
-                } (${getDate(offer.stocks)})`}
+                } (${getDate(offer.stocks[0])})`}
               </span>
             </div>
           )}

@@ -5,11 +5,7 @@ import React, { ComponentProps } from 'react'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import { Audience } from 'core/shared'
 import * as useAnalytics from 'hooks/useAnalytics'
-import {
-  DEFAULT_OMNISEARCH_CRITERIA,
-  EMPTY_FILTER_VALUE,
-} from 'screens/Bookings/BookingsRecapTable/components/Filters/_constants'
-import * as bookingDetailsAdapter from 'screens/Bookings/BookingsRecapTable/components/Table/Body/TableRow/adapters/getCollectiveBookingAdapter'
+import * as bookingDetailsAdapter from 'screens/Bookings/BookingsRecapTable/BookingsTable/getCollectiveBookingAdapter'
 import * as filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 import { bookingRecapFactory } from 'utils/apiFactories'
 import {
@@ -19,6 +15,7 @@ import {
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import BookingsRecapTable from '../BookingsRecapTable'
+import { EMPTY_FILTER_VALUE, DEFAULT_OMNISEARCH_CRITERIA } from '../Filters'
 
 const bookingBeneficiaryCustom = {
   beneficiary: {

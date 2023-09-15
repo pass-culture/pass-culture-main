@@ -9,7 +9,7 @@ import { FORMAT_DD_MM_YYYY, FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
 
 import styles from './BookingStatus.module.scss'
 
-const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
+export const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   {
     id: BOOKING_STATUS.VALIDATED,
     status: 'Validée',
@@ -66,7 +66,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   },
 ]
 
-const COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS = [
+export const COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   {
     id: BOOKING_STATUS.VALIDATED,
     status: 'Terminée',
@@ -105,16 +105,14 @@ const COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   },
 ]
 
-export function getBookingStatusDisplayInformations(bookingStatus: string) {
-  return BOOKING_STATUS_DISPLAY_INFORMATIONS.find(
+export const getBookingStatusDisplayInformations = (bookingStatus: string) =>
+  BOOKING_STATUS_DISPLAY_INFORMATIONS.find(
     ({ id }) => bookingStatus.toLowerCase() === id
   )
-}
 
-export function getCollectiveBookingStatusDisplayInformations(
+export const getCollectiveBookingStatusDisplayInformations = (
   bookingStatus: string
-) {
-  return COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS.find(
+) =>
+  COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS.find(
     ({ id }) => bookingStatus.toLowerCase() === id
   )
-}
