@@ -2,6 +2,7 @@ import csv
 import datetime
 from decimal import Decimal
 import io
+import logging
 import pathlib
 from unittest import mock
 import zipfile
@@ -3035,6 +3036,12 @@ class UserRecreditTest:
         with freezegun.freeze_time("2020-05-02"):
             assert api._can_be_recredited(user) is False
 
+    @mock.patch("pcapi.core.finance.api._has_been_recredited")
+    def should_not_check_recredits_on_age_18(self, mock_has_been_recredited):
+        user = users_factories.BeneficiaryFactory(age=18)
+        assert api._can_be_recredited(user) is False
+        assert mock_has_been_recredited.call_count == 0
+
     @pytest.mark.parametrize(
         "user_age,user_recredits,expected_result",
         [
@@ -3083,6 +3090,14 @@ class UserRecreditTest:
                 deposit=user.deposit, recreditType=recredit["type"], dateCreated=recredit["date_created"]
             )
         assert api._has_been_recredited(user) == expected_result
+
+    def test_has_been_recredited_logs_error_if_no_age(self, caplog):
+        user = users_factories.BaseUserFactory(dateOfBirth=None)
+        assert user.age is None
+
+        with caplog.at_level(logging.ERROR):
+            assert api._has_been_recredited(user) is False
+            assert caplog.records[0].extra["user_id"] == user.id
 
     def test_recredit_underage_users(self):
         # This test aims to check all the possible use cases for recredit_underage_users
