@@ -239,6 +239,21 @@ def resend_email_validation(body: serializers.ResendEmailValidationRequest) -> N
         )
 
 
+@blueprint.native_v1.route("/email_validation_remaining_resends/<email>", methods=["GET"])
+@spectree_serialize(api=blueprint.api, response_model=serializers.EmailValidationRemainingResendsResponse)
+def email_validation_remaining_resends(email: str) -> serializers.EmailValidationRemainingResendsResponse | None:
+    user = find_user_by_email(email)
+    if not user:
+        return serializers.EmailValidationRemainingResendsResponse(remainingResends=0, counterResetDatetime=None)
+
+    remaining_resends = api.get_remaining_email_validation_resends(user)
+    expiration_time = api.get_email_validation_resends_limitation_expiration_time(user)
+
+    return serializers.EmailValidationRemainingResendsResponse(
+        remainingResends=remaining_resends, counterResetDatetime=expiration_time
+    )
+
+
 def _log_failure_code(phone_number: str, code: str) -> None:
     logger.warning("Failed to send phone validation code", extra={"number": phone_number, "code": code})
 

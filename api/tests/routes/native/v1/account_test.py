@@ -1289,6 +1289,49 @@ class ResendEmailValidationTest:
         assert response.json["message"] == "Le nombre de tentatives maximal est dépassé."
 
 
+class EmailValidationRemainingResendsTest:
+    def test_email_validation_remaining_resends(
+        self,
+        client,
+    ):
+        user = users_factories.UserFactory(isEmailValidated=False)
+
+        response = client.get(f"/native/v1/email_validation_remaining_resends/{user.email}")
+
+        assert response.status_code == 200
+        assert response.json["remainingResends"] == 3
+        client.post("/native/v1/resend_email_validation", json={"email": user.email})
+        response = client.get(f"/native/v1/email_validation_remaining_resends/{user.email}")
+
+        assert response.status_code == 200
+        assert response.json["remainingResends"] == 2
+
+    @freeze_time("2023-09-15 10:00")
+    def test_email_validation_counter_reset(
+        self,
+        client,
+    ):
+        user = users_factories.UserFactory(isEmailValidated=False)
+
+        response = client.get(f"/native/v1/email_validation_remaining_resends/{user.email}")
+
+        assert response.json["counterResetDatetime"] is None
+
+        client.post("/native/v1/resend_email_validation", json={"email": user.email})
+        response = client.get(f"/native/v1/email_validation_remaining_resends/{user.email}")
+
+        assert response.json["counterResetDatetime"] == "2023-09-16T10:00:00Z"
+
+    def test_email_validation_remaining_resends_with_unknown_email(
+        self,
+        client,
+    ):
+        response = client.get("/native/v1/email_validation_remaining_resends/test@example.com")
+
+        assert response.json["remainingResends"] == 0
+        assert response.json["counterResetDatetime"] is None
+
+
 class ShowEligibleCardTest:
     @pytest.mark.parametrize("age,expected", [(17, False), (18, True), (19, False)])
     def test_against_different_age(self, age, expected):
