@@ -3,7 +3,7 @@ import {
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 
-import { EMPTY_FILTER_VALUE } from '../components/Filters/_constants'
+import { EMPTY_FILTER_VALUE } from '../Filters/_constants'
 import { BookingsFilters } from '../types'
 
 const doesOfferNameMatchFilter = <
@@ -135,7 +135,7 @@ const isBookingCollectiveBooking = (
 ): booking is CollectiveBookingResponseModel =>
   booking.stock.offerIsEducational === true
 
-const filterBookingsRecap = <
+export const filterBookingsRecap = <
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
 >(
   bookingsRecap: T[],

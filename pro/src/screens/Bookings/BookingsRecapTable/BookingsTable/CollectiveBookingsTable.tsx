@@ -1,0 +1,174 @@
+import React, { useEffect } from 'react'
+
+import { CollectiveBookingResponseModel } from 'apiClient/v1'
+import { SortArrow } from 'components/StocksEventList/SortArrow'
+import { Events } from 'core/FirebaseEvents/constants'
+import { Audience } from 'core/shared'
+import useAnalytics from 'hooks/useAnalytics'
+import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
+import { usePagination } from 'hooks/usePagination'
+import { BookingsFilters } from 'screens/Bookings/BookingsRecapTable/types'
+import {
+  sortByBookingDate,
+  sortByInstitutionName,
+  sortByOfferName,
+} from 'screens/Bookings/BookingsRecapTable/utils/sortingFunctions'
+import { Pagination } from 'ui-kit/Pagination'
+
+import { FilterByBookingStatus } from '../Filters'
+
+import styles from './BookingsTable.module.scss'
+import { CollectiveTableRow } from './CollectiveTableRow'
+
+export enum CollectiveBookingsSortingColumn {
+  OFFER_NAME = 'OFFER_NAME',
+  INSTITUTION_NAME = 'INSTITUTION_NAME',
+  BENEFICIARY_NAME = 'BENEFICIARY_NAME',
+  BOOKING_DATE = 'BOOKING_DATE',
+}
+const BOOKINGS_PER_PAGE = 20
+
+const sortBookings = (
+  bookings: CollectiveBookingResponseModel[],
+  currentSortingColumn: CollectiveBookingsSortingColumn | null,
+  sortingMode: SortingMode
+) => {
+  switch (currentSortingColumn) {
+    case CollectiveBookingsSortingColumn.OFFER_NAME:
+      return bookings.sort(
+        (a, b) =>
+          sortByOfferName(a, b) * (sortingMode === SortingMode.ASC ? 1 : -1)
+      )
+
+    case CollectiveBookingsSortingColumn.INSTITUTION_NAME:
+      return bookings.sort(
+        (a, b) =>
+          sortByInstitutionName(a, b) *
+          (sortingMode === SortingMode.ASC ? 1 : -1)
+      )
+    default:
+      return bookings.sort((a, b) => sortByBookingDate(a, b) * -1)
+  }
+}
+
+interface CollectiveBookingsTableProps {
+  bookings: CollectiveBookingResponseModel[]
+  bookingStatuses: string[]
+  updateGlobalFilters: (updatedFilters: Partial<BookingsFilters>) => void
+  reloadBookings: () => void
+  defaultOpenedBookingId: string
+}
+
+export const CollectiveBookingsTable = ({
+  bookings,
+  bookingStatuses,
+  updateGlobalFilters,
+  reloadBookings,
+  defaultOpenedBookingId,
+}: CollectiveBookingsTableProps): JSX.Element => {
+  const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
+    useColumnSorting<CollectiveBookingsSortingColumn>()
+
+  const sortedBookings = sortBookings(
+    bookings,
+    currentSortingColumn,
+    currentSortingMode
+  )
+  const { page, setPage, previousPage, nextPage, pageCount, currentPageItems } =
+    usePagination(sortedBookings, BOOKINGS_PER_PAGE)
+
+  useEffect(() => {
+    setPage(1)
+  }, [bookings, setPage])
+
+  const { logEvent } = useAnalytics()
+
+  return (
+    <div className={styles['bookings-table-wrapper']}>
+      <table className={styles['bookings-table']}>
+        <thead className={styles['bookings-head']}>
+          <tr>
+            <th className={styles['column-booking-id']}>Réservation</th>
+
+            <th className={styles['column-offer-name']}>
+              <span>Nom de l’offre</span>
+
+              <SortArrow
+                onClick={() =>
+                  onColumnHeaderClick(
+                    CollectiveBookingsSortingColumn.OFFER_NAME
+                  )
+                }
+                sortingMode={
+                  currentSortingColumn ===
+                  CollectiveBookingsSortingColumn.OFFER_NAME
+                    ? currentSortingMode
+                    : SortingMode.NONE
+                }
+              />
+            </th>
+
+            <th className={styles['column-institution']}>
+              <span>Établissement</span>
+
+              <SortArrow
+                onClick={() =>
+                  onColumnHeaderClick(
+                    CollectiveBookingsSortingColumn.INSTITUTION_NAME
+                  )
+                }
+                sortingMode={
+                  currentSortingColumn ===
+                  CollectiveBookingsSortingColumn.INSTITUTION_NAME
+                    ? currentSortingMode
+                    : SortingMode.NONE
+                }
+              />
+            </th>
+
+            <th className={styles['column-price-and-price']}>Places et prix</th>
+
+            <th className={styles['column-booking-status']}>
+              <FilterByBookingStatus
+                bookingStatuses={bookingStatuses}
+                bookingsRecap={bookings}
+                updateGlobalFilters={updateGlobalFilters}
+                audience={Audience.COLLECTIVE}
+              />
+            </th>
+
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody className={styles['bookings-body']}>
+          {currentPageItems.map(booking => (
+            <CollectiveTableRow
+              booking={booking}
+              key={booking.bookingId}
+              reloadBookings={reloadBookings}
+              defaultOpenedBookingId={defaultOpenedBookingId}
+            />
+          ))}
+        </tbody>
+      </table>
+
+      <Pagination
+        currentPage={page}
+        pageCount={pageCount}
+        onPreviousPageClick={() => {
+          previousPage()
+          logEvent?.(Events.CLICKED_PAGINATION_PREVIOUS_PAGE, {
+            from: location.pathname,
+          })
+        }}
+        onNextPageClick={() => {
+          nextPage()
+          logEvent?.(Events.CLICKED_PAGINATION_NEXT_PAGE, {
+            from: location.pathname,
+          })
+        }}
+      />
+    </div>
+  )
+}
