@@ -117,11 +117,10 @@ export const OffersComponent = ({
 
   useEffect(() => {
     setQueriesAreLoading(true)
-    if (hits.length != 0 && queryId != hits[0].__queryID) {
-      setQueryId(hits[0].__queryID)
-      if (newAdageFilters && logFiltersOnSearch) {
-        logFiltersOnSearch(nbHits, hits[0].__queryID)
-      }
+    const newQueryId = (hits || [])[0]?.__queryID
+    setQueryId(newQueryId)
+    if (newAdageFilters && logFiltersOnSearch && queryId !== newQueryId) {
+      logFiltersOnSearch(nbHits, newQueryId)
     }
     Promise.all(
       hits.map(async hit => {
@@ -274,13 +273,18 @@ export const Offers = connectInfiniteHits<
       const areEqualBackToTopVisible =
         prevIsBackToTopVisibile === nextIsBackToTopVisibile
       const areEquelNbHits = prevNbHits === nextNbHits
+      const areQueryIdEqual =
+        prevNbHits > 0 &&
+        nextNbHits > 0 &&
+        prevHits[0].__queryID === nextHits[0].__queryID
 
       const arePropsEqual =
         areEqualHits &&
         areEqualHasMore &&
         areEqualDisplayStats &&
         areEqualBackToTopVisible &&
-        areEquelNbHits
+        areEquelNbHits &&
+        areQueryIdEqual
 
       if (arePropsEqual) {
         nextSetIsLoading(false)

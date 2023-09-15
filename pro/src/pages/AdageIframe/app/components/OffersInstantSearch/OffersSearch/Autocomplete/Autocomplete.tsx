@@ -40,6 +40,7 @@ import styles from './Autocomplete.module.scss'
 type AutocompleteProps = SearchBoxProvided & {
   initialQuery: string
   placeholder: string
+  setCurrentSearch: (search: string) => void
 }
 
 export type SuggestionItem = AutocompleteQuerySuggestionsHit & {
@@ -61,6 +62,7 @@ const AutocompleteComponent = ({
   refine,
   initialQuery,
   placeholder,
+  setCurrentSearch,
 }: AutocompleteProps) => {
   const [instantSearchUiState, setInstantSearchUiState] = useState<
     AutocompleteState<SuggestionItem>
@@ -161,6 +163,7 @@ const AutocompleteComponent = ({
         },
         onSubmit: ({ state }) => {
           refine(state.query)
+          setCurrentSearch(state.query)
         },
         placeholder,
         plugins: isRecentSearchEnabled
