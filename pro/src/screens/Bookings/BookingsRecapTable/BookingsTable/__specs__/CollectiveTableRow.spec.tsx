@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
@@ -94,6 +95,8 @@ describe('CollectiveTableRow', () => {
     })
 
     renderCollectiveTableRow(props)
+
+    await userEvent.click(screen.getByText(/Détails/))
 
     expect(await screen.findByText('Chargement en cours')).toBeInTheDocument()
   })

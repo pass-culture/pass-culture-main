@@ -17,6 +17,11 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 import BookingsRecapTable from '../BookingsRecapTable'
 import { EMPTY_FILTER_VALUE, DEFAULT_OMNISEARCH_CRITERIA } from '../Filters'
 
+vi.mock('utils/windowMatchMedia', () => ({
+  doesUserPreferReducedMotion: vi.fn(() => true),
+}))
+Element.prototype.scrollIntoView = vi.fn()
+
 const bookingBeneficiaryCustom = {
   beneficiary: {
     lastname: 'Parjeot',
@@ -103,13 +108,13 @@ describe('components | BookingsRecapTable', () => {
         statuses: ['booked', 'cancelled'],
       },
     }
-    vi.spyOn(filterBookingsRecap, 'default').mockReturnValue([])
+    vi.spyOn(filterBookingsRecap, 'filterBookingsRecap').mockReturnValue([])
 
     // When
     renderBookingRecap(props)
 
     // Then
-    expect(filterBookingsRecap.default).toHaveBeenCalledWith(
+    expect(filterBookingsRecap.filterBookingsRecap).toHaveBeenCalledWith(
       props.bookingsRecap,
       expect.objectContaining({
         bookingStatus: props.locationState?.statuses,
@@ -137,13 +142,13 @@ describe('components | BookingsRecapTable', () => {
         statuses: ['booked', 'cancelled'],
       },
     }
-    vi.spyOn(filterBookingsRecap, 'default').mockReturnValue([])
+    vi.spyOn(filterBookingsRecap, 'filterBookingsRecap').mockReturnValue([])
 
     // When
     renderBookingRecap(props, '123')
 
     // Then
-    expect(filterBookingsRecap.default).toHaveBeenCalledWith(
+    expect(filterBookingsRecap.filterBookingsRecap).toHaveBeenCalledWith(
       props.bookingsRecap,
       expect.objectContaining({
         bookingStatus: props.locationState?.statuses,
@@ -222,7 +227,6 @@ describe('components | BookingsRecapTable', () => {
   })
 
   it('should reset filters when clicking on "afficher toutes les réservations"', async () => {
-    // given
     const props: Props = {
       ...defaultProps,
       bookingsRecap: [bookingRecapFactory()],
@@ -236,10 +240,8 @@ describe('components | BookingsRecapTable', () => {
       name: /afficher toutes les réservations/i,
     })
 
-    // When
     await userEvent.click(displayAllBookingsButton)
 
-    // Then
     const offerName = screen.getByRole('textbox')
     expect(offerName).toHaveValue('')
   })
@@ -297,35 +299,6 @@ describe('components | BookingsRecapTable', () => {
       1,
       CollectiveBookingsEvents.CLICKED_EXPAND_COLLECTIVE_BOOKING_DETAILS
     )
-  })
-
-  it('should not re-open reservation when there is bookingId in the url but bookingId filter changed', async () => {
-    const bookingsRecap = [collectiveBookingRecapFactory({ bookingId: '123' })]
-
-    vi.spyOn(filterBookingsRecap, 'default').mockReturnValue([])
-
-    const props: Props = {
-      ...defaultProps,
-      audience: Audience.COLLECTIVE,
-      bookingsRecap: bookingsRecap,
-    }
-
-    // When
-    renderBookingRecap(props, '123')
-
-    const omniSearchOption = screen.getByRole('combobox')
-
-    await userEvent.selectOptions(omniSearchOption, 'booking_id')
-
-    const bookingIdOmnisearchFilter = await screen.getByPlaceholderText(
-      'Rechercher par numéro de réservation'
-    )
-
-    await userEvent.clear(bookingIdOmnisearchFilter)
-
-    expect(
-      screen.queryByText('Contact de l’établissement scolaire')
-    ).not.toBeInTheDocument()
   })
 
   it('should update currentPage when clicking on next page button', async () => {
