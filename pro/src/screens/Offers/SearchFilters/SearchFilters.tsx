@@ -207,7 +207,6 @@ const SearchFilters = ({
 
         <div className={styles['reset-filters']}>
           <Button
-            type="button"
             icon={fullRefreshIcon}
             disabled={!hasSearchFilters(selectedFilters)}
             onClick={resetFilters}

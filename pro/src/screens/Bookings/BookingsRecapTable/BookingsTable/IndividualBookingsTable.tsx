@@ -27,7 +27,7 @@ import {
   BookingStatusCell,
 } from './Cells'
 
-export enum IndividualBookingsSortingColumn {
+enum IndividualBookingsSortingColumn {
   OFFER_NAME = 'OFFER_NAME',
   BENEFICIARY_NAME = 'BENEFICIARY_NAME',
   BOOKING_DATE = 'BOOKING_DATE',

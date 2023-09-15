@@ -104,30 +104,23 @@ export const CollectiveTableRow = ({
         </td>
       </tr>
 
-      {isExpanded && (
-        <>
-          <tr className={styles['details-container']} ref={detailsRef}>
-            {isLoading ? (
-              <td className={styles['loader']}>
-                <Spinner />
-              </td>
-            ) : (
-              bookingDetails && (
-                <td
-                  className={styles['details-content']}
-                  id={booking.bookingId}
-                >
-                  <CollectiveBookingDetails
-                    bookingDetails={bookingDetails}
-                    bookingRecap={booking}
-                    reloadBookings={reloadBookings}
-                  />
-                </td>
-              )
-            )}
-          </tr>
-        </>
-      )}
+      {isExpanded ? (
+        <tr className={styles['details-container']} ref={detailsRef}>
+          {isLoading || bookingDetails === null ? (
+            <td className={styles['loader']}>
+              <Spinner />
+            </td>
+          ) : (
+            <td className={styles['details-content']} id={booking.bookingId}>
+              <CollectiveBookingDetails
+                bookingDetails={bookingDetails}
+                bookingRecap={booking}
+                reloadBookings={reloadBookings}
+              />
+            </td>
+          )}
+        </tr>
+      ) : null}
     </>
   )
 }

@@ -20,7 +20,7 @@ import { FilterByBookingStatus } from '../Filters'
 import styles from './BookingsTable.module.scss'
 import { CollectiveTableRow } from './CollectiveTableRow'
 
-export enum CollectiveBookingsSortingColumn {
+enum CollectiveBookingsSortingColumn {
   OFFER_NAME = 'OFFER_NAME',
   INSTITUTION_NAME = 'INSTITUTION_NAME',
   BENEFICIARY_NAME = 'BENEFICIARY_NAME',
