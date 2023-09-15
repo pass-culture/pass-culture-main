@@ -4,8 +4,6 @@ export interface BookingTokenCellProps {
   bookingToken?: string | null
 }
 
-const BookingTokenCell = ({ bookingToken }: BookingTokenCellProps) => (
+export const BookingTokenCell = ({ bookingToken }: BookingTokenCellProps) => (
   <span>{bookingToken || '-'}</span>
 )
-
-export default BookingTokenCell

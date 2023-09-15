@@ -13,7 +13,7 @@ export interface BookingDateCellProps {
   bookingDateTimeIsoString: string
 }
 
-const BookingDateCell = ({
+export const BookingDateCell = ({
   bookingDateTimeIsoString,
 }: BookingDateCellProps) => {
   const bookingDate = toDateStrippedOfTimezone(bookingDateTimeIsoString)
@@ -28,5 +28,3 @@ const BookingDateCell = ({
     </div>
   )
 }
-
-export default BookingDateCell

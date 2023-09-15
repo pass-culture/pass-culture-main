@@ -1,13 +1,11 @@
 import { screen } from '@testing-library/react'
 import { add } from 'date-fns'
 import React from 'react'
-import { Row } from 'react-table'
 
-import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { collectiveBookingRecapFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import BookingOfferCell, { BookingOfferCellProps } from '../BookingOfferCell'
+import { BookingOfferCell, BookingOfferCellProps } from '../BookingOfferCell'
 
 const renderOfferCell = (props: BookingOfferCellProps) =>
   renderWithProviders(<BookingOfferCell {...props} />)
@@ -15,21 +13,18 @@ const renderOfferCell = (props: BookingOfferCellProps) =>
 describe('bookings offer cell', () => {
   const offerId = 1
   it('offer name and ean with a link to the offer when stock is a book', () => {
-    const props = {
-      offer: {
-        offerIdentifier: 'A0',
-        offerId: offerId,
-        offerIsbn: '97834567654',
-        offerName: 'La Guitare pour les nuls',
-        type: 'book',
-        venueDepartmentCode: '93',
-        offerIsEducational: false,
-        eventBeginningDatetime: new Date().toISOString(),
-        numberOfTickets: 1,
-      },
-      bookingRecapInfo: {
-        original: collectiveBookingRecapFactory(),
-      } as Row<CollectiveBookingResponseModel>,
+    const props: BookingOfferCellProps = {
+      booking: collectiveBookingRecapFactory({
+        stock: {
+          offerIdentifier: 'A0',
+          offerId: offerId,
+          offerIsbn: '97834567654',
+          offerName: 'La Guitare pour les nuls',
+          offerIsEducational: false,
+          eventBeginningDatetime: new Date().toISOString(),
+          numberOfTickets: 1,
+        },
+      }),
       isCollective: false,
     }
 
@@ -44,20 +39,18 @@ describe('bookings offer cell', () => {
   })
 
   it('offer name with a link to the offer when stock is a thing', () => {
-    const props = {
-      offer: {
-        offerIdentifier: 'A1',
-        offerId: offerId,
-        offerName: 'Guitare acoustique',
-        type: 'thing',
-        venueDepartmentCode: '93',
-        offerIsEducational: false,
-        eventBeginningDatetime: new Date().toISOString(),
-        numberOfTickets: 1,
-      },
-      bookingRecapInfo: {
-        original: collectiveBookingRecapFactory(),
-      } as Row<CollectiveBookingResponseModel>,
+    const props: BookingOfferCellProps = {
+      booking: collectiveBookingRecapFactory({
+        stock: {
+          offerIdentifier: 'A1',
+          offerId: offerId,
+          offerName: 'Guitare acoustique',
+          offerIsEducational: false,
+          eventBeginningDatetime: new Date().toISOString(),
+          numberOfTickets: 1,
+        },
+      }),
+
       isCollective: false,
     }
 
@@ -70,20 +63,17 @@ describe('bookings offer cell', () => {
   })
 
   it('offer name and event beginning datetime in venue timezone when stock is an event', () => {
-    const props = {
-      offer: {
-        eventBeginningDatetime: '2020-05-12T11:03:28.564687+04:00',
-        offerIdentifier: 'A2',
-        offerId: offerId,
-        offerName: 'La danse des poireaux',
-        type: 'event',
-        venueDepartmentCode: '93',
-        offerIsEducational: false,
-        numberOfTickets: 1,
-      },
-      bookingRecapInfo: {
-        original: collectiveBookingRecapFactory(),
-      } as Row<CollectiveBookingResponseModel>,
+    const props: BookingOfferCellProps = {
+      booking: collectiveBookingRecapFactory({
+        stock: {
+          eventBeginningDatetime: '2020-05-12T11:03:28.564687+04:00',
+          offerIdentifier: 'A2',
+          offerId: offerId,
+          offerName: 'La danse des poireaux',
+          offerIsEducational: false,
+          numberOfTickets: 1,
+        },
+      }),
       isCollective: false,
     }
 
@@ -101,7 +91,7 @@ describe('bookings offer cell', () => {
       days: 1,
     })
 
-    const eventOffer = collectiveBookingRecapFactory({
+    const booking = collectiveBookingRecapFactory({
       stock: {
         bookingLimitDatetime: tomorrowFns.toISOString(),
         eventBeginningDatetime: new Date().toISOString(),
@@ -115,11 +105,7 @@ describe('bookings offer cell', () => {
     })
 
     renderOfferCell({
-      offer: eventOffer.stock,
-      bookingRecapInfo: {
-        original: eventOffer,
-        values: eventOffer,
-      } as unknown as Row<CollectiveBookingResponseModel>,
+      booking,
       isCollective: true,
     })
 
@@ -131,7 +117,7 @@ describe('bookings offer cell', () => {
       days: 8,
     })
 
-    const eventOffer = collectiveBookingRecapFactory({
+    const booking = collectiveBookingRecapFactory({
       stock: {
         bookingLimitDatetime: eightDaysFns.toISOString(),
         eventBeginningDatetime: new Date().toISOString(),
@@ -144,10 +130,7 @@ describe('bookings offer cell', () => {
       },
     })
     renderOfferCell({
-      offer: eventOffer.stock,
-      bookingRecapInfo: {
-        original: eventOffer,
-      } as Row<CollectiveBookingResponseModel>,
+      booking,
       isCollective: false,
     })
 

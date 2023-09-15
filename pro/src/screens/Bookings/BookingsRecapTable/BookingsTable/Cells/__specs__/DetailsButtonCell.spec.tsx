@@ -1,18 +1,15 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import { Row } from 'react-table'
 
-import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { collectiveBookingRecapFactory } from 'utils/collectiveApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import DetailsButtonCell from '../DetailsButtonCell'
+import { DetailsButtonCell, DetailsButtonCellProps } from '../DetailsButtonCell'
 
-const renderDetailsButtonCell = (row: Row<CollectiveBookingResponseModel>) => {
-  renderWithProviders(<DetailsButtonCell bookingRow={row} />)
+const renderDetailsButtonCell = (props: DetailsButtonCellProps) => {
+  renderWithProviders(<DetailsButtonCell {...props} />)
 }
 
 describe('DetailsButtonCell', () => {
@@ -22,11 +19,8 @@ describe('DetailsButtonCell', () => {
       ...vi.importActual('hooks/useAnalytics'),
       logEvent: mockLogEvent,
     }))
-    const row = {
-      original: collectiveBookingRecapFactory(),
-    } as Row<CollectiveBookingResponseModel>
 
-    renderDetailsButtonCell(row)
+    renderDetailsButtonCell({ isExpanded: false })
 
     const detailsButton = screen.getByRole('button', { name: 'Détails' })
     await userEvent.click(detailsButton)

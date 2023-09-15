@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import BookingDateCell, { BookingDateCellProps } from '../BookingDateCell'
+import { BookingDateCell, BookingDateCellProps } from '../BookingDateCell'
 
 const renderDateCell = (props: BookingDateCellProps) =>
   render(<BookingDateCell {...props} />)

@@ -5,8 +5,8 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './BookingIsDuoCell.module.scss'
 
-const BookingIsDuoCell = ({ isDuo }: { isDuo: boolean }) => {
-  return isDuo ? (
+export const BookingIsDuoCell = ({ isDuo }: { isDuo: boolean }) =>
+  isDuo ? (
     <SvgIcon
       src={strokeDuoIcon}
       alt="Réservation DUO"
@@ -15,6 +15,3 @@ const BookingIsDuoCell = ({ isDuo }: { isDuo: boolean }) => {
   ) : (
     <></>
   )
-}
-
-export default BookingIsDuoCell

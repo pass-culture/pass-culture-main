@@ -1,8 +1,6 @@
 import cn from 'classnames'
 import React from 'react'
-import type { Row } from 'react-table'
 
-import { CollectiveBookingResponseModel } from 'apiClient/v1'
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
 import fullUpIcon from 'icons/full-up.svg'
@@ -12,12 +10,13 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './CellFormatter.module.scss'
 
-const DetailsButtonCell = ({
-  bookingRow,
-}: {
-  bookingRow: Row<CollectiveBookingResponseModel>
-}) => {
+export interface DetailsButtonCellProps {
+  isExpanded: boolean
+}
+
+export const DetailsButtonCell = ({ isExpanded }: DetailsButtonCellProps) => {
   const { logEvent } = useAnalytics()
+
   return (
     <Button
       onClick={() =>
@@ -32,11 +31,9 @@ const DetailsButtonCell = ({
         alt=""
         src={fullUpIcon}
         className={cn(styles['details-dropdown-icon'], {
-          [styles['details-dropdown-icon-up']]: !bookingRow.isExpanded,
+          [styles['details-dropdown-icon-up']]: !isExpanded,
         })}
       />
     </Button>
   )
 }
-
-export default DetailsButtonCell

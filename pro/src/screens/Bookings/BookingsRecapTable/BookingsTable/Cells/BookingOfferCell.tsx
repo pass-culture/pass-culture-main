@@ -1,12 +1,9 @@
 import cn from 'classnames'
 import { format } from 'date-fns-tz'
 import React from 'react'
-import { Row } from 'react-table'
 
 import {
   BookingRecapResponseModel,
-  BookingRecapResponseStockModel,
-  CollectiveBookingCollectiveStockResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb'
@@ -31,28 +28,26 @@ import { pluralize } from 'utils/pluralize'
 import styles from './BookingOfferCell.module.scss'
 
 export interface BookingOfferCellProps {
-  offer:
-    | BookingRecapResponseStockModel
-    | CollectiveBookingCollectiveStockResponseModel
-  bookingRecapInfo:
-    | Row<BookingRecapResponseModel>
-    | Row<CollectiveBookingResponseModel>
+  booking: BookingRecapResponseModel | CollectiveBookingResponseModel
   isCollective: boolean
 }
 
-const BookingOfferCell = ({
-  offer,
-  bookingRecapInfo,
+const isCollectiveBooking = (
+  booking: BookingRecapResponseModel | CollectiveBookingResponseModel
+): booking is CollectiveBookingResponseModel => booking.stock.offerIsEducational
+
+export const BookingOfferCell = ({
+  booking,
   isCollective,
 }: BookingOfferCellProps) => {
   const { logEvent } = useAnalytics()
 
   const editionUrl = useOfferEditionURL(
-    offer.offerIsEducational,
-    offer.offerId,
+    booking.stock.offerIsEducational,
+    booking.stock.offerId,
     true
   )
-  const eventBeginningDatetime = offer.eventBeginningDatetime
+  const eventBeginningDatetime = booking.stock.eventBeginningDatetime
 
   const eventDatetimeFormatted = eventBeginningDatetime
     ? format(
@@ -62,9 +57,9 @@ const BookingOfferCell = ({
     : null
   const shouldShowCollectiveWarning =
     isCollective &&
-    bookingRecapInfo.values.bookingStatus.toUpperCase() ===
-      OFFER_STATUS_PENDING &&
-    shouldDisplayWarning([bookingRecapInfo.values.stock])
+    isCollectiveBooking(booking) &&
+    booking.bookingStatus.toUpperCase() === OFFER_STATUS_PENDING &&
+    shouldDisplayWarning(booking.stock)
 
   return (
     <>
@@ -80,21 +75,23 @@ const BookingOfferCell = ({
             isEdition: true,
           })
         }
-        title={`${offer.offerName} (ouverture dans un nouvel onglet)`}
+        title={`${booking.stock.offerName} (ouverture dans un nouvel onglet)`}
       >
         <div
           className={cn(
             styles['booking-offer-name'],
-            !offer.offerIsEducational && styles['booking-offer-name-individual']
+            !booking.stock.offerIsEducational &&
+              styles['booking-offer-name-individual']
           )}
         >
-          {offer.offerName}
+          {booking.stock.offerName}
         </div>
       </a>
-      {offer.offerIsbn ||
+
+      {booking.stock.offerIsbn ||
         (eventBeginningDatetime && (
           <div className={styles['booking-offer-additional-info']}>
-            {eventDatetimeFormatted || offer.offerIsbn}
+            {eventDatetimeFormatted || booking.stock.offerIsbn}
             <span className={styles['stocks']}>
               {shouldShowCollectiveWarning && (
                 <span>
@@ -108,13 +105,10 @@ const BookingOfferCell = ({
                     La date limite de réservation par le chef d'établissement
                     est dans{' '}
                     {`${
-                      getRemainingTime([bookingRecapInfo.values.stock]) >= 1
-                        ? pluralize(
-                            getRemainingTime([bookingRecapInfo.values.stock]),
-                            'jour'
-                          )
+                      getRemainingTime(booking.stock) >= 1
+                        ? pluralize(getRemainingTime(booking.stock), 'jour')
                         : "moins d'un jour"
-                    } (${getDate([bookingRecapInfo.values.stock])})`}
+                    } (${getDate(booking.stock)})`}
                   </span>
                 </span>
               )}
@@ -124,5 +118,3 @@ const BookingOfferCell = ({
     </>
   )
 }
-
-export default BookingOfferCell
