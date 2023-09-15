@@ -17,7 +17,6 @@ class SettingsTest:
         ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING=False,
         ENABLE_PHONE_VALIDATION=True,
         ID_CHECK_ADDRESS_AUTOCOMPLETION=True,
-        PRO_DISABLE_EVENTS_QRCODE=False,
         APP_ENABLE_AUTOCOMPLETE=True,
     )
     def test_get_settings_feature_combination_1(self, app):
@@ -35,7 +34,7 @@ class SettingsTest:
             "idCheckAddressAutocompletion": True,
             "isRecaptchaEnabled": True,
             "objectStorageUrl": "http://localhost/storage",
-            "proDisableEventsQrcode": False,
+            "proDisableEventsQrcode": True,
             "accountUnsuspensionLimit": 60,
         }
 
@@ -47,7 +46,6 @@ class SettingsTest:
         ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING=True,
         ENABLE_PHONE_VALIDATION=False,
         ID_CHECK_ADDRESS_AUTOCOMPLETION=False,
-        PRO_DISABLE_EVENTS_QRCODE=True,
         APP_ENABLE_AUTOCOMPLETE=False,
     )
     def test_get_settings_feature_combination_2(self, app):

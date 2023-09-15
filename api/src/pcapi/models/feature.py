@@ -65,7 +65,6 @@ class FeatureToggle(enum.Enum):
     ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING = (
         "Active le mode debug Firebase pour l'Id Check intégrée à l'application native"
     )
-    ENABLE_NEW_VENUE_PAGES = "Utiliser la nouvelle version des pages d'edition et de creation de lieux"
     ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"
     ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
     ENABLE_PRO_BOOKINGS_V2 = "Activer l'affichage de la page booking avec la nouvelle architecture."
@@ -81,7 +80,6 @@ class FeatureToggle(enum.Enum):
     )
     PRICE_BOOKINGS = "Active la valorisation des réservations"
     PRICE_FINANCE_EVENTS = "Active la valorisation des événements de finance"
-    PRO_DISABLE_EVENTS_QRCODE = "Active la possibilité de différencier le type d’envoi des billets sur une offre et le retrait du QR code sur la réservation"
     SYNCHRONIZE_ALLOCINE = "Permettre la synchronisation journalière avec Allociné"
     SYNCHRONIZE_TITELIVE_PRODUCTS = "Permettre limport journalier du référentiel des livres"
     SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION = "Permettre limport journalier des résumés des livres"
@@ -175,13 +173,13 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING,
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
     FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING,
-    FeatureToggle.ENABLE_NEW_VENUE_PAGES,
     FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
     FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,
+    FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
+    FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION,
     FeatureToggle.ENABLE_ZENDESK_SELL_CREATION,
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.PRICE_FINANCE_EVENTS,
-    FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
     FeatureToggle.WIP_ADD_CLG_6_5_COLLECTIVE_OFFER,
     FeatureToggle.WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT,

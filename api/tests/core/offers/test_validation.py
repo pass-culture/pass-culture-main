@@ -429,7 +429,6 @@ class CheckOfferWithdrawalTest:
                 provider=None,
             )
 
-    @override_features(PRO_DISABLE_EVENTS_QRCODE=True)
     @pytest.mark.parametrize(
         "subcategory_id",
         subcategories.WITHDRAWABLE_SUBCATEGORIES,
@@ -443,36 +442,20 @@ class CheckOfferWithdrawalTest:
             provider=None,
         )
 
-    # @TODO: bruno: remove this test when removing the feature flag PC-14050
-    @override_features(PRO_DISABLE_EVENTS_QRCODE=False)
-    def test_withdrawable_event_offer_can_have_no_withdrawal_type(self):
-        """
-        Test retrocompatibility when disable events QRCode feature toggle is off
-        withdrawable event offer can have no withdrawal type
-        """
-        assert not validation.check_offer_withdrawal(
-            withdrawal_type=None,
-            withdrawal_delay=None,
-            subcategory_id=subcategories.CONCERT.id,
-            booking_contact="booking@conta.ct",
-            provider=None,
-        )
-
-    @override_features(PRO_DISABLE_EVENTS_QRCODE=True)
     def test_withdrawable_event_offer_must_have_withdrawal(self):
         with pytest.raises(exceptions.WithdrawableEventOfferMustHaveWithdrawal):
             validation.check_offer_withdrawal(
                 withdrawal_type=None,
                 withdrawal_delay=None,
                 subcategory_id=subcategories.FESTIVAL_MUSIQUE.id,
-                booking_contact=None,
+                booking_contact="booking@conta.ct",
                 provider=None,
             )
 
     def test_withdrawable_event_offer_must_have_booking_contact(self):
         with pytest.raises(exceptions.WithdrawableEventOfferMustHaveBookingContact):
             validation.check_offer_withdrawal(
-                withdrawal_type=None,
+                withdrawal_type=WithdrawalTypeEnum.NO_TICKET,
                 withdrawal_delay=None,
                 subcategory_id=subcategories.FESTIVAL_MUSIQUE.id,
                 booking_contact=None,
@@ -482,7 +465,7 @@ class CheckOfferWithdrawalTest:
     @override_features(WIP_MANDATORY_BOOKING_CONTACT=False)
     def test_withdrawable_event_offer_can_have_no_booking_contact(self):
         assert not validation.check_offer_withdrawal(
-            withdrawal_type=None,
+            withdrawal_type=WithdrawalTypeEnum.NO_TICKET,
             withdrawal_delay=None,
             subcategory_id=subcategories.FESTIVAL_MUSIQUE.id,
             booking_contact=None,

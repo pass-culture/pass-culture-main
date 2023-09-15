@@ -328,7 +328,7 @@ def check_offer_withdrawal(
     if not is_offer_withdrawable and withdrawal_type is not None:
         raise exceptions.NonWithdrawableEventOfferCantHaveWithdrawal()
 
-    if FeatureToggle.PRO_DISABLE_EVENTS_QRCODE.is_active() and is_offer_withdrawable and withdrawal_type is None:
+    if is_offer_withdrawable and withdrawal_type is None:
         raise exceptions.WithdrawableEventOfferMustHaveWithdrawal()
 
     if FeatureToggle.WIP_MANDATORY_BOOKING_CONTACT.is_active() and is_offer_withdrawable and not booking_contact:
