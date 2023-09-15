@@ -42,6 +42,7 @@ def create_offerer_provider(
         enabledForPro=enabledForPro,
         bookingExternalUrl=booking_url,
         cancelExternalUrl=cancel_booking_url,
+        notificationExternalUrl=settings.CHARLIE_NOTIFICATION_EXTERNAL_URL,
     )
 
     offerers_factories.ApiKeyFactory(
