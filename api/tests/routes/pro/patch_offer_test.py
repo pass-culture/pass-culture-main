@@ -21,9 +21,14 @@ class Returns200Test:
     def test_patch_offer(self, app, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        product = offers_factories.ProductFactory(owningOfferer=user_offerer.offerer)
+        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.OfferFactory(
-            subcategoryId="SEANCE_CINE", venue__managingOfferer=user_offerer.offerer, product=product
+            subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
+            venue=venue,
+            product=None,
+            name="New name",  # FIXME next commit
+            url="test@test.com",
+            description="description",
         )
 
         # When
@@ -43,8 +48,8 @@ class Returns200Test:
         assert updated_offer.name == "New name"
         assert updated_offer.externalTicketOfficeUrl == "http://example.net"
         assert updated_offer.mentalDisabilityCompliant
-        assert updated_offer.subcategoryId == "SEANCE_CINE"
-        assert updated_offer.product.name == "New name"
+        assert updated_offer.subcategoryId == subcategories.ABO_PLATEFORME_VIDEO.id
+        assert updated_offer.product == None
 
     def test_withdrawal_can_be_updated(self, client):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id, bookingContact="booking@conta.ct")

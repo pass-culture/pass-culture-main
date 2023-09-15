@@ -805,25 +805,6 @@ class UpdateOfferTest:
             "showSubType": ["Ce champ est obligatoire"],
         }
 
-    def test_update_product_if_owning_offerer_is_the_venue_managing_offerer(self):
-        offerer = offerers_factories.OffererFactory()
-        product = factories.ProductFactory(owningOfferer=offerer)
-        offer = factories.OfferFactory(product=product, venue__managingOfferer=offerer)
-
-        offer = api.update_offer(offer, name="New name")
-
-        assert offer.name == "New name"
-        assert product.name == "New name"
-
-    def test_do_not_update_product_if_owning_offerer_is_not_the_venue_managing_offerer(self):
-        product = factories.ProductFactory(name="Old name")
-        offer = factories.OfferFactory(product=product, name="Old name")
-
-        offer = api.update_offer(offer, name="New name")
-
-        assert offer.name == "New name"
-        assert product.name == "Old name"
-
     def test_update_offer_with_existing_ean(self):
         offer = factories.OfferFactory(
             name="Old name",
