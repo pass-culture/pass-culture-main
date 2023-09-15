@@ -19,6 +19,9 @@ Spectree:
 * [API pro privée](https://backend.passculture.app/pro/swagger)
 * [API publique d'offres individuelles](https://backend.passculture.app/public/offers/v1/swagger)
 
+## Liens des mocks API:
+* [APi "Charlie" billeterie](https://mock-api-billeterie.ehp.passculture.team/)
+
 ## Tests
 
 ### Installation des dépendances
