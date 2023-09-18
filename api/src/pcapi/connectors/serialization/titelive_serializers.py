@@ -33,6 +33,7 @@ class TiteliveImage(BaseModel):
 class TiteliveArticle(BaseModel):
     codesupport: str
     commentaire: str | None
+    contenu_explicite: str
     dateparution: datetime.date | None
     distributeur: str | None
     editeur: str
