@@ -468,7 +468,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "stocksDateCreated": sorted(stocks_date_created),
                 "students": extra_data.get("students") or [],
                 "subcategoryId": offer.subcategory.id,
-                "thumbUrl": url_path(offer.thumbUrl),
+                "thumbUrl": url_path(offer.thumbUrl) if offer.thumbUrl else None,
                 "tags": tags,
                 "times": list(set(times)),
                 "visa": extra_data.get("visa"),

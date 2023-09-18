@@ -309,7 +309,9 @@ def remove_pricing_point_link(
 ) -> None:
     check_can_remove_pricing_point(venue, override_revenue_check)
 
-    old_pricing_point_siret = venue.current_pricing_point.siret  # type: ignore [union-attr]
+    assert venue.current_pricing_point
+
+    old_pricing_point_siret = venue.current_pricing_point.siret
     old_reimbursement_point_siret = (
         venue.current_reimbursement_point.siret if venue.current_reimbursement_point else None
     )
@@ -362,7 +364,7 @@ def remove_pricing_point_link(
                 query,
                 {
                     "venue_id": venue.id,
-                    "current_pricing_point_id": venue.current_pricing_point.id,  # type: ignore [union-attr]
+                    "current_pricing_point_id": venue.current_pricing_point.id,
                     "pending_finance_event_status": models.FinanceEventStatus.PENDING.value,
                     "validated_pricing_status": models.PricingStatus.VALIDATED.value,
                 },

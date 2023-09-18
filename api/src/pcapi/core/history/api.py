@@ -54,9 +54,9 @@ def log_action(
         authorUser=author,
         user=user,
         # FIXME remove type ignores when upgrading to sqlalchemy 2.0
-        offerer=offerer,  # type: ignore
-        venue=venue,  # type: ignore
-        financeIncident=finance_incident,  # type: ignore
+        offerer=offerer,  # type: ignore [arg-type]
+        venue=venue,  # type: ignore [arg-type]
+        financeIncident=finance_incident,  # type: ignore [arg-type]
         comment=comment or None,  # do not store empty string
         extraData=extra_data,
     )

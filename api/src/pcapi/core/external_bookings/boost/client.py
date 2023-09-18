@@ -60,8 +60,8 @@ class BoostClientAPI(external_bookings_models.ExternalBookingsClientAPI):
         self.cinema_str_id = cinema_str_id
 
     # FIXME: define those later
-    def get_shows_remaining_places(self, shows_id: list[int]) -> dict[int, int]:  # type: ignore [empty-body]
-        pass
+    def get_shows_remaining_places(self, shows_id: list[int]) -> dict[int, int]:
+        return {}
 
     def get_film_showtimes_stocks(self, film_id: str) -> dict[int, int]:
         showtimes = self.get_showtimes(film=int(film_id))

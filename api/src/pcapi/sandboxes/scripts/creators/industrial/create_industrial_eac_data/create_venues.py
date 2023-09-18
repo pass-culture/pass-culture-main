@@ -3,6 +3,7 @@ from datetime import timedelta
 from itertools import chain
 from itertools import count
 from itertools import cycle
+import typing
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import factories as finance_factories
@@ -314,7 +315,7 @@ def create_venues(offerer_list: list[offerers_models.Offerer]) -> None:
     )
 
 
-def create_venue(*, reimbursement: bool = False, **kwargs) -> offerers_models.Venue:  # type: ignore [no-untyped-def]
+def create_venue(*, reimbursement: bool = False, **kwargs: typing.Any) -> offerers_models.Venue:
     venue = offerers_factories.VenueFactory(**kwargs)
     if reimbursement:
         venue.bankInformation = finance_factories.BankInformationFactory()

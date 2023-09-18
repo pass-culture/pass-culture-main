@@ -55,7 +55,7 @@ def handle_educonnect_authentication(
                 user, educonnect_content, fraud_models.FraudReasonCode.DUPLICATE_USER
             )
 
-    return fraud_check.reasonCodes  # type: ignore [return-value]
+    return fraud_check.reasonCodes
 
 
 def get_educonnect_subscription_message(

@@ -271,7 +271,7 @@ def get_content(identification_id: str) -> fraud_models.UbbleContent:
         extra={
             "status_code": response.status_code,
             "score": content.score,
-            "status": content.status.value,  # type: ignore [union-attr]
+            "status": content.status.value if content.status else None,
             "document_type": content.document_type,
         }
         | base_extra_log,

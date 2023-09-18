@@ -8,7 +8,9 @@ from pcapi.sandboxes.scripts.utils.helpers import get_stock_helper
 from pcapi.sandboxes.scripts.utils.helpers import get_venue_helper
 
 
-def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_no_stock():  # type: ignore [no-untyped-def]
+def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_no_stock() -> (
+    dict
+):
     user_offerer = offerers_factories.UserOffererFactory(user__validationToken=None)
     finance_factories.BankInformationFactory(offerer=user_offerer.offerer)
     venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
@@ -22,7 +24,9 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
     }
 
 
-def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_stock():  # type: ignore [no-untyped-def]
+def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_stock() -> (
+    dict
+):
     user_offerer = offerers_factories.UserOffererFactory(user__validationToken=None)
     finance_factories.BankInformationFactory(offerer=user_offerer.offerer)
     venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
@@ -38,7 +42,9 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
     }
 
 
-def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_thing_offer_with_stock():  # type: ignore [no-untyped-def]
+def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_thing_offer_with_stock() -> (
+    dict
+):
     user_offerer = offerers_factories.UserOffererFactory(user__validationToken=None)
     finance_factories.BankInformationFactory(offerer=user_offerer.offerer)
     venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)

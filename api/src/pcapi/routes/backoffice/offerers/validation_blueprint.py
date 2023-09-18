@@ -235,8 +235,10 @@ def _offerer_batch_action(
 
     if hasattr(form, "tags"):
         tags = form.tags.data
-        previous_tags = list(reduce(set.intersection, [set(offerer.tags) for offerer in offerers]))  # type: ignore
+        previous_tags = list(reduce(set.intersection, [set(offerer.tags) for offerer in offerers]))  # type: ignore [arg-type]
         deleted_tags = list(set(previous_tags).difference(list(set(tags))))
+    else:
+        deleted_tags = []
 
     for offerer in offerers:
         kwargs = {}
@@ -284,7 +286,7 @@ def get_batch_offerer_pending_form() -> utils.BackofficeResponse:
             )
             .all()
         )
-        tags = list(reduce(set.intersection, [set(offerer.tags) for offerer in offerers]))  # type: ignore
+        tags = list(reduce(set.intersection, [set(offerer.tags) for offerer in offerers]))  # type: ignore [arg-type]
 
         if len(tags) > 0:
             form.tags.data = tags

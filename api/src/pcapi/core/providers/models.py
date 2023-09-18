@@ -168,7 +168,7 @@ class VenueProvider(PcObject, Base, Model, ProvidableMixin, DeactivableMixin):
         return PcObject.restize_integrity_error(error)
 
     @property
-    def nOffers(self):  # type: ignore [no-untyped-def]
+    def nOffers(self) -> int:
         from pcapi.core.offers.models import Offer
 
         return Offer.query.filter_by(

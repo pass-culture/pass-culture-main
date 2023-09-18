@@ -324,8 +324,8 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
             return self.email in settings.SUPER_ADMIN_EMAIL_ADDRESSES
         return self.has_admin_role  # type: ignore [return-value]
 
-    def populate_from_dict(self, data):  # type: ignore [no-untyped-def]
-        super().populate_from_dict(data)
+    def populate_from_dict(self, data: dict, skipped_keys: typing.Iterable[str] = ()) -> None:
+        super().populate_from_dict(data, skipped_keys=skipped_keys)
         if data.get("password"):
             self.setPassword(data["password"])
 
@@ -438,11 +438,11 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         )
 
     @property
-    def has_active_deposit(self):  # type: ignore [no-untyped-def]
-        return self.deposit.expirationDate > datetime.utcnow() if self.deposit else False
+    def has_active_deposit(self) -> bool:
+        return self.deposit.expirationDate > datetime.utcnow() if self.deposit else False  # type: ignore [operator]
 
     @property
-    def hasPhysicalVenues(self):  # type: ignore [no-untyped-def]
+    def hasPhysicalVenues(self) -> bool:
         for user_offerer in self.UserOfferers:
             if any(not venue.isVirtual for venue in user_offerer.offerer.managedVenues):
                 return True
@@ -458,13 +458,13 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
         return _get_latest_birthday(self.birth_date)  # type: ignore [arg-type]
 
     @property
-    def wallet_balance(self):  # type: ignore [no-untyped-def]
+    def wallet_balance(self) -> Decimal:
         balance = db.session.query(sa.func.get_wallet_balance(self.id, False)).scalar()
         return max(0, balance)
 
     @property
     # list[history_models.ActionHistory] -> None, untyped due to import loop
-    def suspension_action_history(self):  # type: ignore [no-untyped-def]
+    def suspension_action_history(self) -> list:
         import pcapi.core.history.models as history_models
 
         return sorted(
