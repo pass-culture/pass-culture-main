@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react'
+import { useSelector } from 'react-redux'
 
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { MAX_OFFERS_TO_DISPLAY } from 'core/Offers/constants'
@@ -7,7 +8,9 @@ import { hasSearchFilters, isOfferDisabled } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import { getOffersCountToDisplay } from 'pages/Offers/domain/getOffersCountToDisplay'
 import NoResults from 'screens/Offers/NoResults'
+import { searchFiltersSelector } from 'store/offers/selectors'
 import { Banner } from 'ui-kit'
+import { BaseCheckbox } from 'ui-kit/form/shared'
 import { Pagination } from 'ui-kit/Pagination'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -123,6 +126,8 @@ const Offers = ({
     toggleSelectAllCheckboxes()
   }
 
+  const savedSearchFilters = useSelector(searchFiltersSelector)
+
   return (
     <div aria-busy={isLoading} aria-live="polite" className="section">
       {isLoading ? (
@@ -144,6 +149,20 @@ const Offers = ({
             </div>
           )}
 
+          <div className={styles['select-all-container']}>
+            <BaseCheckbox
+              checked={areAllOffersSelected || isAtLeastOneOfferChecked}
+              partialCheck={!areAllOffersSelected && isAtLeastOneOfferChecked}
+              disabled={isAdminForbidden(savedSearchFilters) || !hasOffers}
+              id="select-offer-checkbox"
+              onChange={selectAllOffers}
+              label={
+                areAllOffersSelected
+                  ? 'Tout désélectionner'
+                  : 'Tout sélectionner'
+              }
+            />
+          </div>
           <table>
             <OffersTableHead
               applyFilters={applyFilters}
