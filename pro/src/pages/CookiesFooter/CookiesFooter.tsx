@@ -28,7 +28,7 @@ const CookiesFooter = ({ className }: { className?: string }): JSX.Element => {
                 isExternal: true,
                 rel: 'noopener noreferrer',
                 target: '_blank',
-                'aria-label': 'CGU professionnels (Nouvelle fenêtre)',
+                'aria-label': 'Nouvelle fenêtre',
               }}
             >
               CGU professionnels
@@ -43,8 +43,7 @@ const CookiesFooter = ({ className }: { className?: string }): JSX.Element => {
                 isExternal: true,
                 rel: 'noopener noreferrer',
                 target: '_blank',
-                'aria-label':
-                  'Charte des Données Personnelles (Nouvelle fenêtre)',
+                'aria-label': 'Nouvelle fenêtre',
               }}
             >
               Charte des Données Personnelles

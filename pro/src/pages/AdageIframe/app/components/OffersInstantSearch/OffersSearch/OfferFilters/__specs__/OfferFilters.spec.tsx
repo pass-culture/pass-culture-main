@@ -346,7 +346,6 @@ describe('OfferFilters', () => {
         name: /Localisation des partenaires/,
       })
     )
-    screen.debug()
     await userEvent.click(screen.getAllByTestId('search-button-modal')[0])
 
     expect(handleSubmit).toHaveBeenCalled()
