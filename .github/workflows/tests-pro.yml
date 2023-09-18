@@ -162,7 +162,7 @@ jobs:
         with:
           node-version: ${{ needs.read-node-version.outputs.node_version }}
       - name: Run API server
-        run: docker-compose -f ../docker-compose-app.yml up --build -d
+        run: docker-compose -f ../docker-compose-backend.yml up --build -d
       - name: Wait for migrations to be run
         uses: iFaxity/wait-on-action@v1
         with:

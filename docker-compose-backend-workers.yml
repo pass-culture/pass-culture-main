@@ -3,12 +3,12 @@ version: "3.7"
 services:
   postgres:
     extends:
-      file: docker-compose-app.yml
+      file: docker-compose-backend.yml
       service: postgres
 
   redis:
     extends:
-      file: docker-compose-app.yml
+      file: docker-compose-backend.yml
       service: redis
 
   worker:

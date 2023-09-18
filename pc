@@ -33,13 +33,11 @@ Commands:
   reset-all-db          Clear all data in the local database
   reset-all-storage     Delete all local images
   restart-backend       Restart API after removing the database and files
-  restart-backoffice    Restart the backoffice on localhost after removing the database and files
   restore-db            Restore a postgresql database from file (and anonymize data)
   restore-db-intact     Restore a postgresql database from file (non anonymized)
   set-git-config        Define a local Git configuration
-  start-backend         Start the API on localhost
-  start-backoffice      Start the backoffice on localhost
-  start-pro             Start the pro frontend on localhost
+  start-backend         Start API and backoffice on localhost
+  start-pro             Start PC pro frontend on localhost
   symlink               Create symlink to use \"pc\" command (admin rights may be needed)
   test-backend          Run tests for the API
   test-backend-provider Run only local providers tests for the API
@@ -103,10 +101,7 @@ esac
 ROOT_PATH=$(realpath "$(dirname "$PRG")")
 INFRA_SCRIPTS_PATH="$ROOT_PATH"/infra/pc_scripts/
 
-FLASK_CONTAINER_NAME='pc-flask'
-if [[ $(docker ps --format "{{.Names}}" --filter "name=pc-backoffice" --filter "status=running") ]]; then
-  FLASK_CONTAINER_NAME='pc-backoffice'
-fi
+FLASK_CONTAINER_NAME='pc-api'
 
 function confirm() {
   read -p "$1 (y/n) : " -n 1 -r
@@ -166,9 +161,9 @@ elif [[ "$CMD" == "dump-db" ]]; then
 
 # Force docker-compose to build the docker images
 elif [[ "$CMD" == "rebuild-backend" ]]; then
-  RUN='docker-compose -f "$ROOT_PATH/docker-compose-app.yml" build --no-cache;
+  RUN='docker-compose -f "$ROOT_PATH/docker-compose-backend.yml" build --no-cache;
     sudo rm -rf $ROOT_PATH/api/static/object_store_data;
-    docker-compose -f "$ROOT_PATH/docker-compose-app.yml" down --volumes'
+    docker-compose -f "$ROOT_PATH/docker-compose-backend.yml" down --volumes'
 
 # Execute request from specified file
 elif [[ "$CMD" == "psql-file" ]]; then
@@ -179,11 +174,6 @@ elif [[ "$CMD" == "psql-file" ]]; then
 elif [[ "$CMD" == "restart-backend" ]]; then
   source "$INFRA_SCRIPTS_PATH"/start_backend.sh
   restart_backend
-
-# Restart the backoffice on localhost after removing the database and files
-elif [[ "$CMD" == "restart-backoffice" ]]; then
-  source "$INFRA_SCRIPTS_PATH"/start_backend.sh
-  restart_backoffice
 
 # Clear all data in postgresql database
 elif [[ "$CMD" == "reset-all-db" ]]; then
@@ -216,11 +206,6 @@ elif [[ "$CMD" == "restore-db-intact" ]]; then
 elif [[ "$CMD" == "start-backend" ]]; then
   source "$INFRA_SCRIPTS_PATH"/start_backend.sh
   start_backend
-
-# Start API server with database and nginx server
-elif [[ "$CMD" == "start-backoffice" ]]; then
-  source "$INFRA_SCRIPTS_PATH"/start_backend.sh
-  start_backoffice
 
 # Start pro or adage application
 elif [[ "$CMD" == "start-pro" ]]; then
