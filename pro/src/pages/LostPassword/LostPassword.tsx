@@ -18,7 +18,7 @@ import { validationSchema } from './validationSchema'
 
 type FormValues = { email: string }
 
-const ResetPassword = (): JSX.Element => {
+const LostPassword = (): JSX.Element => {
   const [mailSent, setMailSent] = useState(false)
 
   useRedirectLoggedUser()
@@ -89,4 +89,4 @@ const ResetPassword = (): JSX.Element => {
   )
 }
 
-export default ResetPassword
+export default LostPassword
