@@ -16,12 +16,20 @@ USER pcapi
 
 ENV PYTHONUNBUFFERED 1
 
-COPY ./requirements.txt ./
+#COPY ./requirements.txt ./
+COPY ./pyproject.toml /home/pcapi
 
 ENV PATH=$PATH:/home/pcapi/.local/bin
 
-RUN pip install --no-cache-dir --user \
-	--requirement ./requirements.txt
+#RUN pip install --no-cache-dir --user \
+#	--requirement ./requirements.txt
+RUN pip install poetry
+
+WORKDIR /home/pcapi
+
+RUN poetry config virtualenvs.create false
+
+RUN poetry install
 
 ########## SOURCES ##########
 
