@@ -25,7 +25,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 @freeze_time("2021-10-15 09:00:00")
 class Returns200Test:
-    def test_confirm_collective_prebooking(self, client, caplog) -> None:  # type: ignore [no-untyped-def]
+    def test_confirm_collective_prebooking(self, client, caplog) -> None:
         redactor = EducationalRedactorFactory(
             civility="Mme",
             firstName="Jeanne",
@@ -125,7 +125,7 @@ class Returns200Test:
         )
 
     @override_features(ENABLE_EAC_FINANCIAL_PROTECTION=True)
-    def test_insufficient_ministry_fund_other_ministry(self, client) -> None:  # type: ignore [no-untyped-def]
+    def test_insufficient_ministry_fund_other_ministry(self, client) -> None:
         educational_institution = EducationalInstitutionFactory()
         educational_institution2 = EducationalInstitutionFactory()
         educational_institution3 = EducationalInstitutionFactory()
@@ -169,7 +169,7 @@ class Returns200Test:
         response = client.post(f"/adage/v1/prebookings/{booking.id}/confirm")
         assert response.status_code == 200
 
-    def test_sufficient_ministry_fund(self, client) -> None:  # type: ignore [no-untyped-def]
+    def test_sufficient_ministry_fund(self, client) -> None:
         educational_institution = EducationalInstitutionFactory()
         educational_institution2 = EducationalInstitutionFactory()
         educational_institution3 = EducationalInstitutionFactory()
@@ -222,7 +222,7 @@ class Returns200Test:
         response = client.post(f"/adage/v1/prebookings/{booking.id}/confirm")
         assert response.status_code == 200
 
-    def test_out_of_minitry_check_dates(self, client) -> None:  # type: ignore [no-untyped-def]
+    def test_out_of_minitry_check_dates(self, client) -> None:
         educational_institution = EducationalInstitutionFactory()
         educational_institution2 = EducationalInstitutionFactory()
 
@@ -263,21 +263,21 @@ class Returns200Test:
 
 @freeze_time("2021-10-15 09:00:00")
 class ReturnsErrorTest:
-    def test_no_educational_booking(self, client) -> None:  # type: ignore [no-untyped-def]
+    def test_no_educational_booking(self, client) -> None:
         client = client.with_eac_token()
         response = client.post("/adage/v1/prebookings/404/confirm")
 
         assert response.status_code == 404
         assert response.json == {"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}
 
-    def test_no_collective_booking(self, client) -> None:  # type: ignore [no-untyped-def]
+    def test_no_collective_booking(self, client) -> None:
         client = client.with_eac_token()
         response = client.post("/adage/v1/prebookings/404/confirm")
 
         assert response.status_code == 404
         assert response.json == {"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}
 
-    def test_no_deposit_for_collective_bookings(self, client) -> None:  # type: ignore [no-untyped-def]
+    def test_no_deposit_for_collective_bookings(self, client) -> None:
         booking = CollectiveBookingFactory(
             collectiveStock__price=Decimal(20.00),
             status=CollectiveBookingStatus.PENDING,
@@ -290,7 +290,7 @@ class ReturnsErrorTest:
         assert response.status_code == 404
         assert response.json == {"code": "DEPOSIT_NOT_FOUND"}
 
-    def test_insufficient_fund_for_collective_bookings(self, client) -> None:  # type: ignore [no-untyped-def]
+    def test_insufficient_fund_for_collective_bookings(self, client) -> None:
         educational_institution = EducationalInstitutionFactory()
         educational_year = EducationalYearFactory(adageId="1")
         EducationalDepositFactory(
@@ -314,7 +314,7 @@ class ReturnsErrorTest:
         assert response.json == {"code": "INSUFFICIENT_FUND"}
 
     @override_features(ENABLE_EAC_FINANCIAL_PROTECTION=True)
-    def test_insufficient_ministry_fund_for_collective_bookings(self, client) -> None:  # type: ignore [no-untyped-def]
+    def test_insufficient_ministry_fund_for_collective_bookings(self, client) -> None:
         educational_institution = EducationalInstitutionFactory()
         educational_institution2 = EducationalInstitutionFactory()
 
@@ -351,7 +351,7 @@ class ReturnsErrorTest:
         assert response.status_code == 422
         assert response.json == {"code": "INSUFFICIENT_MINISTRY_FUND"}
 
-    def test_insufficient_temporary_fund_for_collective_bookings(self, client) -> None:  # type: ignore [no-untyped-def]
+    def test_insufficient_temporary_fund_for_collective_bookings(self, client) -> None:
         educational_institution = EducationalInstitutionFactory()
         educational_year = EducationalYearFactory(adageId="1")
         EducationalDepositFactory(
@@ -374,7 +374,7 @@ class ReturnsErrorTest:
         assert response.status_code == 422
         assert response.json == {"code": "INSUFFICIENT_FUND_DEPOSIT_NOT_FINAL"}
 
-    def test_collective_booking_is_cancelled(self, client) -> None:  # type: ignore [no-untyped-def]
+    def test_collective_booking_is_cancelled(self, client) -> None:
         booking = CollectiveBookingFactory(
             status=CollectiveBookingStatus.CANCELLED,
         )
@@ -386,9 +386,7 @@ class ReturnsErrorTest:
         assert response.json == {"code": "EDUCATIONAL_BOOKING_IS_CANCELLED"}
 
     @freeze_time("2021-08-05 15:00:00")
-    def test_confirmation_limit_date_has_passed_for_collective_bookings(  # type: ignore [no-untyped-def]
-        self, client
-    ) -> None:
+    def test_confirmation_limit_date_has_passed_for_collective_bookings(self, client) -> None:
         booking: Booking = CollectiveBookingFactory(
             confirmationLimitDate=datetime(2021, 8, 5, 14),
             status=CollectiveBookingStatus.PENDING,

@@ -1,13 +1,16 @@
 from datetime import datetime
 
 from pcapi import settings
+from pcapi.core.bookings import models as bookings_models
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import models as offers_models
+from pcapi.core.users import models as users_models
 from pcapi.core.users.models import TokenType
-from pcapi.core.users.models import User
 from pcapi.routes.serialization import as_dict
 from pcapi.utils.includes import USER_INCLUDES
 
 
-def get_booking_helper(booking):  # type: ignore [no-untyped-def]
+def get_booking_helper(booking: bookings_models.Booking) -> dict:
     return dict(
         as_dict(booking),
         **{
@@ -17,19 +20,19 @@ def get_booking_helper(booking):  # type: ignore [no-untyped-def]
     )
 
 
-def get_offer_helper(offer):  # type: ignore [no-untyped-def]
+def get_offer_helper(offer: offers_models.Offer) -> dict:
     return dict(
         as_dict(offer),
         **{
             "venueCity": offer.venue.city,
             "venueName": offer.venue.name,
             "thingName": offer.product.name,
-            "status": offer.status.name,
+            "status": offer.status.name,  # type: ignore [attr-defined]
         },
     )
 
 
-def get_offerer_helper(offerer):  # type: ignore [no-untyped-def]
+def get_offerer_helper(offerer: offerers_models.Offerer) -> dict:
     return dict(
         as_dict(offerer),
         **{
@@ -39,17 +42,17 @@ def get_offerer_helper(offerer):  # type: ignore [no-untyped-def]
     )
 
 
-def get_stock_helper(stock):  # type: ignore [no-untyped-def]
+def get_stock_helper(stock: offers_models.Stock) -> dict:
     return as_dict(stock)
 
 
-def get_email(first_name, last_name, domain):  # type: ignore [no-untyped-def]
+def get_email(first_name: str, last_name: str, domain: str) -> str:
     return "{}.{}@{}".format(
         first_name.replace(" ", "").strip().lower(), last_name.replace(" ", "").strip().lower(), domain
     )
 
 
-def get_pro_helper(user):  # type: ignore [no-untyped-def]
+def get_pro_helper(user: users_models.User) -> dict:
     return dict(
         as_dict(user, includes=USER_INCLUDES),
         **{
@@ -60,11 +63,11 @@ def get_pro_helper(user):  # type: ignore [no-untyped-def]
     )
 
 
-def get_venue_helper(venue):  # type: ignore [no-untyped-def]
+def get_venue_helper(venue: offerers_models.Venue) -> dict:
     return as_dict(venue)
 
 
-def _get_reset_password_token(user: User):  # type: ignore [no-untyped-def]
+def _get_reset_password_token(user: users_models.User) -> str | None:
     for token in user.tokens:
         if token.type == TokenType.RESET_PASSWORD and token.expirationDate > datetime.utcnow():
             return token.value

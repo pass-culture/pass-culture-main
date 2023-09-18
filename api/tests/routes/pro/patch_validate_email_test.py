@@ -26,7 +26,7 @@ class PatchValidateEmailTest:
         token_payload = {"exp": expiration, "current_email": email, "new_email": self.new_email, "user_id": user_id}
         token = jwt.encode(
             token_payload,
-            settings.JWT_SECRET_KEY,  # type: ignore # known as str in build assertion
+            settings.JWT_SECRET_KEY,
             algorithm=ALGORITHM_HS_256,
         )
         return token

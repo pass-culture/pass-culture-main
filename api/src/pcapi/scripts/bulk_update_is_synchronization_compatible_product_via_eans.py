@@ -27,9 +27,9 @@ def process_batch(eans: list[str], is_synchronization_compatible: bool) -> None:
     )
 
 
-def bulk_update_is_synchronization_compatible_via_eans(  # type: ignore [no-untyped-def]
+def bulk_update_is_synchronization_compatible_via_eans(
     iterable: Iterable[str], is_synchronization_compatible: bool, batch_size: int
-):
+) -> None:
     total = 0
     batch = []
 

@@ -16,7 +16,7 @@ blueprint = Blueprint(__name__, __name__)
 @blueprint.cli.command("sandbox")
 @click.option("-n", "--name", help="Sandbox name", default="classic")
 @click.option("-c", "--clean", help="Clean database first", default="true")
-def sandbox(name, clean):  # type: ignore [no-untyped-def]
+def sandbox(name: str, clean: str) -> None:
     with_clean = clean == "true"
     save_sandbox(name, with_clean)
 
@@ -24,7 +24,7 @@ def sandbox(name, clean):  # type: ignore [no-untyped-def]
 @blueprint.cli.command("sandbox_to_testcafe")
 @click.option("-n", "--name", help="Sandboxes getters module name", default=None)
 @click.option("-g", "--getter", help="Sandboxes getters function name", default=None)
-def sandbox_to_testcafe(name, getter):  # type: ignore [no-untyped-def]
+def sandbox_to_testcafe(name: str, getter: str) -> None:
     try:
         if name is None:
             print_all_testcafe_helpers()

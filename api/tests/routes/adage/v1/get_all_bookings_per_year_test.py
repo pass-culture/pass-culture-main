@@ -9,7 +9,7 @@ from pcapi.utils.date import format_into_utc_date
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    def test_get_all_collective_bookings_per_year(self, client) -> None:  # type: ignore [no-untyped-def]
+    def test_get_all_collective_bookings_per_year(self, client) -> None:
         educationalYear = EducationalYearFactory()
         educationalInstitution = EducationalInstitutionFactory()
         other_educational_institution = EducationalInstitutionFactory(institutionId="institutionId")
@@ -65,7 +65,7 @@ class Returns200Test:
             ],
         }
 
-    def test_get_all_collective_bookings_per_year_with_no_results(self, client) -> None:  # type: ignore [no-untyped-def]
+    def test_get_all_collective_bookings_per_year_with_no_results(self, client) -> None:
         client = client.with_eac_token()
         response = client.get("/adage/v1/years/1/prebookings")
 
@@ -75,7 +75,7 @@ class Returns200Test:
             "bookings": [],
         }
 
-    def test_get_all_collective_bookings_pagination(self, client) -> None:  # type: ignore [no-untyped-def]
+    def test_get_all_collective_bookings_pagination(self, client) -> None:
         educationalYear = EducationalYearFactory()
         other_educational_year = EducationalYearFactory(adageId="adageId")
         first_bookings = CollectiveBookingFactory.create_batch(
@@ -115,7 +115,7 @@ class Returns200Test:
 
 
 class Returns400Test:
-    def test_non_positive_page_query(self, client):  # type: ignore [no-untyped-def]
+    def test_non_positive_page_query(self, client):
         client.with_eac_token()
         response = client.get("/adage/v1/years/fake/prebookings?page=0")
         assert response.status_code == 400
@@ -123,7 +123,7 @@ class Returns400Test:
         response = client.get("/adage/v1/years/fake/prebookings?page=-1")
         assert response.status_code == 400
 
-    def test_non_positive_per_page_query(self, client):  # type: ignore [no-untyped-def]
+    def test_non_positive_per_page_query(self, client):
         client.with_eac_token()
         response = client.get("/adage/v1/years/fake/prebookings?per_page=0")
         assert response.status_code == 400

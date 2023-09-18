@@ -68,7 +68,7 @@ def _synchronize_venue_providers_apis() -> None:
     default=None,
 )
 @click.option("-w", "--venue-provider-id", type=int, help="Limit update to this venue provider id")
-def update_providables(provider_name: str, venue_provider_id: int, limit: int):  # type: ignore [no-untyped-def]
+def update_providables(provider_name: str, venue_provider_id: int, limit: int) -> None:
     start = time()
     logger.info(
         "Starting update_providables with provider_name=%s and venue_provider_id=%s", provider_name, venue_provider_id

@@ -286,10 +286,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
     from pcapi.core.fraud import api as fraud_api
     from pcapi.core.users.api import get_domains_credit
 
-    is_pro_user = (
-        user.has_pro_role
-        or db.session.query(offerers_models.UserOfferer.query.filter_by(userId=user.id).exists()).scalar()
-    )
+    is_pro_user: bool = user.has_pro_role or user.has_non_attached_pro_role  # type: ignore [assignment]
 
     if is_pro_user:
         user_bookings: List[bookings_models.Booking] = []
@@ -345,7 +342,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
         is_eligible=user.is_eligible,
         is_email_validated=user.isEmailValidated,
         is_phone_validated=user.is_phone_validated,  # type: ignore [arg-type]
-        is_pro=is_pro_user,  # type: ignore [arg-type]
+        is_pro=is_pro_user,
         last_booking_date=user_bookings[0].dateCreated if user_bookings else None,
         last_favorite_creation_date=last_favorite.dateCreated if last_favorite else None,
         last_name=user.lastName,

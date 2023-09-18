@@ -3,7 +3,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.sandboxes.scripts.utils.helpers import get_pro_helper
 
 
-def get_pro_user():  # type: ignore [no-untyped-def]
+def get_pro_user() -> dict:
     user_offerer = offerers_factories.UserOffererFactory(user__validationToken=None, user__phoneNumber="+33100000009")
     venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
     offers_factories.ThingOfferFactory(venue=venue, isActive=True)

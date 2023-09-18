@@ -179,16 +179,16 @@ with app.app_context():
 
 
 @app.shell_context_processor
-def get_shell_extra_context():  # type: ignore [no-untyped-def]
+def get_shell_extra_context() -> dict:
     # We abuse `shell_context_processor` to call custom code when
     # `flask shell` is run.
     _set_python_prompt()
     return {}
 
 
-@app.teardown_request  # type: ignore [arg-type]
+@app.teardown_request
 def remove_db_session(
-    exc: Exception | None = None,  # pylint: disable=unused-argument
+    exc: BaseException | None = None,  # pylint: disable=unused-argument
 ) -> None:
     try:
         db.session.remove()
@@ -196,11 +196,11 @@ def remove_db_session(
         pass
 
 
-def _non_printable(seq):  # type: ignore [no-untyped-def]
+def _non_printable(seq: str) -> str:
     return f"\001{seq}\002"
 
 
-def _set_python_prompt():  # type: ignore [no-untyped-def]
+def _set_python_prompt() -> None:
     env = settings.ENV
     if env in "production":
         color = "\x1b[1;49;31m"  # red

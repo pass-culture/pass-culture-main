@@ -10,7 +10,7 @@ from pcapi.utils.date import format_into_utc_date
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    def test_get_collective_bookings(self, client) -> None:  # type: ignore [no-untyped-def]
+    def test_get_collective_bookings(self, client) -> None:
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
         booking1 = CollectiveBookingFactory(
@@ -141,7 +141,7 @@ class Returns200Test:
             ]
         }
 
-    def test_get_collective_bookings_filter_UAI(self, client) -> None:  # type: ignore [no-untyped-def]
+    def test_get_collective_bookings_filter_UAI(self, client) -> None:
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
         booking1 = CollectiveBookingFactory(
@@ -220,7 +220,7 @@ class Returns200Test:
             ]
         }
 
-    def test_get_collective_bookings_filter_year_id(self, client) -> None:  # type: ignore [no-untyped-def]
+    def test_get_collective_bookings_filter_year_id(self, client) -> None:
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
         booking1 = CollectiveBookingFactory(
@@ -299,7 +299,7 @@ class Returns200Test:
             ]
         }
 
-    def test_get_collective_bookings_filter_redactor_email(self, client) -> None:  # type: ignore [no-untyped-def]
+    def test_get_collective_bookings_filter_redactor_email(self, client) -> None:
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
         booking1 = CollectiveBookingFactory(
@@ -378,7 +378,7 @@ class Returns200Test:
             ]
         }
 
-    def test_get_collective_bookings_filter_status(self, client) -> None:  # type: ignore [no-untyped-def]
+    def test_get_collective_bookings_filter_status(self, client) -> None:
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
         booking1 = CollectiveBookingFactory(

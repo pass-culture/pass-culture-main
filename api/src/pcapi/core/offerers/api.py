@@ -661,6 +661,7 @@ def create_offerer(
 ) -> models.UserOfferer:
     offerer = offerers_repository.find_offerer_by_siren(offerer_informations.siren)
     is_new = False
+    comment = None
 
     if offerer is not None:
         # The user can have his attachment rejected or deleted to the structure,
@@ -686,7 +687,7 @@ def create_offerer(
         else:
             user_offerer.validationStatus = ValidationStatus.NEW
             user_offerer.dateCreated = datetime.utcnow()
-            extra_data = {}
+            extra_data: dict[str, typing.Any] = {}
             _add_new_onboarding_info_to_extra_data(new_onboarding_info, extra_data)
             objects_to_save += [
                 history_api.log_action(
@@ -707,7 +708,6 @@ def create_offerer(
         _fill_in_offerer(offerer, offerer_informations)
         digital_venue = create_digital_venue(offerer)
         user_offerer = grant_user_offerer_access(offerer, user)
-        comment = None
         repository.save(offerer, digital_venue, user_offerer)
 
     assert offerer.siren  # helps mypy until Offerer.siren is set as NOT NULL
@@ -731,7 +731,7 @@ def create_offerer(
             user=user,
             offerer=offerer,
             comment=comment,
-            **extra_data,  # type: ignore [arg-type]
+            **extra_data,
         )
 
     external_attributes_api.update_external_pro(user.email)

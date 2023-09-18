@@ -43,7 +43,7 @@ class UserAttributes:
     most_booked_movie_genre: str | None
     most_booked_music_type: str | None
     most_favorite_offer_subcategories: list[str] | None
-    phone_number: str | None  # Added for Zendesk, type: ignore [arg-type]
+    phone_number: str | None  # Added for Zendesk
     postal_code: str | None
     products_use_date: dict
     roles: list[str]

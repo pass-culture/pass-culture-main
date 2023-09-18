@@ -711,6 +711,7 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
 
     existing_offerer = offerers_models.Offerer.query.filter_by(siren=pro_user.siren).one_or_none()
     is_new_offerer = False
+    comment = None
 
     if existing_offerer:
         if existing_offerer.isRejected:
@@ -740,7 +741,6 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
         user_offerer = offerers_api.grant_user_offerer_access(offerer, new_pro_user)
         digital_venue = offerers_api.create_digital_venue(offerer)
         objects_to_save.extend([digital_venue, offerer, user_offerer])
-        comment = None
 
     new_pro_user = _set_offerer_departement_code(new_pro_user, offerer)
 
@@ -759,7 +759,7 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
             siren_info = None
 
         offerers_api.auto_tag_new_offerer(offerer, siren_info, new_pro_user)
-        extra_data = {}
+        extra_data: dict[str, typing.Any] = {}
         if siren_info:
             extra_data = {"sirene_info": dict(siren_info)}
 
@@ -769,7 +769,7 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
             user=new_pro_user,
             offerer=offerer,
             comment=comment,
-            **extra_data,  # type: ignore [arg-type]
+            **extra_data,
         )
 
     if not transactional_mails.send_email_validation_to_pro_email(new_pro_user):
