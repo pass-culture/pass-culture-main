@@ -44,24 +44,20 @@
               </p>
               <p>
                 <b>compatible avec les CGU :</b>
-                {% if product_compatibility == 'compatible_products' %}
+                {% if product_compatibility %}
                   <span class="mx-2 pb-1 badge rounded-pill text-bg-success">
                     <i class="bi bi-check-circle"></i> Oui
                   </span>
-                {% elif product_compatibility == 'incompatible_products' %}
+                {% else %}
                   <span class="mx-2 pb-1 badge rounded-pill text-bg-dark">
                     <i class="bi bi-x-circle"></i> Non
-                  </span>
-                {% else %}
-                  <span class="mx-2 pb-1 badge rounded-pill text-bg-warning">
-                    <i class="bi bi-radioactive"></i> Partiellement
                   </span>
                 {% endif %}
               </p>
               <p>
                 <b>EAN-13 :</b> {{ ean }}
               </p>
-              {% if has_permission("PRO_FRAUD_ACTIONS") and (product_compatibility != 'incompatible_products' or approved_active_offers_count + approved_inactive_offers_count + pending_offers_count > 0) %}
+              {% if has_permission("PRO_FRAUD_ACTIONS") and (product_compatibility or approved_active_offers_count + approved_inactive_offers_count + pending_offers_count > 0) %}
                 <div>
                   {{ build_modal_form("set-gcu-incompatible", url_for('.set_product_gcu_incompatible'), incompatibility_form,
                   "Rendre le livre et les offres associées incompatibles avec les CGU", "Confirmer",

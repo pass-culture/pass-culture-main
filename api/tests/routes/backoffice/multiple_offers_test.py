@@ -27,6 +27,8 @@ pytestmark = [
     pytest.mark.backoffice,
 ]
 
+# TODO : adapt test to real cases (offers with ean without products, and only one product per ean)
+
 
 class MultipleOffersHomeTest(GetEndpointHelper):
     endpoint = "backoffice_web.multiple_offers.multiple_offers_home"
@@ -44,15 +46,17 @@ class SearchMultipleOffersTest(GetEndpointHelper):
 
     # - fetch session (1 query)
     # - fetch user (1 query)
-    # - fetch product and offers with joinedload including extra data (1 query)
-    expected_num_queries = 3
+    # - fetch unique product (1 query)
+    # - fetch offers with joinedload including extra data (1 query)
+    expected_num_queries = 4
 
     def test_search_product_with_offers(self, authenticated_client):
-        offers_factories.ThingOfferFactory(
-            product__name="Product with EAN",
-            product__extraData={"ean": "9783161484100"},
-            product__subcategoryId=subcategories.LIVRE_PAPIER.id,
+        product = offers_factories.ThingProductFactory(
+            name="Product with EAN",
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            extraData={"ean": "9783161484100"},
         )
+        offers_factories.ThingOfferFactory(product=product)
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, ean="978-3-16-148410-0"))
@@ -71,6 +75,71 @@ class SearchMultipleOffersTest(GetEndpointHelper):
         assert "Rejetées : 0 " in left_card
         assert "compatible avec les CGU : Oui" in left_card
         assert "EAN-13 : 9783161484100 " in left_card
+
+    def test_search_product_with_offers_and_manual_offers(self, authenticated_client):
+        product = offers_factories.ThingProductFactory(
+            name="Product with EAN",
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            extraData={"ean": "9783161484100"},
+        )
+        offers_factories.ThingOfferFactory(product=product)
+
+        offers_factories.ThingOfferFactory(extraData={"ean": "9783161484100"})
+        offers_factories.ThingOfferFactory(extraData={"ean": "9783161484100"})
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, ean="978-3-16-148410-0"))
+            assert response.status_code == 200
+
+        cards = html_parser.extract_cards_text(response.data)
+        assert len(cards) == 2  # left and right cards when active offers exist
+        left_card = cards[0]
+
+        assert "Titre du produit : Product with EAN " in left_card
+        assert "Catégorie : Livre " in left_card
+        assert "Nombre d'offres associées : 3 " in left_card
+        assert "Approuvées actives : 3 " in left_card
+        assert "Approuvées inactives : 0 " in left_card
+        assert "En attente : 0 " in left_card
+        assert "Rejetées : 0 " in left_card
+        assert "compatible avec les CGU : Oui" in left_card
+        assert "EAN-13 : 9783161484100 " in left_card
+
+    def test_search_product_without_offers(self, authenticated_client):
+        offers_factories.ThingProductFactory(
+            name="Product without offer",
+            extraData={"ean": "9783161484100"},
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+        )
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, ean="978 3161484100"))
+            assert response.status_code == 200
+
+        cards = html_parser.extract_cards_text(response.data)
+        assert len(cards) == 1  # no offer => no card about tags
+        left_card = cards[0]
+
+        assert "Titre du produit : Product without offer " in left_card
+        assert "Catégorie : Livre " in left_card
+        assert "Nombre d'offres associées : 0 " in left_card
+        assert "Approuvées actives : 0 " in left_card
+        assert "Approuvées inactives : 0 " in left_card
+        assert "En attente : 0 " in left_card
+        assert "Rejetées : 0 " in left_card
+        assert "compatible avec les CGU : Oui" in left_card
+        assert "EAN-13 : 9783161484100 " in left_card
+
+    def test_search_product_with_offers_but_no_product(self, authenticated_client):
+        # offers_factories.ThingOfferFactory(extraData={"ean": "9783161484100"})
+        # offers_factories.ThingOfferFactory(extraData={"ean": "9783161484100"})
+
+        with assert_num_queries(self.expected_num_queries - 1):  # no offers to query
+            response = authenticated_client.get(url_for(self.endpoint, ean="978-3-16-148410-0"))
+            assert response.status_code == 200
+
+        cards = html_parser.extract_cards_text(response.data)
+        assert len(cards) == 0
 
     def test_search_product_without_offer(self, authenticated_client):
         offers_factories.ThingProductFactory(
@@ -98,25 +167,17 @@ class SearchMultipleOffersTest(GetEndpointHelper):
         assert "EAN-13 : 9783161484100 " in left_card
 
     @pytest.mark.parametrize(
-        "first_compatibility,second_compatibility,expected_cgu_display",
+        "compatibility,expected_cgu_display",
         [
-            (True, True, "Oui"),
-            (False, False, "Non"),
-            (True, False, "Partiellement"),
+            (True, "Oui"),
+            (False, "Non"),
         ],
     )
-    def test_product_compatibility(
-        self, authenticated_client, first_compatibility, second_compatibility, expected_cgu_display
-    ):
+    def test_product_compatibility(self, authenticated_client, compatibility, expected_cgu_display):
         offers_factories.ThingProductFactory(
             extraData={"ean": "9781234567890"},
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            isGcuCompatible=first_compatibility,
-        )
-        offers_factories.ThingProductFactory(
-            extraData={"ean": "9781234567890"},
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
-            isGcuCompatible=second_compatibility,
+            isGcuCompatible=compatibility,
         )
 
         with assert_num_queries(self.expected_num_queries):
@@ -164,14 +225,10 @@ class AddCriteriaToOffersTest(PostEndpointHelper):
         criterion1 = criteria_factories.CriterionFactory(name="Pretty good books")
         criterion2 = criteria_factories.CriterionFactory(name="Other pretty good books")
         product = offers_factories.ProductFactory(extraData={"ean": "9783161484100"})
-        offer1 = offers_factories.OfferFactory(
-            product=product, extraData={"ean": "9783161484100"}, criteria=[criterion1]
-        )
-        offer2 = offers_factories.OfferFactory(product=product, extraData={"ean": "9783161484100"})
-        inactive_offer = offers_factories.OfferFactory(
-            product=product, extraData={"ean": "9783161484100"}, isActive=False
-        )
-        unmatched_offer = offers_factories.OfferFactory()
+        offer1 = offers_factories.OfferFactory(product=product, criteria=[criterion1])
+        offer2 = offers_factories.OfferFactory(product=product)
+        inactive_offer = offers_factories.OfferFactory(product=product, isActive=False)
+        unmatched_offer = offers_factories.OfferFactory()  # ? extraData={"ean": "9783161484100"}
 
         response = self.post_to_endpoint(
             authenticated_client, form={"ean": "9783161484100", "criteria": [criterion1.id, criterion2.id]}

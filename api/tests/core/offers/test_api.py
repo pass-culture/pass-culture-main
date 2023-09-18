@@ -1200,7 +1200,7 @@ class RejectInappropriateProductTest:
             bookings_factories.BookingFactory(stock__offer=offer)
 
         # When
-        api.reject_inappropriate_products("ean-de-test", send_booking_cancellation_emails=False)
+        api.reject_inappropriate_product("ean-de-test", send_booking_cancellation_emails=False)
 
         # Then
         products = models.Product.query.all()
@@ -1240,7 +1240,7 @@ class RejectInappropriateProductTest:
         assert bookings_models.Booking.query.count() == len(offers)
 
         # When
-        api.reject_inappropriate_products("ean-de-test", send_booking_cancellation_emails=True)
+        api.reject_inappropriate_product("ean-de-test", send_booking_cancellation_emails=True)
 
         # Then
         mocked_send_booking_cancellation_emails_to_user_and_offerer.assert_called()
@@ -1249,7 +1249,7 @@ class RejectInappropriateProductTest:
 @pytest.mark.usefixtures("db_session")
 class DeactivatePermanentlyUnavailableProductTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_should_deactivate_permanently_unavailable_product(self, mocked_async_index_offer_ids):
+    def test_should_deactivate_permanently_unavailable_products(self, mocked_async_index_offer_ids):
         # Given
         product1 = factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}
