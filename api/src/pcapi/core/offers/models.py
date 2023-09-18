@@ -92,6 +92,7 @@ class OfferExtraData(typing.TypedDict, total=False):
     collection: str | None
     comic_series: str | None
     comment: str | None
+    contenu_explicite: str | None
     date_parution: str | None
     dewey: str | None
     dispo: str | None

@@ -62,6 +62,7 @@ class TiteliveSearchTest:
         assert cd_product.subcategoryId == subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id
         assert cd_product.extraData["artist"] == "Gims"
         assert cd_product.extraData["author"] == "Gims"
+        assert cd_product.extraData["contenu_explicite"] == "0"
         assert cd_product.extraData["date_parution"] == "2022-12-02"
         assert cd_product.extraData["dispo"] == "1"
         assert cd_product.extraData["distributeur"] == "Believe"
@@ -91,6 +92,7 @@ class TiteliveSearchTest:
         assert shared_gtl_product.subcategoryId == subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id
         assert shared_gtl_product.extraData["artist"] == "Gims"
         assert shared_gtl_product.extraData["author"] == "Gims"
+        assert shared_gtl_product.extraData["contenu_explicite"] == "0"
         assert shared_gtl_product.extraData["date_parution"] == "2022-12-02"
         assert shared_gtl_product.extraData["dispo"] == "1"
         assert shared_gtl_product.extraData["distributeur"] == "Believe"
@@ -120,6 +122,7 @@ class TiteliveSearchTest:
         assert vinyle_product.subcategoryId == subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id
         assert vinyle_product.extraData["artist"] == "Gorillaz"
         assert vinyle_product.extraData["author"] == "Gorillaz"
+        assert vinyle_product.extraData["contenu_explicite"] == "0"
         assert vinyle_product.extraData["date_parution"] == "2023-02-24"
         assert vinyle_product.extraData["dispo"] == "1"
         assert vinyle_product.extraData["distributeur"] == "Warner Music France"

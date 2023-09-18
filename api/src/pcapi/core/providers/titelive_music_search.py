@@ -140,6 +140,7 @@ def build_music_extra_data(
         artist=common_article_fields["artiste"],
         author=article.compositeur,
         comment=article.commentaire,
+        contenu_explicite=article.contenu_explicite,
         date_parution=article.dateparution.isoformat() if article.dateparution else None,
         dispo=article.dispo,
         distributeur=article.distributeur,
