@@ -17,7 +17,6 @@ interface CheckboxGroupItemProps {
 const CheckboxGroupItem = ({
   setGroupTouched,
   label,
-  description,
   name,
   hasError,
   icon,
@@ -40,7 +39,6 @@ const CheckboxGroupItem = ({
       icon={icon}
       hasError={hasError}
       label={label}
-      description={description}
       onChange={onCustomChange}
       disabled={disabled}
     />
