@@ -295,7 +295,6 @@ def get_stats_data(venue_id: int) -> dict:
 
 def get_venue_bank_information(venue: offerers_models.Venue) -> serialization.VenueBankInformation:
     reimbursement_point_name = None
-    pricing_point_id = None
     pricing_point_name = None
     bic = None
     iban = None
@@ -315,14 +314,12 @@ def get_venue_bank_information(venue: offerers_models.Venue) -> serialization.Ve
     if venue.siret:
         pricing_point_name = venue.name
     elif current_pricing_point is not None:
-        pricing_point_id = current_pricing_point.id
         pricing_point_name = current_pricing_point.name
         pricing_point_url = url_for("backoffice_web.venue.get", venue_id=current_pricing_point.id)
 
-    return serialization.VenueBankInformation(  # type: ignore [call-arg]
+    return serialization.VenueBankInformation(
         reimbursement_point_name=reimbursement_point_name,
         reimbursement_point_url=reimbursement_point_url,
-        pricing_point_id=pricing_point_id,
         pricing_point_name=pricing_point_name,
         pricing_point_url=pricing_point_url,
         bic=bic,
@@ -615,7 +612,7 @@ def get_batch_edit_venues_form() -> utils.BackofficeResponse:
             )
             .all()
         )
-        criteria = list(reduce(set.intersection, [set(venue.criteria) for venue in venues]))  # type: ignore
+        criteria = list(reduce(set.intersection, [set(venue.criteria) for venue in venues]))  # type: ignore [arg-type]
 
         if len(criteria) > 0:
             form.criteria.choices = [(criterion.id, criterion.name) for criterion in criteria]
@@ -718,6 +715,8 @@ def _render_remove_pricing_point_form(
     current_pricing_point = venue.current_pricing_point
     current_reimbursement_point = venue.current_reimbursement_point
 
+    assert current_pricing_point
+
     return (
         render_template(
             "components/turbo/modal_form.html",
@@ -731,8 +730,8 @@ def _render_remove_pricing_point_form(
                 "Venue ID": venue.id,
                 "SIRET": venue.siret or "Pas de SIRET",
                 "CA de l'année": filters.format_amount(siret_api.get_yearly_revenue(venue.id)),
-                "Point de valorisation": current_pricing_point.name,  # type: ignore [union-attr]
-                "SIRET de valorisation": current_pricing_point.siret,  # type: ignore [union-attr]
+                "Point de valorisation": current_pricing_point.name,
+                "SIRET de valorisation": current_pricing_point.siret,
                 "Point de remboursement": current_reimbursement_point.name if current_reimbursement_point else "Aucun",
                 "SIRET de remboursement": current_reimbursement_point.siret if current_reimbursement_point else "Aucun",
             },

@@ -1,3 +1,5 @@
+import datetime
+
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational import exceptions
 from pcapi.core.educational.adage_backends.base import AdageClient
@@ -92,22 +94,22 @@ class AdageSpyClient(AdageClient):
     def get_cultural_partner(self, siret: str) -> venues_serialize.AdageCulturalPartner:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/partenaire-culturel/{siret}", "sent_data": ""})
         return venues_serialize.AdageCulturalPartner(
-            id="128028",  # type: ignore [arg-type]
+            id=128028,
             venueId=None,
             siret=siret,
             regionId=None,
             academieId=None,
             statutId=3,
             labelId=None,
-            typeId="8",  # type: ignore [arg-type]
+            typeId=8,
             communeId="26324",
             libelle="Fête du livre jeunesse de St Paul les trois Châteaux",
             adresse="Place Charles Chausy",
             siteWeb="http://www.fetedulivrejeunesse.fr/",
-            latitude="44.350457",  # type: ignore [arg-type]
-            longitude="4.765918",  # type: ignore [arg-type]
-            actif="1",  # type: ignore [arg-type]
-            dateModification="2021-09-01 00:00:00",  # type: ignore [arg-type]
+            latitude=44.350457,
+            longitude=4.765918,
+            actif=1,
+            dateModification=datetime.datetime(2021, 9, 1),
             statutLibelle="Association",
             labelLibelle=None,
             typeIcone="town",

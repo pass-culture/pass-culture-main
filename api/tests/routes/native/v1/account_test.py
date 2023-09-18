@@ -1037,7 +1037,7 @@ class GetEMailUpdateStatusTest:
         user = users_factories.UserFactory(email=self.old_email)
         request_email_update(user, self.new_email, settings.TEST_DEFAULT_PASSWORD)
 
-        redis_key = token_utils.Token._get_redis_key(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id)  # type: ignore [attr-defined]
+        redis_key = token_utils.Token._get_redis_key(token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION, user.id)
         redis_value = app.redis_client.get(redis_key)
         redis_expiration = app.redis_client.ttl(redis_key)
         app.redis_client.delete(redis_key)

@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+from decimal import Decimal
 import logging
 from random import choice
 
@@ -108,10 +109,11 @@ def _create_bookings_for_other_beneficiaries(
                 repository.save(stock)
 
             if user_should_have_no_more_money and user not in list_of_users_with_no_more_money:
-                booking_amount = user.deposit.amount  # type: ignore [union-attr]
+                assert user.deposit
+                booking_amount = user.deposit.amount
                 list_of_users_with_no_more_money.append(user)
             elif user_should_have_no_more_money and user in list_of_users_with_no_more_money:
-                booking_amount = 0
+                booking_amount = Decimal(0)
             else:
                 booking_amount = None
 

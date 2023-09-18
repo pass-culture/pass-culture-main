@@ -457,13 +457,13 @@ class PhoneValidationFraudData(pydantic_v1.BaseModel):
 
 
 class ProfileCompletionContent(pydantic_v1.BaseModel):
-    activity: users_models.ActivityEnum | str  # str for backward compatibility. All new data should be ActivityEnum
+    activity: users_models.ActivityEnum | str | None  # str for backward compatibility. All new data should be ActivityEnum
     address: str | None  # Optional because it was not saved up until now
-    city: str
+    city: str | None  # Optional because it was not saved up until now
     first_name: str
     last_name: str
     origin: str  # Where the profile was completed by the user. Can be the APP or DMS
-    postal_code: str
+    postal_code: str | None  # Optional because it was not saved up until now
     school_type: users_models.SchoolTypeEnum | None
 
     class Config:
@@ -527,7 +527,7 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
         nullable=True,
     )
     reason = sa.Column(sa.Text, nullable=True)
-    reasonCodes = sa.Column(
+    reasonCodes: list[FraudReasonCode] = sa.Column(
         postgresql.ARRAY(sa.Enum(FraudReasonCode, create_constraint=False, native_enum=False)),
         nullable=True,
     )

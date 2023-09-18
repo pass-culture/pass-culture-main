@@ -1,4 +1,5 @@
 from datetime import datetime
+import typing
 
 from flask import Response
 from flask import flash
@@ -375,19 +376,19 @@ def _create_incident_with_log(
 
 
 def _initialize_additional_data(bookings: list[bookings_models.Booking]) -> dict:
-    additional_data = {"Lieu": bookings[0].venue.name}
+    additional_data: dict[str, typing.Any] = {"Lieu": bookings[0].venue.name}
 
     if len(bookings) == 1:
         booking = bookings[0]
 
-        additional_data["ID de la réservation"] = booking.id  # type: ignore [assignment]
+        additional_data["ID de la réservation"] = booking.id
         additional_data["Statut de la réservation"] = filters.format_booking_status(booking.status)
         additional_data["Contremarque"] = booking.token
         additional_data["Nom de l'offre"] = booking.stock.offer.name
-        additional_data["Bénéficiaire"] = booking.user.full_name  # type: ignore [assignment]
+        additional_data["Bénéficiaire"] = booking.user.full_name
         additional_data["Montant remboursé à l'acteur"] = f"{-booking.pricing.amount/100 if booking.pricing else 0} €"
     else:
-        additional_data["Nombre de réservations"] = len(bookings)  # type: ignore [assignment]
+        additional_data["Nombre de réservations"] = len(bookings)
         additional_data[
             "Montant remboursé à l'acteur"
         ] = f"{-sum(booking.pricing.amount for booking in bookings if booking.pricing)/100} €"
@@ -513,9 +514,8 @@ def _validate_finance_incident(finance_incident: finance_models.FinanceIncident)
                 educational_models.CollectiveBookingCancellationReasons.FINANCE_INCIDENT, cancel_even_if_reimbursed=True
             )
 
-    extra_data = {"linked_incident_id": finance_incident.id}
+    beneficiaries_actions = []
     if not finance_incident.relates_to_collective_bookings:
-        beneficiaries_actions = []
         beneficiaries = set(
             booking_incident.beneficiary for booking_incident in finance_incident.booking_finance_incidents
         )
@@ -526,7 +526,7 @@ def _validate_finance_incident(finance_incident: finance_models.FinanceIncident)
                     author=current_user,
                     user=beneficiary,
                     save=False,
-                    **extra_data,  # type: ignore [arg-type]
+                    linked_incident_id=finance_incident.id,
                 )
             )
 
@@ -538,7 +538,7 @@ def _validate_finance_incident(finance_incident: finance_models.FinanceIncident)
         venue=finance_incident.venue,
         finance_incident=finance_incident,
         save=False,
-        **extra_data,  # type: ignore [arg-type]
+        linked_incident_id=finance_incident.id,
     )
 
     repository.save(finance_incident, validation_action, *beneficiaries_actions)

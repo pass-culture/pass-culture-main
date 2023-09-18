@@ -651,9 +651,9 @@ class Offer(PcObject, Base, Model, DeactivableMixin, ValidationMixin, Accessibil
         return None
 
     @property
-    def thumbUrl(self) -> str:
+    def thumbUrl(self) -> str | None:
         image = self.image
-        return image.url if image else None  # type: ignore [return-value]
+        return image.url if image else None
 
     @property
     def min_price(self) -> float | None:

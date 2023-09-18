@@ -433,7 +433,7 @@ def get_batch_edit_offer_form() -> utils.BackofficeResponse:
             )
             .all()
         )
-        criteria = list(reduce(set.intersection, [set(offer.criteria) for offer in offers]))  # type: ignore
+        criteria = list(reduce(set.intersection, [set(offer.criteria) for offer in offers]))  # type: ignore [arg-type]
 
         if len(criteria) > 0:
             form.criteria.choices = [(criterion.id, criterion.name) for criterion in criteria]
@@ -459,7 +459,7 @@ def batch_edit_offer() -> utils.BackofficeResponse:
     offers = offers_models.Offer.query.filter(offers_models.Offer.id.in_(form.object_ids_list)).all()
     criteria = criteria_models.Criterion.query.filter(criteria_models.Criterion.id.in_(form.criteria.data)).all()
 
-    previous_criteria = list(reduce(set.intersection, [set(offer.criteria) for offer in offers]))  # type: ignore
+    previous_criteria = list(reduce(set.intersection, [set(offer.criteria) for offer in offers]))  # type: ignore [arg-type]
     deleted_criteria = list(set(previous_criteria).difference(criteria))
 
     for offer in offers:

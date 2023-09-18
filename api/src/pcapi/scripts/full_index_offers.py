@@ -19,13 +19,12 @@ logger = logging.getLogger(__name__)
 blueprint = Blueprint(__name__, __name__)
 
 
-def _get_eta(end, current, elapsed_per_batch):  # type: ignore [no-untyped-def]
+def _get_eta(end: int, current: int, elapsed_per_batch: list[int]) -> str:
     left_to_do = end - current
-    eta = left_to_do / BATCH_SIZE * statistics.mean(elapsed_per_batch)
-    eta = datetime.datetime.utcnow() + datetime.timedelta(seconds=eta)
-    eta = eta.astimezone(pytz.timezone("Europe/Paris"))
-    eta = eta.strftime("%d/%m/%Y %H:%M:%S")
-    return eta
+    eta_seconds = left_to_do / BATCH_SIZE * statistics.mean(elapsed_per_batch)
+    eta_datetime = datetime.datetime.utcnow() + datetime.timedelta(seconds=eta_seconds)
+    eta_datetime = eta_datetime.astimezone(pytz.timezone("Europe/Paris"))
+    return eta_datetime.strftime("%d/%m/%Y %H:%M:%S")
 
 
 @blueprint.cli.command("full_index_offers")
@@ -62,7 +61,7 @@ def full_index_offers(start: int, end: int) -> None:
         raise ValueError('"start" must be less than "end"')
     backend = algolia.AlgoliaBackend()
 
-    queue: list = []
+    queue: list[tuple] = []
 
     def enqueue_or_index(
         q: list,

@@ -48,7 +48,7 @@ class OfferRecap:
         is_thing: bool,
         product_ean: str | None,
         name: str,
-        thumb_url: str,
+        thumb_url: str | None,
         subcategory_id: str | None,
         venue_id: int,
         venue_is_virtual: bool,

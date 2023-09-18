@@ -7,7 +7,7 @@ from pcapi.sandboxes import scripts
 logger = logging.getLogger(__name__)
 
 
-def save_sandbox(name, with_clean=True):  # type: ignore [no-untyped-def]
+def save_sandbox(name: str, with_clean: bool = True) -> None:
     if with_clean:
         logger.info("Cleaning database")
         clean_all_database()
