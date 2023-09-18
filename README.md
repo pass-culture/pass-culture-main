@@ -80,17 +80,23 @@ manières de lancer le backend.
 - `pc start-backend`
 - `pc sandbox -n industrial` (pour peupler la DB)
 
+Le backend est accessible sur [http://localhost:5001/](http://localhost:5001/), il est possible d'en tester le
+fonctionnement par la route [http://localhost:5001/health/api](http://localhost:5001/health/api).
+
+#### Backoffice
+
+- [http://localhost:5002/](http://localhost:5002/) devrait être lancé et fonctionnel après `pc start-backend`, une fois
+qu'api répond
+- Cliquez sur _Se connecter via Google_
+- Vous arriverez alors sur la page d'accueil du BO, en tant qu'utilisateur admin `admin@passculture.local`, avec toutes
+les permissions
+
+
 #### pro
 
 - `pc start-pro`
-- `http://localhost:3001/` devrait être lancé et fonctionnel
+- [http://localhost:3001/](http://localhost:3001/) devrait être lancé et fonctionnel
 - Connectez-vous avec `pctest.admin93.0@example.com` (admin) ou `pctest.pro93.0@example.com` (non-admin)
-
-#### Flask Admin
-
-- lancer `api` ou `pro`
-- se connecter avec les identifiants d'un compte admin, par exemple `pctest.admin93.0@example.com`
-- visiter `http://localhost/pc/back-office/`
 
 Le mot de passe des utilisateurs de la sandbox dans un environnement de développement est : `user@AZERTY123`
 
@@ -101,18 +107,10 @@ de l'équipe.
 Ces utilisateurs existent également pour le 97, en remplaçant `93` par `97`.
 
 
-#### Backoffice
-
-- `pc start-backoffice`
-- `http://localhost:5001/` devrait être lancé et fonctionnel
-- Cliquez sur _Se connecter via Google_
-- Vous arriverez alors sur la page d'accueil du BO, en tant qu'utilisateur admin `admin@passculture.local`
-
 ### Commandes utiles
 
 - Rebuild : `pc rebuild-backend` (reconstruire l'image docker sans cache)
 - Restart : `pc restart-backend` (effacer la base de données, et relancer tous les containers)
-- Restart : `pc restart-backoffice` (effacer la base de données, et relancer tous les containers, équivalent pour `pc start-backoffice`)
 - Reset :
   - `pc reset-sandbox-db` : si vos serveurs de dev tournent, et que vous souhaitez juste réinitialiser la db
   - `pc reset-reco-db` : (si vous voulez juste enlever les recommandations et bookings créés en dev par votre

@@ -73,7 +73,7 @@ FROM lib AS api-flask
 USER root
 
 RUN apt-get update && \
-    apt-get --no-install-recommends -y install postgresql-client  && \
+    apt-get --no-install-recommends -y install curl postgresql-client  && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists*
 

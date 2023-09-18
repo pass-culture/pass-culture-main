@@ -1,7 +1,7 @@
 # pass-culture-api
 
 Voici le backend de l'application pass Culture; il est lancé via `docker-compose` en utilisant le fichier
-`docker-compose-app.yml` du répertoire parent de `api`: `pass-culture-main`.
+`docker-compose-backend.yml` du répertoire parent de `api`: `pass-culture-main`.
 
 Plus de détails sur le lancement de l'infra docker-compose sont accessibles dans le
 [README de pass-culture-main](https://github.com/pass-culture/pass-culture-main#readme)
@@ -48,7 +48,7 @@ Une base de données de test et un cache redis sont nécessaires à l'exécution
   _redis_ via docker-compose
 
 ```shell
-    docker-compose -f ../docker-compose-app.yml up -d postgres-test redis
+    docker-compose -f ../docker-compose-backend.yml up -d postgres-test redis
  ```
 
 * Soit en démarrant ces conteneurs via docker

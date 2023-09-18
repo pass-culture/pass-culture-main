@@ -34,7 +34,7 @@ services:
       context: ./api
       target: api-flask
     working_dir: /usr/src/app
-    container_name: pc-flask
+    container_name: pc-api
     command: ["./start-api-when-database-is-ready.sh"]
     volumes:
       - ./api:/usr/src/app
@@ -50,6 +50,30 @@ services:
     ports:
       - 5001:5001
       - 10002:10002 # debugger port
+    stdin_open: true
+    tty: true
+
+  backoffice:
+    build:
+      context: ./api
+      target: api-flask
+    working_dir: /usr/src/app
+    container_name: pc-backoffice
+    command: ["./start-backoffice-when-api-is-ready.sh"]
+    volumes:
+      - ./api:/usr/src/app
+    env_file:
+      - env_file
+    networks:
+      - db_nw
+      - web_nw
+    depends_on:
+      - postgres
+      - redis
+      - postgres-test
+    ports:
+      - 5002:5001
+      - 10004:10003 # debugger port
     stdin_open: true
     tty: true
 
