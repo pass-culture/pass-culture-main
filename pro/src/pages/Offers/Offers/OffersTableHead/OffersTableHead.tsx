@@ -1,10 +1,7 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
 
 import { SearchFiltersParams } from 'core/Offers/types'
 import { Audience } from 'core/shared'
-import { searchFiltersSelector } from 'store/offers/selectors'
-import { BaseCheckbox } from 'ui-kit/form/shared'
 
 import StatusFiltersButton from './StatusFiltersButton'
 
@@ -21,18 +18,12 @@ type OffersTableHeadProps = {
 }
 
 const OffersTableHead = ({
-  areAllOffersSelected,
-  areOffersPresent,
   filters,
   isAdminForbidden,
   applyFilters,
-  selectAllOffers,
   updateStatusFilter,
   audience,
-  isAtLeastOneOfferChecked,
 }: OffersTableHeadProps): JSX.Element => {
-  const savedSearchFilters = useSelector(searchFiltersSelector)
-
   return (
     <thead>
       <tr>
