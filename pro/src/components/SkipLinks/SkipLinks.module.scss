@@ -28,12 +28,13 @@
     gap: rem.torem(16px);
     align-items: center;
     height: rem.torem(32px);
-    justify-content: flex-end;
+
+    @media (min-width: size.$desktop) {
+      justify-content: flex-end;
+    }
 
     // Align skiplink to passculture logo, add logo margin and padding of a nav item creating more space
-    margin-right: calc(
-      size.$nav-brand-margin-right + size.$header-nav-item-padding + rem.torem(4px)
-    );
+    margin-right: calc(size.$nav-brand-margin-right + size.$header-nav-item-padding + rem.torem(4px));
 
     &-button {
       color: colors.$white;
