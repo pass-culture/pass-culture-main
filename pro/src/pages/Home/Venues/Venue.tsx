@@ -236,9 +236,6 @@ const Venue = ({
               <button
                 className="h-card-title h-card-title-button"
                 type="button"
-                title={`${
-                  isStatOpen ? 'Masquer' : 'Afficher'
-                } les statistiques de ${publicName || name}`}
                 onClick={() => {
                   setIsStatOpen(prev => !prev)
                   logEvent?.(
@@ -248,7 +245,9 @@ const Venue = ({
                 }}
               >
                 <SvgIcon
-                  alt="icon"
+                  alt={`${
+                    isStatOpen ? 'Masquer' : 'Afficher'
+                  } les statistiques`}
                   className="h-card-title-ico align-baseline"
                   viewBox="0 0 16 16"
                   src={isStatOpen ? fullDisclosureOpen : fullDisclosureClose}
