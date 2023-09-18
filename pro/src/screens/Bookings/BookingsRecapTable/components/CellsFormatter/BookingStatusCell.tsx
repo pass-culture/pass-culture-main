@@ -7,7 +7,6 @@ import {
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import Tooltip from 'ui-kit/Tooltip'
 
 import {
   getBookingStatusDisplayInformations,
@@ -33,29 +32,25 @@ const BookingStatusCell = ({
       bookingRecapInfo.original.bookingStatusHistory.slice(-1)[0].status
     const bookingDisplayInfo =
       getCollectiveBookingStatusDisplayInformations(lastBookingStatus)
-    const tooltipId = `tooltip-${bookingRecapInfo.id}`
     if (!bookingDisplayInfo) {
       return null
     }
 
     return (
-      <Tooltip content={bookingDisplayInfo.label} id={tooltipId}>
-        <div
-          className={cn(
-            styles['booking-status-label'],
-            styles['booking-status-wrapper'],
-            bookingDisplayInfo?.statusClassName
-          )}
-          aria-describedby={tooltipId}
-        >
-          <SvgIcon
-            src={bookingDisplayInfo.icon}
-            alt={bookingDisplayInfo.label}
-            className={styles['booking-status-icon']}
-          />
-          <span>{bookingDisplayInfo.status.toLowerCase()}</span>
-        </div>
-      </Tooltip>
+      <div
+        className={cn(
+          styles['booking-status-label'],
+          styles['booking-status-wrapper'],
+          bookingDisplayInfo?.statusClassName
+        )}
+      >
+        <SvgIcon
+          src={bookingDisplayInfo.icon}
+          alt=""
+          className={styles['booking-status-icon']}
+        />
+        <span>{bookingDisplayInfo.status.toLowerCase()}</span>
+      </div>
     )
   }
 
@@ -83,7 +78,7 @@ const BookingStatusCell = ({
       {bookingDisplayInfo && (
         <SvgIcon
           src={bookingDisplayInfo.icon}
-          alt={bookingDisplayInfo.label}
+          alt=""
           className={styles['booking-status-icon']}
         />
       )}
