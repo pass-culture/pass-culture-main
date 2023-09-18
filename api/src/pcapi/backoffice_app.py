@@ -12,6 +12,7 @@ from sentry_sdk import set_tag
 from pcapi import settings
 from pcapi.flask_app import app
 from pcapi.flask_app import setup_metrics
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.backoffice.scss import preprocess_scss
 
 
@@ -31,6 +32,7 @@ csrf.init_app(app)
 
 @app.errorhandler(CSRFError)
 def handle_csrf_error(error: typing.Any) -> tuple[str, int]:
+    mark_transaction_as_invalid()
     return render_template("errors/csrf.html"), 400
 
 

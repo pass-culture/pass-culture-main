@@ -14,12 +14,16 @@ from pcapi.validation.models import entity_validator
 logger = logging.getLogger(__name__)
 
 
+# DEPRECATED in favor of @atomic() and db.session.delete because committing or
+# rollbacking should be done by a transaction context manager, not manually
 def delete(*models: Model) -> None:
     for model in models:
         db.session.delete(model)
     db.session.commit()
 
 
+# DEPRECATED in favor of @atomic() and db.session.add because committing or
+# rollbacking should be done by a transaction context manager, not manually
 def add_to_session(*models: Model) -> None:
     """Validate models and add them to session."""
     if not models:
@@ -39,6 +43,8 @@ def add_to_session(*models: Model) -> None:
         raise api_errors
 
 
+# DEPRECATED in favor of @atomic() and db.session.add because committing or
+# rollbacking should be done by a transaction context manager, not manually
 def save(*models: Model, commit: bool = True) -> None:
     add_to_session(*models)
 

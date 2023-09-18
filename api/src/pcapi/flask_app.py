@@ -241,9 +241,7 @@ def get_shell_extra_context() -> dict:
 
 
 @app.teardown_request
-def remove_db_session(
-    exc: BaseException | None = None,  # pylint: disable=unused-argument
-) -> None:
+def remove_db_session(exc: BaseException | None = None) -> None:
     try:
         db.session.remove()
     except AttributeError:

@@ -21,6 +21,7 @@ from requests.auth import _basic_auth_str
 from requests.exceptions import ConnectionError as RequestConnectionError
 import requests_mock
 
+from pcapi import repository
 from pcapi import settings
 from pcapi.analytics.amplitude import testing as amplitude_testing
 import pcapi.core.educational.testing as adage_api_testing
@@ -373,6 +374,11 @@ if os.environ.get("CHECK_DATA_LEAKS"):
         counts_after = {model: model.query.count() for model in models}
         leaked_models = ", ".join([model.__name__ for model in models if counts_after[model] != counts_before[model]])
         assert not leaked_models, f"LEAK: {request.function} leaks {leaked_models}"
+
+
+@pytest.fixture(scope="function", autouse=True)
+def clean_global_test_cue():
+    repository._test_helper_reset_is_session_managed()
 
 
 @pytest.fixture(name="cloud_task_client")
