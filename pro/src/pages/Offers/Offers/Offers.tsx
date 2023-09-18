@@ -178,7 +178,7 @@ const Offers = ({
           )}
 
           {!hasOffers && hasSearchFilters(urlSearchFilters) && (
-            <NoResults audience={audience} resetFilters={resetFilters} />
+            <NoResults resetFilters={resetFilters} />
           )}
         </>
       )}

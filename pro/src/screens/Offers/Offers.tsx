@@ -172,7 +172,8 @@ const Offers = ({
 
   const resetFilters = () => {
     setOfferer(null)
-    setSearchFilters({ ...DEFAULT_SEARCH_FILTERS })
+    setSearchFilters(DEFAULT_SEARCH_FILTERS)
+    applyUrlFiltersAndRedirect(DEFAULT_SEARCH_FILTERS)
   }
 
   const numberOfPages = Math.ceil(offers.length / NUMBER_OF_OFFERS_PER_PAGE)

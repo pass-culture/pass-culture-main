@@ -1,4 +1,4 @@
-import React, { FormEvent, MouseEventHandler } from 'react'
+import React, { FormEvent } from 'react'
 
 import FormLayout from 'components/FormLayout/FormLayout'
 import {
@@ -14,7 +14,7 @@ import { Audience } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import fullRefreshIcon from 'icons/full-refresh.svg'
 import strokeCloseIcon from 'icons/stroke-close.svg'
-import { ButtonLink, SubmitButton } from 'ui-kit'
+import { Button, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import PeriodSelector from 'ui-kit/form/PeriodSelector/PeriodSelector'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
@@ -34,7 +34,7 @@ interface SearchFiltersProps {
       | ((previousFilters: SearchFiltersParams) => SearchFiltersParams)
   ) => void
   disableAllFilters: boolean
-  resetFilters: MouseEventHandler<HTMLAnchorElement>
+  resetFilters: () => void
   venues: SelectOption[]
   categories: SelectOption[]
   audience: Audience
@@ -114,9 +114,6 @@ const SearchFilters = ({
     audience === Audience.INDIVIDUAL
       ? 'Rechercher par nom d’offre ou par EAN-13'
       : 'Rechercher par nom d’offre'
-  const resetFilterButtonProps = !hasSearchFilters(selectedFilters)
-    ? { 'aria-current': 'page', isDisabled: true }
-    : {}
 
   return (
     <>
@@ -209,20 +206,15 @@ const SearchFilters = ({
         </FormLayout.Row>
 
         <div className={styles['reset-filters']}>
-          <ButtonLink
+          <Button
+            type="button"
             icon={fullRefreshIcon}
-            {...resetFilterButtonProps}
+            disabled={!hasSearchFilters(selectedFilters)}
             onClick={resetFilters}
-            link={{
-              to: `/offres${
-                audience === Audience.COLLECTIVE ? '/collectives' : ''
-              }`,
-              isExternal: false,
-            }}
             variant={ButtonVariant.TERNARY}
           >
             Réinitialiser les filtres
-          </ButtonLink>
+          </Button>
         </div>
         <div className={styles['search-separator']}>
           <div className={styles['separator']} />
