@@ -39,7 +39,7 @@ const Support: () => JSX.Element | null = () => {
                     from: location.pathname,
                   })
                 }
-                svgAlt="Centre d'aide (Nouvelle fenêtre)"
+                svgAlt="Nouvelle fenêtre"
               >
                 Centre d’aide
               </ButtonLink>
@@ -59,7 +59,7 @@ const Support: () => JSX.Element | null = () => {
                     from: location.pathname,
                   })
                 }
-                svgAlt="Bonnes pratiques et études (Nouvelle fenêtre)"
+                svgAlt="Nouvelle fenêtre"
               >
                 Bonnes pratiques et études
               </ButtonLink>
@@ -99,7 +99,7 @@ const Support: () => JSX.Element | null = () => {
                     from: location.pathname,
                   })
                 }
-                svgAlt="Conditions Générales d’Utilisation (Nouvelle fenêtre)"
+                svgAlt="Nouvelle fenêtre"
               >
                 Conditions Générales d’Utilisation
               </ButtonLink>

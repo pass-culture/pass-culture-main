@@ -82,7 +82,7 @@ const OfferIndividualConfirmation = ({
                 isEdition: false,
               }),
           }}
-          svgAlt="Visualiser l’offre dans l’application (Nouvelle fenêtre)"
+          svgAlt="Nouvelle fenêtre"
           text="Visualiser l’offre dans l’application"
           icon={fullLinkIcon}
         />
