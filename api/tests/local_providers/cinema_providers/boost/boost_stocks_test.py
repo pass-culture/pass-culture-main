@@ -45,11 +45,11 @@ class BoostStocksTest:
         )
 
         requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=30",
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.PAGE_1_JSON_DATA,
         )
         requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=2&per_page=30",
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=2&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.PAGE_2_JSON_DATA,
         )
         boost_stocks = BoostStocks(venue_provider=venue_provider)
@@ -86,11 +86,11 @@ class BoostStocksTest:
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
         )
         requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=30",
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.PAGE_1_JSON_DATA,
         )
         requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=2&per_page=30",
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=2&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.PAGE_2_JSON_DATA,
         )
         requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
@@ -177,7 +177,7 @@ class BoostStocksTest:
         )
 
         requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=30",
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.SAME_FILM_TWICE_JSON_DATA,
         )
         requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
@@ -248,7 +248,7 @@ class BoostStocksTest:
         )
 
         requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=30",
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
         )
         requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
@@ -275,7 +275,7 @@ class BoostStocksTest:
         )
 
         requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=30",
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.NO_PC_PRICING_JSON_DATA,
         )
         boost_stocks = BoostStocks(venue_provider=venue_provider)
@@ -304,7 +304,7 @@ class BoostStocksTest:
         )
 
         requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=30",
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
         )
         boost_stocks = BoostStocks(venue_provider=venue_provider)
@@ -346,7 +346,7 @@ class BoostStocksTest:
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
         )
         requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=30",
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
         )
         file_path = Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
@@ -383,7 +383,7 @@ class BoostStocksTest:
             "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
         )
         requests_mock.get(
-            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=30",
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?page=1&per_page=30",
             json=fixtures.ShowtimesEndpointResponse.ONE_FILM_PAGE_1_JSON_DATA,
         )
         get_poster_adapter = requests_mock.get("http://example.com/images/158026.jpg", content=bytes())
