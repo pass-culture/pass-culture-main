@@ -1,3 +1,4 @@
+import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
@@ -10,8 +11,9 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { parse } from 'utils/query-string'
 import { initReCaptchaScript } from 'utils/recaptcha'
 
-import ChangePasswordForm from './ChangePasswordForm'
+import ChangePasswordForm from './ChangePasswordForm/ChangePasswordForm'
 import styles from './ResetPassword.module.scss'
+import { validationSchema } from './validationSchema'
 
 const ResetPassword = (): JSX.Element => {
   const [passwordChanged, setPasswordChanged] = useState(false)
@@ -39,6 +41,12 @@ const ResetPassword = (): JSX.Element => {
       setIsBadToken(true)
     }
   }
+
+  const formik = useFormik({
+    initialValues: { newPasswordValue: '' },
+    onSubmit: submitChangePassword,
+    validationSchema: validationSchema,
+  })
 
   return (
     <div className={styles['reset-password']}>
@@ -75,7 +83,14 @@ const ResetPassword = (): JSX.Element => {
             />
           )}
           {token && !passwordChanged && !isBadToken && (
-            <ChangePasswordForm onSubmit={submitChangePassword} />
+            <section>
+              <h1 className={styles['change-password-title']}>
+                Définir un nouveau mot de passe
+              </h1>
+              <FormikProvider value={formik}>
+                <ChangePasswordForm />
+              </FormikProvider>
+            </section>
           )}
         </div>
       </AppLayout>
