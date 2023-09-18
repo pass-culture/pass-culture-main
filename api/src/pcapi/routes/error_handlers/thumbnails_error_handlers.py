@@ -4,6 +4,7 @@ from flask import Response
 from flask import current_app as app
 
 from pcapi.core.offers import exceptions as offers_exceptions
+from pcapi.repository import mark_transaction_as_invalid
 
 
 logger = logging.getLogger(__name__)
@@ -11,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 @app.errorhandler(offers_exceptions.ImageValidationError)
 def handle_create_a_thumbnail(exception: Exception) -> tuple[Response, int]:
+    mark_transaction_as_invalid()
     error_message = exception.args[0] if exception.args else "L'image n'est pas valide"
     logger.error(
         "When creating the offer thumbnail, this error was encountered: %s: %s",
