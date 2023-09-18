@@ -429,6 +429,8 @@ class AlgoliaBackend(base.SearchBackend):
         gtl_id = product_extra_data.get("gtl_id")
         gtl = titelive_gtl.get_gtl(gtl_id) if gtl_id else None
 
+        # If you update this dictionary, please check whether you need to
+        # also update `core.offerers.api.VENUE_ALGOLIA_INDEXED_FIELDS`.
         object_to_index = {
             "distinct": distinct,
             "objectID": offer.id,
