@@ -43,7 +43,6 @@ const CheckboxGroup = ({
             icon={item.icon}
             hasError={meta.touched && !!meta.error}
             label={item.label}
-            description={item.description}
             name={item.name}
             setGroupTouched={() =>
               !meta.touched ? helpers.setTouched(true) : null
