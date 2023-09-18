@@ -9,7 +9,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: size.$action-bar-sticky-height;
+  padding: 0 rem.torem(10px);
+  min-height: size.$action-bar-sticky-height;
   align-items: center;
   display: flex;
   background: colors.$white;
@@ -40,6 +41,30 @@
       button,
       a {
         margin-left: rem.torem(16px);
+      }
+    }
+  }
+}
+
+@media (max-width: size.$tablet) {
+  .actions-bar {
+    position: unset;
+    box-shadow: unset;
+    border-top:1px solid colors.$grey-medium;
+
+    .actions-bar-content {
+      flex-wrap: wrap;
+      justify-content: center;
+      
+      .left {
+        margin: 1rem;
+      }
+      
+      .right {
+        margin-left: unset;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: rem.torem(10px);
       }
     }
   }
