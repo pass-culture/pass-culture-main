@@ -281,16 +281,7 @@ def update_offer(
 
     repository.add_to_session(offer)
 
-    if offer.product.owningOfferer and offer.product.owningOfferer == offer.venue.managingOfferer:
-        offer.product.populate_from_dict(modifications)
-        repository.add_to_session(offer.product)
-        product_has_been_updated = True
-    else:
-        product_has_been_updated = False
-
     logger.info("Offer has been updated", extra={"offer_id": offer.id}, technical_message_id="offer.updated")
-    if product_has_been_updated:
-        logger.info("Product has been updated", extra={"product": offer.product.id})
 
     if shouldSendMail and withdrawal_updated:
         transactional_mails.send_email_for_each_ongoing_booking(offer)
