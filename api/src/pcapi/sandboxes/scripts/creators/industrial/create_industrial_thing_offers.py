@@ -53,8 +53,11 @@ def create_industrial_thing_offers(
                 is_active = True
             thing_offers_by_name[name] = offers_factories.OfferFactory(
                 venue=thing_venue,
+                # We should not create a new product for each offer
                 product=thing_product,
+                subcategoryId=thing_product.subcategoryId,
                 isActive=is_active,
+                url="http://example.com" if thing_product.isDigital else None,
                 idAtProvider=str(id_at_provider),
                 extraData=thing_product.extraData,
             )

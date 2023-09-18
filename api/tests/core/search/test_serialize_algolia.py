@@ -216,7 +216,8 @@ def test_serialize_default_position():
 
 
 def test_serialize_offer_thumb_url():
-    offer = offers_factories.OfferFactory(product__thumbCount=1)
+    product = offers_factories.ProductFactory(thumbCount=1)
+    offer = offers_factories.OfferFactory(product=product)
     serialized = algolia.AlgoliaBackend().serialize_offer(offer, 0)
     assert serialized["offer"]["thumbUrl"] == f"/storage/thumbs/products/{humanize(offer.productId)}"
 

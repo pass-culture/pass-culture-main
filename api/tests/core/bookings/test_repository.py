@@ -90,8 +90,7 @@ class FindByProUserTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
         bookings_factories.UsedBookingFactory(
@@ -111,7 +110,7 @@ class FindByProUserTest:
         assert len(bookings_recap_paginated.bookings_recap) == 1
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.offer_identifier == stock.offer.id
-        assert expected_booking_recap.offer_name == "Harry Potter"
+        assert expected_booking_recap.offer_name == offer.name
         assert expected_booking_recap.beneficiary_firstname == "Ron"
         assert expected_booking_recap.beneficiary_lastname == "Weasley"
         assert expected_booking_recap.beneficiary_email == "beneficiary@example.com"
@@ -193,8 +192,8 @@ class FindByProUserTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, quantity=2)
 
@@ -240,8 +239,8 @@ class FindByProUserTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(
             offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
         )
@@ -289,8 +288,8 @@ class FindByProUserTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(
             offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
         )
@@ -319,8 +318,8 @@ class FindByProUserTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=5)
         yesterday = datetime.utcnow() - timedelta(days=1)
         bookings_factories.CancelledBookingFactory(
@@ -388,8 +387,8 @@ class FindByProUserTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         today = datetime.utcnow()
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="ABCD")
@@ -445,8 +444,8 @@ class FindByProUserTest:
         offerers_factories.NotValidatedUserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
-        product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"ean": "9876543234"}))
+
+        offer = offers_factories.ThingOfferFactory(venue=venue, extraData=dict({"ean": "9876543234"}))
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
@@ -519,8 +518,8 @@ class FindByProUserTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
-        product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
         bookings_factories.UsedBookingFactory(
@@ -548,8 +547,8 @@ class FindByProUserTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
-        product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"ean": "9876543234"}))
+
+        offer = offers_factories.ThingOfferFactory(venue=venue, extraData=dict({"ean": "9876543234"}))
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
         bookings_factories.UsedBookingFactory(
@@ -762,8 +761,7 @@ class GetCsvReportTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
         booking = bookings_factories.UsedBookingFactory(
@@ -832,8 +830,8 @@ class GetCsvReportTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
         booking = bookings_factories.BookingFactory(
@@ -982,8 +980,8 @@ class GetCsvReportTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, quantity=2)
 
@@ -1097,8 +1095,8 @@ class GetCsvReportTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(
             offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
         )
@@ -1128,8 +1126,8 @@ class GetCsvReportTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=5)
         yesterday = datetime.utcnow() - timedelta(days=1)
         bookings_factories.CancelledBookingFactory(
@@ -1197,8 +1195,8 @@ class GetCsvReportTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         today = datetime.utcnow()
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="ABCD")
@@ -1228,8 +1226,8 @@ class GetCsvReportTest:
         offerers_factories.NotValidatedUserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
-        product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"ean": "9876543234"}))
+
+        offer = offers_factories.ThingOfferFactory(venue=venue, extraData=dict({"ean": "9876543234"}))
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
@@ -1250,8 +1248,8 @@ class GetCsvReportTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
-        product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
         bookings_factories.UsedBookingFactory(
@@ -1280,8 +1278,8 @@ class GetCsvReportTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
-        product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"ean": "9876543234"}))
+
+        offer = offers_factories.ThingOfferFactory(venue=venue, extraData=dict({"ean": "9876543234"}))
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
         bookings_factories.UsedBookingFactory(
@@ -1781,8 +1779,8 @@ class GetExcelReportTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        product = offers_factories.ThingProductFactory(name="Harry Potter")
-        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
         booking = bookings_factories.UsedBookingFactory(
@@ -1873,20 +1871,20 @@ class FindSoonToBeExpiredBookingsTest:
 
         expected_booking = bookings_factories.BookingFactory(
             dateCreated=expired_creation_date,
-            stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         # offer type not expirable
         bookings_factories.BookingFactory(
             dateCreated=expired_creation_date,
-            stock__offer__product__subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
+            stock__offer__subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
         )
         bookings_factories.BookingFactory(
             dateCreated=non_expired_creation_date,
-            stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         bookings_factories.BookingFactory(
             dateCreated=too_old_expired_creation_date,
-            stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
 
         # When
@@ -1902,19 +1900,19 @@ class FindSoonToBeExpiredBookingsTest:
 
         soon_expired_books_booking = bookings_factories.BookingFactory(
             dateCreated=soon_expired_creation_date,
-            stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
+            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
         bookings_factories.BookingFactory(
             dateCreated=soon_expired_creation_date,
-            stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         bookings_factories.BookingFactory(
             dateCreated=too_old_creation_date,
-            stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
+            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
         bookings_factories.BookingFactory(
             dateCreated=non_expired_creation_date,
-            stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
+            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
 
         assert booking_repository.find_soon_to_be_expiring_individual_bookings_ordered_by_user().all() == [

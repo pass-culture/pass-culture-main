@@ -21,9 +21,14 @@ class Returns200Test:
     def test_patch_offer(self, app, client):
         # Given
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        product = offers_factories.ProductFactory(owningOfferer=user_offerer.offerer)
+        venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.OfferFactory(
-            subcategoryId="SEANCE_CINE", venue__managingOfferer=user_offerer.offerer, product=product
+            subcategoryId=subcategories.ABO_PLATEFORME_VIDEO.id,
+            venue=venue,
+            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
+            name="New name",
+            url="test@test.com",
+            description="description",
         )
 
         # When
@@ -43,11 +48,18 @@ class Returns200Test:
         assert updated_offer.name == "New name"
         assert updated_offer.externalTicketOfficeUrl == "http://example.net"
         assert updated_offer.mentalDisabilityCompliant
-        assert updated_offer.subcategoryId == "SEANCE_CINE"
-        assert updated_offer.product.name == "New name"
+        assert updated_offer.subcategoryId == subcategories.ABO_PLATEFORME_VIDEO.id
+        assert updated_offer.product == None
 
     def test_withdrawal_can_be_updated(self, client):
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id, bookingContact="booking@conta.ct")
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.CONCERT.id,
+            bookingContact="booking@conta.ct",
+            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
+            name="New name",
+            url="",
+            description="description",
+        )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         data = {
@@ -63,7 +75,14 @@ class Returns200Test:
 
     def test_withdrawal_update_send_email_to_each_related_booker(self, client):
         # given
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id, bookingContact="booking@conta.ct")
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.CONCERT.id,
+            bookingContact="booking@conta.ct",
+            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
+            name="New name",
+            url="",
+            description="description",
+        )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
         stock = offers_factories.StockFactory(offer=offer)
         bookings = [bookings_factories.BookingFactory(stock=stock) for _ in range(3)]
@@ -101,7 +120,14 @@ class Returns200Test:
 
     def test_withdrawal_update_does_not_send_email_if_not_specified_so(self, client):
         # given
-        offer = offers_factories.OfferFactory(subcategoryId=subcategories.CONCERT.id, bookingContact="booking@conta.ct")
+        offer = offers_factories.OfferFactory(
+            subcategoryId=subcategories.CONCERT.id,
+            bookingContact="booking@conta.ct",
+            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
+            name="New name",
+            url="",
+            description="description",
+        )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
         stock = offers_factories.StockFactory(offer=offer)
         _ = [bookings_factories.BookingFactory(stock=stock) for _ in range(3)]
@@ -123,7 +149,13 @@ class Returns200Test:
 class Returns400Test:
     def when_trying_to_patch_forbidden_attributes(self, app, client):
         # Given
-        offer = offers_factories.OfferFactory()
+        offer = offers_factories.OfferFactory(
+            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
+            subcategoryId=subcategories.CARTE_MUSEE.id,
+            name="New name",
+            url="test@test.com",
+            description="description",
+        )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
@@ -161,7 +193,14 @@ class Returns400Test:
     def should_fail_when_url_has_no_scheme(self, app, client):
         # Given
         virtual_venue = offerers_factories.VirtualVenueFactory()
-        offer = offers_factories.OfferFactory(venue=virtual_venue)
+        offer = offers_factories.OfferFactory(
+            venue=virtual_venue,
+            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
+            subcategoryId=subcategories.CARTE_MUSEE.id,
+            name="New name",
+            url="test@test.com",
+            description="description",
+        )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
@@ -181,7 +220,14 @@ class Returns400Test:
     def should_fail_when_externalTicketOfficeUrl_has_no_scheme(self, app, client):
         # Given
         virtual_venue = offerers_factories.VirtualVenueFactory()
-        offer = offers_factories.OfferFactory(venue=virtual_venue)
+        offer = offers_factories.OfferFactory(
+            venue=virtual_venue,
+            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
+            subcategoryId=subcategories.CARTE_MUSEE.id,
+            name="New name",
+            url="test@test.com",
+            description="description",
+        )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
@@ -201,7 +247,14 @@ class Returns400Test:
     def should_fail_when_url_has_no_host(self, app, client):
         # Given
         virtual_venue = offerers_factories.VirtualVenueFactory()
-        offer = offers_factories.OfferFactory(venue=virtual_venue)
+        offer = offers_factories.OfferFactory(
+            venue=virtual_venue,
+            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
+            name="New name",
+            subcategoryId=subcategories.CARTE_MUSEE.id,
+            url="test@test.com",
+            description="description",
+        )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
@@ -221,7 +274,14 @@ class Returns400Test:
     def should_fail_when_externalTicketOfficeUrl_has_no_host(self, app, client):
         # Given
         virtual_venue = offerers_factories.VirtualVenueFactory()
-        offer = offers_factories.OfferFactory(venue=virtual_venue)
+        offer = offers_factories.OfferFactory(
+            venue=virtual_venue,
+            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
+            name="New name",
+            subcategoryId=subcategories.CARTE_MUSEE.id,
+            url="test@test.com",
+            description="description",
+        )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
@@ -239,7 +299,14 @@ class Returns400Test:
         assert response.json["externalTicketOfficeUrl"] == ['L\'URL doit terminer par une extension (ex. ".fr")']
 
     def test_patch_non_approved_offer_fails(self, app, client):
-        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
+        offer = offers_factories.OfferFactory(
+            validation=OfferValidationStatus.PENDING,
+            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
+            name="New name",
+            subcategoryId=subcategories.CARTE_MUSEE.id,
+            url="test@test.com",
+            description="description",
+        )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
@@ -259,6 +326,10 @@ class Returns400Test:
             withdrawalType=WithdrawalTypeEnum.BY_EMAIL,
             withdrawalDelay=60 * 15,
             bookingContact="booking@conta.ct",
+            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
+            name="New name",
+            url="test@test.com",
+            description="description",
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
@@ -278,6 +349,10 @@ class Returns400Test:
             withdrawalType=WithdrawalTypeEnum.BY_EMAIL,
             withdrawalDelay=60 * 15,
             bookingContact="booking@conta.ct",
+            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
+            name="New name",
+            url="test@test.com",
+            description="description",
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
@@ -293,7 +368,13 @@ class Returns400Test:
 class Returns403Test:
     def when_user_is_not_attached_to_offerer(self, app, client):
         # Given
-        offer = offers_factories.OfferFactory(name="Old name")
+        offer = offers_factories.OfferFactory(
+            name="Old name",
+            product=None,  # FIXME (mageoffray, 19-09-2023) : remove this line when offerFactory doesn't create a product
+            subcategoryId=subcategories.CARTE_MUSEE.id,
+            url="test@test.com",
+            description="description",
+        )
         offerers_factories.UserOffererFactory(user__email="user@example.com")
 
         # When

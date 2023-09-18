@@ -176,33 +176,22 @@ def create_offer(
 
     is_national = True if url else bool(is_national)
 
-    product = models.Product(
-        name=name,
-        description=description,
-        url=url,
-        durationMinutes=duration_minutes,
-        isNational=is_national,
-        owningOfferer=venue.managingOfferer,
-        subcategoryId=subcategory_id,
-    )
-
     offer = models.Offer(
         audioDisabilityCompliant=audio_disability_compliant,
         bookingContact=booking_contact,
         bookingEmail=booking_email,
-        description=product.description or description,
+        description=description,
         durationMinutes=duration_minutes,
         externalTicketOfficeUrl=external_ticket_office_url,
-        extraData=(product.extraData or {}) | (formatted_extra_data or {}),
+        extraData=formatted_extra_data or {},
         isActive=False,
         isDuo=bool(is_duo),
         isNational=is_national,
         mentalDisabilityCompliant=mental_disability_compliant,
         motorDisabilityCompliant=motor_disability_compliant,
         lastProvider=provider,
-        subcategoryId=product.subcategoryId,
+        subcategoryId=subcategory_id,
         name=name,
-        product=product,
         url=url,
         validation=models.OfferValidationStatus.DRAFT,
         venue=venue,
@@ -293,16 +282,7 @@ def update_offer(
 
     repository.add_to_session(offer)
 
-    if offer.product.owningOfferer and offer.product.owningOfferer == offer.venue.managingOfferer:
-        offer.product.populate_from_dict(modifications)
-        repository.add_to_session(offer.product)
-        product_has_been_updated = True
-    else:
-        product_has_been_updated = False
-
     logger.info("Offer has been updated", extra={"offer_id": offer.id}, technical_message_id="offer.updated")
-    if product_has_been_updated:
-        logger.info("Product has been updated", extra={"product": offer.product.id})
 
     if shouldSendMail and withdrawal_updated:
         transactional_mails.send_email_for_each_ongoing_booking(offer)

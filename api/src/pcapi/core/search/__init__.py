@@ -433,7 +433,7 @@ def get_offers_booking_count_by_id(
 ) -> dict[int, int]:
     offer_booked_since_x_days = (
         offers_models.Offer.query.join(offers_models.Offer.stocks)
-        .join(offers_models.Offer.product)
+        .outerjoin(offers_models.Offer.product)
         .join(offers_models.Stock.bookings)
         .filter(
             offers_models.Offer.id.in_(offer_ids),
@@ -662,7 +662,7 @@ def get_last_x_days_bookings_for_eans(eans: list[str], since: datetime.datetime)
     result = (
         bookings_models.Booking.query.join(offers_models.Stock)
         .join(offers_models.Offer)
-        .join(offers_models.Offer.product)
+        .outerjoin(offers_models.Offer.product)
         .filter(
             bookings_models.Booking.dateCreated >= since,
             bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
@@ -683,7 +683,7 @@ def update_products_booking_count(since: datetime.datetime) -> None:
 
     # We reindex all offers with the same ean
     offer_ids_to_reindex_query = (
-        offers_models.Offer.query.join(offers_models.Offer.product)
+        offers_models.Offer.query.outerjoin(offers_models.Offer.product)
         .filter(
             offers_models.Product.extraData["ean"].astext.in_(
                 list(

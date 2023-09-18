@@ -119,7 +119,7 @@ class SendinblueRetrieveDataToWarnUserAfterProBookingCancellationTest:
 
     def test_should_return_thing_data_when_booking_is_on_an_online_offer(self):
         # Given
-        stock = offers_factories.ThingStockFactory(offer__product=offers_factories.DigitalProductFactory())
+        stock = offers_factories.ThingStockFactory(offer=offers_factories.DigitalOfferFactory())
         booking = bookings_factories.BookingFactory(
             stock=stock,
             user__firstName="Georges",

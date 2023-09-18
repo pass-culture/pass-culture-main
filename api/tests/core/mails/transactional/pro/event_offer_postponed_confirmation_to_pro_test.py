@@ -41,7 +41,7 @@ class SendEventOfferPosponedConfirmationToProEmailTest:
             TransactionalEmail.EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO.value
         )
         assert mails_testing.outbox[0].sent_data["params"] == {
-            "OFFER_NAME": product.name,
+            "OFFER_NAME": offer.name,
             "VENUE_NAME": venue.name,
             "EVENT_DATE": "mardi 1 mars 2022",
             "BOOKING_COUNT": 3,
@@ -62,7 +62,7 @@ class SendEventOfferPosponedConfirmationToProEmailTest:
 
         assert email_data.template == TransactionalEmail.EVENT_OFFER_POSTPONED_CONFIRMATION_TO_PRO.value
         assert email_data.params == {
-            "OFFER_NAME": product.name,
+            "OFFER_NAME": offer.name,
             "VENUE_NAME": venue.name,
             "EVENT_DATE": "mercredi 2 mars 2022",
             "BOOKING_COUNT": 3,

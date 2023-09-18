@@ -45,14 +45,14 @@ def offers_fixture(criteria) -> tuple:
         criteria=[criteria[0]],
         venue__postalCode="47000",
         venue__departementCode="47",
-        product__subcategoryId=subcategories.MATERIEL_ART_CREATIF.id,
+        subcategoryId=subcategories.MATERIEL_ART_CREATIF.id,
     )
     offer_with_limited_stock = offers_factories.EventOfferFactory(
         name="A Very Specific Name",
         lastValidationDate=datetime.date(2022, 2, 22),
         venue__postalCode="97400",
         venue__departementCode="974",
-        product__subcategoryId=subcategories.FESTIVAL_LIVRE.id,
+        subcategoryId=subcategories.FESTIVAL_LIVRE.id,
         validation=offers_models.OfferValidationStatus.APPROVED,
         extraData={"visa": "2023123456"},
     )
@@ -63,7 +63,7 @@ def offers_fixture(criteria) -> tuple:
         validation=offers_models.OfferValidationStatus.REJECTED,
         venue__postalCode="74000",
         venue__departementCode="74",
-        product__subcategoryId=subcategories.LIVRE_PAPIER.id,
+        subcategoryId=subcategories.LIVRE_PAPIER.id,
         extraData={"ean": "9781234567890"},
     )
     offers_factories.StockFactory(quantity=None, offer=offer_with_unlimited_stock)
@@ -804,7 +804,7 @@ class EditOfferTest(PostEndpointHelper):
             criteria=[criteria[0]],
             venue__postalCode="74000",
             venue__departementCode="74",
-            product__subcategoryId=subcategories.LIVRE_PAPIER.id,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
         choosen_ranking_weight = 22
         base_form = {"criteria": [criteria[0].id, criteria[1].id], "rankingWeight": choosen_ranking_weight}
@@ -880,7 +880,7 @@ class GetBatchEditOfferFormTest(PostEndpointHelper):
 
     def test_get_edit_form_with_values_test(self, legit_user, authenticated_client, criteria):
         offers = offers_factories.OfferFactory.create_batch(
-            3, product__subcategoryId=subcategories.LIVRE_PAPIER.id, criteria=[criteria[2]], rankingWeight=22
+            3, subcategoryId=subcategories.LIVRE_PAPIER.id, criteria=[criteria[2]], rankingWeight=22
         )
         selected_offers = offers[:-1]  # select all but the last offer
 

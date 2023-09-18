@@ -8,6 +8,7 @@ import pytz
 
 from pcapi.core import token as token_utils
 from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.fraud import factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.history import factories as history_factories
@@ -15,7 +16,6 @@ from pcapi.core.history import models as history_models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offers import factories as offers_factories
 import pcapi.core.permissions.models as perm_models
 from pcapi.core.subscription.models import SubscriptionItemStatus
 from pcapi.core.subscription.models import SubscriptionStep
@@ -578,7 +578,8 @@ class GetPublicAccountTest(GetEndpointHelper):
 
         bookings_factories.BookingFactory(
             user=grant_18,
-            stock__offer__product=offers_factories.DigitalProductFactory(),
+            stock__offer__subcategoryId=subcategories.VOD.id,
+            stock__offer__url="http://example.com",
             amount=12.5,
             user__deposit__expirationDate=datetime.datetime(year=2031, month=12, day=31),
         )
