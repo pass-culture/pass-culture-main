@@ -897,6 +897,7 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(
             lastProvider=provider,
             name="Old name",
+            url="",
             audioDisabilityCompliant=True,
             visualDisabilityCompliant=False,
             motorDisabilityCompliant=False,

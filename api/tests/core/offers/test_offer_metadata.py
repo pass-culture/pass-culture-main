@@ -91,14 +91,14 @@ class OfferMetadataTest:
             assert metadata["@type"] == "Event"
 
         def should_describe_an_event_for_a_concert(self):
-            offer = offers_factories.OfferFactory(product__subcategoryId=subcategories_v2.CONCERT.id)
+            offer = offers_factories.OfferFactory(subcategoryId=subcategories_v2.CONCERT.id)
 
             metadata = get_metadata_from_offer(offer)
 
             assert metadata["@type"] == "Event"
 
         def should_describe_an_event_for_a_festival(self):
-            offer = offers_factories.OfferFactory(product__subcategoryId=subcategories_v2.FESTIVAL_MUSIQUE.id)
+            offer = offers_factories.OfferFactory(subcategoryId=subcategories_v2.FESTIVAL_MUSIQUE.id)
 
             metadata = get_metadata_from_offer(offer)
 

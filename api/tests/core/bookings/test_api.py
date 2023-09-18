@@ -236,8 +236,7 @@ class BookOfferTest:
         assert sorted(data["attribute_values"]["ut.booking_categories"]) == expected_categories
 
     def test_booking_on_digital_offer_with_activation_stock(self):
-        offer = offers_factories.OfferFactory(product=offers_factories.DigitalProductFactory())
-        stock = offers_factories.StockWithActivationCodesFactory(price=10, dnBookedQuantity=3, offer=offer)
+        stock = offers_factories.StockWithActivationCodesFactory(price=10, dnBookedQuantity=3)
         beneficiary = users_factories.BeneficiaryGrant18Factory()
 
         booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
@@ -1233,7 +1232,7 @@ class MarkAsUnusedTest:
         assert booking.status is BookingStatus.USED
 
     def test_raise_if_booking_was_automatically_used_for_digital_offer_with_activation_code(self):
-        offer = offers_factories.OfferFactory(product=offers_factories.DigitalProductFactory())
+        offer = offers_factories.DigitalOfferFactory()
         digital_stock = offers_factories.StockWithActivationCodesFactory()
         first_activation_code = digital_stock.activationCodes[0]
         booking = bookings_factories.UsedBookingFactory(stock__offer=offer, activationCode=first_activation_code)

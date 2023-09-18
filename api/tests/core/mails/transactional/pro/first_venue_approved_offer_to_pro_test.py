@@ -42,7 +42,12 @@ class SendinblueSendFirstVenueOfferEmailTest:
     def test_get_first_venue_approved_book_offer_correct_email_metadata(self):
         # Given
         product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        offer = offers_factories.OfferFactory(name="Ma petite offre", venue__name="Mon stade", product=product)
+        offer = offers_factories.OfferFactory(
+            name="Ma petite offre",
+            venue__name="Mon stade",
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+            product=product,
+        )
 
         # When
         new_offer_validation_email = get_first_venue_approved_offer_email_data(offer)

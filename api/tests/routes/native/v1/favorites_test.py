@@ -58,7 +58,8 @@ class GetTest:
             offers_factories.EventStockFactory(offer=offer1, beginningDatetime=tomorow, price=20)
 
             # Event offer with soft deleted stock and product's image
-            offer2 = offers_factories.EventOfferFactory(venue=venue, product__thumbCount=666)
+            offer2 = offers_factories.EventOfferFactory(venue=venue)
+            offers_factories.ProductFactory(offer=offer2, thumbCount=666)
             favorite2 = users_factories.FavoriteFactory(offer=offer2, user=user)
             offers_factories.EventStockFactory(offer=offer2, beginningDatetime=today, price=20, isSoftDeleted=True)
             offers_factories.EventStockFactory(offer=offer2, beginningDatetime=tomorow, price=50)

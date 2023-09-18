@@ -887,7 +887,7 @@ class GetCappedOffersForFiltersTest:
             )
             factories.StockFactory(bookingLimitDatetime=unexpired_booking_limit_date, offer=pending_offer)
 
-            offer = factories.OfferFactory(product__subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
+            offer = factories.OfferFactory(subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
             factories.StockFactory(bookingLimitDatetime=unexpired_booking_limit_date, offer=offer)
 
             user = pending_offer.venue.managingOfferer
@@ -912,7 +912,7 @@ class GetCappedOffersForFiltersTest:
             )
             factories.StockFactory(bookingLimitDatetime=unexpired_booking_limit_date, offer=rejected_offer)
 
-            offer = factories.OfferFactory(product__subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
+            offer = factories.OfferFactory(subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
             factories.StockFactory(bookingLimitDatetime=unexpired_booking_limit_date, offer=offer)
 
             user = rejected_offer.venue.managingOfferer

@@ -117,7 +117,7 @@ def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event_s
 def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing_sendinblue():
     stock = offers_factories.ThingStockFactory(
         price=23.99,
-        offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         offer__name="Super bien culturel",
     )
     booking = BookingFactory(stock=stock, dateCreated=datetime.utcnow())
@@ -238,8 +238,8 @@ class DigitalOffersTestSendinblue:
         booking = BookingFactory(
             quantity=10,
             stock__price=0,
-            stock__offer__product__subcategoryId=subcategories.VOD.id,
-            stock__offer__product__url="http://example.com",
+            stock__offer__subcategoryId=subcategories.VOD.id,
+            stock__offer__url="http://example.com",
             stock__offer__name="Super offre numérique",
             dateCreated=datetime.utcnow(),
         )
@@ -314,7 +314,7 @@ class DigitalOffersTestSendinblue:
             user__email="used-email@example.com",
             quantity=10,
             stock__price=0,
-            stock__offer__product__subcategoryId=subcategories.VOD.id,
+            stock__offer__subcategoryId=subcategories.VOD.id,
             stock__offer__product__url="http://example.com?token={token}&offerId={offerId}&email={email}",
             stock__offer__name="Super offre numérique",
             dateCreated=datetime.utcnow(),
@@ -349,7 +349,7 @@ class DigitalOffersTestSendinblue:
         booking = BookingFactory(
             quantity=10,
             stock__price=0,
-            stock__offer__product__subcategoryId=subcategories.VOD.id,
+            stock__offer__subcategoryId=subcategories.VOD.id,
             stock__offer__product__url="http://example.com",
             stock__offer__name="Super offre numérique",
             dateCreated=datetime.utcnow(),
@@ -411,7 +411,7 @@ def test_digital_offer_without_departement_code_information_sendinblue():
 class BooksBookingExpirationDateTestSendinblue:
     def test_should_return_new_expiration_delay_data_for_email_when_offer_is_a_book_sendinblue(self):
         booking = BookingFactory(
-            stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
+            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
             stock__offer__name="Super livre",
             dateCreated=datetime.utcnow(),
         )

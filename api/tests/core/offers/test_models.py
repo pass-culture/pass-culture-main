@@ -301,7 +301,7 @@ class StockBookingsQuantityTest:
         assert models.Stock.query.filter(models.Stock.dnBookedQuantity == 0).one() == stock
 
     def test_bookings_quantity_with_booking(self):
-        offer = factories.OfferFactory(product__subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
+        offer = factories.OfferFactory(subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
         stock = factories.StockFactory(offer=offer, quantity=5)
         bookings_factories.BookingFactory(stock=stock)
 
@@ -309,7 +309,7 @@ class StockBookingsQuantityTest:
         assert models.Stock.query.filter(models.Stock.dnBookedQuantity == 1).one() == stock
 
     def test_bookings_quantity_with_a_cancelled_booking(self):
-        offer = factories.OfferFactory(product__subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
+        offer = factories.OfferFactory(subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
         stock = factories.StockFactory(offer=offer, quantity=5)
         bookings_factories.BookingFactory(stock=stock)
         bookings_factories.CancelledBookingFactory(stock=stock)

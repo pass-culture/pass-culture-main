@@ -42,7 +42,7 @@ def bookings_fixture() -> tuple:
         stock__quantity="212",
         stock__offer__isDuo=True,
         stock__offer__product__name="Guide du Routard Sainte-Hélène",
-        stock__offer__product__subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+        stock__offer__subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=4),
     )
     offerers_factories.UserOffererFactory(offerer=used.offerer)
@@ -51,7 +51,7 @@ def bookings_fixture() -> tuple:
         quantity=1,
         amount=12.5,
         token="CNCL02",
-        stock__offer__product__subcategoryId=subcategories_v2.FESTIVAL_SPECTACLE.id,
+        stock__offer__subcategoryId=subcategories_v2.FESTIVAL_SPECTACLE.id,
         stock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=11),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=3),
     )
@@ -62,13 +62,13 @@ def bookings_fixture() -> tuple:
         stock__price=13.95,
         stock__quantity="2",
         stock__offer__product__name="Guide Ile d'Elbe 1814 Petit Futé",
-        stock__offer__product__subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
+        stock__offer__subcategoryId=subcategories_v2.LIVRE_PAPIER.id,
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=2),
     )
     reimbursed = bookings_factories.ReimbursedBookingFactory(
         user=user3,
         token="REIMB3",
-        stock__offer__product__subcategoryId=subcategories_v2.SPECTACLE_REPRESENTATION.id,
+        stock__offer__subcategoryId=subcategories_v2.SPECTACLE_REPRESENTATION.id,
         stock__beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=12),
         dateCreated=datetime.datetime.utcnow() - datetime.timedelta(days=1),
     )
@@ -392,7 +392,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         # given
         bookings_factories.BookingFactory.create_batch(
             25,
-            stock__offer__product__subcategoryId=subcategories_v2.CINE_PLEIN_AIR.id,
+            stock__offer__subcategoryId=subcategories_v2.CINE_PLEIN_AIR.id,
         )
 
         # when

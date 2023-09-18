@@ -136,7 +136,7 @@ class CheckExpenseLimitsDepositVersion1Test:
 
     def test_physical_limit(self):
         beneficiary = self._get_beneficiary()
-        offer = offers_factories.OfferFactory(product__subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
         factories.BookingFactory(user=beneficiary, stock__price=190, stock__offer=offer)
 
         validation.check_expenses_limits(beneficiary, 10, offer)  # should not raise
@@ -149,7 +149,7 @@ class CheckExpenseLimitsDepositVersion1Test:
 
     def test_physical_limit_on_uncapped_type(self):
         beneficiary = self._get_beneficiary()
-        offer = offers_factories.OfferFactory(product__subcategoryId=subcategories.SEANCE_CINE.id)
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id)
         factories.BookingFactory(user=beneficiary, stock__price=190, stock__offer=offer)
 
         # should not raise because SEANCE_CINE is not capped
@@ -157,8 +157,7 @@ class CheckExpenseLimitsDepositVersion1Test:
 
     def test_digital_limit(self):
         beneficiary = self._get_beneficiary()
-        product = offers_factories.DigitalProductFactory(subcategoryId=subcategories.VOD.id)
-        offer = offers_factories.OfferFactory(product=product)
+        offer = offers_factories.DigitalOfferFactory(subcategoryId=subcategories.VOD.id)
         factories.BookingFactory(
             user=beneficiary,
             stock__price=190,
@@ -175,8 +174,7 @@ class CheckExpenseLimitsDepositVersion1Test:
 
     def test_digital_limit_on_uncapped_type(self):
         beneficiary = self._get_beneficiary()
-        product = offers_factories.DigitalProductFactory(subcategoryId=subcategories.OEUVRE_ART.id)
-        offer = offers_factories.OfferFactory(product=product)
+        offer = offers_factories.DigitalOfferFactory(subcategoryId=subcategories.OEUVRE_ART.id)
         factories.BookingFactory(user=beneficiary, stock__price=190, stock__offer=offer)
 
         # should not raise because OEUVRE_ART is not capped
@@ -204,21 +202,20 @@ class CheckExpenseLimitsDepositVersion2Test:
     def test_raise_if_deposit_expired(self):
         yesterday = datetime.utcnow() - timedelta(days=1)
         beneficiary = self._get_beneficiary(deposit__expirationDate=yesterday)
-        offer = offers_factories.OfferFactory(product__subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
         with pytest.raises(exceptions.UserHasInsufficientFunds):
             validation.check_expenses_limits(beneficiary, 10, offer)
 
     def test_physical_limit(self):
         beneficiary = self._get_beneficiary()
-        offer = offers_factories.OfferFactory(product__subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
+        offer = offers_factories.OfferFactory(subcategoryId=subcategories.ACHAT_INSTRUMENT.id)
         factories.BookingFactory(user=beneficiary, stock__price=290, stock__offer=offer)
 
         validation.check_expenses_limits(beneficiary, 10, offer)  # should not raise
 
     def test_digital_limit(self):
         beneficiary = self._get_beneficiary()
-        product = offers_factories.DigitalProductFactory(subcategoryId=subcategories.VOD.id)
-        offer = offers_factories.OfferFactory(product=product)
+        offer = offers_factories.DigitalOfferFactory(subcategoryId=subcategories.VOD.id)
         factories.BookingFactory(
             user=beneficiary,
             stock__price=90,

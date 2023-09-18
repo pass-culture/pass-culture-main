@@ -162,19 +162,19 @@ class BookingExpirationDateTest:
             user=user,
             dateCreated=datetime.utcnow(),
             stock__price=10,
-            stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
+            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
         dvd_booking = factories.BookingFactory(
             user=user,
             dateCreated=datetime.utcnow(),
             stock__price=10,
-            stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         digital_book_booking = factories.BookingFactory(
             user=user,
             dateCreated=datetime.utcnow(),
             stock__price=10,
-            stock__offer__product__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
+            stock__offer__subcategoryId=subcategories.LIVRE_NUMERIQUE.id,
         )
 
         assert book_booking.expirationDate.strftime("%d/%m/%Y") == (

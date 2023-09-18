@@ -51,7 +51,7 @@ class SearchMultipleOffersTest(GetEndpointHelper):
         offers_factories.ThingOfferFactory(
             product__name="Product with EAN",
             product__extraData={"ean": "9783161484100"},
-            product__subcategoryId=subcategories.LIVRE_PAPIER.id,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
 
         with assert_num_queries(self.expected_num_queries):

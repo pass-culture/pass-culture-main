@@ -2210,13 +2210,13 @@ class GenerateInvoiceTest:
         # 2 offers that have a distinct reimbursement rate rule.
         offer1 = offers_factories.ThingOfferFactory(
             venue=venue,
-            product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
         )
         stock1 = offers_factories.StockFactory(offer=offer1, price=20)
         booking1 = bookings_factories.UsedBookingFactory(stock=stock1)
         offer2 = offers_factories.ThingOfferFactory(
             venue=venue,
-            product__subcategoryId=subcategories.TELECHARGEMENT_MUSIQUE.id,
+            subcategoryId=subcategories.TELECHARGEMENT_MUSIQUE.id,
         )
         stock2 = offers_factories.StockFactory(offer=offer2, price=0)
         booking2 = bookings_factories.UsedBookingFactory(stock=stock2)

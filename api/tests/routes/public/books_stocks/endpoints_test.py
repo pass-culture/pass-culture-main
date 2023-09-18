@@ -19,7 +19,7 @@ def test_basics(client):
     offer = offers_factories.OfferFactory(
         product__idAtProviders=ean,
         product__extraData={"prix_livre": 12.34},
-        product__subcategoryId="LIVRE_PAPIER",
+        subcategoryId="LIVRE_PAPIER",
         idAtProvider=ean,
         venue=venue,
     )
@@ -57,7 +57,7 @@ def test_require_price(price, error, client):
     product_price = decimal.Decimal("12.34")
     offers_factories.OfferFactory(
         product__idAtProviders=ean,
-        product__subcategoryId="LIVRE_PAPIER",
+        subcategoryId="LIVRE_PAPIER",
         idAtProvider=ean,
         product__extraData={"prix_livre": product_price},
         venue=venue,

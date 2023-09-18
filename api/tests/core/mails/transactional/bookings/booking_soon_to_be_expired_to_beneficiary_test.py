@@ -12,6 +12,7 @@ from pcapi.core.mails.transactional.bookings.booking_soon_to_be_expired_to_benef
 )
 from pcapi.core.mails.transactional.bookings.booking_soon_to_be_expired_to_beneficiary import _filter_books_bookings
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import ProductFactory
 import pcapi.core.users.factories as users_factories
 
@@ -57,27 +58,28 @@ class SendinblueSendSoonToBeExpiredBookingsEmailToBeneficiaryTest:
     ):
         # given
         now = datetime.utcnow()
-        user = users_factories.BeneficiaryGrant18Factory(email="isasimov@example.com")
+        email = "isasimov@example.com"
+        user = users_factories.BeneficiaryGrant18Factory(email=email)
         created_5_days_ago = now - timedelta(days=5)
         created_23_days_ago = now - timedelta(days=23)
 
-        book = ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        book = OfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, product=ProductFactory())
         soon_to_be_expired_book_booking = booking_factories.BookingFactory(
-            stock__offer__product=book,
+            stock__offer=book,
             dateCreated=created_5_days_ago,
             user=user,
         )
 
-        dvd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
+        dvd = OfferFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id)
         soon_to_be_expired_dvd_booking = booking_factories.BookingFactory(
-            stock__offer__product=dvd,
+            stock__offer=dvd,
             dateCreated=created_23_days_ago,
             user=user,
         )
 
-        cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
+        cd = OfferFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
         soon_to_be_expired_cd_booking = booking_factories.BookingFactory(
-            stock__offer__product=cd,
+            stock__offer=cd,
             dateCreated=created_23_days_ago,
             user=user,
         )
@@ -104,7 +106,7 @@ class SendinblueSendSoonToBeExpiredBookingsEmailToBeneficiaryTest:
             "DAYS_BEFORE_CANCEL": 5,
             "DAYS_FROM_BOOKING": 5,
         }
-        assert mails_testing.outbox[0].sent_data["To"] == "isasimov@example.com"
+        assert mails_testing.outbox[0].sent_data["To"] == email
 
         assert (
             mails_testing.outbox[1].sent_data["template"]
@@ -125,4 +127,4 @@ class SendinblueSendSoonToBeExpiredBookingsEmailToBeneficiaryTest:
             "DAYS_BEFORE_CANCEL": 7,
             "DAYS_FROM_BOOKING": 23,
         }
-        assert mails_testing.outbox[1].sent_data["To"] == "isasimov@example.com"
+        assert mails_testing.outbox[1].sent_data["To"] == email

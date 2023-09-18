@@ -22,7 +22,7 @@ def create_non_digital_thing_booking(quantity=1, price=10, user=None, date_used=
     booking_kwargs["dateUsed"] = date_used or datetime.utcnow()
     offer_kwargs = {}
     if product_subcategory_id:
-        offer_kwargs = {"product__subcategoryId": product_subcategory_id}
+        offer_kwargs = {"subcategoryId": product_subcategory_id}
     stock = offers_factories.StockFactory(
         price=price,
         offer=offers_factories.ThingOfferFactory(**offer_kwargs),

@@ -26,8 +26,7 @@ def make_booking(**kwargs):
         stock__beginningDatetime=datetime(2019, 11, 6, 14, 59, 5, tzinfo=timezone.utc),
         stock__price=10,
         stock__offer__name="Super évènement",
-        stock__offer__product__name="Super évènement",
-        stock__offer__product__subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id,
+        stock__offer__subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id,
         stock__offer__venue__name="Lieu de l'offreur",
         stock__offer__venue__address="25 avenue du lieu",
         stock__offer__venue__postalCode="75010",
@@ -36,6 +35,16 @@ def make_booking(**kwargs):
         stock__offer__venue__departementCode="75",
     )
     attributes.update(kwargs)
+
+    product_attributes = {}
+    for key, value in attributes.items():
+        if key.startswith("stock__offer__product"):
+            product_attributes[key.replace("stock__offer__", "")] = value
+
+    if product_attributes:
+        product = offers_factories.ProductFactory()
+        return bookings_factories.BookingFactory(stock__offer__product=product, **attributes)
+
     return bookings_factories.BookingFactory(**attributes)
 
 
@@ -84,9 +93,8 @@ class OffererBookingRecapTest:
     def test_with_book(self):
         booking = make_booking(
             stock__offer__name="Le récit de voyage",
-            stock__offer__product__extraData={"ean": "123456789"},
-            stock__offer__product__name="Le récit de voyage",
-            stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
+            stock__offer__extraData={"ean": "123456789"},
+            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
 
         email_data = get_new_booking_to_pro_email_data(booking)
@@ -96,6 +104,7 @@ class OffererBookingRecapTest:
             EVENT_DATE="",
             EVENT_HOUR="",
             IS_EVENT=False,
+            ISBN="123456789",
             OFFER_NAME="Le récit de voyage",
             OFFER_SUBCATEGORY="book",
             CAN_EXPIRE=True,
@@ -108,9 +117,8 @@ class OffererBookingRecapTest:
     def test_non_digital_bookings_can_expire_after_30_days(self):
         booking = make_booking(
             stock__offer__name="Le récit de voyage",
-            stock__offer__product__extraData={"ean": "123456789"},
-            stock__offer__product__name="Le récit de voyage",
-            stock__offer__product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            stock__offer__extraData={"ean": "123456789"},
+            stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
             stock__offer__venue__address=None,
             stock__offer__venue__city=None,
             stock__offer__venue__departementCode=None,
@@ -138,9 +146,8 @@ class OffererBookingRecapTest:
     def test_with_book_with_missing_ean(self):
         booking = make_booking(
             stock__offer__name="Le récit de voyage",
-            stock__offer__product__extraData={},  # no EAN
-            stock__offer__product__name="Le récit de voyage",
-            stock__offer__product__subcategoryId=subcategories.LIVRE_PAPIER.id,
+            stock__offer__extraData={},  # no EAN
+            stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
             stock__offer__venue__address=None,
             stock__offer__venue__city=None,
             stock__offer__venue__departementCode=None,
@@ -172,8 +179,8 @@ class OffererBookingRecapTest:
         booking = make_booking(
             quantity=10,
             stock__price=0,
-            stock__offer__product__subcategoryId=subcategories.VOD.id,
-            stock__offer__product__url="http://example.com",
+            stock__offer__subcategoryId=subcategories.VOD.id,
+            stock__offer__url="http://example.com",
             stock__offer__name="Super offre numérique",
         )
 
@@ -242,12 +249,13 @@ class OffererBookingRecapTest:
     @pytest.mark.usefixtures("db_session")
     def test_no_need_when_booking_is_autovalidated(self):
         # Given
-        offer = offers_factories.OfferFactory(
+        offer = offers_factories.DigitalOfferFactory(
             venue__name="Lieu de l'offreur",
             venue__managingOfferer__name="Théâtre du coin",
-            product=offers_factories.DigitalProductFactory(name="Super évènement", url="http://example.com"),
+            name="Super évènement",
+            url="http://example.com",
         )
-        digital_stock = offers_factories.StockWithActivationCodesFactory()
+        digital_stock = offers_factories.StockWithActivationCodesFactory(offer=offer)
         first_activation_code = digital_stock.activationCodes[0]
         booking = bookings_factories.UsedBookingFactory(
             user__email="john@example.com",
@@ -281,10 +289,11 @@ class OffererBookingRecapTest:
     @pytest.mark.usefixtures("db_session")
     def test_a_digital_booking_with_activation_code_is_automatically_used(self):
         # Given
-        offer = offers_factories.OfferFactory(
+        offer = offers_factories.DigitalOfferFactory(
             venue__name="Lieu de l'offreur",
             venue__managingOfferer__name="Théâtre du coin",
-            product=offers_factories.DigitalProductFactory(name="Super offre numérique", url="http://example.com"),
+            name="Super offre numérique",
+            url="http://example.com",
         )
         digital_stock = offers_factories.StockWithActivationCodesFactory()
         first_activation_code = digital_stock.activationCodes[0]
