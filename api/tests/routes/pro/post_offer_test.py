@@ -33,6 +33,7 @@ class Returns200Test:
         assert response_dict["venue"]["id"] == offer.venue.id
         assert response_dict["name"] == "Celeste"
         assert response_dict["id"] == offer.id
+        assert offer.product == None
 
     def test_create_event_offer(self, client):
         # Given
@@ -68,8 +69,6 @@ class Returns200Test:
         assert offer.extraData == {"showType": 200, "showSubType": 201}
         assert offer.externalTicketOfficeUrl == "http://example.net"
         assert offer.venue == venue
-        assert offer.product.durationMinutes == 60
-        assert offer.product.owningOfferer == offerer
         assert offer.motorDisabilityCompliant is False
         assert offer.visualDisabilityCompliant is False
         assert offer.audioDisabilityCompliant is False
@@ -105,14 +104,10 @@ class Returns200Test:
         assert offer.bookingEmail == "offer@example.com"
         assert offer.subcategoryId == subcategories.JEU_EN_LIGNE.id
         assert offer.venue == venue
-        assert offer.product.name == "Les lièvres pas malins"
-        assert offer.product.url == "http://example.com/offer"
         assert offer.externalTicketOfficeUrl == "http://example.net"
         assert offer.url == "http://example.com/offer"
         assert offer.isDigital
         assert offer.isNational
-        assert offer.product.isNational
-        assert offer.product.owningOfferer == offerer
         assert offer.motorDisabilityCompliant is False
         assert offer.visualDisabilityCompliant is False
         assert offer.audioDisabilityCompliant is True

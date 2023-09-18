@@ -35,7 +35,7 @@ def _create_activation_item_offer(
 ) -> None:
     offer = offers_factories.OfferFactory(
         venue=venue,
-        product__subcategoryId=subcategory,
+        subcategoryId=subcategory,
     )
     stock = offers_factories.StockFactory(
         offer=offer,

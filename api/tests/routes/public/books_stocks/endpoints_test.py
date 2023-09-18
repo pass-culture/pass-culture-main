@@ -16,10 +16,14 @@ NOT_SENT = object()
 def test_basics(client):
     venue = offerers_factories.VenueFactory()
     ean = "123456789"
+    product = offers_factories.ProductFactory(
+        idAtProviders=ean,
+        subcategoryId="LIVRE_PAPIER",
+        extraData={"prix_livre": 12.34},
+    )
     offer = offers_factories.OfferFactory(
-        product__idAtProviders=ean,
-        product__extraData={"prix_livre": 12.34},
-        product__subcategoryId="LIVRE_PAPIER",
+        product=product,
+        subcategoryId="LIVRE_PAPIER",
         idAtProvider=ean,
         venue=venue,
     )
@@ -55,11 +59,14 @@ def test_require_price(price, error, client):
     venue = offerers_factories.VenueFactory()
     ean = "123456789"
     product_price = decimal.Decimal("12.34")
+    product = offers_factories.ProductFactory(
+        idAtProviders=ean,
+        extraData={"prix_livre": product_price},
+    )
     offers_factories.OfferFactory(
-        product__idAtProviders=ean,
-        product__subcategoryId="LIVRE_PAPIER",
+        product=product,
+        subcategoryId="LIVRE_PAPIER",
         idAtProvider=ean,
-        product__extraData={"prix_livre": product_price},
         venue=venue,
     )
     offerers_factories.ApiKeyFactory(offerer=venue.managingOfferer)

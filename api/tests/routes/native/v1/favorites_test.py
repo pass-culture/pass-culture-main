@@ -4,6 +4,7 @@ from datetime import timedelta
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.categories import subcategories_v2 as subcategories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
@@ -58,13 +59,16 @@ class GetTest:
             offers_factories.EventStockFactory(offer=offer1, beginningDatetime=tomorow, price=20)
 
             # Event offer with soft deleted stock and product's image
-            offer2 = offers_factories.EventOfferFactory(venue=venue, product__thumbCount=666)
+            offer2 = offers_factories.EventOfferFactory(venue=venue)
+            mediation = offers_factories.MediationFactory(offer=offer2, thumbCount=666)
             favorite2 = users_factories.FavoriteFactory(offer=offer2, user=user)
             offers_factories.EventStockFactory(offer=offer2, beginningDatetime=today, price=20, isSoftDeleted=True)
             offers_factories.EventStockFactory(offer=offer2, beginningDatetime=tomorow, price=50)
 
             # Thing offer with no date
-            offer3 = offers_factories.ThingOfferFactory(venue=venue)
+            offer3 = offers_factories.ThingOfferFactory(
+                venue=venue, subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id
+            )
             favorite3 = users_factories.FavoriteFactory(offer=offer3, user=user)
             offers_factories.ThingStockFactory(offer=offer3, price=10)
 
@@ -124,7 +128,7 @@ class GetTest:
             assert favorites[4]["offer"]["image"]["credit"] is None
             assert (
                 favorites[4]["offer"]["image"]["url"]
-                == f"http://localhost/storage/thumbs/products/{humanize(offer2.product.id)}_665"
+                == f"http://localhost/storage/thumbs/mediations/{humanize(mediation.id)}_665"
             )
             assert favorites[4]["offer"]["expenseDomains"] == ["all"]
             assert favorites[4]["offer"]["subcategoryId"] == "SEANCE_CINE"
@@ -137,8 +141,8 @@ class GetTest:
             assert favorites[3]["offer"]["date"] is None
             assert favorites[3]["offer"]["startDate"] is None
             assert favorites[3]["offer"]["image"] is None
-            assert set(favorites[3]["offer"]["expenseDomains"]) == {"physical", "all"}
             assert favorites[3]["offer"]["subcategoryId"] == "SUPPORT_PHYSIQUE_FILM"
+            assert set(favorites[3]["offer"]["expenseDomains"]) == {"physical", "all"}
             assert favorites[3]["offer"]["venueName"] == "Le Petit Rintintin"
 
             # Offer in the future but past the booking limit

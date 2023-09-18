@@ -425,7 +425,7 @@ class AlgoliaBackend(base.SearchBackend):
 
         #  The "gtl" code has been set in July 2023 on products only. Offers that were created before do not have "gtl" in their extraData.
         #  This is why we must look at offer.product.extraData and not offer.extraData
-        product_extra_data = offer.product.extraData or {}
+        product_extra_data = offer.product.extraData if offer.product and offer.product.extraData else {}
         gtl_id = product_extra_data.get("gtl_id")
         gtl = titelive_gtl.get_gtl(gtl_id) if gtl_id else None
 

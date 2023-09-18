@@ -37,7 +37,7 @@ class Reminder7DaysBeforeEventToProEmailTest:
             TransactionalEmail.REMINDER_7_DAYS_BEFORE_EVENT_TO_PRO.value
         )
         assert mails_testing.outbox[0].sent_data["params"] == {
-            "OFFER_NAME": product.name,
+            "OFFER_NAME": offer.name,
             "VENUE_NAME": venue.name,
             "EVENT_DATE": "dimanche 1 mai 2022",
             "EVENT_HOUR": "16h10",
@@ -64,7 +64,7 @@ class Reminder7DaysBeforeEventToProEmailTest:
             TransactionalEmail.REMINDER_7_DAYS_BEFORE_EVENT_TO_PRO.value
         )
         assert mails_testing.outbox[0].sent_data["params"] == {
-            "OFFER_NAME": product.name,
+            "OFFER_NAME": offer.name,
             "VENUE_NAME": venue.name,
             "EVENT_DATE": "dimanche 1 mai 2022",
             "EVENT_HOUR": "16h10",
@@ -84,7 +84,7 @@ class Reminder7DaysBeforeEventToProEmailTest:
 
         assert email_data.template == TransactionalEmail.REMINDER_7_DAYS_BEFORE_EVENT_TO_PRO.value
         assert email_data.params == {
-            "OFFER_NAME": product.name,
+            "OFFER_NAME": offer.name,
             "VENUE_NAME": venue.name,
             "EVENT_DATE": "mercredi 2 mars 2022",
             "EVENT_HOUR": "15h20",

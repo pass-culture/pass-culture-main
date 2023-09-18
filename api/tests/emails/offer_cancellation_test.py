@@ -99,7 +99,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         assert "Vous venez d'annuler" in html_action
         assert booking.userName in html_action
         assert booking.email in html_action
-        assert f"pour {stock.offer.product.name}" in html_recap
+        assert f"pour {stock.offer.name}" in html_recap
         assert f"proposé par {venue.name}" in html_recap
         assert venue.address in html_recap
         assert venue.city in html_recap
@@ -110,5 +110,5 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         assert booking2.token not in html_recap_table
         assert (
             email.subject
-            == f"Confirmation de votre annulation de réservation pour {stock.offer.product.name}, proposé par {venue.name}"
+            == f"Confirmation de votre annulation de réservation pour {stock.offer.name}, proposé par {venue.name}"
         )
