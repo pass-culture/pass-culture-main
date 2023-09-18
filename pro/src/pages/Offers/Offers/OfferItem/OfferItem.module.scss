@@ -10,6 +10,16 @@
       opacity: 0.5;
     }
   }
+
+  td:first-of-type {
+    input[type="checkbox"] {
+      margin-right: 0;
+    }
+
+    label {
+      display: inline-flex;
+    }
+  }
 }
 
 .offer-thumb {
