@@ -45,12 +45,14 @@ class BoostStocks(LocalProvider):
         self.price_category_lists_by_offer: dict[offers_models.Offer, list[offers_models.PriceCategory]] = {}
 
     def __next__(self) -> list[ProvidableInfo]:
-        self.showtime_details = next(self.showtimes)
-        self.pcu_pricing: boost_serializers.ShowtimePricing | None = get_pcu_pricing_if_exists(
-            self.showtime_details.showtimePricing
-        )
-        if not self.pcu_pricing:
-            return []
+        showtime = next(self.showtimes)
+        if showtime:
+            self.showtime_details: boost_serializers.ShowTime = self._get_showtime_details(showtime.id)
+            self.pcu_pricing: boost_serializers.ShowtimePricing | None = get_pcu_pricing_if_exists(
+                self.showtime_details.showtimePricing
+            )
+            if not self.pcu_pricing:
+                return []
 
         providable_information_list = []
         # The Product ID must be unique
@@ -209,6 +211,10 @@ class BoostStocks(LocalProvider):
     def _get_showtimes(self) -> list[boost_serializers.ShowTime4]:
         client_boost = BoostClientAPI(self.cinema_id)
         return client_boost.get_showtimes()
+
+    def _get_showtime_details(self, showtime_id: int) -> boost_serializers.ShowTime:
+        client_boost = BoostClientAPI(self.cinema_id)
+        return client_boost.get_showtime(showtime_id)
 
     def _get_boost_movie_poster(self, image_url: str) -> bytes:
         client_boost = BoostClientAPI(self.cinema_id)
