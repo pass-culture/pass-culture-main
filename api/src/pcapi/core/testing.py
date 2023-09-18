@@ -16,6 +16,7 @@ import sqlalchemy.engine
 import sqlalchemy.event
 import sqlalchemy.orm
 
+from pcapi import repository
 from pcapi import settings
 from pcapi.models import db
 from pcapi.models.feature import Feature
@@ -44,7 +45,13 @@ def assert_no_duplicated_queries() -> collections.abc.Generator[None, None, None
     # We record queries with _record_end_of_query and register_event_for_query_logger
     flask._app_ctx_stack._query_logger = []  # type: ignore [attr-defined]
     yield
-    queries = flask._app_ctx_stack._query_logger  # type: ignore [attr-defined]
+    queries = flask._app_ctx_stack._query_logger.copy()  # type: ignore [attr-defined]
+
+    # ignore session management in query count for compatibility with old tests
+    managed_session = repository._test_helper_get_is_session_managed()
+    if managed_session and queries and queries[-1]["statement"].startswith("RELEASE SAVEPOINT sa_savepoint_"):
+        queries.pop()
+
     statements = [query["statement"] for query in queries if "from feature" not in query["statement"].lower()]
 
     duplicated_queries = [(query, count) for query, count in collections.Counter(statements).items() if count > 1]
@@ -78,7 +85,13 @@ def assert_num_queries(expected_n_queries: int) -> collections.abc.Generator[Non
     # the same purpose. Let's do the same.
     flask._app_ctx_stack._query_logger = []  # type: ignore [attr-defined]
     yield
-    queries = flask._app_ctx_stack._query_logger  # type: ignore [attr-defined]
+    queries = flask._app_ctx_stack._query_logger.copy()  # type: ignore [attr-defined]
+
+    # ignore session management in query count for compatibility with old tests
+    managed_session = repository._test_helper_get_is_session_managed()
+    if managed_session and queries and queries[-1]["statement"].startswith("RELEASE SAVEPOINT sa_savepoint_"):
+        queries.pop()
+
     if len(queries) != expected_n_queries:
         details = "\n".join(_format_sql_query(query, i, len(queries)) for i, query in enumerate(queries, start=1))
         pytest.fail(

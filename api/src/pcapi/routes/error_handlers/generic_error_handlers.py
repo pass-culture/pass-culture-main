@@ -17,6 +17,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError
 from pcapi.models.api_errors import UnauthorizedError
+from pcapi.repository import mark_transaction_as_invalid
 from pcapi.routes.error_handlers.utils import format_sql_statement_params
 from pcapi.utils.image_conversion import ImageRatioError
 
@@ -40,6 +41,7 @@ def restize_api_errors(error: ApiErrors) -> ApiErrorResponse:
 
 @app.errorhandler(offers_exceptions.TooLateToDeleteStock)
 def restize_too_late_to_delete_stock(error: offers_exceptions.TooLateToDeleteStock) -> ApiErrorResponse:
+    mark_transaction_as_invalid()
     return app.generate_error_response(error.errors), 400
 
 
@@ -48,6 +50,7 @@ def internal_error(error: Exception) -> ApiErrorResponse | HTTPException:
     # pass through HTTP errors
     if isinstance(error, HTTPException):
         return error
+    mark_transaction_as_invalid()
     logger.exception("Unexpected error on method=%s url=%s: %s", request.method, request.url, error)
     errors = ApiErrors()
     errors.add_error("global", "Il semble que nous ayons des problèmes techniques :(" + " On répare ça au plus vite.")
@@ -66,6 +69,7 @@ def unauthorized_error(error: UnauthorizedError) -> Response:
 
 @app.errorhandler(MethodNotAllowed)
 def method_not_allowed(error: MethodNotAllowed) -> ApiErrorResponse:
+    mark_transaction_as_invalid()
     api_errors = ApiErrors()
     api_errors.add_error("global", "La méthode que vous utilisez n'existe pas sur notre serveur")
     logger.warning("405 %s", error)
@@ -74,6 +78,7 @@ def method_not_allowed(error: MethodNotAllowed) -> ApiErrorResponse:
 
 @app.errorhandler(DecimalCastError)
 def decimal_cast_error(error: DecimalCastError) -> ApiErrorResponse:
+    mark_transaction_as_invalid()
     api_errors = ApiErrors()
     logger.warning(json.dumps(error.errors))
     for field in error.errors.keys():
@@ -83,6 +88,7 @@ def decimal_cast_error(error: DecimalCastError) -> ApiErrorResponse:
 
 @app.errorhandler(DateTimeCastError)
 def date_time_cast_error(error: DateTimeCastError) -> ApiErrorResponse:
+    mark_transaction_as_invalid()
     api_errors = ApiErrors()
     logger.warning(json.dumps(error.errors))
     for field in error.errors.keys():
@@ -92,6 +98,7 @@ def date_time_cast_error(error: DateTimeCastError) -> ApiErrorResponse:
 
 @app.errorhandler(finance_exceptions.DepositTypeAlreadyGrantedException)
 def already_activated_exception(error: finance_exceptions.DepositTypeAlreadyGrantedException) -> ApiErrorResponse:
+    mark_transaction_as_invalid()
     logger.error(json.dumps(error.errors))
     return app.generate_error_response(error.errors), 405
 
@@ -103,6 +110,7 @@ def ratelimit_handler(error: Exception) -> ApiErrorResponse:
     # module needs it.
     from pcapi.utils.login_manager import get_request_authorization
 
+    mark_transaction_as_invalid()
     identifier = None
     try:
         if request.is_json and "identifier" in request.json:  # type: ignore [operator]
@@ -128,6 +136,7 @@ def ratelimit_handler(error: Exception) -> ApiErrorResponse:
 
 @app.errorhandler(DatabaseError)
 def database_error_handler(error: DatabaseError) -> ApiErrorResponse:
+    mark_transaction_as_invalid()
     if error.statement:
         try:
             sql_info_extra = {"sql_query": error.statement % format_sql_statement_params(error.params)}
@@ -152,12 +161,14 @@ def database_error_handler(error: DatabaseError) -> ApiErrorResponse:
 
 @app.errorhandler(ImageRatioError)
 def handle_ratio_error(error: ImageRatioError) -> ApiErrorResponse:
+    mark_transaction_as_invalid()
     logger.info("Image ratio error: %s", error)
     return app.generate_error_response({"code": "BAD_IMAGE_RATIO", "extra": str(error)}), 400
 
 
 @app.errorhandler(sirene.UnknownEntityException)
 def handle_unknown_entity_exception(error: sirene.UnknownEntityException) -> ApiErrorResponse:
+    mark_transaction_as_invalid()
     msg = "Le SIREN n’existe pas."
     err = {"global": [msg]}
     return app.generate_error_response(err), 400
@@ -165,6 +176,7 @@ def handle_unknown_entity_exception(error: sirene.UnknownEntityException) -> Api
 
 @app.errorhandler(sirene.InvalidFormatException)
 def handle_sirene_invalid_format_exception(error: sirene.InvalidFormatException) -> ApiErrorResponse:
+    mark_transaction_as_invalid()
     msg = "Le format de ce SIREN ou SIRET est incorrect."
     err = {"global": [msg]}
     return app.generate_error_response(err), 400
@@ -172,6 +184,7 @@ def handle_sirene_invalid_format_exception(error: sirene.InvalidFormatException)
 
 @app.errorhandler(sirene.NonPublicDataException)
 def handle_sirene_non_public_data_exception(error: sirene.NonPublicDataException) -> ApiErrorResponse:
+    mark_transaction_as_invalid()
     msg = "Les informations relatives à ce SIREN ou SIRET ne sont pas accessibles."
     err = {"global": [msg]}
     return app.generate_error_response(err), 400
@@ -179,6 +192,7 @@ def handle_sirene_non_public_data_exception(error: sirene.NonPublicDataException
 
 @app.errorhandler(sirene.SireneApiException)
 def handle_sirene_api_exception(error: sirene.SireneApiException) -> ApiErrorResponse:
+    mark_transaction_as_invalid()
     msg = "Les informations relatives à ce SIREN ou SIRET n'ont pas pu être vérifiées, veuillez réessayer plus tard."
     err = {"global": [msg]}
     return app.generate_error_response(err), 500
