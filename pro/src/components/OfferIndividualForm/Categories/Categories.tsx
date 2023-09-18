@@ -176,7 +176,7 @@ const Categories = ({
               text: 'Quelles catégories choisir ?',
               target: '_blank',
               rel: 'noopener noreferrer',
-              'aria-label': 'Quelles catégories choisir ? (Nouvelle fenêtre)',
+              'aria-label': 'Nouvelle fenêtre',
             }}
           >
             Une sélection précise de vos catégories permettra au grand public de
