@@ -1,6 +1,7 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_colors.scss" as colors;
+@use "styles/variables/_size.scss" as size;
 
 .offer-item {
   grid-template-rows: auto auto;
@@ -131,6 +132,95 @@
       & ~ .sold-out-dates {
         display: flex;
       }
+    }
+  }
+}
+
+@media (max-width: size.$tablet) {
+  .venue-column,
+  .institution-column,
+  .title-column {
+    display: block;
+    width: unset;
+    max-width: unset;
+  }
+
+  .offer-item {
+    display: grid;
+    grid-template-columns: 10% 25% 65%;
+    grid-template-areas:
+      "check thumb title"
+      "col1a col2a text1"
+      "col1b col2b text2"
+      "col1c col2c text3"
+      "col1d col2d text4";
+
+    td:first-of-type {
+      grid-area: check;
+    }
+
+    .thumb-column {
+      grid-area: thumb;
+    }
+
+    .thumb-column a {
+      position: absolute;
+    }
+
+    .title-column {
+      grid-area: title;
+    }
+
+    .venue-column {
+      grid-area: text1;
+      padding-top: 0.25rem;
+      padding-bottom: 0.25rem;
+    }
+
+    .institution-column,
+    .stock-column {
+      grid-area: text2;
+      padding-top: 0.25rem;
+      padding-bottom: 0.25rem;
+    }
+
+    .status-column {
+      grid-area: text3;
+      padding-top: 0.25rem;
+      padding-bottom: 0.25rem;
+    }
+
+    .actions-column {
+      grid-area: text4;
+      padding-top: 0.25rem;
+
+      & > div {
+        justify-content: unset;
+      }
+    }
+  }
+}
+
+@media (width <= 380px) {
+  .offer-item {
+    grid-template-columns: 10% 30% 60%;
+
+    .thumb-column a {
+      position: relative;
+    }
+
+    .thumb-column img,
+    .thumb-column div {
+      width: 60px;
+      height: 60px;
+    }
+
+    .status-column {
+      grid-area: col1a;
+    }
+
+    .actions-column {
+      grid-area: col2b;
     }
   }
 }
