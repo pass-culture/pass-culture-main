@@ -6,7 +6,6 @@ import styles from './BaseCheckbox.module.scss'
 export interface BaseCheckboxProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
   label: string | React.ReactNode
-  description?: string
   hasError?: boolean
   className?: string
   icon?: string
@@ -17,7 +16,6 @@ export interface BaseCheckboxProps
 
 const BaseCheckbox = ({
   label,
-  description,
   hasError,
   className,
   icon,
@@ -51,9 +49,6 @@ const BaseCheckbox = ({
       )}
       <span className={styles['base-checkbox-label']}>{label}</span>
     </span>
-    {description && (
-      <p className={styles['base-checkbox-description']}>{description}</p>
-    )}
   </label>
 )
 

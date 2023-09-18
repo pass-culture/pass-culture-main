@@ -22,7 +22,6 @@ const Checkbox = ({
   name,
   value,
   label,
-  description,
   className,
   icon,
   hideFooter,
@@ -37,7 +36,6 @@ const Checkbox = ({
         icon={icon}
         hasError={meta.touched && !!meta.error}
         label={label}
-        description={description}
         value={value}
         disabled={disabled}
         withBorder={withBorder}
