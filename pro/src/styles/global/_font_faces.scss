@@ -20,25 +20,11 @@
   src: url("/fonts/Montserrat-Medium.ttf") format("truetype");
 }
 
-@font-face {
-  font-family: Montserrat;
-  font-style: italic;
-  font-weight: 500;
-  src: url("/fonts/Montserrat-MediumItalic.ttf") format("truetype");
-}
-
 // semi-bold
 @font-face {
   font-family: Montserrat;
   font-weight: 600;
   src: url("/fonts/Montserrat-SemiBold.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: Montserrat;
-  font-style: italic;
-  font-weight: 600;
-  src: url("/fonts/Montserrat-SemiBoldItalic.ttf") format("truetype");
 }
 
 // bold
@@ -53,11 +39,4 @@
   font-family: Montserrat;
   font-weight: 800;
   src: url("/fonts/Montserrat-ExtraBold.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: Montserrat;
-  font-style: italic;
-  font-weight: 800;
-  src: url("/fonts/Montserrat-ExtraBoldItalic.ttf") format("truetype");
 }

@@ -18,7 +18,7 @@
 
     &.multi-select-autocomplete-input--has-selected-value {
       .multi-select-autocomplete__value-container
-        .multi-select-autocomplete__placeholder {
+      .multi-select-autocomplete__placeholder {
         font-style: normal;
         font-weight: normal;
       }
@@ -30,7 +30,7 @@
       .multi-select-autocomplete__placeholder {
         font-style: italic;
         color: colors.$black;
-        font-weight: 300;
+        font-weight: normal;
       }
     }
 
