@@ -5,7 +5,7 @@
           name="{{ field.name }}"
           data-original-name="{{ field.name }}"
           aria-label="{{ field.name }}"
-          {% if field.flags.required %}required{% endif %}
+          {% if field.flags.required %}required {% endif +%}
           data-default-value="{{ field.default }}">
     {% if not field.default %}<option value=""></option>{% endif %}
     {% for choice_value, choice_label in field.choices %}
