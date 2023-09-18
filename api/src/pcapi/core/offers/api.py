@@ -176,24 +176,14 @@ def create_offer(
 
     is_national = True if url else bool(is_national)
 
-    product = models.Product(
-        name=name,
-        description=description,
-        url=url,
-        durationMinutes=duration_minutes,
-        isNational=is_national,
-        owningOfferer=venue.managingOfferer,
-        subcategoryId=subcategory_id,
-    )
-
     offer = models.Offer(
         audioDisabilityCompliant=audio_disability_compliant,
         bookingContact=booking_contact,
         bookingEmail=booking_email,
-        description=product.description or description,
+        description=description,
         durationMinutes=duration_minutes,
         externalTicketOfficeUrl=external_ticket_office_url,
-        extraData=(product.extraData or {}) | (formatted_extra_data or {}),
+        extraData=formatted_extra_data or {},
         isActive=False,
         isDuo=bool(is_duo),
         isNational=is_national,
@@ -202,7 +192,6 @@ def create_offer(
         lastProvider=provider,
         subcategoryId=product.subcategoryId,
         name=name,
-        product=product,
         url=url,
         validation=models.OfferValidationStatus.DRAFT,
         venue=venue,
