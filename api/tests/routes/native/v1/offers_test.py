@@ -246,7 +246,9 @@ class OffersTest:
 
     def test_get_thing_offer(self, app):
         product = offers_factories.ProductFactory(thumbCount=1, subcategoryId=subcategories.ABO_MUSEE.id)
-        offer = offers_factories.OfferFactory(product=product, venue__isPermanent=True)
+        offer = offers_factories.OfferFactory(
+            product=product, venue__isPermanent=True, subcategoryId=subcategories.ABO_MUSEE.id
+        )
         offers_factories.ThingStockFactory(offer=offer, price=12.34)
 
         offer_id = offer.id

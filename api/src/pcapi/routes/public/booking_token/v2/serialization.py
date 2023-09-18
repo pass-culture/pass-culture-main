@@ -79,7 +79,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
         isUsed=booking.is_used_or_reimbursed,
         offerId=booking.stock.offer.id,
         publicOfferId=humanize(booking.stock.offer.id),  # type: ignore [arg-type]
-        offerName=booking.stock.offer.product.name,
+        offerName=booking.stock.offer.name,
         offerType=BookingOfferType.EVENEMENT if booking.stock.offer.isEvent else BookingOfferType.EVENEMENT,
         phoneNumber=booking.user.phoneNumber,
         price=booking.amount,

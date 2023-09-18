@@ -30,7 +30,7 @@ class GetProductTest:
         assert response.json == {
             "bookingContact": None,
             "bookingEmail": None,
-            "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM", "ean": None},
+            "categoryRelatedFields": {"category": "CARTE_CINE_ILLIMITE"},
             "description": "Un livre de contrepèterie",
             "accessibility": {
                 "audioDisabilityCompliant": False,

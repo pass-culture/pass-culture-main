@@ -34,7 +34,7 @@ class Returns200Test:
                     },
                 },
                 subcategoryId=subcategories.CARTE_CINE_MULTISEANCES.id,
-                product__name="An offer you cannot refuse",
+                name="An offer you cannot refuse",
                 venue__name="Le Petit Rintintin",
             ),
         )

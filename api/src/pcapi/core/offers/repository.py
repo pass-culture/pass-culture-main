@@ -688,7 +688,7 @@ def get_offer_by_id(offer_id: int) -> models.Offer:
             .outerjoin(models.Stock, sa.and_(models.Stock.offerId == offer_id, sa.not_(models.Stock.isSoftDeleted)))  # type: ignore [type-var]
             .options(sa_orm.contains_eager(models.Offer.stocks))
             .options(sa_orm.joinedload(models.Offer.mediations))
-            .options(sa_orm.joinedload(models.Offer.product, innerjoin=True))
+            .options(sa_orm.joinedload(models.Offer.product))
             .options(
                 sa_orm.joinedload(models.Offer.priceCategories).joinedload(models.PriceCategory.priceCategoryLabel)
             )
