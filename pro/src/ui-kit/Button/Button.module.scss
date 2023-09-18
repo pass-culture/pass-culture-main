@@ -7,12 +7,10 @@
 .button {
   @include fonts.button;
 
-  align-items: center;
   margin: auto 0;
   border: rem.torem(2px) solid;
   border-radius: rem.torem(24px);
   display: inline-flex;
-  height: rem.torem(40px);
   justify-content: center;
   padding: 0 rem.torem(16px);
 
@@ -50,6 +48,8 @@
   }
 
   &-primary {
+    min-height: rem.torem(40px);
+    align-items: center;
     color: colors.$white;
     background-color: colors.$primary;
     border-color: colors.$primary;
@@ -71,6 +71,8 @@
   }
 
   &-secondary {
+    min-height: rem.torem(40px);
+    align-items: center;
     color: colors.$primary;
     background-color: colors.$white;
     border-color: colors.$primary;
@@ -109,6 +111,7 @@
     @include fonts.button;
 
     color: colors.$black;
+    align-items: flex-start;
 
     &-pink {
       color: colors.$primary;
@@ -147,12 +150,6 @@
       .button-icon {
         margin-right: 0;
       }
-    }
-  }
-
-  &-link.button-ternary {
-    .button-icon {
-      margin-bottom: auto;
     }
   }
 
