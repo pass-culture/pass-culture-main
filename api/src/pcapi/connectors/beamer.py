@@ -1,4 +1,5 @@
 import logging
+import typing
 
 from pcapi import settings
 from pcapi.core.external.attributes import models as attributes_models
@@ -30,8 +31,7 @@ class BeamerBackend(BaseBackend):
 
     def update_pro_user(self, pro_attributes: attributes_models.ProAttributes) -> None:
         """Upserts the user into the Beamer database"""
-        if not pro_attributes.user_id:
-            raise MissingIdException()
+        assert pro_attributes.user_id, "pro user id is needed because it is also the beamer user id"
 
         put_users_url = f"{self.url}/users"
         try:
@@ -45,9 +45,9 @@ class BeamerBackend(BaseBackend):
                 "Network error on Beamer API",
                 extra={"exc": exc, "url": put_users_url, "userId": pro_attributes.user_id},
             )
-            raise BeamerNetworkException from exc
+            raise BeamerException("Network error on Beamer API") from exc
 
-        if response.status_code != 200:
+        if not response.ok:
             raise BeamerException(
                 f"Unexpected {response.status_code} response from Beamer for user {pro_attributes.user_id}"
             )
@@ -55,8 +55,8 @@ class BeamerBackend(BaseBackend):
 
 class LoggerBackend(BaseBackend):
     def update_pro_user(self, pro_attributes: attributes_models.ProAttributes) -> None:
-        if not pro_attributes.user_id:
-            raise MissingIdException()
+        assert pro_attributes.user_id, "pro user id is needed because it is also the beamer user id"
+
         request_data = format_pro_attributes(pro_attributes)
         logger.info("Updated pro user data on Beamer: %s", request_data)
 
@@ -81,13 +81,6 @@ def format_pro_attributes(pro_attributes: attributes_models.ProAttributes) -> di
     }
 
 
-class BeamerException(Exception):
-    pass
-
-
-class BeamerNetworkException(BeamerException):
-    pass
-
-
-class MissingIdException(BeamerException):
-    pass
+class BeamerException(requests.ExternalAPIException):
+    def __init__(self, *args: typing.Any) -> None:
+        super().__init__(True, *args)
