@@ -1,6 +1,6 @@
 /* istanbul ignore file: DEBT, TO FIX */
 import { PatchOfferBodyModel } from 'apiClient/v1'
-import { OfferIndividualFormValues } from 'components/OfferIndividualForm'
+import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
 import { OfferExtraData } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 import { individualOfferFactory } from 'utils/individualApiFactories'
@@ -19,7 +19,7 @@ describe('test updateIndividualOffer::serializers', () => {
     expect(serializeDurationMinutes('  ')).toBeUndefined()
   })
   it('test serializeExtraData', () => {
-    const formValues: OfferIndividualFormValues = {
+    const formValues: IndividualOfferFormValues = {
       author: 'author value',
       ean: 'ean value',
       musicType: 'musicType value',
@@ -33,7 +33,7 @@ describe('test updateIndividualOffer::serializers', () => {
       // some not extra data fields
       name: 'Test name',
       description: 'Test description',
-    } as OfferIndividualFormValues
+    } as IndividualOfferFormValues
 
     const extraData: OfferExtraData = {
       author: 'author value',
@@ -51,7 +51,7 @@ describe('test updateIndividualOffer::serializers', () => {
   })
 
   describe('test serializePatchOffer', () => {
-    let formValues: OfferIndividualFormValues
+    let formValues: IndividualOfferFormValues
     let patchBody: PatchOfferBodyModel
     beforeEach(() => {
       formValues = {
@@ -91,7 +91,7 @@ describe('test updateIndividualOffer::serializers', () => {
         externalTicketOfficeUrl: 'https://external.url',
         url: 'https://my.url',
         isVenueVirtual: false,
-      } as OfferIndividualFormValues
+      } as IndividualOfferFormValues
       patchBody = {
         audioDisabilityCompliant: true,
         description: 'test description',

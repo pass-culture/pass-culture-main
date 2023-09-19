@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 
 import { PriceCategoryResponseModel } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
@@ -15,7 +15,7 @@ import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import useNotification from 'hooks/useNotification'
 import { usePagination } from 'hooks/usePagination'
 import fullTrashIcon from 'icons/full-trash.svg'
-import { getPriceCategoryOptions } from 'screens/OfferIndividual/StocksEventEdition/StocksEventEdition'
+import { getPriceCategoryOptions } from 'screens/IndividualOffer/StocksEventEdition/StocksEventEdition'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { BaseDatePicker } from 'ui-kit/form/DatePicker/BaseDatePicker'

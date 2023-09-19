@@ -32,7 +32,7 @@ fetchMock.mockResponse(req => {
 // We should remove it progressively
 const acceptableErrors = [
   // This error exists in the following test:
-  // src/pages/OfferIndividualWizard/Confirmation/__specs__/Confirmation.spec.tsx
+  // src/pages/IndividualOfferWizard/Confirmation/__specs__/Confirmation.spec.tsx
   // It exists because we click on an anchor tag (<a>) and assert that the tracking
   // is called.
   // However Jest DOM doesn't support navigation changes and we shouldn't click on links in tests

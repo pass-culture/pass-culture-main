@@ -1,13 +1,13 @@
 import React from 'react'
 
-import { OfferIndividual } from 'core/Offers/types'
+import { IndividualOffer } from 'core/Offers/types'
 
 import style from './OfferAppPreview.module.scss'
 import { OptionsIcons } from './OptionsIcons'
 import { VenueDetails } from './VenueDetails'
 
 export interface OfferAppPreviewProps {
-  offer: OfferIndividual
+  offer: IndividualOffer
 }
 
 const OfferAppPreview = ({ offer }: OfferAppPreviewProps): JSX.Element => {
