@@ -1,11 +1,5 @@
-import typing
-
-from sqlalchemy.orm.exc import NoResultFound
-
 from pcapi.core.users.models import User
-from pcapi.models import Model
 from pcapi.models.api_errors import ApiErrors
-from pcapi.utils.human_ids import dehumanize
 
 
 def check_user_has_access_to_offerer(user: User, offerer_id: int) -> None:
@@ -16,16 +10,3 @@ def check_user_has_access_to_offerer(user: User, offerer_id: int) -> None:
             },
             status_code=403,
         )
-
-
-def load_or_raise_error(obj_class: typing.Type[Model], human_id: str) -> Model:
-    try:
-        data = obj_class.query.filter_by(id=dehumanize(human_id)).one()
-    except NoResultFound:
-        raise ApiErrors(
-            errors={
-                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
-            },
-            status_code=404,
-        )
-    return data
