@@ -9,6 +9,7 @@ from pcapi import settings
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Target
 import pcapi.core.offerers.repository as offerers_repository
+from pcapi.domain.demarches_simplifiees import DMS_TOKEN_PRO_PREFIX
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization.venues_serialize import DMSApplicationForEAC
@@ -101,6 +102,7 @@ class GetOffererResponseModel(BaseModel):
 
     @classmethod
     def from_orm(cls, offerer: offerers_models.Offerer) -> "GetOffererResponseModel":
+        offerer.dsToken = DMS_TOKEN_PRO_PREFIX + offerer.dsToken
         offerer.apiKey = {
             "maxAllowed": settings.MAX_API_KEY_PER_OFFERER,
             "prefixes": offerers_repository.get_api_key_prefixes(offerer.id),
