@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React, { useEffect, useRef, useState } from 'react'
 
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
@@ -79,27 +80,36 @@ export const CollectiveTableRow = ({
   return (
     <>
       <tr className={styles['table-row']} onClick={onRowClick}>
-        <td className={styles['column-booking-id']}>
+        <td className={cn(styles['table-cell'], styles['column-booking-id'])}>
           <BookingIdCell id={booking.bookingId} />
         </td>
 
-        <td className={styles['column-collective-offer-name']}>
+        <td
+          className={cn(
+            styles['table-cell'],
+            styles['column-collective-offer-name']
+          )}
+        >
           <BookingOfferCell booking={booking} isCollective={true} />
         </td>
 
-        <td className={styles['column-institution']}>
+        <td className={cn(styles['table-cell'], styles['column-institution'])}>
           <InstitutionCell institution={booking.institution} />
         </td>
 
-        <td className={styles['column-price-and-price']}>
+        <td
+          className={cn(styles['table-cell'], styles['column-price-and-price'])}
+        >
           <NumberOfTicketsAndPriceCell booking={booking} />
         </td>
 
-        <td className={styles['column-booking-status']}>
+        <td
+          className={cn(styles['table-cell'], styles['column-booking-status'])}
+        >
           <BookingStatusCell booking={booking} isCollectiveStatus={true} />
         </td>
 
-        <td>
+        <td className={cn(styles['table-cell'])}>
           <DetailsButtonCell isExpanded={isExpanded} />
         </td>
       </tr>
