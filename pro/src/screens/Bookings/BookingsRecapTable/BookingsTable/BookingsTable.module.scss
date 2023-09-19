@@ -2,43 +2,47 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_colors.scss" as colors;
 
-.bookings-head {
-  tr {
-    th,
-    .table-head-label {
-      @include fonts.caption;
+.table-wrapper {
+  display: flex;
+  flex-direction: column;
+}
 
-      color: colors.$black;
-      line-height: rem.torem(20px);
-      min-height: rem.torem(60px);
-      padding: rem.torem(14px);
-      vertical-align: middle;
-      text-align: left;
+.table {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: rem.torem(10px);
+}
 
-      .status-filter {
-        padding-left: 0;
-      }
+.table-header {
+  @include fonts.caption;
 
-      .sorting-icons {
-        display: inline-block;
-        height: rem.torem(20px);
-        margin-left: rem.torem(10px);
-        position: relative;
-        vertical-align: middle;
-        width: rem.torem(18px);
+  color: colors.$black;
+  line-height: rem.torem(20px);
+  min-height: rem.torem(60px);
+  padding: rem.torem(14px);
+  vertical-align: middle;
+  text-align: left;
+}
 
-        & > img {
-          display: block;
-          left: 50%;
-          max-height: rem.torem(20px);
-          position: absolute;
-          top: 50%;
-          transform: translateY(-50%) translateX(-50%);
-          width: auto;
-        }
-      }
-    }
+.table-body {
+  border-bottom: rem.torem(1px) solid colors.$grey-medium;
+}
+
+.table-row {
+  display: flex;
+  flex-flow: row wrap;
+  border-top: rem.torem(1px) solid colors.$grey-medium;
+  padding: rem.torem(16px) 0;
+
+  &:first-child {
+    margin-top: rem.torem(16px);
   }
+}
+
+.table-cell {
+  @include fonts.body;
+
+  padding: rem.torem(16px);
 }
 
 .column-booking-id {
@@ -58,7 +62,7 @@
 .column-booking-duo {
   align-items: center;
   display: flex;
-  padding: 0 !important;
+  padding: 0;
   width: rem.torem(35px);
 }
 
@@ -89,99 +93,18 @@
   width: rem.torem(140px);
 }
 
-.bookings-table-wrapper {
-  display: flex;
-  flex-direction: column;
-
-  .bookings-table {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: rem.torem(10px);
-
-    .column-booking-id {
-      width: rem.torem(110px);
-      display: flex;
-      align-items: center;
-    }
-
-    .column-offer-name {
-      width: rem.torem(160px);
-    }
-
-    .column-collective-offer-name {
-      width: rem.torem(180px);
-    }
-
-    .column-booking-duo {
-      align-items: center;
-      display: flex;
-      padding: rem.torem(10px) 0;
-      width: rem.torem(35px);
-    }
-
-    .column-beneficiary {
-      width: rem.torem(225px);
-      word-break: break-word;
-    }
-
-    .column-institution {
-      width: rem.torem(160px);
-      word-break: break-word;
-    }
-
-    .column-price-and-price {
-      width: rem.torem(112px);
-    }
-
-    .column-booking-date {
-      width: rem.torem(135px);
-    }
-
-    .column-booking-token {
-      width: rem.torem(120px);
-      word-break: break-word;
-    }
-
-    .column-booking-status {
-      width: rem.torem(140px);
-    }
-  }
-}
-
-.bookings-body {
-  border-bottom: rem.torem(1px) solid colors.$grey-medium;
-
-  tr {
-    display: flex;
-    flex-flow: row wrap;
-  }
-
-  td {
-    @include fonts.body;
-
-    padding: rem.torem(16px);
-  }
-}
-
 .details-container {
+  display: flex;
+  flex-flow: row wrap;
   padding: rem.torem(16px) rem.torem(16px) rem.torem(32px) rem.torem(16px);
-
-  .details-content {
-    width: 100%;
-    padding: unset;
-    font-size: unset;
-    font-weight: unset;
-    line-height: unset;
-  }
 }
 
-.table-row {
-  border-top: rem.torem(1px) solid colors.$grey-medium;
-  padding: rem.torem(16px) 0;
-
-  &:first-child {
-    margin-top: rem.torem(16px);
-  }
+.details-content {
+  width: 100%;
+  padding: unset;
+  font-size: unset;
+  font-weight: unset;
+  line-height: unset;
 }
 
 .loader {

@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React, { useEffect } from 'react'
 
 import { CollectiveBookingResponseModel } from 'apiClient/v1'
@@ -84,15 +85,27 @@ export const CollectiveBookingsTable = ({
   const { logEvent } = useAnalytics()
 
   return (
-    <div className={styles['bookings-table-wrapper']}>
-      <table className={styles['bookings-table']}>
-        <thead className={styles['bookings-head']}>
+    <div className={styles['table-wrapper']}>
+      <table className={styles['table']}>
+        <thead className={styles['table-header']}>
           <tr>
-            <th scope="col" className={styles['column-booking-id']}>
+            <th
+              scope="col"
+              className={cn(
+                styles['table-header'],
+                styles['column-booking-id']
+              )}
+            >
               Réservation
             </th>
 
-            <th scope="col" className={styles['column-offer-name']}>
+            <th
+              scope="col"
+              className={cn(
+                styles['table-header'],
+                styles['column-offer-name']
+              )}
+            >
               <span>Nom de l’offre</span>
 
               <SortArrow
@@ -110,7 +123,13 @@ export const CollectiveBookingsTable = ({
               />
             </th>
 
-            <th scope="col" className={styles['column-institution']}>
+            <th
+              scope="col"
+              className={cn(
+                styles['table-header'],
+                styles['column-institution']
+              )}
+            >
               <span>Établissement</span>
 
               <SortArrow
@@ -128,11 +147,23 @@ export const CollectiveBookingsTable = ({
               />
             </th>
 
-            <th scope="col" className={styles['column-price-and-price']}>
+            <th
+              scope="col"
+              className={cn(
+                styles['table-header'],
+                styles['column-price-and-price']
+              )}
+            >
               Places et prix
             </th>
 
-            <th scope="col" className={styles['column-booking-status']}>
+            <th
+              scope="col"
+              className={cn(
+                styles['table-header'],
+                styles['column-booking-status']
+              )}
+            >
               <FilterByBookingStatus
                 bookingStatuses={bookingStatuses}
                 bookingsRecap={bookings}
@@ -145,7 +176,7 @@ export const CollectiveBookingsTable = ({
           </tr>
         </thead>
 
-        <tbody className={styles['bookings-body']}>
+        <tbody className={styles['table-body']}>
           {currentPageItems.map(booking => (
             <CollectiveTableRow
               booking={booking}

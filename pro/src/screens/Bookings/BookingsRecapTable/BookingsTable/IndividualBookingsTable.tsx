@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React, { useEffect } from 'react'
 
 import { BookingRecapResponseModel } from 'apiClient/v1'
@@ -92,11 +93,17 @@ export const IndividualBookingsTable = ({
   const { logEvent } = useAnalytics()
 
   return (
-    <div className={styles['bookings-table-wrapper']}>
-      <table className={styles['bookings-table']}>
-        <thead className={styles['bookings-head']}>
+    <div className={styles['table-wrapper']}>
+      <table className={styles['table']}>
+        <thead>
           <tr>
-            <th scope="col" className={styles['column-offer-name']}>
+            <th
+              scope="col"
+              className={cn(
+                styles['table-header'],
+                styles['column-offer-name']
+              )}
+            >
               <span>Nom de l’offre</span>
 
               <SortArrow
@@ -114,9 +121,21 @@ export const IndividualBookingsTable = ({
               />
             </th>
 
-            <th scope="col" className={styles['column-booking-duo']}></th>
+            <th
+              scope="col"
+              className={cn(
+                styles['table-header'],
+                styles['column-booking-duo']
+              )}
+            ></th>
 
-            <th scope="col" className={styles['column-beneficiary']}>
+            <th
+              scope="col"
+              className={cn(
+                styles['table-header'],
+                styles['column-beneficiary']
+              )}
+            >
               <span>Bénéficiaire</span>
 
               <SortArrow
@@ -134,7 +153,13 @@ export const IndividualBookingsTable = ({
               />
             </th>
 
-            <th scope="col" className={styles['column-booking-date']}>
+            <th
+              scope="col"
+              className={cn(
+                styles['table-header'],
+                styles['column-booking-date']
+              )}
+            >
               <span>Réservation</span>
 
               <SortArrow
@@ -152,11 +177,23 @@ export const IndividualBookingsTable = ({
               />
             </th>
 
-            <th scope="col" className={styles['column-booking-token']}>
+            <th
+              scope="col"
+              className={cn(
+                styles['table-header'],
+                styles['column-booking-token']
+              )}
+            >
               Contremarque
             </th>
 
-            <th scope="col" className={styles['column-booking-status']}>
+            <th
+              scope="col"
+              className={cn(
+                styles['table-header'],
+                styles['column-booking-status']
+              )}
+            >
               <FilterByBookingStatus
                 bookingStatuses={bookingStatuses}
                 bookingsRecap={bookings}
@@ -167,32 +204,62 @@ export const IndividualBookingsTable = ({
           </tr>
         </thead>
 
-        <tbody className={styles['bookings-body']}>
+        <tbody className={styles['table-body']}>
           {currentPageItems.map((booking, index) => (
             <tr className={styles['table-row']} key={index}>
-              <td className={styles['column-offer-name']}>
+              <td
+                className={cn(
+                  styles['table-cell'],
+                  styles['column-offer-name']
+                )}
+              >
                 <BookingOfferCell booking={booking} isCollective={false} />
               </td>
 
-              <td className={styles['column-booking-duo']}>
+              <td
+                className={cn(
+                  styles['table-cell'],
+                  styles['column-booking-duo']
+                )}
+              >
                 <BookingIsDuoCell isDuo={booking.bookingIsDuo} />
               </td>
 
-              <td className={styles['column-beneficiary']}>
+              <td
+                className={cn(
+                  styles['table-cell'],
+                  styles['column-beneficiary']
+                )}
+              >
                 <BeneficiaryCell beneficiaryInfos={booking.beneficiary} />
               </td>
 
-              <td className={styles['column-booking-date']}>
+              <td
+                className={cn(
+                  styles['table-cell'],
+                  styles['column-booking-date']
+                )}
+              >
                 <BookingDateCell
                   bookingDateTimeIsoString={booking.bookingDate}
                 />
               </td>
 
-              <td className={styles['column-booking-token']}>
+              <td
+                className={cn(
+                  styles['table-cell'],
+                  styles['column-booking-token']
+                )}
+              >
                 <BookingTokenCell bookingToken={booking.bookingToken} />
               </td>
 
-              <td className={styles['column-booking-status']}>
+              <td
+                className={cn(
+                  styles['table-cell'],
+                  styles['column-booking-status']
+                )}
+              >
                 <BookingStatusCell
                   booking={booking}
                   isCollectiveStatus={false}
