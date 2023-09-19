@@ -109,7 +109,7 @@ jobs:
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         id: changes
         run: |
-            diff="$(git diff)"
+            diff="$(git diff src)"
             if [[ "${diff}" != "" ]];
             then
                 echo "Found changes in the API."
