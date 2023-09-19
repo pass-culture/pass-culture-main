@@ -100,7 +100,7 @@ const renderOfferTypes = async (
   })
 }
 
-describe('screens:OfferIndividual::OfferType', () => {
+describe('screens:IndividualOffer::OfferType', () => {
   let store: any
   beforeEach(() => {
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({

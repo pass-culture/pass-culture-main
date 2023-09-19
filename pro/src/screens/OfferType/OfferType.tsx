@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import FormLayout from 'components/FormLayout'
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb'
 import {
   Events,
   OFFER_FORM_HOMEPAGE,
@@ -15,7 +15,7 @@ import {
   OFFER_WIZARD_MODE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
 } from 'core/Offers/constants'
-import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
+import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
@@ -23,9 +23,9 @@ import strokeProfIcon from 'icons/stroke-prof.svg'
 import RadioButtonWithImage from 'ui-kit/RadioButtonWithImage'
 
 import ActionsBar from './ActionsBar/ActionsBar'
+import CollectiveOfferType from './CollectiveOfferType/CollectiveOfferType'
+import IndividualOfferType from './IndividualOfferType/IndividualOfferType'
 import styles from './OfferType.module.scss'
-import OfferTypeEducational from './OfferTypeEducational/OfferTypeEducational'
-import OfferTypeIndividual from './OfferTypeIndividual/OfferTypeIndividual'
 import { OfferTypeFormValues } from './types'
 
 const OfferType = (): JSX.Element => {
@@ -58,7 +58,7 @@ const OfferType = (): JSX.Element => {
 
       /* istanbul ignore next: condition will be removed when FF active in prod */
       return navigate({
-        pathname: getOfferIndividualUrl({
+        pathname: getIndividualOfferUrl({
           step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
           mode: OFFER_WIZARD_MODE.CREATION,
         }),
@@ -135,11 +135,11 @@ const OfferType = (): JSX.Element => {
             </FormLayout.Section>
 
             {values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO && (
-              <OfferTypeIndividual />
+              <IndividualOfferType />
             )}
 
             {values.offerType === OFFER_TYPES.EDUCATIONAL && (
-              <OfferTypeEducational
+              <CollectiveOfferType
                 setHasCollectiveTemplateOffer={setHasCollectiveTemplateOffer}
                 setIsEligible={setIsEligible}
                 isEligible={isEligible}

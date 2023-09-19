@@ -22,13 +22,13 @@ import Desk from 'pages/Desk'
 import { EmailChangeValidation } from 'pages/EmailChangeValidation'
 import Unavailable from 'pages/Errors/Unavailable/Unavailable'
 import Homepage from 'pages/Home/Homepage'
+import { IndividualOfferWizard } from 'pages/IndividualOfferWizard'
 import { Logout } from 'pages/Logout'
 import LostPassword from 'pages/LostPassword'
 import OffererDetails from 'pages/Offerers/Offerer/OffererDetails/OffererDetails'
 import CollectiveDataEdition from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition'
 import OffererCreation from 'pages/Offerers/OffererCreation'
 import { OffererStats } from 'pages/OffererStats'
-import { OfferIndividualWizard } from 'pages/OfferIndividualWizard'
 import OffersRoute from 'pages/Offers'
 import OfferType from 'pages/OfferType'
 import Reimbursements from 'pages/Reimbursements'
@@ -315,7 +315,7 @@ const routes: RouteConfig[] = [
     },
   },
   {
-    element: <OfferIndividualWizard />,
+    element: <IndividualOfferWizard />,
     path: '/offre/individuelle/:offerId/*',
     title: 'Offre étape par étape',
     meta: { shouldRedirect: true },

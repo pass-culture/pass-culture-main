@@ -2,14 +2,14 @@
 
 import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
-import { OfferIndividualFormValues } from 'components/OfferIndividualForm'
+import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
 
 import { serializePostOffer } from './serializers'
 
 type SuccessPayload = { id: number }
 type FailurePayload = { errors: Record<string, string> }
 type CreateIndividualOffer = Adapter<
-  OfferIndividualFormValues,
+  IndividualOfferFormValues,
   SuccessPayload,
   FailurePayload
 >

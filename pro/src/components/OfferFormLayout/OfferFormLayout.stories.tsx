@@ -1,7 +1,7 @@
 import React from 'react'
 import { withRouter } from 'storybook-addon-react-router-v6'
 
-import { OfferIndividualBreadcrumb } from 'components/OfferIndividualBreadcrumb'
+import { IndividualOfferBreadcrumb } from 'components/IndividualOfferBreadcrumb'
 
 import { OfferFormLayout } from '.'
 
@@ -27,7 +27,7 @@ const Template = () => (
       </OfferFormLayout.TitleBlock>
 
       <OfferFormLayout.Stepper>
-        <OfferIndividualBreadcrumb />
+        <IndividualOfferBreadcrumb />
       </OfferFormLayout.Stepper>
 
       <OfferFormLayout.Content>
