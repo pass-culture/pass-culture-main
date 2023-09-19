@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.core.categories import subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 
@@ -12,6 +13,7 @@ class GetProductByEanTest:
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
             extraData={"ean": "1234567890123"},
@@ -55,6 +57,7 @@ class GetProductByEanTest:
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
             extraData={"ean": "1234567890123"},
@@ -62,6 +65,7 @@ class GetProductByEanTest:
 
         product_offer_2 = offers_factories.ThingOfferFactory(
             venue=venue,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
             description="Un livre de poterie",
             name="Poterie pour les nuls",
             extraData={"ean": "0123456789123"},
@@ -69,6 +73,7 @@ class GetProductByEanTest:
 
         product_offer_3 = offers_factories.ThingOfferFactory(
             venue=venue,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
             description="Un CD",
             name="Pump it",
             extraData={"ean": "2345678901234"},
@@ -226,6 +231,7 @@ class GetProductByEanTest:
 
         product_offer = offers_factories.ThingOfferFactory(
             venue=venue,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
             extraData={"ean": "1234567890123"},

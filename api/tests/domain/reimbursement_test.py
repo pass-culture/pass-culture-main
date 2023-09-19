@@ -15,14 +15,14 @@ import pcapi.core.users.factories as users_factories
 from pcapi.domain import reimbursement
 
 
-def create_non_digital_thing_booking(quantity=1, price=10, user=None, date_used=None, product_subcategory_id=None):
+def create_non_digital_thing_booking(quantity=1, price=10, user=None, date_used=None, subcategory_id=None):
     booking_kwargs = {}
     if user:
         booking_kwargs["user"] = user
     booking_kwargs["dateUsed"] = date_used or datetime.utcnow()
     offer_kwargs = {}
-    if product_subcategory_id:
-        offer_kwargs = {"subcategoryId": product_subcategory_id}
+    if subcategory_id:
+        offer_kwargs = {"subcategoryId": subcategory_id}
     stock = offers_factories.StockFactory(
         price=price,
         offer=offers_factories.ThingOfferFactory(**offer_kwargs),
@@ -30,15 +30,14 @@ def create_non_digital_thing_booking(quantity=1, price=10, user=None, date_used=
     return bookings_factories.UsedBookingFactory(stock=stock, quantity=quantity, **booking_kwargs)
 
 
-def create_digital_booking(quantity=1, price=10, user=None, product_subcategory_id=None):
+def create_digital_booking(quantity=1, price=10, user=None, subcategory_id=None):
     user = user or users_factories.BeneficiaryGrant18Factory()
-    product_kwargs = {}
-    if product_subcategory_id:
-        product_kwargs = {"subcategoryId": product_subcategory_id}
-    product = offers_factories.DigitalProductFactory(**product_kwargs)
+    subcategory_kwargs = {}
+    if subcategory_id:
+        subcategory_kwargs = {"subcategoryId": subcategory_id}
     stock = offers_factories.StockFactory(
         price=price,
-        offer=offers_factories.ThingOfferFactory(product=product),
+        offer=offers_factories.DigitalOfferFactory(**subcategory_kwargs),
     )
     return bookings_factories.UsedBookingFactory(user=user, stock=stock, quantity=quantity, dateUsed=datetime.utcnow())
 
@@ -67,9 +66,9 @@ class DigitalThingsReimbursementTest:
         rule = reimbursement.DigitalThingsReimbursement()
 
         assert rule.is_relevant(create_digital_booking(), cumulative_revenue=0)
-        digital_book_booking = create_digital_booking(product_subcategory_id=subcategories.LIVRE_PAPIER.id)
+        digital_book_booking = create_digital_booking(subcategory_id=subcategories.LIVRE_PAPIER.id)
         assert not rule.is_relevant(digital_book_booking, cumulative_revenue=0)
-        cinema_card_booking = create_digital_booking(product_subcategory_id=subcategories.CINE_VENTE_DISTANCE.id)
+        cinema_card_booking = create_digital_booking(subcategory_id=subcategories.CINE_VENTE_DISTANCE.id)
         assert not rule.is_relevant(cinema_card_booking, cumulative_revenue=0)
         assert not rule.is_relevant(create_non_digital_thing_booking(), cumulative_revenue=0)
         assert not rule.is_relevant(create_event_booking(), cumulative_revenue=0)
@@ -104,9 +103,9 @@ class PhysicalOffersReimbursementTest:
         assert rule.is_relevant(create_non_digital_thing_booking(), cumulative_revenue=0)
         assert rule.is_relevant(create_event_booking(), cumulative_revenue=0)
         assert not rule.is_relevant(create_digital_booking(), cumulative_revenue=0)
-        digital_book_booking = create_digital_booking(product_subcategory_id=subcategories.LIVRE_NUMERIQUE.id)
+        digital_book_booking = create_digital_booking(subcategory_id=subcategories.LIVRE_NUMERIQUE.id)
         assert not rule.is_relevant(digital_book_booking, cumulative_revenue=0)
-        cinema_card_booking = create_digital_booking(product_subcategory_id=subcategories.CINE_VENTE_DISTANCE.id)
+        cinema_card_booking = create_digital_booking(subcategory_id=subcategories.CINE_VENTE_DISTANCE.id)
         assert rule.is_relevant(cinema_card_booking, cumulative_revenue=0)
 
 
@@ -250,9 +249,7 @@ class ReimbursementRateForBookBelow20000Test:
 
     @property
     def book_booking(self):
-        return create_non_digital_thing_booking(
-            product_subcategory_id=subcategories.LIVRE_PAPIER.id, price=40, quantity=2
-        )
+        return create_non_digital_thing_booking(subcategory_id=subcategories.LIVRE_PAPIER.id, price=40, quantity=2)
 
     def test_apply(self):
         assert self.rule.apply(self.book_booking) == Decimal(1) * 40 * 2
@@ -267,9 +264,7 @@ class ReimbursementRateForBookBelow20000Test:
         assert not self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert not self.rule.is_relevant(create_event_booking(), revenue)
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
-        assert self.rule.is_relevant(
-            create_digital_booking(product_subcategory_id=subcategories.LIVRE_NUMERIQUE.id), revenue
-        )
+        assert self.rule.is_relevant(create_digital_booking(subcategory_id=subcategories.LIVRE_NUMERIQUE.id), revenue)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -278,9 +273,7 @@ class ReimbursementRateForBookAbove20000Test:
 
     @property
     def book_booking(self):
-        return create_non_digital_thing_booking(
-            product_subcategory_id=subcategories.LIVRE_PAPIER.id, price=40, quantity=2
-        )
+        return create_non_digital_thing_booking(subcategory_id=subcategories.LIVRE_PAPIER.id, price=40, quantity=2)
 
     def test_apply(self):
         assert self.rule.apply(self.book_booking) == Decimal("0.95") * 40 * 2
@@ -295,9 +288,7 @@ class ReimbursementRateForBookAbove20000Test:
         assert not self.rule.is_relevant(create_non_digital_thing_booking(), revenue)
         assert not self.rule.is_relevant(create_event_booking(), revenue)
         assert not self.rule.is_relevant(create_digital_booking(), revenue)
-        assert self.rule.is_relevant(
-            create_digital_booking(product_subcategory_id=subcategories.LIVRE_NUMERIQUE.id), revenue
-        )
+        assert self.rule.is_relevant(create_digital_booking(subcategory_id=subcategories.LIVRE_NUMERIQUE.id), revenue)
 
 
 class ReimbursementRuleIsActiveTest:

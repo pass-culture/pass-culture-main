@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_no_duplicated_queries
@@ -29,7 +30,10 @@ class Returns200Test:
         )
         other_venue = offerers_factories.VenueFactory(managingOfferer=offerer, siret="54321987654321")
         offer_on_requested_venue = offers_factories.ThingOfferFactory(
-            venue=requested_venue, extraData={"ean": "123456789"}, name="My Offer"
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+            venue=requested_venue,
+            extraData={"ean": "123456789"},
+            name="My Offer",
         )
         offers_factories.ThingOfferFactory(venue=other_venue)
         stock = offers_factories.StockFactory(offer=offer_on_requested_venue)

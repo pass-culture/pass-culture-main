@@ -59,7 +59,7 @@ class GetTest:
 
             # Event offer with soft deleted stock and product's image
             offer2 = offers_factories.EventOfferFactory(venue=venue)
-            offers_factories.ProductFactory(offer=offer2, thumbCount=666)
+            mediation = offers_factories.MediationFactory(offer=offer2, thumbCount=666)
             favorite2 = users_factories.FavoriteFactory(offer=offer2, user=user)
             offers_factories.EventStockFactory(offer=offer2, beginningDatetime=today, price=20, isSoftDeleted=True)
             offers_factories.EventStockFactory(offer=offer2, beginningDatetime=tomorow, price=50)
@@ -125,7 +125,7 @@ class GetTest:
             assert favorites[4]["offer"]["image"]["credit"] is None
             assert (
                 favorites[4]["offer"]["image"]["url"]
-                == f"http://localhost/storage/thumbs/products/{humanize(offer2.product.id)}_665"
+                == f"http://localhost/storage/thumbs/mediations/{humanize(mediation.id)}_665"
             )
             assert favorites[4]["offer"]["expenseDomains"] == ["all"]
             assert favorites[4]["offer"]["subcategoryId"] == "SEANCE_CINE"
