@@ -50,7 +50,7 @@ const renderOfferTypes = async (venueId?: string) => {
   })
 }
 
-describe('screens:OfferIndividual::OfferType', () => {
+describe('screens:IndividualOffer::OfferType', () => {
   const mockNavigate = vi.fn()
 
   beforeEach(() => {

@@ -92,7 +92,7 @@ export interface OfferSubCategory {
   canBeWithdrawable: boolean
 }
 
-export interface OfferIndividualStock {
+export interface IndividualOfferStock {
   beginningDatetime: string | null
   bookingLimitDatetime: string | null
   bookingsQuantity: number
@@ -110,12 +110,12 @@ export interface OfferIndividualStock {
   activationCodes: string[]
 }
 
-export interface OfferIndividualOfferer {
+export interface IndividualOfferOfferer {
   name: string
   id: number
 }
 
-export interface OfferIndividualVenue {
+export interface IndividualOfferVenue {
   id: number
   name: string
   publicName: string
@@ -123,7 +123,7 @@ export interface OfferIndividualVenue {
   address: string
   postalCode: string
   city: string
-  offerer: OfferIndividualOfferer
+  offerer: IndividualOfferOfferer
   departmentCode: string
   accessibility: AccessibiltyFormValues
 }
@@ -142,7 +142,7 @@ export interface OfferExtraData {
   visa?: string
 }
 
-export interface OfferIndividualVenueProvider {
+export interface IndividualOfferVenueProvider {
   name: string
 }
 
@@ -151,14 +151,14 @@ export interface OfferCollectiveImage {
   credit?: string | null
 }
 
-export interface OfferIndividualImage {
+export interface IndividualOfferImage {
   originalUrl: string
   url: string
   credit: string | null
   cropParams?: CropParams
 }
 
-export interface OfferIndividual {
+export interface IndividualOffer {
   id: number
   author: string
   bookingEmail: string
@@ -183,18 +183,18 @@ export interface OfferIndividual {
   stageDirector: string
   speaker: string
   subcategoryId: string
-  image?: OfferIndividualImage
+  image?: IndividualOfferImage
   url: string
   externalTicketOfficeUrl: string
   venueId: number
-  venue: OfferIndividualVenue
+  venue: IndividualOfferVenue
   visa: string
   withdrawalDetails: string | null
   withdrawalDelay?: number | null
   withdrawalType: WithdrawalTypeEnum | null
-  stocks: OfferIndividualStock[]
+  stocks: IndividualOfferStock[]
   lastProviderName: string | null
-  lastProvider: OfferIndividualVenueProvider | null
+  lastProvider: IndividualOfferVenueProvider | null
   status: OfferStatus
   bookingContact?: string | null
 }

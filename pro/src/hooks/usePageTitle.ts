@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { matchPath, useLocation } from 'react-router-dom'
 
 import routes, { RouteConfig } from 'app/AppRouter/routesMap'
-import routesOfferIndividualWizardDefinitions from 'app/AppRouter/subroutesOfferIndividualWizardMap'
+import routesIndividualOfferWizardDefinitions from 'app/AppRouter/subroutesIndividualOfferWizardMap'
 import routesSignupJourneyDefinitions from 'app/AppRouter/subroutesSignupJourneyMap'
 import routesSignupDefinitions from 'app/AppRouter/subroutesSignupMap'
 
@@ -13,7 +13,7 @@ const usePageTitle = (): LocationListener | void => {
   useEffect(() => {
     const currentRoute = [
       ...routes,
-      ...routesOfferIndividualWizardDefinitions,
+      ...routesIndividualOfferWizardDefinitions,
       ...routesSignupDefinitions,
       ...routesSignupJourneyDefinitions,
     ]

@@ -16,10 +16,10 @@ import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import {
   OfferCategory,
-  OfferIndividual,
-  OfferIndividualOfferer,
-  OfferIndividualStock,
-  OfferIndividualVenue,
+  IndividualOffer,
+  IndividualOfferOfferer,
+  IndividualOfferStock,
+  IndividualOfferVenue,
   OfferSubCategory,
 } from 'core/Offers/types'
 
@@ -32,12 +32,12 @@ let offerCategoryId = 1
 let offerSubCategoryId = 1
 
 export const individualOfferFactory = (
-  customOffer: Partial<OfferIndividual> = {},
-  customStock: OfferIndividualStock = individualStockFactory() || null,
-  customVenue: OfferIndividualVenue = individualOfferVenueFactory(),
+  customOffer: Partial<IndividualOffer> = {},
+  customStock: IndividualOfferStock = individualStockFactory() || null,
+  customVenue: IndividualOfferVenue = individualOfferVenueFactory(),
   customPriceCatgory: PriceCategoryResponseModel = priceCategoryFactory() ||
     null
-): OfferIndividual => {
+): IndividualOffer => {
   const priceCategory = customPriceCatgory ?? null
   const stock = customStock === null ? null : customStock
 
@@ -88,8 +88,8 @@ export const individualOfferFactory = (
 }
 
 export const individualStockFactory = (
-  customStock: Partial<OfferIndividualStock> = {}
-): OfferIndividualStock => {
+  customStock: Partial<IndividualOfferStock> = {}
+): IndividualOfferStock => {
   const id = stockId++
   return {
     id: id,
@@ -111,9 +111,9 @@ export const individualStockFactory = (
 }
 
 export const individualOfferVenueFactory = (
-  customVenue: Partial<OfferIndividualVenue> = {},
-  customOfferer: OfferIndividualOfferer = individualOfferOffererFactory()
-): OfferIndividualVenue => {
+  customVenue: Partial<IndividualOfferVenue> = {},
+  customOfferer: IndividualOfferOfferer = individualOfferOffererFactory()
+): IndividualOfferVenue => {
   const currentVenueId = venueId++
 
   return {
@@ -172,8 +172,8 @@ export const individualOfferVenueResponseModelFactory = (
 }
 
 export const individualOfferOffererFactory = (
-  customOfferer: Partial<OfferIndividualOfferer> = {}
-): OfferIndividualOfferer => {
+  customOfferer: Partial<IndividualOfferOfferer> = {}
+): IndividualOfferOfferer => {
   const currentOffererId = offererId++
 
   return {

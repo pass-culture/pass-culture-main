@@ -6,8 +6,8 @@ import {
   PatchOfferBodyModel,
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
-import { OfferIndividualFormValues } from 'components/OfferIndividualForm'
-import { OfferIndividual } from 'core/Offers/types'
+import { IndividualOfferFormValues } from 'components/IndividualOfferForm'
+import { IndividualOffer } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
 
 import { updateIndividualOffer } from '..'
@@ -15,7 +15,7 @@ import { serializePatchOffer } from '../serializers'
 
 describe('updateIndividualOffer', () => {
   it('should sent PatchOfferBodyModel to api', async () => {
-    const formValues: OfferIndividualFormValues = {
+    const formValues: IndividualOfferFormValues = {
       name: 'Test offer',
       description: 'Description for testing offer',
       accessibility: {
@@ -87,7 +87,7 @@ describe('updateIndividualOffer', () => {
     const nonHumanizedofferId = 1234
     const offer = {
       id: nonHumanizedofferId,
-    } as OfferIndividual
+    } as IndividualOffer
 
     vi.spyOn(api, 'patchOffer').mockResolvedValue(
       {} as GetIndividualOfferResponseModel
@@ -104,7 +104,7 @@ describe('updateIndividualOffer', () => {
   })
 
   it('should sent PatchOfferBodyModel to api with provider editable params', async () => {
-    const formValues: OfferIndividualFormValues = {
+    const formValues: IndividualOfferFormValues = {
       name: 'Test offer',
       description: 'Description for testing offer',
       accessibility: {
@@ -168,7 +168,7 @@ describe('updateIndividualOffer', () => {
       lastProvider: {
         name: 'provider',
       },
-    } as OfferIndividual
+    } as IndividualOffer
     vi.spyOn(api, 'patchOffer').mockResolvedValue(
       {} as GetIndividualOfferResponseModel
     )

@@ -1,7 +1,7 @@
-import { OFFER_WIZARD_STEP_IDS } from 'components/OfferIndividualBreadcrumb'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb'
 import { computeURLCollectiveOfferId } from 'core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { OFFER_STATUS_DRAFT, OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { getOfferIndividualUrl } from 'core/Offers/utils/getOfferIndividualUrl'
+import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 
 export const useOfferEditionURL = (
   isOfferEducational: boolean,
@@ -15,7 +15,7 @@ export const useOfferEditionURL = (
     return `/offre/${id}/collectif/recapitulatif`
   }
   if (status && status == OFFER_STATUS_DRAFT) {
-    return getOfferIndividualUrl({
+    return getIndividualOfferUrl({
       offerId,
       mode: OFFER_WIZARD_MODE.DRAFT,
       step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
@@ -23,7 +23,7 @@ export const useOfferEditionURL = (
     })
   }
 
-  return getOfferIndividualUrl({
+  return getIndividualOfferUrl({
     offerId,
     mode: OFFER_WIZARD_MODE.EDITION,
     step: OFFER_WIZARD_STEP_IDS.SUMMARY,
@@ -42,7 +42,7 @@ export const useOfferStockEditionURL = (
     return `/offre/${id}/collectif/stocks/edition`
   }
 
-  return getOfferIndividualUrl({
+  return getIndividualOfferUrl({
     offerId,
     mode: OFFER_WIZARD_MODE.EDITION,
     step: OFFER_WIZARD_STEP_IDS.STOCKS,

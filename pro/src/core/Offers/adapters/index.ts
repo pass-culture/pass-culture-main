@@ -1,5 +1,5 @@
 export { default as getOffererAdapter } from './getOffererAdapter'
 export { getCategoriesAdapter } from './useGetCategories'
-export { getOfferIndividualAdapter } from './getOfferIndividualAdapter'
+export { getIndividualOfferAdapter } from './getIndividualOfferAdapter'
 export { createIndividualOffer } from './createIndividualOffer'
 export { updateIndividualOffer } from './updateIndividualOffer'

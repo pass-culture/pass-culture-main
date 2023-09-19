@@ -1,12 +1,12 @@
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
-import { OfferIndividualImage } from 'core/Offers/types'
+import { IndividualOfferImage } from 'core/Offers/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 interface Params extends OnImageUploadArgs {
   offerId: number
 }
 
-type CreateThumbnailAdapter = Adapter<Params, OfferIndividualImage, null>
+type CreateThumbnailAdapter = Adapter<Params, IndividualOfferImage, null>
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
