@@ -18,7 +18,7 @@ releases:
 environments:
   testing:
     values:
-      - chartVersion: 0.21.10
+      - chartVersion: 0.21.9
   staging:
     values:
       - chartVersion: 0.21.9
