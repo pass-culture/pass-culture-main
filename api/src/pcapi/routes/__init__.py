@@ -11,6 +11,7 @@ def install_all_routes(app: Flask) -> None:
     from pcapi.routes.native.blueprint import native_blueprint
     from pcapi.routes.pro.blueprint import pro_private_api as pro_private_api_blueprint
     from pcapi.routes.public import blueprints as public_blueprint
+    from pcapi.routes.public.united.blueprint import public_api_blueprint
     from pcapi.routes.saml.blueprint import saml_blueprint as saml_blueprint_blueprint
     import pcapi.tasks
     from pcapi.tasks.decorator import cloud_task_api
@@ -49,3 +50,4 @@ def install_all_routes(app: Flask) -> None:
     app.register_blueprint(cloud_task_api)
     app.register_blueprint(private_api)
     app.register_blueprint(public_api)
+    app.register_blueprint(public_api_blueprint)
