@@ -68,7 +68,7 @@ class BeamerConnectorTest:
         pro_attributes_with_no_id = copy.deepcopy(PRO_ATTRIBUTES)
         pro_attributes_with_no_id.user_id = ""
 
-        with pytest.raises(beamer.MissingIdException):
+        with pytest.raises(AssertionError):
             beamer.update_beamer_user(pro_attributes_with_no_id)
 
     def test_error_handling(self, requests_mock):
