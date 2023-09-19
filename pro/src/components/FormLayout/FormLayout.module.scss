@@ -1,6 +1,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_size.scss" as size;
 
 $info-box-width: rem.torem(316px);
 $info-box-margin-left: rem.torem(24px);
@@ -116,4 +117,12 @@ $info-box-margin-left: rem.torem(24px);
 
   margin-bottom: rem.torem(32px);
   color: colors.$grey-dark;
+}
+
+@media (max-width: size.$tablet) {
+  .form-layout {
+    &-row.inline-group {
+      flex-wrap: wrap;
+    }
+  }
 }
