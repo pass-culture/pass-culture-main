@@ -227,7 +227,7 @@
                 <p class="mb-1">
                   <span class="fw-bold">Provider :</span>
                   {{ venue_provider.provider.name }}
-                  {% if venue_provider.provider.localClass != 'AllocineStocks' %}
+                  {% if has_permission("ADVANCED_PRO_SUPPORT") and venue_provider.provider.localClass != 'AllocineStocks' %}
                     <i class="bi bi-trash3"
                        data-bs-toggle="modal"
                        data-bs-target=".pc-delete-venue-provider-modal-{{ venue_provider.provider.id }}"
