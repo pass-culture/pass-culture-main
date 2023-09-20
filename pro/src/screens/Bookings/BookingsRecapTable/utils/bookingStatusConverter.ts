@@ -9,7 +9,7 @@ import { FORMAT_DD_MM_YYYY, FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
 
 import styles from './BookingStatus.module.scss'
 
-export const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
+export const INDIVIDUAL_BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   {
     id: BOOKING_STATUS.VALIDATED,
     status: 'Validée',
@@ -36,15 +36,6 @@ export const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     statusClassName: styles['booking-status-booked'],
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
     icon: strokeClockIcon,
-  },
-  {
-    id: BOOKING_STATUS.PENDING,
-    status: 'préréservé',
-    label: 'Préréservé (scolaire)',
-    historyClassName: 'bs-history-pending',
-    statusClassName: styles['booking-status-pending'],
-    dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
-    icon: strokeHourglassIcon,
   },
   {
     id: BOOKING_STATUS.REIMBURSED,
@@ -106,7 +97,7 @@ export const COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS = [
 ]
 
 export const getBookingStatusDisplayInformations = (bookingStatus: string) =>
-  BOOKING_STATUS_DISPLAY_INFORMATIONS.find(
+  INDIVIDUAL_BOOKING_STATUS_DISPLAY_INFORMATIONS.find(
     ({ id }) => bookingStatus.toLowerCase() === id
   )
 
