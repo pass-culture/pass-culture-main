@@ -203,12 +203,11 @@ const PriceCategories = ({ offer }: PriceCategoriesProps): JSX.Element => {
     const afterSubmitUrl = getIndividualOfferUrl({
       offerId: offer.id,
       step:
-        mode === OFFER_WIZARD_MODE.EDITION
-          ? OFFER_WIZARD_STEP_IDS.SUMMARY
-          : isClickingDraft
+        isClickingDraft || mode === OFFER_WIZARD_MODE.EDITION
           ? OFFER_WIZARD_STEP_IDS.TARIFS
           : OFFER_WIZARD_STEP_IDS.STOCKS,
-      mode,
+      mode:
+        mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
     })
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OFFER_WIZARD_STEP_IDS.TARIFS,

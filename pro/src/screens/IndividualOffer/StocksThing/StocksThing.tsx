@@ -64,8 +64,12 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const [afterSubmitUrl, setAfterSubmitUrl] = useState<string>(
     getIndividualOfferUrl({
       offerId: offer.id,
-      step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-      mode,
+      step:
+        mode === OFFER_WIZARD_MODE.EDITION
+          ? OFFER_WIZARD_STEP_IDS.STOCKS
+          : OFFER_WIZARD_STEP_IDS.SUMMARY,
+      mode:
+        mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
     })
   )
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
@@ -184,10 +188,14 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
       const nextStepUrl = getIndividualOfferUrl({
         offerId: offer.id,
-        step: saveDraft
-          ? OFFER_WIZARD_STEP_IDS.STOCKS
-          : OFFER_WIZARD_STEP_IDS.SUMMARY,
-        mode,
+        step:
+          saveDraft || mode === OFFER_WIZARD_MODE.EDITION
+            ? OFFER_WIZARD_STEP_IDS.STOCKS
+            : OFFER_WIZARD_STEP_IDS.SUMMARY,
+        mode:
+          mode === OFFER_WIZARD_MODE.EDITION
+            ? OFFER_WIZARD_MODE.READ_ONLY
+            : mode,
       })
 
       // When saving draft with an empty form or in edition mode

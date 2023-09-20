@@ -256,7 +256,10 @@ const Informations = ({
         getIndividualOfferUrl({
           offerId: receivedOfferId,
           step: nextStep,
-          mode,
+          mode:
+            mode === OFFER_WIZARD_MODE.EDITION
+              ? OFFER_WIZARD_MODE.READ_ONLY
+              : mode,
         })
       )
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
