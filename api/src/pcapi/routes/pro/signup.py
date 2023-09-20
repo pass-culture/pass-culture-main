@@ -9,15 +9,6 @@ from pcapi.utils.rate_limiting import ip_rate_limiter
 from . import blueprint
 
 
-@private_api.route("/users/signup/pro", methods=["POST"])
-@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
-def signup_pro(body: users_serialize.ProUserCreationBodyModel) -> None:
-    try:
-        users_api.create_pro_user_and_offerer(body)
-    except phone_exceptions.InvalidPhoneNumber:
-        raise ApiErrors(errors={"phoneNumber": ["Le numéro de téléphone est invalide"]})
-
-
 @private_api.route("/v2/users/signup/pro", methods=["POST"])
 @ip_rate_limiter()
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
