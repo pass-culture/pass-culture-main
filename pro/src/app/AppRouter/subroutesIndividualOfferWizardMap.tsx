@@ -16,7 +16,7 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
     element: <Offer />,
     parentPath: '/offre/individuelle/:offerId',
     path: '/informations',
-    title: 'Détails - Modifier une offre individuelle',
+    title: 'Détails - Consulter une offre individuelle',
   },
   {
     element: <Offer />,
@@ -46,6 +46,12 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
     title: 'Détails - Brouillon d’une offre individuelle',
   },
   {
+    element: <Offer />,
+    parentPath: '/offre/individuelle/:offerId',
+    path: '/edition/informations',
+    title: 'Détails - Modifier une offre individuelle',
+  },
+  {
     element: <PriceCategories />,
     parentPath: '/offre/individuelle/:offerId',
     path: '/creation/tarifs',
@@ -60,8 +66,14 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   {
     element: <PriceCategories />,
     parentPath: '/offre/individuelle/:offerId',
-    path: '/tarifs',
+    path: '/edition/tarifs',
     title: 'Tarifs - Modifier une offre individuelle',
+  },
+  {
+    element: <PriceCategories />,
+    parentPath: '/offre/individuelle/:offerId',
+    path: '/tarifs',
+    title: 'Tarifs - Consulter une offre individuelle',
   },
   {
     element: <Stocks />,
@@ -78,8 +90,14 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
   {
     element: <Stocks />,
     parentPath: '/offre/individuelle/:offerId',
-    path: '/stocks',
+    path: '/edition/stocks',
     title: 'Stocks et prix  - Modifier une offre individuelle',
+  },
+  {
+    element: <Stocks />,
+    parentPath: '/offre/individuelle/:offerId',
+    path: '/stocks',
+    title: 'Stocks et prix  - Consulter une offre individuelle',
   },
   {
     element: <Summary />,
@@ -97,13 +115,13 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
     element: <Summary />,
     parentPath: '/offre/individuelle/:offerId',
     path: '/recapitulatif',
-    title: 'Récapitulatif  - Modifier une offre individuelle',
+    title: 'Récapitulatif - Modifier une offre individuelle',
   },
   {
     element: <Confirmation />,
     parentPath: '/offre/individuelle/:offerId',
     path: '/creation/confirmation',
-    title: 'Confirmation  - Offre individuelle publiée',
+    title: 'Confirmation - Offre individuelle publiée',
   },
   {
     element: <Confirmation />,
@@ -115,7 +133,7 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
     element: <Confirmation />,
     parentPath: '/offre/individuelle/:offerId',
     path: '/confirmation',
-    title: 'Confirmation  - Offre individuelle publiée',
+    title: 'Confirmation - Offre individuelle publiée',
   },
 ]
 
