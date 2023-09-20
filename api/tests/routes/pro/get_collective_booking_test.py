@@ -23,7 +23,7 @@ class Returns200Test:
         )
 
         client = client.with_session_auth(user_offerer.user.email)
-        response = client.get(f"collective/bookings/{humanize(booking.id)}")
+        response = client.get(f"collective/bookings/{booking.id}")
 
         assert response.status_code == 200
         assert response.json == {
@@ -72,7 +72,7 @@ class Returns200Test:
         )
 
         client = client.with_session_auth(user_offerer.user.email)
-        response = client.get(f"collective/bookings/{humanize(booking.id)}")
+        response = client.get(f"collective/bookings/{booking.id}")
 
         assert response.status_code == 200
         assert response.json == {
@@ -127,6 +127,6 @@ class Returns403Test:
         booking = educational_factories.CollectiveBookingFactory()
 
         client = client.with_session_auth(user_offerer.user.email)
-        response = client.get(f"collective/bookings/{humanize(booking.id)}")
+        response = client.get(f"collective/bookings/{booking.id}")
 
         assert response.status_code == 403
