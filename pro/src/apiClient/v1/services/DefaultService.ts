@@ -234,7 +234,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public getCollectiveBookingById(
-    bookingId: string,
+    bookingId: number,
   ): CancelablePromise<CollectiveBookingByIdResponseModel> {
     return this.httpRequest.request({
       method: 'GET',

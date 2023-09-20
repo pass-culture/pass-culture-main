@@ -3,7 +3,7 @@ import { CollectiveBookingByIdResponseModel } from 'apiClient/v1/models/Collecti
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
 type GetCollectiveBookingAdapter = Adapter<
-  string,
+  number,
   CollectiveBookingByIdResponseModel,
   null
 >

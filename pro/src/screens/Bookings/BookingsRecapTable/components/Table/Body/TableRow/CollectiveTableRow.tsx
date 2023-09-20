@@ -36,7 +36,7 @@ const CollectiveTableRow = ({
     const fetchBookingDetails = async () => {
       setIsLoading(true)
       const bookingResponse = await getCollectiveBookingAdapter(
-        row.original.bookingIdentifier
+        Number(row.original.bookingId)
       )
       if (bookingResponse.isOk) {
         setBookingDetails(bookingResponse.payload)

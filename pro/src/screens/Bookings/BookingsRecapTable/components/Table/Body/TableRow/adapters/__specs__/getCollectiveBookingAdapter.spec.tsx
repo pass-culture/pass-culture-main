@@ -19,7 +19,7 @@ describe('getCollectiveBookingAdapter', () => {
       new ApiError({} as ApiRequestOptions, {} as ApiResult, '')
     )
 
-    expect(await getCollectiveBookingAdapter('bookingId')).toStrictEqual({
+    expect(await getCollectiveBookingAdapter(1)).toStrictEqual({
       isOk: false,
       message: GET_DATA_ERROR_MESSAGE,
       payload: null,
@@ -63,7 +63,7 @@ describe('getCollectiveBookingAdapter', () => {
 
     vi.spyOn(api, 'getCollectiveBookingById').mockResolvedValueOnce(booking)
 
-    expect(await getCollectiveBookingAdapter('bookingId')).toStrictEqual({
+    expect(await getCollectiveBookingAdapter(1)).toStrictEqual({
       isOk: true,
       message: '',
       payload: booking,

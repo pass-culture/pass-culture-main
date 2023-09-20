@@ -34,13 +34,6 @@ def dehumanize(public_id: str | None) -> int | None:
     return int_from_bytes(xbytes)
 
 
-def dehumanize_or_raise(public_id: str | None) -> int:
-    dehumanized_public_id = dehumanize(public_id)
-    if dehumanized_public_id is None:
-        raise ValueError()
-    return dehumanized_public_id
-
-
 def humanize(integer: int | None) -> str | None:
     """Create a human-compatible ID from and integer"""
     if integer is None:
