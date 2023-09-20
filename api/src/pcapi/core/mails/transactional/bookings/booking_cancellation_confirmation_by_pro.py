@@ -38,11 +38,11 @@ def get_booking_cancellation_confirmation_by_pro_email_data(
 def get_collective_booking_cancellation_confirmation_by_pro_email_data(
     booking: CollectiveBooking,
 ) -> models.TransactionalEmailData:
-    stock = booking.collectiveStock
-    offer = stock.collectiveOffer
+    stock = booking.stock
+    offer = stock.offer  # type: ignore [attr-defined]
     event_date = format_booking_date_for_email(booking)
     event_hour = format_booking_hours_for_email(booking)
-    offer_price = str(stock.price) if stock.price > 0 else "Gratuit"
+    offer_price = str(stock.price) if stock.price > 0 else "Gratuit"  # type: ignore [attr-defined]
     venue_name = offer.venue.publicName if offer.venue.publicName else offer.venue.name
 
     return models.TransactionalEmailData(
@@ -69,7 +69,7 @@ def send_booking_cancellation_confirmation_by_pro_email(bookings: list[Booking])
 
 
 def send_collective_booking_cancellation_confirmation_by_pro_email(booking: CollectiveBooking) -> bool:
-    offerer_booking_emails = booking.collectiveStock.collectiveOffer.bookingEmails
+    offerer_booking_emails = booking.stock.offer.bookingEmails  # type: ignore [attr-defined]
     if not offerer_booking_emails:
         return True
     data = get_collective_booking_cancellation_confirmation_by_pro_email_data(booking)

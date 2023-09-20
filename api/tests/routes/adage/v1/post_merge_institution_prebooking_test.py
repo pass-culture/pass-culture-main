@@ -17,11 +17,11 @@ class PostMergeInstitutionPrebookingTest:
         )
         offer_1, offer_2 = educational_factories.CollectiveOfferFactory.create_batch(2, institution=institution_source)
         educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer_1,
+            offer=offer_1,
             collectiveBookings=[booking_1],
         )
         educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer_2,
+            offer=offer_2,
             collectiveBookings=[booking_2],
         )
 

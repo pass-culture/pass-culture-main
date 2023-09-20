@@ -148,7 +148,7 @@ class CollectiveStockFactory(BaseFactory):
     class Meta:
         model = models.CollectiveStock
 
-    collectiveOffer = factory.SubFactory(CollectiveOfferFactory)
+    offer = factory.SubFactory(CollectiveOfferFactory)
     beginningDatetime = factory.LazyFunction(lambda: datetime.datetime.utcnow() + datetime.timedelta(days=1))
     bookingLimitDatetime = factory.LazyAttribute(lambda stock: stock.beginningDatetime - datetime.timedelta(minutes=60))
     dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=3))
@@ -225,13 +225,13 @@ class CollectiveBookingFactory(BaseFactory):
     class Meta:
         model = models.CollectiveBooking
 
-    collectiveStock = factory.SubFactory(CollectiveStockFactory)
+    stock = factory.SubFactory(CollectiveStockFactory)
     dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=2))
-    offerer = factory.SelfAttribute("collectiveStock.collectiveOffer.venue.managingOfferer")
-    venue = factory.SelfAttribute("collectiveStock.collectiveOffer.venue")
+    offerer = factory.SelfAttribute("stock.offer.venue.managingOfferer")
+    venue = factory.SelfAttribute("stock.offer.venue")
     cancellationLimitDate = factory.LazyAttribute(
         lambda self: utils.compute_educational_booking_cancellation_limit_date(
-            self.collectiveStock.beginningDatetime, self.dateCreated
+            self.stock.beginningDatetime, self.dateCreated
         )
     )
     confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))

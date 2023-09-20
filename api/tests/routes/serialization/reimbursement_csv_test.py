@@ -265,8 +265,8 @@ def test_find_all_offerer_reimbursement_details() -> None:
     booking1 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue1)
     booking2 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue2)
     collective_booking3 = educational_factories.UsedCollectiveBookingFactory(
-        collectiveStock__beginningDatetime=datetime.utcnow(),
-        collectiveStock__collectiveOffer__venue=venue2,
+        stock__beginningDatetime=datetime.utcnow(),
+        stock__offer__venue=venue2,
     )
     label = ("pass Culture Pro - remboursement 1ère quinzaine 07-2019",)
     payment_1 = finance_factories.PaymentFactory(booking=booking1, transactionLabel=label)
@@ -317,9 +317,9 @@ class CollectiveReimbursementDetailsTest:
         )
         booking3 = educational_factories.UsedCollectiveBookingFactory(
             dateUsed=datetime(2022, 6, 18),
-            collectiveStock__beginningDatetime=datetime(2022, 6, 18),
-            collectiveStock__collectiveOffer__venue=venue2,
-            collectiveStock__collectiveOffer__name="Un super nom d'offre",
+            stock__beginningDatetime=datetime(2022, 6, 18),
+            stock__offer__venue=venue2,
+            stock__offer__name="Un super nom d'offre",
         )
         for booking in (booking1, booking2):
             finance_factories.PricingFactory(booking=booking)
@@ -349,14 +349,12 @@ class CollectiveReimbursementDetailsTest:
             booking3.venue.name,
             "48 boulevard des turlupins 75000 Paris",
             booking3.venue.siret,
-            booking3.collectiveStock.collectiveOffer.name,
+            booking3.stock.offer.name,
             booking3.id,
             "Khteur",
             "Reda",
             booking3.educationalInstitution.name,
-            utc_datetime_to_department_timezone(booking3.collectiveStock.beginningDatetime, "75").strftime(
-                "%d/%m/%Y %H:%M"
-            ),
+            utc_datetime_to_department_timezone(booking3.stock.beginningDatetime, "75").strftime("%d/%m/%Y %H:%M"),
             None,
             booking3.dateUsed,
             None,
@@ -381,9 +379,9 @@ class CollectiveReimbursementDetailsTest:
         venue = offerers_factories.VenueFactory(reimbursement_point=reimbursement_point)
         booking = educational_factories.UsedCollectiveBookingFactory(
             dateUsed=datetime(2022, 6, 18),
-            collectiveStock__price=21,
-            collectiveStock__beginningDatetime=datetime(2022, 6, 18),
-            collectiveStock__collectiveOffer__venue=venue,
+            stock__price=21,
+            stock__beginningDatetime=datetime(2022, 6, 18),
+            stock__offer__venue=venue,
         )
         finance_factories.CollectivePricingFactory(
             collectiveBooking=booking,
@@ -417,13 +415,13 @@ class CollectiveReimbursementDetailsTest:
         assert row[next(row_number)] == "1 boulevard Poissonnière 75000 Paris"
         assert row[next(row_number)] == booking.venue.siret
         # offer and booking
-        assert row[next(row_number)] == booking.collectiveStock.collectiveOffer.name
+        assert row[next(row_number)] == booking.stock.offer.name
         assert row[next(row_number)] == booking.id
         assert row[next(row_number)] == booking.educationalRedactor.lastName
         assert row[next(row_number)] == booking.educationalRedactor.firstName
         assert row[next(row_number)] == booking.educationalInstitution.name
         assert row[next(row_number)] == utc_datetime_to_department_timezone(
-            booking.collectiveStock.beginningDatetime, "75"
+            booking.stock.beginningDatetime, "75"
         ).strftime("%d/%m/%Y %H:%M")
         assert row[next(row_number)] is None
         assert row[next(row_number)] == booking.dateUsed

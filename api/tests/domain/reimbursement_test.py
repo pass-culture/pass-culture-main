@@ -78,7 +78,7 @@ class DigitalThingsReimbursementTest:
 @pytest.mark.usefixtures("db_session")
 class EducationalOffersReimbursementTest:
     def test_apply(self):
-        booking = educational_factories.CollectiveBookingFactory(collectiveStock__price=3000)
+        booking = educational_factories.CollectiveBookingFactory(stock__price=3000)
         rule = reimbursement.EducationalOffersReimbursement()
         assert rule.apply(booking) == 3000
 

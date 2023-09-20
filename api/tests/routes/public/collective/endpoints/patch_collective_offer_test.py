@@ -54,7 +54,7 @@ class CollectiveOffersPublicPatchOfferTest:
             nationalProgramId=None,
         )
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+            offer=offer,
         )
 
         payload = {
@@ -93,13 +93,13 @@ class CollectiveOffersPublicPatchOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.offer.id}", json=payload
             )
 
         # Then
         assert response.status_code == 200
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.offer.id).one()
 
         assert offer.name == payload["name"]
         assert offer.description == payload["description"]
@@ -125,10 +125,10 @@ class CollectiveOffersPublicPatchOfferTest:
         assert offer.imageCredit == "a great artist"
         assert offer.nationalProgramId == national_program.id
 
-        assert offer.collectiveStock.beginningDatetime == datetime.fromisoformat(payload["beginningDatetime"])
-        assert offer.collectiveStock.bookingLimitDatetime == datetime.fromisoformat(payload["bookingLimitDatetime"])
-        assert offer.collectiveStock.price == Decimal(payload["totalPrice"])
-        assert offer.collectiveStock.priceDetail == payload["educationalPriceDetail"]
+        assert offer.stock.beginningDatetime == datetime.fromisoformat(payload["beginningDatetime"])
+        assert offer.stock.bookingLimitDatetime == datetime.fromisoformat(payload["bookingLimitDatetime"])
+        assert offer.stock.price == Decimal(payload["totalPrice"])
+        assert offer.stock.priceDetail == payload["educationalPriceDetail"]
 
         assert offer.institutionId == educational_institution.id
         assert educational_institution.isActive is True
@@ -136,7 +136,7 @@ class CollectiveOffersPublicPatchOfferTest:
     def test_patch_offer_price_should_be_lower(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory()
-        offerer = stock.collectiveOffer.venue.managingOfferer
+        offerer = stock.offer.venue.managingOfferer
         offerers_factories.ApiKeyFactory(offerer=offerer)
 
         payload = {
@@ -146,7 +146,7 @@ class CollectiveOffersPublicPatchOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.offer.id}", json=payload
             )
 
         # Then
@@ -167,7 +167,7 @@ class CollectiveOffersPublicPatchOfferTest:
             students=[educational_models.StudentLevels.COLLEGE4],
         )
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+            offer=offer,
             beginningDatetime=datetime(2022, 8, 1),
         )
 
@@ -181,13 +181,13 @@ class CollectiveOffersPublicPatchOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.offer.id}", json=payload
             )
 
         # Then
         assert response.status_code == 403
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.offer.id).one()
         assert offer.students == [educational_models.StudentLevels.COLLEGE4]
 
     def test_change_venue(self, client):
@@ -201,7 +201,7 @@ class CollectiveOffersPublicPatchOfferTest:
             imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
         )
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+            offer=offer,
         )
 
         payload = {
@@ -216,13 +216,13 @@ class CollectiveOffersPublicPatchOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.offer.id}", json=payload
             )
 
         # Then
         assert response.status_code == 200
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.offer.id).one()
 
         assert offer.venueId == venue2.id
         assert offer.offerVenue == {
@@ -240,7 +240,7 @@ class CollectiveOffersPublicPatchOfferTest:
         educational_institution = educational_factories.EducationalInstitutionFactory()
         offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+            offer=offer,
         )
 
         payload = {
@@ -250,13 +250,13 @@ class CollectiveOffersPublicPatchOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.offer.id}", json=payload
             )
 
         # Then
         assert response.status_code == 200
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.offer.id).one()
         assert offer.institutionId == educational_institution.id
         assert educational_institution.isActive is True
 
@@ -271,7 +271,7 @@ class CollectiveOffersPublicPatchOfferTest:
             validation=OfferValidationStatus.PENDING, name="old_name", venue=venue, provider=api_key.provider
         )
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+            offer=offer,
         )
 
         payload = {
@@ -281,13 +281,13 @@ class CollectiveOffersPublicPatchOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.offer.id}", json=payload
             )
 
         # Then
         assert response.status_code == 422
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.offer.id).one()
         assert offer.name == "old_name"
 
     def test_partial_patch_offer_uai(self, client):
@@ -300,7 +300,7 @@ class CollectiveOffersPublicPatchOfferTest:
             imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
         )
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+            offer=offer,
         )
 
         educational_institution = educational_factories.EducationalInstitutionFactory(institutionId="UAI123")
@@ -312,13 +312,13 @@ class CollectiveOffersPublicPatchOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.offer.id}", json=payload
             )
 
         # Then
         assert response.status_code == 200
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.offer.id).one()
         assert offer.institutionId == educational_institution.id
         assert educational_institution.isActive is True
 
@@ -334,7 +334,7 @@ class CollectiveOffersPublicPatchOfferTest:
             imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
         )
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+            offer=offer,
         )
 
         payload = {
@@ -345,13 +345,13 @@ class CollectiveOffersPublicPatchOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.offer.id}", json=payload
             )
 
         # Then
         assert response.status_code == 400
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.offer.id).one()
         assert offer.institutionId is None
 
     def test_patch_offer_invalid_domain(self, client):
@@ -365,7 +365,7 @@ class CollectiveOffersPublicPatchOfferTest:
             imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
         )
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+            offer=offer,
         )
 
         payload = {
@@ -396,7 +396,7 @@ class CollectiveOffersPublicPatchOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.offer.id}", json=payload
             )
 
         # Then
@@ -413,7 +413,7 @@ class CollectiveOffersPublicPatchOfferTest:
             imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
         )
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+            offer=offer,
         )
 
         payload = {
@@ -444,7 +444,7 @@ class CollectiveOffersPublicPatchOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.offer.id}", json=payload
             )
 
         # Then
@@ -460,7 +460,7 @@ class CollectiveOffersPublicPatchOfferTest:
         educational_institution = educational_factories.EducationalInstitutionFactory()
         offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=provider_factories.ProviderFactory())
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+            offer=offer,
         )
 
         payload = {
@@ -491,7 +491,7 @@ class CollectiveOffersPublicPatchOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.offer.id}", json=payload
             )
 
         # Then
@@ -506,7 +506,7 @@ class CollectiveOffersPublicPatchOfferTest:
 
         offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+            offer=offer,
         )
 
         payload = {
@@ -516,7 +516,7 @@ class CollectiveOffersPublicPatchOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.offer.id}", json=payload
             )
 
         # Then
@@ -535,7 +535,7 @@ class CollectiveOffersPublicPatchOfferTest:
             imageCredit="pouet", imageId="123456789", venue=venue, provider=venue_provider.provider
         )
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+            offer=offer,
         )
 
         payload = {
@@ -571,7 +571,7 @@ class CollectiveOffersPublicPatchOfferTest:
         # when
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.offer.id}", json=payload
             )
 
         # then
@@ -586,7 +586,7 @@ class CollectiveOffersPublicPatchOfferTest:
 
         offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+            offer=offer,
         )
 
         payload = {"imageCredit": "a great artist", "imageFile": image_data.GOOD_IMAGE}
@@ -594,13 +594,13 @@ class CollectiveOffersPublicPatchOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.offer.id}", json=payload
             )
 
         # Then
         assert response.status_code == 200
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.offer.id).one()
         assert offer.hasImage is True
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
 
@@ -613,7 +613,7 @@ class CollectiveOffersPublicPatchOfferTest:
 
         offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+            offer=offer,
         )
 
         payload = {"name": "pouet", "imageCredit": "a great artist", "imageFile": image_data.WRONG_IMAGE_SIZE}
@@ -621,13 +621,13 @@ class CollectiveOffersPublicPatchOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.offer.id}", json=payload
             )
 
         # Then
         assert response.status_code == 400
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.offer.id).one()
         assert offer.hasImage is False
         assert not (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
         assert offer.name != "pouet"
@@ -640,7 +640,7 @@ class CollectiveOffersPublicPatchOfferTest:
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+            offer=offer,
         )
 
         payload = {"name": "pouet", "imageCredit": "a great artist", "imageFile": image_data.WRONG_IMAGE_TYPE}
@@ -648,13 +648,13 @@ class CollectiveOffersPublicPatchOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.offer.id}", json=payload
             )
 
         # Then
         assert response.status_code == 400
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.offer.id).one()
         assert offer.hasImage is False
         assert not (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
         assert offer.name != "pouet"
@@ -667,18 +667,18 @@ class CollectiveOffersPublicPatchOfferTest:
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
         offer = educational_factories.CollectiveOfferFactory(venue=venue, provider=venue_provider.provider)
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+            offer=offer,
         )
 
         payload = {"imageCredit": "a great artist", "imageFile": image_data.GOOD_IMAGE}
 
         with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.offer.id}", json=payload
             )
         assert response.status_code == 200
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.offer.id).one()
         assert offer.hasImage is True
         assert (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
         # END SETUP
@@ -687,7 +687,7 @@ class CollectiveOffersPublicPatchOfferTest:
 
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.offer.id}", json=payload
             )
         assert response.status_code == 200
         assert offer.hasImage is False
@@ -708,7 +708,7 @@ class CollectiveOffersPublicPatchOfferTest:
             domains=[domain],
         )
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+            offer=offer,
         )
 
         payload = {
@@ -718,12 +718,12 @@ class CollectiveOffersPublicPatchOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.offer.id}", json=payload
             )
 
         # Then
         assert response.status_code == 404
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.offer.id).one()
         assert offer.domains[0].id == domain.id
 
     def test_patch_offer_bad_institution(self, client):
@@ -741,7 +741,7 @@ class CollectiveOffersPublicPatchOfferTest:
             institution=educational_institution,
         )
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+            offer=offer,
         )
 
         payload = {
@@ -751,13 +751,13 @@ class CollectiveOffersPublicPatchOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.offer.id}", json=payload
             )
 
         # Then
         assert response.status_code == 404
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.offer.id).one()
         assert offer.institutionId == educational_institution.id
 
     def test_patch_offer_invalid_subcategory(self, client):
@@ -774,7 +774,7 @@ class CollectiveOffersPublicPatchOfferTest:
             subcategoryId="OLD_SUBCATEGORY",
         )
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+            offer=offer,
         )
 
         payload = {
@@ -784,12 +784,12 @@ class CollectiveOffersPublicPatchOfferTest:
         # When
         with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
             response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-                f"/v2/collective/offers/{stock.collectiveOffer.id}", json=payload
+                f"/v2/collective/offers/{stock.offer.id}", json=payload
             )
 
         # Then
         assert response.status_code == 404
 
-        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.collectiveOffer.id).one()
+        offer = educational_models.CollectiveOffer.query.filter_by(id=stock.offer.id).one()
 
         assert offer.subcategoryId == "OLD_SUBCATEGORY"

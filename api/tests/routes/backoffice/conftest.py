@@ -501,11 +501,11 @@ def individual_offerer_bookings_fixture(offerer_stocks, venue_with_accepted_bank
 def collective_offerer_booking_fixture(venue_with_educational_status):
     stock = educational_factories.CollectiveStockFactory(price=1664)
     used = educational_factories.UsedCollectiveBookingFactory(
-        collectiveStock=stock,
+        stock=stock,
         offerer=venue_with_educational_status.managingOfferer,
     )
     cancelled = educational_factories.CancelledCollectiveBookingFactory(
-        collectiveStock=stock,
+        stock=stock,
         offerer=venue_with_educational_status.managingOfferer,
     )
     return used, cancelled
@@ -517,11 +517,11 @@ def collective_venue_booking_fixture(venue_with_accepted_bank_info):
     venue_with_accepted_bank_info.venueEducationalStatusId = educational_status.id
     stock = educational_factories.CollectiveStockFactory(price=42)
     used = educational_factories.UsedCollectiveBookingFactory(
-        collectiveStock=stock,
+        stock=stock,
         venue=venue_with_accepted_bank_info,
     )
     cancelled = educational_factories.CancelledCollectiveBookingFactory(
-        collectiveStock=stock,
+        stock=stock,
         venue=venue_with_accepted_bank_info,
     )
     return used, cancelled

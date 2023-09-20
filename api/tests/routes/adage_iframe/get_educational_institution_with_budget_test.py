@@ -68,7 +68,7 @@ class EducationalInstitutionTest:
         response = test_client.get(url_for(self.endpoint))
 
         assert response.status_code == 200
-        assert response.json["budget"] == deposit.amount - used_booking.collectiveStock.price
+        assert response.json["budget"] == deposit.amount - used_booking.stock.price
 
 
 def _build_educational_year(delta: relativedelta | None = None):

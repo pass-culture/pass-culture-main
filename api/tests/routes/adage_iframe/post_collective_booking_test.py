@@ -50,7 +50,7 @@ class CollectiveBookingTest:
         # Then
         assert response.status_code == 200
         booking = CollectiveBooking.query.filter(CollectiveBooking.collectiveStockId == stock.id).one()
-        assert booking.collectiveStock.id == stock.id
+        assert booking.stock.id == stock.id
         assert booking.educationalInstitution.institutionId == educational_institution.institutionId
         assert booking.educationalYear.adageId == educational_year.adageId
         assert response.json["bookingId"] == booking.id
@@ -92,7 +92,7 @@ class CollectiveBookingTest:
         # Then
         assert response.status_code == 200
         booking = CollectiveBooking.query.filter(CollectiveBooking.collectiveStockId == stock.id).first()
-        assert booking.collectiveStock.id == stock.id
+        assert booking.stock.id == stock.id
         assert booking.educationalInstitution.institutionId == educational_institution.institutionId
         assert booking.educationalYear.adageId == educational_year.adageId
         educational_redactor = booking.educationalRedactor
@@ -141,7 +141,7 @@ class CollectiveBookingTest:
         # Given
         _, educational_institution, educational_redactor = test_data
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=stock_date, collectiveOffer__validation=OfferValidationStatus.REJECTED
+            beginningDatetime=stock_date, offer__validation=OfferValidationStatus.REJECTED
         )
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
             email=educational_redactor.email, uai=educational_institution.institutionId
@@ -189,7 +189,7 @@ class CollectiveBookingTest:
         educational_institution = educational_factories.EducationalInstitutionFactory()
         educational_institution2 = educational_factories.EducationalInstitutionFactory()
         stock = educational_factories.CollectiveStockFactory(
-            beginningDatetime=stock_date, collectiveOffer__institution=educational_institution
+            beginningDatetime=stock_date, offer__institution=educational_institution
         )
         educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
         educational_factories.EducationalYearFactory(

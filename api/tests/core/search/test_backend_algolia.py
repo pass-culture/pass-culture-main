@@ -364,22 +364,22 @@ def test_unindex_venue_ids(app):
 
 def test_index_collective_offers():
     backend = get_backend()
-    collective_offer = educational_factories.CollectiveStockFactory.build().collectiveOffer
+    collective_offer = educational_factories.CollectiveStockFactory.build().offer
     collective_stock_corsica_north = educational_factories.CollectiveStockFactory(
-        collectiveOffer__venue__departementCode="20",
-        collectiveOffer__venue__postalCode="20213",
+        offer__venue__departementCode="20",
+        offer__venue__postalCode="20213",
     )
     collective_stock_corsica_south = educational_factories.CollectiveStockFactory(
-        collectiveOffer__venue__departementCode="20",
-        collectiveOffer__venue__postalCode="20113",
+        offer__venue__departementCode="20",
+        offer__venue__postalCode="20113",
     )
     with requests_mock.Mocker() as mock:
         posted = mock.post("https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/batch", json={})
         backend.index_collective_offers(
             [
                 collective_offer,
-                collective_stock_corsica_north.collectiveOffer,
-                collective_stock_corsica_south.collectiveOffer,
+                collective_stock_corsica_north.offer,
+                collective_stock_corsica_south.offer,
             ]
         )
         posted_json = posted.last_request.json()

@@ -363,14 +363,14 @@ def check_booking_limit_datetime(
 ) -> None:
     if stock:
         if isinstance(stock, educational_models.CollectiveStock):
-            offer = stock.collectiveOffer
+            offer = stock.offer
         else:
             offer = stock.offer
 
-        if beginning and booking_limit_datetime and offer and offer.venue.departementCode is not None:
-            beginning_tz = date.utc_datetime_to_department_timezone(beginning, offer.venue.departementCode)
+        if beginning and booking_limit_datetime and offer and offer.venue.departementCode is not None:  # type: ignore [attr-defined]
+            beginning_tz = date.utc_datetime_to_department_timezone(beginning, offer.venue.departementCode)  # type: ignore [attr-defined]
             booking_limit_datetime_tz = date.utc_datetime_to_department_timezone(
-                booking_limit_datetime, offer.venue.departementCode
+                booking_limit_datetime, offer.venue.departementCode  # type: ignore [attr-defined]
             )
 
             same_date = beginning_tz.date() == booking_limit_datetime_tz.date()

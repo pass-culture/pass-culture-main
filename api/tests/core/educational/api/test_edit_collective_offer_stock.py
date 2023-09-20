@@ -157,7 +157,7 @@ class EditCollectiveOfferStocksTest:
         )
         educational_factories.CollectiveBookingFactory(
             confirmationLimitDate=datetime.datetime.utcnow() + datetime.timedelta(days=3),
-            collectiveStock=stock_to_be_updated,
+            stock=stock_to_be_updated,
             status=CollectiveBookingStatus.REIMBURSED,
         )
 
@@ -185,7 +185,7 @@ class EditCollectiveOfferStocksTest:
         cancellation_limit_date = datetime.datetime(2021, 11, 22, 15)
         stock_to_be_updated = educational_factories.CollectiveStockFactory(beginningDatetime=initial_event_date)
         booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock=stock_to_be_updated,
+            stock=stock_to_be_updated,
             status=CollectiveBookingStatus.PENDING,
             cancellationLimitDate=cancellation_limit_date,
             confirmationLimitDate=datetime.datetime(2021, 12, 17, 15),
@@ -211,7 +211,7 @@ class EditCollectiveOfferStocksTest:
         cancellation_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
         stock_to_be_updated = educational_factories.CollectiveStockFactory(beginningDatetime=initial_event_date)
         booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock=stock_to_be_updated,
+            stock=stock_to_be_updated,
             status=CollectiveBookingStatus.PENDING,
             cancellationLimitDate=cancellation_limit_date,
             confirmationLimitDate=datetime.datetime.utcnow() + datetime.timedelta(days=30),
@@ -245,7 +245,7 @@ class EditCollectiveOfferStocksTest:
             beginningDatetime=initial_event_date,
         )
         booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock=stock_to_be_updated,
+            stock=stock_to_be_updated,
             status=CollectiveBookingStatus.CANCELLED,
             cancellationLimitDate=cancellation_limit_date,
             confirmationLimitDate=datetime.datetime.utcnow() + datetime.timedelta(days=30),
@@ -276,7 +276,7 @@ class returnErrorTest:
         # Given
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
         stock_to_be_updated = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+            offer=offer,
             price=1200,
             numberOfTickets=30,
         )
@@ -350,7 +350,7 @@ class returnErrorTest:
             beginningDatetime=initial_event_date,
         )
         booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock=stock_to_be_updated,
+            stock=stock_to_be_updated,
             status=CollectiveBookingStatus.CANCELLED,
             cancellationLimitDate=cancellation_limit_date,
             confirmationLimitDate=datetime.datetime.utcnow() + datetime.timedelta(days=30),
@@ -380,14 +380,14 @@ class returnErrorTest:
         initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=7)
         initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=3)
         stock_to_be_updated = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+            offer=offer,
             price=1200,
             numberOfTickets=30,
             beginningDatetime=initial_event_date,
             bookingLimitDatetime=initial_booking_limit_date,
         )
         educational_factories.CollectiveBookingFactory(
-            collectiveStock=stock_to_be_updated,
+            stock=stock_to_be_updated,
             status=CollectiveBookingStatus.CANCELLED,
         )
         new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
@@ -421,7 +421,7 @@ class returnErrorTest:
             beginningDate=datetime.datetime(2020, 1, 10), expirationDate=datetime.datetime(2020, 12, 12)
         )
         stock_to_be_updated = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+            offer=offer,
             price=1200,
             numberOfTickets=30,
             beginningDatetime=initial_event_date,  # 2020-01-10 10:00:00
@@ -429,11 +429,11 @@ class returnErrorTest:
         )
 
         educational_factories.CollectiveBookingFactory(
-            collectiveStock=stock_to_be_updated,
+            stock=stock_to_be_updated,
             status=CollectiveBookingStatus.CANCELLED,
         )
         educational_factories.CollectiveBookingFactory(
-            collectiveStock=stock_to_be_updated,
+            stock=stock_to_be_updated,
             status=CollectiveBookingStatus.PENDING,
             educationalYear=educational_year,
         )

@@ -30,13 +30,13 @@ class Returns200Test:
             email="jean.doux@example.com",
         )
         collective_stock: CollectiveStock = CollectiveStockFactory(
-            collectiveOffer__bookingEmails=["test_collective@mail.com", "test2_collective@mail.com"],
+            offer__bookingEmails=["test_collective@mail.com", "test2_collective@mail.com"],
             beginningDatetime=datetime(2020, 1, 1, 12, 53, 00),
         )
         collective_booking = CollectiveBookingFactory(
             status=CollectiveBookingStatus.PENDING,
             educationalRedactor=redactor,
-            collectiveStock=collective_stock,
+            stock=collective_stock,
         )
 
         client = client.with_eac_token()
@@ -52,7 +52,7 @@ class Returns200Test:
             refused_collective_booking.cancellationReason == CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
         )
 
-        collective_offer = collective_stock.collectiveOffer
+        collective_offer = collective_stock.offer
         educational_institution = refused_collective_booking.educationalInstitution
         assert len(mails_testing.outbox) == 1
         assert (
@@ -81,7 +81,7 @@ class Returns200Test:
         collective_booking = CollectiveBookingFactory(
             status=CollectiveBookingStatus.PENDING,
             cancellationLimitDate=datetime(2020, 1, 1),
-            collectiveStock__collectiveOffer__bookingEmails=["johndoe@mail.com", "jacksmith@mail.com"],
+            stock__offer__bookingEmails=["johndoe@mail.com", "jacksmith@mail.com"],
         )
 
         client.with_eac_token()
@@ -102,7 +102,7 @@ class Returns200Test:
         collective_booking = CollectiveBookingFactory(
             status=CollectiveBookingStatus.CONFIRMED,
             cancellationLimitDate=datetime(2022, 11, 18),
-            collectiveStock__collectiveOffer__bookingEmails=["johndoe@mail.com", "jacksmith@mail.com"],
+            stock__offer__bookingEmails=["johndoe@mail.com", "jacksmith@mail.com"],
         )
 
         client.with_eac_token()

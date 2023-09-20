@@ -118,7 +118,7 @@ def _get_pricing_ordering_date(
     booking: bookings_models.Booking | educational_models.CollectiveBooking,
 ) -> datetime.datetime:
     stock: offers_models.Stock | educational_models.CollectiveStock = (
-        booking.stock if isinstance(booking, bookings_models.Booking) else booking.collectiveStock
+        booking.stock if isinstance(booking, bookings_models.Booking) else booking.stock  # type: ignore [assignment]
     )
     # IMPORTANT: if you change this, you must also adapt the SQL query
     # in `core.offerers.api.link_venue_to_pricing_point()`
@@ -815,9 +815,7 @@ def _price_event(event: models.FinanceEvent) -> models.Pricing:
     is_booking_collective = isinstance(booking, educational_models.CollectiveBooking)
     lines = [
         models.PricingLine(
-            amount=-utils.to_eurocents(
-                booking.collectiveStock.price if is_booking_collective else booking.total_amount
-            ),
+            amount=-utils.to_eurocents(booking.stock.price if is_booking_collective else booking.total_amount),
             category=models.PricingLineCategory.OFFERER_REVENUE,
         )
     ]
@@ -860,9 +858,7 @@ def _price_booking(
     # `Pricing.amount` equals the sum of the amount of all lines.
     lines = [
         models.PricingLine(
-            amount=-utils.to_eurocents(
-                booking.collectiveStock.price if is_booking_collective else booking.total_amount
-            ),
+            amount=-utils.to_eurocents(booking.stock.price if is_booking_collective else booking.total_amount),  # type: ignore [union-attr]
             category=models.PricingLineCategory.OFFERER_REVENUE,
         )
     ]

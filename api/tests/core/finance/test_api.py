@@ -112,12 +112,12 @@ def individual_stock_factory(**kwargs):
 def collective_stock_factory(**kwargs):
     create_bank_info = False
     if "offer__venue" not in kwargs:
-        kwargs.setdefault("collectiveOffer__venue__pricing_point", "self")
-        kwargs.setdefault("collectiveOffer__venue__reimbursement_point", "self")
+        kwargs.setdefault("offer__venue__pricing_point", "self")
+        kwargs.setdefault("offer__venue__reimbursement_point", "self")
         create_bank_info = True
     stock = educational_factories.CollectiveStockFactory(**kwargs)
     if create_bank_info:
-        factories.BankInformationFactory(venue=stock.collectiveOffer.venue)
+        factories.BankInformationFactory(venue=stock.offer.venue)
     return stock
 
 
@@ -268,7 +268,7 @@ class PriceBookingTest:
 
 class PriceCollectiveBookingTest:
     def test_basics(self):
-        collective_booking = UsedCollectiveBookingFactory(collectiveStock=collective_stock_factory(price=10))
+        collective_booking = UsedCollectiveBookingFactory(stock=collective_stock_factory(price=10))
         pricing = api.price_booking(collective_booking)
         assert models.Pricing.query.count() == 1
         assert pricing.collectiveBooking == collective_booking
@@ -281,7 +281,7 @@ class PriceCollectiveBookingTest:
         assert pricing.revenue == 0
 
     def test_link_to_finance_event(self):
-        booking = UsedCollectiveBookingFactory(collectiveStock=collective_stock_factory())
+        booking = UsedCollectiveBookingFactory(stock=collective_stock_factory())
         api.add_event(booking, models.FinanceEventMotive.BOOKING_USED)
         pricing = api.price_booking(booking)
         assert pricing.event is not None
@@ -289,7 +289,7 @@ class PriceCollectiveBookingTest:
 
     def test_pricing_lines(self):
         stock = collective_stock_factory(price=19_999)
-        booking1 = UsedCollectiveBookingFactory(collectiveStock=stock)
+        booking1 = UsedCollectiveBookingFactory(stock=stock)
         api.price_booking(booking1)
         pricing1 = models.Pricing.query.one()
         assert pricing1.amount == -(19_999 * 100)
@@ -299,7 +299,7 @@ class PriceCollectiveBookingTest:
         assert pricing1.lines[1].amount == 0
 
         stock.price = 100
-        booking2 = UsedCollectiveBookingFactory(collectiveStock=stock)
+        booking2 = UsedCollectiveBookingFactory(stock=stock)
         api.price_booking(booking2)
         pricing2 = models.Pricing.query.filter_by(collectiveBooking=booking2).one()
         assert pricing2.amount == -(100 * 100)
@@ -309,13 +309,13 @@ class PriceCollectiveBookingTest:
         assert pricing2.lines[1].amount == 0
 
     def test_price_free_booking(self):
-        booking = UsedCollectiveBookingFactory(collectiveStock=collective_stock_factory(price=0))
+        booking = UsedCollectiveBookingFactory(stock=collective_stock_factory(price=0))
         pricing = api.price_booking(booking)
         assert models.Pricing.query.count() == 1
         assert pricing.amount == 0
 
     def test_do_not_accrue_revenue(self):
-        booking = UsedCollectiveBookingFactory(collectiveStock=collective_stock_factory(price=10))
+        booking = UsedCollectiveBookingFactory(stock=collective_stock_factory(price=10))
         pricing = api.price_booking(booking)
         assert pricing.revenue == 0
 
@@ -350,8 +350,8 @@ class PriceEventTest:
             if price:
                 stock_kwargs["price"] = price
             if venue:
-                stock_kwargs["collectiveOffer__venue"] = venue
-            booking_kwargs["collectiveStock"] = collective_stock_factory(**stock_kwargs)
+                stock_kwargs["offer__venue"] = venue
+            booking_kwargs["stock"] = collective_stock_factory(**stock_kwargs)
         booking = educational_factories.UsedCollectiveBookingFactory(**booking_kwargs)
         api.add_event(booking, models.FinanceEventMotive.BOOKING_USED)
         return models.FinanceEvent.query.filter_by(collectiveBooking=booking).one()
@@ -956,21 +956,21 @@ class CancelPricingTest:
 
 class CancelCollectivePricingTest:
     def test_basics(self):
-        pricing = factories.CollectivePricingFactory(collectiveBooking__collectiveStock=collective_stock_factory())
+        pricing = factories.CollectivePricingFactory(collectiveBooking__stock=collective_stock_factory())
         reason = models.PricingLogReason.MARK_AS_UNUSED
         pricing = api.cancel_pricing(pricing.collectiveBooking, reason)
         assert pricing.status == models.PricingStatus.CANCELLED
         assert pricing.logs[0].reason == reason
 
     def test_cancel_when_no_pricing(self):
-        booking = CollectiveBookingFactory(collectiveStock=collective_stock_factory())
+        booking = CollectiveBookingFactory(stock=collective_stock_factory())
         pricing = api.cancel_pricing(booking, models.PricingLogReason.MARK_AS_UNUSED)
         assert pricing is None
 
     def test_cancel_when_already_cancelled(self):
         pricing = factories.CollectivePricingFactory(
             status=models.PricingStatus.CANCELLED,
-            collectiveBooking__collectiveStock=collective_stock_factory(),
+            collectiveBooking__stock=collective_stock_factory(),
         )
         assert api.cancel_pricing(pricing.collectiveBooking, models.PricingLogReason.MARK_AS_UNUSED) is None
         assert pricing.status == models.PricingStatus.CANCELLED  # unchanged
@@ -978,7 +978,7 @@ class CancelCollectivePricingTest:
     def test_cancel_when_not_cancellable(self):
         pricing = factories.CollectivePricingFactory(
             status=models.PricingStatus.PROCESSED,
-            collectiveBooking__collectiveStock=collective_stock_factory(),
+            collectiveBooking__stock=collective_stock_factory(),
         )
         with pytest.raises(exceptions.NonCancellablePricingError):
             api.cancel_pricing(pricing.collectiveBooking, models.PricingLogReason.MARK_AS_UNUSED)
@@ -1230,7 +1230,7 @@ class PriceBookingsTest:
         )
         used_collective_booking = UsedCollectiveBookingFactory(
             dateUsed=self.few_minutes_ago,
-            collectiveStock=collective_stock_factory(),
+            stock=collective_stock_factory(),
         )
         api.price_bookings(min_date=self.few_minutes_ago)
 
@@ -1257,7 +1257,7 @@ class PriceBookingsTest:
         UsedCollectiveBookingFactory.create_batch(
             3,
             dateUsed=self.few_minutes_ago,
-            collectiveStock=collective_stock_factory(),
+            stock=collective_stock_factory(),
         )
         api.price_bookings(
             min_date=self.few_minutes_ago - datetime.timedelta(minutes=1),
@@ -1273,7 +1273,7 @@ class PriceBookingsTest:
         )
         educational_factories.UsedCollectiveBookingFactory(
             dateUsed=self.few_minutes_ago,
-            collectiveStock=collective_stock_factory(),
+            stock=collective_stock_factory(),
         )
         n_queries = 0
         n_queries += 1  # select feature flag PRICE_EVENTS
@@ -1376,9 +1376,9 @@ class GenerateCashflowsTest:
         )
         collective_pricing13 = factories.CollectivePricingFactory(
             status=models.PricingStatus.VALIDATED,
-            collectiveBooking__collectiveStock__collectiveOffer__venue__reimbursement_point=reimbursement_point1,
+            collectiveBooking__stock__offer__venue__reimbursement_point=reimbursement_point1,
             amount=-500,
-            collectiveBooking__collectiveStock__beginningDatetime=now - datetime.timedelta(days=1),
+            collectiveBooking__stock__beginningDatetime=now - datetime.timedelta(days=1),
         )
         pricing_future_event = factories.PricingFactory(
             status=models.PricingStatus.VALIDATED,
@@ -1387,8 +1387,8 @@ class GenerateCashflowsTest:
         )
         collective_pricing_future_event = factories.CollectivePricingFactory(
             status=models.PricingStatus.VALIDATED,
-            collectiveBooking__collectiveStock__beginningDatetime=now + datetime.timedelta(days=1),
-            collectiveBooking__collectiveStock__collectiveOffer__venue__reimbursement_point=reimbursement_point1,
+            collectiveBooking__stock__beginningDatetime=now + datetime.timedelta(days=1),
+            collectiveBooking__stock__offer__venue__reimbursement_point=reimbursement_point1,
         )
         pricing_pending = factories.PricingFactory(
             status=models.PricingStatus.PENDING,
@@ -1491,9 +1491,9 @@ class GenerateCashflowsTest:
         factories.BankInformationFactory(venue=venue2)
         past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
         booking2 = educational_factories.UsedCollectiveBookingFactory(
-            collectiveStock__beginningDatetime=past,
-            collectiveStock__collectiveOffer__venue__pricing_point=venue2,
-            collectiveStock__collectiveOffer__venue__reimbursement_point=venue2,
+            stock__beginningDatetime=past,
+            stock__offer__venue__pricing_point=venue2,
+            stock__offer__venue__reimbursement_point=venue2,
         )
         api.price_booking(booking2)
 
@@ -1501,7 +1501,7 @@ class GenerateCashflowsTest:
         # booking and the collective stock without re-pricing
         # bookings.
         booking1.amount -= 1
-        booking2.collectiveStock.price -= 1
+        booking2.stock.price -= 1
         db.session.commit()
 
         api.generate_cashflows(cutoff=datetime.datetime.utcnow())
@@ -1706,23 +1706,23 @@ def test_generate_payments_file():
     # the 2 following pricing should be merged together in the csv file
     factories.CollectivePricingFactory(
         amount=-300,  # rate = 100 %
-        collectiveBooking__collectiveStock__price=3,
+        collectiveBooking__stock__price=3,
         collectiveBooking__dateUsed=used_date,
-        collectiveBooking__collectiveStock__beginningDatetime=used_date,
-        collectiveBooking__collectiveStock__collectiveOffer__name="Une histoire plutôt bien",
-        collectiveBooking__collectiveStock__collectiveOffer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
-        collectiveBooking__collectiveStock__collectiveOffer__venue=offer_venue2,
+        collectiveBooking__stock__beginningDatetime=used_date,
+        collectiveBooking__stock__offer__name="Une histoire plutôt bien",
+        collectiveBooking__stock__offer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
+        collectiveBooking__stock__offer__venue=offer_venue2,
         collectiveBooking__educationalInstitution=deposit2.educationalInstitution,
         collectiveBooking__educationalYear=deposit2.educationalYear,
     )
     factories.CollectivePricingFactory(
         amount=-700,  # rate = 100 %
-        collectiveBooking__collectiveStock__price=7,
+        collectiveBooking__stock__price=7,
         collectiveBooking__dateUsed=used_date,
-        collectiveBooking__collectiveStock__beginningDatetime=used_date,
-        collectiveBooking__collectiveStock__collectiveOffer__name="Une histoire plutôt bien 2",
-        collectiveBooking__collectiveStock__collectiveOffer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
-        collectiveBooking__collectiveStock__collectiveOffer__venue=offer_venue2,
+        collectiveBooking__stock__beginningDatetime=used_date,
+        collectiveBooking__stock__offer__name="Une histoire plutôt bien 2",
+        collectiveBooking__stock__offer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
+        collectiveBooking__stock__offer__venue=offer_venue2,
         collectiveBooking__educationalInstitution=deposit2.educationalInstitution,
         collectiveBooking__educationalYear=deposit2.educationalYear,
     )
@@ -2255,10 +2255,10 @@ class GenerateInvoiceTest:
         venue = stock.offer.venue
         past = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         collective_booking1 = educational_factories.UsedCollectiveBookingFactory(
-            collectiveStock__beginningDatetime=past, collectiveStock__collectiveOffer__venue=venue
+            stock__beginningDatetime=past, stock__offer__venue=venue
         )
         collective_booking2 = educational_factories.UsedCollectiveBookingFactory(
-            collectiveStock__beginningDatetime=past, collectiveStock__collectiveOffer__venue=venue
+            stock__beginningDatetime=past, stock__offer__venue=venue
         )
         for b in (booking1, booking2, collective_booking1, collective_booking2):
             api.price_booking(b)
@@ -2458,19 +2458,19 @@ class GenerateInvoiceHtmlTest:
             reimbursement_point=reimbursement_point,
         )
         only_collective_booking = UsedCollectiveBookingFactory(
-            collectiveStock__price=666,
-            collectiveStock__collectiveOffer__venue=only_educational_venue,
-            collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            stock__price=666,
+            stock__offer__venue=only_educational_venue,
+            stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
         )
         collective_booking1 = UsedCollectiveBookingFactory(
-            collectiveStock__price=5000,
-            collectiveStock__collectiveOffer__venue=venue,
-            collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            stock__price=5000,
+            stock__offer__venue=venue,
+            stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
         )
         collective_booking2 = UsedCollectiveBookingFactory(
-            collectiveStock__price=250,
-            collectiveStock__collectiveOffer__venue=venue,
-            collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            stock__price=250,
+            stock__offer__venue=venue,
+            stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
         )
         api.price_booking(collective_booking1)
         api.price_booking(collective_booking2)
@@ -2487,19 +2487,19 @@ class GenerateInvoiceHtmlTest:
             name="Coiffeur collecTIF",
         )
         only_collective_booking = educational_factories.UsedCollectiveBookingFactory(
-            collectiveStock__beginningDatetime=datetime.datetime.utcnow(),
-            collectiveStock__collectiveOffer__venue=only_collective_venue,
-            collectiveStock__price=666,
+            stock__beginningDatetime=datetime.datetime.utcnow(),
+            stock__offer__venue=only_collective_venue,
+            stock__price=666,
         )
         collective_booking = educational_factories.UsedCollectiveBookingFactory(
-            collectiveStock__beginningDatetime=datetime.datetime.utcnow(),
-            collectiveStock__collectiveOffer__venue=venue,
-            collectiveStock__price=5000,
+            stock__beginningDatetime=datetime.datetime.utcnow(),
+            stock__offer__venue=venue,
+            stock__price=5000,
         )
         collective_booking2 = educational_factories.UsedCollectiveBookingFactory(
-            collectiveStock__beginningDatetime=datetime.datetime.utcnow(),
-            collectiveStock__collectiveOffer__venue=venue,
-            collectiveStock__price=250,
+            stock__beginningDatetime=datetime.datetime.utcnow(),
+            stock__offer__venue=venue,
+            stock__price=250,
         )
         api.price_booking(collective_booking)
         api.price_booking(collective_booking2)

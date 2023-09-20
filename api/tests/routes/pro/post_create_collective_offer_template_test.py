@@ -65,7 +65,7 @@ class Returns400Test:
         venue = offerers_factories.VenueFactory()
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
         stock = educational_factories.CollectiveStockFactory()
-        offer = educational_factories.CollectiveOfferFactory(venue=venue, collectiveStock=stock)
+        offer = educational_factories.CollectiveOfferFactory(venue=venue, stock=stock)
 
         # When
         response = client.with_session_auth(offer.venue.managingOfferer.UserOfferers[0].user.email).post(

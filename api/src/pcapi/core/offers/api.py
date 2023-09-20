@@ -325,7 +325,7 @@ def update_collective_offer(
     educational_validation.check_if_offer_not_used_or_reimbursed(offer_to_update)
     if "students" in new_values:
         # FIXME remove after 2023-09-01
-        stock = offer_to_update.collectiveStock
+        stock = offer_to_update.stock
         if stock and stock.beginningDatetime < datetime.datetime(2023, 9, 1):
             new_students = []
             for student in new_values["students"]:

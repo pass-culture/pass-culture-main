@@ -98,7 +98,7 @@ def check_confirmation_limit_date_has_not_passed(booking: models.CollectiveBooki
 
 
 def check_collective_stock_is_editable(stock: models.CollectiveStock) -> None:
-    offers_validation.check_validation_status(stock.collectiveOffer)
+    offers_validation.check_validation_status(stock.offer)  # type: ignore [arg-type]
     for booking in stock.collectiveBookings:
         if booking.status is not models.CollectiveBookingStatus.CANCELLED:
             offers_validation.check_event_expiration(stock)
@@ -128,7 +128,7 @@ def check_if_offer_is_not_public_api(offer: models.CollectiveOffer) -> None:
 
 
 def check_user_can_prebook_collective_stock(uai: str, stock: models.CollectiveStock) -> None:
-    offer_institution = stock.collectiveOffer.institution
+    offer_institution = stock.offer.institution  # type: ignore [attr-defined]
     if offer_institution is not None and offer_institution.institutionId != uai:
         raise exceptions.CollectiveStockNotBookableByUser()
 

@@ -21,7 +21,7 @@ class Returns200Test:
         # Given
         institution = EducationalInstitutionFactory()
         stock = CollectiveStockFactory()
-        offer = stock.collectiveOffer
+        offer = stock.offer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
 
         # When
@@ -42,7 +42,7 @@ class Returns200Test:
         # Given
         institution = EducationalInstitutionFactory(institutionId="0470009E")
         stock = CollectiveStockFactory()
-        offer = stock.collectiveOffer
+        offer = stock.offer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
 
         # When
@@ -60,10 +60,10 @@ class Returns200Test:
         # Given
         institution1 = EducationalInstitutionFactory()
         stock = CollectiveStockFactory(
-            collectiveOffer__institution=institution1,
-            collectiveOffer__teacher=EducationalRedactorFactory(),
+            offer__institution=institution1,
+            offer__teacher=EducationalRedactorFactory(),
         )
-        offer = stock.collectiveOffer
+        offer = stock.offer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
         institution2 = EducationalInstitutionFactory()
 
@@ -82,10 +82,10 @@ class Returns200Test:
         # Given
         institution = EducationalInstitutionFactory()
         stock = CollectiveStockFactory(
-            collectiveOffer__institution=institution,
-            collectiveOffer__teacher=EducationalRedactorFactory(),
+            offer__institution=institution,
+            offer__teacher=EducationalRedactorFactory(),
         )
-        offer = stock.collectiveOffer
+        offer = stock.offer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
 
         # When
@@ -109,7 +109,7 @@ class Returns404Test:
         # Given
         institution = EducationalInstitutionFactory()
         stock = CollectiveStockFactory()
-        offer = stock.collectiveOffer
+        offer = stock.offer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
 
         # When
@@ -125,7 +125,7 @@ class Returns404Test:
     def test_institution_not_found(self, client: Any) -> None:
         # Given
         stock = CollectiveStockFactory()
-        offer = stock.collectiveOffer
+        offer = stock.offer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
 
         # When
@@ -146,9 +146,9 @@ class Returns403Test:
         # Given
         institution1 = EducationalInstitutionFactory()
         booking = CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__institution=institution1, status=CollectiveBookingStatus.CONFIRMED
+            stock__offer__institution=institution1, status=CollectiveBookingStatus.CONFIRMED
         )
-        offer = booking.collectiveStock.collectiveOffer
+        offer = booking.stock.offer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
         institution2 = EducationalInstitutionFactory()
 
@@ -166,9 +166,9 @@ class Returns403Test:
         # Given
         institution1 = EducationalInstitutionFactory()
         booking = CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__institution=institution1, status=CollectiveBookingStatus.REIMBURSED
+            stock__offer__institution=institution1, status=CollectiveBookingStatus.REIMBURSED
         )
-        offer = booking.collectiveStock.collectiveOffer
+        offer = booking.stock.offer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
         institution2 = EducationalInstitutionFactory()
 
@@ -185,10 +185,8 @@ class Returns403Test:
     def test_change_institution_on_uneditable_offer_booking_used(self, client: Any) -> None:
         # Given
         institution1 = EducationalInstitutionFactory()
-        booking = CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__institution=institution1, status=CollectiveBookingStatus.USED
-        )
-        offer = booking.collectiveStock.collectiveOffer
+        booking = CollectiveBookingFactory(stock__offer__institution=institution1, status=CollectiveBookingStatus.USED)
+        offer = booking.stock.offer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
         institution2 = EducationalInstitutionFactory()
 
@@ -205,8 +203,8 @@ class Returns403Test:
     def test_add_institution_link_on_pending_offer(self, client: Any) -> None:
         # Given
         institution = EducationalInstitutionFactory()
-        stock = CollectiveStockFactory(collectiveOffer__validation="PENDING")
-        offer = stock.collectiveOffer
+        stock = CollectiveStockFactory(offer__validation="PENDING")
+        offer = stock.offer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
 
         # When
@@ -225,7 +223,7 @@ class Returns403Test:
         # Given
         institution = EducationalInstitutionFactory(isActive=False)
         stock = CollectiveStockFactory()
-        offer = stock.collectiveOffer
+        offer = stock.offer
         offerers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offer.venue.managingOfferer)
 
         # When

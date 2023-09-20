@@ -34,7 +34,7 @@ class GetEducationalInstitutionRemainingCreditTest:
         )
 
         res = api.get_current_year_remaining_credit(institution)
-        assert res == current_year_deposit.amount - booking.collectiveStock.price
+        assert res == current_year_deposit.amount - booking.stock.price
 
     def test_used_and_cancelled_and_pending_offers(self, current_year_deposit):
         """
@@ -50,7 +50,7 @@ class GetEducationalInstitutionRemainingCreditTest:
         )
 
         res = api.get_current_year_remaining_credit(institution)
-        assert res == current_year_deposit.amount - used_booking.collectiveStock.price
+        assert res == current_year_deposit.amount - used_booking.stock.price
 
     def test_no_bookings(self, current_year_deposit):
         institution = current_year_deposit.educationalInstitution

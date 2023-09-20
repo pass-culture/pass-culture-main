@@ -417,11 +417,11 @@ def edit_collective_offer_price(collective_offer_id: int) -> utils.BackofficeRes
     price = form.price.data
     number_of_tickets = form.numberOfTickets.data
 
-    if price > collective_offer.collectiveStock.price:
+    if price > collective_offer.stock.price:
         flash("Impossible d'augmenter le prix")
         return redirect(redirect_url, code=303)
 
-    if number_of_tickets > collective_offer.collectiveStock.numberOfTickets:
+    if number_of_tickets > collective_offer.stock.numberOfTickets:
         flash("Impossible d'augmenter le nombre de participants", "warning")
         return redirect(redirect_url, code=303)
 
@@ -443,8 +443,8 @@ def edit_collective_offer_price(collective_offer_id: int) -> utils.BackofficeRes
         db.session.rollback()
         return redirect(redirect_url, code=303)
 
-    collective_offer.collectiveStock.price = price
-    collective_offer.collectiveStock.numberOfTickets = number_of_tickets
+    collective_offer.stock.price = price
+    collective_offer.stock.numberOfTickets = number_of_tickets
     db.session.commit()
 
     flash("L'offre collective a été mise à jour", "success")
@@ -456,8 +456,8 @@ def edit_collective_offer_price(collective_offer_id: int) -> utils.BackofficeRes
 def get_collective_offer_price_form(collective_offer_id: int) -> utils.BackofficeResponse:
     collective_offer = educational_models.CollectiveOffer.query.get_or_404(collective_offer_id)
     form = EditCollectiveOfferPrice(
-        price=collective_offer.collectiveStock.price,
-        numberOfTickets=collective_offer.collectiveStock.numberOfTickets,
+        price=collective_offer.stock.price,
+        numberOfTickets=collective_offer.stock.numberOfTickets,
     )
     return render_template(
         "components/turbo/modal_form.html",

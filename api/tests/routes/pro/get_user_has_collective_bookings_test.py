@@ -13,7 +13,7 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
 
-        CollectiveBookingFactory(offerer=offerer, collectiveStock__collectiveOffer__venue__managingOfferer=offerer)
+        CollectiveBookingFactory(offerer=offerer, stock__offer__venue__managingOfferer=offerer)
 
         # when
         response = client.with_session_auth(user.email).get("/collective/bookings/pro/userHasBookings")

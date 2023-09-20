@@ -44,9 +44,7 @@ class Returns200Test:
             students=[StudentLevels.CAP1],
             interventionArea=["01", "07", "08"],
         )
-        booking = CollectiveBookingFactory(
-            collectiveStock__collectiveOffer=offer, collectiveStock__beginningDatetime=datetime(2020, 1, 1)
-        )
+        booking = CollectiveBookingFactory(stock__offer=offer, stock__beginningDatetime=datetime(2020, 1, 1))
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
@@ -130,7 +128,7 @@ class Returns200Test:
     ):
         # Given
         offer = CollectiveOfferFactory()
-        CollectiveBookingFactory(collectiveStock__collectiveOffer=offer, status=CollectiveBookingStatus.CANCELLED)
+        CollectiveBookingFactory(stock__offer=offer, status=CollectiveBookingStatus.CANCELLED)
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
@@ -158,7 +156,7 @@ class Returns200Test:
     ):
         # Given
         offer = CollectiveOfferFactory()
-        CollectiveStockFactory(collectiveOffer=offer, beginningDatetime=datetime(2023, 8, 20))
+        CollectiveStockFactory(offer=offer, beginningDatetime=datetime(2023, 8, 20))
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
@@ -534,7 +532,7 @@ class Returns403Test:
         # Given
         offer = CollectiveOfferFactory()
         UsedCollectiveBookingFactory(
-            collectiveStock__collectiveOffer=offer,
+            stock__offer=offer,
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
@@ -657,7 +655,7 @@ class Returns403Test:
     ):
         # Given
         offer = CollectiveOfferFactory()
-        CollectiveStockFactory(collectiveOffer=offer, beginningDatetime=datetime(2023, 8, 20))
+        CollectiveStockFactory(offer=offer, beginningDatetime=datetime(2023, 8, 20))
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,

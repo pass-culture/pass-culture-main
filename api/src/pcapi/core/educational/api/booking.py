@@ -62,8 +62,8 @@ def book_collective_offer(
             educationalRedactor=redactor,
             confirmationLimitDate=stock.bookingLimitDatetime,
             collectiveStockId=stock.id,
-            venueId=stock.collectiveOffer.venueId,
-            offererId=stock.collectiveOffer.venue.managingOffererId,
+            venueId=stock.offer.venueId,  # type: ignore [attr-defined]
+            offererId=stock.offer.venue.managingOffererId,  # type: ignore [attr-defined]
             status=educational_models.CollectiveBookingStatus.PENDING,
             dateCreated=utcnow,
             cancellationLimitDate=educational_utils.compute_educational_booking_cancellation_limit_date(
@@ -144,14 +144,14 @@ def confirm_collective_booking(educational_booking_id: int) -> educational_model
         validation.check_institution_fund(
             educational_institution_id,
             educational_year_id,
-            decimal.Decimal(collective_booking.collectiveStock.price),
+            decimal.Decimal(collective_booking.stock.price),  # type: ignore [attr-defined]
             deposit,
         )
         if FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION.is_active():
             validation.check_ministry_fund(
                 educational_year_id=educational_year_id,
-                booking_amount=decimal.Decimal(collective_booking.collectiveStock.price),
-                booking_date=collective_booking.collectiveStock.beginningDatetime,
+                booking_amount=decimal.Decimal(collective_booking.stock.price),  # type: ignore [attr-defined]
+                booking_date=collective_booking.stock.beginningDatetime,  # type: ignore [attr-defined]
                 ministry=deposit.ministry,
             )
 
@@ -212,7 +212,7 @@ def refuse_collective_booking(educational_booking_id: int) -> educational_models
 
     send_eac_booking_cancellation_email(collective_booking)
 
-    search.async_index_collective_offer_ids([collective_booking.collectiveStock.collectiveOfferId])
+    search.async_index_collective_offer_ids([collective_booking.stock.collectiveOfferId])  # type: ignore [attr-defined]
 
     return collective_booking
 
@@ -244,7 +244,7 @@ def get_collective_booking_by_id(booking_id: int) -> educational_models.Collecti
     query = query.options(
         sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock),
         sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock).joinedload(
-            educational_models.CollectiveStock.collectiveOffer
+            educational_models.CollectiveStock.offer
         ),
         sa.orm.joinedload(educational_models.CollectiveBooking.educationalRedactor),
         sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution),
@@ -314,7 +314,7 @@ def _cancel_collective_booking(
     reason: educational_models.CollectiveBookingCancellationReasons,
 ) -> None:
     with transaction():
-        educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
+        educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.stock.id)  # type: ignore [attr-defined]
         db.session.refresh(collective_booking)
 
         try:
@@ -369,7 +369,7 @@ def cancel_collective_booking(
     _from: str | None = None,
 ) -> None:
     with transaction():
-        educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
+        educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.stock.id)  # type: ignore [attr-defined]
         db.session.refresh(collective_booking)
         if collective_booking.status == educational_models.CollectiveBookingStatus.REIMBURSED:
             raise exceptions.BookingIsAlreadyRefunded()
@@ -390,7 +390,7 @@ def cancel_collective_booking(
         collective_booking.cancel_booking(reason=reason, cancel_even_if_used=True)
 
         db.session.commit()
-    search.async_index_collective_offer_ids([collective_booking.collectiveStock.collectiveOfferId])
+    search.async_index_collective_offer_ids([collective_booking.stock.collectiveOfferId])  # type: ignore [attr-defined]
     logger.info(
         "CollectiveBooking has been cancelled by %s %s",
         reason.value.lower(),
@@ -406,7 +406,7 @@ def uncancel_collective_booking(
     collective_booking: educational_models.CollectiveBooking,
 ) -> None:
     with transaction():
-        educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.collectiveStock.id)
+        educational_repository.get_and_lock_collective_stock(stock_id=collective_booking.stock.id)  # type: ignore [attr-defined]
         db.session.refresh(collective_booking)
         collective_booking.uncancel_booking()
         if collective_booking.status == educational_models.CollectiveBookingStatus.USED:
@@ -416,7 +416,7 @@ def uncancel_collective_booking(
             )
         db.session.commit()
 
-    search.async_index_collective_offer_ids([collective_booking.collectiveStock.collectiveOfferId])
+    search.async_index_collective_offer_ids([collective_booking.stock.collectiveOfferId])  # type: ignore [attr-defined]
     logger.info(
         "CollectiveBooking has been uncancelled by support",
         extra={
@@ -431,7 +431,7 @@ def notify_reimburse_collective_booking(booking_id: int, reason: str, value: flo
     if not booking:
         print(f"Collective booking {booking_id} not found")
         return
-    price = booking.collectiveStock.price
+    price = booking.stock.price  # type: ignore [attr-defined]
     if value > price:
         print(f"Collective booking {booking_id} is priced at {price}. We cannot reimburse more than that.")
         return

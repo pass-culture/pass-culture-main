@@ -89,10 +89,10 @@ def test_reindex_offers_if_same_ean_booked_recently(app):
 
 @clean_database
 def test_partially_index_collective_offers(app):
-    _inactive_offer = educational_factories.CollectiveStockFactory(collectiveOffer__isActive=False).collectiveOffer
+    _inactive_offer = educational_factories.CollectiveStockFactory(offer__isActive=False).offer
     _unbookable_offer = educational_factories.CollectiveOfferFactory()
-    bookable_offer1 = educational_factories.CollectiveStockFactory().collectiveOffer
-    _bookable_offer2 = educational_factories.CollectiveStockFactory().collectiveOffer
+    bookable_offer1 = educational_factories.CollectiveStockFactory().offer
+    _bookable_offer2 = educational_factories.CollectiveStockFactory().offer
 
     # `get_paginated_active_collective_offer_ids()` returns the first
     # 2 active offers, which are _unbookable_offer and bookable_offer1.

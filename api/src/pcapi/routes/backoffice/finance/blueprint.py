@@ -400,10 +400,10 @@ def _initialize_collective_booking_additional_data(collective_booking: education
     additional_data = {
         "ID de la réservation": collective_booking.id,
         "Statut de la réservation": filters.format_booking_status(collective_booking.status),
-        "Nom de l'offre": collective_booking.collectiveStock.collectiveOffer.name,
-        "Date de l'offre": filters.format_date_time(collective_booking.collectiveStock.beginningDatetime),
+        "Nom de l'offre": collective_booking.stock.offer.name,  # type: ignore [attr-defined]
+        "Date de l'offre": filters.format_date_time(collective_booking.stock.beginningDatetime),  # type: ignore [attr-defined]
         "Établissement": collective_booking.educationalInstitution.name,
-        "Nombre d'élèves": collective_booking.collectiveStock.numberOfTickets,
+        "Nombre d'élèves": collective_booking.stock.numberOfTickets,  # type: ignore [attr-defined]
     }
 
     if collective_booking.pricing:

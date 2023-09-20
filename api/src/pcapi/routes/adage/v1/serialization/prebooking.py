@@ -119,15 +119,15 @@ def get_collective_bookings_per_year_response(
         EducationalBookingPerYearResponse(
             id=educational_booking.id,
             UAICode=educational_booking.educationalInstitution.institutionId,
-            status=get_collective_booking_status(educational_booking),  # type: ignore [arg-type]
+            status=get_collective_booking_status(educational_booking),
             confirmationLimitDate=educational_booking.confirmationLimitDate,
-            totalAmount=educational_booking.collectiveStock.price,
-            beginningDatetime=educational_booking.collectiveStock.beginningDatetime,
-            venueTimezone=educational_booking.collectiveStock.collectiveOffer.venue.timezone,
-            name=educational_booking.collectiveStock.collectiveOffer.name,
+            totalAmount=educational_booking.stock.price,  # type: ignore [attr-defined]
+            beginningDatetime=educational_booking.stock.beginningDatetime,  # type: ignore [attr-defined]
+            venueTimezone=educational_booking.stock.offer.venue.timezone,  # type: ignore [attr-defined]
+            name=educational_booking.stock.offer.name,  # type: ignore [attr-defined]
             redactorEmail=educational_booking.educationalRedactor.email,
-            domainIds=[domain.id for domain in educational_booking.collectiveStock.collectiveOffer.domains],
-            domainLabels=[domain.name for domain in educational_booking.collectiveStock.collectiveOffer.domains],
+            domainIds=[domain.id for domain in educational_booking.stock.offer.domains],  # type: ignore [attr-defined]
+            domainLabels=[domain.name for domain in educational_booking.stock.offer.domains],  # type: ignore [attr-defined]
         )
         for educational_booking in educational_bookings
     ]
@@ -156,8 +156,8 @@ def serialize_collective_bookings(educational_bookings: list[CollectiveBooking])
 
 
 def serialize_collective_booking(collective_booking: CollectiveBooking) -> EducationalBookingResponse:
-    stock: educational_models.CollectiveStock = collective_booking.collectiveStock
-    offer: educational_models.CollectiveOffer = stock.collectiveOffer
+    stock: educational_models.CollectiveStock = collective_booking.stock  # type: ignore [assignment]
+    offer: educational_models.CollectiveOffer = stock.offer  # type: ignore [assignment]
     domains = offer.domains
     venue: offerers_models.Venue = offer.venue
     return EducationalBookingResponse(
@@ -170,7 +170,7 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
         confirmationDate=collective_booking.confirmationDate,
         confirmationLimitDate=collective_booking.confirmationLimitDate,
         contact=_get_collective_offer_contact(offer),
-        coordinates={  # type: ignore [arg-type]
+        coordinates={
             "latitude": venue.latitude,
             "longitude": venue.longitude,
         },
@@ -188,16 +188,16 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
         postalCode=venue.postalCode,
         price=stock.price,
         quantity=1,
-        redactor={  # type: ignore [arg-type]
+        redactor={
             "email": collective_booking.educationalRedactor.email,
             "redactorFirstName": collective_booking.educationalRedactor.firstName,
             "redactorLastName": collective_booking.educationalRedactor.lastName,
             "redactorCivility": collective_booking.educationalRedactor.civility,
         },
         UAICode=collective_booking.educationalInstitution.institutionId,
-        yearId=collective_booking.educationalYearId,  # type: ignore [arg-type]
-        status=get_collective_booking_status(collective_booking),  # type: ignore [arg-type]
-        venueTimezone=venue.timezone,  # type: ignore [arg-type]
+        yearId=collective_booking.educationalYearId,
+        status=get_collective_booking_status(collective_booking),
+        venueTimezone=venue.timezone,
         subcategoryLabel=offer.subcategory.app_label,
         totalAmount=stock.price,
         url=offer_app_link(offer),
@@ -278,8 +278,8 @@ class AdageReibursementNotification(EducationalBookingResponse):
 def serialize_reibursement_notification(
     collective_booking: CollectiveBooking, reason: str, value: float, details: str
 ) -> AdageReibursementNotification:
-    stock: educational_models.CollectiveStock = collective_booking.collectiveStock
-    offer: educational_models.CollectiveOffer = stock.collectiveOffer
+    stock: educational_models.CollectiveStock = collective_booking.stock  # type: ignore [assignment]
+    offer: educational_models.CollectiveOffer = stock.offer  # type: ignore [assignment]
     domains = offer.domains
     venue: offerers_models.Venue = offer.venue
     return AdageReibursementNotification(
@@ -292,7 +292,7 @@ def serialize_reibursement_notification(
         confirmationDate=collective_booking.confirmationDate,
         confirmationLimitDate=collective_booking.confirmationLimitDate,
         contact=_get_collective_offer_contact(offer),
-        coordinates={  # type: ignore [arg-type]
+        coordinates={
             "latitude": venue.latitude,
             "longitude": venue.longitude,
         },
@@ -310,16 +310,16 @@ def serialize_reibursement_notification(
         postalCode=venue.postalCode,
         price=stock.price,
         quantity=1,
-        redactor={  # type: ignore [arg-type]
+        redactor={
             "email": collective_booking.educationalRedactor.email,
             "redactorFirstName": collective_booking.educationalRedactor.firstName,
             "redactorLastName": collective_booking.educationalRedactor.lastName,
             "redactorCivility": collective_booking.educationalRedactor.civility,
         },
         UAICode=collective_booking.educationalInstitution.institutionId,
-        yearId=collective_booking.educationalYearId,  # type: ignore [arg-type]
-        status=get_collective_booking_status(collective_booking),  # type: ignore [arg-type]
-        venueTimezone=venue.timezone,  # type: ignore [arg-type]
+        yearId=collective_booking.educationalYearId,
+        status=get_collective_booking_status(collective_booking),
+        venueTimezone=venue.timezone,
         subcategoryLabel=offer.subcategory.app_label,
         totalAmount=stock.price,
         url=offer_app_link(offer),

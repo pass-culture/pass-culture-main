@@ -136,9 +136,9 @@ class CollectivePricingFactory(_BasePricingFactory):
     collectiveBooking = factory.SubFactory(UsedCollectiveBookingFactory)
     venue = factory.SelfAttribute("collectiveBooking.venue")
     valueDate = factory.SelfAttribute("collectiveBooking.dateUsed")
-    amount = factory.LazyAttribute(lambda pricing: -int(100 * pricing.collectiveBooking.collectiveStock.price))
+    amount = factory.LazyAttribute(lambda pricing: -int(100 * pricing.collectiveBooking.stock.price))
     standardRule = "Remboursement total pour les offres éducationnelles"
-    revenue = factory.LazyAttribute(lambda pricing: int(100 * pricing.collectiveBooking.collectiveStock.price))
+    revenue = factory.LazyAttribute(lambda pricing: int(100 * pricing.collectiveBooking.stock.price))
 
 
 class PricingLineFactory(BaseFactory):

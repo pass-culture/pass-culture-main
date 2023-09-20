@@ -1223,8 +1223,8 @@ class DeletePastDraftOfferTest:
         # past offer with collective stock but user did not finalize offer creation
         # with institution association
         educational_factories.CollectiveStockFactory(
-            collectiveOffer__dateCreated=two_days_ago,
-            collectiveOffer__validation=offer_mixin.OfferValidationStatus.DRAFT,
+            offer__dateCreated=two_days_ago,
+            offer__validation=offer_mixin.OfferValidationStatus.DRAFT,
         )
 
         repository.delete_past_draft_collective_offers()
@@ -1355,28 +1355,24 @@ class GetFilteredCollectiveOffersTest:
         collective_offer_prebooked = educational_factories.CollectiveOfferFactory(
             venue__managingOfferer=user_offerer.offerer
         )
-        collective_stock_prebooked = educational_factories.CollectiveStockFactory(
-            collectiveOffer=collective_offer_prebooked
-        )
+        collective_stock_prebooked = educational_factories.CollectiveStockFactory(offer=collective_offer_prebooked)
         educational_factories.CollectiveBookingFactory(
-            collectiveStock=collective_stock_prebooked,
+            stock=collective_stock_prebooked,
             status=educational_models.CollectiveBookingStatus.CANCELLED.value,
         )
         educational_factories.CollectiveBookingFactory(
-            collectiveStock=collective_stock_prebooked, status=educational_models.CollectiveBookingStatus.PENDING.value
+            stock=collective_stock_prebooked, status=educational_models.CollectiveBookingStatus.PENDING.value
         )
 
         collective_offer_cancelled = educational_factories.CollectiveOfferFactory(
             venue__managingOfferer=user_offerer.offerer
         )
-        collective_stock_cancelled = educational_factories.CollectiveStockFactory(
-            collectiveOffer=collective_offer_cancelled
+        collective_stock_cancelled = educational_factories.CollectiveStockFactory(offer=collective_offer_cancelled)
+        educational_factories.CollectiveBookingFactory(
+            stock=collective_stock_cancelled, status=educational_models.CollectiveBookingStatus.PENDING.value
         )
         educational_factories.CollectiveBookingFactory(
-            collectiveStock=collective_stock_cancelled, status=educational_models.CollectiveBookingStatus.PENDING.value
-        )
-        educational_factories.CollectiveBookingFactory(
-            collectiveStock=collective_stock_cancelled,
+            stock=collective_stock_cancelled,
             status=educational_models.CollectiveBookingStatus.CANCELLED.value,
         )
 
@@ -1393,10 +1389,10 @@ class GetFilteredCollectiveOffersTest:
             venue__managingOfferer=user_offerer.offerer
         )
         collective_stock_ended = educational_factories.CollectiveStockFactory(
-            collectiveOffer=collective_offer_ended, beginningDatetime=datetime.datetime(year=2000, month=1, day=1)
+            offer=collective_offer_ended, beginningDatetime=datetime.datetime(year=2000, month=1, day=1)
         )
         educational_factories.CollectiveBookingFactory(
-            collectiveStock=collective_stock_ended, status=educational_models.CollectiveBookingStatus.USED.value
+            stock=collective_stock_ended, status=educational_models.CollectiveBookingStatus.USED.value
         )
 
         offers = repository.get_collective_offers_by_filters(

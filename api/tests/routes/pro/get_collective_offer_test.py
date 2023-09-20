@@ -20,7 +20,7 @@ class Returns200Test:
         stock = educational_factories.CollectiveStockFactory()
         national_program = educational_factories.NationalProgramFactory()
         offer = educational_factories.CollectiveOfferFactory(
-            collectiveStock=stock,
+            stock=stock,
             teacher=educational_factories.EducationalRedactorFactory(),
             templateId=template.id,
             nationalProgramId=national_program.id,
@@ -59,8 +59,8 @@ class Returns200Test:
     def test_sold_out(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory()
-        educational_factories.UsedCollectiveBookingFactory(collectiveStock=stock)
-        offer = educational_factories.CollectiveOfferFactory(collectiveStock=stock)
+        educational_factories.UsedCollectiveBookingFactory(stock=stock)
+        offer = educational_factories.CollectiveOfferFactory(stock=stock)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         # When
@@ -77,8 +77,8 @@ class Returns200Test:
     def test_cancellable(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory()
-        educational_factories.ConfirmedCollectiveBookingFactory(collectiveStock=stock)
-        offer = educational_factories.CollectiveOfferFactory(collectiveStock=stock)
+        educational_factories.ConfirmedCollectiveBookingFactory(stock=stock)
+        offer = educational_factories.CollectiveOfferFactory(stock=stock)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         # When
@@ -95,9 +95,9 @@ class Returns200Test:
     def test_cancellable_with_not_cancellable_booking(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory()
-        educational_factories.ConfirmedCollectiveBookingFactory(collectiveStock=stock)
-        educational_factories.UsedCollectiveBookingFactory(collectiveStock=stock)
-        offer = educational_factories.CollectiveOfferFactory(collectiveStock=stock)
+        educational_factories.ConfirmedCollectiveBookingFactory(stock=stock)
+        educational_factories.UsedCollectiveBookingFactory(stock=stock)
+        offer = educational_factories.CollectiveOfferFactory(stock=stock)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         # When
@@ -114,8 +114,8 @@ class Returns200Test:
     def test_performance(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory()
-        educational_factories.CancelledCollectiveBookingFactory.create_batch(5, collectiveStock=stock)
-        offer = educational_factories.CollectiveOfferFactory(collectiveStock=stock)
+        educational_factories.CancelledCollectiveBookingFactory.create_batch(5, stock=stock)
+        offer = educational_factories.CollectiveOfferFactory(stock=stock)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         # When
@@ -127,13 +127,13 @@ class Returns200Test:
     def test_last_booking_fields(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory()
-        offer = educational_factories.CollectiveOfferFactory(collectiveStock=stock)
+        offer = educational_factories.CollectiveOfferFactory(stock=stock)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
         educational_factories.CollectiveBookingFactory(
-            collectiveStock=stock, status=educational_models.CollectiveBookingStatus.CANCELLED
+            stock=stock, status=educational_models.CollectiveBookingStatus.CANCELLED
         )
         booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock=stock, status=educational_models.CollectiveBookingStatus.REIMBURSED
+            stock=stock, status=educational_models.CollectiveBookingStatus.REIMBURSED
         )
 
         # When
@@ -152,7 +152,7 @@ class Returns200Test:
             bookingLimitDatetime=datetime.utcnow() - timedelta(days=125),
         )
         offer = educational_factories.CollectiveOfferFactory(
-            collectiveStock=stock,
+            stock=stock,
             teacher=educational_factories.EducationalRedactorFactory(),
             isActive=True,
         )

@@ -503,7 +503,7 @@ def create_collective_offer_public(
 
     collective_offer.bookingEmails = body.booking_emails
     collective_stock = educational_models.CollectiveStock(
-        collectiveOffer=collective_offer,
+        offer=collective_offer,  # type: ignore [call-arg]
         beginningDatetime=body.beginning_datetime,
         bookingLimitDatetime=body.booking_limit_datetime,
         price=body.total_price,
@@ -553,7 +553,7 @@ def edit_collective_offer_public(
     collective_stock_unique_booking = (
         educational_models.CollectiveBooking.query.join(
             educational_models.CollectiveStock,
-            educational_models.CollectiveBooking.collectiveStock,
+            educational_models.CollectiveBooking.stock,
         )
         .filter(
             educational_models.CollectiveStock.collectiveOfferId == offer.id,
@@ -729,7 +729,7 @@ def duplicate_offer_and_stock(
     )
     educational_models.CollectiveStock(
         beginningDatetime=original_offer.collectiveStock.beginningDatetime,
-        collectiveOffer=offer,
+        offer=offer,  # type: ignore [call-arg]
         price=original_offer.collectiveStock.price,
         bookingLimitDatetime=original_offer.collectiveStock.bookingLimitDatetime,
         numberOfTickets=original_offer.collectiveStock.numberOfTickets,

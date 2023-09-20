@@ -32,12 +32,12 @@ class Returns200Test:
             )
 
         assert response.status_code == 200
-        stock1 = booking1.collectiveStock
-        offer1 = stock1.collectiveOffer
+        stock1 = booking1.stock
+        offer1 = stock1.offer
         venue1 = offer1.venue
 
-        stock2 = booking2.collectiveStock
-        offer2 = stock2.collectiveOffer
+        stock2 = booking2.stock
+        offer2 = stock2.offer
         venue2 = offer2.venue
 
         assert response.json == {
@@ -163,8 +163,8 @@ class Returns200Test:
         )
 
         assert response.status_code == 200
-        stock1 = booking1.collectiveStock
-        offer1 = stock1.collectiveOffer
+        stock1 = booking1.stock
+        offer1 = stock1.offer
         venue1 = offer1.venue
 
         assert response.json == {
@@ -242,8 +242,8 @@ class Returns200Test:
         )
 
         assert response.status_code == 200
-        stock1 = booking1.collectiveStock
-        offer1 = stock1.collectiveOffer
+        stock1 = booking1.stock
+        offer1 = stock1.offer
         venue1 = offer1.venue
 
         assert response.json == {
@@ -321,8 +321,8 @@ class Returns200Test:
         )
 
         assert response.status_code == 200
-        stock1 = booking1.collectiveStock
-        offer1 = stock1.collectiveOffer
+        stock1 = booking1.stock
+        offer1 = stock1.offer
         venue1 = offer1.venue
 
         assert response.json == {
@@ -400,8 +400,8 @@ class Returns200Test:
         )
 
         assert response.status_code == 200
-        stock1 = booking1.collectiveStock
-        offer1 = stock1.collectiveOffer
+        stock1 = booking1.stock
+        offer1 = stock1.offer
         venue1 = offer1.venue
 
         assert response.json == {

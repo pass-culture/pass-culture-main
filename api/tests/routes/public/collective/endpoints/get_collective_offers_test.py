@@ -19,13 +19,13 @@ class CollectiveOffersPublicGetOfferTest:
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
-        stock1 = educational_factories.CollectiveStockFactory(collectiveOffer__provider=venue_provider.provider)
-        offer1 = stock1.collectiveOffer
+        stock1 = educational_factories.CollectiveStockFactory(offer__provider=venue_provider.provider)
+        offer1 = stock1.offer
 
         offer2 = educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__provider=venue_provider.provider
-        ).collectiveStock.collectiveOffer
-        booking2 = offer2.collectiveStock.collectiveBookings[0]
+            stock__offer__provider=venue_provider.provider
+        ).stock.offer
+        booking2 = offer2.stock.collectiveBookings[0]
 
         # When
         # 1. fetch api key
@@ -78,15 +78,15 @@ class CollectiveOffersPublicGetOfferTest:
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
         stock1 = educational_factories.CollectiveStockFactory(
-            collectiveOffer__provider=venue_provider.provider,
+            offer__provider=venue_provider.provider,
             beginningDatetime=datetime(2043, 5, 2, 15),
         )
-        offer1 = stock1.collectiveOffer
+        offer1 = stock1.offer
         stock2 = educational_factories.CollectiveStockFactory(
-            collectiveOffer__provider=venue_provider.provider,
+            offer__provider=venue_provider.provider,
             beginningDatetime=datetime(2043, 5, 2, 15),
         )
-        offer2 = stock2.collectiveOffer
+        offer2 = stock2.offer
 
         # When
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
@@ -131,8 +131,8 @@ class CollectiveOffersPublicGetOfferTest:
         venue_provider = provider_factories.VenueProviderFactory()
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-        stock = educational_factories.CollectiveStockFactory(collectiveOffer__provider=venue_provider.provider)
-        offer = stock.collectiveOffer
+        stock = educational_factories.CollectiveStockFactory(offer__provider=venue_provider.provider)
+        offer = stock.offer
 
         # When
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get("/v2/collective/offers/")
@@ -155,11 +155,11 @@ class CollectiveOffersPublicGetOfferTest:
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
-        stock1 = educational_factories.CollectiveStockFactory(collectiveOffer__provider=venue_provider.provider)
-        offer1 = stock1.collectiveOffer
+        stock1 = educational_factories.CollectiveStockFactory(offer__provider=venue_provider.provider)
+        offer1 = stock1.offer
 
         venue_provider2 = provider_factories.VenueProviderFactory()
-        educational_factories.CollectiveStockFactory(collectiveOffer__provider=venue_provider2.provider)
+        educational_factories.CollectiveStockFactory(offer__provider=venue_provider2.provider)
 
         # When
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get("/v2/collective/offers/")
@@ -182,11 +182,11 @@ class CollectiveOffersPublicGetOfferTest:
 
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
-        stock1 = educational_factories.CollectiveStockFactory(collectiveOffer__provider=venue_provider.provider)
-        offer1 = stock1.collectiveOffer
+        stock1 = educational_factories.CollectiveStockFactory(offer__provider=venue_provider.provider)
+        offer1 = stock1.offer
         educational_factories.CollectiveStockFactory(
-            collectiveOffer__provider=venue_provider.provider,
-            collectiveOffer__validation=OfferValidationStatus.DRAFT,
+            offer__provider=venue_provider.provider,
+            offer__validation=OfferValidationStatus.DRAFT,
         )
 
         # When
@@ -209,7 +209,7 @@ class CollectiveOffersPublicGetOfferTest:
         venue_provider = provider_factories.VenueProviderFactory()
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
-        educational_factories.CollectiveStockFactory(collectiveOffer__provider=venue_provider.provider)
+        educational_factories.CollectiveStockFactory(offer__provider=venue_provider.provider)
         # When
         response = client.get("/v2/collective/offers/")
 

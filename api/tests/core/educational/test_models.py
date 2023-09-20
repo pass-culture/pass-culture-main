@@ -47,18 +47,18 @@ class CollectiveStockIsBookableTest:
 
     def test_not_bookable_if_offerer_is_not_validated(self) -> None:
         collective_stock = factories.CollectiveStockFactory(
-            collectiveOffer__venue__managingOfferer__validationStatus=ValidationStatus.NEW
+            offer__venue__managingOfferer__validationStatus=ValidationStatus.NEW
         )
         assert not collective_stock.isBookable
 
     def test_not_bookable_if_offerer_is_not_active(self) -> None:
         collective_stock = factories.CollectiveStockFactory(
-            collectiveOffer__venue__managingOfferer__isActive=False,
+            offer__venue__managingOfferer__isActive=False,
         )
         assert not collective_stock.isBookable
 
     def test_not_bookable_if_offer_is_not_active(self) -> None:
-        collective_stock = factories.CollectiveStockFactory(collectiveOffer__isActive=False)
+        collective_stock = factories.CollectiveStockFactory(offer__isActive=False)
         assert not collective_stock.isBookable
 
     def test_not_bookable_if_offer_is_event_with_passed_begining_datetime(self) -> None:
@@ -68,7 +68,7 @@ class CollectiveStockIsBookableTest:
 
     def test_not_bookable_if_no_remaining_stock(self) -> None:
         collective_stock = factories.CollectiveStockFactory()
-        factories.CollectiveBookingFactory(collectiveStock=collective_stock)
+        factories.CollectiveBookingFactory(stock=collective_stock)
         assert not collective_stock.isBookable
 
     def test_bookable(self) -> None:
@@ -77,7 +77,7 @@ class CollectiveStockIsBookableTest:
 
     def test_bookable_if_booking_is_cancelled(self) -> None:
         collective_stock = factories.CollectiveStockFactory()
-        factories.CollectiveBookingFactory(collectiveStock=collective_stock, status=CollectiveBookingStatus.CANCELLED)
+        factories.CollectiveBookingFactory(stock=collective_stock, status=CollectiveBookingStatus.CANCELLED)
 
         assert collective_stock.isBookable
 
@@ -85,40 +85,40 @@ class CollectiveStockIsBookableTest:
 class CollectiveOfferIsSoldOutTest:
     def test_is_sold_out_property_false(self) -> None:
         offer = factories.CollectiveOfferFactory()
-        factories.CollectiveStockFactory(collectiveOffer=offer)
+        factories.CollectiveStockFactory(offer=offer)
 
         assert not offer.isSoldOut
 
     def test_offer_property_is_not_sold_out_when_booking_is_cancelled(self) -> None:
         offer = factories.CollectiveOfferFactory()
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=stock)
+        stock = factories.CollectiveStockFactory(offer=offer)
+        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, stock=stock)
 
         assert not offer.isSoldOut
 
     def test_offer_property_is_sold_out(self) -> None:
         offer = factories.CollectiveOfferFactory()
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-        factories.CollectiveBookingFactory(collectiveStock=stock)
+        stock = factories.CollectiveStockFactory(offer=offer)
+        factories.CollectiveBookingFactory(stock=stock)
 
         assert offer.isSoldOut
 
     def test_offer_property_is_sold_out_when_some_booking_are_cancelled(self) -> None:
         offer = factories.CollectiveOfferFactory()
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-        factories.CollectiveBookingFactory(collectiveStock=stock, status=CollectiveBookingStatus.CANCELLED)
-        factories.CollectiveBookingFactory(collectiveStock=stock)
-        factories.CollectiveBookingFactory(collectiveStock=stock, status=CollectiveBookingStatus.CANCELLED)
+        stock = factories.CollectiveStockFactory(offer=offer)
+        factories.CollectiveBookingFactory(stock=stock, status=CollectiveBookingStatus.CANCELLED)
+        factories.CollectiveBookingFactory(stock=stock)
+        factories.CollectiveBookingFactory(stock=stock, status=CollectiveBookingStatus.CANCELLED)
 
         assert offer.isSoldOut
 
     def test_is_sold_out_query_false(self) -> None:
         offer = factories.CollectiveOfferFactory()
-        factories.CollectiveStockFactory(collectiveOffer=offer)
+        factories.CollectiveStockFactory(offer=offer)
 
         soldout_offer = factories.CollectiveOfferFactory()
-        soldout_stock = factories.CollectiveStockFactory(collectiveOffer=soldout_offer)
-        factories.CollectiveBookingFactory(collectiveStock=soldout_stock)
+        soldout_stock = factories.CollectiveStockFactory(offer=soldout_offer)
+        factories.CollectiveBookingFactory(stock=soldout_stock)
 
         results = db.session.query(CollectiveOffer).filter(CollectiveOffer.isSoldOut.is_(False)).all()
 
@@ -127,13 +127,13 @@ class CollectiveOfferIsSoldOutTest:
 
     def test_offer_query_is_not_sold_out_when_booking_is_cancelled(self) -> None:
         offer = factories.CollectiveOfferFactory()
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=stock)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=stock)
+        stock = factories.CollectiveStockFactory(offer=offer)
+        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, stock=stock)
+        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, stock=stock)
 
         soldout_offer = factories.CollectiveOfferFactory()
-        soldout_stock = factories.CollectiveStockFactory(collectiveOffer=soldout_offer)
-        factories.CollectiveBookingFactory(collectiveStock=soldout_stock)
+        soldout_stock = factories.CollectiveStockFactory(offer=soldout_offer)
+        factories.CollectiveBookingFactory(stock=soldout_stock)
 
         results = db.session.query(CollectiveOffer).filter(CollectiveOffer.isSoldOut.is_(False)).all()
 
@@ -142,13 +142,13 @@ class CollectiveOfferIsSoldOutTest:
 
     def test_offer_query_is_sold_out(self) -> None:
         offer = factories.CollectiveOfferFactory()
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-        factories.CollectiveBookingFactory(collectiveStock=stock)
+        stock = factories.CollectiveStockFactory(offer=offer)
+        factories.CollectiveBookingFactory(stock=stock)
 
         undsold_offer = factories.CollectiveOfferFactory()
-        undsold_stock = factories.CollectiveStockFactory(collectiveOffer=undsold_offer)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=undsold_stock)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=undsold_stock)
+        undsold_stock = factories.CollectiveStockFactory(offer=undsold_offer)
+        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, stock=undsold_stock)
+        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, stock=undsold_stock)
 
         results = db.session.query(CollectiveOffer).filter(CollectiveOffer.isSoldOut.is_(True)).all()
 
@@ -157,15 +157,15 @@ class CollectiveOfferIsSoldOutTest:
 
     def test_offer_query_is_sold_out_when_some_booking_are_cancelled(self) -> None:
         offer = factories.CollectiveOfferFactory()
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-        factories.CollectiveBookingFactory(collectiveStock=stock, status=CollectiveBookingStatus.CANCELLED)
-        factories.CollectiveBookingFactory(collectiveStock=stock)
-        factories.CollectiveBookingFactory(collectiveStock=stock, status=CollectiveBookingStatus.CANCELLED)
+        stock = factories.CollectiveStockFactory(offer=offer)
+        factories.CollectiveBookingFactory(stock=stock, status=CollectiveBookingStatus.CANCELLED)
+        factories.CollectiveBookingFactory(stock=stock)
+        factories.CollectiveBookingFactory(stock=stock, status=CollectiveBookingStatus.CANCELLED)
 
         undsold_offer = factories.CollectiveOfferFactory()
-        undsold_stock = factories.CollectiveStockFactory(collectiveOffer=undsold_offer)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=undsold_stock)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=undsold_stock)
+        undsold_stock = factories.CollectiveStockFactory(offer=undsold_offer)
+        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, stock=undsold_stock)
+        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, stock=undsold_stock)
 
         results = db.session.query(CollectiveOffer).filter(CollectiveOffer.isSoldOut.is_(True)).all()
 
@@ -174,19 +174,19 @@ class CollectiveOfferIsSoldOutTest:
 
     def test_offer_query_is_sold_out_on_realistic_case(self) -> None:
         offer_1 = factories.CollectiveOfferFactory()
-        stock_1 = factories.CollectiveStockFactory(collectiveOffer=offer_1)
-        factories.CollectiveBookingFactory(collectiveStock=stock_1, status=CollectiveBookingStatus.CANCELLED)
-        factories.CollectiveBookingFactory(collectiveStock=stock_1)
-        factories.CollectiveBookingFactory(collectiveStock=stock_1, status=CollectiveBookingStatus.CANCELLED)
+        stock_1 = factories.CollectiveStockFactory(offer=offer_1)
+        factories.CollectiveBookingFactory(stock=stock_1, status=CollectiveBookingStatus.CANCELLED)
+        factories.CollectiveBookingFactory(stock=stock_1)
+        factories.CollectiveBookingFactory(stock=stock_1, status=CollectiveBookingStatus.CANCELLED)
         offer_2 = factories.CollectiveOfferFactory()
-        stock_2 = factories.CollectiveStockFactory(collectiveOffer=offer_2)
-        factories.CollectiveBookingFactory(collectiveStock=stock_2)
+        stock_2 = factories.CollectiveStockFactory(offer=offer_2)
+        factories.CollectiveBookingFactory(stock=stock_2)
 
         offer_3 = factories.CollectiveOfferFactory()
-        stock_3 = factories.CollectiveStockFactory(collectiveOffer=offer_3)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=stock_3)
+        stock_3 = factories.CollectiveStockFactory(offer=offer_3)
+        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, stock=stock_3)
         offer_4 = factories.CollectiveOfferFactory()
-        factories.CollectiveStockFactory(collectiveOffer=offer_4)
+        factories.CollectiveStockFactory(offer=offer_4)
 
         results = (
             db.session.query(CollectiveOffer)
@@ -214,45 +214,45 @@ class CollectiveOfferIsSoldOutTest:
 class CollectiveStockIsEditableTest:
     def test_booked_stock_editable_offer(self) -> None:
         offer = factories.CollectiveOfferFactory(validation=OfferValidationStatus.APPROVED)
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=stock)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.USED, collectiveStock=stock)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=stock)
+        stock = factories.CollectiveStockFactory(offer=offer)
+        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, stock=stock)
+        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.USED, stock=stock)
+        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, stock=stock)
 
         assert not stock.isEditable
 
     def test_unbooked_stock_editable_offer(self) -> None:
         offer = factories.CollectiveOfferFactory(validation=OfferValidationStatus.APPROVED)
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=stock)
+        stock = factories.CollectiveStockFactory(offer=offer)
+        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, stock=stock)
 
         assert stock.isEditable
 
     def test_no_bookings_stock_editable_offer(self) -> None:
         offer = factories.CollectiveOfferFactory(validation=OfferValidationStatus.APPROVED)
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
+        stock = factories.CollectiveStockFactory(offer=offer)
 
         assert stock.isEditable
 
     def test_booked_stock_not_editable_offer(self) -> None:
         offer = factories.CollectiveOfferFactory(validation=OfferValidationStatus.REJECTED)
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=stock)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.USED, collectiveStock=stock)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=stock)
+        stock = factories.CollectiveStockFactory(offer=offer)
+        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, stock=stock)
+        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.USED, stock=stock)
+        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, stock=stock)
 
         assert not stock.isEditable
 
     def test_unbooked_stock_not_editable_offer(self) -> None:
         offer = factories.CollectiveOfferFactory(validation=OfferValidationStatus.REJECTED)
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
-        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, collectiveStock=stock)
+        stock = factories.CollectiveStockFactory(offer=offer)
+        factories.CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED, stock=stock)
 
         assert not stock.isEditable
 
     def test_no_bookings_stock_not_editable_offer(self) -> None:
         offer = factories.CollectiveOfferFactory(validation=OfferValidationStatus.REJECTED)
-        stock = factories.CollectiveStockFactory(collectiveOffer=offer)
+        stock = factories.CollectiveStockFactory(offer=offer)
 
         assert not stock.isEditable
 
@@ -265,7 +265,7 @@ class CollectiveOfferIsEditableTest:
                 expected = False
 
             offer = factories.CollectiveOfferFactory(validation=getattr(OfferValidationStatus, line.name))
-            factories.CollectiveStockFactory(collectiveOffer=offer)
+            factories.CollectiveStockFactory(offer=offer)
 
             assert offer.isEditable == expected
 
@@ -285,18 +285,18 @@ class CollectiveOfferTemplateIsEditableTest:
 class CollectiveStockIsCancellableFromOfferer:
     def test_collective_stock_is_cancellable(self):
         stock: CollectiveStock = factories.CollectiveStockFactory.build()
-        factories.CancelledCollectiveBookingFactory.build(collectiveStock=stock)
-        factories.PendingCollectiveBookingFactory.build(collectiveStock=stock)
+        factories.CancelledCollectiveBookingFactory.build(stock=stock)
+        factories.PendingCollectiveBookingFactory.build(stock=stock)
         assert stock.is_cancellable_from_offerer
 
     def test_collective_stock_has_used_collective_booking(self):
         stock: CollectiveStock = factories.CollectiveStockFactory.build()
-        factories.UsedCollectiveBookingFactory.build(collectiveStock=stock)
+        factories.UsedCollectiveBookingFactory.build(stock=stock)
         assert not stock.is_cancellable_from_offerer
 
     def test_collective_stock_has_reimbursed_collective_booking(self):
         stock: CollectiveStock = factories.CollectiveStockFactory.build()
-        factories.ReimbursedCollectiveBookingFactory.build(collectiveStock=stock)
+        factories.ReimbursedCollectiveBookingFactory.build(stock=stock)
         assert not stock.is_cancellable_from_offerer
 
 

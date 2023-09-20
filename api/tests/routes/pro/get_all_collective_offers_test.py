@@ -28,7 +28,7 @@ class Returns200Test:
         offer = educational_factories.CollectiveOfferFactory(
             venue=venue, offerId=1, institution=institution, nationalProgramId=national_program.id
         )
-        educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
+        educational_factories.CollectiveStockFactory(offer=offer, stockId=1)
 
         # When
         client = TestClient(app.test_client()).with_session_auth(email=user.email)
@@ -57,7 +57,7 @@ class Returns200Test:
             bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=125),
         )
         offer = educational_factories.CollectiveOfferFactory(
-            collectiveStock=stock,
+            stock=stock,
             teacher=educational_factories.EducationalRedactorFactory(),
             isActive=True,
         )
@@ -84,7 +84,7 @@ class Returns200Test:
         stock = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=5),
             bookingLimitDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=5),
-            collectiveOffer__venue=venue,
+            offer__venue=venue,
         )
 
         # When
@@ -96,7 +96,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert len(response_json) == 1
         assert response_json[0]["status"] == "INACTIVE"
-        assert response_json[0]["id"] == stock.collectiveOffer.id
+        assert response_json[0]["id"] == stock.offer.id
 
     def test_if_collective_offer_is_public_api(self, app):
         # Given
@@ -159,7 +159,7 @@ class Returns200Test:
             imageId="00000125999999",
             imageCredit="template",
         )
-        educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
+        educational_factories.CollectiveStockFactory(offer=offer, stockId=1)
 
         # When
         client = TestClient(app.test_client()).with_session_auth(email=user.email)
@@ -220,7 +220,7 @@ class Returns200Test:
                 offer = educational_factories.CollectiveOfferFactory(
                     venue=venue, dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=i), offerId=1
                 )
-                educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+                educational_factories.CollectiveStockFactory(offer=offer)
             else:
                 offer = educational_factories.CollectiveOfferTemplateFactory(
                     venue=venue, dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=i), offerId=2
@@ -252,7 +252,7 @@ class Returns200Test:
         educational_factories.CollectiveOfferTemplateFactory(
             venue=venue, dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=10), offerId=2
         )
-        educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
+        educational_factories.CollectiveStockFactory(offer=offer, stockId=1)
 
         # When
         client = TestClient(app.test_client()).with_session_auth(email=user.email)
@@ -274,16 +274,16 @@ class Returns200Test:
             venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=1
         )
         educational_factories.CollectiveStockFactory(
-            collectiveOffer__venue=venue,
-            collectiveOffer__dateCreated=datetime.datetime.utcnow(),
-            collectiveOffer__offerId=2,
+            offer__venue=venue,
+            offer__dateCreated=datetime.datetime.utcnow(),
+            offer__offerId=2,
             beginningDatetime=datetime.datetime(2022, 8, 10),
         )
         educational_factories.CollectiveOfferTemplateFactory(
             venue=venue, dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=10), offerId=2
         )
         educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer,
+            offer=offer,
             stockId=1,
             beginningDatetime=datetime.datetime(2022, 10, 10),
         )
@@ -306,7 +306,7 @@ class Returns200Test:
         offerer_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerer_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.CollectiveOfferFactory(venue=venue, offerId=1)
-        educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
+        educational_factories.CollectiveStockFactory(offer=offer, stockId=1)
         educational_factories.CollectiveOfferTemplateFactory(venue=venue, offerId=1)
 
         # When
@@ -335,7 +335,7 @@ class Returns200Test:
         template = educational_factories.CollectiveOfferTemplateFactory(
             venue=venue, dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=10), offerId=2
         )
-        educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
+        educational_factories.CollectiveStockFactory(offer=offer, stockId=1)
 
         # When
         client = TestClient(app.test_client()).with_session_auth(email=user.email)

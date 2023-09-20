@@ -231,7 +231,7 @@ class Return400Test:
 
     def should_not_allow_multiple_stocks(self, client):
         # Given
-        offer = educational_factories.CollectiveStockFactory().collectiveOffer
+        offer = educational_factories.CollectiveStockFactory().offer
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,

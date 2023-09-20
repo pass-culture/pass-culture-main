@@ -26,23 +26,23 @@ class Returns200Test:
             educationalYear=educationalYear,
             educationalInstitution=educationalInstitution,
             educationalRedactor=redactor,
-            collectiveStock__collectiveOffer__description=None,
-            collectiveStock__collectiveOffer__students=[
+            stock__offer__description=None,
+            stock__offer__students=[
                 StudentLevels.CAP1,
                 StudentLevels.CAP2,
                 StudentLevels.GENERAL2,
                 StudentLevels.GENERAL1,
             ],
-            collectiveStock__collectiveOffer__offerVenue={
+            stock__offer__offerVenue={
                 "addressType": "other",
                 "otherAddress": "1 rue des polissons, Paris 75017",
                 "venueId": "",
             },
-            collectiveStock__collectiveOffer__contactEmail="miss.rond@point.com",
-            collectiveStock__collectiveOffer__contactPhone="0101010101",
-            collectiveStock__collectiveOffer__audioDisabilityCompliant=True,
-            collectiveStock__collectiveOffer__visualDisabilityCompliant=True,
-            collectiveStock__collectiveOffer__subcategoryId="SEANCE_CINE",
+            stock__offer__contactEmail="miss.rond@point.com",
+            stock__offer__contactPhone="0101010101",
+            stock__offer__audioDisabilityCompliant=True,
+            stock__offer__visualDisabilityCompliant=True,
+            stock__offer__subcategoryId="SEANCE_CINE",
         )
         other_educational_year = EducationalYearFactory(adageId="adageId")
         other_educational_institution = EducationalInstitutionFactory(institutionId="institutionId")
@@ -55,8 +55,8 @@ class Returns200Test:
 
         assert response.status_code == 200
 
-        stock = booking.collectiveStock
-        offer = stock.collectiveOffer
+        stock = booking.stock
+        offer = stock.offer
         venue = offer.venue
         assert response.json == {
             "prebookings": [
@@ -142,7 +142,7 @@ class Returns200Test:
             educationalYear=educationalYear,
             educationalInstitution=educationalInstitution,
             status="PENDING",
-            collectiveStock__collectiveOffer__subcategoryId="SEANCE_CINE",
+            stock__offer__subcategoryId="SEANCE_CINE",
         )
 
         response = client.with_eac_token().get(
@@ -150,8 +150,8 @@ class Returns200Test:
         )
 
         assert response.status_code == 200
-        stock = booking.collectiveStock
-        offer = stock.collectiveOffer
+        stock = booking.stock
+        offer = stock.offer
         venue = offer.venue
         assert response.json == {
             "prebookings": [

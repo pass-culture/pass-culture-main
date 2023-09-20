@@ -26,13 +26,13 @@ class FindByProUserTest:
         institution = educational_factories.EducationalInstitutionFactory()
         user_offerer = offerers_factories.UserOffererFactory()
         collective_stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__name="Le chant des cigales",
-            collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            offer__name="Le chant des cigales",
+            offer__venue__managingOfferer=user_offerer.offerer,
         )
         collective_booking = educational_factories.UsedCollectiveBookingFactory(
             educationalRedactor=redactor,
             dateUsed=booking_date + timedelta(days=10),
-            collectiveStock=collective_stock,
+            stock=collective_stock,
             dateCreated=booking_date,
             educationalInstitution=institution,
         )
@@ -47,8 +47,8 @@ class FindByProUserTest:
         assert total_bookings == 1
         assert len(collective_bookings) == 1
         expected_booking_recap = collective_bookings[0]
-        assert expected_booking_recap.collectiveStock.collectiveOfferId == collective_stock.collectiveOffer.id
-        assert expected_booking_recap.collectiveStock.collectiveOffer.name == "Le chant des cigales"
+        assert expected_booking_recap.stock.collectiveOfferId == collective_stock.offer.id
+        assert expected_booking_recap.stock.offer.name == "Le chant des cigales"
         assert expected_booking_recap.educationalInstitution.name == institution.name
         assert expected_booking_recap.educationalInstitution.institutionType == institution.institutionType
         assert expected_booking_recap.educationalInstitution.city == institution.city
@@ -57,7 +57,7 @@ class FindByProUserTest:
         assert expected_booking_recap.educationalInstitutionId == institution.id
         assert expected_booking_recap.status is CollectiveBookingStatus.USED
         assert expected_booking_recap.isConfirmed is True
-        assert expected_booking_recap.collectiveStock.price == collective_stock.price
+        assert expected_booking_recap.stock.price == collective_stock.price
         assert expected_booking_recap.dateCreated == booking_date
         assert expected_booking_recap.dateUsed == (booking_date + timedelta(days=10))
         assert expected_booking_recap.cancellationLimitDate == collective_booking.cancellationLimitDate
@@ -68,24 +68,24 @@ class FindByProUserTest:
         user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.UsedCollectiveBookingFactory(
             dateUsed=booking_date + timedelta(days=10),
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=booking_date,
         )
 
         used_collective_booking_1 = educational_factories.UsedCollectiveBookingFactory(
             dateUsed=booking_date + timedelta(days=3),
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=booking_date,
         )
 
         used_collective_booking_2 = educational_factories.UsedCollectiveBookingFactory(
             dateUsed=booking_date + timedelta(days=4),
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=booking_date,
         )
 
         educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=booking_date,
         )
 
@@ -99,11 +99,11 @@ class FindByProUserTest:
         # Then
         assert total_bookings == 2
         assert {
-            collective_bookings[0].collectiveStock.collectiveOfferId,
-            collective_bookings[1].collectiveStock.collectiveOfferId,
+            collective_bookings[0].stock.collectiveOfferId,
+            collective_bookings[1].stock.collectiveOfferId,
         } == {
-            used_collective_booking_1.collectiveStock.collectiveOfferId,
-            used_collective_booking_2.collectiveStock.collectiveOfferId,
+            used_collective_booking_1.stock.collectiveOfferId,
+            used_collective_booking_2.stock.collectiveOfferId,
         }
 
     def test_should_return_only_reimbursed_collective_bookings_for_requested_period(self, app):
@@ -112,30 +112,30 @@ class FindByProUserTest:
         user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.ReimbursedCollectiveBookingFactory(
             reimbursementDate=booking_date + timedelta(days=1),
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=booking_date,
         )
 
         reimbursed_collective_booking_1 = educational_factories.ReimbursedCollectiveBookingFactory(
             reimbursementDate=booking_date + timedelta(days=2),
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=booking_date,
         )
 
         reimbursed_collective_booking_2 = educational_factories.ReimbursedCollectiveBookingFactory(
             reimbursementDate=booking_date + timedelta(days=4),
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=booking_date,
         )
 
         educational_factories.ReimbursedCollectiveBookingFactory(
             reimbursementDate=booking_date + timedelta(days=8),
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=booking_date,
         )
 
         educational_factories.UsedCollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=booking_date,
         )
 
@@ -149,11 +149,11 @@ class FindByProUserTest:
         # Then
         assert total_bookings == 2
         assert {
-            collective_bookings[0].collectiveStock.collectiveOfferId,
-            collective_bookings[1].collectiveStock.collectiveOfferId,
+            collective_bookings[0].stock.collectiveOfferId,
+            collective_bookings[1].stock.collectiveOfferId,
         } == {
-            reimbursed_collective_booking_1.collectiveStock.collectiveOfferId,
-            reimbursed_collective_booking_2.collectiveStock.collectiveOfferId,
+            reimbursed_collective_booking_1.stock.collectiveOfferId,
+            reimbursed_collective_booking_2.stock.collectiveOfferId,
         }
 
     def test_should_return_confirmed_collective_bookings_when_booking_is_in_confirmation_period(self, app):
@@ -161,7 +161,7 @@ class FindByProUserTest:
         booking_date = datetime.utcnow() - timedelta(days=5)
         user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=booking_date,
             cancellationLimitDate=datetime.utcnow() - timedelta(days=1),
         )
@@ -181,7 +181,7 @@ class FindByProUserTest:
         booking_date = datetime.utcnow() - timedelta(days=5)
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CancelledCollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=booking_date,
             cancellationDate=booking_date + timedelta(days=2),
         )
@@ -203,13 +203,13 @@ class FindByProUserTest:
 
         user_offerer_1 = offerers_factories.UserOffererFactory(user=pro)
         educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer_1.offerer,
+            stock__offer__venue__managingOfferer=user_offerer_1.offerer,
             dateCreated=booking_date,
         )
 
         user_offerer_2 = offerers_factories.UserOffererFactory(user=pro)
         educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer_2.offerer,
+            stock__offer__venue__managingOfferer=user_offerer_2.offerer,
             dateCreated=booking_date - timedelta(days=2),
         )
 
@@ -227,11 +227,11 @@ class FindByProUserTest:
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=datetime.utcnow() - timedelta(days=1),
         )
         collective_booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=datetime.utcnow() - timedelta(hours=1),
         )
 
@@ -246,17 +246,14 @@ class FindByProUserTest:
         # Then
         assert total_bookings == 2
         assert len(collective_bookings) == 1
-        assert (
-            collective_bookings[0].collectiveStock.collectiveOfferId
-            == collective_booking.collectiveStock.collectiveOfferId
-        )
+        assert collective_bookings[0].stock.collectiveOfferId == collective_booking.stock.collectiveOfferId
 
     def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app):
         # Given
         booking_date = datetime.utcnow() - timedelta(days=5)
         user_offerer = offerers_factories.NotValidatedUserOffererFactory()
         educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=booking_date,
         )
 
@@ -275,12 +272,12 @@ class FindByProUserTest:
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=booking_date,
         )
         booking_to_be_found = educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue=venue,
-            collectiveStock__price=5000,
+            stock__offer__venue=venue,
+            stock__price=5000,
             dateCreated=booking_date,
         )
 
@@ -295,11 +292,8 @@ class FindByProUserTest:
         assert total_bookings == 1
         assert len(collective_bookings) == 1
         collective_booking = collective_bookings[0]
-        assert (
-            collective_booking.collectiveStock.collectiveOfferId
-            == booking_to_be_found.collectiveStock.collectiveOfferId
-        )
-        assert collective_booking.collectiveStock.price == booking_to_be_found.collectiveStock.price
+        assert collective_booking.stock.collectiveOfferId == booking_to_be_found.stock.collectiveOfferId
+        assert collective_booking.stock.price == booking_to_be_found.stock.price
 
     def test_should_return_only_booking_for_requested_event_date(self, app):
         # Given
@@ -307,13 +301,13 @@ class FindByProUserTest:
         user_offerer = offerers_factories.UserOffererFactory()
         event_date = datetime.utcnow() + timedelta(days=30, hours=20)
         educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=booking_date,
         )
         booking_to_be_found = educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
-            collectiveStock__price=5000,
-            collectiveStock__beginningDatetime=event_date,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
+            stock__price=5000,
+            stock__beginningDatetime=event_date,
             dateCreated=booking_date,
         )
 
@@ -328,11 +322,8 @@ class FindByProUserTest:
         assert total_bookings == 1
         assert len(collective_bookings) == 1
         collective_booking = collective_bookings[0]
-        assert (
-            collective_booking.collectiveStock.collectiveOfferId
-            == booking_to_be_found.collectiveStock.collectiveOfferId
-        )
-        assert collective_booking.collectiveStock.price == booking_to_be_found.collectiveStock.price
+        assert collective_booking.stock.collectiveOfferId == booking_to_be_found.stock.collectiveOfferId
+        assert collective_booking.stock.price == booking_to_be_found.stock.price
 
     def should_consider_venue_locale_datetime_when_filtering_by_event_date(self, app):
         # Given
@@ -344,18 +335,18 @@ class FindByProUserTest:
         )
         cayenne_event_datetime = datetime(2022, 4, 22, 2, 0)
         stock_in_cayenne = educational_factories.CollectiveStockFactory(
-            collectiveOffer=collective_offer_in_cayenne, beginningDatetime=cayenne_event_datetime
+            offer=collective_offer_in_cayenne, beginningDatetime=cayenne_event_datetime
         )
-        cayenne_collective_booking = educational_factories.CollectiveBookingFactory(collectiveStock=stock_in_cayenne)
+        cayenne_collective_booking = educational_factories.CollectiveBookingFactory(stock=stock_in_cayenne)
 
         offer_in_mayotte = educational_factories.CollectiveOfferFactory(
             venue__postalCode="97600", venue__managingOfferer=user_offerer.offerer
         )
         mayotte_event_datetime = datetime(2022, 4, 20, 22, 0)
         stock_in_mayotte = educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer_in_mayotte, beginningDatetime=mayotte_event_datetime
+            offer=offer_in_mayotte, beginningDatetime=mayotte_event_datetime
         )
-        mayotte_collective_booking = educational_factories.CollectiveBookingFactory(collectiveStock=stock_in_mayotte)
+        mayotte_collective_booking = educational_factories.CollectiveBookingFactory(stock=stock_in_mayotte)
 
         # When
         total_bookings, collective_bookings = educational_repository.find_collective_bookings_by_pro_user(
@@ -378,15 +369,15 @@ class FindByProUserTest:
         booking_status_filter = CollectiveBookingStatusFilter.BOOKED
         expected_booking = educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2020, 12, 26, 15, 30),
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
         )
         educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2020, 12, 29, 15, 30),
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
         )
         educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2020, 12, 22, 15, 30),
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
         )
 
         # When
@@ -412,7 +403,7 @@ class FindByProUserTest:
         )
         cayenne_booking_datetime = datetime(2020, 4, 22, 2, 0)
         cayenne_booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer=offer_in_cayenne, dateCreated=cayenne_booking_datetime
+            stock__offer=offer_in_cayenne, dateCreated=cayenne_booking_datetime
         )
 
         offer_in_mayotte = educational_factories.CollectiveOfferFactory(
@@ -420,7 +411,7 @@ class FindByProUserTest:
         )
         mayotte_booking_datetime = datetime(2020, 4, 20, 23, 0)
         mayotte_booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer=offer_in_mayotte, dateCreated=mayotte_booking_datetime
+            stock__offer=offer_in_mayotte, dateCreated=mayotte_booking_datetime
         )
 
         # When

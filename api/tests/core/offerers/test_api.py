@@ -228,10 +228,8 @@ class DeleteVenueTest:
         educational_factories.EducationalRedactorWithFavoriteCollectiveOfferTemplate(
             favoriteCollectiveOfferTemplates=[template1]
         )
-        educational_factories.CollectiveStockFactory(collectiveOffer__venue=venue_to_delete)
-        educational_factories.CollectiveStockFactory(
-            collectiveOffer__venue__managingOfferer=venue_to_delete.managingOfferer
-        )
+        educational_factories.CollectiveStockFactory(offer__venue=venue_to_delete)
+        educational_factories.CollectiveStockFactory(offer__venue__managingOfferer=venue_to_delete.managingOfferer)
 
         # When
         offerers_api.delete_venue(venue_to_delete.id)
@@ -1110,9 +1108,7 @@ class DeleteOffererTest:
         # Given
         offerer_to_delete = offerers_factories.OffererFactory()
         educational_factories.CollectiveOfferFactory(venue__managingOfferer=offerer_to_delete)
-        educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue__managingOfferer=offerer_to_delete
-        )
+        educational_factories.CollectiveBookingFactory(stock__offer__venue__managingOfferer=offerer_to_delete)
 
         # When
         with pytest.raises(offerers_exceptions.CannotDeleteOffererWithBookingsException) as exception:

@@ -26,14 +26,14 @@ class CollectiveOfferTest:
         national_program = educational_factories.NationalProgramFactory()
         stock = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime(2021, 5, 15),
-            collectiveOffer__name="offer name",
-            collectiveOffer__description="offer description",
+            offer__name="offer name",
+            offer__description="offer description",
             price=10,
-            collectiveOffer__students=[StudentLevels.GENERAL2],
-            collectiveOffer__educational_domains=[educational_factories.EducationalDomainFactory()],
-            collectiveOffer__institution=institution,
-            collectiveOffer__teacher=educational_factories.EducationalRedactorFactory(),
-            collectiveOffer__nationalProgramId=national_program.id,
+            offer__students=[StudentLevels.GENERAL2],
+            offer__educational_domains=[educational_factories.EducationalDomainFactory()],
+            offer__institution=institution,
+            offer__teacher=educational_factories.EducationalRedactorFactory(),
+            offer__nationalProgramId=national_program.id,
         )
 
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
@@ -41,7 +41,7 @@ class CollectiveOfferTest:
             uai=institution.institutionId,
         )
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
-        offer_id = stock.collectiveOffer.id
+        offer_id = stock.offer.id
 
         # When
         with assert_no_duplicated_queries():
@@ -64,38 +64,38 @@ class CollectiveOfferTest:
                 "educationalPriceDetail": stock.priceDetail,
                 "numberOfTickets": stock.numberOfTickets,
             },
-            "subcategoryLabel": stock.collectiveOffer.subcategory.app_label,
+            "subcategoryLabel": stock.offer.subcategory.app_label,
             "venue": {
                 "address": "1 boulevard Poissonnière",
                 "city": "Paris",
                 "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
-                "id": stock.collectiveOffer.venue.id,
-                "name": stock.collectiveOffer.venue.name,
+                "id": stock.offer.venue.id,
+                "name": stock.offer.venue.name,
                 "postalCode": "75000",
-                "publicName": stock.collectiveOffer.venue.publicName,
-                "managingOfferer": {"name": stock.collectiveOffer.venue.managingOfferer.name},
+                "publicName": stock.offer.venue.publicName,
+                "managingOfferer": {"name": stock.offer.venue.managingOfferer.name},
             },
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
             "durationMinutes": None,
-            "contactEmail": stock.collectiveOffer.contactEmail,
-            "contactPhone": stock.collectiveOffer.contactPhone,
+            "contactEmail": stock.offer.contactEmail,
+            "contactPhone": stock.offer.contactPhone,
             "offerVenue": {
                 "addressType": "other",
                 "address": None,
                 "city": None,
                 "name": None,
-                "otherAddress": stock.collectiveOffer.offerVenue["otherAddress"],
+                "otherAddress": stock.offer.offerVenue["otherAddress"],
                 "postalCode": None,
                 "publicName": None,
-                "venueId": stock.collectiveOffer.offerVenue["venueId"],
+                "venueId": stock.offer.offerVenue["venueId"],
             },
             "students": ["Lycée - Seconde"],
             "offerId": None,
             "educationalPriceDetail": stock.priceDetail,
-            "domains": [{"id": stock.collectiveOffer.domains[0].id, "name": stock.collectiveOffer.domains[0].name}],
+            "domains": [{"id": stock.offer.domains[0].id, "name": stock.offer.domains[0].name}],
             "educationalInstitution": {
                 "id": institution.id,
                 "institutionType": institution.institutionType,
@@ -107,10 +107,10 @@ class CollectiveOfferTest:
             "imageCredit": None,
             "imageUrl": None,
             "teacher": {
-                "email": stock.collectiveOffer.teacher.email,
-                "firstName": stock.collectiveOffer.teacher.firstName,
-                "lastName": stock.collectiveOffer.teacher.lastName,
-                "civility": stock.collectiveOffer.teacher.civility,
+                "email": stock.offer.teacher.email,
+                "firstName": stock.offer.teacher.firstName,
+                "lastName": stock.offer.teacher.lastName,
+                "civility": stock.offer.teacher.civility,
             },
             "nationalProgram": {"id": national_program.id, "name": national_program.name},
         }
@@ -122,18 +122,18 @@ class CollectiveOfferTest:
         national_program = educational_factories.NationalProgramFactory()
         stock = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime(2021, 5, 15),
-            collectiveOffer__name="offer name",
-            collectiveOffer__description="offer description",
+            offer__name="offer name",
+            offer__description="offer description",
             price=10,
-            collectiveOffer__students=[StudentLevels.GENERAL2],
-            collectiveOffer__educational_domains=[educational_factories.EducationalDomainFactory()],
-            collectiveOffer__institution=institution,
-            collectiveOffer__offerVenue={
+            offer__students=[StudentLevels.GENERAL2],
+            offer__educational_domains=[educational_factories.EducationalDomainFactory()],
+            offer__institution=institution,
+            offer__offerVenue={
                 "venueId": venue.id,
                 "addressType": "offererVenue",
                 "otherAddress": "",
             },
-            collectiveOffer__nationalProgramId=national_program.id,
+            offer__nationalProgramId=national_program.id,
         )
 
         adage_jwt_fake_valid_token = create_adage_valid_token_with_email(
@@ -141,7 +141,7 @@ class CollectiveOfferTest:
             uai="autre",
         )
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
-        offer_id = stock.collectiveOffer.id
+        offer_id = stock.offer.id
 
         # When
         with assert_no_duplicated_queries():
@@ -164,24 +164,24 @@ class CollectiveOfferTest:
                 "educationalPriceDetail": stock.priceDetail,
                 "numberOfTickets": stock.numberOfTickets,
             },
-            "subcategoryLabel": stock.collectiveOffer.subcategory.app_label,
+            "subcategoryLabel": stock.offer.subcategory.app_label,
             "venue": {
                 "address": "1 boulevard Poissonnière",
                 "city": "Paris",
                 "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
-                "id": stock.collectiveOffer.venue.id,
-                "name": stock.collectiveOffer.venue.name,
+                "id": stock.offer.venue.id,
+                "name": stock.offer.venue.name,
                 "postalCode": "75000",
-                "publicName": stock.collectiveOffer.venue.publicName,
-                "managingOfferer": {"name": stock.collectiveOffer.venue.managingOfferer.name},
+                "publicName": stock.offer.venue.publicName,
+                "managingOfferer": {"name": stock.offer.venue.managingOfferer.name},
             },
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
             "durationMinutes": None,
-            "contactEmail": stock.collectiveOffer.contactEmail,
-            "contactPhone": stock.collectiveOffer.contactPhone,
+            "contactEmail": stock.offer.contactEmail,
+            "contactPhone": stock.offer.contactPhone,
             "offerVenue": {
                 "addressType": "offererVenue",
                 "address": venue.address,
@@ -195,7 +195,7 @@ class CollectiveOfferTest:
             "students": ["Lycée - Seconde"],
             "offerId": None,
             "educationalPriceDetail": stock.priceDetail,
-            "domains": [{"id": stock.collectiveOffer.domains[0].id, "name": stock.collectiveOffer.domains[0].name}],
+            "domains": [{"id": stock.offer.domains[0].id, "name": stock.offer.domains[0].name}],
             "educationalInstitution": {
                 "id": institution.id,
                 "institutionType": institution.institutionType,

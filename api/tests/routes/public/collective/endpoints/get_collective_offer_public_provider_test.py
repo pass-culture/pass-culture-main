@@ -21,14 +21,14 @@ class CollectiveOffersPublicGetOfferTest:
         domain = educational_factories.EducationalDomainFactory()
         institution = educational_factories.EducationalInstitutionFactory(institutionId="UAI123")
         booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__domains=[domain],
-            collectiveStock__collectiveOffer__provider=venue_provider.provider,
-            collectiveStock__collectiveOffer__imageCredit="Pouet",
-            collectiveStock__collectiveOffer__imageCrop={"data": 2},
-            collectiveStock__collectiveOffer__institution=institution,
-            collectiveStock__collectiveOffer__nationalProgram=national_program,
+            stock__offer__domains=[domain],
+            stock__offer__provider=venue_provider.provider,
+            stock__offer__imageCredit="Pouet",
+            stock__offer__imageCrop={"data": 2},
+            stock__offer__institution=institution,
+            stock__offer__nationalProgram=national_program,
         )
-        offer = booking.collectiveStock.collectiveOffer
+        offer = booking.stock.offer
         # When
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
             f"/v2/collective/offers/{offer.id}"
@@ -49,7 +49,7 @@ class CollectiveOffersPublicGetOfferTest:
                 "dateUsed": booking.dateUsed.isoformat() if booking.dateUsed else None,
                 "dateCreated": booking.dateCreated.isoformat() if booking.dateCreated else None,
             }
-            for booking in offer.collectiveStock.collectiveBookings
+            for booking in offer.stock.collectiveBookings
         ]
         bookings = sorted(bookings, key=itemgetter("id"))
 
@@ -81,7 +81,7 @@ class CollectiveOffersPublicGetOfferTest:
         assert response.json["status"] == "SOLD_OUT"
         assert response.json["students"] == ["GENERAL2"]
         assert response.json["subcategoryId"] == offer.subcategoryId
-        assert response.json["totalPrice"] == float(offer.collectiveStock.price)
+        assert response.json["totalPrice"] == float(offer.stock.price)
         assert response.json["hasBookingLimitDatetimesPassed"] == False
         assert response.json["mentalDisabilityCompliant"] == False
         assert response.json["motorDisabilityCompliant"] == False
@@ -118,7 +118,7 @@ class CollectiveOffersPublicGetOfferTest:
         educational_factories.EducationalDomainFactory()
         educational_factories.EducationalInstitutionFactory(institutionId="UAI123")
         educational_factories.CollectiveStockFactory(
-            collectiveOffer__provider=venue_provider.provider,
+            offer__provider=venue_provider.provider,
         )
         offer = educational_factories.CollectiveOfferFactory()
 
@@ -137,9 +137,9 @@ class CollectiveOffersPublicGetOfferTest:
         offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
 
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__provider=venue_provider.provider,
+            offer__provider=venue_provider.provider,
         )
-        offer = stock.collectiveOffer
+        offer = stock.offer
 
         # When
         response = client.get(f"/v2/collective/offers/{offer.id}")
@@ -158,13 +158,13 @@ class CollectiveOffersPublicGetOfferTest:
 
         venue_provider2 = provider_factories.VenueProviderFactory()
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__domains=[domain],
-            collectiveOffer__provider=venue_provider2.provider,
-            collectiveOffer__imageCredit="Pouet",
-            collectiveOffer__imageCrop={"data": 2},
-            collectiveOffer__institution=institution,
+            offer__domains=[domain],
+            offer__provider=venue_provider2.provider,
+            offer__imageCredit="Pouet",
+            offer__imageCrop={"data": 2},
+            offer__institution=institution,
         )
-        offer = stock.collectiveOffer
+        offer = stock.offer
 
         # When
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(

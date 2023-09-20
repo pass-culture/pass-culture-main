@@ -64,9 +64,9 @@ class Returns204Test:
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         matching_offer1 = CollectiveOfferFactory(name="OKAY 1", venue=venue)
-        CollectiveStockFactory(collectiveOffer=matching_offer1, beginningDatetime=datetime(2020, 10, 10, 12, 0, 0))
+        CollectiveStockFactory(offer=matching_offer1, beginningDatetime=datetime(2020, 10, 10, 12, 0, 0))
         matching_offer2 = CollectiveOfferFactory(name="OKAY 2", venue=venue)
-        CollectiveStockFactory(collectiveOffer=matching_offer2, beginningDatetime=datetime(2020, 10, 10, 12, 0, 0))
+        CollectiveStockFactory(offer=matching_offer2, beginningDatetime=datetime(2020, 10, 10, 12, 0, 0))
 
         offer_out_of_date_range = CollectiveOfferFactory(name="OKAY 3", venue=venue)
         CollectiveStockFactory(

@@ -326,13 +326,12 @@ class GetCollectiveBookingIncidentFormTest(PostEndpointHelper):
 
         assert f"ID de la réservation : {collective_booking.id}" in additional_data_text
         assert "Statut de la réservation : Remboursée" in additional_data_text
-        assert f"Nom de l'offre : {collective_booking.collectiveStock.collectiveOffer.name}" in additional_data_text
+        assert f"Nom de l'offre : {collective_booking.stock.offer.name}" in additional_data_text
         assert (
-            f"Date de l'offre : {format_date_time(collective_booking.collectiveStock.beginningDatetime)}"
-            in additional_data_text
+            f"Date de l'offre : {format_date_time(collective_booking.stock.beginningDatetime)}" in additional_data_text
         )
         assert f"Établissement : {collective_booking.educationalInstitution.name}" in additional_data_text
-        assert f"Nombre d'élèves : {collective_booking.collectiveStock.numberOfTickets}" in additional_data_text
+        assert f"Nombre d'élèves : {collective_booking.stock.numberOfTickets}" in additional_data_text
 
 
 class CreateIncidentTest(PostEndpointHelper):

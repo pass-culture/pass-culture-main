@@ -17,7 +17,7 @@ class SendEacNewBookingEmailToProTest:
     def test_with_collective_booking(self, mails: Any) -> None:
         # given
         booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__bookingEmails=["pouet@example.com", "plouf@example.com"],
+            stock__offer__bookingEmails=["pouet@example.com", "plouf@example.com"],
         )
 
         # when
@@ -26,8 +26,8 @@ class SendEacNewBookingEmailToProTest:
         # then
         mails.send.assert_called_once()
         assert mails.send.call_args.kwargs["data"].params == {
-            "OFFER_NAME": booking.collectiveStock.collectiveOffer.name,
-            "VENUE_NAME": booking.collectiveStock.collectiveOffer.venue.name,
+            "OFFER_NAME": booking.stock.offer.name,
+            "VENUE_NAME": booking.stock.offer.venue.name,
             "EVENT_DATE": "27-Nov-2019",
             "EVENT_HOUR": "19h29",
             "QUANTITY": 1,

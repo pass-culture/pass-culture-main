@@ -45,7 +45,7 @@ class Returns200Test:
         )
 
         offer_id = offer.id
-        educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+        educational_factories.CollectiveStockFactory(offer=offer)
 
         with mock.patch("pcapi.core.educational.api.offer.get_image_from_url", return_value=image_oiseau_bytes):
             response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
@@ -69,7 +69,7 @@ class Returns200Test:
             nationalProgram=national_program,
         )
         offer_id = offer.id
-        educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+        educational_factories.CollectiveStockFactory(offer=offer)
 
         # When
         response = client.with_session_auth("user@example.com").post(f"/collective/offers/{offer_id}/duplicate")
@@ -120,11 +120,11 @@ class Returns200Test:
             "imageUrl": None,
             "isBookable": False,
             "collectiveStock": {
-                "id": duplicate.collectiveStock.id,
+                "id": duplicate.stock.id,
                 "isBooked": False,
                 "isCancellable": False,
-                "beginningDatetime": format_into_utc_date(offer.collectiveStock.beginningDatetime),
-                "bookingLimitDatetime": format_into_utc_date(offer.collectiveStock.bookingLimitDatetime),
+                "beginningDatetime": format_into_utc_date(offer.stock.beginningDatetime),
+                "bookingLimitDatetime": format_into_utc_date(offer.stock.bookingLimitDatetime),
                 "price": 100.0,
                 "numberOfTickets": 25,
                 "educationalPriceDetail": None,
@@ -157,7 +157,7 @@ class Returns200Test:
             validation=offer_mixin.OfferValidationStatus.DRAFT,
         )
         offer_id = offer.id
-        educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+        educational_factories.CollectiveStockFactory(offer=offer)
 
         # When
 
@@ -175,7 +175,7 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.CollectiveOfferFactory(venue=venue)
         offer_id = offer.id
-        educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+        educational_factories.CollectiveStockFactory(offer=offer)
 
         # When
 
@@ -198,7 +198,7 @@ class Returns200Test:
         )
 
         offer_id = offer.id
-        educational_factories.CollectiveStockFactory(collectiveOffer=offer)
+        educational_factories.CollectiveStockFactory(offer=offer)
 
         with mock.patch(
             "pcapi.core.educational.api.offer.get_image_from_url",

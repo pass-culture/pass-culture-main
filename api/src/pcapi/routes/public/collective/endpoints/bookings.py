@@ -58,9 +58,9 @@ def _get_booking(booking_id: int) -> models.CollectiveBooking | None:
         .filter(providers_models.VenueProvider.providerId == current_api_key.providerId)
         .filter(providers_models.VenueProvider.isActive == True)
         .options(
-            sa.orm.joinedload(models.CollectiveBooking.collectiveStock)
+            sa.orm.joinedload(models.CollectiveBooking.stock)
             .load_only(models.CollectiveStock.id)
-            .joinedload(models.CollectiveStock.collectiveOffer)
+            .joinedload(models.CollectiveStock.offer)
             .load_only(models.CollectiveOffer.id),
         )
         .one_or_none()

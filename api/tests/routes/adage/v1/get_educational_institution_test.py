@@ -58,8 +58,8 @@ class Returns200Test:
 
         assert response.status_code == 200
 
-        stock = booking.collectiveStock
-        offer = stock.collectiveOffer
+        stock = booking.stock
+        offer = stock.offer
         venue = offer.venue
         assert response.json == {
             "credit": 2000,

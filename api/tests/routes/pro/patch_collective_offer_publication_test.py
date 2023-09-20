@@ -13,9 +13,7 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 class Returns204Test:
     def expect_offer_to_be_approved(self, client):
         stock = educational_factories.CollectiveStockFactory()
-        offer = educational_factories.CollectiveOfferFactory(
-            collectiveStock=stock, validation=OfferValidationStatus.DRAFT
-        )
+        offer = educational_factories.CollectiveOfferFactory(stock=stock, validation=OfferValidationStatus.DRAFT)
         user_offerer = offerers_factories.UserOffererFactory(offerer=offer.venue.managingOfferer)
 
         url = f"/collective/offers/{offer.id}/publish"
@@ -28,7 +26,7 @@ class Returns204Test:
     def expect_offer_to_be_pending(self, client):
         stock = educational_factories.CollectiveStockFactory()
         offer = educational_factories.CollectiveOfferFactory(
-            name="suspicious", collectiveStock=stock, validation=OfferValidationStatus.DRAFT
+            name="suspicious", stock=stock, validation=OfferValidationStatus.DRAFT
         )
         user_offerer = offerers_factories.UserOffererFactory(offerer=offer.venue.managingOfferer)
 

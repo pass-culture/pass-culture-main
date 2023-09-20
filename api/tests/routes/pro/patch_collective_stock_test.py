@@ -33,7 +33,7 @@ class Return200Test:
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            offerer=stock.offer.venue.managingOfferer,
         )
 
         # When
@@ -78,7 +78,7 @@ class Return200Test:
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            offerer=stock.offer.venue.managingOfferer,
         )
 
         # When
@@ -109,11 +109,11 @@ class Return200Test:
         # Given
         stock = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime(2024, 1, 1),
-            collectiveOffer__students=[StudentLevels.COLLEGE5, StudentLevels.COLLEGE6, StudentLevels.COLLEGE4],
+            offer__students=[StudentLevels.COLLEGE5, StudentLevels.COLLEGE6, StudentLevels.COLLEGE4],
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            offerer=stock.offer.venue.managingOfferer,
         )
 
         # When
@@ -129,7 +129,7 @@ class Return200Test:
         assert response.status_code == 200
         edited_stock = CollectiveStock.query.get(stock.id)
         assert edited_stock.beginningDatetime == datetime(2021, 12, 18, 00)
-        assert edited_stock.collectiveOffer.students == [StudentLevels.COLLEGE4]
+        assert edited_stock.offer.students == [StudentLevels.COLLEGE4]
 
     def test_edit_collective_stock_partially(self, client):
         # Given
@@ -140,10 +140,10 @@ class Return200Test:
             bookingLimitDatetime=datetime(2021, 12, 1),
             priceDetail="Détail du prix",
         )
-        educational_factories.CancelledCollectiveBookingFactory(collectiveStock=stock)
+        educational_factories.CancelledCollectiveBookingFactory(stock=stock)
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            offerer=stock.offer.venue.managingOfferer,
         )
 
         # When
@@ -176,10 +176,10 @@ class Return200Test:
             bookingLimitDatetime=datetime(2021, 12, 1),
             priceDetail="Détail du prix",
         )
-        booking = educational_factories.PendingCollectiveBookingFactory(collectiveStock=stock)
+        booking = educational_factories.PendingCollectiveBookingFactory(stock=stock)
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            offerer=stock.offer.venue.managingOfferer,
         )
 
         # When
@@ -221,10 +221,10 @@ class Return200Test:
             bookingLimitDatetime=datetime(2021, 12, 1),
             priceDetail="Détail du prix",
         )
-        educational_factories.PendingCollectiveBookingFactory(collectiveStock=stock)
+        educational_factories.PendingCollectiveBookingFactory(stock=stock)
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            offerer=stock.offer.venue.managingOfferer,
         )
 
         # When
@@ -254,11 +254,11 @@ class Return200Test:
         )
         collective_booking = educational_factories.CollectiveBookingFactory(
             educationalYear=educational_year_2021_2022,
-            collectiveStock=collective_stock,
+            stock=collective_stock,
             status=CollectiveBookingStatus.PENDING,
         )
         offerers_factories.UserOffererFactory(
-            user__email="user@example.com", offerer=collective_stock.collectiveOffer.venue.managingOfferer
+            user__email="user@example.com", offerer=collective_stock.offer.venue.managingOfferer
         )
 
         # When
@@ -302,11 +302,11 @@ class Return403Test:
 
     def test_edit_collective_stocks_should_not_be_possible_when_offer_created_by_public_api(self, client):
         stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__provider=providers_factories.ProviderFactory(),
+            offer__provider=providers_factories.ProviderFactory(),
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            offerer=stock.offer.venue.managingOfferer,
         )
         # When
         stock_edition_payload = {
@@ -324,11 +324,11 @@ class Return403Test:
         # Given
         stock = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime(2024, 1, 1),
-            collectiveOffer__students=[StudentLevels.COLLEGE5, StudentLevels.COLLEGE6],
+            offer__students=[StudentLevels.COLLEGE5, StudentLevels.COLLEGE6],
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            offerer=stock.offer.venue.managingOfferer,
         )
 
         # When
@@ -356,7 +356,7 @@ class Return400Test:
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            offerer=stock.offer.venue.managingOfferer,
         )
 
         # When
@@ -383,7 +383,7 @@ class Return400Test:
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            offerer=stock.offer.venue.managingOfferer,
         )
 
         # When
@@ -410,7 +410,7 @@ class Return400Test:
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            offerer=stock.offer.venue.managingOfferer,
         )
 
         # When
@@ -434,7 +434,7 @@ class Return400Test:
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            offerer=stock.offer.venue.managingOfferer,
         )
 
         # When
@@ -453,7 +453,7 @@ class Return400Test:
         stock = educational_factories.CollectiveStockFactory()
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            offerer=stock.offer.venue.managingOfferer,
         )
 
         # When
@@ -473,7 +473,7 @@ class Return400Test:
         stock = educational_factories.CollectiveStockFactory()
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            offerer=stock.offer.venue.managingOfferer,
         )
 
         # When
@@ -493,7 +493,7 @@ class Return400Test:
         stock = educational_factories.CollectiveStockFactory()
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            offerer=stock.offer.venue.managingOfferer,
         )
 
         # When
@@ -519,7 +519,7 @@ class Return400Test:
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            offerer=stock.offer.venue.managingOfferer,
         )
 
         # When
@@ -545,7 +545,7 @@ class Return400Test:
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
-            offerer=stock.collectiveOffer.venue.managingOfferer,
+            offerer=stock.offer.venue.managingOfferer,
         )
 
         # When

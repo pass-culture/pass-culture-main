@@ -5,8 +5,8 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 
 
 def get_education_booking_cancellation_email_data(booking: CollectiveBooking) -> models.TransactionalEmailData:
-    stock = booking.collectiveStock
-    offer = stock.collectiveOffer
+    stock = booking.stock
+    offer = stock.offer  # type: ignore [attr-defined]
     institution = booking.educationalInstitution
     redactor = booking.educationalRedactor
     return models.TransactionalEmailData(
@@ -15,8 +15,8 @@ def get_education_booking_cancellation_email_data(booking: CollectiveBooking) ->
             "OFFER_NAME": offer.name,
             "EDUCATIONAL_INSTITUTION_NAME": institution.name,
             "VENUE_NAME": offer.venue.name,
-            "EVENT_DATE": stock.beginningDatetime.strftime("%d/%m/%Y"),
-            "EVENT_HOUR": stock.beginningDatetime.strftime("%H:%M"),
+            "EVENT_DATE": stock.beginningDatetime.strftime("%d/%m/%Y"),  # type: ignore [attr-defined]
+            "EVENT_HOUR": stock.beginningDatetime.strftime("%H:%M"),  # type: ignore [attr-defined]
             "REDACTOR_FIRSTNAME": redactor.firstName,
             "REDACTOR_LASTNAME": redactor.lastName,
             "REDACTOR_EMAIL": redactor.email,
@@ -29,7 +29,7 @@ def get_education_booking_cancellation_email_data(booking: CollectiveBooking) ->
 
 
 def send_eac_booking_cancellation_email(booking: CollectiveBooking) -> bool:
-    booking_emails = booking.collectiveStock.collectiveOffer.bookingEmails
+    booking_emails = booking.stock.offer.bookingEmails  # type: ignore [attr-defined]
     if not booking_emails:
         return True
     data = get_education_booking_cancellation_email_data(booking)

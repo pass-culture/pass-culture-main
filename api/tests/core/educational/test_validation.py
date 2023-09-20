@@ -23,28 +23,28 @@ class EducationalValidationTest:
             amount=Decimal(1400.00),
         )
         PendingCollectiveBookingFactory(
-            collectiveStock__price=Decimal(2000.00),
+            stock__price=Decimal(2000.00),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
         )
         CancelledCollectiveBookingFactory(
-            collectiveStock__price=Decimal(2000.00),
+            stock__price=Decimal(2000.00),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
         )
         ConfirmedCollectiveBookingFactory.create_batch(
             20,
-            collectiveStock__price=Decimal(20.00),
+            stock__price=Decimal(20.00),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
         )
         ConfirmedCollectiveBookingFactory(
-            collectiveStock__price=Decimal(400.00),
+            stock__price=Decimal(400.00),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
         )
         UsedCollectiveBookingFactory(
-            collectiveStock__price=Decimal(400.00),
+            stock__price=Decimal(400.00),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
         )
@@ -63,17 +63,17 @@ class EducationalValidationTest:
             isFinal=False,
         )
         ConfirmedCollectiveBookingFactory(
-            collectiveStock__price=Decimal(400.00),
+            stock__price=Decimal(400.00),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
         )
         ConfirmedCollectiveBookingFactory(
-            collectiveStock__price=Decimal(400.00),
+            stock__price=Decimal(400.00),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
         )
         UsedCollectiveBookingFactory(
-            collectiveStock__price=Decimal(400.00),
+            stock__price=Decimal(400.00),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
         )
@@ -92,17 +92,17 @@ class EducationalValidationTest:
             amount=Decimal(400.00),
         )
         ConfirmedCollectiveBookingFactory(
-            collectiveStock__price=Decimal(400.00),
+            stock__price=Decimal(400.00),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
         )
         ConfirmedCollectiveBookingFactory(
-            collectiveStock__price=Decimal(400.00),
+            stock__price=Decimal(400.00),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
         )
         UsedCollectiveBookingFactory(
-            collectiveStock__price=Decimal(400.00),
+            stock__price=Decimal(400.00),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
         )

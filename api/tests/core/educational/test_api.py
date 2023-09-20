@@ -401,7 +401,7 @@ class EACPendingBookingWithConfirmationLimitDate3DaysTest:
         # given
         booking = educational_factories.PendingCollectiveBookingFactory(
             confirmationLimitDate="2022-11-29 18:29:20.891028",
-            collectiveStock__collectiveOffer__bookingEmails=["pouet@example.com", "plouf@example.com"],
+            stock__offer__bookingEmails=["pouet@example.com", "plouf@example.com"],
         )
 
         # when
@@ -410,8 +410,8 @@ class EACPendingBookingWithConfirmationLimitDate3DaysTest:
         # then
         mock_mail_sender.assert_called_once()
         assert mock_mail_sender.call_args.kwargs["data"].params == {
-            "OFFER_NAME": booking.collectiveStock.collectiveOffer.name,
-            "VENUE_NAME": booking.collectiveStock.collectiveOffer.venue.name,
+            "OFFER_NAME": booking.stock.offer.name,
+            "VENUE_NAME": booking.stock.offer.venue.name,
             "EVENT_DATE": "dimanche 27 novembre 2022",
             "USER_FIRSTNAME": booking.educationalRedactor.firstName,
             "USER_LASTNAME": booking.educationalRedactor.lastName,
@@ -427,12 +427,12 @@ class EACPendingBookingWithConfirmationLimitDate3DaysTest:
         # given
         educational_factories.PendingCollectiveBookingFactory(
             confirmationLimitDate="2022-11-28 18:29:20.891028",
-            collectiveStock__collectiveOffer__bookingEmails=["pouet@example.com", "plouf@example.com"],
+            stock__offer__bookingEmails=["pouet@example.com", "plouf@example.com"],
         )
 
         educational_factories.PendingCollectiveBookingFactory(
             confirmationLimitDate="2022-12-01 18:29:20.891028",
-            collectiveStock__collectiveOffer__bookingEmails=["pouet@example.com", "plouf@example.com"],
+            stock__offer__bookingEmails=["pouet@example.com", "plouf@example.com"],
         )
 
         # when
@@ -448,7 +448,7 @@ class EACPendingBookingWithConfirmationLimitDate3DaysTest:
         # given
         educational_factories.CollectiveBookingFactory(
             confirmationLimitDate="2022-11-29 18:29:20.891028",
-            collectiveStock__collectiveOffer__bookingEmails=["pouet@example.com", "plouf@example.com"],
+            stock__offer__bookingEmails=["pouet@example.com", "plouf@example.com"],
         )
 
         # when
@@ -465,52 +465,52 @@ class NotifyProUserOneDayTest:
     def test_notify_pro_users_one_day(self, mock_mail_sender) -> None:
         # sould send email
         booking1 = educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__name="booking1",
-            collectiveStock__collectiveOffer__bookingEmails=["booking1@example.com", "booking1-2@example.com"],
-            collectiveStock__beginningDatetime=datetime.datetime(2020, 1, 6),
+            stock__offer__name="booking1",
+            stock__offer__bookingEmails=["booking1@example.com", "booking1-2@example.com"],
+            stock__beginningDatetime=datetime.datetime(2020, 1, 6),
             status=CollectiveBookingStatus.CONFIRMED,
         )
         # cancelled should not send email
         educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__name="booking2",
-            collectiveStock__collectiveOffer__bookingEmails=["booking2+1@example.com", "booking2+2@example.com"],
-            collectiveStock__beginningDatetime=datetime.datetime(2020, 1, 6),
+            stock__offer__name="booking2",
+            stock__offer__bookingEmails=["booking2+1@example.com", "booking2+2@example.com"],
+            stock__beginningDatetime=datetime.datetime(2020, 1, 6),
             status=CollectiveBookingStatus.CANCELLED,
         )
         # sould send email (linked to a cancelled one)
         booking3 = educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__name="booking3",
-            collectiveStock__collectiveOffer__bookingEmails=["booking3+2@example.com", "booking3+1@example.com"],
-            collectiveStock__beginningDatetime=datetime.datetime(2020, 1, 6),
+            stock__offer__name="booking3",
+            stock__offer__bookingEmails=["booking3+2@example.com", "booking3+1@example.com"],
+            stock__beginningDatetime=datetime.datetime(2020, 1, 6),
             status=CollectiveBookingStatus.CONFIRMED,
         )
         # cancelled should not send email (linked to a good one)
         educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__name="booking4",
-            collectiveStock__collectiveOffer__bookingEmails=["booking4+1@example.com", "booking4+2@example.com"],
-            collectiveStock__beginningDatetime=datetime.datetime(2020, 1, 6),
-            collectiveStock=booking3.collectiveStock,
+            stock__offer__name="booking4",
+            stock__offer__bookingEmails=["booking4+1@example.com", "booking4+2@example.com"],
+            stock__beginningDatetime=datetime.datetime(2020, 1, 6),
+            stock=booking3.stock,
             status=CollectiveBookingStatus.CANCELLED,
         )
         # no emails register, should not send email
         educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__name="booking5",
-            collectiveStock__collectiveOffer__bookingEmails=[],
-            collectiveStock__beginningDatetime=datetime.datetime(2020, 1, 6),
+            stock__offer__name="booking5",
+            stock__offer__bookingEmails=[],
+            stock__beginningDatetime=datetime.datetime(2020, 1, 6),
             status=CollectiveBookingStatus.CONFIRMED,
         )
         # old booking should not be selected
         educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__name="booking6",
-            collectiveStock__collectiveOffer__bookingEmails=["booking6+1@example.com", "booking6+2@example.com"],
-            collectiveStock__beginningDatetime=datetime.datetime(2019, 1, 6),
+            stock__offer__name="booking6",
+            stock__offer__bookingEmails=["booking6+1@example.com", "booking6+2@example.com"],
+            stock__beginningDatetime=datetime.datetime(2019, 1, 6),
             status=CollectiveBookingStatus.CONFIRMED,
         )
         # too far in the future to be selected
         educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__name="booking7",
-            collectiveStock__collectiveOffer__bookingEmails=["booking7+1@example.com", "booking7+2@example.com"],
-            collectiveStock__beginningDatetime=datetime.datetime(2021, 1, 6),
+            stock__offer__name="booking7",
+            stock__offer__bookingEmails=["booking7+1@example.com", "booking7+2@example.com"],
+            stock__beginningDatetime=datetime.datetime(2021, 1, 6),
             status=CollectiveBookingStatus.CONFIRMED,
         )
         educational_api_booking.notify_pro_users_one_day()
@@ -518,31 +518,31 @@ class NotifyProUserOneDayTest:
         for args in mock_mail_sender.call_args_list:
             data = args.kwargs["data"]
             assert data.params["OFFER_NAME"] in ("booking1", "booking3")
-            if data.params["OFFER_NAME"] == booking1.collectiveStock.collectiveOffer.name:
+            if data.params["OFFER_NAME"] == booking1.stock.offer.name:
                 assert data.params == {
-                    "OFFER_NAME": booking1.collectiveStock.collectiveOffer.name,
-                    "VENUE_NAME": booking1.collectiveStock.collectiveOffer.venue.name,
+                    "OFFER_NAME": booking1.stock.offer.name,
+                    "VENUE_NAME": booking1.stock.offer.venue.name,
                     "EVENT_HOUR": "1h",
                     "QUANTITY": 1,
-                    "PRICE": str(booking1.collectiveStock.price),
+                    "PRICE": str(booking1.stock.price),
                     "REDACTOR_FIRSTNAME": booking1.educationalRedactor.firstName,
                     "REDACTOR_LASTNAME": booking1.educationalRedactor.lastName,
                     "REDACTOR_EMAIL": booking1.educationalRedactor.email,
                     "EDUCATIONAL_INSTITUTION_NAME": booking1.educationalInstitution.name,
                 }
-                assert args.kwargs["recipients"] == [booking1.collectiveStock.collectiveOffer.bookingEmails[0]]
-                assert args.kwargs["bcc_recipients"] == booking1.collectiveStock.collectiveOffer.bookingEmails[1:]
-            elif data.params["OFFER_NAME"] == booking3.collectiveStock.collectiveOffer.name:
+                assert args.kwargs["recipients"] == [booking1.stock.offer.bookingEmails[0]]
+                assert args.kwargs["bcc_recipients"] == booking1.stock.offer.bookingEmails[1:]
+            elif data.params["OFFER_NAME"] == booking3.stock.offer.name:
                 assert data.params == {
-                    "OFFER_NAME": booking3.collectiveStock.collectiveOffer.name,
-                    "VENUE_NAME": booking3.collectiveStock.collectiveOffer.venue.name,
+                    "OFFER_NAME": booking3.stock.offer.name,
+                    "VENUE_NAME": booking3.stock.offer.venue.name,
                     "EVENT_HOUR": "1h",
                     "QUANTITY": 1,
-                    "PRICE": str(booking3.collectiveStock.price),
+                    "PRICE": str(booking3.stock.price),
                     "REDACTOR_FIRSTNAME": booking3.educationalRedactor.firstName,
                     "REDACTOR_LASTNAME": booking3.educationalRedactor.lastName,
                     "REDACTOR_EMAIL": booking3.educationalRedactor.email,
                     "EDUCATIONAL_INSTITUTION_NAME": booking3.educationalInstitution.name,
                 }
-                assert args.kwargs["recipients"] == [booking3.collectiveStock.collectiveOffer.bookingEmails[0]]
-                assert args.kwargs["bcc_recipients"] == booking3.collectiveStock.collectiveOffer.bookingEmails[1:]
+                assert args.kwargs["recipients"] == [booking3.stock.offer.bookingEmails[0]]
+                assert args.kwargs["bcc_recipients"] == booking3.stock.offer.bookingEmails[1:]

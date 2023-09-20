@@ -7,7 +7,7 @@ from pcapi.utils.mailing import format_booking_hours_for_email
 
 
 def send_eac_new_booking_email_to_pro(booking: CollectiveBooking) -> bool:
-    booking_emails = booking.collectiveStock.collectiveOffer.bookingEmails
+    booking_emails = booking.stock.offer.bookingEmails  # type: ignore [attr-defined]
     if not booking_emails:
         return True
     data = get_eac_new_booking_to_pro_email_data(booking)
@@ -16,9 +16,9 @@ def send_eac_new_booking_email_to_pro(booking: CollectiveBooking) -> bool:
 
 
 def get_eac_new_booking_to_pro_email_data(booking: CollectiveBooking) -> models.TransactionalEmailData:
-    stock = booking.collectiveStock
-    offer = stock.collectiveOffer
-    price = f"{stock.price} €" if stock.price > 0 else "Gratuit"
+    stock = booking.stock
+    offer = stock.offer  # type: ignore [attr-defined]
+    price = f"{stock.price} €" if stock.price > 0 else "Gratuit"  # type: ignore [attr-defined]
     educational_redactor = booking.educationalRedactor
     educational_institution = booking.educationalInstitution
 

@@ -6,12 +6,12 @@ from pcapi.utils.mailing import format_booking_hours_for_email
 
 
 def send_eac_alert_one_day_before_event(booking: educational_models.CollectiveBooking) -> bool:
-    if not booking.collectiveStock.collectiveOffer.bookingEmails:
+    if not booking.stock.offer.bookingEmails:  # type: ignore [attr-defined]
         return True
     data = get_eac_one_day_before_event_data(booking)
     return mails.send(
-        recipients=[booking.collectiveStock.collectiveOffer.bookingEmails[0]],
-        bcc_recipients=booking.collectiveStock.collectiveOffer.bookingEmails[1:],
+        recipients=[booking.stock.offer.bookingEmails[0]],  # type: ignore [attr-defined]
+        bcc_recipients=booking.stock.offer.bookingEmails[1:],  # type: ignore [attr-defined]
         data=data,
     )
 
@@ -19,8 +19,8 @@ def send_eac_alert_one_day_before_event(booking: educational_models.CollectiveBo
 def get_eac_one_day_before_event_data(
     booking: educational_models.CollectiveBooking,
 ) -> models.TransactionalEmailData:
-    stock: educational_models.CollectiveStock = booking.collectiveStock
-    offer: educational_models.CollectiveOffer = stock.collectiveOffer
+    stock: educational_models.CollectiveStock = booking.stock  # type: ignore [assignment]
+    offer: educational_models.CollectiveOffer = stock.offer  # type: ignore [assignment]
 
     return models.TransactionalEmailData(
         template=TransactionalEmail.EAC_ONE_DAY_BEFORE_EVENT.value,

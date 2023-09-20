@@ -14,7 +14,7 @@ class SendEducationeBookingCancellationByInstitutionEmailTest:
         # given
         booking = educational_factories.CollectiveBookingFactory(
             cancellationReason=CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE,
-            collectiveStock__collectiveOffer__bookingEmails=["pouet@example.com", "plouf@example.com"],
+            stock__offer__bookingEmails=["pouet@example.com", "plouf@example.com"],
         )
 
         # when
@@ -23,11 +23,11 @@ class SendEducationeBookingCancellationByInstitutionEmailTest:
         # then
         mails.send.assert_called_once()
         assert mails.send.call_args.kwargs["data"].params == {
-            "OFFER_NAME": booking.collectiveStock.collectiveOffer.name,
+            "OFFER_NAME": booking.stock.offer.name,
             "EDUCATIONAL_INSTITUTION_NAME": booking.educationalInstitution.name,
-            "VENUE_NAME": booking.collectiveStock.collectiveOffer.venue.name,
-            "EVENT_DATE": booking.collectiveStock.beginningDatetime.strftime("%d/%m/%Y"),
-            "EVENT_HOUR": booking.collectiveStock.beginningDatetime.strftime("%H:%M"),
+            "VENUE_NAME": booking.stock.offer.venue.name,
+            "EVENT_DATE": booking.stock.beginningDatetime.strftime("%d/%m/%Y"),
+            "EVENT_HOUR": booking.stock.beginningDatetime.strftime("%H:%M"),
             "REDACTOR_FIRSTNAME": booking.educationalRedactor.firstName,
             "REDACTOR_LASTNAME": booking.educationalRedactor.lastName,
             "REDACTOR_EMAIL": booking.educationalRedactor.email,

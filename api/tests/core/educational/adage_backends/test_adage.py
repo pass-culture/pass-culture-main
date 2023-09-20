@@ -67,7 +67,7 @@ class AdageHttpClientTest:
         adage_client = AdageHttpClient()
         offer = educational_factories.CollectiveOfferFactory(
             institution=educational_factories.EducationalInstitutionFactory(),
-            collectiveStock=educational_factories.CollectiveStockFactory(),
+            stock=educational_factories.CollectiveStockFactory(),
         )
         offer_data = serialize_collective_offer(offer)
 
@@ -84,7 +84,7 @@ class AdageHttpClientTest:
         adage_client = AdageHttpClient()
         offer = educational_factories.CollectiveOfferFactory(
             institution=educational_factories.EducationalInstitutionFactory(),
-            collectiveStock=educational_factories.CollectiveStockFactory(),
+            stock=educational_factories.CollectiveStockFactory(),
         )
         offer_data = serialize_collective_offer(offer)
 
@@ -103,7 +103,7 @@ class AdageHttpClientTest:
         adage_client = AdageHttpClient()
         offer = educational_factories.CollectiveOfferFactory(
             institution=educational_factories.EducationalInstitutionFactory(),
-            collectiveStock=educational_factories.CollectiveStockFactory(),
+            stock=educational_factories.CollectiveStockFactory(),
         )
         offer_data = serialize_collective_offer(offer)
 

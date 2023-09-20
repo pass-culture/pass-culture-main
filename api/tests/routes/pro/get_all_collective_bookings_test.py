@@ -28,7 +28,7 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2022, 3, 11, 12, 0, 0),
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
         )
 
         client = client.with_session_auth(admin.email)
@@ -45,13 +45,13 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
         institution = educational_factories.EducationalInstitutionFactory()
         collective_stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__name="Le chant des cigales",
-            collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            offer__name="Le chant des cigales",
+            offer__venue__managingOfferer=user_offerer.offerer,
             beginningDatetime=datetime(2022, 5, 15, 10, 15, 0),
             price=1200,
         )
         booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock=collective_stock,
+            stock=collective_stock,
             dateCreated=booking_date,
             confirmationDate=booking_date + timedelta(days=1),
             educationalInstitution=institution,
@@ -125,13 +125,13 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
         institution = educational_factories.EducationalInstitutionFactory()
         collective_stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__name="Le chant des cigales",
-            collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            offer__name="Le chant des cigales",
+            offer__venue__managingOfferer=user_offerer.offerer,
             beginningDatetime=datetime(2022, 5, 15, 10, 15, 0),
         )
         educational_factories.CollectiveBookingFactory(
             educationalInstitution=institution,
-            collectiveStock=collective_stock,
+            stock=collective_stock,
             dateCreated=booking_date,
         )
 
@@ -155,14 +155,14 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
         institution = educational_factories.EducationalInstitutionFactory()
         collective_stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__name="Le chant des cigales",
-            collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            offer__name="Le chant des cigales",
+            offer__venue__managingOfferer=user_offerer.offerer,
             beginningDatetime=datetime(2022, 5, 15, 10, 15, 0),
             price=1200,
         )
         educational_factories.PendingCollectiveBookingFactory(
             educationalInstitution=institution,
-            collectiveStock=collective_stock,
+            stock=collective_stock,
             dateCreated=booking_date,
         )
 
@@ -193,14 +193,14 @@ class Returns200Test:
         institution = educational_factories.EducationalInstitutionFactory()
 
         collective_stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__name="Le chant des cigales",
-            collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            offer__name="Le chant des cigales",
+            offer__venue__managingOfferer=user_offerer.offerer,
             beginningDatetime=event_date,
             price=1200,
         )
         educational_factories.CancelledCollectiveBookingFactory(
             educationalInstitution=institution,
-            collectiveStock=collective_stock,
+            stock=collective_stock,
             dateCreated=booking_date,
             confirmationDate=booking_date + timedelta(days=1, hours=2),
             cancellationDate=booking_date + timedelta(days=45, minutes=32),
@@ -246,14 +246,14 @@ class Returns200Test:
         institution = educational_factories.EducationalInstitutionFactory()
 
         collective_stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__name="Le chant des cigales",
-            collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            offer__name="Le chant des cigales",
+            offer__venue__managingOfferer=user_offerer.offerer,
             beginningDatetime=event_date,
             price=1200,
         )
         educational_factories.CancelledCollectiveBookingFactory(
             educationalInstitution=institution,
-            collectiveStock=collective_stock,
+            stock=collective_stock,
             dateCreated=booking_date,
             confirmationDate=None,
             cancellationDate=booking_date + timedelta(days=5, minutes=32),
@@ -292,14 +292,14 @@ class Returns200Test:
         institution = educational_factories.EducationalInstitutionFactory()
 
         collective_stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__name="Le chant des cigales",
-            collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            offer__name="Le chant des cigales",
+            offer__venue__managingOfferer=user_offerer.offerer,
             beginningDatetime=event_date,
             price=1200,
         )
         educational_factories.ReimbursedCollectiveBookingFactory(
             educationalInstitution=institution,
-            collectiveStock=collective_stock,
+            stock=collective_stock,
             dateCreated=booking_date,
             cancellationLimitDate=event_date - timedelta(days=15),
             confirmationDate=booking_date + timedelta(days=1, hours=2),
@@ -350,14 +350,14 @@ class Returns200Test:
         institution = educational_factories.EducationalInstitutionFactory()
 
         collective_stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__name="Le chant des cigales",
-            collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            offer__name="Le chant des cigales",
+            offer__venue__managingOfferer=user_offerer.offerer,
             beginningDatetime=event_date,
             price=1200,
         )
         educational_factories.PendingCollectiveBookingFactory(
             educationalInstitution=institution,
-            collectiveStock=collective_stock,
+            stock=collective_stock,
             dateCreated=booking_date,
             cancellationLimitDate=event_date - timedelta(days=15),
         )
@@ -386,21 +386,21 @@ class Returns200Test:
         institution = educational_factories.EducationalInstitutionFactory()
 
         collective_stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__name="Le chant des cigales",
-            collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            offer__name="Le chant des cigales",
+            offer__venue__managingOfferer=user_offerer.offerer,
             beginningDatetime=datetime(2022, 5, 15, 10, 15, 0),
             price=1200,
         )
         booking = educational_factories.CollectiveBookingFactory(
             educationalInstitution=institution,
-            collectiveStock=collective_stock,
+            stock=collective_stock,
             dateCreated=booking_date,
             status=CollectiveBookingStatus.CONFIRMED,
             confirmationDate=booking_date + timedelta(days=1),
         )
         educational_factories.CollectiveBookingFactory(
             educationalInstitution=institution,
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=booking_date,
             status=CollectiveBookingStatus.CONFIRMED,
             confirmationDate=booking_date + timedelta(days=1),
@@ -409,7 +409,7 @@ class Returns200Test:
         # When
         client = client.with_session_auth(pro_user.email)
         response = client.get(
-            f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&venueId={collective_stock.collectiveOffer.venueId}"
+            f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&venueId={collective_stock.offer.venueId}"
         )
 
         # Then
@@ -477,22 +477,22 @@ class Returns200Test:
         institution = educational_factories.EducationalInstitutionFactory()
 
         collective_stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__name="Le chant des cigales",
-            collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            offer__name="Le chant des cigales",
+            offer__venue__managingOfferer=user_offerer.offerer,
             beginningDatetime=datetime(2022, 5, 15, 10, 15, 0),
             price=1200,
         )
         booking = educational_factories.CollectiveBookingFactory(
             educationalInstitution=institution,
-            collectiveStock=collective_stock,
+            stock=collective_stock,
             dateCreated=booking_date,
             status=CollectiveBookingStatus.CONFIRMED,
             confirmationDate=booking_date + timedelta(days=1),
         )
         educational_factories.CollectiveBookingFactory(
             educationalInstitution=institution,
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
-            collectiveStock__beginningDatetime=datetime(2022, 5, 16, 10, 15, 0),
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
+            stock__beginningDatetime=datetime(2022, 5, 16, 10, 15, 0),
             dateCreated=booking_date,
             status=CollectiveBookingStatus.CONFIRMED,
             confirmationDate=booking_date + timedelta(days=1),
@@ -568,22 +568,22 @@ class Returns200Test:
         institution = educational_factories.EducationalInstitutionFactory()
 
         collective_stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__name="Le chant des cigales",
-            collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            offer__name="Le chant des cigales",
+            offer__venue__managingOfferer=user_offerer.offerer,
             beginningDatetime=event_date,
             price=1200,
         )
         booking = educational_factories.UsedCollectiveBookingFactory(
             educationalInstitution=institution,
-            collectiveStock=collective_stock,
+            stock=collective_stock,
             dateCreated=booking_date,
             confirmationDate=booking_date + timedelta(days=1),
             dateUsed=event_date + timedelta(days=1),
         )
         educational_factories.CollectiveBookingFactory(
             educationalInstitution=institution,
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
-            collectiveStock__beginningDatetime=datetime(2022, 5, 16, 10, 15, 0),
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
+            stock__beginningDatetime=datetime(2022, 5, 16, 10, 15, 0),
             dateCreated=datetime(2022, 3, 11, 10, 15, 0),
             status=CollectiveBookingStatus.CONFIRMED,
             confirmationDate=booking_date + timedelta(days=1),
@@ -691,14 +691,14 @@ class Returns400Test:
         institution = educational_factories.EducationalInstitutionFactory()
 
         collective_stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__name="Le chant des cigales",
-            collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            offer__name="Le chant des cigales",
+            offer__venue__managingOfferer=user_offerer.offerer,
             beginningDatetime=event_date,
             price=1200,
         )
         educational_factories.CancelledCollectiveBookingFactory(
             educationalInstitution=institution,
-            collectiveStock=collective_stock,
+            stock=collective_stock,
             dateCreated=booking_date,
             confirmationDate=booking_date + timedelta(days=1, hours=2),
             cancellationDate=booking_date + timedelta(days=45, minutes=32),

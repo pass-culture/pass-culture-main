@@ -25,11 +25,11 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
-            collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
+            stock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
             cancellationLimitDate=datetime.utcnow() + timedelta(days=1),
             reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
             dateUsed=datetime(2020, 8, 15, 12, 0, 0),
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             offerer=user_offerer.offerer,
             educationalRedactor__firstName="Bob",
             educationalRedactor__lastName="Kelso",
@@ -48,13 +48,13 @@ class Returns200Test:
             assert sheet.cell(row=1, column=i).value == COLLECTIVE_BOOKING_EXPORT_HEADER[i - 1]
         # Celles
         assert sheet.cell(row=2, column=1).value == booking.venue.name
-        assert sheet.cell(row=2, column=2).value == booking.collectiveStock.collectiveOffer.name
+        assert sheet.cell(row=2, column=2).value == booking.stock.offer.name
         assert sheet.cell(row=2, column=3).value == "2020-08-13 14:00:00+02:00"
         assert sheet.cell(row=2, column=4).value == "Kelso Bob"
         assert sheet.cell(row=2, column=5).value == booking.educationalRedactor.email
         assert sheet.cell(row=2, column=6).value == "2020-08-11 14:00:00+02:00"
         assert sheet.cell(row=2, column=7).value == "2020-08-15 14:00:00+02:00"
-        assert sheet.cell(row=2, column=8).value == booking.collectiveStock.price
+        assert sheet.cell(row=2, column=8).value == booking.stock.price
         assert sheet.cell(row=2, column=9).value == "réservé"
         assert sheet.cell(row=2, column=10).value == "2021-08-11 14:00:00+02:00"
         assert sheet.cell(row=2, column=11).value == booking.educationalInstitution.institutionId
@@ -67,11 +67,11 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
-            collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
+            stock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
             cancellationLimitDate=datetime.utcnow() + timedelta(days=1),
             reimbursementDate=None,
             dateUsed=None,
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             offerer=user_offerer.offerer,
             educationalRedactor__firstName="Perry",
             educationalRedactor__lastName="Cox",
@@ -89,30 +89,30 @@ class Returns200Test:
             assert sheet.cell(row=1, column=i).value == COLLECTIVE_BOOKING_EXPORT_HEADER[i - 1]
         # Cells
         assert sheet.cell(row=2, column=1).value == booking.venue.name
-        assert sheet.cell(row=2, column=2).value == booking.collectiveStock.collectiveOffer.name
+        assert sheet.cell(row=2, column=2).value == booking.stock.offer.name
         assert sheet.cell(row=2, column=3).value == "2020-08-13 14:00:00+02:00"
         assert sheet.cell(row=2, column=4).value == "Cox Perry"
         assert sheet.cell(row=2, column=5).value == booking.educationalRedactor.email
         assert sheet.cell(row=2, column=6).value == "2020-08-11 14:00:00+02:00"
         assert sheet.cell(row=2, column=7).value == "None"
-        assert sheet.cell(row=2, column=8).value == booking.collectiveStock.price
+        assert sheet.cell(row=2, column=8).value == booking.stock.price
         assert sheet.cell(row=2, column=9).value == "réservé"
         assert sheet.cell(row=2, column=10).value == "None"
 
     def test_one_invisible_rights_booking(self, app):
         invisible_user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue__managingOfferer=invisible_user_offerer.offerer,
+            stock__offer__venue__managingOfferer=invisible_user_offerer.offerer,
             offerer=invisible_user_offerer.offerer,
         )
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
-            collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
+            stock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
             cancellationLimitDate=datetime.utcnow() + timedelta(days=1),
             reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
             dateUsed=datetime(2020, 8, 15, 12, 0, 0),
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             offerer=user_offerer.offerer,
             educationalRedactor__firstName="John Michael",
             educationalRedactor__lastName="Dorian",
@@ -130,13 +130,13 @@ class Returns200Test:
             assert sheet.cell(row=1, column=i).value == COLLECTIVE_BOOKING_EXPORT_HEADER[i - 1]
         # Cells
         assert sheet.cell(row=2, column=1).value == booking.venue.name
-        assert sheet.cell(row=2, column=2).value == booking.collectiveStock.collectiveOffer.name
+        assert sheet.cell(row=2, column=2).value == booking.stock.offer.name
         assert sheet.cell(row=2, column=3).value == "2020-08-13 14:00:00+02:00"
         assert sheet.cell(row=2, column=4).value == "Dorian John Michael"
         assert sheet.cell(row=2, column=5).value == booking.educationalRedactor.email
         assert sheet.cell(row=2, column=6).value == "2020-08-11 14:00:00+02:00"
         assert sheet.cell(row=2, column=7).value == "2020-08-15 14:00:00+02:00"
-        assert sheet.cell(row=2, column=8).value == booking.collectiveStock.price
+        assert sheet.cell(row=2, column=8).value == booking.stock.price
         assert sheet.cell(row=2, column=9).value == "réservé"
         assert sheet.cell(row=2, column=10).value == "2021-08-11 14:00:00+02:00"
 
@@ -147,17 +147,17 @@ class Returns200Test:
         invisible_user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2015, 8, 11, 12, 0, 0),
-            collectiveStock__collectiveOffer__venue__managingOfferer=invisible_user_offerer.offerer,
+            stock__offer__venue__managingOfferer=invisible_user_offerer.offerer,
             offerer=invisible_user_offerer.offerer,
         )
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
-            collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
+            stock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
             reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
             cancellationLimitDate=datetime.utcnow() + timedelta(days=1),
             dateUsed=datetime(2020, 8, 15, 12, 0, 0),
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             offerer=user_offerer.offerer,
             educationalRedactor__firstName="Eliot",
             educationalRedactor__lastName="Reid",
@@ -175,13 +175,13 @@ class Returns200Test:
             assert sheet.cell(row=1, column=i).value == COLLECTIVE_BOOKING_EXPORT_HEADER[i - 1]
         # Cells
         assert sheet.cell(row=2, column=1).value == booking.venue.name
-        assert sheet.cell(row=2, column=2).value == booking.collectiveStock.collectiveOffer.name
+        assert sheet.cell(row=2, column=2).value == booking.stock.offer.name
         assert sheet.cell(row=2, column=3).value == "2020-08-13 14:00:00+02:00"
         assert sheet.cell(row=2, column=4).value == "Reid Eliot"
         assert sheet.cell(row=2, column=5).value == booking.educationalRedactor.email
         assert sheet.cell(row=2, column=6).value == "2020-08-11 14:00:00+02:00"
         assert sheet.cell(row=2, column=7).value == "2020-08-15 14:00:00+02:00"
-        assert sheet.cell(row=2, column=8).value == booking.collectiveStock.price
+        assert sheet.cell(row=2, column=8).value == booking.stock.price
         assert sheet.cell(row=2, column=9).value == "réservé"
         assert sheet.cell(row=2, column=10).value == "2021-08-11 14:00:00+02:00"
 
@@ -190,33 +190,33 @@ class Returns200Test:
         bookings = [
             educational_factories.CollectiveBookingFactory(
                 dateCreated=datetime(2020, 8, 11, 12, 0, 0),
-                collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
+                stock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
                 cancellationLimitDate=datetime.utcnow() + timedelta(days=1),
                 reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
                 dateUsed=datetime(2020, 8, 15, 12, 0, 0),
-                collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+                stock__offer__venue__managingOfferer=user_offerer.offerer,
                 offerer=user_offerer.offerer,
                 educationalRedactor__firstName="Carla",
                 educationalRedactor__lastName="Espinosa",
             ),
             educational_factories.CollectiveBookingFactory(
                 dateCreated=datetime(2020, 8, 11, 12, 0, 0),
-                collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
+                stock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
                 cancellationLimitDate=datetime.utcnow() + timedelta(days=1),
                 reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
                 dateUsed=datetime(2020, 8, 15, 12, 0, 0),
-                collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+                stock__offer__venue__managingOfferer=user_offerer.offerer,
                 offerer=user_offerer.offerer,
                 educationalRedactor__firstName="Janitor",
                 educationalRedactor__lastName="The",
             ),
             educational_factories.CollectiveBookingFactory(
                 dateCreated=datetime(2020, 8, 11, 12, 0, 0),
-                collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
+                stock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
                 cancellationLimitDate=datetime.utcnow() + timedelta(days=1),
                 reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
                 dateUsed=datetime(2020, 8, 15, 12, 0, 0),
-                collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+                stock__offer__venue__managingOfferer=user_offerer.offerer,
                 offerer=user_offerer.offerer,
                 educationalRedactor__firstName="Ted",
                 educationalRedactor__lastName="Buckland",
@@ -233,13 +233,13 @@ class Returns200Test:
         for i in range(2, 5):
             name = f"{bookings[i-2].educationalRedactor.lastName} {bookings[i-2].educationalRedactor.firstName}"
             assert sheet.cell(row=i, column=1).value == bookings[i - 2].venue.name
-            assert sheet.cell(row=i, column=2).value == bookings[i - 2].collectiveStock.collectiveOffer.name
+            assert sheet.cell(row=i, column=2).value == bookings[i - 2].stock.offer.name
             assert sheet.cell(row=i, column=3).value == "2020-08-13 14:00:00+02:00"
             assert sheet.cell(row=i, column=4).value == name
             assert sheet.cell(row=i, column=5).value == bookings[i - 2].educationalRedactor.email
             assert sheet.cell(row=i, column=6).value == "2020-08-11 14:00:00+02:00"
             assert sheet.cell(row=i, column=7).value == "2020-08-15 14:00:00+02:00"
-            assert sheet.cell(row=i, column=8).value == bookings[i - 2].collectiveStock.price
+            assert sheet.cell(row=i, column=8).value == bookings[i - 2].stock.price
             assert sheet.cell(row=2, column=9).value == "réservé"
             assert sheet.cell(row=i, column=10).value == "2021-08-11 14:00:00+02:00"
 
@@ -247,9 +247,9 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.UsedCollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
-            collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
+            stock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
             dateUsed=datetime(2020, 8, 15, 12, 0, 0),
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             offerer=user_offerer.offerer,
         )
         client = TestClient(app.test_client()).with_session_auth(user_offerer.user.email)
@@ -265,10 +265,10 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.ReimbursedCollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
-            collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
+            stock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
             reimbursementDate=datetime(2021, 8, 11, 12, 0, 0),
             dateUsed=datetime(2020, 8, 15, 12, 0, 0),
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             offerer=user_offerer.offerer,
         )
         client = TestClient(app.test_client()).with_session_auth(user_offerer.user.email)
@@ -284,8 +284,8 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.CancelledCollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
-            collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             offerer=user_offerer.offerer,
         )
         client = TestClient(app.test_client()).with_session_auth(user_offerer.user.email)
@@ -301,8 +301,8 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.PendingCollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
-            collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             offerer=user_offerer.offerer,
         )
         client = TestClient(app.test_client()).with_session_auth(user_offerer.user.email)
@@ -318,8 +318,8 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory()
         educational_factories.ConfirmedCollectiveBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
-            collectiveStock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__beginningDatetime=datetime(2020, 8, 13, 12, 0, 0),
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
             offerer=user_offerer.offerer,
         )
         client = TestClient(app.test_client()).with_session_auth(user_offerer.user.email)

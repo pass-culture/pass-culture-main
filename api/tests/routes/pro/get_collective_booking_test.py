@@ -19,7 +19,7 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
             id=dehumanize("EXCEL"),
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
         )
 
         client = client.with_session_auth(user_offerer.user.email)
@@ -33,7 +33,7 @@ class Returns200Test:
             "students": ["Lycée - Seconde"],
             "bankInformationStatus": "MISSING",
             "venueDMSApplicationId": None,
-            "price": float(booking.collectiveStock.price),
+            "price": float(booking.stock.price),
             "educationalInstitution": {
                 "id": booking.educationalInstitution.id,
                 "institutionType": booking.educationalInstitution.institutionType,
@@ -50,7 +50,7 @@ class Returns200Test:
                 "firstName": booking.educationalRedactor.firstName,
                 "lastName": booking.educationalRedactor.lastName,
             },
-            "numberOfTickets": booking.collectiveStock.numberOfTickets,
+            "numberOfTickets": booking.stock.numberOfTickets,
             "venuePostalCode": booking.venue.postalCode,
             "isCancellable": booking.is_cancellable_from_offerer,
             "venueId": humanize(booking.venueId),
@@ -61,10 +61,10 @@ class Returns200Test:
     def test_get_collective_booking_with_banking_informations(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
+            stock__offer__venue__managingOfferer=user_offerer.offerer,
         )
         offerers_factories.VenueReimbursementPointLinkFactory(
-            venue=booking.collectiveStock.collectiveOffer.venue,
+            venue=booking.stock.offer.venue,
             reimbursementPoint__dmsToken="7490b4f8d5e3",
             reimbursementPoint__bankInformation=finance_factories.BankInformationFactory(
                 status="DRAFT", applicationId=24881014
@@ -82,7 +82,7 @@ class Returns200Test:
             "students": ["Lycée - Seconde"],
             "bankInformationStatus": "DRAFT",
             "venueDMSApplicationId": 24881014,
-            "price": float(booking.collectiveStock.price),
+            "price": float(booking.stock.price),
             "educationalInstitution": {
                 "id": booking.educationalInstitution.id,
                 "institutionType": booking.educationalInstitution.institutionType,
@@ -99,7 +99,7 @@ class Returns200Test:
                 "firstName": booking.educationalRedactor.firstName,
                 "lastName": booking.educationalRedactor.lastName,
             },
-            "numberOfTickets": booking.collectiveStock.numberOfTickets,
+            "numberOfTickets": booking.stock.numberOfTickets,
             "venuePostalCode": booking.venue.postalCode,
             "isCancellable": booking.is_cancellable_from_offerer,
             "venueId": humanize(booking.venueId),

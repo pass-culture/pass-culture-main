@@ -207,29 +207,29 @@ def _serialize_collective_booking_status_info(
 
     return BookingStatusHistoryResponseModel(
         status=collective_booking_status.value,
-        date=serialized_collective_booking_status_date,  # type: ignore [arg-type]
+        date=serialized_collective_booking_status_date,
     )
 
 
 def serialize_collective_booking_stock(
     collective_booking: models.CollectiveBooking,
 ) -> CollectiveBookingCollectiveStockResponseModel:
-    return CollectiveBookingCollectiveStockResponseModel(  # type: ignore [call-arg]
-        offerName=collective_booking.collectiveStock.collectiveOffer.name,
-        offerIdentifier=humanize(collective_booking.collectiveStock.collectiveOfferId),
-        offerId=collective_booking.collectiveStock.collectiveOfferId,
+    return CollectiveBookingCollectiveStockResponseModel(
+        offerName=collective_booking.stock.offer.name,  # type: ignore [attr-defined]
+        offerIdentifier=humanize(collective_booking.stock.collectiveOfferId),  # type: ignore [attr-defined]
+        offerId=collective_booking.stock.collectiveOfferId,  # type: ignore [attr-defined]
         eventBeginningDatetime=typing.cast(
             datetime,
             convert_real_booking_dates_utc_to_venue_timezone(
-                collective_booking.collectiveStock.beginningDatetime, collective_booking
+                collective_booking.stock.beginningDatetime, collective_booking  # type: ignore [attr-defined]
             ),
         ).isoformat(),
         offerIsEducational=True,
-        numberOfTickets=collective_booking.collectiveStock.numberOfTickets,
+        numberOfTickets=collective_booking.stock.numberOfTickets,  # type: ignore [attr-defined]
         bookingLimitDatetime=typing.cast(
             datetime,
             convert_real_booking_dates_utc_to_venue_timezone(
-                collective_booking.collectiveStock.bookingLimitDatetime, collective_booking
+                collective_booking.stock.bookingLimitDatetime, collective_booking  # type: ignore [attr-defined]
             ),
         ).isoformat(),
     )
@@ -266,7 +266,7 @@ def _serialize_collective_booking_recap_status(
 
 
 def serialize_collective_booking(collective_booking: models.CollectiveBooking) -> CollectiveBookingResponseModel:
-    return CollectiveBookingResponseModel(  # type: ignore [call-arg]
+    return CollectiveBookingResponseModel(
         stock=serialize_collective_booking_stock(collective_booking),
         institution=serialize_collective_booking_institution(collective_booking),
         bookingId=collective_booking.id,
@@ -293,7 +293,7 @@ def serialize_collective_booking(collective_booking: models.CollectiveBooking) -
             ),
         ).isoformat(),
         bookingStatus=_serialize_collective_booking_recap_status(collective_booking).value,
-        bookingAmount=collective_booking.collectiveStock.price,
+        bookingAmount=collective_booking.stock.price,  # type: ignore [attr-defined]
         bookingStatusHistory=build_status_history(
             booking_status=collective_booking.status,
             booking_date=typing.cast(
@@ -456,19 +456,19 @@ class CollectiveBookingByIdResponseModel(BaseModel):
 
         return cls(
             id=booking.id,
-            offerVenue=booking.collectiveStock.collectiveOffer.offerVenue,  # type: ignore [arg-type]
-            beginningDatetime=booking.collectiveStock.beginningDatetime,
-            students=booking.collectiveStock.collectiveOffer.students,
-            price=booking.collectiveStock.price,
+            offerVenue=booking.stock.offer.offerVenue,  # type: ignore [attr-defined]
+            beginningDatetime=booking.stock.beginningDatetime,  # type: ignore [attr-defined]
+            students=booking.stock.offer.students,  # type: ignore [attr-defined]
+            price=booking.stock.price,  # type: ignore [attr-defined]
             educationalInstitution=booking.educationalInstitution,
             educationalRedactor=booking.educationalRedactor,
-            numberOfTickets=booking.collectiveStock.numberOfTickets,
+            numberOfTickets=booking.stock.numberOfTickets,  # type: ignore [attr-defined]
             venuePostalCode=booking.venue.postalCode,
             isCancellable=booking.is_cancellable_from_offerer,
             bankInformationStatus=bank_information_status,
             venueDMSApplicationId=reimbursement_point.demarchesSimplifieesApplicationId
             if reimbursement_point
             else None,
-            venueId=humanize(booking.venueId),  # type: ignore [arg-type]
-            offererId=humanize(booking.venue.managingOffererId),  # type: ignore [arg-type]
+            venueId=humanize(booking.venueId),
+            offererId=humanize(booking.venue.managingOffererId),
         )

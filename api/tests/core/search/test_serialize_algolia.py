@@ -320,7 +320,7 @@ def test_serialize_collective_offer():
     )
     educational_factories.CollectiveStockFactory(
         beginningDatetime=datetime.datetime(2022, 1, 1, 11, 0, 0),
-        collectiveOffer=collective_offer,
+        offer=collective_offer,
     )
 
     serialized = algolia.AlgoliaBackend().serialize_collective_offer(collective_offer)
@@ -358,7 +358,7 @@ def test_serialize_collective_offer():
 
 
 def test_serialize_collective_offer_without_institution():
-    collective_offer = educational_factories.CollectiveStockFactory().collectiveOffer
+    collective_offer = educational_factories.CollectiveStockFactory().offer
     serialized = algolia.AlgoliaBackend().serialize_collective_offer(collective_offer)
     assert serialized["offer"]["educationalInstitutionUAICode"] == "all"
 

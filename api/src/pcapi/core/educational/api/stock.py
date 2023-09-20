@@ -58,7 +58,7 @@ def create_collective_stock(
             raise exceptions.StudentsNotOpenedYet()
 
     collective_stock = educational_models.CollectiveStock(
-        collectiveOffer=collective_offer,
+        offer=collective_offer,  # type: ignore [call-arg]
         beginningDatetime=beginning,
         bookingLimitDatetime=booking_limit_datetime,
         price=total_price,
@@ -80,7 +80,7 @@ def create_collective_stock(
 def edit_collective_stock(
     stock: educational_models.CollectiveStock, stock_data: dict
 ) -> educational_models.CollectiveStock:
-    validation.check_if_offer_is_not_public_api(stock.collectiveOffer)
+    validation.check_if_offer_is_not_public_api(stock.offer)  # type: ignore [arg-type]
     beginning = stock_data.get("beginningDatetime")
     beginning = serialization_utils.as_utc_without_timezone(beginning) if beginning else None
     booking_limit = stock_data.get("bookingLimitDatetime")
@@ -94,11 +94,11 @@ def edit_collective_stock(
     if beginning and beginning < datetime.datetime(2023, 9, 1, tzinfo=beginning.tzinfo):
         # FIXME: remove after 2023-09-01
         new_students = []
-        for student in stock.collectiveOffer.students:
+        for student in stock.offer.students:  # type: ignore [attr-defined]
             if student not in (educational_models.StudentLevels.COLLEGE5, educational_models.StudentLevels.COLLEGE6):
                 new_students.append(student)
         if new_students:
-            stock.collectiveOffer.students = new_students
+            stock.offer.students = new_students  # type: ignore [attr-defined]
         else:
             raise exceptions.StudentsNotOpenedYet()
 
@@ -156,7 +156,7 @@ def edit_collective_stock(
     search.async_index_collective_offer_ids([stock.collectiveOfferId])
 
     notify_educational_redactor_on_collective_offer_or_stock_edit(
-        stock.collectiveOffer.id,
+        stock.offer.id,  # type: ignore [attr-defined]
         list(stock_data.keys()),
     )
 

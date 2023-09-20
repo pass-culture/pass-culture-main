@@ -26,7 +26,7 @@ def venue_fixture():
 class CancelCollectiveBookingTest:
     @freeze_time("2023-01-01 10:00:00")
     def test_cancel_collective_booking(self, client, venue):
-        booking = educational_factories.CollectiveBookingFactory(collectiveStock__collectiveOffer__venue=venue)
+        booking = educational_factories.CollectiveBookingFactory(stock__offer__venue=venue)
 
         response = self._send_request(client, booking.id)
         assert response.status_code == 204
@@ -41,9 +41,7 @@ class CancelCollectiveBookingTest:
         assert len(mails_testing.outbox) == 1
 
     def test_cannot_cancel_reimbursed_booking(self, client, venue):
-        booking = educational_factories.ReimbursedCollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue=venue
-        )
+        booking = educational_factories.ReimbursedCollectiveBookingFactory(stock__offer__venue=venue)
 
         response = self._send_request(client, booking.id)
         assert response.status_code == 403
@@ -52,7 +50,7 @@ class CancelCollectiveBookingTest:
         assert booking.status == educational_models.CollectiveBookingStatus.REIMBURSED
 
     def test_cannot_cancel_already_cancelled_booking(self, client, venue):
-        booking = educational_factories.CancelledCollectiveBookingFactory(collectiveStock__collectiveOffer__venue=venue)
+        booking = educational_factories.CancelledCollectiveBookingFactory(stock__offer__venue=venue)
 
         response = self._send_request(client, booking.id)
         assert response.status_code == 403

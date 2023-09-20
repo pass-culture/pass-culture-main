@@ -370,6 +370,18 @@ class CollectiveOffer(
         back_populates="favoriteCollectiveOffers",
     )
 
+    @hybrid_property
+    def stock(self) -> "CollectiveStock":
+        return self.collectiveStock
+
+    @stock.setter  # type: ignore[no-redef]
+    def stock(self, value: "CollectiveStock") -> None:
+        self.collectiveStock = value
+
+    @stock.expression  # type: ignore [no-redef]
+    def stock(self) -> "CollectiveStock":
+        return self.collectiveStock
+
     # TODO(jeremieb): remove this property once the front end client
     # does not need this field anymore.
     @property
@@ -509,18 +521,18 @@ class CollectiveOffer(
     @property
     def lastBookingId(self) -> int | None:
         query = db.session.query(func.max(CollectiveBooking.id))
-        query = query.join(CollectiveStock, CollectiveBooking.collectiveStock)
+        query = query.join(CollectiveStock, CollectiveBooking.stock)
         query = query.filter(CollectiveStock.collectiveOfferId == self.id)
         return query.scalar()
 
     @property
     def lastBookingStatus(self) -> CollectiveBookingStatus | None:
         subquery = db.session.query(func.max(CollectiveBooking.id))
-        subquery = subquery.join(CollectiveStock, CollectiveBooking.collectiveStock)
+        subquery = subquery.join(CollectiveStock, CollectiveBooking.stock)
         subquery = subquery.filter(CollectiveStock.collectiveOfferId == self.id)
 
         query = db.session.query(CollectiveBooking.status)
-        query = query.join(CollectiveStock, CollectiveBooking.collectiveStock)
+        query = query.join(CollectiveStock, CollectiveBooking.stock)
         query = query.filter(CollectiveStock.collectiveOfferId == self.id, CollectiveBooking.id.in_(subquery))
         result = query.one_or_none()
         return result[0] if result else None
@@ -764,6 +776,18 @@ class CollectiveStock(PcObject, Base, Model):
     numberOfTickets: int = sa.Column(sa.Integer, nullable=False)
 
     priceDetail = sa.Column(sa.Text, nullable=True)
+
+    @hybrid_property
+    def offer(self) -> "CollectiveOffer":
+        return self.collectiveOffer
+
+    @offer.setter  # type: ignore[no-redef]
+    def offer(self, value: "CollectiveOffer") -> None:
+        self.collectiveOffer = value
+
+    @offer.expression  # type: ignore [no-redef]
+    def offer(self) -> "CollectiveOffer":
+        return self.collectiveOffer
 
     @property
     def isBookable(self) -> bool:
@@ -1026,6 +1050,14 @@ class CollectiveBooking(PcObject, Base, Model):
         back_populates="collectiveBookings",
         uselist=False,
     )
+
+    @hybrid_property
+    def stock(self) -> "CollectiveStock":
+        return self.collectiveStock
+
+    @stock.setter  # type: ignore[no-redef]
+    def stock(self, value: "CollectiveStock") -> None:
+        self.collectiveStock = value
 
     def cancel_booking(
         self,

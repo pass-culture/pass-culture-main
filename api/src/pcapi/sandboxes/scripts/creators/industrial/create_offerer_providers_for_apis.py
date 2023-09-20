@@ -117,15 +117,15 @@ def create_offerer_provider_with_offers(name: str, user_email: str) -> None:
         offer__withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
     )
     educational_factories.CollectiveStockFactory(
-        collectiveOffer__name="Taylor à l'école",
-        collectiveOffer__venue=first_venue,
-        collectiveOffer__provider=provider,
+        offer__name="Taylor à l'école",
+        offer__venue=first_venue,
+        offer__provider=provider,
         beginningDatetime=in_five_days,
     )
     educational_factories.CollectiveStockFactory(
-        collectiveOffer__name="Taylor au lycée",
-        collectiveOffer__venue=second_venue,
-        collectiveOffer__provider=provider,
+        offer__name="Taylor au lycée",
+        offer__venue=second_venue,
+        offer__provider=provider,
         beginningDatetime=in_five_days,
     )
 

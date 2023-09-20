@@ -18,19 +18,19 @@ class GetFavoriteOfferTest:
         national_program = educational_factories.NationalProgramFactory()
         stock = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime(2021, 5, 15),
-            collectiveOffer__name="offer name",
-            collectiveOffer__description="offer description",
+            offer__name="offer name",
+            offer__description="offer description",
             price=10,
-            collectiveOffer__students=[StudentLevels.GENERAL2],
-            collectiveOffer__educational_domains=[educational_factories.EducationalDomainFactory()],
-            collectiveOffer__institution=educational_institution,
-            collectiveOffer__teacher=educational_factories.EducationalRedactorFactory(),
-            collectiveOffer__nationalProgramId=national_program.id,
+            offer__students=[StudentLevels.GENERAL2],
+            offer__educational_domains=[educational_factories.EducationalDomainFactory()],
+            offer__institution=educational_institution,
+            offer__teacher=educational_factories.EducationalRedactorFactory(),
+            offer__nationalProgramId=national_program.id,
         )
 
         collective_offer_template = educational_factories.CollectiveOfferTemplateFactory()
         educational_redactor = educational_factories.EducationalRedactorFactory(
-            favoriteCollectiveOffers=[stock.collectiveOffer],
+            favoriteCollectiveOffers=[stock.offer],
             favoriteCollectiveOfferTemplates=[collective_offer_template],
         )
 
@@ -51,8 +51,8 @@ class GetFavoriteOfferTest:
                     "mentalDisabilityCompliant": False,
                     "motorDisabilityCompliant": False,
                     "visualDisabilityCompliant": False,
-                    "id": stock.collectiveOffer.id,
-                    "subcategoryLabel": stock.collectiveOffer.subcategoryLabel,
+                    "id": stock.offer.id,
+                    "subcategoryLabel": stock.offer.subcategoryLabel,
                     "description": "offer description",
                     "isExpired": False,
                     "isSoldOut": False,
@@ -67,14 +67,14 @@ class GetFavoriteOfferTest:
                         "educationalPriceDetail": stock.priceDetail,
                     },
                     "venue": {
-                        "id": stock.collectiveOffer.venue.id,
+                        "id": stock.offer.venue.id,
                         "address": "1 boulevard Poissonnière",
                         "city": "Paris",
-                        "name": stock.collectiveOffer.venue.name,
+                        "name": stock.offer.venue.name,
                         "postalCode": "75000",
-                        "publicName": stock.collectiveOffer.venue.publicName,
+                        "publicName": stock.offer.venue.publicName,
                         "coordinates": {"latitude": 48.87004, "longitude": 2.3785},
-                        "managingOfferer": {"name": stock.collectiveOffer.venue.managingOfferer.name},
+                        "managingOfferer": {"name": stock.offer.venue.managingOfferer.name},
                     },
                     "students": ["Lycée - Seconde"],
                     "offerVenue": {
@@ -92,9 +92,7 @@ class GetFavoriteOfferTest:
                     "durationMinutes": None,
                     "offerId": None,
                     "educationalPriceDetail": None,
-                    "domains": [
-                        {"id": stock.collectiveOffer.domains[0].id, "name": stock.collectiveOffer.domains[0].name}
-                    ],
+                    "domains": [{"id": stock.offer.domains[0].id, "name": stock.offer.domains[0].name}],
                     "educationalInstitution": {
                         "id": educational_institution.id,
                         "name": educational_institution.name,
@@ -106,14 +104,14 @@ class GetFavoriteOfferTest:
                     "imageCredit": None,
                     "imageUrl": None,
                     "teacher": {
-                        "email": stock.collectiveOffer.teacher.email,
+                        "email": stock.offer.teacher.email,
                         "firstName": "Reda",
                         "lastName": "Khteur",
                         "civility": "M.",
                     },
                     "nationalProgram": {
-                        "id": stock.collectiveOffer.nationalProgram.id,
-                        "name": stock.collectiveOffer.nationalProgram.name,
+                        "id": stock.offer.nationalProgram.id,
+                        "name": stock.offer.nationalProgram.name,
                     },
                 }
             ],
@@ -174,17 +172,17 @@ class GetFavoriteOfferTest:
         national_program = educational_factories.NationalProgramFactory()
         stock = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime(2021, 5, 15),
-            collectiveOffer__name="offer name",
-            collectiveOffer__description="offer description",
+            offer__name="offer name",
+            offer__description="offer description",
             price=10,
-            collectiveOffer__students=[StudentLevels.GENERAL2],
-            collectiveOffer__educational_domains=[educational_factories.EducationalDomainFactory()],
-            collectiveOffer__institution=educational_institution,
-            collectiveOffer__teacher=educational_factories.EducationalRedactorFactory(),
-            collectiveOffer__nationalProgramId=national_program.id,
+            offer__students=[StudentLevels.GENERAL2],
+            offer__educational_domains=[educational_factories.EducationalDomainFactory()],
+            offer__institution=educational_institution,
+            offer__teacher=educational_factories.EducationalRedactorFactory(),
+            offer__nationalProgramId=national_program.id,
         )
         educational_redactor = educational_factories.EducationalRedactorFactory(
-            favoriteCollectiveOffers=[stock.collectiveOffer],
+            favoriteCollectiveOffers=[stock.offer],
         )
 
         test_client = client.with_adage_token(

@@ -1510,9 +1510,9 @@ class ResolveOfferValidationRuleTest:
     @pytest.mark.parametrize(
         "offer_kwargs, expected_status",
         [
-            ({"collectiveOffer__name": "Come to the dark side, we have cookies"}, models.OfferValidationStatus.PENDING),
+            ({"offer__name": "Come to the dark side, we have cookies"}, models.OfferValidationStatus.PENDING),
             (
-                {"collectiveOffer__description": "Come to the dark side, we have cookies"},
+                {"offer__description": "Come to the dark side, we have cookies"},
                 models.OfferValidationStatus.PENDING,
             ),
             ({"priceDetail": "Come to the dark side, we have cookies"}, models.OfferValidationStatus.PENDING),
@@ -1529,7 +1529,7 @@ class ResolveOfferValidationRuleTest:
             operator=models.OfferValidationRuleOperator.CONTAINS_EXACTLY,
             comparated={"comparated": ["dark"]},
         )
-        assert api.set_offer_status_based_on_fraud_criteria(stock.collectiveOffer) == expected_status
+        assert api.set_offer_status_based_on_fraud_criteria(stock.offer) == expected_status
 
     @pytest.mark.parametrize(
         "offer_kwargs, expected_status",
@@ -1603,7 +1603,7 @@ class ResolveOfferValidationRuleTest:
         offer_to_flag = factories.OfferFactory(name="offer with a verboten name")
         factories.StockFactory(offer=offer_to_flag, price=15)
         collective_offer_to_flag = educational_factories.CollectiveOfferFactory(name="offer with a nice name")
-        educational_factories.CollectiveStockFactory(collectiveOffer=collective_offer_to_flag, price=150)
+        educational_factories.CollectiveStockFactory(offer=collective_offer_to_flag, price=150)
         offer_name_rule = factories.OfferValidationRuleFactory(name="Règle sur le nom des offres")
         collective_offer_price_rule = factories.OfferValidationRuleFactory(
             name="Règle sur le prix des offres collectives"

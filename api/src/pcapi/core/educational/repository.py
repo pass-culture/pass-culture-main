@@ -61,7 +61,7 @@ def find_bookings_starting_in_interval(start: datetime, end: datetime) -> list[e
     query = query.options(sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True))
     query = query.options(
         sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True).joinedload(
-            educational_models.CollectiveStock.collectiveOffer, innerjoin=True
+            educational_models.CollectiveStock.offer, innerjoin=True
         )
     )
     query = query.options(
@@ -274,7 +274,7 @@ def find_active_collective_booking_by_offer_id(
             educational_models.CollectiveStock.collectiveOfferId == collective_offer_id,
         )
         .options(
-            sa.orm.contains_eager(educational_models.CollectiveBooking.collectiveStock)
+            sa.orm.contains_eager(educational_models.CollectiveBooking.stock)
             .joinedload(educational_models.CollectiveStock.collectiveOffer, innerjoin=True)
             .joinedload(educational_models.CollectiveOffer.venue, innerjoin=True)
         )
@@ -635,7 +635,7 @@ def _get_filtered_collective_bookings_pro(
         .options(sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock))
         .options(
             sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock).joinedload(
-                educational_models.CollectiveStock.collectiveOffer
+                educational_models.CollectiveStock.offer
             )
         )
         .options(sa.orm.joinedload(educational_models.CollectiveBooking.educationalInstitution))
@@ -1003,7 +1003,7 @@ def find_pending_booking_confirmation_limit_date_in_3_days() -> list[educational
     query = query.options(sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True))
     query = query.options(
         sa.orm.joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True).joinedload(
-            educational_models.CollectiveStock.collectiveOffer, innerjoin=True
+            educational_models.CollectiveStock.offer, innerjoin=True
         )
     )
     query = query.options(
