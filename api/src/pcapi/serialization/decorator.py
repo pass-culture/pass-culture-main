@@ -9,6 +9,7 @@ from typing import Type
 from flask import Response
 from flask import make_response
 from flask import request
+import pydantic.v1
 import spectree
 from werkzeug.exceptions import BadRequest
 
@@ -149,7 +150,17 @@ def spectree_serialize(
             query_params = request.args
             form = request.form
             if body_in_kwargs:
-                kwargs["body"] = body_in_kwargs(**(body_params or {}))
+                try:
+                    kwargs["body"] = body_in_kwargs(**(body_params or {}))
+                except pydantic.v1.ValidationError:
+                    # If we end up here, it means that the client did
+                    # not send the correct HTTP header. Otherwise, the
+                    # validation error would have been caught by the
+                    # `before` handler in `api.validate()` decorator.
+                    return make_response(
+                        'Please send a "Content-Type: application/json" HTTP header',
+                        400,
+                    )
             if query_in_kwargs:
                 kwargs["query"] = query_in_kwargs(**query_params)
             if form_in_kwargs:
