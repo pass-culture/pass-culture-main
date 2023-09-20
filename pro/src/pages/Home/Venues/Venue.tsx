@@ -62,7 +62,6 @@ const Venue = ({
     new URLSearchParams({
       structure: offererId.toString(),
       lieu: venueId.toString(),
-      numerique: isVirtual ? 'null' : 'undefined',
     }),
   ].join('?')
 
