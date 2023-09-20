@@ -18,7 +18,6 @@ from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import collective_bookings_serialize
 from pcapi.routes.serialization.bookings_recap_serialize import UserHasBookingResponse
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.human_ids import dehumanize_or_raise
 from pcapi.utils.rest import check_user_has_access_to_offerer
 
 from . import blueprint
@@ -66,16 +65,15 @@ def get_collective_bookings_pro(
     )
 
 
-@private_api.route("/collective/bookings/<booking_id>", methods=["GET"])
+@private_api.route("/collective/bookings/<int:booking_id>", methods=["GET"])
 @login_required
 @spectree_serialize(
     response_model=collective_bookings_serialize.CollectiveBookingByIdResponseModel,
     api=blueprint.pro_private_schema,
 )
-def get_collective_booking_by_id(booking_id: str) -> collective_bookings_serialize.CollectiveBookingByIdResponseModel:
-    dehumanized_id = dehumanize_or_raise(booking_id)
+def get_collective_booking_by_id(booking_id: int) -> collective_bookings_serialize.CollectiveBookingByIdResponseModel:
     try:
-        booking = educational_api_booking.get_collective_booking_by_id(dehumanized_id)
+        booking = educational_api_booking.get_collective_booking_by_id(booking_id)
     except collective_exceptions.EducationalBookingNotFound:
         raise ApiErrors({"offerer": ["Réservation collective non trouvée."]}, status_code=404)
     check_user_has_access_to_offerer(current_user, booking.offererId)
