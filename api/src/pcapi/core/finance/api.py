@@ -1476,7 +1476,7 @@ def generate_payment_files(batch: models.CashflowBatch) -> None:
 
     file_paths = {}
     logger.info("Generating reimbursement points file")
-    file_paths["reimbursement_points"] = _generate_reimbursement_points_file()
+    file_paths["reimbursement_points"] = _generate_reimbursement_points_file(batch.cutoff)
     logger.info("Generating payments file")
     file_paths["payments"] = _generate_payments_file(batch.id)
     logger.info(
@@ -1585,7 +1585,7 @@ def _write_csv(
     return path
 
 
-def _generate_reimbursement_points_file() -> pathlib.Path:
+def _generate_reimbursement_points_file(cutoff: datetime.datetime) -> pathlib.Path:
     header = (
         "Identifiant du point de remboursement",
         "SIRET",
@@ -1599,7 +1599,7 @@ def _generate_reimbursement_points_file() -> pathlib.Path:
             offerers_models.Venue.id.in_(
                 offerers_models.VenueReimbursementPointLink.query.with_entities(
                     offerers_models.VenueReimbursementPointLink.reimbursementPointId
-                )
+                ).filter(offerers_models.VenueReimbursementPointLink.timespan.contains(cutoff))
             )
         )
         .order_by(offerers_models.Venue.id)
