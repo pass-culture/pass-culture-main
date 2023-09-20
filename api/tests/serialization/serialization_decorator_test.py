@@ -40,9 +40,15 @@ def spectree_post_test_endpoint():
     endpoint_method()
 
 
-@test_blueprint.route("/validation", methods=["POST"])
+@test_blueprint.route("/body-validation", methods=["POST"])
 @spectree_serialize(on_success_status=206)
-def spectree_empty_form_validation(form: TestQueryModel):
+def spectree_body_validation(body: TestQueryModel):
+    return
+
+
+@test_blueprint.route("/form-validation", methods=["POST"])
+@spectree_serialize(on_success_status=206)
+def spectree_form_validation(form: TestQueryModel):
     return
 
 
@@ -149,10 +155,14 @@ class SerializationDecoratorTest:
 
     def test_http_form_validation(self, client):
         response = client.post(
-            "/test-blueprint/validation", form=None, headers={"Content-Type": "application/x-www-form-urlencoded"}
+            "/test-blueprint/form-validation", form=None, headers={"Content-Type": "application/x-www-form-urlencoded"}
         )
 
         assert response.status_code == 400
         assert response.json == {
             "compulsory_int_query": ["Ce champ est obligatoire"],
         }
+
+    def test_post_without_content_type_throws_400(self, client):
+        response = client.post("/test-blueprint/body-validation", headers={})
+        assert response.status_code == 400
