@@ -25,6 +25,7 @@ class TokenType(enum.Enum):
     EMAIL_CHANGE_VALIDATION = "update_email_validation"
     EMAIL_VALIDATION = "email_validation"
     PHONE_VALIDATION = "phone_validation"
+    RESET_PASSWORD = "reset_password"
 
 
 @dataclasses.dataclass(frozen=True)
@@ -103,6 +104,10 @@ class AbstractToken(abc.ABC):
     def delete(cls, type_: TokenType, user_id: int) -> None:
         app.redis_client.delete(cls._get_redis_key(type_, user_id))  # type: ignore [attr-defined]
 
+    @classmethod
+    def get_token(cls, type_: TokenType, user_id: int) -> "AbstractToken | None":
+        raise NotImplementedError()
+
 
 class Token(AbstractToken):
     @classmethod
@@ -126,6 +131,13 @@ class Token(AbstractToken):
         token = Token.load_without_checking(encoded_token)
         token._log(cls._TokenAction.CREATE)
         return token
+
+    @classmethod
+    def get_token(cls, type_: TokenType, user_id: int) -> "Token | None":
+        encoded_token = app.redis_client.get(cls._get_redis_key(type_, user_id))  # type: ignore [attr-defined]
+        if encoded_token is None:
+            return None
+        return cls.load_without_checking(encoded_token)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -178,3 +190,10 @@ class SixDigitsToken(AbstractToken):
     def delete(cls, type_: TokenType, user_id: int) -> None:
         super().delete(type_, user_id)
         app.redis_client.delete(cls._get_redis_extra_data_key(type_, user_id))  # type: ignore [attr-defined]
+
+    @classmethod
+    def get_token(cls, type_: TokenType, user_id: int) -> "SixDigitsToken | None":
+        encoded_token = app.redis_client.get(cls._get_redis_key(type_, user_id))  # type: ignore [attr-defined]
+        if encoded_token is None:
+            return None
+        return cls.load_without_checking(encoded_token, type_, user_id)
