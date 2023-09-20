@@ -266,7 +266,9 @@ const Informations = ({
           ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
           : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        isDraft:
+          mode === OFFER_WIZARD_MODE.CREATION ||
+          mode === OFFER_WIZARD_MODE.DRAFT,
         offerId: receivedOfferId,
         subcategoryId: formik.values.subcategoryId,
       })
@@ -305,7 +307,9 @@ const Informations = ({
         to: OFFER_FORM_HOMEPAGE,
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        isDraft:
+          mode === OFFER_WIZARD_MODE.CREATION ||
+          mode === OFFER_WIZARD_MODE.DRAFT,
         offerId: offer?.id,
       })
     }
@@ -380,7 +384,9 @@ const Informations = ({
             to: logTo(nextLocation),
             used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
             isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-            isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+            isDraft:
+              mode === OFFER_WIZARD_MODE.CREATION ||
+              mode === OFFER_WIZARD_MODE.DRAFT,
             // FIX ME: it is always undefined at first creation (not sure it is possible)
             offerId: offer?.id,
           })

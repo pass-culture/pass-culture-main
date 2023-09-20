@@ -61,7 +61,9 @@ const ActionBar = ({
         to: OFFER_FORM_NAVIGATION_OUT.OFFERS,
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        isDraft:
+          mode === OFFER_WIZARD_MODE.CREATION ||
+          mode === OFFER_WIZARD_MODE.DRAFT,
         offerId: offerId,
       })
   }
@@ -72,7 +74,8 @@ const ActionBar = ({
       to: OFFER_FORM_NAVIGATION_OUT.OFFERS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+      isDraft:
+        mode === OFFER_WIZARD_MODE.CREATION || mode === OFFER_WIZARD_MODE.DRAFT,
       offerId: offerId,
     })
   }
@@ -148,7 +151,10 @@ const ActionBar = ({
   }
 
   const Right = (): JSX.Element | null => {
-    if (mode !== OFFER_WIZARD_MODE.EDITION) {
+    if (
+      mode === OFFER_WIZARD_MODE.CREATION ||
+      mode === OFFER_WIZARD_MODE.DRAFT
+    ) {
       return (
         <>
           {step === OFFER_WIZARD_STEP_IDS.SUMMARY ? (
