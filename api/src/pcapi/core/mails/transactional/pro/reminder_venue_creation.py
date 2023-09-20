@@ -5,7 +5,6 @@ import pcapi.core.offerers.exceptions as offerers_exceptions
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offerers.repository as offerers_repository
 from pcapi.settings import PRO_URL
-from pcapi.utils.human_ids import humanize
 
 
 def get_reminder_venue_creation_email_data(offerer: offerers_models.Offerer) -> models.TransactionalEmailData:
@@ -13,7 +12,7 @@ def get_reminder_venue_creation_email_data(offerer: offerers_models.Offerer) -> 
         template=TransactionalEmail.REMINDER_VENUE_CREATION_TO_PRO.value,
         params={
             "PRO_URL": PRO_URL,
-            "OFFERER_ID": humanize(offerer.id),
+            "OFFERER_ID": offerer.id,
         },
     )
 

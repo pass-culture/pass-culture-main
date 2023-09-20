@@ -9,7 +9,6 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.date import utc_datetime_to_department_timezone
-from pcapi.utils.human_ids import humanize
 from pcapi.utils.urls import booking_app_link
 
 
@@ -46,7 +45,6 @@ def get_booking_confirmation_to_beneficiary_email_data(
 
     stock_price = f"{booking.total_amount} €" if stock.price > 0 else "Gratuit"
 
-    mediation_id = humanize(offer.activeMediation.id) if offer.activeMediation else "vide"
     if offer.isEvent:
         event_beginning_date_in_tz = utc_datetime_to_department_timezone(stock.beginningDatetime, department_code)
         formatted_event_beginning_time = get_time_formatted_for_email(event_beginning_date_in_tz)
@@ -95,8 +93,6 @@ def get_booking_confirmation_to_beneficiary_email_data(
             "IS_EXTERNAL": booking.isExternal,
             "IS_SINGLE_EVENT": offer.isEvent and booking.quantity == 1,
             "IS_DUO_EVENT": booking.quantity == 2,
-            "OFFER_ID": humanize(offer.id),
-            "MEDIATION_ID": mediation_id,
             "CAN_EXPIRE": can_expire,
             "EXPIRATION_DELAY": expiration_delay,
             "HAS_OFFER_URL": offer.isDigital,
