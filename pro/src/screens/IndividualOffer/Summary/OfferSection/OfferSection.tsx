@@ -42,7 +42,7 @@ const OfferSummary = ({
   const editLink = getIndividualOfferUrl({
     offerId: offerData.id,
     step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-    mode,
+    mode: OFFER_WIZARD_MODE.EDITION,
   })
 
   const logEditEvent = () => {
@@ -62,7 +62,7 @@ const OfferSummary = ({
       title="Détails de l’offre"
       editLink={editLink}
       onLinkClick={logEditEvent}
-      aria-label="Modifier détails de l’offre"
+      aria-label="Modifier les détails de l’offre"
     >
       <SummaryLayout.SubSection title="Type d’offre">
         <SummaryLayout.Row

@@ -50,17 +50,32 @@ export const IndividualOfferBreadcrumb = ({
 
   const steps: StepPattern[] = []
 
+  // First step/tab: informations form or recap
+  if (mode === OFFER_WIZARD_MODE.READ_ONLY) {
+    steps.push({
+      id: OFFER_WIZARD_STEP_IDS.SUMMARY,
+      label: 'Détails de l’offre',
+      path: getIndividualOfferPath({
+        step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+        mode,
+      }),
+      isActive: true,
+    })
+  } else {
+    steps.push({
+      id: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+      label: 'Détails de l’offre',
+      path: getIndividualOfferPath({
+        step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        mode,
+      }),
+      isActive: true,
+    })
+  }
+
+  // Intermediate steps depending on isEvent
   if (isEvent) {
     steps.push(
-      {
-        id: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        label: 'Détails de l’offre',
-        path: getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          mode,
-        }),
-        isActive: true,
-      },
       {
         id: OFFER_WIZARD_STEP_IDS.TARIFS,
         label: 'Tarifs',
@@ -81,29 +96,18 @@ export const IndividualOfferBreadcrumb = ({
       }
     )
   } else {
-    steps.push(
-      {
-        id: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        label: 'Détails de l’offre',
-        path: getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          mode,
-        }),
-        isActive: true,
-      },
-
-      {
-        id: OFFER_WIZARD_STEP_IDS.STOCKS,
-        label: 'Stock & Prix',
-        path: getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
-          mode,
-        }),
-        isActive: hasOffer,
-      }
-    )
+    steps.push({
+      id: OFFER_WIZARD_STEP_IDS.STOCKS,
+      label: 'Stock & Prix',
+      path: getIndividualOfferPath({
+        step: OFFER_WIZARD_STEP_IDS.STOCKS,
+        mode,
+      }),
+      isActive: hasOffer,
+    })
   }
 
+  // Summary/confirmation steps on creation/draft
   if (mode === OFFER_WIZARD_MODE.CREATION || mode === OFFER_WIZARD_MODE.DRAFT) {
     steps.push(
       {

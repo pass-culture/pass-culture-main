@@ -12,7 +12,10 @@ const Summary = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
 
   let title: string | undefined = undefined
-  if (mode === OFFER_WIZARD_MODE.EDITION) {
+  if (
+    mode === OFFER_WIZARD_MODE.READ_ONLY ||
+    mode === OFFER_WIZARD_MODE.EDITION
+  ) {
     title = 'Récapitulatif'
   }
   return (
