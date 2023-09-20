@@ -52,39 +52,19 @@ const IndividualOfferBreadcrumb = ({
     {
       id: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
       label: 'Détails de l’offre',
-      path: {
-        [OFFER_WIZARD_MODE.CREATION]: getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          mode: OFFER_WIZARD_MODE.CREATION,
-        }),
-        [OFFER_WIZARD_MODE.DRAFT]: getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          mode: OFFER_WIZARD_MODE.DRAFT,
-        }),
-        [OFFER_WIZARD_MODE.EDITION]: getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          mode: OFFER_WIZARD_MODE.EDITION,
-        }),
-      }[mode],
+      path: getIndividualOfferPath({
+        step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        mode,
+      }),
       isActive: true,
     },
     {
       id: OFFER_WIZARD_STEP_IDS.STOCKS,
       label: isEvent ? 'Dates & Capacités' : 'Stock & Prix',
-      path: {
-        [OFFER_WIZARD_MODE.CREATION]: getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
-          mode: OFFER_WIZARD_MODE.CREATION,
-        }),
-        [OFFER_WIZARD_MODE.DRAFT]: getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
-          mode: OFFER_WIZARD_MODE.DRAFT,
-        }),
-        [OFFER_WIZARD_MODE.EDITION]: getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.STOCKS,
-          mode: OFFER_WIZARD_MODE.EDITION,
-        }),
-      }[mode],
+      path: getIndividualOfferPath({
+        step: OFFER_WIZARD_STEP_IDS.STOCKS,
+        mode,
+      }),
       isActive: (isEvent && hasPriceCategories) || (!isEvent && hasOffer),
     },
   ]
@@ -93,20 +73,10 @@ const IndividualOfferBreadcrumb = ({
     stepPatternList.splice(1, 0, {
       id: OFFER_WIZARD_STEP_IDS.TARIFS,
       label: 'Tarifs',
-      path: {
-        [OFFER_WIZARD_MODE.CREATION]: getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.TARIFS,
-          mode: OFFER_WIZARD_MODE.CREATION,
-        }),
-        [OFFER_WIZARD_MODE.DRAFT]: getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.TARIFS,
-          mode: OFFER_WIZARD_MODE.DRAFT,
-        }),
-        [OFFER_WIZARD_MODE.EDITION]: getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.TARIFS,
-          mode: OFFER_WIZARD_MODE.EDITION,
-        }),
-      }[mode],
+      path: getIndividualOfferPath({
+        step: OFFER_WIZARD_STEP_IDS.TARIFS,
+        mode,
+      }),
       isActive: hasOffer,
     })
   }
@@ -116,16 +86,10 @@ const IndividualOfferBreadcrumb = ({
       {
         id: OFFER_WIZARD_STEP_IDS.SUMMARY,
         label: 'Récapitulatif',
-        path: {
-          [OFFER_WIZARD_MODE.CREATION]: getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.CREATION,
-          }),
-          [OFFER_WIZARD_MODE.DRAFT]: getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.DRAFT,
-          }),
-        }[mode],
+        path: getIndividualOfferPath({
+          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
+          mode,
+        }),
         isActive: hasStock,
       },
       {
