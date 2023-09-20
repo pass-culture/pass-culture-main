@@ -148,7 +148,10 @@ def create_missing_educational_institution_from_adage(destination_uai: str) -> E
     missing institution inside or database if the target uai exists.
     """
     year = find_educational_year_by_date(datetime.utcnow())
-    adage_institutions = get_adage_educational_institutions(year)  # type: ignore [arg-type]
+    if year is None:
+        raise educational_exceptions.EducationalYearNotFound()
+
+    adage_institutions = get_adage_educational_institutions(year.adageId)
     if not adage_institutions:
         raise educational_exceptions.NoAdageInstitution()
 
