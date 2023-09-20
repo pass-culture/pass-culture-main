@@ -83,7 +83,7 @@ def get_fraud_check_to_archive(
             fraud_models.BeneficiaryFraudCheck.dateCreated.between(start_date, end_date),
             fraud_models.BeneficiaryFraudCheck.idPicturesStored.is_(status),
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
-            fraud_models.BeneficiaryFraudCheck.thirdPartyId.notlike(f"{subscription_api.DEPRECATED_UBBLE_PREFIX}%"),
+            fraud_models.BeneficiaryFraudCheck.thirdPartyId.not_like(f"{subscription_api.DEPRECATED_UBBLE_PREFIX}%"),
         )
         .order_by(fraud_models.BeneficiaryFraudCheck.dateCreated.asc())
         .limit(limit)
