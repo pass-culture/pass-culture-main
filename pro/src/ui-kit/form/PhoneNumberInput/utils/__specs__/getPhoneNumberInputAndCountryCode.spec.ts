@@ -10,8 +10,8 @@ describe('getPhoneNumberValues', () => {
 
   it('should detect RE country code', () => {
     const { inputValue, countryCode } =
-      getPhoneNumberInputAndCountryCode('06 39 98 01 01')
-    expect(inputValue).toStrictEqual('639980101')
+      getPhoneNumberInputAndCountryCode('692 98 01 01')
+    expect(inputValue).toStrictEqual('692980101')
     expect(countryCode).toStrictEqual('RE')
   })
 
