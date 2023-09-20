@@ -77,6 +77,30 @@ def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferResponseModel
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
+@private_api.route("/offers/<int:offer_id>/stocks/", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=offers_serialize.StockResponseModel,
+    api=blueprint.pro_private_schema,
+)
+def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offers_serialize.StockResponseModel:
+    try:
+        offer = offers_repository.get_offer_by_id(offer_id)
+    except exceptions.OfferNotFound:
+        raise api_errors.ApiErrors(
+            errors={
+                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
+            },
+            status_code=404,
+        )
+    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    stocks = offers_repository.get_filtered_stocks(
+        offer_id=offer_id, date=query.date, time=query.time, price_category_id=query.price_category_id
+    )
+    filtered_stock_list = [offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in stocks]
+    return offers_serialize.StockResponseModel(stocks=filtered_stock_list, stock_count=len(filtered_stock_list))
+
+
 @private_api.route("/offers/delete-draft", methods=["POST"])
 @login_required
 @spectree_serialize(
