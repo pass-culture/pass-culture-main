@@ -294,7 +294,7 @@ def get_pro_users(offerer_id: int) -> utils.BackofficeResponse:
         .filter(offerers_models.UserOfferer.offererId == offerer_id)
         .union(
             db.session.query(history_models.ActionHistory.userId).filter(
-                history_models.ActionHistory.offererId == offerer_id, history_models.ActionHistory.userId.isnot(None)
+                history_models.ActionHistory.offererId == offerer_id, history_models.ActionHistory.userId.is_not(None)
             )
         )
         .distinct()

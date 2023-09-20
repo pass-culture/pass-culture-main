@@ -256,7 +256,7 @@ def find_duplicate_id_piece_number_user(id_piece_number: str | None, excluded_us
         return None
     return users_models.User.query.filter(
         users_models.User.id != excluded_user_id,
-        users_models.User.idPieceNumber.isnot(None),
+        users_models.User.idPieceNumber.is_not(None),
         users_models.User.idPieceNumber == format_id_piece_number(id_piece_number),
     ).first()
 

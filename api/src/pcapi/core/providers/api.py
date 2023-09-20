@@ -78,7 +78,7 @@ def reset_stock_quantity(venue: offerers_models.Venue) -> None:
     stocks = offers_models.Stock.query.filter(
         offers_models.Stock.offerId == offers_models.Offer.id,
         offers_models.Offer.venue == venue,
-        offers_models.Offer.idAtProvider.isnot(None),
+        offers_models.Offer.idAtProvider.is_not(None),
     )
     stocks.update({"quantity": offers_models.Stock.dnBookedQuantity}, synchronize_session=False)
     db.session.commit()

@@ -23,7 +23,7 @@ def get_latest_deleted_application_datetime(procedure_number: int) -> datetime.d
         fraud_models.BeneficiaryFraudCheck.query.filter(
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
             fraud_models.BeneficiaryFraudCheck.status == fraud_models.FraudCheckStatus.CANCELED,
-            fraud_models.BeneficiaryFraudCheck.resultContent.isnot(None),
+            fraud_models.BeneficiaryFraudCheck.resultContent.is_not(None),
             fraud_models.BeneficiaryFraudCheck.resultContent["procedure_id"].astext.cast(Integer) == procedure_number,
             fraud_models.BeneficiaryFraudCheck.resultContent.has_key("deletion_datetime"),
         )

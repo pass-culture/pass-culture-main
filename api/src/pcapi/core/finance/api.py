@@ -522,7 +522,7 @@ def _get_bookings_to_price(
 def _get_events_to_price(window: tuple[datetime.datetime, datetime.datetime]) -> BaseQuery:
     return (
         models.FinanceEvent.query.filter(
-            models.FinanceEvent.pricingPointId.isnot(None),
+            models.FinanceEvent.pricingPointId.is_not(None),
             models.FinanceEvent.status == models.FinanceEventStatus.READY,
             models.FinanceEvent.pricingOrderingDate.between(*window),
         )
@@ -1319,14 +1319,14 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
         # wait for the event to happen.
         sqla.or_(
             sqla.and_(
-                models.Pricing.bookingId.isnot(None),
+                models.Pricing.bookingId.is_not(None),
                 sqla.or_(
                     offers_models.Stock.beginningDatetime.is_(None),
                     offers_models.Stock.beginningDatetime < batch.cutoff,
                 ),
             ),
             sqla.and_(
-                models.Pricing.collectiveBookingId.isnot(None),
+                models.Pricing.collectiveBookingId.is_not(None),
                 educational_models.CollectiveStock.beginningDatetime < batch.cutoff,
             ),
         ),
@@ -1403,7 +1403,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                         != -100
                         * sqla.case(
                             (
-                                bookings_models.Booking.id.isnot(None),
+                                bookings_models.Booking.id.is_not(None),
                                 bookings_models.Booking.amount * bookings_models.Booking.quantity,
                             ),
                             else_=educational_models.CollectiveStock.price,

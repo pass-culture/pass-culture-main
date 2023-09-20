@@ -174,7 +174,7 @@ def list_offerers_to_be_validated(
         db.session.query(history_models.ActionHistory.comment)
         .filter(
             history_models.ActionHistory.offererId == offerers_models.Offerer.id,
-            history_models.ActionHistory.comment.isnot(None),
+            history_models.ActionHistory.comment.is_not(None),
             history_models.ActionHistory.actionType.in_(
                 [
                     history_models.ActionType.OFFERER_NEW,
@@ -227,7 +227,7 @@ def list_offerers_to_be_validated(
         .select_from(offerers_models.Venue)
         .filter(
             offerers_models.Venue.managingOffererId == offerers_models.Offerer.id,
-            offerers_models.Venue.dms_adage_status.isnot(None),  # type: ignore [attr-defined]
+            offerers_models.Venue.dms_adage_status.is_not(None),  # type: ignore [attr-defined]
         )
         .correlate(offerers_models.Offerer)
         .scalar_subquery()
@@ -278,7 +278,7 @@ def list_users_offerers_to_be_validated(
         .filter(
             history_models.ActionHistory.offererId == offerers_models.Offerer.id,
             history_models.ActionHistory.userId == users_models.User.id,
-            history_models.ActionHistory.comment.isnot(None),
+            history_models.ActionHistory.comment.is_not(None),
             history_models.ActionHistory.actionType.in_(
                 [
                     history_models.ActionType.USER_OFFERER_NEW,

@@ -690,7 +690,7 @@ def reindex_offers_if_ean_booked_since(offer_ids: list, since: datetime.datetime
         .join(bookings_models.Booking.stock)
         .join(offers_models.Stock.offer)
         .join(offers_models.Offer.product)
-        .filter(sa.or_(offers_models.Offer.extraData["ean"].isnot(None)))
+        .filter(sa.or_(offers_models.Offer.extraData["ean"].is_not(None)))
         .with_entities(offers_models.Offer.extraData["ean"].label("ean"))
     )
 
