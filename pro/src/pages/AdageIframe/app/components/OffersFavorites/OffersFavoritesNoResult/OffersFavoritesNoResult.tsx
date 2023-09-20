@@ -1,20 +1,41 @@
-import strokeSearchIcon from 'icons/stroke-search.svg'
+import strokeNoFavorite from 'icons/stroke-no-favorite.svg'
+import { ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './OffersFavoritesNoResult.module.scss'
 
 export const OffersFavoritesNoResult = () => {
+  const params = new URLSearchParams(location.search)
+  const adageAuthToken = params.get('token')
+
   return (
     <div className={styles['no-results']}>
       <SvgIcon
-        src={strokeSearchIcon}
+        src={strokeNoFavorite}
         alt=""
-        className={styles['no-results-icon']}
-        width="124"
+        viewBox="0 0 375 154"
+        width="375"
+        className={styles['no-results-svg']}
       />
-      <p className={styles['no-results-text']}>
-        Aucune offre en favoris pour le moment.
-      </p>
+      <div>
+        <h2 className={styles['no-results-title']}>
+          Vous n'avez pas d'offres en favoris
+        </h2>
+        <p className={styles['no-results-text']}>
+          Explorez le catalogue et ajoutez les offres en favori pour les
+          retrouver facilement !
+        </p>
+        <ButtonLink
+          link={{
+            to: `/adage-iframe?token=${adageAuthToken}`,
+            isExternal: false,
+          }}
+          variant={ButtonVariant.PRIMARY}
+        >
+          Explorer le catalogue
+        </ButtonLink>
+      </div>
     </div>
   )
 }
