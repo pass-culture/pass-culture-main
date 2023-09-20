@@ -50,6 +50,9 @@ class ActionType(enum.Enum):
     FINANCE_INCIDENT_USER_RECREDIT = "Compte re-crédité suite à un incident"
 
 
+ACTION_HISTORY_ORDER_BY = "ActionHistory.actionDate.asc().nullsfirst()"
+
+
 class ActionHistory(PcObject, Base, Model):
     """
     This table aims at logging all actions that should appear in a resource history for support, fraud team, etc.
@@ -93,9 +96,7 @@ class ActionHistory(PcObject, Base, Model):
     user: users_models.User | None = sa.orm.relationship(
         "User",
         foreign_keys=[userId],
-        backref=sa.orm.backref(
-            "action_history", order_by="ActionHistory.actionDate.asc().nullsfirst()", passive_deletes=True
-        ),
+        backref=sa.orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
     )
 
     offererId: int | None = sa.Column(
@@ -104,9 +105,7 @@ class ActionHistory(PcObject, Base, Model):
     offerer: sa.orm.Mapped["offerers_models.Offerer | None"] = sa.orm.relationship(
         "Offerer",
         foreign_keys=[offererId],
-        backref=sa.orm.backref(
-            "action_history", order_by="ActionHistory.actionDate.asc().nullsfirst()", passive_deletes=True
-        ),
+        backref=sa.orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
     )
 
     venueId: int | None = sa.Column(
@@ -115,9 +114,7 @@ class ActionHistory(PcObject, Base, Model):
     venue: sa.orm.Mapped["offerers_models.Venue | None"] = sa.orm.relationship(
         "Venue",
         foreign_keys=[venueId],
-        backref=sa.orm.backref(
-            "action_history", order_by="ActionHistory.actionDate.asc().nullsfirst()", passive_deletes=True
-        ),
+        backref=sa.orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
     )
 
     financeIncidentId: int | None = sa.Column(
