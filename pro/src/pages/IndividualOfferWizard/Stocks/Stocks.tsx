@@ -27,7 +27,8 @@ const Stocks = (): JSX.Element | null => {
   return (
     <Template>
       {offer.isEvent ? (
-        mode !== OFFER_WIZARD_MODE.EDITION ? (
+        mode === OFFER_WIZARD_MODE.CREATION ||
+        mode === OFFER_WIZARD_MODE.DRAFT ? (
           <StocksEventCreation offer={offer} />
         ) : (
           <StocksEventEdition offer={offer} />

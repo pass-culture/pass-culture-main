@@ -131,7 +131,8 @@ export const RecurrenceForm = ({
       to: OFFER_WIZARD_STEP_IDS.STOCKS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECURRENCE_POPIN,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+      isDraft:
+        mode === OFFER_WIZARD_MODE.CREATION || mode === OFFER_WIZARD_MODE.DRAFT,
       offerId: offer.id,
       recurrenceType: values.recurrenceType,
     })

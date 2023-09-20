@@ -33,7 +33,8 @@ const StockSection = ({ offer, canBeDuo }: StockSectionProps): JSX.Element => {
       to: OFFER_WIZARD_STEP_IDS.STOCKS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+      isDraft:
+        mode === OFFER_WIZARD_MODE.CREATION || mode === OFFER_WIZARD_MODE.DRAFT,
       offerId: offer.id,
     })
   }

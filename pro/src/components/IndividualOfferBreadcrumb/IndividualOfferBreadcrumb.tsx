@@ -104,7 +104,7 @@ export const IndividualOfferBreadcrumb = ({
     )
   }
 
-  if (mode !== OFFER_WIZARD_MODE.EDITION) {
+  if (mode === OFFER_WIZARD_MODE.CREATION || mode === OFFER_WIZARD_MODE.DRAFT) {
     steps.push(
       {
         id: OFFER_WIZARD_STEP_IDS.SUMMARY,
@@ -134,7 +134,9 @@ export const IndividualOfferBreadcrumb = ({
             to: step.id,
             used: OFFER_FORM_NAVIGATION_MEDIUM.BREADCRUMB,
             isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-            isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+            isDraft:
+              mode === OFFER_WIZARD_MODE.CREATION ||
+              mode === OFFER_WIZARD_MODE.DRAFT,
             offerId: offer?.id,
           })
       },
@@ -152,12 +154,14 @@ export const IndividualOfferBreadcrumb = ({
       activeStep={activeStep}
       steps={stepList}
       styleType={
-        mode === OFFER_WIZARD_MODE.EDITION
-          ? BreadcrumbStyle.TAB
-          : BreadcrumbStyle.STEPPER
+        mode === OFFER_WIZARD_MODE.CREATION || mode === OFFER_WIZARD_MODE.DRAFT
+          ? BreadcrumbStyle.STEPPER
+          : BreadcrumbStyle.TAB
       }
       className={
-        mode !== OFFER_WIZARD_MODE.EDITION ? styles['stepper-creation'] : ''
+        mode === OFFER_WIZARD_MODE.CREATION || mode === OFFER_WIZARD_MODE.DRAFT
+          ? styles['stepper-creation']
+          : ''
       }
     />
   )

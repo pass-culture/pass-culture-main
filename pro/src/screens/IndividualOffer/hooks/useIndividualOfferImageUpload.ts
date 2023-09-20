@@ -108,7 +108,9 @@ export const useIndividualOfferImageUpload = () => {
         to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_CREATION,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        isDraft:
+          mode === OFFER_WIZARD_MODE.CREATION ||
+          mode === OFFER_WIZARD_MODE.DRAFT,
         offerId: undefined,
       })
     } else {
@@ -119,7 +121,9 @@ export const useIndividualOfferImageUpload = () => {
           to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
           used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_CREATION,
           isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-          isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+          isDraft:
+            mode === OFFER_WIZARD_MODE.CREATION ||
+            mode === OFFER_WIZARD_MODE.DRAFT,
           offerId: offerId,
         })
       } catch {
@@ -140,7 +144,9 @@ export const useIndividualOfferImageUpload = () => {
         to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_DELETE,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        isDraft:
+          mode === OFFER_WIZARD_MODE.CREATION ||
+          mode === OFFER_WIZARD_MODE.DRAFT,
         offerId: undefined,
       })
     } else {
@@ -151,7 +157,9 @@ export const useIndividualOfferImageUpload = () => {
           to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
           used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_DELETE,
           isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-          isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+          isDraft:
+            mode === OFFER_WIZARD_MODE.CREATION ||
+            mode === OFFER_WIZARD_MODE.DRAFT,
           offerId: offerId,
         })
         setImageOffer(undefined)
