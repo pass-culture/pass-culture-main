@@ -28,12 +28,7 @@ const CollectiveActionButtons = ({
   const notify = useNotification()
   const offerId = bookingRecap.stock.offerId
   const nonHumanizedOfferId = bookingRecap.stock.offerId
-  const offerEditionUrl = useOfferEditionURL(
-    true,
-    nonHumanizedOfferId,
-    false,
-    false
-  )
+  const offerEditionUrl = useOfferEditionURL(true, nonHumanizedOfferId, false)
 
   const cancelBooking = async () => {
     const response = await cancelCollectiveBookingAdapter({ offerId })
