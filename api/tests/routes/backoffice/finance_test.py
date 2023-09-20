@@ -227,14 +227,15 @@ class CreateIncidentFinanceEventTest:
             incident__kind=incident_type,
             newTotalAmount=1010,
         )
-
-        finance_events = _create_finance_events_from_incident(total_booking_incident)
+        validation_date = datetime.datetime.utcnow()
+        finance_events = _create_finance_events_from_incident(total_booking_incident, validation_date)
 
         assert len(finance_events) == 1
         assert finance_events[0].bookingFinanceIncidentId == total_booking_incident.id
         assert finance_events[0].status == finance_models.FinanceEventStatus.PENDING
         assert finance_events[0].venue and finance_events[0].venue == total_booking_incident.booking.venue
         assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
+        assert finance_events[0].valueDate == validation_date
 
     @pytest.mark.parametrize(
         "incident_type",
@@ -253,7 +254,8 @@ class CreateIncidentFinanceEventTest:
             newTotalAmount=10000,
         )
 
-        finance_events = _create_finance_events_from_incident(total_booking_incident)
+        validation_date = datetime.datetime.utcnow()
+        finance_events = _create_finance_events_from_incident(total_booking_incident, validation_date)
 
         assert len(finance_events) == 1
 
@@ -261,6 +263,7 @@ class CreateIncidentFinanceEventTest:
         assert finance_events[0].status == finance_models.FinanceEventStatus.PENDING
         assert finance_events[0].venue and finance_events[0].venue == total_booking_incident.collectiveBooking.venue
         assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
+        assert finance_events[0].valueDate == validation_date
 
     @pytest.mark.parametrize(
         "incident_type",
@@ -279,7 +282,8 @@ class CreateIncidentFinanceEventTest:
             newTotalAmount=600,
         )
 
-        finance_events = _create_finance_events_from_incident(partial_booking_incident)
+        validation_date = datetime.datetime.utcnow()
+        finance_events = _create_finance_events_from_incident(partial_booking_incident, validation_date)
 
         assert len(finance_events) == 2
 
@@ -287,11 +291,13 @@ class CreateIncidentFinanceEventTest:
         assert finance_events[0].status == finance_models.FinanceEventStatus.PENDING
         assert finance_events[0].venue and finance_events[0].venue == partial_booking_incident.booking.venue
         assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
+        assert finance_events[0].valueDate == validation_date
 
         assert finance_events[1].bookingFinanceIncidentId == partial_booking_incident.id
         assert finance_events[1].status == finance_models.FinanceEventStatus.PENDING
         assert finance_events[1].venue and finance_events[0].venue == partial_booking_incident.booking.venue
         assert finance_events[1].motive == finance_models.FinanceEventMotive.INCIDENT_NEW_PRICE
+        assert finance_events[1].valueDate == validation_date
 
     @pytest.mark.parametrize(
         "incident_type",
@@ -310,7 +316,8 @@ class CreateIncidentFinanceEventTest:
             newTotalAmount=5500,
         )
 
-        finance_events = _create_finance_events_from_incident(partial_booking_incident)
+        validation_date = datetime.datetime.utcnow()
+        finance_events = _create_finance_events_from_incident(partial_booking_incident, validation_date)
 
         assert len(finance_events) == 2
 
@@ -318,11 +325,13 @@ class CreateIncidentFinanceEventTest:
         assert finance_events[0].status == finance_models.FinanceEventStatus.PENDING
         assert finance_events[0].venue and finance_events[0].venue == partial_booking_incident.collectiveBooking.venue
         assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT
+        assert finance_events[0].valueDate == validation_date
 
         assert finance_events[1].bookingFinanceIncidentId == partial_booking_incident.id
         assert finance_events[1].status == finance_models.FinanceEventStatus.PENDING
         assert finance_events[1].venue and finance_events[1].venue == partial_booking_incident.collectiveBooking.venue
         assert finance_events[1].motive == finance_models.FinanceEventMotive.INCIDENT_NEW_PRICE
+        assert finance_events[1].valueDate == validation_date
 
     def test_create_commercial_gesture_event_on_booking(self):
         booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
@@ -332,8 +341,9 @@ class CreateIncidentFinanceEventTest:
             incident__kind=finance_models.IncidentType.COMMERCIAL_GESTURE,
             newTotalAmount=800,
         )
+        validation_date = datetime.datetime.utcnow()
 
-        finance_events = _create_finance_events_from_incident(booking_incident)
+        finance_events = _create_finance_events_from_incident(booking_incident, validation_date)
 
         assert len(finance_events) == 1
 
@@ -341,6 +351,7 @@ class CreateIncidentFinanceEventTest:
         assert finance_events[0].status == finance_models.FinanceEventStatus.PENDING
         assert finance_events[0].venue and finance_events[0].venue == booking_incident.booking.venue
         assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE
+        assert finance_events[0].valueDate == validation_date
 
     def test_create_commercial_gesture_event_on_collective_booking(self):
         booking_incident = finance_factories.CollectiveBookingFinanceIncidentFactory(
@@ -351,7 +362,8 @@ class CreateIncidentFinanceEventTest:
             newTotalAmount=800,
         )
 
-        finance_events = _create_finance_events_from_incident(booking_incident)
+        validation_date = datetime.datetime.utcnow()
+        finance_events = _create_finance_events_from_incident(booking_incident, validation_date)
 
         assert len(finance_events) == 1
 
@@ -359,6 +371,7 @@ class CreateIncidentFinanceEventTest:
         assert finance_events[0].status == finance_models.FinanceEventStatus.PENDING
         assert finance_events[0].venue and finance_events[0].venue == booking_incident.collectiveBooking.venue
         assert finance_events[0].motive == finance_models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE
+        assert finance_events[0].valueDate == validation_date
 
 
 class GetIncidentTest(GetEndpointHelper):

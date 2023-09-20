@@ -357,7 +357,9 @@ class PriceEventTest:
         api.add_event(models.FinanceEventMotive.BOOKING_USED, booking=booking)
         return models.FinanceEvent.query.filter_by(collectiveBooking=booking).one()
 
-    def _make_incident_event(self, incident_motive: models.FinanceEventMotive) -> models.FinanceEvent:
+    def _make_incident_event(
+        self, incident_motive: models.FinanceEventMotive, validation_date: datetime.datetime
+    ) -> models.FinanceEvent:
         pricing_point = offerers_factories.VenueFactory()
         booking_incident = factories.IndividualBookingFinanceIncidentFactory(
             incident__venue__pricing_point=pricing_point,
@@ -371,7 +373,9 @@ class PriceEventTest:
             lines=[factories.PricingLineFactory(amount=1000)],
         )
 
-        return api.add_event(incident_motive, booking_incident=booking_incident)
+        return api.add_event(
+            incident_motive, booking_incident=booking_incident, incident_validation_date=validation_date
+        )
 
     def test_pricing_individual(self):
         user = users_factories.RichBeneficiaryFactory()
@@ -442,8 +446,11 @@ class PriceEventTest:
         assert pricing2.lines[1].amount == 0
 
     def test_pricing_incident_reversal_of_original_event(self):
-        finance_event = self._make_incident_event(models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT)
-        booking = finance_event.bookingFinanceIncident.booking
+        validation_date = datetime.datetime.utcnow()
+        finance_event = self._make_incident_event(
+            models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT, validation_date
+        )
+
         api.price_event(finance_event)
 
         pricings = models.Pricing.query.order_by(models.Pricing.id.desc()).all()
@@ -452,7 +459,7 @@ class PriceEventTest:
         assert created_pricing.eventId == finance_event.id
         assert created_pricing.status == models.PricingStatus.VALIDATED
         assert created_pricing.amount == 1000
-        assert created_pricing.valueDate == booking.dateUsed
+        assert created_pricing.valueDate == validation_date
         assert created_pricing.revenue == original_pricing.revenue
 
         assert len(created_pricing.lines) == 1
@@ -467,8 +474,9 @@ class PriceEventTest:
         ],
     )
     def test_pricing_new_price_event(self, event_motive):
-        finance_event = self._make_incident_event(event_motive)
-        booking = finance_event.bookingFinanceIncident.booking
+        validation_date = datetime.datetime.utcnow()
+        finance_event = self._make_incident_event(event_motive, validation_date)
+
         api.price_event(finance_event)
 
         pricings = models.Pricing.query.order_by(models.Pricing.id.desc()).all()
@@ -477,7 +485,7 @@ class PriceEventTest:
         assert created_pricing.eventId == finance_event.id
         assert created_pricing.status == models.PricingStatus.VALIDATED
         assert created_pricing.amount == -800
-        assert created_pricing.valueDate == booking.dateUsed
+        assert created_pricing.valueDate == validation_date
         assert created_pricing.revenue == original_pricing.revenue + 800
 
         assert len(created_pricing.lines) == 1
@@ -661,8 +669,10 @@ class AddEventTest:
         booking_incident = factories.IndividualBookingFinanceIncidentFactory(
             booking__stock__offer__venue__pricing_point=pricing_point, incident__venue__pricing_point=pricing_point
         )
-
-        event = api.add_event(incident_motive, booking_incident=booking_incident)
+        validation_date = datetime.datetime.utcnow()
+        event = api.add_event(
+            incident_motive, booking_incident=booking_incident, incident_validation_date=validation_date
+        )
 
         assert event.bookingFinanceIncident == booking_incident
         assert event.status == models.FinanceEventStatus.READY
