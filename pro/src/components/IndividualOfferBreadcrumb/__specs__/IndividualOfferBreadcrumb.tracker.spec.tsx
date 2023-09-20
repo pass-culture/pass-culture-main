@@ -16,7 +16,7 @@ import { individualOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OFFER_WIZARD_STEP_IDS } from '../constants'
-import IndividualOfferBreadcrumb from '../IndividualOfferBreadcrumb'
+import { IndividualOfferBreadcrumb } from '../IndividualOfferBreadcrumb'
 
 const mockLogEvent = vi.fn()
 
