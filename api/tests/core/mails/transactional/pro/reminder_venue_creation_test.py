@@ -8,7 +8,6 @@ from pcapi.core.mails.transactional.pro.reminder_venue_creation import send_remi
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.settings import PRO_URL
-from pcapi.utils.human_ids import humanize
 
 
 @pytest.mark.usefixtures("db_session")
@@ -20,7 +19,7 @@ class ProReminderVenueCreationEmailTest:
         mail_data = get_reminder_venue_creation_email_data(offerer)
         # then
         assert mail_data.template == TransactionalEmail.REMINDER_VENUE_CREATION_TO_PRO.value
-        assert mail_data.params == {"PRO_URL": PRO_URL, "OFFERER_ID": humanize(offerer.id)}
+        assert mail_data.params == {"PRO_URL": PRO_URL, "OFFERER_ID": offerer.id}
 
     def test_send_email(self):
         # given
@@ -35,4 +34,4 @@ class ProReminderVenueCreationEmailTest:
         )
         assert mails_testing.outbox[0].sent_data["To"] == user_offerer.user.email
         assert mails_testing.outbox[0].sent_data["params"]["PRO_URL"] == PRO_URL
-        assert mails_testing.outbox[0].sent_data["params"]["OFFERER_ID"] == humanize(offerer.id)
+        assert mails_testing.outbox[0].sent_data["params"]["OFFERER_ID"] == offerer.id
