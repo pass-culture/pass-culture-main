@@ -11,6 +11,7 @@ from pcapi.core import logging as core_logging
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.ubble import models as ubble_fraud_models
 from pcapi.core.users import models as users_models
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils import requests
 
 
@@ -31,7 +32,10 @@ def configure_session() -> requests.Session:
 
 
 def build_url(path: str) -> str:
-    return urllib.parse.urljoin(settings.UBBLE_API_URL, path)
+    base_url = settings.UBBLE_API_URL
+    if settings.UBBLE_MOCK_API_URL and FeatureToggle.WIP_ENABLE_MOCK_UBBLE.is_active():
+        base_url = settings.UBBLE_MOCK_API_URL
+    return urllib.parse.urljoin(base_url, path)
 
 
 INCLUDED_MODELS = {

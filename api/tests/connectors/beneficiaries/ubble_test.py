@@ -5,6 +5,9 @@ import pytest
 
 from pcapi.connectors.beneficiaries import ubble
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
+from pcapi.core.testing import override_settings
 from pcapi.core.users.models import GenderEnum
 from pcapi.utils import requests as requests_utils
 
@@ -77,6 +80,30 @@ class StartIdentificationTest:
         assert record.extra["request_type"] == "start-identification"
         assert record.extra["error_type"] == "http"
         assert record.message == "Ubble start-identification: Unexpected error: 401, "
+
+
+class BuildUrlTest:
+    @override_features(WIP_ENABLE_MOCK_UBBLE=True)
+    @override_settings(UBBLE_MOCK_API_URL="http://example.com")
+    def test_use_mock_api_if_ff_enabled_and_url_set(self):
+        url = ubble.build_url("")
+
+        assert url == "http://example.com"
+
+    @override_features(WIP_ENABLE_MOCK_UBBLE=False)
+    @override_settings(UBBLE_MOCK_API_URL="http://example.com")
+    def test_use_real_ubble_if_ff_disabled_and_url_set(self):
+        url = ubble.build_url("")
+
+        assert url == "https://api.ubble.ai"
+
+    @override_features(WIP_ENABLE_MOCK_UBBLE=True)
+    @override_settings(UBBLE_MOCK_API_URL="")
+    def test_use_real_ubble_if_ff_enabled_and_url_unset(self):
+        with assert_num_queries(0):
+            url = ubble.build_url("")
+
+        assert url == "https://api.ubble.ai"
 
 
 class GetContentTest:
