@@ -372,6 +372,8 @@ class StocksQueryModel(BaseModel):
     date: datetime.date | None
     time: datetime.time | None
     price_category_id: int | None
+    order_by: offers_repository.StocksOrderedBy = offers_repository.StocksOrderedBy.BEGINNING_DATETIME
+    order_by_desc: bool = False
 
 
 class ImageBodyModel(BaseModel):

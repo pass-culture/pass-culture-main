@@ -88,6 +88,7 @@ import type { SirenInfo } from '../models/SirenInfo';
 import type { SiretInfo } from '../models/SiretInfo';
 import type { StockIdResponseModel } from '../models/StockIdResponseModel';
 import type { StockResponseModel } from '../models/StockResponseModel';
+import type { StocksOrderedBy } from '../models/StocksOrderedBy';
 import type { StocksResponseModel } from '../models/StocksResponseModel';
 import type { StocksUpsertBodyModel } from '../models/StocksUpsertBodyModel';
 import type { UserEmailValidationResponseModel } from '../models/UserEmailValidationResponseModel';
@@ -1610,6 +1611,8 @@ export class DefaultService {
    * @param date
    * @param time
    * @param priceCategoryId
+   * @param orderBy
+   * @param orderByDesc
    * @returns StockResponseModel OK
    * @throws ApiError
    */
@@ -1618,6 +1621,8 @@ export class DefaultService {
     date?: string | null,
     time?: string | null,
     priceCategoryId?: number | null,
+    orderBy?: StocksOrderedBy,
+    orderByDesc: boolean = false,
   ): CancelablePromise<StockResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
@@ -1629,6 +1634,8 @@ export class DefaultService {
         'date': date,
         'time': time,
         'price_category_id': priceCategoryId,
+        'order_by': orderBy,
+        'order_by_desc': orderByDesc,
       },
       errors: {
         403: `Forbidden`,

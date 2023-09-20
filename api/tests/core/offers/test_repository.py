@@ -1482,6 +1482,27 @@ class GetStocksListFiltersTest:
         # Then
         assert len(stocks) == 1
 
+    def test_filtered_stocks_by_hour(self):
+        # Given
+        beginning_datetime = datetime.datetime(2020, 10, 15, 12, 0, 0)
+        same_hour_other_day = datetime.datetime(2020, 10, 16, 12, 0, 0)
+        same_hour_other_minutes_other_day = datetime.datetime(2020, 10, 16, 12, 45, 0)
+        same_day_other_hour = datetime.datetime(2020, 10, 15, 0, 0, 0)
+        same_day_same_hour_other_minutes = datetime.datetime(2020, 10, 15, 12, 45, 0)
+
+        offer = factories.OfferFactory()
+        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
+        factories.EventStockFactory(offer=offer, beginningDatetime=same_hour_other_day)
+        factories.EventStockFactory(offer=offer, beginningDatetime=same_hour_other_minutes_other_day)
+        factories.EventStockFactory(offer=offer, beginningDatetime=same_day_other_hour)
+        factories.EventStockFactory(offer=offer, beginningDatetime=same_day_same_hour_other_minutes)
+
+        # When
+        stocks = repository.get_filtered_stocks(offer_id=offer.id, time=beginning_datetime.time())
+
+        # Then
+        assert len(stocks) == 2
+
     def test_filtered_stock_by_minutes(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
@@ -1517,7 +1538,7 @@ class GetStocksListFiltersTest:
         assert len(stocks) == 2
 
     @override_features(WIP_PRO_STOCK_PAGINATION=False)
-    def test_sorted_query_for_stock_by_offer_id(self):
+    def test_filtered_stocks_query_by_default(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
         offer = factories.OfferFactory()
@@ -1532,6 +1553,8 @@ class GetStocksListFiltersTest:
         # When
         stocks = repository.get_filtered_stocks(
             offer_id=offer.id,
+            stocks_limit_per_page=1,  # Only works because FF is set to False
+            page=1,  # Same as above
         )
 
         # Then
@@ -1539,26 +1562,6 @@ class GetStocksListFiltersTest:
         assert stocks[0] == first_stock
         assert stocks[1] == second_stock
         assert stocks[2] == third_stock
-
-    @override_features(WIP_PRO_STOCK_PAGINATION=True)
-    def test_sorted_query_for_stock_by_offer_id_with_stock_pagination(self):
-        # Given
-        stocks_limit_per_page = 2
-        beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
-        offer = factories.OfferFactory()
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
-        second_stock = factories.EventStockFactory(
-            offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=1)
-        )
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=2))
-
-        # When
-        stocks = repository.get_filtered_stocks(offer_id=offer.id, stocks_limit_per_page=stocks_limit_per_page)
-
-        # Then
-        assert len(stocks) == stocks_limit_per_page
-        assert stocks[0].beginningDatetime < stocks[1].beginningDatetime
-        assert stocks[1] == second_stock
 
     @override_features(WIP_PRO_STOCK_PAGINATION=True)
     def test_stock_pagination_limit_per_page(self):
@@ -1576,8 +1579,187 @@ class GetStocksListFiltersTest:
             offer_id=offer.id,
             stocks_limit_per_page=stocks_limit_per_page,
             page=current_page,
+            order_by="BEGINNING_DATETIME",
         )
 
         # Then
         assert len(stocks) == 1
-        assert stocks[-1].beginningDatetime == beginning_datetime
+
+    @override_features(WIP_PRO_STOCK_PAGINATION=True)
+    def test_order_stocks_by_beginning_datetime_desc(self):
+        # Given
+        beginning_datetime = datetime.datetime(2020, 10, 15, 12, 0, 0)
+        same_hour_other_day = datetime.datetime(2020, 10, 16, 12, 0, 0)
+        same_hour_other_minutes_other_day = datetime.datetime(2020, 10, 16, 12, 45, 0)
+        same_day_other_hour = datetime.datetime(2020, 10, 15, 0, 0, 0)
+        same_day_same_hour_other_minutes = datetime.datetime(2020, 10, 15, 12, 45, 0)
+
+        offer = factories.OfferFactory()
+        stock1 = factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
+        stock2 = factories.EventStockFactory(offer=offer, beginningDatetime=same_hour_other_day)
+        stock3 = factories.EventStockFactory(offer=offer, beginningDatetime=same_hour_other_minutes_other_day)
+        stock4 = factories.EventStockFactory(offer=offer, beginningDatetime=same_day_other_hour)
+        stock5 = factories.EventStockFactory(offer=offer, beginningDatetime=same_day_same_hour_other_minutes)
+
+        # When
+        stocks = repository.get_filtered_stocks(
+            offer_id=offer.id,
+            order_by="BEGINNING_DATETIME",
+            order_by_desc=True,
+        )
+
+        # Then
+        assert stocks[0] == stock3
+        assert stocks[1] == stock2
+        assert stocks[2] == stock5
+        assert stocks[3] == stock1
+        assert stocks[4] == stock4
+
+    @override_features(WIP_PRO_STOCK_PAGINATION=True)
+    def test_order_stocks_by_date(self):
+        beginning_datetime = datetime.datetime(2020, 10, 15, 12, 0, 0)
+        same_hour_other_day = datetime.datetime(2020, 10, 16, 12, 0, 0)
+        same_hour_other_minutes_other_day = datetime.datetime(2020, 10, 16, 12, 45, 0)
+        same_day_other_hour = datetime.datetime(2020, 10, 15, 0, 0, 0)
+        same_day_same_hour_other_minutes = datetime.datetime(2020, 10, 15, 12, 45, 0)
+
+        offer = factories.OfferFactory()
+        stock1 = factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
+        stock2 = factories.EventStockFactory(offer=offer, beginningDatetime=same_hour_other_day)
+        stock3 = factories.EventStockFactory(offer=offer, beginningDatetime=same_hour_other_minutes_other_day)
+        stock4 = factories.EventStockFactory(offer=offer, beginningDatetime=same_day_other_hour)
+        stock5 = factories.EventStockFactory(offer=offer, beginningDatetime=same_day_same_hour_other_minutes)
+
+        # When
+        stocks = repository.get_filtered_stocks(
+            offer_id=offer.id,
+            order_by="DATE",
+        )
+
+        # Then
+        assert len(stocks) == 5
+        assert stocks[0] == stock1
+        assert stocks[1] == stock4
+        assert stocks[2] == stock5
+        assert stocks[3] == stock2
+        assert stocks[4] == stock3
+
+    @override_features(WIP_PRO_STOCK_PAGINATION=True)
+    def test_order_stocks_by_time_desc(self):
+        # Given
+        beginning_datetime = datetime.datetime(2020, 10, 15, 12, 0, 0)
+        same_hour_other_day = datetime.datetime(2020, 10, 16, 12, 0, 0)
+        same_hour_other_minutes_other_day = datetime.datetime(2020, 10, 16, 12, 45, 0)
+        same_day_other_hour = datetime.datetime(2020, 10, 15, 0, 0, 0)
+        same_day_same_hour_other_minutes = datetime.datetime(2020, 10, 15, 12, 45, 0)
+
+        offer = factories.OfferFactory()
+        stock1 = factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
+        stock2 = factories.EventStockFactory(offer=offer, beginningDatetime=same_hour_other_day)
+        stock3 = factories.EventStockFactory(offer=offer, beginningDatetime=same_hour_other_minutes_other_day)
+        stock4 = factories.EventStockFactory(offer=offer, beginningDatetime=same_day_other_hour)
+        stock5 = factories.EventStockFactory(offer=offer, beginningDatetime=same_day_same_hour_other_minutes)
+
+        # When
+        stocks = repository.get_filtered_stocks(
+            offer_id=offer.id,
+            order_by="TIME",
+            order_by_desc=True,
+        )
+
+        # Then
+        assert len(stocks) == 5
+        assert stocks[0] == stock5
+        assert stocks[1] == stock3
+        assert stocks[2] == stock2
+        assert stocks[3] == stock1
+        assert stocks[4] == stock4
+
+    @override_features(WIP_PRO_STOCK_PAGINATION=True)
+    def test_order_stocks_by_price_category_id(self):
+        # Given
+        offer = factories.OfferFactory()
+        price_cat1 = factories.PriceCategoryFactory(offer=offer)
+        price_cat2 = factories.PriceCategoryFactory(offer=offer)
+
+        stock1 = factories.EventStockFactory(offer=offer, priceCategory=price_cat1)
+        stock2 = factories.EventStockFactory(offer=offer, priceCategory=price_cat2)
+        stock3 = factories.EventStockFactory(offer=offer, priceCategory=price_cat1)
+
+        # When
+        stocks = repository.get_filtered_stocks(
+            offer_id=offer.id,
+            order_by="PRICE_CATEGORY_ID",
+        )
+
+        # Then
+        assert stocks[0] == stock1
+        assert stocks[1] == stock3
+        assert stocks[2] == stock2
+
+    @override_features(WIP_PRO_STOCK_PAGINATION=True)
+    def test_order_stocks_by_booking_limit(self):
+        # Given
+        booking_limit_datetime = datetime.datetime(2020, 10, 15, 12, 0, 0)
+        same_hour_other_day = datetime.datetime(2020, 10, 16, 12, 0, 0)
+        same_hour_other_minutes_other_day = datetime.datetime(2020, 10, 16, 12, 45, 0)
+        same_day_other_hour = datetime.datetime(2020, 10, 15, 0, 0, 0)
+        same_day_same_hour_other_minutes = datetime.datetime(2020, 10, 15, 12, 45, 0)
+
+        offer = factories.OfferFactory()
+        stock1 = factories.EventStockFactory(offer=offer, bookingLimitDatetime=booking_limit_datetime)
+        stock2 = factories.EventStockFactory(offer=offer, bookingLimitDatetime=same_hour_other_day)
+        stock3 = factories.EventStockFactory(offer=offer, bookingLimitDatetime=same_hour_other_minutes_other_day)
+        stock4 = factories.EventStockFactory(offer=offer, bookingLimitDatetime=same_day_other_hour)
+        stock5 = factories.EventStockFactory(offer=offer, bookingLimitDatetime=same_day_same_hour_other_minutes)
+
+        # When
+        stocks = repository.get_filtered_stocks(
+            offer_id=offer.id,
+            order_by="BOOKING_LIMIT_DATETIME",
+        )
+
+        # Then
+        assert stocks[0] == stock4
+        assert stocks[1] == stock1
+        assert stocks[2] == stock5
+        assert stocks[3] == stock2
+        assert stocks[4] == stock3
+
+    @override_features(WIP_PRO_STOCK_PAGINATION=True)
+    def test_order_stocks_by_remaining_quantity_desc(self):
+        # Given
+        offer = factories.OfferFactory()
+        stock1 = factories.EventStockFactory(offer=offer, quantity=5, dnBookedQuantity=1)
+        stock2 = factories.EventStockFactory(offer=offer, quantity=6, dnBookedQuantity=3)
+        stock3 = factories.EventStockFactory(offer=offer, quantity=50, dnBookedQuantity=5)
+
+        # When
+        stocks = repository.get_filtered_stocks(
+            offer_id=offer.id,
+            order_by="REMAINING_QUANTITY",
+            order_by_desc=True,
+        )
+
+        # Then
+        assert stocks[0] == stock3
+        assert stocks[1] == stock1
+        assert stocks[2] == stock2
+
+    @override_features(WIP_PRO_STOCK_PAGINATION=True)
+    def test_order_stocks_by_dn_booked_quantity(self):
+        offer = factories.OfferFactory()
+        stock1 = factories.EventStockFactory(offer=offer, quantity=5, dnBookedQuantity=20)
+        stock2 = factories.EventStockFactory(offer=offer, quantity=6, dnBookedQuantity=21)
+        stock3 = factories.EventStockFactory(offer=offer, quantity=50, dnBookedQuantity=5)
+
+        # When
+        stocks = repository.get_filtered_stocks(
+            offer_id=offer.id,
+            order_by="DN_BOOKED_QUANTITY",
+        )
+
+        # Then
+        assert stocks[0] == stock3
+        assert stocks[1] == stock1
+        assert stocks[2] == stock2

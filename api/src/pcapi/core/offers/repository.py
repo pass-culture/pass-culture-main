@@ -1,4 +1,5 @@
 import datetime
+import enum
 import logging
 import operator
 import typing
@@ -30,7 +31,18 @@ logger = logging.getLogger(__name__)
 
 IMPORTED_CREATION_MODE = "imported"
 MANUAL_CREATION_MODE = "manual"
+
 LIMIT_STOCKS_PER_PAGE = 20
+
+
+class StocksOrderedBy(str, enum.Enum):
+    DATE = "DATE"
+    TIME = "TIME"
+    BEGINNING_DATETIME = "BEGINNING_DATETIME"
+    PRICE_CATEGORY_ID = "PRICE_CATEGORY_ID"
+    BOOKING_LIMIT_DATETIME = "BOOKING_LIMIT_DATETIME"
+    REMAINING_QUANTITY = "REMAINING_QUANTITY"  # quantity - dnBookedQuantity
+    DN_BOOKED_QUANTITY = "DN_BOOKED_QUANTITY"
 
 
 def get_capped_offers_for_filters(
@@ -691,12 +703,38 @@ def get_offer_by_id(offer_id: int) -> models.Offer:
         raise exceptions.OfferNotFound()
 
 
+def _order_stocks_by(
+    query: flask_sqlalchemy.BaseQuery, order_by: StocksOrderedBy, order_by_desc: bool
+) -> flask_sqlalchemy.BaseQuery:
+    column: sa_orm.Mapped[int] | sa.cast[sa.Date | sa.Time, sa_orm.Mapped[datetime.datetime | None]]
+    match order_by:
+        case StocksOrderedBy.DATE:
+            column = sa.cast(models.Stock.beginningDatetime, sa.Date)
+        case StocksOrderedBy.TIME:
+            column = sa.cast(models.Stock.beginningDatetime, sa.Time)
+        case StocksOrderedBy.BEGINNING_DATETIME:
+            column = models.Stock.beginningDatetime
+        case StocksOrderedBy.PRICE_CATEGORY_ID:
+            column = models.Stock.priceCategoryId
+        case StocksOrderedBy.BOOKING_LIMIT_DATETIME:
+            column = models.Stock.bookingLimitDatetime
+        case StocksOrderedBy.REMAINING_QUANTITY:
+            column = models.Stock.remainingQuantity  # type: ignore [assignment]
+        case StocksOrderedBy.DN_BOOKED_QUANTITY:
+            column = models.Stock.dnBookedQuantity
+    if order_by_desc:
+        return query.order_by(column.desc(), models.Stock.id.desc())
+    return query.order_by(column, models.Stock.id)
+
+
 def get_filtered_stocks(
     offer_id: int,
     stocks_limit_per_page: int = LIMIT_STOCKS_PER_PAGE,
     date: datetime.date | None = None,
     time: datetime.time | None = None,
     price_category_id: int | None = None,
+    order_by: StocksOrderedBy = StocksOrderedBy.BEGINNING_DATETIME,
+    order_by_desc: bool = False,
     page: int = 1,
 ) -> list[models.Stock]:
     query = models.Stock.query.filter(
@@ -712,7 +750,7 @@ def get_filtered_stocks(
             sa.cast(models.Stock.beginningDatetime, sa.Time) >= time.replace(second=0),
             sa.cast(models.Stock.beginningDatetime, sa.Time) <= time.replace(second=59),
         )
-    query = query.order_by(models.Stock.beginningDatetime)
+    query = _order_stocks_by(query, order_by, order_by_desc)
     if FeatureToggle.WIP_PRO_STOCK_PAGINATION.is_active():
         query = query.offset((page - 1) * stocks_limit_per_page).limit(stocks_limit_per_page)
     return query.all()
