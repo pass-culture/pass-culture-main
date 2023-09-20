@@ -2,7 +2,6 @@
 @use "styles/variables/_forms.scss" as forms;
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
-@use "styles/mixins/_a11y.scss" as a11y;
 
 $border-size-selected: rem.torem(2px);
 $radio-size: rem.torem(16px);
@@ -16,10 +15,6 @@ $radio-size: rem.torem(16px);
 
   // reserve space for border
   padding: $border-size-selected;
-
-  &-radio {
-    @include a11y.visually-hidden;
-  }
 
   &-radio-on,
   &-radio-off {

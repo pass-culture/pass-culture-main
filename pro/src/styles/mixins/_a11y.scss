@@ -9,3 +9,7 @@
   white-space: nowrap;
   border: 0;
 }
+
+.visually-hidden {
+  @include visually-hidden;
+}

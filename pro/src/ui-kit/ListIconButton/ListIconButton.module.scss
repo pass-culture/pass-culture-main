@@ -1,7 +1,6 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_size.scss" as size;
-@use "styles/mixins/_a11y.scss" as a11y;
 
 .button {
   background-color: transparent;
@@ -60,8 +59,4 @@
 
 .tooltip {
   border-radius: rem.torem(16px);
-}
-
-.visually-hidden {
-  @include a11y.visually-hidden;
 }

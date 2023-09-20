@@ -19,7 +19,7 @@ const FilterByStatus = ({
   selectedStatusId,
 }: FilterByStatusProps): JSX.Element => (
   <>
-    <label className={styles['visually-hidden']}>Type de période</label>
+    <label className="visually-hidden">Type de période</label>
     <SelectInput
       onChange={event =>
         updateFilters({
