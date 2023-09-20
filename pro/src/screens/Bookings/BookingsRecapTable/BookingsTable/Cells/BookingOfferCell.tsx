@@ -29,17 +29,13 @@ import styles from './BookingOfferCell.module.scss'
 
 export interface BookingOfferCellProps {
   booking: BookingRecapResponseModel | CollectiveBookingResponseModel
-  isCollective: boolean
 }
 
 const isCollectiveBooking = (
   booking: BookingRecapResponseModel | CollectiveBookingResponseModel
 ): booking is CollectiveBookingResponseModel => booking.stock.offerIsEducational
 
-export const BookingOfferCell = ({
-  booking,
-  isCollective,
-}: BookingOfferCellProps) => {
+export const BookingOfferCell = ({ booking }: BookingOfferCellProps) => {
   const { logEvent } = useAnalytics()
 
   const editionUrl = useOfferEditionURL(
@@ -55,8 +51,8 @@ export const BookingOfferCell = ({
         FORMAT_DD_MM_YYYY_HH_mm
       )
     : null
+
   const shouldShowCollectiveWarning =
-    isCollective &&
     isCollectiveBooking(booking) &&
     booking.bookingStatus.toUpperCase() === OFFER_STATUS_PENDING &&
     shouldDisplayWarning(booking.stock)
