@@ -12,6 +12,13 @@ import { getBookingStatusDisplayInformations } from '../../utils/bookingStatusCo
 
 import styles from './BookingStatusCellHistory.module.scss'
 
+const computeDateForStatus = (
+  item:
+    | BookingRecapResponseBookingStatusHistoryModel
+    | BookingStatusHistoryResponseModel,
+  dateFormat: string
+) => (item.date ? format(toDateStrippedOfTimezone(item.date), dateFormat) : '-')
+
 export interface BookingStatusCellHistoryProps {
   bookingStatusHistory:
     | BookingRecapResponseBookingStatusHistoryModel[]
@@ -45,17 +52,6 @@ export const BookingStatusCellHistory = ({
       </li>
     )
   })
-
-  function computeDateForStatus(
-    item:
-      | BookingRecapResponseBookingStatusHistoryModel
-      | BookingStatusHistoryResponseModel,
-    dateFormat: string
-  ) {
-    return item.date
-      ? format(toDateStrippedOfTimezone(item.date), dateFormat)
-      : '-'
-  }
 
   return (
     <div className={styles['booking-status-history']}>

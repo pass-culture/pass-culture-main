@@ -187,7 +187,7 @@ describe('components | BookingsRecapTable', () => {
 
   it('should render the expected table for collective audience', () => {
     // Given
-    const bookingRecap = bookingRecapFactory(bookingInstitutionCustom)
+    const bookingRecap = collectiveBookingRecapFactory(bookingInstitutionCustom)
     vi.spyOn(filterBookingsRecap, 'default').mockReturnValue([bookingRecap])
     const props: Props = {
       ...defaultProps,
@@ -207,7 +207,7 @@ describe('components | BookingsRecapTable', () => {
     expect(cells[2]).toHaveTextContent('Établissement')
     expect(cells[3]).toHaveTextContent('Places et prix')
     expect(cells[4]).toHaveTextContent('Statut')
-    expect(cells[5]).toHaveTextContent('')
+    expect(cells[5]).toHaveTextContent('Détails')
   })
 
   it('should not render a Header component when there is no filtered booking', async () => {

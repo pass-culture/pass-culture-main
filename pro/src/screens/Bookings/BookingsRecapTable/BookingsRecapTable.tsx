@@ -7,6 +7,7 @@ import {
 } from 'apiClient/v1'
 import { Audience } from 'core/shared'
 
+import { isCollectiveBooking } from './BookingsTable/Cells/BookingOfferCell'
 import { CollectiveBookingsTable } from './BookingsTable/CollectiveBookingsTable'
 import { IndividualBookingsTable } from './BookingsTable/IndividualBookingsTable'
 import {
@@ -20,6 +21,16 @@ import Header from './Header'
 import NoFilteredBookings from './NoFilteredBookings'
 import { BookingsFilters } from './types'
 import { filterBookingsRecap } from './utils/filterBookingsRecap'
+
+const areCollectiveBookings = (
+  bookings: (BookingRecapResponseModel | CollectiveBookingResponseModel)[]
+): bookings is CollectiveBookingResponseModel[] =>
+  bookings.every(isCollectiveBooking)
+
+const areIndividualBookings = (
+  bookings: (BookingRecapResponseModel | CollectiveBookingResponseModel)[]
+): bookings is BookingRecapResponseModel[] =>
+  bookings.every(booking => !isCollectiveBooking(booking))
 
 interface BookingsRecapTableProps<
   T extends BookingRecapResponseModel | CollectiveBookingResponseModel,
@@ -150,21 +161,25 @@ const BookingsRecapTable = <
             resetBookings={resetBookings}
           />
 
-          {audience === Audience.INDIVIDUAL ? (
-            <IndividualBookingsTable
-              bookings={filteredBookings as BookingRecapResponseModel[]}
-              bookingStatuses={filters.bookingStatus}
-              updateGlobalFilters={updateGlobalFilters}
-            />
-          ) : (
-            <CollectiveBookingsTable
-              bookings={filteredBookings as CollectiveBookingResponseModel[]}
-              bookingStatuses={filters.bookingStatus}
-              updateGlobalFilters={updateGlobalFilters}
-              reloadBookings={reloadBookings}
-              defaultOpenedBookingId={defaultBookingId}
-            />
-          )}
+          {audience === Audience.INDIVIDUAL &&
+            areIndividualBookings(filteredBookings) && (
+              <IndividualBookingsTable
+                bookings={filteredBookings}
+                bookingStatuses={filters.bookingStatus}
+                updateGlobalFilters={updateGlobalFilters}
+              />
+            )}
+
+          {audience === Audience.COLLECTIVE &&
+            areCollectiveBookings(filteredBookings) && (
+              <CollectiveBookingsTable
+                bookings={filteredBookings}
+                bookingStatuses={filters.bookingStatus}
+                updateGlobalFilters={updateGlobalFilters}
+                reloadBookings={reloadBookings}
+                defaultOpenedBookingId={defaultBookingId}
+              />
+            )}
         </Fragment>
       ) : (
         <NoFilteredBookings resetFilters={resetAllFilters} />

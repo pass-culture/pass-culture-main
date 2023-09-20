@@ -111,7 +111,7 @@ describe('components | FilterByBookingStatus', () => {
       await userEvent.click(screen.getByRole('img'))
 
       const checkbox = screen.getAllByRole('checkbox')
-      expect(checkbox).toHaveLength(6)
+      expect(checkbox).toHaveLength(5)
       expect(checkbox[0]).toHaveAttribute('checked')
       expect(checkbox[1]).toHaveAttribute('checked')
       expect(screen.getByText('Réservée')).toBeInTheDocument()
