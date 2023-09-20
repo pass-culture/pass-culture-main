@@ -1136,16 +1136,18 @@ class ManualPhoneNumberValidationTest(PostEndpointHelper):
         user = users_factories.UserFactory(
             phoneValidationStatus=None, phoneNumber="+33601010203", isEmailValidated=True
         )
-        users_factories.TokenFactory(user=user, type=users_models.TokenType.PHONE_VALIDATION)
         users_factories.TokenFactory(user=user, type=users_models.TokenType.RESET_PASSWORD)
-        users_factories.TokenFactory(type=users_models.TokenType.PHONE_VALIDATION)
 
+        token_utils.Token.create(
+            token_utils.TokenType.PHONE_VALIDATION, users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME, user.id
+        )
         response = self.post_to_endpoint(authenticated_client, user_id=user.id)
 
         assert user.is_phone_validated is True
         assert response.status_code == 303
         assert history_models.ActionHistory.query.filter(history_models.ActionHistory.user == user).count() == 1
-        assert users_models.Token.query.count() == 2
+        assert users_models.Token.query.count() == 1
+        assert not token_utils.Token.token_exists(token_utils.TokenType.PHONE_VALIDATION, user.id)
 
 
 class SendValidationCodeTest(PostEndpointHelper):
