@@ -95,7 +95,12 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
         )
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     stocks = offers_repository.get_filtered_stocks(
-        offer_id=offer_id, date=query.date, time=query.time, price_category_id=query.price_category_id
+        offer_id=offer_id,
+        date=query.date,
+        time=query.time,
+        price_category_id=query.price_category_id,
+        order_by=query.order_by,
+        order_by_desc=query.order_by_desc,
     )
     filtered_stock_list = [offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in stocks]
     return offers_serialize.StockResponseModel(stocks=filtered_stock_list, stock_count=len(filtered_stock_list))
