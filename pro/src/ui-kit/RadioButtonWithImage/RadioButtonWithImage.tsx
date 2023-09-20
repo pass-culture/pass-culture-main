@@ -62,10 +62,12 @@ const RadioButtonWithImage = ({
         width="16"
       />
     )}
+
     <SvgIcon src={icon} className={styles['button-icon']} alt="" />
+
     <input
       checked={isChecked}
-      className={styles['button-radio']}
+      className="visually-hidden"
       disabled={disabled}
       name={name}
       onChange={onChange}
@@ -73,6 +75,7 @@ const RadioButtonWithImage = ({
       value={value}
       data-testid={dataTestid}
     />
+
     <div className={styles['button-text']}>
       <div>{label}</div>
       {description !== undefined && (

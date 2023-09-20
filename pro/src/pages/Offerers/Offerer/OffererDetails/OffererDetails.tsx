@@ -110,7 +110,7 @@ const OffererDetails = () => {
                 The other span will be hidden from the screen reader. */
           isNewBankDetailsEnabled && offerer.dsToken && (
             <>
-              <span className={styles['identifier-hidden']}>
+              <span className="visually-hidden">
                 Identifiant de structure :{' '}
                 {offerer.dsToken?.split('').join(' ')}
               </span>

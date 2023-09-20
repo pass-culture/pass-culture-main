@@ -117,7 +117,7 @@ const StockFormList = ({
       render={arrayHelpers => (
         <>
           <table className={styles['stock-table']}>
-            <caption className={styles['caption-table']}>
+            <caption className="visually-hidden">
               Tableau d'édition des stocks
             </caption>
 

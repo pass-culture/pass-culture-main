@@ -109,7 +109,7 @@ const PhoneNumberInput = ({
           </span>
         )}
       </legend>
-      <label htmlFor="countryCode" className={styles['label-visually-hidden']}>
+      <label htmlFor="countryCode" className="visually-hidden">
         Indicatif téléphonique
       </label>
       <CodeCountrySelect
@@ -120,7 +120,7 @@ const PhoneNumberInput = ({
         onChange={onPhoneCodeChange}
       />
 
-      <label htmlFor={name} className={styles['label-visually-hidden']}>
+      <label htmlFor={name} className="visually-hidden">
         Numéro de téléphone
       </label>
       <BaseInput

@@ -1,5 +1,4 @@
 @use "styles/variables/_colors.scss" as colors;
-@use "styles/mixins/_a11y.scss" as a11y;
 @use "styles/mixins/_forms.scss" as forms;
 @use "styles/mixins/_rem.scss" as rem;
 
@@ -36,8 +35,4 @@
     top: rem.torem(-29px);
     width: rem.torem(18px);
   }
-}
-
-.visually-hidden {
-  @include a11y.visually-hidden;
 }
