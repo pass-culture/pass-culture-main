@@ -1437,3 +1437,106 @@ class ExcludeOffersFromInactiveVenueProviderTest:
         assert offer_from_stock_api in selected_offers
         assert offer_from_inactive_venue_provider not in selected_offers
         assert offer_from_deleted_venue_provider not in selected_offers
+
+
+@pytest.mark.usefixtures("db_session")
+class GetStocksListFiltersTest:
+    def test_basic(self):
+        stock = factories.EventStockFactory()
+
+        # When
+        stocks = repository.get_filtered_stocks(
+            offer_id=stock.offer.id,
+            stocks_limit_per_page=20,
+        )
+
+        # Then
+        assert len(stocks) == 1
+
+    def test_filtered_stock_by_price_category(self):
+        # Given
+        stock = factories.EventStockFactory()
+        factories.EventStockFactory()
+
+        # When
+        stocks = repository.get_filtered_stocks(
+            offer_id=stock.offer.id,
+            stocks_limit_per_page=20,
+            price_category_id=stock.priceCategoryId,
+        )
+
+        # Then
+        assert len(stocks) == 1
+
+    def test_filtered_stock_by_date(self):
+        # Given
+        beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
+        offer = factories.OfferFactory()
+        stock = factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
+        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(days=1))
+        # When
+        stocks = repository.get_filtered_stocks(
+            offer_id=offer.id,
+            stocks_limit_per_page=20,
+            date=stock.beginningDatetime.date(),
+        )
+
+        # Then
+        assert len(stocks) == 1
+
+    def test_filtered_stock_by_time(self):
+        # Given
+        beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
+        offer = factories.OfferFactory()
+        stock = factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
+        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(hours=1))
+        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(minutes=1))
+
+        # When
+        stocks = repository.get_filtered_stocks(
+            offer_id=offer.id,
+            stocks_limit_per_page=20,
+            time=stock.beginningDatetime.time(),
+        )
+
+        # Then
+        assert len(stocks) == 1
+
+    def test_filtered_stock_by_seconds(self):
+        # Given
+        beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
+        offer = factories.OfferFactory()
+        stock = factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
+        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=1))
+        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=60))
+
+        # When
+        stocks = repository.get_filtered_stocks(
+            offer_id=offer.id,
+            stocks_limit_per_page=20,
+            time=stock.beginningDatetime.time(),
+        )
+
+        # Then
+        assert len(stocks) == 2
+
+    def test_sorted_query_for_stock_by_offer_id(self):
+        # Given
+        beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
+        offer = factories.OfferFactory()
+
+        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
+        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=1))
+        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=2))
+        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=3))
+
+        # When
+        stocks = repository.get_filtered_stocks(
+            offer_id=offer.id,
+            stocks_limit_per_page=2,
+        )
+
+        # Then
+        assert len(stocks) == 2
+        assert stocks[0].beginningDatetime > stocks[1].beginningDatetime
+        assert stocks[0].beginningDatetime == beginning_datetime + datetime.timedelta(seconds=3)

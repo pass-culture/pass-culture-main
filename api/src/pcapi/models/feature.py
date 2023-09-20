@@ -128,6 +128,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_SEARCH_HISTORY_ADAGE = "Activer la possibilité de voir l'historique des recherches sur adage"
     WIP_ENABLE_OFFER_RESERVATION_TAB = "Activer l'onglet réservation depuis les offres"
     WIP_ENABLE_MOCK_UBBLE = "Utiliser le mock Ubble à la place du vrai Ubble"
+    WIP_PRO_STOCK_PAGINATION = "Active la pagination pour les stocks"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -203,6 +204,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_SUSPICIOUS_EMAIL_SEND,
     FeatureToggle.WIP_ENABLE_TRUSTED_DEVICE,
     FeatureToggle.WIP_OFFER_TO_INSTITUTION,
+    FeatureToggle.WIP_PRO_STOCK_PAGINATION,
 )
 
 if settings.IS_PROD or settings.IS_STAGING:
