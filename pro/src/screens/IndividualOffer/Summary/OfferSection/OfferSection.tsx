@@ -50,7 +50,8 @@ const OfferSummary = ({
       from: OFFER_WIZARD_STEP_IDS.SUMMARY,
       to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,
-      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+      isDraft:
+        mode === OFFER_WIZARD_MODE.CREATION || mode === OFFER_WIZARD_MODE.DRAFT,
       offerId: offerData.id,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
     })
