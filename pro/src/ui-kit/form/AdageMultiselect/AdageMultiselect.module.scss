@@ -1,7 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/_a11y.scss" as a11y;
 @use "styles/mixins/_forms.scss" as forms;
 
 .container {
@@ -11,10 +10,6 @@
   height: rem.torem(250px);
 }
 
-.search-label {
-  @include a11y.visually-hidden;
-}
-
 .search-list {
   display: flex;
   flex-direction: column;
@@ -22,9 +17,9 @@
   max-height: rem.torem(400px);
   overflow-y: scroll;
 
-    li:last-child {
-      margin-bottom: rem.torem(20px);
-    }
+  li:last-child {
+    margin-bottom: rem.torem(20px);
+  }
 }
 
 .search-input {

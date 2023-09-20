@@ -2,7 +2,6 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/variables/_size.scss" as size;
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/mixins/_a11y.scss" as a11y;
 
 .skip-links {
   height: 0;
@@ -14,7 +13,6 @@
   @media (min-width: size.$desktop) {
     grid-template-columns: size.$header-grid-template-columns;
   }
-
 
   &:focus-within {
     min-height: rem.torem(32px);
@@ -48,8 +46,4 @@
       }
     }
   }
-}
-
-.input-focus-top-page {
-  @include a11y.visually-hidden;
 }

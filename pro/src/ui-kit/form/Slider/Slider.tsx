@@ -30,7 +30,7 @@ const Slider = ({
       <div className={styles['slider-header']}>
         <label
           htmlFor={fieldName}
-          className={cn(hideLabel ? styles['visually-hidden'] : '')}
+          className={cn(hideLabel ? 'visually-hidden' : '')}
         >
           {inputAttrs.label}
         </label>

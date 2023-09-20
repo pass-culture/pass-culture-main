@@ -128,11 +128,7 @@ const AdageMultiselect = ({
 
   return (
     <div className={styles['container']}>
-      <label
-        htmlFor="search"
-        className={styles['search-label']}
-        {...getLabelProps()}
-      >
+      <label htmlFor="search" className="visually-hidden" {...getLabelProps()}>
         {label}
       </label>
       <BaseInput

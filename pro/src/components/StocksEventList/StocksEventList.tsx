@@ -196,7 +196,7 @@ const StocksEventList = ({
       </div>
 
       <table className={styles['stock-event-table']}>
-        <caption className={styles['table-caption']}>
+        <caption className="visually-hidden">
           Liste des dates et capacités
         </caption>
 
