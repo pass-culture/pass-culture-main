@@ -25,7 +25,7 @@ def _synchronize_venue_providers_apis() -> None:
     # FIXME(viconnex): we should joinedload(Provider.venueProviders) to avoir N+1 queries but sqlalchemy is not able to build the request
     providers_apis = models.Provider.query.filter(
         models.Provider.isActive,
-        models.Provider.apiUrl.isnot(None),
+        models.Provider.apiUrl.is_not(None),
     ).all()
 
     for provider in providers_apis:

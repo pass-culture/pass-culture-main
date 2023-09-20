@@ -868,7 +868,7 @@ def archive_old_bookings() -> None:
         .filter(date_condition)
         .filter(
             offers_models.Offer.isDigital.is_(True),  # type: ignore [attr-defined]
-            offers_models.ActivationCode.id.isnot(None),
+            offers_models.ActivationCode.id.is_not(None),
         )
         .with_entities(Booking.id)
         .union(

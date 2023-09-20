@@ -409,7 +409,7 @@ def _filter_by_creation_mode(query: flask_sqlalchemy.BaseQuery, creation_mode: s
     if creation_mode == MANUAL_CREATION_MODE:
         query = query.filter(models.Offer.lastProviderId.is_(None))
     if creation_mode == IMPORTED_CREATION_MODE:
-        query = query.filter(models.Offer.lastProviderId.isnot(None))
+        query = query.filter(models.Offer.lastProviderId.is_not(None))
 
     return query
 
@@ -588,7 +588,7 @@ def get_expired_offers(interval: typing.List[datetime.datetime]) -> flask_sqlalc
         .filter(
             models.Offer.isActive.is_(True),
             models.Stock.isSoftDeleted.is_(False),
-            models.Stock.bookingLimitDatetime.isnot(None),
+            models.Stock.bookingLimitDatetime.is_not(None),
         )
         .having(sa.func.max(models.Stock.bookingLimitDatetime).between(*interval))  # type: ignore [arg-type]
         .group_by(models.Offer.id)

@@ -359,7 +359,7 @@ def offerer_has_venue_with_adage_id(offerer_id: int) -> bool:
     query = db.session.query(models.Venue.id)
     query = query.join(models.Offerer, models.Venue.managingOfferer)
     query = query.filter(
-        models.Venue.adageId.isnot(None),
+        models.Venue.adageId.is_not(None),
         models.Venue.adageId != "",
         models.Offerer.id == offerer_id,
     )
