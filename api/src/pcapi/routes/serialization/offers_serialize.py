@@ -363,6 +363,17 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
         use_enum_values = True
 
 
+class StockResponseModel(BaseModel):
+    stocks: list[GetOfferStockResponseModel]
+    stock_count: int
+
+
+class StocksQueryModel(BaseModel):
+    date: datetime.date | None
+    time: datetime.time | None
+    price_category_id: int | None
+
+
 class ImageBodyModel(BaseModel):
     url: str
 

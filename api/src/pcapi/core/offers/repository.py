@@ -29,6 +29,7 @@ logger = logging.getLogger(__name__)
 
 IMPORTED_CREATION_MODE = "imported"
 MANUAL_CREATION_MODE = "manual"
+LIMIT_STOCKS_PER_PAGE = 20
 
 
 def get_capped_offers_for_filters(
@@ -687,6 +688,29 @@ def get_offer_by_id(offer_id: int) -> models.Offer:
         )
     except sa_orm.exc.NoResultFound:
         raise exceptions.OfferNotFound()
+
+
+def get_filtered_stocks(
+    offer_id: int,
+    stocks_limit_per_page: int = LIMIT_STOCKS_PER_PAGE,
+    date: datetime.date | None = None,
+    time: datetime.time | None = None,
+    price_category_id: int | None = None,
+) -> list[models.Stock]:
+    query = models.Stock.query.filter(
+        models.Stock.offerId == offer_id,
+        models.Stock.isSoftDeleted == False,
+    )
+    if price_category_id is not None:
+        query = query.filter(models.Stock.priceCategoryId == price_category_id)
+    if date is not None:
+        query = query.filter(sa.cast(models.Stock.beginningDatetime, sa.Date) == date)
+    if time is not None:
+        query = query.filter(
+            sa.cast(models.Stock.beginningDatetime, sa.Time) >= time.replace(second=0),
+            sa.cast(models.Stock.beginningDatetime, sa.Time) <= time.replace(second=59),
+        )
+    return query.order_by(sa.desc(models.Stock.beginningDatetime)).limit(stocks_limit_per_page).all()
 
 
 def get_synchronized_offers_with_provider_for_venue(venue_id: int, provider_id: int) -> flask_sqlalchemy.BaseQuery:
