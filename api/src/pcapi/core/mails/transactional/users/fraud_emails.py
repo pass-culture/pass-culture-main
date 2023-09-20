@@ -40,6 +40,6 @@ def send_mail_for_fraud_review(user: users_models.User) -> None:
     _send_fraud_mail(
         subject="Revue manuelle nécessaire",
         header="Revue manuelle nécesasaire",
-        body=f"""<p>L'utilisateur {user_backoffice_link} a plus de 18 ans, son dossier DMS vient d'être validé.
+        body=f"""<p>L'utilisateur {user_backoffice_link} a plus de 19 ans, son dossier DMS vient d'être validé.
  Il requiert donc une revue manuelle pour que son crédit lui soit octroyé.</p>""",
     )
