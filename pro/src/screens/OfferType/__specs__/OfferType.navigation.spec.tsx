@@ -81,7 +81,7 @@ describe('screens:IndividualOffer::OfferType', () => {
 
     expect(mockNavigate).toHaveBeenCalledWith({
       pathname: '/offre/individuelle/creation/informations',
-      search: '?offer-type=PHYSICAL_GOOD',
+      search: 'offer-type=PHYSICAL_GOOD',
     })
   })
 
@@ -97,7 +97,22 @@ describe('screens:IndividualOffer::OfferType', () => {
 
     expect(mockNavigate).toHaveBeenCalledWith({
       pathname: '/offre/individuelle/creation/informations',
-      search: '?lieu=123&offer-type=PHYSICAL_EVENT',
+      search: 'lieu=123&offer-type=PHYSICAL_EVENT',
+    })
+  })
+
+  it('should redirect just with venue when venue and type was not selected', async () => {
+    renderOfferTypes('123')
+
+    expect(
+      await screen.findByText('Quelle est la catégorie de l’offre ?')
+    ).toBeInTheDocument()
+    await userEvent.click(screen.getByText('Autre'))
+    await userEvent.click(screen.getByText('Étape suivante'))
+
+    expect(mockNavigate).toHaveBeenCalledWith({
+      pathname: '/offre/individuelle/creation/informations',
+      search: 'lieu=123',
     })
   })
 
@@ -112,7 +127,7 @@ describe('screens:IndividualOffer::OfferType', () => {
 
     expect(mockNavigate).toHaveBeenCalledWith({
       pathname: '/offre/individuelle/creation/informations',
-      search: '?lieu=123&sous-categorie=SPECTACLE_REPRESENTATION',
+      search: 'lieu=123&sous-categorie=SPECTACLE_REPRESENTATION',
     })
   })
 })
