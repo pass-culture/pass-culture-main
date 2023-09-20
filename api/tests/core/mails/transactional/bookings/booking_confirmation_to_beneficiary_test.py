@@ -66,8 +66,6 @@ def get_expected_base_sendinblue_email_data(booking, mediation, **overrides):
             "IS_SINGLE_EVENT": True,
             "IS_DUO_EVENT": False,
             "CAN_EXPIRE": False,
-            "OFFER_ID": humanize(booking.stock.offer.id),
-            "MEDIATION_ID": humanize(mediation.id),
             "CODE_EXPIRATION_DATE": None,
             "IS_DIGITAL_BOOKING_WITH_ACTIVATION_CODE_AND_NO_EXPIRATION_DATE": False,
             "HAS_OFFER_URL": False,
