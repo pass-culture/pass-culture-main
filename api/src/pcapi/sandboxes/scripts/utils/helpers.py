@@ -1,11 +1,10 @@
-from datetime import datetime
-
 from pcapi import settings
+from pcapi.core import token as token_utils
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
+from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
-from pcapi.core.users.models import TokenType
 from pcapi.routes.serialization import as_dict
 from pcapi.utils.includes import USER_INCLUDES
 
@@ -53,10 +52,13 @@ def get_email(first_name: str, last_name: str, domain: str) -> str:
 
 
 def get_pro_helper(user: users_models.User) -> dict:
+    resetPasswodToken = _get_reset_password_token(user)
+    if not resetPasswodToken:
+        raise users_exceptions.InvalidToken("No reset password token found")
     return dict(
         as_dict(user, includes=USER_INCLUDES),
         **{
-            "resetPasswordToken": _get_reset_password_token(user),
+            "resetPasswordToken": resetPasswodToken.encoded_token,
             "password": settings.TEST_DEFAULT_PASSWORD,
             "validationToken": user.validationToken,
         },
@@ -67,8 +69,5 @@ def get_venue_helper(venue: offerers_models.Venue) -> dict:
     return as_dict(venue)
 
 
-def _get_reset_password_token(user: users_models.User) -> str | None:
-    for token in user.tokens:
-        if token.type == TokenType.RESET_PASSWORD and token.expirationDate > datetime.utcnow():
-            return token.value
-    return None
+def _get_reset_password_token(user: users_models.User) -> token_utils.Token | None:
+    return token_utils.Token.get_token(token_utils.TokenType.RESET_PASSWORD, user.id)
