@@ -15,14 +15,14 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import { BookingsFilters } from '../../types'
 import {
-  BOOKING_STATUS_DISPLAY_INFORMATIONS,
+  INDIVIDUAL_BOOKING_STATUS_DISPLAY_INFORMATIONS,
   COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS,
 } from '../../utils/bookingStatusConverter'
 
 const getAvailableBookingStatuses = (audience: Audience) => {
   const statuses =
     audience === Audience.INDIVIDUAL
-      ? BOOKING_STATUS_DISPLAY_INFORMATIONS
+      ? INDIVIDUAL_BOOKING_STATUS_DISPLAY_INFORMATIONS
       : COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS
 
   const statusOptions = statuses.map(bookingStatus => ({
