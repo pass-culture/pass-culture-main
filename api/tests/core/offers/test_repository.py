@@ -14,6 +14,7 @@ from pcapi.core.offers import models
 from pcapi.core.offers import repository
 import pcapi.core.providers.constants as providers_constants
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.models import db
@@ -1447,7 +1448,6 @@ class GetStocksListFiltersTest:
         # When
         stocks = repository.get_filtered_stocks(
             offer_id=stock.offer.id,
-            stocks_limit_per_page=20,
         )
 
         # Then
@@ -1461,7 +1461,6 @@ class GetStocksListFiltersTest:
         # When
         stocks = repository.get_filtered_stocks(
             offer_id=stock.offer.id,
-            stocks_limit_per_page=20,
             price_category_id=stock.priceCategoryId,
         )
 
@@ -1472,31 +1471,29 @@ class GetStocksListFiltersTest:
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
         offer = factories.OfferFactory()
-        stock = factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
+        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
         factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(days=1))
         # When
         stocks = repository.get_filtered_stocks(
             offer_id=offer.id,
-            stocks_limit_per_page=20,
-            date=stock.beginningDatetime.date(),
+            date=beginning_datetime.date(),
         )
 
         # Then
         assert len(stocks) == 1
 
-    def test_filtered_stock_by_time(self):
+    def test_filtered_stock_by_minutes(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
         offer = factories.OfferFactory()
-        stock = factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
+        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
         factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(hours=1))
         factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(minutes=1))
 
         # When
         stocks = repository.get_filtered_stocks(
             offer_id=offer.id,
-            stocks_limit_per_page=20,
-            time=stock.beginningDatetime.time(),
+            time=beginning_datetime.time(),
         )
 
         # Then
@@ -1506,37 +1503,81 @@ class GetStocksListFiltersTest:
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
         offer = factories.OfferFactory()
-        stock = factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
+        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
         factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=1))
         factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=60))
 
         # When
         stocks = repository.get_filtered_stocks(
             offer_id=offer.id,
-            stocks_limit_per_page=20,
-            time=stock.beginningDatetime.time(),
+            time=beginning_datetime.time(),
         )
 
         # Then
         assert len(stocks) == 2
 
+    @override_features(WIP_PRO_STOCK_PAGINATION=False)
     def test_sorted_query_for_stock_by_offer_id(self):
         # Given
         beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
         offer = factories.OfferFactory()
-
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=1))
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=2))
-        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=3))
+        first_stock = factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
+        second_stock = factories.EventStockFactory(
+            offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=1)
+        )
+        third_stock = factories.EventStockFactory(
+            offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=2)
+        )
 
         # When
         stocks = repository.get_filtered_stocks(
             offer_id=offer.id,
-            stocks_limit_per_page=2,
         )
 
         # Then
-        assert len(stocks) == 2
-        assert stocks[0].beginningDatetime > stocks[1].beginningDatetime
-        assert stocks[0].beginningDatetime == beginning_datetime + datetime.timedelta(seconds=3)
+        assert len(stocks) == 3
+        assert stocks[0] == first_stock
+        assert stocks[1] == second_stock
+        assert stocks[2] == third_stock
+
+    @override_features(WIP_PRO_STOCK_PAGINATION=True)
+    def test_sorted_query_for_stock_by_offer_id_with_stock_pagination(self):
+        # Given
+        stocks_limit_per_page = 2
+        beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
+        offer = factories.OfferFactory()
+        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
+        second_stock = factories.EventStockFactory(
+            offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=1)
+        )
+        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=2))
+
+        # When
+        stocks = repository.get_filtered_stocks(offer_id=offer.id, stocks_limit_per_page=stocks_limit_per_page)
+
+        # Then
+        assert len(stocks) == stocks_limit_per_page
+        assert stocks[0].beginningDatetime < stocks[1].beginningDatetime
+        assert stocks[1] == second_stock
+
+    @override_features(WIP_PRO_STOCK_PAGINATION=True)
+    def test_stock_pagination_limit_per_page(self):
+        # Given
+        beginning_datetime = datetime.datetime(2020, 10, 15, 0, 0, 0)
+        stocks_limit_per_page = 1
+        current_page = 2
+        offer = factories.OfferFactory()
+        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime - datetime.timedelta(seconds=1))
+        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime)
+        factories.EventStockFactory(offer=offer, beginningDatetime=beginning_datetime + datetime.timedelta(seconds=30))
+
+        # When
+        stocks = repository.get_filtered_stocks(
+            offer_id=offer.id,
+            stocks_limit_per_page=stocks_limit_per_page,
+            page=current_page,
+        )
+
+        # Then
+        assert len(stocks) == 1
+        assert stocks[-1].beginningDatetime == beginning_datetime

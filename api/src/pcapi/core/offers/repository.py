@@ -18,6 +18,7 @@ from pcapi.domain.pro_offers import offers_recap
 from pcapi.infrastructure.repository.pro_offers import offers_recap_domain_converter
 from pcapi.models import db
 from pcapi.models import offer_mixin
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils import custom_keys
 
 from . import exceptions
@@ -696,6 +697,7 @@ def get_filtered_stocks(
     date: datetime.date | None = None,
     time: datetime.time | None = None,
     price_category_id: int | None = None,
+    page: int = 1,
 ) -> list[models.Stock]:
     query = models.Stock.query.filter(
         models.Stock.offerId == offer_id,
@@ -710,7 +712,10 @@ def get_filtered_stocks(
             sa.cast(models.Stock.beginningDatetime, sa.Time) >= time.replace(second=0),
             sa.cast(models.Stock.beginningDatetime, sa.Time) <= time.replace(second=59),
         )
-    return query.order_by(sa.desc(models.Stock.beginningDatetime)).limit(stocks_limit_per_page).all()
+    query = query.order_by(models.Stock.beginningDatetime)
+    if FeatureToggle.WIP_PRO_STOCK_PAGINATION.is_active():
+        query = query.offset((page - 1) * stocks_limit_per_page).limit(stocks_limit_per_page)
+    return query.all()
 
 
 def get_synchronized_offers_with_provider_for_venue(venue_id: int, provider_id: int) -> flask_sqlalchemy.BaseQuery:
