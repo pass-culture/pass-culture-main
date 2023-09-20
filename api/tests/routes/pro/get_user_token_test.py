@@ -1,18 +1,23 @@
 import pytest
 
-from pcapi.core.users import factories as users_factories
+from pcapi.core import token as token_utils
+import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.users import constants
 
 
 class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_activation_token_exists(self, client):
         # given
-        token = "U2NCXTNB2"
-        user = users_factories.BeneficiaryGrant18Factory()
-        users_factories.PasswordResetTokenFactory(value=token, user=user)
+        user_offerer = offerers_factories.UserOffererFactory(user__validationToken=None)
+        token = token_utils.Token.create(
+            token_utils.TokenType.RESET_PASSWORD,
+            constants.RESET_PASSWORD_TOKEN_LIFE_TIME,
+            user_offerer.user.id,
+        )
 
         # when
-        request = client.get("/users/token/" + token)
+        request = client.get("/users/token/" + token.encoded_token)
 
         # then
         assert request.status_code == 204

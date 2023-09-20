@@ -29,7 +29,6 @@ class SendinblueEmailAddressChangeTest:
     def test_should_return_sendinblue_validation_data(self):
         # Given
         user = users_factories.UserFactory.build(email="fabien+test@example.net", firstName="Fabien")
-        users_factories.PasswordResetTokenFactory(user=user, value="ABCD123")
 
         # When
         data = get_validation_email_change_data(first_name=user.firstName, confirmation_link="ABCD123")

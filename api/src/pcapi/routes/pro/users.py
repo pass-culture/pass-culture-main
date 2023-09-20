@@ -8,6 +8,7 @@ from flask_login import logout_user
 from jwt import InvalidTokenError
 import pydantic.v1 as pydantic_v1
 
+from pcapi.core import token as token_utils
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.users import api as users_api
 from pcapi.core.users import email as email_api
@@ -159,10 +160,16 @@ def get_user_email_pending_validation() -> users_serializers.UserEmailValidation
 @blueprint.pro_private_api.route("/users/token/<token>", methods=["GET"])
 @spectree_serialize(on_error_statuses=[404], on_success_status=204, api=blueprint.pro_private_schema)
 def check_activation_token_exists(token: str) -> None:
+    # TODO (yacine-pc) 04-10-23 check if this route is needed, remove it else
     try:
-        users_repo.get_user_with_valid_token(token, [TokenType.RESET_PASSWORD], use_token=False)
-    except users_exceptions.InvalidToken:
-        flask.abort(404)
+        token_utils.Token.load_and_check(token, token_utils.TokenType.RESET_PASSWORD)
+    except (
+        users_exceptions.InvalidToken
+    ):  # TODO abdelmoujibmegzari: remove this except 1 sprint after this https://passculture.atlassian.net/browse/PC-24624
+        try:
+            users_repo.get_user_with_valid_token(token, [TokenType.RESET_PASSWORD], use_token=False)
+        except users_exceptions.InvalidToken:
+            flask.abort(404)
 
 
 @blueprint.pro_private_api.route("/users/password", methods=["POST"])

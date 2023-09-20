@@ -4,11 +4,12 @@ from pcapi import settings
 from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import check_webapp_recaptcha_token
 import pcapi.core.mails.transactional as transactional_mails
+import pcapi.core.token as token_utils
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
+from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.api import update_password_and_external_user
-from pcapi.core.users.models import TokenType
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain.password import check_password_strength
 from pcapi.models.api_errors import ApiErrors
@@ -42,26 +43,31 @@ def reset_password(body: ResetPasswordBodyModel) -> None:
     token = users_api.create_reset_password_token(user)
     if user.is_beneficiary:
         send_email = transactional_mails.send_reset_password_email_to_user
+        # TODO: abdelmoujibmegzari remove lambda when reset password token to pro is replaced by new token
     else:
         send_email = transactional_mails.send_reset_password_email_to_pro
 
-    if not send_email(user, token):
+    if not send_email(token):
         logger.warning("Could not send reset password email", extra={"user": user.id})
 
 
 @private_api.route("/users/new-password", methods=["POST"])
 @spectree_serialize(on_success_status=204, on_error_statuses=[400], api=blueprint.pro_private_schema)
 def post_new_password(body: NewPasswordBodyModel) -> None:
-    token = body.token
+    token_value = body.token
     new_password = body.newPassword
 
     check_password_strength("newPassword", new_password)
-
     try:
-        user = users_repo.get_user_with_valid_token(token, [TokenType.RESET_PASSWORD])
+        token = token_utils.Token.load_and_check(token_value, token_utils.TokenType.RESET_PASSWORD)
+        token.expire()
+        user = users_models.User.query.get(token.user_id)
     except users_exceptions.InvalidToken:
-        errors = ApiErrors()
-        errors.add_error("token", "Votre lien de changement de mot de passe est invalide.")
-        raise errors
+        try:
+            user = users_repo.get_user_with_valid_token(token_value, [users_models.TokenType.RESET_PASSWORD])
+        except users_exceptions.InvalidToken:
+            errors = ApiErrors()
+            errors.add_error("token", "Votre lien de changement de mot de passe est invalide.")
+            raise errors
 
     update_password_and_external_user(user, new_password)
