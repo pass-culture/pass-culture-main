@@ -2,28 +2,81 @@
 @use "styles/variables/_colors.scss" as colors;
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.banner {
+
+.callout {
+  position: relative;
 	display: flex;
 	justify-content: left;
 	color: colors.$black;
 	border-radius: rem.torem(8px);
 	padding: rem.torem(16px);
-	border: rem.torem(1px) solid colors.$primary;
-	background-color: colors.$banner-warning;
+  border: rem.torem(1px) solid colors.$black;
+
+  &-default {
+    border-color: colors.$callout-default-border;
+    background-color: colors.$callout-default-background;
+
+    .icon {
+      color: colors.$callout-default-border;
+    }
+  }
+
+  &-info {
+    border-color: colors.$callout-info-border;
+    background-color: colors.$callout-info-background;
+
+    .icon {
+      color: colors.$callout-info-border;
+    }
+  }
+
+  &-success {
+    border-color: colors.$callout-success-border;
+    background-color: colors.$callout-success-background;
+
+    .icon {
+      color: colors.$callout-success-border;
+    }
+  }
+
+  &-warning {
+    border-color: colors.$callout-warning-border;
+    background-color: colors.$callout-warning-background;
+
+    .icon {
+      color: colors.$callout-warning-border;
+    }
+  }
+
+  &-error {
+    border-color: colors.$callout-error-border;
+    background-color: colors.$callout-error-background;
+
+    .icon {
+      color: colors.$callout-error-border;
+    }
+  }
 
 	.icon {
-		min-width: rem.torem(20px);
-		color: colors.$primary;
+		min-width: rem.torem(24px);
 		align-self: start;
 		margin-right: rem.torem(16px);
 	}
+
+  .close-icon {
+    background: none;
+    border: none;
+    align-self: start;
+    cursor: pointer;
+    min-width: rem.torem(20px);
+    margin-left: rem.torem(16px);
+  }
 }
 
-.content {	
-	display: flex;
-	flex-direction: column;
-	justify-content: left;
-	gap: rem.torem(10px) 0;
+.content {
+	> div, .bi-link-item:not(:last-child)  {
+    margin-bottom: rem.torem(8px);
+  }
 
 	.title {
 		@include fonts.bold;
