@@ -17,18 +17,10 @@ import styles from './Template.module.scss'
 export interface TemplateProps {
   title?: string
   withStepper?: boolean
-  withStatus?: boolean
-  withBanner?: boolean
   children: JSX.Element | JSX.Element[]
 }
 
-const Template = ({
-  title,
-  children,
-  withStepper = true,
-  withStatus = true,
-  withBanner = true,
-}: TemplateProps) => {
+const Template = ({ title, children, withStepper = true }: TemplateProps) => {
   const { offer, setOffer, shouldTrack } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
   const notify = useNotification()
@@ -51,7 +43,7 @@ const Template = ({
 
   const actions = mode !== OFFER_WIZARD_MODE.CREATION &&
     offer &&
-    withStatus && (
+    withStepper && (
       <Status
         offerId={offer.id}
         status={offer.status}
@@ -73,7 +65,9 @@ const Template = ({
           {offer && <h4>{offer.name}</h4>}
         </OfferFormLayout.TitleBlock>
       )}
-      {offer && withBanner && <OfferStatusBanner status={offer.status} />}
+
+      {offer && withStepper && <OfferStatusBanner status={offer.status} />}
+
       {providerName && (
         <SynchronizedProviderInformation providerName={providerName} />
       )}
