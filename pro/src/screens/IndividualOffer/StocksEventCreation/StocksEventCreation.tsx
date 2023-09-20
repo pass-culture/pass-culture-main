@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { api } from 'apiClient/api'
 import DialogBox from 'components/DialogBox'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer'
 import StocksEventList from 'components/StocksEventList'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
