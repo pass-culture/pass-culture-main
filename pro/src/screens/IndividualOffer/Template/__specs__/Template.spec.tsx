@@ -3,7 +3,7 @@ import React from 'react'
 import { generatePath } from 'react-router-dom'
 
 import { OfferStatus } from 'apiClient/v1'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import {
   IndividualOfferContext,
   IndividualOfferContextValues,

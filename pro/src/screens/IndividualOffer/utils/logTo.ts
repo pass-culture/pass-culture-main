@@ -1,4 +1,4 @@
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 
 export const logTo = (nextLocation: string) => {
   if (nextLocation.includes(OFFER_WIZARD_STEP_IDS.INFORMATIONS)) {
