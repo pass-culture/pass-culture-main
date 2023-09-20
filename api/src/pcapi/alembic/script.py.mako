@@ -1,5 +1,8 @@
-"""FIXME: the comment below appears in the output of `alembic history`.
-Remove this FIXME and make the comment below easily readable.
+"""FIXME: Cher auteur de cette migration : le message ci-dessous
+apparaît dans la sortie de `alembic history`. Tu dois supprimer ce
+FIXME et faire en sorte que le message ci-dessous soit en anglais,
+clair et lisible (un peu comme un message de commit). Exemple : Add
+"blob" column to "offer" table.
 
 ${message}
 """
