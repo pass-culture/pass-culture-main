@@ -335,8 +335,8 @@ class GetLastXDaysBookingsTest:
         )
 
         # when
-        result_1 = search._get_offer_bookings_count(offer_with_ean, bookings_count)
-        result_2 = search._get_offer_bookings_count(other_offer_with_ean, bookings_count)
+        result_1 = search.get_offer_bookings_count(offer_with_ean, bookings_count)
+        result_2 = search.get_offer_bookings_count(other_offer_with_ean, bookings_count)
 
         # then
         assert result_1 == 2
@@ -352,7 +352,7 @@ class GetLastXDaysBookingsTest:
 
         bookings_count = search.get_last_x_days_bookings_count(offers=[offer_with_ean], days=30, get_related_eans=True)
 
-        assert search._get_offer_bookings_count(offer_with_ean, bookings_count) == 2
+        assert search.get_offer_bookings_count(offer_with_ean, bookings_count) == 2
 
     def test_get_offer_last_x_days_bookings_ignores_bookings_too_old(self):
         ean_1 = "1234567890123"
@@ -366,4 +366,4 @@ class GetLastXDaysBookingsTest:
         bookings_factories.BookingFactory(stock=offers_factories.StockFactory(offer=other_offer_with_ean))
         bookings_count = search.get_last_x_days_bookings_count(offers=[offer_with_ean], days=30, get_related_eans=True)
 
-        assert search._get_offer_bookings_count(offer_with_ean, bookings_count) == 1
+        assert search.get_offer_bookings_count(offer_with_ean, bookings_count) == 1
