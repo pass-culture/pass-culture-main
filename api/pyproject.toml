@@ -194,7 +194,6 @@ disable = [
     "line-too-long",
     "locally-disabled",
     "missing-docstring",
-    "no-member",
     "protected-access",
     "raise-missing-from",
     "singleton-comparison",
