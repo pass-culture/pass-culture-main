@@ -300,18 +300,7 @@ def book_offer(
         },
     )
     amplitude_events.track_book_offer_event(booking)
-
-    provider = providers_repository.get_provider_enabled_for_pro_by_id(stock.offer.lastProviderId)
-    if (
-        booking.stock.offer.withdrawalType != offers_models.WithdrawalTypeEnum.IN_APP
-        and provider
-        and provider.notificationExternalUrl
-    ):
-        external_api_notification_request = ExternalApiBookingNotificationRequest.build(booking, BookingAction.BOOK)
-        payload = external_api_booking_notification.ExternalApiBookingNotificationTaskPayload(
-            data=external_api_notification_request, notificationUrl=provider.notificationExternalUrl
-        )
-        external_api_booking_notification.external_api_booking_notification_task.delay(payload)
+    _send_external_booking_notification_if_necessary(booking, BookingAction.BOOK)
 
     if not transactional_mails.send_user_new_booking_to_pro_email(booking, first_venue_booking):
         logger.warning(
@@ -462,11 +451,28 @@ def _cancel_booking(
         technical_message_id="booking.cancelled",
     )
     amplitude_events.track_cancel_booking_event(booking, reason)
+    _send_external_booking_notification_if_necessary(booking, BookingAction.CANCEL)
 
     update_external_user(booking.user)
     update_external_pro(booking.venue.bookingEmail)
     search.async_index_offer_ids([booking.stock.offerId])
     return True
+
+
+def _send_external_booking_notification_if_necessary(booking: Booking, action: BookingAction) -> None:
+    provider = providers_repository.get_provider_enabled_for_pro_by_id(booking.stock.offer.lastProviderId)
+    if (
+        booking.stock.offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
+        or not provider
+        or not provider.notificationExternalUrl
+    ):
+        return
+
+    external_api_notification_request = ExternalApiBookingNotificationRequest.build(booking, action)
+    payload = external_api_booking_notification.ExternalApiBookingNotificationTaskPayload(
+        data=external_api_notification_request, notificationUrl=provider.notificationExternalUrl
+    )
+    external_api_booking_notification.external_api_booking_notification_task.delay(payload)
 
 
 def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
