@@ -1172,7 +1172,7 @@ def get_pro_account_base_query(pro_id: int) -> BaseQuery:
 
 def search_backoffice_accounts(search_query: str, order_by: list[str] | None = None) -> BaseQuery:
     bo_accounts = models.User.query.outerjoin(users_models.User.backoffice_profile).filter(
-        perm_models.BackOfficeUserProfile.id.isnot(None),
+        perm_models.BackOfficeUserProfile.id.is_not(None),
     )
 
     if not search_query:

@@ -229,7 +229,7 @@ class Booking(PcObject, Base, Model):
 
     @isConfirmed.expression  # type: ignore [no-redef]
     def isConfirmed(cls) -> BooleanClauseList:  # pylint: disable=no-self-argument # type: ignore[no-redef]
-        return and_(cls.cancellationLimitDate.isnot(None), cls.cancellationLimitDate <= datetime.utcnow())
+        return and_(cls.cancellationLimitDate.is_not(None), cls.cancellationLimitDate <= datetime.utcnow())
 
     @hybrid_property
     def is_used_or_reimbursed(self) -> bool:

@@ -427,9 +427,9 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):
             sa.func.nullif(
                 sa.func.trim(
                     sa.func.concat(
-                        sa.case([(cls.firstName.isnot(None), cls.firstName)], else_=""),
+                        sa.case([(cls.firstName.is_not(None), cls.firstName)], else_=""),
                         " ",
-                        sa.case([(cls.lastName.isnot(None), cls.lastName)], else_=""),
+                        sa.case([(cls.lastName.is_not(None), cls.lastName)], else_=""),
                     )
                 ),
                 "",
