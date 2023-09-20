@@ -16,6 +16,7 @@ export type EmailSpellCheckInputProps<FormType> = FieldLayoutBaseProps & {
   placeholder: string
   label: string
   overrideInitialTip?: string | null
+  maxLength?: number
 }
 
 const EmailSpellCheckInput = <FormType,>({
@@ -24,6 +25,7 @@ const EmailSpellCheckInput = <FormType,>({
   label,
   className,
   overrideInitialTip = null,
+  maxLength = 255,
 }: EmailSpellCheckInputProps<FormType>): JSX.Element => {
   const { setFieldValue, setFieldTouched } = useFormikContext<FormType>()
   const [field, meta] = useField<string>(name)
@@ -63,6 +65,7 @@ const EmailSpellCheckInput = <FormType,>({
         hideFooter={emailValidationTip != null} // This is needed to hide the footer div that takes some space
         autoComplete="email"
         className={className}
+        maxLength={maxLength}
         ErrorDetails={
           emailValidationTip ? (
             <div className={styles['email-validation-error']}>

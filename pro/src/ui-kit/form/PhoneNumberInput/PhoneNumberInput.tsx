@@ -13,6 +13,7 @@ import { getPhoneNumberInputAndCountryCode } from './utils/getPhoneNumberInputAn
 
 export type PhoneNumberInputProps = FieldLayoutBaseProps & {
   disabled?: boolean
+  maxLength?: number
 }
 
 const PhoneNumberInput = ({
@@ -20,6 +21,7 @@ const PhoneNumberInput = ({
   label,
   disabled,
   isOptional = false,
+  maxLength = 15,
 }: PhoneNumberInputProps) => {
   const [field, meta, helpers] = useField({ name })
 
@@ -134,6 +136,8 @@ const PhoneNumberInput = ({
         className={styles['phone-number-input']}
         onBlur={onPhoneNumberBlur}
         autoComplete="tel-national"
+        id="phone"
+        maxLength={maxLength}
       />
       <div className={styles['phone-number-input-footer']}>
         {meta.error && meta.touched && (
