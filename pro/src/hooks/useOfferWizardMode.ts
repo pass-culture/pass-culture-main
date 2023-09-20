@@ -19,12 +19,18 @@ const useOfferWizardMode = (): OFFER_WIZARD_MODE => {
       pathPart: 'brouillon',
       mode: OFFER_WIZARD_MODE.DRAFT,
     },
+    {
+      pathPart: 'edition',
+      mode: OFFER_WIZARD_MODE.EDITION,
+    },
   ]
   const wizardModeDetails = modePathMap.find(data =>
     location.pathname.includes(data.pathPart)
   )
 
-  return wizardModeDetails ? wizardModeDetails.mode : OFFER_WIZARD_MODE.EDITION
+  return wizardModeDetails
+    ? wizardModeDetails.mode
+    : OFFER_WIZARD_MODE.READ_ONLY
 }
 
 export default useOfferWizardMode

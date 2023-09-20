@@ -42,7 +42,7 @@ const StockSection = ({ offer, canBeDuo }: StockSectionProps): JSX.Element => {
   const editLink = getIndividualOfferUrl({
     offerId: offer.id,
     step: OFFER_WIZARD_STEP_IDS.STOCKS,
-    mode,
+    mode: OFFER_WIZARD_MODE.EDITION,
   })
 
   const hasNoStock = offer.stocks.length === 0
@@ -61,7 +61,7 @@ const StockSection = ({ offer, canBeDuo }: StockSectionProps): JSX.Element => {
         title={offer.isEvent ? 'Dates et capacité' : 'Stocks et prix'}
         editLink={editLink}
         onLinkClick={logEditEvent}
-        aria-label="Modifier stock et prix"
+        aria-label="Modifier les stocks et prix"
       >
         {stockWarningText && (
           <SummaryLayout.Row

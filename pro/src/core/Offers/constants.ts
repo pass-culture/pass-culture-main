@@ -34,6 +34,7 @@ export enum CATEGORY_STATUS {
 export enum OFFER_WIZARD_MODE {
   CREATION = 'creation',
   DRAFT = 'draft',
+  READ_ONLY = 'readonly',
   EDITION = 'edition',
 }
 

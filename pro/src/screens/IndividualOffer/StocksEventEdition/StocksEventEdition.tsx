@@ -18,6 +18,7 @@ import {
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
 import { getIndividualOfferAdapter } from 'core/Offers/adapters'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
 import { isOfferDisabled } from 'core/Offers/utils'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
@@ -142,8 +143,12 @@ const StocksEventEdition = ({
   const [afterSubmitUrl, setAfterSubmitUrl] = useState<string>(
     getIndividualOfferUrl({
       offerId: offer.id,
-      step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-      mode,
+      step:
+        mode === OFFER_WIZARD_MODE.EDITION
+          ? OFFER_WIZARD_STEP_IDS.STOCKS
+          : OFFER_WIZARD_STEP_IDS.SUMMARY,
+      mode:
+        mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
     })
   )
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
@@ -381,10 +386,14 @@ const StocksEventEdition = ({
 
       const nextStepUrl = getIndividualOfferUrl({
         offerId: offer.id,
-        step: saveDraft
-          ? OFFER_WIZARD_STEP_IDS.STOCKS
-          : OFFER_WIZARD_STEP_IDS.SUMMARY,
-        mode,
+        step:
+          saveDraft || mode === OFFER_WIZARD_MODE.EDITION
+            ? OFFER_WIZARD_STEP_IDS.STOCKS
+            : OFFER_WIZARD_STEP_IDS.SUMMARY,
+        mode:
+          mode === OFFER_WIZARD_MODE.EDITION
+            ? OFFER_WIZARD_MODE.READ_ONLY
+            : mode,
       })
 
       // When saving draft with an empty form
