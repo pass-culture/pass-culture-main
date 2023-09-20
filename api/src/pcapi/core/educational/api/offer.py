@@ -403,14 +403,14 @@ def update_collective_offer_educational_institution(
             use_email=True,
         )
         for teacher in possible_teachers:
-            if teacher["mail"] == teacher_email:
-                redactor = educational_repository.find_redactor_by_email(teacher["mail"])
+            if teacher.mail == teacher_email:
+                redactor = educational_repository.find_redactor_by_email(teacher.mail)
                 if not redactor:
-                    redactor = redactor = educational_models.EducationalRedactor(
-                        email=teacher["mail"],
-                        firstName=teacher["prenom"],
-                        lastName=teacher["nom"],
-                        civility=teacher["civilite"],
+                    redactor = educational_models.EducationalRedactor(
+                        email=teacher.mail,
+                        firstName=teacher.prenom,
+                        lastName=teacher.nom,
+                        civility=teacher.civilite,
                     )
                 offer.teacher = redactor
                 break

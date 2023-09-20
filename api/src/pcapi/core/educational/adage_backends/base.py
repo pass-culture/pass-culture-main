@@ -1,3 +1,5 @@
+import typing
+
 from pcapi import settings
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational.adage_backends import serialize
@@ -33,7 +35,7 @@ class AdageClient:
     def get_adage_educational_institutions(self, ansco: str) -> list[serialize.AdageEducationalInstitution]:
         raise NotImplementedError()
 
-    def get_adage_educational_redactor_from_uai(self, uai: str) -> list[dict[str, str]]:
+    def get_adage_educational_redactor_from_uai(self, uai: str) -> typing.Sequence[serialize.AdagePlainRedactor]:
         raise NotImplementedError()
 
     def notify_reimburse_collective_booking(self, data: prebooking.AdageReibursementNotification) -> None:

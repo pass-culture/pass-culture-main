@@ -1,3 +1,5 @@
+import typing
+
 from pcapi import settings
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational.adage_backends import serialize
@@ -52,7 +54,7 @@ def get_adage_educational_institutions(ansco: str) -> list[serialize.AdageEducat
     return result
 
 
-def get_adage_educational_redactor_from_uai(uai: str) -> list[dict[str, str]]:
+def get_adage_educational_redactor_from_uai(uai: str) -> typing.Sequence[serialize.AdagePlainRedactor]:
     backend = import_string(settings.ADAGE_BACKEND)
     result = backend().get_adage_educational_redactor_from_uai(uai)
     return result

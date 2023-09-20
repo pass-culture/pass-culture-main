@@ -5,8 +5,8 @@
 
 export type EducationalRedactor = {
   email: string;
-  gender: string;
+  gender?: string | null;
   name: string;
-  surname: string;
+  surname?: string | null;
 };
 

@@ -147,3 +147,10 @@ def serialize_collective_offer_request(request: models.CollectiveOfferRequest) -
         venueName=request.collectiveOfferTemplate.venue.name,
         offerName=request.collectiveOfferTemplate.name,
     )
+
+
+class AdagePlainRedactor(AdageBaseResponseModel):
+    nom: str
+    prenom: str | None
+    civilite: str | None
+    mail: str
