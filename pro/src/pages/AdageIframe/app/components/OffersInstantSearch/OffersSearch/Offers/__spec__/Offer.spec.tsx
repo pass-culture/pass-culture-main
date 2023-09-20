@@ -8,6 +8,7 @@ import {
   OfferAddressType,
   StudentLevels,
 } from 'apiClient/adage'
+import { apiAdage } from 'apiClient/api'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { HydratedCollectiveOffer } from 'pages/AdageIframe/app/types/offers'
 import { defaultCollectiveTemplateOffer } from 'utils/adageFactories'
@@ -21,6 +22,12 @@ vi.mock('apiClient/api', () => ({
     logOfferTemplateDetailsButtonClick: vi.fn(),
     logFavOfferButtonClick: vi.fn(),
     logContactModalButtonClick: vi.fn(),
+    postCollectiveOfferFavorites: vi.fn().mockImplementation(() => {}),
+    postCollectiveTemplateFavorites: vi.fn().mockImplementation(() => {}),
+    deleteFavoriteForCollectiveOffer: vi.fn().mockImplementation(() => {}),
+    deleteFavoriteForCollectiveOfferTemplate: vi
+      .fn()
+      .mockImplementation(() => {}),
   },
 }))
 vi.mock('pages/AdageIframe/libs/initAlgoliaAnalytics')
@@ -290,43 +297,6 @@ describe('offer', () => {
       expect((links[5] as HTMLLinkElement).href).toBe('mailto:toto@toto.com')
     })
 
-    it('should display modal when clicking like button', async () => {
-      renderOffers(
-        {
-          ...offerProps,
-          offer: { ...offerInParis, domains: [{ id: 1, name: 'CINEMA' }] },
-        },
-        [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }]
-      )
-
-      const likeButton = await screen.getByTitle("bouton j'aime")
-      await userEvent.click(likeButton)
-
-      expect(
-        screen.getByText(
-          /Lʼéquipe du pass Culture a bien noté votre intérêt pour cette fonctionnalité. Elle arrivera bientôt !/
-        )
-      ).toBeInTheDocument()
-    })
-
-    it('should close modal when clicking close button', async () => {
-      renderOffers(offerProps, [
-        { nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true },
-      ])
-
-      const likeButton = await screen.getByTitle("bouton j'aime")
-      await userEvent.click(likeButton)
-
-      const closeButton = await screen.getByRole('button', { name: 'Fermer' })
-      await userEvent.click(closeButton)
-
-      expect(
-        screen.queryByText(
-          /Lʼéquipe du pass Culture a bien noté votre intérêt pour cette fonctionnalité. Elle arrivera bientôt !/
-        )
-      ).not.toBeInTheDocument()
-    })
-
     it('should display request form modal', async () => {
       renderOffers(
         {
@@ -408,5 +378,133 @@ describe('offer', () => {
     expect(
       screen.queryByText('km de votre établissement')
     ).not.toBeInTheDocument()
+  })
+
+  it('should display the add to favorite button on offers that are not favorite yet', () => {
+    renderOffers(
+      {
+        ...offerProps,
+      },
+      [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }]
+    )
+
+    expect(screen.getByText('Enregistrer en favoris')).toBeInTheDocument()
+  })
+
+  it('should display the remove from favorite button on offers that are already favorite', () => {
+    renderOffers(
+      {
+        ...offerProps,
+        offer: { ...offerInParis, isFavorite: true } as HydratedCollectiveOffer,
+      },
+      [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }]
+    )
+
+    expect(screen.getByText('Supprimer des favoris')).toBeInTheDocument()
+  })
+
+  it("should toggle the favorite status of an offer when it's clicked", async () => {
+    vi.spyOn(apiAdage, 'postCollectiveOfferFavorites').mockResolvedValue()
+    vi.spyOn(apiAdage, 'deleteFavoriteForCollectiveOffer').mockResolvedValue()
+
+    renderOffers(
+      {
+        ...offerProps,
+      },
+      [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }]
+    )
+
+    const toFavoriteButton = screen.getByRole('button', {
+      name: 'Enregistrer en favoris',
+    })
+
+    await userEvent.click(toFavoriteButton)
+
+    expect(screen.getByText('Supprimer des favoris')).toBeInTheDocument()
+
+    const fromFavoriteButton = screen.getByRole('button', {
+      name: 'Supprimer des favoris',
+    })
+
+    await userEvent.click(fromFavoriteButton)
+
+    expect(screen.getByText('Enregistrer en favoris')).toBeInTheDocument()
+  })
+
+  it("should toggle the favorite status of a template offer when it's clicked", async () => {
+    vi.spyOn(apiAdage, 'postCollectiveTemplateFavorites').mockResolvedValue()
+    vi.spyOn(
+      apiAdage,
+      'deleteFavoriteForCollectiveOfferTemplate'
+    ).mockResolvedValue()
+
+    renderOffers(
+      {
+        ...offerProps,
+        offer: { ...offerProps.offer, isTemplate: true },
+        afterFavoriteChange: () => {},
+      },
+      [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }]
+    )
+
+    const toFavoriteButton = screen.getByRole('button', {
+      name: 'Enregistrer en favoris',
+    })
+
+    await userEvent.click(toFavoriteButton)
+
+    expect(screen.getByText('Supprimer des favoris')).toBeInTheDocument()
+
+    const fromFavoriteButton = screen.getByRole('button', {
+      name: 'Supprimer des favoris',
+    })
+
+    await userEvent.click(fromFavoriteButton)
+
+    expect(screen.getByText('Enregistrer en favoris')).toBeInTheDocument()
+  })
+
+  it('should not change favorite status when set to favorite request fails', async () => {
+    vi.spyOn(apiAdage, 'postCollectiveOfferFavorites').mockRejectedValue(null)
+
+    renderOffers(
+      {
+        ...offerProps,
+      },
+      [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }]
+    )
+
+    const toFavoriteButton = screen.getByRole('button', {
+      name: 'Enregistrer en favoris',
+    })
+
+    await userEvent.click(toFavoriteButton)
+
+    expect(screen.getByText('Enregistrer en favoris')).toBeInTheDocument()
+  })
+
+  it('should not change favorite status when set to favorite request fails', async () => {
+    vi.spyOn(apiAdage, 'deleteFavoriteForCollectiveOffer').mockRejectedValue(
+      null
+    )
+
+    renderOffers(
+      {
+        ...offerProps,
+        offer: {
+          ...offerProps.offer,
+          isFavorite: true,
+        } as HydratedCollectiveOffer & { isFavorite: boolean },
+      },
+      [{ nameKey: 'WIP_ENABLE_LIKE_IN_ADAGE', isActive: true }]
+    )
+
+    const toFavoriteButton = screen.getByRole('button', {
+      name: 'Supprimer des favoris',
+    })
+
+    await userEvent.click(toFavoriteButton)
+
+    expect(screen.getByText('Supprimer des favoris')).toBeInTheDocument()
   })
 })
