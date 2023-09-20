@@ -1,13 +1,17 @@
 from datetime import datetime
+from unittest import mock
 from urllib.parse import urlencode
 
+import fakeredis
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core import token as token_utils
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.mails.transactional.users.suspicious_login_email import get_suspicious_login_email_data
 from pcapi.core.mails.transactional.users.suspicious_login_email import send_suspicious_login_email
+from pcapi.core.users import constants
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import LoginDeviceHistory
 
@@ -24,96 +28,120 @@ class SendinblueSuspiciousLoginEmailTest:
         dateCreated=datetime(2023, 5, 29, 17, 5, 0),
     )
     account_suspension_token = "suspicious_login_email_token"
+    mock_redis_client = fakeredis.FakeStrictRedis()
 
     def setup_method(self):
-        self.user = users_factories.UserFactory()
-        self.reset_password_token = users_factories.PasswordResetTokenFactory()
-        self.ACCOUNT_SECURING_LINK = "https://passcultureapptestauto.page.link/?" + urlencode(
+        with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
+            self.user = users_factories.UserFactory()
+            current_time = datetime.utcnow()
+            with freeze_time(current_time):
+                self.reset_password_token = token_utils.Token.create(
+                    token_utils.TokenType.RESET_PASSWORD, constants.RESET_PASSWORD_TOKEN_LIFE_TIME, self.user.id
+                )
+                self.ACCOUNT_SECURING_LINK = "https://passcultureapptestauto.page.link/?" + urlencode(
+                    {
+                        "link": f"https://webapp-v2.example.com/securisation-compte?token={self.account_suspension_token}&reset_password_token={self.reset_password_token.encoded_token}&reset_token_expiration_timestamp={int(self.reset_password_token.get_expiration_date_from_token().timestamp())}&"
+                        + urlencode({"email": self.user.email})
+                    }
+                )
+
+    def should_return_sendinblue_template_data(self):
+        with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
+            suspicious_email_data = get_suspicious_login_email_data(
+                self.user, self.login_info, self.account_suspension_token, self.reset_password_token
+            )
+
+            assert suspicious_email_data.template == TransactionalEmail.SUSPICIOUS_LOGIN.value
+            assert suspicious_email_data.params["LOCATION"] == "Paris"
+            assert suspicious_email_data.params["SOURCE"] == "iPhone 13"
+            assert suspicious_email_data.params["OS"] == "iOS"
+            assert suspicious_email_data.params["LOGIN_DATE"] == "29/05/2023"
+            assert suspicious_email_data.params["LOGIN_TIME"] == "19h05"
+
+    def should_return_sendinblue_template_data_account_securing_link(self):
+        reset_password_token = token_utils.Token.create(
+            token_utils.TokenType.RESET_PASSWORD, constants.RESET_PASSWORD_TOKEN_LIFE_TIME, self.user.id
+        )
+        ACCOUNT_SECURING_LINK = "https://passcultureapptestauto.page.link/?" + urlencode(
             {
-                "link": f"https://webapp-v2.example.com/securisation-compte?token={self.account_suspension_token}&reset_password_token={self.reset_password_token.value}&reset_token_expiration_timestamp={int(self.reset_password_token.expirationDate.timestamp())}&"
+                "link": f"https://webapp-v2.example.com/securisation-compte?token={self.account_suspension_token}&reset_password_token={self.reset_password_token.encoded_token}&reset_token_expiration_timestamp={int(self.reset_password_token.get_expiration_date_from_token().timestamp())}&"
                 + urlencode({"email": self.user.email})
             }
         )
-
-    def should_return_sendinblue_template_data(self):
         suspicious_email_data = get_suspicious_login_email_data(
-            self.user, self.login_info, self.account_suspension_token, self.reset_password_token
+            self.user, self.login_info, self.account_suspension_token, reset_password_token
         )
-
-        assert suspicious_email_data.template == TransactionalEmail.SUSPICIOUS_LOGIN.value
-        assert suspicious_email_data.params == {
-            "LOCATION": "Paris",
-            "SOURCE": "iPhone 13",
-            "OS": "iOS",
-            "LOGIN_DATE": "29/05/2023",
-            "LOGIN_TIME": "19h05",
-            "ACCOUNT_SECURING_LINK": self.ACCOUNT_SECURING_LINK,
-        }
+        assert suspicious_email_data.params["ACCOUNT_SECURING_LINK"] == ACCOUNT_SECURING_LINK
 
     def should_send_suspicious_login_email(self):
-        send_suspicious_login_email(
-            self.user, self.login_info, self.account_suspension_token, self.reset_password_token
-        )
+        with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
+            send_suspicious_login_email(
+                self.user, self.login_info, self.account_suspension_token, self.reset_password_token
+            )
 
-        assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
-        assert mails_testing.outbox[0].sent_data["To"] == self.user.email
-        assert mails_testing.outbox[0].sent_data["params"] == {
-            "LOCATION": "Paris",
-            "SOURCE": "iPhone 13",
-            "OS": "iOS",
-            "LOGIN_DATE": "29/05/2023",
-            "LOGIN_TIME": "19h05",
-            "ACCOUNT_SECURING_LINK": self.ACCOUNT_SECURING_LINK,
-        }
+            assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
+            assert mails_testing.outbox[0].sent_data["To"] == self.user.email
+            assert mails_testing.outbox[0].sent_data["params"]["LOCATION"] == "Paris"
+            assert mails_testing.outbox[0].sent_data["params"]["SOURCE"] == "iPhone 13"
+            assert mails_testing.outbox[0].sent_data["params"]["OS"] == "iOS"
+            assert mails_testing.outbox[0].sent_data["params"]["LOGIN_DATE"] == "29/05/2023"
+            assert mails_testing.outbox[0].sent_data["params"]["LOGIN_TIME"] == "19h05"
+
+    def should_send_suspicious_login_email_account_securing_link(self):
+        reset_password_token = token_utils.Token.create(
+            token_utils.TokenType.RESET_PASSWORD, constants.RESET_PASSWORD_TOKEN_LIFE_TIME, self.user.id
+        )
+        ACCOUNT_SECURING_LINK = "https://passcultureapptestauto.page.link/?" + urlencode(
+            {
+                "link": f"https://webapp-v2.example.com/securisation-compte?token={self.account_suspension_token}&reset_password_token={self.reset_password_token.encoded_token}&reset_token_expiration_timestamp={int(self.reset_password_token.get_expiration_date_from_token().timestamp())}&"
+                + urlencode({"email": self.user.email})
+            }
+        )
+        send_suspicious_login_email(self.user, self.login_info, self.account_suspension_token, reset_password_token)
+        assert mails_testing.outbox[0].sent_data["params"]["ACCOUNT_SECURING_LINK"] == ACCOUNT_SECURING_LINK
 
     @freeze_time("2023-06-08 14:10:00")
     def should_send_suspicious_login_email_with_date_when_no_login_info(self):
-        send_suspicious_login_email(
-            self.user,
-            login_info=None,
-            account_suspension_token=self.account_suspension_token,
-            reset_password_token=self.reset_password_token,
-        )
+        with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
+            send_suspicious_login_email(
+                self.user,
+                login_info=None,
+                account_suspension_token=self.account_suspension_token,
+                reset_password_token=self.reset_password_token,
+            )
 
-        assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
-        assert mails_testing.outbox[0].sent_data["To"] == self.user.email
-        assert mails_testing.outbox[0].sent_data["params"] == {
-            "LOGIN_DATE": "08/06/2023",
-            "LOGIN_TIME": "16h10",
-            "ACCOUNT_SECURING_LINK": self.ACCOUNT_SECURING_LINK,
-        }
+            assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
+            assert mails_testing.outbox[0].sent_data["To"] == self.user.email
+            assert mails_testing.outbox[0].sent_data["params"]["LOGIN_DATE"] == "08/06/2023"
+            assert mails_testing.outbox[0].sent_data["params"]["LOGIN_TIME"] == "16h10"
 
     def should_send_suspicious_login_email_for_user_living_in_domtom(self):
-        self.user.departementCode = "987"
-        send_suspicious_login_email(
-            self.user, self.login_info, self.account_suspension_token, self.reset_password_token
-        )
+        with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
+            self.user.departementCode = "987"
+            send_suspicious_login_email(
+                self.user, self.login_info, self.account_suspension_token, self.reset_password_token
+            )
 
-        assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
-        assert mails_testing.outbox[0].sent_data["To"] == self.user.email
-        assert mails_testing.outbox[0].sent_data["params"] == {
-            "LOCATION": "Paris",
-            "SOURCE": "iPhone 13",
-            "OS": "iOS",
-            "LOGIN_DATE": "29/05/2023",
-            "LOGIN_TIME": "07h05",
-            "ACCOUNT_SECURING_LINK": self.ACCOUNT_SECURING_LINK,
-        }
+            assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
+            assert mails_testing.outbox[0].sent_data["To"] == self.user.email
+            assert mails_testing.outbox[0].sent_data["params"]["LOCATION"] == "Paris"
+            assert mails_testing.outbox[0].sent_data["params"]["SOURCE"] == "iPhone 13"
+            assert mails_testing.outbox[0].sent_data["params"]["OS"] == "iOS"
+            assert mails_testing.outbox[0].sent_data["params"]["LOGIN_DATE"] == "29/05/2023"
+            assert mails_testing.outbox[0].sent_data["params"]["LOGIN_TIME"] == "07h05"
 
     @freeze_time("2023-06-08 3:15:00")
     def should_send_suspicious_login_email_for_user_living_in_domtom_with_date_when_no_login_info(self):
-        self.user.departementCode = "972"
-        send_suspicious_login_email(
-            self.user,
-            login_info=None,
-            account_suspension_token=self.account_suspension_token,
-            reset_password_token=self.reset_password_token,
-        )
+        with mock.patch("flask.current_app.redis_client", self.mock_redis_client):
+            self.user.departementCode = "972"
+            send_suspicious_login_email(
+                self.user,
+                login_info=None,
+                account_suspension_token=self.account_suspension_token,
+                reset_password_token=self.reset_password_token,
+            )
 
-        assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
-        assert mails_testing.outbox[0].sent_data["To"] == self.user.email
-        assert mails_testing.outbox[0].sent_data["params"] == {
-            "LOGIN_DATE": "07/06/2023",
-            "LOGIN_TIME": "23h15",
-            "ACCOUNT_SECURING_LINK": self.ACCOUNT_SECURING_LINK,
-        }
+            assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.SUSPICIOUS_LOGIN.value.__dict__
+            assert mails_testing.outbox[0].sent_data["To"] == self.user.email
+            assert mails_testing.outbox[0].sent_data["params"]["LOGIN_DATE"] == "07/06/2023"
+            assert mails_testing.outbox[0].sent_data["params"]["LOGIN_TIME"] == "23h15"

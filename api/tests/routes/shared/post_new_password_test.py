@@ -1,44 +1,47 @@
-from datetime import datetime
-from datetime import timedelta
+from unittest import mock
 
+import fakeredis
+from freezegun import freeze_time
 import pytest
 
+from pcapi.core import token as token_utils
+from pcapi.core.users import constants as user_constants
+from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
-from pcapi.core.users import models
 from pcapi.core.users import testing as users_testing
-from pcapi.core.users.models import TokenType
 from pcapi.notifications.push import testing as push_testing
 
 
 @pytest.mark.usefixtures("db_session")
 def test_change_password(client):
     user = users_factories.UserFactory()
-    token = users_factories.TokenFactory(user=user, type=TokenType.RESET_PASSWORD)
-    data = {"token": token.value, "newPassword": "N3W_p4ssw0rd"}
+    token = token_utils.Token.create(
+        token_utils.TokenType.RESET_PASSWORD, user_constants.RESET_PASSWORD_TOKEN_LIFE_TIME, user.id
+    )
+    data = {"token": token.encoded_token, "newPassword": "N3W_p4ssw0rd"}
 
     response = client.post("/users/new-password", json=data)
 
     assert response.status_code == 204
     assert user.checkPassword("N3W_p4ssw0rd")
-
-    assert len(user.tokens) == 1
-    token = models.Token.query.get(token.id)
-    assert token.isUsed
+    with pytest.raises(users_exceptions.InvalidToken):
+        token.check(token_utils.TokenType.RESET_PASSWORD)
 
 
 @pytest.mark.usefixtures("db_session")
 def test_change_password_validates_email(client):
     user = users_factories.UserFactory(isEmailValidated=False, validationToken="AZERTY123456")
-    token = users_factories.TokenFactory(user=user, type=TokenType.RESET_PASSWORD)
-    data = {"token": token.value, "newPassword": "N3W_p4ssw0rd"}
+    token = token_utils.Token.create(
+        token_utils.TokenType.RESET_PASSWORD, user_constants.RESET_PASSWORD_TOKEN_LIFE_TIME, user.id
+    )
+    data = {"token": token.encoded_token, "newPassword": "N3W_p4ssw0rd"}
 
     response = client.post("/users/new-password", json=data)
 
     assert response.status_code == 204
     assert user.checkPassword("N3W_p4ssw0rd")
-    assert len(user.tokens) == 1
-    token = models.Token.query.get(token.id)
-    assert token.isUsed
+    with pytest.raises(users_exceptions.InvalidToken):
+        token.check(token_utils.TokenType.RESET_PASSWORD)
 
     # One call should be sent to batch, and one to sendinblue
     assert len(push_testing.requests) == 2
@@ -50,25 +53,27 @@ def test_change_password_validates_email(client):
 
 @pytest.mark.usefixtures("db_session")
 def test_fail_if_token_has_expired(client):
-    user = users_factories.UserFactory(password="Old_P4ssword")
-    token = users_factories.TokenFactory(
-        user=user,
-        type=TokenType.RESET_PASSWORD,
-        expirationDate=datetime.utcnow() - timedelta(hours=24),
-    )
-    data = {"token": token.value, "newPassword": "N3W_p4ssw0rd"}
+    with mock.patch("flask.current_app.redis_client", fakeredis.FakeStrictRedis()):
+        with freeze_time("2021-10-15 12:48:00"):
+            user = users_factories.UserFactory(password="Old_P4ssword")
+            token = token_utils.Token.create(
+                token_utils.TokenType.RESET_PASSWORD, user_constants.RESET_PASSWORD_TOKEN_LIFE_TIME, user.id
+            )
+            data = {"token": token.encoded_token, "newPassword": "N3W_p4ssw0rd"}
+        with freeze_time("2021-10-25 12:48:00"):
+            response = client.post("/users/new-password", json=data)
 
-    response = client.post("/users/new-password", json=data)
-
-    assert response.status_code == 400
-    assert response.json["token"] == ["Votre lien de changement de mot de passe est invalide."]
-    assert user.checkPassword("Old_P4ssword")
+            assert response.status_code == 400
+            assert response.json["token"] == ["Votre lien de changement de mot de passe est invalide."]
+            assert user.checkPassword("Old_P4ssword")
 
 
 @pytest.mark.usefixtures("db_session")
 def test_fail_if_token_is_unknown(client):
     user = users_factories.UserFactory()
-    users_factories.TokenFactory(user=user, type=TokenType.RESET_PASSWORD, value="ONE TOKEN")
+    token_utils.Token.create(
+        token_utils.TokenType.RESET_PASSWORD, user_constants.RESET_PASSWORD_TOKEN_LIFE_TIME, user.id
+    )
     data = {"token": "OTHER TOKEN", "newPassword": "N3W_p4ssw0rd"}
 
     response = client.post("/users/new-password", json=data)

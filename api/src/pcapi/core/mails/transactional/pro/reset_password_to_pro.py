@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from pcapi.core import mails
+from pcapi.core import token as token_utils
 from pcapi.core.mails import models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.users.models as users_models
@@ -10,10 +11,8 @@ from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.mailing import build_pc_pro_reset_password_link
 
 
-def get_reset_password_to_pro_email_data(
-    user: users_models.User, token: users_models.Token
-) -> models.TransactionalEmailData:
-    reinit_password_url = build_pc_pro_reset_password_link(token.value)
+def get_reset_password_to_pro_email_data(token: token_utils.Token) -> models.TransactionalEmailData:
+    reinit_password_url = build_pc_pro_reset_password_link(token.encoded_token)
     return models.TransactionalEmailData(
         template=TransactionalEmail.RESET_PASSWORD_TO_PRO.value,
         params={
@@ -22,8 +21,9 @@ def get_reset_password_to_pro_email_data(
     )
 
 
-def send_reset_password_email_to_pro(user: users_models.User, token: users_models.Token) -> bool:
-    data = get_reset_password_to_pro_email_data(user, token)
+def send_reset_password_email_to_pro(token: token_utils.Token) -> bool:
+    user = users_models.User.query.get(token.user_id)
+    data = get_reset_password_to_pro_email_data(token)
     return mails.send(recipients=[user.email], data=data)
 
 
