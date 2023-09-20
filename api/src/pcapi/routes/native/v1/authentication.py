@@ -10,6 +10,7 @@ from pcapi.core.subscription.dms import api as dms_subscription_api
 import pcapi.core.token as token_utils
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
+from pcapi.core.users import models as user_models
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
@@ -129,11 +130,15 @@ def request_password_reset(body: RequestPasswordResetRequest) -> None:
 )
 def reset_password(body: ResetPasswordRequest) -> ResetPasswordResponse:
     check_password_strength("newPassword", body.new_password)
-
+    token = None
     try:
-        user = users_repo.get_user_with_valid_token(body.reset_password_token, [TokenType.RESET_PASSWORD])
+        token = token_utils.Token.load_and_check(body.reset_password_token, token_utils.TokenType.RESET_PASSWORD)
+        user = user_models.User.query.get(token.user_id)
     except users_exceptions.InvalidToken:
-        raise ApiErrors({"token": ["Le token de changement de mot de passe est invalide."]})
+        try:  # TODO abdelmoujibmegzari: remove this except 1 sprint after this https://passculture.atlassian.net/browse/PC-24624
+            user = users_repo.get_user_with_valid_token(body.reset_password_token, [TokenType.RESET_PASSWORD])
+        except users_exceptions.InvalidToken:
+            raise ApiErrors({"token": ["Le token de changement de mot de passe est invalide."]})
 
     user.setPassword(body.new_password)
 
@@ -147,7 +152,8 @@ def reset_password(body: ResetPasswordRequest) -> ResetPasswordResponse:
             )
 
     repository.save(user)
-
+    if token:
+        token.expire()
     return ResetPasswordResponse(
         access_token=users_api.create_user_access_token(user),
         refresh_token=users_api.create_user_refresh_token(user, body.device_info),

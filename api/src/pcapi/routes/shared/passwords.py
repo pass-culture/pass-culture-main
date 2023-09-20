@@ -41,7 +41,9 @@ def reset_password(body: ResetPasswordBodyModel) -> None:
 
     token = users_api.create_reset_password_token(user)
     if user.is_beneficiary:
-        send_email = transactional_mails.send_reset_password_email_to_user
+        send_email = lambda user, stoken: transactional_mails.send_reset_password_email_to_user(
+            token
+        )  # TODO: abdelmoujibmegzari remove lambda when reset password token to pro is replaced by new token
     else:
         send_email = transactional_mails.send_reset_password_email_to_pro
 

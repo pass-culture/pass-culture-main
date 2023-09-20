@@ -70,11 +70,11 @@ UNCHANGED = T_UNCHANGED.TOKEN
 logger = logging.getLogger(__name__)
 
 
-def create_reset_password_token(user: models.User, expiration: datetime.datetime | None = None) -> models.Token:
-    return generate_and_save_token(
-        user,
-        models.TokenType.RESET_PASSWORD,
-        expiration=expiration or datetime.datetime.utcnow() + constants.RESET_PASSWORD_TOKEN_LIFE_TIME,
+def create_reset_password_token(user: models.User, expiration: datetime.datetime | None = None) -> token_utils.Token:
+    return token_utils.Token.create(
+        token_utils.TokenType.RESET_PASSWORD,
+        datetime.datetime.utcnow() - expiration if expiration else constants.RESET_PASSWORD_TOKEN_LIFE_TIME,
+        user.id,
     )
 
 
@@ -324,7 +324,7 @@ def request_password_reset(user: models.User | None) -> None:
         return
 
     token = create_reset_password_token(user)
-    is_email_sent = transactional_mails.send_reset_password_email_to_user(user, token)
+    is_email_sent = transactional_mails.send_reset_password_email_to_user(token)
 
     if not is_email_sent:
         logger.error("Email service failure when user requested password reset for email '%s'", user.email)
@@ -336,7 +336,7 @@ def handle_create_account_with_existing_email(user: models.User) -> None:
         return
 
     token = create_reset_password_token(user)
-    is_email_sent = transactional_mails.send_email_already_exists_email(user, token)
+    is_email_sent = transactional_mails.send_email_already_exists_email(token)
 
     if not is_email_sent:
         logger.error("Email service failure when user email already exists in database '%s'", user.email)
