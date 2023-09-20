@@ -54,7 +54,7 @@ const renderTemplate = ({
   )
 }
 
-describe('test IndividualOfferTemplate', () => {
+describe('IndividualOfferTemplate', () => {
   const offerId = 1
   it('should render when no offer is given', () => {
     renderTemplate({})

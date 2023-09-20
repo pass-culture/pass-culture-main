@@ -106,7 +106,8 @@ const Summary = () => {
       to: OFFER_WIZARD_STEP_IDS.STOCKS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+      isDraft:
+        mode === OFFER_WIZARD_MODE.CREATION || mode === OFFER_WIZARD_MODE.DRAFT,
       offerId: offer.id,
     })
 
@@ -136,7 +137,8 @@ const Summary = () => {
 
   return (
     <>
-      {mode !== OFFER_WIZARD_MODE.EDITION && (
+      {(mode === OFFER_WIZARD_MODE.CREATION ||
+        mode === OFFER_WIZARD_MODE.DRAFT) && (
         <div className={styles['offer-preview-banners']}>
           <BannerSummary mode={mode} />
         </div>
