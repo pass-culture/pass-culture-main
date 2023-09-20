@@ -196,6 +196,11 @@ def _get_current_educational_year() -> int:
     return current_educational_year
 
 
+class EducationalCurrentYearFactory(EducationalYearFactory):
+    beginningDate = datetime.datetime(_get_current_educational_year(), 9, 1)
+    expirationDate = datetime.datetime(_get_current_educational_year() + 1, 8, 31, 23, 59, 59)
+
+
 def _get_current_educational_year_adage_id() -> int:
     return _get_current_educational_year() - ADAGE_STARTING_EDUCATIONAL_YEAR
 
