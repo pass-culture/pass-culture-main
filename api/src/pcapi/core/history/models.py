@@ -50,7 +50,7 @@ class ActionType(enum.Enum):
     FINANCE_INCIDENT_USER_RECREDIT = "Compte re-crédité suite à un incident"
 
 
-ACTION_HISTORY_ORDER_BY = "ActionHistory.actionDate.asc().nullsfirst()"
+ACTION_HISTORY_ORDER_BY = "ActionHistory.actionDate.asc().nulls_first()"
 
 
 class ActionHistory(PcObject, Base, Model):
