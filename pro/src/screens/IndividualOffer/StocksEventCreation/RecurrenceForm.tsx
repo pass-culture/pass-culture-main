@@ -2,7 +2,7 @@ import { FieldArray, FormikProvider, useFormik } from 'formik'
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import {
   Events,

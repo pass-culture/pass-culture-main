@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { IndividualOfferBreadcrumb } from 'components/IndividualOfferBreadcrumb'
+import { IndividualOfferBreadcrumb } from 'components/IndividualOfferBreadcrumb/IndividualOfferBreadcrumb'
 import { OfferFormLayout } from 'components/OfferFormLayout'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { getIndividualOfferAdapter } from 'core/Offers/adapters'

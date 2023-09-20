@@ -1,7 +1,7 @@
 import React from 'react'
 import { withRouter } from 'storybook-addon-react-router-v6'
 
-import { IndividualOfferBreadcrumb } from 'components/IndividualOfferBreadcrumb'
+import { IndividualOfferBreadcrumb } from 'components/IndividualOfferBreadcrumb/IndividualOfferBreadcrumb'
 
 import { OfferFormLayout } from '.'
 

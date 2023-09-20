@@ -2,7 +2,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,

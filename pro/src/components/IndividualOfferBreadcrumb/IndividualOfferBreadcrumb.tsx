@@ -28,7 +28,7 @@ interface IndividualOfferBreadcrumbProps {
   shouldTrack?: boolean
 }
 
-const IndividualOfferBreadcrumb = ({
+export const IndividualOfferBreadcrumb = ({
   shouldTrack = true,
 }: IndividualOfferBreadcrumbProps) => {
   const { offer, subcategory } = useIndividualOfferContext()
@@ -48,41 +48,64 @@ const IndividualOfferBreadcrumb = ({
   const isEvent =
     offer?.isEvent || subcategory?.isEvent || isOfferSubtypeEvent(offerSubtype)
 
-  const stepPatternList: StepPattern[] = [
-    {
-      id: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-      label: 'Détails de l’offre',
-      path: getIndividualOfferPath({
-        step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        mode,
-      }),
-      isActive: true,
-    },
-    {
-      id: OFFER_WIZARD_STEP_IDS.STOCKS,
-      label: isEvent ? 'Dates & Capacités' : 'Stock & Prix',
-      path: getIndividualOfferPath({
-        step: OFFER_WIZARD_STEP_IDS.STOCKS,
-        mode,
-      }),
-      isActive: (isEvent && hasPriceCategories) || (!isEvent && hasOffer),
-    },
-  ]
+  const steps: StepPattern[] = []
 
   if (isEvent) {
-    stepPatternList.splice(1, 0, {
-      id: OFFER_WIZARD_STEP_IDS.TARIFS,
-      label: 'Tarifs',
-      path: getIndividualOfferPath({
-        step: OFFER_WIZARD_STEP_IDS.TARIFS,
-        mode,
-      }),
-      isActive: hasOffer,
-    })
+    steps.push(
+      {
+        id: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        label: 'Détails de l’offre',
+        path: getIndividualOfferPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode,
+        }),
+        isActive: true,
+      },
+      {
+        id: OFFER_WIZARD_STEP_IDS.TARIFS,
+        label: 'Tarifs',
+        path: getIndividualOfferPath({
+          step: OFFER_WIZARD_STEP_IDS.TARIFS,
+          mode,
+        }),
+        isActive: hasOffer,
+      },
+      {
+        id: OFFER_WIZARD_STEP_IDS.STOCKS,
+        label: 'Dates & Capacités',
+        path: getIndividualOfferPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode,
+        }),
+        isActive: hasPriceCategories,
+      }
+    )
+  } else {
+    steps.push(
+      {
+        id: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+        label: 'Détails de l’offre',
+        path: getIndividualOfferPath({
+          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+          mode,
+        }),
+        isActive: true,
+      },
+
+      {
+        id: OFFER_WIZARD_STEP_IDS.STOCKS,
+        label: 'Stock & Prix',
+        path: getIndividualOfferPath({
+          step: OFFER_WIZARD_STEP_IDS.STOCKS,
+          mode,
+        }),
+        isActive: hasOffer,
+      }
+    )
   }
 
   if (mode !== OFFER_WIZARD_MODE.EDITION) {
-    stepPatternList.push(
+    steps.push(
       {
         id: OFFER_WIZARD_STEP_IDS.SUMMARY,
         label: 'Récapitulatif',
@@ -100,7 +123,7 @@ const IndividualOfferBreadcrumb = ({
     )
   }
 
-  const stepList = stepPatternList.map((stepPattern: StepPattern): Step => {
+  const stepList = steps.map((stepPattern: StepPattern): Step => {
     const step: Step = {
       id: stepPattern.id,
       label: stepPattern.label,
@@ -139,5 +162,3 @@ const IndividualOfferBreadcrumb = ({
     />
   )
 }
-
-export default IndividualOfferBreadcrumb
