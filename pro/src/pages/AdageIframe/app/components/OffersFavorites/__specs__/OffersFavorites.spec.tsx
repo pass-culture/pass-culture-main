@@ -1,4 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { Route, Routes } from 'react-router-dom'
 
 import {
   AdageFrontRoles,
@@ -21,10 +23,18 @@ const renderAdageFavoritesOffers = (
   storeOverrides?: any
 ) => {
   renderWithProviders(
-    <AdageUserContextProvider adageUser={user}>
-      <OffersFavorites></OffersFavorites>
-    </AdageUserContextProvider>,
-    { storeOverrides }
+    <Routes>
+      <Route path="/adage-iframe" element={<h1>Accueil</h1>} />
+      <Route
+        path="/adage-iframe/mes-favoris"
+        element={
+          <AdageUserContextProvider adageUser={user}>
+            <OffersFavorites></OffersFavorites>
+          </AdageUserContextProvider>
+        }
+      />
+    </Routes>,
+    { storeOverrides, initialRouterEntries: ['/adage-iframe/mes-favoris'] }
   )
 }
 
@@ -67,7 +77,9 @@ describe('OffersFavorites', () => {
     await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
 
     expect(
-      screen.getByText('Aucune offre en favoris pour le moment.')
+      screen.getByText(
+        'Explorez le catalogue et ajoutez les offres en favori pour les retrouver facilement !'
+      )
     ).toBeInTheDocument()
   })
 
@@ -96,7 +108,23 @@ describe('OffersFavorites', () => {
     await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
 
     expect(
-      screen.getByText('Aucune offre en favoris pour le moment.')
+      screen.getByText(
+        'Explorez le catalogue et ajoutez les offres en favori pour les retrouver facilement !'
+      )
     ).toBeInTheDocument()
+  })
+
+  it('should redirect to main adage page when clicking the catalogue button', async () => {
+    vi.spyOn(apiAdage, 'getCollectiveFavorites').mockRejectedValueOnce({})
+
+    renderAdageFavoritesOffers(user, isFavoritesActive)
+
+    await waitFor(() =>
+      expect(screen.queryByText(/Chargement en cours/)).not.toBeInTheDocument()
+    )
+
+    await userEvent.click(screen.getByText('Explorer le catalogue'))
+
+    expect(screen.getByRole('heading', { name: 'Accueil' })).toBeInTheDocument()
   })
 })
