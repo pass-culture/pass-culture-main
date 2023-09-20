@@ -478,7 +478,7 @@ def get_user_bookings(user: users_models.User) -> List[bookings_models.Booking]:
             bookings_models.Booking.userId == user.id,
             bookings_models.Booking.status != bookings_models.BookingStatus.CANCELLED,
         )
-        .order_by(db.desc(bookings_models.Booking.dateCreated))
+        .order_by(bookings_models.Booking.dateCreated.desc())
         .all()
     )
 
