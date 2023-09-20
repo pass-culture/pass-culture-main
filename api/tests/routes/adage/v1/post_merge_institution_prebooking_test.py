@@ -1,82 +1,75 @@
-from unittest.mock import patch
-
 import pytest
 
-from pcapi.core.educational import factories as educational_factories
-from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational import factories
+from pcapi.core.educational import models
+from pcapi.models import db
+
+
+@pytest.fixture(name="eac_client")
+def eac_client_fixture(client):
+    return client.with_eac_token()
+
+
+@pytest.fixture(name="current_year")
+def current_year_fixture():
+    return factories.EducationalCurrentYearFactory()
+
+
+@pytest.fixture(name="booking")
+def booking_fixture(current_year):
+    return factories.CollectiveBookingFactory(educationalYear=current_year)
 
 
 @pytest.mark.usefixtures("db_session")
 class PostMergeInstitutionPrebookingTest:
-    def test_merge_institution_prebooking(self, client) -> None:
-        institution_source, institution_destination = educational_factories.EducationalInstitutionFactory.create_batch(
-            2
-        )
-        booking_1, booking_2, booking_3 = educational_factories.CollectiveBookingFactory.create_batch(
-            3, educationalInstitution=institution_source
-        )
-        offer_1, offer_2 = educational_factories.CollectiveOfferFactory.create_batch(2, institution=institution_source)
-        educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer_1,
-            collectiveBookings=[booking_1],
-        )
-        educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer_2,
-            collectiveBookings=[booking_2],
-        )
+    """Merge institutions prebooking: move bookings from an institution
+    to another.
+    """
+
+    def test_merge_institution_prebooking(self, eac_client, booking) -> None:
+        destination_institution = factories.EducationalInstitutionFactory()
 
         body = {
-            "source_uai": institution_source.institutionId,
-            "destination_uai": institution_destination.institutionId,
-            "bookings_ids": [booking_1.id, booking_2.id, booking_3.id],
+            "source_uai": booking.educationalInstitution.institutionId,
+            "destination_uai": destination_institution.institutionId,
+            "bookings_ids": [booking.id],
         }
 
-        client = client.with_eac_token()
-        response = client.post("/adage/v1/prebookings/move", json=body)
-
+        response = eac_client.post("/adage/v1/prebookings/move", json=body)
         assert response.status_code == 204
-        assert booking_1.educationalInstitution.institutionId == institution_destination.institutionId
-        assert booking_2.educationalInstitution.institutionId == institution_destination.institutionId
-        assert booking_3.educationalInstitution.institutionId == institution_destination.institutionId
-        assert offer_1.institution == institution_destination
-        assert offer_2.institution == institution_destination
 
-    def test_merge_institution_prebooking_institution_destination_in_adage_only(self, client) -> None:
-        institution_source = educational_factories.EducationalInstitutionFactory()
-        booking_1, booking_2 = educational_factories.CollectiveBookingFactory.create_batch(
-            2, educationalInstitution=institution_source
-        )
-        offer_1, offer_2 = educational_factories.CollectiveOfferFactory.create_batch(2, institution=institution_source)
-        educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer_1,
-            collectiveBookings=[booking_1],
-        )
-        educational_factories.CollectiveStockFactory(
-            collectiveOffer=offer_2,
-            collectiveBookings=[booking_2],
-        )
+        db.session.refresh(booking)
+
+        assert booking.educationalInstitution.institutionId == destination_institution.institutionId
+        assert booking.collectiveStock.collectiveOffer.institution == destination_institution
+
+    def test_merge_institution_prebooking_institution_destination_in_adage_only(self, eac_client, booking) -> None:
+        destination_uai = "0470009E"
+        assert booking.educationalInstitution.institutionId != destination_uai
 
         body = {
-            "source_uai": institution_source.institutionId,
-            "destination_uai": "0470009E",
-            "bookings_ids": [booking_1.id, booking_2.id],
+            "source_uai": booking.educationalInstitution.institutionId,
+            "destination_uai": destination_uai,
+            "bookings_ids": [booking.id],
         }
 
-        client = client.with_eac_token()
-        with patch("pcapi.core.educational.adage_backends.get_adage_educational_institutions"):
-            response = client.post("/adage/v1/prebookings/move", json=body)
-
+        response = eac_client.post("/adage/v1/prebookings/move", json=body)
         assert response.status_code == 204
-        institution_destination = educational_repository.find_educational_institution_by_uai_code(
-            body["destination_uai"]
-        )
-        assert booking_1.educationalInstitution.institutionId == institution_destination.institutionId
-        assert booking_2.educationalInstitution.institutionId == institution_destination.institutionId
-        assert offer_1.institution == institution_destination
-        assert offer_2.institution == institution_destination
 
-    def test_merge_institution_prebooking_institution_destination_dont_exist(self, client) -> None:
-        institution_source = educational_factories.EducationalInstitutionFactory()
+        # first: existing one created by the booking, second: the new
+        # one created by the api call
+        assert models.EducationalInstitution.query.count() == 2
+        assert destination_uai in {inst.institutionId for inst in models.EducationalInstitution.query.all()}
+
+        db.session.refresh(booking)
+
+        # booking and its offer should be attached to the newly created
+        # institution
+        assert booking.educationalInstitution.institutionId == destination_uai
+        assert booking.collectiveStock.collectiveOffer.institution.institutionId == destination_uai
+
+    def test_merge_institution_prebooking_institution_destination_dont_exist(self, eac_client, current_year) -> None:
+        institution_source = factories.EducationalInstitutionFactory()
 
         body = {
             "source_uai": institution_source.institutionId,
@@ -84,22 +77,19 @@ class PostMergeInstitutionPrebookingTest:
             "bookings_ids": [1, 2, 3],
         }
 
-        client = client.with_eac_token()
-        with patch("pcapi.core.educational.adage_backends.get_adage_educational_institutions"):
-            response = client.post("/adage/v1/prebookings/move", json=body)
+        response = eac_client.post("/adage/v1/prebookings/move", json=body)
 
         assert response.status_code == 404
         assert response.json == {"destination_uai": "not found"}
 
-    def test_merge_institution_prebooking_institution_source_not_found(self, client) -> None:
+    def test_merge_institution_prebooking_institution_source_not_found(self, eac_client) -> None:
         body = {
             "source_uai": "oh no nono nonono",
             "destination_uai": "the destination",
             "bookings_ids": [1, 2, 3],
         }
 
-        client = client.with_eac_token()
-        response = client.post("/adage/v1/prebookings/move", json=body)
+        response = eac_client.post("/adage/v1/prebookings/move", json=body)
 
         assert response.status_code == 404
         assert response.json == {"code": "Source institution not found"}
