@@ -33,7 +33,6 @@ describe('BookingOfferCell', () => {
           numberOfTickets: 1,
         },
       }),
-      isCollective: false,
     }
 
     // When

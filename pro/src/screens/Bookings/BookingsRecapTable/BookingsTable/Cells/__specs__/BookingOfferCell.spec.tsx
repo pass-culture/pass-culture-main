@@ -25,7 +25,6 @@ describe('bookings offer cell', () => {
           numberOfTickets: 1,
         },
       }),
-      isCollective: false,
     }
 
     renderOfferCell(props)
@@ -50,8 +49,6 @@ describe('bookings offer cell', () => {
           numberOfTickets: 1,
         },
       }),
-
-      isCollective: false,
     }
 
     renderOfferCell(props)
@@ -74,7 +71,6 @@ describe('bookings offer cell', () => {
           numberOfTickets: 1,
         },
       }),
-      isCollective: false,
     }
 
     renderOfferCell(props)
@@ -106,7 +102,6 @@ describe('bookings offer cell', () => {
 
     renderOfferCell({
       booking,
-      isCollective: true,
     })
 
     expect(screen.getByRole('img', { name: 'Attention' })).toBeInTheDocument()
@@ -124,14 +119,13 @@ describe('bookings offer cell', () => {
         numberOfTickets: 1,
         offerId: offerId,
         offerIdentifier: '1',
-        offerIsEducational: true,
+        offerIsEducational: false,
         offerIsbn: null,
         offerName: 'ma super offre collective 2',
       },
     })
     renderOfferCell({
       booking,
-      isCollective: false,
     })
 
     expect(

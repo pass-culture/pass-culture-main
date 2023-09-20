@@ -213,7 +213,7 @@ export const IndividualBookingsTable = ({
                   styles['column-offer-name']
                 )}
               >
-                <BookingOfferCell booking={booking} isCollective={false} />
+                <BookingOfferCell booking={booking} />
               </td>
 
               <td
