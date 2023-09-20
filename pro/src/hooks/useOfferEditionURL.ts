@@ -6,7 +6,6 @@ import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 export const useOfferEditionURL = (
   isOfferEducational: boolean,
   offerId: number,
-  isOfferFormV3: boolean,
   isShowcase?: boolean,
   status?: string
 ): string => {
@@ -19,7 +18,6 @@ export const useOfferEditionURL = (
       offerId,
       mode: OFFER_WIZARD_MODE.DRAFT,
       step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-      isV2: !isOfferFormV3,
     })
   }
 
@@ -27,14 +25,12 @@ export const useOfferEditionURL = (
     offerId,
     mode: OFFER_WIZARD_MODE.EDITION,
     step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-    isV2: !isOfferFormV3,
   })
 }
 
 export const useOfferStockEditionURL = (
   isOfferEducational: boolean,
   offerId: number,
-  isOfferFormV3: boolean,
   isShowcase?: boolean
 ): string => {
   if (isOfferEducational) {
@@ -46,6 +42,5 @@ export const useOfferStockEditionURL = (
     offerId,
     mode: OFFER_WIZARD_MODE.EDITION,
     step: OFFER_WIZARD_STEP_IDS.STOCKS,
-    isV2: !isOfferFormV3,
   })
 }

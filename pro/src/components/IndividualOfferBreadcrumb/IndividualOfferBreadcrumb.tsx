@@ -152,9 +152,9 @@ export const IndividualOfferBreadcrumb = ({
       activeStep={activeStep}
       steps={stepList}
       styleType={
-        mode !== OFFER_WIZARD_MODE.EDITION
-          ? BreadcrumbStyle.STEPPER
-          : BreadcrumbStyle.TAB
+        mode === OFFER_WIZARD_MODE.EDITION
+          ? BreadcrumbStyle.TAB
+          : BreadcrumbStyle.STEPPER
       }
       className={
         mode !== OFFER_WIZARD_MODE.EDITION ? styles['stepper-creation'] : ''
