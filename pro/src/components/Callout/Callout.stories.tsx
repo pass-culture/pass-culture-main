@@ -17,16 +17,25 @@ const Template: Story<CalloutProps> = props => (
 
 export const WithoutLink = Template.bind({})
 WithoutLink.args = {
-  title: 'Without link warning banner',
+  title: 'Without link warning callout',
+}
+export const Closable = Template.bind({})
+WithoutLink.args = {
+  title: 'Without link warning callout',
+  closable: true,
 }
 
 export const WithLink = Template.bind({})
 WithLink.args = {
-  title: 'With link warning banner',
+  title: 'With link warning callout',
   links: [
     {
       href: 'https://pro.testing.passculture.team',
       linkTitle: 'Lien vers le pass culture',
+    },
+    {
+      href: 'https://pro.testing.passculture.team',
+      linkTitle: 'Lien vers autre chose',
     },
   ],
 }

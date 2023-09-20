@@ -21,5 +21,13 @@ describe('Callout', () => {
     expect(link).toHaveAttribute('href', props.links?.[0]?.href)
     expect(link).toHaveAttribute('target', '_blank')
     expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+    expect(screen.queryByAltText('Fermer le message')).not.toBeInTheDocument()
+  })
+
+  it('should render a closable Callout', () => {
+    props.closable = true
+    render(<Callout {...props}>Closable content</Callout>)
+
+    expect(screen.getByLabelText('Fermer le message')).toBeInTheDocument()
   })
 })

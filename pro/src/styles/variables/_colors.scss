@@ -35,11 +35,22 @@ $linear-gradient-to-bottom-right: linear-gradient(
   $primary,
   $secondary
 );
+$alert-color: #F9C030;
 $linear-gradient-to-right: linear-gradient(to right, $primary, $secondary);
-$booking-pending-status: #f9c030;
+$booking-pending-status: $alert-color;
 $input-text-color: #161617;
 $input-text-color-semi-dark: #90949d;
 $light-lavender: #f6f1ff;
 $border-grey-color: #cbcdd2;
 $logo-purple: #7b1e82; // Maybe should be deleted
-$banner-warning: #fef2f6;
+
+$callout-default-border: $tertiary;
+$callout-default-background: rgb(97 35 223 / 7%);
+$callout-info-border: #06F;
+$callout-info-background: rgb(0 102 255 / 7%);
+$callout-success-border: $green-valid;
+$callout-success-background: rgb(21 136 79 / 7%);
+$callout-warning-border: $alert-color;
+$callout-warning-background: rgb(254 219 94 / 7%);
+$callout-error-border: $primary;
+$callout-error-background: #fef2f6;
