@@ -16,10 +16,7 @@ const Summary = (): JSX.Element | null => {
     title = 'Récapitulatif'
   }
   return (
-    <WizardTemplate
-      title={title}
-      withStepper={mode !== OFFER_WIZARD_MODE.EDITION}
-    >
+    <WizardTemplate title={title}>
       <SummaryScreen />
     </WizardTemplate>
   )
