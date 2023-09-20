@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import FormLayout, { FormLayoutDescription } from 'components/FormLayout'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer'
 import { StockFormActions } from 'components/StockFormActions'
 import { StockFormRowAction } from 'components/StockFormActions/types'

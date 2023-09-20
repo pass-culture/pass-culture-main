@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 
 import { PriceCategoryResponseModel } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,

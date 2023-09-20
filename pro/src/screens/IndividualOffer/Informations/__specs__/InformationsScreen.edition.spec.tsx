@@ -10,7 +10,7 @@ import {
   PatchOfferBodyModel,
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import Notification from 'components/Notification/Notification'
 import {
   IndividualOfferContext,
