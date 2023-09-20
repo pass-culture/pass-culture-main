@@ -27,23 +27,6 @@ describe('bookings status history cell', () => {
     expect(screen.getByText('Réservé : 04/01/2020 20:31')).toBeInTheDocument()
   })
 
-  it('should display the corresponding status and date when the offer is pending', () => {
-    const props = {
-      bookingStatusHistory: [
-        {
-          status: 'pending',
-          date: '2020-01-04T20:31:12+02:00',
-        },
-      ],
-    }
-
-    renderBookingStatusCellHistory(props)
-
-    expect(
-      screen.getByText('Préréservé (scolaire) : 04/01/2020 20:31')
-    ).toBeInTheDocument()
-  })
-
   it('should display proper infos for booked status', () => {
     const props = {
       bookingStatusHistory: [
