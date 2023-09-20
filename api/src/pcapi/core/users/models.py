@@ -50,7 +50,6 @@ VOID_FIRST_NAME = ""
 class TokenType(enum.Enum):
     RESET_PASSWORD = "reset-password"
     EMAIL_VALIDATION = "email-validation"
-    PHONE_VALIDATION = "phone-validation"
 
 
 class PhoneValidationStatusType(enum.Enum):
