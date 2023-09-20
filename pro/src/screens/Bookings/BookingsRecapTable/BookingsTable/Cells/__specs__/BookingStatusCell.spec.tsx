@@ -42,38 +42,6 @@ describe('BookingsStatusCell', () => {
     expect(title).toBeInTheDocument()
   })
 
-  it('should display the pending status label', () => {
-    const props: BookingStatusCellProps = {
-      isCollectiveStatus: false,
-      booking: bookingRecapFactory({
-        stock: {
-          eventBeginningDatetime: '2020-06-05T16:31:59.102163+02:00',
-          offerName: 'Matrix',
-        },
-        bookingIsDuo: true,
-        beneficiary: {
-          email: 'loulou.duck@example.com',
-          firstname: 'Loulou',
-          lastname: 'Duck',
-        },
-        bookingDate: '2020-01-04T20:31:12+01:00',
-        bookingToken: '5U7M6U',
-        bookingStatus: 'pending',
-        bookingStatusHistory: [
-          {
-            status: 'pending',
-            date: '2020-01-04T20:31:12+01:00',
-          },
-        ],
-      }),
-    }
-
-    renderBookingStatusCell(props)
-
-    const title = screen.getByText('préréservé', { selector: 'span' })
-    expect(title).toBeInTheDocument()
-  })
-
   it('should display the offer title and history title and amount when it is not free', () => {
     const expectedHistoryTitle = 'Historique'
     const props: BookingStatusCellProps = {

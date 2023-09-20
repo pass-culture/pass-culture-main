@@ -31,7 +31,7 @@ export interface BookingOfferCellProps {
   booking: BookingRecapResponseModel | CollectiveBookingResponseModel
 }
 
-const isCollectiveBooking = (
+export const isCollectiveBooking = (
   booking: BookingRecapResponseModel | CollectiveBookingResponseModel
 ): booking is CollectiveBookingResponseModel => booking.stock.offerIsEducational
 
