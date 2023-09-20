@@ -470,7 +470,7 @@ def get_last_x_days_bookings_count(
     )
 
 
-def _get_offer_bookings_count(offer: offers_models.Offer, last_x_days_bookings_count: BookingsCount) -> int:
+def get_offer_bookings_count(offer: offers_models.Offer, last_x_days_bookings_count: BookingsCount) -> int:
     booking_count_by_offer_id = last_x_days_bookings_count.booking_count_by_offer_id
     booking_count_by_ean = last_x_days_bookings_count.booking_count_by_ean
 
@@ -504,7 +504,7 @@ def reindex_offer_ids(offer_ids: Iterable[int], use_national_booking_count: bool
 
     for offer in offers:
         if offer and offer.is_eligible_for_search:
-            last_x_days_bookings_count_by_offer[offer.id] = _get_offer_bookings_count(offer, last_x_days_bookings_count)
+            last_x_days_bookings_count_by_offer[offer.id] = get_offer_bookings_count(offer, last_x_days_bookings_count)
             to_add.append(offer)
         elif backend.check_offer_is_indexed(offer):
             to_delete_ids.append(offer.id)

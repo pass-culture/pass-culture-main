@@ -9,7 +9,6 @@ import pytz
 from pcapi.core import search
 import pcapi.core.offers.models as offers_models
 from pcapi.core.search.backends import algolia
-from pcapi.models.feature import FeatureToggle
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -32,7 +31,7 @@ def _get_eta(end, current, elapsed_per_batch):  # type: ignore [no-untyped-def]
 @blueprint.cli.command("full_index_offers")
 @click.argument("start", type=int, required=True)
 @click.argument("end", type=int, required=True)
-def full_index_offers(start, end):  # type: ignore [no-untyped-def]
+def full_index_offers(start: int, end: int) -> None:
     """Reindex all bookable offers.
 
     The script iterates over all active offers. For each offer, it
@@ -63,7 +62,7 @@ def full_index_offers(start, end):  # type: ignore [no-untyped-def]
         raise ValueError('"start" must be less than "end"')
     backend = algolia.AlgoliaBackend()
 
-    queue = []
+    queue: list = []
 
     def enqueue_or_index(
         q: list,
@@ -95,15 +94,15 @@ def full_index_offers(start, end):  # type: ignore [no-untyped-def]
             )
             .order_by(offers_models.Offer.id)
         )
-        if FeatureToggle.ALGOLIA_BOOKINGS_NUMBER_COMPUTATION.is_active():
-            last_x_days_bookings = search.get_offers_with_last_x_days_bookings(offers)
-
-        else:
-            last_x_days_bookings = {}
+        last_x_days_bookings_count = search.get_last_x_days_bookings_count(offers)
+        last_x_days_bookings_count_by_offer = {}
 
         for offer in offers:
             if offer.is_eligible_for_search:
-                enqueue_or_index(queue, offer, last_x_days_bookings)
+                last_x_days_bookings_count_by_offer[offer.id] = search.get_offer_bookings_count(
+                    offer, last_x_days_bookings_count
+                )
+                enqueue_or_index(queue, offer, last_x_days_bookings_count_by_offer)
         elapsed_per_batch.append(int(time.perf_counter() - start_time))
         start = start + BATCH_SIZE
         eta = _get_eta(end, start, elapsed_per_batch)
