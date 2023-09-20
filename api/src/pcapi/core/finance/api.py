@@ -132,6 +132,7 @@ def add_event(
     motive: models.FinanceEventMotive,
     booking: bookings_models.Booking | educational_models.CollectiveBooking | None = None,
     booking_incident: models.BookingFinanceIncident | None = None,
+    incident_validation_date: datetime.datetime = None,
     commit: bool = True,
 ) -> models.FinanceEvent:
     if booking_incident:
@@ -139,14 +140,20 @@ def add_event(
 
     assert booking
     if motive in (
-        models.FinanceEventMotive.BOOKING_USED,
-        models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION,
         models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT,
         models.FinanceEventMotive.INCIDENT_NEW_PRICE,
         models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE,
     ):
+        assert incident_validation_date
+        value_date = incident_validation_date
+    elif motive in (
+        models.FinanceEventMotive.BOOKING_USED,
+        models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION,
+    ):
+        assert booking.dateUsed
         value_date = booking.dateUsed
     elif motive == models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE:
+        assert booking.cancellationDate
         value_date = booking.cancellationDate
     elif motive == models.FinanceEventMotive.BOOKING_UNUSED:
         # The value is irrelevant because the event won't be priced.
