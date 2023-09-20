@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import api as subscription_api
@@ -9,6 +10,8 @@ from pcapi.utils.requests import ExternalAPIException
 
 DEFAULT_LIMIT = 1000
 DEFAULT_ID_PICTURE_STORE_STATUS = None
+
+logger = logging.getLogger()
 
 
 class UbbleIdentificationPicturesArchiveResult:
@@ -65,6 +68,7 @@ def archive_past_identification_pictures(
                 result.add_result(False)
             except Exception:  # pylint: disable=broad-except
                 # Catch all exception. Watch logs to find errors during archive
+                logger.exception("Error in archive_past_identification_pictures")
                 result.add_result()
 
         # Offset and limit are used to window query result inside loop.
