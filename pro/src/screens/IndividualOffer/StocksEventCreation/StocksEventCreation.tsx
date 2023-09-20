@@ -112,7 +112,9 @@ export const StocksEventCreation = ({
         to: OFFER_WIZARD_STEP_IDS.TARIFS,
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        isDraft:
+          mode === OFFER_WIZARD_MODE.CREATION ||
+          mode === OFFER_WIZARD_MODE.DRAFT,
         offerId: offer.id,
       })
     }
@@ -199,7 +201,9 @@ export const StocksEventCreation = ({
           ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
           : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        isDraft:
+          mode === OFFER_WIZARD_MODE.CREATION ||
+          mode === OFFER_WIZARD_MODE.DRAFT,
         offerId: offer.id,
       })
       setIsClickingFromActionBar(false)
@@ -271,7 +275,9 @@ export const StocksEventCreation = ({
             to: logTo(nextLocation),
             used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
             isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-            isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+            isDraft:
+              mode === OFFER_WIZARD_MODE.CREATION ||
+              mode === OFFER_WIZARD_MODE.DRAFT,
             offerId: offer?.id,
           })
         }

@@ -121,7 +121,8 @@ const StocksEventList = ({
       to: OFFER_WIZARD_STEP_IDS.STOCKS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.STOCK_EVENT_DELETE,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+      isDraft:
+        mode === OFFER_WIZARD_MODE.CREATION || mode === OFFER_WIZARD_MODE.DRAFT,
       offerId: offerId,
     })
     if (stocks.length % STOCKS_PER_PAGE === 0 && page === pageCount) {
@@ -145,7 +146,8 @@ const StocksEventList = ({
       to: OFFER_WIZARD_STEP_IDS.STOCKS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.STOCK_EVENT_BULK_DELETE,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+      isDraft:
+        mode === OFFER_WIZARD_MODE.CREATION || mode === OFFER_WIZARD_MODE.DRAFT,
       offerId: offerId,
       deletionCount: `${stocks.length - newStocks.length}`,
     })

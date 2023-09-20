@@ -221,7 +221,8 @@ const PriceCategories = ({ offer }: PriceCategoriesProps): JSX.Element => {
         ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
         : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
       isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+      isDraft:
+        mode === OFFER_WIZARD_MODE.CREATION || mode === OFFER_WIZARD_MODE.DRAFT,
       offerId: offer.id,
     })
     navigate(afterSubmitUrl)
@@ -246,7 +247,9 @@ const PriceCategories = ({ offer }: PriceCategoriesProps): JSX.Element => {
         to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
         isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+        isDraft:
+          mode === OFFER_WIZARD_MODE.CREATION ||
+          mode === OFFER_WIZARD_MODE.DRAFT,
         offerId: offer.id,
       })
     }
@@ -352,7 +355,9 @@ const PriceCategories = ({ offer }: PriceCategoriesProps): JSX.Element => {
             to: logTo(nextLocation),
             used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
             isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-            isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+            isDraft:
+              mode === OFFER_WIZARD_MODE.CREATION ||
+              mode === OFFER_WIZARD_MODE.DRAFT,
             offerId: offer?.id,
           })
         }
