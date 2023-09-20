@@ -56,20 +56,25 @@ const OfferType = (): JSX.Element => {
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
       })
 
-      /* istanbul ignore next: condition will be removed when FF active in prod */
+      const params = new URLSearchParams(location.search)
+      if (values.individualOfferSubtype) {
+        params.append('offer-type', values.individualOfferSubtype)
+      } else if (
+        values.individualOfferSubcategory &&
+        values.individualOfferSubcategory !== 'OTHER'
+      ) {
+        params.append('sous-categorie', values.individualOfferSubcategory)
+      }
+
       return navigate({
         pathname: getIndividualOfferUrl({
           step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
           mode: OFFER_WIZARD_MODE.CREATION,
         }),
-        search: `${location.search}${location.search ? '&' : '?'}${
-          values.individualOfferSubcategory &&
-          values.individualOfferSubcategory !== 'OTHER'
-            ? `sous-categorie=${values.individualOfferSubcategory}`
-            : `offer-type=${values.individualOfferSubtype}`
-        }`,
+        search: params.toString(),
       })
     }
+
     // Offer type is EDUCATIONAL
     if (values.collectiveOfferSubtype === COLLECTIVE_OFFER_SUBTYPE.TEMPLATE) {
       return navigate({
