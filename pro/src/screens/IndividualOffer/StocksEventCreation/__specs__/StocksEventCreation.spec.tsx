@@ -7,7 +7,7 @@ import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import Notification from 'components/Notification/Notification'
 import { Events } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
