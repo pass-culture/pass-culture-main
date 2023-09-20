@@ -16,6 +16,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import models as finance_models
+from pcapi.core.finance import utils as finance_utils
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import models as offerer_models
@@ -311,7 +312,9 @@ def create_individual_booking_incident() -> utils.BackofficeResponse:
                 bookingId=booking.id,
                 incidentId=incident.id,
                 beneficiaryId=booking.userId,
-                newTotalAmount=(booking.total_amount if len(bookings) > 1 else form.total_amount.data) * 100,
+                newTotalAmount=finance_utils.to_eurocents(
+                    booking.total_amount if len(bookings) > 1 else form.total_amount.data
+                ),
             )
         )
     db.session.add_all(booking_finance_incidents_to_create)
@@ -344,7 +347,7 @@ def create_collective_booking_incident(collective_booking_id: int) -> utils.Back
     collective_booking_incident = finance_models.BookingFinanceIncident(
         collectiveBookingId=collective_booking_id,
         incidentId=incident.id,
-        newTotalAmount=int(form.total_amount.data * 100),
+        newTotalAmount=finance_utils.to_eurocents(form.total_amount.data),
     )
     repository.save(collective_booking_incident)
 
@@ -362,9 +365,7 @@ def _create_incident_with_log(
         details={
             "origin": origin,
             "author": current_user.full_name,
-            "validator": "",
             "createdAt": datetime.utcnow().isoformat(),
-            "validatedAt": "",
         },
     )
     action = history_api.log_action(
@@ -501,7 +502,9 @@ def validate_finance_incident(finance_incident_id: int) -> utils.BackofficeRespo
 
 
 def _create_finance_events_from_incident(
-    booking_finance_incident: finance_models.BookingFinanceIncident, save: bool = True
+    booking_finance_incident: finance_models.BookingFinanceIncident,
+    incident_validation_date: datetime = None,
+    save: bool = True,
 ) -> list[finance_models.FinanceEvent]:
     finance_events = []
     assert booking_finance_incident.incident
@@ -511,6 +514,7 @@ def _create_finance_events_from_incident(
             finance_api.add_event(
                 finance_models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE,
                 booking_incident=booking_finance_incident,
+                incident_validation_date=incident_validation_date,
                 commit=False,
             )
         )
@@ -520,6 +524,7 @@ def _create_finance_events_from_incident(
             finance_api.add_event(
                 finance_models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT,
                 booking_incident=booking_finance_incident,
+                incident_validation_date=incident_validation_date,
                 commit=False,
             )
         )
@@ -530,6 +535,7 @@ def _create_finance_events_from_incident(
                 finance_api.add_event(
                     finance_models.FinanceEventMotive.INCIDENT_NEW_PRICE,
                     booking_incident=booking_finance_incident,
+                    incident_validation_date=incident_validation_date,
                     commit=False,
                 )
             )
@@ -542,10 +548,14 @@ def _create_finance_events_from_incident(
 
 def _validate_finance_incident(finance_incident: finance_models.FinanceIncident) -> None:
     # TODO (cmorel): send mail to beneficiary / educational redactor
-
+    incident_validation_date = datetime.utcnow()
     finance_events = []
     for booking_incident in finance_incident.booking_finance_incidents:
-        finance_events.extend(_create_finance_events_from_incident(booking_incident, save=False))
+        finance_events.extend(
+            _create_finance_events_from_incident(
+                booking_incident, incident_validation_date=incident_validation_date, save=False
+            )
+        )
         if not booking_incident.is_partial:
             if booking_incident.booking:
                 booking_incident.booking.cancel_booking(
