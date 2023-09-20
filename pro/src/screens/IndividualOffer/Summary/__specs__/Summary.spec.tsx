@@ -113,22 +113,6 @@ const renderSummary = (
             })}
             element={<div>Confirmation page: creation</div>}
           />
-          <Route
-            path={getIndividualOfferPath({
-              step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-              mode: OFFER_WIZARD_MODE.DRAFT,
-              isV2: true,
-            })}
-            element={<div>Confirmation page: draft V2</div>}
-          />
-          <Route
-            path={getIndividualOfferPath({
-              step: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-              mode: OFFER_WIZARD_MODE.CREATION,
-              isV2: true,
-            })}
-            element={<div>Confirmation page: creation V2</div>}
-          />
         </Routes>
       </IndividualOfferContext.Provider>
       <Notification />

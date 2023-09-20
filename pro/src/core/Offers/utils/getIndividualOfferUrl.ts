@@ -3,32 +3,17 @@ import { generatePath } from 'react-router-dom'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 
-import {
-  getIndividualOfferUrlV2,
-  getIndividualOfferPathV2,
-} from './getIndividualOfferUrlV2'
-
 interface GetIndividualOfferPathArgs {
   isCreation?: boolean
   mode: OFFER_WIZARD_MODE
   step: OFFER_WIZARD_STEP_IDS
-  isV2?: boolean
 }
+
 export const getIndividualOfferPath = ({
   isCreation = false,
   mode,
   step,
-  isV2 = false,
 }: GetIndividualOfferPathArgs) => {
-  // needed for redirection to old url
-  if (isV2) {
-    return getIndividualOfferPathV2({
-      isCreation,
-      mode,
-      step,
-    })
-  }
-
   if (isCreation) {
     return `/offre/individuelle/creation/informations`
   }
@@ -66,23 +51,14 @@ interface GetIndividualOfferUrlArgs {
   offerId?: number
   mode: OFFER_WIZARD_MODE
   step: OFFER_WIZARD_STEP_IDS
-  isV2?: boolean
 }
-const getIndividualOfferUrl = ({
+
+export const getIndividualOfferUrl = ({
   offerId,
   mode,
   step,
-  isV2 = false,
-}: GetIndividualOfferUrlArgs) => {
-  if (isV2) {
-    return getIndividualOfferUrlV2({
-      offerId,
-      mode,
-      step,
-    })
-  }
-
-  return generatePath(
+}: GetIndividualOfferUrlArgs) =>
+  generatePath(
     getIndividualOfferPath({
       isCreation: offerId === undefined,
       mode,
@@ -90,5 +66,3 @@ const getIndividualOfferUrl = ({
     }),
     { offerId }
   )
-}
-export default getIndividualOfferUrl
