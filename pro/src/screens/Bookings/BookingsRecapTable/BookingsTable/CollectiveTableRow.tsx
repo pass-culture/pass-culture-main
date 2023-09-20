@@ -90,7 +90,7 @@ export const CollectiveTableRow = ({
             styles['column-collective-offer-name']
           )}
         >
-          <BookingOfferCell booking={booking} isCollective={true} />
+          <BookingOfferCell booking={booking} />
         </td>
 
         <td className={cn(styles['table-cell'], styles['column-institution'])}>
