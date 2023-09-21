@@ -356,6 +356,7 @@ def _get_serialized_user_offerer_last_comment(
                 history_models.ActionType.USER_OFFERER_PENDING,
                 history_models.ActionType.USER_OFFERER_VALIDATED,
                 history_models.ActionType.USER_OFFERER_REJECTED,
+                history_models.ActionType.USER_OFFERER_DELETED,
                 history_models.ActionType.COMMENT,
             )
         ),
