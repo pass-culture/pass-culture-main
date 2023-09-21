@@ -83,14 +83,12 @@ const CollectiveDmsTimeline = ({
     content: (
       <>
         <div className={styles['timeline-step-title']}>
-          Votre dossier est en attente d’un passage en instruction
+          Votre dossier est en attente d'instruction
         </div>
         <div>
           <div className={styles['timeline-step-description']}>
-            Votre dossier sera analysé par les services du Ministère de
-            l’Education Nationale et de la Culture lors d’une commission
-            mensuelle. En fonction du nombre de dossiers en cours, cela peut
-            prendre jusqu’à 3 mois.
+            Votre dossier doit être instruit par la commission régionale du
+            territoire dans lequel se situe votre siège social.
           </div>
         </div>
         <ButtonLink
@@ -132,10 +130,9 @@ const CollectiveDmsTimeline = ({
           {instructionDate}
           <br />
           <div className={styles['timeline-step-description']}>
-            Votre dossier est en cours d’instruction par la commission régionale
-            DAAC et DRAC où est déclaré votre siège social. Si votre dossier
-            concerne un établissement public, il est traité par le Ministère de
-            la Culture.
+            Votre dossier est en cours d'instruction par la commission de
+            référencement de votre territoire. Si votre dossier concerne un
+            établissement public, il est traité par le Ministère de la Culture.
           </div>
         </div>
         <ButtonLink
@@ -176,8 +173,9 @@ const CollectiveDmsTimeline = ({
           {processingDate}
           <br />
           <div className={styles['timeline-step-description']}>
-            Votre lieu sera bientôt ajouté dans ADAGE par le Ministère de
-            l’Éducation Nationale. Cela peut prendre quelques jours.
+            Votre lieu doit encore être référencé dans ADAGE par les équipes du
+            ministère de l'Éducation nationale et de la jeunesse. Vous recevrez
+            un mail lorsque votre référencement sera effectif.
           </div>
         </div>
         <ButtonLink
@@ -233,8 +231,8 @@ const CollectiveDmsTimeline = ({
     content: (
       <>
         <div className={styles['timeline-step-title-disabled']}>
-          Votre lieu a été ajouté dans ADAGE par le Ministère de l’Education
-          Nationale
+          Votre lieu a été réferencé dans ADAGE par les équipes du Ministère de
+          l’Education Nationale
         </div>
         <div>{adageDate}</div>
         <div className={styles['timeline-infobox']}>
@@ -276,14 +274,15 @@ const CollectiveDmsTimeline = ({
           className={styles['refused-state-icon']}
           alt=""
         />
-        <span>Votre demande de référencement a été refusée</span>
+        <span>Votre demande de référencement a été refusée.</span>
       </div>
       <div>
         <div className={styles['timeline-step-description']}>
-          Votre dossier a été refusé le {processingDate} par la commission
-          régionale DAAC et DRAC de la région où est déclaré votre siège social.
-          Nous vous invitons à consulter votre messagerie sur Démarches
-          Simplifiées afin d’en savoir plus sur les raisons de ce refus.
+          Votre demande de référencement a été refusée le {processingDate} par
+          la commission régionale de référencement qui rassemble des
+          représentants du rectorat et de la DRAC de votre territoire. Nous vous
+          invitons à consulter votre messagerie sur Démarches Simplifiées afin
+          d’en savoir plus sur les raisons de ce refus.
         </div>
         <div className={styles['timeline-step-button']}>
           <ButtonLink
@@ -305,8 +304,7 @@ const CollectiveDmsTimeline = ({
             }}
             icon={fullLinkIcon}
           >
-            Contacter les services des Ministères de l’Education Nationale et de
-            la Culture
+            Contacter les membres de la commission de mon territoire
           </ButtonLink>
         </div>
       </div>
