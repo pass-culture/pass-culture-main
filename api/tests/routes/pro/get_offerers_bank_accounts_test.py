@@ -70,6 +70,7 @@ class OfferersBankAccountTest:
         offerer = response.json
 
         assert offerer["hasValidBankAccount"] is False
+        assert offerer["hasPendingBankAccount"] is False
 
         bank_accounts = offerer["bankAccounts"]
         venues = offerer["managedVenues"]
@@ -109,6 +110,7 @@ class OfferersBankAccountTest:
         offerer = response.json
 
         assert offerer["hasValidBankAccount"] is True
+        assert offerer["hasPendingBankAccount"] is False
 
         bank_accounts = offerer["bankAccounts"]
         venues = offerer["managedVenues"]
@@ -156,6 +158,7 @@ class OfferersBankAccountTest:
         offerer = response.json
 
         assert offerer["hasValidBankAccount"] is True
+        assert offerer["hasPendingBankAccount"] is False
 
         bank_accounts = offerer["bankAccounts"]
 
@@ -191,6 +194,7 @@ class OfferersBankAccountTest:
         offerer = response.json
 
         assert offerer["hasValidBankAccount"] is True
+        assert offerer["hasPendingBankAccount"] is False
 
         bank_accounts = offerer["bankAccounts"]
 
@@ -213,7 +217,9 @@ class OfferersBankAccountTest:
         _without_continuation_bank_account = finance_factories.BankAccountFactory(
             offerer=offerer, status=finance_models.BankAccountApplicationStatus.REFUSED
         )
-
+        pending_bank_account = finance_factories.BankAccountFactory(
+            offerer=offerer, status=finance_models.BankAccountApplicationStatus.ON_GOING
+        )
         # When
         http_client = client.with_session_auth(pro_user.email)
 
@@ -229,10 +235,11 @@ class OfferersBankAccountTest:
         offerer = response.json
 
         assert offerer["hasValidBankAccount"] is False
+        assert offerer["hasPendingBankAccount"] is True
 
-        bank_accounts = offerer["bankAccounts"]
-
-        assert len(bank_accounts) == 0
+        assert len(offerer["bankAccounts"]) == 1
+        bank_account = offerer["bankAccounts"].pop()
+        assert bank_account["id"] == pending_bank_account.id
 
     @pytest.mark.usefixtures("db_session")
     def test_we_only_display_up_to_date_venue_link_for_a_given_bank_account(self, client):
