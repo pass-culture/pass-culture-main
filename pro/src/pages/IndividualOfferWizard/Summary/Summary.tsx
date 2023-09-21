@@ -8,7 +8,7 @@ import {
   Template as WizardTemplate,
 } from 'screens/IndividualOffer'
 
-const Summary = (): JSX.Element | null => {
+export const Summary = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
 
   let title: string | undefined = undefined
@@ -24,5 +24,3 @@ const Summary = (): JSX.Element | null => {
     </WizardTemplate>
   )
 }
-
-export default Summary
