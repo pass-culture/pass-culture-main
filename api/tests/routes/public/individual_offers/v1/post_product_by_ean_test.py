@@ -28,7 +28,7 @@ class PostProductByEanTest:
         }
         venue, _ = utils.create_offerer_provider_linked_to_venue(venue_data)
         product = offers_factories.ProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": "1234567890123"}
         )
         unknown_ean = "1234567897123"
 
@@ -193,7 +193,7 @@ class PostProductByEanTest:
     def test_valid_ean_without_task_autoflush(self, update_sib_pro_task_mock, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
         product = offers_factories.ProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": "1234567890123"}
         )
         finance_factories.CustomReimbursementRuleFactory(offerer=api_key.offerer, rate=0.2, offer=None)
 
@@ -298,7 +298,7 @@ class PostProductByEanTest:
     def test_update_offer_when_ean_already_exists(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         product = offers_factories.ProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": "1234567890123"}
         )
 
         client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
@@ -343,10 +343,10 @@ class PostProductByEanTest:
         ean_to_update = "1234567890123"
         ean_to_create = "1234567897123"
         offers_factories.ProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": ean_to_update}
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": ean_to_update}
         )
         offers_factories.ProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": ean_to_create}
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": ean_to_create}
         )
 
         client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
