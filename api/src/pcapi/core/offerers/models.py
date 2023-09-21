@@ -899,6 +899,15 @@ class Offerer(
                 return user_offerer.user
         return None
 
+    @property
+    def hasValidBankAccount(self) -> bool:
+        return any(
+            (
+                bank_account.status is finance_models.BankAccountApplicationStatus.ACCEPTED
+                for bank_account in self.bankAccounts
+            )
+        )
+
 
 class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):
     __table_name__ = "user_offerer"

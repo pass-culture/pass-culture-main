@@ -67,10 +67,12 @@ class OfferersBankAccountTest:
 
         # Then
         assert response.status_code == 200
-        offerer_response = response.json
+        offerer = response.json
 
-        bank_accounts = offerer_response["bankAccounts"]
-        venues = offerer_response["managedVenues"]
+        assert offerer["hasValidBankAccount"] is False
+
+        bank_accounts = offerer["bankAccounts"]
+        venues = offerer["managedVenues"]
 
         assert not bank_accounts
         assert not venues
@@ -104,10 +106,12 @@ class OfferersBankAccountTest:
 
         # Then
         assert response.status_code == 200
-        offerer_response = response.json
+        offerer = response.json
 
-        bank_accounts = offerer_response["bankAccounts"]
-        venues = offerer_response["managedVenues"]
+        assert offerer["hasValidBankAccount"] is True
+
+        bank_accounts = offerer["bankAccounts"]
+        venues = offerer["managedVenues"]
 
         assert len(bank_accounts) == 1
         bank_account = bank_accounts.pop()
@@ -149,9 +153,11 @@ class OfferersBankAccountTest:
 
         # Then
         assert response.status_code == 200
-        offerer_response = response.json
+        offerer = response.json
 
-        bank_accounts = offerer_response["bankAccounts"]
+        assert offerer["hasValidBankAccount"] is True
+
+        bank_accounts = offerer["bankAccounts"]
 
         assert len(bank_accounts) == 1
         bank_account = bank_accounts.pop()
@@ -182,9 +188,11 @@ class OfferersBankAccountTest:
 
         # Then
         assert response.status_code == 200
-        offerer_response = response.json
+        offerer = response.json
 
-        bank_accounts = offerer_response["bankAccounts"]
+        assert offerer["hasValidBankAccount"] is True
+
+        bank_accounts = offerer["bankAccounts"]
 
         assert len(bank_accounts) == 1
         bank_account = bank_accounts.pop()
@@ -206,8 +214,6 @@ class OfferersBankAccountTest:
             offerer=offerer, status=finance_models.BankAccountApplicationStatus.REFUSED
         )
 
-        expected_bank_account = finance_factories.BankAccountFactory(offerer=offerer, isActive=True)
-
         # When
         http_client = client.with_session_auth(pro_user.email)
 
@@ -220,16 +226,13 @@ class OfferersBankAccountTest:
 
         # Then
         assert response.status_code == 200
-        offerer_response = response.json
+        offerer = response.json
 
-        bank_accounts = offerer_response["bankAccounts"]
+        assert offerer["hasValidBankAccount"] is False
 
-        assert len(bank_accounts) == 1
-        bank_account = bank_accounts.pop()
-        assert bank_account["label"] == expected_bank_account.label
-        assert bank_account["obfuscatedIban"] == f"XXXX XXXX XXXX {expected_bank_account.iban[-4:]}"
-        assert bank_account["bic"] == expected_bank_account.bic
-        assert bank_account["isActive"] is True
+        bank_accounts = offerer["bankAccounts"]
+
+        assert len(bank_accounts) == 0
 
     @pytest.mark.usefixtures("db_session")
     def test_we_only_display_up_to_date_venue_link_for_a_given_bank_account(self, client):
@@ -271,10 +274,12 @@ class OfferersBankAccountTest:
 
         # Then
         assert response.status_code == 200
-        offerer_response = response.json
+        offerer = response.json
 
-        bank_accounts = offerer_response["bankAccounts"]
-        managed_venues = sorted(offerer_response["managedVenues"], key=lambda venue: venue["id"])
+        assert offerer["hasValidBankAccount"] is True
+
+        bank_accounts = offerer["bankAccounts"]
+        managed_venues = sorted(offerer["managedVenues"], key=lambda venue: venue["id"])
 
         assert len(bank_accounts) == 2
         assert bank_accounts[0]["id"] == first_bank_account.id
