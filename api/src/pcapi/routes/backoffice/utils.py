@@ -146,6 +146,7 @@ def is_user_offerer_action_type(action: history_models.ActionHistory) -> bool:
         history_models.ActionType.USER_OFFERER_PENDING,
         history_models.ActionType.USER_OFFERER_VALIDATED,
         history_models.ActionType.USER_OFFERER_REJECTED,
+        history_models.ActionType.USER_OFFERER_DELETED,
     }
     return action.actionType in user_offerer_action_types
 
