@@ -95,6 +95,11 @@ describe('tutorial modal', () => {
             hasSeenProTutorials: false,
           },
         },
+        features: {
+          list: [
+            { isActive: false, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
+          ],
+        },
       }
 
       await renderTutorialDialog(storeOverrides)
@@ -112,6 +117,15 @@ describe('tutorial modal', () => {
 
         await userEvent.click(buttonNext)
         expect(screen.getByText(stepTitles[1])).toBeInTheDocument()
+        expect(
+          screen.getByText('Renseignez vos coordonnées bancaires')
+        ).toBeInTheDocument()
+        expect(
+          screen.getByText(
+            'Ajoutez vos informations bancaires pour percevoir les remboursements de vos offres.',
+            { exact: false }
+          )
+        ).toBeInTheDocument()
 
         await userEvent.click(buttonNext)
         expect(screen.getByText(stepTitles[2])).toBeInTheDocument()
@@ -205,5 +219,35 @@ describe('tutorial modal', () => {
       await userEvent.click(navDottes[2])
       expect(screen.getByText(stepTitles[2])).toBeInTheDocument()
     })
+  })
+
+  it('should display text in create venue step under WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY FF', async () => {
+    storeOverrides = {
+      user: {
+        currentUser: {
+          id: 'test_id',
+          hasSeenProTutorials: false,
+        },
+      },
+      features: {
+        list: [
+          { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
+        ],
+      },
+    }
+
+    await renderTutorialDialog(storeOverrides)
+
+    await userEvent.click(screen.getByText('Suivant'))
+
+    expect(
+      screen.getByText('Renseignez vos informations bancaires')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Ajoutez votre ou vos comptes bancaires pour percevoir les remboursements de vos offres.',
+        { exact: false }
+      )
+    ).toBeInTheDocument()
   })
 })
