@@ -74,14 +74,14 @@ describe('CollectiveDmsTimeline', () => {
       },
       hasAdageId: true,
       expectedLabel:
-        'Votre lieu a été ajouté dans ADAGE par le Ministère de l’Education Nationale',
+        'Votre lieu a été réferencé dans ADAGE par les équipes du Ministère de l’Education Nationale',
     },
     {
       collectiveDmsApplication: {
         ...defaultCollectiveDmsApplication,
         state: DMSApplicationstatus.REFUSE,
       },
-      expectedLabel: 'Votre demande de référencement a été refusée',
+      expectedLabel: 'Votre demande de référencement a été refusée.',
     },
     {
       collectiveDmsApplication: {
