@@ -6,11 +6,14 @@ import { OffererName } from 'core/Offerers/types'
 import { OfferSubCategory } from 'core/Offers/types'
 import { IndividualOfferVenue } from 'core/Venue/types'
 
+import buildSubcategoryFields from './buildSubCategoryFields'
+
 const setDefaultInitialFormValues = (
   offererNames: OffererName[],
   offererId: string | null,
   venueId: string | null,
   venueList: IndividualOfferVenue[],
+  isBookingContactEnabled: boolean,
   subcategory?: OfferSubCategory
 ): IndividualOfferFormValues => {
   let initialOffererId = FORM_DEFAULT_VALUES.offererId
@@ -41,13 +44,19 @@ const setDefaultInitialFormValues = (
     }
   }
 
+  const { subcategoryFields } = buildSubcategoryFields(
+    isBookingContactEnabled,
+    subcategory
+  )
+
   return {
     ...FORM_DEFAULT_VALUES,
     isDuo: subcategory?.canBeDuo ?? FORM_DEFAULT_VALUES.isDuo,
     categoryId: subcategory?.categoryId ?? FORM_DEFAULT_VALUES.categoryId,
     subcategoryId: subcategory?.id ?? FORM_DEFAULT_VALUES.subcategoryId,
-    subCategoryFields:
-      subcategory?.conditionalFields ?? FORM_DEFAULT_VALUES.subCategoryFields,
+    subCategoryFields: subcategoryFields
+      ? subcategoryFields
+      : FORM_DEFAULT_VALUES.subCategoryFields,
     offererId: initialOffererId,
     venueId: venue?.id ? String(venue?.id) : FORM_DEFAULT_VALUES.venueId,
     withdrawalDetails: initialWithdrawalDetails,
