@@ -285,6 +285,7 @@ def list_users_offerers_to_be_validated(
                     history_models.ActionType.USER_OFFERER_PENDING,
                     history_models.ActionType.USER_OFFERER_VALIDATED,
                     history_models.ActionType.USER_OFFERER_REJECTED,
+                    history_models.ActionType.USER_OFFERER_DELETED,
                     history_models.ActionType.COMMENT,
                 ]
             ),
