@@ -121,7 +121,8 @@ class NativeCategory(Enum):
     SPECTACLES_ENREGISTRES = "Spectacles enregistrés"
     PRATIQUES_ET_ATELIERS_ARTISTIQUES = "Pratiques & ateliers artistiques"
     MATERIELS_CREATIFS = "Matériels créatifs"
-    CD_VINYLES = "CD, vinyles"
+    CD = "CD"
+    VINYLES = "Vinyles"
     MUSIQUE_EN_LIGNE = "Musique en ligne"
     BIBLIOTHEQUE = "Bibliothèque"
     MEDIATHEQUE = "Médiathèque"
@@ -152,7 +153,8 @@ NATIVE_CATEGORY_GENRES_TYPES_MAPPING = {
     NativeCategory.LIVRES_PAPIER: GenreType.BOOK,
     NativeCategory.SEANCES_DE_CINEMA: GenreType.MOVIE,
     NativeCategory.FESTIVALS: GenreType.MUSIC,
-    NativeCategory.CD_VINYLES: GenreType.MUSIC,
+    NativeCategory.CD: GenreType.MUSIC,
+    NativeCategory.VINYLES: GenreType.MUSIC,
     NativeCategory.MUSIQUE_EN_LIGNE: GenreType.MUSIC,
     NativeCategory.CONCERTS_EN_LIGNE: GenreType.MUSIC,
     NativeCategory.CONCERTS_EVENEMENTS: GenreType.MUSIC,
@@ -1170,7 +1172,7 @@ FESTIVAL_MUSIQUE = Subcategory(
 SUPPORT_PHYSIQUE_MUSIQUE = Subcategory(
     id="SUPPORT_PHYSIQUE_MUSIQUE",
     category=categories.MUSIQUE_ENREGISTREE,
-    native_category=NativeCategory.CD_VINYLES,
+    native_category=NativeCategory.CD,
     pro_label="Support physique (CD, vinyle...)",
     app_label="Support physique (CD, vinyle...)",
     search_group_name=SearchGroups.CD_VINYLE_MUSIQUE_EN_LIGNE.name,
@@ -1199,7 +1201,7 @@ SUPPORT_PHYSIQUE_MUSIQUE = Subcategory(
 SUPPORT_PHYSIQUE_MUSIQUE_CD = Subcategory(
     id="SUPPORT_PHYSIQUE_MUSIQUE_CD",
     category=categories.MUSIQUE_ENREGISTREE,
-    native_category=NativeCategory.CD_VINYLES,
+    native_category=NativeCategory.CD,
     pro_label="CD",
     app_label="CD",
     search_group_name=SearchGroups.CD_VINYLE_MUSIQUE_EN_LIGNE.name,
@@ -1227,7 +1229,7 @@ SUPPORT_PHYSIQUE_MUSIQUE_CD = Subcategory(
 SUPPORT_PHYSIQUE_MUSIQUE_VINYLE = Subcategory(
     id="SUPPORT_PHYSIQUE_MUSIQUE_VINYLE",
     category=categories.MUSIQUE_ENREGISTREE,
-    native_category=NativeCategory.CD_VINYLES,
+    native_category=NativeCategory.VINYLES,
     pro_label="Vinyle",
     app_label="Vinyle",
     search_group_name=SearchGroups.CD_VINYLE_MUSIQUE_EN_LIGNE.name,
