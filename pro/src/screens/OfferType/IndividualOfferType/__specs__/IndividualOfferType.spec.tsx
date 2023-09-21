@@ -15,6 +15,7 @@ import {
 import { OfferTypeFormValues } from 'screens/OfferType/types'
 import {
   individualOfferCategoryFactory,
+  individualOfferGetVenuesFactory,
   individualOfferSubCategoryResponseModelFactory,
   individualOfferVenueResponseModelFactory,
 } from 'utils/individualApiFactories'
@@ -54,15 +55,25 @@ const TestForm = (): JSX.Element => {
     </FormikProvider>
   )
 }
-const renderOfferTypeIndividual = (
-  isFeatureActive: boolean,
+
+interface renderOfferTypeIndividualProps {
+  isFeatureActive?: boolean
   venueId?: string
-) => {
+  offererId?: string
+  isAdmin?: boolean
+}
+
+const renderOfferTypeIndividual = ({
+  isFeatureActive = true,
+  isAdmin = false,
+  venueId,
+  offererId,
+}: renderOfferTypeIndividualProps) => {
   const storeOverrides = {
     user: {
       initialized: true,
       currentUser: {
-        isAdmin: false,
+        isAdmin: isAdmin,
         email: 'email@example.com',
       },
     },
@@ -71,9 +82,19 @@ const renderOfferTypeIndividual = (
     },
   }
 
+  const params = new URLSearchParams()
+  if (venueId) {
+    params.append('lieu', venueId)
+  }
+  if (offererId) {
+    params.append('structure', offererId)
+  }
+
   return renderWithProviders(<TestForm />, {
     storeOverrides,
-    initialRouterEntries: [`/creation${venueId ? `?lieu=${venueId}` : ''}`],
+    initialRouterEntries: [
+      `/creation${params.toString() ? `?${params.toString()}` : ''}`,
+    ],
   })
 }
 
@@ -94,20 +115,80 @@ describe('OfferTypeIndividual', () => {
         venueTypeCode: 'OTHER' as VenueTypeCode, // cast is needed because VenueTypeCode in apiClient is defined in french, but sent by api in english
       }),
     })
+    vi.spyOn(api, 'getVenues').mockResolvedValue({
+      venues: [
+        individualOfferGetVenuesFactory({ isVirtual: true }),
+        individualOfferGetVenuesFactory({
+          isVirtual: false,
+          venueTypeCode: 'OTHER' as VenueTypeCode, // cast is needed because VenueTypeCode in apiClient is defined in french, but sent by api in english
+        }),
+      ],
+    })
   })
 
-  it('should not display macro choices but specific subcategory when arriving on page', async () => {
-    renderOfferTypeIndividual(true, '123')
+  it('should not display macro choices but specific subcategories when venue is in url', async () => {
+    renderOfferTypeIndividual({ venueId: '123' })
 
     expect(
       await screen.findByText('Quelle est la catégorie de l’offre ?')
     ).toBeInTheDocument()
     expect(screen.getByText('Ma sous-catégorie préférée')).toBeInTheDocument()
     expect(screen.queryByText('Votre offre est :')).not.toBeInTheDocument()
+    expect(api.getCategories).toHaveBeenCalledTimes(1)
+    expect(api.getVenue).toHaveBeenCalledTimes(1)
+    expect(api.getVenues).not.toHaveBeenCalled()
+  })
+
+  it('should display specific subcategories when an offerer is in url', async () => {
+    const offererId = 456
+
+    renderOfferTypeIndividual({
+      offererId: offererId.toString(),
+    })
+
+    expect(
+      await screen.findByText('Quelle est la catégorie de l’offre ?')
+    ).toBeInTheDocument()
+    expect(screen.getByText('Ma sous-catégorie préférée')).toBeInTheDocument()
+    expect(screen.queryByText('Votre offre est :')).not.toBeInTheDocument()
+    expect(api.getCategories).toHaveBeenCalledTimes(1)
+    expect(api.getVenue).not.toHaveBeenCalled()
+    expect(api.getVenues).toHaveBeenNthCalledWith(1, null, true, offererId)
+  })
+
+  it('should display specific subcategories when user has only one physical venue', async () => {
+    renderOfferTypeIndividual({})
+
+    expect(
+      await screen.findByText('Quelle est la catégorie de l’offre ?')
+    ).toBeInTheDocument()
+    expect(screen.getByText('Ma sous-catégorie préférée')).toBeInTheDocument()
+    expect(screen.queryByText('Votre offre est :')).not.toBeInTheDocument()
+    expect(api.getCategories).toHaveBeenCalledTimes(1)
+    expect(api.getVenue).not.toHaveBeenCalled()
+    expect(api.getVenues).toHaveBeenNthCalledWith(1, null, true, undefined)
+  })
+
+  it('should display specific subcategories when user is Admin and there is offerer in url', async () => {
+    const offererId = 456
+
+    renderOfferTypeIndividual({
+      offererId: offererId.toString(),
+      isAdmin: true,
+    })
+
+    expect(
+      await screen.findByText('Quelle est la catégorie de l’offre ?')
+    ).toBeInTheDocument()
+    expect(screen.getByText('Ma sous-catégorie préférée')).toBeInTheDocument()
+    expect(screen.queryByText('Votre offre est :')).not.toBeInTheDocument()
+    expect(api.getCategories).toHaveBeenCalledTimes(1)
+    expect(api.getVenue).not.toHaveBeenCalled()
+    expect(api.getVenues).toHaveBeenNthCalledWith(1, null, true, offererId)
   })
 
   it('should display macro choices when clicking on "Autre"', async () => {
-    renderOfferTypeIndividual(true, '123')
+    renderOfferTypeIndividual({ venueId: '123' })
 
     expect(
       await screen.findByText('Quelle est la catégorie de l’offre ?')
@@ -120,42 +201,81 @@ describe('OfferTypeIndividual', () => {
   })
 
   it('should only display macro choices when feature as not been activated', () => {
-    renderOfferTypeIndividual(false, '123')
+    renderOfferTypeIndividual({ isFeatureActive: false, venueId: '123' })
 
     expect(
       screen.queryByText('Quelle est la catégorie de l’offre ?')
     ).not.toBeInTheDocument()
     expect(screen.getByText('Votre offre est :')).toBeInTheDocument()
-  })
-
-  it('should only display macro choices when there is no query venue id', () => {
-    renderOfferTypeIndividual(true, undefined)
-
-    expect(
-      screen.queryByText('Quelle est la catégorie de l’offre ?')
-    ).not.toBeInTheDocument()
-    expect(screen.getByText('Votre offre est :')).toBeInTheDocument()
+    expect(api.getCategories).not.toHaveBeenCalled()
+    expect(api.getVenue).not.toHaveBeenCalled()
+    expect(api.getVenues).not.toHaveBeenCalled()
   })
 
   it('should only display macro choices when get venue api call fail', async () => {
     vi.spyOn(api, 'getVenue').mockRejectedValueOnce(null)
 
-    renderOfferTypeIndividual(true, '123')
+    renderOfferTypeIndividual({ venueId: '123' })
 
     expect(await screen.findByText('Votre offre est :')).toBeInTheDocument()
     expect(
       screen.queryByText('Quelle est la catégorie de l’offre ?')
     ).not.toBeInTheDocument()
+    expect(api.getCategories).toHaveBeenCalledTimes(1)
+    expect(api.getVenue).toHaveBeenCalledTimes(1)
+    expect(api.getVenues).not.toHaveBeenCalled()
   })
 
   it('should only display macro choices when get category api call fail', async () => {
     vi.spyOn(api, 'getCategories').mockRejectedValueOnce(null)
 
-    renderOfferTypeIndividual(true, '123')
+    renderOfferTypeIndividual({ venueId: '123' })
 
     expect(await screen.findByText('Votre offre est :')).toBeInTheDocument()
     expect(
       screen.queryByText('Quelle est la catégorie de l’offre ?')
     ).not.toBeInTheDocument()
+    expect(api.getCategories).toHaveBeenCalledTimes(1)
+    expect(api.getVenue).not.toHaveBeenCalled()
+    expect(api.getVenues).not.toHaveBeenCalled()
+  })
+
+  it('should only display macro choices when user has more than one physical venue', async () => {
+    vi.spyOn(api, 'getVenues').mockResolvedValue({
+      venues: [
+        individualOfferGetVenuesFactory({ isVirtual: true }),
+        individualOfferGetVenuesFactory({
+          isVirtual: false,
+          venueTypeCode: 'OTHER' as VenueTypeCode, // cast is needed because VenueTypeCode in apiClient is defined in french, but sent by api in english
+        }),
+        individualOfferGetVenuesFactory({
+          isVirtual: false,
+        }),
+      ],
+    })
+
+    renderOfferTypeIndividual({})
+
+    expect(await screen.findByText('Votre offre est :')).toBeInTheDocument()
+    expect(
+      screen.queryByText('Quelle est la catégorie de l’offre ?')
+    ).not.toBeInTheDocument()
+    expect(api.getCategories).toHaveBeenCalledTimes(1)
+    expect(api.getVenue).not.toHaveBeenCalled()
+    expect(api.getVenues).toHaveBeenCalledTimes(1)
+  })
+
+  it('should only display macro choices when user is admin and nothing is on url', async () => {
+    renderOfferTypeIndividual({
+      isAdmin: true,
+    })
+
+    expect(await screen.findByText('Votre offre est :')).toBeInTheDocument()
+    expect(
+      screen.queryByText('Quelle est la catégorie de l’offre ?')
+    ).not.toBeInTheDocument()
+    expect(api.getCategories).not.toHaveBeenCalled()
+    expect(api.getVenue).not.toHaveBeenCalled()
+    expect(api.getVenues).not.toHaveBeenCalled()
   })
 })

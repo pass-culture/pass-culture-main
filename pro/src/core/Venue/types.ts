@@ -19,6 +19,7 @@ export type IndividualOfferVenue = {
   bookingEmail?: string | null
   hasMissingReimbursementPoint: boolean
   hasCreatedOffer: boolean
+  venueType: string
 }
 
 export type VenueCollectiveInformation = Pick<
