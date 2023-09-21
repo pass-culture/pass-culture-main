@@ -64,12 +64,12 @@ class BeamerConnectorTest:
 
         assert requests_mock.last_request.json() == BEAMER_ATTRIBUTES
 
-    def test_user_id_missing(self):
+    def test_user_id_missing(self, requests_mock):
         pro_attributes_with_no_id = copy.deepcopy(PRO_ATTRIBUTES)
         pro_attributes_with_no_id.user_id = ""
 
-        with pytest.raises(AssertionError):
-            beamer.update_beamer_user(pro_attributes_with_no_id)
+        assert beamer.update_beamer_user(pro_attributes_with_no_id) is None
+        assert not requests_mock.called
 
     def test_error_handling(self, requests_mock):
         requests_mock.put("https://api.getbeamer.com/v0/users", status_code=403)
