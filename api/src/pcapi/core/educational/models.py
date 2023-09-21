@@ -620,6 +620,9 @@ class CollectiveOfferTemplate(
         back_populates="favoriteCollectiveOfferTemplates",
     )
 
+    start: datetime = sa.Column(sa.DateTime, nullable=True)
+    end: datetime = sa.Column(sa.DateTime, nullable=True)
+
     @property
     def isEducational(self) -> bool:
         # FIXME (rpaoloni, 2022-05-09): Remove legacy support layer

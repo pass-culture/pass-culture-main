@@ -1,3 +1,5 @@
+from datetime import datetime
+from datetime import timedelta
 from unittest.mock import patch
 
 from freezegun import freeze_time
@@ -34,6 +36,8 @@ class Returns200Test:
             offerer=offer.venue.managingOfferer,
         )
         national_program = educational_factories.NationalProgramFactory()
+        start = datetime.utcnow()
+        end = start + timedelta(days=90)
 
         data = {
             "name": "New name",
@@ -43,6 +47,8 @@ class Returns200Test:
             "priceDetail": "pouet",
             "domains": [domain.id],
             "nationalProgramId": national_program.id,
+            "start": start.isoformat(),
+            "end": end.isoformat(),
         }
 
         # WHEN
@@ -70,6 +76,8 @@ class Returns200Test:
         assert updated_offer.subcategoryId == "CONCERT"
         assert updated_offer.priceDetail == "pouet"
         assert updated_offer.domains == [domain]
+        assert updated_offer.start == start
+        assert updated_offer.end == end
 
 
 class Returns400Test:

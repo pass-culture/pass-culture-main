@@ -1,3 +1,5 @@
+from datetime import datetime
+from datetime import timedelta
 from unittest.mock import patch
 
 import pytest
@@ -7,59 +9,96 @@ import pcapi.core.educational.exceptions as educational_exceptions
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveOfferTemplate
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.users.factories as users_factories
 
 
-base_collective_offer_payload = {
-    "description": "Ma super description",
-    "bookingEmails": ["offer1@example.com", "offer2@example.com"],
-    "durationMinutes": 60,
-    "name": "La pièce de théâtre",
-    "contactEmail": "pouet@example.com",
-    "contactPhone": "01 99 00 25 68",
-    "students": ["Lycée - Seconde", "Lycée - Première"],
-    "audioDisabilityCompliant": False,
-    "mentalDisabilityCompliant": True,
-    "motorDisabilityCompliant": False,
-    "visualDisabilityCompliant": False,
-    "interventionArea": ["75", "92", "93"],
-    "templateId": None,
-    "priceDetail": "Le détail ici",
-}
+START = datetime.utcnow()
+END = START + timedelta(days=90)
 
 
-@pytest.mark.usefixtures("db_session")
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
+@pytest.fixture(name="venue")
+def venue_fixture():
+    return offerers_factories.VenueFactory()
+
+
+@pytest.fixture(name="user_offerer")
+def user_offerer_fixture(venue):
+    return offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+
+
+@pytest.fixture(name="user")
+def user_fixture(user_offerer):
+    return user_offerer.user
+
+
+@pytest.fixture(name="offerer")
+def offerer_fixture(user_offerer):
+    return user_offerer.offerer
+
+
+@pytest.fixture(name="pro_client")
+def pro_client_fixture(client, user):
+    return client.with_session_auth(user.email)
+
+
+@pytest.fixture(name="domains")
+def domains_fixture():
+    return [educational_factories.EducationalDomainFactory(), educational_factories.EducationalDomainFactory()]
+
+
+@pytest.fixture(name="offer_venue")
+def offer_venue_fixture(venue):
+    return {
+        "addressType": "school",
+        "venueId": venue.id,
+        "otherAddress": "17 rue aléatoire",
+    }
+
+
+@pytest.fixture(name="payload")
+def payload_fixture(venue, domains, offer_venue):
+    return {
+        "description": "Ma super description",
+        "bookingEmails": ["offer1@example.com", "offer2@example.com"],
+        "durationMinutes": 60,
+        "name": "La pièce de théâtre",
+        "contactEmail": "pouet@example.com",
+        "contactPhone": "01 99 00 25 68",
+        "students": ["Lycée - Seconde", "Lycée - Première"],
+        "audioDisabilityCompliant": False,
+        "mentalDisabilityCompliant": True,
+        "motorDisabilityCompliant": False,
+        "visualDisabilityCompliant": False,
+        "interventionArea": ["75", "92", "93"],
+        "templateId": None,
+        "priceDetail": "Le détail ici",
+        "start": START.isoformat(),
+        "end": END.isoformat(),
+        "offerVenue": offer_venue,
+        "domains": [domain.id for domain in domains],
+        "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
+        "venueId": venue.id,
+    }
+
+
 class Returns200Test:
-    def test_create_collective_offer_template(self, client):
-        # Given
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-        educational_domain1 = educational_factories.EducationalDomainFactory()
-        educational_domain2 = educational_factories.EducationalDomainFactory()
+    def test_create_collective_offer_template(self, pro_client, offerer, venue, payload, domains, offer_venue):
         national_program = educational_factories.NationalProgramFactory()
 
         # When
-        data = {
-            **base_collective_offer_payload,
-            "nationalProgramId": national_program.id,
-            "venueId": venue.id,
-            "domains": [educational_domain1.id, educational_domain1.id, educational_domain2.id],
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
-                "otherAddress": "17 rue aléatoire",
-            },
-        }
+        data = {**payload, "nationalProgramId": national_program.id}
+
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth("user@example.com").post("/collective/offers-template", json=data)
+            response = pro_client.post("/collective/offers-template", json=data)
 
         # Then
-
         assert response.status_code == 201
+
         offer_id = response.json["id"]
         offer = CollectiveOfferTemplate.query.get(offer_id)
+
         assert offer.bookingEmails == ["offer1@example.com", "offer2@example.com"]
         assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
         assert offer.venue == venue
@@ -72,285 +111,146 @@ class Returns200Test:
         assert offer.mentalDisabilityCompliant is True
         assert offer.contactEmail == "pouet@example.com"
         assert offer.contactPhone == "01 99 00 25 68"
-        assert offer.offerVenue == {
-            "addressType": "school",
-            "venueId": venue.id,
-            "otherAddress": "17 rue aléatoire",
-        }
+        assert offer.offerVenue == offer_venue
         assert offer.interventionArea == ["75", "92", "93"]
         assert len(offer.students) == 2
         assert offer.students[0].value == "Lycée - Seconde"
         assert offer.students[1].value == "Lycée - Première"
         assert len(offer.domains) == 2
-        assert set(offer.domains) == {educational_domain1, educational_domain2}
+        assert set(offer.domains) == set(domains)
         assert offer.description == "Ma super description"
         assert offer.priceDetail == "Le détail ici"
         assert offer.nationalProgramId == national_program.id
+        assert offer.start == START
+        assert offer.end == END
 
-    def test_create_collective_offer_template_empty_intervention_area(self, client):
-        # Given
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-        educational_domain = educational_factories.EducationalDomainFactory()
-
-        # When
+    def test_empty_intervention_area(self, pro_client, payload, venue):
         data = {
-            **base_collective_offer_payload,
-            "venueId": venue.id,
-            "domains": [educational_domain.id],
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "offerVenue": {
-                "addressType": "offererVenue",
-                "otherAddress": "",
-                "venueId": venue.id,
-            },
+            **payload,
+            "offerVenue": {"addressType": "offererVenue", "otherAddress": "", "venueId": venue.id},
             "interventionArea": [],
         }
-        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth("user@example.com").post("/collective/offers-template", json=data)
 
-        # Then
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = pro_client.post("/collective/offers-template", json=data)
+
         assert response.status_code == 201
 
+    def test_without_start_end_dates(self, pro_client, payload):
+        data = {**payload, "start": None, "end": None}
 
-@pytest.mark.usefixtures("db_session")
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 201
+
+        offer = CollectiveOfferTemplate.query.get(response.json["id"])
+        assert not offer.start
+        assert not offer.end
+
+
 class Returns403Test:
-    def test_create_collective_offer_template_random_user(self, client):
+    def test_random_user(self, client, payload):
         # Given
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        user = offerers_factories.UserOffererFactory().user
 
         # When
-        data = {
-            **base_collective_offer_payload,
-            "venueId": venue.id,
-            "domains": [educational_factories.EducationalDomainFactory().id],
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
-                "otherAddress": "17 rue aléatoire",
-            },
-        }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth(user.email).post("/collective/offers-template", json=data)
+            response = client.with_session_auth(user.email).post("/collective/offers-template", json=payload)
 
         # Then
         assert response.status_code == 403
         assert CollectiveOfferTemplate.query.count() == 0
 
-    def test_create_collective_offer_template_no_adage_offerer(self, client):
+    def test_no_adage_offerer(self, pro_client, payload):
         # Given
         def raise_ac(*args, **kwargs):
             raise educational_exceptions.CulturalPartnerNotFoundException("pouet")
 
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-
         # When
-        data = {
-            **base_collective_offer_payload,
-            "venueId": venue.id,
-            "domains": [educational_factories.EducationalDomainFactory().id],
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
-                "otherAddress": "17 rue aléatoire",
-            },
-        }
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer", side_effect=raise_ac):
-            response = client.with_session_auth("user@example.com").post("/collective/offers-template", json=data)
+            response = pro_client.post("/collective/offers-template", json=payload)
 
         # Then
         assert response.status_code == 403
         assert CollectiveOfferTemplate.query.count() == 0
 
 
-@pytest.mark.usefixtures("db_session")
 class Returns400Test:
-    def test_create_collective_offer_template_unknown_category(self, client):
-        # Given
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user=user)
-
+    def test_missing_category(self, pro_client, payload):
         # When
-        data = {
-            **base_collective_offer_payload,
-            "venueId": venue.id,
-            "offerVenue": {
-                "addressType": "school",
-                "venueId": 125,
-                "otherAddress": "17 rue aléatoire",
-            },
-        }
+        del payload["subcategoryId"]
+
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth(user.email).post("/collective/offers-template", json=data)
+            response = pro_client.post("/collective/offers-template", json=payload)
 
         # Then
         assert response.status_code == 400
         assert CollectiveOfferTemplate.query.count() == 0
 
-    def test_create_collective_offer_template_unselectable_category(self, client):
-        # Given
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user=user)
-
+    def test_unselectable_category(self, pro_client, payload):
         # When
-        data = {
-            **base_collective_offer_payload,
-            "venueId": venue.id,
-            "subcategoryId": subcategories.OEUVRE_ART.id,
-            "offerVenue": {
-                "addressType": "school",
-                "venueId": 125,
-                "otherAddress": "17 rue aléatoire",
-            },
-        }
+        data = {**payload, "subcategoryId": subcategories.OEUVRE_ART.id}
+
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth(user.email).post("/collective/offers-template", json=data)
+            response = pro_client.post("/collective/offers-template", json=data)
 
         # Then
         assert response.status_code == 400
         assert CollectiveOfferTemplate.query.count() == 0
 
-    def test_create_collective_offer_template_no_collective_category(self, client):
-        # Given
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user=user)
-
+    def test_no_collective_category(self, pro_client, payload):
         # When
-        data = {
-            **base_collective_offer_payload,
-            "venueId": venue.id,
-            "subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id,
-            "offerVenue": {
-                "addressType": "school",
-                "venueId": 125,
-                "otherAddress": "17 rue aléatoire",
-            },
-        }
+        data = {**payload, "subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id}
+
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth(user.email).post("/collective/offers-template", json=data)
+            response = pro_client.post("/collective/offers-template", json=data)
 
         # Then
         assert response.status_code == 400
         assert CollectiveOfferTemplate.query.count() == 0
 
-    def test_create_collective_offer_template_empty_domains(self, client):
-        # Given
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user=user)
-
+    def test_empty_domains(self, pro_client, payload):
         # When
-        data = {
-            **base_collective_offer_payload,
-            "venueId": venue.id,
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "offerVenue": {
-                "addressType": "school",
-                "venueId": 125,
-                "otherAddress": "17 rue aléatoire",
-            },
-        }
+        data = {**payload, "domains": []}
+
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth(user.email).post("/collective/offers-template", json=data)
+            response = pro_client.post("/collective/offers-template", json=data)
 
         # Then
         assert response.status_code == 400
         assert CollectiveOfferTemplate.query.count() == 0
 
-    def test_create_collective_offer_template_too_long_price_details(self, client):
-        user = users_factories.UserFactory()
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user=user)
-
+    def test_too_long_price_details(self, pro_client, payload):
         # When
-        data = {
-            **base_collective_offer_payload,
-            "venueId": venue.id,
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "offerVenue": {
-                "addressType": "school",
-                "venueId": 125,
-                "otherAddress": "17 rue aléatoire",
-            },
-            "priceDetail": "a" * 1001,
-        }
+        data = {**payload, "priceDetail": "a" * 1001}
+
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth(user.email).post("/collective/offers-template", json=data)
+            response = pro_client.post("/collective/offers-template", json=data)
 
         # Then
         assert response.status_code == 400
         assert CollectiveOfferTemplate.query.count() == 0
 
 
-@pytest.mark.usefixtures("db_session")
 class Returns404Test:
-    def test_create_collective_offer_template_with_unknown_domain(self, client):
-        # Given
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-        educational_domain1 = educational_factories.EducationalDomainFactory()
-        educational_domain2 = educational_factories.EducationalDomainFactory()
-
+    def test_unknown_domain(self, pro_client, payload):
         # When
-        data = {
-            **base_collective_offer_payload,
-            "venueId": venue.id,
-            "domains": [0, educational_domain1.id, educational_domain2.id],
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
-                "otherAddress": "17 rue aléatoire",
-            },
-        }
+        data = {**payload, "domains": [0]}
 
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth("user@example.com").post("/collective/offers-template", json=data)
+            response = pro_client.post("/collective/offers-template", json=data)
 
         # Then
         assert response.status_code == 404
         assert response.json == {"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"}
 
-    def test_create_collective_offer_template_with_unknown_national_program(self, client):
-        # Given
-        venue = offerers_factories.VenueFactory()
-        offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
-        educational_domain1 = educational_factories.EducationalDomainFactory()
-        educational_domain2 = educational_factories.EducationalDomainFactory()
-
+    def test_unknown_national_program(self, pro_client, payload):
         # When
-        data = {
-            **base_collective_offer_payload,
-            "nationalProgramId": -1,
-            "venueId": venue.id,
-            "domains": [educational_domain1.id, educational_domain1.id, educational_domain2.id],
-            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
-            "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
-                "otherAddress": "17 rue aléatoire",
-            },
-        }
+        data = {**payload, "nationalProgramId": -1}
+
         with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
-            response = client.with_session_auth("user@example.com").post("/collective/offers-template", json=data)
+            response = pro_client.post("/collective/offers-template", json=data)
 
         assert response.status_code == 400
         assert response.json == {"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_NOT_FOUND"}
