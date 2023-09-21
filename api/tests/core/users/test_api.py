@@ -40,7 +40,7 @@ from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.models import db
 from pcapi.notifications.push import testing as batch_testing
 from pcapi.routes.native.v1.serialization import account as account_serialization
-from pcapi.routes.serialization.users import ProUserCreationBodyModel
+from pcapi.routes.serialization.users import ImportUserFromCsvModel
 
 from tests.test_utils import gen_offerer_tags
 
@@ -818,7 +818,7 @@ class CreateProUserTest:
     }
 
     def test_create_pro_user(self):
-        pro_user_creation_body = ProUserCreationBodyModel(**self.data)
+        pro_user_creation_body = ImportUserFromCsvModel(**self.data)
 
         pro_user = users_api.create_pro_user(pro_user_creation_body)
 
@@ -832,7 +832,7 @@ class CreateProUserTest:
 
     @override_settings(IS_INTEGRATION=True)
     def test_create_pro_user_in_integration(self):
-        pro_user_creation_body = ProUserCreationBodyModel(**self.data)
+        pro_user_creation_body = ImportUserFromCsvModel(**self.data)
 
         pro_user = users_api.create_pro_user(pro_user_creation_body)
 
@@ -850,7 +850,7 @@ class CreateProUserAndOffererTest:
     def test_offerer_auto_tagging(self):
         # Given
         gen_offerer_tags()
-        user_info = ProUserCreationBodyModel(
+        user_info = ImportUserFromCsvModel(
             address="1 rue des polissons",
             city="Paris",
             email="user@example.com",
@@ -865,7 +865,7 @@ class CreateProUserAndOffererTest:
         )
 
         # When
-        user = users_api.create_pro_user_and_offerer(user_info)
+        user = users_api.import_pro_user_and_offerer_from_csv(user_info)
 
         # Then
         offerer = user.UserOfferers[0].offerer
