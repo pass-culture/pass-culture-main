@@ -31,7 +31,9 @@ class BeamerBackend(BaseBackend):
 
     def update_pro_user(self, pro_attributes: attributes_models.ProAttributes) -> None:
         """Upserts the user into the Beamer database"""
-        assert pro_attributes.user_id, "pro user id is needed because it is also the beamer user id"
+        if not pro_attributes.user_id:
+            # these pro attributes are linked to an email that is linked to venues, not to a user
+            return
 
         put_users_url = f"{self.url}/users"
         try:
@@ -55,9 +57,12 @@ class BeamerBackend(BaseBackend):
 
 class LoggerBackend(BaseBackend):
     def update_pro_user(self, pro_attributes: attributes_models.ProAttributes) -> None:
-        assert pro_attributes.user_id, "pro user id is needed because it is also the beamer user id"
-
         request_data = format_pro_attributes(pro_attributes)
+
+        if not pro_attributes.user_id:
+            logger.info("Pro attributes %s not linked to a user, skipping", request_data)
+            return
+
         logger.info("Updated pro user data on Beamer: %s", request_data)
 
 
