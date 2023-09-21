@@ -75,7 +75,7 @@ class UserEmailValidationResponseModel(BaseModel):
         orm_mode = True
 
 
-class ProUserCreationBodyModel(BaseModel):
+class ImportUserFromCsvModel(BaseModel):
     address: str
     city: str
     email: pydantic_v1.EmailStr

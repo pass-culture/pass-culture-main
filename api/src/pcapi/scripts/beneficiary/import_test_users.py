@@ -22,7 +22,7 @@ from pcapi.core.users.repository import find_user_by_email
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications.internal.transactional import import_test_user_failure
 from pcapi.repository import repository
-from pcapi.routes.serialization.users import ProUserCreationBodyModel
+from pcapi.routes.serialization.users import ImportUserFromCsvModel
 from pcapi.utils.email import sanitize_email
 
 
@@ -64,12 +64,12 @@ def _create_beneficiary(row: dict, role: UserRole | None) -> User:
 
 
 def _create_pro_user(row: dict) -> User:
-    user = users_api.create_pro_user_and_offerer(
-        ProUserCreationBodyModel(
-            firstName=row["Prénom"],  # type: ignore [call-arg]
-            lastName=row["Nom"],
+    user = users_api.import_pro_user_and_offerer_from_csv(
+        ImportUserFromCsvModel(
             address="1 avenue des pros",
             city="MA VILLE",
+            firstName=row["Prénom"],  # type: ignore [call-arg]
+            lastName=row["Nom"],
             email=row["Mail"],
             name=f'Entreprise {row["Nom"]}',
             password=_get_password(row),
