@@ -6,8 +6,10 @@ import React from 'react'
 import { Confirmation } from 'pages/IndividualOfferWizard/Confirmation'
 import { Offer } from 'pages/IndividualOfferWizard/Offer'
 import { PriceCategories } from 'pages/IndividualOfferWizard/PriceCategories'
+import { PriceCategoriesSummary } from 'pages/IndividualOfferWizard/PriceCategoriesSummary/PriceCategoriesSummary'
 import { Stocks } from 'pages/IndividualOfferWizard/Stocks'
-import { Summary } from 'pages/IndividualOfferWizard/Summary'
+import { StocksSummary } from 'pages/IndividualOfferWizard/StocksSummary/StocksSummary'
+import { Summary } from 'pages/IndividualOfferWizard/Summary/Summary'
 
 import type { RouteConfig } from './routesMap'
 
@@ -70,7 +72,7 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
     title: 'Tarifs - Modifier une offre individuelle',
   },
   {
-    element: <PriceCategories />,
+    element: <PriceCategoriesSummary />,
     parentPath: '/offre/individuelle/:offerId',
     path: '/tarifs',
     title: 'Tarifs - Consulter une offre individuelle',
@@ -94,7 +96,7 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
     title: 'Stocks et prix  - Modifier une offre individuelle',
   },
   {
-    element: <Stocks />,
+    element: <StocksSummary />,
     parentPath: '/offre/individuelle/:offerId',
     path: '/stocks',
     title: 'Stocks et prix  - Consulter une offre individuelle',

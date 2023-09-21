@@ -148,11 +148,16 @@ const Summary = () => {
         <SummaryLayout.Content>
           <OfferSection conditionalFields={conditionalFields} offer={offer} />
 
-          {offer.isEvent && (
-            <PriceCategoriesSection offer={offer} canBeDuo={canBeDuo} />
-          )}
+          {(mode === OFFER_WIZARD_MODE.CREATION ||
+            mode === OFFER_WIZARD_MODE.DRAFT) &&
+            offer.isEvent && (
+              <PriceCategoriesSection offer={offer} canBeDuo={canBeDuo} />
+            )}
 
-          <StockSection offer={offer} canBeDuo={canBeDuo} />
+          {(mode === OFFER_WIZARD_MODE.CREATION ||
+            mode === OFFER_WIZARD_MODE.DRAFT) && (
+            <StockSection offer={offer} canBeDuo={canBeDuo} />
+          )}
 
           <ActionBar
             onClickNext={publishOffer}
