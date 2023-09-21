@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React from 'react'
 import { generatePath, useLocation } from 'react-router-dom'
 
@@ -162,11 +163,12 @@ export const IndividualOfferBreadcrumb = ({
           ? BreadcrumbStyle.STEPPER
           : BreadcrumbStyle.TAB
       }
-      className={
-        mode === OFFER_WIZARD_MODE.CREATION || mode === OFFER_WIZARD_MODE.DRAFT
-          ? styles['stepper-creation']
-          : ''
-      }
+      className={cn({
+        [styles['stepper-creation']]:
+          mode === OFFER_WIZARD_MODE.CREATION ||
+          mode === OFFER_WIZARD_MODE.DRAFT,
+        [styles['stepper-readonly']]: mode === OFFER_WIZARD_MODE.READ_ONLY,
+      })}
     />
   )
 }
