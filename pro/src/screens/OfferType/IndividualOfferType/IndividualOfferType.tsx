@@ -17,6 +17,7 @@ import strokeVirtualThingIcon from 'icons/stroke-virtual-thing.svg'
 import { RadioButton } from 'ui-kit'
 import { BaseRadioVariant } from 'ui-kit/form/shared/BaseRadio/types'
 import RadioButtonWithImage from 'ui-kit/RadioButtonWithImage'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 import styles from '../OfferType.module.scss'
 import { OfferTypeFormValues } from '../types'
@@ -28,6 +29,7 @@ const IndividualOfferType = (): JSX.Element | null => {
   const { values, handleChange } = useFormikContext<OfferTypeFormValues>()
   const [subcategories, setSubcategories] = useState<OfferSubCategory[]>([])
   const [venue, setVenue] = useState<Venue | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
   const queryParams = new URLSearchParams(location.search)
   const queryVenueId = queryParams.get('lieu')
   const isCategorySelectionActive = useNewIndividualOfferType()
@@ -35,6 +37,7 @@ const IndividualOfferType = (): JSX.Element | null => {
   useEffect(() => {
     async function loadData() {
       if (Boolean(queryVenueId) && isCategorySelectionActive) {
+        setIsLoading(true)
         const categoriesResponse = await getCategoriesAdapter()
         const venueResponse = await getVenueAdapter(Number(queryVenueId))
 
@@ -46,6 +49,7 @@ const IndividualOfferType = (): JSX.Element | null => {
           const venueData = venueResponse.payload
           setVenue(venueData)
         }
+        setIsLoading(false)
       }
     }
     loadData()
@@ -54,6 +58,10 @@ const IndividualOfferType = (): JSX.Element | null => {
   const venueType = venue?.venueType
   const venueTypeMostUsedSubcategories =
     venueType && venueTypeSubcategoriesMapping[venueType]
+
+  if (isLoading) {
+    return <Spinner />
+  }
 
   return (
     <>
