@@ -130,7 +130,8 @@ describe('IndividualOffer section: venue', () => {
       offererNames,
       null,
       null,
-      venueList
+      venueList,
+      true
     )
     props = {
       offererNames,
@@ -175,7 +176,8 @@ describe('IndividualOffer section: venue', () => {
       props.offererNames,
       null,
       null,
-      props.venueList
+      props.venueList,
+      true
     )
     renderVenue({
       initialValues,

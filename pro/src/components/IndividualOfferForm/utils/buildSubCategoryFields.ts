@@ -1,31 +1,32 @@
 import { OfferSubCategory } from 'core/Offers/types'
 
-const buildSubCategoryFields = (
-  subCategoryId: string,
-  subCategories: OfferSubCategory[],
-  isBookingContactEnabled: boolean
+const buildSubcategoryFields = (
+  isBookingContactEnabled: boolean,
+  subcategory?: OfferSubCategory
 ): {
-  subCategoryFields: string[]
-  isEvent: boolean
+  subcategoryFields: string[]
 } => {
-  const subCategory = subCategories.find(
-    (subcategory: OfferSubCategory) => subCategoryId === subcategory.id
-  )
-  const subCategoryFields = [...new Set(subCategory?.conditionalFields || [])]
-  const isEvent = subCategory?.isEvent || false
+  const subcategoryFields = [...new Set(subcategory?.conditionalFields)]
+  const isEvent = Boolean(subcategory?.isEvent)
 
-  isEvent && subCategoryFields.push('durationMinutes')
-  subCategory?.canBeDuo && subCategoryFields.push('isDuo')
+  if (isEvent) {
+    subcategoryFields.push('durationMinutes')
+  }
 
-  subCategory?.canBeWithdrawable &&
-    subCategoryFields.push('withdrawalType') &&
-    subCategoryFields.push('withdrawalDelay')
+  if (subcategory?.canBeDuo) {
+    subcategoryFields.push('isDuo')
+  }
 
-  isBookingContactEnabled &&
-    subCategory?.canBeWithdrawable &&
-    subCategoryFields.push('bookingContact')
+  if (subcategory?.canBeWithdrawable) {
+    subcategoryFields.push('withdrawalType')
+    subcategoryFields.push('withdrawalDelay')
 
-  return { subCategoryFields, isEvent }
+    if (isBookingContactEnabled) {
+      subcategoryFields.push('bookingContact')
+    }
+  }
+
+  return { subcategoryFields }
 }
 
-export default buildSubCategoryFields
+export default buildSubcategoryFields
