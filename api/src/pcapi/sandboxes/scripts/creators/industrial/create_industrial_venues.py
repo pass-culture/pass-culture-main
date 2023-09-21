@@ -18,9 +18,16 @@ logger = logging.getLogger(__name__)
 
 OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO = 3
 OFFERERS_WITH_PHYSICAL_VENUE_WITH_SIRET_REMOVE_MODULO = OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO * 2
+OFFERERS_WITH_A_SECOND_VENUE_WITH_SIRET_MODULO = 4
 
 DEFAULT_VENUE_IMAGES = 4
 VENUE_IMAGE_INDEX_START_AT = 21
+
+
+def _random_venue_type_code() -> offerers_models.VenueTypeCode:
+    return random.choice(
+        [type_code for type_code in offerers_models.VenueTypeCode if type_code != offerers_models.VenueTypeCode.DIGITAL]
+    )
 
 
 def add_default_image_to_venue(image_venue_counter: int, offerer: Offerer, venue: Venue) -> None:
@@ -52,19 +59,21 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
 
     for offerer_index, (offerer_name, offerer) in enumerate(offerers_by_name.items()):
         geoloc_match = re.match(r"(.*)lat\:(.*) lon\:(.*)", offerer_name)
+        latitude = float(geoloc_match.group(2)) if geoloc_match else None
+        longitude = float(geoloc_match.group(3)) if geoloc_match else None
 
         venue_name = MOCK_NAMES[mock_index % len(MOCK_NAMES)]
 
         # create all possible cases:
         # offerer with or without iban / venue with or without iban
+        iban = None
+        bic = None
         if offerer.iban:
             if iban_count == 0:
                 iban = iban_prefix
                 bic = bic_prefix + str(bic_suffix)
                 iban_count = 1
             elif iban_count == 2:
-                iban = None
-                bic = None
                 iban_count = 3
         else:
             if iban_count in (0, 1):
@@ -72,11 +81,11 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
                 bic = bic_prefix + str(bic_suffix)
                 iban_count = 2
             elif iban_count == 3:
-                iban = None
-                bic = None
                 iban_count = 0
 
-        if offerer_index % OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO:
+        if offerer_index % OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO == 0:
+            venue = None
+        else:
             if offerer_index % OFFERERS_WITH_PHYSICAL_VENUE_WITH_SIRET_REMOVE_MODULO:
                 comment = None
                 siret = f"{offerer.siren}11111"
@@ -84,19 +93,15 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
                 comment = "Pas de siret car c'est comme cela."
                 siret = None
 
-            # TODO: remove venue_type and label to code mapping when
-            # the venue_type table has been finally replaced by the
-            # VenueTypeCode enum
-
             venue = offerers_factories.VenueFactory(
                 managingOfferer=offerer,
-                bookingEmail="fake@example.com",
-                latitude=float(geoloc_match.group(2)),  # type: ignore [union-attr]
-                longitude=float(geoloc_match.group(3)),  # type: ignore [union-attr]
+                bookingEmail=f"booking-email@offerer{offerer.id}.example.com",
+                latitude=latitude,
+                longitude=longitude,
                 comment=comment,
                 name=venue_name,
                 siret=siret,
-                venueTypeCode=random.choice(list(offerers_models.VenueTypeCode)),
+                venueTypeCode=_random_venue_type_code(),
                 isPermanent=True,
                 pricing_point="self" if siret else None,
                 reimbursement_point="self" if siret else None,
@@ -119,6 +124,24 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
                     applicationId=application_id_prefix + str(offerer_index),
                 )
 
+            # Create a second physical venue to enable removing SIRET on the first one
+            if offerer_index % OFFERERS_WITH_A_SECOND_VENUE_WITH_SIRET_MODULO == 0:
+                second_venue_name = f"{venue_name} Bis"
+                second_venue = offerers_factories.VenueFactory(
+                    managingOfferer=offerer,
+                    bookingEmail=f"booking-email@offerer{offerer.id}.example.com",
+                    latitude=latitude,
+                    longitude=longitude,
+                    comment=None,
+                    name=second_venue_name,
+                    siret=f"{offerer.siren}22222",
+                    venueTypeCode=_random_venue_type_code(),
+                    isPermanent=True,
+                    pricing_point="self",
+                    reimbursement_point="self",
+                )
+                venue_by_name[second_venue_name] = second_venue
+
         bic_suffix += 1
         mock_index += 1
 
@@ -126,6 +149,8 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
         venue_by_name[virtual_venue_name] = offerers_factories.VirtualVenueFactory(
             managingOfferer=offerer,
             name=virtual_venue_name.format(venue_name),
+            pricing_point=venue,
+            reimbursement_point=venue,
         )
 
     # Venue Allocine
