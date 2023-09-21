@@ -188,7 +188,8 @@ describe('IndividualOfferForm', () => {
       offererNames,
       null,
       null,
-      venueList
+      venueList,
+      true
     )
   })
 
@@ -229,7 +230,8 @@ describe('IndividualOfferForm', () => {
       offererNames,
       null,
       physicalVenueId.toString(),
-      venueList
+      venueList,
+      true
     )
     renderIndividualOfferForm({
       initialValues,
@@ -295,7 +297,8 @@ describe('IndividualOfferForm', () => {
       offererNames,
       null,
       virtualVenueId.toString(),
-      venueList
+      venueList,
+      true
     )
     renderIndividualOfferForm({
       initialValues,

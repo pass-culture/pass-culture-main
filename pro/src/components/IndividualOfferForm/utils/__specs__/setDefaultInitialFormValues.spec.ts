@@ -15,6 +15,7 @@ describe('setDefaultInitialFormValues', () => {
   let offererId: string | null
   let venueId: string | null
   let venueList: IndividualOfferVenue[]
+  const isBookingContactEnabled = true
 
   beforeEach(() => {
     expectedInitialValues = {
@@ -73,7 +74,8 @@ describe('setDefaultInitialFormValues', () => {
       offererNames,
       offererId,
       venueId,
-      venueList
+      venueList,
+      isBookingContactEnabled
     )
 
     expect(initialValues).toStrictEqual(expectedInitialValues)
@@ -87,7 +89,8 @@ describe('setDefaultInitialFormValues', () => {
       offererNames,
       offererId,
       venueId,
-      venueList
+      venueList,
+      isBookingContactEnabled
     )
 
     expectedInitialValues.offererId = '2'
@@ -102,7 +105,8 @@ describe('setDefaultInitialFormValues', () => {
       offererNames,
       offererId,
       venueId,
-      venueList
+      venueList,
+      isBookingContactEnabled
     )
 
     expectedInitialValues.isVenueVirtual = true
@@ -116,7 +120,8 @@ describe('setDefaultInitialFormValues', () => {
       offererNames,
       offererId,
       venueId,
-      venueList
+      venueList,
+      isBookingContactEnabled
     )
 
     expectedInitialValues.venueId = FORM_DEFAULT_VALUES.venueId
@@ -147,13 +152,48 @@ describe('setDefaultInitialFormValues', () => {
       offererId,
       venueId,
       venueList,
+      isBookingContactEnabled,
       subcategory
     )
 
     expect(initialValues.subcategoryId).toStrictEqual(subcategory.id)
     expect(initialValues.categoryId).toStrictEqual(subcategory.categoryId)
-    expect(initialValues.subCategoryFields).toStrictEqual(
-      subcategory.conditionalFields
+    expect(initialValues.subCategoryFields).toStrictEqual([
+      ...subcategory.conditionalFields,
+      'isDuo',
+    ])
+  })
+
+  it('should return subCategoryFields for subcategory who can be withrawable', () => {
+    const subcategory = {
+      id: 'subcategoryId',
+      categoryId: 'categoryId',
+      proLabel: 'Sous catégorie',
+      isEvent: false,
+      conditionalFields: ['lapin', 'moustache'],
+      canBeDuo: true,
+      canBeEducational: false,
+      canBeWithdrawable: true,
+      onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
+      reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
+      isSelectable: true,
+    }
+
+    const initialValues = setDefaultInitialFormValues(
+      offererNames,
+      offererId,
+      venueId,
+      venueList,
+      isBookingContactEnabled,
+      subcategory
     )
+
+    expect(initialValues.subCategoryFields).toStrictEqual([
+      ...subcategory.conditionalFields,
+      'isDuo',
+      'withdrawalType',
+      'withdrawalDelay',
+      'bookingContact',
+    ])
   })
 })

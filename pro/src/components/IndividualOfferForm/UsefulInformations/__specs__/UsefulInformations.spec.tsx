@@ -114,7 +114,8 @@ describe('IndividualOffer section: UsefulInformations', () => {
       offererNames,
       null,
       null,
-      venueList
+      venueList,
+      true
     )
     props = {
       offererNames,

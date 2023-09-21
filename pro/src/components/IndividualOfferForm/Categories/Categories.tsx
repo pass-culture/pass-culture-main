@@ -17,7 +17,7 @@ import { Banner, InfoBox, Select } from 'ui-kit'
 
 import styles from '../IndividualOfferForm.module.scss'
 import { onVenueChange } from '../UsefulInformations/Venue/Venue'
-import buildSubCategoryFields from '../utils/buildSubCategoryFields'
+import buildSubcategoryFields from '../utils/buildSubCategoryFields'
 import { getFilteredVenueListBySubcategory } from '../utils/getFilteredVenueList'
 
 import { SUBCATEGORIES_FIELDS_DEFAULT_VALUES } from './constants'
@@ -72,27 +72,26 @@ const Categories = ({
   const subcategoryOptions = buildSubcategoryOptions(subCategories, categoryId)
 
   const onSubCategoryChange = (newSubCategoryId: string) => {
-    const { subCategoryFields: newSubCategoryFields, isEvent } =
-      buildSubCategoryFields(
-        newSubCategoryId,
-        subCategories,
-        isBookingContactEnabled
-      )
-    setFieldValue('subCategoryFields', newSubCategoryFields)
-    setFieldValue('isEvent', isEvent)
-    setFieldValue(
-      'isDuo',
-      Boolean(subCategories.find(s => s.id == newSubCategoryId)?.canBeDuo)
+    const newSubcategory = subCategories.find(
+      subcategory => subcategory.id === newSubCategoryId
     )
-    setSubcategory(
-      subCategories.find(subcategory => subcategory.id === newSubCategoryId)
+
+    const { subcategoryFields: newSubcategoryFields } = buildSubcategoryFields(
+      isBookingContactEnabled,
+      newSubcategory
     )
-    if (newSubCategoryFields === subCategoryFields) {
+    setFieldValue('subCategoryFields', newSubcategoryFields)
+
+    setFieldValue('isDuo', Boolean(newSubcategory?.canBeDuo))
+
+    setSubcategory(newSubcategory)
+
+    if (newSubcategoryFields === subCategoryFields) {
       return
     }
 
     const fieldsToReset = subCategoryFields.filter(
-      (field: string) => !newSubCategoryFields.includes(field)
+      (field: string) => !newSubcategoryFields.includes(field)
     )
     fieldsToReset.forEach((field: string) => {
       if (field in SUBCATEGORIES_FIELDS_DEFAULT_VALUES) {
