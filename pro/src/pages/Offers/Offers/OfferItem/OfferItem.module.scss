@@ -4,7 +4,15 @@
 @use "styles/variables/_size.scss" as size;
 
 .offer-item {
-  grid-template-rows: auto auto;
+  display: grid;
+  grid-template-columns: rem.torem(31px) 30% calc(70% - rem.torem(31px));
+  grid-template-areas:
+    "check thumb title"
+    "col1a col2a text1"
+    "col1b col2b text2"
+    "col1c col2c text3"
+    "col1d col2d text4"
+    "col1e col2e text5";
 
   &.inactive {
     .offer-thumb {
@@ -13,6 +21,8 @@
   }
 
   td:first-of-type {
+    grid-area: check;
+
     input[type="checkbox"] {
       margin-right: 0;
     }
@@ -21,72 +31,83 @@
       display: inline-flex;
     }
   }
-}
 
-.offer-thumb {
-  height: rem.torem(84px);
-  width: rem.torem(82px);
-}
+  .thumb-column {
+    grid-area: thumb;
 
-.name {
-  @include fonts.button;
+    &-link {
+      @include fonts.button;
 
-  display: block;
-  margin-bottom: rem.torem(4px);
-  overflow-wrap: break-word;
+      height: 0;
+      display: block;
+      margin-bottom: rem.torem(4px);
+      overflow-wrap: break-word;
 
-  &:hover,
-  &:focus {
-    text-decoration: underline;
+      &:hover,
+      &:focus {
+        text-decoration: underline;
+      }
+
+      .offer-thumb {
+        width: 90%;
+      }
+    }
   }
-}
 
-.offer-template-tag {
-  margin-bottom: rem.torem(4px);
-}
+  .title-column {
+    grid-area: title;
 
-.edit-column {
-  width: rem.torem(40px);
-}
+    .offer-template-tag {
+      margin-bottom: rem.torem(4px);
+    }
 
-.switch-column,
-.draft-column {
-  width: rem.torem(136px);
-}
+    a {
+      display: block;
+    }
+  }
 
-.stock-column,
-.institution-column {
-  width: rem.torem(100px);
-}
+  .stock-column {
+    width: rem.torem(100px);
+  }
 
-.title-column {
-  max-width: rem.torem(185px);
-}
+  .status-column {
+    width: rem.torem(140px);
+    grid-area: text3;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
 
-.status-column {
-  width: rem.torem(140px);
-}
+  .venue-column,
+  .institution-column,
+  .title-column {
+    display: block;
+  }
 
-.venue-column {
-  width: rem.torem(135px);
-  max-width: rem.torem(135px);
-  word-break: break-word;
-}
+  .venue-column {
+    grid-area: text1;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
 
-.thumb-column {
-  width: rem.torem(82px);
-}
+  .institution-column,
+  .stock-column {
+    grid-area: text2;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
 
-.actions-column {
-  display: table-cell;
-  text-align: center;
-  width: rem.torem(140px);
+  .actions-column {
+    display: table-cell;
+    text-align: center;
+    width: rem.torem(80px);
+    grid-area: text4;
+    padding-top: 0.25rem;
 
-  &-container {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: rem.torem(4px);
+    &-container {
+      display: flex;
+      align-items: center;
+      gap: rem.torem(4px);
+    }
   }
 }
 
@@ -136,91 +157,63 @@
   }
 }
 
-@media (max-width: size.$tablet) {
-  .venue-column,
-  .institution-column,
-  .title-column {
-    display: block;
-    width: unset;
-    max-width: unset;
-  }
-
+@media (min-width: size.$mobile) {
   .offer-item {
-    display: grid;
     grid-template-columns: 10% 25% 65%;
-    grid-template-areas:
-      "check thumb title"
-      "col1a col2a text1"
-      "col1b col2b text2"
-      "col1c col2c text3"
-      "col1d col2d text4";
+  }
+}
 
-    td:first-of-type {
-      grid-area: check;
-    }
+@media (min-width: size.$tablet) {
+  .offer-item {
+    display: table-row;
 
-    .thumb-column {
-      grid-area: thumb;
-    }
-
-    .thumb-column a {
-      position: absolute;
-    }
-
+    .venue-column,
+    .institution-column,
     .title-column {
-      grid-area: title;
+      display: table-cell;
     }
 
     .venue-column {
-      grid-area: text1;
-      padding-top: 0.25rem;
-      padding-bottom: 0.25rem;
+      width: rem.torem(135px);
+      max-width: rem.torem(135px);
+      word-break: break-word;
+      padding-top: unset;
+      padding-bottom: unset;
+    }
+
+    .institution-column {
+      width: rem.torem(100px);
+    }
+
+    .title-column {
+      max-width: rem.torem(185px);
+    }
+
+    .thumb-column {
+      width: rem.torem(120px);
+
+      a {
+        height: unset;
+      }
     }
 
     .institution-column,
     .stock-column {
-      grid-area: text2;
-      padding-top: 0.25rem;
-      padding-bottom: 0.25rem;
+      padding-top: unset;
+      padding-bottom: unset;
     }
 
     .status-column {
-      grid-area: text3;
-      padding-top: 0.25rem;
-      padding-bottom: 0.25rem;
+      padding-top: unset;
+      padding-bottom: unset;
     }
 
     .actions-column {
-      grid-area: text4;
-      padding-top: 0.25rem;
+      padding-top: unset;
 
       & > div {
-        justify-content: unset;
+        justify-content: flex-end;
       }
-    }
-  }
-}
-
-@media (width <= 380px) {
-  .offer-item {
-    grid-template-columns: 10% 30% 60%;
-
-    .thumb-column a {
-      position: relative;
-    }
-
-    .thumb-column img,
-    .thumb-column div {
-      width: 60px;
-      height: 60px;
-    }
-
-    .status-column {
-      grid-area: col1a;
-    }
-
-    .actions-column {
-      grid-area: col2b;
     }
   }
 }

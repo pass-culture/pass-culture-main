@@ -16,7 +16,7 @@ const ThumbCell = ({
   return (
     <td className={styles['thumb-column']}>
       <Link
-        className={styles['name']}
+        className={styles['thumb-column-link']}
         title={`${offer.name} - éditer l’offre`}
         to={editionOfferLink}
       >

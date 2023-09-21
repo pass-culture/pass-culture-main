@@ -142,13 +142,25 @@
   }
 }
 
-@media (max-width: size.$tablet) {
-  table,
+thead {
+  display: none;
+}
+
+table,
+tbody {
+  display: block;
+}
+
+@media (min-width: size.$tablet) {
+  table {
+    display: table;
+  }
+
   tbody {
-    display: block;
+    display: table-row-group;
   }
 
   thead {
-    display: none;
+    display: table-header-group;
   }
 }

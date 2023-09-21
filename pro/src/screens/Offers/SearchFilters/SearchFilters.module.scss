@@ -16,16 +16,18 @@
 
 .reset-filters {
   display: flex;
-  justify-content: flex-end;
-
-  @media (max-width: size.$tablet) {
-    justify-content: unset;
-    margin-top: rem.torem(32px);
-  }
+  margin-top: rem.torem(32px);
 }
 
 .offerer-close-icon {
   width: rem.torem(14px);
   height: rem.torem(14px);
   color: colors.$black;
+}
+
+@media (min-width: size.$tablet) {
+  .reset-filters {
+    justify-content: flex-end;
+    margin-top: unset;
+  }
 }
