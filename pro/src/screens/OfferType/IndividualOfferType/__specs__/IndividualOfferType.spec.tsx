@@ -137,25 +137,25 @@ describe('OfferTypeIndividual', () => {
     expect(screen.getByText('Votre offre est :')).toBeInTheDocument()
   })
 
-  it('should only display macro choices when get venue api call fail', () => {
+  it('should only display macro choices when get venue api call fail', async () => {
     vi.spyOn(api, 'getVenue').mockRejectedValueOnce(null)
 
     renderOfferTypeIndividual(true, '123')
 
+    expect(await screen.findByText('Votre offre est :')).toBeInTheDocument()
     expect(
       screen.queryByText('Quelle est la catégorie de l’offre ?')
     ).not.toBeInTheDocument()
-    expect(screen.getByText('Votre offre est :')).toBeInTheDocument()
   })
 
-  it('should only display macro choices when get category api call fail', () => {
+  it('should only display macro choices when get category api call fail', async () => {
     vi.spyOn(api, 'getCategories').mockRejectedValueOnce(null)
 
     renderOfferTypeIndividual(true, '123')
 
+    expect(await screen.findByText('Votre offre est :')).toBeInTheDocument()
     expect(
       screen.queryByText('Quelle est la catégorie de l’offre ?')
     ).not.toBeInTheDocument()
-    expect(screen.getByText('Votre offre est :')).toBeInTheDocument()
   })
 })
