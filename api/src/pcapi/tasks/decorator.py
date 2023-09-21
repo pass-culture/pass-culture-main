@@ -24,12 +24,12 @@ cloud_task_api = Blueprint("Cloud task internal API", __name__, url_prefix=CLOUD
 
 def task(queue: str, path: str, deduplicate: bool = False, delayed_seconds: int = 0, task_request_timeout: int | None = None):  # type: ignore [no-untyped-def]
     def decorator(f):  # type: ignore [no-untyped-def]
-        payload_in_kwargs = f.__annotations__.get("payload")
+        payload_type = f.__annotations__["payload"]
 
-        _define_handler(f, path, payload_in_kwargs)
+        _define_handler(f, path, payload_type)
 
         @wraps(f)
-        def delay(payload: payload_in_kwargs):  # type: ignore [no-untyped-def]
+        def delay(payload: payload_type):  # type: ignore [no-untyped-def]
             if not isinstance(payload, pydantic_v1.BaseModel):
                 raise ValueError("Task payload must be a pydantic model")
 
@@ -57,7 +57,7 @@ def task(queue: str, path: str, deduplicate: bool = False, delayed_seconds: int 
 def _define_handler(f, path, payload_type):  # type: ignore [no-untyped-def]
     @cloud_task_api.route(path, methods=["POST"], endpoint=path)
     @spectree_serialize(on_success_status=204)
-    def handle_task(body: payload_type = None):  # type: ignore [no-untyped-def]
+    def handle_task(body: payload_type):  # type: ignore [no-untyped-def]
         queue_name = request.headers.get("HTTP_X_CLOUDTASKS_QUEUENAME")
         task_id = request.headers.get("HTTP_X_CLOUDTASKS_TASKNAME")
         retry_attempt = request.headers.get("X-CloudTasks-TaskRetryCount")
