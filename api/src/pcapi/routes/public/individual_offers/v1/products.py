@@ -265,8 +265,10 @@ def _create_or_update_ean_offers(serialized_products_stocks: dict, venue_id: int
 
 
 def _get_existing_products(ean_to_create: set[str]) -> list[offers_models.Product]:
+    # FIXME (cepehang, 2023-09-21) remove this condition when the product table is cleaned up
     allowed_product_subcategories = [
-        subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
+        subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
+        subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
         subcategories.LIVRE_PAPIER.id,
     ]
     return offers_models.Product.query.filter(
