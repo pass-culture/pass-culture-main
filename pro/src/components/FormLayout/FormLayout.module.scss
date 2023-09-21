@@ -64,6 +64,7 @@ $info-box-margin-left: rem.torem(24px);
 
     &.inline-group {
       display: flex;
+      flex-wrap: wrap;
 
       > *:not(:last-child) {
         margin-right: rem.torem(16px);
@@ -119,10 +120,10 @@ $info-box-margin-left: rem.torem(24px);
   color: colors.$grey-dark;
 }
 
-@media (max-width: size.$tablet) {
+@media (min-width: size.$tablet) {
   .form-layout {
     &-row.inline-group {
-      flex-wrap: wrap;
+      flex-wrap: unset;
     }
   }
 }

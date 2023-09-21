@@ -154,7 +154,6 @@ const Offers = ({
               checked={areAllOffersSelected || isAtLeastOneOfferChecked}
               partialCheck={!areAllOffersSelected && isAtLeastOneOfferChecked}
               disabled={isAdminForbidden(savedSearchFilters) || !hasOffers}
-              id="select-offer-checkbox"
               onChange={selectAllOffers}
               label={
                 areAllOffersSelected

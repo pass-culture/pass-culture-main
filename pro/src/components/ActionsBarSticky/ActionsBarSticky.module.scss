@@ -4,7 +4,6 @@
 @use "styles/variables/_z-index.scss" as zIndex;
 
 .actions-bar {
-  position: fixed;
   z-index: zIndex.$sticky-bar-z-index;
   left: 0;
   right: 0;
@@ -14,18 +13,20 @@
   align-items: center;
   display: flex;
   background: colors.$white;
-  box-shadow: 0 2px rem.torem(16px) colors.$dark-blue-shadow;
+  border-top: 1px solid colors.$grey-medium;
 
   .actions-bar-content {
     width: rem.torem(size.$main-content-width);
     margin: 0 auto;
     align-items: center;
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    justify-content: center;
 
     .left {
       display: flex;
       align-items: center;
+      margin: 1rem;
 
       button,
       a {
@@ -36,7 +37,9 @@
     .right {
       display: flex;
       align-items: center;
-      margin-left: auto;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: rem.torem(10px);
 
       button,
       a {
@@ -46,25 +49,21 @@
   }
 }
 
-@media (max-width: size.$tablet) {
+@media (min-width: size.$tablet) {
   .actions-bar {
-    position: unset;
-    box-shadow: unset;
-    border-top:1px solid colors.$grey-medium;
+    position: fixed;
+    box-shadow: 0 2px rem.torem(16px) colors.$dark-blue-shadow;
+    border-top: unset;
 
     .actions-bar-content {
-      flex-wrap: wrap;
-      justify-content: center;
-      
+      justify-content: space-between;
+
       .left {
-        margin: 1rem;
+        margin: 0;
       }
-      
+
       .right {
-        margin-left: unset;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: rem.torem(10px);
+        margin-left: auto;
       }
     }
   }

@@ -27,22 +27,7 @@ const OffersTableHead = ({
   return (
     <thead>
       <tr>
-        <th
-          className={`th-checkbox ${
-            isAdminForbidden(savedSearchFilters) || !areOffersPresent
-              ? 'label-disabled'
-              : ''
-          }`}
-          colSpan={3}
-        >
-          <BaseCheckbox
-            checked={areAllOffersSelected || isAtLeastOneOfferChecked}
-            partialCheck={!areAllOffersSelected && isAtLeastOneOfferChecked}
-            disabled={isAdminForbidden(savedSearchFilters) || !areOffersPresent}
-            onChange={selectAllOffers}
-            label="Tout sélectionner"
-          />
-        </th>
+        <th colSpan={3} />
 
         <th>Lieu</th>
         <th>{audience === Audience.COLLECTIVE ? 'Établissement' : 'Stocks'}</th>
