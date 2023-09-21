@@ -23,7 +23,7 @@ export const useOfferEditionURL = (
 
   return getIndividualOfferUrl({
     offerId,
-    mode: OFFER_WIZARD_MODE.EDITION,
+    mode: OFFER_WIZARD_MODE.READ_ONLY,
     step: OFFER_WIZARD_STEP_IDS.SUMMARY,
   })
 }
