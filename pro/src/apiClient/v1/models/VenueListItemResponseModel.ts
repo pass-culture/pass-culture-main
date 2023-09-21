@@ -3,6 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { VenueTypeCode } from './VenueTypeCode';
+
 export type VenueListItemResponseModel = {
   audioDisabilityCompliant?: boolean | null;
   bookingEmail?: string | null;
@@ -18,6 +20,7 @@ export type VenueListItemResponseModel = {
   offererName: string;
   publicName?: string | null;
   siret?: string | null;
+  venueTypeCode: VenueTypeCode;
   visualDisabilityCompliant?: boolean | null;
   withdrawalDetails?: string | null;
 };
