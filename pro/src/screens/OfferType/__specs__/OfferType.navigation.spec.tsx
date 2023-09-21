@@ -101,19 +101,23 @@ describe('screens:IndividualOffer::OfferType', () => {
     })
   })
 
-  it('should redirect just with venue when venue and type was not selected', async () => {
+  it('should diable button when type or subcategory was not selected', async () => {
     renderOfferTypes('123')
 
     expect(
       await screen.findByText('Quelle est la catégorie de l’offre ?')
     ).toBeInTheDocument()
-    await userEvent.click(screen.getByText('Autre'))
-    await userEvent.click(screen.getByText('Étape suivante'))
 
-    expect(mockNavigate).toHaveBeenCalledWith({
-      pathname: '/offre/individuelle/creation/informations',
-      search: 'lieu=123',
-    })
+    // subcategory is not selected
+    expect(screen.getByText('Étape suivante')).toBeDisabled()
+
+    await userEvent.click(screen.getByText('Autre'))
+
+    // type is not selected
+    expect(screen.getByText('Étape suivante')).toBeDisabled()
+
+    await userEvent.click(screen.getByText('Un évènement physique daté'))
+    expect(screen.getByText('Étape suivante')).not.toBeDisabled()
   })
 
   it('should redirect with subcategory when venue and subcategory selected', async () => {
