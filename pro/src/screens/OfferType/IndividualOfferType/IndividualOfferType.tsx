@@ -7,8 +7,9 @@ import FormLayout from 'components/FormLayout'
 import { getCategoriesAdapter } from 'core/Offers/adapters'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
 import { OfferSubCategory } from 'core/Offers/types'
+import { getIndividualOfferVenuesAdapter } from 'core/Venue/adapters/getIndividualOfferVenuesAdapter'
 import { getVenueAdapter } from 'core/Venue/adapters/getVenueAdapter'
-import { Venue } from 'core/Venue/types'
+import useCurrentUser from 'hooks/useCurrentUser'
 import useNewIndividualOfferType from 'hooks/useNewIndividualOfferType'
 import strokeDateIcon from 'icons/stroke-date.svg'
 import thingStrokeIcon from 'icons/stroke-thing.svg'
@@ -26,36 +27,59 @@ import { venueTypeSubcategoriesMapping } from './venueTypeSubcategoriesMapping'
 
 const IndividualOfferType = (): JSX.Element | null => {
   const location = useLocation()
+  const { currentUser } = useCurrentUser()
   const { values, handleChange } = useFormikContext<OfferTypeFormValues>()
   const [subcategories, setSubcategories] = useState<OfferSubCategory[]>([])
-  const [venue, setVenue] = useState<Venue | null>(null)
+  const [venueType, setVenueType] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const queryParams = new URLSearchParams(location.search)
   const queryVenueId = queryParams.get('lieu')
+  const queryOffererId = queryParams.get('structure')
   const isCategorySelectionActive = useNewIndividualOfferType()
 
   useEffect(() => {
     async function loadData() {
-      if (Boolean(queryVenueId) && isCategorySelectionActive) {
+      // prevent admin of loading all venues
+      const shouldLoadData =
+        !currentUser.isAdmin || queryOffererId || queryVenueId
+
+      if (isCategorySelectionActive && shouldLoadData) {
         setIsLoading(true)
         const categoriesResponse = await getCategoriesAdapter()
-        const venueResponse = await getVenueAdapter(Number(queryVenueId))
 
-        if (categoriesResponse.isOk && venueResponse.isOk) {
-          const categoriesData = categoriesResponse.payload
-          const { subCategories } = categoriesData
+        if (categoriesResponse.isOk) {
+          const { subCategories } = categoriesResponse.payload
           setSubcategories(subCategories)
 
-          const venueData = venueResponse.payload
-          setVenue(venueData)
+          if (queryVenueId) {
+            const venueResponse = await getVenueAdapter(Number(queryVenueId))
+
+            if (venueResponse.isOk) {
+              const venueData = venueResponse.payload
+              setVenueType(venueData?.venueType)
+            }
+          } else {
+            const venuesResponse = await getIndividualOfferVenuesAdapter({
+              offererId: queryOffererId ? Number(queryOffererId) : undefined,
+            })
+
+            if (venuesResponse.isOk) {
+              const venuesData = venuesResponse.payload.filter(
+                venue => !venue.isVirtual
+              )
+
+              if (venuesData.length === 1) {
+                setVenueType(venuesData[0].venueType)
+              }
+            }
+          }
         }
         setIsLoading(false)
       }
     }
     loadData()
-  }, [queryVenueId, isCategorySelectionActive])
+  }, [queryVenueId, isCategorySelectionActive, queryOffererId])
 
-  const venueType = venue?.venueType
   const venueTypeMostUsedSubcategories =
     venueType && venueTypeSubcategoriesMapping[venueType]
 

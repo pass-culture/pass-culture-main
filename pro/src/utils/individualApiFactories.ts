@@ -7,6 +7,7 @@ import {
   PriceCategoryResponseModel,
   SubcategoryIdEnum,
   SubcategoryResponseModel,
+  VenueListItemResponseModel,
   VenueTypeCode,
   WithdrawalTypeEnum,
 } from 'apiClient/v1'
@@ -167,6 +168,25 @@ export const individualOfferVenueResponseModelFactory = (
     fieldsUpdated: [],
     hasAdageId: false,
     venueTypeCode: VenueTypeCode.AUTRE,
+    ...customVenue,
+  }
+}
+
+export const individualOfferGetVenuesFactory = (
+  customVenue: Partial<VenueListItemResponseModel> = {}
+): VenueListItemResponseModel => {
+  const currentVenueId = venueId++
+
+  return {
+    id: currentVenueId,
+    isVirtual: false,
+    name: `Le nom du lieu ${currentVenueId}`,
+    publicName: 'Mon Lieu',
+    venueTypeCode: VenueTypeCode.AUTRE,
+    hasCreatedOffer: true,
+    hasMissingReimbursementPoint: false,
+    managingOffererId: 1,
+    offererName: 'la structure de Michel',
     ...customVenue,
   }
 }
