@@ -1,0 +1,26 @@
+import{j as e}from"./jsx-runtime-ffb262ed.js";import{r as T}from"./index-76fb7be0.js";import{p as k}from"./stroke-phone-c94a5d32.js";import{c as R}from"./index-a587463d.js";import{S as d}from"./SvgIcon-c0bf369c.js";import"./_commonjsHelpers-de833af9.js";const W=""+new URL("stroke-prof-f66e90d6.svg",import.meta.url).href,j=""+new URL("ico-radio-off-441d5416.svg",import.meta.url).href,O=""+new URL("ico-radio-on-4c8e817d.svg",import.meta.url).href,B="_button_16oph_2",t={button:B,"button-radio-on":"_button-radio-on_16oph_10","button-radio-off":"_button-radio-off_16oph_10","button-icon":"_button-icon_16oph_23","is-selected":"_is-selected_16oph_39","is-disabled":"_is-disabled_16oph_45","button-check-mark":"_button-check-mark_16oph_53","button-text":"_button-text_16oph_56","button-description":"_button-description_16oph_60","layout-column":"_layout-column_16oph_68","layout-row":"_layout-row_16oph_82"},c=({name:o,isChecked:n,icon:l,label:r,description:a,onChange:b,className:x,disabled:p=!1,value:C,dataTestid:I})=>e.jsxs("label",{className:R(t.button,a===void 0?t["layout-column"]:t["layout-row"],{[t["is-selected"]]:n,[t["is-disabled"]]:p},x),children:[n?e.jsx(d,{alt:"",src:O,className:t["button-radio-on"],viewBox:"0 0 16 16",width:"16"}):e.jsx(d,{alt:"",src:j,className:t["button-radio-off"],viewBox:"0 0 16 16",width:"16"}),e.jsx(d,{src:l,className:t["button-icon"],alt:""}),e.jsx("input",{checked:n,className:"visually-hidden",disabled:p,name:o,onChange:b,type:"radio",value:C,"data-testid":I}),e.jsxs("div",{className:t["button-text"],children:[e.jsx("div",{children:r}),a!==void 0&&e.jsx("div",{className:t["button-description"],children:a})]})]}),u=c;try{c.displayName="RadioButtonWithImage",c.__docgenInfo={description:"",displayName:"RadioButtonWithImage",props:{name:{defaultValue:null,description:"",name:"name",required:!0,type:{name:"string"}},isChecked:{defaultValue:null,description:"",name:"isChecked",required:!0,type:{name:"boolean"}},icon:{defaultValue:null,description:"",name:"icon",required:!0,type:{name:"string"}},label:{defaultValue:null,description:"",name:"label",required:!0,type:{name:"string"}},description:{defaultValue:null,description:"",name:"description",required:!1,type:{name:"string"}},onChange:{defaultValue:null,description:"",name:"onChange",required:!1,type:{name:"((e: ChangeEvent<HTMLInputElement>) => void)"}},className:{defaultValue:null,description:"",name:"className",required:!1,type:{name:"string"}},disabled:{defaultValue:{value:"false"},description:"",name:"disabled",required:!1,type:{name:"boolean"}},value:{defaultValue:null,description:"",name:"value",required:!0,type:{name:"string"}},dataTestid:{defaultValue:null,description:"",name:"dataTestid",required:!1,type:{name:"string"}}}}}catch{}const L={title:"ui-kit/RadioButtonWithImage",component:u},_=({description:o})=>{const[n,l]=T.useState("indiv"),r=a=>l(a.target.value);return e.jsxs("div",{style:{maxWidth:o?"480px":"240px"},children:[e.jsx(u,{name:"offerType",label:"Offre Individuelle",description:o,isChecked:n=="indiv",onChange:r,icon:k,value:"indiv"}),e.jsx("br",{}),e.jsx(u,{name:"offerType",label:"Offre Collective",description:o,isChecked:n=="collective",onChange:r,icon:W,value:"collective"})]})},s=_.bind({}),i=_.bind({});i.args={description:"Lorem ipsum dolor sit amet, consectetur adipiscing elit"};var f,m,h;s.parameters={...s.parameters,docs:{...(f=s.parameters)==null?void 0:f.docs,source:{originalSource:`({
+  description
+}) => {
+  const [offerType, setOfferType] = useState('indiv');
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setOfferType(e.target.value);
+  return <div style={{
+    maxWidth: description ? '480px' : '240px'
+  }}>
+      <RadioButtonWithImage name="offerType" label="Offre Individuelle" description={description} isChecked={offerType == 'indiv'} onChange={handleChange} icon={phoneStrokeIcon} value="indiv" />
+      <br />
+      <RadioButtonWithImage name="offerType" label="Offre Collective" description={description} isChecked={offerType == 'collective'} onChange={handleChange} icon={strokeProfIcon} value="collective" />
+    </div>;
+}`,...(h=(m=s.parameters)==null?void 0:m.docs)==null?void 0:h.source}}};var v,g,y;i.parameters={...i.parameters,docs:{...(v=i.parameters)==null?void 0:v.docs,source:{originalSource:`({
+  description
+}) => {
+  const [offerType, setOfferType] = useState('indiv');
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setOfferType(e.target.value);
+  return <div style={{
+    maxWidth: description ? '480px' : '240px'
+  }}>
+      <RadioButtonWithImage name="offerType" label="Offre Individuelle" description={description} isChecked={offerType == 'indiv'} onChange={handleChange} icon={phoneStrokeIcon} value="indiv" />
+      <br />
+      <RadioButtonWithImage name="offerType" label="Offre Collective" description={description} isChecked={offerType == 'collective'} onChange={handleChange} icon={strokeProfIcon} value="collective" />
+    </div>;
+}`,...(y=(g=i.parameters)==null?void 0:g.docs)==null?void 0:y.source}}};const D=["Default","WithDescription"];export{s as Default,i as WithDescription,D as __namedExportsOrder,L as default};
+//# sourceMappingURL=RadioButtonWithImage.stories-b63b5cf7.js.map
