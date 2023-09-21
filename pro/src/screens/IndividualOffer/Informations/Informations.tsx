@@ -124,6 +124,7 @@ const Informations = ({
           offererId,
           venueId,
           filteredVenueList,
+          isBookingContactEnabled,
           querySubcategory
         )
       : setInitialFormValues(offer, subCategories, isBookingContactEnabled)

@@ -152,7 +152,8 @@ describe('IndividualOfferForm', () => {
       offererNames,
       null,
       null,
-      venueList
+      venueList,
+      true
     )
   })
 

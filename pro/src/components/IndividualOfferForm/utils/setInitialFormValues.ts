@@ -4,7 +4,7 @@ import {
 } from 'components/IndividualOfferForm'
 import { IndividualOffer, OfferSubCategory } from 'core/Offers/types'
 
-import buildSubCategoryFields from './buildSubCategoryFields'
+import buildSubcategoryFields from './buildSubCategoryFields'
 
 const serializeDurationHour = (durationMinute: number): string => {
   const hours = Math.floor(durationMinute / 60)
@@ -17,30 +17,29 @@ const setInitialFormValues = (
   subCategoryList: OfferSubCategory[],
   isBookingContactEnabled: boolean
 ): IndividualOfferFormValues => {
-  const subCategory = subCategoryList.find(
+  const subcategory = subCategoryList.find(
     (s: OfferSubCategory) => s.id === offer.subcategoryId
   )
 
-  if (subCategory === undefined) {
+  if (subcategory === undefined) {
     throw Error('La categorie de l’offre est introuvable')
   }
 
-  const { subCategoryFields } = buildSubCategoryFields(
-    offer.subcategoryId,
-    subCategoryList,
-    isBookingContactEnabled
+  const { subcategoryFields } = buildSubcategoryFields(
+    isBookingContactEnabled,
+    subcategory
   )
 
   return {
     isEvent: offer.isEvent,
-    subCategoryFields: subCategoryFields,
+    subCategoryFields: subcategoryFields,
     name: offer.name,
     description: offer.description,
     offererId: offer.offererId.toString(),
     venueId: offer.venueId.toString(),
     isNational: offer.isNational,
     isDuo: offer.isDuo,
-    categoryId: subCategory.categoryId,
+    categoryId: subcategory.categoryId,
     subcategoryId: offer.subcategoryId,
     showType: offer.showType,
     showSubType: offer.showSubType,
