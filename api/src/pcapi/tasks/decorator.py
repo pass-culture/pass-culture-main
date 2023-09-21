@@ -1,6 +1,7 @@
 from functools import wraps
 import json
 import logging
+import typing
 
 from flask.blueprints import Blueprint
 from flask.globals import request
@@ -22,22 +23,26 @@ logger = logging.getLogger(__name__)
 cloud_task_api = Blueprint("Cloud task internal API", __name__, url_prefix=CLOUD_TASK_SUBPATH)
 
 
-def task(queue: str, path: str, deduplicate: bool = False, delayed_seconds: int = 0, task_request_timeout: int | None = None):  # type: ignore [no-untyped-def]
-    def decorator(f):  # type: ignore [no-untyped-def]
+def task(
+    queue: str,
+    path: str,
+    deduplicate: bool = False,
+    delayed_seconds: int = 0,
+    task_request_timeout: int | None = None,
+) -> typing.Callable:
+    def decorator(f: typing.Callable) -> typing.Callable:
         payload_type = f.__annotations__["payload"]
+        assert issubclass(payload_type, pydantic_v1.BaseModel)
 
         _define_handler(f, path, payload_type)
 
         @wraps(f)
-        def delay(payload: payload_type):  # type: ignore [no-untyped-def]
-            if not isinstance(payload, pydantic_v1.BaseModel):
-                raise ValueError("Task payload must be a pydantic model")
-
+        def delay(payload: pydantic_v1.BaseModel) -> None:
             if settings.IS_RUNNING_TESTS:
                 f(payload)
                 return
 
-            payload = json.loads(payload.json())  # type: ignore [attr-defined]
+            payload = json.loads(payload.json())
 
             cloud_task.enqueue_internal_task(
                 queue,
@@ -48,16 +53,20 @@ def task(queue: str, path: str, deduplicate: bool = False, delayed_seconds: int 
                 task_request_timeout=task_request_timeout,
             )
 
-        f.delay = delay
+        f.delay = delay  # type: ignore [attr-defined]
         return f
 
     return decorator
 
 
-def _define_handler(f, path, payload_type):  # type: ignore [no-untyped-def]
+def _define_handler(
+    f: typing.Callable,
+    path: str,
+    payload_type: typing.Type[pydantic_v1.BaseModel],
+) -> None:
     @cloud_task_api.route(path, methods=["POST"], endpoint=path)
     @spectree_serialize(on_success_status=204)
-    def handle_task(body: payload_type):  # type: ignore [no-untyped-def]
+    def handle_task(body: payload_type) -> None:  # type: ignore [valid-type]
         queue_name = request.headers.get("HTTP_X_CLOUDTASKS_QUEUENAME")
         task_id = request.headers.get("HTTP_X_CLOUDTASKS_TASKNAME")
         retry_attempt = request.headers.get("X-CloudTasks-TaskRetryCount")
