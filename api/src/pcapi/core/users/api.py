@@ -42,7 +42,7 @@ from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.repository import repository
-from pcapi.routes.serialization.users import ProUserCreationBodyModel
+from pcapi.routes.serialization.users import ImportUserFromCsvModel
 from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
 from pcapi.tasks import batch_tasks
 from pcapi.utils.clean_accents import clean_accents
@@ -704,73 +704,39 @@ def get_domains_credit(
     return domains_credit
 
 
-def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.User:
-    objects_to_save = []
-
+def import_pro_user_and_offerer_from_csv(pro_user: ImportUserFromCsvModel) -> models.User:
     new_pro_user = create_pro_user(pro_user)
 
-    existing_offerer = offerers_models.Offerer.query.filter_by(siren=pro_user.siren).one_or_none()
-    is_new_offerer = False
-    comment = None
-
-    if existing_offerer:
-        if existing_offerer.isRejected:
-            existing_offerer = _generate_offerer(pro_user.dict(by_alias=True), existing_offerer=existing_offerer)
-            user_offerer = offerers_api.grant_user_offerer_access(existing_offerer, new_pro_user)
-            # When offerer was rejected, it is considered as a new offerer in validation process;
-            # history is kept with same id and siren
-            is_new_offerer = True
-            comment = "Nouvelle demande sur un SIREN précédemment rejeté"
-            objects_to_save += [existing_offerer]
-        else:
-            user_offerer = _generate_user_offerer_when_existing_offerer(new_pro_user, existing_offerer)
-            objects_to_save += [
-                history_api.log_action(
-                    history_models.ActionType.USER_OFFERER_NEW,
-                    new_pro_user,
-                    user=new_pro_user,
-                    offerer=existing_offerer,
-                    save=False,
-                    comment="Demande de rattachement à la création de compte pro",
-                ),
-            ]
-        offerer = existing_offerer
-    else:
-        is_new_offerer = True
-        offerer = _generate_offerer(pro_user.dict(by_alias=True))
-        user_offerer = offerers_api.grant_user_offerer_access(offerer, new_pro_user)
-        digital_venue = offerers_api.create_digital_venue(offerer)
-        objects_to_save.extend([digital_venue, offerer, user_offerer])
+    offerer = _generate_offerer(pro_user.dict(by_alias=True))
+    user_offerer = offerers_api.grant_user_offerer_access(offerer, new_pro_user)
+    digital_venue = offerers_api.create_digital_venue(offerer)
 
     new_pro_user = _set_offerer_departement_code(new_pro_user, offerer)
 
     action = history_api.log_action(
         history_models.ActionType.USER_CREATED, author=new_pro_user, user=new_pro_user, offerer=offerer, save=False
     )
-    objects_to_save.append(action)
 
-    repository.save(new_pro_user, user_offerer, *objects_to_save)
+    repository.save(new_pro_user, user_offerer, offerer, digital_venue, action)
 
-    if is_new_offerer:
-        try:
-            siren_info = sirene.get_siren(offerer.siren)
-        except sirene.SireneException as exc:
-            logger.info("Could not fetch info from Sirene API", extra={"exc": exc})
-            siren_info = None
+    try:
+        siren_info = sirene.get_siren(offerer.siren or "")
+    except sirene.SireneException as exc:
+        logger.info("Could not fetch info from Sirene API", extra={"exc": exc})
+        siren_info = None
 
-        offerers_api.auto_tag_new_offerer(offerer, siren_info, new_pro_user)
-        extra_data: dict[str, typing.Any] = {}
-        if siren_info:
-            extra_data = {"sirene_info": dict(siren_info)}
+    offerers_api.auto_tag_new_offerer(offerer, siren_info, new_pro_user)
+    extra_data: dict[str, typing.Any] = {}
+    if siren_info:
+        extra_data = {"sirene_info": dict(siren_info)}
 
-        history_api.log_action(
-            history_models.ActionType.OFFERER_NEW,
-            new_pro_user,
-            user=new_pro_user,
-            offerer=offerer,
-            comment=comment,
-            **extra_data,
-        )
+    history_api.log_action(
+        history_models.ActionType.OFFERER_NEW,
+        new_pro_user,
+        user=new_pro_user,
+        offerer=offerer,
+        **extra_data,
+    )
 
     if not transactional_mails.send_email_validation_to_pro_email(new_pro_user):
         logger.warning(
@@ -802,7 +768,7 @@ def create_pro_user_V2(pro_user: ProUserCreationBodyV2Model) -> models.User:
     return new_pro_user
 
 
-def create_pro_user(pro_user: ProUserCreationBodyModel | ProUserCreationBodyV2Model) -> models.User:
+def create_pro_user(pro_user: ImportUserFromCsvModel | ProUserCreationBodyV2Model) -> models.User:
     new_pro_user = models.User(from_dict=pro_user.dict(by_alias=True))
     new_pro_user.email = email_utils.sanitize_email(new_pro_user.email)
     new_pro_user.notificationSubscriptions = asdict(
@@ -835,12 +801,8 @@ def _generate_user_offerer_when_existing_offerer(
     return user_offerer
 
 
-def _generate_offerer(data: dict, existing_offerer: offerers_models.Offerer | None = None) -> offerers_models.Offerer:
-    if existing_offerer is not None:
-        offerer = existing_offerer
-        offerer.isActive = True
-    else:
-        offerer = offerers_models.Offerer()
+def _generate_offerer(data: dict) -> offerers_models.Offerer:
+    offerer = offerers_models.Offerer()
     offerer.populate_from_dict(data)
 
     # If offerer was rejected, it appears as deleted from the view. When registering again with the same SIREN, it
