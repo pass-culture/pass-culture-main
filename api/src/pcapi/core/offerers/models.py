@@ -908,6 +908,15 @@ class Offerer(
             )
         )
 
+    @property
+    def hasPendingBankAccount(self) -> bool:
+        return any(
+            (
+                bank_account.status is finance_models.BankAccountApplicationStatus.ON_GOING
+                for bank_account in self.bankAccounts
+            )
+        )
+
 
 class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):
     __table_name__ = "user_offerer"
