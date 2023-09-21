@@ -110,6 +110,20 @@ const OfferType = (): JSX.Element => {
   })
   const { values, handleChange } = formik
 
+  const isDisableForEducationnal =
+    values.offerType === OFFER_TYPES.EDUCATIONAL && !isEligible
+
+  const hasNotChosenSubcategory =
+    values.individualOfferSubcategory === '' ||
+    values.individualOfferSubcategory === 'OTHER'
+
+  const hasNotChosenOfferType = values.individualOfferSubtype === ''
+
+  const isDisableForIndividual =
+    values.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO &&
+    hasNotChosenOfferType &&
+    hasNotChosenSubcategory
+
   return (
     <div className={styles['offer-type-container']}>
       <h1 className={styles['offer-type-title']}>Créer une offre</h1>
@@ -152,7 +166,7 @@ const OfferType = (): JSX.Element => {
             )}
             <ActionsBar
               disableNextButton={
-                values.offerType === OFFER_TYPES.EDUCATIONAL && !isEligible
+                isDisableForEducationnal || isDisableForIndividual
               }
             />
           </FormLayout>
