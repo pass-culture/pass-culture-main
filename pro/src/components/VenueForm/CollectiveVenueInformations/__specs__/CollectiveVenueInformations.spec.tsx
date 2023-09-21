@@ -54,7 +54,7 @@ describe('CollectiveVenueInformations', () => {
     })
     expect(
       screen.getByText(
-        'Votre lieu a été ajouté dans ADAGE par le Ministère de l’Education Nationale'
+        'Votre lieu a été réferencé dans ADAGE par les équipes du Ministère de l’Education Nationale'
       )
     ).toBeInTheDocument()
   })
