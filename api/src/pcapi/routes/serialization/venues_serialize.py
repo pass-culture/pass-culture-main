@@ -365,6 +365,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     hasMissingReimbursementPoint: bool
     hasCreatedOffer: bool
     collectiveSubCategoryId: str | None
+    venueTypeCode: offerers_models.VenueTypeCode
 
     @classmethod
     def from_orm(
