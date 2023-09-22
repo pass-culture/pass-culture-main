@@ -93,7 +93,9 @@ export const AdageHeaderMenu = ({
                     [styles['adage-header-link-active']]: isActive,
                   })
                 }}
-                onClick={() => logAdageLinkClick(AdageHeaderLink.MY_FAVORITES)}
+                //  FIXME (guillaumeMgz, 2023-10-22)
+                //  To be re-activated when AdageHeaderLink.MY_FAVORITES is automatically generated
+                /* onClick={() => logAdageLinkClick(AdageHeaderLink.MY_FAVORITES)} */
               >
                 <SvgIcon
                   src={strokeBookmarkIcon}
