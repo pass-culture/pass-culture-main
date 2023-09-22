@@ -9,18 +9,15 @@ import styles from '../../OfferItem.module.scss'
 const ThumbCell = ({
   offer,
   editionOfferLink,
-  onThumbClick,
 }: {
   offer: Offer
   editionOfferLink: string
-  onThumbClick?: () => void
 }) => {
   return (
     <td className={styles['thumb-column']}>
       <Link
         className={styles['name']}
         title={`${offer.name} - éditer l’offre`}
-        onClick={onThumbClick}
         to={editionOfferLink}
       >
         <Thumb url={offer.thumbUrl} className={styles['offer-thumb']} />

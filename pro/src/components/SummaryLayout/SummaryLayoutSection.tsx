@@ -11,7 +11,6 @@ interface SummaryLayoutSectionProps {
   children: React.ReactNode | React.ReactNode[]
   className?: string
   editLink?: string // FIXME(MathildeDuboille - 18/10/22): make this props mandatory when we can modify collective offer during its creation
-  onLinkClick?: () => void
   'aria-label'?: string
 }
 
@@ -20,7 +19,6 @@ const Section = ({
   children,
   className,
   editLink,
-  onLinkClick,
   ...props
 }: SummaryLayoutSectionProps): JSX.Element => (
   <div className={cn(style['summary-layout-section'], className)}>
@@ -38,7 +36,6 @@ const Section = ({
             }}
             className={style['summary-layout-section-header-edit-link']}
             icon={fullEditIcon}
-            onClick={onLinkClick ? onLinkClick : undefined}
           >
             Modifier
           </ButtonLink>
