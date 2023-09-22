@@ -10,5 +10,6 @@ export type ProUserCreationBodyV2Model = {
   lastName: string;
   password: string;
   phoneNumber: string;
+  token: string;
 };
 

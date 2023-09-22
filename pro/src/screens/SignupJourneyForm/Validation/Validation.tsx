@@ -12,12 +12,14 @@ import {
 import { Events } from 'core/FirebaseEvents/constants'
 import { useGetVenueTypes } from 'core/Venue/adapters/getVenueTypeAdapter'
 import useAnalytics from 'hooks/useAnalytics'
+import useInitReCaptcha from 'hooks/useInitReCaptcha'
 import useNotification from 'hooks/useNotification'
 import fullEditIcon from 'icons/full-edit.svg'
 import { DEFAULT_OFFERER_FORM_VALUES } from 'screens/SignupJourneyForm/Offerer/constants'
 import { Banner, ButtonLink } from 'ui-kit'
 import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
+import { getReCaptchaToken } from 'utils/recaptcha'
 
 import { ActionBar } from '../ActionBar'
 
@@ -33,6 +35,7 @@ const Validation = (): JSX.Element => {
     error: errorVenueTypes,
     data: venueTypes,
   } = useGetVenueTypes()
+  useInitReCaptcha()
 
   const targetCustomerLabel = {
     [Target.INDIVIDUAL]: 'Au grand public',
@@ -64,6 +67,9 @@ const Validation = (): JSX.Element => {
   }
 
   const onSubmit = async () => {
+    /* istanbul ignore next: ENV dependant */
+    const token = await getReCaptchaToken('saveNewOnboardingData')
+
     const data: SaveNewOnboardingDataQueryModel = {
       publicName: offerer.publicName ?? '',
       siret: offerer.siret.replaceAll(' ', ''),
@@ -80,6 +86,7 @@ const Validation = (): JSX.Element => {
       latitude: offerer.latitude ?? 0,
       city: offerer.city,
       postalCode: offerer.postalCode,
+      token,
     }
 
     try {

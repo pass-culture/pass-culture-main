@@ -17,6 +17,7 @@ import {
   SignupJourneyContext,
 } from 'context/SignupJourneyContext'
 import { Validation } from 'screens/SignupJourneyForm/Validation/index'
+import * as utils from 'utils/recaptcha'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 vi.mock('apiClient/api', () => ({
@@ -180,32 +181,22 @@ describe('ValidationScreen', () => {
       expect(screen.getByText('Activite')).toBeInTheDocument()
     })
 
-    it('Should send the data on submit and redirect to home', async () => {
+    it('Should redirect to home after submit', async () => {
       vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
         {} as PostOffererResponseModel
       )
+      vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
+        remove: vi.fn(),
+      } as unknown as HTMLScriptElement)
+      vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
-      expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
-        publicName: 'nom public',
-        siret: '123123123',
-        venueTypeCode: 'MUSEUM',
-        webPresence: 'url1, url2',
-        target: Target.EDUCATIONAL,
-        createVenueWithoutSiret: false,
-        address: '3 Rue de Valois',
-        city: 'Paris',
-        latitude: 1.23,
-        longitude: 2.9887,
-        postalCode: '75001',
-      })
-
       expect(await screen.findByText('accueil')).toBeInTheDocument()
     })
   })
 
-  describe('No public name', () => {
+  describe('Data sending tests', () => {
     beforeEach(() => {
       contextValue = {
         activity: {
@@ -226,27 +217,41 @@ describe('ValidationScreen', () => {
       }
     })
 
-    it('Should send data with empty public name', async () => {
-      vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
-        {} as PostOffererResponseModel
-      )
-      renderValidationScreen(contextValue)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-      await userEvent.click(screen.getByText('Valider et créer ma structure'))
-      expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
-        publicName: '',
-        siret: '123123123',
-        venueTypeCode: 'MUSEUM',
-        webPresence: 'url1, url2',
-        target: Target.EDUCATIONAL,
-        createVenueWithoutSiret: false,
-        address: '3 Rue de Valois',
-        city: 'Paris',
-        latitude: 0,
-        longitude: 0,
-        postalCode: '75001',
-      })
-    })
+    const publicNames = ['nom public', '']
+    it.each(publicNames)(
+      'Should send data with name %s',
+      async (publicName: string) => {
+        if (contextValue.offerer) {
+          contextValue.offerer.publicName = publicName
+        }
+        vi.spyOn(api, 'saveNewOnboardingData').mockResolvedValue(
+          {} as PostOffererResponseModel
+        )
+        vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
+          remove: vi.fn(),
+        } as unknown as HTMLScriptElement)
+        vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
+        renderValidationScreen(contextValue)
+        await waitForElementToBeRemoved(() =>
+          screen.queryAllByTestId('spinner')
+        )
+        await userEvent.click(screen.getByText('Valider et créer ma structure'))
+        expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
+          publicName: publicName,
+          siret: '123123123',
+          venueTypeCode: 'MUSEUM',
+          webPresence: 'url1, url2',
+          target: Target.EDUCATIONAL,
+          createVenueWithoutSiret: false,
+          address: '3 Rue de Valois',
+          city: 'Paris',
+          latitude: 0,
+          longitude: 0,
+          postalCode: '75001',
+          token: 'token',
+        })
+      }
+    )
 
     it('Should see the data from the previous forms for validation without public name', async () => {
       renderValidationScreen(contextValue)
@@ -278,6 +283,10 @@ describe('ValidationScreen', () => {
 
     it('Should display error message on api error', async () => {
       vi.spyOn(api, 'saveNewOnboardingData').mockRejectedValue({})
+      vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
+        remove: vi.fn(),
+      } as unknown as HTMLScriptElement)
+      vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
       renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
