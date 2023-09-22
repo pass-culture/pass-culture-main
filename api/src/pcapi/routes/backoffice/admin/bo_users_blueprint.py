@@ -30,7 +30,7 @@ bo_users_blueprint = utils.child_backoffice_blueprint(
     "bo_users",
     __name__,
     url_prefix="/admin/bo-users",
-    permission=perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS,
+    permission=perm_models.Permissions.READ_ADMIN_ACCOUNTS,
 )
 
 
@@ -102,7 +102,7 @@ def render_bo_user_page(user_id: int, edit_form: forms.EditBOUserForm | None = N
     if not user:
         raise NotFound()
 
-    if not edit_form:
+    if not edit_form and utils.has_current_user_permission(perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS):
         edit_form = forms.EditBOUserForm(
             last_name=user.lastName,
             first_name=user.firstName,
@@ -116,7 +116,7 @@ def render_bo_user_page(user_id: int, edit_form: forms.EditBOUserForm | None = N
         search_dst=url_for(".search_bo_users"),
         user=user,
         edit_account_form=edit_form,
-        edit_account_dst=url_for(".update_bo_user", user_id=user.id),
+        edit_account_dst=url_for(".update_bo_user", user_id=user.id) if edit_form else None,
         history=get_bo_user_history(user),
         roles=user.backoffice_profile.roles,
         active_tab=request.args.get("active_tab", "history"),
@@ -130,6 +130,7 @@ def get_bo_user(user_id: int) -> utils.BackofficeResponse:
 
 
 @bo_users_blueprint.route("/<int:user_id>", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS)
 def update_bo_user(user_id: int) -> utils.BackofficeResponse:
     user = users_models.User.query.get_or_404(user_id)
 
