@@ -1,4 +1,3 @@
-import typing
 from typing import Iterable
 
 from pcapi import settings

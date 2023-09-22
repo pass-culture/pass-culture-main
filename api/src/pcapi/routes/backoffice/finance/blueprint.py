@@ -503,7 +503,7 @@ def validate_finance_incident(finance_incident_id: int) -> utils.BackofficeRespo
 
 def _create_finance_events_from_incident(
     booking_finance_incident: finance_models.BookingFinanceIncident,
-    incident_validation_date: datetime = None,
+    incident_validation_date: datetime | None = None,
     save: bool = True,
 ) -> list[finance_models.FinanceEvent]:
     finance_events = []

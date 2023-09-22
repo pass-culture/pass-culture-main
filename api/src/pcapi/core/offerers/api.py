@@ -1979,7 +1979,7 @@ class OffererVenues:
 
 
 def get_providers_offerer_and_venues(
-    provider: providers_models.Provider, siren: str = None
+    provider: providers_models.Provider, siren: str | None = None
 ) -> typing.Generator[OffererVenues, None, None]:
     offerers_query = (
         db.session.query(offerers_models.Offerer, offerers_models.Venue)

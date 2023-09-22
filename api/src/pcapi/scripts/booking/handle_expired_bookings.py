@@ -107,7 +107,7 @@ def cancel_expired_bookings(query: BaseQuery, batch_size: int = 500) -> None:
     logger.info("[cancel_expired_bookings] %d Bookings have been cancelled", updated_total)
 
 
-def notify_users_of_expired_individual_bookings(expired_on: datetime.date = None) -> None:
+def notify_users_of_expired_individual_bookings(expired_on: datetime.date | None = None) -> None:
     expired_on = expired_on or datetime.date.today()
 
     logger.info("[notify_users_of_expired_bookings] Start")
@@ -130,7 +130,7 @@ def notify_users_of_expired_individual_bookings(expired_on: datetime.date = None
     logger.info("[notify_users_of_expired_bookings] End")
 
 
-def notify_offerers_of_expired_individual_bookings(expired_on: datetime.date = None) -> None:
+def notify_offerers_of_expired_individual_bookings(expired_on: datetime.date | None = None) -> None:
     expired_on = expired_on or datetime.date.today()
     logger.info("[notify_offerers_of_expired_bookings] Start")
 

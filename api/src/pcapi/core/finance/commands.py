@@ -80,7 +80,7 @@ def add_custom_offer_reimbursement_rule(
     offerer_id: int,
     reimbursed_amount: str,
     valid_from: str,
-    valid_until: str = None,
+    valid_until: str | None = None,
     force: bool = False,
 ) -> None:
     """Add a custom reimbursement rule that is linked to an offer."""

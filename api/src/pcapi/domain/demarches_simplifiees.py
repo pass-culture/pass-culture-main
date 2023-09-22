@@ -46,7 +46,7 @@ class ApplicationDetail:
         dms_token: str | None = None,
         error_annotation_id: str | None = None,
         venue_url_annotation_id: str | None = None,
-        dossier_id: str = None,
+        dossier_id: str | None = None,
     ):
         self.siren = siren
         self.status = status

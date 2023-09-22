@@ -21,7 +21,7 @@ REQUEST_TIMEOUT_FOR_PROVIDERS_IN_SECOND = 60
 
 
 class ProviderAPI:
-    def __init__(self, api_url: str, name: str, authentication_token: str = None):
+    def __init__(self, api_url: str, name: str, authentication_token: str | None = None):
         self.api_url = api_url
         self.name = name
         self.authentication_token = authentication_token

@@ -18,7 +18,7 @@ def get_occurrence_short_name(concatened_names_with_a_date: str) -> str:
     return short_name
 
 
-def get_price_by_short_name(occurrence_short_name: str = None) -> Decimal:
+def get_price_by_short_name(occurrence_short_name: str | None = None) -> Decimal:
     if occurrence_short_name is None:
         return Decimal(0)
 

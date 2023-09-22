@@ -132,7 +132,7 @@ def add_event(
     motive: models.FinanceEventMotive,
     booking: bookings_models.Booking | educational_models.CollectiveBooking | None = None,
     booking_incident: models.BookingFinanceIncident | None = None,
-    incident_validation_date: datetime.datetime = None,
+    incident_validation_date: datetime.datetime | None = None,
     commit: bool = True,
 ) -> models.FinanceEvent:
     if booking_incident:
@@ -2399,7 +2399,7 @@ def create_offerer_reimbursement_rule(
     subcategories: list[int],
     rate: decimal.Decimal,
     start_date: datetime.datetime,
-    end_date: datetime.datetime = None,
+    end_date: datetime.datetime | None = None,
 ) -> models.CustomReimbursementRule:
     return _create_reimbursement_rule(
         offerer_id=offerer_id,
@@ -2414,7 +2414,7 @@ def create_offer_reimbursement_rule(
     offer_id: int,
     amount: decimal.Decimal,
     start_date: datetime.datetime,
-    end_date: datetime.datetime = None,
+    end_date: datetime.datetime | None = None,
 ) -> models.CustomReimbursementRule:
     return _create_reimbursement_rule(
         offer_id=offer_id,
@@ -2430,7 +2430,7 @@ def _create_reimbursement_rule(
     subcategories: list[int] | None = None,
     rate: decimal.Decimal | None = None,
     amount: decimal.Decimal | None = None,
-    start_date: datetime.datetime = None,
+    start_date: datetime.datetime | None = None,
     end_date: datetime.datetime | None = None,
 ) -> models.CustomReimbursementRule:
     subcategories = subcategories or []

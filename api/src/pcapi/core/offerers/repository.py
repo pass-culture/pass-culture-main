@@ -32,7 +32,7 @@ def get_all_venue_labels() -> list[models.VenueLabel]:
 
 def get_all_offerers_for_user(
     user: users_models.User,
-    validated: bool = None,
+    validated: bool | None = None,
     include_non_validated_user_offerers: bool = False,
 ) -> sqla_orm.Query:
     """Return a query of matching, accessible offerers.

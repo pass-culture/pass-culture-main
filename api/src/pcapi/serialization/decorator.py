@@ -27,7 +27,7 @@ def _make_json_response(
     status_code: int,
     by_alias: bool,
     exclude_none: bool = False,
-    headers: dict = None,
+    headers: dict | None = None,
 ) -> Response:
     """serializes model, creates JSON response with given status code"""
     if status_code == 204:
@@ -43,7 +43,7 @@ def _make_json_response(
     return response
 
 
-def _make_string_response(content: BaseModel | None, status_code: int, headers: dict = None) -> Response:
+def _make_string_response(content: BaseModel | None, status_code: int, headers: dict | None = None) -> Response:
     """serializes model, creates JSON response with given status code"""
     if status_code == 204:
         return make_response("", 204)
@@ -61,12 +61,12 @@ def _make_string_response(content: BaseModel | None, status_code: int, headers: 
 # - form : the form data
 # You should type these arguments as pydantic models.
 def spectree_serialize(
-    headers: Type[BaseModel] = None,
-    cookies: Type[BaseModel] = None,
-    response_model: Type[BaseModel] = None,
+    headers: Type[BaseModel] | None = None,
+    cookies: Type[BaseModel] | None = None,
+    response_model: Type[BaseModel] | None = None,
     tags: Sequence = (),
-    before: Callable = None,
-    after: Callable = None,
+    before: Callable | None = None,
+    after: Callable | None = None,
     response_by_alias: bool = True,
     exclude_none: bool = False,
     on_success_status: int = 200,

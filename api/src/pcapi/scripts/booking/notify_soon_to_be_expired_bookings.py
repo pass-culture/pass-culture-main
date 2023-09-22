@@ -20,7 +20,7 @@ def notify_soon_to_be_expired_individual_bookings() -> None:
     logger.info("[notify_soon_to_be_expired_individual_bookings] End")
 
 
-def notify_users_of_soon_to_be_expired_individual_bookings(given_date: datetime.date = None) -> None:
+def notify_users_of_soon_to_be_expired_individual_bookings(given_date: datetime.date | None = None) -> None:
     logger.info("[notify_users_of_soon_to_be_expired_bookings] Start")
 
     expired_individual_bookings_grouped_by_user = {
