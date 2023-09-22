@@ -11,7 +11,7 @@ import CollectiveOfferBreadcrumb, {
 const renderCollectiveOfferBreadcrumb = (props: OfferBreadcrumbProps) =>
   renderWithProviders(<CollectiveOfferBreadcrumb {...props} />)
 
-describe('src | components | CollectiveOfferBreadcrumb', () => {
+describe('CollectiveOfferBreadcrumb', () => {
   let props: OfferBreadcrumbProps
   const offerId = 1
 

@@ -14,7 +14,7 @@ import { ButtonLink } from 'ui-kit'
 import { individualOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import PriceCategories, { PriceCategoriesProps } from '../PriceCategories'
+import { PriceCategories, PriceCategoriesProps } from '../PriceCategories'
 
 const mockLogEvent = vi.fn()
 const offerId = 1

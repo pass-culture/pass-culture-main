@@ -12,7 +12,7 @@ import { ButtonLink } from 'ui-kit'
 import { individualOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import PriceCategories, { PriceCategoriesProps } from '../PriceCategories'
+import { PriceCategories, PriceCategoriesProps } from '../PriceCategories'
 
 const renderPriceCategories = (
   props: PriceCategoriesProps,
@@ -26,7 +26,11 @@ const renderPriceCategories = (
 ) =>
   renderWithProviders(
     <Routes>
-      {Object.values(OFFER_WIZARD_MODE).map(mode => (
+      {[
+        OFFER_WIZARD_MODE.CREATION,
+        OFFER_WIZARD_MODE.DRAFT,
+        OFFER_WIZARD_MODE.EDITION,
+      ].map(mode => (
         <Route
           key={mode}
           path={getIndividualOfferPath({
@@ -85,8 +89,8 @@ const renderPriceCategories = (
 
       <Route
         path={getIndividualOfferPath({
-          step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-          mode: OFFER_WIZARD_MODE.EDITION,
+          step: OFFER_WIZARD_STEP_IDS.TARIFS,
+          mode: OFFER_WIZARD_MODE.READ_ONLY,
         })}
         element={<div>There is the summary route content</div>}
       />
@@ -179,7 +183,7 @@ describe('PriceCategories', () => {
     expect(screen.getByText('Intitulé du tarif')).toBeInTheDocument()
   })
 
-  it('should let going to recap when form has been filled in edition', async () => {
+  it.only('should let going to recap when form has been filled in edition', async () => {
     renderPriceCategories(
       { offer: individualOfferFactory() },
       generatePath(

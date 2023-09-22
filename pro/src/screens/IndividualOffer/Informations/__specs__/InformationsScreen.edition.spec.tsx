@@ -101,7 +101,7 @@ const renderInformationsScreen = (
         <Route
           path={getIndividualOfferPath({
             step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.EDITION,
+            mode: OFFER_WIZARD_MODE.READ_ONLY,
           })}
           element={<div>There is the summary route content</div>}
         />
