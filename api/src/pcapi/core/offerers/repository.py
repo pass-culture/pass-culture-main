@@ -14,6 +14,7 @@ from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.models import BankInformation
 from pcapi.core.finance.models import BankInformationStatus
+import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Offer
 import pcapi.core.offers.repository as offers_repository
 import pcapi.core.users.models as users_models
@@ -484,7 +485,7 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
     - Existing bank accounts (possibly none and only active & not (refused or without confirmation) ones)
     - Linked venues to its bank accounts (possibly none and only current ones)
     - Managed venues by the offerer (possibly none)
-    """
+        - With eager loaded offers and stocks, to be able to determine either a venue has non free offers or not."""
 
     return (
         models.Offerer.query.filter_by(id=offerer_id)
@@ -501,7 +502,9 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
                 ),
             ),
         )
-        .outerjoin(models.Venue)
+        .outerjoin(models.Venue, models.Venue.managingOffererId == models.Offerer.id)
+        .outerjoin(offers_models.Offer, offers_models.Offer.venueId == models.Venue.id)
+        .outerjoin(offers_models.Stock, offers_models.Stock.offerId == offers_models.Offer.id)
         .outerjoin(
             models.VenueBankAccountLink,
             sqla.and_(
@@ -514,6 +517,15 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
             sqla_orm.contains_eager(models.Offerer.bankAccounts).contains_eager(finance_models.BankAccount.venueLinks)
         )
         .options(sqla_orm.contains_eager(models.Offerer.managedVenues).contains_eager(models.Venue.bankAccountLinks))
+        .options(
+            sqla_orm.contains_eager(models.Offerer.managedVenues)
+            .load_only(models.Venue.id, models.Venue.siret, models.Venue.publicName, models.Venue.name)
+            .contains_eager(models.Venue.offers)
+            .load_only(offers_models.Offer.id)
+            .contains_eager(offers_models.Offer.stocks)
+            .load_only(offers_models.Stock.price)
+        )
+        .options(sqla_orm.load_only(models.Offerer.id, models.Offerer.name))
         .order_by(finance_models.BankAccount.dateCreated)
         .one_or_none()
     )
