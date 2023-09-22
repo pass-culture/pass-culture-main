@@ -10,7 +10,6 @@ import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
 import {
   individualOfferFactory,
-  individualOfferVenueFactory,
   individualStockFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
@@ -270,28 +269,24 @@ describe('Summary stock section', () => {
   describe('for stock event', () => {
     beforeEach(() => {
       props = {
-        offer: individualOfferFactory(
-          {
-            status: OfferStatus.ACTIVE,
-            isEvent: true,
-            stocks: [
-              individualStockFactory({
-                quantity: 10,
-                price: 20,
-                bookingLimitDatetime: '12/03/2020',
-                beginningDatetime: '12/03/2020',
-              }),
-              individualStockFactory({
-                quantity: 10,
-                price: 20,
-                bookingLimitDatetime: '12/03/2020',
-                beginningDatetime: '12/03/2020',
-              }),
-            ],
-          },
-          undefined,
-          individualOfferVenueFactory({ departmentCode: '78' })
-        ),
+        offer: individualOfferFactory({
+          status: OfferStatus.ACTIVE,
+          isEvent: true,
+          stocks: [
+            individualStockFactory({
+              quantity: 10,
+              price: 20,
+              bookingLimitDatetime: '12/03/2020',
+              beginningDatetime: '12/03/2020',
+            }),
+            individualStockFactory({
+              quantity: 10,
+              price: 20,
+              bookingLimitDatetime: '12/03/2020',
+              beginningDatetime: '12/03/2020',
+            }),
+          ],
+        }),
       }
     })
 
@@ -351,33 +346,29 @@ describe('Summary stock section', () => {
 
     it('should display or not all stocks', async () => {
       props = {
-        offer: individualOfferFactory(
-          {
-            status: OfferStatus.ACTIVE,
-            stocks: [
-              individualStockFactory({
-                quantity: 10,
-                price: 20,
-                bookingLimitDatetime: '12/03/2020',
-                beginningDatetime: '12/03/2020',
-              }),
-              individualStockFactory({
-                quantity: 10,
-                price: 20,
-                bookingLimitDatetime: '12/03/2020',
-                beginningDatetime: '12/03/2020',
-              }),
-              individualStockFactory({
-                quantity: null,
-                price: 20,
-                bookingLimitDatetime: '12/03/2020',
-                beginningDatetime: '12/03/2020',
-              }),
-            ],
-          },
-          undefined,
-          individualOfferVenueFactory({ departmentCode: '78' })
-        ),
+        offer: individualOfferFactory({
+          status: OfferStatus.ACTIVE,
+          stocks: [
+            individualStockFactory({
+              quantity: 10,
+              price: 20,
+              bookingLimitDatetime: '12/03/2020',
+              beginningDatetime: '12/03/2020',
+            }),
+            individualStockFactory({
+              quantity: 10,
+              price: 20,
+              bookingLimitDatetime: '12/03/2020',
+              beginningDatetime: '12/03/2020',
+            }),
+            individualStockFactory({
+              quantity: null,
+              price: 20,
+              bookingLimitDatetime: '12/03/2020',
+              beginningDatetime: '12/03/2020',
+            }),
+          ],
+        }),
       }
 
       renderStockSection(

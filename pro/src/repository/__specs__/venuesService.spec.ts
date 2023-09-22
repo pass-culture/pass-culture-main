@@ -1,26 +1,23 @@
+import { individualOfferGetVenuesFactory } from 'utils/individualApiFactories'
+
 import { computeVenueDisplayName, formatAndOrderVenues } from '../venuesService'
 
 describe('formatAndOrderVenues', () => {
   it('should sort venues alphabetically', () => {
     const venues = [
-      {
+      individualOfferGetVenuesFactory({
         id: 1,
-        name: 'Librairie Fnac',
-        offererName: 'gilbert Joseph',
-        isVirtual: false,
-        hasCreatedOffer: false,
-        hasMissingReimbursementPoint: false,
-        managingOffererId: 1,
-      },
-      {
-        id: 2,
         name: 'Offre numérique',
         offererName: 'gilbert Joseph',
         isVirtual: true,
-        hasCreatedOffer: false,
-        hasMissingReimbursementPoint: false,
-        managingOffererId: 1,
-      },
+      }),
+      individualOfferGetVenuesFactory({
+        id: 1,
+        name: 'a venue name',
+        publicName: 'Librairie Fnac',
+        offererName: 'gilbert Joseph',
+        isVirtual: false,
+      }),
     ]
 
     const sortingValues = formatAndOrderVenues(venues)
@@ -39,15 +36,12 @@ describe('formatAndOrderVenues', () => {
 
   it('should format venue option with "offerer name - offre numérique" when venue is virtual', () => {
     const venues = [
-      {
+      individualOfferGetVenuesFactory({
         id: 1,
         name: 'Offre numérique',
         offererName: 'gilbert Joseph',
         isVirtual: true,
-        hasCreatedOffer: false,
-        hasMissingReimbursementPoint: false,
-        managingOffererId: 1,
-      },
+      }),
     ]
 
     const formattedValues = formatAndOrderVenues(venues)

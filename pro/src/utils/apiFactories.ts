@@ -125,6 +125,7 @@ export const getVenueListItemFactory = (
     hasCreatedOffer: true,
     hasMissingReimbursementPoint: true,
     offererName: 'offerer',
+    venueTypeCode: VenueTypeCode.AUTRE,
     ...customVenue,
   }
 }

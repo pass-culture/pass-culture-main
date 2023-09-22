@@ -7,7 +7,8 @@ import * as yup from 'yup'
 import { Accessibility } from 'components/IndividualOfferForm/Accessibility'
 import { OffererName } from 'core/Offerers/types'
 import { AccessiblityEnum, AccessibiltyFormValues } from 'core/shared'
-import { IndividualOfferVenue } from 'core/Venue/types'
+import { IndividualOfferVenueItem } from 'core/Venue/types'
+import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
 
 import { Venue } from '..'
 import { VenueProps } from '../Venue'
@@ -65,8 +66,8 @@ const renderVenue = async ({
 describe('IndividualOffer section: venue', () => {
   let initialValues: InitialValues
   let venueProps: VenueProps
-  let venueAccessible: IndividualOfferVenue
-  let venueNotAccessible: IndividualOfferVenue
+  let venueAccessible: IndividualOfferVenueItem
+  let venueNotAccessible: IndividualOfferVenueItem
   const onSubmit = vi.fn()
 
   beforeEach(() => {
@@ -77,12 +78,7 @@ describe('IndividualOffer section: venue', () => {
       },
     ]
 
-    venueAccessible = {
-      id: 1,
-      name: 'Venue AAAA',
-      managingOffererId: 1,
-      isVirtual: false,
-      withdrawalDetails: '',
+    venueAccessible = individualOfferVenueItemFactory({
       accessibility: {
         visual: false,
         mental: true,
@@ -90,15 +86,8 @@ describe('IndividualOffer section: venue', () => {
         motor: false,
         none: false,
       },
-      hasMissingReimbursementPoint: false,
-      hasCreatedOffer: true,
-    }
-    venueNotAccessible = {
-      id: 2,
-      name: 'Venue AABB',
-      managingOffererId: 1,
-      isVirtual: false,
-      withdrawalDetails: '',
+    })
+    venueNotAccessible = individualOfferVenueItemFactory({
       accessibility: {
         visual: false,
         mental: false,
@@ -106,10 +95,8 @@ describe('IndividualOffer section: venue', () => {
         motor: false,
         none: true,
       },
-      hasMissingReimbursementPoint: false,
-      hasCreatedOffer: true,
-    }
-    const venueList: IndividualOfferVenue[] = [
+    })
+    const venueList: IndividualOfferVenueItem[] = [
       venueAccessible,
       venueNotAccessible,
     ]

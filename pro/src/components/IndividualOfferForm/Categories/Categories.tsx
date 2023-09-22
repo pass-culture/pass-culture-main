@@ -10,7 +10,7 @@ import {
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { INDIVIDUAL_OFFER_SUBTYPE } from 'core/Offers/constants'
 import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
-import { IndividualOfferVenue } from 'core/Venue/types'
+import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { Banner, InfoBox, Select } from 'ui-kit'
@@ -31,7 +31,7 @@ export interface CategoriesProps {
   readOnlyFields?: string[]
   showAddVenueBanner?: boolean
   offerSubtype: INDIVIDUAL_OFFER_SUBTYPE | null
-  venueList: IndividualOfferVenue[]
+  venueList: IndividualOfferVenueItem[]
 }
 
 const buildCategoryOptions = (categories: OfferCategory[]): SelectOption[] =>

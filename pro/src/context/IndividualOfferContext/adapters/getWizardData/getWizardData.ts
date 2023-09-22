@@ -4,7 +4,7 @@ import { getCategoriesAdapter } from 'core/Offers/adapters'
 import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { getIndividualOfferVenuesAdapter } from 'core/Venue/adapters/getIndividualOfferVenuesAdapter'
-import { IndividualOfferVenue } from 'core/Venue/types'
+import { IndividualOfferVenueItem } from 'core/Venue/types'
 
 interface GetWizardDataArgs {
   offerOffererId?: string
@@ -16,7 +16,7 @@ interface GetWizardDataArgs {
 
 interface OfferWizardData {
   offererNames: OffererName[]
-  venueList: IndividualOfferVenue[]
+  venueList: IndividualOfferVenueItem[]
   categoriesData: {
     categories: OfferCategory[]
     subCategories: OfferSubCategory[]

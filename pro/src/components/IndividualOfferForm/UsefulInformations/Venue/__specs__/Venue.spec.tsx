@@ -9,7 +9,8 @@ import {
   setDefaultInitialFormValues,
 } from 'components/IndividualOfferForm'
 import { OffererName } from 'core/Offerers/types'
-import { IndividualOfferVenue } from 'core/Venue/types'
+import { IndividualOfferVenueItem } from 'core/Venue/types'
+import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
 
 import { validationSchema, Venue, VENUE_DEFAULT_VALUES } from '..'
 import { VenueProps } from '../Venue'
@@ -38,7 +39,7 @@ describe('IndividualOffer section: venue', () => {
   let initialValues: Partial<IndividualOfferFormValues>
   let props: VenueProps
   const onSubmit = vi.fn()
-  let venueList: IndividualOfferVenue[]
+  let venueList: IndividualOfferVenueItem[]
   const firstOfferer = {
     id: 1,
     name: 'Offerer AE',
@@ -60,70 +61,19 @@ describe('IndividualOffer section: venue', () => {
     ]
 
     venueList = [
-      {
-        id: 1,
-        name: 'Venue AAAA',
-        managingOffererId: 1,
-        isVirtual: false,
-        withdrawalDetails: '',
-        accessibility: {
-          visual: false,
-          mental: false,
-          audio: false,
-          motor: false,
-          none: true,
-        },
-        hasMissingReimbursementPoint: false,
-        hasCreatedOffer: true,
-      },
-      {
-        id: 2,
-        name: 'Venue BBAA',
-        managingOffererId: 2,
-        isVirtual: false,
-        withdrawalDetails: '',
-        accessibility: {
-          visual: false,
-          mental: false,
-          audio: false,
-          motor: false,
-          none: true,
-        },
-        hasMissingReimbursementPoint: false,
-        hasCreatedOffer: true,
-      },
-      {
-        id: 3,
-        name: 'Venue CCAA',
-        managingOffererId: 3,
-        isVirtual: false,
-        withdrawalDetails: '',
-        accessibility: {
-          visual: false,
-          mental: false,
-          audio: false,
-          motor: false,
-          none: true,
-        },
-        hasMissingReimbursementPoint: false,
-        hasCreatedOffer: true,
-      },
-      {
-        id: 4,
+      individualOfferVenueItemFactory({
+        managingOffererId: firstOfferer.id,
+      }),
+      individualOfferVenueItemFactory({
+        managingOffererId: secondOfferer.id,
+      }),
+      individualOfferVenueItemFactory({
+        managingOffererId: thirdOfferer.id,
+      }),
+      individualOfferVenueItemFactory({
         name: 'Venue CCBB',
-        managingOffererId: 3,
-        isVirtual: false,
-        withdrawalDetails: '',
-        accessibility: {
-          visual: false,
-          mental: false,
-          audio: false,
-          motor: false,
-          none: true,
-        },
-        hasMissingReimbursementPoint: false,
-        hasCreatedOffer: true,
-      },
+        managingOffererId: thirdOfferer.id,
+      }),
     ]
 
     initialValues = setDefaultInitialFormValues(

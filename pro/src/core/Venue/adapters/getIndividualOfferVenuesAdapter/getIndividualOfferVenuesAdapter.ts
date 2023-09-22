@@ -1,10 +1,10 @@
 import { api } from 'apiClient/api'
 import { VenueListItemResponseModel } from 'apiClient/v1'
 import { AccessiblityEnum, GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { IndividualOfferVenue } from 'core/Venue/types'
+import { IndividualOfferVenueItem } from 'core/Venue/types'
 
 type Params = { offererId?: number }
-type Payload = IndividualOfferVenue[]
+type Payload = IndividualOfferVenueItem[]
 type GetIndividualOfferVenuesAdapter = Adapter<Params, Payload, Payload>
 
 const FAILING_RESPONSE = {
@@ -20,7 +20,7 @@ const getIndividualOfferVenuesAdapter: GetIndividualOfferVenuesAdapter =
 
       const serializeVenue = (
         venue: VenueListItemResponseModel
-      ): IndividualOfferVenue => {
+      ): IndividualOfferVenueItem => {
         /* istanbul ignore next: DEBT, TO FIX */
         const baseAccessibility = {
           [AccessiblityEnum.VISUAL]: venue.visualDisabilityCompliant || false,
