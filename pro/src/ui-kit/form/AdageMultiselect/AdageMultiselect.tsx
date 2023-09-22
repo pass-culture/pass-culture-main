@@ -19,7 +19,7 @@ interface AdageMultiselectProps {
   isOpen: boolean
   sortOptions?: (
     items: ItemProps[],
-    selectedItems: Set<ItemProps['value']>
+    selectedItems: ItemProps['value'][]
   ) => ItemProps[]
 }
 
@@ -30,13 +30,19 @@ const filterItems = (items: ItemProps[], inputValue: string) => {
 
 const defaultSortOptions = (
   items: ItemProps[],
-  selectedItems: Set<ItemProps['value']>
+  selectedItems: ItemProps['value'][]
 ) => {
   return items.sort((a, b) => {
-    if (selectedItems.has(b.value) && !selectedItems.has(a.value)) {
+    if (
+      isIncluded(selectedItems, b.value) &&
+      !isIncluded(selectedItems, a.value)
+    ) {
       return 1
     }
-    if (!selectedItems.has(b.value) && selectedItems.has(a.value)) {
+    if (
+      !isIncluded(selectedItems, b.value) &&
+      isIncluded(selectedItems, a.value)
+    ) {
       return -1
     }
     return a.label.localeCompare(b.label)
@@ -110,7 +116,7 @@ const AdageMultiselect = ({
     if (isIncluded(field.value, selection.value)) {
       setFieldValue(
         name,
-        field.value.filter(item => item !== selection.value)
+        field.value.filter(item => !isIncluded([selection.value], item))
       )
     } else {
       setFieldValue(name, [...field.value, selection.value])
@@ -121,9 +127,7 @@ const AdageMultiselect = ({
   useEffect(() => {
     setInputValue('')
     setDownshiftInputValue('')
-    setSortedOptions(
-      (sortOptions ?? defaultSortOptions)(options, new Set(field.value))
-    )
+    setSortedOptions((sortOptions ?? defaultSortOptions)(options, field.value))
   }, [isOpen])
 
   return (

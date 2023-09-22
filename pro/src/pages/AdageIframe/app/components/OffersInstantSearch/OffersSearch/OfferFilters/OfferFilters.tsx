@@ -112,9 +112,8 @@ export const OfferFilters = ({
     const loadFiltersOptions = async () => {
       const domainsResponse = await getEducationalDomainsOptionsAdapter()
       const academiesResponse = await getAcademiesOptionsAdapter()
-      const categoriesResponse = await getEducationalCategoriesOptionsAdapter(
-        null
-      )
+      const categoriesResponse =
+        await getEducationalCategoriesOptionsAdapter(null)
 
       if (categoriesResponse.isOk) {
         setCategoriesOptions(categoriesResponse.payload.educationalCategories)
@@ -392,8 +391,12 @@ export const OfferFilters = ({
                     sortOptions={(options, selectedOptions) => {
                       //  Implement custom sort to not sort results alphabetically
                       return options.sort((option1, option2) => {
-                        const isSelected1 = selectedOptions.has(option1.value)
-                        const isSelected2 = selectedOptions.has(option2.value)
+                        const isSelected1 = selectedOptions.includes(
+                          option1.value
+                        )
+                        const isSelected2 = selectedOptions.includes(
+                          option2.value
+                        )
                         return isSelected1 === isSelected2
                           ? 0
                           : isSelected1 && !isSelected2
