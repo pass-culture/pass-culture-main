@@ -887,9 +887,8 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         }
 
         if (withdrawalInformations.withdrawalDelay) {
-          const withdrawalDelayField = await screen.findByLabelText(
-            'Heure de retrait'
-          )
+          const withdrawalDelayField =
+            await screen.findByLabelText('Heure de retrait')
           await userEvent.selectOptions(withdrawalDelayField, '1 heure')
           expectedBody.withdrawalDelay = 3600
         }

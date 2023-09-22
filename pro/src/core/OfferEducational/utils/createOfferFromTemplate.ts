@@ -15,9 +15,8 @@ export const createOfferFromTemplate = async (
   templateOfferId: number,
   requestId?: string
 ) => {
-  const offerTemplateResponse = await getCollectiveOfferTemplateAdapter(
-    templateOfferId
-  )
+  const offerTemplateResponse =
+    await getCollectiveOfferTemplateAdapter(templateOfferId)
 
   if (!offerTemplateResponse.isOk) {
     return notify.error(offerTemplateResponse.message)

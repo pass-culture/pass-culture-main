@@ -50,7 +50,8 @@
   "indexLanguages": ["fr"],
   "searchableAttributes": [
     "unordered(offer.name)",
-    "unordered(venue.name),unordered(venue.publicName)",
+    "unordered(venue.name)",
+    "unordered(venue.publicName)",
     "unordered(offerer.name)",
     "unordered(offer.description)",
     "unordered(offer.artist)",
