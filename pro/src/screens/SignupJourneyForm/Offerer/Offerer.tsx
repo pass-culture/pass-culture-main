@@ -63,9 +63,8 @@ const Offerer = (): JSX.Element => {
       setShowIsAppUserDialog(false)
     }
 
-    const siretResponse = await getVenuesOfOffererFromSiretAdapter(
-      formattedSiret
-    )
+    const siretResponse =
+      await getVenuesOfOffererFromSiretAdapter(formattedSiret)
 
     if (!siretResponse.isOk || !response.payload.values) {
       notify.error('Une erreur est survenue')

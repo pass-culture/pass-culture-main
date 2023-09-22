@@ -114,6 +114,15 @@ const AdageMultiselect = ({
 
   const handleNewSelection = (selection: ItemProps) => {
     if (isIncluded(field.value, selection.value)) {
+      if (field.value.length > 0 && Array.isArray(field.value[0])) {
+        setFieldValue(
+          name,
+          (field.value as string[][]).filter(
+            item => !(selection.value as string[]).some(el => item.includes(el))
+          )
+        )
+        return
+      }
       setFieldValue(
         name,
         field.value.filter(item => !isIncluded([selection.value], item))

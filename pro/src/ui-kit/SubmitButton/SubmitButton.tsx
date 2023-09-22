@@ -9,6 +9,8 @@ export interface SubmitButtonProps extends SharedButtonProps {
   isLoading?: boolean
   buttonRef?: ForwardedRef<HTMLButtonElement | null>
   onClick?(): void
+  onBlur?(): void
+  onMouseDown?(e: React.MouseEvent): void
   children?: React.ReactNode
   type?: 'submit' | 'button'
 }
@@ -20,6 +22,8 @@ const SubmitButton = ({
   isLoading = false,
   buttonRef,
   onClick,
+  onBlur,
+  onMouseDown,
   type = 'submit',
   ...buttonAttrs
 }: SubmitButtonProps): JSX.Element => (
@@ -27,6 +31,8 @@ const SubmitButton = ({
     className={className}
     disabled={disabled || isLoading}
     onClick={onClick}
+    onBlur={onBlur}
+    onMouseDown={onMouseDown}
     ref={buttonRef}
     type={type}
     variant={ButtonVariant.PRIMARY}

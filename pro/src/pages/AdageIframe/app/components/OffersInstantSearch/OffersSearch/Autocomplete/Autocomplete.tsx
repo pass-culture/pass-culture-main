@@ -6,7 +6,6 @@ import { createQuerySuggestionsPlugin } from '@algolia/autocomplete-plugin-query
 import { AutocompleteQuerySuggestionsHit } from '@algolia/autocomplete-plugin-query-suggestions/dist/esm/types'
 import { createLocalStorageRecentSearchesPlugin } from '@algolia/autocomplete-plugin-recent-searches'
 import algoliasearch from 'algoliasearch/lite'
-import cn from 'classnames'
 import { FormikContext } from 'formik'
 import React, {
   useState,
@@ -21,22 +20,23 @@ import React, {
 import type { SearchBoxProvided } from 'react-instantsearch-core'
 import { connectSearchBox } from 'react-instantsearch-dom'
 
+import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
 import fullClearIcon from 'icons/full-clear.svg'
-import fullLinkIcon from 'icons/full-link.svg'
 import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeClockIcon from 'icons/stroke-clock.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import { getEducationalCategoriesOptionsAdapter } from 'pages/AdageIframe/app/adapters/getEducationalCategoriesOptionsAdapter'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
 import { Option } from 'pages/AdageIframe/app/types'
-import { Button, ButtonLink } from 'ui-kit'
+import { Button, SubmitButton } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import {
   ALGOLIA_API_KEY,
   ALGOLIA_APP_ID,
   ALGOLIA_COLLECTIVE_OFFERS_INDEX,
+  ALGOLIA_COLLECTIVE_OFFERS_SUGGESTIONS_INDEX,
 } from 'utils/config'
 
 import styles from './Autocomplete.module.scss'
@@ -56,6 +56,7 @@ type SuggestionItem = AutocompleteQuerySuggestionsHit & {
   offerer: {
     name: string
   }
+  ['offer.subcategoryId']: string[]
 }
 
 const ALGOLIA_NUMBER_RECENT_SEARCHES = 5
@@ -83,6 +84,9 @@ const AutocompleteComponent = ({
   const inputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
+  const enableAutocompleteAdage = useActiveFeature(
+    'WIP_ENABLE_SEARCH_HISTORY_ADAGE'
+  )
 
   const formik = useContext(FormikContext)
 
@@ -91,14 +95,13 @@ const AutocompleteComponent = ({
 
   const RECENT_SEARCH_SOURCE_ID = 'RecentSearchSource'
   const VENUE_SUGGESTIONS_SOURCE_ID = 'VenueSuggestionsSource'
-  const adageUser = useAdageUser()
+  const { adageUser } = useAdageUser()
   const KEYWORD_QUERY_SUGGESTIONS_SOURCE_ID = 'KeywordQuerySuggestionsSource'
 
   useEffect(() => {
     const loadData = async () => {
-      const categoriesResponse = await getEducationalCategoriesOptionsAdapter(
-        null
-      )
+      const categoriesResponse =
+        await getEducationalCategoriesOptionsAdapter(null)
 
       if (!categoriesResponse.isOk) {
         return notify.error(categoriesResponse.message)
@@ -107,9 +110,11 @@ const AutocompleteComponent = ({
       setCategories(categoriesResponse.payload.educationalCategories)
     }
 
-    loadData()
+    // TODO: delete when ff deleted
+    enableAutocompleteAdage && loadData()
   }, [])
 
+  // retrieves recent searches made in the search input
   const recentSearchesPlugin = createLocalStorageRecentSearchesPlugin({
     key: 'RECENT_SEARCH',
     limit: ALGOLIA_NUMBER_RECENT_SEARCHES,
@@ -126,6 +131,7 @@ const AutocompleteComponent = ({
 
   const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_API_KEY)
 
+  // provides search suggestions based on existing partners
   /* istanbul ignore next: We dont want to test algolia implementation */
   const venuesSuggestionsPlugin = createQuerySuggestionsPlugin<SuggestionItem>({
     searchClient: searchClient,
@@ -177,9 +183,10 @@ const AutocompleteComponent = ({
     },
   })
 
-  const querySuggestionsPlugin = createQuerySuggestionsPlugin({
+  // retrieves search-based suggestions from an index that generates suggestions based on existing offers
+  const querySuggestionsPlugin = createQuerySuggestionsPlugin<SuggestionItem>({
     searchClient,
-    indexName: 'testing-collective-offers_query_suggestions',
+    indexName: ALGOLIA_COLLECTIVE_OFFERS_SUGGESTIONS_INDEX,
     getSearchParams() {
       return {
         hitsPerPage: ALGOLIA_NUMBER_QUERY_SUGGESTIONS,
@@ -196,18 +203,28 @@ const AutocompleteComponent = ({
 
           return source.getItems(params)
         },
-        onSelect({ item, event }) {
-          if (parseInt(event.target.id) < 3) {
-            const result = getCategoriesFromSubCategorie(
-              item['offer.subcategoryId'].toString()
+        async onSelect(params) {
+          const { item, source: sourceTmp } = params
+
+          const items = (await sourceTmp.getItems({
+            ...params,
+            query: params.state.query,
+          })) as SuggestionItem[]
+
+          const itemId = items.findIndex(elm => elm.objectID === item.objectID)
+
+          // if the id is less than 3, the category is displayed and must be pre-selected in the filters.
+          if (itemId >= 0 && itemId < 3) {
+            const result = getCategoriesFromSubcategory(
+              item['offer.subcategoryId'][0]
             )
 
-            formik.setFieldValue('categories', [result?.subCategories])
-            refine(item.query)
+            result && formik.setFieldValue('categories', [result.subCategories])
           } else {
             formik.setFieldValue('categories', [])
-            refine(item.query)
           }
+          refine(item.query)
+          formik.submitForm()
         },
       }
     },
@@ -232,11 +249,13 @@ const AutocompleteComponent = ({
           setCurrentSearch(state.query)
         },
         placeholder,
-        plugins: [
-          recentSearchesPlugin,
-          venuesSuggestionsPlugin,
-          querySuggestionsPlugin,
-        ],
+        plugins: enableAutocompleteAdage
+          ? [
+              recentSearchesPlugin,
+              venuesSuggestionsPlugin,
+              querySuggestionsPlugin,
+            ]
+          : [],
       }),
     [placeholder, refine, categories]
   )
@@ -297,29 +316,32 @@ const AutocompleteComponent = ({
       items: [],
     }
 
-  const getCategoriesFromSubCategorie = (subCategory: string) => {
+  const getCategoriesFromSubcategory = (subCategory: string) => {
     const result = categories?.find(objet => objet.value.includes(subCategory))
 
     return { label: result?.label, subCategories: result?.value }
   }
 
   const shouldDisplayRecentSearch =
+    enableAutocompleteAdage &&
     recentSearchesSource &&
     recentSearchesItems &&
     recentSearchesItems.length > 0 &&
-    !instantSearchUiState.query
+    Boolean(!instantSearchUiState.query)
 
   const shouldDisplayVenueSuggestions =
+    enableAutocompleteAdage &&
     venuesSuggestionsSource &&
     venuesSuggestionsItems &&
     venuesSuggestionsItems.length > 0 &&
-    !!instantSearchUiState.query
+    Boolean(instantSearchUiState.query)
 
   const shouldDisplayKeywordSuggestions =
+    enableAutocompleteAdage &&
     keywordSuggestionsSource &&
     keywordSuggestionsItems &&
     keywordSuggestionsItems.length > 0 &&
-    !!instantSearchUiState.query
+    Boolean(instantSearchUiState.query)
 
   return (
     <div>
@@ -366,16 +388,22 @@ const AutocompleteComponent = ({
                 </span>
               </div>
 
-              <Button
+              <SubmitButton
+                // TODO: delete when the link is added
+                onBlur={() => {
+                  if (shouldDisplayRecentSearch) {
+                    return
+                  }
+                  autocomplete.setIsOpen(false)
+                }}
                 onMouseDown={e => {
+                  // avoids onfocus code when "Rechercher" is clicked
                   e.preventDefault()
                 }}
-                id="button-search"
-                type="submit"
                 className={styles['form-search-button']}
               >
                 Rechercher
-              </Button>
+              </SubmitButton>
             </div>
 
             <dialog
@@ -390,10 +418,7 @@ const AutocompleteComponent = ({
                 {...autocomplete.getPanelProps({})}
               >
                 {shouldDisplayRecentSearch && (
-                  <div
-                    key={`recent-search`}
-                    className={styles['dialog-panel-autocomplete']}
-                  >
+                  <div className={styles['dialog-panel-autocomplete']}>
                     <span className={styles['dialog-panel-autocomplete-text']}>
                       Recherches récentes
                       <Button
@@ -406,7 +431,11 @@ const AutocompleteComponent = ({
                           localStorage.removeItem(
                             'AUTOCOMPLETE_RECENT_SEARCHES:RECENT_SEARCH'
                           )
-                          autocomplete.refresh()
+                          autocomplete.setIsOpen(false)
+                        }}
+                        // TODO: delete when the link is added
+                        onBlur={() => {
+                          autocomplete.setIsOpen(false)
                         }}
                       >
                         Effacer
@@ -436,10 +465,7 @@ const AutocompleteComponent = ({
                   </div>
                 )}
                 {shouldDisplayVenueSuggestions && (
-                  <div
-                    key={`venue-suggestions`}
-                    className={styles['dialog-panel-autocomplete']}
-                  >
+                  <div className={styles['dialog-panel-autocomplete']}>
                     <span className={styles['dialog-panel-autocomplete-text']}>
                       Partenaires culturels
                     </span>
@@ -471,10 +497,7 @@ const AutocompleteComponent = ({
                   </div>
                 )}
                 {shouldDisplayKeywordSuggestions && (
-                  <div
-                    key={`keyword-query-suggestions`}
-                    className={styles['dialog-panel-autocomplete']}
-                  >
+                  <div className={styles['dialog-panel-autocomplete']}>
                     <span className={styles['dialog-panel-autocomplete-text']}>
                       Suggestions
                     </span>
@@ -490,7 +513,7 @@ const AutocompleteComponent = ({
                           {...autocomplete.getItemProps({
                             item,
                             source: keywordSuggestionsSource,
-                            id: index,
+                            id: `keyword-${index}`,
                           })}
                         >
                           <SvgIcon
@@ -507,8 +530,8 @@ const AutocompleteComponent = ({
                             }
                           >
                             {index <= 2 &&
-                              getCategoriesFromSubCategorie(
-                                item['offer.subcategoryId'].toString()
+                              getCategoriesFromSubcategory(
+                                item['offer.subcategoryId'][0]
                               ).label}
                           </span>
                         </li>
@@ -517,7 +540,7 @@ const AutocompleteComponent = ({
                   </div>
                 )}
               </div>
-              <div
+              {/* <div
                 className={cn(styles['panel-footer'], {
                   [styles['panel-footer-no-result']]: !localStorage.getItem(
                     'AUTOCOMPLETE_RECENT_SEARCHES:RECENT_SEARCH'
@@ -538,7 +561,7 @@ const AutocompleteComponent = ({
                 >
                   Comment fonctionne la recherche ?
                 </ButtonLink>
-              </div>
+              </div> */}
             </dialog>
           </div>
         </form>
