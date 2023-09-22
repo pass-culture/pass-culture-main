@@ -1,15 +1,7 @@
 import React from 'react'
 
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
-import {
-  Events,
-  OFFER_FORM_HOMEPAGE,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-  OFFER_FORM_NAVIGATION_OUT,
-} from 'core/FirebaseEvents/constants'
 import { OFFER_STATUS_PENDING } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
-import useAnalytics from 'hooks/useAnalytics'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
@@ -29,7 +21,6 @@ const IndividualOfferConfirmation = ({
 }: IndividualOfferConfirmationProps): JSX.Element => {
   const isPendingOffer = offer.status === OFFER_STATUS_PENDING
   const queryString = `?structure=${offer.venue.offerer.id}&lieu=${offer.venueId}`
-  const { logEvent } = useAnalytics()
   const title = isPendingOffer
     ? 'Offre en cours de validation'
     : 'Offre publiée !'
@@ -72,16 +63,6 @@ const IndividualOfferConfirmation = ({
       <div className={styles['display-in-app-link']}>
         <DisplayOfferInAppLink
           id={offer.id}
-          tracking={{
-            isTracked: true,
-            trackingFunction: () =>
-              logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                from: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-                to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
-                used: OFFER_FORM_NAVIGATION_MEDIUM.CONFIRMATION_PREVIEW,
-                isEdition: false,
-              }),
-          }}
           svgAlt="Nouvelle fenêtre"
           text="Visualiser l’offre dans l’application"
           icon={fullLinkIcon}
@@ -94,14 +75,6 @@ const IndividualOfferConfirmation = ({
             isExternal: true,
           }}
           variant={ButtonVariant.SECONDARY}
-          onClick={() =>
-            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-              from: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-              to: OFFER_FORM_HOMEPAGE,
-              used: OFFER_FORM_NAVIGATION_MEDIUM.CONFIRMATION_BUTTON_NEW_OFFER,
-              isEdition: false,
-            })
-          }
         >
           Créer une nouvelle offre
         </ButtonLink>
@@ -110,14 +83,6 @@ const IndividualOfferConfirmation = ({
             to: `/offres`,
             isExternal: false,
           }}
-          onClick={() =>
-            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-              from: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-              to: OFFER_FORM_NAVIGATION_OUT.OFFERS,
-              used: OFFER_FORM_NAVIGATION_MEDIUM.CONFIRMATION_BUTTON_OFFER_LIST,
-              isEdition: false,
-            })
-          }
           variant={ButtonVariant.PRIMARY}
         >
           Voir la liste des offres

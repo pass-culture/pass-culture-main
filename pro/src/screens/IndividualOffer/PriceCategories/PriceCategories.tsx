@@ -6,22 +6,15 @@ import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
-import {
-  Events,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-  OFFER_FORM_NAVIGATION_OUT,
-} from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer, IndividualOfferStock } from 'core/Offers/types'
 import { isOfferAllocineSynchronized, isOfferDisabled } from 'core/Offers/utils'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks'
-import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 
 import { ActionBar } from '../ActionBar'
 import { getSuccessMessage } from '../utils'
-import { logTo } from '../utils/logTo'
 
 import { computeInitialValues } from './form/computeInitialValues'
 import { onSubmit } from './form/onSubmit'
@@ -159,7 +152,6 @@ export const PriceCategories = ({
   offer,
 }: PriceCategoriesProps): JSX.Element => {
   const { setOffer, subCategories } = useIndividualOfferContext()
-  const { logEvent } = useAnalytics()
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
     useState<boolean>(false)
   const navigate = useNavigate()
@@ -211,21 +203,6 @@ export const PriceCategories = ({
       mode:
         mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
     })
-    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-      from: OFFER_WIZARD_STEP_IDS.TARIFS,
-      to: isClickingDraft
-        ? OFFER_WIZARD_STEP_IDS.TARIFS
-        : mode === OFFER_WIZARD_MODE.EDITION
-        ? OFFER_WIZARD_STEP_IDS.SUMMARY
-        : OFFER_WIZARD_STEP_IDS.STOCKS,
-      used: isClickingDraft
-        ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
-        : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-      isDraft:
-        mode === OFFER_WIZARD_MODE.CREATION || mode === OFFER_WIZARD_MODE.DRAFT,
-      offerId: offer.id,
-    })
     navigate(afterSubmitUrl)
     if (isClickingDraft || mode === OFFER_WIZARD_MODE.EDITION) {
       notify.success(getSuccessMessage(mode))
@@ -242,18 +219,6 @@ export const PriceCategories = ({
   })
 
   const handlePreviousStep = () => {
-    if (!formik.dirty) {
-      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OFFER_WIZARD_STEP_IDS.TARIFS,
-        to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft:
-          mode === OFFER_WIZARD_MODE.CREATION ||
-          mode === OFFER_WIZARD_MODE.DRAFT,
-        offerId: offer.id,
-      })
-    }
     navigate(
       getIndividualOfferUrl({
         offerId: offer.id,
@@ -347,24 +312,11 @@ export const PriceCategories = ({
           onClickSaveDraft={handleNextStep({ saveDraft: true })}
           step={OFFER_WIZARD_STEP_IDS.TARIFS}
           isDisabled={formik.isSubmitting}
-          offerId={offer.id}
         />
       </form>
 
       <RouteLeavingGuardIndividualOffer
         when={formik.dirty && !isClickingFromActionBar}
-        tracking={nextLocation =>
-          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-            from: OFFER_WIZARD_STEP_IDS.TARIFS,
-            to: logTo(nextLocation),
-            used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
-            isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-            isDraft:
-              mode === OFFER_WIZARD_MODE.CREATION ||
-              mode === OFFER_WIZARD_MODE.DRAFT,
-            offerId: offer?.id,
-          })
-        }
         isEdition={mode === OFFER_WIZARD_MODE.EDITION}
       />
     </FormikProvider>
