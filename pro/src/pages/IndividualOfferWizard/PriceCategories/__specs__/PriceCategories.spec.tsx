@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 import React from 'react'
+import { Routes, Route } from 'react-router-dom'
 
 import {
   IndividualOfferContextValues,
@@ -8,7 +9,7 @@ import {
 import { individualOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import PriceCategories from '../PriceCategories'
+import { PriceCategories } from '../PriceCategories'
 
 const renderOffer = (
   contextOverride?: Partial<IndividualOfferContextValues>
@@ -29,9 +30,17 @@ const renderOffer = (
   }
 
   return renderWithProviders(
-    <IndividualOfferContext.Provider value={contextValue}>
-      <PriceCategories />
-    </IndividualOfferContext.Provider>
+    <Routes>
+      <Route
+        path="/edition/tarifs"
+        element={
+          <IndividualOfferContext.Provider value={contextValue}>
+            <PriceCategories />
+          </IndividualOfferContext.Provider>
+        }
+      />
+    </Routes>,
+    { initialRouterEntries: ['/edition/tarifs'] }
   )
 }
 

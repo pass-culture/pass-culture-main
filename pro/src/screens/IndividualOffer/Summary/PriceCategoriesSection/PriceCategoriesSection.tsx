@@ -27,7 +27,8 @@ export const PriceCategoriesSection = ({ offer, canBeDuo }: Props) => {
   const editLink = getIndividualOfferUrl({
     offerId: offer.id,
     step: OFFER_WIZARD_STEP_IDS.TARIFS,
-    mode: OFFER_WIZARD_MODE.EDITION,
+    mode:
+      mode === OFFER_WIZARD_MODE.READ_ONLY ? OFFER_WIZARD_MODE.EDITION : mode,
   })
 
   const logEditEvent = () => {

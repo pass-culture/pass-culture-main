@@ -6,7 +6,7 @@ import {
   Template as WizardTemplate,
 } from 'screens/IndividualOffer'
 
-const PriceCategories = (): JSX.Element | null => {
+export const PriceCategories = (): JSX.Element | null => {
   const { offer } = useIndividualOfferContext()
 
   // Offer might be null: when we submit Informations form, we setOffer with the
@@ -23,5 +23,3 @@ const PriceCategories = (): JSX.Element | null => {
     </WizardTemplate>
   )
 }
-
-export default PriceCategories
