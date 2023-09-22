@@ -21,6 +21,7 @@ REQUEST_BODY = {
     "target": "INDIVIDUAL",
     "venueTypeCode": "MOVIE",
     "webPresence": "https://www.example.com, https://instagram.com/example, https://mastodon.social/@example",
+    "token": "token",
 }
 
 

@@ -15,6 +15,7 @@ export type SaveNewOnboardingDataQueryModel = {
   publicName?: string | null;
   siret: string;
   target: Target;
+  token: string;
   venueTypeCode: string;
   webPresence: string;
 };
