@@ -4,7 +4,7 @@ import {
 } from 'components/IndividualOfferForm'
 import { OffererName } from 'core/Offerers/types'
 import { OfferSubCategory } from 'core/Offers/types'
-import { IndividualOfferVenue } from 'core/Venue/types'
+import { IndividualOfferVenueItem } from 'core/Venue/types'
 
 import buildSubcategoryFields from './buildSubCategoryFields'
 
@@ -12,7 +12,7 @@ const setDefaultInitialFormValues = (
   offererNames: OffererName[],
   offererId: string | null,
   venueId: string | null,
-  venueList: IndividualOfferVenue[],
+  venueList: IndividualOfferVenueItem[],
   isBookingContactEnabled: boolean,
   subcategory?: OfferSubCategory
 ): IndividualOfferFormValues => {

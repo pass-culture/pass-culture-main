@@ -18,10 +18,11 @@ import { Events } from 'core/FirebaseEvents/constants'
 import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { OfferSubCategory } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import { IndividualOfferVenue } from 'core/Venue/types'
+import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as utils from 'screens/IndividualOffer/Informations/utils'
+import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { InformationsProps, Informations as InformationsScreen } from '..'
@@ -151,43 +152,16 @@ describe('screens:IndividualOffer::Informations::creation', () => {
       },
     ]
 
-    const venue: IndividualOfferVenue = {
+    const venue1: IndividualOfferVenueItem = individualOfferVenueItemFactory({
       id: 1,
-      name: 'Lieu offline AA',
-      managingOffererId: 1,
-      isVirtual: false,
-      withdrawalDetails: '',
-      accessibility: {
-        visual: false,
-        mental: false,
-        audio: false,
-        motor: false,
-        none: true,
-      },
-      hasMissingReimbursementPoint: false,
-      hasCreatedOffer: true,
-    }
+    })
+    const venue2: IndividualOfferVenueItem = individualOfferVenueItemFactory({
+      id: 2,
+      isVirtual: true,
+    })
 
     contextOverride = {
-      venueList: [
-        venue,
-        {
-          id: 2,
-          name: 'Lieu online BB',
-          managingOffererId: 1,
-          isVirtual: true,
-          withdrawalDetails: '',
-          accessibility: {
-            visual: false,
-            mental: false,
-            audio: false,
-            motor: false,
-            none: true,
-          },
-          hasMissingReimbursementPoint: false,
-          hasCreatedOffer: true,
-        },
-      ],
+      venueList: [venue1, venue2],
       offererNames: [{ id: offererId, name: 'mon offerer A' }],
       categories,
       subCategories,
@@ -195,7 +169,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
 
     props = {
       offererId: offererId.toString(),
-      venueId: venue.id.toString(),
+      venueId: venue1.id.toString(),
     }
 
     vi.spyOn(api, 'getOffer').mockResolvedValue(
@@ -227,7 +201,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
 
     expect(api.postOffer).toHaveBeenCalledTimes(1)
     expect(api.postOffer).toHaveBeenCalledWith({
-      audioDisabilityCompliant: false,
+      audioDisabilityCompliant: true,
       bookingEmail: null,
       bookingContact: null,
       description: null,
@@ -236,13 +210,13 @@ describe('screens:IndividualOffer::Informations::creation', () => {
       extraData: {},
       isDuo: true,
       isNational: false,
-      mentalDisabilityCompliant: false,
-      motorDisabilityCompliant: false,
+      mentalDisabilityCompliant: true,
+      motorDisabilityCompliant: true,
       name: 'Le nom de mon offre',
       subcategoryId: 'physical',
       url: null,
       venueId: 1,
-      visualDisabilityCompliant: false,
+      visualDisabilityCompliant: true,
       withdrawalDelay: null,
       withdrawalDetails: null,
       withdrawalType: null,
@@ -315,7 +289,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
 
     expect(api.postOffer).toHaveBeenCalledTimes(1)
     expect(api.postOffer).toHaveBeenCalledWith({
-      audioDisabilityCompliant: false,
+      audioDisabilityCompliant: true,
       bookingEmail: null,
       bookingContact: null,
       description: null,
@@ -324,13 +298,13 @@ describe('screens:IndividualOffer::Informations::creation', () => {
       extraData: {},
       isDuo: false,
       isNational: false,
-      mentalDisabilityCompliant: false,
-      motorDisabilityCompliant: false,
+      mentalDisabilityCompliant: true,
+      motorDisabilityCompliant: true,
       name: 'Le nom de mon offre',
       subcategoryId: 'virtual',
       url: 'https://example.com/',
       venueId: 2,
-      visualDisabilityCompliant: false,
+      visualDisabilityCompliant: true,
       withdrawalDelay: null,
       withdrawalDetails: null,
       withdrawalType: null,
@@ -355,7 +329,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
 
     expect(api.postOffer).toHaveBeenCalledTimes(1)
     expect(api.postOffer).toHaveBeenCalledWith({
-      audioDisabilityCompliant: false,
+      audioDisabilityCompliant: true,
       bookingEmail: null,
       bookingContact: null,
       description: null,
@@ -364,13 +338,13 @@ describe('screens:IndividualOffer::Informations::creation', () => {
       extraData: {},
       isDuo: true,
       isNational: false,
-      mentalDisabilityCompliant: false,
-      motorDisabilityCompliant: false,
+      mentalDisabilityCompliant: true,
+      motorDisabilityCompliant: true,
       name: 'Le nom de mon offre',
       subcategoryId: 'physical',
       url: null,
       venueId: 1,
-      visualDisabilityCompliant: false,
+      visualDisabilityCompliant: true,
       withdrawalDelay: null,
       withdrawalDetails: null,
       withdrawalType: null,

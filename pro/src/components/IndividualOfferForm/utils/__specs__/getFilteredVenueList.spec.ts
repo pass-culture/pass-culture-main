@@ -1,6 +1,7 @@
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { OfferSubCategory } from 'core/Offers/types'
+import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
 
 import {
   getFilteredVenueListByCategoryStatus,
@@ -54,56 +55,20 @@ describe('getFilteredVenueList', () => {
     },
   ]
 
-  const virtualVenue = {
+  const virtualVenue = individualOfferVenueItemFactory({
     id: virtualVenueId,
-    name: 'Lieu online CC',
-    managingOffererId: 1,
     isVirtual: true,
-    withdrawalDetails: '',
-    accessibility: {
-      visual: false,
-      mental: false,
-      audio: false,
-      motor: false,
-      none: true,
-    },
-    hasMissingReimbursementPoint: false,
-    hasCreatedOffer: true,
-  }
+  })
 
   const venueList = [
-    {
+    individualOfferVenueItemFactory({
       id: secondVenueId,
-      name: 'Lieu offline AA',
-      managingOffererId: 1,
       isVirtual: false,
-      withdrawalDetails: '',
-      accessibility: {
-        visual: false,
-        mental: false,
-        audio: false,
-        motor: false,
-        none: true,
-      },
-      hasMissingReimbursementPoint: false,
-      hasCreatedOffer: true,
-    },
-    {
+    }),
+    individualOfferVenueItemFactory({
       id: thirdVenueId,
-      name: 'Lieu offline BB',
-      managingOffererId: 1,
       isVirtual: false,
-      withdrawalDetails: '',
-      accessibility: {
-        visual: false,
-        mental: false,
-        audio: false,
-        motor: false,
-        none: true,
-      },
-      hasMissingReimbursementPoint: false,
-      hasCreatedOffer: true,
-    },
+    }),
   ]
 
   describe('getFilteredVenueListBySubcategory', () => {

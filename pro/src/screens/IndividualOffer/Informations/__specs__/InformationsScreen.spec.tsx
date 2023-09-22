@@ -9,8 +9,9 @@ import {
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { OfferSubCategory } from 'core/Offers/types'
-import { IndividualOfferVenue } from 'core/Venue/types'
+import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as utils from 'screens/IndividualOffer/Informations/utils'
+import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { InformationsProps, Informations as InformationsScreen } from '..'
@@ -144,42 +145,11 @@ describe('screens:IndividualOffer::Informations', () => {
 
   describe('when a subCategory is selected', () => {
     beforeEach(async () => {
-      const venue: IndividualOfferVenue = {
-        id: 1,
-        name: 'Lieu offline AA',
-        managingOffererId: 1,
-        isVirtual: false,
-        withdrawalDetails: '',
-        accessibility: {
-          visual: false,
-          mental: false,
-          audio: false,
-          motor: false,
-          none: true,
-        },
-        hasMissingReimbursementPoint: false,
-        hasCreatedOffer: true,
-      }
-      props.venueId = venue.id.toString()
-      contextValue.venueList = [
-        venue,
-        {
-          id: 1,
-          name: 'Lieu offline BB',
-          managingOffererId: 1,
-          isVirtual: false,
-          withdrawalDetails: '',
-          accessibility: {
-            visual: false,
-            mental: false,
-            audio: false,
-            motor: false,
-            none: true,
-          },
-          hasMissingReimbursementPoint: false,
-          hasCreatedOffer: true,
-        },
-      ]
+      const venue1: IndividualOfferVenueItem = individualOfferVenueItemFactory()
+      const venue2: IndividualOfferVenueItem = individualOfferVenueItemFactory()
+
+      props.venueId = venue1.id.toString()
+      contextValue.venueList = [venue1, venue2]
     })
 
     it('should not display the full form when no venue are available', async () => {

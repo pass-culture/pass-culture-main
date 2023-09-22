@@ -13,8 +13,9 @@ import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { OffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { OfferSubCategory } from 'core/Offers/types'
-import { IndividualOfferVenue } from 'core/Venue/types'
+import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { SubmitButton } from 'ui-kit'
+import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import UsefulInformations, {
@@ -32,13 +33,6 @@ const renderUsefulInformations = async ({
   props: UsefulInformationsProps
 }) => {
   const storeOverrides = {
-    user: {
-      initialized: true,
-      currentUser: {
-        isAdmin: false,
-        email: 'email@example.com',
-      },
-    },
     features: {
       list: [{ isActive: true, nameKey: 'WIP_MANDATORY_BOOKING_CONTACT' }],
     },
@@ -57,8 +51,6 @@ const renderUsefulInformations = async ({
     </Formik>,
     { storeOverrides }
   )
-
-  await screen.findByRole('heading', { name: 'Informations pratiques' })
 }
 
 describe('IndividualOffer section: UsefulInformations', () => {
@@ -66,7 +58,7 @@ describe('IndividualOffer section: UsefulInformations', () => {
   let props: UsefulInformationsProps
   const onSubmit = vi.fn()
   const offererId = 1
-  let venueList: IndividualOfferVenue[]
+  let venueList: IndividualOfferVenueItem[]
 
   beforeEach(() => {
     const offererNames: OffererName[] = [
@@ -77,38 +69,12 @@ describe('IndividualOffer section: UsefulInformations', () => {
     ]
 
     venueList = [
-      {
-        id: 1,
-        name: 'Venue AAAA',
-        managingOffererId: 1,
+      individualOfferVenueItemFactory({
         isVirtual: false,
-        withdrawalDetails: '',
-        accessibility: {
-          visual: false,
-          mental: false,
-          audio: false,
-          motor: false,
-          none: true,
-        },
-        hasMissingReimbursementPoint: false,
-        hasCreatedOffer: true,
-      },
-      {
-        id: 2,
-        name: 'Venue BBBB',
-        managingOffererId: 1,
+      }),
+      individualOfferVenueItemFactory({
         isVirtual: true,
-        withdrawalDetails: '',
-        accessibility: {
-          visual: false,
-          mental: false,
-          audio: false,
-          motor: false,
-          none: true,
-        },
-        hasMissingReimbursementPoint: false,
-        hasCreatedOffer: true,
-      },
+      }),
     ]
     initialValues = setDefaultInitialFormValues(
       offererNames,
@@ -170,11 +136,11 @@ describe('IndividualOffer section: UsefulInformations', () => {
       expect.objectContaining({
         bookingContact: 'robertoDu36@example.com',
         accessibility: {
-          audio: false,
-          mental: false,
-          motor: false,
-          none: true,
-          visual: false,
+          audio: true,
+          mental: true,
+          motor: true,
+          none: false,
+          visual: true,
         },
         isVenueVirtual: false,
         offererId: offererId.toString(),
@@ -310,11 +276,11 @@ describe('IndividualOffer section: UsefulInformations', () => {
       expect(onSubmit).toHaveBeenCalledWith(
         expect.objectContaining({
           accessibility: {
-            audio: false,
-            mental: false,
-            motor: false,
-            none: true,
-            visual: false,
+            audio: true,
+            mental: true,
+            motor: true,
+            none: false,
+            visual: true,
           },
           isVenueVirtual: true,
           offererId: offererId.toString(),

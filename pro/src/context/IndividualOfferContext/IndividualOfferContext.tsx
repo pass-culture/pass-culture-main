@@ -9,7 +9,7 @@ import {
   OfferSubCategory,
 } from 'core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { IndividualOfferVenue } from 'core/Venue/types'
+import { IndividualOfferVenueItem } from 'core/Venue/types'
 import useNotification from 'hooks/useNotification'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -24,7 +24,7 @@ export interface IndividualOfferContextValues {
   subcategory?: OfferSubCategory
   setSubcategory: (p?: OfferSubCategory) => void
   offererNames: OffererName[]
-  venueList: IndividualOfferVenue[]
+  venueList: IndividualOfferVenueItem[]
   shouldTrack: boolean
   setShouldTrack: (p: boolean) => void
   venueId?: number | undefined
@@ -80,7 +80,7 @@ export function IndividualOfferContextProvider({
   const [subCategories, setSubCategories] = useState<OfferSubCategory[]>([])
   const [subcategory, setSubcategory] = useState<OfferSubCategory>()
   const [offererNames, setOffererNames] = useState<OffererName[]>([])
-  const [venueList, setVenueList] = useState<IndividualOfferVenue[]>([])
+  const [venueList, setVenueList] = useState<IndividualOfferVenueItem[]>([])
   const [showVenuePopin, setShowVenuePopin] = useState<Record<string, boolean>>(
     {}
   )
