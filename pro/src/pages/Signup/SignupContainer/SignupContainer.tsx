@@ -9,6 +9,7 @@ import useAnalytics from 'hooks/useAnalytics'
 import useLogEventOnUnload from 'hooks/useLogEventOnUnload'
 import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
+import { getReCaptchaToken } from 'utils/recaptcha'
 
 import { SIGNUP_FORM_DEFAULT_VALUES } from './constants'
 import OperatingProcedures from './OperationProcedures'
@@ -22,7 +23,9 @@ const SignupContainer = (): JSX.Element => {
   const { logEvent } = useAnalytics()
   useRedirectLoggedUser()
 
-  const onSubmit = (values: ProUserCreationBodyV2Model) => {
+  const onSubmit = async (values: ProUserCreationBodyV2Model) => {
+    /* istanbul ignore next : ENV dependant */
+    values.token = await getReCaptchaToken('signup')
     api
       .signupProV2({
         ...values,

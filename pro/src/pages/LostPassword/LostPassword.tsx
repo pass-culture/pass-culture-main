@@ -1,16 +1,16 @@
 import { Formik } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import { api } from 'apiClient/api'
 import AppLayout from 'app/AppLayout'
 import SkipLinks from 'components/SkipLinks'
+import useInitReCaptcha from 'hooks/useInitReCaptcha'
 import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import Hero from 'ui-kit/Hero'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
-import { IS_DEV } from 'utils/config'
-import { getReCaptchaToken, initReCaptchaScript } from 'utils/recaptcha'
+import { getReCaptchaToken } from 'utils/recaptcha'
 
 import ChangePasswordRequestForm from './ChangePasswordRequestForm'
 import styles from './LostPassword.module.scss'
@@ -22,21 +22,12 @@ const LostPassword = (): JSX.Element => {
   const [mailSent, setMailSent] = useState(false)
 
   useRedirectLoggedUser()
+  useInitReCaptcha()
 
   const notification = useNotification()
 
-  useEffect(() => {
-    const gcaptchaScript = initReCaptchaScript()
-
-    return function cleanup() {
-      gcaptchaScript.remove()
-    }
-  })
-
   const submitChangePasswordRequest = async (formValues: FormValues) => {
-    const token = !IS_DEV
-      ? await getReCaptchaToken('resetPassword')
-      : 'test_token'
+    const token = await getReCaptchaToken('resetPassword')
 
     try {
       await api.resetPassword({ token, email: formValues.email })

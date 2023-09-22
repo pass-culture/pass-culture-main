@@ -1,15 +1,15 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import AppLayout from 'app/AppLayout'
+import useInitReCaptcha from 'hooks/useInitReCaptcha'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import Hero from 'ui-kit/Hero'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { parse } from 'utils/query-string'
-import { initReCaptchaScript } from 'utils/recaptcha'
 
 import ChangePasswordForm from './ChangePasswordForm/ChangePasswordForm'
 import styles from './ResetPassword.module.scss'
@@ -23,14 +23,7 @@ const ResetPassword = (): JSX.Element => {
   const { token } = parse(search)
 
   useRedirectLoggedUser()
-
-  useEffect(() => {
-    const gcaptchaScript = initReCaptchaScript()
-
-    return function cleanup() {
-      gcaptchaScript.remove()
-    }
-  })
+  useInitReCaptcha()
 
   const submitChangePassword = async (values: Record<string, string>) => {
     const { newPasswordValue } = values

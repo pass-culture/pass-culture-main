@@ -7,6 +7,7 @@ import { api } from 'apiClient/api'
 import { HTTP_STATUS } from 'apiClient/helpers'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
+import * as utils from 'utils/recaptcha'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import SignupContainer from '../SignupContainer'
@@ -248,6 +249,10 @@ describe('Signup', () => {
 
       describe('formValidation', () => {
         it('should enable submit button', async () => {
+          vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
+            remove: vi.fn(),
+          } as unknown as HTMLScriptElement)
+          vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
           renderSignUp({ ...store, features })
           const submitButton = screen.getByRole('button', {
             name: /Créer mon compte/,
@@ -293,6 +298,7 @@ describe('Signup', () => {
             lastName: 'Nom',
             password: 'user@AZERTY123', // NOSONAR
             phoneNumber: '+33722332233',
+            token: 'token',
           })
           await expect(
             screen.findByText("I'm the confirmation page")
@@ -307,6 +313,10 @@ describe('Signup', () => {
       })
 
       it('should show a notification on api call error', async () => {
+        vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
+          remove: vi.fn(),
+        } as unknown as HTMLScriptElement)
+        vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
         vi.spyOn(api, 'signupProV2').mockRejectedValue({
           body: {
             phoneNumber: 'Le téléphone doit faire moins de 20 caractères',

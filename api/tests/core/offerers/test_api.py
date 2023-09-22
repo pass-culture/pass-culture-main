@@ -2198,6 +2198,7 @@ class CreateFromOnboardingDataTest:
             target=offerers_models.Target.INDIVIDUAL,
             venueTypeCode=offerers_models.VenueTypeCode.MOVIE.name,
             webPresence="https://www.example.com, https://instagram.com/example, https://mastodon.social/@example",
+            token="token",
         )
 
     def test_new_siren_new_siret(self):
