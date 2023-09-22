@@ -74,7 +74,7 @@ class CachingUrlFetcher:
 url_cache = CachingUrlFetcher()
 
 
-def generate_pdf_from_html(html_content: str, metadata: PdfMetadata = None) -> bytes:
+def generate_pdf_from_html(html_content: str, metadata: PdfMetadata | None = None) -> bytes:
     document = weasyprint.HTML(string=html_content, url_fetcher=url_cache.fetch_url).render()
     metadata = metadata or PdfMetadata()
     # a W3C date, as expected by Weasyprint

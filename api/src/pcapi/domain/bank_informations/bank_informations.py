@@ -4,13 +4,13 @@ from datetime import datetime
 class BankInformations:
     def __init__(
         self,
-        application_id: str = None,
-        status: str = None,
-        iban: str = None,
-        bic: str = None,
-        offerer_id: int = None,
-        venue_id: int = None,
-        date_modified: datetime = None,
+        application_id: str | None = None,
+        status: str | None = None,
+        iban: str | None = None,
+        bic: str | None = None,
+        offerer_id: int | None = None,
+        venue_id: int | None = None,
+        date_modified: datetime | None = None,
     ):
         self.id = None
         self.application_id = application_id

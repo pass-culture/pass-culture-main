@@ -164,7 +164,7 @@ def format_list_or_str(raw_value: str | Iterable[str]) -> str:
 def _get_attr(
     attributes: attributes_models.UserAttributes | attributes_models.ProAttributes,
     name: str,
-    func: Callable[[Any], Any] = None,
+    func: Callable[[Any], Any] | None = None,
 ) -> Any:
     value = getattr(attributes, name, None)
     if value is not None and func is not None:

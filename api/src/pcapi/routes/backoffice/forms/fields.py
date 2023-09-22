@@ -257,10 +257,10 @@ class PCDateRangeField(wtforms.StringField):
     def __init__(
         self,
         label: str,
-        max_date: datetime.date = None,
+        max_date: datetime.date | None = None,
         reset_to_blank: bool = False,
-        calendar_start_date: datetime.date = None,
-        calendar_end_date: datetime.date = None,
+        calendar_start_date: datetime.date | None = None,
+        calendar_end_date: datetime.date | None = None,
         **kwargs: typing.Any,
     ):
         super().__init__(label, **kwargs)

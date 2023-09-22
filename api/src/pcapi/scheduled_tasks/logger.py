@@ -10,7 +10,7 @@ class CronStatus(Enum):
         return self.value
 
 
-def build_cron_log_message(name: str, status: CronStatus, duration: int = None):  # type: ignore [no-untyped-def]
+def build_cron_log_message(name: str, status: CronStatus, duration: int | None = None):  # type: ignore [no-untyped-def]
     log_message = f"type=cron name={name} status={status}"
 
     if duration:

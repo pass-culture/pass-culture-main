@@ -7,7 +7,7 @@ from pcapi.domain.client_exceptions import ClientError
 class ApiErrors(Exception):
     status_code: int = 400
 
-    def __init__(self, errors: dict = None, status_code: int | None = None):
+    def __init__(self, errors: dict | None = None, status_code: int | None = None):
         self.errors = errors if errors else {}
         if status_code:
             self.status_code = status_code

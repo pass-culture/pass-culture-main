@@ -32,8 +32,8 @@ def get_client():  # type: ignore [no-untyped-def]
 def enqueue_task(
     queue: str,
     http_request: tasks_v2.HttpRequest,
-    task_id: str = None,
-    schedule_time: datetime = None,
+    task_id: str | None = None,
+    schedule_time: datetime | None = None,
     task_request_timeout: int | None = None,
 ) -> str | None:
     client = get_client()

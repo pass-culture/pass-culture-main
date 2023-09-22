@@ -46,7 +46,7 @@ class UnsuspendUserForm(FlaskForm):
     comment = fields.PCOptCommentField("Commentaire interne optionnel")
 
 
-def get_toggle_suspension_args(user: users_models.User, suspension_type: SuspensionUserType = None) -> dict:
+def get_toggle_suspension_args(user: users_models.User, suspension_type: SuspensionUserType | None = None) -> dict:
     """
     Additional arguments which must be passed to render_template when the page may show suspend/unsuspend button.
     """

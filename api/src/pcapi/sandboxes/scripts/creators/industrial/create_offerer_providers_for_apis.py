@@ -24,7 +24,7 @@ def create_offerer_provider(
     name: str,
     isActive: bool = True,
     enabledForPro: bool = True,
-    provider_name: str = None,
+    provider_name: str | None = None,
     with_charlie_url: bool = False,
 ) -> typing.Tuple[offerers_models.Offerer, providers_models.Provider]:
     offerer = offerers_factories.OffererFactory(name=name)

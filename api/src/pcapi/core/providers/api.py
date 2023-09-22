@@ -158,7 +158,7 @@ def update_allocine_venue_provider(
 
 
 def connect_venue_to_provider(
-    venue: offerers_models.Venue, provider: providers_models.Provider, venueIdAtOfferProvider: str = None
+    venue: offerers_models.Venue, provider: providers_models.Provider, venueIdAtOfferProvider: str | None = None
 ) -> providers_models.VenueProvider:
     if provider.hasOffererProvider:
         id_at_provider = None

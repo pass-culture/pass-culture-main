@@ -70,5 +70,5 @@ class ExtendedSpecTree(SpecTree):
 
 
 class ExtendResponse(Response):
-    def generate_spec(self, _naming_strategy: Callable[[Type[BaseModel]], str] = None) -> Dict[str, Any]:
+    def generate_spec(self, _naming_strategy: Callable[[Type[BaseModel]], str] | None = None) -> Dict[str, Any]:
         return super().generate_spec(naming_strategy=get_model_key)

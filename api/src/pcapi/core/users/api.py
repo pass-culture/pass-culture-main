@@ -142,9 +142,9 @@ def create_account(
     is_email_validated: bool = False,
     send_activation_mail: bool = True,
     remote_updates: bool = True,
-    phone_number: str = None,
-    apps_flyer_user_id: str = None,
-    apps_flyer_platform: str = None,
+    phone_number: str | None = None,
+    apps_flyer_user_id: str | None = None,
+    apps_flyer_platform: str | None = None,
 ) -> models.User:
     email = email_utils.sanitize_email(email)
     if users_repository.find_user_by_email(email):
@@ -648,7 +648,7 @@ def add_comment_to_user(user: models.User, author_user: models.User, comment: st
 
 
 def get_domains_credit(
-    user: models.User, user_bookings: list[bookings_models.Booking] = None
+    user: models.User, user_bookings: list[bookings_models.Booking] | None = None
 ) -> models.DomainsCredit | None:
     if not user.deposit:
         return None

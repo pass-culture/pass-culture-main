@@ -228,7 +228,7 @@ class SeatCDS:
         seat_location_indices: tuple[int, int],
         screen_infos: ScreenCDS,
         seat_map: SeatmapCDS,
-        hardcoded_seatmap: str = None,
+        hardcoded_seatmap: str | None = None,
     ):
         self.seatRow = seat_location_indices[0]
         self.seatCol = seat_location_indices[1]

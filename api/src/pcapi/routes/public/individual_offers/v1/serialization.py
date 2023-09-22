@@ -477,7 +477,7 @@ class ProductsOfferByEanCreation(serialization.ConfiguredBaseModel):
 
 
 class DecimalPriceGetterDict(GetterDict):
-    def get(self, key: str, default: typing.Any = None) -> typing.Any:
+    def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
         if key == "price" and isinstance(self._obj.price, decimal.Decimal):
             return finance_utils.to_eurocents(self._obj.price)
         return super().get(key, default)

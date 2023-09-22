@@ -28,7 +28,7 @@ low_queue = Queue("low", connection=conn, default_timeout=3600, is_async=(not se
 logger = logging.getLogger(__name__)
 
 
-def log_worker_error(job: Job, exception_type: Type, exception_value: Exception, traceback: Any = None) -> None:
+def log_worker_error(job: Job, exception_type: Type, exception_value: Exception, traceback: Any | None = None) -> None:
     # This handler is called by `rq.Worker.handle_exception()` from an
     # `except` clause, so we can (and should) use `logger.exception`.
     logger.exception(

@@ -32,7 +32,7 @@ def track_ubble_error_event(user_id: int, error_codes: list[fraud_models.FraudRe
 def track_dms_error_event(
     user_id: int,
     error_codes: list[fraud_models.FraudReasonCode],
-    field_errors: list[fraud_models.DmsFieldErrorDetails] = None,
+    field_errors: list[fraud_models.DmsFieldErrorDetails] | None = None,
 ) -> None:
     event_properties = (
         {"field_errors": [{"key": field_error.key.value, "value": field_error.value} for field_error in field_errors]}

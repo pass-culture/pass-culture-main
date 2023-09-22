@@ -167,7 +167,7 @@ def find_expiring_individual_bookings_query() -> BaseQuery:
     )
 
 
-def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: date = None) -> BaseQuery:
+def find_soon_to_be_expiring_individual_bookings_ordered_by_user(given_date: date | None = None) -> BaseQuery:
     given_date = given_date or date.today()
     books_expiring_date = datetime.combine(given_date, time(0, 0)) + constants.BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY
     other_expiring_date = datetime.combine(given_date, time(0, 0)) + constants.BOOKINGS_EXPIRY_NOTIFICATION_DELAY
@@ -208,7 +208,7 @@ def generate_booking_token() -> str:
     raise ValueError("Could not generate new booking token")
 
 
-def find_user_ids_with_expired_individual_bookings(expired_on: date = None) -> List[int]:
+def find_user_ids_with_expired_individual_bookings(expired_on: date | None = None) -> List[int]:
     expired_on = expired_on or date.today()
     return [
         user_id
@@ -226,7 +226,7 @@ def find_user_ids_with_expired_individual_bookings(expired_on: date = None) -> L
     ]
 
 
-def get_expired_individual_bookings_for_user(user: User, expired_on: date = None) -> list[Booking]:
+def get_expired_individual_bookings_for_user(user: User, expired_on: date | None = None) -> list[Booking]:
     expired_on = expired_on or date.today()
     return Booking.query.filter(
         Booking.user == user,
@@ -237,7 +237,7 @@ def get_expired_individual_bookings_for_user(user: User, expired_on: date = None
     ).all()
 
 
-def find_expired_individual_bookings_ordered_by_offerer(expired_on: date = None) -> list[Booking]:
+def find_expired_individual_bookings_ordered_by_offerer(expired_on: date | None = None) -> list[Booking]:
     expired_on = expired_on or date.today()
     return (
         Booking.query.filter(Booking.status == BookingStatus.CANCELLED)

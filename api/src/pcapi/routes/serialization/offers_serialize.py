@@ -26,7 +26,7 @@ from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 
 
 class SubcategoryGetterDict(GetterDict):
-    def get(self, key: str, default: Any = None) -> Any:
+    def get(self, key: str, default: Any | None = None) -> Any:
         if key == "conditional_fields":
             return list(self._obj.conditional_fields.keys())
         return super().get(key, default)
