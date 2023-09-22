@@ -13,6 +13,7 @@ export enum StocksEventListSortingColumn {
   HOUR = 'HOUR',
   PRICE_CATEGORY = 'PRICE_CATEGORY',
   BOOKING_LIMIT_DATETIME = 'BOOKING_LIMIT_DATETIME',
+  BOOKINGS_QUANTITY = 'BOOKINGS_QUANTITY',
   QUANTITY = 'QUANTITY',
 }
 
@@ -120,6 +121,9 @@ export const filterAndSortStocks = (
       )
     case StocksEventListSortingColumn.QUANTITY:
       return sortColumnByNumber(filteredStocks, 'quantity', sortingMode)
+
+    case StocksEventListSortingColumn.BOOKINGS_QUANTITY:
+      return sortColumnByNumber(filteredStocks, 'bookingsQuantity', sortingMode)
 
     default:
       throw new Error('Unknown sorting column')

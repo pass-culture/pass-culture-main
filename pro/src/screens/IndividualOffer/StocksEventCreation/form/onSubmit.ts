@@ -165,6 +165,7 @@ const generateStocksForDates = (
               days: bookingLimitDateInterval,
             })
           ),
+          bookingsQuantity: 0,
           uuid: uuidv4(),
         }
       })

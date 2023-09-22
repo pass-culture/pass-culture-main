@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { api } from 'apiClient/api'
 import { PriceCategoryResponseModel } from 'apiClient/v1'
 import DialogBox from 'components/DialogBox'
-import FormLayout, { FormLayoutDescription } from 'components/FormLayout'
+import FormLayout from 'components/FormLayout'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
@@ -36,6 +36,7 @@ import { getSuccessMessage } from '../utils'
 
 import { upsertStocksEventAdapter } from './adapters'
 import { serializeStockEventEdition } from './adapters/serializers'
+import { EventCancellationBanner } from './EventCancellationBanner'
 import {
   buildInitialValues,
   getValidationSchema,
@@ -152,19 +153,6 @@ const StocksEventEdition = ({
   const [showStocksEventConfirmModal, setShowStocksEventConfirmModal] =
     useState(false)
   const priceCategoriesOptions = getPriceCategoryOptions(offer.priceCategories)
-  let description
-  let links
-
-  if (!isOfferDisabled(offer.status)) {
-    description =
-      'Les bénéficiaires ont 48h pour annuler leur réservation. Ils ne peuvent pas le faire à moins de 48h de l’évènement. \n Vous pouvez annuler un évènement en supprimant la ligne de stock associée. Cette action est irréversible.'
-    links = [
-      {
-        href: 'https://aide.passculture.app/hc/fr/articles/4411992053649--Acteurs-Culturels-Comment-annuler-ou-reporter-un-%C3%A9v%C3%A9nement-',
-        linkTitle: 'Comment reporter ou annuler un évènement ?',
-      },
-    ]
-  }
 
   const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
   const onCancel = () => setIsRecurrenceModalOpen(false)
@@ -445,11 +433,7 @@ const StocksEventEdition = ({
       <FormLayout>
         <div aria-current="page">
           <form onSubmit={formik.handleSubmit} data-testid="stock-event-form">
-            <FormLayoutDescription
-              description={description}
-              links={links}
-              isBanner
-            />
+            <EventCancellationBanner offer={offer} />
 
             <div className={styles['add-dates-button']}>
               <Button
