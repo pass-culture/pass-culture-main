@@ -11,11 +11,6 @@ import { StockFormActions } from 'components/StockFormActions'
 import { StockFormRowAction } from 'components/StockFormActions/types'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import {
-  Events,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-  OFFER_FORM_NAVIGATION_OUT,
-} from 'core/FirebaseEvents/constants'
-import {
   getIndividualOfferAdapter,
   updateIndividualOffer,
 } from 'core/Offers/adapters'
@@ -28,7 +23,6 @@ import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from 'core/Offers/utils/isOfferDisabled'
 import { useOfferWizardMode } from 'hooks'
-import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullCodeIcon from 'icons/full-code.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -41,7 +35,6 @@ import { ActionBar } from '../ActionBar'
 import { DialogStockThingDeleteConfirm } from '../DialogStockDeleteConfirm'
 import { useNotifyFormError } from '../hooks'
 import { getSuccessMessage } from '../utils'
-import { logTo } from '../utils/logTo'
 
 import { ActivationCodeFormDialog } from './ActivationCodeFormDialog'
 import { upsertStocksThingAdapter } from './adapters'
@@ -75,11 +68,9 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
     useState<boolean>(false)
   const [isSubmittingDraft, setIsSubmittingDraft] = useState<boolean>(false)
-  const { logEvent } = useAnalytics()
   const navigate = useNavigate()
   const notify = useNotification()
-  const { setOffer, shouldTrack, setShouldTrack, subCategories } =
-    useIndividualOfferContext()
+  const { setOffer, subCategories } = useIndividualOfferContext()
 
   const canBeDuo = subCategories.find(
     subCategory => subCategory.id === offer.subcategoryId
@@ -124,20 +115,6 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       if (isSubmittingDraft || mode === OFFER_WIZARD_MODE.EDITION) {
         notify.success(message)
       }
-      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OFFER_WIZARD_STEP_IDS.STOCKS,
-        to: isSubmittingDraft
-          ? OFFER_WIZARD_STEP_IDS.STOCKS
-          : OFFER_WIZARD_STEP_IDS.SUMMARY,
-        used: isSubmittingDraft
-          ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
-          : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft:
-          mode === OFFER_WIZARD_MODE.CREATION ||
-          mode === OFFER_WIZARD_MODE.DRAFT,
-        offerId: offer.id,
-      })
     } else {
       /* istanbul ignore next: DEBT, TO FIX */
       formik.setErrors(payload.errors)
@@ -162,11 +139,6 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
     onSubmit,
     validationSchema: getValidationSchema(minQuantity),
   })
-
-  useEffect(() => {
-    // when form is dirty it's tracked by RouteLeavingGuard
-    setShouldTrack(!formik.dirty)
-  }, [formik.dirty])
 
   const isFormEmpty = () => {
     return formik.values === STOCK_THING_FORM_DEFAULT_VALUES
@@ -238,18 +210,6 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   }, [formik.isValid])
 
   const handlePreviousStep = () => {
-    if (!formik.dirty) {
-      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OFFER_WIZARD_STEP_IDS.STOCKS,
-        to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft:
-          mode === OFFER_WIZARD_MODE.CREATION ||
-          mode === OFFER_WIZARD_MODE.DRAFT,
-        offerId: offer.id,
-      })
-    }
     /* istanbul ignore next: DEBT, TO FIX */
     navigate(
       getIndividualOfferUrl({
@@ -513,8 +473,6 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
               onClickSaveDraft={handleNextStep({ saveDraft: true })}
               step={OFFER_WIZARD_STEP_IDS.STOCKS}
               isDisabled={formik.isSubmitting || isDisabled}
-              offerId={offer.id}
-              shouldTrack={shouldTrack}
               submitAsButton={isFormEmpty()}
             />
           </form>
@@ -548,18 +506,6 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       )}
       <RouteLeavingGuardIndividualOffer
         when={formik.dirty && !isClickingFromActionBar}
-        tracking={nextLocation =>
-          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-            from: OFFER_WIZARD_STEP_IDS.STOCKS,
-            to: logTo(nextLocation),
-            used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
-            isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-            isDraft:
-              mode === OFFER_WIZARD_MODE.CREATION ||
-              mode === OFFER_WIZARD_MODE.DRAFT,
-            offerId: offer?.id,
-          })
-        }
         isEdition={mode === OFFER_WIZARD_MODE.EDITION}
       />
     </FormikProvider>

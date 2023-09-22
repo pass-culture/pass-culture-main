@@ -11,15 +11,12 @@ import {
   IndividualOfferContextValues,
   IndividualOfferContext,
 } from 'context/IndividualOfferContext'
-import { Events } from 'core/FirebaseEvents/constants'
 import { IndividualOffer } from 'core/Offers/types'
-import * as useAnalytics from 'hooks/useAnalytics'
 import { RootState } from 'store/reducers'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Confirmation from '../Confirmation'
 
-const mockLogEvent = vi.fn()
 window.open = vi.fn()
 
 vi.mock('utils/config', async () => {
@@ -106,10 +103,6 @@ describe('Confirmation', () => {
     contextOverride = {
       offer: offer,
     }
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-      logEvent: mockLogEvent,
-      setLogEvent: null,
-    }))
     vi.spyOn(api, 'getOffer').mockResolvedValue(
       {} as GetIndividualOfferResponseModel
     )
@@ -160,18 +153,6 @@ describe('Confirmation', () => {
           selector: 'a',
         })
       )
-
-      expect(mockLogEvent).toHaveBeenCalledTimes(1)
-      expect(mockLogEvent).toHaveBeenNthCalledWith(
-        1,
-        Events.CLICKED_OFFER_FORM_NAVIGATION,
-        {
-          from: 'confirmation',
-          isEdition: false,
-          to: 'AppPreview',
-          used: 'ConfirmationPreview',
-        }
-      )
     })
 
     it('should track when clicking on create new offer', async () => {
@@ -182,18 +163,6 @@ describe('Confirmation', () => {
           selector: 'a',
         })
       )
-
-      expect(mockLogEvent).toHaveBeenCalledTimes(1)
-      expect(mockLogEvent).toHaveBeenNthCalledWith(
-        1,
-        Events.CLICKED_OFFER_FORM_NAVIGATION,
-        {
-          from: 'confirmation',
-          isEdition: false,
-          to: 'OfferFormHomepage',
-          used: 'ConfirmationButtonNewOffer',
-        }
-      )
     })
 
     it('should track when clicking on see offers list', async () => {
@@ -203,18 +172,6 @@ describe('Confirmation', () => {
         screen.getByText('Voir la liste des offres', {
           selector: 'a',
         })
-      )
-
-      expect(mockLogEvent).toHaveBeenCalledTimes(1)
-      expect(mockLogEvent).toHaveBeenNthCalledWith(
-        1,
-        Events.CLICKED_OFFER_FORM_NAVIGATION,
-        {
-          from: 'confirmation',
-          isEdition: false,
-          to: 'Offers',
-          used: 'ConfirmationButtonOfferList',
-        }
       )
     })
   })

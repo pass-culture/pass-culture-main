@@ -2,8 +2,6 @@ import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
-import { Events } from 'core/FirebaseEvents/constants'
-import * as useAnalytics from 'hooks/useAnalytics'
 import {
   individualStockEventListFactory,
   priceCategoryFactory,
@@ -14,8 +12,6 @@ import StocksEventList, {
   STOCKS_PER_PAGE,
   StocksEventListProps,
 } from '../StocksEventList'
-
-const mockLogEvent = vi.fn()
 
 const mockSetSotcks = vi.fn()
 
@@ -36,13 +32,6 @@ const renderStocksEventList = (props: Partial<StocksEventListProps>) => {
 }
 
 describe('StocksEventList', () => {
-  beforeEach(() => {
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-      logEvent: mockLogEvent,
-      setLogEvent: null,
-    }))
-  })
-
   it('should render a table with header and data', () => {
     renderStocksEventList({
       stocks: [individualStockEventListFactory({ priceCategoryId: 1 })],
@@ -285,20 +274,6 @@ describe('StocksEventList', () => {
     expect(mockSetSotcks).toHaveBeenNthCalledWith(1, [])
 
     expect(screen.queryByText('2 dates sélectionnées')).not.toBeInTheDocument()
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'stocks',
-        deletionCount: '2',
-        isDraft: false,
-        isEdition: true,
-        offerId: 1,
-        used: 'StockEventBulkDelete',
-        to: 'stocks',
-      }
-    )
   })
 
   // test added because pagination has created a bug
@@ -381,19 +356,6 @@ describe('StocksEventList', () => {
         uuid: expect.any(String),
       },
     ])
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'stocks',
-        isDraft: false,
-        isEdition: true,
-        offerId: 1,
-        used: 'StockEventDelete',
-        to: 'stocks',
-      }
-    )
   })
 
   // test added because pagination has created a bug

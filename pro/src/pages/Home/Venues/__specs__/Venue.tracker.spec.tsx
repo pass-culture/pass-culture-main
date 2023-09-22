@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import { Events, VenueEvents } from 'core/FirebaseEvents/constants'
+import { VenueEvents } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
@@ -79,19 +79,6 @@ describe('venue create offer link', () => {
     await userEvent.click(
       screen.getByRole('link', { name: 'Créer une nouvelle offre numérique' })
     )
-
-    // Then
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'Home',
-        isEdition: false,
-        to: 'OfferFormHomepage',
-        used: 'HomeVirtualLink',
-      }
-    )
   })
 
   it('should track with physical param', async () => {
@@ -104,19 +91,6 @@ describe('venue create offer link', () => {
 
     await userEvent.click(
       screen.getByRole('link', { name: 'Créer une nouvelle offre' })
-    )
-
-    // Then
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'Home',
-        isEdition: false,
-        to: 'OfferFormHomepage',
-        used: 'HomeLink',
-      }
     )
   })
 

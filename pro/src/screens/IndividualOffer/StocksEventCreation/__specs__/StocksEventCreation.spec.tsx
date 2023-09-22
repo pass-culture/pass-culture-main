@@ -9,7 +9,6 @@ import { api } from 'apiClient/api'
 import { GetIndividualOfferResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import Notification from 'components/Notification/Notification'
-import { Events } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOfferStock } from 'core/Offers/types'
 import {
@@ -243,19 +242,6 @@ describe('navigation and submit', () => {
 
     await userEvent.click(screen.getByText('Étape précédente'))
 
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'stocks',
-        isDraft: true,
-        isEdition: false,
-        offerId: offer.id,
-        to: 'tarifs',
-        used: 'StickyButtons',
-      }
-    )
     expect(screen.getByText('Previous page')).toBeInTheDocument()
   })
 
@@ -276,19 +262,6 @@ describe('navigation and submit', () => {
       expect(screen.getByText('Next page')).toBeInTheDocument()
     })
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'stocks',
-        isDraft: true,
-        isEdition: false,
-        offerId: offer.id,
-        to: 'recapitulatif',
-        used: 'StickyButtons',
-      }
-    )
   })
 
   it('should trigger a warning when too many stocks are created', async () => {
@@ -334,19 +307,6 @@ describe('navigation and submit', () => {
       screen.getByText('Ajouter une ou plusieurs dates')
     ).toBeInTheDocument()
     expect(api.upsertStocks).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'stocks',
-        isDraft: true,
-        isEdition: false,
-        offerId: offer.id,
-        to: 'stocks',
-        used: 'DraftButtons',
-      }
-    )
   })
 
   it('should notify when an error occur', async () => {
@@ -396,20 +356,6 @@ describe('navigation and submit', () => {
     expect(api.upsertStocks).not.toHaveBeenCalled()
 
     await userEvent.click(screen.getByText('Quitter la page'))
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'stocks',
-        isDraft: true,
-        isEdition: false,
-        offerId: offer.id,
-        to: '/outside',
-        used: 'RouteLeavingGuard',
-      }
-    )
   })
 })
 
