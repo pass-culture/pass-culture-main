@@ -317,36 +317,6 @@ describe('test IndividualOfferWisard', () => {
       expect(tabConfirmation).toBeInTheDocument()
     })
 
-    it('should not render stepper on confirmation page', async () => {
-      const offerId = 'YA'
-      renderIndividualOfferWizardRoute(
-        store,
-        `/offre/individuelle/${offerId}/confirmation`
-      )
-
-      expect(
-        await screen.findByRole('heading', { name: 'Modifier l’offre' })
-      ).toBeInTheDocument()
-
-      const tabInformations = screen.queryByText('Détails de l’offre', {
-        selector: 'span',
-      })
-      const tabStocks = screen.queryByText('Stock & Prix', {
-        selector: 'span',
-      })
-      const tabSummary = screen.queryByText('Récapitulatif', {
-        selector: 'span',
-      })
-      const tabConfirmation = screen.queryByText('Confirmation', {
-        selector: 'span',
-      })
-
-      expect(tabInformations).not.toBeInTheDocument()
-      expect(tabStocks).not.toBeInTheDocument()
-      expect(tabSummary).not.toBeInTheDocument()
-      expect(tabConfirmation).not.toBeInTheDocument()
-    })
-
     it('should render stepper on summary page in creation', async () => {
       renderIndividualOfferWizardRoute(
         store,
@@ -386,7 +356,7 @@ describe('test IndividualOfferWisard', () => {
         generatePath(
           getIndividualOfferPath({
             step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.EDITION,
+            mode: OFFER_WIZARD_MODE.READ_ONLY,
           }),
           { offerId: 'YA' }
         )

@@ -17,7 +17,7 @@ import {
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import PriceCategories, { PriceCategoriesProps } from '../PriceCategories'
+import { PriceCategories, PriceCategoriesProps } from '../PriceCategories'
 
 const renderPriceCategories = (
   props: PriceCategoriesProps,

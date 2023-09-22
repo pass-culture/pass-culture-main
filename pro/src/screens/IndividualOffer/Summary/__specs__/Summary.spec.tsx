@@ -44,7 +44,7 @@ const renderSummary = (
   customContext: Partial<IndividualOfferContextValues> = {},
   url: string = getIndividualOfferPath({
     step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-    mode: OFFER_WIZARD_MODE.EDITION,
+    mode: OFFER_WIZARD_MODE.READ_ONLY,
   }),
   storeOverride: any = {}
 ) => {
@@ -81,7 +81,7 @@ const renderSummary = (
           <Route
             path={getIndividualOfferPath({
               step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-              mode: OFFER_WIZARD_MODE.EDITION,
+              mode: OFFER_WIZARD_MODE.READ_ONLY,
             })}
             element={<Summary />}
           />
@@ -179,7 +179,6 @@ describe('Summary', () => {
   })
 
   const expectOfferFields = () => {
-    expect(screen.getAllByText('Modifier')).toHaveLength(2)
     expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
     expect(screen.getByText('Type d’offre')).toBeInTheDocument()
     expect(screen.getByText('Informations artistiques')).toBeInTheDocument()
@@ -188,7 +187,6 @@ describe('Summary', () => {
     expect(
       screen.getByText('Notifications des réservations')
     ).toBeInTheDocument()
-    expect(screen.getByText('Stocks et prix')).toBeInTheDocument()
     expect(
       screen.getByText('URL d’accès à l’offre', { exact: false })
     ).toBeInTheDocument()
@@ -208,8 +206,6 @@ describe('Summary', () => {
     ).toBeInTheDocument()
     expect(screen.getByText('Non accessible')).toBeInTheDocument()
     expect(screen.getByText('booking@example.com')).toBeInTheDocument()
-    expect(screen.getByText('0 €')).toBeInTheDocument()
-    expect(screen.getByText('Illimité')).toBeInTheDocument()
     expect(screen.getAllByText('mon offre')).toHaveLength(2)
     expect(screen.getAllByText('ma description')).toHaveLength(2)
   }

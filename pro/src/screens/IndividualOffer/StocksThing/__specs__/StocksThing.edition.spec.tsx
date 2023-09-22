@@ -60,8 +60,8 @@ const renderStockThingScreen = (storeOverrides: Partial<RootState> = {}) =>
         />
         <Route
           path={getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.EDITION,
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.READ_ONLY,
           })}
           element={<div>Next page</div>}
         />
@@ -315,7 +315,6 @@ describe('screens:StocksThing', () => {
       screen.getByText('Vos modifications ont bien été enregistrées')
     ).toBeInTheDocument()
     expect(screen.queryByTestId('stock-thing-form')).not.toBeInTheDocument()
-
     expect(screen.getByText(/Next page/)).toBeInTheDocument()
   })
 
@@ -338,6 +337,7 @@ describe('screens:StocksThing', () => {
     expect(api.deleteStock).not.toHaveBeenCalled()
     expect(api.deleteStock).toHaveBeenCalledTimes(0)
   })
+
   it('should display draft success message on save button when stock form is empty and redirect to next page', async () => {
     renderStockThingScreen(storeOverride)
     apiOffer.stocks = []
