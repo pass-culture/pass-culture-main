@@ -103,7 +103,20 @@ vi.mock('react-instantsearch-dom', async () => {
   }
 })
 
-const renderAutocomplete = ({ initialQuery }: { initialQuery: string }) => {
+const renderAutocomplete = ({
+  initialQuery,
+  featuresOverride = null,
+}: {
+  initialQuery: string
+  featuresOverride?: { nameKey: string; isActive: boolean }[] | null
+}) => {
+  const storeOverrides = {
+    features: {
+      list: featuresOverride,
+      initialized: true,
+    },
+  }
+
   return renderWithProviders(
     <AdageUserContext.Provider value={{ adageUser: defaultAdageUser }}>
       <div>
@@ -117,7 +130,8 @@ const renderAutocomplete = ({ initialQuery }: { initialQuery: string }) => {
         />
         <a href="#">Second element</a>
       </div>
-    </AdageUserContext.Provider>
+    </AdageUserContext.Provider>,
+    { storeOverrides }
   )
 }
 
@@ -135,7 +149,13 @@ describe('Autocomplete', () => {
   })
 
   it('should close autocomplete panel when escape key pressed  ', async () => {
-    renderAutocomplete({ initialQuery: '' })
+    const featuresOverride = [
+      {
+        nameKey: 'WIP_ENABLE_SEARCH_HISTORY_ADAGE',
+        isActive: true,
+      },
+    ]
+    renderAutocomplete({ initialQuery: '', featuresOverride })
 
     const inputElement = screen.getByPlaceholderText(
       'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
@@ -155,7 +175,13 @@ describe('Autocomplete', () => {
   })
 
   it('should close autocomplete panel when focus outside form ', async () => {
-    renderAutocomplete({ initialQuery: '' })
+    const featuresOverride = [
+      {
+        nameKey: 'WIP_ENABLE_SEARCH_HISTORY_ADAGE',
+        isActive: true,
+      },
+    ]
+    renderAutocomplete({ initialQuery: '', featuresOverride })
 
     const inputElement = screen.getByPlaceholderText(
       'Rechercher par mot-clé, par partenaire culturel, par nom d’offre...'
@@ -212,8 +238,16 @@ describe('Autocomplete', () => {
   })
 
   it('should clear recent search when clear button is clicked', async () => {
+    const featuresOverride = [
+      {
+        nameKey: 'WIP_ENABLE_SEARCH_HISTORY_ADAGE',
+        isActive: true,
+      },
+    ]
+
     renderAutocomplete({
       initialQuery: '',
+      featuresOverride,
     })
 
     const inputElement = screen.getByPlaceholderText(
@@ -233,8 +267,16 @@ describe('Autocomplete', () => {
   })
 
   it('should display venue suggestion when user start to type', async () => {
+    const featuresOverride = [
+      {
+        nameKey: 'WIP_ENABLE_SEARCH_HISTORY_ADAGE',
+        isActive: true,
+      },
+    ]
+
     renderAutocomplete({
       initialQuery: '',
+      featuresOverride,
     })
 
     const inputElement = screen.getByPlaceholderText(
@@ -249,11 +291,19 @@ describe('Autocomplete', () => {
   })
 
   it('should display word suggestion when user start to type', async () => {
+    const featuresOverride = [
+      {
+        nameKey: 'WIP_ENABLE_SEARCH_HISTORY_ADAGE',
+        isActive: true,
+      },
+    ]
+
     mockGetItems = vi.fn(() => mockKeywordSuggestions)
     mockSourceId = 'KeywordQuerySuggestionsSource'
 
     renderAutocomplete({
       initialQuery: '',
+      featuresOverride,
     })
 
     const inputElement = screen.getByPlaceholderText(

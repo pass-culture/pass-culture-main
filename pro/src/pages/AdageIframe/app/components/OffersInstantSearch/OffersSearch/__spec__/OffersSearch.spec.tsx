@@ -13,6 +13,64 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OffersSearch, SearchProps } from '../OffersSearch'
 
+interface getItems {
+  objectID: string
+  query: string
+  popularity: number
+  nb_words: number
+}
+
+const mockVenueSuggestions = [
+  {
+    objectID: '1',
+    query: '',
+    popularity: 1,
+    nb_words: 1,
+    label: 'Mock Venue 1',
+    venue: {
+      name: 'Mock Venue 1',
+      publicName: 'Mock Venue 1',
+    },
+    offerer: {
+      name: 'Mock Offerer 1',
+    },
+  },
+  {
+    objectID: '2',
+    query: '',
+    popularity: 1,
+    nb_words: 1,
+    label: 'Mock Venue 2',
+    venue: {
+      name: 'Mock Venue 2',
+      publicName: 'Mock Venue 2',
+    },
+    offerer: {
+      name: 'Mock Offerer 2',
+    },
+  },
+]
+
+const mockGetItems = vi.fn((): Array<getItems> => mockVenueSuggestions)
+const mockSourceId = 'VenueSuggestionsSource'
+
+vi.mock('@algolia/autocomplete-plugin-query-suggestions', () => {
+  return {
+    ...vi.importActual('@algolia/autocomplete-plugin-query-suggestions'),
+    createQuerySuggestionsPlugin: vi.fn(() => {
+      return {
+        name: 'querySuggestionName',
+        getSources: () => [
+          {
+            sourceId: mockSourceId,
+            getItems: mockGetItems,
+          },
+        ],
+      }
+    }),
+  }
+})
+
 vi.mock('../Offers/Offers', () => {
   return {
     Offers: vi.fn(() => <div />),
