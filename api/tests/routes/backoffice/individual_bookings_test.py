@@ -348,21 +348,33 @@ class ListIndividualBookingsTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert set(row["Contremarque"] for row in rows) == {"CNCL02", "ELBEIT"}
 
-    def test_list_bookings_by_event_date(self, authenticated_client, bookings):
+    @pytest.mark.parametrize(
+        "from_date, to_date, expected_tokens",
+        [
+            ((datetime.date.today() + datetime.timedelta(days=12)).isoformat(), None, {"REIMB3"}),
+            (None, (datetime.date.today() + datetime.timedelta(days=12)).isoformat(), {"CNCL02", "REIMB3"}),
+            (
+                (datetime.date.today() + datetime.timedelta(days=12)).isoformat(),
+                (datetime.date.today() + datetime.timedelta(days=12)).isoformat(),
+                {"REIMB3"},
+            ),
+        ],
+    )
+    def test_list_bookings_by_event_date(self, authenticated_client, bookings, from_date, to_date, expected_tokens):
         # when
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(
                     self.endpoint,
-                    event_from_date=(datetime.date.today() + datetime.timedelta(days=12)).isoformat(),
-                    event_to_date=(datetime.date.today() + datetime.timedelta(days=12)).isoformat(),
+                    event_from_date=from_date,
+                    event_to_date=to_date,
                 )
             )
 
         # then
         assert response.status_code == 200
         rows = html_parser.extract_table_rows(response.data)
-        assert set(row["Contremarque"] for row in rows) == {"REIMB3"}
+        assert set(row["Contremarque"] for row in rows) == expected_tokens
 
     def test_list_bookings_by_offerer(self, authenticated_client, bookings):
         # when
