@@ -18,7 +18,7 @@ class ExternalApiBookingNotificationTaskPayload(BaseModel):
 @task(settings.GCP_EXTERNAL_API_BOOKING_NOTIFICATION_QUEUE_NAME, "/external_api/booking_notification")
 def external_api_booking_notification_task(payload: ExternalApiBookingNotificationTaskPayload) -> None:
     try:
-        response = requests.post(payload.notificationUrl, json=payload.data)
+        response = requests.post(payload.notificationUrl, json=payload.data.json())
         response.raise_for_status()
     except requests.exceptions.RequestException as exception:
         logger.warning(
