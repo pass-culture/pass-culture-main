@@ -18,8 +18,9 @@ import {
   IndividualOffer,
   OfferSubCategory,
 } from 'core/Offers/types'
-import { IndividualOfferVenue } from 'core/Venue/types'
+import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { SubmitButton } from 'ui-kit'
+import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -84,7 +85,7 @@ describe('IndividualOfferForm', () => {
   let categories: OfferCategory[] = []
   let subCategories: OfferSubCategory[] = []
   let offererNames: OffererName[]
-  let venueList: IndividualOfferVenue[]
+  let venueList: IndividualOfferVenueItem[]
   const offererId = 2
   const physicalVenueId = 1
   const virtualVenueId = 2
@@ -142,38 +143,14 @@ describe('IndividualOfferForm', () => {
       },
     ]
     venueList = [
-      {
+      individualOfferVenueItemFactory({
         id: physicalVenueId,
-        name: 'Venue AAAA',
-        managingOffererId: 1,
         isVirtual: false,
-        withdrawalDetails: '',
-        accessibility: {
-          visual: false,
-          mental: false,
-          audio: false,
-          motor: false,
-          none: true,
-        },
-        hasMissingReimbursementPoint: false,
-        hasCreatedOffer: true,
-      },
-      {
+      }),
+      individualOfferVenueItemFactory({
         id: virtualVenueId,
-        name: 'Venue AAAA',
-        managingOffererId: 1,
         isVirtual: true,
-        withdrawalDetails: '',
-        accessibility: {
-          visual: false,
-          mental: false,
-          audio: false,
-          motor: false,
-          none: true,
-        },
-        hasMissingReimbursementPoint: false,
-        hasCreatedOffer: true,
-      },
+      }),
     ]
     props = {
       categories,
@@ -251,11 +228,11 @@ describe('IndividualOfferForm', () => {
     expect(onSubmit).toHaveBeenCalledWith(
       {
         accessibility: {
-          audio: false,
-          mental: false,
-          motor: false,
-          none: true,
-          visual: false,
+          audio: true,
+          mental: true,
+          motor: true,
+          none: false,
+          visual: true,
         },
         author: '',
         bookingEmail: '',
@@ -321,11 +298,11 @@ describe('IndividualOfferForm', () => {
     expect(onSubmit).toHaveBeenCalledWith(
       {
         accessibility: {
-          audio: false,
-          mental: false,
-          motor: false,
-          none: true,
-          visual: false,
+          audio: true,
+          mental: true,
+          motor: true,
+          none: false,
+          visual: true,
         },
         author: '',
         bookingEmail: '',

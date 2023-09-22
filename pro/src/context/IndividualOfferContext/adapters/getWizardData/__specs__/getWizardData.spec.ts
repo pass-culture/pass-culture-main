@@ -2,30 +2,27 @@ import { api } from 'apiClient/api'
 import { VenueListItemResponseModel } from 'apiClient/v1'
 import {
   individualOfferCategoryFactory,
+  individualOfferGetVenuesFactory,
   individualOfferSubCategoryResponseModelFactory,
 } from 'utils/individualApiFactories'
 
 import getWizardData from '../getWizardData'
 
-const venue1: VenueListItemResponseModel = {
-  hasCreatedOffer: true,
-  hasMissingReimbursementPoint: false,
+const venue1: VenueListItemResponseModel = individualOfferGetVenuesFactory({
   id: 2,
   isVirtual: false,
   managingOffererId: 3,
   name: 'mon lieu',
   offererName: 'ma structure',
-}
+})
 
-const venue2: VenueListItemResponseModel = {
-  hasCreatedOffer: true,
-  hasMissingReimbursementPoint: false,
+const venue2: VenueListItemResponseModel = individualOfferGetVenuesFactory({
   id: 3,
   isVirtual: false,
   managingOffererId: 4,
   name: 'mon lieu 3',
   offererName: 'ma structure',
-}
+})
 
 const offererName1 = {
   id: 68,
@@ -128,6 +125,7 @@ describe('getWizardData', () => {
             managingOffererId: 3,
             name: 'mon lieu',
             withdrawalDetails: null,
+            venueType: 'Autre',
           },
         ],
       },
@@ -210,6 +208,7 @@ describe('getWizardData', () => {
             managingOffererId: 3,
             name: 'mon lieu',
             withdrawalDetails: null,
+            venueType: 'Autre',
           },
         ],
       },
@@ -267,6 +266,7 @@ describe('getWizardData', () => {
             managingOffererId: 3,
             name: 'mon lieu',
             withdrawalDetails: null,
+            venueType: 'Autre',
           },
         ],
       },
@@ -327,6 +327,7 @@ describe('getWizardData', () => {
             managingOffererId: 3,
             name: 'mon lieu',
             withdrawalDetails: null,
+            venueType: 'Autre',
           },
           {
             accessibility: {
@@ -344,6 +345,7 @@ describe('getWizardData', () => {
             managingOffererId: 4,
             name: 'mon lieu 3',
             withdrawalDetails: null,
+            venueType: 'Autre',
           },
         ],
       },

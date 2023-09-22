@@ -6,7 +6,7 @@ import FormLayout from 'components/FormLayout'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { OffererName } from 'core/Offerers/types'
 import { OfferSubCategory } from 'core/Offers/types'
-import { IndividualOfferVenue } from 'core/Venue/types'
+import { IndividualOfferVenueItem } from 'core/Venue/types'
 import useActiveFeature from 'hooks/useActiveFeature'
 import { Checkbox, InfoBox, TextArea, TextInput } from 'ui-kit'
 
@@ -18,7 +18,7 @@ import { Venue } from './Venue'
 
 export interface UsefulInformationsProps {
   offererNames: OffererName[]
-  venueList: IndividualOfferVenue[]
+  venueList: IndividualOfferVenueItem[]
   isUserAdmin: boolean
   offerSubCategory?: OfferSubCategory
   isVenueVirtual: boolean
