@@ -32,7 +32,7 @@ export interface StocksEventCreationProps {
   offer: IndividualOffer
 }
 
-const getInitialStocks = (offer: IndividualOffer) =>
+export const getInitialStocks = (offer: IndividualOffer) =>
   offer.stocks.map((stock): StocksEvent => {
     if (
       stock.beginningDatetime === null ||
@@ -51,6 +51,7 @@ const getInitialStocks = (offer: IndividualOffer) =>
       bookingLimitDatetime: stock.bookingLimitDatetime,
       priceCategoryId: stock.priceCategoryId,
       quantity: stock.quantity,
+      bookingsQuantity: stock.bookingsQuantity,
       uuid: uuidv4(),
     }
   })
