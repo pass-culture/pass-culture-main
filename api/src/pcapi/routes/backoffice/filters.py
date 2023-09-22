@@ -202,6 +202,8 @@ def format_booking_cancellation_reason(
             return "Expirée"
         case bookings_models.BookingCancellationReasons.FRAUD | educational_models.CollectiveBookingCancellationReasons.FRAUD:
             return "Fraude"
+        case educational_models.CollectiveBookingCancellationReasons.BACKOFFICE | bookings_models.BookingCancellationReasons.BACKOFFICE:
+            return "Annulée sur le backoffice"
         case bookings_models.BookingCancellationReasons.REFUSED_BY_INSTITUTE | educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE:
             return "Refusée par l'institution"
         case educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER:

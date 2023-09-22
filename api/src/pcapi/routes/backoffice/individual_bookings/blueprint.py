@@ -153,7 +153,7 @@ def list_individual_bookings() -> utils.BackofficeResponse:
         rows=bookings,
         form=form,
         mark_as_used_booking_form=empty_forms.EmptyForm(),
-        cancel_booking_form=individual_booking_forms.CancelBookingForm(),
+        cancel_booking_form=empty_forms.EmptyForm(),
         pro_visualisation_link=pro_visualisation_link,
     )
 
@@ -221,13 +221,8 @@ def mark_booking_as_used(booking_id: int) -> utils.BackofficeResponse:
 def mark_booking_as_cancelled(booking_id: int) -> utils.BackofficeResponse:
     booking = bookings_models.Booking.query.get_or_404(booking_id)
 
-    form = individual_booking_forms.CancelBookingForm()
-    if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
-        return _redirect_after_individual_booking_action()
-
     try:
-        bookings_api.mark_as_cancelled(booking, bookings_models.BookingCancellationReasons(form.reason.data))
+        bookings_api.mark_as_cancelled(booking, bookings_models.BookingCancellationReasons.BACKOFFICE)
     except bookings_exceptions.BookingIsAlreadyCancelled:
         flash("Impossible d'annuler une réservation déjà annulée", "warning")
     except bookings_exceptions.BookingIsAlreadyRefunded:
@@ -298,9 +293,7 @@ def batch_cancel_individual_bookings() -> utils.BackofficeResponse:
 
     return _batch_individual_bookings_action(
         form,
-        lambda booking: bookings_api.mark_as_cancelled(
-            booking, bookings_models.BookingCancellationReasons(form.reason.data)
-        ),
+        lambda booking: bookings_api.mark_as_cancelled(booking, bookings_models.BookingCancellationReasons.BACKOFFICE),
         "Les réservations ont été annulées avec succès",
     )
 

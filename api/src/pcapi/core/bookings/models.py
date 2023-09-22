@@ -53,6 +53,7 @@ class BookingCancellationReasons(enum.Enum):
     FRAUD = "FRAUD"
     REFUSED_BY_INSTITUTE = "REFUSED_BY_INSTITUTE"
     FINANCE_INCIDENT = "FINANCE_INCIDENT"
+    BACKOFFICE = "BACKOFFICE"
 
 
 class BookingStatus(enum.Enum):
