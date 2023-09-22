@@ -13,9 +13,9 @@ depends_on = None
 
 def upgrade() -> None:
     # booking cancellation reasons update
-    op.execute("ALTER TYPE cancellation_reason ADD VALUE 'FINANCE_INCIDENT'")
+    op.execute("ALTER TYPE cancellation_reason ADD VALUE IF NOT EXISTS 'FINANCE_INCIDENT'")
     # collective booking cancellation reasons update
-    op.execute("ALTER TYPE bookingcancellationreasons ADD VALUE 'FINANCE_INCIDENT'")
+    op.execute("ALTER TYPE bookingcancellationreasons ADD VALUE IF NOT EXISTS 'FINANCE_INCIDENT'")
 
 
 def downgrade() -> None:
