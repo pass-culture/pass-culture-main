@@ -1,5 +1,6 @@
 import datetime
 from functools import lru_cache
+import json
 import math
 from operator import attrgetter
 
@@ -123,12 +124,17 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
             f"Screen #{screen_id} not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.api_url}"
         )
 
-    def get_hardcoded_setmap(self, show: cds_serializers.ShowCDS) -> str | None:
+    def get_hardcoded_setmap(self, show: cds_serializers.ShowCDS) -> list:
         cinema = self.get_cinema_infos()
+        encoded_seatmap = None
         for parameter in cinema.cinema_parameters:
             if parameter.key == cds_constants.SEATMAP_HARDCODED_LABELS_SCREENID + str(show.screen.id):
-                return parameter.value
-        return None
+                encoded_seatmap = parameter.value
+        if not encoded_seatmap:
+            return []
+        seatmap = json.loads(encoded_seatmap)
+        assert isinstance(seatmap, list)
+        return seatmap
 
     def get_available_seat(
         self, show: cds_serializers.ShowCDS, screen: cds_serializers.ScreenCDS

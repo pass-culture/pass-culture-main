@@ -1,5 +1,4 @@
 import datetime
-import json
 from typing import Dict
 
 from pydantic.v1 import Field
@@ -228,13 +227,11 @@ class SeatCDS:
         seat_location_indices: tuple[int, int],
         screen_infos: ScreenCDS,
         seat_map: SeatmapCDS,
-        hardcoded_seatmap: str | None = None,
+        hardcoded_seatmap: list,
     ):
         self.seatRow = seat_location_indices[0]
         self.seatCol = seat_location_indices[1]
         if hardcoded_seatmap:
-            hardcoded_seatmap = json.loads(hardcoded_seatmap)
-            assert isinstance(hardcoded_seatmap, list)
             self.seatNumber: str = hardcoded_seatmap[self.seatRow][self.seatCol]
         else:
             seat_number_row = self.seatRow
