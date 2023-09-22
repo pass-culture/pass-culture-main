@@ -45,6 +45,7 @@ from .pro.reminder_offer_creation import send_reminder_offer_creation_j10_to_pro
 from .pro.reminder_venue_creation import send_reminder_venue_creation_to_pro
 from .pro.reset_password_to_pro import send_reset_password_email_to_connected_pro
 from .pro.reset_password_to_pro import send_reset_password_email_to_pro
+from .pro.venue_needs_picture import send_permanent_venue_needs_picture
 from .pro.venue_provider_deleted import send_venue_provider_deleted_email
 from .pro.venue_provider_disabled import send_venue_provider_disabled_email
 from .pro.welcome_to_pro import send_welcome_to_pro_email

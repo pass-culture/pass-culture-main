@@ -17,6 +17,8 @@ from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import models as history_models
 import pcapi.core.history.factories as history_factories
+from pcapi.core.mails import testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import VenueTypeCode
@@ -29,6 +31,7 @@ from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_dms_status
 from pcapi.routes.backoffice.venues import blueprint as venues_blueprint
+from pcapi.utils import urls
 
 from .helpers import button as button_helpers
 from .helpers import html_parser
@@ -1405,6 +1408,51 @@ class BatchEditVenuesTest(PostEndpointHelper):
         assert response.status_code == 303
 
         assert set(venues[0].criteria) == {criteria[0], new_criterion}
+
+    @pytest.mark.parametrize(
+        "set_permanent,thumb_count,expected_mail_number",
+        [
+            (True, 0, 1),
+            (False, 0, 0),
+            (True, 1, 0),
+        ],
+    )
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def test_batch_edit_venues_set_permanent_sends_mail(
+        self,
+        mock_async_index_venue_ids,
+        legit_user,
+        authenticated_client,
+        criteria,
+        set_permanent,
+        thumb_count,
+        expected_mail_number,
+    ):
+        venue = offerers_factories.VenueFactory(isPermanent=not set_permanent)
+        venue.thumbCount = thumb_count
+
+        form_data = {
+            "object_ids": str(venue.id),
+            "all_permanent": "on" if set_permanent else "",
+            "all_not_permanent": "" if set_permanent else "on",
+        }
+
+        response = self.post_to_endpoint(authenticated_client, form=form_data)
+        assert response.status_code == 303
+
+        assert venue.isPermanent is set_permanent
+
+        assert len(mails_testing.outbox) == expected_mail_number
+        if expected_mail_number > 0:
+            # check that email is sent when venue is set to permanent and has no image
+            assert mails_testing.outbox[0].sent_data["To"] == venue.bookingEmail
+            assert (
+                mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.VENUE_NEEDS_PICTURE.value.__dict__
+            )
+            assert mails_testing.outbox[0].sent_data["params"]["VENUE_NAME"] == venue.common_name
+            assert mails_testing.outbox[0].sent_data["params"]["VENUE_FORM_URL"] == urls.build_pc_pro_venue_link(venue)
+
+        mock_async_index_venue_ids.assert_called_once()
 
 
 class GetRemovePricingPointFormTest(GetEndpointHelper):
