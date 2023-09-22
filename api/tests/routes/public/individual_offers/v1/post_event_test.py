@@ -244,7 +244,6 @@ class PostEventTest:
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.BY_EMAIL
         assert created_offer.withdrawalDelay == 3 * 24 * 3600
 
-    @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
     def test_event_with_in_app_ticket(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue(with_charlie=True)
 
