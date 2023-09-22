@@ -1,13 +1,6 @@
 import React from 'react'
 
 import { GetOffererVenueResponseModel } from 'apiClient/v1'
-import {
-  Events,
-  OFFER_FORM_HOMEPAGE,
-  OFFER_FORM_NAVIGATION_IN,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-} from 'core/FirebaseEvents/constants'
-import useAnalytics from 'hooks/useAnalytics'
 import fullMoreIcon from 'icons/full-more.svg'
 import strokeVenueIcon from 'icons/stroke-venue.svg'
 import { ButtonLink } from 'ui-kit'
@@ -23,7 +16,6 @@ export interface VenueItemProps {
 const VenueItem = ({ venue, offererId }: VenueItemProps) => {
   const { address, city, name, postalCode, publicName, id } = venue || {}
 
-  const { logEvent } = useAnalytics()
   const showPath = `/structures/${offererId}/lieux/${id}`
 
   return (
@@ -51,14 +43,6 @@ const VenueItem = ({ venue, offererId }: VenueItemProps) => {
               to: `/offre/creation?lieu=${id}&structure=${offererId}`,
               isExternal: false,
             }}
-            onClick={() =>
-              logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                from: OFFER_FORM_NAVIGATION_IN.OFFERER,
-                to: OFFER_FORM_HOMEPAGE,
-                used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERER_LINK,
-                isEdition: false,
-              })
-            }
             icon={fullMoreIcon}
           >
             {' Créer une offre'}

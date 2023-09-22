@@ -7,12 +7,7 @@ import {
 } from 'apiClient/v1'
 import RedirectDialog from 'components/Dialog/RedirectDialog'
 import SoftDeletedOffererWarning from 'components/SoftDeletedOffererWarning'
-import {
-  Events,
-  OFFER_FORM_HOMEPAGE,
-  OFFER_FORM_NAVIGATION_IN,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-} from 'core/FirebaseEvents/constants'
+import { Events } from 'core/FirebaseEvents/constants'
 import { SelectOption } from 'custom_types/form'
 import useAnalytics from 'hooks/useAnalytics'
 import fullWaitIcon from 'icons/full-wait.svg'
@@ -144,14 +139,6 @@ const Offerers = ({
               withRedirectLinkIcon={false}
               title="Félicitations,"
               secondTitle="vous avez créé votre lieu !"
-              onRedirect={() =>
-                logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                  from: OFFER_FORM_NAVIGATION_IN.HOME,
-                  to: OFFER_FORM_HOMEPAGE,
-                  used: OFFER_FORM_NAVIGATION_MEDIUM.CREATE_OFFER_POPIN,
-                  isEdition: false,
-                })
-              }
               onCancel={() => {
                 removeSuccessParams()
                 setTimeout(() => window.hj?.('event', 'click_on_later'), 200)

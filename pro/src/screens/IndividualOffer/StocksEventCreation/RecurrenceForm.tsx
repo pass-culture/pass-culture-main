@@ -2,16 +2,8 @@ import { FieldArray, FormikProvider, useFormik } from 'formik'
 import React from 'react'
 
 import FormLayout from 'components/FormLayout'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
-import {
-  Events,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-} from 'core/FirebaseEvents/constants'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
-import { useOfferWizardMode } from 'hooks'
-import useAnalytics from 'hooks/useAnalytics'
 import fullMoreIcon from 'icons/full-more.svg'
 import fullNextIcon from 'icons/full-next.svg'
 import fullTrashIcon from 'icons/full-trash.svg'
@@ -119,23 +111,11 @@ export const RecurrenceForm = ({
   onCancel,
   onConfirm,
 }: Props): JSX.Element => {
-  const { logEvent } = useAnalytics()
   const priceCategoryOptions = getPriceCategoryOptions(offer.priceCategories)
-  const mode = useOfferWizardMode()
 
   const handleSubmit = (values: RecurrenceFormValues) => {
     const newStocks = onSubmit(values, offer.venue.departmentCode)
     onConfirm(newStocks)
-    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-      from: OFFER_WIZARD_STEP_IDS.STOCKS,
-      to: OFFER_WIZARD_STEP_IDS.STOCKS,
-      used: OFFER_FORM_NAVIGATION_MEDIUM.RECURRENCE_POPIN,
-      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-      isDraft:
-        mode === OFFER_WIZARD_MODE.CREATION || mode === OFFER_WIZARD_MODE.DRAFT,
-      offerId: offer.id,
-      recurrenceType: values.recurrenceType,
-    })
   }
 
   const formik = useFormik({

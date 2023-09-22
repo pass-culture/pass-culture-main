@@ -339,24 +339,4 @@ describe('screens:IndividualOffer::Informations:draft', () => {
       }
     )
   })
-
-  it('should track when cancelling draft edition', async () => {
-    renderInformationsScreen(props, contextOverride)
-
-    await userEvent.click(await screen.findByText('Annuler et quitter'))
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'informations',
-        isDraft: true,
-        isEdition: true,
-        offerId: offerId,
-        to: 'Offers',
-        used: 'StickyButtons',
-      }
-    )
-  })
 })

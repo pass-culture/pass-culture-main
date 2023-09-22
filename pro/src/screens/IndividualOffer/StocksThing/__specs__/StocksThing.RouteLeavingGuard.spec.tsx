@@ -13,17 +13,13 @@ import {
   IndividualOfferContext,
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext'
-import { Events } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer, IndividualOfferVenue } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import * as useAnalytics from 'hooks/useAnalytics'
 import { ButtonLink } from 'ui-kit'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StocksThing, { StocksThingProps } from '../StocksThing'
-
-const mockLogEvent = vi.fn()
 
 vi.mock('screens/IndividualOffer/Informations/utils', () => {
   return {
@@ -134,10 +130,6 @@ describe('screens:StocksThing', () => {
     vi.spyOn(api, 'getOffer').mockResolvedValue(
       {} as GetIndividualOfferResponseModel
     )
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-      logEvent: mockLogEvent,
-      setLogEvent: null,
-    }))
     vi.spyOn(api, 'patchOffer').mockResolvedValue(
       {} as GetIndividualOfferResponseModel
     )
@@ -201,20 +193,6 @@ describe('screens:StocksThing', () => {
     await userEvent.click(screen.getByText('Go outside !'))
 
     await userEvent.click(screen.getByText('Quitter la page'))
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'stocks',
-        isDraft: true,
-        isEdition: false,
-        offerId: offerId,
-        to: '/outside',
-        used: 'RouteLeavingGuard',
-      }
-    )
   })
 
   it('should be able to submit from Action Bar without Guard after changing price in draft', async () => {

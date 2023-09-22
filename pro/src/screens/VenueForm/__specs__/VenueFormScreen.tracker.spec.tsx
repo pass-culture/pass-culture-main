@@ -6,12 +6,7 @@ import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from 'apiClient/api'
 import { VenueFormValues } from 'components/VenueForm'
-import {
-  Events,
-  OFFER_FORM_HOMEPAGE,
-  OFFER_FORM_NAVIGATION_IN,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-} from 'core/FirebaseEvents/constants'
+import { Events } from 'core/FirebaseEvents/constants'
 import { Offerer } from 'core/Offerers/types'
 import { SelectOption } from 'custom_types/form'
 import * as useAnalytics from 'hooks/useAnalytics'
@@ -191,22 +186,5 @@ describe('venue form trackers', () => {
       saved: false,
       isEdition: false,
     })
-  })
-
-  it('should track offer creation submit', async () => {
-    renderForm(false)
-
-    await userEvent.click(screen.getByText(/Créer une offre/))
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenCalledWith(
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: OFFER_FORM_NAVIGATION_IN.VENUE,
-        to: OFFER_FORM_HOMEPAGE,
-        used: OFFER_FORM_NAVIGATION_MEDIUM.VENUE_BUTTON,
-        isEdition: false,
-      }
-    )
   })
 })

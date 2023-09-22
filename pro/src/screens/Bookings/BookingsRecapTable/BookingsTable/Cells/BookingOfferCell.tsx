@@ -6,14 +6,7 @@ import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
-import {
-  Events,
-  OFFER_FORM_NAVIGATION_IN,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-} from 'core/FirebaseEvents/constants'
 import { OFFER_STATUS_PENDING } from 'core/Offers/constants'
-import useAnalytics from 'hooks/useAnalytics'
 import { useOfferEditionURL } from 'hooks/useOfferEditionURL'
 import fullErrorIcon from 'icons/full-error.svg'
 import {
@@ -36,8 +29,6 @@ export const isCollectiveBooking = (
 ): booking is CollectiveBookingResponseModel => booking.stock.offerIsEducational
 
 export const BookingOfferCell = ({ booking }: BookingOfferCellProps) => {
-  const { logEvent } = useAnalytics()
-
   const editionUrl = useOfferEditionURL(
     booking.stock.offerIsEducational,
     booking.stock.offerId,
@@ -63,14 +54,6 @@ export const BookingOfferCell = ({ booking }: BookingOfferCellProps) => {
         href={editionUrl}
         rel="noopener noreferrer"
         target="_blank"
-        onClick={() =>
-          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-            from: OFFER_FORM_NAVIGATION_IN.BOOKINGS,
-            to: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            used: OFFER_FORM_NAVIGATION_MEDIUM.BOOKINGS_TITLE,
-            isEdition: true,
-          })
-        }
         title={`${booking.stock.offerName} (ouverture dans un nouvel onglet)`}
       >
         <div
