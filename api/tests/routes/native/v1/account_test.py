@@ -547,8 +547,11 @@ class AccountCreationEmailExistsTest:
 
     def test_email_exists_but_not_validated(self, client):
         user = users_factories.UserFactory(email=self.identifier, isEmailValidated=False)
-        users_factories.EmailValidationTokenFactory(user=user)
-
+        token_utils.Token.create(
+            type_=token_utils.TokenType.EMAIL_VALIDATION,
+            ttl=users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
+            user_id=user.id,
+        )
         response = client.post("/native/v1/account", json=self.data)
         self.assert_email_sent(response, user)
 

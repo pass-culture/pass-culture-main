@@ -1,4 +1,3 @@
-import datetime
 from urllib.parse import urlencode
 
 from flask import flash
@@ -8,10 +7,10 @@ from flask import url_for
 from werkzeug.exceptions import NotFound
 
 from pcapi import settings
+from pcapi.core import token as token_utils
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
-from pcapi.core.users.api import generate_and_save_token
 import pcapi.core.users.generator as users_generator
 from pcapi.routes.backoffice import blueprint
 from pcapi.routes.backoffice import utils
@@ -83,12 +82,12 @@ def generate_user() -> utils.BackofficeResponse:
     except users_exceptions.UserGenerationForbiddenException:
         raise NotFound()
 
-    token = generate_and_save_token(
-        user,
-        users_models.TokenType.EMAIL_VALIDATION,
-        datetime.datetime.utcnow() + users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
+    token = token_utils.Token.create(
+        token_utils.TokenType.EMAIL_VALIDATION, users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME, user.id
     )
-    return redirect(url_for("backoffice_web.get_generated_user", userId=user.id, accessToken=token.value), code=303)
+    return redirect(
+        url_for("backoffice_web.get_generated_user", userId=user.id, accessToken=token.encoded_token), code=303
+    )
 
 
 def _get_user_if_exists(user_id: str | None) -> users_models.User | None:
