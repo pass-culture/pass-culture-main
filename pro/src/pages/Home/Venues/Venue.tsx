@@ -5,13 +5,7 @@ import React, { Fragment, useEffect, useState } from 'react'
 import { api } from 'apiClient/api'
 import { DMSApplicationForEAC, DMSApplicationstatus } from 'apiClient/v1'
 import { BOOKING_STATUS } from 'core/Bookings/constants'
-import {
-  Events,
-  OFFER_FORM_HOMEPAGE,
-  OFFER_FORM_NAVIGATION_IN,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-  VenueEvents,
-} from 'core/FirebaseEvents/constants'
+import { VenueEvents } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import fullDisclosureClose from 'icons/full-disclosure-close.svg'
@@ -351,16 +345,6 @@ const Venue = ({
                           isExternal: false,
                         }}
                         icon={fullMoreIcon}
-                        onClick={() =>
-                          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                            from: OFFER_FORM_NAVIGATION_IN.HOME,
-                            to: OFFER_FORM_HOMEPAGE,
-                            used: isVirtual
-                              ? OFFER_FORM_NAVIGATION_MEDIUM.HOME_VIRTUAL_LINK
-                              : OFFER_FORM_NAVIGATION_MEDIUM.HOME_LINK,
-                            isEdition: false,
-                          })
-                        }
                       >
                         {isVirtual
                           ? 'Créer une nouvelle offre numérique'

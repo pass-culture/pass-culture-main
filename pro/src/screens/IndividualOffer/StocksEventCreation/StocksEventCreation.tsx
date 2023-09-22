@@ -9,18 +9,11 @@ import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIn
 import StocksEventList from 'components/StocksEventList'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
-import {
-  Events,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-  OFFER_FORM_NAVIGATION_OUT,
-} from 'core/FirebaseEvents/constants'
 import { getIndividualOfferAdapter } from 'core/Offers/adapters'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
 import { isOfferDisabled } from 'core/Offers/utils'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks'
-import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit'
@@ -30,7 +23,6 @@ import { ActionBar } from '../ActionBar'
 import { MAX_STOCKS_PER_OFFER } from '../constants'
 import { upsertStocksEventAdapter } from '../StocksEventEdition/adapters'
 import { getSuccessMessage } from '../utils'
-import { logTo } from '../utils/logTo'
 
 import { HelpSection } from './HelpSection/HelpSection'
 import { RecurrenceForm } from './RecurrenceForm'
@@ -68,7 +60,6 @@ export const StocksEventCreation = ({
 }: StocksEventCreationProps): JSX.Element => {
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
     useState<boolean>(false)
-  const { logEvent } = useAnalytics()
   const [stocks, setStocks] = useState<StocksEvent[]>(getInitialStocks(offer))
   const navigate = useNavigate()
   const mode = useOfferWizardMode()
@@ -106,18 +97,6 @@ export const StocksEventCreation = ({
   }
 
   const handlePreviousStep = () => {
-    if (!hasUnsavedStocks) {
-      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OFFER_WIZARD_STEP_IDS.STOCKS,
-        to: OFFER_WIZARD_STEP_IDS.TARIFS,
-        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft:
-          mode === OFFER_WIZARD_MODE.CREATION ||
-          mode === OFFER_WIZARD_MODE.DRAFT,
-        offerId: offer.id,
-      })
-    }
     /* istanbul ignore next: DEBT, TO FIX */
     navigate(
       getIndividualOfferUrl({
@@ -194,20 +173,6 @@ export const StocksEventCreation = ({
           mode,
         })
       )
-      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OFFER_WIZARD_STEP_IDS.STOCKS,
-        to: saveDraft
-          ? OFFER_WIZARD_STEP_IDS.STOCKS
-          : OFFER_WIZARD_STEP_IDS.SUMMARY,
-        used: saveDraft
-          ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
-          : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft:
-          mode === OFFER_WIZARD_MODE.CREATION ||
-          mode === OFFER_WIZARD_MODE.DRAFT,
-        offerId: offer.id,
-      })
       setIsClickingFromActionBar(false)
 
       if (saveDraft) {
@@ -266,23 +231,10 @@ export const StocksEventCreation = ({
         onClickPrevious={handlePreviousStep}
         onClickSaveDraft={handleNextStep({ saveDraft: true })}
         step={OFFER_WIZARD_STEP_IDS.STOCKS}
-        offerId={offer.id}
       />
 
       <RouteLeavingGuardIndividualOffer
         when={hasUnsavedStocks && !isClickingFromActionBar}
-        tracking={nextLocation =>
-          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-            from: OFFER_WIZARD_STEP_IDS.STOCKS,
-            to: logTo(nextLocation),
-            used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
-            isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-            isDraft:
-              mode === OFFER_WIZARD_MODE.CREATION ||
-              mode === OFFER_WIZARD_MODE.DRAFT,
-            offerId: offer?.id,
-          })
-        }
         isEdition={false}
       />
     </div>

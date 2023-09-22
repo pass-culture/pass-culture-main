@@ -4,13 +4,7 @@ import React from 'react'
 
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import {
-  Events,
-  OFFER_FORM_HOMEPAGE,
-  OFFER_FORM_NAVIGATION_IN,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-  VenueEvents,
-} from '../../../../core/FirebaseEvents/constants'
+import { Events, VenueEvents } from '../../../../core/FirebaseEvents/constants'
 import * as useAnalytics from '../../../../hooks/useAnalytics'
 import { VenueOfferSteps } from '../index'
 
@@ -77,17 +71,6 @@ describe('VenueOfferSteps', () => {
     renderVenueOfferSteps(venueId)
 
     await userEvent.click(screen.getByText(/Créer une offre/))
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenCalledWith(
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: OFFER_FORM_NAVIGATION_IN.HOME,
-        to: OFFER_FORM_HOMEPAGE,
-        used: OFFER_FORM_NAVIGATION_MEDIUM.VENUE_OFFER_STEPS,
-        isEdition: false,
-      }
-    )
   })
 
   it('should track ReimbursementPoint', async () => {

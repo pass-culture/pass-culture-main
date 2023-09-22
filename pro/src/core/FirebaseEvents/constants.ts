@@ -109,12 +109,6 @@ export enum OFFER_FORM_NAVIGATION_MEDIUM {
   STOCK_EVENT_BULK_DELETE = 'StockEventBulkDelete',
 }
 
-export enum OFFER_FORM_NAVIGATION_OUT {
-  OFFERS = 'Offers',
-  PREVIEW = 'AppPreview',
-  ROUTE_LEAVING_GUARD = 'RouteLeavingGuard',
-}
-
 export enum OFFER_FORM_NAVIGATION_IN {
   HOME = 'Home',
   OFFERS = 'Offers',
