@@ -244,6 +244,7 @@ class SaveNewOnboardingDataQueryModel(BaseModel):
     target: Target
     venueTypeCode: str
     webPresence: str
+    token: str
 
     class Config:
         extra = "forbid"
