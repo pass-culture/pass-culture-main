@@ -21,7 +21,7 @@ export interface TemplateProps {
 }
 
 const Template = ({ title, children, withStepper = true }: TemplateProps) => {
-  const { offer, setOffer, shouldTrack } = useIndividualOfferContext()
+  const { offer, setOffer } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
   const notify = useNotification()
 
@@ -75,7 +75,7 @@ const Template = ({ title, children, withStepper = true }: TemplateProps) => {
 
       {withStepper && (
         <OfferFormLayout.Stepper>
-          <IndividualOfferBreadcrumb shouldTrack={shouldTrack} />
+          <IndividualOfferBreadcrumb />
         </OfferFormLayout.Stepper>
       )}
 
