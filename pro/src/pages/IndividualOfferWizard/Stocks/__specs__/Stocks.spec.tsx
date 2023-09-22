@@ -24,8 +24,6 @@ const renderStocksScreen = (
     categories: [],
     subCategories: [],
     setOffer: () => {},
-    shouldTrack: true,
-    setShouldTrack: () => {},
     setSubcategory: () => {},
     showVenuePopin: {},
     ...contextOverride,

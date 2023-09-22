@@ -66,8 +66,6 @@ const renderInformationsScreen = (
     categories: [],
     subCategories: [],
     setOffer: () => {},
-    setShouldTrack: () => {},
-    shouldTrack: true,
     showVenuePopin: {},
     setSubcategory: () => {},
     ...contextOverride,

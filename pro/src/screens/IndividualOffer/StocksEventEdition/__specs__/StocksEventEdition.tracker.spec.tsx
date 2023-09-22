@@ -95,9 +95,7 @@ describe('screens:StocksEventEdition', () => {
       categories: [],
       subCategories: [],
       setOffer: () => {},
-      setShouldTrack: () => {},
       setSubcategory: () => {},
-      shouldTrack: true,
       showVenuePopin: {},
     }
     vi.spyOn(api, 'getOffer').mockResolvedValue(

@@ -122,9 +122,7 @@ describe('screens:StocksThing', () => {
       categories: [],
       subCategories: [],
       setOffer: () => {},
-      setShouldTrack: () => {},
       setSubcategory: () => {},
-      shouldTrack: false,
       showVenuePopin: {},
     }
     vi.spyOn(api, 'getOffer').mockResolvedValue(

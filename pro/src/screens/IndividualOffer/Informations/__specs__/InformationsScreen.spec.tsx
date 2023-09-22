@@ -114,8 +114,6 @@ describe('screens:IndividualOffer::Informations', () => {
       categories,
       subCategories,
       setOffer: () => {},
-      setShouldTrack: () => {},
-      shouldTrack: true,
       showVenuePopin: {},
       setSubcategory: () => {},
     }
