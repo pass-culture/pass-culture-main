@@ -47,8 +47,8 @@ class Returns200Test:
             "domains": [educational_domain1.id, educational_domain1.id, educational_domain2.id],
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
         }
@@ -56,7 +56,6 @@ class Returns200Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers-template", json=data)
 
         # Then
-
         assert response.status_code == 201
         offer_id = response.json["id"]
         offer = CollectiveOfferTemplate.query.get(offer_id)
@@ -73,8 +72,8 @@ class Returns200Test:
         assert offer.contactEmail == "pouet@example.com"
         assert offer.contactPhone == "01 99 00 25 68"
         assert offer.offerVenue == {
-            "addressType": "school",
-            "venueId": venue.id,
+            "addressType": "other",
+            "venueId": None,
             "otherAddress": "17 rue aléatoire",
         }
         assert offer.interventionArea == ["75", "92", "93"]
@@ -130,8 +129,8 @@ class Returns403Test:
             "domains": [educational_factories.EducationalDomainFactory().id],
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
         }
@@ -158,8 +157,8 @@ class Returns403Test:
             "domains": [educational_factories.EducationalDomainFactory().id],
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
         }
@@ -185,8 +184,8 @@ class Returns400Test:
             **base_collective_offer_payload,
             "venueId": venue.id,
             "offerVenue": {
-                "addressType": "school",
-                "venueId": 125,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
         }
@@ -210,8 +209,8 @@ class Returns400Test:
             "venueId": venue.id,
             "subcategoryId": subcategories.OEUVRE_ART.id,
             "offerVenue": {
-                "addressType": "school",
-                "venueId": 125,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
         }
@@ -235,8 +234,8 @@ class Returns400Test:
             "venueId": venue.id,
             "subcategoryId": subcategories.SUPPORT_PHYSIQUE_FILM.id,
             "offerVenue": {
-                "addressType": "school",
-                "venueId": 125,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
         }
@@ -260,8 +259,8 @@ class Returns400Test:
             "venueId": venue.id,
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "offerVenue": {
-                "addressType": "school",
-                "venueId": 125,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
         }
@@ -284,8 +283,8 @@ class Returns400Test:
             "venueId": venue.id,
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "offerVenue": {
-                "addressType": "school",
-                "venueId": 125,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
             "priceDetail": "a" * 1001,
@@ -315,8 +314,8 @@ class Returns404Test:
             "domains": [0, educational_domain1.id, educational_domain2.id],
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
         }
@@ -344,8 +343,8 @@ class Returns404Test:
             "domains": [educational_domain1.id, educational_domain1.id, educational_domain2.id],
             "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
         }

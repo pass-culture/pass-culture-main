@@ -13,7 +13,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.core.search.backends import algolia
 from pcapi.core.testing import override_settings
-from pcapi.routes.adage_iframe.serialization.offers import OfferAddressType
+from pcapi.routes.public.collective.serialization.shared import OfferAddressType
 from pcapi.utils.human_ids import humanize
 
 

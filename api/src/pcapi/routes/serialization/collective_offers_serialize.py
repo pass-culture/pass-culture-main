@@ -1,6 +1,5 @@
 from datetime import date
 from datetime import datetime
-import enum
 import typing
 
 import flask
@@ -24,6 +23,7 @@ from pcapi.core.offers.serialize import CollectiveOfferType
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
+from pcapi.routes.public.collective.serialization import shared
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
@@ -37,14 +37,6 @@ from pcapi.validation.routes.offers import check_collective_offer_name_length_is
 T_GetCollectiveOfferBaseResponseModel = typing.TypeVar(
     "T_GetCollectiveOfferBaseResponseModel", bound="GetCollectiveOfferBaseResponseModel"
 )
-
-
-def validate_venue_id(venue_id: int | str | None) -> int | None:
-    # TODO(jeremieb): remove this validator once there is no empty
-    # string stored as a venueId
-    if not venue_id:
-        return None
-    return int(venue_id)  # should not be needed but it makes mypy happy
 
 
 class ListCollectiveOffersQueryModel(BaseModel):
@@ -235,18 +227,6 @@ class GetCollectiveOfferVenueResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
-class OfferAddressType(enum.Enum):
-    OFFERER_VENUE = "offererVenue"
-    SCHOOL = "school"
-    OTHER = "other"
-
-
-class CollectiveOfferOfferVenueResponseModel(BaseModel):
-    addressType: OfferAddressType
-    otherAddress: str
-    venueId: int | None
-
-
 class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
     id: int
     isSoldOut: bool = Field(alias="isBooked")
@@ -270,7 +250,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     description: str
     durationMinutes: int | None
     students: list[StudentLevels]
-    offerVenue: CollectiveOfferOfferVenueResponseModel
+    offerVenue: shared.OfferVenueModel
     contactEmail: str
     contactPhone: str | None
     hasBookingLimitDatetimesPassed: bool
@@ -362,26 +342,14 @@ class CollectiveOfferResponseIdModel(BaseModel):
         arbitrary_types_allowed = True
 
 
-class CollectiveOfferVenueBodyModel(BaseModel):
-    addressType: OfferAddressType
-    otherAddress: str
-    venueId: int | None
-
-    _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
 def is_intervention_area_valid(
     intervention_area: list[str] | None,
-    offer_venue: CollectiveOfferVenueBodyModel | None,
+    offer_venue: shared.OfferVenueModel | None,
 ) -> bool:
     if intervention_area is None:
         return False
 
-    if offer_venue is not None and offer_venue.addressType == OfferAddressType.OFFERER_VENUE:
+    if offer_venue is not None and offer_venue.addressType == shared.OfferAddressType.OFFERER_VENUE:
         return True
 
     if len(intervention_area) == 0:
@@ -403,7 +371,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     motor_disability_compliant: bool = False
     visual_disability_compliant: bool = False
     students: list[StudentLevels]
-    offer_venue: CollectiveOfferVenueBodyModel
+    offer_venue: shared.OfferVenueModel
     contact_email: EmailStr
     contact_phone: str | None
     intervention_area: list[str] | None
@@ -502,7 +470,7 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     description: str | None
     name: str | None
     students: list[StudentLevels] | None
-    offerVenue: CollectiveOfferVenueBodyModel | None
+    offerVenue: shared.OfferVenueModel | None
     contactEmail: EmailStr | None
     contactPhone: str | None
     durationMinutes: int | None

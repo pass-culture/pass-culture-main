@@ -14,9 +14,8 @@ from pcapi.core.educational.models import StudentLevels
 from pcapi.core.subscription.phone_validation.exceptions import InvalidPhoneNumber
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
+from pcapi.routes.public.collective.serialization import shared
 from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import collective_offers_serialize
-from pcapi.routes.serialization.collective_offers_serialize import validate_venue_id
 from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import email as email_utils
@@ -39,18 +38,6 @@ class ListCollectiveOffersQueryModel(BaseModel):
     venue_id: int | None
     period_beginning_date: str | None
     period_ending_date: str | None
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
-class OfferVenueModel(BaseModel):
-    venueId: int | None
-    otherAddress: str | None
-    addressType: collective_offers_serialize.OfferAddressType
-
-    _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
 
     class Config:
         alias_generator = to_camel
@@ -301,7 +288,7 @@ class GetPublicCollectiveOfferResponseModel(BaseModel):
     educationalPriceDetail: str | None
     educationalInstitution: str | None
     educationalInstitutionId: int | None
-    offerVenue: OfferVenueModel
+    offerVenue: shared.OfferVenueModel
     imageCredit: str | None
     imageUrl: str | None
     bookings: Sequence[CollectiveBookingResponseModel]
@@ -378,7 +365,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     mental_disability_compliant: bool = False
     motor_disability_compliant: bool = False
     visual_disability_compliant: bool = False
-    offer_venue: OfferVenueModel
+    offer_venue: shared.OfferVenueModel
     isActive: bool
     image_file: str | None
     image_credit: str | None
@@ -457,7 +444,7 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     contactPhone: str | None
     domains: list[int] | None
     students: list[str] | None
-    offerVenue: OfferVenueModel | None
+    offerVenue: shared.OfferVenueModel | None
     interventionArea: list[str] | None
     durationMinutes: int | None
     audioDisabilityCompliant: bool | None

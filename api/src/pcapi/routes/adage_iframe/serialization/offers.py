@@ -1,6 +1,5 @@
 from datetime import date
 from datetime import datetime
-import enum
 import logging
 import typing
 
@@ -11,8 +10,8 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.native.v1.serialization import common_models
+from pcapi.routes.public.collective.serialization import shared
 from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization.collective_offers_serialize import validate_venue_id
 from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -94,14 +93,8 @@ class CategoriesResponseModel(BaseModel):
         orm_mode = True
 
 
-class OfferAddressType(enum.Enum):
-    OFFERER_VENUE = "offererVenue"
-    SCHOOL = "school"
-    OTHER = "other"
-
-
 class CollectiveOfferOfferVenue(BaseModel):
-    addressType: OfferAddressType
+    addressType: shared.OfferAddressType
     otherAddress: str
     venueId: int | None
     name: str | None
@@ -110,7 +103,7 @@ class CollectiveOfferOfferVenue(BaseModel):
     postalCode: str | None
     city: str | None
 
-    _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
+    _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(shared.validate_venue_id)
 
     class Config:
         alias_generator = to_camel

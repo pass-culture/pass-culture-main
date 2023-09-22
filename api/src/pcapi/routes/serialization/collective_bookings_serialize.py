@@ -14,8 +14,8 @@ from pcapi.core.bookings.utils import convert_real_booking_dates_utc_to_venue_ti
 from pcapi.core.educational import models
 from pcapi.core.educational import repository
 from pcapi.models.api_errors import ApiErrors
+from pcapi.routes.public.collective.serialization import shared
 from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization.collective_offers_serialize import CollectiveOfferOfferVenueResponseModel
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -422,7 +422,7 @@ class CollectiveBookingEducationalRedactorResponseModel(BaseModel):
 
 class CollectiveBookingByIdResponseModel(BaseModel):
     id: int
-    offerVenue: CollectiveOfferOfferVenueResponseModel
+    offerVenue: shared.OfferVenueModel
     beginningDatetime: datetime
     students: list[models.StudentLevels]
     price: float

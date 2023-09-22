@@ -1,6 +1,5 @@
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
-from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import repository as offerers_repository
@@ -11,7 +10,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.public import blueprints
 from pcapi.routes.public import utils
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
-from pcapi.routes.serialization import collective_offers_serialize
+from pcapi.routes.public.collective.serialization import shared
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils.image_conversion import DO_NOT_CROP
@@ -303,7 +302,6 @@ def patch_collective_offer_public(
     image_as_bytes = None
     image_file = False
     # checking data
-    educational_validation.validate_offer_venue(body.offerVenue)
     non_nullable_fields = [
         "name",
         "venueId",
@@ -386,7 +384,7 @@ def patch_collective_offer_public(
             )
 
     if new_values.get("offerVenue"):
-        if new_values["offerVenue"] == collective_offers_serialize.OfferAddressType.OFFERER_VENUE.value:
+        if new_values["offerVenue"] == shared.OfferAddressType.OFFERER_VENUE.value:
             venue = offerers_repository.find_venue_by_id(new_values["offerVenue"]["venuId"])
             if (not venue) or (venue.managingOffererId != current_api_key.offerer.id):
                 raise ApiErrors(

@@ -35,8 +35,8 @@ class Returns200Test:
             "contactEmail": "pouet@example.com",
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Lycée - Seconde", "Lycée - Première"],
@@ -68,8 +68,8 @@ class Returns200Test:
         assert offer.contactEmail == "pouet@example.com"
         assert offer.contactPhone == "01 99 00 25 68"
         assert offer.offerVenue == {
-            "addressType": "school",
-            "venueId": venue.id,
+            "addressType": "other",
+            "venueId": None,
             "otherAddress": "17 rue aléatoire",
         }
         assert offer.interventionArea == ["75", "92", "93"]
@@ -104,8 +104,8 @@ class Returns200Test:
             "contactEmail": "pouet@example.com",
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Collège - 6e"],
@@ -136,8 +136,8 @@ class Returns200Test:
         assert offer.contactEmail == "pouet@example.com"
         assert offer.contactPhone == "01 99 00 25 68"
         assert offer.offerVenue == {
-            "addressType": "school",
-            "venueId": venue.id,
+            "addressType": "other",
+            "venueId": None,
             "otherAddress": "17 rue aléatoire",
         }
         assert offer.interventionArea == ["75", "92", "93"]
@@ -204,8 +204,8 @@ class Returns200Test:
             "contactEmail": "pouet@example.com",
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Lycée - Seconde", "Lycée - Première"],
@@ -250,8 +250,8 @@ class Returns200Test:
             "contactEmail": "pouet@example.com",
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Collège - 6e", "Collège - 4e"],
@@ -282,8 +282,8 @@ class Returns200Test:
         assert offer.contactEmail == "pouet@example.com"
         assert offer.contactPhone == "01 99 00 25 68"
         assert offer.offerVenue == {
-            "addressType": "school",
-            "venueId": venue.id,
+            "addressType": "other",
+            "venueId": None,
             "otherAddress": "17 rue aléatoire",
         }
         assert offer.interventionArea == ["75", "92", "93"]
@@ -316,8 +316,8 @@ class Returns403Test:
             "contactEmail": "pouet@example.com",
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Lycée - Seconde", "Lycée - Première"],
@@ -356,8 +356,8 @@ class Returns403Test:
             "contactEmail": "pouet@example.com",
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Lycée - Seconde", "Lycée - Première"],
@@ -396,8 +396,8 @@ class Returns400Test:
             "contactEmail": "pouet@example.com",
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
-                "addressType": "school",
-                "venueId": 125,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Lycée - Seconde", "Lycée - Première"],
@@ -433,8 +433,8 @@ class Returns400Test:
             "contactEmail": "pouet@example.com",
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
-                "addressType": "school",
-                "venueId": 125,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Lycée - Seconde", "Lycée - Première"],
@@ -470,8 +470,8 @@ class Returns400Test:
             "contactEmail": "pouet@example.com",
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
-                "addressType": "school",
-                "venueId": 125,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Lycée - Seconde", "Lycée - Première"],
@@ -508,8 +508,8 @@ class Returns400Test:
             "contactEmail": "pouet@example.com",
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
-                "addressType": "school",
-                "venueId": 125,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Lycée - Seconde", "Lycée - Première"],
@@ -550,8 +550,8 @@ class Returns404Test:
             "contactEmail": "pouet@example.com",
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Lycée - Seconde", "Lycée - Première"],
@@ -591,8 +591,8 @@ class Returns404Test:
             "contactEmail": "pouet@example.com",
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Lycée - Seconde", "Lycée - Première"],
@@ -632,8 +632,8 @@ class Returns404Test:
             "contactEmail": "pouet@example.com",
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Lycée - Seconde", "Lycée - Première"],
@@ -673,8 +673,8 @@ class Returns404Test:
             "contactEmail": "pouet@example.com",
             "contactPhone": "01 99 00 25 68",
             "offerVenue": {
-                "addressType": "school",
-                "venueId": venue.id,
+                "addressType": "other",
+                "venueId": None,
                 "otherAddress": "17 rue aléatoire",
             },
             "students": ["Lycée - Seconde", "Lycée - Première"],

@@ -17,5 +17,5 @@ from . import blueprint
 def get_national_programs() -> serialization.ListNationalProgramsResponseModel:
     query = educational_models.NationalProgram.query
     return serialization.ListNationalProgramsResponseModel(
-        __root__=[serialization.NationalProgramModel(id=program.id, name=program.name) for program in query]
+        __root__=[serialization.NationalProgramModel(id=program.id, name=program.name) for program in query.all()]
     )

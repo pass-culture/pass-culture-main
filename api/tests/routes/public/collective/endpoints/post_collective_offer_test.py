@@ -20,7 +20,78 @@ IMAGES_DIR = Path(tests.__path__[0]) / "files"
 UPLOAD_FOLDER = settings.LOCAL_STORAGE_DIR / educational_models.CollectiveOffer.FOLDER
 
 
-@pytest.mark.usefixtures("db_session")
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
+@pytest.fixture(name="collective_client")
+def collective_client_fixture(client):
+    return client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY)
+
+
+@pytest.fixture(name="venue_provider")
+def venue_provider_fixture():
+    venue_provider = provider_factories.VenueProviderFactory()
+    offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
+    return venue_provider
+
+
+@pytest.fixture(name="venue")
+def venue_fixture(venue_provider):
+    return venue_provider.venue
+
+
+@pytest.fixture(name="domain")
+def domain_fixture():
+    return educational_factories.EducationalDomainFactory()
+
+
+@pytest.fixture(name="national_program")
+def national_program_fixture():
+    return educational_factories.NationalProgramFactory()
+
+
+@pytest.fixture(name="institution")
+def institution_fixture():
+    return educational_factories.EducationalInstitutionFactory()
+
+
+@pytest.fixture(name="payload")
+def payload_fixture(venue, domain, national_program, institution):
+    return {
+        "venueId": venue.id,
+        "name": "Un nom en français ævœc des diàcrtîtïqués",
+        "description": "une description d'offre",
+        "subcategoryId": "EVENEMENT_CINE",
+        "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
+        "contactEmail": "offerer-contact@example.com",
+        "contactPhone": "+33100992798",
+        "domains": [domain.id],
+        "durationMinutes": 183,
+        "students": [educational_models.StudentLevels.COLLEGE4.name],
+        "audioDisabilityCompliant": True,
+        "mentalDisabilityCompliant": True,
+        "motorDisabilityCompliant": False,
+        "visualDisabilityCompliant": False,
+        "offerVenue": {
+            "venueId": venue.id,
+            "addressType": "offererVenue",
+            "otherAddress": "",
+        },
+        "isActive": True,
+        "nationalProgramId": national_program.id,
+        # stock part
+        "beginningDatetime": "2022-09-25T11:00",
+        "bookingLimitDatetime": "2022-09-15T11:00",
+        "totalPrice": 35621,
+        "numberOfTickets": 30,
+        "educationalPriceDetail": "Justification du prix",
+        # link to educational institution
+        "educationalInstitutionId": institution.id,
+        "imageCredit": "pouet",
+        "imageFile": image_data.GOOD_IMAGE,
+    }
+
+
 @freeze_time("2022-05-01 15:00:00")
 class CollectiveOffersPublicPostOfferTest:
     def teardown_method(self, *args):
@@ -32,57 +103,12 @@ class CollectiveOffersPublicPostOfferTest:
                     continue
                 child.unlink()
 
-    def test_post_offers(self, client):
-        # Given
-
-        venue_provider = provider_factories.VenueProviderFactory()
-        offerers_factories.ApiKeyFactory(provider=venue_provider.provider)
-        domain = educational_factories.EducationalDomainFactory()
-        educational_institution = educational_factories.EducationalInstitutionFactory()
-        national_program = educational_factories.NationalProgramFactory()
-
-        venue = venue_provider.venue
-        payload = {
-            "venueId": venue.id,
-            "name": "Un nom en français ævœc des diàcrtîtïqués",
-            "description": "une description d'offre",
-            "subcategoryId": "EVENEMENT_CINE",
-            "bookingEmails": ["offerer-email@example.com", "offerer-email2@example.com"],
-            "contactEmail": "offerer-contact@example.com",
-            "contactPhone": "+33100992798",
-            "domains": [domain.id],
-            "durationMinutes": 183,
-            "students": [educational_models.StudentLevels.COLLEGE4.name],
-            "audioDisabilityCompliant": True,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": False,
-            "visualDisabilityCompliant": False,
-            "offerVenue": {
-                "venueId": venue.id,
-                "addressType": "offererVenue",
-                "otherAddress": "",
-            },
-            "isActive": True,
-            "nationalProgramId": national_program.id,
-            # stock part
-            "beginningDatetime": "2022-09-25T11:00",
-            "bookingLimitDatetime": "2022-09-15T11:00",
-            "totalPrice": 35621,
-            "numberOfTickets": 30,
-            "educationalPriceDetail": "Justification du prix",
-            # link to educational institution
-            "educationalInstitutionId": educational_institution.id,
-            "imageCredit": "pouet",
-            "imageFile": image_data.GOOD_IMAGE,
-        }
-
-        # When
+    def test_post_offers(
+        self, collective_client, payload, venue_provider, venue, domain, institution, national_program
+    ):
         with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
-            response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-                "/v2/collective/offers/", json=payload
-            )
+            response = collective_client.post("/v2/collective/offers/", json=payload)
 
-        # Then
         assert response.status_code == 200
 
         offer = educational_models.CollectiveOffer.query.filter_by(id=response.json["id"]).one()
@@ -90,7 +116,7 @@ class CollectiveOffersPublicPostOfferTest:
         assert offer.venueId == venue.id
         assert offer.name == payload["name"]
         assert offer.domains == [domain]
-        assert offer.institutionId == educational_institution.id
+        assert offer.institutionId == institution.id
         assert offer.interventionArea == []
         assert offer.offerVenue == {
             "venueId": venue.id,
@@ -448,7 +474,7 @@ class CollectiveOffersPublicPostOfferTest:
             "motorDisabilityCompliant": False,
             "visualDisabilityCompliant": False,
             "offerVenue": {
-                "venueId": 0,
+                "venueId": venue_provider.venue.id,
                 "addressType": "offererVenue",
                 "otherAddress": "",
             },
@@ -726,3 +752,45 @@ class CollectiveOffersPublicPostOfferTest:
 
         # Then
         assert response.status_code == 404
+
+
+class InvalidOfferVenuesTest:
+    def test_offerer_venue_without_venue_id(self, collective_client, payload):
+        payload["offerVenue"]["addressType"] = "offererVenue"
+        payload["offerVenue"]["venueId"] = None
+
+        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+            response = collective_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 400
+        assert "offerVenue.addressType" in response.json
+
+    def test_venue_id_without_offerer_venue(self, collective_client, payload, venue):
+        payload["offerVenue"]["addressType"] = "other"
+        payload["offerVenue"]["venueId"] = venue.id
+
+        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+            response = collective_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 400
+        assert "offerVenue.addressType" in response.json
+
+    def test_other_without_other_address(self, collective_client, payload, venue):
+        payload["offerVenue"]["addressType"] = "other"
+        payload["offerVenue"]["otherAddress"] = None
+
+        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+            response = collective_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 400
+        assert "offerVenue.addressType" in response.json
+
+    def test_other_address_without_other(self, collective_client, payload, venue):
+        payload["offerVenue"]["addressType"] = "school"
+        payload["offerVenue"]["otherAddress"] = "Some other address"
+
+        with patch("pcapi.core.offerers.api.can_venue_create_educational_offer"):
+            response = collective_client.post("/v2/collective/offers/", json=payload)
+
+        assert response.status_code == 400
+        assert "offerVenue.addressType" in response.json
