@@ -54,9 +54,7 @@ const renderIndividualOfferForm = ({
     categories: [],
     subCategories: [],
     setOffer: () => {},
-    setShouldTrack: () => {},
     setSubcategory: () => {},
-    shouldTrack: true,
     showVenuePopin: {},
     ...contextOverride,
   }
