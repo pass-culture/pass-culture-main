@@ -1,6 +1,7 @@
-import { waitFor, screen } from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
 
+import { api } from 'apiClient/api'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import BankInformations from '../BankInformations'
@@ -23,14 +24,29 @@ describe('BankInformations page', () => {
         initialized: true,
       },
     }
+
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+      offerersNames: [
+        {
+          id: 1,
+          name: 'first offerer',
+        },
+      ],
+    })
+
+    vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
+      id: 1,
+      bankAccounts: [],
+      managedVenues: [],
+    })
   })
 
   it('should has not validated bank account message', async () => {
     renderBankInformations(store)
 
-    await waitFor(() => {
-      expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
-    })
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
     expect(
       screen.getByText(
         'Ajoutez au moins un compte bancaire pour percevoir vos remboursements.'
