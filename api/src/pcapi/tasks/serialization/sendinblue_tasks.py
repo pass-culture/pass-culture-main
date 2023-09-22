@@ -1,3 +1,5 @@
+import pydantic.v1
+
 from pcapi.routes.serialization import BaseModel
 
 
@@ -10,7 +12,7 @@ class UpdateSendinblueContactRequest(BaseModel):
 
 class SendTransactionalEmailRequest(BaseModel):
     recipients: list[str]
-    bcc_recipients: list[str] | None = None
+    bcc_recipients: list[str] = pydantic.v1.Field(default_factory=list)
     params: dict | None = None
     template_id: int | None = None
     tags: list[str] | None = None
