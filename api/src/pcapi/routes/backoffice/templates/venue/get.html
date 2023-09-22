@@ -228,7 +228,7 @@
                   <span class="fw-bold">Provider :</span>
                   {{ venue_provider.provider.name }}
                   {% if has_permission("ADVANCED_PRO_SUPPORT") and venue_provider.provider.localClass != 'AllocineStocks' %}
-                    <i class="bi bi-trash3"
+                    <i class="bi bi-trash3 text-primary"
                        data-bs-toggle="modal"
                        data-bs-target=".pc-delete-venue-provider-modal-{{ venue_provider.provider.id }}"
                        data-bs-title="Effacer le lien entre {{ venue.name }} et {{ venue_provider.provider.name }}">
