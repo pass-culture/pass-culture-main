@@ -5,6 +5,7 @@ export const SIGNUP_FORM_DEFAULT_VALUES = {
   firstName: '',
   phoneNumber: '',
   contactOk: false,
+  token: '',
 }
 
 // APE/NAF codes for :

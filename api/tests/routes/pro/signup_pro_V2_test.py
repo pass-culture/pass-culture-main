@@ -11,6 +11,7 @@ BASE_DATA_PRO = {
     "password": "__v4l1d_P455sw0rd__",
     "phoneNumber": "0102030405",
     "contactOk": False,
+    "token": "token",
 }
 
 
