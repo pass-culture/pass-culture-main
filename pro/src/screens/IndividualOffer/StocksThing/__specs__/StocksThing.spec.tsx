@@ -137,9 +137,7 @@ describe('screens:StocksThing', () => {
       categories: [],
       subCategories: [{ id: 'CANBEDUO', canBeDuo: true } as OfferSubCategory],
       setOffer: () => {},
-      setShouldTrack: () => {},
       setSubcategory: () => {},
-      shouldTrack: true,
       showVenuePopin: {},
     }
     vi.spyOn(api, 'getOffer').mockResolvedValue(

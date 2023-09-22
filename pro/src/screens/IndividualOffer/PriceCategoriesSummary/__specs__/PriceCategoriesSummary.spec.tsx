@@ -24,9 +24,7 @@ const renderPriceCategoriesSummary = (offer: IndividualOffer) => {
     categories: [],
     subCategories: [duoSubcategory],
     setOffer: () => {},
-    setShouldTrack: () => {},
     setSubcategory: () => {},
-    shouldTrack: true,
     showVenuePopin: {},
   }
 

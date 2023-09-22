@@ -3,11 +3,10 @@ import React, { FunctionComponent, useCallback, MouseEventHandler } from 'react'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant, SharedButtonProps } from 'ui-kit/Button/types'
 
-export interface ButtonLinkNewWindowProps extends SharedButtonProps {
+interface ButtonLinkNewWindowProps extends SharedButtonProps {
   className?: string
   linkTo: string
   children?: React.ReactNode
-  tracking?: { isTracked: boolean; trackingFunction: () => void }
   svgAlt?: string
 }
 
@@ -17,7 +16,6 @@ export const ButtonLinkNewWindow: FunctionComponent<
   className,
   linkTo,
   children,
-  tracking,
   icon,
   variant = ButtonVariant.TERNARY,
   svgAlt,
@@ -29,10 +27,6 @@ export const ButtonLinkNewWindow: FunctionComponent<
       window
         .open(linkTo, 'targetWindow', 'toolbar=no, width=375, height=667')
         ?.focus()
-
-      if (tracking?.isTracked) {
-        tracking.trackingFunction()
-      }
     },
     [linkTo]
   )

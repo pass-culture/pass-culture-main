@@ -37,9 +37,7 @@ const renderTemplate = ({
     categories: [],
     subCategories: [],
     setOffer: () => {},
-    setShouldTrack: () => {},
     setSubcategory: () => {},
-    shouldTrack: true,
     showVenuePopin: {},
     ...contextOverride,
   }
