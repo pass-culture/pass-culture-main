@@ -37,7 +37,6 @@ list_offers_blueprint = utils.child_backoffice_blueprint(
     permission=perm_models.Permissions.READ_OFFERS,
 )
 
-# Do not interfere with Stock used in Offer.status hybrid property
 aliased_stock = sa.orm.aliased(offers_models.Stock)
 
 SEARCH_FIELD_TO_PYTHON = {
@@ -56,6 +55,7 @@ SEARCH_FIELD_TO_PYTHON = {
     "DEPARTMENT": {
         "field": "department",
         "column": offerers_models.Venue.departementCode,
+        "inner_join": "venue",
     },
     "EAN": {
         "field": "string",
@@ -66,11 +66,13 @@ SEARCH_FIELD_TO_PYTHON = {
         "field": "date",
         "column": aliased_stock.beginningDatetime,
         "special": partial(date_utils.date_to_localized_datetime, time_=datetime.datetime.min.time()),
+        "inner_join": "stock",
     },
     "BOOKING_LIMIT_DATE": {
         "field": "date",
         "column": aliased_stock.bookingLimitDatetime,
         "special": partial(date_utils.date_to_localized_datetime, time_=datetime.datetime.min.time()),
+        "inner_join": "stock",
     },
     "ID": {
         "field": "integer",
@@ -83,10 +85,14 @@ SEARCH_FIELD_TO_PYTHON = {
     "OFFERER": {
         "field": "offerer",
         "column": offerers_models.Venue.managingOffererId,
+        "inner_join": "venue",
     },
     "TAG": {
         "field": "criteria",
         "column": criteria_models.Criterion.id,
+        "inner_join": "criterion",
+        "outer_join": "offer_criterion",
+        "outer_join_column": criteria_models.OfferCriterion.offerId,
     },
     "STATUS": {
         "field": "status",
@@ -108,6 +114,39 @@ SEARCH_FIELD_TO_PYTHON = {
     },
 }
 
+JOIN_DICT: dict[str, list[dict[str, typing.Any]]] = {
+    "criterion": [
+        {
+            "name": "criterion",
+            "args": (criteria_models.Criterion, offers_models.Offer.criteria),
+        }
+    ],
+    "offer_criterion": [
+        {
+            "name": "offer_criterion",
+            "args": (criteria_models.OfferCriterion, offers_models.Offer.id == criteria_models.OfferCriterion.offerId),
+        }
+    ],
+    "stock": [
+        {
+            "name": "stock",
+            "args": (
+                aliased_stock,
+                sa.and_(
+                    aliased_stock.offerId == offers_models.Offer.id,
+                    aliased_stock.isSoftDeleted.is_(False),
+                ),
+            ),
+        }
+    ],
+    "venue": [
+        {
+            "name": "venue",
+            "args": (offerers_models.Venue, offers_models.Offer.venue),
+        }
+    ],
+}
+
 OPERATOR_DICT: typing.Dict[str, typing.Dict[str, typing.Any]] = {
     **utils.OPERATOR_DICT,
     "NAME_EQUALS": {"function": lambda x, y: x.ilike(y)},
@@ -116,71 +155,57 @@ OPERATOR_DICT: typing.Dict[str, typing.Dict[str, typing.Any]] = {
 
 
 def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
-    # Using join/outerjoin for filters on one side and joinedload for eager loading on the other side causes a nested
-    # select (added when adding limit()) which results in very poor performance in some cases of advanced search (join
-    # stock in both select).
-    # So it has been changed to share the same join for both, as written in sqlalchemy doc:
-    # "To produce a specific SQL JOIN which is explicitly available, use Query.join(). To combine explicit JOINs with
-    # eager loading of collections, use contains_eager()".
-    query = (
-        offers_models.Offer.query.outerjoin(offers_models.Offer.venue)
-        .outerjoin(offerers_models.Venue.managingOfferer)
-        .outerjoin(
-            aliased_stock,
-            sa.and_(
-                aliased_stock.offerId == offers_models.Offer.id,
-                aliased_stock.isSoftDeleted.is_(False),
-            ),
-        )
-        .outerjoin(offers_models.Offer.criteria)
-        .outerjoin(offers_models.Offer.flaggingValidationRules)
-        .options(
-            sa.orm.load_only(
-                offers_models.Offer.id,
-                offers_models.Offer.name,
-                offers_models.Offer.subcategoryId,
-                offers_models.Offer.rankingWeight,
-                offers_models.Offer.dateCreated,
-                offers_models.Offer.validation,
-                offers_models.Offer.lastValidationDate,
-                offers_models.Offer.lastValidationType,
-                offers_models.Offer.isActive,
-            ),
-            sa.orm.contains_eager(offers_models.Offer.stocks, alias=aliased_stock).load_only(
-                offers_models.Stock.offerId,
-                # needed to check if stock is bookable and compute initial/remaining stock:
-                offers_models.Stock.beginningDatetime,
-                offers_models.Stock.bookingLimitDatetime,
-                offers_models.Stock.isSoftDeleted,
-                offers_models.Stock.quantity,
-                offers_models.Stock.dnBookedQuantity,
-            ),
-            sa.orm.contains_eager(offers_models.Offer.criteria).load_only(criteria_models.Criterion.name),
-            sa.orm.contains_eager(offers_models.Offer.venue).load_only(
-                offerers_models.Venue.managingOffererId,
-                offerers_models.Venue.departementCode,
-                offerers_models.Venue.name,
-            )
+    query = offers_models.Offer.query.options(
+        sa.orm.load_only(
+            offers_models.Offer.id,
+            offers_models.Offer.name,
+            offers_models.Offer.subcategoryId,
+            offers_models.Offer.rankingWeight,
+            offers_models.Offer.dateCreated,
+            offers_models.Offer.validation,
+            offers_models.Offer.lastValidationDate,
+            offers_models.Offer.lastValidationType,
+            offers_models.Offer.isActive,
+        ),
+        sa.orm.joinedload(offers_models.Offer.stocks).load_only(
+            offers_models.Stock.offerId,
             # needed to check if stock is bookable and compute initial/remaining stock:
-            .contains_eager(offerers_models.Venue.managingOfferer).load_only(
-                offerers_models.Offerer.name, offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus
-            ),
-            sa.orm.contains_eager(offers_models.Offer.flaggingValidationRules).load_only(
-                offers_models.OfferValidationRule.name
-            ),
+            offers_models.Stock.beginningDatetime,
+            offers_models.Stock.bookingLimitDatetime,
+            offers_models.Stock.isSoftDeleted,
+            offers_models.Stock.quantity,
+            offers_models.Stock.dnBookedQuantity,
+        ),
+        sa.orm.joinedload(offers_models.Offer.criteria).load_only(criteria_models.Criterion.name),
+        sa.orm.joinedload(offers_models.Offer.venue).load_only(
+            offerers_models.Venue.managingOffererId,
+            offerers_models.Venue.departementCode,
+            offerers_models.Venue.name,
         )
+        # needed to check if stock is bookable and compute initial/remaining stock:
+        .joinedload(offerers_models.Venue.managingOfferer).load_only(
+            offerers_models.Offerer.name, offerers_models.Offerer.isActive, offerers_models.Offerer.validationStatus
+        ),
+        sa.orm.joinedload(offers_models.Offer.flaggingValidationRules).load_only(
+            offers_models.OfferValidationRule.name
+        ),
     )
     if not forms.GetOfferAdvancedSearchForm.is_search_empty(form.search.data):
-        query, warnings = utils.generate_search_query(
+        query, inner_joins, _, warnings = utils.generate_search_query(
             query=query,
             search_parameters=form.search.data,
             fields_definition=SEARCH_FIELD_TO_PYTHON,
+            joins_definition=JOIN_DICT,
             operators_definition=OPERATOR_DICT,
         )
         for warning in warnings:
             flash(warning, "warning")
 
         if form.only_validated_offerers.data:
+            if "venue" not in inner_joins:
+                query = query.join(offerers_models.Venue, offers_models.Offer.venue)
+            if "offerer" not in inner_joins:
+                query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
             query = query.filter(offerers_models.Offerer.isValidated)
     else:
         if form.category.data:
@@ -220,10 +245,13 @@ def _get_offers(form: forms.InternalSearchForm) -> list[offers_models.Offer]:
                 name_query = "%{}%".format(search_query)
                 or_filters.append(offers_models.Offer.name.ilike(name_query))
 
-            if len(or_filters) == 1:
-                query = query.filter(or_filters[0])
-            elif len(or_filters) > 1:
-                query = query.filter(sa.or_(*or_filters))
+            if or_filters:
+                main_query = query.filter(or_filters[0])
+            if len(or_filters) > 1:
+                # Same as for bookings, where union has better performance than or_
+                query = main_query.union(*(query.filter(f) for f in or_filters[1:]))
+            else:
+                query = main_query
 
     if form.sort.data:
         order = form.order.data or "desc"
