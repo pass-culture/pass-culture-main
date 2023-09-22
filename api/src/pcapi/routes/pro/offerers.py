@@ -4,6 +4,9 @@ from flask_login import current_user
 from flask_login import login_required
 import sqlalchemy.orm as sqla_orm
 
+from pcapi import settings
+from pcapi.connectors.api_recaptcha import ReCaptchaException
+from pcapi.connectors.api_recaptcha import check_webapp_recaptcha_token
 import pcapi.core.educational.exceptions as educational_exceptions
 from pcapi.core.offerers import api
 from pcapi.core.offerers import repository
@@ -214,6 +217,15 @@ def get_offerer_stats_dashboard_url(
 def save_new_onboarding_data(
     body: offerers_serialize.SaveNewOnboardingDataQueryModel,
 ) -> offerers_serialize.PostOffererResponseModel:
+    try:
+        check_webapp_recaptcha_token(
+            body.token,
+            original_action="saveNewOnboardingData",
+            minimal_score=settings.RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE,
+        )
+    except ReCaptchaException:
+        raise ApiErrors({"token": "The given token is invalid"})
+
     user_offerer = api.create_from_onboarding_data(current_user, body)
     return offerers_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)
 

@@ -108,6 +108,7 @@ class ProUserCreationBodyV2Model(BaseModel):
     password: str
     phone_number: str
     contact_ok: bool
+    token: str
 
     @validator("password")
     def validate_password_strength(cls, password: str) -> str:
