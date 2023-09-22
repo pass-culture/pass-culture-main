@@ -815,6 +815,8 @@ def _generate_offerer(data: dict) -> offerers_models.Offerer:
     else:
         offerer.validationStatus = ValidationStatus.VALIDATED
 
+    offerer.dsToken = offerers_api.generate_offerer_ds_token()
+
     return offerer
 
 
