@@ -30,12 +30,12 @@ class SendinblueBackend(BaseBackend):
         self,
         recipients: Iterable,
         data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
-        bcc_recipients: Iterable[str] = None,
+        bcc_recipients: Iterable[str] = (),
     ) -> models.MailResult:
         if isinstance(data, models.TransactionalEmailData):
             payload = serializers.SendTransactionalEmailRequest(
                 recipients=list(recipients),
-                bcc_recipients=list(bcc_recipients) if bcc_recipients else None,
+                bcc_recipients=list(bcc_recipients),
                 template_id=data.template.id,
                 params=data.params,
                 tags=data.template.tags,
@@ -53,7 +53,7 @@ class SendinblueBackend(BaseBackend):
         elif isinstance(data, models.TransactionalWithoutTemplateEmailData):
             payload = serializers.SendTransactionalEmailRequest(
                 recipients=list(recipients),
-                bcc_recipients=list(bcc_recipients) if bcc_recipients else None,
+                bcc_recipients=list(bcc_recipients),
                 sender=asdict(data.sender.value),
                 subject=data.subject,
                 html_content=data.html_content,
@@ -133,17 +133,17 @@ class ToDevSendinblueBackend(SendinblueBackend):
         self,
         recipients: Iterable,
         data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
-        bcc_recipients: Iterable[str] = None,
+        bcc_recipients: Iterable[str] = (),
     ) -> models.MailResult:
         whitelisted_recipients = self._get_whitelisted_recipients(recipients)
-        whitelisted_bcc_recipients = self._get_whitelisted_recipients(bcc_recipients) if bcc_recipients else []
+        whitelisted_bcc_recipients = self._get_whitelisted_recipients(bcc_recipients)
 
         recipients = list(whitelisted_recipients) or [settings.DEV_EMAIL_ADDRESS]
         bcc_recipients = list(whitelisted_bcc_recipients)
 
         return super().send_mail(recipients=recipients, bcc_recipients=bcc_recipients, data=data)
 
-    def _get_whitelisted_recipients(self, recipient_list: Iterable) -> list:
+    def _get_whitelisted_recipients(self, recipient_list: Iterable[str]) -> list[str]:
         whitelisted_recipients = set()
         end_to_end_tests_email_address_arr = settings.END_TO_END_TESTS_EMAIL_ADDRESS.split("@")
         for recipient in recipient_list:

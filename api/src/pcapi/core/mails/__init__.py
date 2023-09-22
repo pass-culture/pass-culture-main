@@ -14,7 +14,7 @@ def send(
     *,
     recipients: Iterable[str],
     data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
-    bcc_recipients: Iterable[str] = None,
+    bcc_recipients: Iterable[str] = (),
 ) -> bool:
     """Try to send an email and return whether it was successful."""
     if isinstance(recipients, str):

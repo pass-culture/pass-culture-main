@@ -21,7 +21,7 @@ class LoggerBackend(BaseBackend):
         self,
         recipients: typing.Iterable[str],
         data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
-        bcc_recipients: typing.Iterable[str] = None,
+        bcc_recipients: typing.Iterable[str] = (),
     ) -> models.MailResult:
         recipients = ", ".join(recipients)
         if bcc_recipients:

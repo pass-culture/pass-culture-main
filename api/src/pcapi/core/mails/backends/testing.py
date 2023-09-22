@@ -18,7 +18,7 @@ class TestingBackend(BaseBackend):
         self,
         recipients: Iterable[str],
         data: models.TransactionalEmailData | models.TransactionalWithoutTemplateEmailData,
-        bcc_recipients: Iterable[str] = None,
+        bcc_recipients: Iterable[str] = (),
     ) -> models.MailResult:
         sent_data = asdict(data)
         sent_data["To"] = ", ".join(recipients)
