@@ -25,8 +25,6 @@ export interface IndividualOfferContextValues {
   setSubcategory: (p?: OfferSubCategory) => void
   offererNames: OffererName[]
   venueList: IndividualOfferVenueItem[]
-  shouldTrack: boolean
-  setShouldTrack: (p: boolean) => void
   venueId?: number | undefined
   offerOfferer?: OffererName | null
   showVenuePopin: Record<string, boolean>
@@ -41,8 +39,6 @@ export const IndividualOfferContext =
     subCategories: [],
     offererNames: [],
     venueList: [],
-    shouldTrack: true,
-    setShouldTrack: () => {},
     showVenuePopin: {},
     setSubcategory: () => {},
   })
@@ -71,7 +67,6 @@ export function IndividualOfferContextProvider({
   const navigate = useNavigate()
 
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [shouldTrack, setShouldTrack] = useState<boolean>(true)
   const [offerOfferer, setOfferOfferer] = useState<OffererName | null>(null)
   const [venueId, setVenueId] = useState<number>()
 
@@ -166,8 +161,6 @@ export function IndividualOfferContextProvider({
         subCategories,
         offererNames,
         venueList,
-        shouldTrack,
-        setShouldTrack,
         venueId,
         offerOfferer,
         showVenuePopin: showVenuePopin,

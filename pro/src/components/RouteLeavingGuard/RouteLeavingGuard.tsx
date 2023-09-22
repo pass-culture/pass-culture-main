@@ -14,7 +14,6 @@ export interface RouteLeavingGuardProps {
   extraClassNames?: string
   shouldBlockNavigation: BlockerFunction
   dialogTitle: string
-  tracking?: (p: string) => void
   rightButton?: string
   leftButton?: string
   // This is a weird behavior that should be unified at a UX level
@@ -27,7 +26,6 @@ const RouteLeavingGuard = ({
   extraClassNames = '',
   shouldBlockNavigation,
   dialogTitle,
-  tracking,
   rightButton = 'Quitter',
   leftButton = 'Annuler',
   closeModalOnRightButton = false,
@@ -46,9 +44,6 @@ const RouteLeavingGuard = ({
       return
     }
 
-    if (tracking) {
-      tracking(blocker.location.pathname)
-    }
     blocker.proceed()
   }
 
