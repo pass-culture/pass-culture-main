@@ -66,9 +66,9 @@ interface InstitutionOption extends SelectOptionNormalized {
 }
 
 interface TeacherOption extends SelectOption {
-  surname: string
+  surname?: string | null
   name: string
-  gender: string
+  gender?: string | null
   email: string
 }
 
