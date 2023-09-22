@@ -78,7 +78,6 @@ import type { PostVenueBodyModel } from '../models/PostVenueBodyModel';
 import type { PostVenueProviderBody } from '../models/PostVenueProviderBody';
 import type { PriceCategoryBody } from '../models/PriceCategoryBody';
 import type { ProFlagsQueryModel } from '../models/ProFlagsQueryModel';
-import type { ProUserCreationBodyModel } from '../models/ProUserCreationBodyModel';
 import type { ProUserCreationBodyV2Model } from '../models/ProUserCreationBodyV2Model';
 import type { ResetPasswordBodyModel } from '../models/ResetPasswordBodyModel';
 import type { SaveNewOnboardingDataQueryModel } from '../models/SaveNewOnboardingDataQueryModel';
@@ -1965,27 +1964,6 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/users/signout',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-
-  /**
-   * signup_pro <POST>
-   * @param requestBody
-   * @returns void
-   * @throws ApiError
-   */
-  public signupPro(
-    requestBody?: ProUserCreationBodyModel,
-  ): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'POST',
-      url: '/users/signup/pro',
-      body: requestBody,
-      mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
