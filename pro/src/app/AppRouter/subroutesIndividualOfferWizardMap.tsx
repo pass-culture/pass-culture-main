@@ -5,7 +5,7 @@ import React from 'react'
 
 import { Confirmation } from 'pages/IndividualOfferWizard/Confirmation'
 import { Offer } from 'pages/IndividualOfferWizard/Offer'
-import { PriceCategories } from 'pages/IndividualOfferWizard/PriceCategories'
+import { PriceCategories } from 'pages/IndividualOfferWizard/PriceCategories/PriceCategories'
 import { PriceCategoriesSummary } from 'pages/IndividualOfferWizard/PriceCategoriesSummary/PriceCategoriesSummary'
 import { Stocks } from 'pages/IndividualOfferWizard/Stocks'
 import { StocksSummary } from 'pages/IndividualOfferWizard/StocksSummary/StocksSummary'

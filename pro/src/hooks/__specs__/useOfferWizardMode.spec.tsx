@@ -22,13 +22,18 @@ describe('useOfferWizardMode', () => {
     expect(result.current).toEqual(OFFER_WIZARD_MODE.CREATION)
   })
 
-  it('should return mode "creation"', async () => {
+  it('should return mode "brouillon"', async () => {
     const { result } = renderUseOfferWizardMode('/test/brouillon/test')
     expect(result.current).toEqual(OFFER_WIZARD_MODE.DRAFT)
   })
 
-  it('should return mode "creation"', async () => {
+  it('should return mode "read only"', async () => {
     const { result } = renderUseOfferWizardMode('/test/test')
+    expect(result.current).toEqual(OFFER_WIZARD_MODE.READ_ONLY)
+  })
+
+  it('should return mode "edition"', async () => {
+    const { result } = renderUseOfferWizardMode('/test/edition/test')
     expect(result.current).toEqual(OFFER_WIZARD_MODE.EDITION)
   })
 })

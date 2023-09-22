@@ -102,8 +102,8 @@ const renderStockEventScreen = async (
         />
         <Route
           path={getIndividualOfferPath({
-            step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-            mode: OFFER_WIZARD_MODE.EDITION,
+            step: OFFER_WIZARD_STEP_IDS.STOCKS,
+            mode: OFFER_WIZARD_MODE.READ_ONLY,
           })}
           element={<div>Next page</div>}
         />
