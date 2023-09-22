@@ -1,17 +1,73 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
+import { api } from 'apiClient/api'
+import {
+  GetOffererBankAccountsResponseModel,
+  GetOffererNameResponseModel,
+} from 'apiClient/v1'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 import styles from './BankInformations.module.scss'
 
 const BankInformations = (): JSX.Element => {
-  // TODO: request api
+  const [isOfferersLoading, setIsOfferersLoading] = useState<boolean>(false)
+  const [isOffererBankAccountsLoading, setIsOffererBankAccountsLoading] =
+    useState<boolean>(false)
+  const [offerers, setOfferers] =
+    useState<Array<GetOffererNameResponseModel> | null>(null)
+  const [selectedOfferer, setSelectedOfferer] =
+    useState<GetOffererBankAccountsResponseModel | null>(null)
+  const [selectedOffererId, setSelectedOffererId] = useState<number | null>(
+    null
+  )
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsOfferersLoading(true)
+      try {
+        const { offerersNames } = await api.listOfferersNames()
+        if (offerersNames) {
+          setOfferers(offerersNames)
+          setSelectedOffererId(offerersNames[0].id)
+        }
+        setIsOfferersLoading(false)
+      } catch (error) {
+        setIsOfferersLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
+
+  useEffect(() => {
+    const getSelectedOffererBankAccounts = async (
+      selectedOffererId: number
+    ) => {
+      setIsOffererBankAccountsLoading(true)
+      try {
+        const offererBankAccounts =
+          await api.getOffererBankAccountsAndAttachedVenues(selectedOffererId)
+        setSelectedOfferer(offererBankAccounts)
+        setIsOffererBankAccountsLoading(false)
+      } catch (error) {
+        setIsOffererBankAccountsLoading(false)
+      }
+    }
+    if (selectedOffererId !== null) {
+      getSelectedOffererBankAccounts(selectedOffererId)
+    }
+  }, [selectedOffererId])
+
   const venuesWithNonFreeOffersNotLinkedToBankAccount = []
   const hasValidBankAccount = false
   const hasPendingBankAccount = false
+
+  if (isOffererBankAccountsLoading || isOfferersLoading) {
+    return <Spinner className={styles['spinner']} />
+  }
 
   return (
     <>
