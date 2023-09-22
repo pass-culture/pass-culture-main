@@ -143,7 +143,15 @@ def test_public_api(client):
                 },
                 "BookingCancellationReasons": {
                     "description": "An enumeration.",
-                    "enum": ["OFFERER", "BENEFICIARY", "EXPIRED", "FRAUD", "REFUSED_BY_INSTITUTE", "FINANCE_INCIDENT"],
+                    "enum": [
+                        "OFFERER",
+                        "BENEFICIARY",
+                        "EXPIRED",
+                        "FRAUD",
+                        "REFUSED_BY_INSTITUTE",
+                        "FINANCE_INCIDENT",
+                        "BACKOFFICE",
+                    ],
                     "title": "BookingCancellationReasons",
                 },
                 "BookingDisplayStatusRequest": {
