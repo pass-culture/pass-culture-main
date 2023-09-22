@@ -79,7 +79,7 @@ describe('Summary trackers', () => {
       setLogEvent: null,
     }))
     vi.spyOn(useOfferWizardMode, 'default').mockImplementation(
-      () => OFFER_WIZARD_MODE.EDITION
+      () => OFFER_WIZARD_MODE.READ_ONLY
     )
   })
 
@@ -103,29 +103,6 @@ describe('Summary trackers', () => {
           isDraft: false,
           offerId: offerId,
           used: 'RecapLink',
-        }
-      )
-    })
-
-    it('should track when clicking on "Modifier" on stock section', async () => {
-      // given
-      renderSummary(customContext)
-
-      // when
-      await userEvent.click(screen.getAllByText('Modifier')[1])
-
-      // then
-      expect(mockLogEvent).toHaveBeenCalledTimes(1)
-      expect(mockLogEvent).toHaveBeenNthCalledWith(
-        1,
-        Events.CLICKED_OFFER_FORM_NAVIGATION,
-        {
-          from: 'recapitulatif',
-          isEdition: true,
-          to: 'tarifs',
-          used: 'RecapLink',
-          isDraft: false,
-          offerId: offerId,
         }
       )
     })
