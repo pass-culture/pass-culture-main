@@ -108,7 +108,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         expect(stockLink).toBeInTheDocument()
         expect(stockLink).toHaveAttribute(
           'href',
-          `/offre/individuelle/${eventOffer.id}/stocks`
+          `/offre/individuelle/${eventOffer.id}/edition/stocks`
         )
       })
       describe('draft delete button', () => {

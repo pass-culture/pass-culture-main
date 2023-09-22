@@ -87,7 +87,7 @@ describe('ImageUploaderOffer::tracker', () => {
     expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_ADD_IMAGE, {
       offerId: 12,
       imageType: UploaderModeEnum.OFFER,
-      isEdition: true,
+      isEdition: false,
     })
   })
 })

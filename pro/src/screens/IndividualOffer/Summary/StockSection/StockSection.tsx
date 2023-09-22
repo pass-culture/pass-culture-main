@@ -42,7 +42,8 @@ const StockSection = ({ offer, canBeDuo }: StockSectionProps): JSX.Element => {
   const editLink = getIndividualOfferUrl({
     offerId: offer.id,
     step: OFFER_WIZARD_STEP_IDS.STOCKS,
-    mode: OFFER_WIZARD_MODE.EDITION,
+    mode:
+      mode === OFFER_WIZARD_MODE.READ_ONLY ? OFFER_WIZARD_MODE.EDITION : mode,
   })
 
   const hasNoStock = offer.stocks.length === 0

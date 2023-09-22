@@ -155,7 +155,9 @@ export const getPopinType = (
   return null
 }
 
-const PriceCategories = ({ offer }: PriceCategoriesProps): JSX.Element => {
+export const PriceCategories = ({
+  offer,
+}: PriceCategoriesProps): JSX.Element => {
   const { setOffer, subCategories } = useIndividualOfferContext()
   const { logEvent } = useAnalytics()
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
@@ -285,7 +287,10 @@ const PriceCategories = ({ offer }: PriceCategoriesProps): JSX.Element => {
             getIndividualOfferUrl({
               offerId: offer.id,
               step: OFFER_WIZARD_STEP_IDS.SUMMARY,
-              mode,
+              mode:
+                mode === OFFER_WIZARD_MODE.EDITION
+                  ? OFFER_WIZARD_MODE.READ_ONLY
+                  : mode,
             })
           )
           notify.success(getSuccessMessage(OFFER_WIZARD_MODE.EDITION))
@@ -365,5 +370,3 @@ const PriceCategories = ({ offer }: PriceCategoriesProps): JSX.Element => {
     </FormikProvider>
   )
 }
-
-export default PriceCategories

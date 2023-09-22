@@ -180,7 +180,7 @@ const Summary = () => {
 
           <OfferAppPreview offer={offer} />
 
-          {mode === OFFER_WIZARD_MODE.EDITION && (
+          {mode === OFFER_WIZARD_MODE.READ_ONLY && (
             <div className={styles['offer-preview-app-link']}>
               <DisplayOfferInAppLink
                 id={offer.id}

@@ -35,7 +35,7 @@ const CollectiveOfferBreadcrumb = ({
   haveStock = false,
   requestId = null,
 }: OfferBreadcrumbProps): JSX.Element => {
-  const stockEditionUrl = useOfferStockEditionURL(true, offerId, true)
+  const stockEditionUrl = useOfferStockEditionURL(true, offerId)
   const isEditingExistingOffer = !(isCreatingOffer || isCompletingDraft)
   const isOfferToInstitutionActive = useActiveFeature(
     'WIP_OFFER_TO_INSTITUTION'

@@ -42,7 +42,8 @@ const OfferSummary = ({
   const editLink = getIndividualOfferUrl({
     offerId: offerData.id,
     step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-    mode: OFFER_WIZARD_MODE.EDITION,
+    mode:
+      mode === OFFER_WIZARD_MODE.READ_ONLY ? OFFER_WIZARD_MODE.EDITION : mode,
   })
 
   const logEditEvent = () => {
