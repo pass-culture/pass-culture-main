@@ -191,6 +191,42 @@ class SuspendUserTest(PostEndpointHelper):
         assert user.isActive
         assert len(user.action_history) == 0
 
+    def test_suspend_admin_user(self, client, roles_with_permissions, beneficiary_fraud_admin):
+        user = users_factories.AdminFactory(
+            backoffice_profile__roles=[
+                role
+                for role in roles_with_permissions
+                if role.name in (perm_models.Roles.SUPPORT_PRO.value, perm_models.Roles.SUPPORT_PRO_N2.value)
+            ]
+        )
+
+        response = self.post_to_endpoint(
+            client.with_bo_session_auth(beneficiary_fraud_admin),
+            user_id=user.id,
+            form={
+                "reason": users_constants.SuspensionReason.END_OF_CONTRACT.name,
+                "comment": "",  # optional, keep empty
+            },
+        )
+
+        assert response.status_code == 303
+        # No longer admin => now considered as suspended public account
+        assert response.location == url_for(
+            "backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True
+        )
+
+        assert not user.isActive
+        assert not user.backoffice_profile
+
+        assert len(user.action_history) == 1
+        assert user.action_history[0].actionType == history_models.ActionType.USER_SUSPENDED
+        assert user.action_history[0].authorUser == beneficiary_fraud_admin
+        assert user.action_history[0].user == user
+        assert user.action_history[0].offererId is None
+        assert user.action_history[0].venueId is None
+        assert user.action_history[0].extraData["reason"] == users_constants.SuspensionReason.END_OF_CONTRACT.value
+        assert user.action_history[0].comment is None
+
 
 class UnsuspendUserTest(PostEndpointHelper):
     endpoint = "backoffice_web.users.unsuspend_user"

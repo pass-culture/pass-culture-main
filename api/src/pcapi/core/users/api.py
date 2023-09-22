@@ -395,6 +395,9 @@ def suspend_account(
     sessions = models.UserSession.query.filter_by(userId=user.id)
     repository.delete(*sessions)
 
+    bo_profile = perm_models.BackOfficeUserProfile.query.filter_by(userId=user.id)
+    repository.delete(*bo_profile)
+
     n_bookings = 0
 
     # Cancel all bookings of the related offerer if the suspended
