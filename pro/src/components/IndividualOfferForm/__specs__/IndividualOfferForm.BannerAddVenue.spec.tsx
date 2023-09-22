@@ -7,7 +7,8 @@ import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { OffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
-import { IndividualOfferVenue } from 'core/Venue/types'
+import { IndividualOfferVenueItem } from 'core/Venue/types'
+import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -50,7 +51,7 @@ describe('IndividualOfferForm', () => {
   let categories: OfferCategory[] = []
   let subCategories: OfferSubCategory[] = []
   let offererNames: OffererName[]
-  let venueList: IndividualOfferVenue[]
+  let venueList: IndividualOfferVenueItem[]
 
   beforeEach(() => {
     categories = [
@@ -105,38 +106,8 @@ describe('IndividualOfferForm', () => {
       },
     ]
     venueList = [
-      {
-        id: 1,
-        name: 'Venue AAAA',
-        managingOffererId: 1,
-        isVirtual: false,
-        withdrawalDetails: '',
-        accessibility: {
-          visual: false,
-          mental: false,
-          audio: false,
-          motor: false,
-          none: true,
-        },
-        hasMissingReimbursementPoint: false,
-        hasCreatedOffer: true,
-      },
-      {
-        id: 2,
-        name: 'Venue AAAA',
-        managingOffererId: 1,
-        isVirtual: true,
-        withdrawalDetails: '',
-        accessibility: {
-          visual: false,
-          mental: false,
-          audio: false,
-          motor: false,
-          none: true,
-        },
-        hasMissingReimbursementPoint: false,
-        hasCreatedOffer: true,
-      },
+      individualOfferVenueItemFactory({ isVirtual: true }),
+      individualOfferVenueItemFactory({ isVirtual: false }),
     ]
     props = {
       categories,
@@ -160,22 +131,9 @@ describe('IndividualOfferForm', () => {
   describe('venue banner', () => {
     it('should display venue banner when subcategory is not virtual and venue is only virtual', async () => {
       const onlyVirtualVenueList = [
-        {
-          name: 'Venue AAAA',
-          id: 3,
-          managingOffererId: 1,
+        individualOfferVenueItemFactory({
           isVirtual: true,
-          withdrawalDetails: '',
-          accessibility: {
-            visual: false,
-            mental: false,
-            audio: false,
-            motor: false,
-            none: true,
-          },
-          hasMissingReimbursementPoint: false,
-          hasCreatedOffer: true,
-        },
+        }),
       ]
       props = { ...props, venueList: onlyVirtualVenueList }
 
@@ -195,22 +153,9 @@ describe('IndividualOfferForm', () => {
 
     it('should not display venue banner when subcategory is virtual', async () => {
       const onlyVirtualVenueList = [
-        {
-          name: 'Venue AAAA',
-          id: 4,
-          managingOffererId: 1,
+        individualOfferVenueItemFactory({
           isVirtual: true,
-          withdrawalDetails: '',
-          accessibility: {
-            visual: false,
-            mental: false,
-            audio: false,
-            motor: false,
-            none: true,
-          },
-          hasMissingReimbursementPoint: false,
-          hasCreatedOffer: true,
-        },
+        }),
       ]
       props = { ...props, venueList: onlyVirtualVenueList }
 

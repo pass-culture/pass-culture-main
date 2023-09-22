@@ -23,6 +23,7 @@ import {
   IndividualOfferVenue,
   OfferSubCategory,
 } from 'core/Offers/types'
+import { IndividualOfferVenueItem } from 'core/Venue/types'
 
 let offerId = 1
 let stockId = 1
@@ -138,6 +139,31 @@ export const individualOfferVenueFactory = (
   }
 }
 
+export const individualOfferVenueItemFactory = (
+  customVenue: Partial<IndividualOfferVenueItem> = {}
+): IndividualOfferVenueItem => {
+  const currentVenueId = venueId++
+
+  return {
+    id: currentVenueId,
+    isVirtual: false,
+    name: `Le nom du lieu ${currentVenueId}`,
+    accessibility: {
+      visual: true,
+      mental: true,
+      motor: true,
+      audio: true,
+      none: false,
+    },
+    managingOffererId: 1,
+    hasCreatedOffer: true,
+    hasMissingReimbursementPoint: false,
+    withdrawalDetails: null,
+    venueType: VenueTypeCode.AUTRE,
+    ...customVenue,
+  }
+}
+
 export const individualOfferVenueResponseModelFactory = (
   customVenue: Partial<GetVenueResponseModel> = {}
 ): GetVenueResponseModel => {
@@ -181,7 +207,7 @@ export const individualOfferGetVenuesFactory = (
     id: currentVenueId,
     isVirtual: false,
     name: `Le nom du lieu ${currentVenueId}`,
-    publicName: 'Mon Lieu',
+    publicName: undefined,
     venueTypeCode: VenueTypeCode.AUTRE,
     hasCreatedOffer: true,
     hasMissingReimbursementPoint: false,

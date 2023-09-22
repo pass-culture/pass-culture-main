@@ -21,10 +21,11 @@ import { CATEGORY_STATUS, OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer, OfferSubCategory } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { AccessiblityEnum } from 'core/shared'
-import { IndividualOfferVenue } from 'core/Venue/types'
+import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as utils from 'screens/IndividualOffer/Informations/utils'
+import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { InformationsProps, Informations as InformationsScreen } from '..'
@@ -155,22 +156,10 @@ describe('screens:IndividualOffer::Informations:draft', () => {
       },
     ]
 
-    const venue: IndividualOfferVenue = {
-      id: physicalVenueId,
-      name: 'Venue name',
-      isVirtual: false,
-      accessibility: {
-        [AccessiblityEnum.AUDIO]: false,
-        [AccessiblityEnum.MENTAL]: false,
-        [AccessiblityEnum.MOTOR]: false,
-        [AccessiblityEnum.VISUAL]: false,
-        [AccessiblityEnum.NONE]: true,
-      },
-      managingOffererId: 1,
-      withdrawalDetails: '',
-      hasMissingReimbursementPoint: false,
-      hasCreatedOffer: true,
-    }
+    const venue1: IndividualOfferVenueItem = individualOfferVenueItemFactory()
+    const venue2: IndividualOfferVenueItem = individualOfferVenueItemFactory({
+      isVirtual: true,
+    })
 
     offer = {
       id: offerId,
@@ -240,25 +229,7 @@ describe('screens:IndividualOffer::Informations:draft', () => {
     contextOverride = {
       offerId: offer.id,
       offer: offer,
-      venueList: [
-        venue,
-        {
-          id: 2,
-          name: 'Lieu online BB',
-          managingOffererId: 1,
-          isVirtual: true,
-          withdrawalDetails: '',
-          accessibility: {
-            visual: false,
-            mental: false,
-            audio: false,
-            motor: false,
-            none: true,
-          },
-          hasMissingReimbursementPoint: false,
-          hasCreatedOffer: true,
-        },
-      ],
+      venueList: [venue1, venue2],
       offererNames: [{ id: 1, name: 'Offerer name' }],
       categories,
       subCategories,

@@ -1,11 +1,11 @@
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { OfferSubCategory } from 'core/Offers/types'
-import { IndividualOfferVenue } from 'core/Venue/types'
+import { IndividualOfferVenueItem } from 'core/Venue/types'
 
 export const getFilteredVenueListBySubcategory = (
-  venueList: IndividualOfferVenue[],
+  venueList: IndividualOfferVenueItem[],
   subcategory?: OfferSubCategory
-): IndividualOfferVenue[] => {
+): IndividualOfferVenueItem[] => {
   if (!subcategory) {
     return venueList
   }
@@ -24,9 +24,9 @@ export const getFilteredVenueListBySubcategory = (
 }
 
 export const getFilteredVenueListByCategoryStatus = (
-  venueList: IndividualOfferVenue[],
+  venueList: IndividualOfferVenueItem[],
   categoryStatus: CATEGORY_STATUS
-): IndividualOfferVenue[] => {
+): IndividualOfferVenueItem[] => {
   if (categoryStatus === CATEGORY_STATUS.ONLINE_OR_OFFLINE) {
     return venueList
   }

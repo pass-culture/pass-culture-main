@@ -14,7 +14,7 @@ import {
   IndividualOfferImage,
   OfferSubCategory,
 } from 'core/Offers/types'
-import { IndividualOfferVenue } from 'core/Venue/types'
+import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 import useCurrentUser from 'hooks/useCurrentUser'
 
@@ -29,7 +29,7 @@ import { getFilteredVenueListBySubcategory } from './utils/getFilteredVenueList'
 
 export interface IndividualOfferFormProps {
   offererNames: OffererName[]
-  venueList: IndividualOfferVenue[]
+  venueList: IndividualOfferVenueItem[]
   categories: OfferCategory[]
   subCategories: OfferSubCategory[]
   onImageUpload: (values: OnImageUploadArgs) => Promise<void>
@@ -73,7 +73,7 @@ const IndividualOfferForm = ({
   // because of CATEGORY_STATUS.ONLINE_OR_OFFLINE who can be both virtual or not
   const isVenueVirtual = venue?.isVirtual || false
 
-  const matchOffererId = (venue: IndividualOfferVenue) => {
+  const matchOffererId = (venue: IndividualOfferVenueItem) => {
     return venue.managingOffererId.toString() === offererId
   }
 

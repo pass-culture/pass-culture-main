@@ -5,7 +5,8 @@ import {
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { OffererName } from 'core/Offerers/types'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
-import { IndividualOfferVenue } from 'core/Venue/types'
+import { IndividualOfferVenueItem } from 'core/Venue/types'
+import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
 
 import setDefaultInitialFormValues from '../setDefaultInitialFormValues'
 
@@ -14,7 +15,7 @@ describe('setDefaultInitialFormValues', () => {
   let offererNames: OffererName[]
   let offererId: string | null
   let venueId: string | null
-  let venueList: IndividualOfferVenue[]
+  let venueList: IndividualOfferVenueItem[]
   const isBookingContactEnabled = true
 
   beforeEach(() => {
@@ -24,7 +25,13 @@ describe('setDefaultInitialFormValues', () => {
       venueId: '1',
       isVenueVirtual: false,
       withdrawalDetails: 'détails de retrait',
-      accessibility: { ...FORM_DEFAULT_VALUES.accessibility, none: true },
+      accessibility: {
+        visual: true,
+        mental: true,
+        motor: true,
+        audio: true,
+        none: false,
+      },
     }
 
     offererNames = [
@@ -34,38 +41,18 @@ describe('setDefaultInitialFormValues', () => {
     offererId = '1'
     venueId = '1'
     venueList = [
-      {
+      individualOfferVenueItemFactory({
         id: 1,
-        managingOffererId: 1,
-        name: 'Venue Name',
         isVirtual: true,
+        name: 'Venue Name',
         withdrawalDetails: 'détails de retrait',
-        accessibility: {
-          visual: false,
-          audio: false,
-          motor: false,
-          mental: false,
-          none: true,
-        },
-        hasMissingReimbursementPoint: false,
-        hasCreatedOffer: true,
-      },
-      {
+      }),
+      individualOfferVenueItemFactory({
         id: 2,
-        managingOffererId: 1,
         name: 'Venue Name 2',
         isVirtual: false,
         withdrawalDetails: 'détails de retrait',
-        accessibility: {
-          visual: false,
-          audio: false,
-          motor: false,
-          mental: false,
-          none: true,
-        },
-        hasMissingReimbursementPoint: false,
-        hasCreatedOffer: true,
-      },
+      }),
     ]
   })
 
