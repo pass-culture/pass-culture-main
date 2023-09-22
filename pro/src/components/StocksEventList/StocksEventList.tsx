@@ -44,6 +44,7 @@ export interface StocksEvent {
   priceCategoryId: number
   quantity: number | null
   uuid: string
+  bookingsQuantity: number
 }
 
 export interface StocksEventListProps {
@@ -52,7 +53,8 @@ export interface StocksEventListProps {
   className?: string
   departmentCode: string
   offerId: number
-  setStocks: (stocks: StocksEvent[]) => void
+  setStocks?: (stocks: StocksEvent[]) => void
+  readonly?: boolean
 }
 
 const StocksEventList = ({
@@ -62,6 +64,7 @@ const StocksEventList = ({
   departmentCode,
   offerId,
   setStocks,
+  readonly = false,
 }: StocksEventListProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const mode = useOfferWizardMode()
@@ -115,7 +118,7 @@ const StocksEventList = ({
     const stockIndex = stocks.findIndex(stock => stock.uuid === uuid)
 
     stocks.splice(stockIndex, 1)
-    setStocks([...stocks])
+    setStocks?.([...stocks])
     // TODO Should create dedicated event, this is not a navigation event
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OFFER_WIZARD_STEP_IDS.STOCKS,
@@ -153,7 +156,7 @@ const StocksEventList = ({
       deletionCount: `${stocks.length - newStocks.length}`,
     })
     setIsCheckedArray(stocks.map(() => false))
-    setStocks([...newStocks])
+    setStocks?.([...newStocks])
 
     const newLastPage = Math.ceil(newStocks.length / STOCKS_PER_PAGE)
     if (
@@ -186,14 +189,16 @@ const StocksEventList = ({
   return (
     <div className={className}>
       <div className={styles['select-all-container']}>
-        <BaseCheckbox
-          label="Tout sélectionner"
-          checked={areAllChecked || isAtLeastOneStockChecked}
-          partialCheck={!areAllChecked && isAtLeastOneStockChecked}
-          onChange={handleOnChangeSelectAll}
-        />
+        {!readonly && (
+          <BaseCheckbox
+            label="Tout sélectionner"
+            checked={areAllChecked || isAtLeastOneStockChecked}
+            partialCheck={!areAllChecked && isAtLeastOneStockChecked}
+            onChange={handleOnChangeSelectAll}
+          />
+        )}
 
-        <div>
+        <div className={styles['stocks-count']}>
           {stocks.length} occurence{stocks.length !== 1 && 's'}
         </div>
       </div>
@@ -344,7 +349,33 @@ const StocksEventList = ({
               <div className={cn(styles['filter-input'])}>&nbsp;</div>
             </th>
 
-            <th className={cn(styles['actions-column'], styles['header'])} />
+            {readonly ? (
+              <th
+                className={cn(
+                  styles['bookings-quantity-column'],
+                  styles['header']
+                )}
+              >
+                <span className={styles['header-name']}>Réservations</span>
+
+                <SortArrow
+                  onClick={() =>
+                    onColumnHeaderClick(
+                      StocksEventListSortingColumn.BOOKINGS_QUANTITY
+                    )
+                  }
+                  sortingMode={
+                    currentSortingColumn ===
+                    StocksEventListSortingColumn.BOOKINGS_QUANTITY
+                      ? currentSortingMode
+                      : SortingMode.NONE
+                  }
+                />
+                <div className={cn(styles['filter-input'])}>&nbsp;</div>
+              </th>
+            ) : (
+              <th className={cn(styles['actions-column'], styles['header'])} />
+            )}
           </tr>
         </thead>
 
@@ -408,11 +439,15 @@ const StocksEventList = ({
                       styles['capitalize']
                     )}
                   >
-                    <BaseCheckbox
-                      checked={isCheckedArray[currentStockIndex]}
-                      onChange={() => handleOnChangeSelected(currentStockIndex)}
-                      label=""
-                    />
+                    {!readonly && (
+                      <BaseCheckbox
+                        checked={isCheckedArray[currentStockIndex]}
+                        onChange={() =>
+                          handleOnChangeSelected(currentStockIndex)
+                        }
+                        label=""
+                      />
+                    )}
 
                     <div className={styles['day']}>
                       <strong>{beginningDay}</strong>
@@ -420,22 +455,33 @@ const StocksEventList = ({
                     <div>{beginningDate}</div>
                   </div>
                 </td>
+
                 <td className={styles['data']}>{beginningHour}</td>
+
                 <td className={styles['data']}>{price}</td>
+
                 <td className={styles['data']}>{bookingLimitDate}</td>
+
                 <td className={styles['data']}>
                   {stock.quantity === null ? 'Illimité' : stock.quantity}
                 </td>
-                <td className={cn(styles['data'], styles['clear-icon'])}>
-                  <Button
-                    variant={ButtonVariant.TERNARY}
-                    onClick={() => onDeleteStock(index, stock.uuid)}
-                    icon={fullTrashIcon}
-                    hasTooltip
-                  >
-                    Supprimer
-                  </Button>
-                </td>
+
+                {readonly ? (
+                  <td className={styles['data']}>
+                    {stock.bookingsQuantity ?? 0}
+                  </td>
+                ) : (
+                  <td className={cn(styles['data'], styles['clear-icon'])}>
+                    <Button
+                      variant={ButtonVariant.TERNARY}
+                      onClick={() => onDeleteStock(index, stock.uuid)}
+                      icon={fullTrashIcon}
+                      hasTooltip
+                    >
+                      Supprimer
+                    </Button>
+                  </td>
+                )}
               </tr>
             )
           })}

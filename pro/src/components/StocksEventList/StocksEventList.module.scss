@@ -12,7 +12,10 @@
 
 .select-all-container {
   display: flex;
-  justify-content: space-between;
+}
+
+.stocks-count {
+  margin-left: auto;
 }
 
 .header {
@@ -89,6 +92,10 @@ $icon-size: rem.torem(20px);
 
 .quantity-column {
   width: rem.torem(116px);
+}
+
+.bookings-quantity-column {
+  width: rem.torem(120px);
 }
 
 .actions-column {

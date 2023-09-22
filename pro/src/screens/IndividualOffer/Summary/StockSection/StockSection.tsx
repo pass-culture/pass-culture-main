@@ -12,6 +12,22 @@ import { RecurrenceSection } from './RecurrenceSection'
 import styles from './StockSection.module.scss'
 import { StockThingSection } from './StockThingSection'
 
+export const getStockWarningText = (offer: IndividualOffer) => {
+  if (offer.stocks.length === 0) {
+    return 'Vous n’avez aucun stock renseigné.'
+  }
+
+  if (offer.status === OfferStatus.SOLD_OUT) {
+    return 'Votre stock est épuisé.'
+  }
+
+  if (offer.status === OfferStatus.EXPIRED) {
+    return 'Votre stock est expiré.'
+  }
+
+  return false
+}
+
 export interface StockSectionProps {
   offer: IndividualOffer
   canBeDuo?: boolean
@@ -27,15 +43,7 @@ const StockSection = ({ offer, canBeDuo }: StockSectionProps): JSX.Element => {
       mode === OFFER_WIZARD_MODE.READ_ONLY ? OFFER_WIZARD_MODE.EDITION : mode,
   })
 
-  const hasNoStock = offer.stocks.length === 0
-
-  const stockWarningText = hasNoStock
-    ? 'Vous n’avez aucun stock renseigné.'
-    : // @ts-expect-error Other OfferStatus make stockWarningText be undefined wich is expected
-      {
-        [OfferStatus.SOLD_OUT]: 'Votre stock est épuisé.',
-        [OfferStatus.EXPIRED]: 'Votre stock est expiré.',
-      }[offer.status]
+  const stockWarningText = getStockWarningText(offer)
 
   return (
     <>

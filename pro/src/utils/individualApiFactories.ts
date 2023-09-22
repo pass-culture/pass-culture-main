@@ -294,6 +294,7 @@ export const individualStockEventListFactory = (
     priceCategoryId: 2,
     quantity: 18,
     uuid: uuidv4(),
+    bookingsQuantity: 0,
     ...customStock,
   }
 }
