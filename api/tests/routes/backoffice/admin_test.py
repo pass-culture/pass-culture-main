@@ -197,7 +197,7 @@ def assert_user_equals(result_card_text: str, expected_user: users_models.User):
 
 class SearchBoUsersTest(GetEndpointHelper):
     endpoint = "backoffice_web.bo_users.search_bo_users"
-    needed_permission = perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS
+    needed_permission = perm_models.Permissions.READ_ADMIN_ACCOUNTS
 
     # - fetch session
     # - fetch authenticated user
@@ -262,7 +262,7 @@ class SearchBoUsersTest(GetEndpointHelper):
 class GetBoUserTest(GetEndpointHelper):
     endpoint = "backoffice_web.bo_users.get_bo_user"
     endpoint_kwargs = {"user_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS
+    needed_permission = perm_models.Permissions.READ_ADMIN_ACCOUNTS
 
     # - fetch session (1 query)
     # - fetch authenticated user (1 query)

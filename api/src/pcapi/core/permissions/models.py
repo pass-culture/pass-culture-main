@@ -24,6 +24,7 @@ class Permissions(enum.Enum):
     """
 
     MANAGE_PERMISSIONS = "gérer les droits"
+    READ_ADMIN_ACCOUNTS = "visualiser les comptes admin"
     MANAGE_ADMIN_ACCOUNTS = "gérer les comptes admin"
     FEATURE_FLIPPING = "activer/désactiver les feature flags"
 
