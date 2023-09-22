@@ -1,20 +1,12 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import {
-  Events,
-  OFFER_FORM_NAVIGATION_IN,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-} from 'core/FirebaseEvents/constants'
-import {
-  OFFER_STATUS_DRAFT,
   OFFER_STATUS_PENDING,
   OFFER_STATUS_SOLD_OUT,
 } from 'core/Offers/constants'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
-import useAnalytics from 'hooks/useAnalytics'
 import fullErrorIcon from 'icons/full-error.svg'
 import { Tag } from 'ui-kit'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -37,22 +29,6 @@ const OfferNameCell = ({
   editionOfferLink,
   audience,
 }: OfferNameCellProps) => {
-  const { logEvent } = useAnalytics()
-
-  const onOfferNameClick = () => {
-    const isDraft = offer.status === OFFER_STATUS_DRAFT
-    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-      from: OFFER_FORM_NAVIGATION_IN.OFFERS,
-      to: !isDraft
-        ? OFFER_WIZARD_STEP_IDS.SUMMARY
-        : OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-      used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_TITLE,
-      isEdition: true,
-      isDraft: isDraft,
-      offerId: offer.id,
-    })
-  }
-
   const getDateInformations = () => {
     const {
       stocks,
@@ -96,7 +72,6 @@ const OfferNameCell = ({
       <Link
         className={styles['name']}
         title={`${offer.name} - éditer l’offre`}
-        onClick={onOfferNameClick}
         to={editionOfferLink}
       >
         {offer.name}

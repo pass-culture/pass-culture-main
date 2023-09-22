@@ -411,24 +411,4 @@ describe('screens:IndividualOffer::Informations::creation', () => {
       }
     )
   })
-
-  it('should track when cancelling creation', async () => {
-    renderInformationsScreen(props, contextOverride)
-
-    await userEvent.click(await screen.findByText('Étape précédente'))
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'informations',
-        isDraft: true,
-        isEdition: false,
-        offerId: undefined,
-        to: 'OfferFormHomepage',
-        used: 'StickyButtons',
-      }
-    )
-  })
 })

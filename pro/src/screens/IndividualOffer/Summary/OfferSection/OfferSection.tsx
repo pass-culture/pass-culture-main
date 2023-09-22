@@ -5,10 +5,6 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/cons
 import { SummaryLayout } from 'components/SummaryLayout'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import {
-  Events,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-} from 'core/FirebaseEvents/constants'
-import {
   OFFER_WITHDRAWAL_TYPE_LABELS,
   OFFER_WIZARD_MODE,
 } from 'core/Offers/constants'
@@ -17,7 +13,6 @@ import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { AccessiblityEnum } from 'core/shared'
 import { useOfferWizardMode } from 'hooks'
 import useActiveFeature from 'hooks/useActiveFeature'
-import useAnalytics from 'hooks/useAnalytics'
 
 import { serializeOfferSectionData } from './serializer'
 import humanizeDelay from './utils'
@@ -32,7 +27,6 @@ const OfferSummary = ({
   offer,
 }: OfferSummaryProps): JSX.Element => {
   const mode = useOfferWizardMode()
-  const { logEvent } = useAnalytics()
   const { categories, subCategories } = useIndividualOfferContext()
   const isBookingContactEnabled = useActiveFeature(
     'WIP_MANDATORY_BOOKING_CONTACT'
@@ -46,23 +40,10 @@ const OfferSummary = ({
       mode === OFFER_WIZARD_MODE.READ_ONLY ? OFFER_WIZARD_MODE.EDITION : mode,
   })
 
-  const logEditEvent = () => {
-    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-      from: OFFER_WIZARD_STEP_IDS.SUMMARY,
-      to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-      used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,
-      isDraft:
-        mode === OFFER_WIZARD_MODE.CREATION || mode === OFFER_WIZARD_MODE.DRAFT,
-      offerId: offerData.id,
-      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-    })
-  }
-
   return (
     <SummaryLayout.Section
       title="Détails de l’offre"
       editLink={editLink}
-      onLinkClick={logEditEvent}
       aria-label="Modifier les détails de l’offre"
     >
       <SummaryLayout.SubSection title="Type d’offre">

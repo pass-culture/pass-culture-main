@@ -12,12 +12,7 @@ import {
   VenueFormValues,
 } from 'components/VenueForm'
 import { generateSiretValidationSchema } from 'components/VenueForm/Informations/SiretOrCommentFields'
-import {
-  Events,
-  OFFER_FORM_HOMEPAGE,
-  OFFER_FORM_NAVIGATION_IN,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-} from 'core/FirebaseEvents/constants'
+import { Events } from 'core/FirebaseEvents/constants'
 import { Offerer } from 'core/Offerers/types'
 import { Providers, Venue } from 'core/Venue/types'
 import { SelectOption } from 'custom_types/form'
@@ -220,19 +215,7 @@ const VenueFormScreen = ({
             <a
               href={`/offre/creation?lieu=${initialId}&structure=${offerer.id}`}
             >
-              <Button
-                variant={ButtonVariant.PRIMARY}
-                /* istanbul ignore next: DEBT, TO FIX */
-                onClick={() =>
-                  logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                    from: OFFER_FORM_NAVIGATION_IN.VENUE,
-                    to: OFFER_FORM_HOMEPAGE,
-                    used: OFFER_FORM_NAVIGATION_MEDIUM.VENUE_BUTTON,
-                    isEdition: false,
-                  })
-                }
-                icon={fullPlusIcon}
-              >
+              <Button variant={ButtonVariant.PRIMARY} icon={fullPlusIcon}>
                 <span>Créer une offre</span>
               </Button>
             </a>

@@ -9,9 +9,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 
 import {
   Events,
-  OFFER_FORM_HOMEPAGE,
   OFFER_FORM_NAVIGATION_IN,
-  OFFER_FORM_NAVIGATION_MEDIUM,
   VenueEvents,
 } from '../../../core/FirebaseEvents/constants'
 import useActiveFeature from '../../../hooks/useActiveFeature'
@@ -123,14 +121,6 @@ const VenueOfferSteps = ({
                       to: `/offre/creation?lieu=${venueId}&structure=${offererId}`,
                       isExternal: false,
                     }}
-                    onClick={() =>
-                      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                        from: OFFER_FORM_NAVIGATION_IN.HOME,
-                        to: OFFER_FORM_HOMEPAGE,
-                        used: OFFER_FORM_NAVIGATION_MEDIUM.VENUE_OFFER_STEPS,
-                        isEdition: false,
-                      })
-                    }
                   >
                     Créer une offre
                   </ButtonLink>

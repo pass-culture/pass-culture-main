@@ -12,11 +12,6 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/cons
 import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIndividualOffer'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
-import {
-  Events,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-  OFFER_FORM_NAVIGATION_OUT,
-} from 'core/FirebaseEvents/constants'
 import { getIndividualOfferAdapter } from 'core/Offers/adapters'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
@@ -24,7 +19,6 @@ import { isOfferDisabled } from 'core/Offers/utils'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { SelectOption } from 'custom_types/form'
 import { useOfferWizardMode } from 'hooks'
-import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit'
@@ -39,7 +33,6 @@ import DialogStocksEventEditConfirm from '../DialogStocksEventEditConfirm/Dialog
 import { useNotifyFormError } from '../hooks'
 import { RecurrenceForm } from '../StocksEventCreation/RecurrenceForm'
 import { getSuccessMessage } from '../utils'
-import { logTo } from '../utils/logTo'
 
 import { upsertStocksEventAdapter } from './adapters'
 import { serializeStockEventEdition } from './adapters/serializers'
@@ -153,11 +146,9 @@ const StocksEventEdition = ({
   )
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
     useState<boolean>(false)
-  const [isSubmittingDraft, setIsSubmittingDraft] = useState<boolean>(false)
-  const { logEvent } = useAnalytics()
   const navigate = useNavigate()
   const notify = useNotification()
-  const { setOffer, shouldTrack, setShouldTrack } = useIndividualOfferContext()
+  const { setOffer } = useIndividualOfferContext()
   const [showStocksEventConfirmModal, setShowStocksEventConfirmModal] =
     useState(false)
   const priceCategoriesOptions = getPriceCategoryOptions(offer.priceCategories)
@@ -276,18 +267,6 @@ const StocksEventEdition = ({
         })
       }
       navigate(afterSubmitUrl)
-      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OFFER_WIZARD_STEP_IDS.STOCKS,
-        to: isSubmittingDraft
-          ? OFFER_WIZARD_STEP_IDS.STOCKS
-          : OFFER_WIZARD_STEP_IDS.SUMMARY,
-        used: isSubmittingDraft
-          ? OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS
-          : OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-        isEdition: true,
-        isDraft: false,
-        offerId: offer.id,
-      })
       notify.success(getSuccessMessage(mode))
     } else {
       /* istanbul ignore next: DEBT, TO FIX */
@@ -372,11 +351,6 @@ const StocksEventEdition = ({
     errors: formik.errors,
   })
 
-  useEffect(() => {
-    // when form is dirty it's tracked by RouteLeavingGuard
-    setShouldTrack(!areStocksChanged)
-  }, [areStocksChanged])
-
   const handleNextStep =
     ({ saveDraft = false } = {}) =>
     async () => {
@@ -412,7 +386,6 @@ const StocksEventEdition = ({
       }
       // tested but coverage don't see it.
       /* istanbul ignore next */
-      setIsSubmittingDraft(saveDraft)
       setAfterSubmitUrl(nextStepUrl)
 
       const allStockValues = [
@@ -447,16 +420,6 @@ const StocksEventEdition = ({
   }, [formik.isValid])
 
   const handlePreviousStep = () => {
-    if (!formik.dirty) {
-      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OFFER_WIZARD_STEP_IDS.STOCKS,
-        to: OFFER_WIZARD_STEP_IDS.TARIFS,
-        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-        isEdition: true,
-        isDraft: false,
-        offerId: offer.id,
-      })
-    }
     /* istanbul ignore next: DEBT, TO FIX */
     navigate(
       getIndividualOfferUrl({
@@ -527,8 +490,6 @@ const StocksEventEdition = ({
               onClickPrevious={handlePreviousStep}
               onClickSaveDraft={handleNextStep({ saveDraft: true })}
               step={OFFER_WIZARD_STEP_IDS.STOCKS}
-              offerId={offer.id}
-              shouldTrack={shouldTrack}
               submitAsButton={isFormEmpty()}
             />
           </form>
@@ -537,16 +498,6 @@ const StocksEventEdition = ({
 
       <RouteLeavingGuardIndividualOffer
         when={areStocksChanged && !isClickingFromActionBar}
-        tracking={nextLocation =>
-          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-            from: OFFER_WIZARD_STEP_IDS.STOCKS,
-            to: logTo(nextLocation),
-            used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
-            isEdition: true,
-            isDraft: false,
-            offerId: offer?.id,
-          })
-        }
         isEdition
       />
     </FormikProvider>
