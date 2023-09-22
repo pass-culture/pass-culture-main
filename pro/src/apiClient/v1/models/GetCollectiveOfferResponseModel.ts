@@ -4,7 +4,6 @@
 /* eslint-disable */
 
 import type { CollectiveBookingStatus } from './CollectiveBookingStatus';
-import type { CollectiveOfferOfferVenueResponseModel } from './CollectiveOfferOfferVenueResponseModel';
 import type { EducationalInstitutionResponseModel } from './EducationalInstitutionResponseModel';
 import type { EducationalRedactorResponseModel } from './EducationalRedactorResponseModel';
 import type { GetCollectiveOfferCollectiveStockResponseModel } from './GetCollectiveOfferCollectiveStockResponseModel';
@@ -12,6 +11,7 @@ import type { GetCollectiveOfferVenueResponseModel } from './GetCollectiveOfferV
 import type { NationalProgramModel } from './NationalProgramModel';
 import type { OfferDomain } from './OfferDomain';
 import type { OfferStatus } from './OfferStatus';
+import type { OfferVenueModel } from './OfferVenueModel';
 import type { StudentLevels } from './StudentLevels';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 
@@ -44,7 +44,7 @@ export type GetCollectiveOfferResponseModel = {
   name: string;
   nationalProgram?: NationalProgramModel | null;
   offerId?: number | null;
-  offerVenue: CollectiveOfferOfferVenueResponseModel;
+  offerVenue: OfferVenueModel;
   status: OfferStatus;
   students: Array<StudentLevels>;
   subcategoryId: SubcategoryIdEnum;

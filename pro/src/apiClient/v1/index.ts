@@ -40,7 +40,6 @@ export { CollectiveBookingStatus } from './models/CollectiveBookingStatus';
 export { CollectiveBookingStatusFilter } from './models/CollectiveBookingStatusFilter';
 export { CollectiveOfferDisplayedStatus } from './models/CollectiveOfferDisplayedStatus';
 export type { CollectiveOfferInstitutionModel } from './models/CollectiveOfferInstitutionModel';
-export type { CollectiveOfferOfferVenueResponseModel } from './models/CollectiveOfferOfferVenueResponseModel';
 export type { CollectiveOfferRedactorModel } from './models/CollectiveOfferRedactorModel';
 export type { CollectiveOfferResponseIdModel } from './models/CollectiveOfferResponseIdModel';
 export type { CollectiveOfferResponseModel } from './models/CollectiveOfferResponseModel';
@@ -49,7 +48,6 @@ export type { CollectiveOffersStockResponseModel } from './models/CollectiveOffe
 export type { CollectiveOfferTemplateBodyModel } from './models/CollectiveOfferTemplateBodyModel';
 export type { CollectiveOfferTemplateResponseIdModel } from './models/CollectiveOfferTemplateResponseIdModel';
 export { CollectiveOfferType } from './models/CollectiveOfferType';
-export type { CollectiveOfferVenueBodyModel } from './models/CollectiveOfferVenueBodyModel';
 export type { CollectiveStockCreationBodyModel } from './models/CollectiveStockCreationBodyModel';
 export type { CollectiveStockEditionBodyModel } from './models/CollectiveStockEditionBodyModel';
 export type { CollectiveStockResponseModel } from './models/CollectiveStockResponseModel';
@@ -149,6 +147,7 @@ export type { OffererReimbursementPointResponseModel } from './models/OffererRei
 export type { OffererStatsResponseModel } from './models/OffererStatsResponseModel';
 export { OfferStatus } from './models/OfferStatus';
 export { OfferType } from './models/OfferType';
+export type { OfferVenueModel } from './models/OfferVenueModel';
 export type { PatchAllCollectiveOffersActiveStatusBodyModel } from './models/PatchAllCollectiveOffersActiveStatusBodyModel';
 export type { PatchAllOffersActiveStatusBodyModel } from './models/PatchAllOffersActiveStatusBodyModel';
 export type { PatchCollectiveOfferActiveStatusBodyModel } from './models/PatchCollectiveOfferActiveStatusBodyModel';

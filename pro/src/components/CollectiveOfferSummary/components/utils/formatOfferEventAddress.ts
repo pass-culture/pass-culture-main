@@ -1,19 +1,19 @@
-import {
-  CollectiveOfferOfferVenueResponseModel,
-  OfferAddressType,
-} from 'apiClient/v1'
+import { OfferVenueModel, OfferAddressType } from 'apiClient/v1'
 import { Venue } from 'core/Venue/types'
 import { EVENT_ADDRESS_SCHOOL_LABEL } from 'screens/OfferEducational/constants/labels'
 
 export const formatOfferEventAddress = (
-  eventAddress: CollectiveOfferOfferVenueResponseModel,
+  eventAddress: OfferVenueModel,
   venue: Venue
 ): string => {
   if (eventAddress.addressType === OfferAddressType.SCHOOL) {
     return EVENT_ADDRESS_SCHOOL_LABEL
   }
 
-  if (eventAddress.addressType === OfferAddressType.OTHER) {
+  if (
+    eventAddress.addressType === OfferAddressType.OTHER &&
+    eventAddress.otherAddress
+  ) {
     return eventAddress.otherAddress
   }
 

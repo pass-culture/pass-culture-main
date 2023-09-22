@@ -5,9 +5,9 @@
 
 import type { OfferAddressType } from './OfferAddressType';
 
-export type CollectiveOfferVenueBodyModel = {
+export type OfferVenueModel = {
   addressType: OfferAddressType;
-  otherAddress: string;
+  otherAddress?: string | null;
   venueId?: number | null;
 };
 

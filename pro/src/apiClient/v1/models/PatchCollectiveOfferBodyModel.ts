@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { CollectiveOfferVenueBodyModel } from './CollectiveOfferVenueBodyModel';
+import type { OfferVenueModel } from './OfferVenueModel';
 import type { StudentLevels } from './StudentLevels';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 
@@ -20,7 +20,7 @@ export type PatchCollectiveOfferBodyModel = {
   motorDisabilityCompliant?: boolean | null;
   name?: string | null;
   nationalProgramId?: number | null;
-  offerVenue?: CollectiveOfferVenueBodyModel | null;
+  offerVenue?: OfferVenueModel | null;
   students?: Array<StudentLevels> | null;
   subcategoryId?: SubcategoryIdEnum | null;
   venueId?: number | null;
