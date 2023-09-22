@@ -5,6 +5,7 @@ from pcapi.core.permissions import models as perm_models
 ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     "admin": [
         perm_models.Permissions.MANAGE_PERMISSIONS,
+        perm_models.Permissions.READ_ADMIN_ACCOUNTS,
         perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS,
         perm_models.Permissions.MANAGE_TAGS_N2,
         perm_models.Permissions.MANAGE_OFFERER_TAG,
@@ -77,6 +78,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     ],
     "charge_developpement": [],
     "lecture_seule": [
+        perm_models.Permissions.READ_ADMIN_ACCOUNTS,
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.READ_PRO_ENTITY,
         perm_models.Permissions.READ_BOOKINGS,
@@ -84,6 +86,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     ],
     "qa": [
         perm_models.Permissions.MANAGE_PERMISSIONS,
+        perm_models.Permissions.READ_ADMIN_ACCOUNTS,
         perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS,
         perm_models.Permissions.FEATURE_FLIPPING,
         perm_models.Permissions.PRO_FRAUD_ACTIONS,
@@ -113,6 +116,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_TECH_PARTNERS,
     ],
     "global_access": [
+        perm_models.Permissions.READ_ADMIN_ACCOUNTS,
         perm_models.Permissions.MANAGE_ADMIN_ACCOUNTS,
         perm_models.Permissions.FEATURE_FLIPPING,
         perm_models.Permissions.PRO_FRAUD_ACTIONS,
