@@ -4,17 +4,13 @@ import React from 'react'
 
 import { api } from 'apiClient/api'
 import { UserRole } from 'apiClient/v1'
-import { Events } from 'core/FirebaseEvents/constants'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { Audience } from 'core/shared'
-import * as useAnalytics from 'hooks/useAnalytics'
 import { offererFactory } from 'utils/apiFactories'
 import { individualOfferOffererFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Offers, { OffersProps } from '../Offers'
-
-const mockLogEvent = vi.fn()
 
 const renderOffers = (props: OffersProps) =>
   renderWithProviders(<Offers {...props} />)
@@ -48,10 +44,6 @@ describe('tracker screen Offers', () => {
       venues: [],
       categories: [],
     }
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-      logEvent: mockLogEvent,
-      setLogEvent: null,
-    }))
 
     const individualOffererNames = individualOfferOffererFactory()
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
@@ -70,16 +62,5 @@ describe('tracker screen Offers', () => {
     // Then
     const createLink = screen.getByText('Créer une offre')
     await userEvent.click(createLink)
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'Offers',
-        isEdition: false,
-        to: 'OfferFormHomepage',
-        used: 'OffersButton',
-      }
-    )
   })
 })

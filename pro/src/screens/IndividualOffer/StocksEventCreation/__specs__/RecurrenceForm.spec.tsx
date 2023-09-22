@@ -4,8 +4,6 @@ import { addDays, format } from 'date-fns'
 import React from 'react'
 import { axe } from 'vitest-axe'
 
-import { Events } from 'core/FirebaseEvents/constants'
-import * as useAnalytics from 'hooks/useAnalytics'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import {
   individualOfferFactory,
@@ -15,7 +13,6 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { RecurrenceForm } from '../RecurrenceForm'
 
-const mockLogEvent = vi.fn()
 const offer = individualOfferFactory({ id: 1, stocks: [] })
 
 const defaultProps = {
@@ -25,13 +22,6 @@ const defaultProps = {
 }
 
 describe('RecurrenceForm', () => {
-  beforeEach(() => {
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-      logEvent: mockLogEvent,
-      setLogEvent: null,
-    }))
-  })
-
   it('should pass axe accessibility tests', async () => {
     const { container } = renderWithProviders(
       <RecurrenceForm {...defaultProps} />
@@ -59,20 +49,6 @@ describe('RecurrenceForm', () => {
 
     await userEvent.click(screen.getByText('Valider'))
     expect(onConfirm).toHaveBeenCalled()
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'stocks',
-        isDraft: false,
-        isEdition: true,
-        offerId: offer.id,
-        to: 'stocks',
-        used: 'RecurrencePopin',
-        recurrenceType: 'UNIQUE',
-      }
-    )
   })
 
   it('should add and remove a beginning time', async () => {

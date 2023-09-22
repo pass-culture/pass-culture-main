@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import format from 'date-fns/format'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
@@ -15,20 +14,15 @@ import {
   IndividualOfferContext,
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext'
-import { Events } from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOffer, IndividualOfferVenue } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import * as useAnalytics from 'hooks/useAnalytics'
 import { ButtonLink } from 'ui-kit'
-import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StocksEventEdition, {
   StocksEventEditionProps,
 } from '../StocksEventEdition'
-
-const mockLogEvent = vi.fn()
 
 vi.mock('screens/IndividualOffer/Informations/utils', () => {
   return {
@@ -145,11 +139,6 @@ describe('screens:StocksEventEdition', () => {
     vi.spyOn(api, 'getOffer').mockResolvedValue(
       {} as GetIndividualOfferResponseModel
     )
-
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-      logEvent: mockLogEvent,
-      setLogEvent: null,
-    }))
   })
 
   it('should not block when going outside and form is not touched', async () => {
@@ -185,41 +174,5 @@ describe('screens:StocksEventEdition', () => {
 
     expect(api.upsertStocks).toHaveBeenCalledTimes(0)
     expect(screen.getByText('This is outside stock form')).toBeInTheDocument()
-  })
-
-  it('should track when quitting without submit from RouteLeavingGuard', async () => {
-    vi.spyOn(api, 'upsertStocks').mockResolvedValue({
-      stocks: [{ id: 1 } as StockResponseModel],
-    })
-
-    renderStockEventScreen(props, contextValue)
-
-    await userEvent.type(
-      screen.getByLabelText('Date'),
-      format(new Date(), FORMAT_ISO_DATE_ONLY)
-    )
-    await userEvent.type(screen.getByLabelText('Horaire'), '12:00')
-    await userEvent.selectOptions(
-      screen.getByLabelText('Tarif'),
-      priceCategoryId
-    )
-
-    await userEvent.click(screen.getByText('Go outside !'))
-
-    await userEvent.click(screen.getByText('Quitter la page'))
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'stocks',
-        isDraft: false,
-        isEdition: true,
-        offerId: offerId,
-        to: '/outside',
-        used: 'RouteLeavingGuard',
-      }
-    )
   })
 })

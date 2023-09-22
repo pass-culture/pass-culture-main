@@ -3,15 +3,9 @@ import { useSelector } from 'react-redux'
 
 import ActionsBarSticky from 'components/ActionsBarSticky'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
-import {
-  Events,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-  OFFER_FORM_NAVIGATION_OUT,
-} from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { useOfferWizardMode } from 'hooks'
-import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 import fullLeftIcon from 'icons/full-left.svg'
 import fullRightIcon from 'icons/full-right.svg'
@@ -25,8 +19,6 @@ export interface ActionBarProps {
   onClickSaveDraft?: () => void
   isDisabled: boolean
   step: OFFER_WIZARD_STEP_IDS
-  offerId?: number
-  shouldTrack?: boolean
   submitAsButton?: boolean
 }
 
@@ -36,8 +28,6 @@ const ActionBar = ({
   onClickSaveDraft,
   isDisabled,
   step,
-  offerId,
-  shouldTrack = true,
   submitAsButton = false,
 }: ActionBarProps) => {
   const offersSearchFilters = useSelector(
@@ -51,34 +41,7 @@ const ActionBar = ({
     ...offersSearchFilters,
     page: offersPageNumber,
   })
-  const { logEvent } = useAnalytics()
   const notify = useNotification()
-
-  const logCancel = () => {
-    shouldTrack &&
-      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: step,
-        to: OFFER_FORM_NAVIGATION_OUT.OFFERS,
-        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft:
-          mode === OFFER_WIZARD_MODE.CREATION ||
-          mode === OFFER_WIZARD_MODE.DRAFT,
-        offerId: offerId,
-      })
-  }
-
-  const logDraft = () => {
-    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-      from: step,
-      to: OFFER_FORM_NAVIGATION_OUT.OFFERS,
-      used: OFFER_FORM_NAVIGATION_MEDIUM.DRAFT_BUTTONS,
-      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-      isDraft:
-        mode === OFFER_WIZARD_MODE.CREATION || mode === OFFER_WIZARD_MODE.DRAFT,
-      offerId: offerId,
-    })
-  }
 
   const Left = (): JSX.Element => {
     if (mode === OFFER_WIZARD_MODE.CREATION) {
@@ -99,7 +62,6 @@ const ActionBar = ({
             <ButtonLink
               link={{ to: '/offres', isExternal: false }}
               variant={ButtonVariant.SECONDARY}
-              onClick={logCancel}
             >
               Annuler et quitter
             </ButtonLink>
@@ -123,7 +85,6 @@ const ActionBar = ({
             <ButtonLink
               link={{ to: backOfferUrl, isExternal: false }}
               variant={ButtonVariant.PRIMARY}
-              onClick={logCancel}
             >
               Retour à la liste des offres
             </ButtonLink>
@@ -132,7 +93,6 @@ const ActionBar = ({
               <ButtonLink
                 link={{ to: backOfferUrl, isExternal: false }}
                 variant={ButtonVariant.SECONDARY}
-                onClick={logCancel}
               >
                 Annuler et quitter
               </ButtonLink>
@@ -166,7 +126,6 @@ const ActionBar = ({
                   notify.success(
                     'Brouillon sauvegardé dans la liste des offres'
                   )
-                  logDraft()
                 }}
               >
                 Sauvegarder le brouillon et quitter

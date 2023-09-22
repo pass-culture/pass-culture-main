@@ -7,12 +7,7 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/cons
 import { OfferAppPreview } from 'components/OfferAppPreview'
 import { SummaryLayout } from 'components/SummaryLayout'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
-import {
-  Events,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-  OFFER_FORM_NAVIGATION_OUT,
-  VenueEvents,
-} from 'core/FirebaseEvents/constants'
+import { Events, VenueEvents } from 'core/FirebaseEvents/constants'
 import { getIndividualOfferAdapter } from 'core/Offers/adapters'
 import { publishIndividualOffer } from 'core/Offers/adapters/publishIndividualOffer'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
@@ -80,14 +75,6 @@ const Summary = () => {
       if (response.isOk) {
         setOffer && setOffer(response.payload)
       }
-      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OFFER_WIZARD_STEP_IDS.SUMMARY,
-        to: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
-        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft: true,
-        offerId: offer.id,
-      })
       if (showVenuePopin[venueId || '']) {
         setDisplayRedirectDialog(true)
       } else {
@@ -101,16 +88,6 @@ const Summary = () => {
 
   /* istanbul ignore next: DEBT, TO FIX */
   const handlePreviousStep = () => {
-    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-      from: OFFER_WIZARD_STEP_IDS.SUMMARY,
-      to: OFFER_WIZARD_STEP_IDS.STOCKS,
-      used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-      isDraft:
-        mode === OFFER_WIZARD_MODE.CREATION || mode === OFFER_WIZARD_MODE.DRAFT,
-      offerId: offer.id,
-    })
-
     navigate(
       getIndividualOfferUrl({
         offerId: offer.id,
@@ -164,7 +141,6 @@ const Summary = () => {
             onClickPrevious={handlePreviousStep}
             step={OFFER_WIZARD_STEP_IDS.SUMMARY}
             isDisabled={isDisabled}
-            offerId={offer.id}
           />
         </SummaryLayout.Content>
 
@@ -184,20 +160,6 @@ const Summary = () => {
             <div className={styles['offer-preview-app-link']}>
               <DisplayOfferInAppLink
                 id={offer.id}
-                tracking={{
-                  isTracked: true,
-                  trackingFunction:
-                    /* istanbul ignore next: DEBT, TO FIX */
-                    () =>
-                      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                        from: OFFER_WIZARD_STEP_IDS.SUMMARY,
-                        to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
-                        used: OFFER_FORM_NAVIGATION_MEDIUM.SUMMARY_PREVIEW,
-                        isEdition: true,
-                        isDraft: false,
-                        offerId: offer.id,
-                      }),
-                }}
                 variant={ButtonVariant.SECONDARY}
               />
             </div>

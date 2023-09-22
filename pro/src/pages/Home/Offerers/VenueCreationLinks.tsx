@@ -1,12 +1,7 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom'
 
-import {
-  Events,
-  OFFER_FORM_HOMEPAGE,
-  OFFER_FORM_NAVIGATION_IN,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-} from 'core/FirebaseEvents/constants'
+import { Events } from 'core/FirebaseEvents/constants'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useAnalytics from 'hooks/useAnalytics'
 import { ButtonLink } from 'ui-kit'
@@ -56,14 +51,6 @@ const VenueCreationLinks = ({
             to: `/offre/creation?structure=${offererId}`,
             isExternal: false,
           }}
-          onClick={() =>
-            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-              from: OFFER_FORM_NAVIGATION_IN.HOME,
-              to: OFFER_FORM_HOMEPAGE,
-              used: OFFER_FORM_NAVIGATION_MEDIUM.HOME_BUTTON,
-              isEdition: false,
-            })
-          }
         >
           Créer une offre
         </ButtonLink>

@@ -1,27 +1,17 @@
 import { useCallback, useState } from 'react'
 
 import { OnImageUploadArgs } from 'components/ImageUploader/ButtonImageEdit/ModalImageEdit/ModalImageEdit'
-import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
-import {
-  Events,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-} from 'core/FirebaseEvents/constants'
 import { createThumbnailAdapter } from 'core/Offers/adapters/createThumbnailAdapter'
 import { deleteThumbnailAdapter } from 'core/Offers/adapters/deleteThumbnailAdapter'
-import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { IndividualOfferImage } from 'core/Offers/types'
 import { SENT_DATA_ERROR_MESSAGE } from 'core/shared'
-import { useOfferWizardMode } from 'hooks'
-import useAnalytics from 'hooks/useAnalytics'
 import useNotification from 'hooks/useNotification'
 
 import { imageFileToDataUrl } from '../Informations/utils/files'
 
 export const useIndividualOfferImageUpload = () => {
   const notify = useNotification()
-  const { logEvent } = useAnalytics()
-  const mode = useOfferWizardMode()
   const { offerId, offer, setOffer } = useIndividualOfferContext()
 
   const [imageOfferCreationArgs, setImageOfferCreationArgs] = useState<
@@ -103,29 +93,9 @@ export const useIndividualOfferImageUpload = () => {
             : undefined,
         })
       })
-      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_CREATION,
-        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft:
-          mode === OFFER_WIZARD_MODE.CREATION ||
-          mode === OFFER_WIZARD_MODE.DRAFT,
-        offerId: undefined,
-      })
     } else {
       try {
         await handleImageOnSubmit(offerId, creationArgs)
-        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-          from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_CREATION,
-          isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-          isDraft:
-            mode === OFFER_WIZARD_MODE.CREATION ||
-            mode === OFFER_WIZARD_MODE.DRAFT,
-          offerId: offerId,
-        })
       } catch {
         notify.error(SENT_DATA_ERROR_MESSAGE)
       }
@@ -139,29 +109,9 @@ export const useIndividualOfferImageUpload = () => {
       setImageOffer(undefined)
       /* istanbul ignore next: DEBT, TO FIX */
       setImageOfferCreationArgs(undefined)
-      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_DELETE,
-        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft:
-          mode === OFFER_WIZARD_MODE.CREATION ||
-          mode === OFFER_WIZARD_MODE.DRAFT,
-        offerId: undefined,
-      })
     } else {
       const response = await deleteThumbnailAdapter(offerId)
       if (response.isOk) {
-        logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-          from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          to: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          used: OFFER_FORM_NAVIGATION_MEDIUM.IMAGE_DELETE,
-          isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-          isDraft:
-            mode === OFFER_WIZARD_MODE.CREATION ||
-            mode === OFFER_WIZARD_MODE.DRAFT,
-          offerId: offerId,
-        })
         setImageOffer(undefined)
       } else {
         notify.error(response.message)

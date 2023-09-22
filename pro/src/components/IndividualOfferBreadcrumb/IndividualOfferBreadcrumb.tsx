@@ -8,15 +8,10 @@ import Breadcrumb, {
   Step,
 } from 'components/Breadcrumb'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
-import {
-  Events,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-} from 'core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks'
 import useActiveStep from 'hooks/useActiveStep'
-import useAnalytics from 'hooks/useAnalytics'
 import {
   getOfferSubtypeFromParam,
   isOfferSubtypeEvent,
@@ -25,16 +20,9 @@ import {
 import { OFFER_WIZARD_STEP_IDS } from './constants'
 import styles from './IndividualOfferBreadcrumb.module.scss'
 
-interface IndividualOfferBreadcrumbProps {
-  shouldTrack?: boolean
-}
-
-export const IndividualOfferBreadcrumb = ({
-  shouldTrack = true,
-}: IndividualOfferBreadcrumbProps) => {
+export const IndividualOfferBreadcrumb = () => {
   const { offer, subcategory } = useIndividualOfferContext()
   const activeStep = useActiveStep(Object.values(OFFER_WIZARD_STEP_IDS))
-  const { logEvent } = useAnalytics()
   const mode = useOfferWizardMode()
   const hasOffer = offer !== null
   const hasPriceCategories = Boolean(
@@ -132,19 +120,6 @@ export const IndividualOfferBreadcrumb = ({
     const step: Step = {
       id: stepPattern.id,
       label: stepPattern.label,
-      onClick: () => {
-        shouldTrack &&
-          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-            from: activeStep,
-            to: step.id,
-            used: OFFER_FORM_NAVIGATION_MEDIUM.BREADCRUMB,
-            isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-            isDraft:
-              mode === OFFER_WIZARD_MODE.CREATION ||
-              mode === OFFER_WIZARD_MODE.DRAFT,
-            offerId: offer?.id,
-          })
-      },
     }
     if (stepPattern.isActive && stepPattern.path && offer) {
       step.url = generatePath(stepPattern.path, {

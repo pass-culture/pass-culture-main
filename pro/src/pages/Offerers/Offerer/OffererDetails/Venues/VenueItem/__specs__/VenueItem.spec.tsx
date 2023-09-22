@@ -1,15 +1,10 @@
 import { screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import { VenueTypeCode } from 'apiClient/v1'
-import { Events } from 'core/FirebaseEvents/constants'
-import * as useAnalytics from 'hooks/useAnalytics'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import VenueItem, { VenueItemProps } from '../VenueItem'
-
-const mockLogEvent = vi.fn()
 
 describe('VenueItem', () => {
   let props: VenueItemProps
@@ -63,29 +58,6 @@ describe('VenueItem', () => {
     expect(navLink).toHaveAttribute(
       'href',
       `/offre/creation?lieu=${venueId}&structure=${offererId}`
-    )
-  })
-
-  it('should track when clicking on offer creation page', async () => {
-    vi.spyOn(useAnalytics, 'default').mockImplementation(() => ({
-      logEvent: mockLogEvent,
-      setLogEvent: null,
-    }))
-
-    renderVenueItem()
-
-    await userEvent.click(screen.getByText('Créer une offre'))
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'Offerer',
-        isEdition: false,
-        to: 'OfferFormHomepage',
-        used: 'OffererLink',
-      }
     )
   })
 })

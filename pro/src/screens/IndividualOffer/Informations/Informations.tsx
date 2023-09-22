@@ -1,5 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
@@ -21,9 +21,7 @@ import { RouteLeavingGuardIndividualOffer } from 'components/RouteLeavingGuardIn
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import {
   Events,
-  OFFER_FORM_HOMEPAGE,
   OFFER_FORM_NAVIGATION_MEDIUM,
-  OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
 import {
   createIndividualOffer,
@@ -44,7 +42,6 @@ import strokeMailIcon from 'icons/stroke-mail.svg'
 
 import { ActionBar } from '../ActionBar'
 import { useIndividualOfferImageUpload } from '../hooks'
-import { logTo } from '../utils/logTo'
 
 import { filterCategories } from './utils'
 import { computeNextStep } from './utils/computeNextStep'
@@ -76,8 +73,6 @@ const Informations = ({
     offererNames,
     venueList,
     setOffer,
-    shouldTrack,
-    setShouldTrack,
   } = useIndividualOfferContext()
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useIndividualOfferImageUpload()
@@ -298,24 +293,7 @@ const Informations = ({
     enableReinitialize: true,
   })
 
-  useEffect(() => {
-    // when form is dirty it's tracked by RouteLeavingGuard
-    setShouldTrack(!formik.dirty)
-  }, [formik.dirty])
-
   const handlePreviousStep = () => {
-    if (!formik.dirty) {
-      logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-        from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-        to: OFFER_FORM_HOMEPAGE,
-        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-        isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-        isDraft:
-          mode === OFFER_WIZARD_MODE.CREATION ||
-          mode === OFFER_WIZARD_MODE.DRAFT,
-        offerId: offer?.id,
-      })
-    }
     const queryParams = new URLSearchParams(location.search)
     const queryOffererId = queryParams.get('structure')
     const queryVenueId = queryParams.get('lieu')
@@ -357,8 +335,6 @@ const Informations = ({
               Boolean(offer && isOfferDisabled(offer.status)) ||
               isWithdrawalDialogOpen
             }
-            offerId={offer?.id}
-            shouldTrack={shouldTrack}
           />
         </form>
       </FormLayout>
@@ -381,19 +357,6 @@ const Informations = ({
       )}
       <RouteLeavingGuardIndividualOffer
         when={formik.dirty && !isClickingFromActionBar}
-        tracking={nextLocation =>
-          logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-            from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-            to: logTo(nextLocation),
-            used: OFFER_FORM_NAVIGATION_OUT.ROUTE_LEAVING_GUARD,
-            isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
-            isDraft:
-              mode === OFFER_WIZARD_MODE.CREATION ||
-              mode === OFFER_WIZARD_MODE.DRAFT,
-            // FIX ME: it is always undefined at first creation (not sure it is possible)
-            offerId: offer?.id,
-          })
-        }
         isEdition={mode === OFFER_WIZARD_MODE.EDITION}
       />
     </FormikProvider>

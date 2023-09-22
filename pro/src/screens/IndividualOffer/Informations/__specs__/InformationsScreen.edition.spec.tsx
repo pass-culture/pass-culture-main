@@ -507,26 +507,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
     )
   })
 
-  it('should track when cancelling edition', async () => {
-    renderInformationsScreen(props, contextOverride)
-
-    await userEvent.click(await screen.findByText('Annuler et quitter'))
-
-    expect(mockLogEvent).toHaveBeenCalledTimes(1)
-    expect(mockLogEvent).toHaveBeenNthCalledWith(
-      1,
-      Events.CLICKED_OFFER_FORM_NAVIGATION,
-      {
-        from: 'informations',
-        isDraft: false,
-        isEdition: true,
-        offerId: offer.id,
-        to: 'Offers',
-        used: 'StickyButtons',
-      }
-    )
-  })
-
   describe('send mail on withdrawal changes', () => {
     let expectedBody: PatchOfferBodyModel
     let features: { list: { isActive: true; nameKey: string }[] }

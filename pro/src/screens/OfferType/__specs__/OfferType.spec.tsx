@@ -303,7 +303,6 @@ describe('screens:IndividualOffer::OfferType', () => {
       )
 
       expect(screen.getByText('Création individuel')).toBeInTheDocument()
-      expect(mockLogEvent).toHaveBeenCalledTimes(1)
       expect(mockLogEvent).toHaveBeenNthCalledWith(
         1,
         Events.CLICKED_OFFER_FORM_NAVIGATION,
