@@ -26,6 +26,7 @@ from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import siret_api
 import pcapi.core.history.models as history_models
+from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -677,15 +678,17 @@ def _update_venues_criteria(
     return changed_venues
 
 
-REMOVE_PRICING_POINT_TITLE = "Détacher les points de valorisation et remboursement"
-
-
 def _update_permanent_venues(venues: list[offerers_models.Venue], is_permanent: bool) -> list[offerers_models.Venue]:
     venues_to_update = [venue for venue in venues if venue.isPermanent != is_permanent]
     for venue in venues_to_update:
         venue.isPermanent = is_permanent
+        if is_permanent and venue.thumbCount == 0:
+            transactional_mails.send_permanent_venue_needs_picture(venue)
 
     return venues_to_update
+
+
+REMOVE_PRICING_POINT_TITLE = "Détacher les points de valorisation et remboursement"
 
 
 def _load_venue_for_removing_pricing_point(venue_id: int) -> offerers_models.Venue:
