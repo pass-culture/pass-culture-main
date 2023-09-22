@@ -917,6 +917,20 @@ class Offerer(
             )
         )
 
+    @property
+    def venuesWithNonFreeOffersWithoutBankAccounts(self) -> list[int]:
+        """
+        Don’t use this property without proper eager loading or you could
+        face huge N+1 problem (see `offerer/{id}/bank-accounts`)
+        """
+        ids: list[int] = []
+        for venue in self.managedVenues:
+            if any((link.timespan.upper is None for link in venue.bankAccountLinks)):
+                continue
+            if any((stock.price > 0 for offer in venue.offers for stock in offer.stocks)):
+                ids.append(venue.id)
+        return ids
+
 
 class UserOfferer(PcObject, Base, Model, ValidationStatusMixin):
     __table_name__ = "user_offerer"

@@ -5,6 +5,7 @@ import pytest
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 
@@ -71,6 +72,7 @@ class OfferersBankAccountTest:
 
         assert offerer["hasValidBankAccount"] is False
         assert offerer["hasPendingBankAccount"] is False
+        assert offerer["venuesWithNonFreeOffersWithoutBankAccounts"] == []
 
         bank_accounts = offerer["bankAccounts"]
         venues = offerer["managedVenues"]
@@ -111,6 +113,7 @@ class OfferersBankAccountTest:
 
         assert offerer["hasValidBankAccount"] is True
         assert offerer["hasPendingBankAccount"] is False
+        assert offerer["venuesWithNonFreeOffersWithoutBankAccounts"] == []
 
         bank_accounts = offerer["bankAccounts"]
         venues = offerer["managedVenues"]
@@ -138,6 +141,12 @@ class OfferersBankAccountTest:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         expected_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        non_linked_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        non_linked_venue_bis = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offer = offers_factories.OfferFactory(venue=non_linked_venue)
+        offer_bis = offers_factories.OfferFactory(venue=non_linked_venue_bis)
+        offers_factories.StockFactory(offer=offer)
+        offers_factories.StockFactory(offer=offer_bis)
         expected_bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         offerers_factories.VenueBankAccountLinkFactory(
             venueId=expected_venue.id, bankAccountId=expected_bank_account.id, timespan=(datetime.datetime.utcnow(),)
@@ -159,6 +168,10 @@ class OfferersBankAccountTest:
 
         assert offerer["hasValidBankAccount"] is True
         assert offerer["hasPendingBankAccount"] is False
+        assert sorted(offerer["venuesWithNonFreeOffersWithoutBankAccounts"]) == [
+            non_linked_venue.id,
+            non_linked_venue_bis.id,
+        ]
 
         bank_accounts = offerer["bankAccounts"]
 
@@ -195,6 +208,7 @@ class OfferersBankAccountTest:
 
         assert offerer["hasValidBankAccount"] is True
         assert offerer["hasPendingBankAccount"] is False
+        assert offerer["venuesWithNonFreeOffersWithoutBankAccounts"] == []
 
         bank_accounts = offerer["bankAccounts"]
 
@@ -236,6 +250,7 @@ class OfferersBankAccountTest:
 
         assert offerer["hasValidBankAccount"] is False
         assert offerer["hasPendingBankAccount"] is True
+        assert offerer["venuesWithNonFreeOffersWithoutBankAccounts"] == []
 
         assert len(offerer["bankAccounts"]) == 1
         bank_account = offerer["bankAccounts"].pop()
@@ -269,6 +284,10 @@ class OfferersBankAccountTest:
             venueId=venue_linked.id, bankAccountId=second_bank_account.id, timespan=(datetime.datetime.utcnow(), None)
         )
 
+        venue_not_linked_with_free_offer = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offer = offers_factories.OfferFactory(venue=venue_not_linked_with_free_offer)
+        offers_factories.StockFactory(offer=offer, price=0)
+
         # When
         http_client = client.with_session_auth(pro_user.email)
 
@@ -284,6 +303,8 @@ class OfferersBankAccountTest:
         offerer = response.json
 
         assert offerer["hasValidBankAccount"] is True
+        assert offerer["hasPendingBankAccount"] is False
+        assert offerer["venuesWithNonFreeOffersWithoutBankAccounts"] == []
 
         bank_accounts = offerer["bankAccounts"]
         managed_venues = sorted(offerer["managedVenues"], key=lambda venue: venue["id"])
