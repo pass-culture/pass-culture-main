@@ -1,7 +1,14 @@
 import React from 'react'
 
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_OUT,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
 import { OFFER_STATUS_PENDING } from 'core/Offers/constants'
 import { IndividualOffer } from 'core/Offers/types'
+import useAnalytics from 'hooks/useAnalytics'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
@@ -19,11 +26,13 @@ interface IndividualOfferConfirmationProps {
 const IndividualOfferConfirmation = ({
   offer,
 }: IndividualOfferConfirmationProps): JSX.Element => {
+  const { logEvent } = useAnalytics()
   const isPendingOffer = offer.status === OFFER_STATUS_PENDING
   const queryString = `?structure=${offer.venue.offerer.id}&lieu=${offer.venueId}`
   const title = isPendingOffer
     ? 'Offre en cours de validation'
     : 'Offre publiée !'
+
   return (
     <div className={styles['confirmation-container']}>
       <div>
@@ -60,13 +69,23 @@ const IndividualOfferConfirmation = ({
           </p>
         )}
       </div>
+
       <div className={styles['display-in-app-link']}>
         <DisplayOfferInAppLink
           id={offer.id}
           svgAlt="Nouvelle fenêtre"
-          text="Visualiser l’offre dans l’application"
           icon={fullLinkIcon}
-        />
+          onClick={() => {
+            logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+              from: OFFER_WIZARD_STEP_IDS.CONFIRMATION,
+              to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
+              used: OFFER_FORM_NAVIGATION_MEDIUM.CONFIRMATION_PREVIEW,
+              isEdition: false,
+            })
+          }}
+        >
+          Visualiser l’offre dans l’application
+        </DisplayOfferInAppLink>
       </div>
       <div className={styles['confirmation-actions']}>
         <ButtonLink
