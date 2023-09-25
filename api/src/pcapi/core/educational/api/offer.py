@@ -472,7 +472,7 @@ def create_collective_offer_public(
         raise exceptions.EducationalInstitutionIsNotActive()
 
     offer_venue = {
-        "venueId": body.offer_venue.venueId or "",
+        "venueId": body.offer_venue.venueId,
         "addressType": body.offer_venue.addressType,
         "otherAddress": body.offer_venue.otherAddress or "",
     }
