@@ -288,6 +288,74 @@ class PostBookingTest:
 
     @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
     @freeze_time("2022-10-12 17:09:25")
+    def test_bookings_with_external_event_booking_and_remaining_quantity_unlimited(self, client, requests_mock):
+        external_booking_url = "https://book_my_offer.com/confirm"
+        user = users_factories.BeneficiaryGrant18Factory(
+            email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101"
+        )
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider",
+            localClass=None,
+            bookingExternalUrl=external_booking_url,
+            cancelExternalUrl=external_booking_url,
+        )
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = EventStockFactory(
+            lastProvider=provider,
+            priceCategory__price=2,
+            offer__subcategoryId=subcategories.SEANCE_ESSAI_PRATIQUE_ART.id,
+            offer__lastProvider=provider,
+            offer__withdrawalType=offer_models.WithdrawalTypeEnum.IN_APP,
+            offer__venue__address="1 boulevard Poissonniere",
+            offer__extraData={"ean": "1234567890123"},
+            idAtProviders="",
+            dnBookedQuantity=14,
+            quantity=20,
+        )
+
+        requests_mock.post(
+            external_booking_url,
+            json={"tickets": [{"barcode": "12123932898127", "seat": "A12"}], "remainingQuantity": "unlimited"},
+            status_code=201,
+        )
+
+        response = client.with_token(self.identifier).post(
+            "/native/v1/bookings",
+            json={"stockId": stock.id, "quantity": 1},
+        )
+
+        assert response.status_code == 200
+        assert json.loads(requests_mock.last_request.json()) == {
+            "booking_confirmation_date": "2022-10-14T17:09:25",
+            "booking_creation_date": "2022-10-12T17:09:25",
+            "booking_quantity": 1,
+            "offer_ean": "1234567890123",
+            "offer_id": stock.offer.id,
+            "offer_name": stock.offer.name,
+            "offer_price": finance_utils.to_eurocents(stock.priceCategory.price),
+            "price_category_id": stock.priceCategoryId,
+            "price_category_label": stock.priceCategory.label,
+            "stock_id": stock.id,
+            "user_birth_date": "2007-01-01",
+            "user_email": user.email,
+            "user_first_name": user.firstName,
+            "user_last_name": user.lastName,
+            "user_phone": user.phoneNumber,
+            "venue_address": "1 boulevard Poissonniere",
+            "venue_department_code": "75",
+            "venue_id": stock.offer.venue.id,
+            "venue_name": stock.offer.venue.name,
+        }
+        external_bookings = bookings_models.ExternalBooking.query.one()
+        assert external_bookings.bookingId == response.json["bookingId"]
+        assert external_bookings.barcode == "12123932898127"
+        assert external_bookings.seat == "A12"
+        assert stock.quantity == None  # stock quantity is unlimited the value is None in the database
+        assert stock.remainingQuantity == "unlimited"
+        assert stock.dnBookedQuantity == 15
+
+    @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
+    @freeze_time("2022-10-12 17:09:25")
     def test_bookings_with_external_event_booking_sold_out(self, client, requests_mock):
         external_booking_url = "https://book_my_offer.com/confirm"
         users_factories.BeneficiaryGrant18Factory(
