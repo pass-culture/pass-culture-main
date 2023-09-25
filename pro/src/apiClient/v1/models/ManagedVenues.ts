@@ -7,6 +7,6 @@ export type ManagedVenues = {
   bankAccountId?: number | null;
   commonName: string;
   id: number;
-  siret: string;
+  siret?: string | null;
 };
 
