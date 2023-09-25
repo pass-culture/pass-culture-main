@@ -7,7 +7,12 @@ import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/cons
 import { OfferAppPreview } from 'components/OfferAppPreview'
 import { SummaryLayout } from 'components/SummaryLayout'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
-import { Events, VenueEvents } from 'core/FirebaseEvents/constants'
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+  OFFER_FORM_NAVIGATION_OUT,
+  VenueEvents,
+} from 'core/FirebaseEvents/constants'
 import { getIndividualOfferAdapter } from 'core/Offers/adapters'
 import { publishIndividualOffer } from 'core/Offers/adapters/publishIndividualOffer'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
@@ -161,7 +166,19 @@ const Summary = () => {
               <DisplayOfferInAppLink
                 id={offer.id}
                 variant={ButtonVariant.SECONDARY}
-              />
+                onClick={() =>
+                  logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                    from: OFFER_WIZARD_STEP_IDS.SUMMARY,
+                    to: OFFER_FORM_NAVIGATION_OUT.PREVIEW,
+                    used: OFFER_FORM_NAVIGATION_MEDIUM.SUMMARY_PREVIEW,
+                    isEdition: true,
+                    isDraft: false,
+                    offerId: offer.id,
+                  })
+                }
+              >
+                Visualiser dans l’app
+              </DisplayOfferInAppLink>
             </div>
           )}
         </SummaryLayout.Side>
