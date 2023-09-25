@@ -3,10 +3,8 @@ import React from 'react'
 
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { useOfferWizardMode } from 'hooks'
-import {
-  Summary as SummaryScreen,
-  Template as WizardTemplate,
-} from 'screens/IndividualOffer'
+import { Summary as SummaryScreen } from 'screens/IndividualOffer'
+import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 
 export const Summary = (): JSX.Element | null => {
   const mode = useOfferWizardMode()
@@ -19,8 +17,8 @@ export const Summary = (): JSX.Element | null => {
     title = 'Récapitulatif'
   }
   return (
-    <WizardTemplate title={title}>
+    <IndivualOfferLayout title={title}>
       <SummaryScreen />
-    </WizardTemplate>
+    </IndivualOfferLayout>
   )
 }
