@@ -113,6 +113,7 @@ class OfferVenueResponse(BaseModel):
     publicName: str | None
     coordinates: Coordinates
     isPermanent: bool
+    timezone: str
 
     class Config:
         orm_mode = True

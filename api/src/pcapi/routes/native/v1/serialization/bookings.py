@@ -36,6 +36,7 @@ class BookingVenueResponse(BaseModel):
     name: str
     publicName: str | None
     coordinates: Coordinates
+    timezone: str
 
     class Config:
         orm_mode = True

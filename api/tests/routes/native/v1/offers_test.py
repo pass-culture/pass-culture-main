@@ -230,6 +230,7 @@ class OffersTest:
             "postalCode": "75000",
             "publicName": "il est venu le temps des names",
             "isPermanent": False,
+            "timezone": "Europe/Paris",
         }
         assert response.json["withdrawalDetails"] == "modalité de retrait"
 
