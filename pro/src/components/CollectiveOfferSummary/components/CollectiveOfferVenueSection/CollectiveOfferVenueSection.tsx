@@ -18,7 +18,7 @@ const CollectiveOfferVenueSection = ({
       />
       <SummaryLayout.Row
         title="Lieu"
-        description={venue.publicName ?? venue.name}
+        description={venue.publicName || venue.name}
       />
     </SummaryLayout.SubSection>
   )
