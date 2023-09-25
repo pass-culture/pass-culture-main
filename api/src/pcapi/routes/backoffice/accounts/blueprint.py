@@ -365,19 +365,15 @@ class RegistrationStep:
         description: str,
         subscription_item_status: str,
         icon: str,
-        fraud_actions_history: list[dict] = None,
+        fraud_actions_history: typing.Iterable[dict] = (),
         is_active: bool = False,
         is_disabled: bool = False,
     ):
-        if fraud_actions_history is not None:
-            self.fraud_actions_history = fraud_actions_history
-        else:
-            self.fraud_actions_history = []
-
         self.step_id = step_id
         self.description = description
         self.subscription_item_status = subscription_item_status
         self.icon = icon
+        self.fraud_actions_history = list(fraud_actions_history)
         self.status = {
             "error": _get_status(subscription_item_status) is RegistrationStepStatus.ERROR,
             "success": _get_status(subscription_item_status) is RegistrationStepStatus.SUCCESS,
