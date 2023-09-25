@@ -1,29 +1,44 @@
 import React, { FunctionComponent } from 'react'
 
-import { ButtonLinkNewWindow } from 'components/ButtonLinkNewWindow'
+import { ButtonLink } from 'ui-kit'
 import { SharedButtonProps } from 'ui-kit/Button/types'
 import { WEBAPP_URL } from 'utils/config'
 
 interface DisplayOfferInAppLinkProps extends SharedButtonProps {
   id: number
-  text?: string
   icon?: string
   svgAlt?: string
+  children: React.ReactNode
+  onClick?: () => void
 }
 
 export const DisplayOfferInAppLink: FunctionComponent<
   DisplayOfferInAppLinkProps
-> = ({ id, icon, variant, text, svgAlt }) => {
+> = ({ id, icon, children, variant, svgAlt, onClick }) => {
   const offerPreviewUrl = `${WEBAPP_URL}/offre/${id}`
 
   return (
-    <ButtonLinkNewWindow
-      linkTo={offerPreviewUrl}
+    <ButtonLink
+      link={{ to: offerPreviewUrl, isExternal: true }}
       variant={variant}
       icon={icon}
       svgAlt={svgAlt}
+      onClick={event => {
+        event.preventDefault()
+        onClick?.()
+
+        window
+          .open(
+            offerPreviewUrl,
+            'targetWindow',
+            'toolbar=no, width=375, height=667'
+          )
+          ?.focus()
+
+        return false
+      }}
     >
-      {text ? text : 'Visualiser dans l’app'}
-    </ButtonLinkNewWindow>
+      {children}
+    </ButtonLink>
   )
 }
