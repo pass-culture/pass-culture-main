@@ -6,10 +6,8 @@ import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { useOfferWizardMode } from 'hooks'
 import useCurrentUser from 'hooks/useCurrentUser'
-import {
-  Informations as InformationsScreen,
-  Template as WizardTemplate,
-} from 'screens/IndividualOffer'
+import { Informations as InformationsScreen } from 'screens/IndividualOffer'
+import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { parse } from 'utils/query-string'
 
 const Offer = (): JSX.Element | null => {
@@ -26,13 +24,13 @@ const Offer = (): JSX.Element | null => {
     !(offererId || offer)
 
   return (
-    <WizardTemplate>
+    <IndivualOfferLayout>
       {showAdminCreationBanner ? (
         <BannerCreateOfferAdmin />
       ) : (
         <InformationsScreen offererId={offererId} venueId={venueId} />
       )}
-    </WizardTemplate>
+    </IndivualOfferLayout>
   )
 }
 
