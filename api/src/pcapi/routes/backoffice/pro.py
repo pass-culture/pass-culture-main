@@ -112,12 +112,18 @@ def search_pro() -> utils.BackofficeResponse:
             "searchType": "ProSearch",
             "searchQuery": search_model.terms,
             "searchNbResults": paginated_rows.total,
-            "searchSubType": search_model.pro_type.value,
+            "searchProType": search_model.pro_type.value,
         },
     )
 
     if paginated_rows.total == 1 and FeatureToggle.WIP_BACKOFFICE_ENABLE_REDIRECT_SINGLE_RESULT.is_active():
-        return redirect(context.get_pro_link(paginated_rows.items[0].id, terms=form.terms.data), code=303)
+        return redirect(
+            context.get_pro_link(
+                paginated_rows.items[0].id,
+                terms=form.terms.data,
+            ),
+            code=303,
+        )
 
     next_pages_urls = search_utils.pagination_links(next_page, search_model.page, paginated_rows.pages)
 

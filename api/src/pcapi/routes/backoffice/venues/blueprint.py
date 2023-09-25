@@ -245,6 +245,19 @@ def list_venues() -> utils.BackofficeResponse:
 @venue_blueprint.route("/<int:venue_id>", methods=["GET"])
 def get(venue_id: int) -> utils.BackofficeResponse:
     venue = get_venue(venue_id)
+
+    if request.args.get("terms") and request.args.get("search_rank"):
+        utils.log_backoffice_tracking_data(
+            event_name="ConsultCard",
+            extra_data={
+                "searchType": "ProSearch",
+                "searchProType": TypeOptions.VENUE.name,
+                "searchQuery": request.args.get("terms"),
+                "searchRank": request.args.get("search_rank"),
+                "searchNbResults": request.args.get("total_items"),
+            },
+        )
+
     return render_venue_details(venue)
 
 
