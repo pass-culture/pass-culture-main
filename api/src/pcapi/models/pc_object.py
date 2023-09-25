@@ -21,7 +21,6 @@ from sqlalchemy.sql.schema import Column
 from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError
 from pcapi.models.api_errors import UuidCastError
-from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
 
 
@@ -68,7 +67,7 @@ class PcObject:
                 setattr(self, key, data.get(key))
                 continue
 
-            value = _dehumanize_if_needed(column, data.get(key))
+            value = data.get(key)
             if isinstance(value, str):
                 if isinstance(column.expression.type, Integer):
                     self._try_to_set_attribute_with_decimal_value(column, key, value, "integer")
@@ -211,12 +210,6 @@ class PcObject:
             raise DeletedRecordException
 
 
-def _dehumanize_if_needed(column: sa_orm.ColumnProperty, value: typing.Any) -> typing.Any:
-    if _is_human_id_column(column) and not isinstance(value, int):
-        return dehumanize(value)
-    return value
-
-
 def _deserialize_datetime(value: str | None) -> datetime | None:
     if value is None:
         return None
@@ -229,12 +222,3 @@ def _deserialize_datetime(value: str | None) -> datetime | None:
             pass
 
     raise TypeError()
-
-
-def _is_human_id_column(column: sa_orm.ColumnProperty) -> bool:
-    if column is None:
-        return None
-    column_name = column.key
-    is_column_primary_key_or_foreign_key = column_name == "id" or column_name.endswith("Id")
-    is_column_a_number = isinstance(column.expression.type, (Integer, BigInteger))
-    return is_column_primary_key_or_foreign_key and is_column_a_number
