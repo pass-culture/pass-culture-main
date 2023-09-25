@@ -265,14 +265,14 @@ def book_offer(
             offers_validation.check_offer_is_from_current_cinema_provider(stock.offer)
             _book_cinema_external_ticket(booking, stock, beneficiary)
 
-        stock.dnBookedQuantity += booking.quantity
-
         if providers_repository.is_event_external_ticket_applicable(stock.offer):
             remaining_quantity = _book_event_external_ticket(booking, stock, beneficiary)
             if remaining_quantity is None:
                 stock.quantity = None
             else:
-                stock.quantity = stock.dnBookedQuantity + remaining_quantity
+                stock.quantity = stock.dnBookedQuantity + remaining_quantity + booking.quantity
+
+        stock.dnBookedQuantity += booking.quantity
 
         logger.info(
             "Updating dnBookedQuantity after a successful booking",

@@ -322,7 +322,7 @@ class PostBookingTest:
 
         requests_mock.post(
             external_booking_url,
-            json={"tickets": [{"barcode": "12123932898127", "seat": "A12"}], "remainingQuantity": "unlimited"},
+            json={"tickets": [{"barcode": "12123932898127", "seat": "A12"}], "remainingQuantity": None},
             status_code=201,
         )
 
@@ -385,7 +385,7 @@ class PostBookingTest:
             dnBookedQuantity=10,
         )
 
-        requests_mock.post(external_booking_url, json={"error": "sold_out"}, status_code=409)
+        requests_mock.post(external_booking_url, json={"error": "sold_out", "remainingQuantity": 0}, status_code=409)
 
         response = client.with_token(self.identifier).post(
             "/native/v1/bookings", json={"stockId": stock.id, "quantity": 1}

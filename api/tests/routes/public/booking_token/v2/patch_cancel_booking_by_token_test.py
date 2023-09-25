@@ -111,6 +111,46 @@ class Returns204Test:
 
     @pytest.mark.usefixtures("db_session")
     @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
+    def test_should_returns_204_for_external_booking_and_remaining_quantity_is_unlimited(self, client, requests_mock):
+        external_url = "https://book_my_offer.com"
+        provider = providers_factories.ProviderFactory(
+            name="Technical provider",
+            bookingExternalUrl=external_url + "/book",
+            cancelExternalUrl=external_url + "/cancel",
+        )
+        providers_factories.OffererProviderFactory(provider=provider)
+        stock = offers_factories.EventStockFactory(
+            lastProvider=provider,
+            offer__subcategoryId=subcategories_v2.SEANCE_ESSAI_PRATIQUE_ART.id,
+            offer__lastProvider=provider,
+            idAtProviders="",
+            quantity=20,
+            dnBookedQuantity=4,
+        )
+        # This booking increseaes the stock.dnBookedQuantity to 5
+        booking = bookings_factories.BookingFactory(stock=stock)
+        offerers_factories.ApiKeyFactory(offerer=booking.offerer)
+        external_bookings_factories.ExternalBookingFactory(booking=booking, barcode="1234567890123")
+        requests_mock.post(
+            external_url + "/cancel",
+            json={"remainingQuantity": None},
+            status_code=200,
+        )
+
+        response = client.patch(
+            f"/v2/bookings/cancel/token/{booking.token}",
+            headers={"Authorization": "Bearer " + offerers_factories.DEFAULT_CLEAR_API_KEY},
+        )
+
+        assert response.status_code == 204
+        booking = Booking.query.one()
+        assert booking.status is BookingStatus.CANCELLED
+        assert stock.dnBookedQuantity == 4
+        assert booking.stock.quantity == None  # stock quantity is unlimited when value is None
+        assert booking.stock.remainingQuantity == "unlimited"
+
+    @pytest.mark.usefixtures("db_session")
+    @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
     def test_should_returns_204_for_booking_duo_external_booking(self, client, requests_mock):
         external_url = "https://book_my_offer.com"
         # Given
