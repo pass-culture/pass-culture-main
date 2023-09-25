@@ -2,11 +2,12 @@ import cx from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 
-import { GetBookingResponse } from 'apiClient/v2'
+import { apiContremarque } from 'apiClient/api'
+import { ApiError, GetBookingResponse } from 'apiClient/v2'
 import { Banner, SubmitButton, TextInput } from 'ui-kit'
 import Titles from 'ui-kit/Titles/Titles'
 
-import { submitValidate, getBooking, submitInvalidate } from './adapters'
+import { getBooking } from './adapters'
 import { BookingDetails } from './BookingDetails'
 import { ButtonInvalidateToken } from './ButtonInvalidateToken'
 import styles from './Desk.module.scss'
@@ -46,15 +47,24 @@ const Desk = (): JSX.Element => {
       variant: MESSAGE_VARIANT.DEFAULT,
     })
 
-    submitValidate(formValues.token).then(
-      (submitResponse: DeskSubmitResponse) => {
+    apiContremarque
+      .patchBookingUseByToken(formValues.token)
+      .then(() => ({}))
+      .catch(
+        (error: ApiError): DeskSubmitResponse => ({
+          error: {
+            message: error.body['global'],
+            variant: MESSAGE_VARIANT.ERROR,
+          },
+        })
+      )
+      .then((submitResponse: DeskSubmitResponse) => {
         if (submitResponse.error) {
           setMessage(submitResponse.error)
         } else {
           onSubmitSuccess('Contremarque validée !')
         }
-      }
-    )
+      })
   }
 
   const initialValues = {
@@ -119,13 +129,24 @@ const Desk = (): JSX.Element => {
       message: 'Invalidation en cours...',
       variant: MESSAGE_VARIANT.DEFAULT,
     })
-    submitInvalidate(token).then((submitResponse: DeskSubmitResponse) => {
-      if (submitResponse.error) {
-        setMessage(submitResponse.error)
-      } else {
-        onSubmitSuccess('Contremarque invalidée !')
-      }
-    })
+    apiContremarque
+      .patchBookingKeepByToken(token)
+      .then(() => ({}))
+      .catch(
+        (error: ApiError): DeskSubmitResponse => ({
+          error: {
+            message: error.body['global'],
+            variant: MESSAGE_VARIANT.ERROR,
+          },
+        })
+      )
+      .then((submitResponse: DeskSubmitResponse) => {
+        if (submitResponse.error) {
+          setMessage(submitResponse.error)
+        } else {
+          onSubmitSuccess('Contremarque invalidée !')
+        }
+      })
   }
 
   return (
