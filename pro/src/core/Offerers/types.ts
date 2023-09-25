@@ -16,6 +16,9 @@ export interface Offerer {
   fieldsUpdated: Array<string>
   hasAvailablePricingPoints: boolean
   hasDigitalVenueAtLeastOneOffer: boolean
+  hasValidBankAccount: boolean
+  hasPendingBankAccount: boolean
+  venuesWithNonFreeOffersWithoutBankAccounts: Array<number>
   idAtProviders?: string | null
   isActive: boolean
   isValidated: boolean
