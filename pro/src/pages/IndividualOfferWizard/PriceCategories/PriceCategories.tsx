@@ -1,10 +1,8 @@
 import React from 'react'
 
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
-import {
-  PriceCategories as PriceCategoriesScreen,
-  Template as WizardTemplate,
-} from 'screens/IndividualOffer'
+import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
+import { PriceCategories as PriceCategoriesScreen } from 'screens/IndividualOffer/PriceCategories/PriceCategories'
 
 export const PriceCategories = (): JSX.Element | null => {
   const { offer } = useIndividualOfferContext()
@@ -18,8 +16,8 @@ export const PriceCategories = (): JSX.Element | null => {
   }
 
   return (
-    <WizardTemplate>
+    <IndivualOfferLayout>
       <PriceCategoriesScreen offer={offer} />
-    </WizardTemplate>
+    </IndivualOfferLayout>
   )
 }

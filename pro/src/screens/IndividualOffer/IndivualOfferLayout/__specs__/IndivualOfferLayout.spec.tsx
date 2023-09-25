@@ -13,15 +13,17 @@ import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Template, { TemplateProps } from '../Template'
+import IndivualOfferLayout, {
+  IndivualOfferLayoutProps,
+} from '../IndivualOfferLayout'
 
 interface RenderTemplateProps {
   contextOverride?: Partial<IndividualOfferContextValues>
   url?: string
-  props?: Partial<TemplateProps>
+  props?: Partial<IndivualOfferLayoutProps>
 }
 
-const renderTemplate = ({
+const renderIndivualOfferLayout = ({
   contextOverride = {},
   url = getIndividualOfferPath({
     step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
@@ -44,18 +46,18 @@ const renderTemplate = ({
 
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValues}>
-      <Template {...props}>
+      <IndivualOfferLayout {...props}>
         <div>Template child</div>
-      </Template>
+      </IndivualOfferLayout>
     </IndividualOfferContext.Provider>,
     { initialRouterEntries: [url] }
   )
 }
 
-describe('IndividualOfferTemplate', () => {
+describe('IndivualOfferLayout', () => {
   const offerId = 1
   it('should render when no offer is given', () => {
-    renderTemplate({})
+    renderIndivualOfferLayout({})
 
     expect(screen.getByText('Template child')).toBeInTheDocument()
     expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
@@ -76,7 +78,7 @@ describe('IndividualOfferTemplate', () => {
     const contextOverride = {
       offer: offer as IndividualOffer,
     }
-    renderTemplate({ contextOverride })
+    renderIndivualOfferLayout({ contextOverride })
 
     expect(screen.getByText('Template child')).toBeInTheDocument()
     expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
@@ -99,7 +101,7 @@ describe('IndividualOfferTemplate', () => {
     const contextOverride = {
       offer: offer as IndividualOffer,
     }
-    renderTemplate({
+    renderIndivualOfferLayout({
       contextOverride,
       url: generatePath(
         getIndividualOfferPath({
@@ -125,7 +127,7 @@ describe('IndividualOfferTemplate', () => {
   })
 
   it('should display custom title', () => {
-    renderTemplate({ props: { title: 'Custom title' } })
+    renderIndivualOfferLayout({ props: { title: 'Custom title' } })
 
     expect(
       screen.getByRole('heading', { name: 'Custom title' })
@@ -144,7 +146,7 @@ describe('IndividualOfferTemplate', () => {
       const contextOverride = {
         offer: offer as IndividualOffer,
       }
-      renderTemplate({
+      renderIndivualOfferLayout({
         contextOverride,
         url: generatePath(
           getIndividualOfferPath({
@@ -173,7 +175,7 @@ describe('IndividualOfferTemplate', () => {
       const contextOverride = {
         offer: offer as IndividualOffer,
       }
-      renderTemplate({
+      renderIndivualOfferLayout({
         contextOverride,
         url: generatePath(
           getIndividualOfferPath({
@@ -200,7 +202,7 @@ describe('IndividualOfferTemplate', () => {
       const contextOverride = {
         offer: offer as IndividualOffer,
       }
-      renderTemplate({
+      renderIndivualOfferLayout({
         contextOverride,
       })
 
@@ -220,7 +222,7 @@ describe('IndividualOfferTemplate', () => {
       const contextOverride = {
         offer: offer as IndividualOffer,
       }
-      renderTemplate({
+      renderIndivualOfferLayout({
         contextOverride,
       })
 
@@ -241,7 +243,7 @@ describe('IndividualOfferTemplate', () => {
       const contextOverride = {
         offer: offer as IndividualOffer,
       }
-      renderTemplate({
+      renderIndivualOfferLayout({
         contextOverride,
       })
 

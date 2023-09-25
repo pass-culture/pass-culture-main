@@ -1,13 +1,13 @@
 /* istanbul ignore file: DEBT, TO FIX */
 import React from 'react'
 
-import { Template as WizardTemplate } from 'screens/IndividualOffer'
+import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { StocksSummary as StocksSummaryScreen } from 'screens/IndividualOffer/StocksSummary/StocksSummary'
 
 export const StocksSummary = (): JSX.Element | null => {
   return (
-    <WizardTemplate title="Récapitulatif">
+    <IndivualOfferLayout title="Récapitulatif">
       <StocksSummaryScreen />
-    </WizardTemplate>
+    </IndivualOfferLayout>
   )
 }

@@ -11,16 +11,20 @@ import useNotification from 'hooks/useNotification'
 import { Status } from '../Status'
 import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
 
-import OfferStatusBanner from './OfferStatusBanner'
-import styles from './Template.module.scss'
+import styles from './IndivualOfferLayout.module.scss'
+import OfferStatusBanner from './OfferStatusBanner/OfferStatusBanner'
 
-export interface TemplateProps {
+export interface IndivualOfferLayoutProps {
   title?: string
   withStepper?: boolean
   children: JSX.Element | JSX.Element[]
 }
 
-const Template = ({ title, children, withStepper = true }: TemplateProps) => {
+const IndivualOfferLayout = ({
+  title,
+  children,
+  withStepper = true,
+}: IndivualOfferLayoutProps) => {
   const { offer, setOffer } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
   const notify = useNotification()
@@ -84,4 +88,4 @@ const Template = ({ title, children, withStepper = true }: TemplateProps) => {
   )
 }
 
-export default Template
+export default IndivualOfferLayout
