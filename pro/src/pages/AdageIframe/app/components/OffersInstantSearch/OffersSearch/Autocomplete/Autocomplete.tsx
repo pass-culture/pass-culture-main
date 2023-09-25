@@ -21,12 +21,11 @@ import { connectSearchBox } from 'react-instantsearch-dom'
 
 import useActiveFeature from 'hooks/useActiveFeature'
 import fullClearIcon from 'icons/full-clear.svg'
-import fullLinkIcon from 'icons/full-link.svg'
 import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeClockIcon from 'icons/stroke-clock.svg'
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
-import { Button, ButtonLink } from 'ui-kit'
+import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import {
@@ -223,6 +222,9 @@ const AutocompleteComponent = ({
     venuesSuggestionsItems &&
     venuesSuggestionsItems.length > 0 &&
     !!instantSearchUiState.query
+
+  const shouldDisplayHistory =
+    isRecentSearchEnabled && recentSearchesSource && !instantSearchUiState.query
   return (
     <div>
       {instantSearchUiState.isOpen && (
@@ -266,7 +268,21 @@ const AutocompleteComponent = ({
                 </span>
               </div>
 
-              <Button type="submit" className={styles['form-search-button']}>
+              <Button
+                type="submit"
+                className={styles['form-search-button']}
+                // TODO: delete when the link is added
+                onBlur={() => {
+                  if (shouldDisplayHistory) {
+                    return
+                  }
+                  autocomplete.setIsOpen(false)
+                }}
+                onMouseDown={e => {
+                  // avoids onfocus code when "Rechercher" is clicked
+                  e.preventDefault()
+                }}
+              >
                 Rechercher
               </Button>
             </div>
@@ -285,68 +301,65 @@ const AutocompleteComponent = ({
                 })}
                 {...autocomplete.getPanelProps({})}
               >
-                {isRecentSearchEnabled &&
-                  recentSearchesSource &&
-                  !instantSearchUiState.query && (
-                    <div
-                      key={`recent-search`}
-                      className={styles['dialog-panel-autocomplete']}
-                    >
-                      <span
-                        className={styles['dialog-panel-autocomplete-text']}
+                {shouldDisplayHistory && (
+                  <div
+                    key={`recent-search`}
+                    className={styles['dialog-panel-autocomplete']}
+                  >
+                    <span className={styles['dialog-panel-autocomplete-text']}>
+                      Recherches récentes
+                      <Button
+                        className={
+                          styles['dialog-panel-autocomplete-text-clean']
+                        }
+                        variant={ButtonVariant.QUATERNARYPINK}
+                        icon={fullClearIcon}
+                        onClick={() => {
+                          localStorage.removeItem(
+                            'AUTOCOMPLETE_RECENT_SEARCHES:RECENT_SEARCH'
+                          )
+                          autocomplete.refresh()
+                        }}
+                        // TODO: delete when the link is added
+                        onBlur={() => {
+                          autocomplete.setIsOpen(false)
+                        }}
                       >
-                        Recherches récentes
-                        <Button
-                          className={
-                            styles['dialog-panel-autocomplete-text-clean']
-                          }
-                          variant={ButtonVariant.QUATERNARYPINK}
-                          icon={fullClearIcon}
-                          onClick={() => {
-                            localStorage.removeItem(
-                              'AUTOCOMPLETE_RECENT_SEARCHES:RECENT_SEARCH'
-                            )
-                            autocomplete.refresh()
-                          }}
-                        >
-                          Effacer
-                        </Button>
-                      </span>
-                      {recentSearchesItems &&
-                        recentSearchesItems.length > 0 && (
-                          <ul
-                            className={styles['dialog-panel-autocomplete-list']}
-                            {...autocomplete.getListProps()}
+                        Effacer
+                      </Button>
+                    </span>
+                    {recentSearchesItems && recentSearchesItems.length > 0 && (
+                      <ul
+                        className={styles['dialog-panel-autocomplete-list']}
+                        {...autocomplete.getListProps()}
+                      >
+                        {recentSearchesItems.map((item, index) => (
+                          <li
+                            key={`item-${index}`}
+                            className={styles['dialog-panel-autocomplete-item']}
+                            {...autocomplete.getItemProps({
+                              item,
+                              source: recentSearchesSource,
+                            })}
                           >
-                            {recentSearchesItems.map((item, index) => (
-                              <li
-                                key={`item-${index}`}
-                                className={
-                                  styles['dialog-panel-autocomplete-item']
-                                }
-                                {...autocomplete.getItemProps({
-                                  item,
-                                  source: recentSearchesSource,
-                                })}
-                              >
-                                <SvgIcon
-                                  src={strokeClockIcon}
-                                  alt="Récente recherche"
-                                />
-                                {item.label}
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                    </div>
-                  )}
+                            <SvgIcon
+                              src={strokeClockIcon}
+                              alt="Récente recherche"
+                            />
+                            {item.label}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
                 {shouldDisplayVenueSuggestions && (
                   <div
                     key={`venue-suggestions`}
                     className={styles['dialog-panel-autocomplete']}
                   >
                     <span className={styles['dialog-panel-autocomplete-text']}>
-                      Partenaire culturels
+                      Partenaires culturels
                     </span>
 
                     <ul
@@ -382,7 +395,8 @@ const AutocompleteComponent = ({
                   </div>
                 )}
               </div>
-              <div
+              {/* TODO : uncomment when the link is added */}
+              {/* <div
                 className={cn(styles['panel-footer'], {
                   [styles['panel-footer-no-result']]: !localStorage.getItem(
                     'AUTOCOMPLETE_RECENT_SEARCHES:RECENT_SEARCH'
@@ -403,7 +417,7 @@ const AutocompleteComponent = ({
                 >
                   Comment fonctionne la recherche ?
                 </ButtonLink>
-              </div>
+              </div> */}
             </dialog>
           </div>
         </form>
