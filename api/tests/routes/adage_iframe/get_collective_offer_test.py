@@ -166,3 +166,17 @@ class CollectiveOfferTest:
         offer = educational_factories.CollectiveOfferTemplateFactory(validation=validation)
         response = eac_client.get(f"/adage-iframe/collective/offers/{offer.id}")
         assert response.status_code == 404
+
+    def test_offer_venue_has_an_empty_string_venue_id(self, client):
+        # TODO(jeremieb): remove this test once there is no empty
+        # string stored as a venueId
+        redactor = educational_factories.EducationalRedactorFactory()
+        stock = educational_factories.CollectiveStockFactory(
+            collectiveOffer__offerVenue={"venueId": "", "addressType": "other", "otherAddress": "REDACTED"}
+        )
+
+        eac_client = client.with_adage_token(email=redactor.email, uai="1234UAI")
+        with assert_no_duplicated_queries():
+            response = eac_client.get(f"/adage-iframe/collective/offers/{stock.collectiveOfferId}")
+
+        assert response.status_code == 200
