@@ -20,7 +20,7 @@ WithoutLink.args = {
   title: 'Without link warning callout',
 }
 export const Closable = Template.bind({})
-WithoutLink.args = {
+Closable.args = {
   title: 'Without link warning callout',
   closable: true,
 }
