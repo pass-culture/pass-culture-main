@@ -308,8 +308,9 @@ describe('navigation and submit', () => {
 
     await userEvent.click(screen.getByText('Étape suivante'))
 
+    // when not in test 1 is replaced by MAX_STOCKS_PER_OFFER
     expect(
-      screen.getByText('Veuillez créer moins de 10 000 occurrences par offre.')
+      screen.getByText('Veuillez créer moins de 1 occurrences par offre.')
     ).toBeInTheDocument()
   })
 

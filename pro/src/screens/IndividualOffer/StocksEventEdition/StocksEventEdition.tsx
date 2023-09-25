@@ -242,7 +242,9 @@ const StocksEventEdition = ({
     }
 
     if (allStocks.length > MAX_STOCKS_PER_OFFER) {
-      notify.error('Veuillez créer moins de 10 000 occurrences par offre.')
+      notify.error(
+        `Veuillez créer moins de ${MAX_STOCKS_PER_OFFER} occurrences par offre.`
+      )
       return
     }
 

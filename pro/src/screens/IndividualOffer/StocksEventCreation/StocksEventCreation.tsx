@@ -154,7 +154,9 @@ export const StocksEventCreation = ({
         return
       }
       if (stocks.length > MAX_STOCKS_PER_OFFER) {
-        notify.error('Veuillez créer moins de 10 000 occurrences par offre.')
+        notify.error(
+          `Veuillez créer moins de ${MAX_STOCKS_PER_OFFER} occurrences par offre.`
+        )
         setIsSubmitting(false)
         return
       }

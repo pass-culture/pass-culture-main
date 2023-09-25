@@ -457,9 +457,10 @@ describe('screens:StocksEventEdition', () => {
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
 
+    // when not in test 1 is replaced by MAX_STOCKS_PER_OFFER
     expect(
       await screen.findByText(
-        'Veuillez créer moins de 10 000 occurrences par offre.'
+        'Veuillez créer moins de 1 occurrences par offre.'
       )
     ).toBeInTheDocument()
   })
