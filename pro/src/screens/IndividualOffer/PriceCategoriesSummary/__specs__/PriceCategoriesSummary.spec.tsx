@@ -15,7 +15,7 @@ import {
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { PriceCategoriesSummary } from '../PriceCategoriesSummary'
+import { PriceCategoriesSummaryScreen } from '../PriceCategoriesSummary'
 
 const mockLogEvent = vi.fn()
 
@@ -37,7 +37,7 @@ const renderPriceCategoriesSummary = (offer: IndividualOffer) => {
 
   renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
-      <PriceCategoriesSummary />
+      <PriceCategoriesSummaryScreen />
     </IndividualOfferContext.Provider>
   )
 }

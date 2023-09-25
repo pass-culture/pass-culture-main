@@ -4,7 +4,7 @@ import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 
 import { PriceCategoriesSection } from '../Summary/PriceCategoriesSection/PriceCategoriesSection'
 
-export const PriceCategoriesSummary = () => {
+export const PriceCategoriesSummaryScreen = () => {
   const { offer, subCategories } = useIndividualOfferContext()
 
   if (offer === null) {
