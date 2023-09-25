@@ -18,7 +18,6 @@ from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError
 from pcapi.models.api_errors import UnauthorizedError
 from pcapi.routes.error_handlers.utils import format_sql_statement_params
-from pcapi.utils.human_ids import NonDehumanizableId
 from pcapi.utils.image_conversion import ImageRatioError
 
 
@@ -71,14 +70,6 @@ def method_not_allowed(error: MethodNotAllowed) -> ApiErrorResponse:
     api_errors.add_error("global", "La méthode que vous utilisez n'existe pas sur notre serveur")
     logger.warning("405 %s", error)
     return app.generate_error_response(api_errors.errors), 405  # type: ignore [attr-defined]
-
-
-@app.errorhandler(NonDehumanizableId)
-def invalid_id_for_dehumanize_error(error: NonDehumanizableId) -> ApiErrorResponse:
-    api_errors = ApiErrors()
-    api_errors.add_error("global", "La page que vous recherchez n'existe pas")
-    logger.warning("404 %s", error)
-    return app.generate_error_response(api_errors.errors), 404  # type: ignore [attr-defined]
 
 
 @app.errorhandler(DecimalCastError)

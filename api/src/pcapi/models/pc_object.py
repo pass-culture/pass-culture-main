@@ -21,7 +21,6 @@ from sqlalchemy.sql.schema import Column
 from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError
 from pcapi.models.api_errors import UuidCastError
-from pcapi.utils.human_ids import humanize
 
 
 logger = logging.getLogger(__name__)
@@ -46,11 +45,8 @@ class PcObject:
         super().__init__(**kwargs)
 
     def __repr__(self) -> str:
-        if self.id is None:
-            object_id = "unsaved"
-        else:
-            object_id = f"{self.id}/{humanize(self.id)}"
-        return "<%s #%s>" % (self.__class__.__name__, object_id)
+        class_name = self.__class__.__name__
+        return f"<{class_name} #{self.id or 'unsaved'}>"
 
     def dump(self) -> None:
         pprint(vars(self))
