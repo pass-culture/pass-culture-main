@@ -58,7 +58,7 @@
   }
 
 	.icon {
-		min-width: rem.torem(24px);
+		min-width: rem.torem(20px);
 		align-self: start;
 		margin-right: rem.torem(16px);
 	}
@@ -74,6 +74,8 @@
 }
 
 .content {
+  flex-grow: 1;
+
 	> div, .bi-link-item:not(:last-child)  {
     margin-bottom: rem.torem(8px);
   }

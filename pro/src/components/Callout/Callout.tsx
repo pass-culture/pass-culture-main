@@ -57,7 +57,7 @@ const Callout = ({
         src={calloutIconSrc}
         alt=""
         className={styles['icon']}
-        width="24"
+        width="20"
       />
       <div className={styles['content']}>
         <div className={styles['title']}>{title}</div>
