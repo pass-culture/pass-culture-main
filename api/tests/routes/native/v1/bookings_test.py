@@ -558,6 +558,7 @@ class GetBookingsTest:
                         "id": used2.venue.id,
                         "name": used2.venue.name,
                         "publicName": used2.venue.publicName,
+                        "timezone": "Europe/Paris",
                     },
                     "withdrawalDetails": None,
                     "withdrawalType": None,

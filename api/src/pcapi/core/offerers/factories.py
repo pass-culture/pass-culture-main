@@ -67,6 +67,7 @@ class VenueFactory(BaseFactory):
     contact = factory.RelatedFactory("pcapi.core.offerers.factories.VenueContactFactory", factory_related_name="venue")
     bookingEmail = factory.Sequence("venue{}@example.net".format)
     dmsToken = factory.LazyFunction(api.generate_dms_token)
+    timezone: str = "Europe/Paris"
     _bannerUrl = None
 
     @factory.post_generation
