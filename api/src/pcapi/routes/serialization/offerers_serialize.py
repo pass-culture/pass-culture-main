@@ -100,6 +100,9 @@ class GetOffererResponseModel(BaseModel):
     siren: str | None
     # FIXME (mageoffray, 2023-09-14): optional until we populate the database
     dsToken: str | None
+    hasValidBankAccount: bool
+    hasPendingBankAccount: bool
+    venuesWithNonFreeOffersWithoutBankAccounts: list[int]
 
     @classmethod
     def from_orm(cls, offerer: offerers_models.Offerer) -> "GetOffererResponseModel":
@@ -121,6 +124,9 @@ class GetOffererResponseModel(BaseModel):
             offerer.id
         )
         offerer.hasAvailablePricingPoints = any(venue.siret for venue in offerer.managedVenues)
+        offerer.venuesWithNonFreeOffersWithoutBankAccounts = (
+            offerers_repository.get_venues_with_non_free_offers_without_bank_accounts(offerer.id)
+        )
 
         # We would like the response attribute to be called
         # `managedVenues` but we don't want to use the
