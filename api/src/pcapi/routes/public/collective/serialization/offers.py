@@ -16,6 +16,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import collective_offers_serialize
+from pcapi.routes.serialization.collective_offers_serialize import validate_venue_id
 from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import email as email_utils
@@ -48,6 +49,8 @@ class OfferVenueModel(BaseModel):
     venueId: int | None
     otherAddress: str | None
     addressType: collective_offers_serialize.OfferAddressType
+
+    _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
 
     class Config:
         alias_generator = to_camel

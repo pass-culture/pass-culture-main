@@ -12,6 +12,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.native.v1.serialization import common_models
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization.collective_offers_serialize import validate_venue_id
 from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -108,6 +109,8 @@ class CollectiveOfferOfferVenue(BaseModel):
     address: str | None
     postalCode: str | None
     city: str | None
+
+    _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
 
     class Config:
         alias_generator = to_camel
