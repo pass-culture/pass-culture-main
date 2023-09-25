@@ -16,6 +16,7 @@ import {
   getOfferSubtypeFromParam,
   isOfferSubtypeEvent,
 } from 'screens/IndividualOffer/InformationsScreen/utils/filterCategories/filterCategories'
+import { computeSearchForNavigation } from 'screens/IndividualOffer/utils/computeSearchForNavigation'
 
 import { OFFER_WIZARD_STEP_IDS } from './constants'
 import styles from './IndividualOfferBreadcrumb.module.scss'
@@ -30,6 +31,7 @@ export const IndividualOfferBreadcrumb = () => {
   )
   const hasStock = offer !== null && offer.stocks.length > 0
   const { search } = useLocation()
+  const venueOrOffererParam = computeSearchForNavigation(search)
   const queryParams = new URLSearchParams(search)
   const queryOfferType = queryParams.get('offer-type')
 
@@ -127,16 +129,16 @@ export const IndividualOfferBreadcrumb = () => {
       isActive: true,
     })
   }
-
+  const params = venueOrOffererParam ? `?${venueOrOffererParam}` : ''
   const stepList = steps.map((stepPattern: StepPattern): Step => {
     const step: Step = {
       id: stepPattern.id,
       label: stepPattern.label,
     }
     if (stepPattern.isActive && stepPattern.path && offer) {
-      step.url = generatePath(stepPattern.path, {
+      step.url = `${generatePath(stepPattern.path, {
         offerId: offer.id,
-      })
+      })}${params}`
     }
     return step
   })

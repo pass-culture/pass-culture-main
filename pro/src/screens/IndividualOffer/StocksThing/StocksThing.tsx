@@ -1,7 +1,7 @@
 import cn from 'classnames'
 import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import FormLayout, { FormLayoutDescription } from 'components/FormLayout'
@@ -34,6 +34,7 @@ import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 import ActionBar from '../ActionBar/ActionBar'
 import DialogStockThingDeleteConfirm from '../DialogStockDeleteConfirm/DialogStockThingDeleteConfirm'
 import useNotifyFormError from '../hooks/useNotifyFormError'
+import { computeSearchForNavigation } from '../utils/computeSearchForNavigation'
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 
 import ActivationCodeFormDialog from './ActivationCodeFormDialog/ActivationCodeFormDialog'
@@ -68,6 +69,8 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const navigate = useNavigate()
   const notify = useNotification()
   const { setOffer, subCategories } = useIndividualOfferContext()
+  const location = useLocation()
+  const search = computeSearchForNavigation(location.search)
 
   const canBeDuo = subCategories.find(
     subCategory => subCategory.id === offer.subcategoryId
@@ -108,7 +111,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
         setOffer && setOffer(response.payload)
         formik.resetForm({ values: buildInitialValues(response.payload) })
       }
-      navigate(afterSubmitUrl)
+      navigate({ pathname: afterSubmitUrl, search })
       if (isSubmittingDraft || mode === OFFER_WIZARD_MODE.EDITION) {
         notify.success(message)
       }
@@ -175,7 +178,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
           notify.success('Brouillon sauvegardé dans la liste des offres')
           return
         } else {
-          navigate(nextStepUrl)
+          navigate({ pathname: nextStepUrl, search })
           if (mode === OFFER_WIZARD_MODE.EDITION) {
             notify.success(getSuccessMessage(mode))
           }
@@ -188,7 +191,7 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       const hasSavedStock = formik.values.stockId !== undefined
       if (hasSavedStock && !formik.dirty) {
         if (!saveDraft) {
-          navigate(nextStepUrl)
+          navigate({ pathname: nextStepUrl, search })
         } else {
           notify.success(getSuccessMessage(mode))
         }
@@ -208,13 +211,14 @@ const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
   const handlePreviousStep = () => {
     /* istanbul ignore next: DEBT, TO FIX */
-    navigate(
-      getIndividualOfferUrl({
+    navigate({
+      pathname: getIndividualOfferUrl({
         offerId: offer.id,
         step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         mode,
-      })
-    )
+      }),
+      search,
+    })
   }
 
   const onConfirmDeleteStock = async () => {

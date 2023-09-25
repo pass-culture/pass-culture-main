@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import { BannerSummary } from 'components/Banner'
 import RedirectDialog from 'components/Dialog/RedirectDialog'
@@ -28,6 +28,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 
 import ActionBar from '../ActionBar/ActionBar'
+import { computeSearchForNavigation } from '../utils/computeSearchForNavigation'
 
 import { DisplayOfferInAppLink } from './DisplayOfferInAppLink/DisplayOfferInAppLink'
 import OfferSection from './OfferSection/OfferSection'
@@ -41,6 +42,9 @@ const SummaryScreen = () => {
   const notification = useNotification()
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
+  const location = useLocation()
+  const search = computeSearchForNavigation(location.search)
+
   const {
     setOffer,
     venueId,
@@ -93,13 +97,14 @@ const SummaryScreen = () => {
 
   /* istanbul ignore next: DEBT, TO FIX */
   const handlePreviousStep = () => {
-    navigate(
-      getIndividualOfferUrl({
+    navigate({
+      pathname: getIndividualOfferUrl({
         offerId: offer.id,
         step: OFFER_WIZARD_STEP_IDS.STOCKS,
         mode,
-      })
-    )
+      }),
+      search,
+    })
   }
   const offerSubCategory = subCategories.find(s => s.id === offer.subcategoryId)
 
@@ -194,7 +199,7 @@ const SummaryScreen = () => {
                 from: OFFER_WIZARD_STEP_IDS.SUMMARY,
               }
             )
-            navigate(offerConfirmationStepUrl)
+            navigate({ pathname: offerConfirmationStepUrl, search })
           }}
           title="Félicitations, vous avez créé votre offre !"
           redirectText="Renseigner des coordonnées bancaires"

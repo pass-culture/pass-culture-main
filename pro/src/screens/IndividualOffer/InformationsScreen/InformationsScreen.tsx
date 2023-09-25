@@ -42,6 +42,7 @@ import strokeMailIcon from 'icons/stroke-mail.svg'
 
 import ActionBar from '../ActionBar/ActionBar'
 import { useIndividualOfferImageUpload } from '../hooks/useIndividualOfferImageUpload'
+import { computeSearchForNavigation } from '../utils/computeSearchForNavigation'
 
 import { computeNextStep } from './utils/computeNextStep'
 import {
@@ -76,6 +77,7 @@ const InformationsScreen = ({
   } = useIndividualOfferContext()
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
     useIndividualOfferImageUpload()
+  const search = computeSearchForNavigation(location.search)
 
   const isBookingContactEnabled = useActiveFeature(
     'WIP_MANDATORY_BOOKING_CONTACT'
@@ -239,24 +241,28 @@ const InformationsScreen = ({
       }
       // replace url to fix back button
       navigate(
-        getIndividualOfferUrl({
-          step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
-          offerId: receivedOfferId,
-          mode,
-        }),
+        {
+          pathname: getIndividualOfferUrl({
+            step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
+            offerId: receivedOfferId,
+            mode,
+          }),
+          search,
+        },
         { replace: true }
       )
 
-      navigate(
-        getIndividualOfferUrl({
+      navigate({
+        pathname: getIndividualOfferUrl({
           offerId: receivedOfferId,
           step: nextStep,
           mode:
             mode === OFFER_WIZARD_MODE.EDITION
               ? OFFER_WIZARD_MODE.READ_ONLY
               : mode,
-        })
-      )
+        }),
+        search,
+      })
       // TODO Should create dedicated event for subcategory, this is not a navigation event
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
@@ -295,18 +301,9 @@ const InformationsScreen = ({
   })
 
   const handlePreviousStep = () => {
-    const queryParams = new URLSearchParams(location.search)
-    const queryOffererId = queryParams.get('structure')
-    const queryVenueId = queryParams.get('lieu')
-    /* istanbul ignore next: DEBT, TO FIX */
     navigate({
       pathname: '/offre/creation',
-      search:
-        queryOffererId && queryVenueId
-          ? `lieu=${queryVenueId}&structure=${queryOffererId}`
-          : queryOffererId && !queryVenueId
-          ? `structure=${queryOffererId}`
-          : '',
+      search,
     })
   }
 

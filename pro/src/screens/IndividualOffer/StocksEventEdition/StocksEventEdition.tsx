@@ -2,7 +2,7 @@ import { format } from 'date-fns'
 import { FormikProvider, useFormik } from 'formik'
 import isEqual from 'lodash/isEqual'
 import React, { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { PriceCategoryResponseModel } from 'apiClient/v1'
@@ -32,6 +32,7 @@ import { MAX_STOCKS_PER_OFFER } from '../constants'
 import DialogStocksEventEditConfirm from '../DialogStocksEventEditConfirm/DialogStocksEventEditConfirm'
 import useNotifyFormError from '../hooks/useNotifyFormError'
 import { RecurrenceForm } from '../StocksEventCreation/RecurrenceForm'
+import { computeSearchForNavigation } from '../utils/computeSearchForNavigation'
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 
 import { serializeStockEventEdition } from './adapters/serializers'
@@ -151,6 +152,8 @@ const StocksEventEdition = ({
   const [showStocksEventConfirmModal, setShowStocksEventConfirmModal] =
     useState(false)
   const priceCategoriesOptions = getPriceCategoryOptions(offer.priceCategories)
+  const location = useLocation()
+  const search = computeSearchForNavigation(location.search)
 
   const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
   const onCancel = () => setIsRecurrenceModalOpen(false)
@@ -252,7 +255,7 @@ const StocksEventEdition = ({
           }),
         })
       }
-      navigate(afterSubmitUrl)
+      navigate({ pathname: afterSubmitUrl, search })
       notify.success(getSuccessMessage(mode))
     } else {
       /* istanbul ignore next: DEBT, TO FIX */
@@ -366,7 +369,7 @@ const StocksEventEdition = ({
           notify.success('Brouillon sauvegardé dans la liste des offres')
           return
         } else {
-          navigate(nextStepUrl)
+          navigate({ pathname: nextStepUrl, search })
           notify.success(getSuccessMessage(mode))
         }
       }
@@ -387,7 +390,7 @@ const StocksEventEdition = ({
         setIsClickingFromActionBar(false)
         /* istanbul ignore next: DEBT to fix */
         if (!saveDraft) {
-          navigate(nextStepUrl)
+          navigate({ pathname: nextStepUrl, search })
         }
         /* istanbul ignore next: DEBT to fix */
         notify.success(getSuccessMessage(mode))
@@ -407,13 +410,14 @@ const StocksEventEdition = ({
 
   const handlePreviousStep = () => {
     /* istanbul ignore next: DEBT, TO FIX */
-    navigate(
-      getIndividualOfferUrl({
+    navigate({
+      pathname: getIndividualOfferUrl({
         offerId: offer.id,
         step: OFFER_WIZARD_STEP_IDS.TARIFS,
         mode,
-      })
-    )
+      }),
+      search,
+    })
   }
 
   const isDisabled = offer.status ? isOfferDisabled(offer.status) : false

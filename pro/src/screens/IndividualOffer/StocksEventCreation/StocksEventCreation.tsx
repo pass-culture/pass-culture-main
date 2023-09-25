@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { v4 as uuidv4 } from 'uuid'
 
 import { api } from 'apiClient/api'
@@ -22,6 +22,7 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import ActionBar from '../ActionBar/ActionBar'
 import { MAX_STOCKS_PER_OFFER } from '../constants'
 import upsertStocksEventAdapter from '../StocksEventEdition/adapters/upsertStocksEventAdapter'
+import { computeSearchForNavigation } from '../utils/computeSearchForNavigation'
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 
 import { HelpSection } from './HelpSection/HelpSection'
@@ -67,6 +68,8 @@ export const StocksEventCreation = ({
   const { setOffer } = useIndividualOfferContext()
   const notify = useNotification()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const location = useLocation()
+  const search = computeSearchForNavigation(location.search)
 
   const [isRecurrenceModalOpen, setIsRecurrenceModalOpen] = useState(false)
   const onCancel = () => setIsRecurrenceModalOpen(false)
@@ -99,13 +102,14 @@ export const StocksEventCreation = ({
 
   const handlePreviousStep = () => {
     /* istanbul ignore next: DEBT, TO FIX */
-    navigate(
-      getIndividualOfferUrl({
+    navigate({
+      pathname: getIndividualOfferUrl({
         offerId: offer.id,
         step: OFFER_WIZARD_STEP_IDS.TARIFS,
         mode,
-      })
-    )
+      }),
+      search,
+    })
   }
   const stocksToCreate = stocks
     .filter(stock => stock.id === undefined)
@@ -165,15 +169,17 @@ export const StocksEventCreation = ({
         }
       }
 
-      navigate(
-        getIndividualOfferUrl({
+      navigate({
+        pathname: getIndividualOfferUrl({
           offerId: offer.id,
           step: saveDraft
             ? OFFER_WIZARD_STEP_IDS.STOCKS
             : OFFER_WIZARD_STEP_IDS.SUMMARY,
           mode,
-        })
-      )
+        }),
+        search,
+      })
+
       setIsClickingFromActionBar(false)
 
       if (saveDraft) {

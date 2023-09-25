@@ -1,6 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import ConfirmDialog from 'components/Dialog/ConfirmDialog'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
@@ -14,6 +14,7 @@ import { useOfferWizardMode } from 'hooks'
 import useNotification from 'hooks/useNotification'
 
 import ActionBar from '../ActionBar/ActionBar'
+import { computeSearchForNavigation } from '../utils/computeSearchForNavigation'
 import { getSuccessMessage } from '../utils/getSuccessMessage'
 
 import { computeInitialValues } from './form/computeInitialValues'
@@ -159,6 +160,8 @@ export const PriceCategoriesScreen = ({
   const [isClickingDraft, setIsClickingDraft] = useState<boolean>(false)
   const notify = useNotification()
   const [popinType, setPopinType] = useState<POPIN_TYPE | null>(null)
+  const location = useLocation()
+  const search = computeSearchForNavigation(location.search)
 
   const isDisabledBySynchronization =
     Boolean(offer.lastProvider) && !isOfferAllocineSynchronized(offer)
@@ -203,7 +206,7 @@ export const PriceCategoriesScreen = ({
       mode:
         mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
     })
-    navigate(afterSubmitUrl)
+    navigate({ pathname: afterSubmitUrl, search })
     if (isClickingDraft || mode === OFFER_WIZARD_MODE.EDITION) {
       notify.success(getSuccessMessage(mode))
     }
@@ -219,13 +222,14 @@ export const PriceCategoriesScreen = ({
   })
 
   const handlePreviousStep = () => {
-    navigate(
-      getIndividualOfferUrl({
+    navigate({
+      pathname: getIndividualOfferUrl({
         offerId: offer.id,
         step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         mode,
-      })
-    )
+      }),
+      search,
+    })
   }
 
   const handleNextStep =
@@ -248,16 +252,17 @@ export const PriceCategoriesScreen = ({
           notify.success(getSuccessMessage(OFFER_WIZARD_MODE.DRAFT))
           return
         } else {
-          navigate(
-            getIndividualOfferUrl({
+          navigate({
+            pathname: getIndividualOfferUrl({
               offerId: offer.id,
               step: OFFER_WIZARD_STEP_IDS.SUMMARY,
               mode:
                 mode === OFFER_WIZARD_MODE.EDITION
                   ? OFFER_WIZARD_MODE.READ_ONLY
                   : mode,
-            })
-          )
+            }),
+            search,
+          })
           notify.success(getSuccessMessage(OFFER_WIZARD_MODE.EDITION))
         }
       }
