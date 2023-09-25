@@ -909,7 +909,7 @@ class CancelByBeneficiaryTest:
         external_bookings_factories.ExternalBookingFactory(booking=booking, barcode="1234567890123")
         requests_mock.post(
             external_url + "/cancel",
-            json={"error": "already_cancelled"},
+            json={"error": "already_cancelled", "remainingQuantity": None},
             status_code=409,
         )
 
@@ -917,6 +917,7 @@ class CancelByBeneficiaryTest:
 
         assert booking.status is BookingStatus.CANCELLED
         assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
+        assert booking.stock.remainingQuantity == "unlimited"
 
     @patch("pcapi.core.bookings.api.external_bookings_api.cancel_booking")
     @override_features(ENABLE_CDS_IMPLEMENTATION=True)
