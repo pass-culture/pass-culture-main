@@ -136,3 +136,7 @@ export enum OffererLinkEvents {
   CLICKED_ADD_COLLABORATOR = 'hasClickedAddCollaborator',
   CLICKED_SEND_INVITATION = 'hasSentInvitation',
 }
+
+export enum OFFER_FORM_NAVIGATION_OUT {
+  PREVIEW = 'AppPreview',
+}
