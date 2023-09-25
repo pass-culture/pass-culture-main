@@ -25,6 +25,48 @@ import { OfferTypeFormValues } from '../types'
 
 import { venueTypeSubcategoriesMapping } from './venueTypeSubcategoriesMapping'
 
+const getVenueTypeAndSubcategories = async (
+  venueId: string | null,
+  offererId: string | null
+): Promise<[string | null, OfferSubCategory[]]> => {
+  let venueType: string | null = null
+  let subcategories: OfferSubCategory[] = []
+
+  if (venueId) {
+    const [categoriesResponse, venueResponse] = await Promise.all([
+      getCategoriesAdapter(),
+      getVenueAdapter(Number(venueId)),
+    ])
+
+    if (venueResponse.isOk && categoriesResponse.isOk) {
+      const venueData = venueResponse.payload
+      const { subCategories } = categoriesResponse.payload
+      venueType = venueData.venueType
+      subcategories = subCategories
+    }
+  } else {
+    const [categoriesResponse, venuesResponse] = await Promise.all([
+      getCategoriesAdapter(),
+      getIndividualOfferVenuesAdapter({
+        offererId: offererId ? Number(offererId) : undefined,
+      }),
+    ])
+
+    if (venuesResponse.isOk && categoriesResponse.isOk) {
+      const { subCategories } = categoriesResponse.payload
+      const venuesData = venuesResponse.payload.filter(
+        venue => !venue.isVirtual
+      )
+
+      if (venuesData.length === 1) {
+        venueType = venuesData[0].venueType
+        subcategories = subCategories
+      }
+    }
+  }
+  return [venueType, subcategories]
+}
+
 const IndividualOfferType = (): JSX.Element | null => {
   const location = useLocation()
   const { currentUser } = useCurrentUser()
@@ -39,41 +81,16 @@ const IndividualOfferType = (): JSX.Element | null => {
 
   useEffect(() => {
     async function loadData() {
-      // prevent admin of loading all venues
+      // prevent admin from loading all venues
       const shouldLoadData =
         !currentUser.isAdmin || queryOffererId || queryVenueId
 
       if (isCategorySelectionActive && shouldLoadData) {
         setIsLoading(true)
-        const categoriesResponse = await getCategoriesAdapter()
-
-        if (categoriesResponse.isOk) {
-          const { subCategories } = categoriesResponse.payload
-          setSubcategories(subCategories)
-
-          if (queryVenueId) {
-            const venueResponse = await getVenueAdapter(Number(queryVenueId))
-
-            if (venueResponse.isOk) {
-              const venueData = venueResponse.payload
-              setVenueType(venueData?.venueType)
-            }
-          } else {
-            const venuesResponse = await getIndividualOfferVenuesAdapter({
-              offererId: queryOffererId ? Number(queryOffererId) : undefined,
-            })
-
-            if (venuesResponse.isOk) {
-              const venuesData = venuesResponse.payload.filter(
-                venue => !venue.isVirtual
-              )
-
-              if (venuesData.length === 1) {
-                setVenueType(venuesData[0].venueType)
-              }
-            }
-          }
-        }
+        const [queriedVenueType, queriedSubcategories] =
+          await getVenueTypeAndSubcategories(queryVenueId, queryOffererId)
+        setVenueType(queriedVenueType)
+        setSubcategories(queriedSubcategories)
         setIsLoading(false)
       }
     }
