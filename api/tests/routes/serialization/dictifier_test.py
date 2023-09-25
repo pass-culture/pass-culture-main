@@ -1,6 +1,3 @@
-import pytest
-
-import pcapi.core.bookings.factories as booking_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.serialization import as_dict
@@ -63,25 +60,3 @@ class AsDictTest:
         includes = [{"key": "mediations", "includes": ["-isActive"]}]
         dict_ = as_dict(mediation.offer, includes=includes)
         assert "isActive" not in dict_["mediations"][0]
-
-    def test_returns_humanized_ids_for_primary_keys(self):
-        # given
-        user = users_factories.UserFactory.build(id=12)
-
-        # when
-        dict_result = as_dict(user, includes=[])
-
-        # then
-        assert dict_result["id"] == "BQ"
-
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_humanized_ids_for_foreign_keys(self):
-        # given
-        user = users_factories.BeneficiaryGrant18Factory(id=12)
-        booking = booking_factories.BookingFactory(user=user)
-
-        # when
-        dict_result = as_dict(booking, includes=[])
-
-        # then
-        assert dict_result["userId"] == "BQ"
