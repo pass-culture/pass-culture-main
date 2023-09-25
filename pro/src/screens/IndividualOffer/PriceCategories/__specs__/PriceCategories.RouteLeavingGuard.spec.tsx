@@ -183,7 +183,7 @@ describe('PriceCategories', () => {
     expect(screen.getByText('Intitulé du tarif')).toBeInTheDocument()
   })
 
-  it.only('should let going to recap when form has been filled in edition', async () => {
+  it('should let going to recap when form has been filled in edition', async () => {
     renderPriceCategories(
       { offer: individualOfferFactory() },
       generatePath(
