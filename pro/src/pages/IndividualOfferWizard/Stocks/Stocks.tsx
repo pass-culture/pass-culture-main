@@ -3,11 +3,8 @@ import React from 'react'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { useOfferWizardMode } from 'hooks'
-import {
-  StocksEventEdition,
-  StocksThing,
-  Template,
-} from 'screens/IndividualOffer'
+import { StocksEventEdition, StocksThing } from 'screens/IndividualOffer'
+import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import { StocksEventCreation } from 'screens/IndividualOffer/StocksEventCreation/StocksEventCreation'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
@@ -25,7 +22,7 @@ const Stocks = (): JSX.Element | null => {
   }
 
   return (
-    <Template>
+    <IndivualOfferLayout>
       {offer.isEvent ? (
         mode === OFFER_WIZARD_MODE.CREATION ||
         mode === OFFER_WIZARD_MODE.DRAFT ? (
@@ -36,7 +33,7 @@ const Stocks = (): JSX.Element | null => {
       ) : (
         <StocksThing offer={offer} />
       )}
-    </Template>
+    </IndivualOfferLayout>
   )
 }
 
