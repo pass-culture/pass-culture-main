@@ -3,6 +3,14 @@ import React, { useState } from 'react'
 
 import { PriceCategoryResponseModel } from 'apiClient/v1'
 import ActionsBarSticky from 'components/ActionsBarSticky'
+import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
+import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
+import { useOfferWizardMode } from 'hooks'
+import useAnalytics from 'hooks/useAnalytics'
 import { SortingMode, useColumnSorting } from 'hooks/useColumnSorting'
 import useNotification from 'hooks/useNotification'
 import { usePagination } from 'hooks/usePagination'
@@ -52,8 +60,11 @@ const StocksEventList = ({
   priceCategories,
   className,
   departmentCode,
+  offerId,
   setStocks,
 }: StocksEventListProps): JSX.Element => {
+  const { logEvent } = useAnalytics()
+  const mode = useOfferWizardMode()
   const notify = useNotification()
   const [isCheckedArray, setIsCheckedArray] = useState<boolean[]>(
     Array(stocks.length).fill(false)
@@ -105,6 +116,15 @@ const StocksEventList = ({
 
     stocks.splice(stockIndex, 1)
     setStocks([...stocks])
+    // TODO Should create dedicated event, this is not a navigation event
+    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      from: OFFER_WIZARD_STEP_IDS.STOCKS,
+      to: OFFER_WIZARD_STEP_IDS.STOCKS,
+      used: OFFER_FORM_NAVIGATION_MEDIUM.STOCK_EVENT_DELETE,
+      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+      offerId: offerId,
+    })
 
     if (stocks.length % STOCKS_PER_PAGE === 0 && page === pageCount) {
       previousPage()
@@ -122,6 +142,16 @@ const StocksEventList = ({
     )
 
     const deletedStocksCount = stocks.length - newStocks.length
+    // TODO Should create dedicated event, this is not a navigation event
+    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      from: OFFER_WIZARD_STEP_IDS.STOCKS,
+      to: OFFER_WIZARD_STEP_IDS.STOCKS,
+      used: OFFER_FORM_NAVIGATION_MEDIUM.STOCK_EVENT_BULK_DELETE,
+      isEdition: mode !== OFFER_WIZARD_MODE.CREATION,
+      isDraft: mode !== OFFER_WIZARD_MODE.EDITION,
+      offerId: offerId,
+      deletionCount: `${stocks.length - newStocks.length}`,
+    })
     setIsCheckedArray(stocks.map(() => false))
     setStocks([...newStocks])
 

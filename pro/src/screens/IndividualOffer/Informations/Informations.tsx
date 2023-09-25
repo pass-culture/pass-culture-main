@@ -257,6 +257,7 @@ const Informations = ({
               : mode,
         })
       )
+      // TODO Should create dedicated event for subcategory, this is not a navigation event
       logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         from: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
         to: nextStep,
