@@ -162,12 +162,12 @@ def cancel_event_ticket(
     _check_external_booking_response_is_ok(response)
     try:
         parsed_response = pydantic_v1.parse_obj_as(serialize.ExternalEventCancelBookingResponse, response.json())
-        if parsed_response.remainingQuantity:
-            new_quantity = (
-                parsed_response.remainingQuantity + stock.dnBookedQuantity - len(barcodes)
-                if is_booking_saved
-                else parsed_response.remainingQuantity + stock.dnBookedQuantity
-            )
+        if parsed_response.remainingQuantity is None:
+            stock.quantity = None
+        else:
+            new_quantity = parsed_response.remainingQuantity + stock.dnBookedQuantity
+            if is_booking_saved:
+                new_quantity -= len(barcodes)
             stock.quantity = new_quantity
     except (ValueError, pydantic_v1.ValidationError):
         logger.exception(
