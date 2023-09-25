@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOffererBankAccountsResponseModel } from 'apiClient/v1'
+import ReimbursementBankAccount from 'components/ReimbursementBankAccount/ReimbursementBankAccount'
 import { useReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
 import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
@@ -135,6 +136,11 @@ const BankInformations = (): JSX.Element => {
           </div>
         </div>
       )}
+      <div className={styles['bank-accounts']}>
+        {selectedOffererBankAccounts?.bankAccounts.map(bankAccount => (
+          <ReimbursementBankAccount bankAccount={bankAccount} />
+        ))}
+      </div>
       <Button
         icon={fullMoreIcon}
         className={styles['add-bank-account-button']}
