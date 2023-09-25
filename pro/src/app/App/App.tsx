@@ -1,5 +1,5 @@
 import { setUser as setSentryUser } from '@sentry/browser'
-import React, { useEffect, useState } from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
@@ -15,7 +15,7 @@ import { URL_FOR_MAINTENANCE } from 'utils/config'
 import { Consents, initCookieConsent } from 'utils/cookieConsentModal'
 
 interface AppProps {
-  children: JSX.Element
+  children: ReactNode
 }
 
 window.beamer_config = { product_id: 'vjbiYuMS52566', lazy: true }

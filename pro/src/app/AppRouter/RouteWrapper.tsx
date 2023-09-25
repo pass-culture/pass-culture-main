@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ComponentType, ReactNode } from 'react'
 import { Navigate, useLocation, useMatches } from 'react-router-dom'
 
 import App from 'app/App/App'
@@ -7,22 +7,27 @@ import { RouteConfig } from 'app/AppRouter/routesMap'
 import useCurrentUser from 'hooks/useCurrentUser'
 import { dehumanizedRoute } from 'utils/dehumanize'
 
-export const RouteWrapper = ({ route }: { route: RouteConfig }) => {
+interface RouteWrapperProps {
+  children: React.ReactNode
+  routeMeta: RouteConfig['meta']
+}
+
+export const RouteWrapper = ({ children, routeMeta }: RouteWrapperProps) => {
   const { currentUser } = useCurrentUser()
   const location = useLocation()
   const matches = useMatches()
   const fromUrl = encodeURIComponent(`${location.pathname}${location.search}`)
-  let jsx: JSX.Element = route.element
+  let jsx: ReactNode = children
 
-  if (!route.meta?.withoutLayout) {
+  if (!routeMeta?.withoutLayout) {
     jsx = (
-      <AppLayout layoutConfig={route.meta && route.meta.layoutConfig}>
+      <AppLayout layoutConfig={routeMeta && routeMeta.layoutConfig}>
         {jsx}
       </AppLayout>
     )
   }
 
-  if (!route.meta?.public && currentUser === null) {
+  if (!routeMeta?.public && currentUser === null) {
     const loginUrl = fromUrl.includes('logout')
       ? '/connexion'
       : `/connexion?de=${fromUrl}`
@@ -35,7 +40,7 @@ export const RouteWrapper = ({ route }: { route: RouteConfig }) => {
   // For 6 months (until around 2023-10-01) we should redirect
   // urls with humanized params to url wih non human parameters
   /* istanbul ignore next */
-  if (route.meta?.shouldRedirect) {
+  if (routeMeta?.shouldRedirect) {
     const newLocation = dehumanizedRoute(location, matches)
     if (location.pathname + location.search + location.hash != newLocation) {
       jsx = <Navigate to={newLocation} replace />
