@@ -13,7 +13,6 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.models.feature import FeatureToggle
 import pcapi.scheduled_tasks.decorators as cron_decorators
-from pcapi.utils import human_ids
 from pcapi.utils.blueprint import Blueprint
 import pcapi.utils.date as date_utils
 
@@ -68,7 +67,7 @@ def generate_invoices(batch_id: int) -> None:
 
 
 @blueprint.cli.command("add_custom_offer_reimbursement_rule")
-@click.option("--offer-humanized-id", required=True)
+@click.option("--offer-id", required=True)
 @click.option("--offer-original-amount", required=True)
 @click.option("--offerer-id", type=int, required=True)
 @click.option("--reimbursed-amount", required=True)
@@ -76,7 +75,7 @@ def generate_invoices(batch_id: int) -> None:
 @click.option("--valid-until", required=False)
 @click.option("--force", required=False, is_flag=True, help="Ignore warnings and create rule anyway")
 def add_custom_offer_reimbursement_rule(
-    offer_humanized_id: str,
+    offer_id: str,
     offer_original_amount: str,
     offerer_id: int,
     reimbursed_amount: str,
@@ -88,7 +87,6 @@ def add_custom_offer_reimbursement_rule(
     offer_original_amount = decimal.Decimal(offer_original_amount.replace(",", "."))  # type: ignore [assignment]
     reimbursed_amount = decimal.Decimal(reimbursed_amount.replace(",", "."))  # type: ignore [assignment]
 
-    offer_id = human_ids.dehumanize(offer_humanized_id)
     offer = (
         offers_models.Offer.query.options(
             sqla_orm.joinedload(offers_models.Offer.stocks, innerjoin=True),
@@ -98,7 +96,7 @@ def add_custom_offer_reimbursement_rule(
         .one_or_none()
     )
     if not offer:
-        print(f"Could not find offer: {offer_humanized_id}")
+        print(f"Could not find offer: {offer_id}")
         return
 
     warnings = []
