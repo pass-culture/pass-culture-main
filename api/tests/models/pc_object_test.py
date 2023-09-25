@@ -17,8 +17,6 @@ from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError
 from pcapi.models.api_errors import UuidCastError
 from pcapi.models.pc_object import PcObject
-from pcapi.utils.human_ids import NonDehumanizableId
-from pcapi.utils.human_ids import dehumanize
 
 
 class TimeInterval(PcObject, Base, Model):
@@ -140,18 +138,6 @@ class PopulateFromDictTest:
         # Then
         assert test_pc_object.uuidId == uuid_id
 
-    def test_on_pc_object_for_valid_sql_humanize_id_value_with_key_finishing_by_Id(self):
-        # Given
-        test_pc_object = TestPcObject()
-        humanized_entity_id = "AE"
-        data = {"entityId": humanized_entity_id}
-
-        # When
-        test_pc_object.populate_from_dict(data)
-
-        # Then
-        assert test_pc_object.entityId == dehumanize(humanized_entity_id)
-
     def test_on_pc_object_for_sql_float_value_with_string_raises_decimal_cast_error(self):
         # Given
         test_pc_object = TestPcObject()
@@ -233,12 +219,3 @@ class PopulateFromDictTest:
 
         # Then
         assert errors.value.errors["uuidId"] == ["Invalid value for uuidId (uuid): 'foo'"]
-
-    def test_raises_type_error_if_raw_humanized_id_is_invalid(self):
-        # Given
-        test_pc_object = TestPcObject()
-        data = {"entityId": "12R-..2foo"}
-
-        # When
-        with pytest.raises(NonDehumanizableId):
-            test_pc_object.populate_from_dict(data)
