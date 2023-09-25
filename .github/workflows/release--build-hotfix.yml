@@ -84,4 +84,5 @@ jobs:
       ENV: production
       CHANNEL: "${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}"
       EXPIRES: "30d"
+      PUSH_RELEASE_TO_SENTRY: true
       REF: v${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}
