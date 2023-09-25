@@ -8,6 +8,7 @@ from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.models import offer_mixin
+from pcapi.utils.date import format_into_utc_date
 
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
 
@@ -66,6 +67,8 @@ class CollectiveOfferTemplateTest:
             "durationMinutes": None,
             "contactEmail": offer.contactEmail,
             "contactPhone": offer.contactPhone,
+            "dateCreated": format_into_utc_date(offer.dateCreated),
+            "dateUpdated": format_into_utc_date(offer.dateUpdated),
             "offerVenue": {
                 "addressType": "other",
                 "address": None,
@@ -137,6 +140,8 @@ class CollectiveOfferTemplateTest:
             "durationMinutes": None,
             "contactEmail": offer.contactEmail,
             "contactPhone": offer.contactPhone,
+            "dateCreated": format_into_utc_date(offer.dateCreated),
+            "dateUpdated": format_into_utc_date(offer.dateUpdated),
             "offerVenue": {
                 "addressType": "offererVenue",
                 "address": venue.address,

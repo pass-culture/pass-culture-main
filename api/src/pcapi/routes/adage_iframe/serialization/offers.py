@@ -221,6 +221,8 @@ class CollectiveOfferTemplateResponseModel(BaseModel, common_models.Accessibilit
     imageCredit: str | None
     imageUrl: str | None
     nationalProgram: NationalProgramModel | None
+    dateCreated: datetime
+    dateUpdated: datetime
 
     @classmethod
     def from_orm(
