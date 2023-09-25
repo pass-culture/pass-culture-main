@@ -522,5 +522,5 @@ class LogsTest:
             "searchType": "ProSearch",
             "searchQuery": "rythme",
             "searchNbResults": 1,
-            "searchSubType": "offerer",
+            "searchProType": "offerer",
         }

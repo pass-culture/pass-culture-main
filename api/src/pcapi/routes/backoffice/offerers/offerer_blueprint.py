@@ -101,6 +101,19 @@ def render_offerer_details(
 @offerer_blueprint.route("", methods=["GET"])
 def get(offerer_id: int) -> utils.BackofficeResponse:
     offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+
+    if request.args.get("terms") and request.args.get("search_rank"):
+        utils.log_backoffice_tracking_data(
+            event_name="ConsultCard",
+            extra_data={
+                "searchType": "ProSearch",
+                "searchProType": TypeOptions.OFFERER.name,
+                "searchQuery": request.args.get("terms"),
+                "searchRank": request.args.get("search_rank"),
+                "searchNbResults": request.args.get("total_items"),
+            },
+        )
+
     return render_offerer_details(offerer)
 
 
