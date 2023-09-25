@@ -22,7 +22,9 @@ const AppRouter = ({ routes }: { routes: RouteConfig[] }): JSX.Element => {
     )
     .map((route) => ({
       ...route,
-      element: <RouteWrapper route={route} />,
+      element: (
+        <RouteWrapper routeMeta={route.meta}>{route.element}</RouteWrapper>
+      ),
     }))
 
   const router = sentryCreateBrowserRouter([
