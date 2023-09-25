@@ -22,7 +22,6 @@ import Desk from 'pages/Desk'
 import { EmailChangeValidation } from 'pages/EmailChangeValidation'
 import Unavailable from 'pages/Errors/Unavailable/Unavailable'
 import Homepage from 'pages/Home/Homepage'
-import IndividualOfferWizard from 'pages/IndividualOfferWizard/IndividualOfferWizard'
 import LostPassword from 'pages/LostPassword'
 import OffererDetails from 'pages/Offerers/Offerer/OffererDetails/OffererDetails'
 import CollectiveDataEdition from 'pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition'
@@ -56,7 +55,8 @@ export interface RouteConfig {
   parentPath?: string
   path: string
   title?: string
-  element: JSX.Element
+  element?: JSX.Element
+  lazy?: any
   meta?: RouteMeta
   featureName?: string
 }
@@ -309,10 +309,9 @@ const routes: RouteConfig[] = [
     },
   },
   {
-    element: <IndividualOfferWizard />,
     path: '/offre/individuelle/:offerId/*',
     title: 'Offre étape par étape',
-    meta: { shouldRedirect: true },
+    lazy: () => import('pages/IndividualOfferWizard/IndividualOfferWizard'),
   },
   {
     element: <Reimbursements />,

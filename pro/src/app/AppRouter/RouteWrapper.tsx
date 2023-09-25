@@ -48,3 +48,17 @@ export const RouteWrapper = ({ children, routeMeta }: RouteWrapperProps) => {
   }
   return <App>{jsx}</App>
 }
+
+export const withRouteWrapper = <Props extends object>(
+  Component: ComponentType<Props>,
+  routeMeta: RouteConfig['meta']
+) => {
+  const WrappedComponent = (props: Props) => (
+    <RouteWrapper routeMeta={routeMeta}>
+      <Component {...props} />
+    </RouteWrapper>
+  )
+  WrappedComponent.displayName = `withRouteWrapper(${Component.displayName})`
+
+  return WrappedComponent
+}
