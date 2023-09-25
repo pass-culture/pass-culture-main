@@ -39,6 +39,14 @@ T_GetCollectiveOfferBaseResponseModel = typing.TypeVar(
 )
 
 
+def validate_venue_id(venue_id: int | str | None) -> int | None:
+    # TODO(jeremieb): remove this validator once there is no empty
+    # string stored as a venueId
+    if not venue_id:
+        return None
+    return int(venue_id)  # should not be needed but it makes mypy happy
+
+
 class ListCollectiveOffersQueryModel(BaseModel):
     nameOrIsbn: str | None
     offerer_id: int | None
@@ -358,6 +366,8 @@ class CollectiveOfferVenueBodyModel(BaseModel):
     addressType: OfferAddressType
     otherAddress: str
     venueId: int | None
+
+    _validated_venue_id = validator("venueId", pre=True, allow_reuse=True)(validate_venue_id)
 
     class Config:
         alias_generator = to_camel
