@@ -60,7 +60,7 @@ const renderIndividualOfferWizardRoute = (
     { storeOverrides, initialRouterEntries: [url] }
   )
 
-describe('test IndividualOfferWisard', () => {
+describe('IndividualOfferWisard', () => {
   let store: any
 
   beforeEach(() => {
@@ -350,7 +350,7 @@ describe('test IndividualOfferWisard', () => {
       expect(tabConfirmation).toBeInTheDocument()
     })
 
-    it('should not render stepper on summary page in edition', async () => {
+    it('should not render stepper on summary page in read only mode', async () => {
       renderIndividualOfferWizardRoute(
         store,
         generatePath(
