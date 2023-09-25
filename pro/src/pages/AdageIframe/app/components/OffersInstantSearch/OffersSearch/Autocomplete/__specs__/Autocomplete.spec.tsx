@@ -161,7 +161,8 @@ describe('Autocomplete', () => {
 
     const searchButton = screen.getByText('Rechercher')
     const dialogElement = screen.getByTestId('dialog')
-    const footerButton = screen.getByText('Comment fonctionne la recherche ?')
+    // TODO : uncomment when the link is added
+    // const footerButton = screen.getByText('Comment fonctionne la recherche ?')
 
     await userEvent.click(searchButton)
     await userEvent.click(inputElement)
@@ -170,9 +171,9 @@ describe('Autocomplete', () => {
     await userEvent.tab()
     await userEvent.tab()
 
-    expect(footerButton).toHaveFocus()
+    // TODO : uncomment when the link is added
+    // expect(footerButton).toHaveFocus()
 
-    await userEvent.tab()
     expect(dialogElement).not.toHaveAttribute('open')
   })
 

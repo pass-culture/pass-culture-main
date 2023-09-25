@@ -91,6 +91,8 @@
 
           margin-left: rem.torem(8px);
           text-decoration: none;
+          display: flex;
+          align-items: center;
         }
 
         svg {
