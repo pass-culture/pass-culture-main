@@ -163,7 +163,7 @@ describe('screens:IndividualOffer::OfferType', () => {
     renderOfferTypes(store)
 
     expect(
-      screen.queryByRole('heading', { name: 'Votre offre est :' })
+      await screen.findByRole('heading', { name: 'Votre offre est :' })
     ).toBeInTheDocument()
 
     await userEvent.click(
@@ -191,7 +191,7 @@ describe('screens:IndividualOffer::OfferType', () => {
     renderOfferTypes(store)
 
     expect(
-      screen.queryByRole('heading', { name: 'Votre offre est :' })
+      await screen.findByRole('heading', { name: 'Votre offre est :' })
     ).toBeInTheDocument()
 
     await userEvent.click(
@@ -267,7 +267,7 @@ describe('screens:IndividualOffer::OfferType', () => {
   it('should display individual offer choices', async () => {
     renderOfferTypes(store)
 
-    expect(screen.getByText('Un bien physique')).toBeInTheDocument()
+    expect(await screen.findByText('Un bien physique')).toBeInTheDocument()
     expect(screen.getByText('Un bien numérique')).toBeInTheDocument()
     expect(screen.getByText('Un évènement physique daté')).toBeInTheDocument()
     expect(screen.getByText('Un évènement numérique daté')).toBeInTheDocument()
@@ -296,7 +296,7 @@ describe('screens:IndividualOffer::OfferType', () => {
     async ({ buttonClicked, expectedSearch }) => {
       renderOfferTypes(store)
 
-      await userEvent.click(screen.getByText(buttonClicked))
+      await userEvent.click(await screen.findByText(buttonClicked))
 
       await userEvent.click(
         screen.getByRole('button', { name: 'Étape suivante' })
