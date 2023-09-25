@@ -76,7 +76,7 @@ describe('screens:IndividualOffer::OfferType', () => {
   it('should redirect with offer type when no venue and type selected', async () => {
     renderOfferTypes()
 
-    await userEvent.click(screen.getByText('Un bien physique'))
+    await userEvent.click(await screen.findByText('Un bien physique'))
     await userEvent.click(screen.getByText('Étape suivante'))
 
     expect(mockNavigate).toHaveBeenCalledWith({
