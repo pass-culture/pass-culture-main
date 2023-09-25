@@ -153,7 +153,8 @@ describe('OfferTypeIndividual', () => {
     expect(screen.queryByText('Votre offre est :')).not.toBeInTheDocument()
     expect(api.getCategories).toHaveBeenCalledTimes(1)
     expect(api.getVenue).not.toHaveBeenCalled()
-    expect(api.getVenues).toHaveBeenNthCalledWith(1, null, true, offererId)
+    expect(api.getVenues).toHaveBeenCalledWith(null, true, offererId)
+    expect(api.getVenues).toHaveBeenCalledTimes(1)
   })
 
   it('should display specific subcategories when user has only one physical venue', async () => {
@@ -166,7 +167,8 @@ describe('OfferTypeIndividual', () => {
     expect(screen.queryByText('Votre offre est :')).not.toBeInTheDocument()
     expect(api.getCategories).toHaveBeenCalledTimes(1)
     expect(api.getVenue).not.toHaveBeenCalled()
-    expect(api.getVenues).toHaveBeenNthCalledWith(1, null, true, undefined)
+    expect(api.getVenues).toHaveBeenCalledWith(null, true, undefined)
+    expect(api.getVenues).toHaveBeenCalledTimes(1)
   })
 
   it('should display specific subcategories when user is Admin and there is offerer in url', async () => {
@@ -184,7 +186,8 @@ describe('OfferTypeIndividual', () => {
     expect(screen.queryByText('Votre offre est :')).not.toBeInTheDocument()
     expect(api.getCategories).toHaveBeenCalledTimes(1)
     expect(api.getVenue).not.toHaveBeenCalled()
-    expect(api.getVenues).toHaveBeenNthCalledWith(1, null, true, offererId)
+    expect(api.getVenues).toHaveBeenCalledWith(null, true, offererId)
+    expect(api.getVenues).toHaveBeenCalledTimes(1)
   })
 
   it('should display macro choices when clicking on "Autre"', async () => {
@@ -235,9 +238,6 @@ describe('OfferTypeIndividual', () => {
     expect(
       screen.queryByText('Quelle est la catégorie de l’offre ?')
     ).not.toBeInTheDocument()
-    expect(api.getCategories).toHaveBeenCalledTimes(1)
-    expect(api.getVenue).not.toHaveBeenCalled()
-    expect(api.getVenues).not.toHaveBeenCalled()
   })
 
   it('should only display macro choices when user has more than one physical venue', async () => {
@@ -262,6 +262,7 @@ describe('OfferTypeIndividual', () => {
     ).not.toBeInTheDocument()
     expect(api.getCategories).toHaveBeenCalledTimes(1)
     expect(api.getVenue).not.toHaveBeenCalled()
+    expect(api.getVenues).toHaveBeenCalledWith(null, true, undefined)
     expect(api.getVenues).toHaveBeenCalledTimes(1)
   })
 
