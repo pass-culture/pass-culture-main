@@ -478,6 +478,39 @@ def find_venues_of_offerer_from_siret(siret: str) -> tuple[models.Offerer | None
     return offerer, venues
 
 
+def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
+    """
+    Return and offerer and some extra data regarding it.
+    Needed for the following Offerer properties:
+        - hasValidBankAccount
+        - hasPendingBankAccount
+    """
+    return (
+        models.Offerer.query.filter_by(id=offerer_id)
+        .outerjoin(
+            finance_models.BankAccount,
+            sqla.and_(
+                finance_models.BankAccount.offererId == models.Offerer.id,
+                finance_models.BankAccount.isActive.is_(True),
+                finance_models.BankAccount.status.in_(
+                    (
+                        finance_models.BankAccountApplicationStatus.ON_GOING,
+                        finance_models.BankAccountApplicationStatus.ACCEPTED,
+                    )
+                ),
+            ),
+        )
+        .outerjoin(models.Venue, models.Venue.managingOffererId == models.Offerer.id)
+        .options(
+            sqla_orm.contains_eager(models.Offerer.managedVenues).load_only(
+                models.Venue.id, models.Venue.siret, models.Venue.publicName, models.Venue.name
+            )
+        )
+        .options(sqla_orm.load_only(models.Offerer.id, models.Offerer.name))
+        .one_or_none()
+    )
+
+
 def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
     """
     Return an Offerer with its accounting data and related venues:
@@ -529,3 +562,31 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
         .order_by(finance_models.BankAccount.dateCreated)
         .one_or_none()
     )
+
+
+def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> list[int]:
+    """
+    Venue without a bank account is either a venue without any VenueBankAccountLink at all
+    or without up to date VenueBankAccountLink (timespan.upper is None)
+    """
+    venue_with_non_free_offers = (
+        models.Venue.query.filter(
+            models.Venue.managingOffererId == offerer_id,
+            sqla.or_(
+                models.VenueBankAccountLink.timespan == None, # Because as we LEFT OUTER JOIN on VenueReimbursementPointLink, timespan column can be NULL
+                ~models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
+            ),
+            offers_models.Stock.query.join(
+                offers_models.Offer,
+                sqla.and_(
+                    offers_models.Stock.offerId == offers_models.Offer.id,
+                    offers_models.Offer.venueId == models.Venue.id,
+                    offers_models.Stock.price > 0,
+                ),
+            ).exists(),
+        )
+        .join(models.Offerer)
+        .outerjoin(models.VenueBankAccountLink, models.VenueBankAccountLink.venueId == models.Venue.id)
+        .with_entities(models.Venue.id)
+    )
+    return [venue.id for venue in venue_with_non_free_offers]

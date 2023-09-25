@@ -15,6 +15,8 @@ export type GetOffererResponseModel = {
   dsToken?: string | null;
   hasAvailablePricingPoints: boolean;
   hasDigitalVenueAtLeastOneOffer: boolean;
+  hasPendingBankAccount: boolean;
+  hasValidBankAccount: boolean;
   id: number;
   isActive: boolean;
   isValidated: boolean;
@@ -22,5 +24,6 @@ export type GetOffererResponseModel = {
   name: string;
   postalCode: string;
   siren?: string | null;
+  venuesWithNonFreeOffersWithoutBankAccounts: Array<number>;
 };
 
