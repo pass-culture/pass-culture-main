@@ -264,9 +264,14 @@ def book_offer(
             offers_validation.check_offer_is_from_current_cinema_provider(stock.offer)
             _book_cinema_external_ticket(booking, stock, beneficiary)
 
-        remaining_quantity = None
+        stock.dnBookedQuantity += booking.quantity
+
         if providers_repository.is_event_external_ticket_applicable(stock.offer):
             remaining_quantity = _book_event_external_ticket(booking, stock, beneficiary)
+            if remaining_quantity is None:
+                stock.quantity = None
+            else:
+                stock.quantity = stock.dnBookedQuantity + remaining_quantity
 
         logger.info(
             "Updating dnBookedQuantity after a successful booking",
@@ -277,21 +282,6 @@ def book_offer(
             },
         )
 
-        stock.dnBookedQuantity += booking.quantity
-
-        logger.info(
-            "Successfully updated dnBookedQuantity after a successful booking",
-            extra={
-                "booking_id": booking.id,
-                "booking_quantity": booking.quantity,
-                "stock_dnBookedQuantity": stock.dnBookedQuantity,
-            },
-        )
-
-        # If a partner have implemented our external ticket api (charlie api),
-        # they should send us the remaining seats for the event.
-        if remaining_quantity:
-            stock.quantity = stock.dnBookedQuantity + remaining_quantity
         repository.save(booking, stock)
 
         if booking.status == BookingStatus.USED:
@@ -393,7 +383,7 @@ def _book_cinema_external_ticket(booking: Booking, stock: Stock, beneficiary: Us
     )
 
 
-def _book_event_external_ticket(booking: Booking, stock: Stock, beneficiary: User) -> int:
+def _book_event_external_ticket(booking: Booking, stock: Stock, beneficiary: User) -> int | None:
     if not FeatureToggle.ENABLE_CHARLIE_BOOKINGS_API.is_active():
         raise feature.DisabledFeatureError("ENABLE_CHARLIE_BOOKINGS_API is inactive")
     try:
