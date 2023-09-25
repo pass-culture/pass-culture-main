@@ -54,6 +54,18 @@ def get(user_id: int) -> utils.BackofficeResponse:
     )
     dst = url_for(".update_pro_user", user_id=user.id)
 
+    if request.args.get("terms") and request.args.get("search_rank"):
+        utils.log_backoffice_tracking_data(
+            event_name="ConsultCard",
+            extra_data={
+                "searchType": "ProSearch",
+                "searchProType": TypeOptions.USER.name,
+                "searchQuery": request.args.get("terms"),
+                "searchRank": request.args.get("search_rank"),
+                "searchNbResults": request.args.get("total_items"),
+            },
+        )
+
     return render_template(
         "pro_user/get.html",
         search_form=search_forms.ProSearchForm(terms=request.args.get("terms"), pro_type=TypeOptions.USER.name),
