@@ -4,7 +4,6 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
-from pcapi.utils import human_ids
 
 from tests.conftest import clean_database
 from tests.test_utils import run_command
@@ -20,7 +19,7 @@ class AddCustomOfferReimbursementRuleTest:
         result = run_command(
             app,
             "add_custom_offer_reimbursement_rule",
-            "--offer-humanized-id", human_ids.humanize(offer.id),
+            "--offer-id", offer.id,
             "--offer-original-amount", "24,68",
             "--offerer-id", str(offer.venue.managingOffererId),
             "--reimbursed-amount", "12.34",
@@ -42,7 +41,7 @@ class AddCustomOfferReimbursementRuleTest:
         result = run_command(
             app,
             "add_custom_offer_reimbursement_rule",
-            "--offer-humanized-id", human_ids.humanize(offer.id),
+            "--offer-id", offer.id,
             "--offer-original-amount", "0,34",  # wrong amount
             "--offerer-id", str(offer.venue.managingOffererId + 7),
             "--reimbursed-amount", "12.34",
@@ -65,7 +64,7 @@ class AddCustomOfferReimbursementRuleTest:
         result = run_command(
             app,
             "add_custom_offer_reimbursement_rule",
-            "--offer-humanized-id", human_ids.humanize(offer.id),
+            "--offer-id", offer.id,
             "--offer-original-amount", "0,34",  # wrong amount
             "--offerer-id", str(offer.venue.managingOffererId + 7),
             "--reimbursed-amount", "12.34",
