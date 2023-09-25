@@ -87,7 +87,7 @@ def book_event_ticket(
     booking: bookings_models.Booking,
     stock: offers_models.Stock,
     beneficiary: users_models.User,
-) -> typing.Tuple[list[external_bookings_models.Ticket], int]:
+) -> typing.Tuple[list[external_bookings_models.Ticket], int | None]:
     provider = providers_repository.get_provider_enabled_for_pro_by_id(stock.offer.lastProviderId)
     if not provider:
         raise providers_exceptions.InactiveProvider()
@@ -194,7 +194,7 @@ def _check_external_booking_response_is_ok(response: requests.Response) -> None:
             )
         if error_response.error == "sold_out":
             raise exceptions.ExternalBookingSoldOutError()
-        if error_response.error == "not_enough_seats" and error_response.remainingQuantity:
+        if error_response.error == "not_enough_seats" and isinstance(error_response.remainingQuantity, int):
             raise exceptions.ExternalBookingNotEnoughSeatsError(remainingQuantity=error_response.remainingQuantity)
         if error_response.error == "already_cancelled":
             raise exceptions.ExternalBookingAlreadyCancelledError(
