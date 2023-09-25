@@ -5,7 +5,6 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories
-from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
 
 
@@ -18,7 +17,6 @@ class Returns200Test:
     def test_get_collective_booking(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         booking = educational_factories.CollectiveBookingFactory(
-            id=dehumanize("EXCEL"),
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
         )
 

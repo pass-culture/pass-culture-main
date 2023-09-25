@@ -4,7 +4,6 @@ from pcapi.core import testing
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.utils.human_ids import humanize
 
 
 @pytest.mark.usefixtures("db_session")
@@ -43,10 +42,9 @@ class Returns200Test:
 
         # When
         client.with_session_auth(email="user@example.com")
-        humanized_offer_id = humanize(offer.id)
 
         with testing.assert_no_duplicated_queries():
-            client.get(f"/collective/offers-template/{humanized_offer_id}")
+            client.get(f"/collective/offers-template/{offer.id}")
 
 
 @pytest.mark.usefixtures("db_session")
