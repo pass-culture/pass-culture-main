@@ -134,6 +134,7 @@ def get_individual_bookings(user: User) -> list[Booking]:
                 Venue.latitude,
                 Venue.longitude,
                 Venue.publicName,
+                Venue.timezone,
             )
         )
         .options(
