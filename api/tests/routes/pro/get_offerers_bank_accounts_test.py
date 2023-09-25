@@ -95,6 +95,7 @@ class OfferersBankAccountTest:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         expected_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        expected_venue_without_siret = offerers_factories.VenueWithoutSiretFactory(managingOfferer=offerer)
         expected_bank_account = finance_factories.BankAccountFactory(offerer=offerer)
 
         # When
@@ -116,7 +117,7 @@ class OfferersBankAccountTest:
         assert offerer["venuesWithNonFreeOffersWithoutBankAccounts"] == []
 
         bank_accounts = offerer["bankAccounts"]
-        venues = offerer["managedVenues"]
+        venues = sorted(offerer["managedVenues"], key=lambda v: v["id"])
 
         assert len(bank_accounts) == 1
         bank_account = bank_accounts.pop()
@@ -127,12 +128,15 @@ class OfferersBankAccountTest:
         assert bank_account["status"] == "accepte"
         assert not bank_account["linkedVenues"]
 
-        assert len(venues) == 1
-        venue = venues.pop()
-        assert venue["id"] == expected_venue.id
-        assert venue["commonName"] == expected_venue.common_name
-        assert venue["siret"] == expected_venue.siret
-        assert not venue["bankAccountId"]
+        assert len(venues) == 2
+        assert venues[0]["id"] == expected_venue.id
+        assert venues[0]["commonName"] == expected_venue.common_name
+        assert venues[0]["siret"] == expected_venue.siret
+        assert not venues[0]["bankAccountId"]
+        assert venues[1]["id"] == expected_venue_without_siret.id
+        assert venues[1]["commonName"] == expected_venue_without_siret.common_name
+        assert not venues[1]["siret"]
+        assert not venues[1]["bankAccountId"]
 
     @pytest.mark.usefixtures("db_session")
     def test_linked_venues_to_bank_accounts_are_displayed_to_users(self, client):

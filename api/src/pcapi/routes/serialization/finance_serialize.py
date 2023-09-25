@@ -84,7 +84,7 @@ class LinkedVenues(BaseModel):
 class ManagedVenues(BaseModel):
     id: int
     commonName: str
-    siret: str
+    siret: str | None
     bankAccountId: int | None
 
     class Config:
