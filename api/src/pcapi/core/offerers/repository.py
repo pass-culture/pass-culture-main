@@ -518,7 +518,7 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
     - Existing bank accounts (possibly none and only active & not (refused or without confirmation) ones)
     - Linked venues to its bank accounts (possibly none and only current ones)
     - Managed venues by the offerer (possibly none)
-        - With eager loaded offers and stocks, to be able to determine either a venue has non free offers or not."""
+    """
 
     return (
         models.Offerer.query.filter_by(id=offerer_id)
@@ -536,8 +536,6 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
             ),
         )
         .outerjoin(models.Venue, models.Venue.managingOffererId == models.Offerer.id)
-        .outerjoin(offers_models.Offer, offers_models.Offer.venueId == models.Venue.id)
-        .outerjoin(offers_models.Stock, offers_models.Stock.offerId == offers_models.Offer.id)
         .outerjoin(
             models.VenueBankAccountLink,
             sqla.and_(
@@ -549,14 +547,10 @@ def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
         .options(
             sqla_orm.contains_eager(models.Offerer.bankAccounts).contains_eager(finance_models.BankAccount.venueLinks)
         )
-        .options(sqla_orm.contains_eager(models.Offerer.managedVenues).contains_eager(models.Venue.bankAccountLinks))
         .options(
             sqla_orm.contains_eager(models.Offerer.managedVenues)
             .load_only(models.Venue.id, models.Venue.siret, models.Venue.publicName, models.Venue.name)
-            .contains_eager(models.Venue.offers)
-            .load_only(offers_models.Offer.id)
-            .contains_eager(offers_models.Offer.stocks)
-            .load_only(offers_models.Stock.price)
+            .contains_eager(models.Venue.bankAccountLinks)
         )
         .options(sqla_orm.load_only(models.Offerer.id, models.Offerer.name))
         .order_by(finance_models.BankAccount.dateCreated)
@@ -573,7 +567,8 @@ def get_venues_with_non_free_offers_without_bank_accounts(offerer_id: int) -> li
         models.Venue.query.filter(
             models.Venue.managingOffererId == offerer_id,
             sqla.or_(
-                models.VenueBankAccountLink.timespan == None, # Because as we LEFT OUTER JOIN on VenueReimbursementPointLink, timespan column can be NULL
+                models.VenueBankAccountLink.timespan
+                == None,  # Because as we LEFT OUTER JOIN on VenueReimbursementPointLink, timespan column can be NULL
                 ~models.VenueBankAccountLink.timespan.contains(datetime.utcnow()),
             ),
             offers_models.Stock.query.join(
