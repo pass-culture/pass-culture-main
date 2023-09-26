@@ -97,18 +97,50 @@ class TiteliveSearch(abc.ABC, typing.Generic[TiteliveSearchResultType]):
         self,
         titelive_page: TiteliveProductSearchResponse[TiteliveSearchResultType],
     ) -> list[offers_models.Product]:
-        titelive_results = titelive_page.result
-        titelive_eans = [article.gencod for result in titelive_results for article in result.article]
+        titelive_eans = [article.gencod for result in titelive_page.result for article in result.article]
 
         products = offers_models.Product.query.filter(
             offers_models.Product.extraData["ean"].astext.in_(titelive_eans),
-            offers_models.Product.lastProvider == self.provider,  # pylint: disable=comparison-with-callable
+            offers_models.Product.lastProviderId.is_not(None),
         ).all()
+
+        titelive_page, products = self.dodge_sync_collision(titelive_page, products)
+
         products_by_ean: dict[str, offers_models.Product] = {p.extraData["ean"]: p for p in products}
-        for titelive_search_result in titelive_results:
+        for titelive_search_result in titelive_page.result:
             products_by_ean = self.upsert_titelive_result_in_dict(titelive_search_result, products_by_ean)
 
         return list(products_by_ean.values())
+
+    def dodge_sync_collision(
+        self,
+        titelive_page: TiteliveProductSearchResponse[TiteliveSearchResultType],
+        existing_products: list[offers_models.Product],
+    ) -> tuple[TiteliveProductSearchResponse[TiteliveSearchResultType], list[offers_models.Product]]:
+        """Returns the titelive search page and product list without products that were already imported
+        by another provider, and logs as error the removed products EAN and their provider."""
+        products_from_other_provider = [p for p in existing_products if p.lastProvider != self.provider]
+        if not products_from_other_provider:
+            return titelive_page, existing_products
+
+        # Some EANs like 0030206040920 are both a book and a CD, as such Titelive returns those articles
+        # for both books and music. However, EANs from providers must be unique in our database, and this
+        # is enforced by a unicity constraint in Product.idAtProviders.
+        # Those EANs are assigned in our database to the first provider that imports them. Provider change
+        # must be done manually.
+        other_provider_by_product_ean = {
+            p.extraData["ean"]: p.lastProviderId for p in products_from_other_provider if p.extraData
+        }
+        logger.error("Conflicting products already exist: %s, skipping", other_provider_by_product_ean)
+
+        for oeuvre in titelive_page.result:
+            oeuvre.article = [
+                article for article in oeuvre.article if article.gencod not in other_provider_by_product_ean
+            ]
+        titelive_page.result = [oeuvre for oeuvre in titelive_page.result if oeuvre.article]
+
+        current_provider_managed_products = [p for p in existing_products if p.lastProvider == self.provider]
+        return titelive_page, current_provider_managed_products
 
     @abc.abstractmethod
     def upsert_titelive_result_in_dict(
