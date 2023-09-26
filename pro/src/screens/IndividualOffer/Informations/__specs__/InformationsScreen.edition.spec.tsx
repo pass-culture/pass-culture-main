@@ -25,14 +25,13 @@ import { AccessiblityEnum } from 'core/shared'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
-import * as utils from 'screens/IndividualOffer/Informations/utils'
 import {
   individualOfferVenueItemFactory,
   individualStockFactory,
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { InformationsProps, Informations as InformationsScreen } from '..'
+import Informations, { InformationsProps } from '../Informations'
 
 const mockLogEvent = vi.fn()
 
@@ -88,7 +87,7 @@ const renderInformationsScreen = (
           })}
           element={
             <IndividualOfferContext.Provider value={contextValue}>
-              <InformationsScreen {...props} />
+              <Informations {...props} />
             </IndividualOfferContext.Provider>
           }
         />
@@ -255,9 +254,6 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       offererId: offererId.toString(),
     }
 
-    vi.spyOn(utils, 'filterCategories')
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .mockImplementation((c, s, _v) => [c, s])
     vi.spyOn(api, 'patchOffer').mockResolvedValue({
       id: offerId,
     } as GetIndividualOfferResponseModel)

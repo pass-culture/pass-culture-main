@@ -1,6 +1,7 @@
 import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
 
-import { StockThingFormValues, STOCK_THING_FORM_DEFAULT_VALUES } from '../..'
+import { STOCK_THING_FORM_DEFAULT_VALUES } from '../../constants'
+import { StockThingFormValues } from '../../types'
 import { serializeStockThingList } from '../serializers'
 
 describe('serializeStockThingList', () => {

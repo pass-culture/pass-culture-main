@@ -40,12 +40,12 @@ import useCurrentUser from 'hooks/useCurrentUser'
 import useNotification from 'hooks/useNotification'
 import strokeMailIcon from 'icons/stroke-mail.svg'
 
-import { ActionBar } from '../ActionBar'
-import { useIndividualOfferImageUpload } from '../hooks'
+import ActionBar from '../ActionBar/ActionBar'
+import { useIndividualOfferImageUpload } from '../hooks/useIndividualOfferImageUpload'
 
-import { filterCategories } from './utils'
 import { computeNextStep } from './utils/computeNextStep'
 import {
+  filterCategories,
   getCategoryStatusFromOfferSubtype,
   getOfferSubtypeFromParam,
   isOfferSubtypeEvent,

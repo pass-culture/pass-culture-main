@@ -23,7 +23,7 @@ import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
 } from 'core/Offers/utils/getIndividualOfferUrl'
-import { Stocks } from 'pages/IndividualOfferWizard/Stocks'
+import Stocks from 'pages/IndividualOfferWizard/Stocks/Stocks'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
 import { renderWithProviders } from 'utils/renderWithProviders'
 

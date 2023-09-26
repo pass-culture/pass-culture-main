@@ -13,8 +13,8 @@ import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks'
 import useNotification from 'hooks/useNotification'
 
-import { ActionBar } from '../ActionBar'
-import { getSuccessMessage } from '../utils'
+import ActionBar from '../ActionBar/ActionBar'
+import { getSuccessMessage } from '../utils/getSuccessMessage'
 
 import { computeInitialValues } from './form/computeInitialValues'
 import { onSubmit } from './form/onSubmit'

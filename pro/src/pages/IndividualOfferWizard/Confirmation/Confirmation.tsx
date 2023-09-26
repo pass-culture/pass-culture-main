@@ -3,7 +3,7 @@ import React from 'react'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { IndividualOffer } from 'core/Offers/types'
 import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
-import { IndividualOfferConfirmation as IndividualOfferConfirmationScreen } from 'screens/IndividualOfferConfirmation'
+import IndividualOfferConfirmationScreen from 'screens/IndividualOfferConfirmation/IndividualOfferConfirmation'
 
 const Confirmation = (): JSX.Element => {
   const { offer } = useIndividualOfferContext()

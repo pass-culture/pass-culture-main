@@ -1,10 +1,8 @@
 import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
-import {
-  StockEventFormValues,
-  STOCK_EVENT_FORM_DEFAULT_VALUES,
-} from 'screens/IndividualOffer/StocksEventEdition/StockFormList'
 import { stockEventFactory } from 'screens/IndividualOffer/StocksEventEdition/StockFormList/stockEventFactory'
 
+import { STOCK_EVENT_FORM_DEFAULT_VALUES } from '../../StockFormList/constants'
+import { StockEventFormValues } from '../../StockFormList/types'
 import { serializeStockEventEdition } from '../serializers'
 
 vi.mock('utils/date', async () => {

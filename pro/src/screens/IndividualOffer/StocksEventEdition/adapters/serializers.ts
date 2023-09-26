@@ -1,7 +1,7 @@
 import endOfDay from 'date-fns/endOfDay'
 
 import { StockCreationBodyModel, StockEditionBodyModel } from 'apiClient/v1'
-import { StockEventFormValues } from 'screens/IndividualOffer/StocksEventEdition/StockFormList'
+import { StockEventFormValues } from 'screens/IndividualOffer/StocksEventEdition/StockFormList/types'
 import {
   getToday,
   isDateValid,

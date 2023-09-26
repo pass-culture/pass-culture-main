@@ -8,11 +8,11 @@ import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { useOfferWizardMode } from 'hooks'
 import useNotification from 'hooks/useNotification'
 
-import { Status } from '../Status'
-import { SynchronizedProviderInformation } from '../SynchronisedProviderInfos'
+import Status from '../Status/Status'
+import SynchronizedProviderInformation from '../SynchronisedProviderInfos/SynchronizedProviderInformation'
 
-import styles from './IndivualOfferLayout.module.scss'
 import OfferStatusBanner from './OfferStatusBanner/OfferStatusBanner'
+import styles from './Template.module.scss'
 
 export interface IndivualOfferLayoutProps {
   title?: string

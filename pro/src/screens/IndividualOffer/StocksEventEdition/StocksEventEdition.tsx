@@ -27,22 +27,20 @@ import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY, getToday } from 'utils/date'
 import { formatPrice } from 'utils/formatPrice'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
-import { ActionBar } from '../ActionBar'
+import ActionBar from '../ActionBar/ActionBar'
 import { MAX_STOCKS_PER_OFFER } from '../constants'
 import DialogStocksEventEditConfirm from '../DialogStocksEventEditConfirm/DialogStocksEventEditConfirm'
-import { useNotifyFormError } from '../hooks'
+import useNotifyFormError from '../hooks/useNotifyFormError'
 import { RecurrenceForm } from '../StocksEventCreation/RecurrenceForm'
-import { getSuccessMessage } from '../utils'
+import { getSuccessMessage } from '../utils/getSuccessMessage'
 
-import { upsertStocksEventAdapter } from './adapters'
 import { serializeStockEventEdition } from './adapters/serializers'
-import {
-  buildInitialValues,
-  getValidationSchema,
-  STOCK_EVENT_FORM_DEFAULT_VALUES,
-  StockEventFormValues,
-  StockFormList,
-} from './StockFormList'
+import upsertStocksEventAdapter from './adapters/upsertStocksEventAdapter'
+import { STOCK_EVENT_FORM_DEFAULT_VALUES } from './StockFormList/constants'
+import StockFormList from './StockFormList/StockFormList'
+import { StockEventFormValues } from './StockFormList/types'
+import { buildInitialValues } from './StockFormList/utils'
+import { getValidationSchema } from './StockFormList/validationSchema'
 import styles from './StocksEventEdition.module.scss'
 
 export const hasChangesOnStockWithBookings = (
