@@ -69,7 +69,7 @@ const isSubcategoryMatchingCriteria = (
   )
 }
 
-const filterCategories = (
+export const filterCategories = (
   allCategories: OfferCategory[],
   allSubCategories: OfferSubCategory[],
   onlineOfflinePlatform: CATEGORY_STATUS,
@@ -96,5 +96,3 @@ const filterCategories = (
 
   return [categories, subCategories]
 }
-
-export default filterCategories

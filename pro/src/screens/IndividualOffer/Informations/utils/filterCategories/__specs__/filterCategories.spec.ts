@@ -5,10 +5,10 @@ import {
 } from 'core/Offers/constants'
 import { OfferCategory, OfferSubCategory } from 'core/Offers/types'
 
-import { filterCategories } from '..'
 import {
   getOfferSubtypeFromParam,
   getCategoryStatusFromOfferSubtype,
+  filterCategories,
 } from '../filterCategories'
 
 describe('getOfferSubtypeFromParam', () => {

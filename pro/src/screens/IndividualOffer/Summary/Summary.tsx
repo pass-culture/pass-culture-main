@@ -23,16 +23,16 @@ import useNotification from 'hooks/useNotification'
 import fullWaitIcon from 'icons/full-wait.svg'
 import strokePartyIcon from 'icons/stroke-party.svg'
 import phoneStrokeIcon from 'icons/stroke-phone.svg'
-import { DisplayOfferInAppLink } from 'screens/IndividualOffer/Summary/DisplayOfferInAppLink'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 
-import { ActionBar } from '../ActionBar'
+import ActionBar from '../ActionBar/ActionBar'
 
-import { OfferSection } from './OfferSection'
+import { DisplayOfferInAppLink } from './DisplayOfferInAppLink/DisplayOfferInAppLink'
+import OfferSection from './OfferSection/OfferSection'
 import { PriceCategoriesSection } from './PriceCategoriesSection/PriceCategoriesSection'
-import { StockSection } from './StockSection'
+import StockSection from './StockSection/StockSection'
 import styles from './Summary.module.scss'
 
 const Summary = () => {
