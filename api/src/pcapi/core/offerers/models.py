@@ -1065,6 +1065,7 @@ class IndividualOffererSubscription(PcObject, Base, Model):
     isExperienceReceived: bool = sa.Column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
     )
+    experienceDetails: str | None = sa.Column(sa.Text, nullable=True)
     has1yrExperience: bool = sa.Column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
     )

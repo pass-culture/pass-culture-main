@@ -76,11 +76,6 @@
         {{ form.collective_offers }}
         {{ form.individual_offers }}
       </div>
-      <div class="pt-5 pb-3 px-3">
-        {{ form.csrf_token }}
-        <button type="submit"
-                class="btn btn-primary">Enregistrer</button>
-      </div>
     </div>
     <div class="col-4">
       <p class="fw-bold pt-2">Réception du casier judiciaire</p>
@@ -88,9 +83,7 @@
         {{ form.is_criminal_record_received }}
         {{ form.date_criminal_record_received }}
       </div>
-    </div>
-    <div class="col-4">
-      <p class="fw-bold pt-2">Diplômes</p>
+      <p class="fw-bold pt-4">Diplômes</p>
       <div class="px-3">
         {{ form.is_certificate_received }}
         {% set documents_link = get_setting("BACKOFFICE_OFFERERS_DOCUMENTS_LINK") %}
@@ -101,6 +94,8 @@
         {% endif %}
         {{ form.certificate_details }}
       </div>
+    </div>
+    <div class="col-4">
       <p class="fw-bold pt-2">Années d'expérience</p>
       <div class="px-3">
         {{ form.is_experience_received }}
@@ -110,7 +105,13 @@
             {{ form.has_4yr_experience }}
           </div>
         </div>
+        {{ form.experience_details }}
         {{ form.is_certificate_valid }}
+      </div>
+      <div class="pt-5 pb-3 px-3">
+        {{ form.csrf_token }}
+        <button type="submit"
+                class="btn btn-primary">Enregistrer</button>
       </div>
     </div>
   </form>
