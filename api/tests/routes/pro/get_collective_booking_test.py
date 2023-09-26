@@ -5,7 +5,6 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories
-from pcapi.utils.human_ids import humanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -51,8 +50,8 @@ class Returns200Test:
             "numberOfTickets": booking.collectiveStock.numberOfTickets,
             "venuePostalCode": booking.venue.postalCode,
             "isCancellable": booking.is_cancellable_from_offerer,
-            "venueId": humanize(booking.venueId),
-            "offererId": humanize(booking.venue.managingOffererId),
+            "venueId": booking.venueId,
+            "offererId": booking.venue.managingOffererId,
         }
 
     @freeze_time("2022-05-01 15:00:00")
@@ -100,8 +99,8 @@ class Returns200Test:
             "numberOfTickets": booking.collectiveStock.numberOfTickets,
             "venuePostalCode": booking.venue.postalCode,
             "isCancellable": booking.is_cancellable_from_offerer,
-            "venueId": humanize(booking.venueId),
-            "offererId": humanize(booking.venue.managingOffererId),
+            "venueId": booking.venueId,
+            "offererId": booking.venue.managingOffererId,
         }
 
 

@@ -20,7 +20,6 @@ from pcapi.routes.serialization.educational_institutions import EducationalInsti
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.date import isoformat
-from pcapi.utils.human_ids import humanize
 
 
 class CollectiveBookingRecapStatus(Enum):
@@ -75,7 +74,6 @@ class BookingStatusHistoryResponseModel(BaseModel):
 
 class CollectiveBookingCollectiveStockResponseModel(BaseModel):
     offer_name: str
-    offer_identifier: str
     offer_id: int
     event_beginning_datetime: str
     offer_isbn: str | None
@@ -107,7 +105,6 @@ class CollectiveBookingResponseModel(BaseModel):
     booking_is_duo = False
     booking_amount: float
     booking_status_history: list[BookingStatusHistoryResponseModel]
-    booking_identifier: str
     booking_cancellation_reason: models.CollectiveBookingCancellationReasons | None
 
     class Config:
@@ -216,7 +213,6 @@ def serialize_collective_booking_stock(
 ) -> CollectiveBookingCollectiveStockResponseModel:
     return CollectiveBookingCollectiveStockResponseModel(  # type: ignore [call-arg]
         offerName=collective_booking.collectiveStock.collectiveOffer.name,
-        offerIdentifier=humanize(collective_booking.collectiveStock.collectiveOfferId),
         offerId=collective_booking.collectiveStock.collectiveOfferId,
         eventBeginningDatetime=typing.cast(
             datetime,
@@ -315,7 +311,6 @@ def serialize_collective_booking(collective_booking: models.CollectiveBooking) -
             ),
             is_confirmed=collective_booking.isConfirmed,  # type: ignore[arg-type]
         ),
-        bookingIdentifier=humanize(collective_booking.id),
         bookingCancellationReason=collective_booking.cancellationReason,
     )
 
@@ -438,8 +433,8 @@ class CollectiveBookingByIdResponseModel(BaseModel):
     isCancellable: bool
     bankInformationStatus: CollectiveBookingBankInformationStatus
     venueDMSApplicationId: int | None
-    venueId: str
-    offererId: str
+    venueId: int
+    offererId: int
 
     class Config:
         orm_mode = True
@@ -469,6 +464,6 @@ class CollectiveBookingByIdResponseModel(BaseModel):
             venueDMSApplicationId=reimbursement_point.demarchesSimplifieesApplicationId
             if reimbursement_point
             else None,
-            venueId=humanize(booking.venueId),  # type: ignore [arg-type]
-            offererId=humanize(booking.venue.managingOffererId),  # type: ignore [arg-type]
+            venueId=booking.venueId,
+            offererId=booking.venue.managingOffererId,
         )

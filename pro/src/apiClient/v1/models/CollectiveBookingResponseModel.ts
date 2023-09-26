@@ -16,7 +16,6 @@ export type CollectiveBookingResponseModel = {
   bookingConfirmationLimitDate: string;
   bookingDate: string;
   bookingId: string;
-  bookingIdentifier: string;
   bookingIsDuo?: boolean;
   bookingStatus: string;
   bookingStatusHistory: Array<BookingStatusHistoryResponseModel>;

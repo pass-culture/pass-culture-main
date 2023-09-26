@@ -145,7 +145,7 @@ const CollectiveTimeLine = ({
               <ButtonLink
                 variant={ButtonVariant.TERNARY}
                 link={{
-                  to: `/offre/${bookingRecap.stock.offerIdentifier}/collectif/stocks/edition`,
+                  to: `/offre/${bookingRecap.stock.offerId}/collectif/stocks/edition`,
                   isExternal: false,
                 }}
                 icon={fullEditIcon}
@@ -166,7 +166,7 @@ const CollectiveTimeLine = ({
                 <ButtonLink
                   variant={ButtonVariant.TERNARY}
                   link={{
-                    to: `/offre/${bookingRecap.stock.offerIdentifier}/collectif/stocks/edition`,
+                    to: `/offre/${bookingRecap.stock.offerId}/collectif/stocks/edition`,
                     isExternal: false,
                   }}
                   icon={fullEditIcon}
@@ -218,7 +218,7 @@ const CollectiveTimeLine = ({
           <ButtonLink
             variant={ButtonVariant.TERNARY}
             link={{
-              to: `/offre/${bookingRecap.stock.offerIdentifier}/collectif/stocks/edition`,
+              to: `/offre/${bookingRecap.stock.offerId}/collectif/stocks/edition`,
               isExternal: false,
             }}
             icon={fullEditIcon}

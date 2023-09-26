@@ -16,7 +16,6 @@ describe('bookings offer cell', () => {
     const props: BookingOfferCellProps = {
       booking: collectiveBookingRecapFactory({
         stock: {
-          offerIdentifier: 'A0',
           offerId: offerId,
           offerIsbn: '97834567654',
           offerName: 'La Guitare pour les nuls',
@@ -41,7 +40,6 @@ describe('bookings offer cell', () => {
     const props: BookingOfferCellProps = {
       booking: collectiveBookingRecapFactory({
         stock: {
-          offerIdentifier: 'A1',
           offerId: offerId,
           offerName: 'Guitare acoustique',
           offerIsEducational: false,
@@ -64,7 +62,6 @@ describe('bookings offer cell', () => {
       booking: collectiveBookingRecapFactory({
         stock: {
           eventBeginningDatetime: '2020-05-12T11:03:28.564687+04:00',
-          offerIdentifier: 'A2',
           offerId: offerId,
           offerName: 'La danse des poireaux',
           offerIsEducational: false,
@@ -93,7 +90,6 @@ describe('bookings offer cell', () => {
         eventBeginningDatetime: new Date().toISOString(),
         numberOfTickets: 1,
         offerId: offerId,
-        offerIdentifier: '1',
         offerIsEducational: true,
         offerIsbn: null,
         offerName: 'ma super offre collective',
@@ -118,7 +114,6 @@ describe('bookings offer cell', () => {
         eventBeginningDatetime: new Date().toISOString(),
         numberOfTickets: 1,
         offerId: offerId,
-        offerIdentifier: '1',
         offerIsEducational: false,
         offerIsbn: null,
         offerName: 'ma super offre collective 2',

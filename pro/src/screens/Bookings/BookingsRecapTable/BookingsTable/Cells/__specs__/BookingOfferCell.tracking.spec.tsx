@@ -25,7 +25,6 @@ describe('BookingOfferCell', () => {
       booking: collectiveBookingRecapFactory({
         stock: {
           offerId: 1,
-          offerIdentifier: 'A1',
           offerName: 'Guitare acoustique',
           offerIsEducational: false,
           eventBeginningDatetime: new Date().toISOString(),
