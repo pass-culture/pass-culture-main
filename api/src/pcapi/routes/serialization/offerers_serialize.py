@@ -285,9 +285,6 @@ class InviteMemberQueryModel(BaseModel):
 
 class GetOffererBankAccountsResponseModel(BaseModel):
     id: int
-    hasValidBankAccount: bool
-    hasPendingBankAccount: bool
-    venuesWithNonFreeOffersWithoutBankAccounts: list[int]
     bankAccounts: list[finance_serialize.BankAccountResponseModel]
     managedVenues: list[finance_serialize.ManagedVenues]
 

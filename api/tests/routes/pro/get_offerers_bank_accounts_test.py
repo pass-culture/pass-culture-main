@@ -70,10 +70,6 @@ class OfferersBankAccountTest:
         assert response.status_code == 200
         offerer = response.json
 
-        assert offerer["hasValidBankAccount"] is False
-        assert offerer["hasPendingBankAccount"] is False
-        assert offerer["venuesWithNonFreeOffersWithoutBankAccounts"] == []
-
         bank_accounts = offerer["bankAccounts"]
         venues = offerer["managedVenues"]
 
@@ -111,10 +107,6 @@ class OfferersBankAccountTest:
         # Then
         assert response.status_code == 200
         offerer = response.json
-
-        assert offerer["hasValidBankAccount"] is True
-        assert offerer["hasPendingBankAccount"] is False
-        assert offerer["venuesWithNonFreeOffersWithoutBankAccounts"] == []
 
         bank_accounts = offerer["bankAccounts"]
         venues = sorted(offerer["managedVenues"], key=lambda v: v["id"])
@@ -170,13 +162,6 @@ class OfferersBankAccountTest:
         assert response.status_code == 200
         offerer = response.json
 
-        assert offerer["hasValidBankAccount"] is True
-        assert offerer["hasPendingBankAccount"] is False
-        assert sorted(offerer["venuesWithNonFreeOffersWithoutBankAccounts"]) == [
-            non_linked_venue.id,
-            non_linked_venue_bis.id,
-        ]
-
         bank_accounts = offerer["bankAccounts"]
 
         assert len(bank_accounts) == 1
@@ -209,10 +194,6 @@ class OfferersBankAccountTest:
         # Then
         assert response.status_code == 200
         offerer = response.json
-
-        assert offerer["hasValidBankAccount"] is True
-        assert offerer["hasPendingBankAccount"] is False
-        assert offerer["venuesWithNonFreeOffersWithoutBankAccounts"] == []
 
         bank_accounts = offerer["bankAccounts"]
 
@@ -251,10 +232,6 @@ class OfferersBankAccountTest:
         # Then
         assert response.status_code == 200
         offerer = response.json
-
-        assert offerer["hasValidBankAccount"] is False
-        assert offerer["hasPendingBankAccount"] is True
-        assert offerer["venuesWithNonFreeOffersWithoutBankAccounts"] == []
 
         assert len(offerer["bankAccounts"]) == 1
         bank_account = offerer["bankAccounts"].pop()
@@ -305,10 +282,6 @@ class OfferersBankAccountTest:
         # Then
         assert response.status_code == 200
         offerer = response.json
-
-        assert offerer["hasValidBankAccount"] is True
-        assert offerer["hasPendingBankAccount"] is False
-        assert offerer["venuesWithNonFreeOffersWithoutBankAccounts"] == []
 
         bank_accounts = offerer["bankAccounts"]
         managed_venues = sorted(offerer["managedVenues"], key=lambda venue: venue["id"])
