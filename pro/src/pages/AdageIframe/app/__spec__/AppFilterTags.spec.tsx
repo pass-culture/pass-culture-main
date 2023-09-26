@@ -19,10 +19,6 @@ import {
   FacetFiltersContextProvider,
   FiltersContextProvider,
 } from '../providers'
-import {
-  FeaturesContext,
-  FeaturesContextType,
-} from '../providers/FeaturesContextProvider'
 
 vi.mock('react-instantsearch-dom', async () => {
   return {
@@ -49,18 +45,14 @@ vi.mock('utils/config', async () => {
   }
 })
 
-const features: FeaturesContextType = []
-
 const renderApp = () => {
   renderWithProviders(
     <FiltersContextProvider>
-      <FeaturesContext.Provider value={features}>
-        <AlgoliaQueryContextProvider>
-          <FacetFiltersContextProvider>
-            <App />
-          </FacetFiltersContextProvider>
-        </AlgoliaQueryContextProvider>
-      </FeaturesContext.Provider>
+      <AlgoliaQueryContextProvider>
+        <FacetFiltersContextProvider>
+          <App />
+        </FacetFiltersContextProvider>
+      </AlgoliaQueryContextProvider>
     </FiltersContextProvider>
   )
 }
