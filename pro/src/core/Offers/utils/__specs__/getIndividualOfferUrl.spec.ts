@@ -156,6 +156,14 @@ describe('getIndividualOfferUrl', () => {
       },
       expectedUrl: '/offre/individuelle/42/tarifs',
     },
+    {
+      props: {
+        offerId: offerId,
+        mode: OFFER_WIZARD_MODE.READ_ONLY,
+        step: OFFER_WIZARD_STEP_IDS.BOOKINGS,
+      },
+      expectedUrl: '/offre/individuelle/42/reservations',
+    },
   ]
   it.each(testCases)('should return right url', ({ props, expectedUrl }) => {
     expect(getIndividualOfferUrl(props)).toBe(expectedUrl)
