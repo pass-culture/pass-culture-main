@@ -116,6 +116,18 @@ export const IndividualOfferBreadcrumb = () => {
     )
   }
 
+  if (mode === OFFER_WIZARD_MODE.READ_ONLY) {
+    steps.push({
+      id: OFFER_WIZARD_STEP_IDS.BOOKINGS,
+      label: 'Réservations',
+      path: getIndividualOfferPath({
+        step: OFFER_WIZARD_STEP_IDS.BOOKINGS,
+        mode,
+      }),
+      isActive: true,
+    })
+  }
+
   const stepList = steps.map((stepPattern: StepPattern): Step => {
     const step: Step = {
       id: stepPattern.id,

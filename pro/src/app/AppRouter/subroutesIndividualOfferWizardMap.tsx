@@ -3,6 +3,7 @@
 
 import React from 'react'
 
+import { BookingsSummary } from 'pages/IndividualOfferWizard/BookingsSummary/BookingsSummary'
 import { Confirmation } from 'pages/IndividualOfferWizard/Confirmation'
 import { Offer } from 'pages/IndividualOfferWizard/Offer'
 import { PriceCategories } from 'pages/IndividualOfferWizard/PriceCategories/PriceCategories'
@@ -81,7 +82,7 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
     element: <Stocks />,
     parentPath: '/offre/individuelle/:offerId',
     path: '/creation/stocks',
-    title: 'Stocks et prix  - Créer une offre individuelle',
+    title: 'Stocks et prix - Créer une offre individuelle',
   },
   {
     element: <Stocks />,
@@ -93,19 +94,19 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
     element: <Stocks />,
     parentPath: '/offre/individuelle/:offerId',
     path: '/edition/stocks',
-    title: 'Stocks et prix  - Modifier une offre individuelle',
+    title: 'Stocks et prix - Modifier une offre individuelle',
   },
   {
     element: <StocksSummary />,
     parentPath: '/offre/individuelle/:offerId',
     path: '/stocks',
-    title: 'Stocks et prix  - Consulter une offre individuelle',
+    title: 'Stocks et prix - Consulter une offre individuelle',
   },
   {
     element: <Summary />,
     parentPath: '/offre/individuelle/:offerId',
     path: '/creation/recapitulatif',
-    title: 'Récapitulatif  - Créer une offre individuelle',
+    title: 'Récapitulatif - Créer une offre individuelle',
   },
   {
     element: <Summary />,
@@ -136,6 +137,12 @@ export const routesIndividualOfferWizard: RouteConfig[] = [
     parentPath: '/offre/individuelle/:offerId',
     path: '/confirmation',
     title: 'Confirmation - Offre individuelle publiée',
+  },
+  {
+    element: <BookingsSummary />,
+    parentPath: '/offre/individuelle/:offerId',
+    path: '/reservations',
+    title: 'Réservations - Consulter une offre individuelle',
   },
 ]
 
