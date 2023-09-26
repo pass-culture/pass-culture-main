@@ -31,22 +31,19 @@ import { Checkbox, DatePicker, InfoBox, TextInput } from 'ui-kit'
 import { getToday, getYearMonthDay, isDateValid } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
-import { ActionBar } from '../ActionBar'
-import { DialogStockThingDeleteConfirm } from '../DialogStockDeleteConfirm'
-import { useNotifyFormError } from '../hooks'
-import { getSuccessMessage } from '../utils'
+import ActionBar from '../ActionBar/ActionBar'
+import DialogStockThingDeleteConfirm from '../DialogStockDeleteConfirm/DialogStockThingDeleteConfirm'
+import useNotifyFormError from '../hooks/useNotifyFormError'
+import { getSuccessMessage } from '../utils/getSuccessMessage'
 
-import { ActivationCodeFormDialog } from './ActivationCodeFormDialog'
-import { upsertStocksThingAdapter } from './adapters'
+import ActivationCodeFormDialog from './ActivationCodeFormDialog/ActivationCodeFormDialog'
+import upsertStocksThingAdapter from './adapters/upsertStocksThingAdapter'
+import { STOCK_THING_FORM_DEFAULT_VALUES } from './constants'
 import styles from './StockThing.module.scss'
-import { setFormReadOnlyFields } from './utils'
-
-import {
-  buildInitialValues,
-  getValidationSchema,
-  StockThingFormValues,
-  STOCK_THING_FORM_DEFAULT_VALUES,
-} from './'
+import { StockThingFormValues } from './types'
+import buildInitialValues from './utils/buildInitialValues'
+import setFormReadOnlyFields from './utils/setFormReadOnlyFields'
+import { getValidationSchema } from './validationSchema'
 
 export interface StocksThingProps {
   offer: IndividualOffer

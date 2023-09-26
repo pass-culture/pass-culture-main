@@ -5,8 +5,7 @@ import React from 'react'
 import { OFFER_WIZARD_STEP_IDS } from 'components/IndividualOfferBreadcrumb/constants'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { ActionBar } from '..'
-import { ActionBarProps } from '../ActionBar'
+import ActionBar, { ActionBarProps } from '../ActionBar'
 
 const renderActionBar = ({
   props,

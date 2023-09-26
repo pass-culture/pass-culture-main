@@ -8,7 +8,7 @@ import {
 } from 'utils/date'
 import { getUtcDateTimeFromLocalDepartement } from 'utils/timezone'
 
-import { StockThingFormValues } from '../'
+import { StockThingFormValues } from '../types'
 
 export const serializeThingBookingLimitDatetime = (
   bookingLimitDatetime: Date,
