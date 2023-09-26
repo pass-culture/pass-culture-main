@@ -92,7 +92,7 @@ const OfferSummary = ({
           /* istanbul ignore next: DEBT, TO FIX */
           conditionalFields.includes('showType') && (
             <SummaryLayout.Row
-              title="Type de spéctacle"
+              title="Type de spectacle"
               description={
                 /* istanbul ignore next: DEBT, TO FIX */
                 offerData.showTypeName || '-'
