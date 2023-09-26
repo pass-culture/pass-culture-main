@@ -211,7 +211,6 @@ class LogsTest:
         # then
         assert response.status_code == 204
         record = next(record for record in caplog.records if record.message == "HeaderLinkClick")
-
         assert record is not None
         assert record.extra == {
             "analyticsSource": "adage",
@@ -318,4 +317,36 @@ class LogsTest:
             "uai": "EAU123",
             "user_role": AdageFrontRoles.READONLY,
             "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+        }
+
+    def test_log_tracking_autocompletion(self, client, caplog):
+        # given
+        adage_jwt_fake_valid_token = create_adage_valid_token_with_email(email="test@mail.com")
+        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
+
+        # when
+        with caplog.at_level(logging.INFO):
+            response = client.post(
+                "/adage-iframe/logs/tracking-autocompletion",
+                json={
+                    "suggestionType": "offer category",
+                    "suggestionValue": "ai confiance, crois en moi, que je puisse, veiller sur toi",
+                    "iframeFrom": "for_my_institution",
+                    "queryId": "1234a",
+                },
+            )
+
+        # then
+        assert response.status_code == 204
+        assert caplog.records[0].message == "logAutocompleteSuggestionClicked"
+        record = [record for record in caplog.records if record.message == "logAutocompleteSuggestionClicked"][0]
+        assert record.extra == {
+            "analyticsSource": "adage",
+            "from": "for_my_institution",
+            "queryId": "1234a",
+            "suggestionType": "offer category",
+            "suggestionValue": "ai confiance, crois en moi, que je puisse, veiller sur toi",
+            "userId": "f0e2a21bcf499cbc713c47d8f034d66e90a99f9ffcfe96466c9971dfdc5c9816",
+            "uai": "EAU123",
+            "user_role": AdageFrontRoles.READONLY,
         }
