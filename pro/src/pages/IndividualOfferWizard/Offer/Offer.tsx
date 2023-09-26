@@ -6,8 +6,8 @@ import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { useOfferWizardMode } from 'hooks'
 import useCurrentUser from 'hooks/useCurrentUser'
-import { Informations as InformationsScreen } from 'screens/IndividualOffer'
 import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
+import InformationsScreen from 'screens/IndividualOffer/Informations/Informations'
 import { parse } from 'utils/query-string'
 
 const Offer = (): JSX.Element | null => {

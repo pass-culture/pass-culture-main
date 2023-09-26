@@ -2,9 +2,9 @@ import { api } from 'apiClient/api'
 import { isErrorAPIError, serializeApiErrors } from 'apiClient/helpers'
 import { StockResponseModel } from 'apiClient/v1'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { getSuccessMessage } from 'screens/IndividualOffer/utils'
+import { getSuccessMessage } from 'screens/IndividualOffer/utils/getSuccessMessage'
 
-import { StockThingFormValues } from '../'
+import { StockThingFormValues } from '../types'
 
 import { serializeStockThingList } from './serializers'
 

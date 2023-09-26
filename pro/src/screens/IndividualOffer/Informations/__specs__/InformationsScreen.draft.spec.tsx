@@ -24,7 +24,6 @@ import { AccessiblityEnum } from 'core/shared'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
-import * as utils from 'screens/IndividualOffer/Informations/utils'
 import {
   individualOfferCategoryFactory,
   individualOfferContextFactory,
@@ -34,7 +33,7 @@ import {
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { InformationsProps, Informations as InformationsScreen } from '..'
+import Informations, { InformationsProps } from '../Informations'
 
 vi.mock('utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
@@ -76,7 +75,7 @@ const renderInformationsScreen = (
           })}
           element={
             <IndividualOfferContext.Provider value={contextValue}>
-              <InformationsScreen {...props} />
+              <Informations {...props} />
             </IndividualOfferContext.Provider>
           }
         />
@@ -234,9 +233,6 @@ describe('screens:IndividualOffer::Informations:draft', () => {
       venueId: physicalVenueId.toString(),
     }
 
-    vi.spyOn(utils, 'filterCategories')
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .mockImplementation((c, s, _v) => [c, s])
     vi.spyOn(api, 'patchOffer').mockResolvedValue({
       id: offerId,
     } as GetIndividualOfferResponseModel)
