@@ -3259,6 +3259,7 @@ class UpdateIndividualOffererSubscriptionTest(PostEndpointHelper):
         assert individual_subscription.isCertificateReceived is form_data["is_certificate_received"]
         assert individual_subscription.certificateDetails == (form_data["certificate_details"] or None)
         assert individual_subscription.isExperienceReceived is form_data["is_experience_received"]
+        assert individual_subscription.experienceDetails == (form_data["experience_details"] or None)
         assert individual_subscription.has1yrExperience is form_data["has_1yr_experience"]
         assert individual_subscription.has5yrExperience is form_data["has_4yr_experience"]
         assert individual_subscription.isCertificateValid is form_data["is_certificate_valid"]
@@ -3276,6 +3277,7 @@ class UpdateIndividualOffererSubscriptionTest(PostEndpointHelper):
             "is_certificate_received": False,
             "certificate_details": "",
             "is_experience_received": False,
+            "experience_details": "",
             "has_1yr_experience": False,
             "has_4yr_experience": False,
             "is_certificate_valid": False,
@@ -3307,6 +3309,8 @@ class UpdateIndividualOffererSubscriptionTest(PostEndpointHelper):
             "is_certificate_received": True,
             "certificate_details": "BAC+42",
             "is_experience_received": True,
+            "experience_details": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n"
+            "Duis non nulla luctus, malesuada augue ac, pulvinar velit.",
             "has_1yr_experience": False,
             "has_4yr_experience": True,
             "is_certificate_valid": True,
