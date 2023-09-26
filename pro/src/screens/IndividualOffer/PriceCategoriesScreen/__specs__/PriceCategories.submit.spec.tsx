@@ -17,10 +17,13 @@ import {
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { PriceCategories, PriceCategoriesProps } from '../PriceCategories'
+import {
+  PriceCategoriesScreen,
+  PriceCategoriesScreenProps,
+} from '../PriceCategoriesScreen'
 
 const renderPriceCategories = (
-  props: PriceCategoriesProps,
+  props: PriceCategoriesScreenProps,
   url = generatePath(
     getIndividualOfferPath({
       step: OFFER_WIZARD_STEP_IDS.TARIFS,
@@ -38,7 +41,7 @@ const renderPriceCategories = (
               step: OFFER_WIZARD_STEP_IDS.TARIFS,
               mode,
             })}
-            element={<PriceCategories {...props} />}
+            element={<PriceCategoriesScreen {...props} />}
             key={mode}
           />
         ))}

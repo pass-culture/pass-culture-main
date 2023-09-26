@@ -15,7 +15,7 @@ import useActiveStep from 'hooks/useActiveStep'
 import {
   getOfferSubtypeFromParam,
   isOfferSubtypeEvent,
-} from 'screens/IndividualOffer/Informations/utils/filterCategories/filterCategories'
+} from 'screens/IndividualOffer/InformationsScreen/utils/filterCategories/filterCategories'
 
 import { OFFER_WIZARD_STEP_IDS } from './constants'
 import styles from './IndividualOfferBreadcrumb.module.scss'

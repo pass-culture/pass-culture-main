@@ -10,11 +10,13 @@ import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { OfferSubCategory } from 'core/Offers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
-import * as filterCategories from 'screens/IndividualOffer/Informations/utils/filterCategories/filterCategories'
+import * as filterCategories from 'screens/IndividualOffer/InformationsScreen/utils/filterCategories/filterCategories'
 import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Informations, { InformationsProps } from '../Informations'
+import InformationsScreen, {
+  InformationsScreenProps,
+} from '../InformationsScreen'
 
 vi.mock('screens/IndividualOffer/Informations/utils', () => {
   return {
@@ -36,7 +38,7 @@ vi.mock('repository/pcapi/pcapi', () => ({
 }))
 
 const renderInformationsScreen = (
-  props: InformationsProps,
+  props: InformationsScreenProps,
   contextValue: IndividualOfferContextValues
 ) => {
   const storeOverrides = {
@@ -51,7 +53,7 @@ const renderInformationsScreen = (
 
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
-      <Informations {...props} />
+      <InformationsScreen {...props} />
     </IndividualOfferContext.Provider>,
     { storeOverrides, initialRouterEntries: ['/creation'] }
   )
@@ -60,7 +62,7 @@ const renderInformationsScreen = (
 const scrollIntoViewMock = vi.fn()
 
 describe('screens:IndividualOffer::Informations', () => {
-  let props: InformationsProps
+  let props: InformationsScreenProps
   let contextValue: IndividualOfferContextValues
 
   beforeEach(() => {

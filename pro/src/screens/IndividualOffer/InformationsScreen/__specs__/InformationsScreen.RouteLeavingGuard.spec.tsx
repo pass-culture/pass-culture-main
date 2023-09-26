@@ -27,7 +27,9 @@ import { ButtonLink } from 'ui-kit'
 import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Informations, { InformationsProps } from '../Informations'
+import InformationsScreen, {
+  InformationsScreenProps,
+} from '../InformationsScreen'
 
 const mockLogEvent = vi.fn()
 
@@ -42,7 +44,7 @@ vi.mock('repository/pcapi/pcapi', () => ({
 }))
 
 const renderInformationsScreen = (
-  props: InformationsProps,
+  props: InformationsScreenProps,
   contextOverride: Partial<IndividualOfferContextValues>,
   url = generatePath(
     getIndividualOfferPath({
@@ -86,7 +88,7 @@ const renderInformationsScreen = (
             })}
             element={
               <IndividualOfferContext.Provider value={contextValue}>
-                <Informations {...props} />
+                <InformationsScreen {...props} />
                 <ButtonLink link={{ to: '/outside', isExternal: false }}>
                   Go outside !
                 </ButtonLink>
@@ -118,7 +120,7 @@ const renderInformationsScreen = (
 const scrollIntoViewMock = vi.fn()
 
 describe('screens:IndividualOffer::Informations::creation', () => {
-  let props: InformationsProps
+  let props: InformationsScreenProps
   let contextOverride: Partial<IndividualOfferContextValues>
   let offer: IndividualOffer
   const offerId = 12

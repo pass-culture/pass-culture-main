@@ -6,7 +6,7 @@ import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 
-export const StocksSummary = () => {
+export const StocksSummaryScreen = () => {
   const { offer } = useIndividualOfferContext()
 
   if (offer === null) {

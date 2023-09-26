@@ -24,7 +24,9 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Informations, { InformationsProps } from '../Informations'
+import InformationsScreen, {
+  InformationsScreenProps,
+} from '../InformationsScreen'
 
 const mockLogEvent = vi.fn()
 
@@ -43,7 +45,7 @@ vi.mock('repository/pcapi/pcapi', () => ({
 }))
 
 const renderInformationsScreen = (
-  props: InformationsProps,
+  props: InformationsScreenProps,
   contextOverride: Partial<IndividualOfferContextValues>
 ) => {
   const storeOverrides = {
@@ -77,7 +79,7 @@ const renderInformationsScreen = (
           })}
           element={
             <IndividualOfferContext.Provider value={contextValue}>
-              <Informations {...props} />
+              <InformationsScreen {...props} />
             </IndividualOfferContext.Provider>
           }
         />
@@ -106,7 +108,7 @@ const renderInformationsScreen = (
 const scrollIntoViewMock = vi.fn()
 
 describe('screens:IndividualOffer::Informations::creation', () => {
-  let props: InformationsProps
+  let props: InformationsScreenProps
   let contextOverride: Partial<IndividualOfferContextValues>
   const offererId = 1
   const offerId = 5

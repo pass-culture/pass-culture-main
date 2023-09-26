@@ -31,7 +31,7 @@ import {
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Summary from '../Summary'
+import SummaryScreen from '../SummaryScreen'
 
 const mockLogEvent = vi.fn()
 
@@ -81,21 +81,21 @@ const renderSummary = (
               step: OFFER_WIZARD_STEP_IDS.SUMMARY,
               mode: OFFER_WIZARD_MODE.READ_ONLY,
             })}
-            element={<Summary />}
+            element={<SummaryScreen />}
           />
           <Route
             path={getIndividualOfferPath({
               step: OFFER_WIZARD_STEP_IDS.SUMMARY,
               mode: OFFER_WIZARD_MODE.CREATION,
             })}
-            element={<Summary />}
+            element={<SummaryScreen />}
           />
           <Route
             path={getIndividualOfferPath({
               step: OFFER_WIZARD_STEP_IDS.SUMMARY,
               mode: OFFER_WIZARD_MODE.DRAFT,
             })}
-            element={<Summary />}
+            element={<SummaryScreen />}
           />
           <Route
             path={getIndividualOfferPath({

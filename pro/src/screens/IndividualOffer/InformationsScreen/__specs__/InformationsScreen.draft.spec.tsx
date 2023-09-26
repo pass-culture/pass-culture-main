@@ -27,7 +27,9 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Informations, { InformationsProps } from '../Informations'
+import InformationsScreen, {
+  InformationsScreenProps,
+} from '../InformationsScreen'
 
 vi.mock('utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn(() => true),
@@ -45,7 +47,7 @@ vi.mock('repository/pcapi/pcapi', () => ({
 const scrollIntoViewMock = vi.fn()
 
 const renderInformationsScreen = (
-  props: InformationsProps,
+  props: InformationsScreenProps,
   contextOverride: Partial<IndividualOfferContextValues>
 ) => {
   const storeOverrides = {
@@ -79,7 +81,7 @@ const renderInformationsScreen = (
           })}
           element={
             <IndividualOfferContext.Provider value={contextValue}>
-              <Informations {...props} />
+              <InformationsScreen {...props} />
             </IndividualOfferContext.Provider>
           }
         />
@@ -106,7 +108,7 @@ const renderInformationsScreen = (
 }
 
 describe('screens:IndividualOffer::Informations:draft', () => {
-  let props: InformationsProps
+  let props: InformationsScreenProps
   let contextOverride: Partial<IndividualOfferContextValues>
   let offer: IndividualOffer
   let subCategories: OfferSubCategory[]

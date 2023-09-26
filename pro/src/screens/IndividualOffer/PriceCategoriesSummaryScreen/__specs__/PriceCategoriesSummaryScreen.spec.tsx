@@ -12,7 +12,7 @@ import {
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { PriceCategoriesSummaryScreen } from '../PriceCategoriesSummary'
+import { PriceCategoriesSummaryScreen } from '../PriceCategoriesSummaryScreen'
 
 const duoSubcategory = individualOfferSubCategoryFactory({ canBeDuo: true })
 const renderPriceCategoriesSummary = (offer: IndividualOffer) => {
