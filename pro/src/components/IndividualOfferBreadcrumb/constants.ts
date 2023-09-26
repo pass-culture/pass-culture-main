@@ -4,4 +4,5 @@ export enum OFFER_WIZARD_STEP_IDS {
   STOCKS = 'stocks',
   SUMMARY = 'recapitulatif',
   CONFIRMATION = 'confirmation',
+  BOOKINGS = 'reservations',
 }

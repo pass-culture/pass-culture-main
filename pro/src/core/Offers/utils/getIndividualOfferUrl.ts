@@ -49,6 +49,13 @@ export const getIndividualOfferPath = ({
       [OFFER_WIZARD_MODE.EDITION]: '',
       [OFFER_WIZARD_MODE.READ_ONLY]: '',
     },
+    [OFFER_WIZARD_STEP_IDS.BOOKINGS]: {
+      [OFFER_WIZARD_MODE.CREATION]: ``,
+      [OFFER_WIZARD_MODE.DRAFT]: ``,
+      [OFFER_WIZARD_MODE.EDITION]: '',
+      [OFFER_WIZARD_MODE.READ_ONLY]:
+        '/offre/individuelle/:offerId/reservations',
+    },
   }[step][mode]
 }
 
