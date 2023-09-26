@@ -19,10 +19,7 @@ const OfferFavoriteButton = ({
   offer,
   afterFavoriteChange,
 }: {
-  //  TODO : remove the additional isFavorite when back model merged
-  offer: (HydratedCollectiveOffer | HydratedCollectiveOfferTemplate) & {
-    isFavorite: boolean
-  }
+  offer: HydratedCollectiveOffer | HydratedCollectiveOfferTemplate
   afterFavoriteChange?: (isFavorite: boolean) => void
 }): JSX.Element => {
   const [isFavorite, setIsFavorite] = useState(offer.isFavorite)
