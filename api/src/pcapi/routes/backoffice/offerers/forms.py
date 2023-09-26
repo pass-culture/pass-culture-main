@@ -255,6 +255,7 @@ class IndividualOffererSubscriptionForm(FlaskForm):
     is_certificate_received = fields.PCSwitchBooleanField("Diplôme reçu", full_width=True)
     certificate_details = fields.PCTextareaField("Type de diplôme / niveau")
     is_experience_received = fields.PCSwitchBooleanField("Expérience reçue", full_width=True)
+    experience_details = fields.PCTextareaField("Type d'expérience")
     has_1yr_experience = fields.PCSwitchBooleanField("1 à 4 ans")
     has_4yr_experience = fields.PCSwitchBooleanField("+ 5 ans")
     is_certificate_valid = fields.PCSwitchBooleanField("Validité du diplôme", full_width=True)
