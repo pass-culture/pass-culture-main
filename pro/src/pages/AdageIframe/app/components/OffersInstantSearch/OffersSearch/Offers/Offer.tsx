@@ -163,8 +163,7 @@ const Offer = ({
               <div className={style['offer-details-actions']}>
                 {isLikeActive && (
                   <OfferFavoriteButton
-                    //  TODO : remove the additional isFavorite when back model merged
-                    offer={offer as typeof offer & { isFavorite: boolean }}
+                    offer={offer}
                     afterFavoriteChange={afterFavoriteChange}
                   ></OfferFavoriteButton>
                 )}
