@@ -10,7 +10,6 @@ from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories
-from pcapi.utils.human_ids import humanize
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -66,7 +65,6 @@ class Returns200Test:
             {
                 "stock": {
                     "offerName": "Le chant des cigales",
-                    "offerIdentifier": humanize(collective_stock.collectiveOfferId),
                     "offerId": collective_stock.collectiveOfferId,
                     "offerIsEducational": True,
                     "eventBeginningDatetime": "2022-05-15T12:15:00+02:00",
@@ -83,7 +81,6 @@ class Returns200Test:
                     "phoneNumber": institution.phoneNumber,
                     "institutionId": institution.institutionId,
                 },
-                "bookingIdentifier": humanize(booking.id),
                 "bookingCancellationLimitDate": "2022-04-15T12:15:00+02:00",
                 "bookingConfirmationDate": "2022-03-12T11:15:00+01:00",
                 "bookingConfirmationLimitDate": "2022-04-30T17:00:00+02:00",
@@ -417,7 +414,6 @@ class Returns200Test:
             {
                 "stock": {
                     "offerName": "Le chant des cigales",
-                    "offerIdentifier": humanize(collective_stock.collectiveOfferId),
                     "offerId": collective_stock.collectiveOfferId,
                     "offerIsEducational": True,
                     "eventBeginningDatetime": "2022-05-15T12:15:00+02:00",
@@ -434,7 +430,6 @@ class Returns200Test:
                     "phoneNumber": institution.phoneNumber,
                     "institutionId": institution.institutionId,
                 },
-                "bookingIdentifier": humanize(booking.id),
                 "bookingCancellationLimitDate": "2022-04-15T12:15:00+02:00",
                 "bookingConfirmationDate": "2022-03-12T11:15:00+01:00",
                 "bookingConfirmationLimitDate": "2022-04-30T17:00:00+02:00",
@@ -507,7 +502,6 @@ class Returns200Test:
             {
                 "stock": {
                     "offerName": "Le chant des cigales",
-                    "offerIdentifier": humanize(collective_stock.collectiveOfferId),
                     "offerId": collective_stock.collectiveOfferId,
                     "offerIsEducational": True,
                     "eventBeginningDatetime": "2022-05-15T12:15:00+02:00",
@@ -524,7 +518,6 @@ class Returns200Test:
                     "phoneNumber": institution.phoneNumber,
                     "institutionId": institution.institutionId,
                 },
-                "bookingIdentifier": humanize(booking.id),
                 "bookingCancellationLimitDate": "2022-04-15T12:15:00+02:00",
                 "bookingConfirmationDate": "2022-03-12T11:15:00+01:00",
                 "bookingConfirmationLimitDate": "2022-04-30T17:00:00+02:00",
@@ -599,7 +592,6 @@ class Returns200Test:
             {
                 "stock": {
                     "offerName": "Le chant des cigales",
-                    "offerIdentifier": humanize(collective_stock.collectiveOfferId),
                     "offerId": collective_stock.collectiveOfferId,
                     "offerIsEducational": True,
                     "eventBeginningDatetime": "2022-03-10T11:15:00+01:00",
@@ -616,7 +608,6 @@ class Returns200Test:
                     "phoneNumber": institution.phoneNumber,
                     "institutionId": institution.institutionId,
                 },
-                "bookingIdentifier": humanize(booking.id),
                 "bookingDate": "2022-02-11T11:15:00+01:00",
                 "bookingCancellationLimitDate": "2022-02-11T11:15:00+01:00",
                 "bookingConfirmationDate": "2022-02-12T11:15:00+01:00",
