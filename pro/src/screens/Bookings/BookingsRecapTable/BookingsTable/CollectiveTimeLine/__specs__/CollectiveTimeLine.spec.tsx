@@ -211,7 +211,7 @@ describe('collective timeline', () => {
         })
       ).toHaveAttribute(
         'href',
-        '/structures/O1/lieux/V1?modification#reimbursement-section'
+        '/structures/1/lieux/1?modification#reimbursement-section'
       )
     })
 
@@ -229,7 +229,6 @@ describe('collective timeline', () => {
           bookingLimitDatetime: new Date().toISOString(),
           eventBeginningDatetime: addDays(new Date(), -1).toISOString(),
           numberOfTickets: 1,
-          offerIdentifier: '1',
           offerId: 1,
           offerIsEducational: true,
           offerIsbn: null,

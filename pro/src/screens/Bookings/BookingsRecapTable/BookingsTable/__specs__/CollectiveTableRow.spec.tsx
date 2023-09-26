@@ -57,10 +57,7 @@ describe('CollectiveTableRow', () => {
   it('should not render booking details if row is not expanded', async () => {
     const props: CollectiveTableRowProps = {
       booking: collectiveBookingRecapFactory({
-        bookingIdentifier: 'A1',
-        stock: collectiveBookingCollectiveStockFactory({
-          offerIdentifier: 'A1',
-        }),
+        stock: collectiveBookingCollectiveStockFactory(),
         bookingStatus: 'booked',
       }),
       reloadBookings: vi.fn(),
@@ -77,10 +74,7 @@ describe('CollectiveTableRow', () => {
   it('should render loader while fetching data', async () => {
     const props: CollectiveTableRowProps = {
       booking: collectiveBookingRecapFactory({
-        bookingIdentifier: 'A1',
-        stock: collectiveBookingCollectiveStockFactory({
-          offerIdentifier: 'A1',
-        }),
+        stock: collectiveBookingCollectiveStockFactory(),
         bookingStatus: 'booked',
       }),
       reloadBookings: vi.fn(),
