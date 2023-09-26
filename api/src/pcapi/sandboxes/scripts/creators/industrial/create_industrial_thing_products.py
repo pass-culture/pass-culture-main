@@ -1,6 +1,7 @@
 import logging
 import random
 
+from pcapi.connectors import thumb_storage
 from pcapi.core.categories import subcategories_v2
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
@@ -96,6 +97,8 @@ def create_industrial_thing_products() -> dict[str, offers_models.Product]:
 
     repository.save(*thing_products_by_name.values())
 
+    create_products_thumb(titelive_synced_products)
+
     logger.info("created %d thing products", len(thing_products_by_name))
 
     return thing_products_by_name
@@ -123,7 +126,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
         ),
         idAtProviders="0602438073177",
         name="Greatest Hits",
-        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE.id,
+        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
     )
 
     soon_released_cd = offers_factories.ProductFactory(
@@ -146,7 +149,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
         ),
         idAtProviders="0602435858395",
         name="Who's Next",
-        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE.id,
+        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
     )
 
     available_rap_cd_1 = offers_factories.ProductFactory(
@@ -168,7 +171,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
         ),
         idAtProviders="3700187679323",
         name="Les dernières volontés de Mozart (symphony)",
-        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE.id,
+        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
     )
 
     available_rap_cd_2 = offers_factories.ProductFactory(
@@ -191,7 +194,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
         ),
         idAtProviders="3596974281424",
         name="Civilisation - Edition ultime",
-        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE.id,
+        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
     )
 
     available_multiple_discs_cd = offers_factories.ProductFactory(
@@ -213,7 +216,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
         ),
         idAtProviders="0196587966423",
         name="2023 Enfoirés un jour, toujours",
-        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE.id,
+        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
     )
 
     available_french_cd = offers_factories.ProductFactory(
@@ -235,7 +238,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
         ),
         idAtProviders="0602448125255",
         name="Coeur Encore",
-        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE.id,
+        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
     )
 
     available_pop_vinyl_1 = offers_factories.ProductFactory(
@@ -257,7 +260,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
         ),
         idAtProviders="0190296666964",
         name="Music Of The Spheres",
-        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE.id,
+        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
     )
 
     available_pop_vinyl_2 = offers_factories.ProductFactory(
@@ -279,7 +282,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
         ),
         idAtProviders="5054197199738",
         name="Cracker Island",
-        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE.id,
+        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
     )
 
     available_rock_vinyl = offers_factories.ProductFactory(
@@ -301,7 +304,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
         ),
         idAtProviders="0602435931975",
         name="The Highlights",
-        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE.id,
+        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
     )
 
     available_multiple_discs_vinyl = offers_factories.ProductFactory(
@@ -324,7 +327,7 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
         ),
         idAtProviders="5060281614698",
         name="If you wait",
-        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE.id,
+        subcategoryId=subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id,
     )
 
     return [
@@ -339,3 +342,12 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
         available_rock_vinyl,
         available_multiple_discs_vinyl,
     ]
+
+
+def create_products_thumb(products: list[offers_models.Product]) -> None:
+    for i, product in enumerate(products):
+        with open(
+            f"./src/pcapi/sandboxes/thumbs/generic_pictures/Picture_{10+i:03}.jpg",
+            mode="rb",
+        ) as file:
+            thumb_storage.create_thumb(product, file.read(), storage_id_suffix_str="", keep_ratio=True)
