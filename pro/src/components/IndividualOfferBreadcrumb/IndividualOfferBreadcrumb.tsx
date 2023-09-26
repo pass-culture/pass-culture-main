@@ -138,7 +138,7 @@ export const IndividualOfferBreadcrumb = () => {
           ? BreadcrumbStyle.STEPPER
           : BreadcrumbStyle.TAB
       }
-      className={cn({
+      className={cn(styles['stepper'], {
         [styles['stepper-creation']]:
           mode === OFFER_WIZARD_MODE.CREATION ||
           mode === OFFER_WIZARD_MODE.DRAFT,

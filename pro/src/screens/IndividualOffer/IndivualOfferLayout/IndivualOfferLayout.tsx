@@ -1,7 +1,7 @@
+import cn from 'classnames'
 import React from 'react'
 
 import { IndividualOfferBreadcrumb } from 'components/IndividualOfferBreadcrumb/IndividualOfferBreadcrumb'
-import { OfferFormLayout } from 'components/OfferFormLayout'
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { getIndividualOfferAdapter } from 'core/Offers/adapters'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
@@ -60,15 +60,19 @@ const IndivualOfferLayout = ({
   const providerName = offer?.lastProviderName
 
   return (
-    <OfferFormLayout>
+    <div>
       {title !== null && (
-        <OfferFormLayout.TitleBlock
-          className={!offer?.name ? styles['title-without-name'] : undefined}
-          actions={actions}
+        <div
+          className={cn(styles['title'], {
+            [styles['title-without-name']]: !offer?.name,
+          })}
         >
-          <h1>{title ? title : defaultTitle}</h1>
-          {offer && <h4>{offer.name}</h4>}
-        </OfferFormLayout.TitleBlock>
+          <div>
+            <h1>{title ? title : defaultTitle}</h1>
+            {offer && <h4 className={styles['offer-title']}>{offer.name}</h4>}
+          </div>
+          {actions && <div className={styles['right']}>{actions}</div>}
+        </div>
       )}
 
       {offer && withStepper && <OfferStatusBanner status={offer.status} />}
@@ -77,14 +81,10 @@ const IndivualOfferLayout = ({
         <SynchronizedProviderInformation providerName={providerName} />
       )}
 
-      {withStepper && (
-        <OfferFormLayout.Stepper>
-          <IndividualOfferBreadcrumb />
-        </OfferFormLayout.Stepper>
-      )}
+      {withStepper && <IndividualOfferBreadcrumb />}
 
-      <OfferFormLayout.Content>{children}</OfferFormLayout.Content>
-    </OfferFormLayout>
+      <div className={styles['content']}>{children}</div>
+    </div>
   )
 }
 
