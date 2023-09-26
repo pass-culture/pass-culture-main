@@ -12,10 +12,15 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 
 interface StoreProviderProps {
   isDev?: boolean
+  isAdageIframe?: boolean
   children: JSX.Element | JSX.Element[]
 }
 
-const StoreProvider = ({ children, isDev = false }: StoreProviderProps) => {
+const StoreProvider = ({
+  children,
+  isAdageIframe = false,
+  isDev = false,
+}: StoreProviderProps) => {
   const [currentUser, setCurrentUser] =
     useState<SharedCurrentUserResponseModel | null>()
   const [features, setFeatures] = useState<FeatureResponseModel[]>()
@@ -29,10 +34,14 @@ const StoreProvider = ({ children, isDev = false }: StoreProviderProps) => {
     }
 
     async function getStoreInitialData() {
-      api
-        .getProfile()
-        .then(response => setCurrentUser(response))
-        .catch(() => setCurrentUser(null))
+      if (isAdageIframe) {
+        setCurrentUser(null)
+      } else {
+        api
+          .getProfile()
+          .then(response => setCurrentUser(response))
+          .catch(() => setCurrentUser(null))
+      }
       api
         .listFeatures()
         .then(response => setFeatures(response))
@@ -49,7 +58,6 @@ const StoreProvider = ({ children, isDev = false }: StoreProviderProps) => {
       })
     }
   }, [currentUser, features])
-
   if (initialState === null) {
     return (
       <main id="content" className="spinner-container">

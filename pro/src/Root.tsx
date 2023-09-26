@@ -7,9 +7,13 @@ import StoreProvider from 'store/StoreProvider/StoreProvider'
 
 import { RemoteContextProvider } from './context/remoteConfigContext'
 
-const Root = (): JSX.Element => {
+interface RootProps {
+  isAdageIframe: boolean
+}
+
+const Root = ({ isAdageIframe }: RootProps): JSX.Element => {
   return (
-    <StoreProvider>
+    <StoreProvider isAdageIframe={isAdageIframe}>
       <AnalyticsContextProvider>
         <RemoteContextProvider>
           <AppRouter routes={routes} />
