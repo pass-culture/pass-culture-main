@@ -48,3 +48,14 @@ class CollectiveRequestBody(AdageBaseModel):
 class TrackingFilterBody(AdageBaseModel):
     resultNumber: int
     filterValues: dict
+
+
+class SuggestionType(enum.Enum):
+    VENUE = "venue"
+    OFFER_BY_CATEGORY = "offer category"
+    OFFER = "offer"
+
+
+class TrackingAutocompleteSuggestionBody(AdageBaseModel):
+    suggestionType: SuggestionType
+    suggestionValue: str

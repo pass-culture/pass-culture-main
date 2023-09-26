@@ -220,3 +220,26 @@ def log_open_satisfaction_survey(
         user_email=authenticated_information.email,
     )
     return
+
+
+@blueprint.adage_iframe.route("/logs/tracking-autocompletion", methods=["POST"])
+@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_jwt_required
+def log_tracking_autocomplete_suggestion_click(
+    authenticated_information: AuthenticatedInformation,
+    body: serialization.TrackingAutocompleteSuggestionBody,
+) -> None:
+    institution = find_educational_institution_by_uai_code(authenticated_information.uai)  # type: ignore [arg-type]
+    educational_utils.log_information_for_data_purpose(
+        event_name="logAutocompleteSuggestionClicked",
+        extra_data={
+            "from": body.iframeFrom,
+            "queryId": body.queryId,
+            "suggestionType": body.suggestionType.value,
+            "suggestionValue": body.suggestionValue,
+        },
+        uai=authenticated_information.uai,
+        user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
+        user_email=authenticated_information.email,
+    )
+    return
