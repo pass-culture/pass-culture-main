@@ -3,7 +3,7 @@ import { individualStockFactory } from 'utils/individualApiFactories'
 
 import { priceCategoryFormFactory } from '../form/factories'
 import { PriceCategoriesFormValues } from '../form/types'
-import { POPIN_TYPE, getPopinType } from '../PriceCategories'
+import { POPIN_TYPE, getPopinType } from '../PriceCategoriesScreen'
 
 describe('getPopinType', () => {
   const cases: {

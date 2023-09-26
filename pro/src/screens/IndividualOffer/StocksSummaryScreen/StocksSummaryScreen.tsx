@@ -6,13 +6,13 @@ import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 
-import { getStockWarningText } from '../Summary/StockSection/StockSection'
-import { StockThingSection } from '../Summary/StockSection/StockThingSection'
+import { getStockWarningText } from '../SummaryScreen/StockSection/StockSection'
+import StockThingSection from '../SummaryScreen/StockSection/StockThingSection/StockThingSection'
 
 import { RecurrenceSummary } from './RecurrenceSummary'
 import styles from './StocksSummary.module.scss'
 
-export const StocksSummary = () => {
+export const StocksSummaryScreen = () => {
   const { offer, subCategories } = useIndividualOfferContext()
 
   if (offer === null) {

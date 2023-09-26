@@ -22,7 +22,7 @@ import { PriceCategoriesFormValues, PriceCategoryForm } from './form/types'
 import { validationSchema } from './form/validationSchema'
 import { PriceCategoriesForm } from './PriceCategoriesForm'
 
-export interface PriceCategoriesProps {
+export interface PriceCategoriesScreenProps {
   offer: IndividualOffer
 }
 
@@ -148,9 +148,9 @@ export const getPopinType = (
   return null
 }
 
-export const PriceCategories = ({
+export const PriceCategoriesScreen = ({
   offer,
-}: PriceCategoriesProps): JSX.Element => {
+}: PriceCategoriesScreenProps): JSX.Element => {
   const { setOffer, subCategories } = useIndividualOfferContext()
   const [isClickingFromActionBar, setIsClickingFromActionBar] =
     useState<boolean>(false)

@@ -5,10 +5,13 @@ import { OfferStatus } from 'apiClient/v1'
 import { individualOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { PriceCategories, PriceCategoriesProps } from '../PriceCategories'
+import {
+  PriceCategoriesScreen,
+  PriceCategoriesScreenProps,
+} from '../PriceCategoriesScreen'
 
-const renderPriceCategories = (props: PriceCategoriesProps) =>
-  renderWithProviders(<PriceCategories {...props} />)
+const renderPriceCategories = (props: PriceCategoriesScreenProps) =>
+  renderWithProviders(<PriceCategoriesScreen {...props} />)
 
 describe('PriceCategories', () => {
   it('should render without error', () => {
