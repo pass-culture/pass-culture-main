@@ -19,10 +19,10 @@ import fullMoreIcon from 'icons/full-more.svg'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
-import { ActionBar } from '../ActionBar'
+import ActionBar from '../ActionBar/ActionBar'
 import { MAX_STOCKS_PER_OFFER } from '../constants'
-import { upsertStocksEventAdapter } from '../StocksEventEdition/adapters'
-import { getSuccessMessage } from '../utils'
+import upsertStocksEventAdapter from '../StocksEventEdition/adapters/upsertStocksEventAdapter'
+import { getSuccessMessage } from '../utils/getSuccessMessage'
 
 import { HelpSection } from './HelpSection/HelpSection'
 import { RecurrenceForm } from './RecurrenceForm'

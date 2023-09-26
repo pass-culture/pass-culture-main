@@ -10,7 +10,7 @@ import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { OfferSubCategory } from 'core/Offers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
-import * as utils from 'screens/IndividualOffer/Informations/utils'
+import * as filterCategories from 'screens/IndividualOffer/Informations/utils/filterCategories/filterCategories'
 import {
   individualOfferCategoryFactory,
   individualOfferContextFactory,
@@ -19,7 +19,7 @@ import {
 } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { InformationsProps, Informations as InformationsScreen } from '..'
+import Informations, { InformationsProps } from '../Informations'
 
 vi.mock('screens/IndividualOffer/Informations/utils', () => {
   return {
@@ -56,7 +56,7 @@ const renderInformationsScreen = (
 
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
-      <InformationsScreen {...props} />
+      <Informations {...props} />
     </IndividualOfferContext.Provider>,
     { storeOverrides, initialRouterEntries: ['/creation'] }
   )
@@ -117,13 +117,14 @@ describe('screens:IndividualOffer::Informations', () => {
       offer: null,
     })
 
-    vi.spyOn(utils, 'filterCategories')
+    vi.spyOn(filterCategories, 'filterCategories')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       .mockImplementation((c, s, _v) => [c, s])
   })
 
   it('should render the component', async () => {
     renderInformationsScreen(props, contextValue)
+
     expect(
       await screen.findByRole('heading', { name: 'Type d’offre' })
     ).toBeInTheDocument()
@@ -131,8 +132,10 @@ describe('screens:IndividualOffer::Informations', () => {
 
   it('should call filterCategories when no venue id is given on initial values', async () => {
     renderInformationsScreen(props, contextValue)
+
     await screen.findByRole('heading', { name: 'Type d’offre' })
-    expect(utils.filterCategories).toHaveBeenCalledWith(
+
+    expect(filterCategories.filterCategories).toHaveBeenCalledWith(
       contextValue.categories,
       contextValue.subCategories,
       CATEGORY_STATUS.ONLINE_OR_OFFLINE,

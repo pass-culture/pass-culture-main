@@ -8,9 +8,9 @@ import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferUrl } from 'core/Offers/utils/getIndividualOfferUrl'
 import { useOfferWizardMode } from 'hooks'
 
-import { RecurrenceSection } from './RecurrenceSection'
+import RecurrenceSection from './RecurrenceSection/RecurrenceSection'
 import styles from './StockSection.module.scss'
-import { StockThingSection } from './StockThingSection'
+import StockThingSection from './StockThingSection/StockThingSection'
 
 export const getStockWarningText = (offer: IndividualOffer) => {
   if (offer.stocks.length === 0) {

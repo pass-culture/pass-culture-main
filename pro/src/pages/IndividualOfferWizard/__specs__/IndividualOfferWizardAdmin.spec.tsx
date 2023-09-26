@@ -18,7 +18,7 @@ import {
 } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { IndividualOfferWizard } from '..'
+import IndividualOfferWizard from '../IndividualOfferWizard'
 
 const offerer = offererFactory({ id: 12 })
 const venue = getOfferVenueFactory(undefined, offerer)

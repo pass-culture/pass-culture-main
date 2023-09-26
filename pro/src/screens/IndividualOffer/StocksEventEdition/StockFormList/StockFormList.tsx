@@ -29,8 +29,7 @@ import {
   filterAndSortStocks,
   StocksEventFormSortingColumn,
 } from './stocksFiltering'
-
-import { StockEventFormValues } from './'
+import { StockEventFormValues } from './types'
 
 interface StockFormListProps {
   offer: IndividualOffer

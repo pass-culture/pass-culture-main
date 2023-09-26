@@ -1,6 +1,6 @@
 import { IndividualOffer, IndividualOfferStock } from 'core/Offers/types'
 
-import { STOCK_THING_FORM_DEFAULT_VALUES } from '../../'
+import { STOCK_THING_FORM_DEFAULT_VALUES } from '../../constants'
 import buildInitialValues from '../buildInitialValues'
 
 describe('StockThingForm::utils::buildInitialValues', () => {

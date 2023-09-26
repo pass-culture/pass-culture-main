@@ -4,7 +4,7 @@ import {
   IndividualOfferVenueProvider,
 } from 'core/Offers/types'
 
-import { StockThingFormValues } from '../..'
+import { StockThingFormValues } from '../../types'
 import setFormReadOnlyFields from '../setFormReadOnlyFields'
 
 describe('StockThingForm::utils::setFormReadOnlyFields', () => {
