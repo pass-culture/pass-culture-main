@@ -12,20 +12,20 @@ import useAnalytics from 'hooks/useAnalytics'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
-import { DisplayOfferInAppLink } from 'screens/IndividualOffer/Summary/DisplayOfferInAppLink/DisplayOfferInAppLink'
+import { DisplayOfferInAppLink } from 'screens/IndividualOffer/SummaryScreen/DisplayOfferInAppLink/DisplayOfferInAppLink'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
-import styles from './IndividualOfferConfirmation.module.scss'
+import styles from './IndividualOfferConfirmationScreen.module.scss'
 
-interface IndividualOfferConfirmationProps {
+interface IndividualOfferConfirmationScreenProps {
   offer: IndividualOffer
 }
 
-const IndividualOfferConfirmation = ({
+const IndividualOfferConfirmationScreen = ({
   offer,
-}: IndividualOfferConfirmationProps): JSX.Element => {
+}: IndividualOfferConfirmationScreenProps): JSX.Element => {
   const { logEvent } = useAnalytics()
   const isPendingOffer = offer.status === OFFER_STATUS_PENDING
   const queryString = `?structure=${offer.venue.offerer.id}&lieu=${offer.venueId}`
@@ -111,4 +111,4 @@ const IndividualOfferConfirmation = ({
   )
 }
 
-export default IndividualOfferConfirmation
+export default IndividualOfferConfirmationScreen

@@ -51,15 +51,15 @@ import {
   isOfferSubtypeEvent,
 } from './utils/filterCategories/filterCategories'
 
-export interface InformationsProps {
+export interface InformationsScreenProps {
   offererId: string
   venueId: string
 }
 
-const Informations = ({
+const InformationsScreen = ({
   offererId,
   venueId,
-}: InformationsProps): JSX.Element => {
+}: InformationsScreenProps): JSX.Element => {
   const notify = useNotification()
   const location = useLocation()
   const { currentUser } = useCurrentUser()
@@ -364,4 +364,4 @@ const Informations = ({
   )
 }
 
-export default Informations
+export default InformationsScreen
