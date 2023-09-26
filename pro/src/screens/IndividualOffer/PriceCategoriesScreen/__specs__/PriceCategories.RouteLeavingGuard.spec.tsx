@@ -12,10 +12,13 @@ import { ButtonLink } from 'ui-kit'
 import { individualOfferFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { PriceCategories, PriceCategoriesProps } from '../PriceCategories'
+import {
+  PriceCategoriesScreen,
+  PriceCategoriesScreenProps,
+} from '../PriceCategoriesScreen'
 
 const renderPriceCategories = (
-  props: PriceCategoriesProps,
+  props: PriceCategoriesScreenProps,
   url = generatePath(
     getIndividualOfferPath({
       step: OFFER_WIZARD_STEP_IDS.TARIFS,
@@ -39,7 +42,7 @@ const renderPriceCategories = (
           })}
           element={
             <>
-              <PriceCategories {...props} />
+              <PriceCategoriesScreen {...props} />
               <ButtonLink link={{ to: '/outside', isExternal: false }}>
                 Go outside !
               </ButtonLink>

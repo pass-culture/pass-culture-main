@@ -8,7 +8,7 @@ import { IndividualOfferImage } from 'core/Offers/types'
 import { SENT_DATA_ERROR_MESSAGE } from 'core/shared'
 import useNotification from 'hooks/useNotification'
 
-import { imageFileToDataUrl } from '../Informations/utils/files'
+import { imageFileToDataUrl } from '../InformationsScreen/utils/files'
 
 export const useIndividualOfferImageUpload = () => {
   const notify = useNotification()

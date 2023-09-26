@@ -2,7 +2,7 @@
 import React from 'react'
 
 import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
-import { StocksSummary as StocksSummaryScreen } from 'screens/IndividualOffer/StocksSummary/StocksSummary'
+import { StocksSummaryScreen } from 'screens/IndividualOffer/StocksSummaryScreen/StocksSummaryScreen'
 
 export const StocksSummary = (): JSX.Element | null => {
   return (

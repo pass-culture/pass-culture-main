@@ -2,7 +2,7 @@ import React from 'react'
 
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
-import { PriceCategories as PriceCategoriesScreen } from 'screens/IndividualOffer/PriceCategories/PriceCategories'
+import { PriceCategoriesScreen } from 'screens/IndividualOffer/PriceCategoriesScreen/PriceCategoriesScreen'
 
 export const PriceCategories = (): JSX.Element | null => {
   const { offer } = useIndividualOfferContext()
