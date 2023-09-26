@@ -33,9 +33,9 @@ import { DisplayOfferInAppLink } from './DisplayOfferInAppLink/DisplayOfferInApp
 import OfferSection from './OfferSection/OfferSection'
 import { PriceCategoriesSection } from './PriceCategoriesSection/PriceCategoriesSection'
 import StockSection from './StockSection/StockSection'
-import styles from './Summary.module.scss'
+import styles from './SummaryScreen.module.scss'
 
-const Summary = () => {
+const SummaryScreen = () => {
   const [isDisabled, setIsDisabled] = useState(false)
   const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
   const notification = useNotification()
@@ -223,4 +223,4 @@ const Summary = () => {
   )
 }
 
-export default Summary
+export default SummaryScreen

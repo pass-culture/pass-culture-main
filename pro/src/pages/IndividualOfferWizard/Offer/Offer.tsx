@@ -7,7 +7,7 @@ import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { useOfferWizardMode } from 'hooks'
 import useCurrentUser from 'hooks/useCurrentUser'
 import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
-import InformationsScreen from 'screens/IndividualOffer/Informations/Informations'
+import InformationsScreen from 'screens/IndividualOffer/InformationsScreen/InformationsScreen'
 import { parse } from 'utils/query-string'
 
 const Offer = (): JSX.Element | null => {

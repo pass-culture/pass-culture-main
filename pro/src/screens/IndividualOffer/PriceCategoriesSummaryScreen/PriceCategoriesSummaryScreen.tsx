@@ -2,7 +2,7 @@ import React from 'react'
 
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 
-import { PriceCategoriesSection } from '../Summary/PriceCategoriesSection/PriceCategoriesSection'
+import { PriceCategoriesSection } from '../SummaryScreen/PriceCategoriesSection/PriceCategoriesSection'
 
 export const PriceCategoriesSummaryScreen = () => {
   const { offer, subCategories } = useIndividualOfferContext()
