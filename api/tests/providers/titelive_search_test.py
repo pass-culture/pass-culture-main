@@ -194,17 +194,18 @@ class TiteliveSearchTest:
         )
         assert end_sync_events_query.count() == 1
 
-    def test_sync_does_not_overwrite_existing_provider(self, requests_mock):
+    def test_sync_skips_products_already_synced_by_other_provider(self, requests_mock):
         self._configure_login_and_images(requests_mock)
         requests_mock.get("https://catsearch.epagine.fr/v1/search", json=fixtures.MUSIC_SEARCH_FIXTURE)
-        offers_factories.ProductFactory(extraData={"ean": "3700187679323"})
+        other_provider = providers_factories.ProviderFactory()
+        offers_factories.ProductFactory(extraData={"ean": "3700187679323"}, lastProvider=other_provider)
 
         TiteliveMusicSearch().synchronize_products(datetime.date(2022, 12, 1))
 
         products_with_same_ean_query = offers_models.Product.query.filter(
             offers_models.Product.extraData["ean"].astext == "3700187679323"
         )
-        assert products_with_same_ean_query.count() == 2
+        assert products_with_same_ean_query.count() == 1
 
         titelive_epagine_provider = providers_repository.get_provider_by_name(
             providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME
@@ -212,7 +213,7 @@ class TiteliveSearchTest:
         titelive_synced_products_query = offers_models.Product.query.filter(
             offers_models.Product.lastProvider == titelive_epagine_provider  # pylint: disable=comparison-with-callable
         )
-        assert titelive_synced_products_query.count() == 3
+        assert titelive_synced_products_query.count() == 2
 
     def test_sync_thumbnails(self, requests_mock):
         self._configure_login_and_images(requests_mock)
