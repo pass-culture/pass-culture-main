@@ -22,6 +22,8 @@ import config from '../package.json'
 
 import { unregister } from './registerServiceWorker'
 
+const isAdageIframe = window.location.href.includes('adage-iframe')
+
 // Initialize sentry
 if (SENTRY_SERVER_URL) {
   SentryInit({
@@ -46,7 +48,7 @@ if (SENTRY_SERVER_URL) {
 // load and initialise hotjar library for all pc pro except adage-iframe
 // included in the bundle instead of <script> tag in index.html
 // to avoid the need of 'insafe-inline' in Content Security Policy
-if (!window.location.href.includes('adage-iframe')) {
+if (!isAdageIframe) {
   ;(function (h: any, o, t, j, a?: any, r?: any) {
     h.hj =
       h.hj ||
@@ -83,7 +85,7 @@ const root = createRoot(document.getElementById('root'))
 
 root.render(
   <React.StrictMode>
-    <Root />
+    <Root isAdageIframe={isAdageIframe} />
   </React.StrictMode>
 )
 
