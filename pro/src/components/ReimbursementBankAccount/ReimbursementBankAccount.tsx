@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { BankAccountResponseModel } from 'apiClient/v1'
+import fullErrorIcon from 'icons/full-error.svg'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullWaitIcon from 'icons/full-wait.svg'
 import { Button, ButtonLink } from 'ui-kit'
@@ -9,11 +10,17 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import styles from './ReimbursementBankAccount.module.scss'
 
+interface ReimbursementBankAccountProps {
+  bankAccount: BankAccountResponseModel
+  venuesWithNonFreeOffersNotLinkedToBankAccount: number[]
+  bankAccountsNumber: number
+}
+
 const ReimbursementBankAccount = ({
   bankAccount,
-}: {
-  bankAccount: BankAccountResponseModel
-}): JSX.Element => {
+  venuesWithNonFreeOffersNotLinkedToBankAccount,
+  bankAccountsNumber,
+}: ReimbursementBankAccountProps): JSX.Element => {
   return (
     <div className={styles['bank-account']}>
       <div className={styles['informations-section']}>
@@ -21,8 +28,8 @@ const ReimbursementBankAccount = ({
           {bankAccount.label}
         </div>
         <div className={styles['informations-section-content']}>
-          <div>IBAN: {bankAccount.obfuscatedIban}</div>
-          <div>BIC: {bankAccount.bic}</div>
+          <div>IBAN : **** {bankAccount.obfuscatedIban.slice(-4)}</div>
+          <div>BIC : {bankAccount.bic}</div>
         </div>
       </div>
       {!bankAccount.isActive && (
@@ -50,31 +57,46 @@ const ReimbursementBankAccount = ({
         <div className={styles['linked-venues-section']}>
           <div className={styles['linked-venues-section-title']}>
             Lieu(x) rattaché(s) à ce compte bancaire
-            {/*TODO: add icon depending linked venues */}
+            {bankAccount.linkedVenues.length === 0 && (
+              <SvgIcon
+                src={fullErrorIcon}
+                alt="Une action est requise"
+                width="20"
+                className={styles['error-icon']}
+              />
+            )}
           </div>
           <div className={styles['linked-venues-content']}>
-            {bankAccount.isActive && bankAccount.linkedVenues.length === 0 && (
+            {bankAccount.linkedVenues.length === 0 && (
               <div className={styles['issue-text']}>
                 Aucun lieu n'est rattaché à ce compte bancaire.
-                {/* TODO: message when no linked and all venues already linked*/}
+                {venuesWithNonFreeOffersNotLinkedToBankAccount.length === 0 &&
+                  bankAccountsNumber > 1 &&
+                  ' Désélectionnez un lieu déjà rattaché et rattachez-le à ce compte bancaire.'}
               </div>
             )}
-            {
-              // TODO: 1 or more venues associated are not linked
-              // <div className={styles['issue-text']}>
-              //   Un de vos lieux n'est pas rattaché.
-              // </div>
-            }
-            {bankAccount.isActive && bankAccount.linkedVenues.length > 0 && (
+            {bankAccount.linkedVenues.length > 0 &&
+              venuesWithNonFreeOffersNotLinkedToBankAccount.length > 0 && (
+                <div className={styles['issue-text']}>
+                  {venuesWithNonFreeOffersNotLinkedToBankAccount.length > 1
+                    ? 'Certains de vos lieux ne sont pas rattachés'
+                    : "Un de vos lieux n'est pas rattaché."}
+                </div>
+              )}
+            {bankAccount.linkedVenues.length > 0 && (
               <>
                 <div className={styles['linked-venues']}>
                   {bankAccount.linkedVenues.map(venue => (
-                    <div className={styles['linked-venue']}>
+                    <div className={styles['linked-venue']} key={venue.id}>
                       {venue.commonName}
                     </div>
                   ))}
                 </div>
-                <Button variant={ButtonVariant.SECONDARY}>Modifier</Button>
+                {bankAccount.linkedVenues.length > 0 ? (
+                  <Button variant={ButtonVariant.SECONDARY}>Modifier</Button>
+                ) : (
+                  <Button>Rattacher</Button>
+                )}
               </>
             )}
           </div>
