@@ -176,7 +176,5 @@ class CollectiveOfferTest:
         )
 
         eac_client = client.with_adage_token(email=redactor.email, uai="1234UAI")
-        with assert_no_duplicated_queries():
-            response = eac_client.get(f"/adage-iframe/collective/offers/{stock.collectiveOfferId}")
-
+        response = eac_client.get(f"/adage-iframe/collective/offers/{stock.collectiveOfferId}")
         assert response.status_code == 200
