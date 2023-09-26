@@ -138,7 +138,15 @@ const BankInformations = (): JSX.Element => {
       )}
       <div className={styles['bank-accounts']}>
         {selectedOffererBankAccounts?.bankAccounts.map(bankAccount => (
-          <ReimbursementBankAccount bankAccount={bankAccount} />
+          <ReimbursementBankAccount
+            bankAccount={bankAccount}
+            venuesWithNonFreeOffersNotLinkedToBankAccount={
+              selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts ?? []
+            }
+            bankAccountsNumber={
+              selectedOffererBankAccounts?.bankAccounts.length
+            }
+          />
         ))}
       </div>
       <Button
