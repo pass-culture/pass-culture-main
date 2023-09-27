@@ -5,6 +5,7 @@ import React from 'react'
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
 import * as useNotification from 'hooks/useNotification'
+import { GetIndividualOfferFactory } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StatusToggleButton, {
@@ -22,8 +23,9 @@ describe('StatusToggleButton', () => {
       offerId: offerId,
       isActive: true,
       status: OfferStatus.ACTIVE,
-      reloadOffer: vi.fn(),
+      setOffer: vi.fn(),
     }
+    vi.spyOn(api, 'getOffer').mockResolvedValue(GetIndividualOfferFactory())
   })
 
   it('should deactivate an offer and confirm', async () => {
@@ -49,11 +51,11 @@ describe('StatusToggleButton', () => {
       ids: [offerId],
       isActive: false,
     })
-
     expect(notifySuccess).toHaveBeenNthCalledWith(
       1,
       'L’offre a bien été désactivée.'
     )
+    expect(api.getOffer).toHaveBeenCalledTimes(1)
   })
 
   it('should activate an offer and confirm', async () => {
@@ -88,6 +90,7 @@ describe('StatusToggleButton', () => {
       1,
       'L’offre a bien été publiée.'
     )
+    expect(api.getOffer).toHaveBeenCalledTimes(1)
   })
 
   it('should display error', async () => {
