@@ -3,6 +3,7 @@ import React from 'react'
 
 import { OfferStatus } from 'apiClient/v1'
 import { StatusLabel } from 'components/StatusLabel'
+import { IndividualOffer } from 'core/Offers/types'
 import StatusToggleButton from 'screens/IndividualOffer/Status/StatusToggleButton'
 
 import styles from './Status.module.scss'
@@ -12,7 +13,7 @@ interface StatusProps {
   status: OfferStatus
   isActive: boolean
   canDeactivate: boolean
-  reloadOffer: () => void
+  setOffer: ((offer: IndividualOffer | null) => void) | null
 }
 
 const Status = ({
@@ -20,7 +21,7 @@ const Status = ({
   status,
   isActive,
   canDeactivate,
-  reloadOffer,
+  setOffer,
 }: StatusProps) => (
   <div
     className={cn(styles['status'], {
@@ -34,7 +35,7 @@ const Status = ({
           offerId={offerId}
           status={status}
           isActive={isActive}
-          reloadOffer={reloadOffer}
+          setOffer={setOffer}
         />
         <div className={styles['separator']} />
       </>

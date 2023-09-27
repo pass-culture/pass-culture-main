@@ -1,7 +1,9 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 
 import { api } from 'apiClient/api'
 import { OfferStatus } from 'apiClient/v1'
+import { getIndividualOfferAdapter } from 'core/Offers/adapters'
+import { IndividualOffer } from 'core/Offers/types'
 import useNotification from 'hooks/useNotification'
 import fullHideIcon from 'icons/full-hide.svg'
 import strokeCheckIcon from 'icons/stroke-check.svg'
@@ -12,18 +14,27 @@ export interface StatusToggleButtonProps {
   offerId: number
   isActive: boolean
   status: OfferStatus
-  reloadOffer: () => void
+  setOffer: ((offer: IndividualOffer | null) => void) | null
 }
 
 const StatusToggleButton = ({
   offerId,
   isActive,
   status,
-  reloadOffer,
+  setOffer,
 }: StatusToggleButtonProps) => {
   const notification = useNotification()
 
-  const toggleOfferActiveStatus = useCallback(async () => {
+  const reloadOffer = async () => {
+    const response = await getIndividualOfferAdapter(offerId)
+    if (response.isOk) {
+      setOffer && setOffer(response.payload)
+    } else {
+      notification.error(response.message)
+    }
+  }
+
+  const toggleOfferActiveStatus = async () => {
     try {
       await api.patchOffersActiveStatus({ ids: [offerId], isActive: !isActive })
       reloadOffer()
@@ -35,7 +46,7 @@ const StatusToggleButton = ({
         'Une erreur est survenue, veuillez réessayer ultérieurement.'
       )
     }
-  }, [offerId, isActive, reloadOffer])
+  }
 
   return (
     <Button

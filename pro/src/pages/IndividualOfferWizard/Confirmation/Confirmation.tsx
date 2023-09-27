@@ -1,16 +1,20 @@
 import React from 'react'
 
 import { useIndividualOfferContext } from 'context/IndividualOfferContext'
-import { IndividualOffer } from 'core/Offers/types'
 import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
 import IndividualOfferConfirmationScreen from 'screens/IndividualOfferConfirmationScreen/IndividualOfferConfirmationScreen'
+import Spinner from 'ui-kit/Spinner/Spinner'
 
 const Confirmation = (): JSX.Element => {
-  const { offer } = useIndividualOfferContext()
-  // FIXME : we should not need  as IndividualOffer cause parent route would redirect on offer loading error
+  const { offer, setOffer } = useIndividualOfferContext()
+
+  if (offer === null) {
+    return <Spinner />
+  }
+
   return (
-    <IndivualOfferLayout withStepper={false}>
-      <IndividualOfferConfirmationScreen offer={offer as IndividualOffer} />
+    <IndivualOfferLayout withStepper={false} offer={offer} setOffer={setOffer}>
+      <IndividualOfferConfirmationScreen offer={offer} />
     </IndivualOfferLayout>
   )
 }
