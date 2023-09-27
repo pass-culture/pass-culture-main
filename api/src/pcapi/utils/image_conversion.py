@@ -117,7 +117,13 @@ def _pre_process_image(content: bytes) -> PIL.Image:
     raw_image = PIL.Image.open(io.BytesIO(content))
 
     # Remove exif orientation so that it doesnt rotate after upload
-    transposed_image = ImageOps.exif_transpose(raw_image)
+    try:
+        transposed_image = ImageOps.exif_transpose(raw_image)
+    except SyntaxError as exc:
+        # PIL may raise `SyntaxError("not a TIFF file [...]")` or a
+        # similar message, depending on the expected type of file. In
+        # that case, re-reraise as a more specific, PIL-related error.
+        raise PIL.UnidentifiedImageError() from exc
 
     if transposed_image.mode == "RGBA":
         background = PIL.Image.new("RGB", transposed_image.size, (255, 255, 255))
