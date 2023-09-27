@@ -87,6 +87,7 @@ import type { SharedLoginUserResponseModel } from '../models/SharedLoginUserResp
 import type { SirenInfo } from '../models/SirenInfo';
 import type { SiretInfo } from '../models/SiretInfo';
 import type { StockIdResponseModel } from '../models/StockIdResponseModel';
+import type { StockResponseModel } from '../models/StockResponseModel';
 import type { StocksResponseModel } from '../models/StocksResponseModel';
 import type { StocksUpsertBodyModel } from '../models/StocksUpsertBodyModel';
 import type { UserEmailValidationResponseModel } from '../models/UserEmailValidationResponseModel';
@@ -1591,6 +1592,39 @@ export class DefaultService {
       url: '/offers/{offer_id}/price_categories/{price_category_id}',
       path: {
         'offer_id': offerId,
+        'price_category_id': priceCategoryId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_stocks <GET>
+   * @param offerId
+   * @param date
+   * @param time
+   * @param priceCategoryId
+   * @returns StockResponseModel OK
+   * @throws ApiError
+   */
+  public getStocks(
+    offerId: number,
+    date?: string | null,
+    time?: string | null,
+    priceCategoryId?: number | null,
+  ): CancelablePromise<StockResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/offers/{offer_id}/stocks/',
+      path: {
+        'offer_id': offerId,
+      },
+      query: {
+        'date': date,
+        'time': time,
         'price_category_id': priceCategoryId,
       },
       errors: {
