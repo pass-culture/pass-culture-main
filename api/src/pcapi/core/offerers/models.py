@@ -566,13 +566,27 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
             .scalar()
         )
 
-    @property
+    @hybrid_property
     def current_reimbursement_point_id(self) -> int | None:
         now = datetime.utcnow()
+
         return (
             db.session.query(VenueReimbursementPointLink.reimbursementPointId)
             .filter(
                 VenueReimbursementPointLink.venueId == self.id,
+                VenueReimbursementPointLink.timespan.contains(now),
+            )
+            .scalar()
+        )
+
+    @current_reimbursement_point_id.expression  # type: ignore [no-redef]
+    def current_reimbursement_point_id(cls) -> int | None:  # pylint: disable=no-self-argument # type: ignore[no-redef]
+        now = datetime.utcnow()
+
+        return (
+            db.session.query(VenueReimbursementPointLink.reimbursementPointId)
+            .filter(
+                VenueReimbursementPointLink.venueId == cls.id,
                 VenueReimbursementPointLink.timespan.contains(now),
             )
             .scalar()
