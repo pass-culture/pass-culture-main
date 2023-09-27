@@ -8,8 +8,8 @@ from pcapi.utils.image_conversion import CropParams
 from pcapi.utils.image_conversion import ImageRatio
 from pcapi.utils.image_conversion import ImageRatioError
 from pcapi.utils.image_conversion import _crop_image
+from pcapi.utils.image_conversion import _pre_process_image
 from pcapi.utils.image_conversion import _resize_image
-from pcapi.utils.image_conversion import _transpose_image
 from pcapi.utils.image_conversion import process_original_image
 from pcapi.utils.image_conversion import standardize_image
 
@@ -50,7 +50,7 @@ class ImageConversionTest:
         assert 274 in exif_info
 
         # when
-        transposed_image = _transpose_image(expected_image)
+        transposed_image = _pre_process_image(image_as_bytes)
 
         # then
         exif_info = transposed_image.getexif()
