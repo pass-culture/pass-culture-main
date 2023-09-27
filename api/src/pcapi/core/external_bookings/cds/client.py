@@ -3,6 +3,7 @@ from functools import lru_cache
 import json
 import math
 from operator import attrgetter
+import typing
 
 from pydantic.v1.tools import parse_obj_as
 
@@ -124,7 +125,14 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
             f"Screen #{screen_id} not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.api_url}"
         )
 
-    def get_hardcoded_seatmap(self, show: cds_serializers.ShowCDS) -> list:
+    def get_hardcoded_seatmap(
+        self,
+        show: cds_serializers.ShowCDS,
+    ) -> list[list[str | typing.Literal[0]]]:
+        """Return a matrix (a list of lists) of values, where each
+        value is a seat number as a string (e.g. "A7" or "123"), or
+        zero as an integer when there is no seat.
+        """
         cinema = self.get_cinema_infos()
         encoded_seatmap = None
         for parameter in cinema.cinema_parameters:
