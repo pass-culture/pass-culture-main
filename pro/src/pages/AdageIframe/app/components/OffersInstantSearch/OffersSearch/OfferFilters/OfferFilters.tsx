@@ -11,7 +11,6 @@ import strokeBuildingIcon from 'icons/stroke-building.svg'
 import strokeFranceIcon from 'icons/stroke-france.svg'
 import strokeNearIcon from 'icons/stroke-near.svg'
 import { getAcademiesOptionsAdapter } from 'pages/AdageIframe/app/adapters/getAcademiesOptionsAdapter'
-import { getEducationalCategoriesOptionsAdapter } from 'pages/AdageIframe/app/adapters/getEducationalCategoriesOptionsAdapter'
 import { getEducationalDomainsOptionsAdapter } from 'pages/AdageIframe/app/adapters/getEducationalDomainsOptionsAdapter'
 import { departmentOptions } from 'pages/AdageIframe/app/constants/departmentOptions'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
@@ -33,6 +32,7 @@ interface OfferFiltersProps {
   localisationFilterState: LocalisationFilterStates
   setLocalisationFilterState: (state: LocalisationFilterStates) => void
   resetForm: () => void
+  categoriesOptions: Option<string[]>[]
 }
 
 export const OfferFilters = ({
@@ -40,6 +40,7 @@ export const OfferFilters = ({
   localisationFilterState,
   setLocalisationFilterState,
   resetForm,
+  categoriesOptions,
 }: OfferFiltersProps): JSX.Element => {
   const [modalOpenStatus, setModalOpenStatus] = useState<{
     [key: string]: boolean
@@ -83,9 +84,6 @@ export const OfferFilters = ({
 
   const [domainsOptions, setDomainsOptions] = useState<Option<number>[]>([])
   const [academiesOptions, setAcademieOptions] = useState<Option<string>[]>([])
-  const [categoriesOptions, setCategoriesOptions] = useState<
-    Option<string[]>[]
-  >([])
 
   const onReset = (
     modalName: string,
@@ -112,12 +110,6 @@ export const OfferFilters = ({
     const loadFiltersOptions = async () => {
       const domainsResponse = await getEducationalDomainsOptionsAdapter()
       const academiesResponse = await getAcademiesOptionsAdapter()
-      const categoriesResponse =
-        await getEducationalCategoriesOptionsAdapter(null)
-
-      if (categoriesResponse.isOk) {
-        setCategoriesOptions(categoriesResponse.payload.educationalCategories)
-      }
 
       if (domainsResponse.isOk) {
         setDomainsOptions(domainsResponse.payload)

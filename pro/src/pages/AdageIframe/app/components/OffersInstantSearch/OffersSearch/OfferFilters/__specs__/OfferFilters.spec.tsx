@@ -4,7 +4,6 @@ import { Formik } from 'formik'
 import React from 'react'
 
 import { AuthenticatedResponse } from 'apiClient/adage'
-import { apiAdage } from 'apiClient/api'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import * as pcapi from 'pages/AdageIframe/repository/pcapi/pcapi'
 import { defaultAdageUser } from 'utils/adageFactories'
@@ -56,6 +55,7 @@ const renderOfferFilters = ({
           localisationFilterState={localisationFilterState}
           setLocalisationFilterState={mockSetLocalisationFilterState}
           resetForm={resetFormMock}
+          categoriesOptions={[{ label: 'Cinéma', value: ['CINE_PLEIN_AIR'] }]}
         />
       </Formik>
     </AdageUserContextProvider>,
@@ -352,11 +352,6 @@ describe('OfferFilters', () => {
   })
 
   it('should return categories options when the api call was successful', async () => {
-    vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockResolvedValueOnce({
-      categories: [{ id: 'CINEMA', proLabel: 'Cinéma' }],
-      subcategories: [{ id: 'CINE_PLEIN_AIR', categoryId: 'CINEMA' }],
-    })
-
     renderOfferFilters({
       initialValues: initialValues,
       storeOverrides: isGeolocationActive,
