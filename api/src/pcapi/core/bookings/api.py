@@ -279,6 +279,15 @@ def book_offer(
 
         stock.dnBookedQuantity += booking.quantity
 
+        logger.info(
+            "Successfully updated dnBookedQuantity after a successful booking",
+            extra={
+                "booking_id": booking.id,
+                "booking_quantity": booking.quantity,
+                "stock_dnBookedQuantity": stock.dnBookedQuantity,
+            },
+        )
+
         # If a partner have implemented our external ticket api (charlie api),
         # they should send us the remaining seats for the event.
         if remaining_quantity:
@@ -298,6 +307,9 @@ def book_offer(
             "used": booking.is_used_or_reimbursed,
             "booking_token": booking.token,
             "barcodes": [external_booking.barcode for external_booking in booking.externalBookings],
+            "booking_quantity": booking.quantity,
+            "stock_dnBookedQuantity": stock.dnBookedQuantity,
+            "stock_quantity": stock.quantity,
         },
     )
     amplitude_events.track_book_offer_event(booking)
@@ -405,6 +417,14 @@ def _cancel_booking(
         with db.session.no_autoflush:
             stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
             db.session.refresh(booking)
+            logger.info(
+                "Cancelling booking...",
+                extra={
+                    "booking_id": booking.id,
+                    "stock_dnBookedQuantity": stock.dnBookedQuantity,
+                    "booking_quantity": booking.quantity,
+                },
+            )
             try:
                 finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED, commit=False)
                 cancelled_event = finance_api.cancel_latest_event(
@@ -445,9 +465,11 @@ def _cancel_booking(
         "Booking has been cancelled",
         extra={
             "booking_id": booking.id,
+            "booking_quantity": booking.quantity,
             "reason": str(reason),
             "booking_token": booking.token,
             "barcodes": [external_booking.barcode for external_booking in booking.externalBookings],
+            "stock_dnBookedQuantity": stock.dnBookedQuantity,
         },
         technical_message_id="booking.cancelled",
     )
