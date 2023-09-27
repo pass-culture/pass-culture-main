@@ -1579,7 +1579,19 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
 
-    def test_registration_step_underage_ok_age18_void(self, authenticated_client):
+    @pytest.mark.parametrize(
+        "age,id_check_type,expected_items_status_18,expected_id_check_status_18",
+        [
+            (18, fraud_models.FraudCheckType.EDUCONNECT, SubscriptionItemStatus.TODO, SubscriptionItemStatus.TODO),
+            (19, fraud_models.FraudCheckType.EDUCONNECT, SubscriptionItemStatus.VOID, SubscriptionItemStatus.VOID),
+            (18, fraud_models.FraudCheckType.UBBLE, SubscriptionItemStatus.TODO, SubscriptionItemStatus.OK),
+            (19, fraud_models.FraudCheckType.UBBLE, SubscriptionItemStatus.VOID, SubscriptionItemStatus.VOID),
+            (18, fraud_models.FraudCheckType.DMS, SubscriptionItemStatus.TODO, SubscriptionItemStatus.OK),
+        ],
+    )
+    def test_registration_step_underage_ok_age18_void(
+        self, authenticated_client, age, id_check_type, expected_items_status_18, expected_id_check_status_18
+    ):
         # given
         expected_results = [
             ("Validation Email", SubscriptionItemStatus.OK),
@@ -1587,17 +1599,17 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             ("ID Check", SubscriptionItemStatus.OK),
             ("Attestation sur l'honneur", SubscriptionItemStatus.OK),
             ("Pass 15-17", SubscriptionItemStatus.OK),
-            ("Validation N° téléphone", SubscriptionItemStatus.OK),
-            ("Profil Complet", SubscriptionItemStatus.VOID),
-            ("ID Check", SubscriptionItemStatus.VOID),
-            ("Attestation sur l'honneur", SubscriptionItemStatus.VOID),
+            ("Validation N° téléphone", expected_items_status_18),
+            ("Profil Complet", expected_items_status_18),
+            ("ID Check", expected_id_check_status_18),
+            ("Attestation sur l'honneur", expected_items_status_18),
             ("Pass 18", SubscriptionItemStatus.VOID),
         ]
-        date_of_birth = datetime.datetime(2004, 4, 16)
+        date_of_birth = datetime.datetime.utcnow() - relativedelta(years=age, months=3)
         user = users_factories.UserFactory(
-            dateCreated=datetime.datetime(2022, 2, 21),
+            dateCreated=date_of_birth + relativedelta(years=17, days=5),
             dateOfBirth=date_of_birth,
-            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.UNVALIDATED,
             roles=[users_models.UserRole.UNDERAGE_BENEFICIARY],
             validatedBirthDate=date_of_birth,
         )
@@ -1610,7 +1622,7 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.EDUCONNECT,
+            type=id_check_type,
             status=fraud_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )

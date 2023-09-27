@@ -647,6 +647,10 @@ class ExUnderageBeneficiaryFactory(UnderageBeneficiaryFactory):
     class Params:
         subscription_age = 18
 
+    dateCreated = LazyAttribute(
+        lambda user: user.dateOfBirth + relativedelta(years=users_constants.ELIGIBILITY_AGE_18 - 1, hours=12)
+    )
+
     @factory.post_generation
     def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
         obj,
@@ -661,6 +665,7 @@ class ExUnderageBeneficiaryFactory(UnderageBeneficiaryFactory):
 
         return fraud_factories.BeneficiaryFraudCheckFactory(
             user=obj,
+            dateCreated=obj.dateCreated,
             status=fraud_models.FraudCheckStatus.OK,
             type=fraud_models.FraudCheckType.EDUCONNECT,
             resultContent=fraud_factories.EduconnectContentFactory(
@@ -690,7 +695,40 @@ class ExUnderageBeneficiaryFactory(UnderageBeneficiaryFactory):
             user=obj,
             **kwargs,
             type=finance_models.DepositType.GRANT_15_17,
-            expirationDate=datetime.utcnow() - relativedelta(days=1),
+            expirationDate=obj.dateCreated + relativedelta(days=1),
+        )
+
+
+class ExUnderageBeneficiaryWithUbbleFactory(ExUnderageBeneficiaryFactory):
+    class Params:
+        subscription_age = 18
+
+    @factory.post_generation
+    def beneficiaryFraudChecks(  # pylint: disable=no-self-argument
+        obj,
+        create: bool,
+        extracted: fraud_models.BeneficiaryFraudCheck | None,
+        **kwargs: typing.Any,
+    ) -> fraud_models.BeneficiaryFraudCheck | None:
+        import pcapi.core.fraud.factories as fraud_factories
+        from pcapi.core.fraud.ubble import models as ubble_fraud_models
+
+        if not create:
+            return None
+
+        return fraud_factories.BeneficiaryFraudCheckFactory(
+            user=obj,
+            dateCreated=obj.dateCreated,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.UBBLE,
+            resultContent=fraud_factories.UbbleContentFactory(
+                status=ubble_fraud_models.UbbleIdentificationStatus.PROCESSED,
+                first_name=obj.firstName,
+                last_name=obj.lastName,
+                birth_date=obj.dateOfBirth.date().isoformat(),
+                registration_datetime=obj.dateCreated,
+            ),
+            eligibilityType=models.EligibilityType.UNDERAGE,
         )
 
 
