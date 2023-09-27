@@ -1,27 +1,24 @@
-import type { Story } from '@storybook/react'
-import React from 'react'
+import { StoryObj } from '@storybook/react'
 
-import Tag, { TagProps } from './Tag'
+import Tag from './Tag'
 
 export default {
   title: 'ui-kit/Tag',
   component: Tag,
 }
 
-const Template: Story<TagProps> = args => <Tag {...args}></Tag>
-
-export const Default = Template.bind({})
-
-Default.args = {
-  label: 'Offre collective',
+export const Default: StoryObj<typeof Tag> = {
+  args: {
+    label: 'Offre collective',
+  },
 }
 
-export const Closeable = Template.bind({})
-
-Closeable.args = {
-  label: 'Offre collective',
-  closeable: {
-    onClose: () => {},
-    closeLabel: 'Supprimer le tag',
+export const Closeable: StoryObj<typeof Tag> = {
+  args: {
+    label: 'Offre collective',
+    closeable: {
+      onClose: () => {},
+      closeLabel: 'Supprimer le tag',
+    },
   },
 }

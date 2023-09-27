@@ -11,7 +11,7 @@ interface Closeable {
   closeLabel?: string
   disabled?: boolean
 }
-export interface TagProps {
+interface TagProps {
   className?: string
   closeable?: Closeable
   label: string
