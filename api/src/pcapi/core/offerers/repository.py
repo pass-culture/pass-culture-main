@@ -1,6 +1,7 @@
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
+import logging
 from typing import Iterable
 
 from flask_sqlalchemy import BaseQuery
@@ -24,6 +25,9 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 
 from . import exceptions
 from . import models
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_all_venue_labels() -> list[models.VenueLabel]:
