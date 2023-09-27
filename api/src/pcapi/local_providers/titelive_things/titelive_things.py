@@ -263,7 +263,7 @@ class TiteLiveThings(LocalProvider):
                     ineligibility_reason,
                 )
             else:
-                offers_api.reject_inappropriate_products(book_unique_identifier)
+                offers_api.reject_inappropriate_product(book_unique_identifier)
                 logger.info(
                     "Rejecting ineligible ean=%s because reason=%s", book_unique_identifier, ineligibility_reason
                 )
