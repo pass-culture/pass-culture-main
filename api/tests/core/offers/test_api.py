@@ -829,7 +829,7 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(
             name="Old name",
             extraData={"ean": "1234567890123"},
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         )
 
         offer = api.update_offer(offer, name="New name", description="new Description")
@@ -841,7 +841,7 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(
             name="Old name",
             extraData={"ean": "1234567890123", "musicSubType": 524, "musicType": 520},
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id,
         )
 
         offer = api.update_offer(

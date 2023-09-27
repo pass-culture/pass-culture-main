@@ -1169,35 +1169,6 @@ FESTIVAL_MUSIQUE = Subcategory(
 )
 # endregion
 # region MUSIQUE_ENREGISTREE
-SUPPORT_PHYSIQUE_MUSIQUE = Subcategory(
-    id="SUPPORT_PHYSIQUE_MUSIQUE",
-    category=categories.MUSIQUE_ENREGISTREE,
-    native_category=NativeCategory.CD,
-    pro_label="Support physique (CD, vinyle...)",
-    app_label="Support physique (CD, vinyle...)",
-    search_group_name=SearchGroups.CD_VINYLE_MUSIQUE_EN_LIGNE.name,
-    homepage_label_name=HomepageLabels.MUSIQUE.name,
-    is_event=False,
-    conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
-        ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=True
-        ),
-        ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
-            is_required_in_external_form=True, is_required_in_internal_form=True
-        ),
-        ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
-        ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True),
-    },
-    can_expire=True,
-    can_be_duo=False,
-    can_be_educational=False,
-    online_offline_platform=OnlineOfflinePlatformChoices.OFFLINE.value,
-    is_digital_deposit=False,
-    is_physical_deposit=True,
-    reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
-    is_selectable=False,
-)
 SUPPORT_PHYSIQUE_MUSIQUE_CD = Subcategory(
     id="SUPPORT_PHYSIQUE_MUSIQUE_CD",
     category=categories.MUSIQUE_ENREGISTREE,
@@ -1921,7 +1892,6 @@ ALL_SUBCATEGORIES = (
     SPECTACLE_REPRESENTATION,
     SPECTACLE_VENTE_DISTANCE,
     SUPPORT_PHYSIQUE_FILM,
-    SUPPORT_PHYSIQUE_MUSIQUE,
     SUPPORT_PHYSIQUE_MUSIQUE_CD,
     SUPPORT_PHYSIQUE_MUSIQUE_VINYLE,
     TELECHARGEMENT_LIVRE_AUDIO,

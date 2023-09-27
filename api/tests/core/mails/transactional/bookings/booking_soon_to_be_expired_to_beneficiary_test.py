@@ -75,7 +75,7 @@ class SendinblueSendSoonToBeExpiredBookingsEmailToBeneficiaryTest:
             user=user,
         )
 
-        cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
+        cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id)
         soon_to_be_expired_cd_booking = booking_factories.BookingFactory(
             stock__offer__product=cd,
             dateCreated=created_23_days_ago,

@@ -102,7 +102,7 @@ class CancelExpiredBookingsTest:
             subcategoryId=subcategories.ACHAT_INSTRUMENT.id,
         )
         old_guitar_booking = booking_factories.BookingFactory(stock__offer__product=guitar, dateCreated=two_months_ago)
-        disc = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
+        disc = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id)
         old_disc_booking = booking_factories.BookingFactory(stock__offer__product=disc, dateCreated=two_months_ago)
         vod = ProductFactory(subcategoryId=subcategories.VOD.id)
         old_vod_booking = booking_factories.BookingFactory(stock__offer__product=vod, dateCreated=two_months_ago)
@@ -256,7 +256,7 @@ class NotifyUsersOfExpiredBookingsTest:
             dateCreated=long_ago,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
-        cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
+        cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id)
         expired_today_cd_booking = booking_factories.CancelledBookingFactory(
             stock__offer__product=cd,
             dateCreated=long_ago,
@@ -300,7 +300,7 @@ class NotifyOfferersOfExpiredBookingsTest:
             dateCreated=long_ago,
             cancellationReason=BookingCancellationReasons.EXPIRED,
         )
-        cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
+        cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id)
         expired_today_cd_booking = booking_factories.CancelledBookingFactory(
             stock__offer__product=cd,
             dateCreated=long_ago,

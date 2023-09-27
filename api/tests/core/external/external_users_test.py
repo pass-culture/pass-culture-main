@@ -538,7 +538,7 @@ def test_get_bookings_categories_and_subcategories_music_first():
     BookingFactory(user=user, stock__offer=offer1, stock__price=15.00)
     BookingFactory(user=user, stock__offer=offer1, stock__price=15.00)
     CancelledBookingFactory(user=user)
-    offer2 = OfferFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"musicType": "600"})
+    offer2 = OfferFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"musicType": "600"})
     BookingFactory(user=user, stock__offer=offer2, stock__price=10.00)
     offer3 = OfferFactory(subcategoryId=subcategories.TELECHARGEMENT_MUSIQUE.id, extraData={"musicType": "800"})
     BookingFactory(user=user, stock__offer=offer3, stock__price=5.00)
@@ -559,7 +559,7 @@ def test_get_bookings_categories_and_subcategories_music_first():
         "CONCERT",
         "EVENEMENT_MUSIQUE",
         "SUPPORT_PHYSIQUE_FILM",
-        "SUPPORT_PHYSIQUE_MUSIQUE",
+        "SUPPORT_PHYSIQUE_MUSIQUE_CD",
         "TELECHARGEMENT_MUSIQUE",
     ]
     assert booking_attributes.most_booked_subcategory == "SUPPORT_PHYSIQUE_FILM"
