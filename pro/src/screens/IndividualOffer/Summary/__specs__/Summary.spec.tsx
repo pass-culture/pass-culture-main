@@ -23,6 +23,7 @@ import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import * as useAnalytics from 'hooks/useAnalytics'
 import {
   individualOfferCategoryFactory,
+  individualOfferContextFactory,
   individualOfferFactory,
   individualOfferOffererFactory,
   individualOfferSubCategoryFactory,
@@ -48,18 +49,7 @@ const renderSummary = (
   }),
   storeOverride: any = {}
 ) => {
-  const contextValues: IndividualOfferContextValues = {
-    offerId: null,
-    offer: null,
-    venueList: [],
-    offererNames: [],
-    categories: [],
-    subCategories: [],
-    setOffer: () => {},
-    setSubcategory: () => {},
-    showVenuePopin: {},
-    ...customContext,
-  }
+  const contextValues = individualOfferContextFactory(customContext)
 
   const storeOverrides = {
     user: {

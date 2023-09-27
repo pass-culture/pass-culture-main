@@ -9,8 +9,11 @@ import {
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
+import {
+  individualOfferContextFactory,
+  individualOfferFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Template, { TemplateProps } from '../Template'
@@ -29,18 +32,7 @@ const renderTemplate = ({
   }),
   props = {},
 }: RenderTemplateProps) => {
-  const contextValues: IndividualOfferContextValues = {
-    offerId: null,
-    offer: null,
-    venueList: [],
-    offererNames: [],
-    categories: [],
-    subCategories: [],
-    setOffer: () => {},
-    setSubcategory: () => {},
-    showVenuePopin: {},
-    ...contextOverride,
-  }
+  const contextValues = individualOfferContextFactory(contextOverride)
 
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValues}>
@@ -54,8 +46,11 @@ const renderTemplate = ({
 
 describe('IndividualOfferTemplate', () => {
   const offerId = 1
+
   it('should render when no offer is given', () => {
-    renderTemplate({})
+    renderTemplate({
+      contextOverride: { offer: individualOfferFactory({ isEvent: false }) },
+    })
 
     expect(screen.getByText('Template child')).toBeInTheDocument()
     expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
@@ -67,16 +62,15 @@ describe('IndividualOfferTemplate', () => {
       screen.getByRole('heading', { name: 'Créer une offre' })
     ).toBeInTheDocument()
   })
+
   it('should render when offer is given', () => {
-    const offer: Partial<IndividualOffer> = {
+    const offer = individualOfferFactory({
       name: 'Titre de l’offre',
       id: offerId,
       stocks: [],
-    }
-    const contextOverride = {
-      offer: offer as IndividualOffer,
-    }
-    renderTemplate({ contextOverride })
+      isEvent: false,
+    })
+    renderTemplate({ contextOverride: { offer } })
 
     expect(screen.getByText('Template child')).toBeInTheDocument()
     expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
@@ -90,17 +84,17 @@ describe('IndividualOfferTemplate', () => {
       screen.getByRole('heading', { name: 'Titre de l’offre' })
     ).toBeInTheDocument()
   })
+
   it('should render when no offer is given on edition mode', () => {
-    const offer: Partial<IndividualOffer> = {
+    const offer = individualOfferFactory({
       name: 'Titre de l’offre',
       id: offerId,
+      isEvent: false,
       stocks: [],
-    }
-    const contextOverride = {
-      offer: offer as IndividualOffer,
-    }
+    })
+
     renderTemplate({
-      contextOverride,
+      contextOverride: { offer },
       url: generatePath(
         getIndividualOfferPath({
           step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
@@ -134,18 +128,16 @@ describe('IndividualOfferTemplate', () => {
 
   describe('Status', () => {
     it('should display status and button in edition', () => {
-      const offer: Partial<IndividualOffer> = {
+      const offer = individualOfferFactory({
         name: 'Titre de l’offre',
         id: offerId,
         isActive: true,
         status: OfferStatus.ACTIVE,
         stocks: [],
-      }
-      const contextOverride = {
-        offer: offer as IndividualOffer,
-      }
+      })
+
       renderTemplate({
-        contextOverride,
+        contextOverride: { offer },
         url: generatePath(
           getIndividualOfferPath({
             step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
@@ -163,18 +155,16 @@ describe('IndividualOfferTemplate', () => {
     })
 
     it('should display draft status in draft', () => {
-      const offer: Partial<IndividualOffer> = {
+      const offer = individualOfferFactory({
         name: 'Titre de l’offre',
         id: offerId,
         isActive: false,
         status: OfferStatus.DRAFT,
         stocks: [],
-      }
-      const contextOverride = {
-        offer: offer as IndividualOffer,
-      }
+      })
+
       renderTemplate({
-        contextOverride,
+        contextOverride: { offer },
         url: generatePath(
           getIndividualOfferPath({
             step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
@@ -190,39 +180,31 @@ describe('IndividualOfferTemplate', () => {
     })
 
     it('should display nothing in creation', () => {
-      const offer: Partial<IndividualOffer> = {
+      const offer = individualOfferFactory({
         name: 'Titre de l’offre',
         id: offerId,
         isActive: false,
         status: OfferStatus.DRAFT,
         stocks: [],
-      }
-      const contextOverride = {
-        offer: offer as IndividualOffer,
-      }
-      renderTemplate({
-        contextOverride,
       })
+
+      renderTemplate({ contextOverride: { offer } })
 
       expect(screen.queryByTestId('status')).not.toBeInTheDocument()
       expect(screen.queryByRole('button')).not.toBeInTheDocument()
     })
 
     it('should display provider banner', () => {
-      const offer: Partial<IndividualOffer> = {
+      const offer = individualOfferFactory({
         name: 'Titre de l’offre',
         id: offerId,
         isActive: false,
         status: OfferStatus.DRAFT,
         stocks: [],
         lastProviderName: 'boost',
-      }
-      const contextOverride = {
-        offer: offer as IndividualOffer,
-      }
-      renderTemplate({
-        contextOverride,
       })
+
+      renderTemplate({ contextOverride: { offer } })
 
       expect(
         screen.getByText('Offre synchronisée avec Boost')
@@ -230,20 +212,16 @@ describe('IndividualOfferTemplate', () => {
     })
 
     it('should not display provider banner when no provider is provided', () => {
-      const offer: Partial<IndividualOffer> = {
+      const offer = individualOfferFactory({
         name: 'Titre de l’offre',
         id: offerId,
         isActive: false,
         status: OfferStatus.DRAFT,
         stocks: [],
         lastProviderName: '',
-      }
-      const contextOverride = {
-        offer: offer as IndividualOffer,
-      }
-      renderTemplate({
-        contextOverride,
       })
+
+      renderTemplate({ contextOverride: { offer } })
 
       expect(screen.queryByText('Offre synchronisée')).not.toBeInTheDocument()
     })

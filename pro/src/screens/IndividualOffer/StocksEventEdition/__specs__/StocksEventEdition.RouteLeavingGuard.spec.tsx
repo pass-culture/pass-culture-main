@@ -15,9 +15,15 @@ import {
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { IndividualOffer, IndividualOfferVenue } from 'core/Offers/types'
+import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { ButtonLink } from 'ui-kit'
+import {
+  individualOfferContextFactory,
+  individualOfferFactory,
+  individualOfferVenueFactory,
+  priceCategoryFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StocksEventEdition, {
@@ -105,35 +111,29 @@ const priceCategoryId = '1'
 describe('screens:StocksEventEdition', () => {
   let props: StocksEventEditionProps
   let contextValue: IndividualOfferContextValues
-  let offer: Partial<IndividualOffer>
+  let offer: IndividualOffer
   const offerId = 1
 
   beforeEach(() => {
-    offer = {
+    offer = individualOfferFactory({
       id: offerId,
-      venue: {
+      venue: individualOfferVenueFactory({
         departmentCode: '75',
-      } as IndividualOfferVenue,
+      }),
       stocks: [],
       priceCategories: [
-        { id: Number(priceCategoryId), label: 'Cat 1', price: 10 },
-        { id: 2, label: 'Cat 2', price: 20 },
+        priceCategoryFactory({
+          id: Number(priceCategoryId),
+          label: 'Cat 1',
+          price: 10,
+        }),
+        priceCategoryFactory({ id: 2, label: 'Cat 2', price: 20 }),
       ],
-    }
+    })
     props = {
-      offer: offer as IndividualOffer,
+      offer,
     }
-    contextValue = {
-      offerId: null,
-      offer: null,
-      venueList: [],
-      offererNames: [],
-      categories: [],
-      subCategories: [],
-      setOffer: () => {},
-      setSubcategory: () => {},
-      showVenuePopin: {},
-    }
+    contextValue = individualOfferContextFactory()
     vi.spyOn(api, 'getOffer').mockResolvedValue(
       {} as GetIndividualOfferResponseModel
     )
