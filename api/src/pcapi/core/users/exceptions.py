@@ -82,9 +82,9 @@ class InvalidToken(Exception):
 
 
 class ExpiredToken(InvalidToken):
-    user: models.User
+    user: models.User | None = None
 
-    def __init__(self, user: models.User):
+    def __init__(self, user: models.User | None = None):
         self.user = user
         super().__init__()
 

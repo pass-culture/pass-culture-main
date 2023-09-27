@@ -12,6 +12,7 @@ from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.phone_validation import sending_limit
 from pcapi.core.users import api as users_api
+from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import models as users_models
 from pcapi.notifications import sms as sms_notifications
 from pcapi.repository import repository
@@ -172,7 +173,7 @@ def validate_phone_number(user: users_models.User, code: str) -> None:
 
     try:
         token = token_utils.SixDigitsToken.load_and_check(code, token_utils.TokenType.PHONE_VALIDATION, user.id)
-    except token_utils.InvalidToken:
+    except users_exceptions.InvalidToken:
         code_validation_attempts = sending_limit.get_code_validation_attempts(app.redis_client, user)  # type: ignore [attr-defined]
         if code_validation_attempts.remaining == 0:
             fraud_api.handle_phone_validation_attempts_limit_reached(user, code_validation_attempts.attempts)

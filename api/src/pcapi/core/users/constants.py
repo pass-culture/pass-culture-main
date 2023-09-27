@@ -8,6 +8,7 @@ RESET_PASSWORD_TOKEN_LIFE_TIME = datetime.timedelta(hours=24)
 EMAIL_VALIDATION_TOKEN_LIFE_TIME = datetime.timedelta(minutes=30)
 EMAIL_CHANGE_TOKEN_LIFE_TIME = datetime.timedelta(seconds=settings.EMAIL_CHANGE_TOKEN_LIFE_TIME)
 PHONE_VALIDATION_TOKEN_LIFE_TIME = datetime.timedelta(hours=12)
+SUSPICIOUS_LOGIN_EMAIL_TOKEN_LIFE_TIME = datetime.timedelta(weeks=1)
 
 MAX_EMAIL_UPDATE_ATTEMPTS_FOR_PRO = 5
 EMAIL_PRO_UPDATE_ATTEMPTS_TTL = 24 * 60 * 60  # 1 day in seconds

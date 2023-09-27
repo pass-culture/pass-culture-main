@@ -27,7 +27,6 @@ class SendinblueSuspiciousLoginEmailTest:
         location="Paris",
         dateCreated=datetime(2023, 5, 29, 17, 5, 0),
     )
-    account_suspension_token = "suspicious_login_email_token"
     mock_redis_client = fakeredis.FakeStrictRedis()
 
     def setup_method(self):
@@ -35,14 +34,13 @@ class SendinblueSuspiciousLoginEmailTest:
             self.user = users_factories.UserFactory()
             current_time = datetime.utcnow()
             with freeze_time(current_time):
+                self.account_suspension_token = token_utils.Token.create(
+                    token_utils.TokenType.SUSPENSION_SUSPICIOUS_LOGIN,
+                    constants.SUSPICIOUS_LOGIN_EMAIL_TOKEN_LIFE_TIME,
+                    self.user.id,
+                )
                 self.reset_password_token = token_utils.Token.create(
                     token_utils.TokenType.RESET_PASSWORD, constants.RESET_PASSWORD_TOKEN_LIFE_TIME, self.user.id
-                )
-                self.ACCOUNT_SECURING_LINK = "https://passcultureapptestauto.page.link/?" + urlencode(
-                    {
-                        "link": f"https://webapp-v2.example.com/securisation-compte?token={self.account_suspension_token}&reset_password_token={self.reset_password_token.encoded_token}&reset_token_expiration_timestamp={int(self.reset_password_token.get_expiration_date_from_token().timestamp())}&"
-                        + urlencode({"email": self.user.email})
-                    }
                 )
 
     def should_return_sendinblue_template_data(self):
@@ -62,9 +60,10 @@ class SendinblueSuspiciousLoginEmailTest:
         reset_password_token = token_utils.Token.create(
             token_utils.TokenType.RESET_PASSWORD, constants.RESET_PASSWORD_TOKEN_LIFE_TIME, self.user.id
         )
+
         ACCOUNT_SECURING_LINK = "https://passcultureapptestauto.page.link/?" + urlencode(
             {
-                "link": f"https://webapp-v2.example.com/securisation-compte?token={self.account_suspension_token}&reset_password_token={self.reset_password_token.encoded_token}&reset_token_expiration_timestamp={int(self.reset_password_token.get_expiration_date_from_token().timestamp())}&"
+                "link": f"https://webapp-v2.example.com/securisation-compte?token={self.account_suspension_token.encoded_token}&reset_password_token={reset_password_token.encoded_token}&reset_token_expiration_timestamp={int(reset_password_token.get_expiration_date_from_token().timestamp())}&"
                 + urlencode({"email": self.user.email})
             }
         )
@@ -91,9 +90,10 @@ class SendinblueSuspiciousLoginEmailTest:
         reset_password_token = token_utils.Token.create(
             token_utils.TokenType.RESET_PASSWORD, constants.RESET_PASSWORD_TOKEN_LIFE_TIME, self.user.id
         )
+
         ACCOUNT_SECURING_LINK = "https://passcultureapptestauto.page.link/?" + urlencode(
             {
-                "link": f"https://webapp-v2.example.com/securisation-compte?token={self.account_suspension_token}&reset_password_token={self.reset_password_token.encoded_token}&reset_token_expiration_timestamp={int(self.reset_password_token.get_expiration_date_from_token().timestamp())}&"
+                "link": f"https://webapp-v2.example.com/securisation-compte?token={self.account_suspension_token.encoded_token}&reset_password_token={reset_password_token.encoded_token}&reset_token_expiration_timestamp={int(reset_password_token.get_expiration_date_from_token().timestamp())}&"
                 + urlencode({"email": self.user.email})
             }
         )

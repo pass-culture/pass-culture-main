@@ -13,7 +13,7 @@ from pcapi.utils.urls import generate_firebase_dynamic_link
 def get_suspicious_login_email_data(
     user: users_models.User,
     login_info: users_models.LoginDeviceHistory | None,
-    account_suspension_token: str,
+    account_suspension_token: token_utils.Token,
     reset_password_token: token_utils.Token,
 ) -> models.TransactionalEmailData:
     # We called `create_reset_password_token()` without explicly
@@ -24,7 +24,7 @@ def get_suspicious_login_email_data(
     ACCOUNT_SECURING_LINK = generate_firebase_dynamic_link(
         path="securisation-compte",
         params={
-            "token": account_suspension_token,
+            "token": account_suspension_token.encoded_token,
             "reset_password_token": reset_password_token.encoded_token,
             "reset_token_expiration_timestamp": int(expiration_date.timestamp()),
             "email": user.email,
@@ -60,7 +60,7 @@ def get_suspicious_login_email_data(
 def send_suspicious_login_email(
     user: users_models.User,
     login_info: users_models.LoginDeviceHistory | None,
-    account_suspension_token: str,
+    account_suspension_token: token_utils.Token,
     reset_password_token: token_utils.Token,
 ) -> bool:
     data = get_suspicious_login_email_data(user, login_info, account_suspension_token, reset_password_token)
