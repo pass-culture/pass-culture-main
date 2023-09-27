@@ -41,7 +41,6 @@ def test_response_serialization(client):
         "motorDisabilityCompliant": venue.motorDisabilityCompliant,
         "visualDisabilityCompliant": venue.visualDisabilityCompliant,
         "siret": venue.siret,
-        "venueTypeCode": venue.venueTypeCode.name,
         "hasMissingReimbursementPoint": True,
         "hasCreatedOffer": False,
     }
