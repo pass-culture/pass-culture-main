@@ -13,6 +13,7 @@ import {
 } from 'apiClient/v1'
 import { OfferStatus } from 'apiClient/v2'
 import { StocksEvent } from 'components/StocksEventList/StocksEventList'
+import { IndividualOfferContextValues } from 'context/IndividualOfferContext'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers/constants'
 import {
@@ -295,5 +296,24 @@ export const individualStockEventListFactory = (
     quantity: 18,
     uuid: uuidv4(),
     ...customStock,
+  }
+}
+
+export const individualOfferContextFactory = (
+  customContext: Partial<IndividualOfferContextValues> = {}
+): IndividualOfferContextValues => {
+  const offer = individualOfferFactory()
+
+  return {
+    offerId: offer.id,
+    offer,
+    venueList: [],
+    offererNames: [],
+    categories: [],
+    subCategories: [],
+    setOffer: () => {},
+    setSubcategory: () => {},
+    showVenuePopin: {},
+    ...customContext,
   }
 }

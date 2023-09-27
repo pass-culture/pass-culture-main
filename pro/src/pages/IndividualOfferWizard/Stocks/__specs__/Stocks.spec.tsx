@@ -6,8 +6,13 @@ import {
   IndividualOfferContextValues,
   IndividualOfferContext,
 } from 'context/IndividualOfferContext'
-import { IndividualOffer, IndividualOfferVenue } from 'core/Offers/types'
+import { IndividualOffer } from 'core/Offers/types'
 import { RootState } from 'store/reducers'
+import {
+  individualOfferContextFactory,
+  individualOfferFactory,
+  individualOfferVenueFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Stocks from '../Stocks'
@@ -16,18 +21,8 @@ const renderStocksScreen = (
   storeOverrides: Partial<RootState> = {},
   contextOverride: Partial<IndividualOfferContextValues>
 ) => {
-  const contextValue: IndividualOfferContextValues = {
-    offerId: null,
-    offer: null,
-    venueList: [],
-    offererNames: [],
-    categories: [],
-    subCategories: [],
-    setOffer: () => {},
-    setSubcategory: () => {},
-    showVenuePopin: {},
-    ...contextOverride,
-  }
+  const contextValue = individualOfferContextFactory(contextOverride)
+
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
       <Stocks />
@@ -38,31 +33,31 @@ const renderStocksScreen = (
 
 describe('screens:Stocks', () => {
   let storeOverrides: Partial<RootState>
-  let contextOverride: Partial<IndividualOfferContextValues>
-  let offer: Partial<IndividualOffer>
+  let contextOverride: IndividualOfferContextValues
+  let offer: IndividualOffer
   const offerId = 12
 
   beforeEach(() => {
-    offer = {
+    offer = individualOfferFactory({
       id: offerId,
-      venue: {
+      venue: individualOfferVenueFactory({
         departmentCode: '75',
-      } as IndividualOfferVenue,
+      }),
       stocks: [],
-    }
+    })
     storeOverrides = {}
-    contextOverride = {
-      offerId: offerId,
-      offer: offer as IndividualOffer,
-    }
+    contextOverride = individualOfferContextFactory({
+      offerId,
+      offer,
+    })
   })
 
   it('should render stock thing', async () => {
-    contextOverride.offer = {
+    contextOverride.offer = individualOfferFactory({
       ...contextOverride.offer,
       isEvent: false,
       isDigital: false,
-    } as IndividualOffer
+    })
     renderStocksScreen(storeOverrides, contextOverride)
 
     expect(
@@ -73,10 +68,10 @@ describe('screens:Stocks', () => {
   })
 
   it('should render stock event', async () => {
-    contextOverride.offer = {
+    contextOverride.offer = individualOfferFactory({
       ...contextOverride.offer,
       isEvent: true,
-    } as IndividualOffer
+    })
     renderStocksScreen(storeOverrides, contextOverride)
 
     await waitFor(() => {
@@ -92,11 +87,11 @@ describe('screens:Stocks', () => {
   it.each(offerStatusWithoutBanner)(
     'should not render stock description banner',
     async offerStatus => {
-      contextOverride.offer = {
+      contextOverride.offer = individualOfferFactory({
         ...contextOverride.offer,
         isEvent: true,
         status: offerStatus,
-      } as IndividualOffer
+      })
       renderStocksScreen(storeOverrides, contextOverride)
 
       await waitFor(() => {
@@ -119,11 +114,11 @@ describe('screens:Stocks', () => {
   it.each(offerStatusWithBanner)(
     'should render stock description banner',
     async offerStatus => {
-      contextOverride.offer = {
+      contextOverride.offer = individualOfferFactory({
         ...contextOverride.offer,
         isEvent: true,
         status: offerStatus,
-      } as IndividualOffer
+      })
       renderStocksScreen(storeOverrides, contextOverride)
 
       await waitFor(() => {

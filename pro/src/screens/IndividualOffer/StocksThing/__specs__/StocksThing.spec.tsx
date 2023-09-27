@@ -22,17 +22,19 @@ import {
   LIVRE_PAPIER_SUBCATEGORY_ID,
   OFFER_WIZARD_MODE,
 } from 'core/Offers/constants'
-import {
-  IndividualOffer,
-  IndividualOfferStock,
-  IndividualOfferVenue,
-  OfferSubCategory,
-} from 'core/Offers/types'
+import { IndividualOffer } from 'core/Offers/types'
 import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
 } from 'core/Offers/utils/getIndividualOfferUrl'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
+import {
+  individualOfferContextFactory,
+  individualOfferFactory,
+  individualOfferSubCategoryFactory,
+  individualOfferVenueFactory,
+  individualStockFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { serializeThingBookingLimitDatetime } from '../adapters/serializers'
@@ -113,33 +115,29 @@ const renderStockThingScreen = (
 describe('screens:StocksThing', () => {
   let props: StocksThingProps
   let contextValue: IndividualOfferContextValues
-  let offer: Partial<IndividualOffer>
+  let offer: IndividualOffer
   const offerId = 1
 
   beforeEach(() => {
-    offer = {
+    offer = individualOfferFactory({
       id: offerId,
-      venue: {
+      venue: individualOfferVenueFactory({
         departmentCode: '75',
-      } as IndividualOfferVenue,
+      }),
       stocks: [],
       lastProviderName: 'Ciné Office',
       subcategoryId: 'CANBEDUO',
-    }
+    })
     props = {
-      offer: offer as IndividualOffer,
+      offer,
     }
-    contextValue = {
+    contextValue = individualOfferContextFactory({
       offerId: offerId,
-      offer: offer as IndividualOffer,
-      venueList: [],
-      offererNames: [],
-      categories: [],
-      subCategories: [{ id: 'CANBEDUO', canBeDuo: true } as OfferSubCategory],
-      setOffer: () => {},
-      setSubcategory: () => {},
-      showVenuePopin: {},
-    }
+      offer,
+      subCategories: [
+        individualOfferSubCategoryFactory({ id: 'CANBEDUO', canBeDuo: true }),
+      ],
+    })
     vi.spyOn(api, 'getOffer').mockResolvedValue(
       {} as GetIndividualOfferResponseModel
     )
@@ -150,7 +148,7 @@ describe('screens:StocksThing', () => {
 
   it('should render physical stock thing', async () => {
     props.offer = {
-      ...(offer as IndividualOffer),
+      ...offer,
       isDigital: false,
     }
 
@@ -171,7 +169,7 @@ describe('screens:StocksThing', () => {
 
   it('should render digital stock thing', async () => {
     props.offer = {
-      ...(offer as IndividualOffer),
+      ...offer,
       subcategoryId: 'TESTID',
       isDigital: true,
     }
@@ -188,7 +186,7 @@ describe('screens:StocksThing', () => {
 
   it('should render digital book', async () => {
     props.offer = {
-      ...(offer as IndividualOffer),
+      ...offer,
       subcategoryId: LIVRE_PAPIER_SUBCATEGORY_ID,
       isDigital: false,
     }
@@ -337,7 +335,7 @@ describe('screens:StocksThing', () => {
         stocks: [{ id: 1 } as StockResponseModel],
       })
       props.offer = {
-        ...(offer as IndividualOffer),
+        ...offer,
         isDigital: true,
       }
       renderStockThingScreen(props, contextValue)
@@ -409,7 +407,7 @@ describe('screens:StocksThing', () => {
         stocks: [{ id: 1 } as StockResponseModel],
       })
       props.offer = {
-        ...(offer as IndividualOffer),
+        ...offer,
         isDigital: true,
       }
       renderStockThingScreen(props, contextValue)
@@ -445,15 +443,15 @@ describe('screens:StocksThing', () => {
     })
     it('should display an expiration field disabled when activationCodesExpirationDatetime is provided', async () => {
       props.offer = {
-        ...(offer as IndividualOffer),
+        ...offer,
         isDigital: true,
         stocks: [
-          {
+          individualStockFactory({
             bookingsQuantity: 1,
             price: 12,
             hasActivationCode: true,
             activationCodesExpirationDatetime: new Date('2020-12-15T12:00:00Z'),
-          } as IndividualOfferStock,
+          }),
         ],
       }
       renderStockThingScreen(props, contextValue)

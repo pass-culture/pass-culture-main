@@ -8,9 +8,12 @@ import {
   IndividualOfferContext,
 } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { IndividualOffer, IndividualOfferStock } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
-import { individualOfferFactory } from 'utils/individualApiFactories'
+import {
+  individualOfferContextFactory,
+  individualOfferFactory,
+  individualStockFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { OFFER_WIZARD_STEP_IDS } from '../constants'
@@ -27,18 +30,7 @@ const renderIndividualOfferBreadcrumb = (
   }),
   storeOverrides = {}
 ) => {
-  const contextValues: IndividualOfferContextValues = {
-    offerId: null,
-    offer: null,
-    venueList: [],
-    offererNames: [],
-    categories: [],
-    subCategories: [],
-    setOffer: () => {},
-    setSubcategory: () => {},
-    showVenuePopin: {},
-    ...contextOverride,
-  }
+  const contextValues = individualOfferContextFactory(contextOverride)
 
   renderWithProviders(
     <IndividualOfferContext.Provider value={contextValues}>
@@ -102,7 +94,9 @@ describe('test IndividualOfferBreadcrumb', () => {
     })
 
     it('should render steps when no offer is given', async () => {
-      renderIndividualOfferBreadcrumb()
+      renderIndividualOfferBreadcrumb({
+        offer: individualOfferFactory({ isEvent: false }),
+      })
 
       expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
       expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
@@ -113,23 +107,18 @@ describe('test IndividualOfferBreadcrumb', () => {
       expect(screen.getByTestId('stepper')).toBeInTheDocument()
 
       await userEvent.click(screen.getByText('Stock & Prix'))
-      expect(screen.getByText('Informations screen')).toBeInTheDocument()
+      expect(screen.getByText('Stocks screen')).toBeInTheDocument()
       await userEvent.click(screen.getByText('Récapitulatif'))
-      expect(screen.getByText('Informations screen')).toBeInTheDocument()
-      await userEvent.click(screen.getByText('Confirmation'))
-      expect(screen.getByText('Informations screen')).toBeInTheDocument()
+      expect(screen.getByText('Summary screen')).toBeInTheDocument()
     })
 
     it('should render steps when offer without stock is given', async () => {
-      const offer: Partial<IndividualOffer> = individualOfferFactory({
+      const offer = individualOfferFactory({
         stocks: [],
         isEvent: false,
       })
 
-      const contextOverride: Partial<IndividualOfferContextValues> = {
-        offer: offer as IndividualOffer,
-      }
-      renderIndividualOfferBreadcrumb(contextOverride)
+      renderIndividualOfferBreadcrumb({ offer })
 
       expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
       expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
@@ -147,14 +136,11 @@ describe('test IndividualOfferBreadcrumb', () => {
     })
 
     it('should render steps when offer and stock are given', async () => {
-      const offer: Partial<IndividualOffer> = individualOfferFactory({
+      const offer = individualOfferFactory({
         isEvent: false,
       })
 
-      const contextOverride: Partial<IndividualOfferContextValues> = {
-        offer: offer as IndividualOffer,
-      }
-      renderIndividualOfferBreadcrumb(contextOverride)
+      renderIndividualOfferBreadcrumb({ offer })
 
       expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
       expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
@@ -173,7 +159,7 @@ describe('test IndividualOfferBreadcrumb', () => {
 
     it('should render steps on Information', () => {
       renderIndividualOfferBreadcrumb(
-        undefined,
+        { offer: individualOfferFactory({ isEvent: false }) },
         generatePath(
           getIndividualOfferPath({
             step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
@@ -192,7 +178,7 @@ describe('test IndividualOfferBreadcrumb', () => {
 
     it('should render steps on Stocks', () => {
       renderIndividualOfferBreadcrumb(
-        undefined,
+        { offer: individualOfferFactory({ isEvent: false }) },
         generatePath(
           getIndividualOfferPath({
             step: OFFER_WIZARD_STEP_IDS.STOCKS,
@@ -211,7 +197,7 @@ describe('test IndividualOfferBreadcrumb', () => {
 
     it('should render steps on Summary', () => {
       renderIndividualOfferBreadcrumb(
-        undefined,
+        { offer: individualOfferFactory({ isEvent: false }) },
         generatePath(
           getIndividualOfferPath({
             step: OFFER_WIZARD_STEP_IDS.SUMMARY,
@@ -284,16 +270,13 @@ describe('test IndividualOfferBreadcrumb', () => {
 
   describe('in edition', () => {
     it('should render default breadcrumb in edition', () => {
-      const offer: Partial<IndividualOffer> = {
+      const offer = individualOfferFactory({
         id: offerId,
-        stocks: [{ id: stockId } as IndividualOfferStock],
-      }
+        stocks: [individualStockFactory({ id: stockId })],
+      })
 
-      const contextOverride: Partial<IndividualOfferContextValues> = {
-        offer: offer as IndividualOffer,
-      }
       renderIndividualOfferBreadcrumb(
-        contextOverride,
+        { offer },
         generatePath(
           getIndividualOfferPath({
             step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
@@ -308,17 +291,14 @@ describe('test IndividualOfferBreadcrumb', () => {
     })
 
     it('should render steps on Information', () => {
-      const offer: Partial<IndividualOffer> = {
+      const offer = individualOfferFactory({
         id: offerId,
-        stocks: [{ id: stockId } as IndividualOfferStock],
-      }
-
-      const contextOverride: Partial<IndividualOfferContextValues> = {
-        offer: offer as IndividualOffer,
-      }
+        stocks: [individualStockFactory({ id: stockId })],
+        isEvent: false,
+      })
 
       renderIndividualOfferBreadcrumb(
-        contextOverride,
+        { offer },
         generatePath(
           getIndividualOfferPath({
             step: OFFER_WIZARD_STEP_IDS.INFORMATIONS,
@@ -337,17 +317,14 @@ describe('test IndividualOfferBreadcrumb', () => {
     })
 
     it('should render steps on Stocks', () => {
-      const offer: Partial<IndividualOffer> = {
+      const offer = individualOfferFactory({
         id: offerId,
-        stocks: [{ id: stockId } as IndividualOfferStock],
-      }
-
-      const contextOverride: Partial<IndividualOfferContextValues> = {
-        offer: offer as IndividualOffer,
-      }
+        stocks: [individualStockFactory({ id: stockId })],
+        isEvent: false,
+      })
 
       renderIndividualOfferBreadcrumb(
-        contextOverride,
+        { offer },
         generatePath(
           getIndividualOfferPath({
             step: OFFER_WIZARD_STEP_IDS.STOCKS,

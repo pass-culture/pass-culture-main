@@ -27,6 +27,10 @@ import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as utils from 'screens/IndividualOffer/Informations/utils'
 import {
+  individualOfferCategoryFactory,
+  individualOfferContextFactory,
+  individualOfferFactory,
+  individualOfferSubCategoryFactory,
   individualOfferVenueItemFactory,
   individualStockFactory,
 } from 'utils/individualApiFactories'
@@ -125,7 +129,7 @@ const scrollIntoViewMock = vi.fn()
 
 describe('screens:IndividualOffer::Informations:edition', () => {
   let props: InformationsProps
-  let contextOverride: Partial<IndividualOfferContextValues>
+  let contextOverride: IndividualOfferContextValues
   let offer: IndividualOffer
   let subCategories: OfferSubCategory[]
   const offererId = 1
@@ -136,14 +140,14 @@ describe('screens:IndividualOffer::Informations:edition', () => {
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
     const categories = [
-      {
+      individualOfferCategoryFactory({
         id: 'CID',
         proLabel: 'Catégorie CID',
         isSelectable: true,
-      },
+      }),
     ]
     subCategories = [
-      {
+      individualOfferSubCategoryFactory({
         id: 'SCID virtual',
         categoryId: 'CID',
         proLabel: 'Sous catégorie online de CID',
@@ -155,8 +159,8 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
         reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
         isSelectable: true,
-      },
-      {
+      }),
+      individualOfferSubCategoryFactory({
         id: 'SCID physical',
         categoryId: 'CID',
         proLabel: 'Sous catégorie offline de CID',
@@ -168,7 +172,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
         reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
         isSelectable: true,
-      },
+      }),
     ]
 
     const venue1: IndividualOfferVenueItem = individualOfferVenueItemFactory()
@@ -176,7 +180,7 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       isVirtual: true,
     })
 
-    offer = {
+    offer = individualOfferFactory({
       id: offerId,
       author: 'Offer author',
       bookingEmail: 'booking@email.com',
@@ -239,16 +243,16 @@ describe('screens:IndividualOffer::Informations:edition', () => {
       lastProviderName: null,
       lastProvider: null,
       status: OfferStatus.ACTIVE,
-    }
+    })
 
-    contextOverride = {
+    contextOverride = individualOfferContextFactory({
       offerId: offer.id,
       offer: offer,
       venueList: [venue1, venue2],
       offererNames: [{ id: offererId, name: 'Offerer name' }],
       categories,
       subCategories,
-    }
+    })
 
     props = {
       venueId: physicalVenueId.toString(),
