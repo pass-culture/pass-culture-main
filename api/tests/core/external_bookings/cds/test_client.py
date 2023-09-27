@@ -551,7 +551,7 @@ class CineDigitalServiceGetScreenTest:
 
 class CineDigitalServiceGetAvailableSingleSeatTest:
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
-    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_hardcoded_setmap", return_value=[])
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_hardcoded_seatmap", return_value=[])
     def test_should_return_seat_available(self, mocked_get_hardcoded_seatmap, mocked_get_resource):
         seatmap_json = [
             [1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
@@ -586,7 +586,7 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
         assert best_seat[0].seatNumber == "E_6"
 
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
-    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_hardcoded_setmap")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_hardcoded_seatmap")
     def test_should_return_seat_available_when_seatmap_is_hardcoded(
         self, mocked_get_hardcoded_seatmap, mocked_get_resource
     ):
@@ -624,7 +624,7 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
         assert best_seat[0].seatNumber == "M_9"
 
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
-    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_hardcoded_setmap", return_value=[])
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_hardcoded_seatmap", return_value=[])
     def test_should_not_return_prm_seat(self, mocked_get_hardcoded_seatmap, mocked_get_resource):
         seatmap_json = [
             [1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
@@ -656,7 +656,7 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
         assert best_seat[0].seatNumber == "D_6"
 
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
-    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_hardcoded_setmap", return_value=[])
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_hardcoded_seatmap", return_value=[])
     def test_should_return_seat_infos_according_to_screen(self, mocked_get_hardcoded_seatmap, mocked_get_resource):
         seatmap_json = [
             [3, 3, 3, 3, 0, 0, 3, 3],
@@ -712,7 +712,7 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
         assert not best_seat
 
     @patch("pcapi.core.external_bookings.cds.client.get_resource")
-    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_hardcoded_setmap", return_value=[])
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_hardcoded_seatmap", return_value=[])
     def test_should_return_correct_seat_number(self, mocked_get_hardcoded_seatmap, mocked_get_resource):
         # fmt: off
         seatmap_json = [
@@ -784,10 +784,10 @@ class CineDigitalServiceGetAvailableDuoSeatTest:
         assert duo_seats[0].seatNumber == "B_2"
         assert duo_seats[1].seatNumber == "B_3"
 
-    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_hardcoded_setmap")
+    @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_hardcoded_seatmap")
     @patch("pcapi.core.external_bookings.cds.client.CineDigitalServiceAPI.get_seatmap")
     def test_should_return_duo_seat_if_available_when_seatmap_is_hardcoded(
-        self, mocked_get_seatmap, mocked_get_hardcoded_setmap
+        self, mocked_get_seatmap, mocked_get_hardcoded_seatmap
     ):
         seatmap = cds_serializers.SeatmapCDS(
             __root__=[
@@ -808,7 +808,7 @@ class CineDigitalServiceGetAvailableDuoSeatTest:
         show = create_show_cds(id_=1, screen_id=1)
 
         mocked_get_seatmap.return_value = seatmap
-        mocked_get_hardcoded_setmap.return_value = mocked_hardcoded_seatmap
+        mocked_get_hardcoded_seatmap.return_value = mocked_hardcoded_seatmap
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="test_id", account_id="accountid_test", cinema_api_token="token_test", api_url="test_url"
         )
@@ -1370,7 +1370,7 @@ class CineDigitalServiceGetHardcodedSeatmapTest:
             cinema_api_token=token,
         )
 
-        hardcoded_seatmap = cine_digital_service.get_hardcoded_setmap(show=show)
+        hardcoded_seatmap = cine_digital_service.get_hardcoded_seatmap(show=show)
 
         assert hardcoded_seatmap == expected_hardcoded_seatmap
 
@@ -1392,6 +1392,6 @@ class CineDigitalServiceGetHardcodedSeatmapTest:
             cinema_api_token=token,
         )
 
-        hardcoded_seatmap = cine_digital_service.get_hardcoded_setmap(show=show)
+        hardcoded_seatmap = cine_digital_service.get_hardcoded_seatmap(show=show)
 
         assert not hardcoded_seatmap
