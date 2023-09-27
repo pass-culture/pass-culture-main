@@ -870,6 +870,13 @@ class UpdateVenueTest(PostEndpointHelper):
         assert update_snapshot["longitude"]["new_info"] == data["longitude"]
         assert update_snapshot["venueTypeCode"]["new_info"] == data["venue_type_code"]
 
+        assert len(mails_testing.outbox) == 1
+        # check that email is sent when venue is set to permanent and has no image
+        assert mails_testing.outbox[0].sent_data["To"] == venue.bookingEmail
+        assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.VENUE_NEEDS_PICTURE.value.__dict__
+        assert mails_testing.outbox[0].sent_data["params"]["VENUE_NAME"] == venue.common_name
+        assert mails_testing.outbox[0].sent_data["params"]["VENUE_FORM_URL"] == urls.build_pc_pro_venue_link(venue)
+
     def test_update_venue_contact_only(self, authenticated_client, offerer):
         contact_email = "contact.venue@example.com"
         website = "update.venue@example.com"
