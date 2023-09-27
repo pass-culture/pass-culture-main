@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import type { HitsProvided } from 'react-instantsearch-core'
-import { connectHits } from 'react-instantsearch-dom'
+import type { StatsProvided } from 'react-instantsearch-core'
+import { connectStats } from 'react-instantsearch-dom'
 
 import { AdageFrontRoles } from 'apiClient/adage'
 import useNotification from 'hooks/useNotification'
@@ -10,7 +10,6 @@ import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { formatPrice } from 'utils/formatPrice'
-import { ResultType } from 'utils/types'
 
 import { getEducationalInstitutionWithBudgetAdapter } from '../../adapters/getEducationalInstitutionWithBudgetAdapter'
 import useAdageUser from '../../hooks/useAdageUser'
@@ -18,7 +17,7 @@ import useAdageUser from '../../hooks/useAdageUser'
 import styles from './AdageHeader.module.scss'
 import { AdageHeaderMenu } from './AdageHeaderMenu/AdageHeaderMenu'
 
-export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
+export const AdageHeaderComponent = (params: StatsProvided) => {
   const notify = useNotification()
   const { adageUser } = useAdageUser()
 
@@ -56,7 +55,7 @@ export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
         </div>
         <AdageHeaderMenu
           adageUser={adageUser}
-          institutionsOfferCount={hits.length}
+          institutionsOfferCount={params.nbHits}
         ></AdageHeaderMenu>
         {!isLoading && (
           <div className={styles['adage-header-nav-menu-budget']}>
@@ -92,4 +91,4 @@ export const AdageHeaderComponent = ({ hits }: HitsProvided<ResultType>) => {
   )
 }
 
-export const AdageHeader = connectHits(AdageHeaderComponent)
+export const AdageHeader = connectStats(AdageHeaderComponent)

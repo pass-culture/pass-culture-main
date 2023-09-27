@@ -1,20 +1,16 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
-import type { Hit } from 'react-instantsearch-core'
+import type { StatsProvided } from 'react-instantsearch-core'
 
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import { AdageHeaderLink } from 'apiClient/adage/models/AdageHeaderLink'
 import { apiAdage } from 'apiClient/api'
 import * as useNotification from 'hooks/useNotification'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import {
-  defaultAlgoliaHits,
-  defaultEducationalInstitution,
-} from 'utils/adageFactories'
+import { defaultEducationalInstitution } from 'utils/adageFactories'
 import { formatPrice } from 'utils/formatPrice'
 import { renderWithProviders } from 'utils/renderWithProviders'
-import { ResultType } from 'utils/types'
 
 import { AdageHeaderComponent } from '../AdageHeader'
 
@@ -24,13 +20,19 @@ interface HeaderLinkProps {
 }
 
 const renderAdageHeader = (
-  hits: Hit<ResultType>[] = [],
+  nbHits: number,
   user: AuthenticatedResponse,
   storeOverrides?: any
 ) => {
+  const stats: StatsProvided = {
+    areHitsSorted: true,
+    nbHits: nbHits,
+    nbSortedHits: nbHits,
+    processingTimeMS: 0,
+  }
   renderWithProviders(
     <AdageUserContextProvider adageUser={user}>
-      <AdageHeaderComponent hits={hits} />
+      <AdageHeaderComponent {...stats} />
     </AdageUserContextProvider>,
     { storeOverrides }
   )
@@ -76,7 +78,7 @@ describe('AdageHeader', () => {
   })
 
   it('should render adage header', async () => {
-    renderAdageHeader([], user)
+    renderAdageHeader(0, user)
     await waitFor(() =>
       expect(
         apiAdage.getEducationalInstitutionWithBudget
@@ -91,7 +93,7 @@ describe('AdageHeader', () => {
   })
 
   it('should render the number of hits', async () => {
-    renderAdageHeader([defaultAlgoliaHits, defaultAlgoliaHits], user)
+    renderAdageHeader(2, user)
     await waitFor(() =>
       expect(screen.getByText('Solde prévisionnel')).toBeInTheDocument()
     )
@@ -99,7 +101,7 @@ describe('AdageHeader', () => {
   })
 
   it('should display the institution budget', async () => {
-    renderAdageHeader([], user)
+    renderAdageHeader(0, user)
     await waitFor(() =>
       expect(screen.getByText('Solde prévisionnel')).toBeInTheDocument()
     )
@@ -113,7 +115,7 @@ describe('AdageHeader', () => {
       'getEducationalInstitutionWithBudget'
     ).mockRejectedValueOnce({})
 
-    renderAdageHeader([], user)
+    renderAdageHeader(0, user)
     await waitFor(() =>
       expect(apiAdage.getEducationalInstitutionWithBudget).toHaveBeenCalled()
     )
@@ -135,7 +137,7 @@ describe('AdageHeader', () => {
   it.each(headerLinks)(
     'should log click on header link',
     async (headerLink: HeaderLinkProps) => {
-      renderAdageHeader([], user)
+      renderAdageHeader(0, user)
       await waitFor(() =>
         expect(screen.getByText('Solde prévisionnel')).toBeInTheDocument()
       )
@@ -153,7 +155,7 @@ describe('AdageHeader', () => {
   it('should not display budget when user is readonly ', async () => {
     vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
 
-    renderAdageHeader([], { ...user, role: AdageFrontRoles.READONLY })
+    renderAdageHeader(0, { ...user, role: AdageFrontRoles.READONLY })
 
     expect(apiAdage.getEducationalInstitutionWithBudget).not.toHaveBeenCalled()
   })
@@ -161,7 +163,7 @@ describe('AdageHeader', () => {
   it('should not display adage link when user is readonly ', async () => {
     vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
 
-    renderAdageHeader([], { ...user, role: AdageFrontRoles.READONLY })
+    renderAdageHeader(0, { ...user, role: AdageFrontRoles.READONLY })
 
     expect(
       screen.queryByRole('link', { name: 'Suivi' })
@@ -171,7 +173,7 @@ describe('AdageHeader', () => {
   it('should not display help download link when user is readonly ', async () => {
     vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
 
-    renderAdageHeader([], { ...user, role: AdageFrontRoles.READONLY })
+    renderAdageHeader(0, { ...user, role: AdageFrontRoles.READONLY })
 
     expect(
       screen.queryByRole('link', { name: "Télécharger l'aide" })
@@ -181,7 +183,7 @@ describe('AdageHeader', () => {
   it('should not display favorites tab if the feature flag is disabled', async () => {
     vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
 
-    renderAdageHeader([], user)
+    renderAdageHeader(0, user)
 
     expect(
       screen.queryByRole('link', { name: /Mes Favoris/ })
@@ -191,7 +193,7 @@ describe('AdageHeader', () => {
   it('should display favorites tab if the feature flag is enabled', async () => {
     vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
 
-    renderAdageHeader([], user, isFavoritesActive)
+    renderAdageHeader(0, user, isFavoritesActive)
 
     expect(
       screen.queryByRole('link', { name: /Mes Favoris/ })
@@ -202,7 +204,7 @@ describe('AdageHeader', () => {
     vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget')
 
     renderAdageHeader(
-      [],
+      0,
       { ...user, favoritesCount: 10 } as AuthenticatedResponse,
       isFavoritesActive
     )
