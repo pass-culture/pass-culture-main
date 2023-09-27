@@ -25,7 +25,13 @@ import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as utils from 'screens/IndividualOffer/Informations/utils'
 import { ButtonLink } from 'ui-kit'
-import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
+import {
+  individualOfferCategoryFactory,
+  individualOfferContextFactory,
+  individualOfferFactory,
+  individualOfferSubCategoryFactory,
+  individualOfferVenueItemFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { InformationsProps, Informations as InformationsScreen } from '..'
@@ -62,18 +68,7 @@ const renderInformationsScreen = (
       },
     },
   }
-  const contextValue: IndividualOfferContextValues = {
-    offerId: null,
-    offer: null,
-    venueList: [],
-    offererNames: [],
-    categories: [],
-    subCategories: [],
-    setOffer: () => {},
-    showVenuePopin: {},
-    setSubcategory: () => {},
-    ...contextOverride,
-  }
+  const contextValue = individualOfferContextFactory(contextOverride)
 
   return renderWithProviders(
     <>
@@ -120,13 +115,13 @@ const scrollIntoViewMock = vi.fn()
 
 describe('screens:IndividualOffer::Informations::creation', () => {
   let props: InformationsProps
-  let contextOverride: Partial<IndividualOfferContextValues>
+  let contextOverride: IndividualOfferContextValues
   let offer: IndividualOffer
   const offerId = 12
 
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
-    offer = {
+    offer = individualOfferFactory({
       id: offerId,
       author: 'Offer author',
       bookingEmail: 'booking@email.com',
@@ -189,23 +184,23 @@ describe('screens:IndividualOffer::Informations::creation', () => {
       lastProviderName: null,
       lastProvider: null,
       status: OfferStatus.DRAFT,
-    }
+    })
 
     const categories = [
-      {
+      individualOfferCategoryFactory({
         id: 'A',
         proLabel: 'Catégorie A',
         isSelectable: true,
-      },
+      }),
       // we need two categories otherwise the first one is preselected and the form is dirty
-      {
+      individualOfferCategoryFactory({
         id: 'B',
         proLabel: 'Catégorie B',
         isSelectable: true,
-      },
+      }),
     ]
     const subCategories: OfferSubCategory[] = [
-      {
+      individualOfferSubCategoryFactory({
         id: 'virtual',
         categoryId: 'A',
         proLabel: 'Sous catégorie online de A',
@@ -217,8 +212,8 @@ describe('screens:IndividualOffer::Informations::creation', () => {
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
         reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
         isSelectable: true,
-      },
-      {
+      }),
+      individualOfferSubCategoryFactory({
         id: 'physical',
         categoryId: 'A',
         proLabel: 'Sous catégorie offline de A',
@@ -230,8 +225,8 @@ describe('screens:IndividualOffer::Informations::creation', () => {
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
         reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
         isSelectable: true,
-      },
-      {
+      }),
+      individualOfferSubCategoryFactory({
         id: 'physicalB',
         categoryId: 'B',
         proLabel: 'Sous catégorie offline de B',
@@ -243,7 +238,7 @@ describe('screens:IndividualOffer::Informations::creation', () => {
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
         reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
         isSelectable: true,
-      },
+      }),
     ]
 
     const venue1: IndividualOfferVenueItem = individualOfferVenueItemFactory()
@@ -251,12 +246,13 @@ describe('screens:IndividualOffer::Informations::creation', () => {
       isVirtual: true,
     })
 
-    contextOverride = {
+    contextOverride = individualOfferContextFactory({
       venueList: [venue1, venue2],
       offererNames: [{ id: 1, name: 'mon offerer A' }],
       categories,
       subCategories,
-    }
+      offer: null,
+    })
 
     props = {
       venueId: offer.venue.id.toString(),

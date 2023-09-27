@@ -13,6 +13,11 @@ import {
 } from 'context/IndividualOfferContext'
 import { IndividualOffer } from 'core/Offers/types'
 import { RootState } from 'store/reducers'
+import {
+  individualOfferContextFactory,
+  individualOfferFactory,
+  individualOfferVenueFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Confirmation from '../Confirmation'
@@ -30,18 +35,8 @@ const renderOffer = (
   contextOverride: Partial<IndividualOfferContextValues>,
   storeOverride?: Partial<RootState>
 ) => {
-  const contextValue: IndividualOfferContextValues = {
-    offerId: null,
-    offer: null,
-    venueList: [],
-    offererNames: [],
-    categories: [],
-    subCategories: [],
-    setOffer: () => {},
-    setSubcategory: () => {},
-    showVenuePopin: {},
-    ...contextOverride,
-  }
+  const contextValue = individualOfferContextFactory(contextOverride)
+
   const storeOverrides = {
     user: {
       initialized: true,
@@ -77,6 +72,7 @@ describe('Confirmation', () => {
   let offer: IndividualOffer
   const venueId = 45
   const offererId = 51
+
   beforeEach(() => {
     store = {
       user: {
@@ -87,17 +83,16 @@ describe('Confirmation', () => {
         },
       },
     }
-    offer = {
-      id: 12,
+    offer = individualOfferFactory({
       venueId: venueId,
-      venue: {
+      venue: individualOfferVenueFactory({
         offerer: {
           id: offererId,
           name: 'Offerer name',
         },
-      },
+      }),
       status: OfferStatus.ACTIVE,
-    } as IndividualOffer
+    })
     contextOverride = {
       offer: offer,
     }
