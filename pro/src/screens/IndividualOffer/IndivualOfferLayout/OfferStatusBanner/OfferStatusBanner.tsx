@@ -25,7 +25,7 @@ const OfferStatusBanner = ({ status }: OfferStatusBannerProps): JSX.Element => {
         votre compte.
       </Banner>
     )
-  } else if (status == OfferStatus.PENDING) {
+  } else if (status === OfferStatus.PENDING) {
     return (
       <Banner type="notification-info">
         Votre offre est en cours de validation par l’équipe du pass Culture.
