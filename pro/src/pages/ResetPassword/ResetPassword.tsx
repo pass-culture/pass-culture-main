@@ -4,7 +4,6 @@ import { useLocation } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import AppLayout from 'app/AppLayout'
-import useInitReCaptcha from 'hooks/useInitReCaptcha'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
 import logoPassCultureProFullIcon from 'icons/logo-pass-culture-pro-full.svg'
 import Hero from 'ui-kit/Hero'
@@ -23,7 +22,6 @@ const ResetPassword = (): JSX.Element => {
   const { token } = parse(search)
 
   useRedirectLoggedUser()
-  useInitReCaptcha()
 
   const submitChangePassword = async (values: Record<string, string>) => {
     const { newPasswordValue } = values
