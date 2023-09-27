@@ -1,4 +1,5 @@
 import datetime
+import logging
 from typing import Any
 
 import pytz
@@ -9,6 +10,7 @@ import sqlalchemy.sql.sqltypes as sqla_sqltypes
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.educational.models as educational_models
+import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.users.models as users_models
@@ -19,6 +21,9 @@ import pcapi.utils.db as db_utils
 
 from . import models
 from . import utils
+
+
+logger = logging.getLogger(__name__)
 
 
 def deposit_exists_for_beneficiary_and_type(beneficiary: users_models.User, deposit_type: models.DepositType) -> bool:
@@ -470,4 +475,20 @@ def _get_legacy_payments_for_collective_bookings(
             models.Payment.transactionLabel.label("transaction_label"),
             models.Payment.collectiveBookingId.label("collective_booking_id"),
         )
+    )
+
+
+def get_bank_account_with_current_venues_links(
+    offerer_id: int, bank_account_id: int
+) -> finance_models.BankAccount | None:
+    return (
+        finance_models.BankAccount.query.filter(
+            finance_models.BankAccount.id == bank_account_id, finance_models.BankAccount.offererId == offerer_id
+        )
+        .outerjoin(
+            offerers_models.VenueBankAccountLink,
+            offerers_models.VenueBankAccountLink.timespan.contains(datetime.datetime.utcnow()),
+        )
+        .options(sqla_orm.contains_eager(finance_models.BankAccount.venueLinks))
+        .one_or_none()
     )

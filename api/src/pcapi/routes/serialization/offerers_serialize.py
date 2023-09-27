@@ -290,3 +290,7 @@ class GetOffererBankAccountsResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class LinkVenueToBankAccountBodyModel(BaseModel):
+    venues_ids: set[int]
