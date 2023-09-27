@@ -413,13 +413,6 @@ FESTIVAL_MUSIQUE = Subcategory.from_new(
 )
 # endregion
 # region MUSIQUE_ENREGISTREE
-SUPPORT_PHYSIQUE_MUSIQUE = Subcategory.from_new(
-    subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE,
-    {
-        "search_group_name": SearchGroups.MUSIQUE.name,
-        "homepage_label_name": HomepageLabels.MUSIQUE.name,
-    },
-)
 SUPPORT_PHYSIQUE_MUSIQUE_CD = Subcategory.from_new(
     subcategories_v2.SUPPORT_PHYSIQUE_MUSIQUE_CD,
     {
@@ -706,7 +699,6 @@ ALL_SUBCATEGORIES = (
     SPECTACLE_REPRESENTATION,
     SPECTACLE_VENTE_DISTANCE,
     SUPPORT_PHYSIQUE_FILM,
-    SUPPORT_PHYSIQUE_MUSIQUE,
     SUPPORT_PHYSIQUE_MUSIQUE_CD,
     SUPPORT_PHYSIQUE_MUSIQUE_VINYLE,
     TELECHARGEMENT_LIVRE_AUDIO,

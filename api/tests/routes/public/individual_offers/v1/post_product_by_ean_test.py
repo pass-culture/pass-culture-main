@@ -90,7 +90,7 @@ class PostProductByEanTest:
         }
         venue, api_key = utils.create_offerer_provider_linked_to_venue(venue_data)
         product = offers_factories.ThingProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": "1234567890123"}
         )
 
         offer = offers_factories.ThingOfferFactory(
@@ -124,7 +124,7 @@ class PostProductByEanTest:
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
         old_provider = providers_factories.ProviderFactory()
         product = offers_factories.ThingProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": "1234567890123"}
         )
         offer = offers_factories.ThingOfferFactory(
             product=product, venue=venue, lastProvider=old_provider, extraData=product.extraData, isActive=False
@@ -158,7 +158,7 @@ class PostProductByEanTest:
         }
         venue, api_key = utils.create_offerer_provider_linked_to_venue(venue_data)
         product = offers_factories.ThingProductFactory(
-            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id, extraData={"ean": "1234567890123"}
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id, extraData={"ean": "1234567890123"}
         )
 
         offer = offers_factories.ThingOfferFactory(
