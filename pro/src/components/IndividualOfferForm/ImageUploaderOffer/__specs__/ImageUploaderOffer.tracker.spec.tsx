@@ -4,13 +4,13 @@ import { Form, Formik } from 'formik'
 import React from 'react'
 
 import { UploaderModeEnum } from 'components/ImageUploader/types'
-import {
-  IndividualOfferContext,
-  IndividualOfferContextValues,
-} from 'context/IndividualOfferContext'
+import { IndividualOfferContext } from 'context/IndividualOfferContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
-import { individualOfferFactory } from 'utils/individualApiFactories'
+import {
+  individualOfferContextFactory,
+  individualOfferFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import ImageUploaderOffer, {
@@ -19,22 +19,13 @@ import ImageUploaderOffer, {
 
 const mockLogEvent = vi.fn()
 
-const renderImageUploaderOffer = (
-  props: ImageUploaderOfferProps,
-  contextOverride?: Partial<IndividualOfferContextValues>
-) => {
-  const contextValue: IndividualOfferContextValues = {
-    offerId: 12,
-    offer: individualOfferFactory({ id: 12 }),
-    venueList: [],
-    offererNames: [],
-    categories: [],
-    subCategories: [],
-    setOffer: () => {},
-    setSubcategory: () => {},
-    showVenuePopin: {},
-    ...contextOverride,
-  }
+const TEST_OFFER_ID = 12
+
+const renderImageUploaderOffer = (props: ImageUploaderOfferProps) => {
+  const contextValue = individualOfferContextFactory({
+    offerId: TEST_OFFER_ID,
+    offer: individualOfferFactory({ id: TEST_OFFER_ID }),
+  })
 
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
@@ -83,7 +74,7 @@ describe('ImageUploaderOffer::tracker', () => {
     )
 
     expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_ADD_IMAGE, {
-      offerId: 12,
+      offerId: TEST_OFFER_ID,
       imageType: UploaderModeEnum.OFFER,
       isEdition: false,
     })

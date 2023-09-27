@@ -319,6 +319,7 @@ describe('StocksEventList', () => {
       Array(STOCKS_PER_PAGE + 1).fill({
         beginningDatetime: '2021-10-15T12:00:00.000Z',
         bookingLimitDatetime: '2021-09-15T12:00:00.000Z',
+        bookingsQuantity: 0,
         priceCategoryId: 1,
         quantity: 18,
         uuid: expect.any(String),
@@ -351,6 +352,7 @@ describe('StocksEventList', () => {
       {
         beginningDatetime: '2021-10-15T12:00:00.000Z',
         bookingLimitDatetime: '2021-09-15T12:00:00.000Z',
+        bookingsQuantity: 0,
         priceCategoryId: 1,
         quantity: 18,
         uuid: expect.any(String),

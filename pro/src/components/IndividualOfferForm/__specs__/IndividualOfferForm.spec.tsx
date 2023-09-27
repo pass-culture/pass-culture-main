@@ -20,7 +20,11 @@ import {
 } from 'core/Offers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import { SubmitButton } from 'ui-kit'
-import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
+import {
+  individualOfferContextFactory,
+  individualOfferFactory,
+  individualOfferVenueItemFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import {
@@ -46,18 +50,7 @@ const renderIndividualOfferForm = ({
   const storeOverrides = {
     user: { currentUser: { isAdmin: false } },
   }
-  const contextValues: IndividualOfferContextValues = {
-    offerId: null,
-    offer: null,
-    venueList: [],
-    offererNames: [],
-    categories: [],
-    subCategories: [],
-    setOffer: () => {},
-    setSubcategory: () => {},
-    showVenuePopin: {},
-    ...contextOverride,
-  }
+  const contextValues = individualOfferContextFactory(contextOverride)
 
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValues}>
@@ -177,24 +170,20 @@ describe('IndividualOfferForm', () => {
     expect(await screen.findByText('Type d’offre')).toBeInTheDocument()
   })
 
-  const imageSectionDataset: (Partial<IndividualOffer> | undefined)[] = [
-    {
+  const imageSectionDataset: (IndividualOffer | undefined)[] = [
+    individualOfferFactory({
       stocks: [],
-    },
+    }),
     undefined,
   ]
   it.each(imageSectionDataset)(
     'should render image section when offer is given',
     async offer => {
-      const contextOverride: Partial<IndividualOfferContextValues> = {
-        offer: offer ? (offer as IndividualOffer) : undefined,
-      }
-
       renderIndividualOfferForm({
         initialValues,
         onSubmit,
         props,
-        contextOverride,
+        contextOverride: { offer },
       })
       expect(await screen.findByText('Type d’offre')).toBeInTheDocument()
     }

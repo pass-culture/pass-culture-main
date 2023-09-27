@@ -22,7 +22,10 @@ import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as utils from 'screens/IndividualOffer/Informations/utils'
-import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
+import {
+  individualOfferContextFactory,
+  individualOfferVenueItemFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { InformationsProps, Informations as InformationsScreen } from '..'
@@ -45,7 +48,7 @@ vi.mock('repository/pcapi/pcapi', () => ({
 
 const renderInformationsScreen = (
   props: InformationsProps,
-  contextOverride: Partial<IndividualOfferContextValues>
+  contextOverride: IndividualOfferContextValues
 ) => {
   const storeOverrides = {
     user: {
@@ -56,18 +59,8 @@ const renderInformationsScreen = (
       },
     },
   }
-  const contextValue: IndividualOfferContextValues = {
-    offerId: null,
-    offer: null,
-    venueList: [],
-    offererNames: [],
-    categories: [],
-    subCategories: [],
-    setOffer: () => {},
-    showVenuePopin: {},
-    setSubcategory: () => {},
-    ...contextOverride,
-  }
+  const contextValue = individualOfferContextFactory(contextOverride)
+
   return renderWithProviders(
     <>
       <Routes>
@@ -108,7 +101,7 @@ const scrollIntoViewMock = vi.fn()
 
 describe('screens:IndividualOffer::Informations::creation', () => {
   let props: InformationsProps
-  let contextOverride: Partial<IndividualOfferContextValues>
+  let contextOverride: IndividualOfferContextValues
   const offererId = 1
   const offerId = 5
 
@@ -158,12 +151,13 @@ describe('screens:IndividualOffer::Informations::creation', () => {
       isVirtual: true,
     })
 
-    contextOverride = {
+    contextOverride = individualOfferContextFactory({
       venueList: [venue1, venue2],
       offererNames: [{ id: offererId, name: 'mon offerer A' }],
       categories,
       subCategories,
-    }
+      offer: null,
+    })
 
     props = {
       offererId: offererId.toString(),

@@ -25,7 +25,13 @@ import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as useAnalytics from 'hooks/useAnalytics'
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as utils from 'screens/IndividualOffer/Informations/utils'
-import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
+import {
+  individualOfferCategoryFactory,
+  individualOfferContextFactory,
+  individualOfferFactory,
+  individualOfferSubCategoryFactory,
+  individualOfferVenueItemFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { InformationsProps, Informations as InformationsScreen } from '..'
@@ -58,18 +64,8 @@ const renderInformationsScreen = (
       },
     },
   }
-  const contextValue: IndividualOfferContextValues = {
-    offerId: null,
-    offer: null,
-    venueList: [],
-    offererNames: [],
-    categories: [],
-    subCategories: [],
-    setOffer: () => {},
-    showVenuePopin: {},
-    setSubcategory: () => {},
-    ...contextOverride,
-  }
+  const contextValue = individualOfferContextFactory(contextOverride)
+
   return renderWithProviders(
     <>
       <Routes>
@@ -108,7 +104,7 @@ const renderInformationsScreen = (
 
 describe('screens:IndividualOffer::Informations:draft', () => {
   let props: InformationsProps
-  let contextOverride: Partial<IndividualOfferContextValues>
+  let contextOverride: IndividualOfferContextValues
   let offer: IndividualOffer
   let subCategories: OfferSubCategory[]
   const offererId = 1
@@ -119,14 +115,14 @@ describe('screens:IndividualOffer::Informations:draft', () => {
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
     const categories = [
-      {
+      individualOfferCategoryFactory({
         id: 'CID',
         proLabel: 'Catégorie CID',
         isSelectable: true,
-      },
+      }),
     ]
     subCategories = [
-      {
+      individualOfferSubCategoryFactory({
         id: 'SCID virtual',
         categoryId: 'CID',
         proLabel: 'Sous catégorie online de CID',
@@ -138,8 +134,8 @@ describe('screens:IndividualOffer::Informations:draft', () => {
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
         reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
         isSelectable: true,
-      },
-      {
+      }),
+      individualOfferSubCategoryFactory({
         id: 'SCID physical',
         categoryId: 'CID',
         proLabel: 'Sous catégorie offline de CID',
@@ -151,7 +147,7 @@ describe('screens:IndividualOffer::Informations:draft', () => {
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
         reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
         isSelectable: true,
-      },
+      }),
     ]
 
     const venue1: IndividualOfferVenueItem = individualOfferVenueItemFactory()
@@ -159,7 +155,7 @@ describe('screens:IndividualOffer::Informations:draft', () => {
       isVirtual: true,
     })
 
-    offer = {
+    offer = individualOfferFactory({
       id: offerId,
       author: 'Offer author',
       bookingEmail: 'booking@email.com',
@@ -222,16 +218,16 @@ describe('screens:IndividualOffer::Informations:draft', () => {
       lastProviderName: null,
       lastProvider: null,
       status: OfferStatus.DRAFT,
-    }
+    })
 
-    contextOverride = {
+    contextOverride = individualOfferContextFactory({
       offerId: offer.id,
       offer: offer,
       venueList: [venue1, venue2],
       offererNames: [{ id: 1, name: 'Offerer name' }],
       categories,
       subCategories,
-    }
+    })
 
     props = {
       offererId: offererId.toString(),
