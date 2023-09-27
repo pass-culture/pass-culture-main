@@ -44,10 +44,14 @@ class ActionType(enum.Enum):
     # Fraud and compliance actions:
     BLACKLIST_DOMAIN_NAME = "Blacklist d'un nom de domaine"
     REMOVE_BLACKLISTED_DOMAIN_NAME = "Suppression d'un nom de domaine banni"
+
+    # Finance incident events
     FINANCE_INCIDENT_CREATED = "Création de l'incident"
     FINANCE_INCIDENT_CANCELLED = "Annulation de l'incident"
     FINANCE_INCIDENT_VALIDATED = "Validation de l'incident"
     FINANCE_INCIDENT_USER_RECREDIT = "Compte re-crédité suite à un incident"
+    FINANCE_INCIDENT_WAIT_FOR_PAYMENT = "Attente de la prochaine échéance de remboursement"
+    FINANCE_INCIDENT_GENERATE_DEBIT_NOTE = "Une note de débit va être générée"
     # Bank accounts changes:
     LINK_VENUE_BANK_ACCOUNT_DEPRECATED = "Lieu dissocié d'un compte bancaire"
     LINK_VENUE_BANK_ACCOUNT_CREATED = "Lieu associé à un compte bancaire"
