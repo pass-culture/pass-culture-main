@@ -6,7 +6,7 @@ import {
   IndividualOfferContextValues,
   IndividualOfferContext,
 } from 'context/IndividualOfferContext'
-import { individualOfferFactory } from 'utils/individualApiFactories'
+import { individualOfferContextFactory } from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { PriceCategories } from '../PriceCategories'
@@ -14,18 +14,8 @@ import { PriceCategories } from '../PriceCategories'
 const renderOffer = (
   contextOverride?: Partial<IndividualOfferContextValues>
 ) => {
-  const contextValue: IndividualOfferContextValues = {
-    offerId: null,
-    offer: null,
-    venueList: [],
-    offererNames: [],
-    categories: [],
-    subCategories: [],
-    setOffer: () => {},
-    setSubcategory: () => {},
-    showVenuePopin: {},
-    ...contextOverride,
-  }
+  const contextValue: IndividualOfferContextValues =
+    individualOfferContextFactory(contextOverride)
 
   return renderWithProviders(
     <Routes>
@@ -44,12 +34,12 @@ const renderOffer = (
 
 describe('PriceCategories', () => {
   it('should display', () => {
-    renderOffer({ offer: individualOfferFactory() })
+    renderOffer()
     expect(screen.getByText('Modifier l’offre')).toBeInTheDocument()
   })
 
   it('should not render when the offer is not set', () => {
-    renderOffer()
+    renderOffer({ offer: null })
     expect(screen.queryByText('Modifier l’offre')).not.toBeInTheDocument()
   })
 })

@@ -12,15 +12,17 @@ import {
   IndividualOfferContext,
 } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import {
-  IndividualOffer,
-  IndividualOfferStock,
-  IndividualOfferVenue,
-} from 'core/Offers/types'
+import { IndividualOffer, IndividualOfferStock } from 'core/Offers/types'
 import {
   getIndividualOfferPath,
   getIndividualOfferUrl,
 } from 'core/Offers/utils/getIndividualOfferUrl'
+import {
+  individualOfferContextFactory,
+  individualOfferFactory,
+  individualOfferVenueFactory,
+  individualStockFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StocksThing, { StocksThingProps } from '../StocksThing'
@@ -86,41 +88,34 @@ const renderStockThingScreen = (
 describe('screens:StocksThing::draft', () => {
   let props: StocksThingProps
   let contextValue: IndividualOfferContextValues
-  let offer: Partial<IndividualOffer>
-  let stock: Partial<IndividualOfferStock>
+  let offer: IndividualOffer
+  let stock: IndividualOfferStock
   const offerId = 1
 
   beforeEach(() => {
-    stock = {
+    stock = individualStockFactory({
       id: 1,
       quantity: 10,
       price: 10.01,
       remainingQuantity: 6,
       bookingsQuantity: 4,
       isEventDeletable: true,
-    }
-    offer = {
+    })
+    offer = individualOfferFactory({
       id: 1,
       lastProvider: null,
-      venue: {
+      venue: individualOfferVenueFactory({
         departmentCode: '75',
-      } as IndividualOfferVenue,
-      stocks: [stock as IndividualOfferStock],
-    }
+      }),
+      stocks: [stock],
+    })
     props = {
-      offer: offer as IndividualOffer,
+      offer,
     }
-    contextValue = {
-      offerId: offerId,
-      offer: offer as IndividualOffer,
-      venueList: [],
-      offererNames: [],
-      categories: [],
-      subCategories: [],
-      setOffer: () => {},
-      setSubcategory: () => {},
-      showVenuePopin: {},
-    }
+    contextValue = individualOfferContextFactory({
+      offerId,
+      offer,
+    })
     vi.spyOn(api, 'getOffer').mockResolvedValue(
       {} as GetIndividualOfferResponseModel
     )
