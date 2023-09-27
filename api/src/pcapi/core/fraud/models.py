@@ -11,6 +11,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 import sqlalchemy.orm as sa_orm
 
+from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.models import Base
 from pcapi.models import Model
@@ -570,10 +571,17 @@ class BeneficiaryFraudCheck(PcObject, Base, Model):
 
     @property
     def applicable_eligibilities(self) -> list[users_models.EligibilityType]:
+        """
+        A fraud check entry is always related to the eligibility for the single credit requested by the user at this
+        time. However, id check may be valid for the next eligibility: the same user does not have to prove his/her
+        identity again. Extended eligibility of a previous id check should not be considered as an action made in the
+        subscription process once eligibility period has ended.
+        """
         if (
             self.type in (FraudCheckType.UBBLE, FraudCheckType.DMS)
             and self.status == FraudCheckStatus.OK
             and self.eligibilityType == users_models.EligibilityType.UNDERAGE
+            and (self.user.has_beneficiary_role or self.user.age == users_constants.ELIGIBILITY_AGE_18)
         ):
             return [users_models.EligibilityType.UNDERAGE, users_models.EligibilityType.AGE18]
         return [self.eligibilityType] if self.eligibilityType else []
