@@ -4,13 +4,14 @@ import { useIndividualOfferContext } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
 import { useOfferWizardMode } from 'hooks'
 import IndivualOfferLayout from 'screens/IndividualOffer/IndivualOfferLayout/IndivualOfferLayout'
+import { getTitle } from 'screens/IndividualOffer/IndivualOfferLayout/utils/getTitle'
 import { StocksEventCreation } from 'screens/IndividualOffer/StocksEventCreation/StocksEventCreation'
 import StocksEventEdition from 'screens/IndividualOffer/StocksEventEdition/StocksEventEdition'
 import StocksThing from 'screens/IndividualOffer/StocksThing/StocksThing'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
 const Stocks = (): JSX.Element | null => {
-  const { offer } = useIndividualOfferContext()
+  const { offer, setOffer } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
 
   // Here we display a spinner because when the router transitions from
@@ -23,7 +24,12 @@ const Stocks = (): JSX.Element | null => {
   }
 
   return (
-    <IndivualOfferLayout>
+    <IndivualOfferLayout
+      offer={offer}
+      setOffer={setOffer}
+      title={getTitle(mode)}
+      mode={mode}
+    >
       {offer.isEvent ? (
         mode === OFFER_WIZARD_MODE.CREATION ||
         mode === OFFER_WIZARD_MODE.DRAFT ? (
