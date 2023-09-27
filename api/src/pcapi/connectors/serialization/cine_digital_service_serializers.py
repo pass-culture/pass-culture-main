@@ -1,5 +1,5 @@
 import datetime
-from typing import Dict
+import typing
 
 from pydantic.v1 import Field
 from pydantic.v1 import validator
@@ -163,7 +163,7 @@ class CancelBookingCDS(BaseModel):
 
 
 class CancelBookingsErrorsCDS(BaseModel):
-    __root__: Dict[str, str]
+    __root__: typing.Dict[str, str]
 
 
 class TicketSaleCDS(BaseModel):
@@ -227,12 +227,13 @@ class SeatCDS:
         seat_location_indices: tuple[int, int],
         screen_infos: ScreenCDS,
         seat_map: SeatmapCDS,
-        hardcoded_seatmap: list,
+        hardcoded_seatmap: list[list[str | typing.Literal[0]]],
     ):
         self.seatRow = seat_location_indices[0]
         self.seatCol = seat_location_indices[1]
         if hardcoded_seatmap:
-            self.seatNumber: str = hardcoded_seatmap[self.seatRow][self.seatCol]
+            self.seatNumber = hardcoded_seatmap[self.seatRow][self.seatCol]
+            assert isinstance(self.seatNumber, str)  # cannot be zero (int)
         else:
             seat_number_row = self.seatRow
             seat_number_col = self.seatCol
