@@ -1,7 +1,6 @@
 from contextlib import suppress
 import logging
 import typing
-import urllib.parse
 
 from pydantic.v1 import networks as pydantic_networks
 from urllib3 import exceptions as urllib3_exceptions
@@ -35,7 +34,12 @@ def build_url(path: str) -> str:
     base_url = settings.UBBLE_API_URL
     if settings.UBBLE_MOCK_API_URL and FeatureToggle.WIP_ENABLE_MOCK_UBBLE.is_active():
         base_url = settings.UBBLE_MOCK_API_URL
-    return urllib.parse.urljoin(base_url, path)
+
+    base_url = base_url.rstrip("/")
+    if not path.startswith("/"):
+        path = "/" + path
+
+    return base_url + path
 
 
 INCLUDED_MODELS = {

@@ -88,14 +88,14 @@ class BuildUrlTest:
     def test_use_mock_api_if_ff_enabled_and_url_set(self):
         url = ubble.build_url("")
 
-        assert url == "http://example.com"
+        assert url == "http://example.com/"
 
     @override_features(WIP_ENABLE_MOCK_UBBLE=False)
     @override_settings(UBBLE_MOCK_API_URL="http://example.com")
     def test_use_real_ubble_if_ff_disabled_and_url_set(self):
         url = ubble.build_url("")
 
-        assert url == "https://api.ubble.ai"
+        assert url == "https://api.ubble.ai/"
 
     @override_features(WIP_ENABLE_MOCK_UBBLE=True)
     @override_settings(UBBLE_MOCK_API_URL="")
@@ -103,7 +103,25 @@ class BuildUrlTest:
         with assert_num_queries(0):
             url = ubble.build_url("")
 
-        assert url == "https://api.ubble.ai"
+        assert url == "https://api.ubble.ai/"
+
+    @override_settings(UBBLE_API_URL="http://example.com/partial/path")
+    def test_add_slash_if_missing(self):
+        url = ubble.build_url("and/end")
+
+        assert url == "http://example.com/partial/path/and/end"
+
+    @override_settings(UBBLE_API_URL="http://example.com/partial/path")
+    def test_dont_add_slash_if_given(self):
+        url = ubble.build_url("/and/end")
+
+        assert url == "http://example.com/partial/path/and/end"
+
+    @override_settings(UBBLE_API_URL="http://example.com/partial/path/")
+    def test_remove_slash_if_given_twice(self):
+        url = ubble.build_url("/and/end")
+
+        assert url == "http://example.com/partial/path/and/end"
 
 
 class GetContentTest:
