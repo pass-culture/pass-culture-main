@@ -1,4 +1,5 @@
 import logging
+import os
 import random
 
 from pcapi.connectors import thumb_storage
@@ -345,9 +346,10 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
 
 
 def create_products_thumb(products: list[offers_models.Product]) -> None:
+    files = list(os.listdir("./src/pcapi/sandboxes/thumbs/generic_pictures/"))
     for i, product in enumerate(products):
         with open(
-            f"./src/pcapi/sandboxes/thumbs/generic_pictures/Picture_{10+i:03}.jpg",
+            f"./src/pcapi/sandboxes/thumbs/generic_pictures/{files[i % len(files)]}",
             mode="rb",
         ) as file:
             thumb_storage.create_thumb(product, file.read(), storage_id_suffix_str="", keep_ratio=True)
