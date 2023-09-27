@@ -3,7 +3,7 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
 import type { Hit } from 'react-instantsearch-core'

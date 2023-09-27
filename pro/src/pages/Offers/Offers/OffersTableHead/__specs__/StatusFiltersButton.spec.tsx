@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 
 import { CollectiveOfferStatus } from 'core/OfferEducational'
 import { ADMINS_DISABLED_FILTERS_MESSAGE } from 'core/Offers/constants'

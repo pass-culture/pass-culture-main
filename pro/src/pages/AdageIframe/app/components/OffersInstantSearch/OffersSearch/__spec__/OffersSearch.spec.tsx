@@ -1,5 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import type { SearchBoxProvided } from 'react-instantsearch-core'
 
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
