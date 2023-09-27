@@ -520,6 +520,9 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
         if field.name and hasattr(venue, to_camelcase(field.name))
     }
 
+    venue_was_permanent = venue.isPermanent
+    new_permanent = attrs.get("isPermanent")
+
     update_siret = False
     if not venue.isVirtual and venue.siret != form.siret.data:
         if not _can_edit_siret():
@@ -581,6 +584,9 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
             for error_detail in error_details:
                 flash(f"[{error_key}] {error_detail}", "warning")
         return render_venue_details(venue, form), 400
+
+    if not venue_was_permanent and new_permanent and venue.thumbCount == 0:
+        transactional_mails.send_permanent_venue_needs_picture(venue)
 
     if update_siret:
         if unavailable_sirene:
