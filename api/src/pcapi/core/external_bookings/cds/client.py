@@ -124,7 +124,7 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
             f"Screen #{screen_id} not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.api_url}"
         )
 
-    def get_hardcoded_setmap(self, show: cds_serializers.ShowCDS) -> list:
+    def get_hardcoded_seatmap(self, show: cds_serializers.ShowCDS) -> list:
         cinema = self.get_cinema_infos()
         encoded_seatmap = None
         for parameter in cinema.cinema_parameters:
@@ -147,7 +147,7 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
             return []
         best_seat = self._get_closest_seat_to_center((seatmap.nb_row // 2, seatmap.nb_col // 2), available_seats_index)
 
-        hardcoded_seatmap = self.get_hardcoded_setmap(show)
+        hardcoded_seatmap = self.get_hardcoded_seatmap(show)
         return [cds_serializers.SeatCDS(best_seat, screen, seatmap, hardcoded_seatmap)]
 
     def get_available_duo_seat(
@@ -174,7 +174,7 @@ class CineDigitalServiceAPI(ExternalBookingsClientAPI):
             available_seats_index.remove(first_seat)
             second_seat = self._get_closest_seat_to_center(seatmap_center, available_seats_index)
 
-        hardcoded_seatmap = self.get_hardcoded_setmap(show)
+        hardcoded_seatmap = self.get_hardcoded_seatmap(show)
 
         return [
             cds_serializers.SeatCDS(first_seat, screen, seatmap, hardcoded_seatmap),
