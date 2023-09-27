@@ -637,7 +637,14 @@ def edit_stock(
 
     repository.add_to_session(stock)
     search.async_index_offer_ids([stock.offerId])
-
+    logger.info(
+        "Successfully updated stock",
+        extra={
+            "stock_id": stock.id,
+            "stock_quantity": stock.quantity,
+            "stock_dnBookedQuantity": stock.dnBookedQuantity,
+        },
+    )
     return stock, is_beginning_updated
 
 
@@ -1134,6 +1141,15 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
         assert showtime_id
         remaining_places = shows_remaining_places.pop(showtime_id, None)
         # make this stock sold out, instead of soft-deleting it (don't update its bookings)
+        logger.info(
+            "Updating stock quantity to match cinema remaining places",
+            extra={
+                "stock_id": stock.id,
+                "stock_quantity": stock.quantity,
+                "stock_dnBookedQuantity": stock.dnBookedQuantity,
+                "remaining_places": remaining_places,
+            },
+        )
         if remaining_places is None or remaining_places <= 0:
             try:
                 offers_repository.update_stock_quantity_to_dn_booked_quantity(stock.id)
@@ -1155,6 +1171,15 @@ def update_stock_quantity_to_match_cinema_venue_provider_remaining_places(offer:
         if remaining_places == 1:
             stock.quantity = stock.dnBookedQuantity + 1
             repository.save(stock)
+
+        logger.info(
+            "Successfully updated stock quantity",
+            extra={
+                "stock_id": stock.id,
+                "stock_quantity": stock.quantity,
+                "stock_dnBookedQuantity": stock.dnBookedQuantity,
+            },
+        )
 
     if offer_has_new_sold_out_stock:
         search.async_index_offer_ids([offer.id])
