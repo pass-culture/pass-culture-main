@@ -1,5 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import React, { ComponentProps } from 'react'
 
 import { CollectiveBookingsEvents } from 'core/FirebaseEvents/constants'
