@@ -2,12 +2,11 @@ from math import isfinite
 
 import pydantic.v1 as pydantic_v1
 
-from pcapi.routes.serialization.dictifier import as_dict
 from pcapi.routes.serialization.serializer import serialize
 from pcapi.serialization import utils as serialization_utils
 
 
-__all__ = ("as_dict", "serialize")
+__all__ = ("serialize",)
 
 
 class BaseModel(pydantic_v1.BaseModel):

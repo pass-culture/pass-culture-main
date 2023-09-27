@@ -12,7 +12,6 @@ from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.models import Venue
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
-from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
 from pcapi.serialization.decorator import spectree_serialize
@@ -114,7 +113,6 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
         "shouldSendMail",
     }
     update_venue_attrs = body.dict(exclude=not_venue_fields, exclude_unset=True)
-    venue_attrs = as_dict(venue)
     accessibility_fields = [
         "audioDisabilityCompliant",
         "mentalDisabilityCompliant",
@@ -122,15 +120,14 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
         "visualDisabilityCompliant",
     ]
     have_accessibility_changes = any(
-        (field in update_venue_attrs and update_venue_attrs[field] != venue_attrs[field])
+        (field in update_venue_attrs and update_venue_attrs[field] != getattr(venue, field))
         for field in accessibility_fields
     )
     have_withdrawal_details_changes = body.withdrawalDetails != venue.withdrawalDetails
     venue = offerers_api.update_venue(venue, author=current_user, contact_data=body.contact, **update_venue_attrs)
-    venue_attrs = as_dict(venue)
 
     if have_accessibility_changes and body.isAccessibilityAppliedOnAllOffers:
-        edited_accessibility = {field: venue_attrs[field] for field in accessibility_fields}
+        edited_accessibility = {field: getattr(venue, field) for field in accessibility_fields}
         update_all_venue_offers_accessibility_job.delay(venue, edited_accessibility)
 
     if have_withdrawal_details_changes and body.isWithdrawalAppliedOnAllOffers:
