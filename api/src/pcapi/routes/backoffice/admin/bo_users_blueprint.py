@@ -118,7 +118,7 @@ def render_bo_user_page(user_id: int, edit_form: forms.EditBOUserForm | None = N
         edit_account_form=edit_form,
         edit_account_dst=url_for(".update_bo_user", user_id=user.id) if edit_form else None,
         history=get_bo_user_history(user),
-        roles=user.backoffice_profile.roles,
+        roles=user.backoffice_profile.roles if user.backoffice_profile else [],
         active_tab=request.args.get("active_tab", "history"),
         **user_forms.get_toggle_suspension_args(user),
     )

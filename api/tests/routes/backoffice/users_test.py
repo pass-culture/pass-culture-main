@@ -60,6 +60,15 @@ def support_n2_fixture(roles_with_permissions: None) -> users_models.User:
     return user
 
 
+@pytest.fixture(scope="function", name="super_admin")
+def super_admin_fixture(roles_with_permissions: None) -> users_models.User:
+    user = users_factories.UserFactory(roles=["ADMIN"])
+    user.backoffice_profile = perm_models.BackOfficeUserProfile(user=user)
+    backoffice_api.upsert_roles(user, {perm_models.Roles.ADMIN})
+    db.session.commit()
+    return user
+
+
 class SuspendUserTest(PostEndpointHelper):
     endpoint = "backoffice_web.users.suspend_user"
     endpoint_kwargs = {"user_id": 1}
@@ -191,7 +200,8 @@ class SuspendUserTest(PostEndpointHelper):
         assert user.isActive
         assert len(user.action_history) == 0
 
-    def test_suspend_admin_user(self, client, roles_with_permissions, beneficiary_fraud_admin):
+    # FIXME (prouzet, 2023-09-27): only super_admin should suspend admin user - ticket coming soon
+    def test_suspend_admin_user(self, client, roles_with_permissions, beneficiary_fraud_admin, super_admin):
         user = users_factories.AdminFactory(
             backoffice_profile__roles=[
                 role
@@ -200,6 +210,8 @@ class SuspendUserTest(PostEndpointHelper):
             ]
         )
 
+        referer = url_for("backoffice_web.bo_users.get_bo_user", user_id=user.id, _external=True)
+
         response = self.post_to_endpoint(
             client.with_bo_session_auth(beneficiary_fraud_admin),
             user_id=user.id,
@@ -207,13 +219,11 @@ class SuspendUserTest(PostEndpointHelper):
                 "reason": users_constants.SuspensionReason.END_OF_CONTRACT.name,
                 "comment": "",  # optional, keep empty
             },
+            headers={"referer": referer},
         )
 
         assert response.status_code == 303
-        # No longer admin => now considered as suspended public account
-        assert response.location == url_for(
-            "backoffice_web.public_accounts.get_public_account", user_id=user.id, _external=True
-        )
+        assert response.location == referer
 
         assert not user.isActive
         assert not user.backoffice_profile
@@ -226,6 +236,9 @@ class SuspendUserTest(PostEndpointHelper):
         assert user.action_history[0].venueId is None
         assert user.action_history[0].extraData["reason"] == users_constants.SuspensionReason.END_OF_CONTRACT.value
         assert user.action_history[0].comment is None
+
+        # ensure that admin page still does not crash
+        assert client.with_bo_session_auth(super_admin).get(response.location).status_code == 200
 
 
 class UnsuspendUserTest(PostEndpointHelper):
