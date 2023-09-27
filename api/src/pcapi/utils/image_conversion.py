@@ -117,7 +117,7 @@ def _pre_process_image(content: bytes) -> PIL.Image:
     raw_image = PIL.Image.open(io.BytesIO(content))
 
     # Remove exif orientation so that it doesnt rotate after upload
-    transposed_image = _transpose_image(raw_image)
+    transposed_image = ImageOps.exif_transpose(raw_image)
 
     if transposed_image.mode == "RGBA":
         background = PIL.Image.new("RGB", transposed_image.size, (255, 255, 255))
@@ -129,10 +129,6 @@ def _pre_process_image(content: bytes) -> PIL.Image:
 
 def _post_process_image(image: PIL.Image) -> bytes:
     return _convert_to_jpeg(image)
-
-
-def _transpose_image(raw_image: PIL.Image) -> PIL.Image:
-    return ImageOps.exif_transpose(raw_image)
 
 
 def _check_ratio(image: PIL.Image, ratio: ImageRatio) -> PIL.Image:
