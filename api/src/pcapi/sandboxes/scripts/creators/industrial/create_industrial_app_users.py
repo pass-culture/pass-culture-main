@@ -4,6 +4,7 @@ from datetime import time
 from datetime import timedelta
 import itertools
 import logging
+import re
 
 from dateutil.relativedelta import relativedelta
 from faker import Faker
@@ -13,7 +14,9 @@ from pcapi.core.bookings import factories as bookings_factory
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.finance.models as finance_models
 from pcapi.core.fraud import factories as fraud_factories
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
@@ -35,6 +38,10 @@ UNDERAGE_BENEFICIARIES_TAGS = [
     "15-years-old-underage-beneficiary",
     "16-years-old-underage-beneficiary",
     "17-years-old-underage-beneficiary",
+    "18-years-old-ex-underage-beneficiary",
+    "18-years-old-ex-underage-beneficiary-ubble",
+    "19-years-old-ex-underage-beneficiary",
+    "19-years-old-ex-underage-beneficiary-ubble",
 ]
 OTHER_USERS_TAGS = ["has-signed-up", "has-booked-activation"]
 AGE_TAGS = ["age-more-than-18yo", "age-less-than-18yo", "age-18yo"]
@@ -96,18 +103,24 @@ def create_industrial_app_underage_beneficiaries() -> dict[str, User]:
     variants = itertools.product(DEPARTEMENT_CODES, UNDERAGE_BENEFICIARIES_TAGS)
 
     for index, (departement_code, tag) in enumerate(variants, start=0):
-        short_tag = "".join([chunk[0].upper() for chunk in tag.split("-")])
+        split_tag = tag.split("-")
+        short_tag = split_tag[0] + "".join([chunk[0].upper() for chunk in split_tag[1:]])
 
         email = f"pctest.mineur{departement_code}.{tag}@example.com"
 
-        if tag == "15-years-old-underage-beneficiary":
-            age = 15
-        elif tag == "16-years-old-underage-beneficiary":
-            age = 16
-        else:
-            age = 17
+        match = re.match(r"^(\d+)-years-old", tag)
+        assert match
+        age = int(match.group(1))
 
-        user = users_factories.UnderageBeneficiaryFactory(
+        if age >= ELIGIBILITY_AGE_18:
+            if "ubble" in tag:
+                factory = users_factories.ExUnderageBeneficiaryWithUbbleFactory
+            else:
+                factory = users_factories.ExUnderageBeneficiaryFactory
+        else:
+            factory = users_factories.UnderageBeneficiaryFactory
+
+        user = factory(
             subscription_age=age,
             departementCode=str(departement_code),
             email=email,
@@ -117,6 +130,22 @@ def create_industrial_app_underage_beneficiaries() -> dict[str, User]:
             needsToFillCulturalSurvey=False,
             postalCode="{}100".format(departement_code),
             deposit__source="sandbox",
+        )
+
+        # EDUCONNECT or UBBLE already created in factory, make subscription steps consistent with granted deposit
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            dateCreated=user.dateCreated,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            dateCreated=user.dateCreated,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
         user_key = f"jeune{departement_code} {tag}"
