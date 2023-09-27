@@ -7,14 +7,15 @@ import json
 import logging
 import secrets
 import typing
+from typing import Any
 from typing import Type
 from typing import TypeVar
 
 from flask import current_app as app
 import jwt
 
+from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import utils
-from pcapi.core.users.exceptions import InvalidToken
 
 
 logger = logging.getLogger(__name__)
@@ -25,6 +26,7 @@ class TokenType(enum.Enum):
     EMAIL_CHANGE_VALIDATION = "update_email_validation"
     EMAIL_VALIDATION = "email_validation"
     PHONE_VALIDATION = "phone_validation"
+    SUSPENSION_SUSPICIOUS_LOGIN = "suspension_suspicious_login"
     RESET_PASSWORD = "reset_password"
 
 
@@ -86,7 +88,7 @@ class AbstractToken(abc.ABC):
             or app.redis_client.get(redis_key) != self.encoded_token  # type: ignore [attr-defined]
         ):
             self._log(self._TokenAction.CHECK_KO)
-            raise InvalidToken()
+            raise users_exceptions.InvalidToken()
         self._log(self._TokenAction.CHECK_OK)
 
     def expire(self) -> None:
@@ -114,20 +116,31 @@ class Token(AbstractToken):
     def load_without_checking(cls, encoded_token: str, *args: typing.Any, **kwargs: typing.Any) -> "Token":
         try:
             payload = utils.decode_jwt_token(encoded_token)
+        except jwt.exceptions.ExpiredSignatureError:
+            raise users_exceptions.ExpiredToken()
         except jwt.PyJWTError:
-            raise InvalidToken()
+            raise users_exceptions.InvalidToken()
         try:
             data = payload["data"] if payload["data"] is not None else {}
             type_ = TokenType(payload["token_type"])
             user_id = payload["user_id"]
             return cls(type_, user_id, encoded_token, data)
         except (KeyError, ValueError):
-            raise InvalidToken()
+            raise users_exceptions.InvalidToken()
 
     @classmethod
     def create(cls, type_: TokenType, ttl: timedelta | None, user_id: int, data: dict | None = None) -> "Token":
-        encoded_token = utils.encode_jwt_payload({"token_type": type_.value, "user_id": user_id, "data": data})
-        app.redis_client.set(cls._get_redis_key(type_, user_id), encoded_token, ex=ttl)  # type: ignore [attr-defined]
+        payload: dict[str, Any] = {
+            "token_type": type_.value,
+            "user_id": user_id,
+            "data": data,
+        }
+        if ttl:
+            payload["exp"] = (datetime.utcnow() + ttl).timestamp()
+
+        encoded_token = utils.encode_jwt_payload(payload)
+        if ttl is None or ttl > timedelta(0):
+            app.redis_client.set(cls._get_redis_key(type_, user_id), encoded_token, ex=ttl)  # type: ignore [attr-defined]
         token = Token.load_without_checking(encoded_token)
         token._log(cls._TokenAction.CREATE)
         return token
@@ -158,10 +171,10 @@ class SixDigitsToken(AbstractToken):
         try:
             data_json = app.redis_client.get(cls._get_redis_extra_data_key(type_=type_, user_id=user_id))  # type: ignore [attr-defined]
             if data_json is None:
-                raise InvalidToken()
+                raise users_exceptions.InvalidToken()
             data = json.loads(data_json)
         except json.JSONDecodeError:
-            raise InvalidToken()
+            raise users_exceptions.InvalidToken()
         return cls(type_, user_id, encoded_token, data)
 
     @classmethod
