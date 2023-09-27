@@ -1,5 +1,4 @@
 from collections import defaultdict
-import itertools
 import typing
 
 from flask import flash
@@ -36,16 +35,6 @@ def _get_current_criteria_on_active_offers(offers: list[offers_models.Offer]) ->
     return dict(current_criteria_on_offers)
 
 
-def _get_products_compatible_status(products: list[offers_models.Product]) -> str:
-    if all(product.isGcuCompatible for product in products):
-        return "compatible_products"
-
-    if all(not product.isGcuCompatible for product in products):
-        return "incompatible_products"
-
-    return "partially_incompatible_products"
-
-
 def _render_search(search_form: forms.SearchEanForm, **kwargs: typing.Any) -> str:
     if kwargs:
         return render_template(
@@ -71,22 +60,26 @@ def search_multiple_offers() -> utils.BackofficeResponse:
 
     ean = form.ean.data
 
-    products = (
-        offers_models.Product.query.filter(offers_models.Product.extraData["ean"].astext == ean)
+    product = offers_models.Product.query.filter(
+        offers_models.Product.extraData["ean"].astext == ean, offers_models.Product.idAtProviders.is_not(None)
+    ).one_or_none()
+
+    if not product:
+        flash("Aucun produit n'a été trouvé avec cet EAN-13", "danger")
+        return _render_search(form)
+
+    offers = (
+        offers_models.Offer.query.filter(
+            sa.or_(offers_models.Offer.extraData["ean"].astext == ean, offers_models.Offer.productId == product.id)
+        )
         .options(
-            sa.orm.joinedload(offers_models.Product.offers)
-            .load_only(offers_models.Offer.isActive, offers_models.Offer.validation)
+            sa.orm.load_only(offers_models.Offer.isActive, offers_models.Offer.validation)
             .joinedload(offers_models.Offer.criteria)
-            .load_only(criteria_models.Criterion.name)
+            .load_only(criteria_models.Criterion.name),
+            sa.orm.joinedload(offers_models.Offer.product),
         )
         .all()
     )
-
-    if not products:
-        flash("Aucun livre n'a été trouvé avec cet EAN-13", "danger")
-        return _render_search(form)
-
-    offers = list(itertools.chain.from_iterable(p.offers for p in products))
 
     active_offers_count = sum(offer.isActive for offer in offers)
     approved_active_offers_count = sum(
@@ -100,8 +93,8 @@ def search_multiple_offers() -> utils.BackofficeResponse:
 
     return _render_search(
         form,
-        name=products[0].name,
-        category=products[0].subcategory.category,
+        name=product.name,
+        category=product.subcategory.category,
         offers_count=len(offers),
         active_offers_count=active_offers_count,
         approved_active_offers_count=approved_active_offers_count,
@@ -109,10 +102,11 @@ def search_multiple_offers() -> utils.BackofficeResponse:
         pending_offers_count=pending_offers_count,
         rejected_offers_count=rejected_offers_count,
         ean=ean,
-        product_compatibility=_get_products_compatible_status(products),
+        product_compatibility=product.isGcuCompatible,
         incompatibility_form=forms.HiddenEanForm(ean=ean),
         current_criteria_on_offers=_get_current_criteria_on_active_offers(offers),
         offer_criteria_form=forms.OfferCriteriaForm(ean=ean),
+        product_synchronisable=product.isSynchronizationCompatible,
     )
 
 
@@ -137,7 +131,7 @@ def set_product_gcu_incompatible() -> utils.BackofficeResponse:
 
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
-    elif offers_api.reject_inappropriate_products(form.ean.data, send_booking_cancellation_emails=False):
+    elif offers_api.reject_inappropriate_product(form.ean.data, send_booking_cancellation_emails=False):
         flash("Le produit a été rendu incompatible aux CGU et les offres ont été désactivées", "success")
     else:
         flash("Une erreur s'est produite lors de l'opération", "warning")

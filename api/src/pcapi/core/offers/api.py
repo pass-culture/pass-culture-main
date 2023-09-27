@@ -863,15 +863,16 @@ def add_criteria_to_offers(
     return True
 
 
-def reject_inappropriate_products(ean: str, send_booking_cancellation_emails: bool = True) -> bool:
-    product_query = models.Product.query.filter(models.Product.extraData["ean"].astext == ean)
-    product_ids = [p.id for p in product_query.with_entities(models.Product.id)]
+def reject_inappropriate_product(ean: str, send_booking_cancellation_emails: bool = True) -> bool:
+    product = models.Product.query.filter(
+        models.Product.extraData["ean"].astext == ean, models.Product.idAtProviders.is_not(None)
+    ).one_or_none()
 
-    if not product_ids:
+    if not product:
         return False
 
     offers_query = models.Offer.query.filter(
-        models.Offer.productId.in_(product_query.with_entities(models.Product.id)),
+        sa.or_(models.Offer.productId == product.id, models.Offer.extraData["ean"].astext == ean),
         models.Offer.validation != models.OfferValidationStatus.REJECTED,
     )
 
@@ -886,17 +887,15 @@ def reject_inappropriate_products(ean: str, send_booking_cancellation_emails: bo
         synchronize_session=False,
     )
 
-    product_query.update(
-        values={"isGcuCompatible": False},
-        synchronize_session=False,
-    )
+    product.isGcuCompatible = False
+    db.session.add(product)
 
     try:
         db.session.commit()
     except Exception as exception:  # pylint: disable=broad-except
         logger.exception(
             "Could not mark product and offers as inappropriate: %s",
-            extra={"ean": ean, "products": product_ids, "exc": str(exception)},
+            extra={"ean": ean, "product": product.id, "exc": str(exception)},
         )
         return False
 
@@ -910,7 +909,7 @@ def reject_inappropriate_products(ean: str, send_booking_cancellation_emails: bo
 
     logger.info(
         "Rejected inappropriate products",
-        extra={"ean": ean, "products": product_ids, "offers": offer_ids, "offer_updated_counts": offer_updated_counts},
+        extra={"ean": ean, "product": product.id, "offers": offer_ids, "offer_updated_counts": offer_updated_counts},
     )
 
     if offer_ids:

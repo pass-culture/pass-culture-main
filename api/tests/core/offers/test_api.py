@@ -1183,11 +1183,12 @@ class RejectInappropriateProductTest:
         self, mocked_send_booking_cancellation_emails_to_user_and_offerer, mocked_async_index_offer_ids
     ):
         # Given
+        provider = providers_factories.APIProviderFactory()
         product1 = factories.ThingProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}, lastProvider=provider
         )
         product2 = factories.ThingProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test-2"}, lastProvider=provider
         )
         offers = {
             factories.OfferFactory(product=product1),
@@ -1200,19 +1201,30 @@ class RejectInappropriateProductTest:
             bookings_factories.BookingFactory(stock__offer=offer)
 
         # When
-        api.reject_inappropriate_products("ean-de-test", send_booking_cancellation_emails=False)
+        api.reject_inappropriate_product("ean-de-test", send_booking_cancellation_emails=False)
 
         # Then
-        products = models.Product.query.all()
         offers = models.Offer.query.all()
         bookings = bookings_models.Booking.query.all()
 
-        assert not any(product.isGcuCompatible for product in products)
-        assert all(offer.validation == OfferValidationStatus.REJECTED for offer in offers)
+        product1 = models.Product.query.filter(models.Product.extraData["ean"].astext == "ean-de-test").one()
+        assert not product1.isGcuCompatible
+
+        product2 = models.Product.query.filter(models.Product.extraData["ean"].astext == "ean-de-test-2").one()
+        assert product2.isGcuCompatible
+
+        assert all(
+            offer.validation == OfferValidationStatus.REJECTED for offer in offers if offer.product.id == product1.id
+        )
+        assert all(
+            offer.validation == OfferValidationStatus.APPROVED for offer in offers if offer.product.id != product1.id
+        )
         mocked_async_index_offer_ids.assert_called()
-        assert set(mocked_async_index_offer_ids.call_args[0][0]) == {o.id for o in offers}
-        assert users_models.Favorite.query.count() == 0
-        assert all(booking.isCancelled is True for booking in bookings)
+        assert set(mocked_async_index_offer_ids.call_args[0][0]) == {
+            o.id for o in offers if o.product.id == product1.id
+        }
+        assert users_models.Favorite.query.count() == 1  # product 2
+        assert all(booking.isCancelled is True for booking in bookings if booking.stock.offer.product.id == product1)
         mocked_send_booking_cancellation_emails_to_user_and_offerer.assert_not_called()
 
     @mock.patch("pcapi.core.offers.api.send_booking_cancellation_emails_to_user_and_offerer")
@@ -1220,11 +1232,12 @@ class RejectInappropriateProductTest:
         self, mocked_send_booking_cancellation_emails_to_user_and_offerer
     ):
         # Given
+        provider = providers_factories.APIProviderFactory()
         product1 = factories.ThingProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}, lastProvider=provider
         )
         product2 = factories.ThingProductFactory(
-            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}
+            subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test-2"}, lastProvider=provider
         )
         offers = {
             factories.OfferFactory(product=product1),
@@ -1240,7 +1253,7 @@ class RejectInappropriateProductTest:
         assert bookings_models.Booking.query.count() == len(offers)
 
         # When
-        api.reject_inappropriate_products("ean-de-test", send_booking_cancellation_emails=True)
+        api.reject_inappropriate_product("ean-de-test", send_booking_cancellation_emails=True)
 
         # Then
         mocked_send_booking_cancellation_emails_to_user_and_offerer.assert_called()
@@ -1249,7 +1262,7 @@ class RejectInappropriateProductTest:
 @pytest.mark.usefixtures("db_session")
 class DeactivatePermanentlyUnavailableProductTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def test_should_deactivate_permanently_unavailable_product(self, mocked_async_index_offer_ids):
+    def test_should_deactivate_permanently_unavailable_products(self, mocked_async_index_offer_ids):
         # Given
         product1 = factories.ThingProductFactory(
             subcategoryId=subcategories.LIVRE_PAPIER.id, extraData={"ean": "ean-de-test"}
