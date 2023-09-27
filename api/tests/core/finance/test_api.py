@@ -1530,6 +1530,80 @@ class GenerateCashflowsTest:
         assert not pricing_pending.cashflows
         assert not pricing_after_cutoff.cashflows
 
+    @pytest.mark.parametrize(
+        "booking_pricing,incident_booking_amount",
+        [
+            (-2000, 10),
+            (-1000, 10),
+            (-1000, 20),
+        ],
+    )
+    def test_basics_with_incident(self, booking_pricing, incident_booking_amount):
+        reimbursement_point1 = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
+        bank_info1 = factories.BankInformationFactory(venue=reimbursement_point1)
+
+        # creating an incident for another booking in the same reimbursment_point
+        offer = offers_factories.OfferFactory(venue=reimbursement_point1)
+        _beginningDatetime = datetime.datetime.utcnow().replace(second=0, microsecond=0) - datetime.timedelta(days=30)
+        stock = offers_factories.StockFactory(
+            offer=offer, price=incident_booking_amount, beginningDatetime=_beginningDatetime
+        )
+        reimbursed_booking = bookings_factories.ReimbursedBookingFactory(stock=stock, venue=reimbursement_point1)
+
+        event = api.add_event(motive=models.FinanceEventMotive.BOOKING_USED, booking=reimbursed_booking, commit=True)
+        pricing = api.price_event(event)
+        pricing.status = models.PricingStatus.INVOICED
+
+        booking_finance_incident = factories.IndividualBookingFinanceIncidentFactory(booking=reimbursed_booking)
+
+        from pcapi.routes.backoffice.finance import finance_incidents_blueprint
+
+        finance_incident_events = finance_incidents_blueprint._create_finance_events_from_incident(
+            booking_finance_incident=booking_finance_incident,
+            incident_validation_date=datetime.datetime.utcnow(),
+        )
+
+        for finance_incident_event in finance_incident_events:
+            api.price_event(finance_incident_event)
+
+        # creating a pricing for a booking
+        pricing11 = factories.PricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            booking__stock__offer__venue=reimbursement_point1,
+            amount=booking_pricing,
+        )
+        assert models.Pricing.query.count() == 3
+
+        # Generating Cashflow
+        cutoff = datetime.datetime.utcnow()
+        batch = api.generate_cashflows(cutoff)
+
+        queried_batch = models.CashflowBatch.query.one()
+
+        processed_pricings = models.Pricing.query.filter(models.Pricing.status == models.PricingStatus.PROCESSED).all()
+
+        if abs(incident_booking_amount * 100) > abs(booking_pricing):
+            assert len(processed_pricings) == 0
+
+            assert len(batch.cashflows) == 0
+            assert len(pricing11.cashflows) == 0
+        elif abs(incident_booking_amount * 100) == abs(booking_pricing):
+            assert len(processed_pricings) == 2
+
+            assert len(batch.cashflows) == 0
+            assert len(pricing11.cashflows) == 0
+        else:
+            assert len(processed_pricings) == 2
+            assert models.Cashflow.query.count() == 1
+            assert len(batch.cashflows) == 1
+            assert batch.cashflows[0].amount == booking_pricing + (incident_booking_amount * 100)
+
+            assert len(pricing11.cashflows) == 1
+            assert pricing11.cashflows[0].bankAccount == bank_info1
+
+        assert queried_batch.id == batch.id
+        assert queried_batch.cutoff == cutoff
+
     def test_no_cashflow_if_no_accepted_bank_information(self):
         venue_ok = offerers_factories.VenueFactory(reimbursement_point="self")
         factories.BankInformationFactory(venue=venue_ok)
@@ -1646,11 +1720,12 @@ class GenerateCashflowsTest:
                 1,  # compute sum of pricings
                 1,  # insert Cashflow
                 1,  # select pricings to...
-                1,  # ... insert CashflowPricing
                 1,  # update Pricing.status
+                1,  # ... insert CashflowPricing
                 1,  # commit
             )
         )
+
         with assert_num_queries(n_queries):
             api.generate_cashflows(cutoff)
 

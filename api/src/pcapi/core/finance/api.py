@@ -51,6 +51,7 @@ from pcapi.connectors import googledrive
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.educational.models as educational_models
 import pcapi.core.external.attributes.api as external_attributes_api
+import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
 from pcapi.core.logging import log_elapsed
 import pcapi.core.mails.transactional as transactional_mails
@@ -1401,6 +1402,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                 models.Pricing.collectiveBookingId.is_not(None),
                 educational_models.CollectiveStock.beginningDatetime < batch.cutoff,
             ),
+            models.FinanceEvent.bookingFinanceIncidentId.is_not(None),
         ),
     )
 
@@ -1416,9 +1418,10 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
     reimbursement_point_infos = (
         models.Pricing.query.filter(*filters)
         .outerjoin(models.Pricing.booking)
-        .outerjoin(models.Pricing.collectiveBooking)
         .outerjoin(bookings_models.Booking.stock)
+        .outerjoin(models.Pricing.collectiveBooking)
         .outerjoin(educational_models.CollectiveBooking.collectiveStock)
+        .outerjoin(models.Pricing.event)
         .join(
             offerers_models.VenueReimbursementPointLink,
             offerers_models.VenueReimbursementPointLink.venueId == models.Pricing.venueId,
@@ -1454,6 +1457,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                     .outerjoin(bookings_models.Booking.stock)
                     .outerjoin(models.Pricing.collectiveBooking)
                     .outerjoin(educational_models.CollectiveBooking.collectiveStock)
+                    .outerjoin(models.Pricing.event)
                     .join(
                         models.BankInformation,
                         models.BankInformation.venueId == reimbursement_point_id,
@@ -1494,12 +1498,67 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                     )
                     continue
 
-                total = pricings.with_entities(sqla.func.sum(models.Pricing.amount)).scalar()
-                if not total:
+                total = pricings.with_entities(sqla.func.sum(models.Pricing.amount)).scalar() or 0
+
+                # The total is positive if the pro owes us more than we do.
+                if total >= 0:
+                    last_cashflow_age = 0
+
+                    all_current_incidents = (
+                        models.FinanceIncident.query.join(models.FinanceIncident.booking_finance_incidents)
+                        .join(models.BookingFinanceIncident.finance_events)
+                        .join(models.FinanceEvent.pricings)
+                        .outerjoin(models.Pricing.cashflows)
+                        .filter(
+                            models.FinanceIncident.venueId.in_(venue_ids),
+                            models.FinanceIncident.status == models.IncidentStatus.VALIDATED,
+                            models.Cashflow.id.is_(None),  # exclude incidents that already have a cashflow
+                            models.Pricing.status == models.PricingStatus.VALIDATED,
+                            models.Pricing.valueDate < batch.cutoff,
+                        )
+                        .all()
+                    )
+
+                    if total > 0:
+                        override_incident_debit_note = any(
+                            incident.forceDebitNote for incident in all_current_incidents
+                        )
+                        # Last cashflow where we effectively paid (successfully or not) the pro
+                        last_cashflow = (
+                            models.Cashflow.query.filter(
+                                models.Cashflow.reimbursementPointId == reimbursement_point_id,
+                                models.Cashflow.status == models.CashflowStatus.ACCEPTED,
+                            )
+                            .order_by(models.Cashflow.creationDate.desc())
+                            .first()
+                        )
+                        if last_cashflow:
+                            last_cashflow_age = (datetime.datetime.utcnow() - last_cashflow.creationDate).days
+
+                        if (
+                            last_cashflow_age < conf.DEBIT_NOTE_AGE_THRESHOLD_FOR_CASHFLOW
+                            and not override_incident_debit_note
+                        ):
+                            for incident in all_current_incidents:
+                                db.session.add(
+                                    history_api.log_action(
+                                        history_models.ActionType.FINANCE_INCIDENT_WAIT_FOR_PAYMENT,
+                                        author=None,
+                                        finance_incident=incident,
+                                        comment="Le montant de l’incident est supérieur au montant total des réservations validées. Donc aucun justificatif n’est généré, on attend la prochaine échéance",
+                                        save=False,
+                                    )
+                                )
+
+                            continue
+
+                        # TODO (akarki): generate debit note + history entry
+                        continue
                     # Mark as `PROCESSED` even if there is no cashflow, so
                     # that we will not process these pricings again.
                     _mark_as_processed(pricings)
                     continue
+
                 cashflow = models.Cashflow(
                     batchId=batch_id,
                     reimbursementPointId=reimbursement_point_id,

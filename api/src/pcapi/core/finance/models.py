@@ -301,7 +301,7 @@ class FinanceEvent(Base, Model):
         sqla.BigInteger, sqla.ForeignKey("booking_finance_incident.id"), index=True, nullable=True
     )
     bookingFinanceIncident: sqla_orm.Mapped["BookingFinanceIncident | None"] = sqla_orm.relationship(
-        "BookingFinanceIncident", foreign_keys=[bookingFinanceIncidentId]
+        "BookingFinanceIncident", foreign_keys=[bookingFinanceIncidentId], backref="finance_events"
     )
 
     # `venueId` is denormalized and comes from `booking.venueId`
