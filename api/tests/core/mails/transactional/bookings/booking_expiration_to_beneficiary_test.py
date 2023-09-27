@@ -82,7 +82,7 @@ class SendExpiredBookingsEmailToBeneficiarySendinblueTest:
             user=amnesiac_user,
         )
 
-        cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
+        cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id)
         expired_today_cd_booking = CancelledBookingFactory(
             stock__offer__product=cd,
             stock__offer__name="Random Access Memories",

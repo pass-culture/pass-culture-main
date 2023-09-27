@@ -29,7 +29,7 @@ class NotifyUsersOfSoonToBeExpiredBookingsTest:
             stock__offer__product=dvd,
             dateCreated=booking_date_23_days_ago,
         )
-        non_expired_cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE.id)
+        non_expired_cd = ProductFactory(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id)
         dont_expire_in_7_days_cd_individual_booking = BookingFactory(
             stock__offer__product=non_expired_cd,
             dateCreated=booking_date_22_days_ago,
