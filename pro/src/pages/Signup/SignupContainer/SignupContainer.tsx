@@ -6,6 +6,7 @@ import { api } from 'apiClient/api'
 import { ProUserCreationBodyV2Model } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import useAnalytics from 'hooks/useAnalytics'
+import useInitReCaptcha from 'hooks/useInitReCaptcha'
 import useLogEventOnUnload from 'hooks/useLogEventOnUnload'
 import useNotification from 'hooks/useNotification'
 import useRedirectLoggedUser from 'hooks/useRedirectLoggedUser'
@@ -22,6 +23,7 @@ const SignupContainer = (): JSX.Element => {
   const notification = useNotification()
   const { logEvent } = useAnalytics()
   useRedirectLoggedUser()
+  useInitReCaptcha()
 
   const onSubmit = async (values: ProUserCreationBodyV2Model) => {
     /* istanbul ignore next : ENV dependant */
