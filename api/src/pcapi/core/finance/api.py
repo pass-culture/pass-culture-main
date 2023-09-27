@@ -2689,3 +2689,51 @@ def recredit_underage_users() -> None:
     logger.info("Recredited %s users successfully", total_users_recredited)
     if failed_users:
         logger.error("Failed to recredit %s users: %s", len(failed_users), failed_users)
+
+
+def update_bank_account_venues_links(
+    user: users_models.User,
+    offerer: offerers_models.Offerer,
+    bank_account: models.BankAccount,
+    venues_ids: set[int],
+) -> None:
+    managed_venues_ids = {venue.id for venue in offerer.managedVenues}
+
+    venues_already_linked = {link.venueId for link in bank_account.venueLinks}
+
+    venues_links_to_create = venues_ids.difference(venues_already_linked)
+    venues_links_to_deprecate = venues_already_linked.difference(venues_ids)
+
+    new_links = []
+
+    with transaction():
+        db.session.bulk_update_mappings(
+            offerers_models.VenueBankAccountLink,
+            [
+                {"id": link.id, "timespan": db_utils.make_timerange(link.timespan.lower, datetime.datetime.utcnow())}
+                for link in bank_account.venueLinks
+                if link.venueId in venues_links_to_deprecate
+            ],
+        )
+
+        for venue_id in venues_links_to_create:
+            if venue_id not in managed_venues_ids:
+                logger.warning(
+                    "Attempt of a user to link a venue that doesn't depend on its offerer to a bank account.",
+                    extra={
+                        "venue_id": venue_id,
+                        "bank_account_id": bank_account.id,
+                        "offerer_id": offerer.id,
+                        "user_id": user.id,
+                    },
+                )
+                continue
+            new_links.append(
+                {
+                    "venueId": venue_id,
+                    "bankAccountId": bank_account.id,
+                    "timespan": db_utils.make_timerange(datetime.datetime.utcnow()),
+                }
+            )
+
+        db.session.bulk_insert_mappings(offerers_models.VenueBankAccountLink, new_links)

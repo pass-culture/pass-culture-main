@@ -8,6 +8,8 @@ from pcapi import settings
 from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.connectors.api_recaptcha import check_webapp_recaptcha_token
 import pcapi.core.educational.exceptions as educational_exceptions
+import pcapi.core.finance.api as finance_api
+import pcapi.core.finance.repository as finance_repository
 from pcapi.core.offerers import api
 from pcapi.core.offerers import repository
 import pcapi.core.offerers.exceptions as offerers_exceptions
@@ -245,3 +247,17 @@ def get_offerer_bank_accounts_and_attached_venues(
     if not offerer_bank_accounts:
         raise ResourceNotFoundError()
     return offerers_serialize.GetOffererBankAccountsResponseModel.from_orm(offerer_bank_accounts)
+
+
+@private_api.route("/offerers/<int:offerer_id>/bank-accounts/<int:bank_account_id>", methods=["PATCH"])
+@login_required
+@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
+def link_venue_to_bank_account(
+    offerer_id: int, bank_account_id: int, body: offerers_serialize.LinkVenueToBankAccountBodyModel
+) -> None:
+    check_user_has_access_to_offerer(current_user, offerer_id)
+    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
+    bank_account = finance_repository.get_bank_account_with_current_venues_links(offerer_id, bank_account_id)
+    if bank_account is None:
+        raise ResourceNotFoundError()
+    finance_api.update_bank_account_venues_links(current_user, offerer, bank_account, body.venues_ids)

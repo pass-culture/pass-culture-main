@@ -118,6 +118,7 @@ export type { InvoiceListResponseModel } from './models/InvoiceListResponseModel
 export type { InvoiceResponseModel } from './models/InvoiceResponseModel';
 export type { LegalStatusResponseModel } from './models/LegalStatusResponseModel';
 export type { LinkedVenues } from './models/LinkedVenues';
+export type { LinkVenueToBankAccountBodyModel } from './models/LinkVenueToBankAccountBodyModel';
 export type { LinkVenueToPricingPointBodyModel } from './models/LinkVenueToPricingPointBodyModel';
 export type { ListBookingsQueryModel } from './models/ListBookingsQueryModel';
 export type { ListBookingsResponseModel } from './models/ListBookingsResponseModel';

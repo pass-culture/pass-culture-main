@@ -48,6 +48,7 @@ import type { GetVenueResponseModel } from '../models/GetVenueResponseModel';
 import type { GetVenuesOfOffererFromSiretResponseModel } from '../models/GetVenuesOfOffererFromSiretResponseModel';
 import type { InviteMemberQueryModel } from '../models/InviteMemberQueryModel';
 import type { InvoiceListResponseModel } from '../models/InvoiceListResponseModel';
+import type { LinkVenueToBankAccountBodyModel } from '../models/LinkVenueToBankAccountBodyModel';
 import type { LinkVenueToPricingPointBodyModel } from '../models/LinkVenueToPricingPointBodyModel';
 import type { ListBookingsResponseModel } from '../models/ListBookingsResponseModel';
 import type { ListCollectiveBookingsResponseModel } from '../models/ListCollectiveBookingsResponseModel';
@@ -1173,6 +1174,35 @@ export class DefaultService {
       path: {
         'offerer_id': offererId,
       },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * link_venue_to_bank_account <PATCH>
+   * @param offererId
+   * @param bankAccountId
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public linkVenueToBankAccount(
+    offererId: number,
+    bankAccountId: number,
+    requestBody?: LinkVenueToBankAccountBodyModel,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/offerers/{offerer_id}/bank-accounts/{bank_account_id}',
+      path: {
+        'offerer_id': offererId,
+        'bank_account_id': bankAccountId,
+      },
+      body: requestBody,
+      mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
