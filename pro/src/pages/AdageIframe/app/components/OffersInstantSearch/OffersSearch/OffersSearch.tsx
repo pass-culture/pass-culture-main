@@ -1,7 +1,7 @@
 import './OldOffersSearch.scss'
 
 import { FormikContext, useFormik } from 'formik'
-import { useContext, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 
 import { VenueResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
@@ -14,7 +14,12 @@ import {
   FacetFiltersContext,
   FiltersContext,
 } from 'pages/AdageIframe/app/providers'
+import { Option } from 'pages/AdageIframe/app/types'
 import Tabs from 'ui-kit/Tabs'
+import {
+  filterEducationalSubCategories,
+  inferCategoryLabelsFromSubcategories,
+} from 'utils/collectiveCategories'
 import { removeParamsFromUrl } from 'utils/removeParamsFromUrl'
 
 import {
@@ -68,6 +73,15 @@ export const OffersSearch = ({
   const userUAICode = adageUser.uai
   const uaiCodeAllInstitutionsTab = userUAICode ? ['all', userUAICode] : ['all']
   const uaiCodeShareWithMyInstitutionTab = userUAICode ? [userUAICode] : null
+  const [categoriesOptions, setCategoriesOptions] = useState<
+    Option<string[]>[]
+  >([])
+
+  useEffect(() => {
+    apiAdage.getEducationalOffersCategories().then(categories => {
+      setCategoriesOptions(filterEducationalSubCategories(categories))
+    })
+  }, [])
 
   const handleTabChange = (tab: OfferTab) => {
     dispatchCurrentFilters({
@@ -139,7 +153,16 @@ export const OffersSearch = ({
         iframeFrom: removeParamsFromUrl(location.pathname),
         resultNumber: nbHits,
         queryId: queryId ?? null,
-        filterValues: formik ? { ...formik.values, query: currentSearch } : {},
+        filterValues: formik
+          ? {
+              ...formik.values,
+              query: currentSearch,
+              categories: inferCategoryLabelsFromSubcategories(
+                formik.values.categories,
+                categoriesOptions
+              ),
+            }
+          : {},
       })
     }
   }
@@ -185,6 +208,7 @@ export const OffersSearch = ({
             localisationFilterState={localisationFilterState}
             setLocalisationFilterState={setlocalisationFilterState}
             resetForm={resetForm}
+            categoriesOptions={categoriesOptions}
           />
         </div>
         <div className="search-results">

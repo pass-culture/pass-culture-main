@@ -3,6 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import type { SearchBoxProvided } from 'react-instantsearch-core'
 
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
+import { apiAdage } from 'apiClient/api'
 import {
   AlgoliaQueryContextProvider,
   FiltersContextProvider,
@@ -79,7 +80,10 @@ vi.mock('../Offers/Offers', () => {
 
 vi.mock('apiClient/api', () => ({
   apiAdage: {
-    getEducationalOffersCategories: vi.fn(),
+    getEducationalOffersCategories: vi.fn(() => ({
+      categories: [],
+      subcategories: [],
+    })),
     getAcademies: vi.fn(() => ['Amiens', 'Paris']),
   },
 }))
@@ -144,6 +148,10 @@ describe('offersSearch component', () => {
       setGeoRadius: setGeoRadiusMock,
     }
     vi.spyOn(pcapi, 'getEducationalDomains').mockResolvedValue([])
+    vi.spyOn(apiAdage, 'getEducationalOffersCategories').mockResolvedValue({
+      categories: [],
+      subcategories: [],
+    })
     window.IntersectionObserver = vi.fn().mockImplementation(() => ({
       observe: vi.fn(),
       unobserve: vi.fn(),
