@@ -11,7 +11,12 @@ import { CATEGORY_STATUS } from 'core/Offers/constants'
 import { OfferSubCategory } from 'core/Offers/types'
 import { IndividualOfferVenueItem } from 'core/Venue/types'
 import * as utils from 'screens/IndividualOffer/Informations/utils'
-import { individualOfferVenueItemFactory } from 'utils/individualApiFactories'
+import {
+  individualOfferCategoryFactory,
+  individualOfferContextFactory,
+  individualOfferSubCategoryFactory,
+  individualOfferVenueItemFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { InformationsProps, Informations as InformationsScreen } from '..'
@@ -66,14 +71,14 @@ describe('screens:IndividualOffer::Informations', () => {
   beforeEach(() => {
     Element.prototype.scrollIntoView = scrollIntoViewMock
     const categories = [
-      {
+      individualOfferCategoryFactory({
         id: 'A',
         proLabel: 'Catégorie A',
         isSelectable: true,
-      },
+      }),
     ]
     const subCategories: OfferSubCategory[] = [
-      {
+      individualOfferSubCategoryFactory({
         id: 'virtual',
         categoryId: 'A',
         proLabel: 'Sous catégorie online de A',
@@ -85,8 +90,8 @@ describe('screens:IndividualOffer::Informations', () => {
         onlineOfflinePlatform: CATEGORY_STATUS.ONLINE,
         reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
         isSelectable: true,
-      },
-      {
+      }),
+      individualOfferSubCategoryFactory({
         id: 'physical',
         categoryId: 'A',
         proLabel: 'Sous catégorie offline de A',
@@ -98,7 +103,7 @@ describe('screens:IndividualOffer::Informations', () => {
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
         reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
         isSelectable: true,
-      },
+      }),
     ]
 
     props = {
@@ -106,17 +111,11 @@ describe('screens:IndividualOffer::Informations', () => {
       offererId: '',
     }
 
-    contextValue = {
-      offerId: null,
-      offer: null,
-      venueList: [],
-      offererNames: [],
+    contextValue = individualOfferContextFactory({
       categories,
       subCategories,
-      setOffer: () => {},
-      showVenuePopin: {},
-      setSubcategory: () => {},
-    }
+      offer: null,
+    })
 
     vi.spyOn(utils, 'filterCategories')
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

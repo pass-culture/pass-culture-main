@@ -7,6 +7,7 @@ import {
 } from 'context/IndividualOfferContext'
 import { IndividualOffer } from 'core/Offers/types'
 import {
+  individualOfferContextFactory,
   individualOfferFactory,
   individualOfferSubCategoryFactory,
 } from 'utils/individualApiFactories'
@@ -16,17 +17,12 @@ import { PriceCategoriesSummaryScreen } from '../PriceCategoriesSummary'
 
 const duoSubcategory = individualOfferSubCategoryFactory({ canBeDuo: true })
 const renderPriceCategoriesSummary = (offer: IndividualOffer) => {
-  const contextValue: IndividualOfferContextValues = {
-    offerId: null,
-    offer,
-    venueList: [],
-    offererNames: [],
-    categories: [],
-    subCategories: [duoSubcategory],
-    setOffer: () => {},
-    setSubcategory: () => {},
-    showVenuePopin: {},
-  }
+  const contextValue: IndividualOfferContextValues =
+    individualOfferContextFactory({
+      offerId: offer.id,
+      offer,
+      subCategories: [duoSubcategory],
+    })
 
   renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>

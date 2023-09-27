@@ -14,9 +14,15 @@ import {
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from 'core/Offers/constants'
-import { IndividualOffer, IndividualOfferVenue } from 'core/Offers/types'
+import { IndividualOffer } from 'core/Offers/types'
 import { getIndividualOfferPath } from 'core/Offers/utils/getIndividualOfferUrl'
 import { ButtonLink } from 'ui-kit'
+import {
+  individualOfferContextFactory,
+  individualOfferFactory,
+  individualOfferVenueFactory,
+  individualStockFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StocksThing, { StocksThingProps } from '../StocksThing'
@@ -101,30 +107,20 @@ const renderStockThingScreen = (
 describe('screens:StocksThing', () => {
   let props: StocksThingProps
   let contextValue: IndividualOfferContextValues
-  let offer: Partial<IndividualOffer>
+  let offer: IndividualOffer
 
   beforeEach(() => {
-    offer = {
+    offer = individualOfferFactory({
       id: offerId,
-      venue: {
+      venue: individualOfferVenueFactory({
         departmentCode: '75',
-      } as IndividualOfferVenue,
+      }),
       stocks: [],
-    }
+    })
     props = {
-      offer: offer as IndividualOffer,
+      offer,
     }
-    contextValue = {
-      offerId: null,
-      offer: null,
-      venueList: [],
-      offererNames: [],
-      categories: [],
-      subCategories: [],
-      setOffer: () => {},
-      setSubcategory: () => {},
-      showVenuePopin: {},
-    }
+    contextValue = individualOfferContextFactory()
     vi.spyOn(api, 'getOffer').mockResolvedValue(
       {} as GetIndividualOfferResponseModel
     )
@@ -197,7 +193,7 @@ describe('screens:StocksThing', () => {
     vi.spyOn(api, 'upsertStocks').mockResolvedValue({
       stocks: [{ id: 1 } as StockResponseModel],
     })
-    const stock = {
+    const stock = individualStockFactory({
       id: 1,
       quantity: 10,
       price: 17.11,
@@ -210,21 +206,20 @@ describe('screens:StocksThing', () => {
       bookingLimitDatetime: null,
       isSoftDeleted: false,
       isEventExpired: false,
-      offerId: 'OFFER_ID',
       isEventDeletable: false,
       dateCreated: new Date(),
-    }
+    })
 
-    offer = {
+    offer = individualOfferFactory({
       id: offerId,
-      venue: {
+      venue: individualOfferVenueFactory({
         departmentCode: '75',
-      } as IndividualOfferVenue,
+      }),
       stocks: [stock],
-    }
+    })
 
-    props.offer = offer as IndividualOffer
-    contextValue.offer = offer as IndividualOffer
+    props.offer = offer
+    contextValue.offer = offer
     renderStockThingScreen(
       props,
       contextValue,

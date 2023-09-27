@@ -14,8 +14,13 @@ import {
   IndividualOfferContext,
   IndividualOfferContextValues,
 } from 'context/IndividualOfferContext'
-import { IndividualOffer, IndividualOfferVenue } from 'core/Offers/types'
+import { IndividualOffer } from 'core/Offers/types'
 import { FORMAT_ISO_DATE_ONLY } from 'utils/date'
+import {
+  individualOfferContextFactory,
+  individualOfferFactory,
+  individualOfferVenueFactory,
+} from 'utils/individualApiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import StocksEventEdition, {
@@ -69,35 +74,25 @@ const priceCategoryId = '1'
 describe('screens:StocksEventEdition', () => {
   let props: StocksEventEditionProps
   let contextValue: IndividualOfferContextValues
-  let offer: Partial<IndividualOffer>
+  let offer: IndividualOffer
   const offerId = 12
 
   beforeEach(() => {
-    offer = {
+    offer = individualOfferFactory({
       id: offerId,
-      venue: {
+      venue: individualOfferVenueFactory({
         departmentCode: '75',
-      } as IndividualOfferVenue,
+      }),
       stocks: [],
       priceCategories: [
         { id: Number(priceCategoryId), label: 'Cat 1', price: 10 },
         { id: 2, label: 'Cat 2', price: 20 },
       ],
-    }
+    })
     props = {
-      offer: offer as IndividualOffer,
+      offer,
     }
-    contextValue = {
-      offerId: null,
-      offer: null,
-      venueList: [],
-      offererNames: [],
-      categories: [],
-      subCategories: [],
-      setOffer: () => {},
-      setSubcategory: () => {},
-      showVenuePopin: {},
-    }
+    contextValue = individualOfferContextFactory()
     vi.spyOn(api, 'getOffer').mockResolvedValue(
       {} as GetIndividualOfferResponseModel
     )
