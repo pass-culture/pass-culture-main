@@ -9,13 +9,16 @@ from pcapi.models.api_errors import ApiErrors
 
 
 def to_camel(string: str) -> str:
+    # used to define root level lists, see https://docs.pydantic.dev/1.10/usage/models/#custom-root-types
+    if string == pydantic_v1.utils.ROOT_KEY:
+        return pydantic_v1.utils.ROOT_KEY
     components = string.split("_")
     return components[0] + "".join(x.title() for x in components[1:])
 
 
 def before_handler(
-    request: flask.Request,  # pylint: disable=unused-argument
-    response: flask.Response,  # pylint: disable=unused-argument
+    _request: flask.Request,
+    _response: flask.Response,
     pydantic_error: pydantic_v1.ValidationError | None,
     _: typing.Any,
 ) -> None:
