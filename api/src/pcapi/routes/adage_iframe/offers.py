@@ -7,8 +7,11 @@ from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.api import favorite as educational_api_favorite
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.educational.api.categories import get_educational_categories
+from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import EducationalRedactor
 import pcapi.core.educational.utils as educational_utils
+from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import get_venue_by_id
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
@@ -55,18 +58,13 @@ def get_collective_offer(
     except orm_exc.NoResultFound:
         raise ApiErrors({"code": "COLLECTIVE_OFFER_NOT_FOUND"}, status_code=404)
 
-    offer_venue_id = offer.offerVenue.get("venueId", None)
-    if offer_venue_id:
-        offer_venue = get_venue_by_id(offer_venue_id)
-    else:
-        offer_venue = None
-
     redactor = _get_redactor(authenticated_information)
     if redactor:
         is_favorite = educational_api_favorite.is_offer_a_redactor_favorite(offer.id, redactor.id)
     else:
         is_favorite = False
 
+    offer_venue = _get_offer_venue(offer)
     return serializers.CollectiveOfferResponseModel.build(
         offer=offer,
         offerVenue=offer_venue,
@@ -87,18 +85,13 @@ def get_collective_offer_template(
     except orm_exc.NoResultFound:
         raise ApiErrors({"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}, status_code=404)
 
-    offer_venue_id = offer.offerVenue.get("venueId", None)
-    if offer_venue_id:
-        offer_venue = get_venue_by_id(offer_venue_id)
-    else:
-        offer_venue = None
-
     redactor = _get_redactor(authenticated_information)
     if redactor:
         is_favorite = educational_api_favorite.is_offer_template_a_redactor_favorite(offer.id, redactor.id)
     else:
         is_favorite = False
 
+    offer_venue = _get_offer_venue(offer)
     return serializers.CollectiveOfferTemplateResponseModel.build(
         offer=offer, is_favorite=is_favorite, offerVenue=offer_venue
     )
@@ -154,3 +147,10 @@ def _get_redactor(authenticated_information: AuthenticatedInformation) -> Educat
     except educational_exceptions.MissingRequiredRedactorInformation:
         return None
     return educational_repository.find_redactor_by_email(redactor_informations.email)
+
+
+def _get_offer_venue(offer: CollectiveOffer | CollectiveOfferTemplate) -> Venue | None:
+    offer_venue_id = offer.offerVenue.get("venueId", None)
+    if offer_venue_id:
+        return get_venue_by_id(offer_venue_id)
+    return None
