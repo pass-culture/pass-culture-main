@@ -46,6 +46,10 @@ ShowTypeEnum = StrEnum(  # type: ignore [call-overload]
     },
 )
 
+EventCategoryEnum = StrEnum(  # type:ignore [call-overload]
+    "CategoryEnum", {subcategory_id: subcategory_id for subcategory_id in subcategories.EVENT_SUBCATEGORIES}
+)
+
 
 class Accessibility(serialization.ConfiguredBaseModel):
     """Accessibility for people with disabilities."""
@@ -809,3 +813,24 @@ class GetProductsListByEansQuery(serialization.ConfiguredBaseModel):
             if len(ean) != 13:
                 raise ValueError("Only 13 characters EAN are accepted")
         return ean_list
+
+
+class EventCategoryResponse(serialization.ConfiguredBaseModel):
+    id: EventCategoryEnum  # type: ignore [valid-type]
+    conditional_fields: dict[str, bool] = pydantic_v1.Field(
+        description="The keys are fields that should be set in the category_related_fields of an event. The values indicate whether their associated field is mandatory during event creation."
+    )
+
+    @classmethod
+    def build_category(cls, subcategory: subcategories.Subcategory) -> "EventCategoryResponse":
+        return cls(
+            id=subcategory.id,
+            conditional_fields={
+                field: condition.is_required_in_external_form
+                for field, condition in subcategory.conditional_fields.items()
+            },
+        )
+
+
+class GetEventCategoriesResponse(serialization.ConfiguredBaseModel):
+    __root__: list[EventCategoryResponse]
