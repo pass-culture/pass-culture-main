@@ -101,9 +101,13 @@ jobs:
 
       - name: Update api client
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        run: |
-          cd pro
-          yarn generate:api:client:local
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: |
+            cd pro
+            yarn generate:api:client:local
 
       - name: Check if there are changes
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
