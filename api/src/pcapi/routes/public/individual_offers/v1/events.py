@@ -611,3 +611,32 @@ def patch_event_date(
     except offers_exceptions.OfferCreationBaseException as error:
         raise api_errors.ApiErrors(error.errors, status_code=400)
     return serialization.DateResponse.build_date(edited_date)
+
+
+@blueprint.v1_blueprint.route("/events/categories", methods=["GET"])
+@spectree_serialize(
+    api=blueprint.v1_event_schema,
+    tags=[constants.EVENT_OFFER_INFO_TAG],
+    response_model=serialization.GetEventCategoriesResponse,
+    resp=SpectreeResponse(
+        **(
+            constants.BASE_CODE_DESCRIPTIONS
+            | {
+                "HTTP_200": (serialization.GetEventCategoriesResponse, "The event categories has been returned"),
+            }
+        )
+    ),
+)
+@api_key_required
+@rate_limiting.api_key_high_rate_limiter()
+def get_event_categories() -> serialization.GetEventCategoriesResponse:
+    """
+    Get all the event categories, their conditional fields, and whether they are required for event creation.
+    """
+    # Individual offers API only relies on subcategories, not categories.
+    # To make it simpler for the provider using this API, we only expose subcategories and call them categories.
+    event_categories_response = [
+        serialization.EventCategoryResponse.build_category(subcategory)
+        for subcategory in subcategories.EVENT_SUBCATEGORIES.values()
+    ]
+    return serialization.GetEventCategoriesResponse(__root__=event_categories_response)
