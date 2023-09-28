@@ -26,7 +26,7 @@ class PcOverrideCustomTextareaEnter extends PcAddOn {
         $textarea.focus()
         return
       }
-      $textarea.form.submit()
+      $textarea.form.requestSubmit()
     }
   }
 }
