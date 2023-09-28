@@ -4,18 +4,18 @@ import tempfile
 import pytest
 
 from pcapi import settings
+import pcapi.core.bookings.models as bookings_models
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import clean_temporary_files
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
-from pcapi.models.feature import Feature
 from pcapi.models.feature import FeatureToggle
 
 
 class AssertNoDuplicatedQueriesTest:
     def _run_dummy_query(self):
         # We cast to list to force query execution
-        list(Feature.query.all())
+        list(bookings_models.Booking.query.all())
 
     def test_passes_when_no_queries(self):
         with assert_no_duplicated_queries():
