@@ -81,13 +81,11 @@ def render_finance_incident(incident: finance_models.FinanceIncident) -> utils.B
             for booking_incident in booking_incidents
         )
     )
-    total_amount_of_incident = sum(booking_incident.newTotalAmount for booking_incident in booking_incidents)
 
     return render_template(
         "finance/incident/get.html",
         booking_finance_incidents=incident.booking_finance_incidents,
         total_amount=total_amount,
-        total_amount_of_incident=total_amount_of_incident,
         incident=incident,
         reimbursement_point=current_reimbursement_point,
         reimbursement_point_humanized_id=humanize(current_reimbursement_point.id),
@@ -213,13 +211,10 @@ def get_incident_creation_form() -> utils.BackofficeResponse:
                 correspondant au même lieu peuvent faire l'objet d'un incident</div>"""
             )
 
-        form.total_amount.data = (
-            -(
-                bookings[0].pricing.amount
-                if len(bookings) == 1 and bookings[0].pricing
-                else sum(booking.pricing.amount for booking in bookings if booking.pricing)
-            )
-            / 100
+        form.total_amount.data = -finance_utils.to_euros(
+            bookings[0].pricing.amount
+            if len(bookings) == 1 and bookings[0].pricing
+            else sum(booking.pricing.amount for booking in bookings if booking.pricing)
         )
 
         additional_data = _initialize_additional_data(bookings)
@@ -297,9 +292,11 @@ def create_individual_booking_incident() -> utils.BackofficeResponse:
         .all()
     )
     is_one_booking_incident = len(bookings) == 1
+    is_commercial_gesture = form.kind.data == finance_models.IncidentType.COMMERCIAL_GESTURE.name
 
     if not validation.check_incident_bookings(bookings) or (
-        is_one_booking_incident and not validation.check_total_amount(form.total_amount.data, bookings)
+        is_one_booking_incident
+        and not validation.check_total_amount(form.total_amount.data, bookings, not is_commercial_gesture)
     ):
         return redirect(request.referrer or url_for("backoffice_web.individual_bookings.list_individual_bookings"), 303)
 
@@ -313,7 +310,10 @@ def create_individual_booking_incident() -> utils.BackofficeResponse:
                 incidentId=incident.id,
                 beneficiaryId=booking.userId,
                 newTotalAmount=finance_utils.to_eurocents(
-                    booking.total_amount if len(bookings) > 1 else form.total_amount.data
+                    # Only total overpayment if multiple bookings are selected
+                    booking.total_amount - form.total_amount.data
+                    if len(bookings) == 1
+                    else 0
                 ),
             )
         )
@@ -336,9 +336,10 @@ def create_collective_booking_incident(collective_booking_id: int) -> utils.Back
         return redirect(request.referrer, 303)
 
     collective_booking = educational_models.CollectiveBooking.query.get_or_404(collective_booking_id)
+    is_commercial_gesture = form.kind.data == finance_models.IncidentType.COMMERCIAL_GESTURE.name
 
     if not validation.check_incident_collective_booking(collective_booking) or not validation.check_total_amount(
-        form.total_amount.data, [collective_booking]
+        form.total_amount.data, [collective_booking], not is_commercial_gesture
     ):
         return redirect(request.referrer or url_for("backoffice_web.collective_bookings.list_collective_bookings"), 303)
 
@@ -347,7 +348,7 @@ def create_collective_booking_incident(collective_booking_id: int) -> utils.Back
     collective_booking_incident = finance_models.BookingFinanceIncident(
         collectiveBookingId=collective_booking_id,
         incidentId=incident.id,
-        newTotalAmount=finance_utils.to_eurocents(form.total_amount.data),
+        newTotalAmount=finance_utils.to_eurocents(collective_booking.total_amount - form.total_amount.data),
     )
     repository.save(collective_booking_incident)
 
@@ -391,12 +392,18 @@ def _initialize_additional_data(bookings: list[bookings_models.Booking]) -> dict
         additional_data["Contremarque"] = booking.token
         additional_data["Nom de l'offre"] = booking.stock.offer.name
         additional_data["Bénéficiaire"] = booking.user.full_name
-        additional_data["Montant remboursé à l'acteur"] = f"{-booking.pricing.amount/100 if booking.pricing else 0} €"
+        additional_data["Montant de la réservation"] = filters.format_amount(booking.total_amount)
+        additional_data["Montant remboursé à l'acteur"] = filters.format_amount(
+            -finance_utils.to_euros(booking.pricing.amount) if booking.pricing else 0
+        )
     else:
         additional_data["Nombre de réservations"] = len(bookings)
-        additional_data[
-            "Montant remboursé à l'acteur"
-        ] = f"{-sum(booking.pricing.amount for booking in bookings if booking.pricing) / 100} €"
+        additional_data["Montant des réservations"] = filters.format_amount(
+            sum(booking.total_amount for booking in bookings)
+        )
+        additional_data["Montant remboursé à l'acteur"] = filters.format_amount(
+            -finance_utils.to_euros(sum(booking.pricing.amount for booking in bookings if booking.pricing))
+        )
 
     return additional_data
 
@@ -409,10 +416,13 @@ def _initialize_collective_booking_additional_data(collective_booking: education
         "Date de l'offre": filters.format_date_time(collective_booking.collectiveStock.beginningDatetime),
         "Établissement": collective_booking.educationalInstitution.name,
         "Nombre d'élèves": collective_booking.collectiveStock.numberOfTickets,
+        "Montant de la réservation": filters.format_amount(collective_booking.total_amount),
     }
 
     if collective_booking.pricing:
-        additional_data["Montant remboursé à l'acteur"] = f"{-collective_booking.pricing.amount / 100} €"
+        additional_data["Montant remboursé à l'acteur"] = filters.format_amount(
+            -finance_utils.to_euros(collective_booking.pricing.amount)
+        )
 
     return additional_data
 
@@ -462,8 +472,8 @@ def get_finance_incident_validation_form(finance_incident_id: int) -> utils.Back
     if not finance_incident:
         raise NotFound()
 
-    incident_total_amount_euros = (
-        sum(booking_incident.newTotalAmount for booking_incident in finance_incident.booking_finance_incidents) / 100
+    incident_total_amount_euros = finance_utils.to_euros(
+        sum(booking_incident.newTotalAmount for booking_incident in finance_incident.booking_finance_incidents)
     )
 
     current_reimbursement_point = finance_incident.venue.current_reimbursement_point or finance_incident.venue
@@ -662,6 +672,7 @@ def _get_incident(finance_incident_id: int) -> finance_models.FinanceIncident:
             .joinedload(bookings_models.Booking.stock)
             .load_only(
                 offers_models.Stock.beginningDatetime,
+                offers_models.Stock.price,
             )
             .joinedload(offers_models.Stock.offer)
             .load_only(
@@ -700,7 +711,7 @@ def _get_incident(finance_incident_id: int) -> finance_models.FinanceIncident:
             )
             .joinedload(finance_models.BookingFinanceIncident.collectiveBooking)
             .joinedload(educational_models.CollectiveBooking.collectiveStock)
-            .load_only(educational_models.CollectiveStock.beginningDatetime)
+            .load_only(educational_models.CollectiveStock.beginningDatetime, educational_models.CollectiveStock.price)
             .joinedload(educational_models.CollectiveStock.collectiveOffer)
             .load_only(
                 educational_models.CollectiveOffer.id,

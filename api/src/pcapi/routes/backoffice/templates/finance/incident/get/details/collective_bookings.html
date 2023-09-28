@@ -53,6 +53,10 @@
                 <span class="fw-bold">Catégorie :</span>
                 {{ booking_finance_incident.collectiveBooking.collectiveStock.collectiveOffer.subcategoryId | format_offer_category }}
               </p>
+              <p class="mb-1">
+                <span class="fw-bold">Montant de la réservation :</span>
+                {{ booking_finance_incident.collectiveBooking.total_amount | format_amount }}
+              </p>
             </div>
           </td>
         </tr>

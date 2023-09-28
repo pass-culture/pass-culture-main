@@ -73,6 +73,10 @@
                 <span class="fw-bold">Email du pro :</span>
                 {{ booking_finance_incident.booking.venue.bookingEmail | empty_string_if_null }}
               </p>
+              <p class="mb-1">
+                <span class="fw-bold">Montant de la réservation :</span>
+                {{ booking_finance_incident.booking.total_amount | format_amount }}
+              </p>
             </div>
           </td>
         </tr>

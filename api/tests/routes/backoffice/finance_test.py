@@ -8,12 +8,14 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
+from pcapi.core.finance import utils as finance_utils
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.filters import format_booking_status
 from pcapi.routes.backoffice.filters import format_date_time
 from pcapi.routes.backoffice.finance.blueprint import _cancel_finance_incident
@@ -159,7 +161,7 @@ class ValidateIncidentTest(PostEndpointHelper):
                 finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-1000)
             ],
             booking__amount=10.10,
-            newTotalAmount=1010,
+            newTotalAmount=0,
         )
 
         response = self.post_to_endpoint(authenticated_client, finance_incident_id=booking_incident.incident.id)
@@ -225,7 +227,7 @@ class CreateIncidentFinanceEventTest:
             ],
             booking__amount=10.10,
             incident__kind=incident_type,
-            newTotalAmount=1010,
+            newTotalAmount=0,
         )
         validation_date = datetime.datetime.utcnow()
         finance_events = _create_finance_events_from_incident(total_booking_incident, validation_date)
@@ -251,7 +253,7 @@ class CreateIncidentFinanceEventTest:
                 finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED, amount=-10000)
             ],
             incident__kind=incident_type,
-            newTotalAmount=10000,
+            newTotalAmount=0,
         )
 
         validation_date = datetime.datetime.utcnow()
@@ -440,14 +442,23 @@ class GetIncidentCreationFormTest(PostEndpointHelper):
         assert f"Contremarque : {booking.token}" in additional_data_text
         assert f"Nom de l'offre : {offer.name}" in additional_data_text
         assert f"Bénéficiaire : {booking.user.full_name}" in additional_data_text
+        assert f"Montant de la réservation : {filters.format_amount(booking.total_amount)}" in additional_data_text
+        assert (
+            f"Montant remboursé à l'acteur : {filters.format_amount(finance_utils.to_euros(-invoiced_pricing.amount))}"
+            in additional_data_text
+        )
 
-    def test_get_incident_creation_for_multiple_bookings_form(self, authenticated_client, invoiced_pricing):
+    def test_get_incident_creation_for_multiple_bookings_form(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
         offer = offers_factories.OfferFactory(venue=venue)
         stock = offers_factories.StockFactory(offer=offer)
         selected_bookings = [
-            bookings_factories.ReimbursedBookingFactory(stock=stock, pricings=[invoiced_pricing]),
-            bookings_factories.ReimbursedBookingFactory(stock=stock, pricings=[invoiced_pricing]),
+            bookings_factories.ReimbursedBookingFactory(
+                stock=stock, pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED)]
+            ),
+            bookings_factories.ReimbursedBookingFactory(
+                stock=stock, pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED)]
+            ),
         ]
         object_ids = ",".join([str(booking.id) for booking in selected_bookings])
 
@@ -458,6 +469,14 @@ class GetIncidentCreationFormTest(PostEndpointHelper):
         additional_data_text = html_parser.extract_cards_text(response.data)[0]
         assert f"Lieu : {venue.name}" in additional_data_text
         assert f"Nombre de réservations : {len(selected_bookings)}" in additional_data_text
+        assert (
+            f"Montant des réservations : {filters.format_amount(sum(booking.total_amount for booking in selected_bookings))}"
+            in additional_data_text
+        )
+        assert (
+            f"Montant remboursé à l'acteur : {filters.format_amount(finance_utils.to_euros(-sum(booking.pricing.amount for booking in selected_bookings)))}"
+            in additional_data_text
+        )
 
     def test_display_error_if_booking_not_reimbursed(self, authenticated_client):
         booking = bookings_factories.UsedBookingFactory()
@@ -508,6 +527,14 @@ class GetCollectiveBookingIncidentFormTest(PostEndpointHelper):
         )
         assert f"Établissement : {collective_booking.educationalInstitution.name}" in additional_data_text
         assert f"Nombre d'élèves : {collective_booking.collectiveStock.numberOfTickets}" in additional_data_text
+        assert (
+            f"Montant de la réservation : {filters.format_amount(collective_booking.total_amount)}"
+            in additional_data_text
+        )
+        assert (
+            f"Montant remboursé à l'acteur : {filters.format_amount(finance_utils.to_euros(-collective_booking.pricing.amount))}"
+            in additional_data_text
+        )
 
 
 class CreateIncidentTest(PostEndpointHelper):
@@ -533,9 +560,7 @@ class CreateIncidentTest(PostEndpointHelper):
         assert finance_models.FinanceIncident.query.count() == 1
         assert finance_models.BookingFinanceIncident.query.count() == 1
         booking_finance_incident = finance_models.BookingFinanceIncident.query.first()
-        assert booking_finance_incident.newTotalAmount == int(
-            booking.amount * 100
-        )  # incident amount is stored as cents
+        assert booking_finance_incident.newTotalAmount == 0
 
         action_history = history_models.ActionHistory.query.one()
         assert action_history.actionType == history_models.ActionType.FINANCE_INCIDENT_CREATED
@@ -625,7 +650,7 @@ class CreateIncidentOnCollectiveBookingTest(PostEndpointHelper):
         booking_incidents = finance_incidents[0].booking_finance_incidents
         assert len(booking_incidents) == 1
         assert booking_incidents[0].collectiveBookingId == collective_booking.id
-        assert booking_incidents[0].newTotalAmount == 4000
+        assert booking_incidents[0].newTotalAmount == 6000
 
     def test_incident_amount_superior_to_booking_amount(self, authenticated_client):
         collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
