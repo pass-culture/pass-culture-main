@@ -5,11 +5,11 @@
 
 .callout {
   position: relative;
-	display: flex;
-	justify-content: left;
-	color: colors.$black;
-	border-radius: rem.torem(8px);
-	padding: rem.torem(16px);
+  display: flex;
+  justify-content: left;
+  color: colors.$black;
+  border-radius: rem.torem(8px);
+  padding: rem.torem(16px);
   border: rem.torem(1px) solid colors.$black;
 
   &-default {
@@ -57,11 +57,11 @@
     }
   }
 
-	.icon {
-		min-width: rem.torem(20px);
-		align-self: start;
-		margin-right: rem.torem(16px);
-	}
+  .icon {
+    min-width: rem.torem(20px);
+    align-self: start;
+    margin-right: rem.torem(16px);
+  }
 
   .close-icon {
     background: none;
@@ -76,11 +76,17 @@
 .content {
   flex-grow: 1;
 
-	> div, .bi-link-item:not(:last-child)  {
+  > div, .bi-link-item:not(:last-child) {
     margin-bottom: rem.torem(8px);
   }
 
-	.title {
-		@include fonts.bold;
-	}
+  .title {
+    @include fonts.bold;
+  }
+}
+
+.small-callout {
+  div {
+    margin-bottom: 0;
+  }
 }

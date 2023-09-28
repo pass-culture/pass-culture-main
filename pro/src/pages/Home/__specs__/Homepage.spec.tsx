@@ -10,11 +10,14 @@ import { api } from 'apiClient/api'
 import {
   GetOffererNameResponseModel,
   GetOffererResponseModel,
-  GetOffererVenueResponseModel,
 } from 'apiClient/v1'
 import { RemoteContextProvider } from 'context/remoteConfigContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
+import {
+  defaultGetOffererVenueResponseModel,
+  defautGetOffererResponseModel,
+} from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Homepage from '../Homepage'
@@ -64,69 +67,38 @@ describe('homepage', () => {
     }
     baseOfferers = [
       {
-        address: 'LA COULÉE D’OR',
-        apiKey: {
-          maxAllowed: 5,
-          prefixes: ['development_41'],
-        },
-        city: 'Cayenne',
-        dateCreated: '2021-11-03T16:31:17.240807Z',
-        demarchesSimplifieesApplicationId: null,
-        hasDigitalVenueAtLeastOneOffer: true,
-        hasValidBankAccount: true,
-        hasPendingBankAccount: false,
-        venuesWithNonFreeOffersWithoutBankAccounts: [],
-        id: 6,
-        isValidated: true,
-        name: 'Bar des amis',
-        postalCode: '97300',
-        siren: '111111111',
-        hasAvailablePricingPoints: true,
-        isActive: true,
+        ...defautGetOffererResponseModel,
+        id: 1,
         managedVenues: [
           {
+            ...defaultGetOffererVenueResponseModel,
             id: 1,
             isVirtual: true,
-            name: 'Le Sous-sol (Offre numérique)',
-            publicName: null,
-          } as GetOffererVenueResponseModel,
+          },
           {
+            ...defaultGetOffererVenueResponseModel,
             id: 2,
             isVirtual: false,
-            name: 'Le Sous-sol (Offre physique)',
-            publicName: null,
-          } as GetOffererVenueResponseModel,
+          },
           {
+            ...defaultGetOffererVenueResponseModel,
             id: 3,
             isVirtual: false,
-            name: 'Le deuxième Sous-sol (Offre physique)',
-            publicName: 'Le deuxième Sous-sol',
-          } as GetOffererVenueResponseModel,
+          },
         ],
-        dsToken: '',
+        hasValidBankAccount: false,
       },
       {
-        address: 'RUE DE NIEUPORT',
-        apiKey: {
-          maxAllowed: 5,
-          prefixes: ['development_41'],
-        },
-        city: 'Drancy',
-        dateCreated: '2021-11-03T16:31:17.240807Z',
-        demarchesSimplifieesApplicationId: null,
-        hasDigitalVenueAtLeastOneOffer: true,
+        ...defautGetOffererResponseModel,
+        id: 2,
         hasValidBankAccount: true,
-        hasPendingBankAccount: false,
         venuesWithNonFreeOffersWithoutBankAccounts: [],
-        id: 12,
-        isValidated: true,
-        name: 'Club Dorothy',
-        postalCode: '93700',
-        siren: '222222222',
-        managedVenues: [],
-        hasAvailablePricingPoints: true,
-        isActive: true,
-        dsToken: '',
+      },
+      {
+        ...defautGetOffererResponseModel,
+        id: 3,
+        hasValidBankAccount: false,
+        venuesWithNonFreeOffersWithoutBankAccounts: [1],
       },
     ]
 
@@ -293,6 +265,64 @@ describe('homepage', () => {
           })
         })
       })
+    })
+  })
+
+  describe('bank accounts', () => {
+    beforeEach(() => {
+      store.features = {
+        list: [
+          { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
+        ],
+      }
+    })
+
+    it('should not render the add bank account banner if the offerer has no valid bank account', async () => {
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+        offerersNames: [baseOfferersNames[0]],
+      })
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[0])
+
+      renderHomePage(store)
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+      expect(
+        screen.queryByText(
+          'Ajoutez un compte bancaire pour percevoir vos remboursements'
+        )
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not render the add bank account banner if the offerer has no unliked venues', async () => {
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+        offerersNames: [baseOfferersNames[1]],
+      })
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[1])
+
+      renderHomePage(store)
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+      expect(
+        screen.queryByText(
+          'Ajoutez un compte bancaire pour percevoir vos remboursements'
+        )
+      ).not.toBeInTheDocument()
+    })
+
+    it('should render the add bank account banner if the offerer has no valid bank account and some unlinked venues', async () => {
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+        offerersNames: [baseOfferersNames[2]],
+      })
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[2])
+
+      renderHomePage(store)
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+      expect(
+        screen.queryByText(
+          'Ajoutez un compte bancaire pour percevoir vos remboursements'
+        )
+      ).toBeInTheDocument()
     })
   })
 })
