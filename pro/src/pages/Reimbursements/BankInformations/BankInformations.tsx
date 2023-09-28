@@ -79,6 +79,7 @@ const BankInformations = (): JSX.Element => {
         const offererBankAccounts =
           await api.getOffererBankAccountsAndAttachedVenues(selectedOffererId)
         setSelectedOffererBankAccounts(offererBankAccounts)
+        setIsOffererBankAccountsLoading(false)
       } catch (error) {
         notify.error(
           'Impossible de récupérer les informations relatives à vos comptes bancaires.'
@@ -141,8 +142,7 @@ const BankInformations = (): JSX.Element => {
         icon={fullMoreIcon}
         className={styles['add-bank-account-button']}
         variant={
-          /* istanbul ignore next : graphic changes */
-          selectedOfferer &&
+          /* istanbul ignore next : graphic changes */ selectedOfferer &&
           selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts.length > 0
             ? ButtonVariant.SECONDARY
             : ButtonVariant.PRIMARY
