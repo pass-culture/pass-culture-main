@@ -295,7 +295,7 @@ class IndividualBookingFinanceIncidentFactory(BaseFactory):
     booking = factory.SubFactory(bookings_factories.ReimbursedBookingFactory)
     incident = factory.SubFactory(FinanceIncidentFactory)
     beneficiary = factory.SelfAttribute("booking.user")
-    newTotalAmount = 1020
+    newTotalAmount = factory.LazyAttribute(lambda x: x.booking.amount * x.booking.quantity - 100)
 
 
 class CollectiveBookingFinanceIncidentFactory(BaseFactory):
@@ -304,4 +304,4 @@ class CollectiveBookingFinanceIncidentFactory(BaseFactory):
 
     collectiveBooking = factory.SubFactory(educational_factories.ReimbursedCollectiveBookingFactory)
     incident = factory.SubFactory(FinanceIncidentFactory)
-    newTotalAmount = 1020
+    newTotalAmount = factory.LazyAttribute(lambda x: x.collectiveBooking.collectiveStock.price - 100)
