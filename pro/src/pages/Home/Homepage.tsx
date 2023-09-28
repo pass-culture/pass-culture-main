@@ -6,6 +6,7 @@ import {
   GetOfferersNamesResponseModel,
 } from 'apiClient/v1'
 import AddBankAccountCallout from 'components/Callout/AddBankAccountCallout'
+import LinkVenueCallout from 'components/Callout/LinkVenueCallout'
 import { Newsletter } from 'components/Newsletter'
 import TutorialDialog from 'components/TutorialDialog'
 import { hasStatusCode } from 'core/OfferEducational'
@@ -35,6 +36,7 @@ const Homepage = (): JSX.Element => {
   const [venues, setVenues] = useState(INITIAL_OFFERER_VENUES)
   const [displayAddBankAccountBanner, setDisplayBankAccountBanner] =
     useState(false)
+  const [displayLinkVenueBanner, setDisplayLinkVenueBanner] = useState(false)
   const { remoteConfigData } = useRemoteConfig()
 
   useEffect(() => {
@@ -56,6 +58,11 @@ const Homepage = (): JSX.Element => {
         setIsUserOffererValidated(true)
         setDisplayBankAccountBanner(
           !receivedOfferer.hasValidBankAccount &&
+            receivedOfferer.venuesWithNonFreeOffersWithoutBankAccounts.length >
+              0
+        )
+        setDisplayLinkVenueBanner(
+          receivedOfferer.hasValidBankAccount &&
             receivedOfferer.venuesWithNonFreeOffersWithoutBankAccounts.length >
               0
         )
@@ -114,6 +121,16 @@ const Homepage = (): JSX.Element => {
         <h1>Bienvenue dans l’espace acteurs culturels</h1>
 
         {displayAddBankAccountBanner && <AddBankAccountCallout />}
+        {displayLinkVenueBanner && (
+          <LinkVenueCallout
+            hasMultipleVenuesToLink={
+              selectedOfferer
+                ? selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts
+                    .length > 1
+                : false
+            }
+          />
+        )}
         <HomepageBreadcrumb
           activeStep={STEP_ID_OFFERERS}
           isOffererStatsActive={isOffererStatsActive}

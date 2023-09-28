@@ -7,10 +7,7 @@ import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { api } from 'apiClient/api'
-import {
-  GetOffererNameResponseModel,
-  GetOffererResponseModel,
-} from 'apiClient/v1'
+import { GetOffererResponseModel } from 'apiClient/v1'
 import { RemoteContextProvider } from 'context/remoteConfigContext'
 import { Events } from 'core/FirebaseEvents/constants'
 import * as useAnalytics from 'hooks/useAnalytics'
@@ -47,66 +44,69 @@ const renderHomePage = (storeOverrides: any) => {
 const mockLogEvent = vi.fn()
 
 describe('homepage', () => {
-  let baseOfferers: GetOffererResponseModel[]
-  let baseOfferersNames: GetOffererNameResponseModel[]
-  let store: any
+  const baseOfferers: GetOffererResponseModel[] = [
+    {
+      ...defautGetOffererResponseModel,
+      id: 1,
+      managedVenues: [
+        {
+          ...defaultGetOffererVenueResponseModel,
+          id: 1,
+          isVirtual: true,
+        },
+        {
+          ...defaultGetOffererVenueResponseModel,
+          id: 2,
+          isVirtual: false,
+        },
+        {
+          ...defaultGetOffererVenueResponseModel,
+          id: 3,
+          isVirtual: false,
+        },
+      ],
+      hasValidBankAccount: false,
+    },
+    {
+      ...defautGetOffererResponseModel,
+      id: 2,
+      hasValidBankAccount: true,
+    },
+    {
+      ...defautGetOffererResponseModel,
+      id: 3,
+      hasValidBankAccount: false,
+      venuesWithNonFreeOffersWithoutBankAccounts: [1],
+    },
+    {
+      ...defautGetOffererResponseModel,
+      id: 4,
+      hasValidBankAccount: true,
+      venuesWithNonFreeOffersWithoutBankAccounts: [2],
+    },
+  ]
+
+  const baseOfferersNames = baseOfferers.map(offerer => ({
+    id: offerer.id,
+    name: offerer.name,
+  }))
+
+  let store = {
+    user: {
+      currentUser: {
+        id: 'fake_id',
+        firstName: 'John',
+        lastName: 'Do',
+        email: 'john.do@dummy.xyz',
+        phoneNumber: '01 00 00 00 00',
+        hasSeenProTutorials: true,
+      },
+      initialized: true,
+    },
+    features: {},
+  }
 
   beforeEach(() => {
-    store = {
-      user: {
-        currentUser: {
-          id: 'fake_id',
-          firstName: 'John',
-          lastName: 'Do',
-          email: 'john.do@dummy.xyz',
-          phoneNumber: '01 00 00 00 00',
-          hasSeenProTutorials: true,
-        },
-        initialized: true,
-      },
-    }
-    baseOfferers = [
-      {
-        ...defautGetOffererResponseModel,
-        id: 1,
-        managedVenues: [
-          {
-            ...defaultGetOffererVenueResponseModel,
-            id: 1,
-            isVirtual: true,
-          },
-          {
-            ...defaultGetOffererVenueResponseModel,
-            id: 2,
-            isVirtual: false,
-          },
-          {
-            ...defaultGetOffererVenueResponseModel,
-            id: 3,
-            isVirtual: false,
-          },
-        ],
-        hasValidBankAccount: false,
-      },
-      {
-        ...defautGetOffererResponseModel,
-        id: 2,
-        hasValidBankAccount: true,
-        venuesWithNonFreeOffersWithoutBankAccounts: [],
-      },
-      {
-        ...defautGetOffererResponseModel,
-        id: 3,
-        hasValidBankAccount: false,
-        venuesWithNonFreeOffersWithoutBankAccounts: [1],
-      },
-    ]
-
-    baseOfferersNames = baseOfferers.map(offerer => ({
-      id: offerer.id,
-      name: offerer.name,
-    }))
-
     vi.spyOn(api, 'getProfile')
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: baseOfferersNames,
@@ -277,37 +277,28 @@ describe('homepage', () => {
       }
     })
 
-    it('should not render the add bank account banner if the offerer has no valid bank account', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNames: [baseOfferersNames[0]],
-      })
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[0])
+    it.each([baseOfferers[0], baseOfferers[1]])(
+      'should not render the add bank account banner if the offerer  hasValidBankAccount = $hasValidBankAccount and venuesWithNonFreeOffersWithoutBankAccounts = $venuesWithNonFreeOffersWithoutBankAccounts',
+      async (
+        // utilisés dans le message du test
+        // eslint-disable-next-line
+        { hasValidBankAccount, venuesWithNonFreeOffersWithoutBankAccounts }
+      ) => {
+        vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+          offerersNames: [baseOfferersNames[0]],
+        })
+        vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[0])
 
-      renderHomePage(store)
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+        renderHomePage(store)
+        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
-      expect(
-        screen.queryByText(
-          'Ajoutez un compte bancaire pour percevoir vos remboursements'
-        )
-      ).not.toBeInTheDocument()
-    })
-
-    it('should not render the add bank account banner if the offerer has no unliked venues', async () => {
-      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-        offerersNames: [baseOfferersNames[1]],
-      })
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[1])
-
-      renderHomePage(store)
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-      expect(
-        screen.queryByText(
-          'Ajoutez un compte bancaire pour percevoir vos remboursements'
-        )
-      ).not.toBeInTheDocument()
-    })
+        expect(
+          screen.queryByText(
+            'Ajoutez un compte bancaire pour percevoir vos remboursements'
+          )
+        ).not.toBeInTheDocument()
+      }
+    )
 
     it('should render the add bank account banner if the offerer has no valid bank account and some unlinked venues', async () => {
       vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
@@ -319,9 +310,44 @@ describe('homepage', () => {
       await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
       expect(
-        screen.queryByText(
+        screen.getByText(
           'Ajoutez un compte bancaire pour percevoir vos remboursements'
         )
+      ).toBeInTheDocument()
+    })
+
+    it.each([baseOfferers[0], baseOfferers[1]])(
+      'should not render the add link venue banner if the offerer  hasValidBankAccount = $hasValidBankAccount and venuesWithNonFreeOffersWithoutBankAccounts = $venuesWithNonFreeOffersWithoutBankAccounts',
+      async (
+        // utilisés dans le message du test
+        // eslint-disable-next-line
+        { hasValidBankAccount, venuesWithNonFreeOffersWithoutBankAccounts }
+      ) => {
+        vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+          offerersNames: [baseOfferersNames[0]],
+        })
+        vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[0])
+
+        renderHomePage(store)
+        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+        expect(
+          screen.queryByText(/Dernière étape pour vous faire rembourser/)
+        ).not.toBeInTheDocument()
+      }
+    )
+
+    it('should render the link venue banner if the offerer has no valid bank account and some unlinked venues', async () => {
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+        offerersNames: [baseOfferersNames[3]],
+      })
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[3])
+
+      renderHomePage(store)
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+      expect(
+        screen.getByText(/Dernière étape pour vous faire rembourser/)
       ).toBeInTheDocument()
     })
   })
