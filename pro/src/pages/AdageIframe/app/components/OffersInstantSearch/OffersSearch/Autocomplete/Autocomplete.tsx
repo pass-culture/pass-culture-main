@@ -63,6 +63,23 @@ const ALGOLIA_NUMBER_RECENT_SEARCHES = 5
 const ALGOLIA_NUMBER_VENUES_SUGGESTIONS = 6
 const DEFAULT_GEO_RADIUS = 30000000 // 30 000 km ensure that we get all the results
 const ALGOLIA_NUMBER_QUERY_SUGGESTIONS = 5
+const AUTOCOMPLETE_LOCAL_STORAGE_KEY =
+  'AUTOCOMPLETE_RECENT_SEARCHES:RECENT_SEARCH'
+
+const addSuggestionToHistory = (suggestion: string) => {
+  const currentHistory = localStorage.getItem(AUTOCOMPLETE_LOCAL_STORAGE_KEY)
+  const currentHistoryParsed = currentHistory ? JSON.parse(currentHistory) : []
+  if (
+    !currentHistoryParsed.find((item: { id: string }) => item.id === suggestion)
+  ) {
+    currentHistoryParsed.unshift({ id: suggestion, label: suggestion })
+  }
+
+  localStorage.setItem(
+    AUTOCOMPLETE_LOCAL_STORAGE_KEY,
+    JSON.stringify(currentHistoryParsed)
+  )
+}
 
 const AutocompleteComponent = ({
   refine,
@@ -97,7 +114,6 @@ const AutocompleteComponent = ({
   const VENUE_SUGGESTIONS_SOURCE_ID = 'VenueSuggestionsSource'
   const { adageUser } = useAdageUser()
   const KEYWORD_QUERY_SUGGESTIONS_SOURCE_ID = 'KeywordQuerySuggestionsSource'
-
   useEffect(() => {
     const loadData = async () => {
       const categoriesResponse =
@@ -164,8 +180,10 @@ const AutocompleteComponent = ({
         ...source,
         sourceId: VENUE_SUGGESTIONS_SOURCE_ID,
         onSelect({ item }) {
-          autocomplete.setQuery(item.venue.publicName || item.venue.name)
-          refine(item.venue.publicName || item.venue.name)
+          const venueDisplayName = item.venue.publicName || item.venue.name
+          autocomplete.setQuery(venueDisplayName)
+          refine(venueDisplayName)
+          addSuggestionToHistory(venueDisplayName)
         },
         getItems(params) {
           if (!params.state.query) {
@@ -225,6 +243,7 @@ const AutocompleteComponent = ({
           }
           refine(item.query)
           formik.submitForm()
+          addSuggestionToHistory(item.query)
         },
       }
     },
@@ -429,7 +448,7 @@ const AutocompleteComponent = ({
                         icon={fullClearIcon}
                         onClick={() => {
                           localStorage.removeItem(
-                            'AUTOCOMPLETE_RECENT_SEARCHES:RECENT_SEARCH'
+                            AUTOCOMPLETE_LOCAL_STORAGE_KEY
                           )
                           autocomplete.setIsOpen(false)
                         }}
