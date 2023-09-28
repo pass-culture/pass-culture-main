@@ -51,7 +51,7 @@ logger = logging.getLogger(__name__)
     ),
 )
 @api_key_required
-@rate_limiting.api_key_rate_limiter()
+@rate_limiting.api_key_high_rate_limiter()
 def get_offerer_venues(
     query: venues_serialization.GetOfferersVenuesQuery,
 ) -> venues_serialization.GetOfferersVenuesResponse:
@@ -93,7 +93,7 @@ def _retrieve_offer_by_eans_query(eans: list[str], venueId: int) -> sqla.orm.Que
     ),
 )
 @api_key_required
-@rate_limiting.api_key_rate_limiter()
+@rate_limiting.api_key_high_rate_limiter()
 def post_product_offer(body: serialization.BatchProductOfferCreation) -> serialization.BatchProductOfferResponse:
     """
     Create in batch (1-50) CD or vinyl products.
@@ -163,7 +163,7 @@ def post_product_offer(body: serialization.BatchProductOfferCreation) -> seriali
     ),
 )
 @api_key_required
-@rate_limiting.api_key_rate_limiter()
+@rate_limiting.api_key_low_rate_limiter()
 def post_product_offer_by_ean(body: serialization.ProductsOfferByEanCreation) -> None:
     """
     Create products offer using their European Article Number (EAN-13).
@@ -364,7 +364,7 @@ def _create_offer_from_product(
     ),
 )
 @api_key_required
-@rate_limiting.api_key_rate_limiter()
+@rate_limiting.api_key_high_rate_limiter()
 def get_product(product_id: int) -> serialization.ProductOfferResponse:
     """
     Get a product offer.
@@ -395,7 +395,7 @@ def get_product(product_id: int) -> serialization.ProductOfferResponse:
     ),
 )
 @api_key_required
-@rate_limiting.api_key_rate_limiter()
+@rate_limiting.api_key_high_rate_limiter()
 def get_product_by_ean(
     query: serialization.GetProductsListByEansQuery,
 ) -> serialization.ProductOffersByEanResponse:
@@ -432,7 +432,7 @@ def get_product_by_ean(
     ),
 )
 @api_key_required
-@rate_limiting.api_key_rate_limiter()
+@rate_limiting.api_key_high_rate_limiter()
 def get_products(
     query: serialization.GetOffersQueryParams,
 ) -> serialization.ProductOffersResponse:
@@ -483,7 +483,7 @@ def _check_offer_can_be_edited(offer: offers_models.Offer) -> None:
     ),
 )
 @api_key_required
-@rate_limiting.api_key_rate_limiter()
+@rate_limiting.api_key_high_rate_limiter()
 def edit_product(body: serialization.BatchProductOfferEdition) -> serialization.BatchProductOfferResponse:
     """
     Edit in batch (1 to 50) CD or vinyl products.
