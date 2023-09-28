@@ -1,8 +1,42 @@
-import { screen } from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 
+import { api } from 'apiClient/api'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Reimbursements from '../Reimbursements'
+
+vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+  offerersNames: [
+    {
+      id: 1,
+      name: 'first offerer',
+    },
+  ],
+})
+
+vi.spyOn(api, 'getOfferer').mockResolvedValue({
+  address: null,
+  apiKey: {
+    maxAllowed: 0,
+    prefixes: [],
+  },
+  city: 'city',
+  dateCreated: '1010/10/10',
+  demarchesSimplifieesApplicationId: null,
+  hasAvailablePricingPoints: false,
+  hasDigitalVenueAtLeastOneOffer: false,
+  hasValidBankAccount: false,
+  hasPendingBankAccount: false,
+  venuesWithNonFreeOffersWithoutBankAccounts: [],
+  isActive: false,
+  isValidated: false,
+  managedVenues: [],
+  name: 'name',
+  id: 10,
+  postalCode: '123123',
+  siren: null,
+  dsToken: '',
+})
 
 const renderReimbursements = async (storeOverrides: any) => {
   renderWithProviders(<Reimbursements />, {
@@ -50,6 +84,8 @@ describe('Reimbursement page', () => {
   it('should render reimbursement page with FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY enabled', async () => {
     store.features.list[0].isActive = true
     renderReimbursements(store)
+
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     expect(screen.getByText(/Justificatifs/)).toBeInTheDocument()
     expect(screen.getByText(/Détails/)).toBeInTheDocument()
