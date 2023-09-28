@@ -35,6 +35,7 @@ export const getFilteredBookingsRecapAdapter: GetFilteredBookingsRecapAdapter =
         }
         const {
           venueId,
+          offerId,
           eventDate,
           bookingPeriodBeginningDate,
           bookingPeriodEndingDate,
@@ -47,6 +48,7 @@ export const getFilteredBookingsRecapAdapter: GetFilteredBookingsRecapAdapter =
           page,
           // @ts-expect-error api expect number
           venueId,
+          offerId,
           eventDate,
           bookingStatusFilter,
           bookingPeriodBeginningDate,

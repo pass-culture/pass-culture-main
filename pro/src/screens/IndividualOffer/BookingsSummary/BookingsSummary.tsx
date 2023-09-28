@@ -6,13 +6,20 @@ import {
   DEFAULT_PRE_FILTERS,
   EMPTY_FILTER_VALUE,
 } from 'core/Bookings/constants'
+import { IndividualOffer } from 'core/Offers/types'
 import { getFilteredBookingsRecapAdapter } from 'pages/Bookings/adapters'
 import { IndividualBookingsTable } from 'screens/Bookings/BookingsRecapTable/BookingsTable/IndividualBookingsTable'
 import { DEFAULT_OMNISEARCH_CRITERIA } from 'screens/Bookings/BookingsRecapTable/Filters'
 import filterBookingsRecap from 'screens/Bookings/BookingsRecapTable/utils/filterBookingsRecap'
 import Spinner from 'ui-kit/Spinner/Spinner'
 
-export const BookingsSummaryScreen = () => {
+interface BookingsSummaryScreenProps {
+  offer: IndividualOffer
+}
+
+export const BookingsSummaryScreen = ({
+  offer,
+}: BookingsSummaryScreenProps) => {
   const [bookings, setBookings] = useState<BookingRecapResponseModel[] | null>(
     null
   )
@@ -24,6 +31,7 @@ export const BookingsSummaryScreen = () => {
     const loadBookings = async () => {
       const response = await getFilteredBookingsRecapAdapter({
         ...DEFAULT_PRE_FILTERS,
+        offerId: String(offer.id),
       })
 
       if (response.isOk) {
@@ -64,5 +72,4 @@ export const BookingsSummaryScreen = () => {
       )}
     </SummaryLayout.Section>
   )
-  return
 }

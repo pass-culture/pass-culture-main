@@ -18,7 +18,7 @@ const render = (offer: IndividualOffer) => {
 
   renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
-      <BookingsSummaryScreen />
+      <BookingsSummaryScreen offer={offer} />
     </IndividualOfferContext.Provider>
   )
 }

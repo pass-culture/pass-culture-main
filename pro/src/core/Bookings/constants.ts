@@ -33,6 +33,7 @@ export const DEFAULT_PRE_FILTERS = {
   offerEventDate: ALL_DATES,
   offerVenueId: ALL_VENUES,
   offerType: ALL_OFFER_TYPE,
+  offerId: undefined,
 }
 
 export const ALL_VENUES_OPTION: SelectOption = {
