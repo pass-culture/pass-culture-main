@@ -97,6 +97,7 @@ def find_by_pro_user(
     status_filter: BookingStatusFilter | None = None,
     event_date: datetime | None = None,
     venue_id: int | None = None,
+    offer_id: int | None = None,
     offer_type: OfferType | None = None,
     page: int = 1,
     per_page_limit: int = 1000,
@@ -107,6 +108,7 @@ def find_by_pro_user(
         status_filter=status_filter,
         event_date=event_date,
         venue_id=venue_id,
+        offer_id=offer_id,
         offer_type=offer_type,
     )
 
@@ -117,6 +119,7 @@ def find_by_pro_user(
         event_date=event_date,
         venue_id=venue_id,
         offer_type=offer_type,
+        offer_id=offer_id,
     )
     bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
     bookings_page = (
@@ -359,6 +362,7 @@ def _get_filtered_bookings_query(
     status_filter: BookingStatusFilter | None = None,
     event_date: date | None = None,
     venue_id: int | None = None,
+    offer_id: int | None = None,
     offer_type: OfferType | None = None,
     extra_joins: Iterable[Column] | None = None,
 ) -> BaseQuery:
@@ -392,6 +396,9 @@ def _get_filtered_bookings_query(
     if venue_id is not None:
         bookings_query = bookings_query.filter(Booking.venueId == venue_id)
 
+    if offer_id is not None:
+        bookings_query = bookings_query.filter(Stock.offerId == offer_id)
+
     if event_date:
         bookings_query = bookings_query.filter(field_to_venue_timezone(Stock.beginningDatetime) == event_date)
     return bookings_query
@@ -403,10 +410,11 @@ def _get_filtered_bookings_count(
     status_filter: BookingStatusFilter | None = None,
     event_date: date | None = None,
     venue_id: int | None = None,
+    offer_id: int | None = None,
     offer_type: OfferType | None = None,
 ) -> int:
     bookings = (
-        _get_filtered_bookings_query(pro_user, period, status_filter, event_date, venue_id, offer_type)
+        _get_filtered_bookings_query(pro_user, period, status_filter, event_date, venue_id, offer_id, offer_type)
         .with_entities(Booking.id, Booking.quantity)
         .distinct(Booking.id)
     ).cte()
@@ -422,6 +430,7 @@ def _get_filtered_booking_report(
     status_filter: BookingStatusFilter | None,
     event_date: datetime | None = None,
     venue_id: int | None = None,
+    offer_id: int | None = None,
     offer_type: OfferType | None = None,
 ) -> str:
     bookings_query = (
@@ -431,6 +440,7 @@ def _get_filtered_booking_report(
             status_filter,
             event_date,
             venue_id,
+            offer_id,
             offer_type,
             extra_joins=(Stock.offer, Booking.user),
         )
@@ -476,6 +486,7 @@ def _get_filtered_booking_pro(
     status_filter: BookingStatusFilter | None = None,
     event_date: datetime | None = None,
     venue_id: int | None = None,
+    offer_id: int | None = None,
     offer_type: OfferType | None = None,
 ) -> BaseQuery:
     bookings_query = (
@@ -485,6 +496,7 @@ def _get_filtered_booking_pro(
             status_filter,
             event_date,
             venue_id,
+            offer_id,
             offer_type,
             extra_joins=(
                 Stock.offer,
