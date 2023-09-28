@@ -466,6 +466,31 @@ describe('offers', () => {
     expect(surveySatisfaction).toBeInTheDocument()
   })
 
+  it('should not display survey satisfaction if user role readonly', async () => {
+    // Given
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(offerInParis)
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+      offerInCayenne
+    )
+    // When
+    renderOffers(
+      offersProps,
+      { ...adageUser, role: AdageFrontRoles.READONLY },
+      {
+        features: {
+          list: [{ isActive: true, nameKey: 'WIP_ENABLE_SATISFACTION_SURVEY' }],
+        },
+      }
+    )
+
+    const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
+    expect(listItemsInOffer).toHaveLength(2)
+
+    // Then
+    const surveySatisfaction = screen.queryByText('Enquête de satisfaction')
+    expect(surveySatisfaction).not.toBeInTheDocument()
+  })
+
   it('should not display survey satisfaction if only 1 offer', async () => {
     // Given
     vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce({
