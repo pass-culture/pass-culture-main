@@ -4,8 +4,8 @@ import pytest
 
 from pcapi.core.categories import categories
 from pcapi.core.categories.subcategories import Subcategory
-from pcapi.core.categories.subcategories_v2 import ConditionalField
 from pcapi.core.categories.subcategories_v2 import ExtraDataFieldEnum
+from pcapi.core.categories.subcategories_v2 import FieldCondition
 from pcapi.core.categories.subcategories_v2 import NativeCategory
 import pcapi.core.users.factories as users_factories
 
@@ -41,9 +41,9 @@ import pcapi.core.users.factories as users_factories
             homepage_label_name="CINEMA",
             is_event=True,
             conditional_fields={
-                ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-                ExtraDataFieldEnum.VISA.value: ConditionalField(),
-                ExtraDataFieldEnum.STAGE_DIRECTOR.value: ConditionalField(),
+                ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+                ExtraDataFieldEnum.VISA.value: FieldCondition(),
+                ExtraDataFieldEnum.STAGE_DIRECTOR.value: FieldCondition(),
             },
             can_expire=False,
             can_be_duo=True,
