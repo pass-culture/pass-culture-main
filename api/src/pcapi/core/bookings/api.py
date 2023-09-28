@@ -404,6 +404,44 @@ def _cancel_booking(
     raise_if_error: bool = False,
 ) -> bool:
     """Cancel booking and update a user's credit information on Batch"""
+    try:
+        if not _execute_cancel_booking(booking, reason, cancel_even_if_used, raise_if_error):
+            return False
+    except external_bookings_exceptions.ExternalBookingAlreadyCancelledError as error:
+        booking.cancel_booking(reason, cancel_even_if_used)
+        if error.remainingQuantity is None:
+            booking.stock.quantity = None
+        else:
+            booking.stock.quantity = booking.stock.dnBookedQuantity + error.remainingQuantity
+    except external_bookings_exceptions.ExternalBookingException as error:
+        if raise_if_error:
+            raise error
+
+    logger.info(
+        "Booking has been cancelled",
+        extra={
+            "booking_id": booking.id,
+            "reason": str(reason),
+            "booking_token": booking.token,
+            "barcodes": [external_booking.barcode for external_booking in booking.externalBookings],
+        },
+        technical_message_id="booking.cancelled",
+    )
+    amplitude_events.track_cancel_booking_event(booking, reason)
+    _send_external_booking_notification_if_necessary(booking, BookingAction.CANCEL)
+
+    update_external_user(booking.user)
+    update_external_pro(booking.venue.bookingEmail)
+    search.async_index_offer_ids([booking.stock.offerId])
+    return True
+
+
+def _execute_cancel_booking(
+    booking: Booking,
+    reason: BookingCancellationReasons,
+    cancel_even_if_used: bool = False,
+    raise_if_error: bool = False,
+) -> bool:
     with transaction():
         with db.session.no_autoflush:
             stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
@@ -445,27 +483,9 @@ def _cancel_booking(
                     },
                 )
                 return False
+
             stock.dnBookedQuantity -= booking.quantity
             repository.save(booking, stock)
-
-    logger.info(
-        "Booking has been cancelled",
-        extra={
-            "booking_id": booking.id,
-            "booking_quantity": booking.quantity,
-            "reason": str(reason),
-            "booking_token": booking.token,
-            "barcodes": [external_booking.barcode for external_booking in booking.externalBookings],
-            "stock_dnBookedQuantity": stock.dnBookedQuantity,
-        },
-        technical_message_id="booking.cancelled",
-    )
-    amplitude_events.track_cancel_booking_event(booking, reason)
-    _send_external_booking_notification_if_necessary(booking, BookingAction.CANCEL)
-
-    update_external_user(booking.user)
-    update_external_pro(booking.venue.bookingEmail)
-    search.async_index_offer_ids([booking.stock.offerId])
     return True
 
 
@@ -500,6 +520,7 @@ def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
             raise external_bookings_exceptions.ExternalBookingException
         except external_bookings_exceptions.ExternalBookingAlreadyCancelledError as error:
             logger.info("External ticket already cancelled for booking: %s. Error %s", booking.id, str(error))
+            raise error
         return None
 
     venue_provider_name = external_bookings_api.get_active_cinema_venue_provider(offer.venueId).provider.localClass
@@ -539,13 +560,13 @@ def cancel_booking_by_beneficiary(user: User, booking: Booking) -> None:
     if not user.is_beneficiary:
         raise RuntimeError("Unexpected call to cancel_booking_by_beneficiary with non-beneficiary user %s" % user)
     validation.check_beneficiary_can_cancel_booking(user, booking)
-    _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
+    _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY, raise_if_error=True)
     user_emails_job.send_booking_cancellation_emails_to_user_and_offerer_job.delay(booking.id)
 
 
 def cancel_booking_by_offerer(booking: Booking) -> None:
     validation.check_booking_can_be_cancelled(booking)
-    _cancel_booking(booking, BookingCancellationReasons.OFFERER)
+    _cancel_booking(booking, BookingCancellationReasons.OFFERER, raise_if_error=True)
     push_notification_job.send_cancel_booking_notification.delay([booking.id])
     user_emails_job.send_booking_cancellation_emails_to_user_and_offerer_job.delay(booking.id)
 

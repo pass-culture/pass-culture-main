@@ -197,9 +197,7 @@ def _check_external_booking_response_is_ok(response: requests.Response) -> None:
         if error_response.error == "not_enough_seats" and isinstance(error_response.remainingQuantity, int):
             raise exceptions.ExternalBookingNotEnoughSeatsError(remainingQuantity=error_response.remainingQuantity)
         if error_response.error == "already_cancelled":
-            raise exceptions.ExternalBookingAlreadyCancelledError(
-                f"External booking failed with status code {response.status_code} and message {response.text}"
-            )
+            raise exceptions.ExternalBookingAlreadyCancelledError(remainingQuantity=error_response.remainingQuantity)
     if not response.ok:
         raise exceptions.ExternalBookingException(
             f"External booking failed with status code {response.status_code} and message {response.text}"
