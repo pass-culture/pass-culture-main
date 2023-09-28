@@ -16,6 +16,7 @@ from pcapi.core.providers.factories import BoostCinemaDetailsFactory
 from pcapi.core.providers.factories import BoostCinemaProviderPivotFactory
 from pcapi.core.providers.factories import VenueProviderFactory
 from pcapi.core.providers.repository import get_provider_by_local_class
+from pcapi.core.testing import override_features
 from pcapi.local_providers import BoostStocks
 from pcapi.utils.human_ids import humanize
 
@@ -84,6 +85,50 @@ class BoostStocksTest:
         assert stock_providable_info.type == Stock
         assert stock_providable_info.id_at_providers == f"207%{venue_provider.venue.id}%Boost#36683"
         assert stock_providable_info.new_id_at_provider == f"207%{venue_provider.venue.id}%Boost#36683"
+
+        assert get_cinema_attr_adapter.call_count == 1
+
+    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=True)
+    def should_return_providable_info_on_next_with_enabled_filter_ff(self, requests_mock):
+        boost_provider = get_provider_by_local_class("BoostStocks")
+        venue_provider = VenueProviderFactory(provider=boost_provider)
+        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
+            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+
+        get_cinema_attr_adapter = requests_mock.get(
+            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
+        )
+
+        requests_mock.get(
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=30",
+            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_1_JSON_DATA,
+        )
+        requests_mock.get(
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=2&per_page=30",
+            json=fixtures.ShowtimesEndpointResponse.PAGE_2_JSON_DATA,
+        )
+
+        boost_stocks = BoostStocks(venue_provider=venue_provider)
+        providable_infos = next(boost_stocks)
+
+        assert len(providable_infos) == 3
+        product_providable_info = providable_infos[0]
+        offer_providable_info = providable_infos[1]
+        stock_providable_info = providable_infos[2]
+
+        assert product_providable_info.type == Product
+        assert product_providable_info.id_at_providers == f"161%{venue_provider.venue.id}%Boost"
+        assert product_providable_info.new_id_at_provider == f"161%{venue_provider.venue.id}%Boost"
+
+        assert offer_providable_info.type == Offer
+        assert offer_providable_info.id_at_providers == f"161%{venue_provider.venue.id}%Boost"
+        assert offer_providable_info.new_id_at_provider == f"161%{venue_provider.venue.id}%Boost"
+
+        assert stock_providable_info.type == Stock
+        assert stock_providable_info.id_at_providers == f"161%{venue_provider.venue.id}%Boost#15971"
+        assert stock_providable_info.new_id_at_provider == f"161%{venue_provider.venue.id}%Boost#15971"
 
         assert get_cinema_attr_adapter.call_count == 1
 
@@ -179,6 +224,111 @@ class BoostStocksTest:
         assert created_stocks[1].features == ["VO", "3D"]
 
         assert all((category.price == decimal.Decimal("6.9") for category in created_price_categories))
+        assert all(
+            (category.priceCategoryLabel == created_price_category_label for category in created_price_categories)
+        )
+        assert created_price_category_label.label == "PASS CULTURE"
+
+        assert boost_stocks.erroredObjects == 0
+        assert boost_stocks.erroredThumbs == 0
+
+        assert get_cinema_attr_adapter.call_count == 1
+
+    @override_features(WIP_ENABLE_BOOST_SHOWTIMES_FILTER=True)
+    def should_fill_offer_and_product_and_stock_informations_for_each_movie_with_enabled_filter_ff(self, requests_mock):
+        boost_provider = get_provider_by_local_class("BoostStocks")
+        venue_provider = VenueProviderFactory(provider=boost_provider, isDuoOffers=True)
+        cinema_provider_pivot = BoostCinemaProviderPivotFactory(
+            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        BoostCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaUrl="https://cinema-0.example.com/")
+
+        get_cinema_attr_adapter = requests_mock.get(
+            "https://cinema-0.example.com/api/cinemas/attributs", json=fixtures.CinemasAttributsEndPointResponse.DATA
+        )
+        requests_mock.get(
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=1&per_page=30",
+            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_1_JSON_DATA,
+        )
+        requests_mock.get(
+            f"https://cinema-0.example.com/api/showtimes/between/{TODAY_STR}/{FUTURE_DATE_STR}?paymentMethod=external:credit:passculture&hideFullReservation=1&page=2&per_page=30",
+            json=fixtures.ShowtimesWithPaymentMethodFilterEndpointResponse.PAGE_2_JSON_DATA,
+        )
+        requests_mock.get("http://example.com/images/159673.jpg", content=bytes())
+        requests_mock.get("http://example.com/images/159570.jpg", content=bytes())
+        boost_stocks = BoostStocks(venue_provider=venue_provider)
+        boost_stocks.updateObjects()
+
+        created_offers = Offer.query.order_by(Offer.id).all()
+        created_products = Product.query.order_by(Product.id).all()
+        created_stocks = Stock.query.order_by(Stock.id).all()
+        created_price_categories = PriceCategory.query.order_by(PriceCategory.id).all()
+        created_price_category_label = PriceCategoryLabel.query.one()
+        assert len(created_offers) == len(created_products) == 2
+        assert len(created_stocks) == 3
+        assert len(created_price_categories) == 3
+
+        assert created_offers[0].name == "MISSION IMPOSSIBLE DEAD RECKONING PARTIE 1"
+        assert created_offers[0].product == created_products[0]
+        assert created_offers[0].venue == venue_provider.venue
+        assert not created_offers[0].description  # FIXME
+        assert created_offers[0].durationMinutes == 163
+        assert created_offers[0].isDuo
+        assert created_offers[0].subcategoryId == subcategories.SEANCE_CINE.id
+        assert created_offers[0].extraData == {"visa": "159673"}
+
+        assert created_products[0].name == "MISSION IMPOSSIBLE DEAD RECKONING PARTIE 1"
+        assert not created_products[0].description  # FIXME
+        assert created_products[0].durationMinutes == 163
+        assert created_products[0].extraData == {"visa": "159673"}
+
+        assert created_stocks[0].quantity == 147
+        assert created_stocks[0].price == decimal.Decimal("12.00")
+        assert created_stocks[0].priceCategory == created_price_categories[0]
+        assert created_stocks[0].dateCreated is not None
+        assert created_stocks[0].offer == created_offers[0]
+        assert created_stocks[0].bookingLimitDatetime == datetime.datetime(2023, 9, 26, 8, 40)
+        assert created_stocks[0].beginningDatetime == datetime.datetime(2023, 9, 26, 8, 40)
+        assert created_stocks[0].features == ["VF", "ICE"]
+
+        assert created_offers[1].name == "SPIDER-MAN ACROSS THE SPIDER-VERSE"
+        assert created_offers[1].product == created_products[1]
+        assert created_offers[1].venue == venue_provider.venue
+        assert not created_offers[1].description  # FIXME
+        assert created_offers[1].durationMinutes == 140
+        assert created_offers[1].isDuo
+        assert created_offers[1].subcategoryId == subcategories.SEANCE_CINE.id
+        assert created_offers[1].extraData == {"visa": "159570"}
+
+        assert created_products[1].name == "SPIDER-MAN ACROSS THE SPIDER-VERSE"
+        assert not created_products[1].description  # FIXME
+        assert created_products[1].durationMinutes == 140
+        assert created_products[1].extraData == {"visa": "159570"}
+
+        assert created_stocks[1].quantity == 452
+        assert created_stocks[1].price == decimal.Decimal("6.00")
+        assert created_stocks[1].priceCategory == created_price_categories[1]
+        assert created_stocks[1].dateCreated is not None
+        assert created_stocks[1].offer == created_offers[1]
+        assert created_stocks[1].bookingLimitDatetime == datetime.datetime(2023, 9, 26, 9, 10)
+        assert created_stocks[1].beginningDatetime == datetime.datetime(2023, 9, 26, 9, 10)
+        assert created_stocks[1].features == ["VO"]
+
+        assert created_stocks[2].offer == created_offers[1]
+
+        assert created_stocks[2].quantity == 152
+        assert created_stocks[2].price == decimal.Decimal("12.00")
+        assert created_stocks[2].priceCategory == created_price_categories[2]
+        assert created_stocks[2].dateCreated is not None
+        assert created_stocks[2].offer == created_offers[1]
+        assert created_stocks[2].bookingLimitDatetime == datetime.datetime(2023, 9, 26, 12, 20)
+        assert created_stocks[2].beginningDatetime == datetime.datetime(2023, 9, 26, 12, 20)
+        assert created_stocks[2].features == ["VF", "ICE"]
+
+        assert created_price_categories[0].price == decimal.Decimal("12.00")
+        assert created_price_categories[1].price == decimal.Decimal("6.00")
+        assert created_price_categories[2].price == decimal.Decimal("12.00")
+
         assert all(
             (category.priceCategoryLabel == created_price_category_label for category in created_price_categories)
         )
