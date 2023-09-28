@@ -4,15 +4,13 @@ import Callout from 'components/Callout/Callout'
 import { CalloutVariant } from 'components/Callout/types'
 import useActiveFeature from 'hooks/useActiveFeature'
 
-import styles from './Callout.module.scss'
-
 export interface LinkVenueCalloutProps {
-  smallCallout?: boolean
+  titleOnly?: boolean
   hasMultipleVenuesToLink?: boolean
 }
 
 const LinkVenueCallout = ({
-  smallCallout = false,
+  titleOnly = false,
   hasMultipleVenuesToLink = false,
 }: LinkVenueCalloutProps): JSX.Element | null => {
   const isNewBankDetailsJourneyEnable = useActiveFeature(
@@ -27,35 +25,27 @@ const LinkVenueCallout = ({
       title={`Dernière étape pour vous faire rembourser : rattachez ${
         hasMultipleVenuesToLink ? 'vos lieux' : 'votre lieu'
       } à un compte bancaire`}
-      className={smallCallout ? styles['small-callout'] : ''}
-      links={
-        smallCallout
-          ? undefined
-          : [
-              {
-                href: '/remboursements/informations-bancaires',
-                linkTitle: 'Gérer le rattachement de mes lieux',
-                targetLink: '',
-              },
-            ]
-      }
+      links={[
+        {
+          href: '/remboursements/informations-bancaires',
+          linkTitle: 'Gérer le rattachement de mes lieux',
+          targetLink: '',
+        },
+      ]}
       type={CalloutVariant.ERROR}
+      titleOnly={titleOnly}
     >
-      {!smallCallout && (
-        <>
-          <p>
-            Afin de percevoir vos remboursements, vous devez rattacher
-            {hasMultipleVenuesToLink ? ' vos lieux' : ' votre lieu'} à un compte
-            bancaire. Les offres dont les lieux ne sont pas rattachés à un
-            compte bancaire ne seront pas remboursées.
-          </p>
-          <br />
-          <p>
-            Rendez-vous dans l'onglet informations bancaires de votre page
-            Remboursements.
-          </p>
-        </>
-      )}
+      <p>
+        Afin de percevoir vos remboursements, vous devez rattacher
+        {hasMultipleVenuesToLink ? ' vos lieux' : ' votre lieu'} à un compte
+        bancaire. Les offres dont les lieux ne sont pas rattachés à un compte
+        bancaire ne seront pas remboursées.
+      </p>
+      <br />
+      <p>
+        Rendez-vous dans l'onglet informations bancaires de votre page
+        Remboursements.
+      </p>
     </Callout>
   )
 }

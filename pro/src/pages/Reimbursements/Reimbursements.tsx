@@ -17,9 +17,9 @@ const Reimbursements = (): JSX.Element => {
 
       <>
         {/* TODO: displaying condition when offerer is available here. (Done in another branch)*/}
-        <AddBankAccountCallout smallCallout={true} />
+        <AddBankAccountCallout titleOnly={true} />
         {/* TODO: displaying condition when offerer is available here. (Done in another branch)*/}
-        <LinkVenueCallout smallCallout={true} />
+        <LinkVenueCallout titleOnly={true} />
 
         <BannerReimbursementsInfo />
 
