@@ -45,9 +45,9 @@ vi.mock('utils/date', async () => {
 const NTH_ARGUMENT_GET_BOOKINGS = {
   page: 1,
   venueId: 2,
-  eventDate: 3,
-  bookingBeginningDate: 5,
-  bookingEndingDate: 6,
+  eventDate: 4,
+  bookingBeginningDate: 6,
+  bookingEndingDate: 7,
 }
 
 const renderBookingsRecap = async (

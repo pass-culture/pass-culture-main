@@ -8,6 +8,7 @@ export const buildBookingsRecapQuery = ({
   bookingEndingDate = DEFAULT_PRE_FILTERS.bookingEndingDate,
   bookingStatusFilter = DEFAULT_PRE_FILTERS.bookingStatusFilter,
   offerType = DEFAULT_PRE_FILTERS.offerType,
+  offerId,
   page,
 }: Partial<PreFiltersParams> & { page?: number }): APIFilters => {
   const params = { page } as APIFilters
@@ -27,6 +28,10 @@ export const buildBookingsRecapQuery = ({
 
   if (bookingEndingDate) {
     params.bookingPeriodEndingDate = bookingEndingDate
+  }
+
+  if (offerId) {
+    params.offerId = offerId
   }
 
   params.bookingStatusFilter = bookingStatusFilter
