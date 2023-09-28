@@ -9,6 +9,7 @@ from flask import url_for
 import sqlalchemy as sa
 
 from pcapi.core import search
+from pcapi.core.bookings import constants as bookings_constants
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import models as educational_models
@@ -329,23 +330,24 @@ def _is_collective_offer_price_editable(collective_offer: educational_models.Col
         return False
 
     # if the offer is not USED it cannot be edited
-    if not (collective_offer.isSoldOut and collective_offer.hasBeginningDatetimePassed):
+    if not collective_offer.isSoldOut or (
+        collective_offer.collectiveStock.beginningDatetime + bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
+        < datetime.datetime.utcnow()
+    ):
         return False
 
     # cannot update an offer's price while the cashflow generation script is running
     if app.redis_client.exists(finance_conf.REDIS_GENERATE_CASHFLOW_LOCK):  # type: ignore [attr-defined]
         return False
 
-    # cannot update an offer's stock if it already has a processed pricing
+    # cannot update an offer's stock if it already has a pricing
     pricing_query = (
         db.session.query(finance_models.Pricing.id)
         .join(educational_models.CollectiveBooking, finance_models.Pricing.collectiveBooking)
         .join(educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock)
         .filter(
             educational_models.CollectiveStock.collectiveOfferId == collective_offer.id,
-            finance_models.Pricing.status.in_(
-                (finance_models.PricingStatus.PROCESSED, finance_models.PricingStatus.INVOICED)
-            ),
+            finance_models.Pricing.status != finance_models.PricingStatus.CANCELLED,
         )
     )
     if pricing_query.one_or_none():
