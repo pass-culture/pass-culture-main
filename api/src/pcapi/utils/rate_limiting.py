@@ -63,14 +63,22 @@ def email_rate_limiter(**kwargs: typing.Any) -> typing.Callable:
     return rate_limiter.shared_limit(settings.RATE_LIMIT_BY_EMAIL, **base_kwargs)
 
 
-def api_key_rate_limiter(**kwargs: typing.Any) -> typing.Callable:
+def api_key_high_rate_limiter(**kwargs: typing.Any) -> typing.Callable:
+    return _api_key_rate_limiter(settings.HIGH_RATE_LIMIT_BY_API_KEY, **kwargs)
+
+
+def api_key_low_rate_limiter(**kwargs: typing.Any) -> typing.Callable:
+    return _api_key_rate_limiter(settings.LOW_RATE_LIMIT_BY_API_KEY, **kwargs)
+
+
+def _api_key_rate_limiter(rate_limit: str, **kwargs: typing.Any) -> typing.Callable:
     base_kwargs = {
         "key_func": get_api_key,
         "scope": "rate_limiter",
         "error_message": "rate limit by api_key exceeded",
     }
     base_kwargs.update(kwargs)
-    return rate_limiter.shared_limit(settings.RATE_LIMIT_BY_API_KEY, **base_kwargs)
+    return rate_limiter.shared_limit(rate_limit, **base_kwargs)
 
 
 def basic_auth_rate_limiter(**kwargs: typing.Any) -> typing.Callable:

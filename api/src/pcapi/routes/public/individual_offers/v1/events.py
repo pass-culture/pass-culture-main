@@ -73,7 +73,7 @@ def _deserialize_ticket_collection(
     ),
 )
 @api_key_required
-@rate_limiting.api_key_rate_limiter()
+@rate_limiting.api_key_high_rate_limiter()
 def post_event_offer(body: serialization.EventOfferCreation) -> serialization.EventOfferResponse:
     """
     Post an event offer.
@@ -143,7 +143,7 @@ def post_event_offer(body: serialization.EventOfferCreation) -> serialization.Ev
     ),
 )
 @api_key_required
-@rate_limiting.api_key_rate_limiter()
+@rate_limiting.api_key_high_rate_limiter()
 def get_event(event_id: int) -> serialization.EventOfferResponse:
     """
     Get an event offer.
@@ -178,7 +178,7 @@ def get_event(event_id: int) -> serialization.EventOfferResponse:
     ),
 )
 @api_key_required
-@rate_limiting.api_key_rate_limiter()
+@rate_limiting.api_key_high_rate_limiter()
 def get_events(query: serialization.GetOffersQueryParams) -> serialization.EventOffersResponse:
     """
     Get events. Results are paginated.
@@ -216,7 +216,7 @@ def get_events(query: serialization.GetOffersQueryParams) -> serialization.Event
     ),
 )
 @api_key_required
-@rate_limiting.api_key_rate_limiter()
+@rate_limiting.api_key_high_rate_limiter()
 def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serialization.EventOfferResponse:
     """
     Edit a event offer.
@@ -289,7 +289,7 @@ def edit_event(event_id: int, body: serialization.EventOfferEdition) -> serializ
     ),
 )
 @api_key_required
-@rate_limiting.api_key_rate_limiter()
+@rate_limiting.api_key_high_rate_limiter()
 def post_event_price_categories(
     event_id: int, body: serialization.PriceCategoriesCreation
 ) -> serialization.PriceCategoriesResponse:
@@ -336,7 +336,7 @@ def post_event_price_categories(
     ),
 )
 @api_key_required
-@rate_limiting.api_key_rate_limiter()
+@rate_limiting.api_key_high_rate_limiter()
 def patch_event_price_categories(
     event_id: int,
     price_category_id: int,
@@ -405,7 +405,7 @@ def patch_event_price_categories(
     ),
 )
 @api_key_required
-@rate_limiting.api_key_rate_limiter()
+@rate_limiting.api_key_high_rate_limiter()
 def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serialization.PostDatesResponse:
     """
     Add dates to an event offer.
@@ -471,7 +471,7 @@ def post_event_dates(event_id: int, body: serialization.DatesCreation) -> serial
     ),
 )
 @api_key_required
-@rate_limiting.api_key_rate_limiter()
+@rate_limiting.api_key_high_rate_limiter()
 def get_event_dates(event_id: int, query: serialization.GetDatesQueryParams) -> serialization.GetDatesResponse:
     """
     Get dates of an event. Results are paginated.
@@ -526,7 +526,7 @@ def get_event_dates(event_id: int, query: serialization.GetDatesQueryParams) -> 
     ),
 )
 @api_key_required
-@rate_limiting.api_key_rate_limiter()
+@rate_limiting.api_key_high_rate_limiter()
 def delete_event_date(event_id: int, date_id: int) -> None:
     """
     Delete an event date.
@@ -571,7 +571,7 @@ def delete_event_date(event_id: int, date_id: int) -> None:
     ),
 )
 @api_key_required
-@rate_limiting.api_key_rate_limiter()
+@rate_limiting.api_key_high_rate_limiter()
 def patch_event_date(
     event_id: int,
     date_id: int,
