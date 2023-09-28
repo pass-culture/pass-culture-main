@@ -5,6 +5,7 @@ import {
   GetOffererResponseModel,
   GetOfferersNamesResponseModel,
 } from 'apiClient/v1'
+import AddBankAccountCallout from 'components/Callout/AddBankAccountCallout'
 import { Newsletter } from 'components/Newsletter'
 import TutorialDialog from 'components/TutorialDialog'
 import { hasStatusCode } from 'core/OfferEducational'
@@ -32,6 +33,8 @@ const Homepage = (): JSX.Element => {
   const [hasNoVenueVisible, setHasNoVenueVisible] = useState(false)
   const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
   const [venues, setVenues] = useState(INITIAL_OFFERER_VENUES)
+  const [displayAddBankAccountBanner, setDisplayBankAccountBanner] =
+    useState(false)
   const { remoteConfigData } = useRemoteConfig()
 
   useEffect(() => {
@@ -51,6 +54,11 @@ const Homepage = (): JSX.Element => {
         })
         setSelectedOfferer(receivedOfferer)
         setIsUserOffererValidated(true)
+        setDisplayBankAccountBanner(
+          !receivedOfferer.hasValidBankAccount &&
+            receivedOfferer.venuesWithNonFreeOffersWithoutBankAccounts.length >
+              0
+        )
       } catch (error) {
         /* istanbul ignore next: DEBT, TO FIX */
         if (hasStatusCode(error) && error.status === HTTP_STATUS.FORBIDDEN) {
@@ -80,6 +88,7 @@ const Homepage = (): JSX.Element => {
       }
       setIsLoading(false)
     }
+
     selectedOffererId && loadOfferer(selectedOffererId)
   }, [selectedOffererId])
 
@@ -104,6 +113,7 @@ const Homepage = (): JSX.Element => {
       <div className="homepage">
         <h1>Bienvenue dans l’espace acteurs culturels</h1>
 
+        {displayAddBankAccountBanner && <AddBankAccountCallout />}
         <HomepageBreadcrumb
           activeStep={STEP_ID_OFFERERS}
           isOffererStatsActive={isOffererStatsActive}
