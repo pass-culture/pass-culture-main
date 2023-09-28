@@ -49,17 +49,6 @@ def _convert_to_utc_datetime(datetime_with_tz_offset: datetime.datetime) -> date
     return datetime_with_tz_offset.astimezone(tz=datetime.timezone.utc)
 
 
-class ShowTime4(BaseModel):
-    """We transcribe their API schema and keep their name convention"""
-
-    id: int
-    numberSeatsRemaining: int
-
-
-class ShowTimeCollection(Collection):
-    data: list[ShowTime4]
-
-
 class ShowtimePricing(BaseModel):
     id: int
     pricingCode: str
@@ -67,18 +56,18 @@ class ShowtimePricing(BaseModel):
     title: str
 
 
-class ShowTime(BaseModel):
+class ShowTime4(BaseModel):
+    """We transcribe their API schema and keep their name convention"""
+
     id: int
     numberSeatsRemaining: int
     showDate: datetime.datetime
     showEndDate: datetime.datetime
-    soldOut: bool
-    authorizedAccess: bool
     film: Film2
     format: dict
     version: dict
     screen: dict
-    showtimePricing: list[ShowtimePricing]
+    showtimePricing: list[ShowtimePricing] = pydantic_v1.Field(default_factory=list)
     attributs: list[int]
 
     @pydantic_v1.validator("showDate", "showEndDate")
@@ -86,9 +75,13 @@ class ShowTime(BaseModel):
         return _convert_to_utc_datetime(value)
 
 
+class ShowTimeCollection(Collection):
+    data: list[ShowTime4]
+
+
 class ShowTimeDetails(BaseModel):
     message: str
-    data: ShowTime
+    data: ShowTime4
 
 
 class BasketItem(BaseModel):
