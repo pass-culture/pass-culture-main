@@ -25,10 +25,7 @@ from . import utils
 
 
 def _deserialize_ticket_collection(
-    ticket_collection: serialization.SentByEmailDetails
-    | serialization.OnSiteCollectionDetails
-    | serialization.InAppDetails
-    | None,
+    ticket_collection: serialization.InAppDetails | None,
     subcategory_id: str,
 ) -> tuple[offers_models.WithdrawalTypeEnum | None, int | None]:
     if not ticket_collection:
@@ -36,22 +33,17 @@ def _deserialize_ticket_collection(
             return offers_models.WithdrawalTypeEnum.NO_TICKET, None
         return None, None
 
-    if isinstance(ticket_collection, serialization.InAppDetails):
-        if not (current_api_key.provider.hasProviderEnableCharlie):
-            raise api_errors.ApiErrors(
-                {"global": "You must support the pass culture ticketting interface to use the in_app value."},
-                status_code=400,
-            )
-        return offers_models.WithdrawalTypeEnum.IN_APP, None
-
     if not feature.FeatureToggle.WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API.is_active():
         raise api_errors.ApiErrors(
             {"global": "During this API Beta, it is only possible to create events without tickets."}, status_code=400
         )
 
-    if isinstance(ticket_collection, serialization.SentByEmailDetails):
-        return offers_models.WithdrawalTypeEnum.BY_EMAIL, ticket_collection.daysBeforeEvent * 24 * 3600
-    return offers_models.WithdrawalTypeEnum.ON_SITE, ticket_collection.minutesBeforeEvent * 60
+    if not (current_api_key.provider.hasProviderEnableCharlie):
+        raise api_errors.ApiErrors(
+            {"global": "You must support the pass culture ticketting interface to use the in_app value."},
+            status_code=400,
+        )
+    return offers_models.WithdrawalTypeEnum.IN_APP, None
 
 
 @blueprint.v1_blueprint.route("/events", methods=["POST"])
