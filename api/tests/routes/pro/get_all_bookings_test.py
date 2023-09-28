@@ -41,6 +41,7 @@ class GetAllBookingsTest:
             status_filter=bookings_models.BookingStatusFilter.BOOKED,
             event_date=None,
             venue_id=None,
+            offer_id=None,
             offer_type=None,
             page=3,
         )
@@ -58,6 +59,7 @@ class GetAllBookingsTest:
             status_filter=bookings_models.BookingStatusFilter.BOOKED,
             event_date=None,
             venue_id=None,
+            offer_id=None,
             offer_type=None,
             page=1,
         )
@@ -81,6 +83,31 @@ class GetAllBookingsTest:
             status_filter=bookings_models.BookingStatusFilter.BOOKED,
             event_date=None,
             venue_id=venue.id,
+            offer_id=None,
+            offer_type=None,
+            page=1,
+        )
+
+    @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.core.bookings.repository.find_by_pro_user")
+    def test_call_repository_with_offer_id(self, find_by_pro_user, app):
+        # Given
+        pro = users_factories.ProFactory()
+        offer = offers_factories.OfferFactory()
+
+        # When
+        TestClient(app.test_client()).with_session_auth(pro.email).get(
+            f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&offerId={offer.id}"
+        )
+
+        # Then
+        find_by_pro_user.assert_called_once_with(
+            user=pro,
+            booking_period=BOOKING_PERIOD,
+            status_filter=bookings_models.BookingStatusFilter.BOOKED,
+            event_date=None,
+            venue_id=None,
+            offer_id=offer.id,
             offer_type=None,
             page=1,
         )
