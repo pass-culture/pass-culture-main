@@ -22,7 +22,7 @@ export const BookingsSummary = (): JSX.Element | null => {
       setOffer={setOffer}
       mode={mode}
     >
-      <BookingsSummaryScreen />
+      <BookingsSummaryScreen offer={offer} />
     </IndivualOfferLayout>
   )
 }

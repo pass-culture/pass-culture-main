@@ -74,18 +74,19 @@ const PreFilters = ({
     let key: keyof PreFiltersParams
     let hasFilters = false
     for (key in selectedPreFilters) {
+      const selectedValue = selectedPreFilters[key]
+      const defaultValue = DEFAULT_PRE_FILTERS[key]
       if (
         key.includes('Date') &&
-        isDateValid(selectedPreFilters[key]) &&
-        isDateValid(DEFAULT_PRE_FILTERS[key])
+        isDateValid(selectedValue) &&
+        isDateValid(defaultValue)
       ) {
         if (
-          new Date(selectedPreFilters[key]).getTime() !==
-          new Date(DEFAULT_PRE_FILTERS[key]).getTime()
+          new Date(selectedValue).getTime() !== new Date(defaultValue).getTime()
         ) {
           hasFilters = true
         }
-      } else if (selectedPreFilters[key] !== DEFAULT_PRE_FILTERS[key]) {
+      } else if (selectedValue !== defaultValue) {
         hasFilters = true
       }
     }
