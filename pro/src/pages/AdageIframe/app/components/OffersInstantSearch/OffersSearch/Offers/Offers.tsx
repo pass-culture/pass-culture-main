@@ -7,6 +7,7 @@ import type {
 import { connectInfiniteHits, connectStats } from 'react-instantsearch-dom'
 
 import {
+  AdageFrontRoles,
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from 'apiClient/adage'
@@ -98,7 +99,9 @@ export const OffersComponent = ({
   const { adageUser } = useAdageUser()
 
   const showSurveySatisfaction =
-    isSatisfactionSurveyActive && !adageUser.preferences?.feedback_form_closed
+    isSatisfactionSurveyActive &&
+    !adageUser.preferences?.feedback_form_closed &&
+    adageUser.role !== AdageFrontRoles.READONLY
 
   const { filtersKeys, hasClickedSearch, setHasClickedSearch } =
     useContext(AnalyticsContext)
