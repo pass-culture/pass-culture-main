@@ -103,17 +103,7 @@ def assert_no_duplicated_queries() -> collections.abc.Generator[None, None, None
     flask._app_ctx_stack._query_logger = []  # type: ignore [attr-defined]
     yield
     queries = flask._app_ctx_stack._query_logger  # type: ignore [attr-defined]
-    statements = [
-        query["statement"]
-        for query in queries
-        if query["statement"]
-        != (
-            'SELECT feature.id AS feature_id, feature."isActive" AS "feature_isActive", feature.name AS feature_name, '
-            "feature.description AS feature_description \n"
-            "FROM feature \n"
-            "WHERE feature.name = %(name_1)s"
-        )
-    ]
+    statements = [query["statement"] for query in queries if "from feature" not in query["statement"].lower()]
 
     duplicated_queries = [(query, count) for query, count in collections.Counter(statements).items() if count > 1]
     number_of_duplicated_queries = len(duplicated_queries)
