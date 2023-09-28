@@ -331,7 +331,8 @@ GOOGLE_BIG_QUERY_BACKEND = os.environ.get("GOOGLE_BIG_QUERY_BACKEND")
 RATE_LIMIT_BY_EMAIL = os.environ.get("RATE_LIMIT_BY_EMAIL", "10/minute")
 RATE_LIMIT_BY_IP = os.environ.get("RATE_LIMIT_BY_IP", "10/minute")
 RATE_LIMIT_SIRENE_API = os.environ.get("RATE_LIMIT_SIRENE_API", "5/minute")
-RATE_LIMIT_BY_API_KEY = os.environ.get("RATE_LIMIT_BY_API_KEY", "50/minute")
+HIGH_RATE_LIMIT_BY_API_KEY = os.environ.get("HIGH_RATE_LIMIT_BY_API_KEY", "50/minute")
+LOW_RATE_LIMIT_BY_API_KEY = os.environ.get("LOW_RATE_LIMIT_BY_API_KEY", "10/minute")
 
 
 # DEBUG
