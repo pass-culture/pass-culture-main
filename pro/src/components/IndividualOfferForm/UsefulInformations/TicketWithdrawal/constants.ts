@@ -25,7 +25,7 @@ export const ticketWithdrawalTypeRadios = [
 export const providedTicketWithdrawalTypeRadios = [
   ...ticketWithdrawalTypeRadios,
   {
-    label: 'Retrait dans l’app',
+    label: 'Les billets seront affichés dans l’application',
     value: WithdrawalTypeEnum.IN_APP,
   },
 ]
