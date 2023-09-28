@@ -133,6 +133,8 @@ describe('IndividualOffer section: TicketWithdrawal', () => {
     expect(
       screen.getByLabelText('Retrait sur place (guichet, comptoir...)')
     ).toBeDisabled()
-    expect(screen.getByLabelText('Retrait dans l’app')).toBeDisabled()
+    expect(
+      screen.getByLabelText('Les billets seront affichés dans l’application')
+    ).toBeDisabled()
   })
 })
