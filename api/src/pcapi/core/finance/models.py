@@ -911,6 +911,17 @@ class FinanceIncident(Base, Model):
     def relates_to_collective_bookings(self) -> bool:
         return any(booking_incident.collectiveBooking for booking_incident in self.booking_finance_incidents)
 
+    @property
+    def due_amount_by_offerer(self) -> decimal.Decimal:
+        """
+        Returns the amount we want to retrieve from the offerer for this incident.
+        """
+        return sum(
+            finance_utils.to_eurocents((booking_incident.booking or booking_incident.collectiveBooking).total_amount)
+            - booking_incident.newTotalAmount
+            for booking_incident in self.booking_finance_incidents
+        )
+
 
 class BookingFinanceIncident(Base, Model):
     id: int = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
@@ -949,5 +960,8 @@ class BookingFinanceIncident(Base, Model):
 
     @property
     def is_partial(self) -> bool:
-        booking = self.booking or self.collectiveBooking
-        return finance_utils.to_eurocents(booking.total_amount) != self.newTotalAmount
+        """
+        Returns True if the booking new amount is not 0. That means the incident is not total.
+        In case the new amount is 0, it means the booking didn't occur, so the incident is total.
+        """
+        return self.newTotalAmount > 0

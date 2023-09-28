@@ -41,11 +41,9 @@
             <p class="mb-1">
               <span class="fw-bold">Montant remboursé initialement :</span> {{ total_amount | format_cents }}
             </p>
-            {% if total_amount_of_incident %}
-              <p class="mb-1">
-                <span class="fw-bold">Montant de l'incident :</span> {{ total_amount_of_incident | format_cents }}
-              </p>
-            {% endif %}
+            <p class="mb-1">
+              <span class="fw-bold">Montant de l'incident :</span> {{ incident.due_amount_by_offerer | format_cents }}
+            </p>
             {% if incident.details.author %}
               <p class="mb-1">
                 <span class="fw-bold">Incident créé par :</span> {{ incident.details.author }}

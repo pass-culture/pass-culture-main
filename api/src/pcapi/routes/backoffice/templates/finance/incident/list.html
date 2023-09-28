@@ -47,7 +47,7 @@
                   <td>{{ incident.kind | format_finance_incident_type | safe }}</td>
                   <td>{{ "Collective" if incident.relates_to_collective_bookings else "Individuelle" }}</td>
                   <td>{{ incident.booking_finance_incidents | length }}</td>
-                  <td>{{ incident.booking_finance_incidents | sum(attribute="newTotalAmount") | format_cents }}</td>
+                  <td>{{ incident.due_amount_by_offerer | format_cents }}</td>
                   <td>{{ links.build_offerer_name_to_details_link(incident.venue.managingOfferer) }}</td>
                   <td>{{ links.build_venue_name_to_details_link(venue) }}</td>
                   <td>
