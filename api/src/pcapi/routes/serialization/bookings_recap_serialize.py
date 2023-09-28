@@ -158,6 +158,7 @@ def _serialize_booking_recap(booking_recap: BookingRecap) -> BookingRecapRespons
 class ListBookingsQueryModel(BaseModel):
     page: int = 1
     venue_id: int | None
+    offer_id: int | None
     event_date: str | None
     booking_status_filter: BookingStatusFilter | None
     booking_period_beginning_date: str | None

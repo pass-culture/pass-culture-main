@@ -115,6 +115,7 @@ export class DefaultService {
    * get_bookings_pro <GET>
    * @param page
    * @param venueId
+   * @param offerId
    * @param eventDate
    * @param bookingStatusFilter
    * @param bookingPeriodBeginningDate
@@ -128,6 +129,7 @@ export class DefaultService {
   public getBookingsPro(
     page: number = 1,
     venueId?: number | null,
+    offerId?: number | null,
     eventDate?: string | null,
     bookingStatusFilter?: BookingStatusFilter | null,
     bookingPeriodBeginningDate?: string | null,
@@ -142,6 +144,7 @@ export class DefaultService {
       query: {
         'page': page,
         'venueId': venueId,
+        'offerId': offerId,
         'eventDate': eventDate,
         'bookingStatusFilter': bookingStatusFilter,
         'bookingPeriodBeginningDate': bookingPeriodBeginningDate,

@@ -22,6 +22,7 @@ from . import blueprint
 def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel:
     page = query.page
     venue_id = query.venue_id
+    offer_id = query.offer_id
     event_date = parser.parse(query.event_date) if query.event_date else None
     booking_status = query.booking_status_filter
     booking_period = None
@@ -42,6 +43,7 @@ def get_bookings_pro(query: ListBookingsQueryModel) -> ListBookingsResponseModel
         status_filter=booking_status,
         event_date=event_date,
         venue_id=venue_id,
+        offer_id=offer_id,
         offer_type=offer_type,
         page=int(page),
     )
