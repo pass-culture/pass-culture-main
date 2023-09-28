@@ -10,7 +10,6 @@ import pydantic.v1 as pydantic_v1
 from pydantic.v1.utils import GetterDict
 import typing_extensions
 
-from pcapi import settings
 from pcapi.core.categories import subcategories_v2 as subcategories
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offers import models as offers_models
@@ -768,82 +767,6 @@ class GetOffersQueryParams(IndexPaginationQueryParams):
 
 class GetDatesQueryParams(IndexPaginationQueryParams):
     pass
-
-
-class PaginationLinks(serialization.ConfiguredBaseModel):
-    current: str = pydantic_v1.Field(
-        ...,
-        description="URL of the current page.",
-        example=f"{settings.API_URL}/public/offers/v1/products?page=1&limit=50",
-    )
-    first: str = pydantic_v1.Field(
-        ...,
-        description="URL of the first page.",
-        example=f"{settings.API_URL}/public/offers/v1/products?page=1&limit=50",
-    )
-    last: str = pydantic_v1.Field(
-        ...,
-        description="URL of the last page.",
-        example=f"{settings.API_URL}/public/offers/v1/products?page=3&limit=50",
-    )
-    next: str | None = pydantic_v1.Field(
-        None,
-        description="URL of the next page.",
-        example=f"{settings.API_URL}/public/offers/v1/products?page=2&limit=50",
-    )
-    previous: str | None = pydantic_v1.Field(None, description="URL of the previous page.", example=None)
-
-    @classmethod
-    def build_pagination_links(
-        cls,
-        base_url: str,
-        current: int,
-        limit: int,
-        items_total: int,
-        venue_id: int | None = None,
-    ) -> "PaginationLinks":
-        url_start = f"{base_url}?venueId={venue_id}&" if venue_id is not None else f"{base_url}?"
-        return cls(
-            first=f"{url_start}page=1&limit={limit}",
-            current=f"{url_start}page={current}&limit={limit}",
-            last=f"{url_start}page={items_total // limit+1}&limit={limit}",
-            next=f"{url_start}page={current + 1}&limit={limit}" if current * limit < items_total else None,
-            previous=f"{url_start}page={current - 1}&limit={limit}" if current > 1 else None,
-        )
-
-
-class Pagination(serialization.ConfiguredBaseModel):
-    current_page: int = pydantic_v1.Field(..., description="Page number of the returned items.", example=1)
-    items_count: int = pydantic_v1.Field(..., description="Number of items returned.", example=50)
-    items_total: int = pydantic_v1.Field(..., description="Total number of items.", example=120)
-    last_page: int = pydantic_v1.Field(..., description="Last page number.", example=3)
-    limit_per_page: int = pydantic_v1.Field(..., description="Maximum number of items per page.", example=50)
-    pages_links: PaginationLinks
-
-    @classmethod
-    def build_pagination(
-        cls,
-        base_url: str,
-        current_page: int,
-        items_count: int,
-        items_total: int,
-        limit: int,
-        venue_id: int | None = None,
-    ) -> "Pagination":
-        return cls(
-            current_page=current_page,
-            items_count=items_count,
-            items_total=items_total,
-            last_page=items_total // limit + 1,
-            limit_per_page=limit,
-            pages_links=PaginationLinks.build_pagination_links(
-                base_url,
-                current_page,
-                limit,
-                items_total,
-                venue_id=venue_id,
-            ),
-        )
 
 
 class ProductOffersResponse(serialization.ConfiguredBaseModel):
