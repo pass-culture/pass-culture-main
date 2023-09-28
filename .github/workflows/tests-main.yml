@@ -50,14 +50,14 @@ jobs:
 
   test-api:
     name: Test api
-    needs: test-deploy-variable
-    if: needs.test-deploy-variable.outputs.deploy == 'true'
+    needs: check-api-folder-changes
+    if: needs.check-api-folder-changes.outputs.folder_changed == 'true'
     uses: ./.github/workflows/tests-api.yml
     secrets: inherit
 
   test-pro:
-    needs: test-deploy-variable
-    if: needs.test-deploy-variable.outputs.deploy == 'true'
+    needs: check-pro-folder-changes
+    if: needs.check-pro-folder-changes.outputs.folder_changed == 'true'
     name: Tests pro
     uses: ./.github/workflows/tests-pro.yml
     secrets: inherit
