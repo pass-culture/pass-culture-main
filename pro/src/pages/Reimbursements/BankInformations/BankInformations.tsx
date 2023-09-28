@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react'
 
 import { api } from 'apiClient/api'
-import {
-  GetOffererBankAccountsResponseModel,
-  GetOffererNameResponseModel,
-} from 'apiClient/v1'
+import { GetOffererBankAccountsResponseModel } from 'apiClient/v1'
+import { useReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button, ButtonLink } from 'ui-kit'
@@ -14,33 +12,12 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 import styles from './BankInformations.module.scss'
 
 const BankInformations = (): JSX.Element => {
-  const [isOfferersLoading, setIsOfferersLoading] = useState<boolean>(false)
+  const { selectedOfferer } = useReimbursementContext()
+
   const [isOffererBankAccountsLoading, setIsOffererBankAccountsLoading] =
     useState<boolean>(false)
-  const [offerers, setOfferers] =
-    useState<Array<GetOffererNameResponseModel> | null>(null)
-  const [selectedOfferer, setSelectedOfferer] =
+  const [, setSelectedOffererBankAccounts] =
     useState<GetOffererBankAccountsResponseModel | null>(null)
-  const [selectedOffererId, setSelectedOffererId] = useState<number | null>(
-    null
-  )
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsOfferersLoading(true)
-      try {
-        const { offerersNames } = await api.listOfferersNames()
-        if (offerersNames) {
-          setOfferers(offerersNames)
-          setSelectedOffererId(offerersNames[0].id)
-        }
-        setIsOfferersLoading(false)
-      } catch (error) {
-        setIsOfferersLoading(false)
-      }
-    }
-    fetchData()
-  }, [])
 
   useEffect(() => {
     const getSelectedOffererBankAccounts = async (
@@ -50,22 +27,19 @@ const BankInformations = (): JSX.Element => {
       try {
         const offererBankAccounts =
           await api.getOffererBankAccountsAndAttachedVenues(selectedOffererId)
-        setSelectedOfferer(offererBankAccounts)
+        setSelectedOffererBankAccounts(offererBankAccounts)
         setIsOffererBankAccountsLoading(false)
       } catch (error) {
         setIsOffererBankAccountsLoading(false)
       }
     }
-    if (selectedOffererId !== null) {
-      getSelectedOffererBankAccounts(selectedOffererId)
+
+    if (selectedOfferer !== null) {
+      getSelectedOffererBankAccounts(selectedOfferer.id)
     }
-  }, [selectedOffererId])
+  }, [selectedOfferer])
 
-  const venuesWithNonFreeOffersNotLinkedToBankAccount = []
-  const hasValidBankAccount = false
-  const hasPendingBankAccount = false
-
-  if (isOffererBankAccountsLoading || isOfferersLoading) {
+  if (isOffererBankAccountsLoading) {
     return <Spinner className={styles['spinner']} />
   }
 
@@ -75,11 +49,12 @@ const BankInformations = (): JSX.Element => {
         <h2 className="header-title">Informations bancaires</h2>
       </div>
       <div className={styles['information']}>
-        {!hasValidBankAccount &&
+        {!selectedOfferer?.hasValidBankAccount &&
+          !selectedOfferer?.hasPendingBankAccount &&
           'Ajoutez au moins un compte bancaire pour percevoir vos remboursements.'}
 
-        {hasValidBankAccount &&
-          hasPendingBankAccount &&
+        {(selectedOfferer?.hasValidBankAccount ||
+          selectedOfferer?.hasPendingBankAccount) &&
           "Vous pouvez ajouter plusieurs comptes bancaires afin de percevoir les remboursements de vos offres. Chaque compte bancaire fera l'objet d'un remboursement et d'un justificatif de remboursement distincts."}
 
         <ButtonLink
@@ -97,7 +72,8 @@ const BankInformations = (): JSX.Element => {
         icon={fullMoreIcon}
         className={styles['add-bank-account-button']}
         variant={
-          venuesWithNonFreeOffersNotLinkedToBankAccount.length > 0
+          selectedOfferer &&
+          selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts.length > 0
             ? ButtonVariant.SECONDARY
             : ButtonVariant.PRIMARY
         }
