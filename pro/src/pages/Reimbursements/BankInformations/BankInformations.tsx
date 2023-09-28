@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { api } from 'apiClient/api'
 import { GetOffererBankAccountsResponseModel } from 'apiClient/v1'
 import { useReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
+import useNotification from 'hooks/useNotification'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import { Button, ButtonLink } from 'ui-kit'
@@ -12,6 +13,8 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 import styles from './BankInformations.module.scss'
 
 const BankInformations = (): JSX.Element => {
+  const notify = useNotification()
+
   const { selectedOfferer } = useReimbursementContext()
 
   const [isOffererBankAccountsLoading, setIsOffererBankAccountsLoading] =
@@ -28,19 +31,20 @@ const BankInformations = (): JSX.Element => {
         const offererBankAccounts =
           await api.getOffererBankAccountsAndAttachedVenues(selectedOffererId)
         setSelectedOffererBankAccounts(offererBankAccounts)
-        setIsOffererBankAccountsLoading(false)
       } catch (error) {
+        notify.error(
+          'Impossible de récupérer les informations relatives à vos comptes bancaires.'
+        )
+      } finally {
         setIsOffererBankAccountsLoading(false)
       }
     }
 
-    if (selectedOfferer !== null) {
-      getSelectedOffererBankAccounts(selectedOfferer.id)
-    }
+    selectedOfferer && getSelectedOffererBankAccounts(selectedOfferer.id)
   }, [selectedOfferer])
 
   if (isOffererBankAccountsLoading) {
-    return <Spinner className={styles['spinner']} />
+    return <Spinner />
   }
 
   return (
@@ -59,7 +63,7 @@ const BankInformations = (): JSX.Element => {
 
         <ButtonLink
           link={{
-            to: '',
+            to: '', // TODO: le liens manque
             isExternal: true,
           }}
           icon={fullLinkIcon}
