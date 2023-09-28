@@ -178,3 +178,17 @@ class CollectiveOfferTest:
         eac_client = client.with_adage_token(email=redactor.email, uai="1234UAI")
         response = eac_client.get(f"/adage-iframe/collective/offers/{stock.collectiveOfferId}")
         assert response.status_code == 200
+
+    def test_non_redactor_is_ok(self, eac_client):
+        """Ensure that an authenticated user that is a not an
+        educational redactor can still fetch offers informations.
+        """
+        offer = educational_factories.CollectiveStockFactory().collectiveOffer
+        dst = url_for("adage_iframe.get_collective_offer", offer_id=offer.id)
+
+        # 1. fetch redactor
+        # 2. fetch collective offer and related data
+        with assert_num_queries(2):
+            response = eac_client.get(dst)
+
+        assert response.status_code == 200

@@ -136,3 +136,17 @@ class CollectiveOfferTemplateTest:
         offer = educational_factories.CollectiveOfferTemplateFactory(validation=validation)
         response = eac_client.get(f"/adage-iframe/collective/offers-template/{offer.id}")
         assert response.status_code == 404
+
+    def test_non_redactor_is_ok(self, eac_client):
+        """Ensure that an authenticated user that is a not an
+        educational redactor can still fetch offers informations.
+        """
+        offer = educational_factories.CollectiveOfferTemplateFactory()
+        dst = url_for("adage_iframe.get_collective_offer_template", offer_id=offer.id)
+
+        # 1. fetch redactor
+        # 2. fetch collective offer and related data
+        with assert_num_queries(2):
+            response = eac_client.get(dst)
+
+        assert response.status_code == 200
