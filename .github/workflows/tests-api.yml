@@ -10,21 +10,9 @@ defaults:
     working-directory: api
 
 jobs:
-  build-tests-docker-image:
-    name: Build tests docker image
-    uses: ./.github/workflows/build-and-push-docker-images.yml
-    with:
-      tag: ${{ github.sha }}
-      tests: true
-      # Extra builds when tests are run on master before deployment on testing
-      pcapi: ${{ github.ref == 'refs/heads/master' }}
-      console: ${{ github.ref == 'refs/heads/master' }}
-    secrets: inherit
-
   quality-checks:
     name: Quality checks
     runs-on: [self-hosted, linux, x64]
-    needs: build-tests-docker-image
     permissions:
       id-token: write
       contents: read
@@ -93,7 +81,6 @@ jobs:
   pylint-check:
     name: Pylint
     runs-on: [self-hosted, linux, x64]
-    needs: build-tests-docker-image
     permissions:
       id-token: write
       contents: read
@@ -156,7 +143,6 @@ jobs:
       DATABASE_URL_TEST: postgresql://pytest:pytest@postgres:5432/pass_culture
       REDIS_URL: redis://redis:6379
     runs-on: [self-hosted, linux, x64]
-    needs: build-tests-docker-image
     permissions:
       id-token: write
       contents: read
@@ -277,7 +263,6 @@ jobs:
             "tests --ignore=tests/core --ignore=tests/routes",
             "tests/routes/backoffice -m 'backoffice'",
           ]
-    needs: build-tests-docker-image
     permissions:
       id-token: write
       contents: read

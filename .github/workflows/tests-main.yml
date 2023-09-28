@@ -27,30 +27,32 @@ jobs:
     with:
       folder: pro
 
-  test-deploy-variable:
-    name: Check if deployment is required
-    runs-on: [self-hosted, linux, x64]
+  build-api:
+    name: Build API (backend) Docker image
     needs:
       - check-api-folder-changes
       - check-pro-folder-changes
-    outputs:
-      deploy: ${{ steps.check.outputs.deploy }}
-    steps:
-      - name: Check values
-        id: check
-        run: |
-          if \
-          [ "${{ needs.check-api-folder-changes.outputs.folder_changed }}" = "true" ] || \
-          [ "${{ needs.check-pro-folder-changes.outputs.folder_changed }}" = "true" ];
-          then
-            echo "deploy=true" >> $GITHUB_OUTPUT
-          else
-            echo "deploy=false" >> $GITHUB_OUTPUT
-          fi
+    if: |
+      needs.check-api-folder-changes.outputs.folder_changed == 'true' ||
+      needs.check-pro-folder-changes.outputs.folder_changed == 'true'
+    uses: ./.github/workflows/build-and-push-docker-images.yml
+    with:
+      tag: ${{ github.sha }}
+      # Needed to run end-to-end tests, i.e. when either "pro" or
+      # "api" source code changes, which is the condition under which
+      # this step is run. In other words: always.
+      pcapi: true
+      # Extra when tests are run on master before deployment on testing.
+      console: ${{ github.ref == 'refs/heads/master' }}
+      # Needed to run backend tests.
+      tests: ${{ needs.check-api-folder-changes.outputs.folder_changed == 'true' }}
+    secrets: inherit
 
   test-api:
     name: Test api
-    needs: check-api-folder-changes
+    needs:
+      - check-api-folder-changes
+      - build-api
     if: needs.check-api-folder-changes.outputs.folder_changed == 'true'
     uses: ./.github/workflows/tests-api.yml
     secrets: inherit
@@ -65,8 +67,13 @@ jobs:
       CACHE_BUCKET_NAME: passculture-infra-prod-github-runner-cache
 
   test-pro-e2e:
-    needs: test-deploy-variable
-    if: needs.test-deploy-variable.outputs.deploy == 'true'
+    needs:
+      - check-api-folder-changes
+      - check-pro-folder-changes
+      - build-api
+    if: |
+      needs.check-api-folder-changes.outputs.folder_changed == 'true' ||
+      needs.check-pro-folder-changes.outputs.folder_changed == 'true'
     name: Tests pro E2E
     uses: ./.github/workflows/tests-pro-e2e.yml
     secrets: inherit
@@ -85,7 +92,6 @@ jobs:
   deploy-to-testing:
     name: Deploy to testing
     needs:
-      - test-deploy-variable
       - test-api
       - test-pro
     if: |
