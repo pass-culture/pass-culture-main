@@ -21,7 +21,7 @@ EMAIL = "toto@mail.com"
 
 
 @pytest.fixture(name="eac_client")
-def eac_token_fixture(client):
+def eac_client_fixture(client):
     return client.with_adage_token(email=EMAIL, uai="1234UAI")
 
 
