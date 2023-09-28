@@ -84,6 +84,11 @@ describe('homepage', () => {
       hasValidBankAccount: true,
       venuesWithNonFreeOffersWithoutBankAccounts: [2],
     },
+    {
+      ...defautGetOffererResponseModel,
+      id: 5,
+      hasPendingBankAccount: true,
+    },
   ]
 
   const baseOfferersNames = baseOfferers.map(offerer => ({
@@ -316,7 +321,7 @@ describe('homepage', () => {
       ).toBeInTheDocument()
     })
 
-    it.each([baseOfferers[0], baseOfferers[1]])(
+    it.each([baseOfferers[0], baseOfferers[1], baseOfferers[2]])(
       'should not render the add link venue banner if the offerer  hasValidBankAccount = $hasValidBankAccount and venuesWithNonFreeOffersWithoutBankAccounts = $venuesWithNonFreeOffersWithoutBankAccounts',
       async (
         // utilisés dans le message du test
@@ -348,6 +353,56 @@ describe('homepage', () => {
 
       expect(
         screen.getByText(/Dernière étape pour vous faire rembourser/)
+      ).toBeInTheDocument()
+    })
+
+    it.each([
+      baseOfferers[0],
+      baseOfferers[1],
+      baseOfferers[2],
+      baseOfferers[3],
+    ])(
+      'should not render the pending bank account banner if the offerer  hasValidBankAccount = $hasValidBankAccount and venuesWithNonFreeOffersWithoutBankAccounts = $venuesWithNonFreeOffersWithoutBankAccounts and hasPendingBankAccount = $hasPendingBankAccount',
+      async (
+        // utilisés dans le message du test
+        {
+          // eslint-disable-next-line
+          hasValidBankAccount,
+          // eslint-disable-next-line
+          venuesWithNonFreeOffersWithoutBankAccounts,
+          // eslint-disable-next-line
+          hasPendingBankAccount,
+        }
+      ) => {
+        vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+          offerersNames: [baseOfferersNames[0]],
+        })
+        vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[0])
+
+        renderHomePage(store)
+        await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+        expect(
+          screen.queryByText(
+            /Compte bancaire en cours de validation par nos services/
+          )
+        ).not.toBeInTheDocument()
+      }
+    )
+
+    it('should render the pending bank account banner if the offerer has a pending bank account', async () => {
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+        offerersNames: [baseOfferersNames[4]],
+      })
+      vi.spyOn(api, 'getOfferer').mockResolvedValue(baseOfferers[4])
+
+      renderHomePage(store)
+      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+      expect(
+        screen.getByText(
+          /Compte bancaire en cours de validation par nos services/
+        )
       ).toBeInTheDocument()
     })
   })
