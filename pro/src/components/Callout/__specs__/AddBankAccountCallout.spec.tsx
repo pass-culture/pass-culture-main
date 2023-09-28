@@ -8,7 +8,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 describe('AddBankAccountCallout', () => {
   const props: AddBankAccountCalloutProps = {
-    smallCallout: false,
+    titleOnly: false,
   }
   it('should not render AddBankAccountCallout without FF', () => {
     renderWithProviders(<AddBankAccountCallout {...props} />)
@@ -59,24 +59,6 @@ describe('AddBankAccountCallout', () => {
           name: 'ajouter un compte bancaire',
         })
       ).toBeInTheDocument()
-    })
-
-    it('should render a small AddBankAccountCallout', () => {
-      props.smallCallout = true
-      renderWithProviders(<AddBankAccountCallout {...props} />, {
-        storeOverrides,
-      })
-
-      expect(
-        screen.queryByText(
-          /Rendez-vous dans l'onglet informations bancaires de votre page Remboursements/
-        )
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByRole('link', {
-          name: 'ajouter un compte bancaire',
-        })
-      ).not.toBeInTheDocument()
     })
   })
 })

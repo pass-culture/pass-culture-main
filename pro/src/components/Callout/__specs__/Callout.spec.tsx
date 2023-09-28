@@ -30,4 +30,17 @@ describe('Callout', () => {
 
     expect(screen.getByLabelText('Fermer le message')).toBeInTheDocument()
   })
+
+  it('should render a title only Callout', () => {
+    props.titleOnly = true
+    render(<Callout {...props}>Closable content</Callout>)
+
+    expect(screen.queryByText('This is a banner warning')).toBeInTheDocument()
+    expect(screen.queryByText('This is the content')).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('link', {
+        name: props.links?.[0]?.linkTitle,
+      })
+    ).not.toBeInTheDocument()
+  })
 })

@@ -8,7 +8,7 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 describe('LinkVenueCallout', () => {
   let props: LinkVenueCalloutProps = {
-    smallCallout: false,
+    titleOnly: false,
   }
   it('should not render LinkVenueCallout without FF', () => {
     renderWithProviders(<LinkVenueCallout {...props} />)
@@ -57,26 +57,8 @@ describe('LinkVenueCallout', () => {
       ).toBeInTheDocument()
     })
 
-    it('should render a small LinkVenueCallout', () => {
-      props.smallCallout = true
-      renderWithProviders(<LinkVenueCallout {...props} />, {
-        storeOverrides,
-      })
-
-      expect(
-        screen.queryByText(
-          /Afin de percevoir vos remboursements, vous devez rattacher vos lieux/
-        )
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByRole('link', {
-          name: 'Gérer le rattachement de mes lieux',
-        })
-      ).not.toBeInTheDocument()
-    })
-
     it('should render LinkVenueCallout with singular wording', () => {
-      props.smallCallout = false
+      props.titleOnly = false
       renderWithProviders(<LinkVenueCallout {...props} />, {
         storeOverrides,
       })
@@ -95,7 +77,7 @@ describe('LinkVenueCallout', () => {
 
     it('should render LinkVenueCallout with singular plural', () => {
       props = {
-        smallCallout: false,
+        titleOnly: false,
         hasMultipleVenuesToLink: true,
       }
       renderWithProviders(<LinkVenueCallout {...props} />, {
