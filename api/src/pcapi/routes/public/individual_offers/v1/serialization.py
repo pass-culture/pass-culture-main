@@ -132,23 +132,12 @@ DURATION_MINUTES_FIELD = pydantic_v1.Field(description="Event duration in minute
 TICKET_COLLECTION_FIELD = pydantic_v1.Field(
     None,
     description="How the ticket will be collected. Leave empty if there is no ticket. To use 'in_app' you must have developed the pass culture ticketing interface. Only some categories are compatible with tickets.",
-    discriminator="way",
     example=None,
 )
 PRICE_CATEGORY_LABEL_FIELD = pydantic_v1.Field(description="Price category label", example="Carré or")
 PRICE_CATEGORIES_FIELD = pydantic_v1.Field(description="Available price categories for dates of this offer")
 EVENT_DATES_FIELD = pydantic_v1.Field(
     description="Dates of the event. If there are different prices for the same date, several date objects are needed",
-)
-ON_SITE_MINUTES_BEFORE_EVENT_FIELD = pydantic_v1.Field(
-    ...,
-    description="Number of minutes before the event when the ticket may be collected. Only some values are accepted (between 0 minutes and 48 hours).",
-    example=0,
-)
-BY_EMAIL_DAYS_BEFORE_EVENT_FIELD = pydantic_v1.Field(
-    ...,
-    description="Number of days before the event when the ticket will be sent. Only some values are accepted (1 to 7).",
-    example=1,
 )
 
 
@@ -406,32 +395,6 @@ class StockEdition(BaseStockEdition):
         return value
 
 
-ON_SITE_MINUTES_BEFORE_EVENT = typing.Literal[0, 15, 30, 60, 120, 240, 1440, 2880]
-BY_EMAIL_DAYS_BEFORE_EVENT = typing.Literal[1, 2, 3, 4, 5, 6, 7]
-
-
-class OnSiteCollectionDetails(serialization.ConfiguredBaseModel):
-    minutesBeforeEvent: ON_SITE_MINUTES_BEFORE_EVENT = ON_SITE_MINUTES_BEFORE_EVENT_FIELD
-    way: typing.Literal["on_site"] = "on_site"
-
-
-class OnSiteCollectionDetailsResponse(serialization.ConfiguredBaseModel):
-    # different model in case the database minutesBeforeEvent value is not in the enum
-    minutesBeforeEvent: int = ON_SITE_MINUTES_BEFORE_EVENT_FIELD
-    way: typing.Literal["on_site"] = "on_site"
-
-
-class SentByEmailDetails(serialization.ConfiguredBaseModel):
-    daysBeforeEvent: BY_EMAIL_DAYS_BEFORE_EVENT = BY_EMAIL_DAYS_BEFORE_EVENT_FIELD
-    way: typing.Literal["by_email"] = "by_email"
-
-
-class SentByEmailDetailsResponse(serialization.ConfiguredBaseModel):
-    # different model in case the database daysBeforeEvent value is not in the enum
-    daysBeforeEvent: int = BY_EMAIL_DAYS_BEFORE_EVENT_FIELD
-    way: typing.Literal["by_email"] = "by_email"
-
-
 class InAppDetails(serialization.ConfiguredBaseModel):
     way: typing.Literal["in_app"] = "in_app"
 
@@ -523,7 +486,7 @@ class EventOfferCreation(OfferCreationBase):
     category_related_fields: event_category_creation_fields
     duration_minutes: int | None = DURATION_MINUTES_FIELD
     location: PhysicalLocation | DigitalLocation = LOCATION_FIELD
-    ticket_collection: SentByEmailDetails | OnSiteCollectionDetails | InAppDetails | None = TICKET_COLLECTION_FIELD
+    ticket_collection: InAppDetails | None = TICKET_COLLECTION_FIELD
     price_categories: typing.List[PriceCategoryCreation] | None = PRICE_CATEGORIES_FIELD
 
     @pydantic_v1.validator("price_categories")
@@ -620,7 +583,7 @@ class EventOfferEdition(OfferEditionBase):
         description="To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
     )
     duration_minutes: int | None = DURATION_MINUTES_FIELD
-    ticket_collection: SentByEmailDetails | OnSiteCollectionDetails | None = TICKET_COLLECTION_FIELD
+    ticket_collection: None = TICKET_COLLECTION_FIELD
 
 
 class DateCreation(BaseStockCreation):
@@ -770,18 +733,11 @@ class BatchProductOfferResponse(serialization.ConfiguredBaseModel):
 
 def _serialize_ticket_collection(
     offer: offers_models.Offer,
-) -> SentByEmailDetailsResponse | OnSiteCollectionDetailsResponse | InAppDetails | None:
+) -> InAppDetails | None:
     if offer.withdrawalType is None or offer.withdrawalType == offers_models.WithdrawalTypeEnum.NO_TICKET:
         return None
     if offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP:
         return InAppDetails()
-    if offer.withdrawalDelay is None:
-        logger.error("Missing withdrawal delay for offer %s", offer.id)
-        return None
-    if offer.withdrawalType == offers_models.WithdrawalTypeEnum.ON_SITE:
-        return OnSiteCollectionDetailsResponse(minutesBeforeEvent=offer.withdrawalDelay / 60)  # type: ignore [arg-type]
-    if offer.withdrawalType == offers_models.WithdrawalTypeEnum.BY_EMAIL:
-        return SentByEmailDetailsResponse(daysBeforeEvent=offer.withdrawalDelay / (24 * 3600))  # type: ignore [arg-type]
     logger.error("Unknown withdrawal type %s for offer %s", offer.withdrawalType, offer.id)
     return None
 
@@ -789,9 +745,7 @@ def _serialize_ticket_collection(
 class EventOfferResponse(OfferResponse, PriceCategoriesResponse):
     category_related_fields: event_category_reading_fields
     duration_minutes: int | None = DURATION_MINUTES_FIELD
-    ticket_collection: SentByEmailDetailsResponse | OnSiteCollectionDetailsResponse | InAppDetails | None = (
-        TICKET_COLLECTION_FIELD
-    )
+    ticket_collection: InAppDetails | None = TICKET_COLLECTION_FIELD
 
     @classmethod
     def build_event_offer(cls, offer: offers_models.Offer) -> "EventOfferResponse":

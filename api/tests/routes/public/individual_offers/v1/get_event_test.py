@@ -123,36 +123,6 @@ class GetEventTest:
             "musicType": None,
         }
 
-    def test_ticket_collection_by_email(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-        event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
-            withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
-            withdrawalDelay=259201,  # 3 days + 1 second
-        )
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/events/{event_offer.id}"
-        )
-
-        assert response.status_code == 200
-        assert response.json["ticketCollection"] == {"daysBeforeEvent": 3, "way": "by_email"}
-
-    def test_ticket_collection_on_site(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-        event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
-            withdrawalType=offers_models.WithdrawalTypeEnum.ON_SITE,
-            withdrawalDelay=1801,  # 30 minutes + 1 second
-        )
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
-            f"/public/offers/v1/events/{event_offer.id}"
-        )
-
-        assert response.status_code == 200
-        assert response.json["ticketCollection"] == {"minutesBeforeEvent": 30, "way": "on_site"}
-
     def test_ticket_collection_in_app(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(

@@ -129,7 +129,7 @@ class PatchEventTest:
 
     @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
     def test_patch_all_fields(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        venue, api_key = utils.create_offerer_provider_linked_to_venue(with_charlie=True)
         event_offer = offers_factories.EventOfferFactory(
             venue=venue,
             bookingContact="contact@example.com",
@@ -138,7 +138,7 @@ class PatchEventTest:
             durationMinutes=20,
             isDuo=False,
             lastProvider=api_key.provider,
-            withdrawalType=offers_models.WithdrawalTypeEnum.BY_EMAIL,
+            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
             withdrawalDelay=86400,
             withdrawalDetails="Around there",
         )
@@ -146,7 +146,7 @@ class PatchEventTest:
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
             f"/public/offers/v1/events/{event_offer.id}",
             json={
-                "ticketCollection": {"way": "on_site", "minutesBeforeEvent": 60},
+                "ticketCollection": None,  # This should not change
                 "bookingContact": "test@myemail.com",
                 "bookingEmail": "test@myemail.com",
                 "eventDuration": 40,
@@ -154,9 +154,9 @@ class PatchEventTest:
                 "itemCollectionDetails": "Here !",
             },
         )
+
         assert response.status_code == 200
-        assert event_offer.withdrawalType == offers_models.WithdrawalTypeEnum.ON_SITE
-        assert event_offer.withdrawalDelay == 3600
+        assert event_offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
         assert event_offer.durationMinutes == 40
         assert event_offer.isDuo is True
         assert event_offer.bookingContact == "test@myemail.com"

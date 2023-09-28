@@ -166,7 +166,7 @@ class NonLinkedProviderCannotHaveInAppTicket(OfferCreationBaseException):
     def __init__(self) -> None:
         super().__init__(
             "offer",
-            "L'offre ne supporte pas de billet dans l'application mobile",
+            "Vous devez supporter l'interface de billeterie pour créer des offres avec billet",
         )
 
 
