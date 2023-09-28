@@ -2,10 +2,12 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
 
 import { api } from 'apiClient/api'
+import Notification from 'components/Notification/Notification'
 import {
   ReimbursementContext,
   ReimbursementContextValues,
 } from 'context/ReimbursementContext/ReimbursementContext'
+import { defautGetOffererResponseModel } from 'utils/apiFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import BankInformations from '../BankInformations'
@@ -22,9 +24,12 @@ const renderBankInformations = (
     ...customContext,
   }
   renderWithProviders(
-    <ReimbursementContext.Provider value={contextValues}>
-      <BankInformations />
-    </ReimbursementContext.Provider>,
+    <>
+      <ReimbursementContext.Provider value={contextValues}>
+        <BankInformations />
+      </ReimbursementContext.Provider>
+      <Notification />
+    </>,
     {
       storeOverrides,
     }
@@ -47,32 +52,12 @@ describe('BankInformations page', () => {
 
     customContext = {
       selectedOfferer: {
-        address: null,
-        apiKey: {
-          maxAllowed: 0,
-          prefixes: [],
-        },
-        city: 'city',
-        dateCreated: '1010/10/10',
-        demarchesSimplifieesApplicationId: null,
-        hasAvailablePricingPoints: false,
-        hasDigitalVenueAtLeastOneOffer: false,
+        ...defautGetOffererResponseModel,
         hasValidBankAccount: false,
-        hasPendingBankAccount: false,
-        venuesWithNonFreeOffersWithoutBankAccounts: [],
-        isActive: false,
-        isValidated: false,
-        managedVenues: [],
-        name: 'name',
-        id: 10,
-        postalCode: '123123',
-        siren: null,
-        dsToken: '',
       },
       offerers: [
         {
-          id: 1,
-          name: 'first offerer',
+          ...defautGetOffererResponseModel,
         },
       ],
     }
@@ -99,7 +84,7 @@ describe('BankInformations page', () => {
     expect(screen.getByText('En savoir plus')).toBeInTheDocument()
   })
 
-  it('should render message when hasValidBankAccount and not hasPendingBankAccount', async () => {
+  it('should render message when the user has a valid bank account and no pending one', async () => {
     if (customContext.selectedOfferer) {
       customContext.selectedOfferer = {
         ...customContext.selectedOfferer,
@@ -125,7 +110,7 @@ describe('BankInformations page', () => {
     expect(screen.getByText('En savoir plus')).toBeInTheDocument()
   })
 
-  it('should render message when hasPendingBankAccount && not hasValidBankAccount', async () => {
+  it('should render message when has a pending bank account and no valid one', async () => {
     if (customContext.selectedOfferer) {
       customContext.selectedOfferer = {
         ...customContext.selectedOfferer,
@@ -149,5 +134,24 @@ describe('BankInformations page', () => {
     ).toBeInTheDocument()
     expect(screen.getByText('Ajouter un compte bancaire')).toBeInTheDocument()
     expect(screen.getByText('En savoir plus')).toBeInTheDocument()
+  })
+
+  it('should render default page if error on getOffererBankAccountsAndAttachedVenues request', async () => {
+    vi.spyOn(
+      api,
+      'getOffererBankAccountsAndAttachedVenues'
+    ).mockRejectedValueOnce({})
+
+    renderBankInformations(customContext, store)
+
+    await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    expect(api.getOffererBankAccountsAndAttachedVenues).toHaveBeenCalledTimes(1)
+    expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Impossible de récupérer les informations relatives à vos comptes bancaires.'
+      )
+    ).toBeInTheDocument()
   })
 })

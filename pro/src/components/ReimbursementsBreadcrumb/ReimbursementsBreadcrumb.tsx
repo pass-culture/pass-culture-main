@@ -6,11 +6,11 @@ import useActiveFeature from 'hooks/useActiveFeature'
 import useActiveStep from 'hooks/useActiveStep'
 
 import {
-  STEP_LIST,
-  STEP_NAMES,
   OLD_STEP_LIST,
   OLD_STEP_NAMES,
   STEP_ID_BANK_INFORMATIONS,
+  STEP_LIST,
+  STEP_NAMES,
 } from './constants'
 
 const ReimbursementsBreadcrumb = () => {
@@ -24,19 +24,16 @@ const ReimbursementsBreadcrumb = () => {
   )
 
   const getSteps = () => {
-    const hasBannerError = true
-    if (hasBannerError) {
-      const indexBankInformationStep = STEP_LIST.findIndex(
-        value => value.id === STEP_ID_BANK_INFORMATIONS
-      )
-
-      STEP_LIST[indexBankInformationStep].hasWarning =
-        (selectedOfferer &&
-          selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts.length >
-            0) ??
-        false
-    }
-    return STEP_LIST
+    return STEP_LIST.map(step => {
+      if (step.id === STEP_ID_BANK_INFORMATIONS) {
+        step.hasWarning =
+          (selectedOfferer &&
+            selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts.length >
+              0) ??
+          false
+      }
+      return step
+    })
   }
 
   return (

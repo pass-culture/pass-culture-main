@@ -142,6 +142,40 @@ describe('Breadcrumb', () => {
         })
       ).toBeInTheDocument()
     })
+
+    it('should render error icon if step has url ans has warning', async () => {
+      props.steps.pop()
+      props.steps.push({
+        id: '6',
+        label: 'step with url',
+        url: 'https://example.com',
+        hasWarning: true,
+      })
+      renderBreadcrumb(props)
+      expect(screen.getByText('step with url')).toBeInTheDocument()
+      expect(
+        screen.getByRole('img', {
+          name: 'Une action est requise dans cet onglet',
+        })
+      ).toBeInTheDocument()
+    })
+
+    it('should render error icon if step has hash ans has warning', async () => {
+      props.steps.pop()
+      props.steps.push({
+        id: '7',
+        label: 'step with hash',
+        hash: 'hash',
+        hasWarning: true,
+      })
+      renderBreadcrumb(props)
+      expect(screen.getByText('step with hash')).toBeInTheDocument()
+      expect(
+        screen.getByRole('img', {
+          name: 'Une action est requise dans cet onglet',
+        })
+      ).toBeInTheDocument()
+    })
   })
 
   describe('tab breadcrumb', () => {
