@@ -52,7 +52,7 @@ class PostEventTest:
     @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_event_creation_with_full_body(self, client, clear_tests_assets_bucket):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
+        venue, _ = utils.create_offerer_provider_linked_to_venue(with_charlie=True)
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
             "/public/offers/v1/events",
@@ -83,7 +83,7 @@ class PostEventTest:
                 "itemCollectionDetails": "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2",
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Nicolas Jaar dans ton salon",
-                "ticketCollection": {"way": "by_email", "daysBeforeEvent": 1},
+                "ticketCollection": {"way": "in_app"},
                 "priceCategories": [{"price": 2500, "label": "triangle or"}],
             },
         )
@@ -110,8 +110,8 @@ class PostEventTest:
         assert created_offer.externalTicketOfficeUrl == "https://maposaic.com"
         assert created_offer.status == offer_mixin.OfferStatus.SOLD_OUT
         assert created_offer.withdrawalDetails == "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2"
-        assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.BY_EMAIL
-        assert created_offer.withdrawalDelay == 86400
+        assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
+        assert created_offer.withdrawalDelay == None
 
         created_mediation = offers_models.Mediation.query.one()
         assert created_mediation.offer == created_offer
@@ -153,7 +153,7 @@ class PostEventTest:
             "location": {"type": "physical", "venueId": venue.id},
             "name": "Nicolas Jaar dans ton salon",
             "status": "SOLD_OUT",
-            "ticketCollection": {"daysBeforeEvent": 1, "way": "by_email"},
+            "ticketCollection": {"way": "in_app"},
             "priceCategories": [{"id": created_price_category.id, "price": 2500, "label": "triangle or"}],
         }
 
@@ -202,28 +202,6 @@ class PostEventTest:
         created_offer = offers_models.Offer.query.one()
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.NO_TICKET
 
-    @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
-    def test_event_with_on_site_ticket(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/events",
-            json={
-                "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue.id},
-                "name": "Le champ des possibles",
-                "ticketCollection": {"way": "on_site", "minutesBeforeEvent": 30},
-                "bookingContact": "booking@conta.ct",
-            },
-        )
-
-        assert response.status_code == 200
-        created_offer = offers_models.Offer.query.one()
-        assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.ON_SITE
-        assert created_offer.withdrawalDelay == 30 * 60
-
-    @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
     def test_event_with_email_ticket(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
@@ -239,11 +217,9 @@ class PostEventTest:
             },
         )
 
-        assert response.status_code == 200
-        created_offer = offers_models.Offer.query.one()
-        assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.BY_EMAIL
-        assert created_offer.withdrawalDelay == 3 * 24 * 3600
+        assert response.status_code == 400
 
+    @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
     def test_event_with_in_app_ticket(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue(with_charlie=True)
 
@@ -262,27 +238,7 @@ class PostEventTest:
         created_offer = offers_models.Offer.query.one()
         assert created_offer.withdrawalType == offers_models.WithdrawalTypeEnum.IN_APP
 
-    @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
-    def test_error_when_ticket_specified_but_not_applicable(self, client):
-        venue, _ = utils.create_offerer_provider_linked_to_venue()
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
-            "/public/offers/v1/events",
-            json={
-                "categoryRelatedFields": {"category": "EVENEMENT_PATRIMOINE"},
-                "accessibility": utils.ACCESSIBILITY_FIELDS,
-                "location": {"type": "physical", "venueId": venue.id},
-                "name": "Le champ des possibles",
-                "ticketCollection": {"way": "on_site", "minutesBeforeEvent": 30},
-            },
-        )
-
-        assert response.status_code == 400
-        assert offers_models.Offer.query.count() == 0
-        assert response.json == {"offer": ["La catégorie de l'offre n'accepte pas de modalité de retrait de billet"]}
-
-    @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
-    def test_error_when_withdrawable_event_but_no_booking_contact(self, client):
+    def test_event_error_with_on_site_ticket(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
@@ -292,7 +248,25 @@ class PostEventTest:
                 "accessibility": utils.ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
-                "ticketCollection": {"way": "by_email", "daysBeforeEvent": 3},
+                "ticketCollection": {"way": "on_site", "minutesBeforeEvent": 30},
+                "bookingContact": "booking@conta.ct",
+            },
+        )
+
+        assert response.status_code == 400
+
+    @override_features(WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API=True)
+    def test_error_when_withdrawable_event_but_no_booking_contact(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue(with_charlie=True)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/events",
+            json={
+                "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+                "ticketCollection": {"way": "in_app"},
             },
         )
 
@@ -344,7 +318,7 @@ class PostEventTest:
                 "accessibility": utils.ACCESSIBILITY_FIELDS,
                 "location": {"type": "physical", "venueId": venue.id},
                 "name": "Le champ des possibles",
-                "ticketCollection": {"way": "by_email", "daysBeforeEvent": 3},
+                "ticketCollection": {"way": "in_app"},
             },
         )
 
