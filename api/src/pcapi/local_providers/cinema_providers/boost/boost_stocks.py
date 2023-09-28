@@ -15,6 +15,7 @@ from pcapi.local_providers.cinema_providers.constants import ShowtimeFeatures
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
+from pcapi.models.feature import FeatureToggle
 
 
 ACCEPTED_VERSIONS_MAPPING = {
@@ -37,6 +38,7 @@ class BoostStocks(LocalProvider):
         self.cinema_id = venue_provider.venueIdAtOfferProvider
         self.isDuo = venue_provider.isDuoOffers if venue_provider.isDuoOffers else False
         self.attributs: list[boost_serializers.CinemaAttribut] = self._get_cinema_attributs()
+        self.showtimes_filter_ff_is_active = FeatureToggle.WIP_ENABLE_BOOST_SHOWTIMES_FILTER.is_active()
         self.showtimes: Iterator[boost_serializers.ShowTime4] = iter(self._get_showtimes())
         self.price_category_labels: list[
             offers_models.PriceCategoryLabel
@@ -46,13 +48,15 @@ class BoostStocks(LocalProvider):
 
     def __next__(self) -> list[ProvidableInfo]:
         showtime = next(self.showtimes)
-        if showtime:
-            self.showtime_details: boost_serializers.ShowTime = self._get_showtime_details(showtime.id)
-            self.pcu_pricing: boost_serializers.ShowtimePricing | None = get_pcu_pricing_if_exists(
-                self.showtime_details.showtimePricing
-            )
-            if not self.pcu_pricing:
-                return []
+        if self.showtimes_filter_ff_is_active:
+            self.showtime_details = showtime
+        else:
+            self.showtime_details = self._get_showtime_details(showtime.id)
+        self.pcu_pricing: boost_serializers.ShowtimePricing | None = get_pcu_pricing_if_exists(
+            self.showtime_details.showtimePricing
+        )
+        if not self.pcu_pricing:
+            return []
 
         providable_information_list = []
         # The Product ID must be unique
@@ -212,7 +216,7 @@ class BoostStocks(LocalProvider):
         client_boost = BoostClientAPI(self.cinema_id)
         return client_boost.get_showtimes()
 
-    def _get_showtime_details(self, showtime_id: int) -> boost_serializers.ShowTime:
+    def _get_showtime_details(self, showtime_id: int) -> boost_serializers.ShowTime4:
         client_boost = BoostClientAPI(self.cinema_id)
         return client_boost.get_showtime(showtime_id)
 
