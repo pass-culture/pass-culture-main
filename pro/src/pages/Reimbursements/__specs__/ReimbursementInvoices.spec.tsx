@@ -177,7 +177,11 @@ describe('reimbursementsWithFilters', () => {
   })
 
   it('should display invoice banner if FF WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is enable', async () => {
-    store.features.list[0].isActive = true
+    store.features = {
+      list: [
+        { isActive: true, nameKey: 'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY' },
+      ],
+    }
     renderReimbursementsInvoices(store)
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
