@@ -12,39 +12,6 @@ import { renderWithProviders } from 'utils/renderWithProviders'
 
 import Reimbursements from '../Reimbursements'
 
-vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-  offerersNames: [
-    {
-      id: 1,
-      name: 'first offerer',
-    },
-  ],
-})
-
-vi.spyOn(api, 'getOfferer').mockResolvedValue({
-  address: null,
-  apiKey: {
-    maxAllowed: 0,
-    prefixes: [],
-  },
-  city: 'city',
-  dateCreated: '1010/10/10',
-  demarchesSimplifieesApplicationId: null,
-  hasAvailablePricingPoints: false,
-  hasDigitalVenueAtLeastOneOffer: false,
-  hasValidBankAccount: false,
-  hasPendingBankAccount: false,
-  venuesWithNonFreeOffersWithoutBankAccounts: [],
-  isActive: false,
-  isValidated: false,
-  managedVenues: [],
-  name: 'name',
-  id: 10,
-  postalCode: '123123',
-  siren: null,
-  dsToken: '',
-})
-
 const renderReimbursements = async (storeOverrides: any) => {
   renderWithProviders(
     <ReimbursementContextProvider>
