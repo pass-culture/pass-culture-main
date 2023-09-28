@@ -8,9 +8,6 @@ on:
       app_folder:
         type: string
         required: true
-      use_cache:
-        type: boolean
-        required: true
 
 jobs:
   type-check-node-app:
@@ -18,5 +15,5 @@ jobs:
     with:
       node_version: ${{ inputs.node_version }}
       app_folder: ${{ inputs.app_folder }}
-      use_cache: ${{ inputs.use_cache }}
       command: yarn lint:js --max-warnings 0
+    secrets: inherit

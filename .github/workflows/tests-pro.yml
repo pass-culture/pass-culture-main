@@ -2,42 +2,44 @@ name: Tests pro
 on: workflow_call
 
 env:
-  use_cache: ${{ github.ref != 'refs/heads/master' }}
+  CACHE_BUCKET_NAME: passculture-infra-prod-github-runner-cache
 
 defaults:
   run:
     working-directory: pro
 
-jobs:
-  read-node-version:
-    name: "Read node version from .nvmrc"
-    runs-on: [self-hosted, linux, x64]
-    outputs:
-      node_version: ${{ steps.read-node-version.outputs.node_version }}
-    steps:
-      - uses: actions/checkout@v3
-      - id: read-node-version
-        run: echo "node_version=$(cat .nvmrc | sed -r -e 's/v?(.+)/\1/')" >> $GITHUB_OUTPUT
+permissions:
+   contents: 'read'
+   id-token: 'write'
 
+jobs:
   type-check:
     name: "Type check"
     runs-on: [self-hosted, linux, x64]
     container:
       image: node:18
-    needs: read-node-version
     steps:
       - uses: actions/checkout@v3
-      - if: ${{ env.use_cache }}
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
-          cache: yarn
-          cache-dependency-path: pro/yarn.lock
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - if: ${{ env.use_cache == false }}
-        uses: actions/setup-node@v3
+          node-version-file: 'pro/.nvmrc'
+      - name: "OpenID Connect Authentication"
+        uses: 'google-github-actions/auth@v1'
         with:
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - run: yarn install
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: Cache the node_modules
+        id: yarn-modules-cache
+        uses: mansagroup/gcs-cache-action@867797f1a78d69e008ad0a321c1459ddd619e9fd
+        with:
+          bucket: ${{ env.CACHE_BUCKET_NAME }}
+          path: |
+            node_modules
+            ~/.cache/yarn
+          key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - run: yarn install --immutable
       - run: yarn tsc -b
 
   quality-check:
@@ -45,20 +47,28 @@ jobs:
     runs-on: [self-hosted, linux, x64]
     container:
       image: node:18
-    needs: read-node-version
     steps:
       - uses: actions/checkout@v3
-      - if: ${{ env.use_cache }}
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
-          cache: yarn
-          cache-dependency-path: pro/yarn.lock
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - if: ${{ env.use_cache == false }}
-        uses: actions/setup-node@v3
+          node-version-file: 'pro/.nvmrc'
+      - name: "OpenID Connect Authentication"
+        uses: 'google-github-actions/auth@v1'
         with:
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - run: yarn install
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: Cache the node_modules
+        id: yarn-modules-cache
+        uses: mansagroup/gcs-cache-action@867797f1a78d69e008ad0a321c1459ddd619e9fd
+        with:
+          bucket: ${{ env.CACHE_BUCKET_NAME }}
+          path: |
+            node_modules
+            ~/.cache/yarn
+          key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - run: yarn install --immutable
       - run: yarn lint:dead-code
       - run: yarn lint:js --max-warnings 0
 
@@ -67,20 +77,28 @@ jobs:
     runs-on: [self-hosted, linux, x64]
     container:
       image: node:18
-    needs: read-node-version
     steps:
       - uses: actions/checkout@v3
-      - if: ${{ env.use_cache }}
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
-          cache: yarn
-          cache-dependency-path: pro/yarn.lock
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - if: ${{ env.use_cache == false }}
-        uses: actions/setup-node@v3
+          node-version-file: 'pro/.nvmrc'
+      - name: "OpenID Connect Authentication"
+        uses: 'google-github-actions/auth@v1'
         with:
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - run: yarn install
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: Cache the node_modules
+        id: yarn-modules-cache
+        uses: mansagroup/gcs-cache-action@867797f1a78d69e008ad0a321c1459ddd619e9fd
+        with:
+          bucket: ${{ env.CACHE_BUCKET_NAME }}
+          path: |
+            node_modules
+            ~/.cache/yarn
+          key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - run: yarn install --immutable
       - run: yarn lint:scss --max-warnings 0
 
   tests-pro-unit-tests:
@@ -88,7 +106,6 @@ jobs:
     runs-on: [self-hosted, linux, x64]
     container:
       image: node:18
-    needs: read-node-version
     steps:
       - uses: actions/checkout@v3
         with:
@@ -97,23 +114,26 @@ jobs:
           git config --global --add safe.directory /__w/pass-culture-main/pass-culture-main
           git fetch --no-tags origin +refs/heads/master:refs/remotes/origin/master
           git update-ref refs/heads/master refs/remotes/origin/master
-      - if: ${{ env.use_cache }}
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
-          fetch-depth: 0
-          cache: yarn
-          cache-dependency-path: pro/yarn.lock
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - if: ${{ env.use_cache == false }}
-        uses: actions/setup-node@v3
+          node-version-file: 'pro/.nvmrc'
+      - name: "OpenID Connect Authentication"
+        uses: 'google-github-actions/auth@v1'
         with:
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
-      - run: yarn install
-      - name: Use Vitest Cache
-        uses: actions/cache@v3
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      - name: Cache the node_modules
+        id: yarn-modules-cache
+        uses: mansagroup/gcs-cache-action@867797f1a78d69e008ad0a321c1459ddd619e9fd
         with:
-          path: ./${{ env.folder }}/.vitest_cache
-          key: vitest-cache
+          bucket: ${{ env.CACHE_BUCKET_NAME }}
+          path: |
+            node_modules
+            ~/.cache/yarn
+          key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - run: yarn install --immutable
       - name: Run tests with coverage
         run: yarn test:unit:ci
       - name: SonarCloud scan
@@ -154,13 +174,11 @@ jobs:
   tests-pro-e2e-tests:
     name: "E2E tests"
     runs-on: [self-hosted, linux, x64]
-    needs: read-node-version
     steps:
       - uses: actions/checkout@v3
-      - if: ${{ env.use_cache == false }}
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: ${{ needs.read-node-version.outputs.node_version }}
+          node-version-file: 'pro/.nvmrc'
       - name: Run API server
         run: docker-compose -f ../docker-compose-backend.yml up --build -d
       - name: Wait for migrations to be run
@@ -183,9 +201,15 @@ jobs:
           wait-on: "http://localhost:3001,http://localhost/health/api,http://localhost/health/database"
           wait-on-timeout: 600
           working-directory: pro
+      - name: "OpenID Connect Authentication"
+        if: always()
+        uses: 'google-github-actions/auth@v1'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: Archive E2E results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: google-github-actions/upload-cloud-storage@v1
         with:
-          name: e2e-artifacts
-          path: pro/cypress/videos
+          path: 'pro/cypress/videos'
+          destination: '${{ env.CACHE_BUCKET_NAME }}/pro/cypress/videos/e2e-artifacts'

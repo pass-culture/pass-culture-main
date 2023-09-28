@@ -25,6 +25,9 @@ on:
       GCP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
 
+env:
+  CACHE_BUCKET_NAME: passculture-infra-prod-github-runner-cache
+
 jobs:
   deploy_on_firebase:
     permissions: write-all
@@ -37,6 +40,9 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ${{ inputs.REF }}
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: 'pro/.nvmrc'
       - id: openid-auth
         name: "OpenID Connect Authentication"
         uses: "google-github-actions/auth@v1"
@@ -50,7 +56,18 @@ jobs:
           secrets: |-
             FIREBASE_TOKEN:passculture-metier-ehp/pc_pro_${{ inputs.ENV }}_firebase_json
             SENTRY_TOKEN:passculture-metier-ehp/passculture-app-pro-sentry-token
-      - run: yarn install
+      - name: Cache the node_modules
+        id: yarn-modules-cache
+        uses: mansagroup/gcs-cache-action@867797f1a78d69e008ad0a321c1459ddd619e9fd
+        with:
+          bucket: ${{ env.CACHE_BUCKET_NAME }}
+          path: |
+            node_modules
+            ~/.cache/yarn
+          key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - run: yarn install --immutable
       - run: |
           set -a; 
           source ../config/run_envs/${{ inputs.ENV }};
