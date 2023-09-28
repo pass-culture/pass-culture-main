@@ -179,7 +179,7 @@ class ExtraDataFieldEnum(Enum):
 
 
 @dataclass
-class ConditionalField:
+class FieldCondition:
     is_required_in_external_form: bool = False
     is_required_in_internal_form: bool = False
 
@@ -194,7 +194,7 @@ class Subcategory:
     search_group_name: str
     homepage_label_name: str
     is_event: bool
-    conditional_fields: dict[str, ConditionalField]
+    conditional_fields: dict[str, FieldCondition]
     can_expire: bool
     # the booking amount will be substracted from physical cap
     is_physical_deposit: bool
@@ -248,7 +248,7 @@ SUPPORT_PHYSIQUE_FILM = Subcategory(
     search_group_name=SearchGroups.FILMS_SERIES_CINEMA.name,
     homepage_label_name=HomepageLabels.FILMS.name,
     is_event=False,
-    conditional_fields={ExtraDataFieldEnum.EAN.value: ConditionalField(is_required_in_external_form=True)},
+    conditional_fields={ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True)},
     can_expire=True,
     can_be_duo=False,
     can_be_educational=False,
@@ -380,9 +380,9 @@ SEANCE_CINE = Subcategory(
     homepage_label_name=HomepageLabels.CINEMA.name,
     is_event=True,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.VISA.value: ConditionalField(),
-        ExtraDataFieldEnum.STAGE_DIRECTOR.value: ConditionalField(),
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.VISA.value: FieldCondition(),
+        ExtraDataFieldEnum.STAGE_DIRECTOR.value: FieldCondition(),
     },
     can_expire=False,
     can_be_duo=True,
@@ -402,9 +402,9 @@ EVENEMENT_CINE = Subcategory(
     homepage_label_name=HomepageLabels.CINEMA.name,
     is_event=True,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.VISA.value: ConditionalField(),
-        ExtraDataFieldEnum.STAGE_DIRECTOR.value: ConditionalField(),
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.VISA.value: FieldCondition(),
+        ExtraDataFieldEnum.STAGE_DIRECTOR.value: FieldCondition(),
     },
     can_expire=False,
     can_be_duo=True,
@@ -424,9 +424,9 @@ FESTIVAL_CINE = Subcategory(
     homepage_label_name=HomepageLabels.CINEMA.name,
     is_event=True,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.VISA.value: ConditionalField(),
-        ExtraDataFieldEnum.STAGE_DIRECTOR.value: ConditionalField(),
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.VISA.value: FieldCondition(),
+        ExtraDataFieldEnum.STAGE_DIRECTOR.value: FieldCondition(),
     },
     can_expire=False,
     can_be_duo=True,
@@ -446,9 +446,9 @@ CINE_VENTE_DISTANCE = Subcategory(
     homepage_label_name=HomepageLabels.CINEMA.name,
     is_event=False,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.VISA.value: ConditionalField(),
-        ExtraDataFieldEnum.STAGE_DIRECTOR.value: ConditionalField(),
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.VISA.value: FieldCondition(),
+        ExtraDataFieldEnum.STAGE_DIRECTOR.value: FieldCondition(),
     },
     can_expire=False,
     can_be_duo=False,
@@ -470,9 +470,9 @@ CINE_PLEIN_AIR = Subcategory(
     homepage_label_name=HomepageLabels.CINEMA.name,
     is_event=True,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.VISA.value: ConditionalField(),
-        ExtraDataFieldEnum.STAGE_DIRECTOR.value: ConditionalField(),
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.VISA.value: FieldCondition(),
+        ExtraDataFieldEnum.STAGE_DIRECTOR.value: FieldCondition(),
     },
     can_expire=False,
     can_be_duo=True,
@@ -495,7 +495,7 @@ CONFERENCE = Subcategory(
     search_group_name=SearchGroups.RENCONTRES_CONFERENCES.name,
     homepage_label_name=HomepageLabels.RENCONTRES.name,
     is_event=True,
-    conditional_fields={ExtraDataFieldEnum.SPEAKER.value: ConditionalField()},
+    conditional_fields={ExtraDataFieldEnum.SPEAKER.value: FieldCondition()},
     can_expire=False,
     can_be_duo=True,
     can_be_educational=True,
@@ -513,7 +513,7 @@ RENCONTRE = Subcategory(
     search_group_name=SearchGroups.RENCONTRES_CONFERENCES.name,
     homepage_label_name=HomepageLabels.RENCONTRES.name,
     is_event=True,
-    conditional_fields={ExtraDataFieldEnum.SPEAKER.value: ConditionalField()},
+    conditional_fields={ExtraDataFieldEnum.SPEAKER.value: FieldCondition()},
     can_expire=False,
     can_be_duo=True,
     can_be_educational=True,
@@ -531,7 +531,7 @@ DECOUVERTE_METIERS = Subcategory(
     search_group_name=SearchGroups.RENCONTRES_CONFERENCES.name,
     homepage_label_name=HomepageLabels.RENCONTRES.name,
     is_event=True,
-    conditional_fields={ExtraDataFieldEnum.SPEAKER.value: ConditionalField()},
+    conditional_fields={ExtraDataFieldEnum.SPEAKER.value: FieldCondition()},
     can_expire=False,
     can_be_duo=True,
     can_be_educational=True,
@@ -550,7 +550,7 @@ SALON = Subcategory(
     search_group_name=SearchGroups.RENCONTRES_CONFERENCES.name,
     homepage_label_name=HomepageLabels.RENCONTRES.name,
     is_event=True,
-    conditional_fields={ExtraDataFieldEnum.SPEAKER.value: ConditionalField()},
+    conditional_fields={ExtraDataFieldEnum.SPEAKER.value: FieldCondition()},
     can_expire=False,
     can_be_duo=True,
     can_be_educational=True,
@@ -568,7 +568,7 @@ RENCONTRE_EN_LIGNE = Subcategory(
     search_group_name=SearchGroups.RENCONTRES_CONFERENCES.name,
     homepage_label_name=HomepageLabels.RENCONTRES.name,
     is_event=True,
-    conditional_fields={ExtraDataFieldEnum.SPEAKER.value: ConditionalField()},
+    conditional_fields={ExtraDataFieldEnum.SPEAKER.value: FieldCondition()},
     can_expire=False,
     can_be_duo=False,
     can_be_educational=True,
@@ -661,7 +661,7 @@ JEU_EN_LIGNE = Subcategory(
     search_group_name=SearchGroups.JEUX_JEUX_VIDEOS.name,
     homepage_label_name=HomepageLabels.JEUX.name,
     is_event=False,
-    conditional_fields={ExtraDataFieldEnum.EAN.value: ConditionalField(is_required_in_external_form=True)},
+    conditional_fields={ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True)},
     can_expire=False,
     can_be_duo=False,
     can_be_educational=False,
@@ -726,9 +726,9 @@ LIVRE_PAPIER = Subcategory(
     homepage_label_name=HomepageLabels.LIVRES.name,
     is_event=False,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.EAN.value: ConditionalField(),
-        ExtraDataFieldEnum.GTL_ID.value: ConditionalField(),
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.EAN.value: FieldCondition(),
+        ExtraDataFieldEnum.GTL_ID.value: FieldCondition(),
     },
     can_expire=True,
     can_be_duo=False,
@@ -748,8 +748,8 @@ LIVRE_NUMERIQUE = Subcategory(
     homepage_label_name=HomepageLabels.LIVRES.name,
     is_event=False,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.EAN.value: ConditionalField(),
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.EAN.value: FieldCondition(),
     },
     can_expire=False,
     can_be_duo=False,
@@ -770,7 +770,7 @@ TELECHARGEMENT_LIVRE_AUDIO = Subcategory(
     homepage_label_name=HomepageLabels.LIVRES.name,
     is_event=False,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
     },
     can_expire=False,
     can_be_duo=False,
@@ -791,8 +791,8 @@ LIVRE_AUDIO_PHYSIQUE = Subcategory(
     homepage_label_name=HomepageLabels.LIVRES.name,
     is_event=False,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.EAN.value: ConditionalField(),
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.EAN.value: FieldCondition(),
     },
     can_expire=True,
     can_be_duo=False,
@@ -1018,8 +1018,8 @@ FESTIVAL_ART_VISUEL = Subcategory(
     homepage_label_name=HomepageLabels.FESTIVAL.name,
     is_event=True,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.PERFORMER.value: ConditionalField(),
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
     },
     can_expire=False,
     can_be_duo=True,
@@ -1043,14 +1043,14 @@ CONCERT = Subcategory(
     homepage_label_name=HomepageLabels.CONCERT.name,
     is_event=True,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.MUSIC_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.PERFORMER.value: ConditionalField(),
+        ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
     },
     can_expire=False,
     can_be_duo=True,
@@ -1071,14 +1071,14 @@ EVENEMENT_MUSIQUE = Subcategory(
     homepage_label_name=HomepageLabels.CONCERT.name,
     is_event=True,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.MUSIC_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.PERFORMER.value: ConditionalField(),
+        ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
     },
     can_expire=False,
     can_be_duo=True,
@@ -1099,14 +1099,14 @@ LIVESTREAM_MUSIQUE = Subcategory(
     homepage_label_name=HomepageLabels.MUSIQUE.name,
     is_event=True,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.MUSIC_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.PERFORMER.value: ConditionalField(),
+        ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
     },
     can_expire=False,
     can_be_duo=False,
@@ -1127,7 +1127,7 @@ ABO_CONCERT = Subcategory(
     homepage_label_name=HomepageLabels.CONCERT.name,
     is_event=False,
     conditional_fields={
-        ExtraDataFieldEnum.MUSIC_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         )
     },
@@ -1149,14 +1149,14 @@ FESTIVAL_MUSIQUE = Subcategory(
     homepage_label_name=HomepageLabels.FESTIVAL.name,
     is_event=True,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.MUSIC_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.PERFORMER.value: ConditionalField(),
+        ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
     },
     can_expire=False,
     can_be_duo=True,
@@ -1179,15 +1179,15 @@ SUPPORT_PHYSIQUE_MUSIQUE = Subcategory(
     homepage_label_name=HomepageLabels.MUSIQUE.name,
     is_event=False,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.MUSIC_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.PERFORMER.value: ConditionalField(),
-        ExtraDataFieldEnum.EAN.value: ConditionalField(is_required_in_external_form=True),
+        ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
+        ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True),
     },
     can_expire=True,
     can_be_duo=False,
@@ -1208,15 +1208,15 @@ SUPPORT_PHYSIQUE_MUSIQUE_CD = Subcategory(
     homepage_label_name=HomepageLabels.MUSIQUE.name,
     is_event=False,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.MUSIC_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.PERFORMER.value: ConditionalField(),
-        ExtraDataFieldEnum.EAN.value: ConditionalField(is_required_in_external_form=True),
+        ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
+        ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True),
     },
     can_expire=True,
     can_be_duo=False,
@@ -1236,15 +1236,15 @@ SUPPORT_PHYSIQUE_MUSIQUE_VINYLE = Subcategory(
     homepage_label_name=HomepageLabels.MUSIQUE.name,
     is_event=False,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.MUSIC_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.PERFORMER.value: ConditionalField(),
-        ExtraDataFieldEnum.EAN.value: ConditionalField(is_required_in_external_form=True),
+        ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
+        ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True),
     },
     can_expire=True,
     can_be_duo=False,
@@ -1264,15 +1264,15 @@ TELECHARGEMENT_MUSIQUE = Subcategory(
     homepage_label_name=HomepageLabels.MUSIQUE.name,
     is_event=False,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.MUSIC_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.PERFORMER.value: ConditionalField(),
-        ExtraDataFieldEnum.EAN.value: ConditionalField(is_required_in_external_form=True),
+        ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
+        ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True),
     },
     can_expire=False,
     can_be_duo=False,
@@ -1312,14 +1312,14 @@ CAPTATION_MUSIQUE = Subcategory(
     homepage_label_name=HomepageLabels.MUSIQUE.name,
     is_event=False,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.MUSIC_SUB_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.MUSIC_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.MUSIC_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.PERFORMER.value: ConditionalField(),
+        ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
     },
     can_expire=False,
     can_be_duo=False,
@@ -1342,7 +1342,7 @@ SEANCE_ESSAI_PRATIQUE_ART = Subcategory(
     search_group_name=SearchGroups.ARTS_LOISIRS_CREATIFS.name,
     homepage_label_name=HomepageLabels.BEAUX_ARTS.name,
     is_event=True,
-    conditional_fields={ExtraDataFieldEnum.SPEAKER.value: ConditionalField()},
+    conditional_fields={ExtraDataFieldEnum.SPEAKER.value: FieldCondition()},
     can_expire=True,
     can_be_duo=True,
     can_be_educational=True,
@@ -1360,7 +1360,7 @@ ATELIER_PRATIQUE_ART = Subcategory(
     search_group_name=SearchGroups.ARTS_LOISIRS_CREATIFS.name,
     homepage_label_name=HomepageLabels.BEAUX_ARTS.name,
     is_event=True,
-    conditional_fields={ExtraDataFieldEnum.SPEAKER.value: ConditionalField()},
+    conditional_fields={ExtraDataFieldEnum.SPEAKER.value: FieldCondition()},
     can_expire=False,
     can_be_duo=True,
     can_be_educational=True,
@@ -1396,7 +1396,7 @@ PRATIQUE_ART_VENTE_DISTANCE = Subcategory(
     search_group_name=SearchGroups.ARTS_LOISIRS_CREATIFS.name,
     homepage_label_name=HomepageLabels.BEAUX_ARTS.name,
     is_event=False,
-    conditional_fields={ExtraDataFieldEnum.SPEAKER.value: ConditionalField()},
+    conditional_fields={ExtraDataFieldEnum.SPEAKER.value: FieldCondition()},
     can_expire=False,
     can_be_duo=False,
     can_be_educational=False,
@@ -1514,15 +1514,15 @@ SPECTACLE_REPRESENTATION = Subcategory(
     homepage_label_name=HomepageLabels.SPECTACLES.name,
     is_event=True,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.SHOW_SUB_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.SHOW_SUB_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.SHOW_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.SHOW_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.STAGE_DIRECTOR.value: ConditionalField(),
-        ExtraDataFieldEnum.PERFORMER.value: ConditionalField(),
+        ExtraDataFieldEnum.STAGE_DIRECTOR.value: FieldCondition(),
+        ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
     },
     can_expire=False,
     can_be_duo=True,
@@ -1543,15 +1543,15 @@ SPECTACLE_ENREGISTRE = Subcategory(
     homepage_label_name=HomepageLabels.SPECTACLES.name,
     is_event=False,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.SHOW_SUB_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.SHOW_SUB_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.SHOW_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.SHOW_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.STAGE_DIRECTOR.value: ConditionalField(),
-        ExtraDataFieldEnum.PERFORMER.value: ConditionalField(),
+        ExtraDataFieldEnum.STAGE_DIRECTOR.value: FieldCondition(),
+        ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
     },
     can_expire=False,
     can_be_duo=False,
@@ -1572,15 +1572,15 @@ LIVESTREAM_EVENEMENT = Subcategory(
     homepage_label_name=HomepageLabels.SPECTACLES.name,
     is_event=True,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.SHOW_SUB_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.SHOW_SUB_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.SHOW_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.SHOW_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.STAGE_DIRECTOR.value: ConditionalField(),
-        ExtraDataFieldEnum.PERFORMER.value: ConditionalField(),
+        ExtraDataFieldEnum.STAGE_DIRECTOR.value: FieldCondition(),
+        ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
     },
     can_expire=False,
     can_be_duo=False,
@@ -1601,15 +1601,15 @@ FESTIVAL_SPECTACLE = Subcategory(
     homepage_label_name=HomepageLabels.SPECTACLES.name,
     is_event=True,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.SHOW_SUB_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.SHOW_SUB_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.SHOW_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.SHOW_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.STAGE_DIRECTOR.value: ConditionalField(),
-        ExtraDataFieldEnum.PERFORMER.value: ConditionalField(),
+        ExtraDataFieldEnum.STAGE_DIRECTOR.value: FieldCondition(),
+        ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
     },
     can_expire=False,
     can_be_duo=True,
@@ -1630,10 +1630,10 @@ ABO_SPECTACLE = Subcategory(
     homepage_label_name=HomepageLabels.SPECTACLES.name,
     is_event=False,
     conditional_fields={
-        ExtraDataFieldEnum.SHOW_SUB_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.SHOW_SUB_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.SHOW_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.SHOW_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
     },
@@ -1655,15 +1655,15 @@ SPECTACLE_VENTE_DISTANCE = Subcategory(
     homepage_label_name=HomepageLabels.SPECTACLES.name,
     is_event=False,
     conditional_fields={
-        ExtraDataFieldEnum.AUTHOR.value: ConditionalField(),
-        ExtraDataFieldEnum.SHOW_SUB_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.AUTHOR.value: FieldCondition(),
+        ExtraDataFieldEnum.SHOW_SUB_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.SHOW_TYPE.value: ConditionalField(
+        ExtraDataFieldEnum.SHOW_TYPE.value: FieldCondition(
             is_required_in_external_form=True, is_required_in_internal_form=True
         ),
-        ExtraDataFieldEnum.STAGE_DIRECTOR.value: ConditionalField(),
-        ExtraDataFieldEnum.PERFORMER.value: ConditionalField(),
+        ExtraDataFieldEnum.STAGE_DIRECTOR.value: FieldCondition(),
+        ExtraDataFieldEnum.PERFORMER.value: FieldCondition(),
     },
     can_expire=False,
     can_be_duo=False,
@@ -1739,7 +1739,7 @@ PARTITION = Subcategory(
     search_group_name=SearchGroups.INSTRUMENTS.name,
     homepage_label_name=HomepageLabels.INSTRUMENT.name,
     is_event=False,
-    conditional_fields={ExtraDataFieldEnum.EAN.value: ConditionalField(is_required_in_external_form=True)},
+    conditional_fields={ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True)},
     can_expire=True,
     can_be_duo=False,
     can_be_educational=False,
@@ -1759,7 +1759,7 @@ MATERIEL_ART_CREATIF = Subcategory(
     search_group_name=SearchGroups.ARTS_LOISIRS_CREATIFS.name,
     homepage_label_name=HomepageLabels.BEAUX_ARTS.name,
     is_event=False,
-    conditional_fields={ExtraDataFieldEnum.EAN.value: ConditionalField(is_required_in_external_form=True)},
+    conditional_fields={ExtraDataFieldEnum.EAN.value: FieldCondition(is_required_in_external_form=True)},
     can_expire=True,
     can_be_duo=False,
     can_be_educational=False,
