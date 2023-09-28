@@ -147,6 +147,8 @@ def import_eac_dms_application(ignore_previous: bool = False) -> None:
         settings.DMS_EAC_PROCEDURE_STRUCTURE_CANDIDATE_ID,
         settings.DMS_EAC_PROCEDURE_MENJS_CANDIDATE_ID,
     ]
+
+    procedures = [proc for proc in procedures if proc > 0]
     for procedure_number in procedures:
         import_dms_applications(procedure_number=procedure_number, ignore_previous=ignore_previous)
 
