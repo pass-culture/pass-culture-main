@@ -55,9 +55,9 @@ const Callout = ({
     <div
       className={cn(
         styles['callout'],
-        className,
         styles[`callout-${type}`],
-        titleOnly ? styles['small-callout'] : ''
+        titleOnly ? styles['small-callout'] : '',
+        className
       )}
     >
       <SvgIcon
