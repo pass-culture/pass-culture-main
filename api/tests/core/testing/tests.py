@@ -19,7 +19,7 @@ class AssertNoDuplicatedQueriesTest:
 
     def test_passes_when_no_queries(self):
         with assert_no_duplicated_queries():
-            self._run_dummy_query()
+            pass
 
     def test_passes_when_no_duplicated_queries(self):
         with assert_no_duplicated_queries():
