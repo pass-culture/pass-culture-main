@@ -18,7 +18,7 @@ import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 
 import styles from './VenueOfferSteps.module.scss'
 
-interface VenueOfferStepsProps {
+export interface VenueOfferStepsProps {
   hasVenue: boolean
   hasMissingReimbursementPoint?: boolean
   offererId: number
@@ -42,6 +42,9 @@ const VenueOfferSteps = ({
   demarchesSimplifieesApplicationId,
 }: VenueOfferStepsProps) => {
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
+  const isNewBankDetailsJourneyEnable = useActiveFeature(
+    'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
+  )
   const venueCreationUrl = isVenueCreationAvailable
     ? `/structures/${offererId}/lieux/creation`
     : UNAVAILABLE_ERROR_PAGE
@@ -163,7 +166,8 @@ const VenueOfferSteps = ({
             </div>
           )}
           {(shouldDisplayEACInformationSection ||
-            hasPendingBankInformationApplication) && (
+            (!isNewBankDetailsJourneyEnable &&
+              hasPendingBankInformationApplication)) && (
             <div className="h-card-inner">
               <h3 className={styles['card-title']}>Démarche en cours : </h3>
 
@@ -186,32 +190,33 @@ const VenueOfferSteps = ({
                     Suivre ma demande de référencement ADAGE
                   </ButtonLink>
                 )}
-                {hasPendingBankInformationApplication && (
-                  <ButtonLink
-                    className={styles['step-button-width']}
-                    variant={ButtonVariant.BOX}
-                    icon={fullLinkIcon}
-                    link={{
-                      to: `https://www.demarches-simplifiees.fr/dossiers${
-                        demarchesSimplifieesApplicationId
-                          ? `/${demarchesSimplifieesApplicationId}/messagerie`
-                          : ''
-                      }`,
-                      isExternal: true,
-                      target: '_blank',
-                    }}
-                    onClick={() => {
-                      logEvent?.(
-                        VenueEvents.CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP,
-                        {
-                          from: location.pathname,
-                        }
-                      )
-                    }}
-                  >
-                    Suivre mon dossier de coordonnées bancaires
-                  </ButtonLink>
-                )}
+                {!isNewBankDetailsJourneyEnable &&
+                  hasPendingBankInformationApplication && (
+                    <ButtonLink
+                      className={styles['step-button-width']}
+                      variant={ButtonVariant.BOX}
+                      icon={fullLinkIcon}
+                      link={{
+                        to: `https://www.demarches-simplifiees.fr/dossiers${
+                          demarchesSimplifieesApplicationId
+                            ? `/${demarchesSimplifieesApplicationId}/messagerie`
+                            : ''
+                        }`,
+                        isExternal: true,
+                        target: '_blank',
+                      }}
+                      onClick={() => {
+                        logEvent?.(
+                          VenueEvents.CLICKED_BANK_DETAILS_RECORD_FOLLOW_UP,
+                          {
+                            from: location.pathname,
+                          }
+                        )
+                      }}
+                    >
+                      Suivre mon dossier de coordonnées bancaires
+                    </ButtonLink>
+                  )}
               </div>
             </div>
           )}
