@@ -13,10 +13,7 @@ import AddBankAccountCallout from 'components/Callout/AddBankAccountCallout'
 import LinkVenueCallout from 'components/Callout/LinkVenueCallout'
 import PendingBankAccountCallout from 'components/Callout/PendingBankAccountCallout'
 import { ReimbursementsBreadcrumb } from 'components/ReimbursementsBreadcrumb'
-import {
-  ReimbursementContextProvider,
-  useReimbursementContext,
-} from 'context/ReimbursementContext/ReimbursementContext'
+import { useReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
 import useActiveFeature from 'hooks/useActiveFeature'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import Titles from 'ui-kit/Titles/Titles'
@@ -25,6 +22,7 @@ const Reimbursements = (): JSX.Element => {
   const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
+
   const [isOfferersLoading, setIsOfferersLoading] = useState<boolean>(false)
 
   const { setOfferers, setSelectedOfferer } = useReimbursementContext()
@@ -42,12 +40,10 @@ const Reimbursements = (): JSX.Element => {
       setIsOfferersLoading(true)
       try {
         const { offerersNames } = await api.listOfferersNames()
-        if (offerersNames) {
-          setOfferers(offerersNames)
+        setOfferers(offerersNames)
+        if (offerersNames.length > 0) {
           const offerer = await api.getOfferer(offerersNames[0].id)
-          if (offerer) {
-            setSelectedOfferer(offerer)
-          }
+          setSelectedOfferer(offerer)
         }
         setIsOfferersLoading(false)
       } catch (error) {
@@ -64,7 +60,7 @@ const Reimbursements = (): JSX.Element => {
   }
 
   return (
-    <ReimbursementContextProvider>
+    <>
       <Titles title="Remboursements" />
       <>
         {!isNewBankDetailsJourneyEnabled && (
@@ -86,7 +82,7 @@ const Reimbursements = (): JSX.Element => {
           ))}
         </Routes>
       </>
-    </ReimbursementContextProvider>
+    </>
   )
 }
 
