@@ -1,3 +1,5 @@
+from secrets import token_urlsafe
+
 from flask import flash
 from flask import redirect
 from flask import render_template
@@ -65,6 +67,9 @@ def create_provider() -> utils.BackofficeResponse:
         flash(error_msg, "warning")
         return redirect(url_for("backoffice_web.providers.get_providers"), code=303)
 
+    def generate_hmac_key() -> str:
+        return token_urlsafe(64)
+
     try:
         provider = providers_models.Provider(
             name=form.name.data,
@@ -74,6 +79,7 @@ def create_provider() -> utils.BackofficeResponse:
             bookingExternalUrl=form.booking_external_url.data,
             cancelExternalUrl=form.cancel_external_url.data,
             notificationExternalUrl=form.notification_external_url.data,
+            hmacKey=generate_hmac_key(),
         )
         offerer, is_offerer_new = _get_or_create_offerer(form)
         offerer_provider = offerers_models.OffererProvider(offerer=offerer, provider=provider)
@@ -97,6 +103,10 @@ def create_provider() -> utils.BackofficeResponse:
             zendesk_sell.create_offerer(offerer)
         flash(
             f"Le partenaire {provider.name} a été créé. La Clé API ne peut être régénérée ni ré-affichée, veillez à la sauvegarder immédiatement : {clear_secret}",
+            "success",
+        )
+        flash(
+            f"La clé de chiffrage des requêtes entre le partenaire et le pass Culture dans le cadre de l'api Charlie est: {provider.hmacKey}",
             "success",
         )
 
