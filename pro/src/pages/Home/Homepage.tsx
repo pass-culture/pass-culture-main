@@ -7,6 +7,7 @@ import {
 } from 'apiClient/v1'
 import AddBankAccountCallout from 'components/Callout/AddBankAccountCallout'
 import LinkVenueCallout from 'components/Callout/LinkVenueCallout'
+import PendingBankAccountCallout from 'components/Callout/PendingBankAccountCallout'
 import { Newsletter } from 'components/Newsletter'
 import TutorialDialog from 'components/TutorialDialog'
 import { hasStatusCode } from 'core/OfferEducational'
@@ -130,6 +131,9 @@ const Homepage = (): JSX.Element => {
                 : false
             }
           />
+        )}
+        {selectedOfferer?.hasPendingBankAccount && (
+          <PendingBankAccountCallout />
         )}
         <HomepageBreadcrumb
           activeStep={STEP_ID_OFFERERS}
