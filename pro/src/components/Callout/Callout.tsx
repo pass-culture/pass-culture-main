@@ -22,6 +22,7 @@ export interface CalloutProps {
   closable?: boolean
   onClose?: undefined | (() => void)
   type?: CalloutVariant
+  titleOnly?: boolean
 }
 
 const Callout = ({
@@ -32,6 +33,7 @@ const Callout = ({
   closable = false,
   onClose,
   type = CalloutVariant.DEFAULT,
+  titleOnly = false,
 }: CalloutProps): JSX.Element => {
   let calloutIconSrc
   /* istanbul ignore next: graphic variations */
@@ -51,7 +53,12 @@ const Callout = ({
   }
   return (
     <div
-      className={cn(styles['callout'], className, styles[`callout-${type}`])}
+      className={cn(
+        styles['callout'],
+        className,
+        styles[`callout-${type}`],
+        titleOnly ? styles['small-callout'] : ''
+      )}
     >
       <SvgIcon
         src={calloutIconSrc}
@@ -61,8 +68,14 @@ const Callout = ({
       />
       <div className={styles['content']}>
         <div className={styles['title']}>{title}</div>
-        {children && <div className={styles['callout-text']}>{children}</div>}
-        <LinkNodes links={links} defaultLinkIcon={fullNextIcon} />
+        {!titleOnly && (
+          <>
+            {children && (
+              <div className={styles['callout-text']}>{children}</div>
+            )}
+            <LinkNodes links={links} defaultLinkIcon={fullNextIcon} />
+          </>
+        )}
       </div>
       {closable && (
         <button
