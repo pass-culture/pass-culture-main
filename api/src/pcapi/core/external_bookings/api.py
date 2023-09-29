@@ -5,6 +5,7 @@ import typing
 import pydantic.v1 as pydantic_v1
 
 from pcapi import settings
+from pcapi.core.bookings.utils import generate_hmac_signature
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
 from pcapi.core.bookings.constants import RedisExternalBookingType
 import pcapi.core.bookings.models as bookings_models
