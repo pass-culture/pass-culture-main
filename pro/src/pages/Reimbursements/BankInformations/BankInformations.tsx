@@ -35,9 +35,7 @@ const BankInformations = (): JSX.Element => {
   const [offererOptions, setOffererOptions] = useState<SelectOption[]>([])
 
   const updateOfferer = async (newOffererId: string) => {
-    if (newOffererId === '') {
-      setSelectedOfferer(null)
-    } else {
+    if (newOffererId !== '') {
       setIsOffererLoading(true)
       const offerer = await api.getOfferer(Number(newOffererId))
       setSelectedOfferer(offerer)
@@ -49,27 +47,13 @@ const BankInformations = (): JSX.Element => {
     if (offererId && offerers && offerers?.length > 0) {
       updateOfferer(offererId)
     }
-  }, [])
-
-  if (
-    searchParams.has('structure') &&
-    Number(offererId) === selectedOfferer?.id
-  ) {
-    searchParams.delete('structure')
-    setSearchParams(searchParams)
-  }
-
-  const selectedOffererId = selectedOfferer?.id.toString() ?? ''
-
-  useEffect(() => {
-    if (offererId && offerers && offerers?.length > 0) {
-      updateOfferer(offererId)
-    }
     if (searchParams.has('structure')) {
       searchParams.delete('structure')
       setSearchParams(searchParams)
     }
   }, [])
+
+  const selectedOffererId = selectedOfferer?.id.toString() ?? ''
 
   useEffect(() => {
     if (offerers && offerers.length > 1) {
