@@ -47,6 +47,7 @@ import pcapi.core.finance.models as finance_models
 from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
+from pcapi.models import feature
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.has_address_mixin import HasAddressMixin
@@ -403,7 +404,11 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
 
     @hybrid_property
     def bannerUrl(self) -> str | None:
-        return self._bannerUrl or self._get_type_banner_url()
+        if self._bannerUrl:
+            return self._bannerUrl
+        if feature.FeatureToggle.WIP_ENABLE_GOOGLE_PHOTOS_FOR_VENUES.is_active() and self._googleBannerUrl:
+            return self._googleBannerUrl
+        return self._get_type_banner_url()
 
     @bannerUrl.setter  # type: ignore [no-redef]
     def bannerUrl(self, value: str | None) -> None:

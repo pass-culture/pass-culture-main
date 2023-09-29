@@ -15,6 +15,7 @@ from pcapi.core.offerers import models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -172,6 +173,26 @@ class VenueBannerUrlTest:
         venue = factories.VenueFactory(bannerUrl=expected_banner_url)
 
         assert venue.bannerUrl == expected_banner_url
+
+    def test_google_banner_is_returned_if_no_banner_url(self):
+        google_banner_url = "http://example.com/google_banner_url"
+        venue = factories.VenueFactory(_bannerUrl=None, _googleBannerUrl=google_banner_url)
+
+        assert venue.bannerUrl == google_banner_url
+
+    def test_google_banner_is_not_returned_if_banner_url(self):
+        google_banner_url = "http://example.com/google_banner_url"
+        banner_url = "http://example.com/banner_url"
+        venue = factories.VenueFactory(_bannerUrl=banner_url, _googleBannerUrl=google_banner_url)
+
+        assert venue.bannerUrl == banner_url
+
+    @override_features(WIP_ENABLE_GOOGLE_PHOTOS_FOR_VENUES=False)
+    def test_feature_flag_hides_google_banner_url(self):
+        google_banner_url = "http://example.com/google_banner_url"
+        venue = factories.VenueFactory(_bannerUrl=None, _googleBannerUrl=google_banner_url)
+
+        assert venue.bannerUrl != google_banner_url
 
 
 class OffererDepartementCodePropertyTest:
