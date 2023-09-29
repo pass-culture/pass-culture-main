@@ -2,7 +2,7 @@
 
 C'est la version (browser) de l'application PRO frontend du pass Culture. Ce repo contient également [un storybook](https://pass-culture.github.io/pass-culture-main/) des éléments graphiques
 
-Il faut aller voir le README dans https://github.com/betagouv/pass-culture-main pour être informé des différentes lignes de commande associées à ce repo.
+Il faut aller voir le README dans https://github.com/pass-culture/pass-culture-main pour être informé des différentes lignes de commande associées à ce repo.
 
 ## Note sur Yarn
 
@@ -18,6 +18,12 @@ Yarn est prometteur, on vous conseille de l'utiliser. Tâchez de l'installer glo
   yarn install
   yarn start
   ```
+
+#### Troubleshooting:
+
+Sur linux + chrome / chromium l'application peut se charger indéfiniment
+un workaround est de changer de navigateur,
+une solution est proposée ici : https://vitejs.dev/guide/troubleshooting.html#dev-server
 
 ## Lancement des tests
 
