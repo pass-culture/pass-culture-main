@@ -250,7 +250,12 @@ class RunIntegrationTest:
             phoneValidationStatus=None,
         )
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
+            fixture.make_parsed_graphql_application(
+                application_number=123,
+                state="accepte",
+                email=user.email,
+                construction_datetime=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+            )
         ]
         # when
         import_all_updated_dms_applications(6712558)
@@ -687,6 +692,34 @@ class GraphQLSourceProcessApplicationTest:
 
         assert len(user.beneficiaryFraudChecks) == 3  # profile, DMS, honor statement
         assert user.roles == [users_models.UserRole.BENEFICIARY]
+
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
+    def test_process_accepted_application_user_registered_at_18_dms_started_at_19(self, get_applications_with_details):
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.utcnow() - relativedelta(years=19, days=1),
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user,
+            dateCreated=datetime.utcnow() - relativedelta(years=1),
+        )
+
+        get_applications_with_details.return_value = [
+            fixture.make_parsed_graphql_application(
+                123123,
+                "accepte",
+                email=user.email,
+                birth_date=user.dateOfBirth,
+                # For the user to be automatically credited, the DMS application must be created before user's 19th birthday
+                # Here it's created after 19yo, so requires a manual review
+                construction_datetime=(datetime.utcnow()).strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+            ),
+        ]
+
+        import_all_updated_dms_applications(6712558)
+
+        assert len(user.beneficiaryFraudChecks) == 3  # profile, DMS, honor statement
+        assert mails_testing.outbox[0].sent_data["subject"] == "Revue manuelle nécessaire"
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_process_accepted_application_user_not_eligible(self, get_applications_with_details):
