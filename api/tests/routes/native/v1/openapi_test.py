@@ -842,10 +842,6 @@ def test_public_api(client):
                             "anyOf": [{"$ref": "#/components/schemas/SubscriptionStep"}],
                             "nullable": True,
                         },
-                        "stepperIncludesPhoneValidation": {
-                            "title": "Stepperincludesphonevalidation",
-                            "type": "boolean",
-                        },
                         "subscriptionMessage": {
                             "anyOf": [{"$ref": "#/components/schemas/SubscriptionMessage"}],
                             "nullable": True,
@@ -853,7 +849,6 @@ def test_public_api(client):
                         },
                     },
                     "required": [
-                        "stepperIncludesPhoneValidation",
                         "allowedIdentityCheckMethods",
                         "hasIdentityCheckPending",
                     ],
