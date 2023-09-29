@@ -15,7 +15,6 @@ import pcapi.core.fraud.models as fraud_models
 import pcapi.core.fraud.repository as fraud_repository
 import pcapi.core.fraud.ubble.constants as ubble_constants
 import pcapi.core.mails.transactional as transactional_mails
-from pcapi.core.mails.transactional.users import fraud_emails
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.dms import api as dms_subscription_api
@@ -480,9 +479,8 @@ def get_user_subscription_state(user: users_models.User) -> subscription_models.
     if identity_check_fraud_status == models.SubscriptionItemStatus.OK:
         is_activable = True
         assert relevant_identity_fraud_check  # mypy
-        if _requires_manual_review_before_activation(user, relevant_identity_fraud_check):
+        if requires_manual_review_before_activation(user, relevant_identity_fraud_check):
             is_activable = False
-            fraud_emails.send_mail_for_fraud_review(user)
         return subscription_models.UserSubscriptionState(
             identity_fraud_check=relevant_identity_fraud_check,
             is_activable=is_activable,
@@ -505,7 +503,7 @@ def get_user_subscription_state(user: users_models.User) -> subscription_models.
     )
 
 
-def _requires_manual_review_before_activation(
+def requires_manual_review_before_activation(
     user: users_models.User, identity_fraud_check: fraud_models.BeneficiaryFraudCheck
 ) -> bool:
     return (

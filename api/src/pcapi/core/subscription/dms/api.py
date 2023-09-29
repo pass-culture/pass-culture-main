@@ -13,6 +13,7 @@ from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.dms import api as fraud_dms_api
 import pcapi.core.mails.transactional as transactional_mails
+from pcapi.core.mails.transactional.users import fraud_emails
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.dms import dms_internal_mailing
@@ -454,6 +455,9 @@ def _process_accepted_application(
     _create_profile_completion_fraud_check_from_dms(
         user, fraud_check.eligibilityType, dms_content, application_id=fraud_check.thirdPartyId
     )
+
+    if subscription_api.requires_manual_review_before_activation(user, fraud_check):
+        fraud_emails.send_mail_for_fraud_review(user)
 
     try:
         has_completed_all_steps = subscription_api.activate_beneficiary_if_no_missing_step(user=user)
