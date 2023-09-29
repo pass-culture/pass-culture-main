@@ -38,7 +38,6 @@ class NextStepTest:
         assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
         assert response.json["maintenancePageType"] is None
         assert response.json["hasIdentityCheckPending"] is False
-        assert response.json["stepperIncludesPhoneValidation"] is True
         assert response.json["subscriptionMessage"] is None
 
     @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=False)
@@ -58,7 +57,6 @@ class NextStepTest:
         assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
         assert response.json["maintenancePageType"] is None
         assert not response.json["hasIdentityCheckPending"]
-        assert response.json["stepperIncludesPhoneValidation"]
         assert response.json["subscriptionMessage"] is None
 
     @override_features(
@@ -87,7 +85,6 @@ class NextStepTest:
         assert response.json["allowedIdentityCheckMethods"] == []
         assert response.json["maintenancePageType"] == "with-dms"
         assert response.json["hasIdentityCheckPending"] is False
-        assert response.json["stepperIncludesPhoneValidation"] is False
         assert response.json["subscriptionMessage"] == {
             "callToAction": None,
             "popOverIcon": "CLOCK",
@@ -184,7 +181,6 @@ class NextStepTest:
         assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
         assert response.json["maintenancePageType"] is None
         assert response.json["hasIdentityCheckPending"] is False
-        assert response.json["stepperIncludesPhoneValidation"] is True
         assert response.json["subscriptionMessage"] is None
 
         # Perform phone validation
@@ -197,7 +193,6 @@ class NextStepTest:
         assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
         assert response.json["maintenancePageType"] is None
         assert response.json["hasIdentityCheckPending"] is False
-        assert response.json["stepperIncludesPhoneValidation"] is True
         assert response.json["subscriptionMessage"] is None
 
         # Perform profile completion
@@ -209,7 +204,6 @@ class NextStepTest:
         assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
         assert response.json["maintenancePageType"] is None
         assert response.json["hasIdentityCheckPending"] is False
-        assert response.json["stepperIncludesPhoneValidation"] is True
         assert response.json["subscriptionMessage"] is None
 
         # Perform first id check with Ubble
@@ -231,7 +225,6 @@ class NextStepTest:
         assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
         assert response.json["maintenancePageType"] is None
         assert response.json["hasIdentityCheckPending"] == pending_idcheck
-        assert response.json["stepperIncludesPhoneValidation"] is True
         assert response.json["subscriptionMessage"] == subscription_message
 
     @override_features(
@@ -281,7 +274,6 @@ class NextStepTest:
         assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
         assert response.json["maintenancePageType"] is None
         assert response.json["hasIdentityCheckPending"] is False
-        assert response.json["stepperIncludesPhoneValidation"] is True
         assert response.json["subscriptionMessage"] is None
 
         # Perform phone validation
@@ -294,7 +286,6 @@ class NextStepTest:
         assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
         assert response.json["maintenancePageType"] is None
         assert response.json["hasIdentityCheckPending"] is False
-        assert response.json["stepperIncludesPhoneValidation"] is True
         assert response.json["subscriptionMessage"] is None
 
         response = client.get("/native/v1/subscription/next_step")
@@ -304,7 +295,6 @@ class NextStepTest:
         assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
         assert response.json["maintenancePageType"] is None
         assert response.json["hasIdentityCheckPending"] is False
-        assert response.json["stepperIncludesPhoneValidation"] is True
         assert response.json["subscriptionMessage"] is None
 
         # Perform profile completion
@@ -317,7 +307,6 @@ class NextStepTest:
         assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
         assert response.json["maintenancePageType"] is None
         assert response.json["hasIdentityCheckPending"] is False
-        assert response.json["stepperIncludesPhoneValidation"] is True
         assert response.json["subscriptionMessage"] is None
 
         # Perform id check with Ubble
@@ -338,7 +327,6 @@ class NextStepTest:
         assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
         assert response.json["maintenancePageType"] is None
         assert response.json["hasIdentityCheckPending"] is True
-        assert response.json["stepperIncludesPhoneValidation"] is True
         assert response.json["subscriptionMessage"] is None
 
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -355,7 +343,6 @@ class NextStepTest:
         assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
         assert response.json["maintenancePageType"] is None
         assert response.json["hasIdentityCheckPending"] is True
-        assert response.json["stepperIncludesPhoneValidation"] is True
         assert response.json["subscriptionMessage"]["callToAction"] is None
         assert response.json["subscriptionMessage"]["popOverIcon"] == "CLOCK"
         assert response.json["subscriptionMessage"]["updatedAt"] == ubble_fraud_check.updatedAt.isoformat()
@@ -377,7 +364,6 @@ class NextStepTest:
         assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
         assert response.json["maintenancePageType"] is None
         assert response.json["hasIdentityCheckPending"] is False
-        assert response.json["stepperIncludesPhoneValidation"] is True
         assert response.json["subscriptionMessage"] is None
 
     @override_features(
@@ -426,7 +412,6 @@ class NextStepTest:
         assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
         assert response.json["maintenancePageType"] is None
         assert response.json["hasIdentityCheckPending"] is False
-        assert response.json["stepperIncludesPhoneValidation"] is True
         assert response.json["subscriptionMessage"] is None
 
     @override_features(
@@ -437,11 +422,9 @@ class NextStepTest:
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE=False,
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
     )
-    @pytest.mark.parametrize(
-        "age, stepper_includes_phone_validation", [(15, False), (16, False), (17, False), (18, True)]
-    )
+    @pytest.mark.parametrize("age", [15, 16, 17, 18])
     @freeze_time("2022-09-08T12:45:13.534068")
-    def test_ubble_subscription_limited(self, client, age, stepper_includes_phone_validation):
+    def test_ubble_subscription_limited(self, client, age):
         birth_date = datetime.datetime.utcnow() - relativedelta(years=age + 1)
         birth_date += relativedelta(days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS - 1)
         # the user has:
@@ -472,7 +455,6 @@ class NextStepTest:
         assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
         assert response.json["maintenancePageType"] is None
         assert response.json["hasIdentityCheckPending"] is False
-        assert response.json["stepperIncludesPhoneValidation"] == stepper_includes_phone_validation
         assert response.json["subscriptionMessage"] is None
 
         user_not_eligible_for_ubble = users_factories.UserFactory(
@@ -498,7 +480,6 @@ class NextStepTest:
         assert response.json["allowedIdentityCheckMethods"] == []
         assert response.json["maintenancePageType"] == "without-dms"
         assert response.json["hasIdentityCheckPending"] is False
-        assert response.json["stepperIncludesPhoneValidation"] == stepper_includes_phone_validation
         assert response.json["subscriptionMessage"] == {
             "callToAction": None,
             "popOverIcon": "CLOCK",
@@ -541,7 +522,6 @@ class NextStepTest:
         assert response.json["allowedIdentityCheckMethods"] == ["ubble"]
         assert response.json["maintenancePageType"] is None
         assert response.json["hasIdentityCheckPending"] is False
-        assert response.json["stepperIncludesPhoneValidation"] is True
         assert response.json["subscriptionMessage"] is None
 
 

@@ -39,10 +39,6 @@ class SubscriptionMessage(BaseModel):
 
 class NextSubscriptionStepResponse(BaseModel):
     next_subscription_step: subscription_models.SubscriptionStep | None
-    # TODO: (Lixxday) 23/02/2023: Remove "stepper_includes_phone_validation" when the app does not use it anymore
-    # - when this ticket is done: https://passculture.atlassian.net/browse/PC-20003
-    # - and after a forced update of the app
-    stepper_includes_phone_validation: bool
     maintenance_page_type: subscription_models.MaintenancePageType | None
     allowed_identity_check_methods: list[subscription_models.IdentityCheckMethod]
     has_identity_check_pending: bool
