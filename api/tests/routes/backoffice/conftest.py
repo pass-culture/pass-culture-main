@@ -536,6 +536,12 @@ def top_acteur_tag_fixture():
     return offerers_factories.OffererTagFactory(name="top-acteur", label="Top Acteur", categories=[category])
 
 
+@pytest.fixture(name="adage_tag")
+def adage_tag_fixture():
+    category = offerers_factories.OffererTagCategoryFactory(name="homologation", label="Homologation")
+    return offerers_factories.OffererTagFactory(name="adage", label="Adage", categories=[category])
+
+
 @pytest.fixture(name="offerer_tags")
 def offerer_tags_fixture():
     category = offerers_factories.OffererTagCategoryFactory(name="homologation", label="Homologation")

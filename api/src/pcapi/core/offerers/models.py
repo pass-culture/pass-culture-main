@@ -1060,13 +1060,6 @@ class IndividualOffererSubscription(PcObject, Base, Model):
     isEmailSent: bool = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False)
     dateEmailSent: date | None = sa.Column(sa.Date, nullable=True)
 
-    targetsCollectiveOffers: bool = sa.Column(
-        sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
-    )
-    targetsIndividualOffers: bool = sa.Column(
-        sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
-    )
-
     isCriminalRecordReceived: bool = sa.Column(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.false(), default=False
     )
