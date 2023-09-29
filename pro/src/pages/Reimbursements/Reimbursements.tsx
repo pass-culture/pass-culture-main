@@ -27,10 +27,6 @@ const Reimbursements = (): JSX.Element => {
 
   const { setOfferers, setSelectedOfferer } = useReimbursementContext()
 
-  const [isOfferersLoading, setIsOfferersLoading] = useState<boolean>(false)
-
-  const { setOfferers, setSelectedOfferer } = useReimbursementContext()
-
   const routes = isNewBankDetailsJourneyEnabled
     ? routesReimbursements
     : oldRoutesReimbursements

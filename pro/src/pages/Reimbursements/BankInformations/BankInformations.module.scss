@@ -31,26 +31,6 @@
   }
 }
 
-.no-offerer-selected {
-  @include fonts.title4;
-
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-  justify-content: center;
-  margin: rem.torem(32px) 0;
-
-  .repayment-icon {
-    color: colors.$grey-medium;
-    margin: 0 auto;
-  }
-
-  &-text {
-    width: rem.torem(600px);
-    margin: 0 auto;
-  }
-}
-
 .bank-accounts {
   display: flex;
   flex-direction: column;
