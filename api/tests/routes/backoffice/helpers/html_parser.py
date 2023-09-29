@@ -136,6 +136,24 @@ def extract_alert(html_content: str) -> str:
     return _filter_whitespaces(alert.text)
 
 
+def assert_no_alert(html_content: str) -> str:
+    soup = get_soup(html_content)
+
+    alert = soup.find("div", class_="alert")
+    assert alert is None
+
+
 def extract_warnings(html_content: str) -> list[str]:
     # form validation errors have "text-warning" class
     return extract(html_content, tag="p", class_="text-warning")
+
+
+def extract_select_options(html_content: str, name: str) -> str:
+    soup = get_soup(html_content)
+
+    select = soup.find("select", attrs={"name": name})
+    assert select is not None
+
+    options = select.find_all("option")
+
+    return {option["value"]: _filter_whitespaces(option.text) for option in options if option["value"]}

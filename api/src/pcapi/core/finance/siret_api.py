@@ -1,8 +1,11 @@
+from collections import defaultdict
+import datetime
 from decimal import Decimal
 
 import pcapi.core.history.models as history_models
 import pcapi.core.offerers.models as offerers_models
 from pcapi.models import db
+import pcapi.utils.db as db_utils
 
 from . import models
 
@@ -169,52 +172,8 @@ def has_pending_pricings(pricing_point: offerers_models.Venue) -> bool:
     ).scalar()
 
 
-def check_can_remove_siret(
-    venue: offerers_models.Venue,
-    comment: str,
-    override_revenue_check: bool = False,
-) -> None:
-    if not comment:
-        raise CheckError("Comment is required")
-    # Deleting the SIRET implies deleting non-final pricings (see
-    # `remove_siret()`). If the venue has pending pricings, it means
-    # we want to block them from being reimbursed. If those pricings
-    # were deleted, they would be recreated under the "validated"
-    # status and they would not be blocked anymore.
-    if has_pending_pricings(venue):
-        raise CheckError("Venue has pending pricings")
-    if not override_revenue_check:
-        revenue = get_yearly_revenue(venue.id)
-        if revenue and revenue >= YEARLY_REVENUE_THRESHOLD:
-            raise CheckError(f"Venue has an unexpectedly high yearly revenue: {revenue}")
-
-
-def remove_siret(
-    venue: offerers_models.Venue,
-    comment: str,
-    apply_changes: bool = False,
-    override_revenue_check: bool = False,
-    author_user_id: int | None = None,
-) -> None:
-    if not venue.siret:
-        return
-    check_can_remove_siret(venue, comment, override_revenue_check)
-    old_siret = venue.siret
-
-    db.session.rollback()  # discard any previous transaction to start a fresh new one.
-
+def _delete_ongoing_pricings(venue: offerers_models.Venue) -> None:
     queries = (
-        """
-        update venue
-        set siret = NULL, comment = :comment
-        where id = :venue_id
-        """,
-        # End all links to this pricing point
-        """
-        update venue_pricing_point_link
-        set timespan = tsrange(lower(timespan), now()::timestamp, '[)')
-        where "pricingPointId" = :venue_id
-        """,
         # Delete all ongoing pricings (and related pricing lines),
         # except pending ones. The corresponding bookings will be
         # priced again once a new pricing point has been selected for
@@ -243,42 +202,134 @@ def remove_siret(
         where "pricingPointId" = :venue_id and status = :validated_pricing_status
         """,
     )
-    try:
-        db.session.begin()
-        for query in queries:
-            db.session.execute(
-                query,
-                {
-                    "venue_id": venue.id,
-                    "comment": comment,
-                    "pending_finance_event_status": models.FinanceEventStatus.PENDING.value,
-                    "validated_pricing_status": models.PricingStatus.VALIDATED.value,
-                },
-            )
 
-        db.session.add(
-            history_models.ActionHistory(
-                actionType=history_models.ActionType.INFO_MODIFIED,
-                authorUserId=author_user_id,
-                offererId=venue.managingOffererId,
-                venueId=venue.id,
-                comment=comment,
-                extraData={
-                    "modified_info": {
-                        "siret": {"old_info": old_siret, "new_info": None},
-                    }
-                },
-            )
+    for query in queries:
+        db.session.execute(
+            query,
+            {
+                "venue_id": venue.id,
+                "pending_finance_event_status": models.FinanceEventStatus.PENDING.value,
+                "validated_pricing_status": models.PricingStatus.VALIDATED.value,
+            },
         )
 
-    except Exception:
-        db.session.rollback()
-        raise
 
-    if apply_changes:
-        db.session.commit()
-    else:
-        db.session.rollback()
+def check_can_remove_siret(
+    venue: offerers_models.Venue,
+    comment: str,
+    override_revenue_check: bool = False,
+    check_offerer_has_other_siret: bool = False,
+) -> None:
+    if not venue.siret:
+        raise CheckError("Ce lieu n'a pas de SIRET")
+
+    if check_offerer_has_other_siret:
+        if not any(
+            offerer_venue.siret
+            for offerer_venue in venue.managingOfferer.managedVenues
+            if offerer_venue.siret and offerer_venue.id != venue.id
+        ):
+            raise CheckError("La structure gérant ce lieu n'a pas d'autre lieu avec SIRET")
+
+    if not comment:
+        raise CheckError("Le commentaire est obligatoire")
+
+    # Deleting the SIRET implies deleting non-final pricings (see
+    # `remove_siret()`). If the venue has pending pricings, it means
+    # we want to block them from being reimbursed. If those pricings
+    # were deleted, they would be recreated under the "validated"
+    # status and they would not be blocked anymore.
+    if has_pending_pricings(venue):
+        raise CheckError("Ce lieu a des valorisations en attente")
+
+    if not override_revenue_check:
+        revenue = get_yearly_revenue(venue.id)
+        if revenue and revenue >= YEARLY_REVENUE_THRESHOLD:
+            raise CheckError(f"Ce lieu a un chiffre d'affaires de l'année élevé : {revenue}")
+
+
+def remove_siret(
+    venue: offerers_models.Venue,
+    comment: str,
+    apply_changes: bool = False,
+    override_revenue_check: bool = False,
+    new_pricing_point_id: int | None = None,
+    author_user_id: int | None = None,
+    new_db_session: bool = True,
+) -> None:
+    check_can_remove_siret(venue, comment, override_revenue_check)
+    old_siret = venue.siret
+    now = datetime.datetime.utcnow()
+
+    if new_pricing_point_id:
+        new_pricing_point_venue: offerers_models.Venue = offerers_models.Venue.query.filter(
+            offerers_models.Venue.id == new_pricing_point_id,
+            offerers_models.Venue.managingOffererId == venue.managingOffererId,
+            offerers_models.Venue.siret.is_not(None),
+        ).one_or_none()
+        if not new_pricing_point_venue:
+            raise CheckError("Le nouveau point de valorisation doit être un lieu avec SIRET sur la même structure")
+
+    with db.session.no_autoflush:  # do not flush anything before commit
+        if new_db_session:
+            db.session.rollback()  # discard any previous transaction to start a fresh new one.
+            db.session.begin()
+
+        try:
+            modified_info_by_venue: dict[int, dict[str, dict]] = defaultdict(dict)
+
+            venue.siret = None
+            venue.comment = comment
+            db.session.add(venue)
+            modified_info_by_venue[venue.id]["siret"] = {"old_info": old_siret, "new_info": None}
+
+            # End all active links to this pricing point
+            pricing_point_links = offerers_models.VenuePricingPointLink.query.filter(
+                offerers_models.VenuePricingPointLink.pricingPointId == venue.id,
+                offerers_models.VenuePricingPointLink.timespan.contains(now),
+            ).all()
+            for pricing_point_link in pricing_point_links:
+                pricing_point_link.timespan = db_utils.make_timerange(pricing_point_link.timespan.lower, end=now)
+                db.session.add(pricing_point_link)
+                modified_info_by_venue[pricing_point_link.venueId]["pricingPointSiret"] = {
+                    "old_info": old_siret,
+                    "new_info": None,
+                }
+
+                # Replace with new pricing point (when provided), only for the venue which lost its SIRET
+                if new_pricing_point_id and pricing_point_link.venueId == venue.id:
+                    new_pricing_point_link = offerers_models.VenuePricingPointLink(
+                        venueId=pricing_point_link.venueId,
+                        pricingPointId=new_pricing_point_id,
+                        timespan=(now, None),
+                    )
+                    db.session.add(new_pricing_point_link)
+                    modified_info_by_venue[pricing_point_link.venueId]["pricingPointSiret"]["new_info"] = (
+                        db.session.query(offerers_models.Venue.siret).filter_by(id=new_pricing_point_id).scalar()
+                    )
+
+            for modified_venue_id, modified_info in modified_info_by_venue.items():
+                db.session.add(
+                    history_models.ActionHistory(
+                        actionType=history_models.ActionType.INFO_MODIFIED,
+                        authorUserId=author_user_id,
+                        offererId=venue.managingOffererId,
+                        venueId=modified_venue_id,
+                        comment=comment,
+                        extraData={"modified_info": modified_info},
+                    )
+                )
+
+            _delete_ongoing_pricings(venue)
+
+        except Exception:
+            db.session.rollback()
+            raise
+
+        if apply_changes:
+            db.session.commit()
+        else:
+            db.session.rollback()
 
 
 def check_can_remove_pricing_point(
@@ -309,87 +360,35 @@ def remove_pricing_point_link(
 ) -> None:
     check_can_remove_pricing_point(venue, override_revenue_check)
 
-    assert venue.current_pricing_point
+    now = datetime.datetime.utcnow()
 
-    old_pricing_point_siret = venue.current_pricing_point.siret
-    old_reimbursement_point_siret = (
-        venue.current_reimbursement_point.siret if venue.current_reimbursement_point else None
-    )
+    with db.session.no_autoflush:  # do not flush anything before commit
+        try:
+            # End this pricing point
+            pricing_point_link = venue.current_pricing_point_link
+            assert pricing_point_link
+            pricing_point_link.timespan = db_utils.make_timerange(pricing_point_link.timespan.lower, end=now)
+            db.session.add(pricing_point_link)
+            modified_info = {"pricingPointSiret": {"old_info": pricing_point_link.pricingPoint.siret, "new_info": None}}
 
-    queries = (
-        # End this pricing point
-        """
-        update venue_pricing_point_link
-        set timespan = tsrange(lower(timespan), now()::timestamp, '[)')
-        where "venueId" = :venue_id and "pricingPointId" = :current_pricing_point_id
-        and timespan @> now()::timestamp
-        """,
-        # End the reimbursement point
-        """
-        update venue_reimbursement_point_link
-        set timespan = tsrange(lower(timespan), now()::timestamp, '[)')
-        where "venueId" = :venue_id and timespan @> now()::timestamp
-        """,
-        # Delete all ongoing pricings (and related pricing lines),
-        # except pending ones. The corresponding bookings will be
-        # priced again once a new pricing point has been selected for
-        # their venues.
-        """
-        update finance_event
-        set
-          "pricingPointId" = NULL,
-          status = :pending_finance_event_status
-        where
-          "pricingPointId" = :venue_id
-          and id in (
-            select "eventId" from pricing
-            where "pricingPointId" = :venue_id and status = :validated_pricing_status
-          )
-        """,
-        """
-        delete from pricing_line
-        where "pricingId" in (
-          select id from pricing
-          where "pricingPointId" = :venue_id and status = :validated_pricing_status
-        )
-        """,
-        """
-        delete from pricing
-        where "pricingPointId" = :venue_id and status = :validated_pricing_status
-        """,
-    )
-    try:
-        for query in queries:
-            db.session.execute(
-                query,
-                {
-                    "venue_id": venue.id,
-                    "current_pricing_point_id": venue.current_pricing_point.id,
-                    "pending_finance_event_status": models.FinanceEventStatus.PENDING.value,
-                    "validated_pricing_status": models.PricingStatus.VALIDATED.value,
-                },
+            _delete_ongoing_pricings(venue)
+
+            db.session.add(
+                history_models.ActionHistory(
+                    actionType=history_models.ActionType.INFO_MODIFIED,
+                    authorUserId=author_user_id,
+                    offererId=venue.managingOffererId,
+                    venueId=venue.id,
+                    comment=comment,
+                    extraData={"modified_info": modified_info},
+                )
             )
 
-        modified_info = {"pricingPointSiret": {"old_info": old_pricing_point_siret, "new_info": None}}
-        if old_reimbursement_point_siret:
-            modified_info["reimbursementPointSiret"] = {"old_info": old_reimbursement_point_siret, "new_info": None}
+        except Exception:
+            db.session.rollback()
+            raise
 
-        db.session.add(
-            history_models.ActionHistory(
-                actionType=history_models.ActionType.INFO_MODIFIED,
-                authorUserId=author_user_id,
-                offererId=venue.managingOffererId,
-                venueId=venue.id,
-                comment=comment,
-                extraData={"modified_info": modified_info},
-            )
-        )
-
-    except Exception:
-        db.session.rollback()
-        raise
-
-    if apply_changes:
-        db.session.commit()
-    else:
-        db.session.rollback()
+        if apply_changes:
+            db.session.commit()
+        else:
+            db.session.rollback()
