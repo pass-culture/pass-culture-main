@@ -37,7 +37,7 @@ const PricingPoint = ({
   const [isBannerVisible, setIsBannerVisible] = useState(true)
   const [pricingPointSelectField] = useField({ name: 'venueSiret' })
 
-  const isNewBankDetailsJourneyEnable = useActiveFeature(
+  const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
 
@@ -75,7 +75,7 @@ const PricingPoint = ({
 
   return (
     <>
-      {!isNewBankDetailsJourneyEnable && (
+      {!isNewBankDetailsJourneyEnabled && (
         <div className="main-list-title">
           <Title as="h3" className="sub-title" level={4}>
             Barème de remboursement

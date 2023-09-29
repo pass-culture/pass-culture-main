@@ -19,7 +19,7 @@ import Spinner from 'ui-kit/Spinner/Spinner'
 import Titles from 'ui-kit/Titles/Titles'
 
 const Reimbursements = (): JSX.Element => {
-  const isNewBankDetailsJourneyEnable = useActiveFeature(
+  const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
 
@@ -27,7 +27,7 @@ const Reimbursements = (): JSX.Element => {
 
   const { setOfferers, setSelectedOfferer } = useReimbursementContext()
 
-  const routes = isNewBankDetailsJourneyEnable
+  const routes = isNewBankDetailsJourneyEnabled
     ? routesReimbursements
     : oldRoutesReimbursements
 
@@ -37,7 +37,7 @@ const Reimbursements = (): JSX.Element => {
       try {
         const { offerersNames } = await api.listOfferersNames()
         setOfferers(offerersNames)
-        if (offerersNames.length >= 0) {
+        if (offerersNames.length >= 1) {
           const offerer = await api.getOfferer(offerersNames[0].id)
           setSelectedOfferer(offerer)
         }
@@ -46,12 +46,12 @@ const Reimbursements = (): JSX.Element => {
         setIsOfferersLoading(false)
       }
     }
-    if (isNewBankDetailsJourneyEnable) {
+    if (isNewBankDetailsJourneyEnabled) {
       fetchData()
     }
   }, [])
 
-  if (isOfferersLoading && isNewBankDetailsJourneyEnable) {
+  if (isOfferersLoading && isNewBankDetailsJourneyEnabled) {
     return <Spinner />
   }
 
@@ -59,7 +59,7 @@ const Reimbursements = (): JSX.Element => {
     <>
       <Titles title="Remboursements" />
       <>
-        {!isNewBankDetailsJourneyEnable && (
+        {!isNewBankDetailsJourneyEnabled && (
           <>
             {/* TODO: displaying condition when offerer is available here. (Done in another branch)*/}
             <AddBankAccountCallout titleOnly={true} />

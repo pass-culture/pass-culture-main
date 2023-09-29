@@ -22,7 +22,7 @@ const ReimbursementFields = ({
   scrollToSection,
   venue,
 }: ReimbursementFieldsProps) => {
-  const isNewBankDetailsJourneyEnable = useActiveFeature(
+  const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
   const venueHaveSiret = !!venue.siret
@@ -44,7 +44,7 @@ const ReimbursementFields = ({
       <div ref={scrollToReimbursementSection} id="reimbursement-section">
         <FormLayout.Section
           title={
-            isNewBankDetailsJourneyEnable
+            isNewBankDetailsJourneyEnabled
               ? 'Barème de remboursement'
               : 'Remboursement'
           }
@@ -73,7 +73,7 @@ const ReimbursementFields = ({
                 />
               )}
 
-              {!isNewBankDetailsJourneyEnable && (
+              {!isNewBankDetailsJourneyEnabled && (
                 <ReimbursementPoint
                   offerer={offerer}
                   readOnly={readOnly}

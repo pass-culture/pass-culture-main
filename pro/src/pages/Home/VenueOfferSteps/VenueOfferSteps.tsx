@@ -42,7 +42,7 @@ const VenueOfferSteps = ({
   demarchesSimplifieesApplicationId,
 }: VenueOfferStepsProps) => {
   const isVenueCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
-  const isNewBankDetailsJourneyEnable = useActiveFeature(
+  const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
   const venueCreationUrl = isVenueCreationAvailable
@@ -166,7 +166,7 @@ const VenueOfferSteps = ({
             </div>
           )}
           {(shouldDisplayEACInformationSection ||
-            (!isNewBankDetailsJourneyEnable &&
+            (!isNewBankDetailsJourneyEnabled &&
               hasPendingBankInformationApplication)) && (
             <div className="h-card-inner">
               <h3 className={styles['card-title']}>Démarche en cours : </h3>
@@ -190,7 +190,7 @@ const VenueOfferSteps = ({
                     Suivre ma demande de référencement ADAGE
                   </ButtonLink>
                 )}
-                {!isNewBankDetailsJourneyEnable &&
+                {!isNewBankDetailsJourneyEnabled &&
                   hasPendingBankInformationApplication && (
                     <ButtonLink
                       className={styles['step-button-width']}
