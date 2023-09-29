@@ -41,7 +41,7 @@ const Reimbursements = (): JSX.Element => {
       try {
         const { offerersNames } = await api.listOfferersNames()
         setOfferers(offerersNames)
-        if (offerersNames.length > 0) {
+        if (offerersNames.length >= 0) {
           const offerer = await api.getOfferer(offerersNames[0].id)
           setSelectedOfferer(offerer)
         }
