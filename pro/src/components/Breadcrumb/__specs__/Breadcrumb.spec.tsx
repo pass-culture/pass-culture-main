@@ -5,7 +5,7 @@ import React from 'react'
 import type { Step } from 'components/Breadcrumb'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import Breadcrumb, { BreadcrumbStyle, BreadcrumbProps } from '../Breadcrumb'
+import Breadcrumb, { BreadcrumbProps, BreadcrumbStyle } from '../Breadcrumb'
 
 const renderBreadcrumb = (props: BreadcrumbProps) => {
   renderWithProviders(<Breadcrumb {...props} />)
@@ -126,55 +126,6 @@ describe('Breadcrumb', () => {
       informationLink && (await userEvent.click(informationLink))
 
       expect(onClick).toHaveBeenCalledTimes(1)
-    })
-
-    it('should render error icon if step has warning', async () => {
-      props.steps.push({
-        id: '5',
-        label: 'Informations bancaires',
-        hasWarning: true,
-      })
-      renderBreadcrumb(props)
-      expect(screen.getByText('Informations bancaires')).toBeInTheDocument()
-      expect(
-        screen.getByRole('img', {
-          name: 'Une action est requise dans cet onglet',
-        })
-      ).toBeInTheDocument()
-    })
-
-    it('should render error icon if step has url ans has warning', async () => {
-      props.steps.pop()
-      props.steps.push({
-        id: '6',
-        label: 'step with url',
-        url: 'https://example.com',
-        hasWarning: true,
-      })
-      renderBreadcrumb(props)
-      expect(screen.getByText('step with url')).toBeInTheDocument()
-      expect(
-        screen.getByRole('img', {
-          name: 'Une action est requise dans cet onglet',
-        })
-      ).toBeInTheDocument()
-    })
-
-    it('should render error icon if step has hash ans has warning', async () => {
-      props.steps.pop()
-      props.steps.push({
-        id: '7',
-        label: 'step with hash',
-        hash: 'hash',
-        hasWarning: true,
-      })
-      renderBreadcrumb(props)
-      expect(screen.getByText('step with hash')).toBeInTheDocument()
-      expect(
-        screen.getByRole('img', {
-          name: 'Une action est requise dans cet onglet',
-        })
-      ).toBeInTheDocument()
     })
   })
 

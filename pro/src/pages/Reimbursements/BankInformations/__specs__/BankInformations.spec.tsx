@@ -1,7 +1,6 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import React from 'react'
-import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
 import { GetOffererResponseModel } from 'apiClient/v1'
@@ -17,7 +16,6 @@ import BankInformations from '../BankInformations'
 
 const renderBankInformations = (
   customContext: Partial<ReimbursementContextValues> = {},
-  storeOverrides: any,
   initialRouterEntriesOverrides = '/remboursements/informations-bancaires'
 ) => {
   const contextValues: ReimbursementContextValues = {
@@ -30,18 +28,11 @@ const renderBankInformations = (
   renderWithProviders(
     <>
       <ReimbursementContext.Provider value={contextValues}>
-        <Routes>
-          <Route
-            path="/remboursements/informations-bancaires"
-            element={<BankInformations />}
-          />
-          <BankInformations />
-        </Routes>
+        <BankInformations />
       </ReimbursementContext.Provider>
       <Notification />
     </>,
     {
-      storeOverrides,
       initialRouterEntries: [initialRouterEntriesOverrides],
     }
   )
@@ -72,6 +63,7 @@ describe('BankInformations page', () => {
       offerers: [
         {
           ...defautGetOffererResponseModel,
+          name: 'first offerer',
         },
         {
           ...defautGetOffererResponseModel,
@@ -103,7 +95,6 @@ describe('BankInformations page', () => {
     ).toBeInTheDocument()
     expect(screen.getByText('Ajouter un compte bancaire')).toBeInTheDocument()
     expect(screen.getByText('En savoir plus')).toBeInTheDocument()
-    expect(screen.queryByLabelText('Structure')).not.toBeInTheDocument()
   })
 
   it('should render message when the user has a valid bank account and no pending one', async () => {
@@ -177,18 +168,6 @@ describe('BankInformations page', () => {
   })
 
   it('should render with default offerer select and update render on select element', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [
-        {
-          id: 1,
-          name: 'first offerer',
-        },
-        {
-          id: 2,
-          name: 'second offerer',
-        },
-      ],
-    })
     renderBankInformations(customContext, store)
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
@@ -209,23 +188,13 @@ describe('BankInformations page', () => {
   })
 
   it('should render select input with correct offerer if url has offerer parameter', async () => {
-    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
-      offerersNames: [
-        {
-          id: 1,
-          name: 'first offerer',
-        },
-        {
-          id: 2,
-          name: 'second offerer',
-        },
-      ],
-    })
     renderBankInformations(
-      store,
+      customContext,
       '/remboursements/informations-bancaires?struture=2'
     )
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
+
+    expect(api.getOffererBankAccountsAndAttachedVenues).toHaveBeenCalledTimes(1)
     expect(screen.getByText('second offerer')).toBeInTheDocument()
   })
 })

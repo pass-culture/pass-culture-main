@@ -11,10 +11,10 @@ export interface PendingBankAccountCalloutProps {
 const PendingBankAccountCallout = ({
   titleOnly = false,
 }: PendingBankAccountCalloutProps): JSX.Element | null => {
-  const isNewBankDetailsJourneyEnable = useActiveFeature(
+  const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
-  if (!isNewBankDetailsJourneyEnable) {
+  if (!isNewBankDetailsJourneyEnabled) {
     return null
   }
 

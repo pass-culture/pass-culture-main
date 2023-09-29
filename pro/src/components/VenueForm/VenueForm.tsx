@@ -85,7 +85,7 @@ const VenueForm = ({
   const {
     values: { isPermanent },
   } = useFormikContext<VenueFormValues>()
-  const isNewBankDetailsJourneyEnable = useActiveFeature(
+  const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
   const shouldDisplayImageVenueUploaderSection = isPermanent
@@ -171,8 +171,8 @@ const VenueForm = ({
               canCreateCollectiveOffer={canOffererCreateCollectiveOffer}
             />
           )}
-        {((!isNewBankDetailsJourneyEnable && !isCreatingVenue) ||
-          (isNewBankDetailsJourneyEnable && !venue?.siret)) &&
+        {((!isNewBankDetailsJourneyEnabled && !isCreatingVenue) ||
+          (isNewBankDetailsJourneyEnabled && !venue?.siret)) &&
           venue && (
             <ReimbursementFields
               offerer={offerer}

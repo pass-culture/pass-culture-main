@@ -1,7 +1,5 @@
-import { Step } from 'components/Breadcrumb'
-
-const STEP_ID_INVOICES = 'justificatifs'
-const STEP_ID_DETAILS = 'details'
+export const STEP_ID_INVOICES = 'justificatifs'
+export const STEP_ID_DETAILS = 'details'
 export const STEP_ID_BANK_INFORMATIONS = 'informations-bancaires'
 
 // TODO: Remove after WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY deleted
@@ -24,23 +22,5 @@ export const OLD_STEP_LIST = [
     id: STEP_ID_DETAILS,
     label: 'Détails des remboursements',
     url: '/remboursements/details',
-  },
-]
-
-export const STEP_LIST: Step[] = [
-  {
-    id: STEP_ID_INVOICES,
-    label: 'Justificatifs',
-    url: '/remboursements/justificatifs',
-  },
-  {
-    id: STEP_ID_DETAILS,
-    label: 'Détails',
-    url: '/remboursements/details',
-  },
-  {
-    id: STEP_ID_BANK_INFORMATIONS,
-    label: 'Informations bancaires',
-    url: '/remboursements/informations-bancaires',
   },
 ]
