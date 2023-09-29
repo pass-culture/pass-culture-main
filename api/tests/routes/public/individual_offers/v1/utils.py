@@ -33,12 +33,16 @@ def create_offerer_provider(with_charlie=False):
     return provider, api_key
 
 
-def create_offerer_provider_linked_to_venue(venue_params=None, is_virtual=False, with_charlie=False):
+def create_offerer_provider_linked_to_venue(
+    venue_params=None, is_virtual=False, with_charlie=False, is_venue_provider_active=True
+):
     venue_params = venue_params if venue_params else {}
     provider, api_key = create_offerer_provider(with_charlie)
     if is_virtual:
         venue = offerers_factories.VirtualVenueFactory(**venue_params)
     else:
         venue = offerers_factories.VenueFactory(**venue_params)
-    providers_factories.VenueProviderFactory(venue=venue, provider=provider, venueIdAtOfferProvider="Test")
+    providers_factories.VenueProviderFactory(
+        venue=venue, provider=provider, venueIdAtOfferProvider="Test", isActive=is_venue_provider_active
+    )
     return venue, api_key

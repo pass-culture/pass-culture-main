@@ -206,7 +206,7 @@ class GetProductByEanTest:
         assert response.status_code == 400
         assert response.json == {"venueId": ["Ce champ est obligatoire"]}
 
-    def test_404_when_ean_not_found(self, client):
+    def test_no_404_when_ean_not_found(self, client):
         venue, _ = utils.create_offerer_provider_linked_to_venue()
         offers_factories.ThingOfferFactory(
             venue=venue,
@@ -216,6 +216,22 @@ class GetProductByEanTest:
 
         response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
             f"/public/offers/v1/products/ean?eans=1234567890123&venueId={venue.id}"
+        )
+
+        assert response.status_code == 200
+        assert response.json == {"products": []}
+
+    def test_empty_list_when_inactive_venue_provider(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
+        product_offer = offers_factories.ThingOfferFactory(
+            venue=venue,
+            description="Un livre de contrepèterie",
+            name="Vieux motard que jamais",
+            extraData={"ean": "1234567890123"},
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/products/ean?eans={product_offer.extraData['ean']}&venueId={venue.id}"
         )
 
         assert response.status_code == 200

@@ -1989,7 +1989,9 @@ def get_providers_offerer_and_venues(
         db.session.query(offerers_models.Offerer, offerers_models.Venue)
         .join(offerers_models.Venue, offerers_models.Offerer.managedVenues)
         .join(providers_models.VenueProvider, offerers_models.Venue.venueProviders)
+        .join(providers_models.Provider, providers_models.VenueProvider.provider)
         .filter(providers_models.VenueProvider.provider == provider)
+        .filter(providers_models.VenueProvider.isActive)
         .order_by(offerers_models.Offerer.id, offerers_models.Venue.id)
     )
 

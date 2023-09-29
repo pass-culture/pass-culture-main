@@ -205,3 +205,28 @@ class PostDatesTest:
             "dates.0.beginningDatetime": ["The datetime must be in the future."],
             "dates.0.bookingLimitDatetime": ["The datetime must be in the future."],
         }
+
+    @freezegun.freeze_time("2022-01-01 12:00:00")
+    def test_inactive_venue_provider(self, client):
+        venue, api_key = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
+        event_offer = offers_factories.EventOfferFactory(
+            venue=venue,
+            lastProvider=api_key.provider,
+        )
+        carre_or_price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            f"/public/offers/v1/events/{event_offer.id}/dates",
+            json={
+                "dates": [
+                    {
+                        "beginningDatetime": "2022-02-01T12:00:00+02:00",
+                        "bookingLimitDatetime": "2022-01-15T13:00:00Z",
+                        "price_category_id": carre_or_price_category.id,
+                        "quantity": 10,
+                    },
+                ],
+            },
+        )
+
+        assert response.status_code == 404

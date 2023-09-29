@@ -793,3 +793,27 @@ class PostProductTest:
 
         assert response.status_code == 400
         assert offers_models.Offer.query.count() == 0
+
+    @pytest.mark.usefixtures("db_session")
+    def test_returns_404_for_inactive_venue_provider(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products",
+            json={
+                "location": {"type": "physical", "venueId": venue.id},
+                "product_offers": [
+                    {
+                        "categoryRelatedFields": {
+                            "category": "SUPPORT_PHYSIQUE_MUSIQUE_CD",
+                            "ean": "1234567891234",
+                            "musicType": "ROCK-LO_FI",
+                        },
+                        "accessibility": utils.ACCESSIBILITY_FIELDS,
+                        "name": "Le champ des possibles",
+                    }
+                ],
+            },
+        )
+
+        assert response.status_code == 404

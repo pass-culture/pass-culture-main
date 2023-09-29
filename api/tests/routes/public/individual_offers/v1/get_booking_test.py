@@ -178,6 +178,24 @@ class GetBookingByTokenReturns404Test:
         response = client.get("/public/bookings/v1/token/")
         assert response.status_code == 404
 
+    def test_inactive_venue_provider(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
+        product_offer = offers_factories.ThingOfferFactory(
+            venue=venue,
+        )
+        past = datetime.datetime.utcnow() - datetime.timedelta(days=2)
+        product_stock = offers_factories.StockFactory(offer=product_offer, beginningDatetime=past)
+        booking = bookings_factories.BookingFactory(
+            venue=venue,
+            stock=product_stock,
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/bookings/v1/token/{booking.token.lower()}",
+        )
+
+        assert response.status_code == 404
+
     def test_key_has_no_rights_and_regular_offer(self, client):
         utils.create_offerer_provider_linked_to_venue()
         venue = offerers_factories.VenueFactory()
