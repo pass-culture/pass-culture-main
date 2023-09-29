@@ -6,7 +6,7 @@ import {
 import { userEvent } from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
-import type { Hit } from 'react-instantsearch-core'
+import * as instantSearch from 'react-instantsearch'
 
 import {
   AdageFrontRoles,
@@ -22,20 +22,24 @@ import {
   FacetFiltersContextProvider,
 } from 'pages/AdageIframe/app/providers'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
+import {
+  defaultUseInfiniteHitsReturn,
+  defaultUseStatsReturn,
+} from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
-import { ResultType } from 'utils/types'
 
-import { OffersComponent, OffersComponentProps } from '../Offers'
+import { Offers, OffersProps } from '../Offers'
 
 vi.mock('apiClient/api', () => ({
   apiAdage: {
     getCollectiveOffer: vi.fn(),
+    getCollectiveOfferTemplate: vi.fn(),
     logSearchButtonClick: vi.fn(),
     logTrackingFilter: vi.fn(),
   },
 }))
 
-const searchFakeResults: Hit<ResultType>[] = [
+const searchFakeResults = [
   {
     objectID: '479',
     offer: {
@@ -50,6 +54,7 @@ const searchFakeResults: Hit<ResultType>[] = [
     _highlightResult: {},
     isTemplate: false,
     __queryID: 'queryId',
+    __position: 0,
   },
   {
     objectID: '480',
@@ -65,11 +70,29 @@ const searchFakeResults: Hit<ResultType>[] = [
     _highlightResult: {},
     isTemplate: false,
     __queryID: 'queryId',
+    __position: 1,
   },
 ]
 
+const otherFakeSearchResult = {
+  objectID: '481',
+  offer: {
+    dates: [new Date('2021-09-29T13:54:30+00:00').valueOf()],
+    name: 'Un autre titre',
+    thumbUrl: '',
+  },
+  venue: {
+    name: 'Un autre lieu',
+    publicName: 'Un autre lieu public',
+  },
+  _highlightResult: {},
+  isTemplate: false,
+  __queryID: 'queryId',
+  __position: 0,
+}
+
 const renderOffers = (
-  props: OffersComponentProps,
+  props: OffersProps,
   adageUser: AuthenticatedResponse,
   storeOverrides = {}
 ) => {
@@ -78,7 +101,7 @@ const renderOffers = (
       <AlgoliaQueryContextProvider>
         <FacetFiltersContextProvider>
           <Formik onSubmit={() => {}} initialValues={{}}>
-            <OffersComponent {...props} />
+            <Offers {...props} />
           </Formik>
         </FacetFiltersContextProvider>
       </AlgoliaQueryContextProvider>
@@ -93,10 +116,25 @@ describe('offers', () => {
   let offerInParis: CollectiveOfferResponseModel
   let offerInCayenne: CollectiveOfferResponseModel
   let otherOffer: CollectiveOfferResponseModel
-  let offersProps: OffersComponentProps
+  let offersProps: OffersProps
   let adageUser: AuthenticatedResponse
 
   beforeEach(() => {
+    vi.mock('react-instantsearch', async () => {
+      return {
+        ...((await vi.importActual('react-instantsearch')) ?? {}),
+        useStats: () => ({
+          ...defaultUseStatsReturn,
+          nbHits: 2,
+        }),
+        useInfiniteHits: () => ({
+          ...defaultUseInfiniteHitsReturn,
+          hits: searchFakeResults,
+          results: { queryID: 'queryId' },
+        }),
+      }
+    })
+
     adageUser = {
       role: AdageFrontRoles.REDACTOR,
       preferences: { feedback_form_closed: null },
@@ -242,16 +280,6 @@ describe('offers', () => {
 
     offersProps = {
       handleResetFiltersAndLaunchSearch: vi.fn(),
-      hits: searchFakeResults,
-      setIsLoading: vi.fn(),
-      refineNext: vi.fn(),
-      hasMore: true,
-      hasPrevious: false,
-      refinePrevious: vi.fn(),
-      nbHits: 2,
-      nbSortedHits: 0,
-      areHitsSorted: true,
-      processingTimeMS: 0,
       submitCount: 0,
     }
   })
@@ -262,6 +290,7 @@ describe('offers', () => {
     vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
       offerInCayenne
     )
+
     // When
     renderOffers(offersProps, adageUser)
 
@@ -273,30 +302,44 @@ describe('offers', () => {
     expect(screen.getByText('2 résultats')).toBeInTheDocument()
   })
 
-  it('should remove previous rendered offers on results update', async () => {
-    const { rerender } = renderOffers(offersProps, adageUser)
-    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(otherOffer)
-    const otherSearchResult: Hit<ResultType> = {
-      objectID: '481',
-      offer: {
-        dates: [new Date('2021-09-29T13:54:30+00:00').valueOf()],
-        name: 'Un autre titre',
-        thumbUrl: '',
-      },
-      venue: {
-        name: 'Un autre lieu',
-        publicName: 'Un autre lieu public',
-      },
-      _highlightResult: {},
-      isTemplate: false,
-      __queryID: 'queryId',
-    }
+  it('should display non bookable offers', async () => {
+    // Given
+    vi.spyOn(apiAdage, 'getCollectiveOfferTemplate').mockResolvedValueOnce(
+      offerInCayenne
+    )
+
+    vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(() => ({
+      ...defaultUseInfiniteHitsReturn,
+      hits: [{ ...otherFakeSearchResult, isTemplate: true }],
+    }))
 
     // When
-    offersProps = { ...offersProps, hits: [otherSearchResult] }
+    renderOffers(offersProps, adageUser)
+
+    // Then
+    const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
+    expect(listItemsInOffer).toHaveLength(1)
+  })
+
+  it('should remove previous rendered offers on results update', async () => {
+    const { rerender } = renderOffers(offersProps, adageUser)
+
+    vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(otherOffer)
+
+    vi.spyOn(instantSearch, 'useStats').mockImplementation(() => ({
+      ...defaultUseStatsReturn,
+      nbHits: 1,
+    }))
+
+    vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(() => ({
+      ...defaultUseInfiniteHitsReturn,
+      hits: [otherFakeSearchResult],
+    }))
+
+    // When
     rerender(
       <AdageUserContextProvider adageUser={adageUser}>
-        <OffersComponent {...offersProps} />
+        <Offers {...offersProps} />
       </AdageUserContextProvider>
     )
 
@@ -306,8 +349,12 @@ describe('offers', () => {
     expect(screen.getAllByTestId('offer-listitem')).toHaveLength(1)
     expect(screen.queryByText(offerInParis.name)).not.toBeInTheDocument()
     expect(screen.queryByText(offerInCayenne.name)).not.toBeInTheDocument()
-    expect(screen.getByText('2 résultats')).toBeInTheDocument()
-    expect(screen.getByText('Vous avez vu 1 offre sur 2')).toBeInTheDocument()
+    expect(screen.getByText('1 résultat')).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Vous avez vu toutes les offres qui correspondent à votre recherche.'
+      )
+    ).toBeInTheDocument()
   })
 
   it('should show most recent results and cancel previous request', async () => {
@@ -323,27 +370,15 @@ describe('offers', () => {
     )
     const { rerender } = renderOffers(offersProps, adageUser)
     vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(otherOffer)
-    const otherSearchResult: Hit<ResultType> = {
-      objectID: '481',
-      offer: {
-        dates: [new Date('2021-09-29T13:54:30+00:00').valueOf()],
-        name: 'Un autre titre',
-        thumbUrl: '',
-      },
-      venue: {
-        name: 'Un autre lieu',
-        publicName: 'Un autre lieu public',
-      },
-      _highlightResult: {},
-      isTemplate: false,
-      __queryID: 'queryId',
-    }
+
+    vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(
+      () => defaultUseInfiniteHitsReturn
+    )
 
     // When
-    offersProps = { ...offersProps, hits: [otherSearchResult] }
     rerender(
       <AdageUserContextProvider adageUser={adageUser}>
-        <OffersComponent {...offersProps} />
+        <Offers {...offersProps} />
       </AdageUserContextProvider>
     )
 
@@ -500,6 +535,12 @@ describe('offers', () => {
     vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
       offerInCayenne
     )
+
+    vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(() => ({
+      ...defaultUseInfiniteHitsReturn,
+      hits: defaultUseInfiniteHitsReturn.hits.slice(0, 1),
+    }))
+
     // When
     renderOffers(offersProps, adageUser, {
       features: {
@@ -545,8 +586,12 @@ describe('offers', () => {
 
   describe('should display no results page', () => {
     it('when there are no results', async () => {
+      vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(() => ({
+        ...defaultUseInfiniteHitsReturn,
+        hits: [],
+      }))
       // When
-      renderOffers({ ...offersProps, hits: [] }, adageUser)
+      renderOffers({ ...offersProps }, adageUser)
 
       // Then
       const errorMessage = await screen.findByText(
@@ -605,6 +650,7 @@ describe('offers', () => {
       vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
         offerInParis
       )
+
       renderOffers(
         { ...offersProps, logFiltersOnSearch: mockLogTrackingFilter },
         adageUser,
@@ -626,6 +672,15 @@ describe('offers', () => {
       vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
         offerInCayenne
       )
+
+      const showMoreMock = vi.fn()
+
+      vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(() => ({
+        ...defaultUseInfiniteHitsReturn,
+        isLastPage: false,
+        showMore: showMoreMock,
+      }))
+
       renderOffers(offersProps, adageUser)
       const loadMoreButton = await screen.findByRole('button', {
         name: 'Voir plus d’offres',
@@ -633,9 +688,39 @@ describe('offers', () => {
 
       userEvent.click(loadMoreButton)
 
-      await waitFor(() =>
-        expect(offersProps.refineNext).toHaveBeenCalledTimes(1)
+      await waitFor(() => expect(showMoreMock).toHaveBeenCalledTimes(1))
+    })
+
+    it('should not fetch again offers that were previously loaded', async () => {
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValue(offerInParis)
+
+      vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(
+        () =>
+          ({
+            ...defaultUseInfiniteHitsReturn,
+            isLastPage: false,
+            results: { queryID: 'test' },
+          }) as typeof defaultUseInfiniteHitsReturn
       )
+
+      renderOffers(offersProps, adageUser)
+
+      vi.spyOn(instantSearch, 'useInfiniteHits').mockImplementation(
+        () =>
+          ({
+            ...defaultUseInfiniteHitsReturn,
+            isLastPage: false,
+            results: { queryID: 'test2' },
+          }) as typeof defaultUseInfiniteHitsReturn
+      )
+
+      const loadMoreButton = await screen.findByRole('button', {
+        name: 'Voir plus d’offres',
+      })
+
+      userEvent.click(loadMoreButton)
+
+      expect(apiAdage.getCollectiveOffer).toHaveBeenCalledTimes(1)
     })
 
     it('should not show button if there is no more result to refine', async () => {
@@ -645,7 +730,7 @@ describe('offers', () => {
       vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
         offerInCayenne
       )
-      renderOffers({ ...offersProps, hasMore: false }, adageUser)
+      renderOffers({ ...offersProps }, adageUser)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       const loadMoreButton = screen.queryByRole('button', {
         name: 'Voir plus d’offres',
@@ -682,7 +767,7 @@ describe('offers', () => {
         offerInCayenne
       )
 
-      renderOffers({ ...offersProps, submitCount: 0 }, adageUser, {
+      renderOffers({ ...offersProps, submitCount: undefined }, adageUser, {
         features: {
           list: [{ isActive: true, nameKey: 'WIP_ENABLE_DIFFUSE_HELP' }],
         },
@@ -712,6 +797,24 @@ describe('offers', () => {
       const diffuseHelp = screen.getByText('Le saviez-vous ?')
 
       expect(diffuseHelp).toBeInTheDocument()
+    })
+
+    it('should hide diffuse help before the filters were applied at least once', async () => {
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+        offerInParis
+      )
+      vi.spyOn(apiAdage, 'getCollectiveOffer').mockResolvedValueOnce(
+        offerInCayenne
+      )
+
+      renderOffers({ ...offersProps, submitCount: 0 }, adageUser, {
+        features: {
+          list: [{ isActive: true, nameKey: 'WIP_ENABLE_DIFFUSE_HELP' }],
+        },
+      })
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+      expect(screen.queryByText('Le saviez-vous ?')).not.toBeInTheDocument()
     })
 
     it('should display back to top button if filters are not visible', async () => {

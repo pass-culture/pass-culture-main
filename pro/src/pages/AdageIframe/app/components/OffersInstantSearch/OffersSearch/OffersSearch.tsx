@@ -51,8 +51,6 @@ export const OffersSearch = ({
   venueFilter,
   setGeoRadius,
 }: SearchProps): JSX.Element => {
-  const [, setIsLoading] = useState<boolean>(false)
-
   const { setFacetFilters } = useContext(FacetFiltersContext)
   const { adageUser } = useAdageUser()
   const [categoriesOptions, setCategoriesOptions] = useState<
@@ -153,16 +151,15 @@ export const OffersSearch = ({
             categoriesOptions={categoriesOptions}
           />
         </div>
-        <div className="search-results">
-          <Offers
-            setIsLoading={setIsLoading}
-            resetForm={resetForm}
-            logFiltersOnSearch={logFiltersOnSearch}
-            submitCount={formik.submitCount}
-            isBackToTopVisibile={!isOfferFiltersVisible}
-          />
-        </div>
       </FormikContext.Provider>
+      <div className="search-results">
+        <Offers
+          resetForm={resetForm}
+          logFiltersOnSearch={logFiltersOnSearch}
+          submitCount={formik.submitCount}
+          isBackToTopVisibile={!isOfferFiltersVisible}
+        />
+      </div>
     </>
   )
 }

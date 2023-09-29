@@ -13,6 +13,6 @@ const OffersInstitutionList = ({
   removeVenueFilter,
   venueFilter,
 }: OffersInstitutionListProps): JSX.Element => {
-  return <Offers setIsLoading={() => {}} displayStats={false} />
+  return <Offers displayStats={false} />
 }
 export default OffersInstitutionList

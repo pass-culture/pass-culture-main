@@ -1,6 +1,5 @@
 import './SearchBox.scss'
 import React, { useCallback, useContext } from 'react'
-import type { SearchBoxProvided } from 'react-instantsearch-core'
 
 import strokeSearchIcon from 'icons/stroke-search.svg'
 import { AlgoliaQueryContext } from 'pages/AdageIframe/app/providers'
@@ -9,7 +8,7 @@ import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 const SearchBoxComponent = ({
   refine,
 }: {
-  refine: SearchBoxProvided['refine']
+  refine: (query: string) => void
 }): React.ReactElement => {
   const { query, setQuery, setQueryTag } = useContext(AlgoliaQueryContext)
 

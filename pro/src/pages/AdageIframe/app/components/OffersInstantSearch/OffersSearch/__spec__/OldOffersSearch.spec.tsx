@@ -12,7 +12,7 @@ import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageU
 import * as adagePcapi from 'pages/AdageIframe/repository/pcapi/pcapi'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
-import { OldOffersSearchComponent, SearchProps } from '../OldOffersSearch'
+import { OldOffersSearch, SearchProps } from '../OldOffersSearch'
 
 vi.mock('../Offers/Offers', () => {
   return {
@@ -26,6 +26,15 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
+const refineMock = vi.fn()
+
+vi.mock('react-instantsearch', async () => {
+  return {
+    ...((await vi.importActual('react-instantsearch')) ?? {}),
+    useSearchBox: () => ({ refine: refineMock }),
+  }
+})
+
 const renderOffersSearchComponent = (
   props: SearchProps,
   user: AuthenticatedResponse
@@ -34,7 +43,7 @@ const renderOffersSearchComponent = (
     <AdageUserContextProvider adageUser={user}>
       <FiltersContextProvider>
         <AlgoliaQueryContextProvider>
-          <OldOffersSearchComponent {...props} />
+          <OldOffersSearch {...props} />
         </AlgoliaQueryContextProvider>
       </FiltersContextProvider>
     </AdageUserContextProvider>
@@ -56,9 +65,6 @@ describe('offersSearch component', () => {
     props = {
       removeVenueFilter: vi.fn(),
       venueFilter: null,
-      refine: vi.fn(),
-      currentRefinement: '',
-      isSearchStalled: false,
     }
 
     vi.spyOn(adagePcapi, 'getEducationalDomains').mockResolvedValue([
@@ -81,7 +87,7 @@ describe('offersSearch component', () => {
     await userEvent.click(launchSearchButton)
 
     // Then
-    expect(props.refine).toHaveBeenCalledWith('Paris')
+    expect(refineMock).toHaveBeenCalledWith('Paris')
   })
 
   it('should uncheck checkbox when user remove department tag', async () => {
