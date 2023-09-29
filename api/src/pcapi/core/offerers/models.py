@@ -313,8 +313,10 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
     # whereas bannerMeta should provide extra information that might be
     # helpful like image type, author, etc. that can change over time.
     _bannerUrl = Column(Text, nullable=True, name="bannerUrl")
-
     bannerMeta: dict | None = Column(MutableDict.as_mutable(JSONB), nullable=True)
+
+    # This column will be used to store the banner url retrieved from google
+    _googleBannerUrl = Column(Text, nullable=True, name="googleBannerUrl")
 
     adageId = Column(Text, nullable=True)
     adageInscriptionDate = Column(DateTime, nullable=True)
