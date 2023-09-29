@@ -10,6 +10,8 @@ from pcapi.core.bookings import models
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
+from pcapi.core.finance import factories as finance_factories
+from pcapi.core.finance import models as finance_models
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.models import db
@@ -23,6 +25,13 @@ pytestmark = pytest.mark.usefixtures("db_session")
 def test_total_amount():
     booking = factories.BookingFactory(amount=1.2, quantity=2)
     assert booking.total_amount == Decimal("2.4")
+
+
+def test_reimbursement_rate():
+    booking = factories.UsedBookingFactory(amount=12.3, quantity=2)
+    finance_factories.PricingFactory(booking=booking, status=finance_models.PricingStatus.INVOICED)
+
+    assert booking.reimbursement_rate == 100.0
 
 
 def test_save_cancellation_date_postgresql_function():
