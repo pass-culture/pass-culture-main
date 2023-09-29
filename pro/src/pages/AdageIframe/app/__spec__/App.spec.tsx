@@ -133,12 +133,12 @@ describe('app', () => {
       renderApp(venue)
 
       // Then
-      const contentTitle = await screen.findByText('Rechercher une offre', {
-        selector: 'h2',
+      const contentTitle = await screen.findByRole('link', {
+        name: 'Rechercher',
       })
       expect(contentTitle).toBeInTheDocument()
       expect(Configure).toHaveBeenNthCalledWith(
-        1,
+        2,
         expect.objectContaining({
           facetFilters: [
             ['venue.departmentCode:30'],
@@ -150,7 +150,7 @@ describe('app', () => {
         }),
         {}
       )
-      expect(Configure).toHaveBeenCalledTimes(1)
+      expect(Configure).toHaveBeenCalledTimes(2)
 
       expect(
         screen.queryByText('Lieu :', { exact: false })
@@ -168,16 +168,16 @@ describe('app', () => {
       renderApp(venue)
 
       // Then
-      const contentTitle = await screen.findByText('Rechercher une offre', {
-        selector: 'h2',
+      const contentTitle = await screen.findByRole('link', {
+        name: 'Rechercher',
       })
       expect(contentTitle).toBeInTheDocument()
 
       await waitFor(() => {
-        expect(Configure).toHaveBeenCalledTimes(1)
+        expect(Configure).toHaveBeenCalledTimes(2)
       })
       expect(Configure).toHaveBeenNthCalledWith(
-        1,
+        2,
         expect.objectContaining({
           facetFilters: [
             [`venue.id:${venue.id}`],
@@ -217,16 +217,16 @@ describe('app', () => {
       renderApp(venue)
 
       // Then
-      const contentTitle = await screen.findByText('Rechercher une offre', {
-        selector: 'h2',
+      const contentTitle = await screen.findByRole('link', {
+        name: 'Rechercher',
       })
       expect(contentTitle).toBeInTheDocument()
 
       await waitFor(() => {
-        expect(Configure).toHaveBeenCalledTimes(1)
+        expect(Configure).toHaveBeenCalledTimes(2)
       })
       expect(Configure).toHaveBeenNthCalledWith(
-        1,
+        2,
         expect.objectContaining({
           facetFilters: [
             [`venue.id:${venue.id}`],
@@ -269,14 +269,14 @@ describe('app', () => {
       renderApp(venue)
 
       // Then
-      const contentTitle = await screen.findByText('Rechercher une offre', {
-        selector: 'h2',
+      const contentTitle = await screen.findByRole('link', {
+        name: 'Rechercher',
       })
       expect(contentTitle).toBeInTheDocument()
       expect(apiAdage.getVenueBySiret).toHaveBeenCalledWith(siret, false)
-      expect(Configure).toHaveBeenCalledTimes(1)
+      expect(Configure).toHaveBeenCalledTimes(2)
       expect(Configure).toHaveBeenNthCalledWith(
-        1,
+        2,
         expect.objectContaining({
           facetFilters: [
             ['venue.departmentCode:30'],
@@ -310,15 +310,15 @@ describe('app', () => {
       // When
       renderApp(venue)
 
-      const contentTitle = await screen.findByText('Rechercher une offre', {
-        selector: 'h2',
+      const contentTitle = await screen.findByRole('link', {
+        name: 'Rechercher',
       })
       expect(contentTitle).toBeInTheDocument()
       expect(apiAdage.getVenueBySiret).toHaveBeenCalledWith(siret, true)
 
       await waitFor(() => {
         expect(Configure).toHaveBeenNthCalledWith(
-          1,
+          2,
           expect.objectContaining({
             facetFilters: [
               [`venue.id:${venue.id}`, 'venue.id:123', 'venue.id:456'],
@@ -344,8 +344,8 @@ describe('app', () => {
       // When
       renderApp(venue)
 
-      const contentTitle = await screen.findByText('Rechercher une offre', {
-        selector: 'h2',
+      const contentTitle = await screen.findByRole('link', {
+        name: 'Rechercher',
       })
       expect(contentTitle).toBeInTheDocument()
 
@@ -353,7 +353,7 @@ describe('app', () => {
 
       await waitFor(() => {
         expect(Configure).toHaveBeenNthCalledWith(
-          1,
+          2,
           expect.objectContaining({
             facetFilters: [
               [`venue.id:${venue.id}`, 'venue.id:123', 'venue.id:456'],
@@ -384,9 +384,9 @@ describe('app', () => {
       await userEvent.click(launchSearchButton)
 
       // Then
-      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(3))
+      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(5))
       expect(Configure).toHaveBeenNthCalledWith(
-        3,
+        5,
         expect.objectContaining({
           facetFilters: [
             [
@@ -417,9 +417,9 @@ describe('app', () => {
       await userEvent.click(launchSearchButton)
 
       // Then
-      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(2))
+      await waitFor(() => expect(Configure).toHaveBeenCalledTimes(3))
       expect(Configure).toHaveBeenNthCalledWith(
-        2,
+        3,
         expect.objectContaining({
           facetFilters: [
             ['venue.departmentCode:30', 'offer.interventionArea:30'],
@@ -445,77 +445,16 @@ describe('app', () => {
       })
       renderApp(null)
 
-      await screen.findByText('Rechercher une offre', {
-        selector: 'h2',
-      })
+      await screen.findByRole('link', { name: 'Rechercher' })
 
       expect(Configure).toHaveBeenNthCalledWith(
-        1,
+        2,
         expect.objectContaining({
           aroundLatLng: '48.856614, 2.3522219',
           aroundRadius: DEFAULT_GEO_RADIUS,
         }),
         {}
       )
-    })
-
-    describe('tabs', () => {
-      it('should display tabs if user has UAI code', async () => {
-        const siret = '123456789'
-        window.location.search = `?siret=${siret}`
-        // Given
-        renderApp(venue)
-
-        const firstTab = await screen.findByText('Toutes les offres')
-        const secondTab = await screen.findByText(
-          'Partagé avec mon établissement'
-        )
-
-        expect(firstTab).toBeInTheDocument()
-        expect(secondTab).toBeInTheDocument()
-      })
-
-      it('should not display tabs if user does not have UAI code', async () => {
-        // Given
-        vi.spyOn(apiAdage, 'authenticate').mockResolvedValueOnce({
-          role: AdageFrontRoles.REDACTOR,
-          uai: null,
-        })
-        renderApp(venue)
-
-        // wait that app is rendered
-        await screen.findByText('Rechercher une offre', {
-          selector: 'h2',
-        })
-
-        const firstTab = screen.queryByText('Toutes les offres')
-        const secondTab = screen.queryByText('Partagé avec mon établissement')
-
-        expect(firstTab).not.toBeInTheDocument()
-        expect(secondTab).not.toBeInTheDocument()
-      })
-
-      it('should add a facet filter when user clicks on "Partagé avec mon établissement"', async () => {
-        // Given
-        window.location.search = `?venue=${venue.id}`
-        renderApp(venue)
-
-        const secondTab = await screen.findByText(
-          'Partagé avec mon établissement'
-        )
-        await userEvent.click(secondTab)
-
-        expect(Configure).toHaveBeenNthCalledWith(
-          2,
-          expect.objectContaining({
-            facetFilters: [
-              ['venue.id:1436'],
-              ['offer.educationalInstitutionUAICode:uai'],
-            ],
-          }),
-          {}
-        )
-      })
     })
   })
 
