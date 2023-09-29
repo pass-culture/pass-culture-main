@@ -109,7 +109,6 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_SUSPICIOUS_EMAIL_SEND = "Active l'envoie d'email lors de la détection d'une connexion suspicieuse"
     WIP_EAC_ENABLE_NEW_AUTHENTICATION_PUBLIC_API = "Active la gestion des providers dans l'api publique EAC"
     WIP_ENABLE_COLLECTIVE_REQUEST = "Active la demande de création d'offre collective de la part des utilisateurs adage"
-    WIP_ENABLE_NEW_ADAGE_HEADER = "Active le nouveau header dans l'iframe adage"
     WIP_ENABLE_COOKIES_BANNER = "Active la nouvelle bannière de cookies"
     WIP_ENABLE_SATISFACTION_SURVEY = "Activer l'affichage du questionnaire de satisfaction adage"
     WIP_ENABLE_NEW_ADAGE_FILTERS = "Active les nouveaux filtres adage"
@@ -194,7 +193,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_LIKE_IN_ADAGE,
     FeatureToggle.WIP_ENABLE_MOCK_UBBLE,
     FeatureToggle.WIP_ENABLE_NEW_ADAGE_FILTERS,
-    FeatureToggle.WIP_ENABLE_NEW_ADAGE_HEADER,
     FeatureToggle.WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY,
     FeatureToggle.WIP_ENABLE_NEW_USER_OFFERER_LINK,
     FeatureToggle.WIP_ENABLE_OFFER_RESERVATION_TAB,
