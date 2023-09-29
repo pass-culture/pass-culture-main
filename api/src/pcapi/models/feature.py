@@ -112,6 +112,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_COOKIES_BANNER = "Active la nouvelle bannière de cookies"
     WIP_ENABLE_DIFFUSE_HELP = "Activer l'affichage de l'aide diffuse adage"
     WIP_ENABLE_EVENTS_WITH_TICKETS_FOR_PUBLIC_API = "Activer la création événements avec tickets dans l'API publique"
+    WIP_ENABLE_GOOGLE_PHOTOS_FOR_VENUES = "Active l'ajout de photos de lieux via les APIs de Google maps"
     WIP_ENABLE_LIKE_IN_ADAGE = "Active la possibilité de liker une offre sur adage"
     WIP_ENABLE_MOCK_UBBLE = "Utiliser le mock Ubble à la place du vrai Ubble"
     WIP_ENABLE_NEW_ADAGE_FILTERS = "Active les nouveaux filtres adage"
