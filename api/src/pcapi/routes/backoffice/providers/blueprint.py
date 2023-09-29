@@ -137,7 +137,10 @@ def get_update_provider_form(provider_id: int) -> utils.BackofficeResponse:
         booking_external_url=provider.bookingExternalUrl,
         cancel_external_url=provider.cancelExternalUrl,
         notification_external_url=provider.notificationExternalUrl,
+        provider_hmac_key=provider.hmacKey,
     )
+
+    form.provider_hmac_key.flags.copy_button = provider.hmacKey is not None
 
     return render_template(
         "components/turbo/modal_form.html",
