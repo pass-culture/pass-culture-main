@@ -7,7 +7,7 @@ import sqlalchemy as sa
 # pre/post deployment: post
 # revision identifiers, used by Alembic.
 revision = "ba42ea4318a0"
-down_revision = "12e531343466"
+down_revision = "e0ed8316241a"
 branch_labels = None
 depends_on = None
 
