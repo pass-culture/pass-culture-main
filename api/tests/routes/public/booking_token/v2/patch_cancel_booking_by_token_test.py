@@ -1,3 +1,6 @@
+import hashlib
+import hmac
+
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
@@ -98,6 +101,13 @@ class Returns204Test:
         assert booking.status is BookingStatus.CANCELLED
         assert stock.dnBookedQuantity == 4
         assert booking.stock.quantity == 14  # 4 already booked + 10 remaining
+
+        assert (
+            requests_mock.last_request.headers["PassCulture-Signature"]
+            == hmac.new(
+                provider.hmacKey.encode(), '{"barcodes": ["1234567890123"]}'.encode(), hashlib.sha256
+            ).hexdigest()
+        )
 
     @pytest.mark.usefixtures("db_session")
     @override_features(ENABLE_CHARLIE_BOOKINGS_API=True)
