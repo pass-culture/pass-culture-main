@@ -49,7 +49,9 @@ const IndivualOfferLayout = ({
                 offerId={offer.id}
                 status={offer.status}
                 isActive={offer.isActive}
-                canDeactivate={mode !== OFFER_WIZARD_MODE.DRAFT}
+                canDeactivate={
+                  mode !== OFFER_WIZARD_MODE.DRAFT && offer.isActivable
+                }
                 setOffer={setOffer}
               />
             }
