@@ -48,6 +48,9 @@ class ActionType(enum.Enum):
     FINANCE_INCIDENT_CANCELLED = "Annulation de l'incident"
     FINANCE_INCIDENT_VALIDATED = "Validation de l'incident"
     FINANCE_INCIDENT_USER_RECREDIT = "Compte re-crédité suite à un incident"
+    # Bank accounts changes:
+    LINK_VENUE_BANK_ACCOUNT_DEPRECATED = "Lieu dissocié d'un compte bancaire"
+    LINK_VENUE_BANK_ACCOUNT_CREATED = "Lieu associé à un compte bancaire"
 
 
 ACTION_HISTORY_ORDER_BY = "ActionHistory.actionDate.asc().nulls_first()"
@@ -57,12 +60,12 @@ class ActionHistory(PcObject, Base, Model):
     """
     This table aims at logging all actions that should appear in a resource history for support, fraud team, etc.
 
-    user, offerer, venue are filled in the log entry depending on the action. So they are nullable.
+    user, offerer, venue, bank account are filled in the log entry depending on the action. So they are nullable.
     Example: When a user requests to be attached to an offerer, action has both userId and offererId, but no venueId.
     This enables to filter on either the user or the offerer, and the same action appears in both user history and
     offerer history in the backoffice.
 
-    user, offerer and venue ids have a dedicated column in the table because this enables to:
+    user, offerer, venue and bank account ids have a dedicated column in the table because this enables to:
     - easily index and filter to get history list for a resource or select items directly in database for debug
       (even if this is also possible with JSONB, but using more complex filter in requests),
     - have a constraint which forces to link the action to at least one resource,
@@ -124,6 +127,16 @@ class ActionHistory(PcObject, Base, Model):
         "FinanceIncident",
         foreign_keys=[financeIncidentId],
         backref=sa.orm.backref("action_history", order_by="ActionHistory.actionDate.asc()", passive_deletes=True),
+    )
+
+    bankAccountId: int | None = sa.Column(
+        sa.BigInteger, sa.ForeignKey("bank_account.id", ondelete="CASCADE"), index=True, nullable=True
+    )
+
+    bankAccount: sa.orm.Mapped["finance_models.BankAccount | None"] = sa.orm.relationship(
+        "BankAccount",
+        foreign_keys=[bankAccountId],
+        backref=sa.orm.backref("action_history", order_by=ACTION_HISTORY_ORDER_BY, passive_deletes=True),
     )
 
     comment = sa.Column(sa.Text(), nullable=True)

@@ -51,6 +51,7 @@ from pcapi.connectors import googledrive
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.educational.models as educational_models
 import pcapi.core.external.attributes.api as external_attributes_api
+import pcapi.core.history.models as history_models
 from pcapi.core.logging import log_elapsed
 import pcapi.core.mails.transactional as transactional_mails
 from pcapi.core.object_storage import store_public_object
@@ -2700,27 +2701,43 @@ def recredit_underage_users() -> None:
 
 def update_bank_account_venues_links(
     user: users_models.User,
-    offerer: offerers_models.Offerer,
     bank_account: models.BankAccount,
     venues_ids: set[int],
 ) -> None:
+    offerer = bank_account.offerer
     managed_venues_ids = {venue.id for venue in offerer.managedVenues}
+    current_links_by_venue_id = {link.venueId: link for link in bank_account.venueLinks}
 
-    venues_already_linked = {link.venueId for link in bank_account.venueLinks}
-
+    venues_already_linked = set(current_links_by_venue_id.keys())
     venues_links_to_create = venues_ids.difference(venues_already_linked)
     venues_links_to_deprecate = venues_already_linked.difference(venues_ids)
 
     new_links = []
 
     with transaction():
+        link_bulk_update_mapping = []
+        action_history_bulk_insert_mapping = []
+
+        for venue_id in venues_links_to_deprecate:
+            link = current_links_by_venue_id[venue_id]
+
+            link_bulk_update_mapping.append(
+                {
+                    "id": link.id,
+                    "timespan": db_utils.make_timerange(link.timespan.lower, datetime.datetime.utcnow()),
+                }
+            )
+            action_history_bulk_insert_mapping.append(
+                {
+                    "actionType": history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_DEPRECATED,
+                    "authorUserId": user.id,
+                    "venueId": link.venueId,
+                    "bankAccountId": bank_account.id,
+                }
+            )
         db.session.bulk_update_mappings(
             offerers_models.VenueBankAccountLink,
-            [
-                {"id": link.id, "timespan": db_utils.make_timerange(link.timespan.lower, datetime.datetime.utcnow())}
-                for link in bank_account.venueLinks
-                if link.venueId in venues_links_to_deprecate
-            ],
+            link_bulk_update_mapping,
         )
 
         for venue_id in venues_links_to_create:
@@ -2735,6 +2752,7 @@ def update_bank_account_venues_links(
                     },
                 )
                 continue
+
             new_links.append(
                 {
                     "venueId": venue_id,
@@ -2742,5 +2760,18 @@ def update_bank_account_venues_links(
                     "timespan": db_utils.make_timerange(datetime.datetime.utcnow()),
                 }
             )
+            action_history_bulk_insert_mapping.append(
+                {
+                    "actionType": history_models.ActionType.LINK_VENUE_BANK_ACCOUNT_CREATED,
+                    "authorUserId": user.id,
+                    "venueId": venue_id,
+                    "bankAccountId": bank_account.id,
+                }
+            )
 
         db.session.bulk_insert_mappings(offerers_models.VenueBankAccountLink, new_links)
+
+        db.session.bulk_insert_mappings(
+            history_models.ActionHistory,
+            action_history_bulk_insert_mapping,
+        )
