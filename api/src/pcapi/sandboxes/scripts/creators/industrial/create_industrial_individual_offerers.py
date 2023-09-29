@@ -14,6 +14,7 @@ def create_industrial_individual_offerers() -> None:
     logger.info("create_industrial_individual_offerers")
 
     ae_tag = offerers_models.OffererTag.query.filter_by(name="auto-entrepreneur").one()
+    adage_tag = offerers_models.OffererTag.query.filter_by(name="adage").one()
 
     # offerer with tag but subscription row not yet created
     offerer = offerers_factories.NotValidatedOffererFactory(name="JOE DALTON", tags=[ae_tag])
@@ -37,22 +38,20 @@ def create_industrial_individual_offerers() -> None:
     # individual offerer with Adage application submitted
     offerer = offerers_factories.NotValidatedOffererFactory(
         name="WILLIAM DALTON",
-        tags=[ae_tag],
+        tags=[ae_tag, adage_tag],
         validationStatus=ValidationStatus.PENDING,
     )
     venue = offerers_factories.VenueFactory(name="WILLIAM DALTON", managingOfferer=offerer)
     offerers_factories.UserOffererFactory(
         offerer=offerer, user__firstName="William", user__lastName="Dalton", user__email="william.dalton@example.com"
     )
-    offerers_factories.IndividualOffererSubscription(
-        offerer=offerer, targetsCollectiveOffers=True, targetsIndividualOffers=True
-    )
+    offerers_factories.IndividualOffererSubscription(offerer=offerer)
     educational_factories.CollectiveDmsApplicationFactory(venue=venue, state="en_instruction")
 
     # individual offerer with Adage application accepted and everything received
     offerer = offerers_factories.NotValidatedOffererFactory(
         name="AVERELL DALTON",
-        tags=[ae_tag],
+        tags=[ae_tag, adage_tag],
         validationStatus=ValidationStatus.PENDING,
     )
     venue = offerers_factories.VenueFactory(name="AVERELL DALTON", managingOfferer=offerer)
@@ -61,8 +60,6 @@ def create_industrial_individual_offerers() -> None:
     )
     offerers_factories.IndividualOffererSubscription(
         offerer=offerer,
-        targetsCollectiveOffers=True,
-        targetsIndividualOffers=False,
         isCriminalRecordReceived=True,
         dateCriminalRecordReceived=datetime.date.today() - datetime.timedelta(days=1),
         isCertificateReceived=True,

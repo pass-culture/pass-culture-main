@@ -3182,9 +3182,9 @@ class GetIndividualOffererSubscriptionTest(GetEndpointHelper):
             },
         )
 
-    def test_with_adage_expected(self, authenticated_client):
+    def test_with_adage_expected(self, authenticated_client, adage_tag):
         individual_subscription = offerers_factories.IndividualOffererSubscription(
-            targetsCollectiveOffers=True, isCertificateReceived=True
+            offerer__tags=[adage_tag], isCertificateReceived=True
         )
         offerer = individual_subscription.offerer
         url = url_for(self.endpoint, offerer_id=offerer.id)
@@ -3213,9 +3213,9 @@ class GetIndividualOffererSubscriptionTest(GetEndpointHelper):
             ("refuse", ["bi-x-circle-fill", "text-danger"]),
         ],
     )
-    def test_with_adage_application(self, authenticated_client, state, expected_adage_classes):
+    def test_with_adage_application(self, authenticated_client, adage_tag, state, expected_adage_classes):
         individual_subscription = offerers_factories.IndividualOffererSubscription(
-            targetsCollectiveOffers=True,
+            offerer__tags=[adage_tag],
             isCriminalRecordReceived=True,
             isCertificateReceived=True,
             isExperienceReceived=True,
@@ -3248,8 +3248,6 @@ class UpdateIndividualOffererSubscriptionTest(PostEndpointHelper):
     def _assert_data(self, individual_subscription: offerers_models.IndividualOffererSubscription, form_data: dict):
         assert individual_subscription.isEmailSent is form_data["is_email_sent"]
         assert individual_subscription.dateEmailSent == datetime.date.fromisoformat(form_data["date_email_sent"])
-        assert individual_subscription.targetsCollectiveOffers is form_data["collective_offers"]
-        assert individual_subscription.targetsIndividualOffers is form_data["individual_offers"]
         assert individual_subscription.isCriminalRecordReceived is form_data["is_criminal_record_received"]
         assert individual_subscription.dateCriminalRecordReceived == (
             datetime.date.fromisoformat(form_data["date_criminal_record_received"])
