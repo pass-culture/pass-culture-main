@@ -57,14 +57,15 @@ const ReimbursementBankAccount = ({
         <div className={styles['linked-venues-section']}>
           <div className={styles['linked-venues-section-title']}>
             Lieu(x) rattaché(s) à ce compte bancaire
-            {bankAccount.linkedVenues.length === 0 && (
-              <SvgIcon
-                src={fullErrorIcon}
-                alt="Une action est requise"
-                width="20"
-                className={styles['error-icon']}
-              />
-            )}
+            {bankAccount.linkedVenues.length === 0 &&
+              venuesWithNonFreeOffersNotLinkedToBankAccount.length > 0 && (
+                <SvgIcon
+                  src={fullErrorIcon}
+                  alt="Une action est requise"
+                  width="20"
+                  className={styles['error-icon']}
+                />
+              )}
           </div>
           <div className={styles['linked-venues-content']}>
             {bankAccount.linkedVenues.length === 0 && (
