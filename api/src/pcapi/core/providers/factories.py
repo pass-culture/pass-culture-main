@@ -42,6 +42,7 @@ class ProviderFactory(BaseFactory):
 
     name = factory.Sequence("Provider {}".format)
     localClass = factory.Sequence("{}Stocks".format)
+    hmacKey = "secret"
     apiUrl = None
     enabledForPro = True
     isActive = True

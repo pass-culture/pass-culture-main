@@ -93,8 +93,13 @@ def book_event_ticket(
         raise providers_exceptions.InactiveProvider()
 
     payload = serialize.ExternalEventBookingRequest.build_external_booking(stock, booking, beneficiary)
+    json_payload = payload.json()
+    hmac_signature = generate_hmac_signature(provider.hmacKey, json_payload)
     response = requests.post(
-        provider.bookingExternalUrl, json=payload.json(), headers={"Content-Type": "application/json"}
+        provider.bookingExternalUrl,
+        json=json_payload,
+        hmac=hmac_signature,
+        headers={"Content-Type": "application/json"},
     )
     _check_external_booking_response_is_ok(response)
     try:
