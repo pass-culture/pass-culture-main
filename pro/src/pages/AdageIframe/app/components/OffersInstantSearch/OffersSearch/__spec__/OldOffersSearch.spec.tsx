@@ -126,7 +126,7 @@ describe('offersSearch component', () => {
       institutionCity: null,
     })
 
-    await screen.findByText('Partagé avec mon établissement') // wait that all async re-render as finished
+    await screen.findByText('Département') // wait that all async re-render as finished
 
     expect(
       screen.queryByLabelText(
