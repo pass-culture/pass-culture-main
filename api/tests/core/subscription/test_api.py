@@ -485,39 +485,6 @@ class NextSubscriptionStepTest:
     @pytest.mark.parametrize(
         "feature_flags,user_age,expected_result",
         [
-            # User 18
-            (
-                {"ENABLE_PHONE_VALIDATION": True},
-                18,
-                True,
-            ),
-            (
-                {"ENABLE_PHONE_VALIDATION": False},
-                18,
-                False,
-            ),
-            # User 15 - 17
-            (
-                {"ENABLE_PHONE_VALIDATION": True},
-                15,
-                False,
-            ),
-            (
-                {"ENABLE_PHONE_VALIDATION": False},
-                16,
-                False,
-            ),
-        ],
-    )
-    def test_is_phone_validation_in_stepper(self, feature_flags, user_age, expected_result):
-        dateOfBirth = datetime.today() - relativedelta(years=user_age, months=1)
-        user = users_factories.UserFactory(dateOfBirth=dateOfBirth)
-        with override_features(**feature_flags):
-            assert subscription_api.is_phone_validation_in_stepper(user) == expected_result
-
-    @pytest.mark.parametrize(
-        "feature_flags,user_age,expected_result",
-        [
             (
                 {"ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18": True},
                 18,

@@ -802,13 +802,6 @@ def initialize_identity_fraud_check(
     return fraud_check
 
 
-# TODO: (Lixxday) 23/02/2023: Remove this function when "stepper_includes_phone_validation" is removed from NextStepResponse
-# - when this ticket is done: https://passculture.atlassian.net/browse/PC-20003
-# - after a forced update of the app
-def is_phone_validation_in_stepper(user: users_models.User) -> bool:
-    return user.eligibility == users_models.EligibilityType.AGE18 and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active()
-
-
 def get_subscription_steps_to_display(
     user: users_models.User, user_subscription_state: models.UserSubscriptionState
 ) -> list[models.SubscriptionStepDetails]:

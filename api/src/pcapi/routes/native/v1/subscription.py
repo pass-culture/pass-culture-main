@@ -42,7 +42,6 @@ def next_subscription_step(
     )
     return serializers.NextSubscriptionStepResponse(
         next_subscription_step=user_subscription_state.next_step,
-        stepper_includes_phone_validation=subscription_api.is_phone_validation_in_stepper(user),
         # FIXME: (thconte, 03/04/2023) deprecated. Remove this field when:
         # [ ] it is not used anymore in the frontend
         # [ ] a forced updated happened
