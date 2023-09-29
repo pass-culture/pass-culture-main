@@ -1067,10 +1067,7 @@ class UpdateVenueTest(PostEndpointHelper):
         response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
 
         assert response.status_code == 400
-        assert (
-            html_parser.extract_alert(response.data)
-            == "[siret] Une entrée avec cet identifiant existe déjà dans notre base de données"
-        )
+        assert html_parser.extract_alert(response.data) == "Un autre lieu existe déjà avec le SIRET 11122233344444"
         db.session.refresh(venue)
         assert venue.siret is None
 

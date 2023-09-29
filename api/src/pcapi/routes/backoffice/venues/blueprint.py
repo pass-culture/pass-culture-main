@@ -525,6 +525,8 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
 
     update_siret = False
     if not venue.isVirtual and venue.siret != form.siret.data:
+        new_siret = form.siret.data
+
         if not _can_edit_siret():
             flash(
                 f"Vous ne pouvez pas {'modifier' if venue.siret else 'ajouter'} le SIRET d'un lieu. Contactez le support pro N2.",
@@ -533,12 +535,16 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
             return render_venue_details(venue, form), 400
 
         if venue.siret:
-            if not form.siret.data:
+            if not new_siret:
                 flash("Vous ne pouvez pas retirer le SIRET d'un lieu.", "warning")
                 return render_venue_details(venue, form), 400
-        elif form.siret.data:
+        elif new_siret:
             # Remove comment because of constraint check_has_siret_xor_comment_xor_isVirtual
             attrs["comment"] = None
+
+        if new_siret and offerers_repository.find_venue_by_siret(new_siret):
+            flash(f"Un autre lieu existe déjà avec le SIRET {new_siret}", "warning")
+            return render_venue_details(venue, form), 400
 
         existing_pricing_point_id = venue.current_pricing_point_id
         if existing_pricing_point_id and venue.id != existing_pricing_point_id:
@@ -551,7 +557,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
             return render_venue_details(venue, form), 400
 
         try:
-            if not sirene.siret_is_active(form.siret.data):
+            if not sirene.siret_is_active(new_siret):
                 flash("Ce SIRET n'est plus actif, on ne peut pas l'attribuer à ce lieu", "error")
                 return render_venue_details(venue, form), 400
         except sirene.SireneException:
