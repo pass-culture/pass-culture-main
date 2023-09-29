@@ -376,10 +376,7 @@ def cancel_collective_booking(
         if finance_repository.has_reimbursement(collective_booking):
             raise exceptions.BookingIsAlreadyRefunded()
 
-        cancelled_event = finance_api.cancel_latest_event(
-            collective_booking,
-            finance_models.FinanceEventMotive.BOOKING_USED,
-        )
+        cancelled_event = finance_api.cancel_latest_event(collective_booking)
         if cancelled_event:
             finance_api.add_event(
                 finance_models.FinanceEventMotive.BOOKING_CANCELLED_AFTER_USE,
