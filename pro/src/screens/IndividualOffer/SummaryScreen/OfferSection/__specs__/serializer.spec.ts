@@ -3,10 +3,14 @@ import { CATEGORY_STATUS } from 'core/Offers/constants'
 import {
   OfferCategory,
   IndividualOffer,
-  IndividualOfferStock,
   OfferSubCategory,
 } from 'core/Offers/types'
 import { AccessiblityEnum } from 'core/shared'
+import {
+  individualOfferFactory,
+  individualOfferSubCategoryFactory,
+  individualOfferVenueFactory,
+} from 'utils/individualApiFactories'
 
 import { serializeOfferSectionData } from '../serializer'
 
@@ -16,102 +20,46 @@ describe('routes::Summary::serializers', () => {
   let subCategoryList: OfferSubCategory[]
 
   beforeEach(() => {
-    offer = {
-      id: 12,
-      author: 'Offer author',
-      bookingEmail: 'booking@email.com',
-      bookingContact: 'alfonsoLeBg@exampple.com',
-      description: 'Offer description',
-      durationMinutes: 140,
-      isActive: true,
-      isDuo: false,
-      isEvent: true,
-      isDigital: true,
-      accessibility: {
-        [AccessiblityEnum.AUDIO]: true,
-        [AccessiblityEnum.MENTAL]: true,
-        [AccessiblityEnum.MOTOR]: true,
-        [AccessiblityEnum.VISUAL]: true,
-        [AccessiblityEnum.NONE]: false,
-      },
-      isNational: false,
-      name: 'Offer name',
-      musicSubType: '',
-      musicType: '',
-      offererId: 12,
-      offererName: '',
-      performer: 'Offer performer',
-      ean: '',
-      showSubType: '',
-      showType: '',
-      stageDirector: 'Offer stageDirector',
-      speaker: 'Offer speaker',
-      subcategoryId: 'SCID',
-      image: {
-        originalUrl: 'https://image.url.test',
-        url: 'https://image.url.test',
-        credit: 'John Do',
-      },
-      url: 'https://offer.example.com',
-      externalTicketOfficeUrl: 'https://external.example.com',
-      venueId: 1,
-      venue: {
-        id: 1,
-        name: 'Venue name',
-        publicName: 'Venue publicName',
-        isVirtual: false,
-        address: '15 rue de la corniche',
-        postalCode: '75001',
-        city: 'Paris',
-        offerer: {
-          id: 1,
-          name: 'Offerer name',
-        },
-        departmentCode: '75',
+    offer = individualOfferFactory(
+      {
+        id: 12,
+        author: 'Offer author',
+        bookingEmail: 'booking@email.com',
+        bookingContact: 'alfonsoLeBg@exampple.com',
+        description: 'Offer description',
+        durationMinutes: 140,
+        isDuo: false,
         accessibility: {
-          [AccessiblityEnum.AUDIO]: false,
-          [AccessiblityEnum.MENTAL]: false,
-          [AccessiblityEnum.MOTOR]: false,
-          [AccessiblityEnum.VISUAL]: false,
-          [AccessiblityEnum.NONE]: true,
+          [AccessiblityEnum.AUDIO]: true,
+          [AccessiblityEnum.MENTAL]: true,
+          [AccessiblityEnum.MOTOR]: true,
+          [AccessiblityEnum.VISUAL]: true,
+          [AccessiblityEnum.NONE]: false,
         },
+        name: 'Offer name',
+        musicSubType: '',
+        musicType: '',
+        offererId: 12,
+        offererName: '',
+        performer: 'Offer performer',
+        ean: '',
+        showSubType: '',
+        showType: '',
+        stageDirector: 'Offer stageDirector',
+        speaker: 'Offer speaker',
+        subcategoryId: 'SCID',
+        url: 'https://offer.example.com',
+        externalTicketOfficeUrl: 'https://external.example.com',
+        venueId: 1,
+        visa: '',
+        withdrawalDetails: 'Offer withdrawalDetails',
+        withdrawalDelay: 140,
+        withdrawalType: WithdrawalTypeEnum.ON_SITE,
+        status: OfferStatus.ACTIVE,
       },
-      visa: '',
-      withdrawalDetails: 'Offer withdrawalDetails',
-      withdrawalDelay: 140,
-      withdrawalType: WithdrawalTypeEnum.ON_SITE,
-      stocks: [
-        {
-          quantity: 10,
-          price: 12,
-          bookingLimitDatetime: '01-01-2021',
-          beginningDatetime: null,
-          dateCreated: new Date('01-12-2020'),
-        } as IndividualOfferStock,
-        {
-          quantity: 10,
-          price: 12,
-          bookingLimitDatetime: '01-01-2023',
-          beginningDatetime: '01-12-2023',
-        } as IndividualOfferStock,
-        {
-          quantity: 10,
-          price: 12,
-          bookingLimitDatetime: '01-01-2024',
-          beginningDatetime: null,
-          dateCreated: new Date('01-12-2019'),
-        } as IndividualOfferStock,
-        {
-          quantity: 10,
-          price: 12,
-          bookingLimitDatetime: '01-01-2022',
-          beginningDatetime: '01-12-2022',
-        } as IndividualOfferStock,
-      ],
-      lastProviderName: 'Last Provider Name',
-      lastProvider: null,
-      status: OfferStatus.ACTIVE,
-    }
+      undefined,
+      individualOfferVenueFactory()
+    )
     categories = [
       {
         id: 'CID',
@@ -120,19 +68,16 @@ describe('routes::Summary::serializers', () => {
       },
     ]
     subCategoryList = [
-      {
+      individualOfferSubCategoryFactory({
         id: 'SCID',
         categoryId: 'CID',
         proLabel: 'sub-category proLabel',
         isEvent: true,
         conditionalFields: ['stageDirector', 'speaker', 'author', 'performer'],
         canBeDuo: true,
-        canBeEducational: false,
         onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-        reimbursementRule: 'sub-category reimbursementRule',
         canBeWithdrawable: false,
-        isSelectable: true,
-      },
+      }),
     ]
   })
 
@@ -150,11 +95,11 @@ describe('routes::Summary::serializers', () => {
       categoryName: 'Catégorie',
       subCategoryName: 'sub-category proLabel',
       subcategoryId: 'SCID',
-      venueName: 'Venue name',
-      venuePublicName: 'Venue publicName',
-      venueDepartmentCode: '75',
+      venueName: 'Le nom du lieu 1',
+      venuePublicName: 'Mon Lieu',
+      venueDepartmentCode: '78',
       isVenueVirtual: false,
-      offererName: 'Offerer name',
+      offererName: 'Le nom de la structure 1',
       bookingEmail: 'booking@email.com',
       bookingContact: 'alfonsoLeBg@exampple.com',
       withdrawalDetails: 'Offer withdrawalDetails',

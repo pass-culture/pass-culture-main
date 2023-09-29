@@ -142,6 +142,7 @@ export const serializeOfferApi = (
     description: apiOffer.description || '',
     durationMinutes: apiOffer.durationMinutes || null,
     isActive: apiOffer.isActive,
+    isActivable: apiOffer.isActivable,
     isDuo: apiOffer.isDuo,
     isEvent: apiOffer.isEvent,
     isDigital: apiOffer.isDigital,
