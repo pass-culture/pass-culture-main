@@ -58,6 +58,7 @@ from pcapi.workers import user_emails_job
 
 from . import constants
 from . import exceptions
+from . import utils
 from . import validation
 from .exceptions import BookingIsAlreadyCancelled
 from .exceptions import BookingIsAlreadyUsed
@@ -492,8 +493,9 @@ def _send_external_booking_notification_if_necessary(booking: Booking, action: B
         return
 
     external_api_notification_request = ExternalApiBookingNotificationRequest.build(booking, action)
+    signature = utils.generate_hmac_signature(provider.hmacKey, external_api_notification_request.json())
     payload = external_api_booking_notification.ExternalApiBookingNotificationTaskPayload(
-        data=external_api_notification_request, notificationUrl=provider.notificationExternalUrl
+        data=external_api_notification_request, notificationUrl=provider.notificationExternalUrl, signature=signature
     )
     external_api_booking_notification.external_api_booking_notification_task.delay(payload)
 

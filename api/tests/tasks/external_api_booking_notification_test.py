@@ -33,16 +33,15 @@ def test_send_notification_task(client, requests_mock):
         "user_first_name": "John",
         "booking_id": 1,
     }
-    requests_mock.post(
-        "https://example.com/notify", status_code=200, json=data
-    )  # Matthieu, authorisation for charlie to use this url?
+    requests_mock.post("https://example.com/notify", status_code=200, json=data)
 
     # When
     response = client.post(
         f"{settings.API_URL}/cloud-tasks/external_api/booking_notification",
-        json={"notificationUrl": "https://example.com/notify", "data": data},
+        json={"notificationUrl": "https://example.com/notify", "data": data, "signature": "M0ckS1gn@TuR3"},
         headers={AUTHORIZATION_HEADER_KEY: AUTHORIZATION_HEADER_VALUE},
     )
 
     # Then
     assert response.status_code == 204
+    assert requests_mock.last_request.headers["PassCulture-Signature"] == "M0ckS1gn@TuR3"

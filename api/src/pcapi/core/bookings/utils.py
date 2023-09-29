@@ -1,4 +1,6 @@
 from datetime import datetime
+from hashlib import sha256
+import hmac
 import typing
 
 from dateutil import tz
@@ -10,6 +12,16 @@ import pcapi.utils.postal_code as postal_code_utils
 if typing.TYPE_CHECKING:
     from pcapi.core.bookings.models import Booking
     from pcapi.core.educational.models import CollectiveBooking
+
+
+def generate_hmac_signature(
+    hmac_key: str,
+    data: str,
+) -> str:
+    """
+    Generate the signature of the notification data using the hmac_key.
+    """
+    return hmac.new(hmac_key.encode(), data.encode(), sha256).hexdigest()
 
 
 def convert_real_booking_dates_utc_to_venue_timezone(
