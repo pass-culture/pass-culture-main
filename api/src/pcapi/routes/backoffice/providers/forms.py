@@ -45,8 +45,13 @@ class EditProviderForm(FlaskForm):
             wtforms.validators.Length(max=1024, message="Doit contenir moins de %(max)d caractères"),
         ),
     )
+    provider_hmac_key = fields.PCOptPasswordField("Clé de chiffrement des requêtes")
     enabled_for_pro = fields.PCSwitchBooleanField("Actif pour les pros", default="checked")
     is_active = fields.PCSwitchBooleanField("Actif", default="checked")
+
+    def __init__(self, *args: typing.Any, **kwargs: typing.Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.provider_hmac_key.flags.disabled = True
 
 
 class CreateProviderForm(EditProviderForm):
@@ -72,3 +77,4 @@ class CreateProviderForm(EditProviderForm):
         self._fields.move_to_end("city", last=False)
         self._fields.move_to_end("siren", last=False)
         self._fields.move_to_end("name", last=False)
+        self.provider_hmac_key.flags.hidden = True
