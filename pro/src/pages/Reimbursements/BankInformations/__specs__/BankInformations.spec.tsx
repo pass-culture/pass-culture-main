@@ -4,6 +4,7 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
+import { GetOffererResponseModel } from 'apiClient/v1'
 import Notification from 'components/Notification/Notification'
 import {
   ReimbursementContext,
@@ -49,6 +50,7 @@ const renderBankInformations = (
 describe('BankInformations page', () => {
   let store: any
   let customContext: Partial<ReimbursementContextValues>
+  let offerer: GetOffererResponseModel
 
   beforeEach(() => {
     store = {
@@ -60,11 +62,13 @@ describe('BankInformations page', () => {
       },
     }
 
+    offerer = {
+      ...defautGetOffererResponseModel,
+      hasValidBankAccount: false,
+    }
+
     customContext = {
-      selectedOfferer: {
-        ...defautGetOffererResponseModel,
-        hasValidBankAccount: false,
-      },
+      selectedOfferer: offerer,
       offerers: [
         {
           ...defautGetOffererResponseModel,
@@ -82,6 +86,8 @@ describe('BankInformations page', () => {
       bankAccounts: [],
       managedVenues: [],
     })
+
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
   })
 
   it('should not display validated bank account message', async () => {
@@ -187,17 +193,8 @@ describe('BankInformations page', () => {
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     const selectInput = screen.getByTestId('select-input-offerer')
-    expect(
-      screen.getByDisplayValue('Sélectionnez une structure')
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText(
-        'Sélectionnez une structure pour faire apparaitre tous les comptes bancaires associés'
-      )
-    ).toBeInTheDocument()
-    expect(
-      screen.queryByText('Ajouter un compte bancaire')
-    ).not.toBeInTheDocument()
+    expect(screen.getByDisplayValue('first offerer')).toBeInTheDocument()
+    expect(screen.queryByText('Ajouter un compte bancaire')).toBeInTheDocument()
 
     await userEvent.selectOptions(selectInput, 'second offerer')
 
