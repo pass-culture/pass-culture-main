@@ -433,6 +433,7 @@ class CurrentPricingPointTest:
         venue_with_joinedload = self._load_venue(venue.id)
 
         with assert_num_queries(0):
+            assert venue_with_joinedload.current_pricing_point_link is None
             assert venue_with_joinedload.current_pricing_point is None
 
     def test_pricing_point(self):
@@ -443,7 +444,7 @@ class CurrentPricingPointTest:
             pricingPoint=factories.VenueFactory(managingOfferer=venue.managingOfferer, name="former"),
             timespan=[now - datetime.timedelta(days=7), now - datetime.timedelta(days=1)],
         )
-        factories.VenuePricingPointLinkFactory(
+        link = factories.VenuePricingPointLinkFactory(
             venue=venue,
             pricingPoint=factories.VenueFactory(managingOfferer=venue.managingOfferer, name="current"),
             timespan=[now - datetime.timedelta(days=1), None],
@@ -452,6 +453,7 @@ class CurrentPricingPointTest:
         venue_with_joinedload = self._load_venue(venue.id)
 
         with assert_num_queries(0):
+            assert venue_with_joinedload.current_pricing_point_link == link
             assert venue_with_joinedload.current_pricing_point is not None
             assert venue_with_joinedload.current_pricing_point.name == "current"
 
@@ -474,6 +476,7 @@ class CurrentReimbursementPointTest:
         venue_with_joinedload = self._load_venue(venue.id)
 
         with assert_num_queries(0):
+            assert venue_with_joinedload.current_reimbursement_point_link is None
             assert venue_with_joinedload.current_reimbursement_point is None
 
     def test_reimbursement_point(self):
@@ -484,7 +487,7 @@ class CurrentReimbursementPointTest:
             reimbursementPoint=factories.VenueFactory(managingOfferer=venue.managingOfferer, name="former"),
             timespan=[now - datetime.timedelta(days=7), now - datetime.timedelta(days=1)],
         )
-        factories.VenueReimbursementPointLinkFactory(
+        link = factories.VenueReimbursementPointLinkFactory(
             venue=venue,
             reimbursementPoint=factories.VenueFactory(managingOfferer=venue.managingOfferer, name="current"),
             timespan=[now - datetime.timedelta(days=1), None],
@@ -493,6 +496,7 @@ class CurrentReimbursementPointTest:
         venue_with_joinedload = self._load_venue(venue.id)
 
         with assert_num_queries(0):
+            assert venue_with_joinedload.current_reimbursement_point_link == link
             assert venue_with_joinedload.current_reimbursement_point is not None
             assert venue_with_joinedload.current_reimbursement_point.name == "current"
 

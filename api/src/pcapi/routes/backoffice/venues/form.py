@@ -172,3 +172,17 @@ class RemovePricingPointForm(utils.PCForm):
         "Ignorer la limite de revenus annuels (accord de la comptabilité nécessaire)",
         full_width=True,
     )
+
+
+class RemoveSiretForm(RemovePricingPointForm):
+    new_pricing_point = fields.PCSelectWithPlaceholderValueField(
+        "Nouveau point de valorisation", choices=[], coerce=int
+    )
+
+    def __init__(self, venue: offerers_models.Venue, *args: typing.Any, **kwargs: typing.Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.new_pricing_point.choices = [
+            (offerer_venue.id, f"{offerer_venue.name} ({offerer_venue.siret})")
+            for offerer_venue in venue.managingOfferer.managedVenues
+            if offerer_venue.siret and offerer_venue.id != venue.id
+        ]

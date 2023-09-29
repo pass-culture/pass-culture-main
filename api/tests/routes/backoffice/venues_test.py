@@ -1556,7 +1556,7 @@ class RemovePricingPointTest(PostEndpointHelper):
     def test_remove_pricing_point_and_reimbursement_point(self, legit_user, authenticated_client, venue_with_no_siret):
         offerers_factories.VenueReimbursementPointLinkFactory(venue=venue_with_no_siret)
         old_pricing_siret = venue_with_no_siret.current_pricing_point.siret
-        old_reimbursement_siret = venue_with_no_siret.current_reimbursement_point.siret
+        old_reimbursement_point_id = venue_with_no_siret.current_reimbursement_point.id
 
         response = self.post_to_endpoint(
             authenticated_client,
@@ -1569,9 +1569,8 @@ class RemovePricingPointTest(PostEndpointHelper):
         assert response.status_code == 303
 
         assert venue_with_no_siret.current_pricing_point is None
-        assert venue_with_no_siret.current_reimbursement_point is None
+        assert venue_with_no_siret.current_reimbursement_point.id == old_reimbursement_point_id  # unchanged
         assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= datetime.utcnow()
-        assert venue_with_no_siret.reimbursement_point_links[0].timespan.upper <= datetime.utcnow()
 
         action = history_models.ActionHistory.query.one()
         assert action.actionType == history_models.ActionType.INFO_MODIFIED
@@ -1583,7 +1582,6 @@ class RemovePricingPointTest(PostEndpointHelper):
         assert action.comment == "test"
         assert action.extraData["modified_info"] == {
             "pricingPointSiret": {"new_info": None, "old_info": old_pricing_siret},
-            "reimbursementPointSiret": {"new_info": None, "old_info": old_reimbursement_siret},
         }
 
     def test_venue_with_siret(self, authenticated_client):
@@ -1660,6 +1658,203 @@ class RemovePricingPointTest(PostEndpointHelper):
         assert response.status_code == 303
         assert venue_with_no_siret.current_pricing_point is None
         assert venue_with_no_siret.pricing_point_links[0].timespan.upper <= datetime.utcnow()
+
+
+class GetRemoveSiretFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.venue.get_remove_siret_form"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.MOVE_SIRET
+
+    def test_get_remove_siret_form(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        other_venues = offerers_factories.VenueFactory.create_batch(2, managingOfferer=offerer)
+
+        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
+
+        assert response.status_code == 200
+        html_parser.assert_no_alert(response.data)
+
+        content = html_parser.content_as_text(response.data)
+        assert f"Structure : {offerer.name}" in content
+        assert f"Offerer ID : {offerer.id}" in content
+        assert f"Lieu : {venue.name}" in content
+        assert f"Venue ID : {venue.id}" in content
+        assert f"SIRET : {venue.siret}" in content
+        assert "CA de l'année : 0,00 €" in content
+
+        assert html_parser.extract_select_options(response.data, "new_pricing_point") == {
+            str(other_venue.id): f"{other_venue.name} ({other_venue.siret})" for other_venue in other_venues
+        }
+
+    def test_venue_without_siret(self, authenticated_client):
+        venue = offerers_factories.VenueWithoutSiretFactory()
+        offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+
+        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
+
+        assert response.status_code == 400
+        assert html_parser.extract_alert(response.data) == "Ce lieu n'a pas de SIRET"
+
+    def test_no_other_venue_with_siret(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.VenueWithoutSiretFactory(managingOfferer=venue.managingOfferer)
+
+        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
+
+        assert response.status_code == 400
+        assert html_parser.extract_alert(response.data) == "La structure gérant ce lieu n'a pas d'autre lieu avec SIRET"
+
+    def test_venue_with_high_yearly_revenue(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        rich_beneficiary = users_factories.BeneficiaryGrant18Factory(deposit__amount=25_000)
+        bookings_factories.ReimbursedBookingFactory(
+            user=rich_beneficiary, stock__price=10800, stock__offer__venue=venue
+        )
+
+        response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
+
+        assert response.status_code == 200
+        html_parser.assert_no_alert(response.data)
+
+        content = html_parser.content_as_text(response.data)
+        assert "CA de l'année : 10 800,00 €" in content
+
+
+class RemoveSiretTest(PostEndpointHelper):
+    endpoint = "backoffice_web.venue.remove_siret"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.MOVE_SIRET
+
+    def test_remove_siret(self, legit_user, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.VenuePricingPointLinkFactory(venue=venue, pricingPoint=venue)
+        offerers_factories.VenueReimbursementPointLinkFactory(venue=venue, reimbursementPoint=venue)
+        other_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        offerers_factories.VenuePricingPointLinkFactory(venue=other_venue, pricingPoint=venue)
+        offerers_factories.VenueReimbursementPointLinkFactory(venue=other_venue, reimbursementPoint=venue)
+        target_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+
+        old_siret = venue.siret
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue.id,
+            form={"override_revenue_check": False, "comment": "test", "new_pricing_point": target_venue.id},
+        )
+        assert response.status_code == 303
+
+        assert venue.siret is None
+        assert venue.comment == "test"
+        assert venue.pricing_point_links[0].timespan.upper <= datetime.utcnow()
+        assert venue.current_pricing_point == target_venue
+        assert venue.reimbursement_point_links[0].timespan.upper is None  # unchanged
+        assert venue.current_reimbursement_point == venue
+
+        action = history_models.ActionHistory.query.filter_by(venueId=venue.id).one()
+        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.actionDate is not None
+        assert action.authorUserId == legit_user.id
+        assert action.offererId == venue.managingOffererId
+        assert action.comment == "test"
+        assert action.extraData["modified_info"] == {
+            "siret": {"old_info": old_siret, "new_info": None},
+            "pricingPointSiret": {"old_info": old_siret, "new_info": target_venue.siret},
+        }
+
+        assert other_venue.pricing_point_links[0].timespan.upper <= datetime.utcnow()
+        assert other_venue.current_pricing_point is None
+        assert other_venue.reimbursement_point_links[0].timespan.upper is None  # unchanged
+        assert other_venue.current_reimbursement_point == venue
+
+        other_action = history_models.ActionHistory.query.filter_by(venueId=other_venue.id).one()
+        assert other_action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert other_action.actionDate is not None
+        assert other_action.authorUserId == legit_user.id
+        assert other_action.offererId == venue.managingOffererId
+        assert other_action.comment == "test"
+        assert other_action.extraData["modified_info"] == {
+            "pricingPointSiret": {"old_info": old_siret, "new_info": None},
+        }
+
+    def test_venue_without_siret(self, authenticated_client):
+        venue = offerers_factories.VenueWithoutSiretFactory()
+        target_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue.id,
+            form={
+                "comment": "test",
+                "override_revenue_check": False,
+                "new_pricing_point": target_venue.id,
+            },
+        )
+
+        assert response.status_code == 400
+        assert html_parser.extract_alert(response.data) == "Ce lieu n'a pas de SIRET"
+
+    def test_invalid_new_pricing_point(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        target_venue = offerers_factories.VenueWithoutSiretFactory(managingOfferer=venue.managingOfferer)
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue.id,
+            form={
+                "comment": "test",
+                "override_revenue_check": False,
+                "new_pricing_point": target_venue.id,
+            },
+        )
+
+        assert response.status_code == 400
+        assert html_parser.extract_warnings(response.data) == ["Not a valid choice."]
+
+    def test_venue_with_high_yearly_revenue(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        target_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        rich_beneficiary = users_factories.BeneficiaryGrant18Factory(deposit__amount=25_000)
+        bookings_factories.ReimbursedBookingFactory(
+            user=rich_beneficiary, stock__price=10800, stock__offer__venue=venue
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue.id,
+            form={
+                "comment": "test",
+                "override_revenue_check": False,
+                "new_pricing_point": target_venue.id,
+            },
+        )
+
+        assert response.status_code == 400
+        assert html_parser.extract_alert(response.data) == "Ce lieu a un chiffre d'affaires de l'année élevé : 10800.00"
+
+    def test_override_yearly_revenue(self, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.VenuePricingPointLinkFactory(venue=venue, pricingPoint=venue)
+        target_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        rich_beneficiary = users_factories.BeneficiaryGrant18Factory(deposit__amount=25_000)
+        bookings_factories.ReimbursedBookingFactory(
+            user=rich_beneficiary, stock__price=10800, stock__offer__venue=venue
+        )
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            venue_id=venue.id,
+            form={
+                "comment": "test",
+                "override_revenue_check": True,
+                "new_pricing_point": target_venue.id,
+            },
+        )
+
+        assert response.status_code == 303
+        assert venue.siret is None
+        assert venue.current_pricing_point == target_venue
 
 
 class PostDeleteVenueProviderTest(PostEndpointHelper):

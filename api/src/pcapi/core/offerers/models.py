@@ -575,7 +575,7 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
         )
 
     @property
-    def current_pricing_point(self) -> "Venue | None":
+    def current_pricing_point_link(self) -> "VenuePricingPointLink | None":
         # Unlike current_pricing_point_id, this property uses pricing_point_links joinedloaded with the venue, which
         # avoids additional SQL query
         now = datetime.utcnow()
@@ -585,12 +585,19 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
             upper = link.timespan.upper
 
             if lower <= now and (not upper or now <= upper):
-                return link.pricingPoint
+                return link
 
         return None
 
     @property
-    def current_reimbursement_point(self) -> "Venue | None":
+    def current_pricing_point(self) -> "Venue | None":
+        # Unlike current_pricing_point_id, this property uses pricing_point_links joinedloaded with the venue, which
+        # avoids additional SQL query
+        link = self.current_pricing_point_link
+        return link.pricingPoint if link else None
+
+    @property
+    def current_reimbursement_point_link(self) -> "VenueReimbursementPointLink | None":
         # Unlike current_reimbursement_point_id, this property uses reimbursement_point_links joinedloaded with the
         # venue, which avoids additional SQL query
         now = datetime.utcnow()
@@ -600,9 +607,16 @@ class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, Accessibility
             upper = link.timespan.upper
 
             if lower <= now and (not upper or now <= upper):
-                return link.reimbursementPoint
+                return link
 
         return None
+
+    @property
+    def current_reimbursement_point(self) -> "Venue | None":
+        # Unlike current_reimbursement_point_id, this property uses reimbursement_point_links joinedloaded with the
+        # venue, which avoids additional SQL query
+        link = self.current_reimbursement_point_link
+        return link.reimbursementPoint if link else None
 
     @hybrid_property
     def common_name(self) -> str:

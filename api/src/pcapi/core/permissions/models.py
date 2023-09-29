@@ -41,7 +41,7 @@ class Permissions(enum.Enum):
     MANAGE_PRO_ENTITY = "gérer une structure, un lieu ou un compte pro"
     DELETE_PRO_ENTITY = "supprimer une structure ou un lieu"
 
-    MOVE_SIRET = "support pro avancé : déplacer un SIRET"
+    MOVE_SIRET = "support pro avancé : déplacer ou supprimer un SIRET"
     ADVANCED_PRO_SUPPORT = "support pro avancé"
 
     MANAGE_BOOKINGS = "gérer les réservations"

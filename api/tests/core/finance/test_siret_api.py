@@ -51,7 +51,7 @@ class DeleteSiretTest:
 
         with pytest.raises(siret_api.CheckError) as err:
             siret_api.remove_siret(venue, comment="xxx", apply_changes=True)
-        assert "Venue has an unexpectedly high yearly revenue" in str(err.value)
+        assert "Ce lieu a un chiffre d'affaires de l'année élevé" in str(err.value)
         assert venue.siret is not None
 
         siret_api.remove_siret(
@@ -69,4 +69,30 @@ class DeleteSiretTest:
 
         with pytest.raises(siret_api.CheckError) as err:
             siret_api.remove_siret(venue, comment="xxx", apply_changes=True)
-        assert str(err.value) == "Venue has pending pricings"
+        assert str(err.value) == "Ce lieu a des valorisations en attente"
+
+    @clean_database
+    def test_refuse_if_new_pricing_point_does_not_exist(self):
+        venue = offerers_factories.VenueFactory(pricing_point="self")
+
+        with pytest.raises(siret_api.CheckError) as err:
+            siret_api.remove_siret(venue, comment="xxx", new_pricing_point_id=venue.id + 1000, apply_changes=True)
+        assert str(err.value) == "Le nouveau point de valorisation doit être un lieu avec SIRET sur la même structure"
+
+    @clean_database
+    def test_refuse_if_new_pricing_point_has_no_siret(self):
+        venue = offerers_factories.VenueFactory(pricing_point="self")
+        new_pricing_point = offerers_factories.VenueWithoutSiretFactory(managingOffererId=venue.managingOffererId)
+
+        with pytest.raises(siret_api.CheckError) as err:
+            siret_api.remove_siret(venue, comment="xxx", new_pricing_point_id=new_pricing_point.id, apply_changes=True)
+        assert str(err.value) == "Le nouveau point de valorisation doit être un lieu avec SIRET sur la même structure"
+
+    @clean_database
+    def test_refuse_if_new_pricing_point_is_managed_by_another_offerer(self):
+        venue = offerers_factories.VenueFactory(pricing_point="self")
+        new_pricing_point = offerers_factories.VenueFactory(pricing_point="self")
+
+        with pytest.raises(siret_api.CheckError) as err:
+            siret_api.remove_siret(venue, comment="xxx", new_pricing_point_id=new_pricing_point.id, apply_changes=True)
+        assert str(err.value) == "Le nouveau point de valorisation doit être un lieu avec SIRET sur la même structure"
