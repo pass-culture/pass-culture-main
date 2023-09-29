@@ -1,6 +1,6 @@
 import algoliasearch from 'algoliasearch/lite'
 import * as React from 'react'
-import { Configure, InstantSearch } from 'react-instantsearch-dom'
+import { Configure, InstantSearch } from 'react-instantsearch'
 import { Route, Routes } from 'react-router-dom'
 
 import { VenueResponse } from 'apiClient/adage'
