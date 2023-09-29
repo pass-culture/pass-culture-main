@@ -27,3 +27,4 @@ def create_industrial_offerer_tags() -> None:
     )
     offerers_factories.OffererTagFactory(name="partenaire-national", label="Partenaire national", categories=[comptage])
     offerers_factories.OffererTagFactory(name=CONFORMITE_TAG_NAME, label="Conformité", categories=[homologation])
+    offerers_factories.OffererTagFactory(name="adage", label="Adage", categories=[homologation])

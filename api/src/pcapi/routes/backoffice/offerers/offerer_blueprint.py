@@ -530,6 +530,7 @@ def get_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
                 educational_models.CollectiveDmsApplication.state,
                 educational_models.CollectiveDmsApplication.lastChangeDate,
             ),
+            sa.orm.joinedload(offerers_models.Offerer.tags),
         )
         .one_or_none()
     )
@@ -542,8 +543,6 @@ def get_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
         form = offerer_forms.IndividualOffererSubscriptionForm(
             is_email_sent=individual_subscription.isEmailSent,
             date_email_sent=individual_subscription.dateEmailSent,
-            collective_offers=individual_subscription.targetsCollectiveOffers,
-            individual_offers=individual_subscription.targetsIndividualOffers,
             is_criminal_record_received=individual_subscription.isCriminalRecordReceived,
             date_criminal_record_received=individual_subscription.dateCriminalRecordReceived,
             is_certificate_received=individual_subscription.isCertificateReceived,
@@ -574,6 +573,7 @@ def get_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
         "offerer/get/details/individual_subscription.html",
         individual_subscription=individual_subscription,
         adage_decision=adage_decision,
+        has_adage_tag=any(tag.name == "adage" for tag in offerer.tags),
         form=form,
         dst=url_for("backoffice_web.offerer.update_individual_subscription", offerer_id=offerer_id),
     )
@@ -603,8 +603,6 @@ def update_individual_subscription(offerer_id: int) -> utils.BackofficeResponse:
     data = {
         "isEmailSent": form.is_email_sent.data,
         "dateEmailSent": form.date_email_sent.data,
-        "targetsCollectiveOffers": form.collective_offers.data,
-        "targetsIndividualOffers": form.individual_offers.data,
         "isCriminalRecordReceived": form.is_criminal_record_received.data,
         "dateCriminalRecordReceived": form.date_criminal_record_received.data,
         "isCertificateReceived": form.is_certificate_received.data,

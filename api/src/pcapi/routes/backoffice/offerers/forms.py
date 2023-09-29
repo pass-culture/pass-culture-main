@@ -248,8 +248,6 @@ class CreateOffererTagCategoryForm(OffererTagBaseForm):
 class IndividualOffererSubscriptionForm(FlaskForm):
     is_email_sent = fields.PCSwitchBooleanField("Mail envoyé à l'acteur", full_width=True)
     date_email_sent = fields.PCOptDateField("Date d'envoi")
-    collective_offers = fields.PCSwitchBooleanField("Collectif", full_width=True)
-    individual_offers = fields.PCSwitchBooleanField("Individuel", full_width=True)
     is_criminal_record_received = fields.PCSwitchBooleanField("Casier judiciaire reçu", full_width=True)
     date_criminal_record_received = fields.PCOptDateField("Date de réception")
     is_certificate_received = fields.PCSwitchBooleanField("Diplôme reçu", full_width=True)
