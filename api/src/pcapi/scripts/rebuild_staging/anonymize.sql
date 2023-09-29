@@ -109,6 +109,10 @@ SET
     "notificationExternalUrl" = 'http://mock-api-billeterie.mock-api-billeterie.svc.cluster.local:5003/notify'
 WHERE "notificationExternalUrl" IS NOT NULL;
 
+UPDATE provider
+SET 
+    "hmacKey" = 's3cr3tK3y'
+WHERE "hmacKey" IS NOT NULL;
 
 UPDATE boost_cinema_details
 SET
