@@ -213,17 +213,18 @@ def cancel_latest_event(
         models.FinanceEvent.status.in_(models.CANCELLABLE_FINANCE_EVENT_STATUSES),
     ).one_or_none()
     if not event:
-        # Once we have switched to event pricing, there MUST be an event. If no
-        # event can be found, something is wrong somewhere (probably a
-        # bug).
-        if not feature.FeatureToggle.PRICE_BOOKINGS.is_active():
-            log = logger.error
-        else:
-            log = logger.info
-        log(
-            "No finance event to cancel",
-            extra={"booking": booking.id},
-        )
+        # Once we have switched to event pricing, there MUST be an
+        # event if a used booking is being cancelled. If no event can
+        # be found, something is wrong somewhere (probably a bug).
+        if booking.dateUsed:
+            if not feature.FeatureToggle.PRICE_BOOKINGS.is_active():
+                log = logger.error
+            else:
+                log = logger.info
+            log(
+                "No finance event to cancel",
+                extra={"booking": booking.id},
+            )
         return None
     pricing = _cancel_event_pricing(event, models.PricingLogReason.MARK_AS_UNUSED, commit=commit)
     event.status = models.FinanceEventStatus.CANCELLED
