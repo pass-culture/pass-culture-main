@@ -731,34 +731,40 @@ def _load_venue_for_removing_pricing_point(venue_id: int) -> offerers_models.Ven
     return venue
 
 
-def _render_remove_pricing_point_form(
-    form: forms.RemovePricingPointForm, venue: offerers_models.Venue, code: int = 200
+def _render_remove_pricing_point_content(
+    venue: offerers_models.Venue, form: forms.RemovePricingPointForm | None = None, error: str | None = None
 ) -> utils.BackofficeResponse:
     current_pricing_point = venue.current_pricing_point
     current_reimbursement_point = venue.current_reimbursement_point
 
-    assert current_pricing_point
-
+    kwargs = {}
+    if form:
+        kwargs.update(
+            {
+                "form": form,
+                "dst": url_for("backoffice_web.venue.remove_pricing_point", venue_id=venue.id),
+                "button_text": "Confirmer",
+            }
+        )
     return (
         render_template(
             "components/turbo/modal_form.html",
-            form=form,
-            dst=url_for("backoffice_web.venue.remove_pricing_point", venue_id=venue.id),
             div_id="remove-venue-pricing-point",  # must be consistent with parameter passed to build_lazy_modal
             title=REMOVE_PRICING_POINT_TITLE,
-            button_text="Confirmer",
             additional_data={
                 "Lieu": venue.name,
                 "Venue ID": venue.id,
                 "SIRET": venue.siret or "Pas de SIRET",
                 "CA de l'année": filters.format_amount(siret_api.get_yearly_revenue(venue.id)),
-                "Point de valorisation": current_pricing_point.name,
-                "SIRET de valorisation": current_pricing_point.siret,
+                "Point de valorisation": current_pricing_point.name if current_pricing_point else "Aucun",
+                "SIRET de valorisation": current_pricing_point.siret if current_pricing_point else "Aucun",
                 "Point de remboursement": current_reimbursement_point.name if current_reimbursement_point else "Aucun",
                 "SIRET de remboursement": current_reimbursement_point.siret if current_reimbursement_point else "Aucun",
             },
+            alert=error,
+            **kwargs,
         ),
-        code,
+        400 if error or (form and form.errors) else 200,
     )
 
 
@@ -770,18 +776,10 @@ def get_remove_pricing_point_form(venue_id: int) -> utils.BackofficeResponse:
     try:
         siret_api.check_can_remove_pricing_point(venue)
     except siret_api.CheckError as exc:
-        return (
-            render_template(
-                "components/turbo/modal_form.html",
-                div_id="remove-venue-pricing-point",  # must be consistent with parameter passed to build_lazy_modal
-                title=REMOVE_PRICING_POINT_TITLE,
-                alert=str(exc),
-            ),
-            400,
-        )
+        return _render_remove_pricing_point_content(venue, error=str(exc))
 
     form = forms.RemovePricingPointForm()
-    return _render_remove_pricing_point_form(form, venue)
+    return _render_remove_pricing_point_content(venue, form=form)
 
 
 @venue_blueprint.route("/<int:venue_id>/remove-pricing-point", methods=["POST"])
@@ -791,7 +789,7 @@ def remove_pricing_point(venue_id: int) -> utils.BackofficeResponse:
 
     form = forms.RemovePricingPointForm()
     if not form.validate():
-        return _render_remove_pricing_point_form(form, venue)
+        return _render_remove_pricing_point_content(venue, form=form)
 
     try:
         siret_api.remove_pricing_point_link(
@@ -802,14 +800,102 @@ def remove_pricing_point(venue_id: int) -> utils.BackofficeResponse:
             author_user_id=current_user.id,
         )
     except siret_api.CheckError as exc:
-        return (
-            render_template(
-                "components/turbo/modal_form.html",
-                div_id="remove-venue-pricing-point",  # must be consistent with parameter passed to build_lazy_modal
-                title=REMOVE_PRICING_POINT_TITLE,
-                alert=str(exc),
-            ),
-            400,
+        return _render_remove_pricing_point_content(venue, form=form, error=str(exc))
+
+    return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
+
+
+REMOVE_SIRET_TITLE = "Supprimer le SIRET d'un lieu"
+
+
+def _load_venue_for_removing_siret(venue_id: int) -> offerers_models.Venue:
+    venue = (
+        offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id)
+        .options(
+            sa.orm.load_only(offerers_models.Venue.name, offerers_models.Venue.siret),
+            sa.orm.joinedload(offerers_models.Venue.managingOfferer)
+            .load_only(offerers_models.Offerer.id, offerers_models.Offerer.name)
+            .joinedload(offerers_models.Offerer.managedVenues)
+            .load_only()
+            .load_only(offerers_models.Venue.id, offerers_models.Venue.name, offerers_models.Venue.siret),
         )
+        .one_or_none()
+    )
+
+    if not venue:
+        raise NotFound()
+
+    return venue
+
+
+def _render_remove_siret_content(
+    venue: offerers_models.Venue, form: forms.RemoveSiretForm | None = None, error: str | None = None
+) -> utils.BackofficeResponse:
+    kwargs = {}
+    if form:
+        kwargs.update(
+            {
+                "form": form,
+                "dst": url_for("backoffice_web.venue.remove_siret", venue_id=venue.id),
+                "button_text": "Confirmer",
+            }
+        )
+    return (
+        render_template(
+            "components/turbo/modal_form.html",
+            div_id="remove-venue-siret",  # must be consistent with parameter passed to build_lazy_modal
+            title=REMOVE_SIRET_TITLE,
+            additional_data={
+                "Structure": venue.managingOfferer.name,
+                "Offerer ID": venue.managingOfferer.id,
+                "Lieu": venue.name,
+                "Venue ID": venue.id,
+                "SIRET": venue.siret or "Pas de SIRET",
+                "CA de l'année": filters.format_amount(siret_api.get_yearly_revenue(venue.id)),
+            },
+            alert=error,
+            **kwargs,
+        ),
+        400 if error or (form and form.errors) else 200,
+    )
+
+
+@venue_blueprint.route("/<int:venue_id>/remove-siret", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.MOVE_SIRET)
+def get_remove_siret_form(venue_id: int) -> utils.BackofficeResponse:
+    venue = _load_venue_for_removing_siret(venue_id)
+
+    try:
+        siret_api.check_can_remove_siret(
+            venue, "comment", override_revenue_check=True, check_offerer_has_other_siret=True
+        )
+    except siret_api.CheckError as exc:
+        return _render_remove_siret_content(venue, error=str(exc))
+
+    form = forms.RemoveSiretForm(venue)
+    return _render_remove_siret_content(venue, form=form)
+
+
+@venue_blueprint.route("/<int:venue_id>/remove-siret", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MOVE_SIRET)
+def remove_siret(venue_id: int) -> utils.BackofficeResponse:
+    venue = _load_venue_for_removing_siret(venue_id)
+
+    form = forms.RemoveSiretForm(venue)
+    if not form.validate():
+        return _render_remove_siret_content(venue, form=form)
+
+    try:
+        siret_api.remove_siret(
+            venue,
+            form.comment.data,
+            apply_changes=True,
+            override_revenue_check=bool(form.override_revenue_check.data),
+            new_pricing_point_id=form.new_pricing_point.data,
+            author_user_id=current_user.id,
+            new_db_session=False,
+        )
+    except siret_api.CheckError as exc:
+        return _render_remove_siret_content(venue, form=form, error=str(exc))
 
     return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
