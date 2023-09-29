@@ -49,3 +49,18 @@ class DeleteDateTest:
 
         assert response.status_code == 404
         assert response.json == {"event_id": ["The event could not be found"]}
+
+    def test_404_if_inactive_venue_provider(self, client):
+        venue, api_key = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
+        event_offer = offers_factories.EventOfferFactory(
+            venue=venue,
+            lastProvider=api_key.provider,
+        )
+        to_delete_stock = offers_factories.EventStockFactory(offer=event_offer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).delete(
+            f"/public/offers/v1/events/{event_offer.id}/dates/{to_delete_stock.id}",
+        )
+
+        assert response.status_code == 404
+        assert response.json == {"event_id": ["The event could not be found"]}

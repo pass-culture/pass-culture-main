@@ -24,6 +24,7 @@ def retrieve_venue_from_location(
         .filter(
             offerers_models.Venue.id == location.venue_id,
             providers_models.VenueProvider.provider == current_api_key.provider,
+            providers_models.VenueProvider.isActive,
         )
         .one_or_none()
     )
@@ -59,6 +60,7 @@ def check_venue_id_is_tied_to_api_key(venue_id: int | None) -> None:
         providers_models.VenueProvider.query.filter(
             providers_models.VenueProvider.provider == current_api_key.provider,
             providers_models.VenueProvider.venueId == venue_id,
+            providers_models.VenueProvider.isActive,
         ).exists()
     ).scalar()
     if not is_venue_tied_to_api_key:
@@ -98,6 +100,7 @@ def _retrieve_offer_tied_to_user_query() -> sqla_orm.Query:
         offers_models.Offer.query.join(offerers_models.Venue)
         .join(offerers_models.Venue.venueProviders, providers_models.VenueProvider.provider)
         .filter(providers_models.VenueProvider.provider == current_api_key.provider)
+        .filter(providers_models.VenueProvider.isActive)
     )
 
 
