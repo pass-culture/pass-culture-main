@@ -165,6 +165,7 @@ export interface IndividualOffer {
   description: string
   durationMinutes: number | null
   isActive: boolean
+  isActivable: boolean
   isDuo: boolean
   isEvent: boolean
   isDigital: boolean

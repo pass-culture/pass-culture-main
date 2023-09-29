@@ -94,7 +94,7 @@ describe('IndivualOfferLayout', () => {
     expect(screen.getByText('publiée')).toBeInTheDocument()
   })
 
-  it('should display draft status in draft', () => {
+  it('should display draft status but not let activate offer in draft', () => {
     const offer = individualOfferFactory({
       isActive: false,
       status: OfferStatus.DRAFT,
@@ -108,6 +108,20 @@ describe('IndivualOfferLayout', () => {
     expect(screen.getByTestId('status')).toBeInTheDocument()
     expect(screen.queryByRole('button')).not.toBeInTheDocument()
     expect(screen.getByText('brouillon')).toBeInTheDocument()
+  })
+
+  it('should display status but not let activate offer when offer is not activable', () => {
+    const offer = individualOfferFactory({
+      isActivable: false,
+    })
+
+    renderIndivualOfferLayout({
+      offer,
+      mode: OFFER_WIZARD_MODE.DRAFT,
+    })
+
+    expect(screen.getByTestId('status')).toBeInTheDocument()
+    expect(screen.queryByRole('button')).not.toBeInTheDocument()
   })
 
   it('should not display status in creation', () => {
