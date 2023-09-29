@@ -112,13 +112,6 @@ def cancel_unstored_external_bookings() -> None:
     bookings_api.cancel_unstored_external_bookings()
 
 
-# TODO: (lixxday 24/02/2023) remove this command when PR https://github.com/pass-culture/pass-culture-deployment/pull/200 is deployed
-@blueprint.cli.command("import_beneficiaries_from_dms_v4")
-@log_cron_with_transaction
-def import_beneficiaries_from_dms_legacy() -> None:
-    pass
-
-
 @blueprint.cli.command("archive_already_processed_dms_applications")
 @log_cron_with_transaction
 def archive_already_processed_dms_applications() -> None:
