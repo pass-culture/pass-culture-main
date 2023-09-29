@@ -256,8 +256,7 @@ def link_venue_to_bank_account(
     offerer_id: int, bank_account_id: int, body: offerers_serialize.LinkVenueToBankAccountBodyModel
 ) -> None:
     check_user_has_access_to_offerer(current_user, offerer_id)
-    offerer = offerers_models.Offerer.query.get_or_404(offerer_id)
     bank_account = finance_repository.get_bank_account_with_current_venues_links(offerer_id, bank_account_id)
     if bank_account is None:
         raise ResourceNotFoundError()
-    finance_api.update_bank_account_venues_links(current_user, offerer, bank_account, body.venues_ids)
+    finance_api.update_bank_account_venues_links(current_user, bank_account, body.venues_ids)

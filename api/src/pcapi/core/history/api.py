@@ -19,6 +19,7 @@ def log_action(
     offerer: offerers_models.Offerer | None = None,
     venue: offerers_models.Venue | None = None,
     finance_incident: finance_models.FinanceIncident | None = None,
+    bank_account: finance_models.BankAccount | None = None,
     comment: str | None = None,
     save: bool = True,
     **extra_data: typing.Any,
@@ -26,7 +27,7 @@ def log_action(
     """
     Set save parameter to False if you want to save the returned object at the same time as modified resources.
 
-    Be careful: author/user/offerer/venue object and its id may not be associated before the action is saved and/or
+    Be careful: author/user/offerer/venue/bank_account object and its id may not be associated before the action is saved and/or
     before the new object itself is inserted in the database. RuntimeError are issued in case this function would save
     new resources in parameters; when such an exception is raised, it shows a bug in our code.
     """
@@ -43,6 +44,9 @@ def log_action(
 
         if venue is not None and venue.id is None:
             raise RuntimeError("Unsaved venue would be saved with action %s" % (venue.name,))
+
+        if bank_account is not None and bank_account.id is None:
+            raise RuntimeError("Unsaved bank account would be saved with action %s" % bank_account.label)
 
     if not isinstance(author, users_models.User):
         # None or AnonymousUserMixin
