@@ -146,6 +146,7 @@ const BankInformations = (): JSX.Element => {
             bankAccountsNumber={
               selectedOffererBankAccounts?.bankAccounts.length
             }
+            key={bankAccount.id}
           />
         ))}
       </div>
