@@ -202,7 +202,6 @@ def add_event(
 
 def cancel_latest_event(
     booking: bookings_models.Booking | educational_models.CollectiveBooking,
-    commit: bool = False,
 ) -> models.FinanceEvent | None:
     """Cancel latest used-related finance event, if there is one."""
     event = models.FinanceEvent.query.filter(
@@ -231,7 +230,7 @@ def cancel_latest_event(
                 extra={"booking": booking.id},
             )
         return None
-    pricing = _cancel_event_pricing(event, models.PricingLogReason.MARK_AS_UNUSED, commit=commit)
+    pricing = _cancel_event_pricing(event, models.PricingLogReason.MARK_AS_UNUSED)
     event.status = models.FinanceEventStatus.CANCELLED
     db.session.flush()
     logger.info(
@@ -987,7 +986,6 @@ def _get_initial_pricing_status(
 def _cancel_event_pricing(
     event: models.FinanceEvent,
     reason: models.PricingLogReason,
-    commit: bool = True,
 ) -> models.Pricing | None:
     if not event.pricingPointId:
         return None
@@ -1034,10 +1032,7 @@ def _cancel_event_pricing(
     except Exception:
         db.session.rollback()
         raise
-    if commit:
-        db.session.commit()
-    else:
-        db.session.flush()
+    db.session.flush()
     return pricing
 
 

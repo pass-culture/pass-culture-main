@@ -427,7 +427,7 @@ def _cancel_booking(
             )
             try:
                 finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED, commit=False)
-                cancelled_event = finance_api.cancel_latest_event(booking, commit=False)
+                cancelled_event = finance_api.cancel_latest_event(booking)
                 booking.cancel_booking(reason, cancel_even_if_used)
                 if cancelled_event:
                     finance_api.add_event(
