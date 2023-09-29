@@ -15,34 +15,6 @@ from . import utils
 
 @pytest.mark.usefixtures("db_session")
 class PatchDateTest:
-    def test_find_no_stock_returns_404(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
-        event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
-            lastProvider=api_key.provider,
-        )
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            f"/public/offers/v1/events/{event_offer.id}/dates/12",
-            json={"beginningDatetime": "2022-02-01T12:00:00+02:00"},
-        )
-        assert response.status_code == 404
-        assert response.json == {"date_id": ["No date could be found"]}
-
-    def test_find_no_price_category_returns_404(self, client):
-        venue, api_key = utils.create_offerer_provider_linked_to_venue()
-        event_offer = offers_factories.EventOfferFactory(
-            venue=venue,
-            lastProvider=api_key.provider,
-        )
-        event_stock = offers_factories.EventStockFactory(offer=event_offer, priceCategory=None)
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            f"/public/offers/v1/events/{event_offer.id}/dates/{event_stock.id}",
-            json={"priceCategoryId": 0},
-        )
-
-        assert response.status_code == 404
-
     @freezegun.freeze_time("2022-01-01 12:00:00")
     def test_update_all_fields_on_date_with_price(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
@@ -272,3 +244,56 @@ class PatchDateTest:
         assert event_stock.price == price_category.price
         assert event_stock.quantity == 1
         assert event_stock.priceCategory == price_category
+
+
+@pytest.mark.usefixtures("db_session")
+class PatchDateReturns404Test:
+    def test_call_with_inactive_venue_provider_returns_404(self, client):
+        venue, api_key = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
+        event_offer = offers_factories.EventOfferFactory(
+            venue=venue,
+            lastProvider=api_key.provider,
+        )
+        event_stock = offers_factories.EventStockFactory(
+            offer=event_offer,
+        )
+        price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/events/{event_stock.offer.id}/dates/{event_stock.id}",
+            json={
+                "beginningDatetime": "2022-02-01T15:00:00+02:00",
+                "bookingLimitDatetime": "2022-01-20T12:00:00+02:00",
+                "priceCategoryId": price_category.id,
+                "quantity": 24,
+            },
+        )
+        assert response.status_code == 404
+
+    def test_find_no_stock_returns_404(self, client):
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        event_offer = offers_factories.EventOfferFactory(
+            venue=venue,
+            lastProvider=api_key.provider,
+        )
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/events/{event_offer.id}/dates/12",
+            json={"beginningDatetime": "2022-02-01T12:00:00+02:00"},
+        )
+        assert response.status_code == 404
+        assert response.json == {"date_id": ["No date could be found"]}
+
+    def test_find_no_price_category_returns_404(self, client):
+        venue, api_key = utils.create_offerer_provider_linked_to_venue()
+        event_offer = offers_factories.EventOfferFactory(
+            venue=venue,
+            lastProvider=api_key.provider,
+        )
+        event_stock = offers_factories.EventStockFactory(offer=event_offer, priceCategory=None)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/events/{event_offer.id}/dates/{event_stock.id}",
+            json={"priceCategoryId": 0},
+        )
+
+        assert response.status_code == 404

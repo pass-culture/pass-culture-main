@@ -150,3 +150,14 @@ class GetEventTest:
 
         assert response.status_code == 200
         assert response.json["ticketCollection"] is None
+
+    def test_404_inactive_venue_provider(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
+        event_offer = offers_factories.EventOfferFactory(
+            venue=venue,
+        )
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/events/{event_offer.id}"
+        )
+
+        assert response.status_code == 404

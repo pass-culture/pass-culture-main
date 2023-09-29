@@ -10,20 +10,6 @@ from . import utils
 
 @pytest.mark.usefixtures("db_session")
 class PatchEventTest:
-    def test_edit_product_offer_returns_404(self, client):
-        _, api_key = utils.create_offerer_provider_linked_to_venue()
-        thing_offer = offers_factories.ThingOfferFactory(
-            venue__managingOfferer=api_key.offerer, isActive=True, lastProvider=api_key.provider
-        )
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            f"/public/offers/v1/events/{thing_offer.id}",
-            json={"isActive": False},
-        )
-
-        assert response.status_code == 404
-        assert thing_offer.isActive is True
-
     def test_deactivate_offer(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(venue=venue, isActive=True, lastProvider=api_key.provider)
@@ -191,3 +177,33 @@ class PatchEventTest:
             },
         )
         assert response.status_code == 400
+
+
+@pytest.mark.usefixtures("db_session")
+class PatchEventReturns404Test:
+    def test_edit_product_offer(self, client):
+        _, api_key = utils.create_offerer_provider_linked_to_venue()
+        thing_offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=api_key.offerer, isActive=True, lastProvider=api_key.provider
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/events/{thing_offer.id}",
+            json={"isActive": False},
+        )
+
+        assert response.status_code == 404
+        assert thing_offer.isActive is True
+
+    def test_edit_inactive_venue_provider(self, client):
+        _, api_key = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
+        event_offer = offers_factories.EventOfferFactory(
+            venue__managingOfferer=api_key.offerer, lastProvider=api_key.provider
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/events/{event_offer.id}",
+            json={"isActive": True},
+        )
+
+        assert response.status_code == 404
