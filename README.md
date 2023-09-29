@@ -106,15 +106,13 @@ de l'équipe.
 
 Ces utilisateurs existent également pour le 97, en remplaçant `93` par `97`.
 
+D'autres informations sont disponibles sur le [README de Pro](./pro/README.md)
+
 
 ### Commandes utiles
 
 - Rebuild : `pc rebuild-backend` (reconstruire l'image docker sans cache)
 - Restart : `pc restart-backend` (effacer la base de données, et relancer tous les containers)
-- Reset :
-  - `pc reset-sandbox-db` : si vos serveurs de dev tournent, et que vous souhaitez juste réinitialiser la db
-  - `pc reset-reco-db` : (si vous voulez juste enlever les recommandations et bookings créés en dev par votre
-    navigation)
 - Restore : `pc restore-db file.pgdump` (restaurer un fichier de dump postgresql (file.pgdump) en local)
 
 #### Troubleshooting:
@@ -174,30 +172,6 @@ ou
 pc pgcli
 ```
 
-### Configuration de Metabase
-
-```bash
-pc start-metabase
-```
-
-Lance Metabase et une base de données contenant les données sandbox du produit. Pour supprimer les volumes avant de
-lancer Metabase, utiliser la commande :
-
-```bash
-pc restart-metabase
-```
-
-L'url pour aller sur Metabase en local est : http://localhost:3002/
-
-Pour configurer Metabase, il suffit de créer un compte admin, puis de se connecter à la base produit. Pour cela, il faut
-renseigner les informations suivantes :
-
-- Host : pc-postgres-product-metabase
-- Port : 5432
-- Database name : pass_culture
-- Database username : pass_culture
-- Database password : passq
-
 ### Connexion en ligne de commande python à un environnement (testing | staging | production | integration)
 
 ```bash
@@ -207,7 +181,7 @@ pc -e <testing|staging|production|integration> python
 ### Téléverser un fichier
 
 Il est également possible d'uploader un fichier dans l'environnement temporaire à
-l'emplacement `/tmp/uploads/myfile.extension`
+l'emplacement `/usr/src/app/myfile.extension`
 
 ```bash
 pc -e <testing|staging|production|integration> -f myfile.extension python
