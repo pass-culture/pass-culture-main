@@ -3,7 +3,7 @@ set -e
 
 # API waits for database, runs migrations and initialize data
 echo >&2 -e "\033[0;33mWaiting until API is available"
-until curl "http://flask:5001/health/api" --silent --output nul; do
+until curl "http://flask:5001/health/api" --silent; do
   sleep 2
 done
 
