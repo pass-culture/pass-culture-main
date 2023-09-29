@@ -43,7 +43,7 @@
             {{ build_step("Casier judiciaire", "bi-person-vcard", "bi-check-circle-fill text-success" if individual_subscription.isCriminalRecordReceived else ("bi-exclamation-circle-fill text-warning" if individual_subscription), "step-success" if individual_subscription.isCriminalRecordReceived) }}
             {{ build_step("Diplômes", "bi-mortarboard-fill", "bi-check-circle-fill text-success" if individual_subscription.isCertificateReceived else ("bi-exclamation-circle-fill text-warning" if individual_subscription), "step-success" if individual_subscription.isCertificateReceived) }}
             {{ build_step("Certifications professionnelles", "bi-box-fill", "bi-check-circle-fill text-success" if individual_subscription.isExperienceReceived else ("bi-exclamation-circle-fill text-warning" if individual_subscription), "step-success" if individual_subscription.isExperienceReceived) }}
-            {% if individual_subscription.targetsCollectiveOffers %}
+            {% if has_adage_tag or adage_decision %}
               {% if adage_decision == "accepte" %}
                 {{ build_step("Référencement Adage", "bi-briefcase-fill", "bi-check-circle-fill text-success", "step-success") }}
               {% elif adage_decision == "refuse" %}
@@ -71,19 +71,19 @@
         {{ form.is_email_sent }}
         {{ form.date_email_sent }}
       </div>
-      <p class="fw-bold pt-4">Activités</p>
-      <div class="px-3">
-        {{ form.collective_offers }}
-        {{ form.individual_offers }}
-      </div>
-    </div>
-    <div class="col-4">
-      <p class="fw-bold pt-2">Réception du casier judiciaire</p>
+      <p class="fw-bold pt-4">Réception du casier judiciaire</p>
       <div class="px-3">
         {{ form.is_criminal_record_received }}
         {{ form.date_criminal_record_received }}
       </div>
-      <p class="fw-bold pt-4">Diplômes</p>
+      <div class="pt-5 pb-3 px-3">
+        {{ form.csrf_token }}
+        <button type="submit"
+                class="btn btn-primary">Enregistrer</button>
+      </div>
+    </div>
+    <div class="col-4">
+      <p class="fw-bold pt-2">Diplômes</p>
       <div class="px-3">
         {{ form.is_certificate_received }}
         {% set documents_link = get_setting("BACKOFFICE_OFFERERS_DOCUMENTS_LINK") %}
@@ -107,11 +107,6 @@
         </div>
         {{ form.experience_details }}
         {{ form.is_certificate_valid }}
-      </div>
-      <div class="pt-5 pb-3 px-3">
-        {{ form.csrf_token }}
-        <button type="submit"
-                class="btn btn-primary">Enregistrer</button>
       </div>
     </div>
   </form>
