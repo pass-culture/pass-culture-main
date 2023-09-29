@@ -1,5 +1,5 @@
 import React from 'react'
-import { Configure } from 'react-instantsearch-dom'
+import { Configure } from 'react-instantsearch'
 
 import { AlgoliaQueryContextProvider } from 'pages/AdageIframe/app/providers'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
@@ -23,20 +23,10 @@ vi.mock('../../OffersInstantSearch/OffersSearch/Offers/Offers', () => {
   }
 })
 
-vi.mock('react-instantsearch-dom', async () => {
+vi.mock('react-instantsearch', async () => {
   return {
-    ...((await vi.importActual('react-instantsearch-dom')) ?? {}),
+    ...((await vi.importActual('react-instantsearch')) ?? {}),
     Configure: vi.fn(() => <div />),
-    connectStats: vi.fn(Component => (props: any) => (
-      <Component
-        {...props}
-        areHitsSorted={false}
-        nbHits={0}
-        nbSortedHits={0}
-        processingTimeMS={0}
-        hits={[]}
-      />
-    )),
   }
 })
 

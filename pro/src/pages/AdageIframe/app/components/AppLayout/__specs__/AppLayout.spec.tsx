@@ -6,7 +6,10 @@ import {
   FiltersContextProvider,
 } from 'pages/AdageIframe/app/providers'
 import { AdageUserContextProvider } from 'pages/AdageIframe/app/providers/AdageUserContext'
-import { defaultAdageUser } from 'utils/adageFactories'
+import {
+  defaultAdageUser,
+  defaultUseInfiniteHitsReturn,
+} from 'utils/adageFactories'
 import { renderWithProviders } from 'utils/renderWithProviders'
 
 import { AppLayout } from '../AppLayout'
@@ -23,19 +26,16 @@ vi.mock('apiClient/api', () => ({
   },
 }))
 
-vi.mock('react-instantsearch-dom', async () => {
+vi.mock('react-instantsearch', async () => {
   return {
-    ...((await vi.importActual('react-instantsearch-dom')) ?? {}),
+    ...((await vi.importActual('react-instantsearch')) ?? {}),
     Configure: vi.fn(() => <div />),
-    connectStats: vi.fn(Component => (props: any) => (
-      <Component
-        {...props}
-        areHitsSorted={false}
-        nbHits={0}
-        nbSortedHits={0}
-        processingTimeMS={0}
-      />
-    )),
+    InstantSearch: vi.fn(({ children }) => <div>{children}</div>),
+    useStats: () => ({ nbHits: 1 }),
+    useSearchBox: () => ({ refine: vi.fn() }),
+    useInfiniteHits: () => ({
+      hits: defaultUseInfiniteHitsReturn.hits.slice(0, 1),
+    }),
   }
 })
 
@@ -74,7 +74,7 @@ describe('AppLayout', () => {
 
     expect(screen.getByRole('link', { name: 'Rechercher' })).toBeInTheDocument()
     expect(
-      screen.getByRole('link', { name: 'Pour mon établissement 0' })
+      screen.getByRole('link', { name: 'Pour mon établissement 1' })
     ).toBeInTheDocument()
   })
 })

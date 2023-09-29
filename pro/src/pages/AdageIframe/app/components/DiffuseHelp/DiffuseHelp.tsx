@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import fullClear from 'icons/full-clear.svg'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
@@ -13,16 +13,25 @@ export const DiffuseHelp = ({
 }: {
   description: string
 }): JSX.Element => {
-  const [shouldHideDiffuseHelp, setShouldHideDiffuseHelp] = useState(
-    Boolean(localStorage.getItem(LOCAL_STORAGE_HAS_SEEN_DIFFUSE_HELP_KEY))
-  )
-
+  const [shouldHideDiffuseHelp, setShouldHideDiffuseHelp] = useState(false)
+  const [isCookieEnabled, setIsCookieEnabled] = useState(true)
+  useEffect(() => {
+    try {
+      setIsCookieEnabled(Boolean(window.localStorage))
+      setShouldHideDiffuseHelp(
+        Boolean(localStorage.getItem(LOCAL_STORAGE_HAS_SEEN_DIFFUSE_HELP_KEY))
+      )
+      /* istanbul ignore next: DEBT, TO FIX */
+    } catch (e) {
+      setIsCookieEnabled(false)
+    }
+  }, [])
   const onCloseDiffuseHelp = () => {
     localStorage.setItem(LOCAL_STORAGE_HAS_SEEN_DIFFUSE_HELP_KEY, 'true')
     setShouldHideDiffuseHelp(true)
   }
 
-  return !shouldHideDiffuseHelp ? (
+  return !shouldHideDiffuseHelp && isCookieEnabled ? (
     <div
       className={cn(styles['diffuse-help'], {
         [styles['diffuse-help-closed']]: shouldHideDiffuseHelp,

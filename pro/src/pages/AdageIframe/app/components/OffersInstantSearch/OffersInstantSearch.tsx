@@ -1,6 +1,6 @@
 import algoliasearch from 'algoliasearch/lite'
 import React, { useContext, useState } from 'react'
-import { Configure, InstantSearch } from 'react-instantsearch-dom'
+import { Configure, InstantSearch } from 'react-instantsearch'
 
 import { VenueResponse } from 'apiClient/adage'
 import useActiveFeature from 'hooks/useActiveFeature'
@@ -42,10 +42,8 @@ export const OffersInstantSearch = ({
   const { facetFilters } = useContext(FacetFiltersContext)
 
   const newAdageFilters = useActiveFeature('WIP_ENABLE_NEW_ADAGE_FILTERS')
-
   const [geoRadius, setGeoRadius] = useState<number | null>(null)
   const { adageUser } = useAdageUser()
-
   return (
     <InstantSearch
       indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
