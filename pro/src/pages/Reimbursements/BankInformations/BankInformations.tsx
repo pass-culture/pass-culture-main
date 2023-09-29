@@ -54,8 +54,6 @@ const BankInformations = (): JSX.Element => {
     }
   }, [])
 
-  const selectedOffererId = selectedOfferer?.id.toString() ?? ''
-
   useEffect(() => {
     if (offerers && offerers.length > 1) {
       const initialOffererOptions = sortByLabel(
@@ -140,8 +138,9 @@ const BankInformations = (): JSX.Element => {
         {selectedOffererBankAccounts?.bankAccounts.map(bankAccount => (
           <ReimbursementBankAccount
             bankAccount={bankAccount}
-            venuesWithNonFreeOffersNotLinkedToBankAccount={
-              selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts ?? []
+            venuesNotLinkedLength={
+              selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts
+                .length ?? 0
             }
             bankAccountsNumber={
               selectedOffererBankAccounts?.bankAccounts.length
@@ -155,35 +154,6 @@ const BankInformations = (): JSX.Element => {
         className={styles['add-bank-account-button']}
         variant={
           /* istanbul ignore next : graphic changes */ selectedOfferer &&
-          selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts.length > 0
-            ? ButtonVariant.SECONDARY
-            : ButtonVariant.PRIMARY
-        }
-      >
-        Ajouter un compte bancaire
-      </Button>
-      {offerers && offerers.length > 1 && (
-        <div className={styles['select-offerer-section']}>
-          <div className={styles['select-offerer-input']}>
-            <div className={styles['select-offerer-input-label']}>
-              <label htmlFor="selected-offerer">Structure</label>
-            </div>
-            <SelectInput
-              onChange={e => updateOfferer(e.target.value)}
-              id="selected-offerer"
-              data-testid="select-input-offerer"
-              name="offererId"
-              options={offererOptions}
-              value={selectedOffererId}
-            />
-          </div>
-        </div>
-      )}
-      <Button
-        icon={fullMoreIcon}
-        className={styles['add-bank-account-button']}
-        variant={
-          selectedOfferer &&
           selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts.length > 0
             ? ButtonVariant.SECONDARY
             : ButtonVariant.PRIMARY

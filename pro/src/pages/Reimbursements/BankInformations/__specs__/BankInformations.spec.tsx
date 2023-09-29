@@ -190,7 +190,7 @@ describe('BankInformations page', () => {
   it('should render select input with correct offerer if url has offerer parameter', async () => {
     renderBankInformations(
       customContext,
-      '/remboursements/informations-bancaires?struture=2'
+      '/remboursements/informations-bancaires?structure=2'
     )
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
@@ -244,8 +244,8 @@ describe('BankInformations page', () => {
       ],
     })
     renderBankInformations(
-      store,
-      '/remboursements/informations-bancaires?struture=2'
+      customContext,
+      '/remboursements/informations-bancaires?structure=2'
     )
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
     expect(screen.getByText('second offerer')).toBeInTheDocument()

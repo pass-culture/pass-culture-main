@@ -2,8 +2,8 @@ import { render, screen } from '@testing-library/react'
 import React from 'react'
 
 import {
-  BankAccountResponseModel,
   BankAccountApplicationStatus,
+  BankAccountResponseModel,
 } from 'apiClient/v1'
 
 import ReimbursementBankAccount from '../ReimbursementBankAccount'
@@ -31,7 +31,7 @@ describe('ReimbursementBankAccount', () => {
     render(
       <ReimbursementBankAccount
         bankAccount={bankAccount}
-        venuesWithNonFreeOffersNotLinkedToBankAccount={[]}
+        venuesNotLinkedLength={0}
         bankAccountsNumber={1}
       />
     )
@@ -51,27 +51,12 @@ describe('ReimbursementBankAccount', () => {
   })
 
   describe('Active bank account', () => {
-    beforeEach(() => {
-      bankAccount = {
-        id: 1,
-        isActive: true,
-        label: 'Bank account label',
-        obfuscatedIban: 'XXXX XXXX XXXX 0637',
-        bic: 'BDFEFRPP',
-        dsApplicationId: 6,
-        status: BankAccountApplicationStatus.ACCEPTE,
-        dateCreated: '2023-09-22T12:44:05.410448',
-        dateLastStatusUpdate: null,
-        linkedVenues: [{ id: 11, commonName: 'Le Petit Rintintin' }],
-      }
-    })
-
-    it('should render without venues linked to bank account with only one bank account', async () => {
+    it('should not render venues linked to bank account with only one bank account', async () => {
       bankAccount.linkedVenues = []
       render(
         <ReimbursementBankAccount
           bankAccount={bankAccount}
-          venuesWithNonFreeOffersNotLinkedToBankAccount={[]}
+          venuesNotLinkedLength={1}
           bankAccountsNumber={1}
         />
       )
@@ -83,6 +68,10 @@ describe('ReimbursementBankAccount', () => {
       expect(
         screen.getByText("Aucun lieu n'est rattaché à ce compte bancaire.")
       ).toBeInTheDocument()
+
+      expect(
+        screen.getByRole('button', { name: 'Rattacher' })
+      ).toBeInTheDocument()
     })
 
     it('should render without venues linked to bank account and with all venues linked to another account', async () => {
@@ -90,7 +79,7 @@ describe('ReimbursementBankAccount', () => {
       render(
         <ReimbursementBankAccount
           bankAccount={bankAccount}
-          venuesWithNonFreeOffersNotLinkedToBankAccount={[]}
+          venuesNotLinkedLength={0}
           bankAccountsNumber={2}
         />
       )
@@ -106,7 +95,7 @@ describe('ReimbursementBankAccount', () => {
       render(
         <ReimbursementBankAccount
           bankAccount={bankAccount}
-          venuesWithNonFreeOffersNotLinkedToBankAccount={[1]}
+          venuesNotLinkedLength={1}
           bankAccountsNumber={2}
         />
       )
@@ -124,13 +113,17 @@ describe('ReimbursementBankAccount', () => {
         screen.getByText("Un de vos lieux n'est pas rattaché.")
       ).toBeInTheDocument()
       expect(screen.getByText('Le Petit Rintintin')).toBeInTheDocument()
+
+      expect(
+        screen.getByRole('button', { name: 'Modifier' })
+      ).toBeInTheDocument()
     })
 
     it('should render with several venues not linked to bank account', () => {
       render(
         <ReimbursementBankAccount
           bankAccount={bankAccount}
-          venuesWithNonFreeOffersNotLinkedToBankAccount={[1, 2]}
+          venuesNotLinkedLength={2}
           bankAccountsNumber={1}
         />
       )
@@ -145,7 +138,7 @@ describe('ReimbursementBankAccount', () => {
       render(
         <ReimbursementBankAccount
           bankAccount={bankAccount}
-          venuesWithNonFreeOffersNotLinkedToBankAccount={[1, 2]}
+          venuesNotLinkedLength={2}
           bankAccountsNumber={1}
         />
       )
@@ -159,7 +152,7 @@ describe('ReimbursementBankAccount', () => {
       render(
         <ReimbursementBankAccount
           bankAccount={bankAccount}
-          venuesWithNonFreeOffersNotLinkedToBankAccount={[]}
+          venuesNotLinkedLength={0}
           bankAccountsNumber={1}
         />
       )
