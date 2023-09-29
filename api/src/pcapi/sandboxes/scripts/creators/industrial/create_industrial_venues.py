@@ -1,16 +1,19 @@
+import itertools
 import logging
+import pathlib
 import random
 import re
+import typing
 
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
-from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.providers import factories as providers_factories
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
+import pcapi.sandboxes.thumbs.generic_pictures as generic_pictures_thumbs
 
 
 logger = logging.getLogger(__name__)
@@ -23,16 +26,15 @@ DEFAULT_VENUE_IMAGES = 4
 VENUE_IMAGE_INDEX_START_AT = 21
 
 
-def add_default_image_to_venue(image_venue_counter: int, offerer: Offerer, venue: Venue) -> None:
-    image_number = image_venue_counter + VENUE_IMAGE_INDEX_START_AT
-    with open(
-        f"./src/pcapi/sandboxes/thumbs/generic_pictures/Picture_0{image_number}.jpg",
-        mode="rb",
-    ) as file:
+def add_default_image_to_venues(venues: typing.Iterable[Venue]) -> None:
+    thumbs_dir = pathlib.Path(generic_pictures_thumbs.__path__[0])
+    thumbs_paths = thumbs_dir.iterdir()
+
+    for venue, image_path in zip(venues, itertools.cycle(thumbs_paths)):
         offerers_api.save_venue_banner(
-            user=offerer.UserOfferers[0].user,
+            user=venue.managingOfferer.UserOfferers[0].user,
             venue=venue,
-            content=file.read(),
+            content=image_path.read_bytes(),
             image_credit="industrial sandbox picture provider",
         )
 
@@ -40,15 +42,13 @@ def add_default_image_to_venue(image_venue_counter: int, offerer: Offerer, venue
 def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
     logger.info("create_industrial_venues")
 
-    venue_by_name = {}
+    venue_by_name: dict[str, Venue] = {}
     mock_index = 0
 
     iban_count = 0
     iban_prefix = "FR7630001007941234567890185"
     bic_prefix, bic_suffix = "QSDFGH8Z", 556
     application_id_prefix = "12"
-
-    image_venue_counter = 0
 
     for offerer_index, (offerer_name, offerer) in enumerate(offerers_by_name.items()):
         geoloc_match = re.match(r"(.*)lat\:(.*) lon\:(.*)", offerer_name)
@@ -105,10 +105,6 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
             if offerer.validationStatus == ValidationStatus.NEW:
                 offerers_factories.VenueRegistrationFactory(venue=venue)
 
-            if image_venue_counter < DEFAULT_VENUE_IMAGES:
-                add_default_image_to_venue(image_venue_counter, offerer, venue)
-                image_venue_counter += 1
-
             venue_by_name[venue_name] = venue
 
             if iban and venue.siret:
@@ -148,5 +144,7 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
     venue_by_name[venue_synchronized_with_allocine.name] = venue_synchronized_with_allocine
 
     logger.info("created %d venues", len(venue_by_name))
+
+    add_default_image_to_venues(venue_by_name.values())
 
     return venue_by_name
