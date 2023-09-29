@@ -1,5 +1,7 @@
 from datetime import datetime
 from datetime import timedelta
+import hashlib
+import hmac
 import json
 import re
 from unittest.mock import patch
@@ -258,7 +260,7 @@ class PostBookingTest:
         )
 
         assert response.status_code == 200
-        assert json.loads(requests_mock.last_request.json()) == {
+        payload = {
             "booking_confirmation_date": "2022-10-14T17:09:25",
             "booking_creation_date": "2022-10-12T17:09:25",
             "booking_quantity": 1,
@@ -279,6 +281,11 @@ class PostBookingTest:
             "venue_id": stock.offer.venue.id,
             "venue_name": stock.offer.venue.name,
         }
+        assert json.loads(requests_mock.last_request.json()) == payload
+        assert (
+            requests_mock.last_request.headers["PassCulture-Signature"]
+            == hmac.new(provider.hmacKey.encode(), json.dumps(payload).encode(), hashlib.sha256).hexdigest()
+        )
         external_bookings = bookings_models.ExternalBooking.query.one()
         assert external_bookings.bookingId == response.json["bookingId"]
         assert external_bookings.barcode == "12123932898127"
