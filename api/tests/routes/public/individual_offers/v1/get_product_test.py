@@ -120,3 +120,14 @@ class GetProductTest:
 
         assert response.status_code == 404
         assert response.json == {"product_id": ["The product offer could not be found"]}
+
+    def test_404_when_inactive_venue_provider(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
+        product_offer = offers_factories.ThingOfferFactory(
+            venue=venue,
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/products/{product_offer.id}"
+        )
+        assert response.status_code == 404

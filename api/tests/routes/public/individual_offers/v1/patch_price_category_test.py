@@ -11,15 +11,6 @@ from . import utils
 
 @pytest.mark.usefixtures("db_session")
 class PatchPriceCategoryTest:
-    def test_find_no_offer_returns_404(self, client):
-        utils.create_offerer_provider_linked_to_venue()
-
-        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
-            "/public/offers/v1/events/inexistent_event_id/price_categories/inexistent_price_category_id",
-            json={"price": 2500, "label": "carre or"},
-        )
-        assert response.status_code == 404
-
     def test_update_price_category(self, client):
         venue, api_key = utils.create_offerer_provider_linked_to_venue()
         event_offer = offers_factories.EventOfferFactory(venue=venue, lastProvider=api_key.provider)
@@ -94,3 +85,23 @@ class PatchPriceCategoryTest:
         assert response.status_code == 200
         assert all((stock.price == decimal.Decimal("0.25") for stock in offer.stocks if not stock.isEventExpired))
         assert expired_stock.price != decimal.Decimal("0.25")
+
+    def test_find_no_offer_returns_404(self, client):
+        utils.create_offerer_provider_linked_to_venue()
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            "/public/offers/v1/events/inexistent_event_id/price_categories/inexistent_price_category_id",
+            json={"price": 2500, "label": "carre or"},
+        )
+        assert response.status_code == 404
+
+    def test_inactive_provider_returns_404(self, client):
+        venue, api_key = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
+        event_offer = offers_factories.EventOfferFactory(venue=venue, lastProvider=api_key.provider)
+        price_category = offers_factories.PriceCategoryFactory(offer=event_offer)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/offers/v1/events/{event_offer.id}/price_categories/{price_category.id}",
+            json={"price": 2500, "label": "carre or"},
+        )
+        assert response.status_code == 404

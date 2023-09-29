@@ -97,3 +97,13 @@ class GetEventDatesTest:
 
         assert response.status_code == 200
         assert response.json == {"dates": []}
+
+    def test_404_inactive_venue_provider(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
+        event_offer = offers_factories.EventOfferFactory(venue=venue)
+        offers_factories.StockFactory(offer=event_offer, isSoftDeleted=True)
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            f"/public/offers/v1/events/{event_offer.id}/dates"
+        )
+
+        assert response.status_code == 404

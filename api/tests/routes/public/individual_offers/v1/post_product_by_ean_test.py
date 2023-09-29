@@ -397,6 +397,27 @@ class PostProductByEanTest:
         assert created_offer.activeStocks[0].price == decimal.Decimal("98.76")
         assert created_offer.activeStocks[0].quantity == 22
 
+    def test_returns_404_for_inactive_venue_provider(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/products/ean",
+            json={
+                "location": {"type": "physical", "venueId": venue.id},
+                "products": [
+                    {
+                        "ean": "1234567890123",
+                        "stock": {
+                            "price": 1234,
+                            "quantity": 3,
+                        },
+                    }
+                ],
+            },
+        )
+
+        assert response.status_code == 404
+
 
 @pytest.mark.usefixtures("db_session")
 class JsonFormatTest:

@@ -143,6 +143,15 @@ class GetOffererVenuesTest:
             ],
         }
 
+    def test_does_not_return_inactive_venue_providers(self, client):
+        utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).get(
+            "/public/offers/v1/offerer_venues",
+        )
+        assert response == 200
+        assert response.json == []
+
     def test_get_filtered_offerer_venues(self, client):
         (
             offerer_with_two_venues,

@@ -327,3 +327,19 @@ class PostEventTest:
         assert response.json == {
             "global": "During this API Beta, it is only possible to create events without tickets."
         }
+
+    def test_returns_404_for_inactive_venue_provider(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            "/public/offers/v1/events",
+            json={
+                "categoryRelatedFields": {"category": "FESTIVAL_ART_VISUEL"},
+                "accessibility": utils.ACCESSIBILITY_FIELDS,
+                "location": {"type": "physical", "venueId": venue.id},
+                "name": "Le champ des possibles",
+                "ticketCollection": None,
+            },
+        )
+
+        assert response.status_code == 404

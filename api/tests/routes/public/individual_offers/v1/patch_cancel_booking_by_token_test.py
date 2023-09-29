@@ -183,6 +183,21 @@ class PatchBookingByTokenReturns404Test:
         assert response.status_code == 404
         assert response.json == {"global": "This countermark cannot be found"}
 
+    def test_inactive_venue_provider(self, client):
+        venue, _ = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
+        product_offer = offers_factories.ThingOfferFactory(
+            venue=venue,
+        )
+        product_stock = offers_factories.StockFactory(offer=product_offer)
+        booking = bookings_factories.BookingFactory(
+            venue=venue,
+            stock=product_stock,
+        )
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).patch(
+            f"/public/bookings/v1/cancel/token/{booking.token.lower()}",
+        )
+        assert response.status_code == 404
+
 
 class PatchBookingByTokenReturns410Test:
     def test_when_booking_is_already_canceled(self, client):

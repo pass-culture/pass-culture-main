@@ -139,3 +139,21 @@ class PostPriceCategoriesTest:
         assert response.json == {
             "priceCategories": ["The price category carre or already exists"],
         }
+
+    def test_returns_404_with_inactive_venue_provider(self, client):
+        venue, api_key = utils.create_offerer_provider_linked_to_venue(is_venue_provider_active=False)
+        event_offer = offers_factories.EventOfferFactory(
+            venue=venue,
+            lastProvider=api_key.provider,
+        )
+
+        response = client.with_explicit_token(offerers_factories.DEFAULT_CLEAR_API_KEY).post(
+            f"/public/offers/v1/events/{event_offer.id}/price_categories",
+            json={
+                "priceCategories": [
+                    {"price": 2500, "label": "carre or"},
+                    {"price": 1500, "label": "triangle argent"},
+                ],
+            },
+        )
+        assert response.status_code == 404
