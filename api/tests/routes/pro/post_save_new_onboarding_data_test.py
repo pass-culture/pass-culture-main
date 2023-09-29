@@ -4,6 +4,7 @@ import pytest
 
 from pcapi.connectors import sirene
 import pcapi.core.offerers.models as offerers_models
+from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 
 
@@ -68,6 +69,17 @@ class Returns200Test:
             "siren": "853318459",
             "name": "MINISTERE DE LA CULTURE",
         }
+
+    @override_settings(IS_INTEGRATION=True)
+    def test_validated_in_integration(self, client):
+        user = users_factories.UserFactory(email="pro@example.com")
+
+        client = client.with_session_auth(user.email)
+        response = client.post("/offerers/new", json=REQUEST_BODY)
+
+        assert response.status_code == 201
+        created_offerer = offerers_models.Offerer.query.one()
+        assert created_offerer.isValidated
 
 
 class Returns400Test:

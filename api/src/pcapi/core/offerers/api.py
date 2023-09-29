@@ -606,7 +606,10 @@ def _fill_in_offerer(
     offerer.name = offerer_informations.name
     offerer.postalCode = offerer_informations.postalCode
     offerer.siren = offerer_informations.siren
-    offerer.validationStatus = ValidationStatus.NEW
+    if settings.IS_INTEGRATION:
+        offerer.validationStatus = ValidationStatus.VALIDATED
+    else:
+        offerer.validationStatus = ValidationStatus.NEW
     offerer.isActive = True
     offerer.dateCreated = datetime.utcnow()
 
