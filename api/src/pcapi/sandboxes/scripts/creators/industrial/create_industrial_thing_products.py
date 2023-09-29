@@ -1,10 +1,6 @@
-import itertools
 import logging
-import pathlib
 import random
 
-import pcapi
-from pcapi.connectors import thumb_storage
 from pcapi.core.categories import subcategories_v2
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
@@ -14,6 +10,7 @@ from pcapi.domain.music_types import MUSIC_TYPES_BY_SLUG
 from pcapi.domain.music_types import music_types
 from pcapi.domain.titelive import read_things_date
 from pcapi.repository import repository
+import pcapi.sandboxes.scripts.creators.industrial.utils as industrial_utils
 from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_AUTHOR_NAMES
 from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_DESCRIPTIONS
 from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_NAMES
@@ -100,7 +97,7 @@ def create_industrial_thing_products() -> dict[str, offers_models.Product]:
 
     repository.save(*thing_products_by_name.values())
 
-    create_products_thumb(titelive_synced_products)
+    industrial_utils.create_products_thumb(titelive_synced_products)
 
     logger.info("created %d thing products", len(thing_products_by_name))
 
@@ -345,11 +342,3 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
         available_rock_vinyl,
         available_multiple_discs_vinyl,
     ]
-
-
-def create_products_thumb(products: list[offers_models.Product]) -> None:
-    image_dir = pathlib.Path(pcapi.__path__[0]) / "sandboxes" / "thumbs" / "generic_pictures"
-    image_paths = image_dir.iterdir()
-
-    for product, image_path in zip(products, itertools.cycle(image_paths)):
-        thumb_storage.create_thumb(product, image_path.read_bytes(), storage_id_suffix_str="", keep_ratio=True)
