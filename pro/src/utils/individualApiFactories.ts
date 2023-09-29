@@ -81,9 +81,10 @@ export const individualOfferFactory = (
     },
     isNational: true,
     isActive: true,
+    isActivable: true,
     status: OfferStatus.ACTIVE,
     subcategoryId: SubcategoryIdEnum.CINE_PLEIN_AIR,
-    venueId: 1,
+    venueId: customVenue.id,
     stocks: stock ? [stock] : [],
     priceCategories: priceCategory ? [priceCategory] : [],
     ...customOffer,
@@ -225,7 +226,7 @@ export const individualOfferOffererFactory = (
 
   return {
     id: currentOffererId,
-    name: `La nom de la structure ${currentOffererId}`,
+    name: `Le nom de la structure ${currentOffererId}`,
     ...customOfferer,
   }
 }

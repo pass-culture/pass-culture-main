@@ -317,6 +317,7 @@ describe('serializer', () => {
       externalTicketOfficeUrl: '',
       image: undefined,
       isActive: true,
+      isActivable: true,
       isDigital: false,
       isDuo: true,
       isEvent: false,
