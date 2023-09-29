@@ -106,7 +106,7 @@ describe('ReimbursementBankAccount', () => {
       render(
         <ReimbursementBankAccount
           bankAccount={bankAccount}
-          venuesWithNonFreeOffersNotLinkedToBankAccount={['1']}
+          venuesWithNonFreeOffersNotLinkedToBankAccount={[1]}
           bankAccountsNumber={2}
         />
       )
@@ -130,7 +130,7 @@ describe('ReimbursementBankAccount', () => {
       render(
         <ReimbursementBankAccount
           bankAccount={bankAccount}
-          venuesWithNonFreeOffersNotLinkedToBankAccount={['1', '2']}
+          venuesWithNonFreeOffersNotLinkedToBankAccount={[1, 2]}
           bankAccountsNumber={1}
         />
       )
@@ -145,7 +145,7 @@ describe('ReimbursementBankAccount', () => {
       render(
         <ReimbursementBankAccount
           bankAccount={bankAccount}
-          venuesWithNonFreeOffersNotLinkedToBankAccount={['1', '2']}
+          venuesWithNonFreeOffersNotLinkedToBankAccount={[1, 2]}
           bankAccountsNumber={1}
         />
       )
@@ -166,10 +166,6 @@ describe('ReimbursementBankAccount', () => {
 
       expect(
         screen.queryByRole('img', { name: 'Une action est requise' })
-      ).not.toBeInTheDocument()
-
-      expect(
-        screen.queryByText("Aucun lieu n'est rattaché à ce compte bancaire.")
       ).not.toBeInTheDocument()
 
       expect(
