@@ -21,22 +21,41 @@ import styles from './BankInformations.module.scss'
 const BankInformations = (): JSX.Element => {
   const notify = useNotification()
 
-  const { offerers, selectedOfferer } = useReimbursementContext()
+  const { offerers, selectedOfferer, setSelectedOfferer } =
+    useReimbursementContext()
 
   const [isOffererBankAccountsLoading, setIsOffererBankAccountsLoading] =
     useState<boolean>(false)
   const [, setSelectedOffererBankAccounts] =
     useState<GetOffererBankAccountsResponseModel | null>(null)
   const [searchParams, setSearchParams] = useSearchParams()
+  const [isOffererLoading, setIsOffererLoading] = useState<boolean>(false)
 
   const { structure: offererId } = Object.fromEntries(searchParams)
 
-  if (searchParams.has('structure')) {
-    searchParams.delete('structure')
-    setSearchParams(searchParams)
-  }
   const [offererOptions, setOffererOptions] = useState<SelectOption[]>([])
   const selectedOffererId = selectedOfferer?.id.toString() ?? ''
+
+  const updateOfferer = async (newOffererId: string) => {
+    if (newOffererId === '') {
+      setSelectedOfferer(null)
+    } else {
+      setIsOffererLoading(true)
+      const offerer = await api.getOfferer(Number(newOffererId))
+      setSelectedOfferer(offerer)
+      setIsOffererLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (offererId && offerers && offerers?.length > 0) {
+      updateOfferer(offererId)
+    }
+    if (searchParams.has('structure')) {
+      searchParams.delete('structure')
+      setSearchParams(searchParams)
+    }
+  }, [])
 
   useEffect(() => {
     if (offerers && offerers.length > 1) {
@@ -77,7 +96,7 @@ const BankInformations = (): JSX.Element => {
     selectedOfferer && getSelectedOffererBankAccounts(selectedOfferer.id)
   }, [selectedOfferer])
 
-  if (isOffererBankAccountsLoading) {
+  if (isOffererBankAccountsLoading || isOffererLoading) {
     return <Spinner />
   }
 
@@ -107,18 +126,6 @@ const BankInformations = (): JSX.Element => {
           En savoir plus
         </ButtonLink>
       </div>
-      <Button
-        icon={fullMoreIcon}
-        className={styles['add-bank-account-button']}
-        variant={
-          selectedOfferer &&
-          selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts.length > 0
-            ? ButtonVariant.SECONDARY
-            : ButtonVariant.PRIMARY
-        }
-      >
-        Ajouter un compte bancaire
-      </Button>
       {offerers && offerers.length > 1 && (
         <div className={styles['select-offerer-section']}>
           <div className={styles['select-offerer-input']}>
@@ -126,11 +133,7 @@ const BankInformations = (): JSX.Element => {
               <label htmlFor="selected-offerer">Structure</label>
             </div>
             <SelectInput
-              onChange={e => {
-                /*TODO: set correct offerer*/
-                console.log(e)
-                // setSelectedOfferer(e.target.value)
-              }}
+              onChange={e => updateOfferer(e.target.value)}
               id="selected-offerer"
               data-testid="select-input-offerer"
               name="offererId"
