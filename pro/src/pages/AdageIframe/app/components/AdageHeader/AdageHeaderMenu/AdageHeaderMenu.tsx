@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import { useStats } from 'react-instantsearch'
 import { NavLink } from 'react-router-dom'
 
 import {
@@ -20,17 +21,15 @@ import styles from './AdageHeaderMenu.module.scss'
 
 type AdageHeaderMenuProps = {
   adageUser: AuthenticatedResponse
-  institutionsOfferCount: number
 }
 
-export const AdageHeaderMenu = ({
-  adageUser,
-  institutionsOfferCount,
-}: AdageHeaderMenuProps) => {
+export const AdageHeaderMenu = ({ adageUser }: AdageHeaderMenuProps) => {
   const params = new URLSearchParams(location.search)
   const adageAuthToken = params.get('token')
 
   const { favoritesCount } = useAdageUser()
+
+  const { nbHits } = useStats()
 
   const areFavoritesActive = useActiveFeature('WIP_ENABLE_LIKE_IN_ADAGE')
 
@@ -78,9 +77,7 @@ export const AdageHeaderMenu = ({
                 className={styles['adage-header-link-icon']}
               />
               Pour mon établissement
-              <div className={styles['adage-header-nb-hits']}>
-                {institutionsOfferCount}
-              </div>
+              <div className={styles['adage-header-nb-hits']}>{nbHits}</div>
             </NavLink>
           </li>
 

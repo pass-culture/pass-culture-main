@@ -1,6 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import type { SearchBoxProvided } from 'react-instantsearch-core'
 
 import { AdageFrontRoles, AuthenticatedResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
@@ -129,6 +128,13 @@ const renderOffersSearchComponent = (
 const refineSearch = vi.fn()
 const setGeoRadiusMock = vi.fn()
 
+vi.mock('react-instantsearch', async () => {
+  return {
+    ...((await vi.importActual('react-instantsearch')) ?? {}),
+    useSearchBox: () => ({ refine: refineSearch }),
+  }
+})
+
 describe('offersSearch component', () => {
   let props: SearchProps
   const user = {
@@ -157,18 +163,6 @@ describe('offersSearch component', () => {
       unobserve: vi.fn(),
       disconnect: vi.fn(),
     }))
-
-    vi.mock('react-instantsearch-dom', async () => {
-      return {
-        ...((await vi.importActual('react-instantsearch-dom')) ?? {}),
-        Configure: vi.fn(() => <div />),
-        connectSearchBox: vi
-          .fn()
-          .mockImplementation(Component => (props: SearchBoxProvided) => (
-            <Component {...props} refine={refineSearch} />
-          )),
-      }
-    })
   })
 
   it('should call algolia with requested query and uai all', async () => {

@@ -5,7 +5,7 @@ import {
 } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
-import { Configure } from 'react-instantsearch-dom'
+import { Configure } from 'react-instantsearch'
 import type { Mock } from 'vitest'
 
 import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
@@ -19,22 +19,6 @@ import {
   FacetFiltersContextProvider,
   FiltersContextProvider,
 } from '../providers'
-
-vi.mock('react-instantsearch-dom', async () => {
-  return {
-    ...((await vi.importActual('react-instantsearch-dom')) ?? {}),
-    Configure: vi.fn(() => <div />),
-    connectStats: vi.fn(Component => (props: any) => (
-      <Component
-        {...props}
-        areHitsSorted={false}
-        nbHits={0}
-        nbSortedHits={0}
-        processingTimeMS={0}
-      />
-    )),
-  }
-})
 
 vi.mock('utils/config', async () => {
   return {

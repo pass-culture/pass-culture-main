@@ -2,8 +2,7 @@ import './OldOffersSearch.scss'
 
 import { useContext, useState } from 'react'
 import * as React from 'react'
-import type { SearchBoxProvided } from 'react-instantsearch-core'
-import { connectSearchBox } from 'react-instantsearch-dom'
+import { useSearchBox } from 'react-instantsearch'
 
 import { VenueResponse } from 'apiClient/adage'
 import { INITIAL_QUERY } from 'pages/AdageIframe/app/constants'
@@ -24,19 +23,19 @@ import { OfferFilters } from './OfferFilters/OldOfferFilters'
 import { Offers } from './Offers/Offers'
 import { SearchBox } from './SearchBox/SearchBox'
 
-export interface SearchProps extends SearchBoxProvided {
+export interface SearchProps {
   removeVenueFilter: () => void
   venueFilter: VenueResponse | null
 }
 
-export const OldOffersSearchComponent = ({
+export const OldOffersSearch = ({
   removeVenueFilter,
   venueFilter,
-  refine,
 }: SearchProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const { dispatchCurrentFilters } = useContext(FiltersContext)
+  const { refine } = useSearchBox()
   const { setFacetFilters } = useContext(FacetFiltersContext)
   const { query, removeQuery, setQueryTag } = useContext(AlgoliaQueryContext)
   const { setFiltersKeys, setHasClickedSearch } = useContext(AnalyticsContext)
@@ -82,13 +81,8 @@ export const OldOffersSearchComponent = ({
       <div className="search-results">
         <Offers
           handleResetFiltersAndLaunchSearch={handleResetFiltersAndLaunchSearch}
-          setIsLoading={setIsLoading}
         />
       </div>
     </>
   )
 }
-
-export const OldOffersSearch = connectSearchBox<SearchProps>(
-  OldOffersSearchComponent
-)

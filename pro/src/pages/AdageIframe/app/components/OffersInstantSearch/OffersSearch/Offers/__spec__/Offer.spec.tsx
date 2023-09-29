@@ -32,22 +32,6 @@ vi.mock('apiClient/api', () => ({
 }))
 vi.mock('pages/AdageIframe/libs/initAlgoliaAnalytics')
 
-vi.mock('react-instantsearch-dom', () => {
-  return {
-    ...vi.importActual('react-instantsearch-dom'),
-    connectStats: vi.fn(Component => (props: any) => (
-      <Component
-        {...props}
-        areHitsSorted={false}
-        nbHits={0}
-        nbSortedHits={0}
-        processingTimeMS={0}
-      />
-    )),
-    Stats: vi.fn(() => <div>2 résultats</div>),
-  }
-})
-
 const user: AuthenticatedResponse = {
   role: AdageFrontRoles.REDACTOR,
   email: 'test@example.com',
