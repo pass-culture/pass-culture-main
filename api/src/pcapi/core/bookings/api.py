@@ -427,11 +427,7 @@ def _cancel_booking(
             )
             try:
                 finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED, commit=False)
-                cancelled_event = finance_api.cancel_latest_event(
-                    booking,
-                    finance_models.FinanceEventMotive.BOOKING_USED,
-                    commit=False,
-                )
+                cancelled_event = finance_api.cancel_latest_event(booking, commit=False)
                 booking.cancel_booking(reason, cancel_even_if_used)
                 if cancelled_event:
                     finance_api.add_event(
@@ -684,7 +680,7 @@ def mark_as_cancelled(booking: Booking, reason: BookingCancellationReasons) -> N
 
 def mark_as_unused(booking: Booking) -> None:
     validation.check_can_be_mark_as_unused(booking)
-    finance_api.cancel_latest_event(booking, finance_models.FinanceEventMotive.BOOKING_USED)
+    finance_api.cancel_latest_event(booking)
     finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
     finance_api.add_event(finance_models.FinanceEventMotive.BOOKING_UNUSED, booking=booking, commit=False)
     booking.mark_as_unused_set_confirmed()
