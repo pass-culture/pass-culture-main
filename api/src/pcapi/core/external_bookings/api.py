@@ -5,10 +5,10 @@ import typing
 import pydantic.v1 as pydantic_v1
 
 from pcapi import settings
-from pcapi.core.bookings.utils import generate_hmac_signature
 from pcapi.core.bookings.constants import REDIS_EXTERNAL_BOOKINGS_NAME
 from pcapi.core.bookings.constants import RedisExternalBookingType
 import pcapi.core.bookings.models as bookings_models
+from pcapi.core.bookings.utils import generate_hmac_signature
 from pcapi.core.external_bookings.boost.client import BoostClientAPI
 from pcapi.core.external_bookings.cds.client import CineDigitalServiceAPI
 from pcapi.core.external_bookings.cgr.client import CGRClientAPI
@@ -163,8 +163,10 @@ def cancel_event_ticket(
     is_booking_saved: bool,
 ) -> None:
     payload = serialize.ExternalEventCancelBookingRequest.build_external_cancel_booking(barcodes)
+    json_payload = payload.json()
+    hmac_signature = generate_hmac_signature(provider.hmacKey, json_payload)
     headers = {"Content-Type": "application/json"}
-    response = requests.post(provider.cancelExternalUrl, json=payload.json(), headers=headers)
+    response = requests.post(provider.cancelExternalUrl, json=json_payload, headers=headers, hmac=hmac_signature)
     _check_external_booking_response_is_ok(response)
     try:
         parsed_response = pydantic_v1.parse_obj_as(serialize.ExternalEventCancelBookingResponse, response.json())
