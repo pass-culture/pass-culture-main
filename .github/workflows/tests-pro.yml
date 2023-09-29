@@ -34,8 +34,7 @@ jobs:
         with:
           bucket: ${{ env.CACHE_BUCKET_NAME }}
           path: |
-            node_modules
-            ~/.cache/yarn
+            **/node_modules
           key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
@@ -63,8 +62,7 @@ jobs:
         with:
           bucket: ${{ env.CACHE_BUCKET_NAME }}
           path: |
-            node_modules
-            ~/.cache/yarn
+            **/node_modules
           key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
@@ -93,8 +91,7 @@ jobs:
         with:
           bucket: ${{ env.CACHE_BUCKET_NAME }}
           path: |
-            node_modules
-            ~/.cache/yarn
+            **/node_modules
           key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
@@ -128,8 +125,7 @@ jobs:
         with:
           bucket: ${{ env.CACHE_BUCKET_NAME }}
           path: |
-            node_modules
-            ~/.cache/yarn
+            **/node_modules
           key: v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
