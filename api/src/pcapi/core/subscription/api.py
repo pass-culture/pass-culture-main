@@ -508,8 +508,12 @@ def get_user_subscription_state(user: users_models.User) -> subscription_models.
 def _requires_manual_review_before_activation(
     user: users_models.User, identity_fraud_check: fraud_models.BeneficiaryFraudCheck
 ) -> bool:
-    return identity_fraud_check.type == fraud_models.FraudCheckType.DMS and not users_api.get_eligibility_at_date(
-        user.birth_date, identity_fraud_check.get_min_date_between_creation_and_registration()  # type: ignore [arg-type]
+    return (
+        identity_fraud_check.type == fraud_models.FraudCheckType.DMS
+        and identity_fraud_check.status == fraud_models.FraudCheckStatus.OK
+        and not users_api.get_eligibility_at_date(
+            user.birth_date, identity_fraud_check.get_min_date_between_creation_and_registration()  # type: ignore [arg-type]
+        )
     )
 
 
