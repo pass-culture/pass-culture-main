@@ -14,6 +14,7 @@ def create_thumb(
     crop_params: CropParams | None = None,
     ratio: ImageRatio = ImageRatio.PORTRAIT,
     keep_ratio: bool = False,
+    folder: str = settings.THUMBS_FOLDER_NAME,
 ) -> None:
     if keep_ratio:
         image_as_bytes = process_original_image(image_as_bytes)
@@ -21,7 +22,7 @@ def create_thumb(
         image_as_bytes = standardize_image(image_as_bytes, ratio=ratio, crop_params=crop_params)
     model_with_thumb.thumbCount += 1
     object_storage.store_public_object(
-        folder=settings.THUMBS_FOLDER_NAME,
+        folder=folder,
         object_id=model_with_thumb.get_thumb_storage_id(storage_id_suffix_str),
         blob=image_as_bytes,
         content_type="image/jpeg",

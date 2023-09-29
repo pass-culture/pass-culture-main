@@ -274,6 +274,9 @@ LOCAL_STORAGE_DIR = Path(os.path.dirname(os.path.realpath(__file__))) / "static"
 
 # THUMBS
 THUMBS_FOLDER_NAME = os.environ.get("THUMBS_FOLDER_NAME", "thumbs")
+THUMBS_FROM_GOOGLE_PLACE_FOLDER_NAME = os.environ.get(
+    "THUMBS_FROM_GOOGLE_PLACE_FOLDER_NAME", "thumbs_from_google_place"
+)
 
 # GOOGLE
 GCP_BUCKET_CREDENTIALS = json.loads(base64.b64decode(secrets_utils.get("GCP_BUCKET_CREDENTIALS", "")) or "{}")

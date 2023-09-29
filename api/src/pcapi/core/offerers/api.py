@@ -1071,6 +1071,17 @@ def rm_previous_venue_thumbs(venue: models.Venue) -> None:
     venue.thumbCount = 1
 
 
+def rm_previous_google_venue_thumbs(venue: offerers_models.Venue) -> None:
+    if not venue._googleBannerUrl:  # bannerUrl (with no undescore) always returns an url (potentially a default one)
+        return
+
+    # handle old banner urls that did not have a timestamp
+    timestamp = get_timestamp_from_url(venue._googleBannerUrl) if "_" in venue._googleBannerUrl else ""
+    storage.remove_thumb(venue, storage_id_suffix=str(timestamp), ignore_thumb_count=True)
+
+    venue._googleBannerUrl = None
+
+
 def save_venue_banner(
     user: users_models.User,
     venue: models.Venue,
@@ -1092,6 +1103,7 @@ def save_venue_banner(
 
     updated_at = datetime.utcnow()
     banner_timestamp = str(int(updated_at.timestamp()))
+    print(f"creating resized thumb for {venue.id}")
     storage.create_thumb(
         model_with_thumb=venue,
         image_as_bytes=content,
@@ -1101,6 +1113,7 @@ def save_venue_banner(
     )
 
     original_image_timestamp = str(int(updated_at.timestamp() + 1))
+    print(f"creating original thumb for {venue.id}")
     storage.create_thumb(
         model_with_thumb=venue, image_as_bytes=content, storage_id_suffix_str=original_image_timestamp, keep_ratio=True
     )
@@ -1116,6 +1129,32 @@ def save_venue_banner(
 
     repository.save(venue)
 
+    search.async_index_venue_ids([venue.id])
+
+
+# We use the same function signature as save_venue_banner to be able to call either with the same parameters
+def save_venue_google_banner(
+    _user: users_models.User,
+    venue: models.Venue,
+    content: bytes,
+    _image_credit: str,
+    _crop_params: image_conversion.CropParams | None = None,
+) -> None:
+    rm_previous_google_venue_thumbs(venue)
+
+    updated_at = datetime.utcnow()
+    banner_timestamp = str(int(updated_at.timestamp()))
+    print(f"creating google thumb for {venue.id}")
+    storage.create_thumb(
+        model_with_thumb=venue,
+        image_as_bytes=content,
+        storage_id_suffix_str=banner_timestamp,
+        ratio=image_conversion.ImageRatio.LANDSCAPE,
+        folder=settings.THUMBS_FROM_GOOGLE_PLACE_FOLDER_NAME,
+    )
+    venue._googleBannerUrl = f"{venue.thumbUrl}_{banner_timestamp}"
+
+    repository.save(venue)
     search.async_index_venue_ids([venue.id])
 
 

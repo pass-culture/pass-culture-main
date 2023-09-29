@@ -14,6 +14,7 @@ from pcapi.core.providers import factories as providers_factories
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
 import pcapi.sandboxes.thumbs.generic_pictures as generic_pictures_thumbs
+from pcapi.utils.image_conversion import ImageRatioError
 
 
 logger = logging.getLogger(__name__)
@@ -22,7 +23,6 @@ logger = logging.getLogger(__name__)
 OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO = 3
 OFFERERS_WITH_PHYSICAL_VENUE_WITH_SIRET_REMOVE_MODULO = OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO * 2
 
-DEFAULT_VENUE_IMAGES = 4
 VENUE_IMAGE_INDEX_START_AT = 21
 
 
@@ -30,13 +30,31 @@ def add_default_image_to_venues(venues: typing.Iterable[Venue]) -> None:
     thumbs_dir = pathlib.Path(generic_pictures_thumbs.__path__[0])
     thumbs_paths = thumbs_dir.iterdir()
 
-    for venue, image_path in zip(venues, itertools.cycle(thumbs_paths)):
-        offerers_api.save_venue_banner(
-            user=venue.managingOfferer.UserOfferers[0].user,
-            venue=venue,
-            content=image_path.read_bytes(),
-            image_credit="industrial sandbox picture provider",
-        )
+    # We want to have venues with banners, with google banners, with both and with none
+    actions_to_perform = [
+        (offerers_api.save_venue_banner,),
+        (offerers_api.save_venue_google_banner,),
+        (offerers_api.save_venue_banner, offerers_api.save_venue_google_banner),
+        (),
+    ]
+
+    for counter, (venue, image_path) in enumerate(zip(venues, itertools.cycle(thumbs_paths))):
+        actions = actions_to_perform[counter % 4]
+
+        for action in actions:
+            if not venue.managingOfferer.UserOfferers:
+                continue
+            try:
+                action(
+                    venue.managingOfferer.UserOfferers[0].user,
+                    venue,
+                    image_path.read_bytes(),
+                    "industrial sandbox picture provider",
+                )
+            except ImageRatioError:
+                # This can happen since offer images and venue images are mixed.
+                # We don't want to fail the whole script
+                continue
 
 
 def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
