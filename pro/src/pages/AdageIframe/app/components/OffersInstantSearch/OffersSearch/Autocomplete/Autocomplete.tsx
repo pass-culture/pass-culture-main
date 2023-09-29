@@ -17,8 +17,7 @@ import React, {
   useRef,
   useContext,
 } from 'react'
-import type { SearchBoxProvided } from 'react-instantsearch-core'
-import { connectSearchBox } from 'react-instantsearch-dom'
+import { useSearchBox } from 'react-instantsearch'
 
 import useActiveFeature from 'hooks/useActiveFeature'
 import useNotification from 'hooks/useNotification'
@@ -41,7 +40,7 @@ import {
 
 import styles from './Autocomplete.module.scss'
 
-type AutocompleteProps = SearchBoxProvided & {
+type AutocompleteProps = {
   initialQuery: string
   placeholder: string
   setCurrentSearch: (search: string) => void
@@ -64,12 +63,12 @@ const ALGOLIA_NUMBER_VENUES_SUGGESTIONS = 6
 const DEFAULT_GEO_RADIUS = 30000000 // 30 000 km ensure that we get all the results
 const ALGOLIA_NUMBER_QUERY_SUGGESTIONS = 5
 
-const AutocompleteComponent = ({
-  refine,
+export const Autocomplete = ({
   initialQuery,
   placeholder,
   setCurrentSearch,
 }: AutocompleteProps) => {
+  const { refine } = useSearchBox()
   const [instantSearchUiState, setInstantSearchUiState] = useState<
     AutocompleteState<SuggestionItem>
   >({
@@ -569,7 +568,3 @@ const AutocompleteComponent = ({
     </div>
   )
 }
-
-export const Autocomplete = connectSearchBox<AutocompleteProps>(
-  AutocompleteComponent
-)

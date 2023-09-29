@@ -1,5 +1,3 @@
-import type { Hit } from 'react-instantsearch-core'
-
 import {
   AdageFrontRoles,
   AuthenticatedResponse,
@@ -7,8 +5,6 @@ import {
   EducationalInstitutionWithBudgetResponseModel,
   OfferAddressType,
 } from 'apiClient/adage'
-
-import { ResultType } from './types'
 
 export const defaultCollectiveTemplateOffer: CollectiveOfferTemplateResponseModel =
   {
@@ -59,22 +55,6 @@ export const defaultAdageUser: AuthenticatedResponse = {
   lon: null,
 }
 
-export const defaultAlgoliaHits: Hit<ResultType> = {
-  objectID: '1',
-  offer: {
-    dates: [new Date().valueOf()],
-    name: 'Une offre collective',
-    thumbUrl: '/imageUrl',
-  },
-  venue: {
-    name: 'Lieu collectif #1',
-    publicName: 'Mon super lieu collectif',
-  },
-  _highlightResult: {},
-  isTemplate: false,
-  __queryID: 'queryId',
-}
-
 export const defaultEducationalInstitution: EducationalInstitutionWithBudgetResponseModel =
   {
     budget: 1000,
@@ -85,3 +65,39 @@ export const defaultEducationalInstitution: EducationalInstitutionWithBudgetResp
     phoneNumber: '0123456789',
     postalCode: '75000',
   }
+
+export const defaultUseStatsReturn = {
+  nbHits: 0,
+  nbPages: 0,
+  areHitsSorted: false,
+  page: 0,
+  processingTimeMS: 0,
+  query: '',
+}
+
+const hit = {
+  objectID: '481',
+  offer: {
+    dates: [new Date('2021-09-29T13:54:30+00:00').valueOf()],
+    name: 'titre',
+    thumbUrl: '',
+  },
+  venue: {
+    name: 'lieu',
+    publicName: 'lieu public',
+  },
+  _highlightResult: {},
+  isTemplate: false,
+  __queryID: 'queryId',
+  __position: 0,
+}
+export const defaultUseInfiniteHitsReturn = {
+  hits: [hit],
+  isLastPage: true,
+  showMore: vi.fn(),
+  showPrevious: vi.fn(),
+  isFirstPage: true,
+  sendEvent: vi.fn(),
+  bindEvent: vi.fn(),
+  currentPageHits: [hit],
+}

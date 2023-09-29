@@ -1,7 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
-import { Configure } from 'react-instantsearch-dom'
+import { Configure } from 'react-instantsearch'
 
 import { AdageFrontRoles, VenueResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
@@ -14,19 +14,17 @@ import {
   FacetFiltersContextProvider,
   FiltersContextProvider,
 } from '../providers'
-vi.mock('react-instantsearch-dom', async () => {
+
+vi.mock('react-instantsearch', async () => {
   return {
-    ...((await vi.importActual('react-instantsearch-dom')) ?? {}),
+    ...((await vi.importActual('react-instantsearch')) ?? {}),
     Configure: vi.fn(() => <div />),
-    connectStats: vi.fn(Component => (props: any) => (
-      <Component
-        {...props}
-        areHitsSorted={false}
-        nbHits={0}
-        nbSortedHits={0}
-        processingTimeMS={0}
-      />
-    )),
+    InstantSearch: vi.fn(({ children }) => <div>{children}</div>),
+    useStats: () => ({ nbHits: 1 }),
+    useSearchBox: () => ({ refine: vi.fn() }),
+    useInfiniteHits: () => ({
+      hits: [],
+    }),
   }
 })
 

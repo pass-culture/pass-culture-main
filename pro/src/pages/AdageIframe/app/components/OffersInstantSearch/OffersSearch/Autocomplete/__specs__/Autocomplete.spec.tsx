@@ -1,7 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import React from 'react'
-import type { SearchBoxProvided } from 'react-instantsearch-core'
 
 import { AdageUserContext } from 'pages/AdageIframe/app/providers/AdageUserContext'
 import { defaultAdageUser } from 'utils/adageFactories'
@@ -91,15 +90,10 @@ vi.mock('@algolia/autocomplete-plugin-query-suggestions', () => {
   }
 })
 
-vi.mock('react-instantsearch-dom', async () => {
+vi.mock('react-instantsearch', async () => {
   return {
-    ...((await vi.importActual('react-instantsearch-dom')) ?? {}),
-    Configure: vi.fn(() => <div />),
-    connectSearchBox: vi
-      .fn()
-      .mockImplementation(Component => (props: SearchBoxProvided) => (
-        <Component {...props} refine={refineMock} />
-      )),
+    ...((await vi.importActual('react-instantsearch')) ?? {}),
+    useSearchBox: () => ({ refine: refineMock }),
   }
 })
 
