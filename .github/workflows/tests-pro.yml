@@ -39,6 +39,7 @@ jobs:
           restore-keys: |
             v1-yarn-pro-dependency-cache-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - run: yarn install --immutable
+      - run: sleep 3600
       - run: yarn tsc -b
 
   quality-check:
