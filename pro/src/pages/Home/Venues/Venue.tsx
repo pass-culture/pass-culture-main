@@ -96,7 +96,7 @@ const Venue = ({
   }
   const [stats, setStats] = useState(INITIAL_STATS_VALUE)
   const { logEvent } = useAnalytics()
-  const isNewBankDetailsJourneyEnabled = useActiveFeature(
+  const isNewBankDetailsJourneyEnabledd = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
 
@@ -268,7 +268,7 @@ const Venue = ({
             </h3>
             <div className="button-group">
               {/*Delete when WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY is deleted*/}
-              {!isNewBankDetailsJourneyEnabled &&
+              {!isNewBankDetailsJourneyEnabledd &&
                 hasMissingReimbursementPoint &&
                 !isVirtual &&
                 hasCreatedOffer && (
