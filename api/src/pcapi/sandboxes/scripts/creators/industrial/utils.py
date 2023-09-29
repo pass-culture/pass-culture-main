@@ -1,4 +1,10 @@
 from decimal import Decimal
+import itertools
+import pathlib
+
+import pcapi
+from pcapi.connectors import thumb_storage
+import pcapi.core.offers.models as offers_models
 
 
 def get_occurrence_short_name_or_none(concatened_names_with_a_date: str) -> str | None:
@@ -23,3 +29,11 @@ def get_price_by_short_name(occurrence_short_name: str | None = None) -> Decimal
         return Decimal(0)
 
     return Decimal(str(sum(map(ord, occurrence_short_name)) % 50))
+
+
+def create_products_thumb(products: list[offers_models.Product]) -> None:
+    image_dir = pathlib.Path(pcapi.__path__[0]) / "sandboxes" / "thumbs" / "generic_pictures"
+    image_paths = image_dir.iterdir()
+
+    for product, image_path in zip(products, itertools.cycle(image_paths)):
+        thumb_storage.create_thumb(product, image_path.read_bytes(), storage_id_suffix_str="", keep_ratio=True)
