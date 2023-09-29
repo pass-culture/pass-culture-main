@@ -8,12 +8,10 @@ import { SelectOption } from 'custom_types/form'
 import useNotification from 'hooks/useNotification'
 import fullLinkIcon from 'icons/full-link.svg'
 import fullMoreIcon from 'icons/full-more.svg'
-import strokeMoneyIcon from 'icons/stroke-repayment.svg'
 import { Button, ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import SelectInput from 'ui-kit/form/Select/SelectInput'
 import Spinner from 'ui-kit/Spinner/Spinner'
-import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { sortByLabel } from 'utils/strings'
 
 import styles from './BankInformations.module.scss'
@@ -180,37 +178,20 @@ const BankInformations = (): JSX.Element => {
               value={selectedOffererId}
             />
           </div>
-          {selectedOffererId === '' && (
-            <div className={styles['no-offerer-selected']}>
-              <SvgIcon
-                src={strokeMoneyIcon}
-                alt={''}
-                width="88"
-                className={styles['repayment-icon']}
-              />
-              <span className={styles['no-offerer-selected-text']}>
-                Sélectionnez une structure pour faire apparaitre tous les
-                comptes bancaires associés
-              </span>
-            </div>
-          )}
         </div>
       )}
-      {!(offerers && offerers?.length > 1 && selectedOffererId === '') && (
-        <Button
-          icon={fullMoreIcon}
-          className={styles['add-bank-account-button']}
-          variant={
-            selectedOfferer &&
-            selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts.length >
-              0
-              ? ButtonVariant.SECONDARY
-              : ButtonVariant.PRIMARY
-          }
-        >
-          Ajouter un compte bancaire
-        </Button>
-      )}
+      <Button
+        icon={fullMoreIcon}
+        className={styles['add-bank-account-button']}
+        variant={
+          selectedOfferer &&
+          selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts.length > 0
+            ? ButtonVariant.SECONDARY
+            : ButtonVariant.PRIMARY
+        }
+      >
+        Ajouter un compte bancaire
+      </Button>
     </>
   )
 }

@@ -168,7 +168,6 @@ describe('BankInformations page', () => {
   })
 
   it('should render with default offerer select and update render on select element', async () => {
-    customContext.selectedOfferer = null
     renderBankInformations(customContext, store)
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
@@ -216,17 +215,8 @@ describe('BankInformations page', () => {
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
     const selectInput = screen.getByTestId('select-input-offerer')
-    expect(
-      screen.getByDisplayValue('Sélectionnez une structure')
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText(
-        'Sélectionnez une structure pour faire apparaitre tous les comptes bancaires associés'
-      )
-    ).toBeInTheDocument()
-    expect(
-      screen.queryByText('Ajouter un compte bancaire')
-    ).not.toBeInTheDocument()
+    expect(screen.getByDisplayValue('first offerer')).toBeInTheDocument()
+    expect(screen.queryByText('Ajouter un compte bancaire')).toBeInTheDocument()
 
     await userEvent.selectOptions(selectInput, 'second offerer')
 
