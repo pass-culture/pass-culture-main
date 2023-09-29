@@ -1,7 +1,9 @@
+import itertools
 import logging
-import os
+import pathlib
 import random
 
+import pcapi
 from pcapi.connectors import thumb_storage
 from pcapi.core.categories import subcategories_v2
 import pcapi.core.offers.factories as offers_factories
@@ -346,10 +348,8 @@ def create_titelive_synced_music_products() -> list[offers_models.Product]:
 
 
 def create_products_thumb(products: list[offers_models.Product]) -> None:
-    files = list(os.listdir("./src/pcapi/sandboxes/thumbs/generic_pictures/"))
-    for i, product in enumerate(products):
-        with open(
-            f"./src/pcapi/sandboxes/thumbs/generic_pictures/{files[i % len(files)]}",
-            mode="rb",
-        ) as file:
-            thumb_storage.create_thumb(product, file.read(), storage_id_suffix_str="", keep_ratio=True)
+    image_dir = pathlib.Path(pcapi.__path__[0]) / "sandboxes" / "thumbs" / "generic_pictures"
+    image_paths = image_dir.iterdir()
+
+    for product, image_path in zip(products, itertools.cycle(image_paths)):
+        thumb_storage.create_thumb(product, image_path.read_bytes(), storage_id_suffix_str="", keep_ratio=True)
