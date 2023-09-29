@@ -202,14 +202,19 @@ def add_event(
 
 def cancel_latest_event(
     booking: bookings_models.Booking | educational_models.CollectiveBooking,
-    motive: models.FinanceEventMotive,
     commit: bool = False,
 ) -> models.FinanceEvent | None:
+    """Cancel latest used-related finance event, if there is one."""
     event = models.FinanceEvent.query.filter(
         (models.FinanceEvent.booking == booking)
         if isinstance(booking, bookings_models.Booking)
         else (models.FinanceEvent.collectiveBooking == booking),
-        models.FinanceEvent.motive == motive,
+        models.FinanceEvent.motive.in_(
+            (
+                models.FinanceEventMotive.BOOKING_USED,
+                models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION,
+            )
+        ),
         models.FinanceEvent.status.in_(models.CANCELLABLE_FINANCE_EVENT_STATUSES),
     ).one_or_none()
     if not event:

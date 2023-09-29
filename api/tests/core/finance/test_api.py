@@ -680,13 +680,25 @@ class AddEventTest:
 
 
 class CancelLatestEventTest:
-    def test_basics(self):
+    def test_with_booking_used(self):
         event = factories.UsedBookingFinanceEventFactory(
             booking__stock__offer__venue__pricing_point="self",
         )
         pricing = factories.PricingFactory(event=event, booking=event.booking)
 
-        api.cancel_latest_event(event.booking, motive=event.motive)
+        api.cancel_latest_event(event.booking)
+
+        assert event.status == models.FinanceEventStatus.CANCELLED
+        assert pricing.status == models.PricingStatus.CANCELLED
+
+    def test_with_booking_used_after_cancellation(self):
+        event = factories.UsedBookingFinanceEventFactory(
+            motive=models.FinanceEventMotive.BOOKING_USED_AFTER_CANCELLATION,
+            booking__stock__offer__venue__pricing_point="self",
+        )
+        pricing = factories.PricingFactory(event=event, booking=event.booking)
+
+        api.cancel_latest_event(event.booking)
 
         assert event.status == models.FinanceEventStatus.CANCELLED
         assert pricing.status == models.PricingStatus.CANCELLED
@@ -694,7 +706,7 @@ class CancelLatestEventTest:
     def test_no_event_to_cancel(self):
         booking = bookings_factories.UsedBookingFactory()
 
-        event = api.cancel_latest_event(booking, models.FinanceEventMotive.BOOKING_UNUSED)
+        event = api.cancel_latest_event(booking)
 
         assert event is None
 
@@ -709,7 +721,7 @@ class CancelLatestEventTest:
         )
 
         with pytest.raises(exceptions.NonCancellablePricingError):
-            api.cancel_latest_event(event.booking, motive=event.motive)
+            api.cancel_latest_event(event.booking)
 
         assert event.status == models.FinanceEventStatus.READY  # unchanged
         assert pricing.status == models.PricingStatus.PROCESSED  # unchanged
@@ -726,7 +738,7 @@ class CancelLatestEventTest:
         )
         factories.PricingFactory(event=event2, booking=event2.booking)
 
-        api.cancel_latest_event(event1.booking, motive=event1.motive)
+        api.cancel_latest_event(event1.booking)
 
         assert event1.status == models.FinanceEventStatus.CANCELLED
         assert event1.pricings[0].status == models.PricingStatus.CANCELLED
@@ -752,7 +764,7 @@ class CancelLatestEventTest:
         )
 
         with pytest.raises(exceptions.NonCancellablePricingError):
-            api.cancel_latest_event(event1.booking, motive=event1.motive)
+            api.cancel_latest_event(event1.booking)
 
         # No changes!
         assert event1.status == models.FinanceEventStatus.PRICED
@@ -761,7 +773,7 @@ class CancelLatestEventTest:
         assert event2.pricings[0].status == models.PricingStatus.PROCESSED
 
         with override_settings(FINANCE_OVERRIDE_PRICING_ORDERING_ON_PRICING_POINTS=[ppoint.id]):
-            api.cancel_latest_event(event1.booking, motive=event1.motive)
+            api.cancel_latest_event(event1.booking)
 
         # This time, event1 and its pricing were cancelled. event2 and
         # its pricing were left untouched.
