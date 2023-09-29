@@ -4,42 +4,69 @@ import Breadcrumb, { BreadcrumbStyle } from 'components/Breadcrumb'
 import { useReimbursementContext } from 'context/ReimbursementContext/ReimbursementContext'
 import useActiveFeature from 'hooks/useActiveFeature'
 import useActiveStep from 'hooks/useActiveStep'
+import fullErrorIcon from 'icons/full-error.svg'
+import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 
 import {
   OLD_STEP_LIST,
   OLD_STEP_NAMES,
   STEP_ID_BANK_INFORMATIONS,
-  STEP_LIST,
+  STEP_ID_DETAILS,
+  STEP_ID_INVOICES,
   STEP_NAMES,
 } from './constants'
+import styles from './ReimbursmentsBreadcrumb.module.scss'
 
 const ReimbursementsBreadcrumb = () => {
-  const isNewBankDetailsJourneyEnable = useActiveFeature(
+  const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
   const { selectedOfferer } = useReimbursementContext()
 
   const activeStep = useActiveStep(
-    isNewBankDetailsJourneyEnable ? STEP_NAMES : OLD_STEP_NAMES
+    isNewBankDetailsJourneyEnabled ? STEP_NAMES : OLD_STEP_NAMES
   )
+  const hasWarning =
+    (selectedOfferer &&
+      selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts.length > 0) ??
+    false
 
   const getSteps = () => {
-    return STEP_LIST.map(step => {
-      if (step.id === STEP_ID_BANK_INFORMATIONS) {
-        step.hasWarning =
-          (selectedOfferer &&
-            selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts.length >
-              0) ??
-          false
-      }
-      return step
-    })
+    return [
+      {
+        id: STEP_ID_INVOICES,
+        label: 'Justificatifs',
+        url: '/remboursements/justificatifs',
+      },
+      {
+        id: STEP_ID_DETAILS,
+        label: 'Détails',
+        url: '/remboursements/details',
+      },
+      {
+        id: STEP_ID_BANK_INFORMATIONS,
+        label: (
+          <>
+            Informations bancaires{' '}
+            {hasWarning && (
+              <SvgIcon
+                src={fullErrorIcon}
+                alt="Une action est requise dans cet onglet"
+                width="20"
+                className={styles['error-icon']}
+              />
+            )}
+          </>
+        ),
+        url: '/remboursements/informations-bancaires',
+      },
+    ]
   }
 
   return (
     <Breadcrumb
       activeStep={activeStep}
-      steps={isNewBankDetailsJourneyEnable ? getSteps() : OLD_STEP_LIST}
+      steps={isNewBankDetailsJourneyEnabled ? getSteps() : OLD_STEP_LIST}
       styleType={BreadcrumbStyle.TAB}
     />
   )

@@ -25,7 +25,7 @@ import { InvoiceTable } from './InvoiceTable'
 import NoInvoicesYet from './NoInvoicesYet'
 
 const ReimbursementsInvoices = (): JSX.Element => {
-  const isNewBankDetailsJourneyEnable = useActiveFeature(
+  const isNewBankDetailsJourneyEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_BANK_DETAILS_JOURNEY'
   )
   const ALL_REIMBURSEMENT_POINT_OPTION_ID = 'all'
@@ -159,7 +159,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
   if (reimbursementPointsOptions.length === 0) {
     return (
       <div className="no-refunds">
-        {isNewBankDetailsJourneyEnable && <BannerReimbursementsInfo />}
+        {isNewBankDetailsJourneyEnabled && <BannerReimbursementsInfo />}
         <SvgIcon
           src={strokeNoBookingIcon}
           alt=""
@@ -173,7 +173,7 @@ const ReimbursementsInvoices = (): JSX.Element => {
   }
   return (
     <>
-      {isNewBankDetailsJourneyEnable && <BannerReimbursementsInfo />}
+      {isNewBankDetailsJourneyEnabled && <BannerReimbursementsInfo />}
       <InvoicesFilters
         areFiltersDefault={areFiltersDefault}
         filters={filters}

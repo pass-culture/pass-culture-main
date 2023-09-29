@@ -200,6 +200,7 @@ const Venue = ({
       })
       setIsStatLoaded(true)
     }
+
     if (isStatOpen && !isStatLoaded) {
       updateStats()
     }

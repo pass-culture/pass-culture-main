@@ -1,10 +1,9 @@
 export type Step = {
   id: string
-  label: string
+  label: React.ReactNode
   onClick?: (e: React.MouseEvent) => void
   url?: string
   hash?: string
-  hasWarning?: boolean
 }
 
 export interface StepPattern {

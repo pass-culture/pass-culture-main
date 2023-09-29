@@ -24,7 +24,9 @@ const BankInformations = (): JSX.Element => {
 
   const [isOffererBankAccountsLoading, setIsOffererBankAccountsLoading] =
     useState<boolean>(false)
-  const [, setSelectedOffererBankAccounts] =
+  // TODO: use bank accounts
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [selectedOffererBankAccounts, setSelectedOffererBankAccounts] =
     useState<GetOffererBankAccountsResponseModel | null>(null)
   const [searchParams, setSearchParams] = useSearchParams()
   const [isOffererLoading, setIsOffererLoading] = useState<boolean>(false)
@@ -32,12 +34,9 @@ const BankInformations = (): JSX.Element => {
   const { structure: offererId } = Object.fromEntries(searchParams)
 
   const [offererOptions, setOffererOptions] = useState<SelectOption[]>([])
-  const selectedOffererId = selectedOfferer?.id.toString() ?? ''
 
   const updateOfferer = async (newOffererId: string) => {
-    if (newOffererId === '') {
-      setSelectedOfferer(null)
-    } else {
+    if (newOffererId !== '') {
       setIsOffererLoading(true)
       const offerer = await api.getOfferer(Number(newOffererId))
       setSelectedOfferer(offerer)
@@ -49,11 +48,15 @@ const BankInformations = (): JSX.Element => {
     if (offererId && offerers && offerers?.length > 0) {
       updateOfferer(offererId)
     }
-    if (searchParams.has('structure')) {
-      searchParams.delete('structure')
-      setSearchParams(searchParams)
-    }
   }, [])
+
+  if (
+    searchParams.has('structure') &&
+    Number(offererId) === selectedOfferer?.id
+  ) {
+    searchParams.delete('structure')
+    setSearchParams(searchParams)
+  }
 
   useEffect(() => {
     if (offerers && offerers.length > 1) {
@@ -126,11 +129,10 @@ const BankInformations = (): JSX.Element => {
             </div>
             <SelectInput
               onChange={e => updateOfferer(e.target.value)}
-              id="selected-offerer"
               data-testid="select-input-offerer"
               name="offererId"
               options={offererOptions}
-              value={selectedOffererId}
+              value={selectedOfferer?.id.toString() ?? ''}
             />
           </div>
         </div>
@@ -139,6 +141,7 @@ const BankInformations = (): JSX.Element => {
         icon={fullMoreIcon}
         className={styles['add-bank-account-button']}
         variant={
+          /* istanbul ignore next : graphic changes */
           selectedOfferer &&
           selectedOfferer?.venuesWithNonFreeOffersWithoutBankAccounts.length > 0
             ? ButtonVariant.SECONDARY
