@@ -1624,16 +1624,9 @@ class ActivateBeneficiaryIfNoMissingStepTest:
             TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
         )
 
-    def test_dms_requires_manual_review_after_19yo(self):
-        with freeze_time(datetime.utcnow() - relativedelta(years=1, days=1)):
-            user = users_factories.ProfileCompletedUserFactory(age=18)
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                user=user,
-                type=fraud_models.FraudCheckType.UBBLE,
-                status=fraud_models.FraudCheckStatus.KO,
-                eligibilityType=users_models.EligibilityType.AGE18,
-                resultContent={"registration_datetime": datetime.utcnow()},
-            )
+    def test_manual_review_is_required_for_post_19yo_dms(self):
+        with freeze_time(datetime.utcnow() - relativedelta(days=1)):
+            user = users_factories.ProfileCompletedUserFactory(age=19)
 
         dms_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -1646,17 +1639,43 @@ class ActivateBeneficiaryIfNoMissingStepTest:
                 birth_date=user.birth_date.isoformat(),
             ),
         )
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-            status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=users_models.EligibilityType.AGE18,
-        )
-        user_subscription_state = subscription_api.get_user_subscription_state(user)
 
-        assert user_subscription_state.is_activable is False
-        assert user_subscription_state.next_step is None
-        assert user_subscription_state.identity_fraud_check == dms_fraud_check
+        assert subscription_api.requires_manual_review_before_activation(user, dms_fraud_check)
+
+    def test_manual_review_is_not_required_for_post_19yo_dms_ko(self):
+        user = users_factories.ProfileCompletedUserFactory(age=19)
+
+        dms_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.DMS,
+            status=fraud_models.FraudCheckStatus.KO,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            resultContent=fraud_factories.DMSContentFactory(
+                first_name=user.firstName,
+                last_name=user.lastName,
+                birth_date=user.birth_date.isoformat(),
+            ),
+        )
+
+        assert not subscription_api.requires_manual_review_before_activation(user, dms_fraud_check)
+
+    def test_manual_review_is_not_required_for_pre_19yo_dms(self):
+        user = users_factories.ProfileCompletedUserFactory(age=19)
+
+        with freeze_time(datetime.utcnow() - relativedelta(days=1)):
+            dms_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user,
+                type=fraud_models.FraudCheckType.DMS,
+                status=fraud_models.FraudCheckStatus.OK,
+                eligibilityType=users_models.EligibilityType.AGE18,
+                resultContent=fraud_factories.DMSContentFactory(
+                    first_name=user.firstName,
+                    last_name=user.lastName,
+                    birth_date=user.birth_date.isoformat(),
+                ),
+            )
+
+        assert not subscription_api.requires_manual_review_before_activation(user, dms_fraud_check)
 
 
 @pytest.mark.usefixtures("db_session")
