@@ -32,11 +32,14 @@ const BankInformations = (): JSX.Element => {
     useState<GetOffererBankAccountsResponseModel | null>(null)
   const [searchParams, setSearchParams] = useSearchParams()
   const [isOffererLoading, setIsOffererLoading] = useState<boolean>(false)
+
   const { structure: offererId } = Object.fromEntries(searchParams)
   const [offererOptions, setOffererOptions] = useState<SelectOption[]>([])
 
   const updateOfferer = async (newOffererId: string) => {
-    if (newOffererId !== '') {
+    if (newOffererId === '') {
+      setSelectedOfferer(null)
+    } else {
       setIsOffererLoading(true)
       const offerer = await api.getOfferer(Number(newOffererId))
       setSelectedOfferer(offerer)
@@ -59,6 +62,16 @@ const BankInformations = (): JSX.Element => {
   }
 
   const selectedOffererId = selectedOfferer?.id.toString() ?? ''
+
+  useEffect(() => {
+    if (offererId && offerers && offerers?.length > 0) {
+      updateOfferer(offererId)
+    }
+    if (searchParams.has('structure')) {
+      searchParams.delete('structure')
+      setSearchParams(searchParams)
+    }
+  }, [])
 
   useEffect(() => {
     if (offerers && offerers.length > 1) {
@@ -159,11 +172,7 @@ const BankInformations = (): JSX.Element => {
               <label htmlFor="selected-offerer">Structure</label>
             </div>
             <SelectInput
-              onChange={e => {
-                /*TODO: set correct offerer*/
-                console.log(e)
-                // setSelectedOfferer(e.target.value)
-              }}
+              onChange={e => updateOfferer(e.target.value)}
               id="selected-offerer"
               data-testid="select-input-offerer"
               name="offererId"

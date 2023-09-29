@@ -24,6 +24,7 @@ const renderBankInformations = (
     setSelectedOfferer: () => {},
     ...customContext,
   }
+
   renderWithProviders(
     <>
       <ReimbursementContext.Provider value={contextValues}>
@@ -81,7 +82,7 @@ describe('BankInformations page', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
   })
 
-  it('should not display validated bank account message', async () => {
+  it('should display not validated bank account message', async () => {
     renderBankInformations(customContext, store)
 
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
@@ -94,7 +95,6 @@ describe('BankInformations page', () => {
     ).toBeInTheDocument()
     expect(screen.getByText('Ajouter un compte bancaire')).toBeInTheDocument()
     expect(screen.getByText('En savoir plus')).toBeInTheDocument()
-    expect(screen.queryByLabelText('Structure')).not.toBeInTheDocument()
   })
 
   it('should render message when the user has a valid bank account and no pending one', async () => {
@@ -168,6 +168,7 @@ describe('BankInformations page', () => {
   })
 
   it('should render with default offerer select and update render on select element', async () => {
+    customContext.selectedOfferer = null
     renderBankInformations(customContext, store)
     await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 
