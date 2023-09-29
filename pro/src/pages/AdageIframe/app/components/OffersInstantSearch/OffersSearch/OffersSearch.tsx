@@ -5,17 +5,10 @@ import { useContext, useEffect, useRef, useState } from 'react'
 
 import { VenueResponse } from 'apiClient/adage'
 import { apiAdage } from 'apiClient/api'
-import useActiveFeature from 'hooks/useActiveFeature'
 import useIsElementVisible from 'hooks/useIsElementVisible'
-import strokeOffersIcon from 'icons/stroke-offers.svg'
-import strokeVenueIcon from 'icons/stroke-venue.svg'
 import useAdageUser from 'pages/AdageIframe/app/hooks/useAdageUser'
-import {
-  FacetFiltersContext,
-  FiltersContext,
-} from 'pages/AdageIframe/app/providers'
+import { FacetFiltersContext } from 'pages/AdageIframe/app/providers'
 import { Option } from 'pages/AdageIframe/app/types'
-import Tabs from 'ui-kit/Tabs'
 import {
   filterEducationalSubCategories,
   inferCategoryLabelsFromSubcategories,
@@ -26,7 +19,6 @@ import {
   ADAGE_FILTERS_DEFAULT_VALUES,
   adageFiltersToFacetFilters,
   computeFiltersInitialValues,
-  populateFacetFilters,
 } from '../utils'
 
 import { Autocomplete } from './Autocomplete/Autocomplete'
@@ -55,24 +47,14 @@ export interface SearchFormValues {
   geolocRadius: number
 }
 
-enum OfferTab {
-  ALL = 'all',
-  ASSOCIATED_TO_INSTITUTION = 'associatedToInstitution',
-}
-
 export const OffersSearch = ({
   venueFilter,
   setGeoRadius,
 }: SearchProps): JSX.Element => {
   const [, setIsLoading] = useState<boolean>(false)
-  const [activeTab, setActiveTab] = useState(OfferTab.ALL)
 
-  const { dispatchCurrentFilters, currentFilters } = useContext(FiltersContext)
   const { setFacetFilters } = useContext(FacetFiltersContext)
   const { adageUser } = useAdageUser()
-  const userUAICode = adageUser.uai
-  const uaiCodeAllInstitutionsTab = userUAICode ? ['all', userUAICode] : ['all']
-  const uaiCodeShareWithMyInstitutionTab = userUAICode ? [userUAICode] : null
   const [categoriesOptions, setCategoriesOptions] = useState<
     Option<string[]>[]
   >([])
@@ -83,47 +65,10 @@ export const OffersSearch = ({
     })
   }, [])
 
-  const handleTabChange = (tab: OfferTab) => {
-    dispatchCurrentFilters({
-      type: 'RESET_CURRENT_FILTERS',
-    })
-    setActiveTab(tab)
-    setFacetFilters(
-      populateFacetFilters({
-        ...currentFilters,
-        venueFilter,
-        uai:
-          tab === OfferTab.ASSOCIATED_TO_INSTITUTION
-            ? uaiCodeShareWithMyInstitutionTab
-            : uaiCodeAllInstitutionsTab,
-      }).queryFilters
-    )
-  }
-
-  const tabs = [
-    {
-      label: 'Toutes les offres',
-      key: OfferTab.ALL,
-      onClick: () => handleTabChange(OfferTab.ALL),
-      icon: strokeOffersIcon,
-    },
-    {
-      label: 'Partagé avec mon établissement',
-      key: OfferTab.ASSOCIATED_TO_INSTITUTION,
-      onClick: () => handleTabChange(OfferTab.ASSOCIATED_TO_INSTITUTION),
-      icon: strokeVenueIcon,
-    },
-  ]
-
-  const isNewHeaderActive = useActiveFeature('WIP_ENABLE_NEW_ADAGE_HEADER')
-
   const handleSubmit = () => {
     const updatedFilters = adageFiltersToFacetFilters({
       ...formik.values,
-      uai:
-        activeTab === OfferTab.ASSOCIATED_TO_INSTITUTION
-          ? uaiCodeShareWithMyInstitutionTab
-          : uaiCodeAllInstitutionsTab,
+      uai: adageUser.uai ? ['all', adageUser.uai] : ['all'],
     })
 
     setFacetFilters(updatedFilters.queryFilters)
@@ -192,9 +137,6 @@ export const OffersSearch = ({
   return (
     <>
       <FormikContext.Provider value={formik}>
-        {!!adageUser.uai && !isNewHeaderActive && (
-          <Tabs selectedKey={activeTab} tabs={tabs} />
-        )}
         <Autocomplete
           initialQuery={venueFilter?.publicName || venueFilter?.name || ''}
           placeholder={
