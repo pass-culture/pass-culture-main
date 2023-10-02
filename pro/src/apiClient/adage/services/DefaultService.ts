@@ -16,6 +16,7 @@ import type { CollectiveRequestBody } from '../models/CollectiveRequestBody';
 import type { CollectiveRequestResponseModel } from '../models/CollectiveRequestResponseModel';
 import type { EducationalInstitutionWithBudgetResponseModel } from '../models/EducationalInstitutionWithBudgetResponseModel';
 import type { FavoritesResponseModel } from '../models/FavoritesResponseModel';
+import type { ListCollectiveOffersResponseModel } from '../models/ListCollectiveOffersResponseModel';
 import type { ListFeatureResponseModel } from '../models/ListFeatureResponseModel';
 import type { OfferFavoriteBody } from '../models/OfferFavoriteBody';
 import type { OfferIdBody } from '../models/OfferIdBody';
@@ -59,6 +60,22 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/collective/academies',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_educational_eligible_offers_by_uai <GET>
+   * @returns ListCollectiveOffersResponseModel OK
+   * @throws ApiError
+   */
+  public getEducationalEligibleOffersByUai(): CancelablePromise<ListCollectiveOffersResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/adage-iframe/collective/all-offers',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
