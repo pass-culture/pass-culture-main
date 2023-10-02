@@ -1,10 +1,10 @@
 from datetime import date
 from datetime import datetime
+from datetime import timedelta
 import enum
 import typing
 
 import flask
-import pydantic.v1 as pydantic_v1
 from pydantic.v1 import ConstrainedStr
 from pydantic.v1 import EmailStr
 from pydantic.v1 import Field
@@ -396,6 +396,28 @@ def is_intervention_area_valid(
     return True
 
 
+class DateRangeModel(BaseModel):
+    start: datetime
+    end: datetime
+
+    @root_validator(skip_on_failure=True)
+    def validate_end(cls, values: dict) -> dict:
+        if values["start"] > values["end"]:
+            raise ValueError("end before start")
+
+        return values
+
+
+class DateRangeOnCreateModel(DateRangeModel):
+    @validator("start")
+    def validate_start(cls, start: datetime) -> datetime:
+        # five minutes otherwise we might always raise an error
+        # because of a couple of (milli)seconds.
+        if start < (datetime.utcnow() - timedelta(minutes=5)):
+            raise ValueError("start date can't be passed")
+        return start
+
+
 class PostCollectiveOfferBodyModel(BaseModel):
     venue_id: int
     subcategory_id: str
@@ -457,6 +479,11 @@ class PostCollectiveOfferBodyModel(BaseModel):
 
 class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
     price_detail: PriceDetail | None
+
+    # TODO(jeremieb) | None is temporary
+    # when the frontend clients are up to date, dateRange should
+    # become mandatory
+    dates: DateRangeOnCreateModel | None
 
     class Config:
         alias_generator = to_camel
@@ -548,6 +575,11 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
 class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
     priceDetail: PriceDetail | None
     domains: list[int] | None
+
+    # TODO(jeremieb) | None is temporary
+    # when the frontend clients are up to date, dateRange should
+    # become mandatory
+    dates: DateRangeModel | None
 
     @validator("domains")
     def validate_domains_collective_offer_template_edition(
