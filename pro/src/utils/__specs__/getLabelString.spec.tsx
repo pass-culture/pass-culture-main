@@ -12,7 +12,7 @@ describe('getLabelString', () => {
   it('should return empty string if label is a component', async () => {
     expect(
       getLabelString(
-        <Tooltip id={'tooltip-id'} content={'Label'}>
+        <Tooltip visuallyHidden={false} content={'Label'}>
           Button
         </Tooltip>
       )

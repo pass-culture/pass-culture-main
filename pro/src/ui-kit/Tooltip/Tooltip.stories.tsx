@@ -11,7 +11,7 @@ export default {
 const Template: Story<TooltipProps> = ({ content, children }) => {
   return (
     <div style={{ padding: '4rem' }}>
-      <Tooltip id="someid" content={content}>
+      <Tooltip visuallyHidden={false} content={content}>
         {children}
       </Tooltip>
     </div>
