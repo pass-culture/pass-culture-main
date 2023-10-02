@@ -176,7 +176,14 @@ def add_event(
         pricing_point_id = booking.venue.current_pricing_point_id
         if pricing_point_id:
             status = models.FinanceEventStatus.READY
-            pricing_ordering_date = _get_pricing_ordering_date(booking)
+            if motive in (
+                models.FinanceEventMotive.INCIDENT_REVERSAL_OF_ORIGINAL_EVENT,
+                models.FinanceEventMotive.INCIDENT_NEW_PRICE,
+                models.FinanceEventMotive.INCIDENT_COMMERCIAL_GESTURE,
+            ):
+                pricing_ordering_date = incident_validation_date
+            else:
+                pricing_ordering_date = _get_pricing_ordering_date(booking)
         else:
             status = models.FinanceEventStatus.PENDING
             pricing_ordering_date = None

@@ -667,16 +667,20 @@ class AddEventTest:
     def test_create_incident_event(self, incident_motive):
         pricing_point = offerers_factories.VenueFactory()
         booking_incident = factories.IndividualBookingFinanceIncidentFactory(
-            booking__stock__offer__venue__pricing_point=pricing_point, incident__venue__pricing_point=pricing_point
+            booking__stock__offer__venue__pricing_point=pricing_point,
+            incident__venue__pricing_point=pricing_point,
         )
         validation_date = datetime.datetime.utcnow()
         event = api.add_event(
-            incident_motive, booking_incident=booking_incident, incident_validation_date=validation_date
+            incident_motive,
+            booking_incident=booking_incident,
+            incident_validation_date=validation_date,
         )
 
         assert event.bookingFinanceIncident == booking_incident
         assert event.status == models.FinanceEventStatus.READY
         assert event.motive == incident_motive
+        assert event.pricingOrderingDate == validation_date
 
 
 class CancelLatestEventTest:
