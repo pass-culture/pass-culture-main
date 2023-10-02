@@ -621,6 +621,10 @@ class CollectiveOfferTemplate(
         back_populates="favoriteCollectiveOfferTemplates",
     )
 
+    startEndDates: typing.Collection["TemplateStartEndDates"] = relationship(
+        "TemplateStartEndDates", back_populates="template"
+    )
+
     @property
     def isEducational(self) -> bool:
         # FIXME (rpaoloni, 2022-05-09): Remove legacy support layer
@@ -1419,4 +1423,31 @@ class CollectiveOfferTemplateEducationalRedactor(PcObject, Base, Model):
     )
     __table_args__ = (
         UniqueConstraint("educationalRedactorId", "collectiveOfferTemplateId", name="unique_redactorId_template"),
+    )
+
+
+class TemplateStartEndDates(PcObject, Base, Model):
+    """
+    Provide collective offer templates start end end dates.
+    A template cannot have more than 10 start-end pairs.
+    """
+
+    MAX_DATES_PER_TEMPLATE = 10
+
+    start: datetime = sa.Column(sa.DateTime, nullable=False)
+    end: datetime | None = sa.Column(sa.DateTime, nullable=True)
+    templateId: int = sa.Column(
+        sa.BigInteger, sa.ForeignKey("collective_offer_template.id", ondelete="CASCADE"), nullable=False
+    )
+    template: sa.orm.Mapped["CollectiveOfferTemplate"] = sa.orm.relationship(
+        "CollectiveOfferTemplate", foreign_keys=[templateId], back_populates="startEndDates"
+    )
+
+    @classmethod
+    def count_template_dates(cls, template_id: int) -> int:
+        return cls.query.filter_by(templateId=template_id).count()
+
+    __table_args__ = (
+        sa.UniqueConstraint("start", "end", "templateId", name="template_dates_unique_start_end"),
+        sa.CheckConstraint("(end is null) or start < end", name="template_dates_start_before_end"),
     )
