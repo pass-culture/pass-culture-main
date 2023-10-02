@@ -9,6 +9,7 @@
   &-boxes {
     margin-top: rem.torem(16px);
     display: flex;
+    flex-wrap: wrap;
     gap: rem.torem(16px);
   }
 

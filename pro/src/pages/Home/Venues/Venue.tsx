@@ -16,7 +16,7 @@ import fullErrorIcon from 'icons/full-error.svg'
 import fullMoreIcon from 'icons/full-more.svg'
 import strokeConnectIcon from 'icons/stroke-connect.svg'
 import { Button, ButtonLink } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
+import { ButtonVariant, IconPositionEnum } from 'ui-kit/Button/types'
 import Spinner from 'ui-kit/Spinner/Spinner'
 import { SvgIcon } from 'ui-kit/SvgIcon/SvgIcon'
 import { Tag, TagVariant } from 'ui-kit/Tag/Tag'
@@ -362,6 +362,7 @@ const Venue = ({
                     <div className="h-card-col v-add-offer-link">
                       <ButtonLink
                         variant={ButtonVariant.TERNARY}
+                        iconPosition={IconPositionEnum.CENTER}
                         link={{
                           to: venueCreateOfferLink,
                           isExternal: false,

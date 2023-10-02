@@ -53,21 +53,22 @@ const OffererStats = () => {
             {...defaultIconLinkProps}
           />
         </div>
-        <ButtonLink
-          variant={ButtonVariant.SECONDARY}
-          className={styles['offerer-stats-button']}
-          link={{
-            to: offererStatsUrl,
-            isExternal: false,
-          }}
-          onClick={() => {
-            logEvent?.(Events.CLICKED_VIEW_ALL_OFFERER_STATS, {
-              from: location.pathname,
-            })
-          }}
-        >
-          Voir toutes les statistiques
-        </ButtonLink>
+        <div className={styles['offerer-stats-button']}>
+          <ButtonLink
+            variant={ButtonVariant.SECONDARY}
+            link={{
+              to: offererStatsUrl,
+              isExternal: false,
+            }}
+            onClick={() => {
+              logEvent?.(Events.CLICKED_VIEW_ALL_OFFERER_STATS, {
+                from: location.pathname,
+              })
+            }}
+          >
+            Voir toutes les statistiques
+          </ButtonLink>
+        </div>
       </div>
     </div>
   )
